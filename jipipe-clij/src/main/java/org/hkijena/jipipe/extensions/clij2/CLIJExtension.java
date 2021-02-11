@@ -47,7 +47,7 @@ public class CLIJExtension extends JIPipePrepackagedDefaultJavaExtension {
 
     @Override
     public HTMLText getDescription() {
-        return new HTMLText( "Integrates data types and algorithms for GPU computing based on CLIJ2.");
+        return new HTMLText("Integrates data types and algorithms for GPU computing based on CLIJ2.");
     }
 
     @Override

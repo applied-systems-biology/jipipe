@@ -23,7 +23,7 @@ import org.hkijena.jipipe.utils.BusyCursor;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
-import java.awt.BorderLayout;
+import java.awt.*;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.io.IOException;

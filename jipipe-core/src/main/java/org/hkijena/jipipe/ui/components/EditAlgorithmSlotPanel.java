@@ -14,11 +14,7 @@
 package org.hkijena.jipipe.ui.components;
 
 import org.hkijena.jipipe.JIPipe;
-import org.hkijena.jipipe.api.data.JIPipeDataInfo;
-import org.hkijena.jipipe.api.data.JIPipeDataSlot;
-import org.hkijena.jipipe.api.data.JIPipeDataSlotInfo;
-import org.hkijena.jipipe.api.data.JIPipeDefaultMutableSlotConfiguration;
-import org.hkijena.jipipe.api.data.JIPipeSlotType;
+import org.hkijena.jipipe.api.data.*;
 import org.hkijena.jipipe.api.history.JIPipeGraphHistory;
 import org.hkijena.jipipe.api.history.SlotConfigurationHistorySnapshot;
 import org.hkijena.jipipe.api.nodes.JIPipeGraph;
@@ -29,17 +25,11 @@ import org.jdesktop.swingx.JXTextField;
 
 import javax.swing.*;
 import javax.swing.event.DocumentEvent;
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Component;
-import java.awt.Dimension;
+import java.awt.*;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
@@ -78,10 +68,31 @@ public class EditAlgorithmSlotPanel extends JPanel {
         setInitialValues();
     }
 
+    /**
+     * Shows a dialog for adding slots
+     *
+     * @param parent       parent component
+     * @param graphHistory the graph history for undo snapshots
+     * @param existingSlot the slot to be edited
+     */
+    public static void showDialog(Component parent, JIPipeGraphHistory graphHistory, JIPipeDataSlot existingSlot) {
+        JDialog dialog = new JDialog();
+        EditAlgorithmSlotPanel panel = new EditAlgorithmSlotPanel(existingSlot, graphHistory);
+        panel.setDialog(dialog);
+        dialog.setContentPane(panel);
+        dialog.setTitle("Edit slot '" + existingSlot.getName() + "'");
+        dialog.setModal(true);
+        dialog.pack();
+        dialog.setSize(new Dimension(640, 480));
+        dialog.setLocationRelativeTo(parent);
+        UIUtils.addEscapeListener(dialog);
+        dialog.setVisible(true);
+    }
+
     private void setInitialValues() {
         nameEditor.setText(existingSlot.getName());
         datatypeList.setSelectedValue(JIPipeDataInfo.getInstance(existingSlot.getAcceptedDataType()), true);
-        if(existingSlot.isInput()) {
+        if (existingSlot.isInput()) {
             optionalInputEditor.setSelected(existingSlot.getInfo().isOptional());
         }
     }
@@ -124,7 +135,7 @@ public class EditAlgorithmSlotPanel extends JPanel {
         });
         formPanel.addToForm(nameEditor, new JLabel("Slot name"), null);
 
-        if(existingSlot.getSlotType() == JIPipeSlotType.Input) {
+        if (existingSlot.getSlotType() == JIPipeSlotType.Input) {
             optionalInputEditor.setText("Optional input");
             optionalInputEditor.setToolTipText("If enabled, the input slot does not require an incoming edge. The node then will receive an empty data table.");
             formPanel.addWideToForm(optionalInputEditor, null);
@@ -363,26 +374,5 @@ public class EditAlgorithmSlotPanel extends JPanel {
 
     public void setDialog(JDialog dialog) {
         this.dialog = dialog;
-    }
-
-    /**
-     * Shows a dialog for adding slots
-     *
-     * @param parent       parent component
-     * @param graphHistory the graph history for undo snapshots
-     * @param existingSlot the slot to be edited
-     */
-    public static void showDialog(Component parent, JIPipeGraphHistory graphHistory, JIPipeDataSlot existingSlot) {
-        JDialog dialog = new JDialog();
-        EditAlgorithmSlotPanel panel = new EditAlgorithmSlotPanel(existingSlot, graphHistory);
-        panel.setDialog(dialog);
-        dialog.setContentPane(panel);
-        dialog.setTitle("Edit slot '" + existingSlot.getName() + "'");
-        dialog.setModal(true);
-        dialog.pack();
-        dialog.setSize(new Dimension(640, 480));
-        dialog.setLocationRelativeTo(parent);
-        UIUtils.addEscapeListener(dialog);
-        dialog.setVisible(true);
     }
 }

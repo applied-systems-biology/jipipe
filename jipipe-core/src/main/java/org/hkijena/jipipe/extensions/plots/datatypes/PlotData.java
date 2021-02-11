@@ -48,11 +48,7 @@ import org.jfree.graphics2d.svg.SVGGraphics2D;
 import org.jfree.graphics2d.svg.SVGUtils;
 
 import javax.swing.*;
-import java.awt.Color;
-import java.awt.Component;
-import java.awt.Font;
-import java.awt.Image;
-import java.awt.Rectangle;
+import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.nio.file.Path;
@@ -106,6 +102,51 @@ public abstract class PlotData implements JIPipeData, JIPipeParameterCollection,
         for (PlotDataSeries data : other.series) {
             this.series.add(new PlotDataSeries(data));
         }
+    }
+
+    public static <T extends PlotData> T importFrom(Path storageFilePath, Class<T> klass) {
+        try {
+            PlotData plotData = JsonUtils.getObjectMapper().readerFor(klass).readValue(storageFilePath.resolve("plot-metadata.json").toFile());
+            List<Path> seriesFiles = PathUtils.findFilesByExtensionIn(storageFilePath, ".csv").stream()
+                    .filter(p -> p.getFileName().toString().matches("series\\d+.csv")).sorted(Comparator.comparing(p -> p.getFileName().toString())).collect(Collectors.toList());
+            for (Path seriesFile : seriesFiles) {
+                plotData.addSeries(new PlotDataSeries(ResultsTable.open(seriesFile.toString())));
+            }
+            return (T) plotData;
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    /**
+     * Loads data from a folder
+     *
+     * @param folder folder
+     * @return loaded data
+     */
+    public static PlotData fromFolder(Path folder) {
+        PlotData result;
+        try {
+            JsonNode node = JsonUtils.getObjectMapper().readValue(folder.resolve("plot-metadata.json").toFile(), JsonNode.class);
+            Class<? extends JIPipeData> dataClass = JIPipe.getDataTypes().getById(node.get("plot-data-type").textValue());
+            result = (PlotData) JIPipe.createData(dataClass);
+
+            // Load metadata
+            result.fromJson(node);
+
+            // Load series
+            for (JsonNode element : ImmutableList.copyOf(node.get("plot-series").elements())) {
+                PlotDataSeries series = JsonUtils.getObjectMapper().readerFor(PlotDataSeries.class).readValue(element.get("metadata"));
+                Path fileName = folder.resolve(element.get("file-name").textValue());
+                ResultsTableData tableData = new ResultsTableData(ResultsTable.open(fileName.toString()));
+                series.setTable(tableData.getTable());
+                result.addSeries(series);
+            }
+
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        return result;
     }
 
     @Override
@@ -374,51 +415,6 @@ public abstract class PlotData implements JIPipeData, JIPipeParameterCollection,
      */
     public void fromJson(JsonNode node) {
         JIPipeParameterCollection.deserializeParametersFromJson(this, node, new JIPipeValidityReport());
-    }
-
-    public static <T extends PlotData> T importFrom(Path storageFilePath, Class<T> klass) {
-        try {
-            PlotData plotData = JsonUtils.getObjectMapper().readerFor(klass).readValue(storageFilePath.resolve("plot-metadata.json").toFile());
-            List<Path> seriesFiles = PathUtils.findFilesByExtensionIn(storageFilePath, ".csv").stream()
-                    .filter(p -> p.getFileName().toString().matches("series\\d+.csv")).sorted(Comparator.comparing(p -> p.getFileName().toString())).collect(Collectors.toList());
-            for (Path seriesFile : seriesFiles) {
-                plotData.addSeries(new PlotDataSeries(ResultsTable.open(seriesFile.toString())));
-            }
-            return (T) plotData;
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    /**
-     * Loads data from a folder
-     *
-     * @param folder folder
-     * @return loaded data
-     */
-    public static PlotData fromFolder(Path folder) {
-        PlotData result;
-        try {
-            JsonNode node = JsonUtils.getObjectMapper().readValue(folder.resolve("plot-metadata.json").toFile(), JsonNode.class);
-            Class<? extends JIPipeData> dataClass = JIPipe.getDataTypes().getById(node.get("plot-data-type").textValue());
-            result = (PlotData) JIPipe.createData(dataClass);
-
-            // Load metadata
-            result.fromJson(node);
-
-            // Load series
-            for (JsonNode element : ImmutableList.copyOf(node.get("plot-series").elements())) {
-                PlotDataSeries series = JsonUtils.getObjectMapper().readerFor(PlotDataSeries.class).readValue(element.get("metadata"));
-                Path fileName = folder.resolve(element.get("file-name").textValue());
-                ResultsTableData tableData = new ResultsTableData(ResultsTable.open(fileName.toString()));
-                series.setTable(tableData.getTable());
-                result.addSeries(series);
-            }
-
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-        return result;
     }
 
     /**

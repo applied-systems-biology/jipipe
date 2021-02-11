@@ -83,6 +83,7 @@ public @interface JIPipeParameter {
 
     /**
      * Determines if a sub-parameter is collapsed.
+     *
      * @return if a sub-parameter is collapsed
      */
     boolean collapsed() default false;

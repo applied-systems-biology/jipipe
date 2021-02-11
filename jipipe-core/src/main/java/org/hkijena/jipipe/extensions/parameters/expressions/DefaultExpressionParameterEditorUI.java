@@ -26,7 +26,7 @@ import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
 import javax.swing.event.DocumentEvent;
-import java.awt.BorderLayout;
+import java.awt.*;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Objects;

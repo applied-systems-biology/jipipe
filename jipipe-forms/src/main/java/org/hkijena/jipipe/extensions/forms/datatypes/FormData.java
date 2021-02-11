@@ -6,30 +6,22 @@ import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.google.common.eventbus.EventBus;
-import ij.measure.ResultsTable;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.JIPipeValidatable;
 import org.hkijena.jipipe.api.JIPipeValidityReport;
 import org.hkijena.jipipe.api.data.JIPipeData;
-import org.hkijena.jipipe.api.data.JIPipeDataSource;
 import org.hkijena.jipipe.api.nodes.JIPipeMergingDataBatch;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.extensions.parameters.primitives.OptionalAnnotationNameParameter;
-import org.hkijena.jipipe.extensions.plots.datatypes.PlotData;
-import org.hkijena.jipipe.extensions.plots.datatypes.PlotDataSeries;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.utils.JsonUtils;
-import org.hkijena.jipipe.utils.PathUtils;
 
 import java.awt.*;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Comparator;
-import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * Base class for any form data.
@@ -52,6 +44,23 @@ public abstract class FormData implements JIPipeData, JIPipeParameterCollection,
         tabSettings.getEventBus().register(this);
     }
 
+    /**
+     * Helper method that simplifies the importFrom() method definition
+     *
+     * @param storageFilePath the storage folder
+     * @param klass           the form class
+     * @param <T>             the form class
+     * @return the deserialized form
+     */
+    public static <T extends FormData> T importFrom(Path storageFilePath, Class<T> klass) {
+        try {
+            FormData formData = JsonUtils.getObjectMapper().readerFor(klass).readValue(storageFilePath.resolve("form.json").toFile());
+            return (T) formData;
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     @Override
     public void saveTo(Path storageFilePath, String name, boolean forceName, JIPipeProgressInfo progressInfo) {
         Path fileName = forceName ? Paths.get(name) : Paths.get("form.json");
@@ -70,6 +79,7 @@ public abstract class FormData implements JIPipeData, JIPipeParameterCollection,
     /**
      * Gets a component that acts as the editor for the form data.
      * This is presented to the user
+     *
      * @param workbench the workbench
      * @return the editor
      */
@@ -82,12 +92,14 @@ public abstract class FormData implements JIPipeData, JIPipeParameterCollection,
 
     /**
      * This method is called by the form processor nodes on loading data into this form.
+     *
      * @param dataBatch the data batch
      */
     public abstract void loadData(JIPipeMergingDataBatch dataBatch);
 
     /**
      * This method should write any changes into the data batch
+     *
      * @param dataBatch the data batch
      */
     public abstract void writeData(JIPipeMergingDataBatch dataBatch);
@@ -106,22 +118,6 @@ public abstract class FormData implements JIPipeData, JIPipeParameterCollection,
     @JIPipeParameter("form:tabs")
     public TabSettings getTabSettings() {
         return tabSettings;
-    }
-
-    /**
-     * Helper method that simplifies the importFrom() method definition
-     * @param storageFilePath the storage folder
-     * @param klass the form class
-     * @param <T> the form class
-     * @return the deserialized form
-     */
-    public static <T extends FormData> T importFrom(Path storageFilePath, Class<T> klass) {
-        try {
-            FormData formData = JsonUtils.getObjectMapper().readerFor(klass).readValue(storageFilePath.resolve("form.json").toFile());
-            return (T) formData;
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
     }
 
     public static class Serializer extends JsonSerializer<FormData> {

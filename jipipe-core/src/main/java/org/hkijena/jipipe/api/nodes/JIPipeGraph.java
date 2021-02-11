@@ -16,18 +16,10 @@ package org.hkijena.jipipe.api.nodes;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.DeserializationContext;
-import com.fasterxml.jackson.databind.JsonDeserializer;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.JsonSerializer;
-import com.fasterxml.jackson.databind.SerializerProvider;
+import com.fasterxml.jackson.databind.*;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import com.google.common.collect.BiMap;
-import com.google.common.collect.HashBiMap;
-import com.google.common.collect.ImmutableBiMap;
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.*;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 import org.hkijena.jipipe.JIPipe;
@@ -49,8 +41,9 @@ import org.jgrapht.graph.DefaultDirectedGraph;
 import org.jgrapht.traverse.GraphIterator;
 import org.jgrapht.traverse.TopologicalOrderIterator;
 
-import java.awt.Point;
+import java.awt.*;
 import java.io.IOException;
+import java.util.List;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -942,7 +935,7 @@ public class JIPipeGraph implements JIPipeValidatable {
     public Set<JIPipeGraphNode> getDeactivatedAlgorithms() {
         Set<JIPipeGraphNode> missing = new HashSet<>();
         for (JIPipeGraphNode algorithm : traverse()) {
-            if(!algorithm.getInfo().isRunnable())
+            if (!algorithm.getInfo().isRunnable())
                 continue;
             if (algorithm instanceof JIPipeAlgorithm) {
                 if (!((JIPipeAlgorithm) algorithm).isEnabled()) {
@@ -951,7 +944,7 @@ public class JIPipeGraph implements JIPipeValidatable {
                 }
             }
             for (JIPipeDataSlot inputSlot : algorithm.getInputSlots()) {
-                if(inputSlot.getInfo().isOptional())
+                if (inputSlot.getInfo().isOptional())
                     continue;
                 Set<JIPipeDataSlot> sourceSlots = getSourceSlots(inputSlot);
                 if (sourceSlots.isEmpty()) {
@@ -978,7 +971,7 @@ public class JIPipeGraph implements JIPipeValidatable {
     public Set<JIPipeGraphNode> getDeactivatedAlgorithms(Set<JIPipeGraphNode> externallySatisfied) {
         Set<JIPipeGraphNode> missing = new HashSet<>();
         for (JIPipeGraphNode algorithm : traverse()) {
-            if(!algorithm.getInfo().isRunnable())
+            if (!algorithm.getInfo().isRunnable())
                 continue;
             if (externallySatisfied.contains(algorithm))
                 continue;
@@ -989,7 +982,7 @@ public class JIPipeGraph implements JIPipeValidatable {
                 }
             }
             for (JIPipeDataSlot inputSlot : algorithm.getInputSlots()) {
-                if(inputSlot.getInfo().isOptional())
+                if (inputSlot.getInfo().isOptional())
                     continue;
                 Set<JIPipeDataSlot> sourceSlots = getSourceSlots(inputSlot);
                 if (sourceSlots.isEmpty()) {
@@ -1065,7 +1058,7 @@ public class JIPipeGraph implements JIPipeValidatable {
         }
         if (!RuntimeSettings.getInstance().isAllowSkipAlgorithmsWithoutInput()) {
             for (JIPipeDataSlot slot : graph.vertexSet()) {
-                if(!slot.getNode().getInfo().isRunnable())
+                if (!slot.getNode().getInfo().isRunnable())
                     continue;
                 if (slot.isInput()) {
                     if (!slot.getInfo().isOptional() && graph.incomingEdgesOf(slot).isEmpty()) {
@@ -1127,7 +1120,7 @@ public class JIPipeGraph implements JIPipeValidatable {
                 }
             }
             for (JIPipeDataSlot slot : node.getInputSlots()) {
-                if(!slot.getNode().getInfo().isRunnable())
+                if (!slot.getNode().getInfo().isRunnable())
                     continue;
                 if (!slot.getInfo().isOptional() && graph.incomingEdgesOf(slot).isEmpty()) {
                     report.forCategory(slot.getNode().getCompartment()).forCategory(slot.getNode().getName())

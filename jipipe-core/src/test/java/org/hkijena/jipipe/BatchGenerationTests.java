@@ -15,11 +15,7 @@ package org.hkijena.jipipe;
 
 import net.imagej.ImageJ;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
-import org.hkijena.jipipe.api.data.JIPipeAnnotation;
-import org.hkijena.jipipe.api.data.JIPipeAnnotationMergeStrategy;
-import org.hkijena.jipipe.api.data.JIPipeDataSlot;
-import org.hkijena.jipipe.api.data.JIPipeDataSlotInfo;
-import org.hkijena.jipipe.api.data.JIPipeSlotType;
+import org.hkijena.jipipe.api.data.*;
 import org.hkijena.jipipe.api.nodes.JIPipeMergingDataBatch;
 import org.hkijena.jipipe.api.nodes.JIPipeMergingDataBatchBuilder;
 import org.hkijena.jipipe.extensions.settings.ExtensionSettings;
@@ -35,6 +31,15 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class BatchGenerationTests {
+
+    @BeforeAll
+    public static void setupJIPipe() {
+        ImageJ imageJ = new ImageJ();
+        JIPipe jiPipe = JIPipe.createInstance(imageJ.context());
+        ExtensionSettings settings = new ExtensionSettings();
+        JIPipeRegistryIssues issues = new JIPipeRegistryIssues();
+        jiPipe.initialize(settings, issues);
+    }
 
     /**
      * A simple test where one slot should be split into three batches (one for A, B, and C)
@@ -118,14 +123,5 @@ public class BatchGenerationTests {
         builder.setSlots(Arrays.asList(slot1, slot2));
         List<JIPipeMergingDataBatch> batches = builder.build();
         assertEquals(3, batches.size());
-    }
-
-    @BeforeAll
-    public static void setupJIPipe() {
-        ImageJ imageJ = new ImageJ();
-        JIPipe jiPipe = JIPipe.createInstance(imageJ.context());
-        ExtensionSettings settings = new ExtensionSettings();
-        JIPipeRegistryIssues issues = new JIPipeRegistryIssues();
-        jiPipe.initialize(settings, issues);
     }
 }

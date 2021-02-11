@@ -28,7 +28,7 @@ import org.hkijena.jipipe.utils.TooltipUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
-import java.awt.BorderLayout;
+import java.awt.*;
 import java.util.Collections;
 
 /**

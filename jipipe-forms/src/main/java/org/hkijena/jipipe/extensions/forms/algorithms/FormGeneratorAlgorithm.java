@@ -17,9 +17,9 @@ public abstract class FormGeneratorAlgorithm extends JIPipeAlgorithm {
 
     public FormGeneratorAlgorithm(JIPipeNodeInfo info) {
         super(info, JIPipeDefaultMutableSlotConfiguration.builder().addInputSlot("Existing", FormData.class, true)
-        .addOutputSlot("Combined", FormData.class, null)
-        .seal()
-        .build());
+                .addOutputSlot("Combined", FormData.class, null)
+                .seal()
+                .build());
     }
 
     public FormGeneratorAlgorithm(FormGeneratorAlgorithm other) {
@@ -29,14 +29,15 @@ public abstract class FormGeneratorAlgorithm extends JIPipeAlgorithm {
     @Override
     public void run(JIPipeProgressInfo progressInfo) {
         getFirstOutputSlot().addData(getFirstInputSlot(), progressInfo);
-        if(!isPassThrough()) {
-           run(getFirstOutputSlot(), progressInfo);
+        if (!isPassThrough()) {
+            run(getFirstOutputSlot(), progressInfo);
         }
     }
 
     /**
      * This method should add new {@link FormData} elements into the combined slot.
-     * @param combined the output slot
+     *
+     * @param combined     the output slot
      * @param progressInfo
      */
     public abstract void run(JIPipeDataSlot combined, JIPipeProgressInfo progressInfo);

@@ -24,14 +24,9 @@ import org.hkijena.jipipe.extensions.settings.FileChooserSettings;
 import org.hkijena.jipipe.extensions.settings.GeneralDataSettings;
 import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
-import org.hkijena.jipipe.ui.JIPipeProjectWorkbenchPanel;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.JIPipeWorkbenchPanel;
-import org.hkijena.jipipe.ui.components.FormPanel;
-import org.hkijena.jipipe.ui.components.JIPipeComponentCellRenderer;
-import org.hkijena.jipipe.ui.components.PreviewControlUI;
-import org.hkijena.jipipe.ui.components.SearchTextField;
-import org.hkijena.jipipe.ui.components.SearchTextFieldTableRowFilter;
+import org.hkijena.jipipe.ui.components.*;
 import org.hkijena.jipipe.ui.parameters.ParameterPanel;
 import org.hkijena.jipipe.ui.resultanalysis.JIPipeTraitTableCellRenderer;
 import org.hkijena.jipipe.ui.running.JIPipeRunnerQueue;
@@ -45,10 +40,7 @@ import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
 import javax.swing.table.TableColumnModel;
 import javax.swing.table.TableModel;
-import java.awt.BorderLayout;
-import java.awt.Component;
-import java.awt.Point;
-import java.awt.Rectangle;
+import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.nio.file.Path;
@@ -78,7 +70,7 @@ public class JIPipeCacheDataSlotTableUI extends JIPipeWorkbenchPanel {
 
         initialize();
         reloadTable();
-        if(getWorkbench() instanceof JIPipeProjectWorkbench) {
+        if (getWorkbench() instanceof JIPipeProjectWorkbench) {
             ((JIPipeProjectWorkbench) getWorkbench()).getProject().getCache().getEventBus().register(this);
         }
         updateStatus();
@@ -237,7 +229,7 @@ public class JIPipeCacheDataSlotTableUI extends JIPipeWorkbenchPanel {
             label.setFont(label.getFont().deriveFont(26.0f));
             add(label, BorderLayout.CENTER);
 
-            if(getWorkbench() instanceof JIPipeProjectWorkbench) {
+            if (getWorkbench() instanceof JIPipeProjectWorkbench) {
                 ((JIPipeProjectWorkbench) getWorkbench()).getProject().getCache().getEventBus().unregister(this);
             }
         }
@@ -291,7 +283,7 @@ public class JIPipeCacheDataSlotTableUI extends JIPipeWorkbenchPanel {
 
         @Override
         public String getColumnName(int columnIndex) {
-            if(columnIndex == 0)
+            if (columnIndex == 0)
                 return "Index";
             else if (columnIndex == 1)
                 return "Type";
@@ -306,7 +298,7 @@ public class JIPipeCacheDataSlotTableUI extends JIPipeWorkbenchPanel {
 
         @Override
         public Class<?> getColumnClass(int columnIndex) {
-            if(columnIndex == 0)
+            if (columnIndex == 0)
                 return Integer.class;
             else if (columnIndex == 1)
                 return JIPipeDataInfo.class;
@@ -326,7 +318,7 @@ public class JIPipeCacheDataSlotTableUI extends JIPipeWorkbenchPanel {
 
         @Override
         public Object getValueAt(int rowIndex, int columnIndex) {
-            if(columnIndex == 0)
+            if (columnIndex == 0)
                 return rowIndex;
             else if (columnIndex == 1)
                 return JIPipeDataInfo.getInstance(slot.getDataClass(rowIndex));

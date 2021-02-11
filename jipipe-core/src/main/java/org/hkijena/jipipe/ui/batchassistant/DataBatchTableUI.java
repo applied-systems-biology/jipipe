@@ -103,7 +103,7 @@ public class DataBatchTableUI extends JPanel {
     }
 
     public void resetSearch() {
-        if(!StringUtils.isNullOrEmpty(searchTextField.getText())) {
+        if (!StringUtils.isNullOrEmpty(searchTextField.getText())) {
             searchTextField.setText("");
         }
     }

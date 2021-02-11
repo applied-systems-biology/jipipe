@@ -18,7 +18,7 @@ import org.hkijena.jipipe.api.JIPipeValidityReport;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
-import java.awt.BorderLayout;
+import java.awt.*;
 
 /**
  * Panel that encapsulates a {@link JIPipeValidityReportUI} and an {@link JIPipeValidatable}.

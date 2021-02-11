@@ -5,14 +5,12 @@ import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataInfo;
 import org.hkijena.jipipe.api.data.JIPipeDataSource;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
-import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.extensions.parameters.primitives.HTMLText;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.components.FormPanel;
 import org.hkijena.jipipe.ui.components.MarkdownDocument;
 
 import javax.swing.*;
-import java.awt.*;
 
 /**
  * {@link FormData} that is put into a {@link org.hkijena.jipipe.ui.components.FormPanel}
@@ -37,16 +35,15 @@ public abstract class ParameterFormData extends FormData {
         FormPanel formPanel = new FormPanel(new MarkdownDocument("This is a preview of the form."),
                 FormPanel.WITH_DOCUMENTATION | FormPanel.WITH_SCROLLING | FormPanel.DOCUMENTATION_BELOW);
         ParameterFormData duplicate = (ParameterFormData) duplicate();
-        if(isShowName()) {
+        if (isShowName()) {
             formPanel.addToForm(duplicate.getEditor(workbench), new JLabel(getName()), description.toMarkdown());
-        }
-        else {
+        } else {
             formPanel.addWideToForm(duplicate.getEditor(workbench), description.toMarkdown());
         }
         formPanel.addVerticalGlue();
         JFrame frame = new JFrame("Preview: " + JIPipeDataInfo.getInstance(getClass()).getName());
         frame.setContentPane(formPanel);
-        frame.setSize(640,480);
+        frame.setSize(640, 480);
         frame.setVisible(true);
     }
 

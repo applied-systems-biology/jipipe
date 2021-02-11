@@ -33,8 +33,7 @@ import org.hkijena.jipipe.ui.components.AlwaysOnTopToggle;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
-import java.awt.Component;
-import java.awt.Window;
+import java.awt.*;
 import java.lang.ref.WeakReference;
 import java.util.Map;
 
@@ -58,6 +57,17 @@ public class CacheAwareImagePlusDataViewerPanel extends ImageViewerPanel {
         loadImageFromDataSource();
 
         project.getCache().getEventBus().register(this);
+    }
+
+    public static void show(JIPipeWorkbench workbench, JIPipeCacheSlotDataSource dataSource, String displayName) {
+        CacheAwareImagePlusDataViewerPanel dataDisplay = new CacheAwareImagePlusDataViewerPanel(workbench, dataSource);
+        ImageViewerWindow window = new ImageViewerWindow(dataDisplay);
+        window.setAlwaysOnTop(GeneralUISettings.getInstance().isOpenDataWindowsAlwaysOnTop());
+        AlwaysOnTopToggle alwaysOnTopToggle = new AlwaysOnTopToggle(window);
+        alwaysOnTopToggle.addActionListener(e -> GeneralUISettings.getInstance().setOpenDataWindowsAlwaysOnTop(alwaysOnTopToggle.isSelected()));
+        dataDisplay.getToolBar().add(alwaysOnTopToggle);
+        window.setTitle(displayName);
+        window.setVisible(true);
     }
 
     private void initialize() {
@@ -112,16 +122,5 @@ public class CacheAwareImagePlusDataViewerPanel extends ImageViewerPanel {
             lastVirtualData = null;
             getCanvas().setError(errorPanel);
         }
-    }
-
-    public static void show(JIPipeWorkbench workbench, JIPipeCacheSlotDataSource dataSource, String displayName) {
-        CacheAwareImagePlusDataViewerPanel dataDisplay = new CacheAwareImagePlusDataViewerPanel(workbench, dataSource);
-        ImageViewerWindow window = new ImageViewerWindow(dataDisplay);
-        window.setAlwaysOnTop(GeneralUISettings.getInstance().isOpenDataWindowsAlwaysOnTop());
-        AlwaysOnTopToggle alwaysOnTopToggle = new AlwaysOnTopToggle(window);
-        alwaysOnTopToggle.addActionListener(e -> GeneralUISettings.getInstance().setOpenDataWindowsAlwaysOnTop(alwaysOnTopToggle.isSelected()));
-        dataDisplay.getToolBar().add(alwaysOnTopToggle);
-        window.setTitle(displayName);
-        window.setVisible(true);
     }
 }

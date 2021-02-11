@@ -3,7 +3,6 @@ package org.hkijena.jipipe.extensions.forms.algorithms;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
-import org.hkijena.jipipe.api.data.JIPipeAnnotation;
 import org.hkijena.jipipe.api.data.JIPipeAnnotationMergeStrategy;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
@@ -51,11 +50,10 @@ public class SimpleIteratingFormProcessorAlgorithm extends JIPipeAlgorithm {
         JIPipeDataSlot formsSlot = getInputSlot("Forms");
         JIPipeDataSlot outputDataSlot = getOutputSlot("Data");
 
-        if(isPassThrough() ||formsSlot.isEmpty()) {
+        if (isPassThrough() || formsSlot.isEmpty()) {
             // Just copy without changes
             outputDataSlot.addData(dataSlot, progressInfo);
-        }
-        else if(!dataSlot.isEmpty()) {
+        } else if (!dataSlot.isEmpty()) {
             // Generate data batches and show the user interface
             List<JIPipeMergingDataBatch> dataBatchList = new ArrayList<>();
             for (int row = 0; row < dataSlot.getRowCount(); row++) {
@@ -103,7 +101,7 @@ public class SimpleIteratingFormProcessorAlgorithm extends JIPipeAlgorithm {
                 }
             }
 
-            if(cancelled.get()) {
+            if (cancelled.get()) {
                 progressInfo.log("User input was cancelled!");
                 throw new UserFriendlyRuntimeException("User input was cancelled!",
                         "User input was cancelled!",

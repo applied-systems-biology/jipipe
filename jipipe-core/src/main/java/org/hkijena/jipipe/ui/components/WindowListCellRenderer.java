@@ -16,8 +16,7 @@ package org.hkijena.jipipe.ui.components;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
-import java.awt.Component;
-import java.awt.Frame;
+import java.awt.*;
 
 public class WindowListCellRenderer<T extends Frame> extends JLabel implements ListCellRenderer<T> {
 

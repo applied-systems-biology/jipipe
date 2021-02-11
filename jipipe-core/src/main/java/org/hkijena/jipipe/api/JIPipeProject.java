@@ -17,12 +17,7 @@ import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.DeserializationContext;
-import com.fasterxml.jackson.databind.JsonDeserializer;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.JsonSerializer;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializerProvider;
+import com.fasterxml.jackson.databind.*;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.google.common.collect.BiMap;
@@ -49,14 +44,10 @@ import org.hkijena.jipipe.ui.settings.JIPipeProjectInfoParameters;
 import org.hkijena.jipipe.utils.JsonUtils;
 import org.hkijena.jipipe.utils.ReflectionUtils;
 
-import java.awt.Point;
+import java.awt.*;
 import java.io.IOException;
 import java.nio.file.Path;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -87,6 +78,65 @@ public class JIPipeProject implements JIPipeValidatable {
         this.compartmentGraph.attach(JIPipeProject.class, this);
         this.compartmentGraph.attach(JIPipeGraphType.ProjectCompartments);
         compartmentGraph.getEventBus().register(this);
+    }
+
+    /**
+     * Loads a project from a file
+     *
+     * @param fileName JSON file
+     * @param report   issue report
+     * @return Loaded project
+     * @throws IOException Triggered by {@link ObjectMapper}
+     */
+    public static JIPipeProject loadProject(Path fileName, JIPipeValidityReport report) throws IOException {
+        JsonNode jsonData = JsonUtils.getObjectMapper().readValue(fileName.toFile(), JsonNode.class);
+        JIPipeProject project = new JIPipeProject();
+        project.fromJson(jsonData, report);
+        project.setWorkDirectory(fileName.getParent());
+        return project;
+    }
+
+    /**
+     * Deserializes the set of project dependencies from JSON.
+     * Does not require the dependencies to be actually registered.
+     *
+     * @param node JSON node
+     * @return The dependencies as {@link org.hkijena.jipipe.JIPipeMutableDependency}
+     */
+    public static Set<JIPipeDependency> loadDependenciesFromJson(JsonNode node) {
+        node = node.path("dependencies");
+        if (node.isMissingNode())
+            return new HashSet<>();
+        TypeReference<HashSet<JIPipeDependency>> typeReference = new TypeReference<HashSet<JIPipeDependency>>() {
+        };
+        try {
+            return JsonUtils.getObjectMapper().readerFor(typeReference).readValue(node);
+        } catch (IOException e) {
+            throw new UserFriendlyRuntimeException(e, "Could not load dependencies from JIPipe project",
+                    "Project", "The JSON data that describes the project dependencies is missing essential information",
+                    "Open the file in a text editor and compare the dependencies with a valid project. You can also try " +
+                            "to delete the whole dependencies section - you just have to make sure that they are actually satisfied. " +
+                            "To do this, use the plugin manager in JIPipe's GUI.");
+        }
+    }
+
+    /**
+     * Deserializes the project metadata from JSON
+     *
+     * @param node JSON node
+     * @return the metadata
+     */
+    public static JIPipeProjectMetadata loadMetadataFromJson(JsonNode node) {
+        node = node.path("metadata");
+        if (node.isMissingNode())
+            return new JIPipeProjectMetadata();
+        try {
+            return JsonUtils.getObjectMapper().readerFor(JIPipeProjectMetadata.class).readValue(node);
+        } catch (IOException e) {
+            throw new UserFriendlyRuntimeException(e, "Could not load metadata from JIPipe project",
+                    "Project", "The JSON data that describes the project metadata is missing essential information",
+                    "Open the file in a text editor and compare the metadata with a valid project.");
+        }
     }
 
     /**
@@ -191,10 +241,10 @@ public class JIPipeProject implements JIPipeValidatable {
         }
 
         for (JIPipeGraphNode targetNode : compartmentGraph.getNodes().values()) {
-            if(targetNode instanceof JIPipeProjectCompartment) {
+            if (targetNode instanceof JIPipeProjectCompartment) {
                 JIPipeProjectCompartment target = (JIPipeProjectCompartment) targetNode;
                 for (JIPipeDataSlot sourceSlot : compartmentGraph.getSourceSlots(target.getFirstInputSlot())) {
-                    if(sourceSlot.getNode() instanceof JIPipeProjectCompartment) {
+                    if (sourceSlot.getNode() instanceof JIPipeProjectCompartment) {
                         JIPipeProjectCompartment source = (JIPipeProjectCompartment) sourceSlot.getNode();
                         source.getOutputNode().getVisibleCompartments().add(target.getProjectCompartmentId());
                     }
@@ -234,7 +284,7 @@ public class JIPipeProject implements JIPipeValidatable {
     public void onCompartmentGraphChanged(JIPipeGraph.GraphChangedEvent event) {
         if (event.getGraph() == compartmentGraph) {
             for (JIPipeGraphNode algorithm : compartmentGraph.getNodes().values()) {
-                if(algorithm instanceof JIPipeProjectCompartment) {
+                if (algorithm instanceof JIPipeProjectCompartment) {
                     JIPipeProjectCompartment compartment = (JIPipeProjectCompartment) algorithm;
                     if (!compartment.isInitialized()) {
                         compartments.put(compartment.getProjectCompartmentId(), compartment);
@@ -328,7 +378,7 @@ public class JIPipeProject implements JIPipeValidatable {
         Map<String, String> compartmentRenames = compartmentGraph.cleanupIds();
         Map<String, Set<JIPipeGraphNode>> compartmentNodes = new HashMap<>();
         for (Map.Entry<String, String> entry : compartmentRenames.entrySet()) {
-            if(compartmentGraph.getNodes().get(entry.getValue()) instanceof JIPipeProjectCompartment) {
+            if (compartmentGraph.getNodes().get(entry.getValue()) instanceof JIPipeProjectCompartment) {
                 Set<JIPipeGraphNode> nodes = graph.getNodes().values().stream().filter(node -> Objects.equals(node.getCompartment(), entry.getKey())).collect(Collectors.toSet());
                 compartmentNodes.put(entry.getKey(), nodes);
                 eventBus.post(new CompartmentRenamedEvent((JIPipeProjectCompartment) compartmentGraph.getNodes().get(entry.getValue())));
@@ -440,7 +490,7 @@ public class JIPipeProject implements JIPipeValidatable {
         // read compartments
         compartmentGraph.fromJson(node.get("compartments").get("compartment-graph"), new JIPipeValidityReport());
         for (JIPipeGraphNode algorithm : compartmentGraph.getNodes().values()) {
-            if(algorithm instanceof JIPipeProjectCompartment) {
+            if (algorithm instanceof JIPipeProjectCompartment) {
                 JIPipeProjectCompartment compartment = (JIPipeProjectCompartment) algorithm;
                 compartment.setProject(this);
                 compartments.put(compartment.getProjectCompartmentId(), compartment);
@@ -525,65 +575,6 @@ public class JIPipeProject implements JIPipeValidatable {
     }
 
     /**
-     * Loads a project from a file
-     *
-     * @param fileName JSON file
-     * @param report   issue report
-     * @return Loaded project
-     * @throws IOException Triggered by {@link ObjectMapper}
-     */
-    public static JIPipeProject loadProject(Path fileName, JIPipeValidityReport report) throws IOException {
-        JsonNode jsonData = JsonUtils.getObjectMapper().readValue(fileName.toFile(), JsonNode.class);
-        JIPipeProject project = new JIPipeProject();
-        project.fromJson(jsonData, report);
-        project.setWorkDirectory(fileName.getParent());
-        return project;
-    }
-
-    /**
-     * Deserializes the set of project dependencies from JSON.
-     * Does not require the dependencies to be actually registered.
-     *
-     * @param node JSON node
-     * @return The dependencies as {@link org.hkijena.jipipe.JIPipeMutableDependency}
-     */
-    public static Set<JIPipeDependency> loadDependenciesFromJson(JsonNode node) {
-        node = node.path("dependencies");
-        if (node.isMissingNode())
-            return new HashSet<>();
-        TypeReference<HashSet<JIPipeDependency>> typeReference = new TypeReference<HashSet<JIPipeDependency>>() {
-        };
-        try {
-            return JsonUtils.getObjectMapper().readerFor(typeReference).readValue(node);
-        } catch (IOException e) {
-            throw new UserFriendlyRuntimeException(e, "Could not load dependencies from JIPipe project",
-                    "Project", "The JSON data that describes the project dependencies is missing essential information",
-                    "Open the file in a text editor and compare the dependencies with a valid project. You can also try " +
-                            "to delete the whole dependencies section - you just have to make sure that they are actually satisfied. " +
-                            "To do this, use the plugin manager in JIPipe's GUI.");
-        }
-    }
-
-    /**
-     * Deserializes the project metadata from JSON
-     *
-     * @param node JSON node
-     * @return the metadata
-     */
-    public static JIPipeProjectMetadata loadMetadataFromJson(JsonNode node) {
-        node = node.path("metadata");
-        if (node.isMissingNode())
-            return new JIPipeProjectMetadata();
-        try {
-            return JsonUtils.getObjectMapper().readerFor(JIPipeProjectMetadata.class).readValue(node);
-        } catch (IOException e) {
-            throw new UserFriendlyRuntimeException(e, "Could not load metadata from JIPipe project",
-                    "Project", "The JSON data that describes the project metadata is missing essential information",
-                    "Open the file in a text editor and compare the metadata with a valid project.");
-        }
-    }
-
-    /**
      * Serializes a project
      */
     public static class Serializer extends JsonSerializer<JIPipeProject> {
@@ -629,11 +620,11 @@ public class JIPipeProject implements JIPipeValidatable {
      * Triggered when a sample is removed from an {@link JIPipeProject}
      */
     public static class CompartmentRemovedEvent {
-        private JIPipeProjectCompartment compartment;
         private final String compartmentId;
+        private JIPipeProjectCompartment compartment;
 
         /**
-         * @param compartment the compartment
+         * @param compartment   the compartment
          * @param compartmentId the compartment id
          */
         public CompartmentRemovedEvent(JIPipeProjectCompartment compartment, String compartmentId) {

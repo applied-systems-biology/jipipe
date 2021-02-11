@@ -17,7 +17,7 @@ import org.hkijena.jipipe.api.compat.ImageJDatatypeImporter;
 import org.hkijena.jipipe.ui.compat.ImageJDatatypeImporterUI;
 import org.hkijena.jipipe.ui.components.PathEditor;
 
-import java.awt.BorderLayout;
+import java.awt.*;
 
 /**
  * Imports {@link org.hkijena.jipipe.extensions.filesystem.dataypes.PathData}

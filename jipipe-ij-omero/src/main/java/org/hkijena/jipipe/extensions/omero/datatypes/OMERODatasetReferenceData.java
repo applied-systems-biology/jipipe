@@ -34,6 +34,15 @@ public class OMERODatasetReferenceData implements JIPipeData {
         this.datasetId = datasetId;
     }
 
+    public static OMERODatasetReferenceData importFrom(Path storageFilePath) {
+        Path targetFile = PathUtils.findFileByExtensionIn(storageFilePath, ".json");
+        try {
+            return JsonUtils.getObjectMapper().readerFor(OMERODatasetReferenceData.class).readValue(targetFile.toFile());
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     @JsonGetter("dataset-id")
     public long getDatasetId() {
         return datasetId;
@@ -67,14 +76,5 @@ public class OMERODatasetReferenceData implements JIPipeData {
     @Override
     public String toString() {
         return "OMERO dataset ID=" + datasetId;
-    }
-
-    public static OMERODatasetReferenceData importFrom(Path storageFilePath) {
-        Path targetFile = PathUtils.findFileByExtensionIn(storageFilePath, ".json");
-        try {
-            return JsonUtils.getObjectMapper().readerFor(OMERODatasetReferenceData.class).readValue(targetFile.toFile());
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
     }
 }

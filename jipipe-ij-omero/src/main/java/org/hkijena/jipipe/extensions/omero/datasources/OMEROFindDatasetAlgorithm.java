@@ -43,12 +43,7 @@ import org.hkijena.jipipe.extensions.parameters.expressions.StringQueryExpressio
 import org.hkijena.jipipe.extensions.parameters.primitives.OptionalAnnotationNameParameter;
 import org.hkijena.jipipe.utils.JsonUtils;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @JIPipeDocumentation(name = "List datasets", description = "Returns the ID(s) of dataset(s) according to search criteria. Requires project IDs as input.")

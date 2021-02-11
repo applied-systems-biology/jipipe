@@ -4,7 +4,6 @@ import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.JIPipeValidityReport;
 import org.hkijena.jipipe.api.data.JIPipeAnnotation;
 import org.hkijena.jipipe.api.data.JIPipeAnnotationMergeStrategy;
-import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeMergingDataBatch;
 import org.hkijena.jipipe.extensions.forms.FormsExtension;
@@ -24,8 +23,8 @@ import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.util.*;
 import java.util.List;
+import java.util.*;
 
 public class FormsDialog extends JFrame {
     private static final String TAB_ISSUES_DETECTED = "Issues detected";
@@ -39,9 +38,9 @@ public class FormsDialog extends JFrame {
     private DocumentTabPane tabPane = new DocumentTabPane();
     private String lastTab = "";
     private List<DataBatchStatus> dataBatchStatuses = new ArrayList<>();
-    private JLabel unvisitedLabel = new JLabel(new ColorIcon(16,16, DataBatchStatusTableCellRenderer.COLOR_UNVISITED));
-    private JLabel visitedLabel = new JLabel(new ColorIcon(16,16, new Color(0xb3ef8e)));
-    private JLabel invalidLabel = new JLabel(new ColorIcon(16,16, DataBatchStatusTableCellRenderer.COLOR_INVALID));
+    private JLabel unvisitedLabel = new JLabel(new ColorIcon(16, 16, DataBatchStatusTableCellRenderer.COLOR_UNVISITED));
+    private JLabel visitedLabel = new JLabel(new ColorIcon(16, 16, new Color(0xb3ef8e)));
+    private JLabel invalidLabel = new JLabel(new ColorIcon(16, 16, DataBatchStatusTableCellRenderer.COLOR_INVALID));
     private JToggleButton visitedButton = new JToggleButton("Reviewed", UIUtils.getIconFromResources("actions/eye.png"));
     private MarkdownDocument documentation;
 
@@ -81,16 +80,15 @@ public class FormsDialog extends JFrame {
     }
 
     private void gotoNextBatch() {
-        if(!checkCurrentBatch())
+        if (!checkCurrentBatch())
             return;
-        if(dataBatchList.size() > 0) {
+        if (dataBatchList.size() > 0) {
             dataBatchTableUI.resetSearch();
             JXTable table = dataBatchTableUI.getTable();
             int row = table.getSelectedRow();
-            if(row == -1) {
-                table.getSelectionModel().setSelectionInterval(0,0);
-            }
-            else {
+            if (row == -1) {
+                table.getSelectionModel().setSelectionInterval(0, 0);
+            } else {
                 row = table.convertRowIndexToModel(row);
                 row = (row + 1) % dataBatchList.size();
                 row = table.convertRowIndexToView(row);
@@ -102,12 +100,12 @@ public class FormsDialog extends JFrame {
     private boolean checkCurrentBatch() {
         JXTable table = dataBatchTableUI.getTable();
         int row = table.getSelectedRow();
-        if(row == -1) {
+        if (row == -1) {
             return true;
         }
         JIPipeProgressInfo info = new JIPipeProgressInfo();
         JIPipeValidityReport report = getReportForDataBatch(row, info);
-        if(!report.isValid()) {
+        if (!report.isValid()) {
             int result = JOptionPane.showOptionDialog(this,
                     "The current batch has settings that are not fully valid. Do you want to continue, anyways?",
                     "Issues found",
@@ -116,7 +114,7 @@ public class FormsDialog extends JFrame {
                     null,
                     new Object[]{"Yes", "No", "Show errors"},
                     "Show errors");
-            if(result == JOptionPane.YES_OPTION)
+            if (result == JOptionPane.YES_OPTION)
                 return true;
             else if (result == JOptionPane.NO_OPTION)
                 return false;
@@ -131,19 +129,18 @@ public class FormsDialog extends JFrame {
     }
 
     private void gotoPreviousBatch() {
-        if(!checkCurrentBatch())
+        if (!checkCurrentBatch())
             return;
-        if(dataBatchList.size() > 0) {
+        if (dataBatchList.size() > 0) {
             dataBatchTableUI.resetSearch();
             JXTable table = dataBatchTableUI.getTable();
             int row = table.getSelectedRow();
-            if(row == -1) {
-                table.getSelectionModel().setSelectionInterval(0,0);
-            }
-            else {
+            if (row == -1) {
+                table.getSelectionModel().setSelectionInterval(0, 0);
+            } else {
                 row = table.convertRowIndexToModel(row);
                 --row;
-                if(row < 0)
+                if (row < 0)
                     row = dataBatchList.size() - 1;
                 row = table.convertRowIndexToView(row);
                 table.getSelectionModel().setSelectionInterval(row, row);
@@ -185,7 +182,7 @@ public class FormsDialog extends JFrame {
         dataBatchTableUI.getTable().getSelectionModel().addListSelectionListener(e -> {
             int selectedRow = dataBatchTableUI.getTable().getSelectedRow();
             closeAllTabsAndRememberLast();
-            if(selectedRow != -1) {
+            if (selectedRow != -1) {
                 selectedRow = dataBatchTableUI.getTable().convertRowIndexToModel(selectedRow);
                 switchToDataBatchUI(selectedRow);
             }
@@ -193,7 +190,7 @@ public class FormsDialog extends JFrame {
     }
 
     private void closeAllTabsAndRememberLast() {
-        if(tabPane.getTabCount() > 0 && tabPane.getCurrentContent() != null) {
+        if (tabPane.getTabCount() > 0 && tabPane.getCurrentContent() != null) {
             lastTab = tabPane.getTabContaining(tabPane.getCurrentContent()).getTitle();
         }
         tabPane.closeAllTabs();
@@ -219,10 +216,10 @@ public class FormsDialog extends JFrame {
                 false);
 
         // If invalid, create report
-        if(wasVisitedBefore) {
+        if (wasVisitedBefore) {
             JIPipeProgressInfo progressInfo = new JIPipeProgressInfo();
             JIPipeValidityReport report = getReportForDataBatch(selectedRow, progressInfo);
-            if(!report.isValid()) {
+            if (!report.isValid()) {
                 UserFriendlyErrorUI errorUI = new UserFriendlyErrorUI(null, UserFriendlyErrorUI.WITH_SCROLLING);
                 errorUI.displayErrors(report);
                 errorUI.addVerticalGlue();
@@ -241,7 +238,7 @@ public class FormsDialog extends JFrame {
         for (int row = 0; row < formsForRow.getRowCount(); row++) {
             String tab = formsForRow.getAnnotationOr(row, tabAnnotation, new JIPipeAnnotation(tabAnnotation, "General")).getValue();
             List<Integer> rowList = groupedByTabName.getOrDefault(tab, null);
-            if(rowList == null) {
+            if (rowList == null) {
                 rowList = new ArrayList<>();
                 groupedByTabName.put(tab, rowList);
             }
@@ -252,10 +249,10 @@ public class FormsDialog extends JFrame {
             String tab = entry.getKey();
             for (Integer row : entry.getValue()) {
                 FormData formData = formsForRow.getData(row, FormData.class, progressInfo);
-                if(formData instanceof ParameterFormData) {
+                if (formData instanceof ParameterFormData) {
                     // Add to form panel
                     FormPanel formPanel = formPanelsForTab.getOrDefault(tab, null);
-                    if(formPanel == null) {
+                    if (formPanel == null) {
                         formPanel = new FormPanel(documentation,
                                 FormPanel.WITH_DOCUMENTATION | FormPanel.DOCUMENTATION_BELOW | FormPanel.WITH_SCROLLING);
                         tabPane.addTab(tab,
@@ -266,17 +263,15 @@ public class FormsDialog extends JFrame {
                         formPanelsForTab.put(tab, formPanel);
                     }
                     ParameterFormData parameterFormData = (ParameterFormData) formData;
-                    if(parameterFormData.isShowName()) {
+                    if (parameterFormData.isShowName()) {
                         formPanel.addToForm(formData.getEditor(workbench),
                                 new JLabel(parameterFormData.getName()),
                                 parameterFormData.getDescription().toMarkdown());
-                    }
-                    else {
+                    } else {
                         formPanel.addWideToForm(formData.getEditor(workbench),
                                 parameterFormData.getDescription().toMarkdown());
                     }
-                }
-                else {
+                } else {
                     // Create a separate GUI tab
                     tabPane.addTab(tab,
                             UIUtils.getIconFromResources("actions/settings.png"),
@@ -303,7 +298,7 @@ public class FormsDialog extends JFrame {
             FormData formData = formsForRow.getData(row, FormData.class, progressInfo);
             String name = formData.toString();
             String tab = formsForRow.getAnnotationOr(row, tabAnnotation, new JIPipeAnnotation(tabAnnotation, "General")).getValue();
-            if(formData instanceof ParameterFormData) {
+            if (formData instanceof ParameterFormData) {
                 name = ((ParameterFormData) formData).getName();
             }
             formData.reportValidity(report.forCategory(tab).forCategory(name + " (#" + row + ")"));
@@ -314,17 +309,17 @@ public class FormsDialog extends JFrame {
     private void updateVisitedStatuses() {
         JIPipeProgressInfo progressInfo = new JIPipeProgressInfo();
         for (int i = 0; i < dataBatchList.size(); i++) {
-            if(dataBatchStatuses.get(i) == DataBatchStatus.Visited) {
+            if (dataBatchStatuses.get(i) == DataBatchStatus.Visited) {
                 JIPipeValidityReport report = new JIPipeValidityReport();
                 for (int row = 0; row < dataBatchForms.get(i).getRowCount(); row++) {
                     FormData formData = dataBatchForms.get(i).getData(row, FormData.class, progressInfo);
                     formData.reportValidity(report.forCategory("Form " + row));
-                    if(!report.isValid()) {
+                    if (!report.isValid()) {
                         dataBatchStatuses.set(i, DataBatchStatus.Invalid);
                         break;
                     }
                 }
-                if(report.isValid()) {
+                if (report.isValid()) {
                     dataBatchStatuses.set(i, DataBatchStatus.Visited);
                 }
             }
@@ -361,11 +356,11 @@ public class FormsDialog extends JFrame {
         JPanel buttonBar = new JPanel();
         buttonBar.setLayout(new BoxLayout(buttonBar, BoxLayout.X_AXIS));
 
-        visitedLabel.setBorder(BorderFactory.createEmptyBorder(0,4,0,4));
+        visitedLabel.setBorder(BorderFactory.createEmptyBorder(0, 4, 0, 4));
         buttonBar.add(visitedLabel);
-        unvisitedLabel.setBorder(BorderFactory.createEmptyBorder(0,4,0,4));
+        unvisitedLabel.setBorder(BorderFactory.createEmptyBorder(0, 4, 0, 4));
         buttonBar.add(unvisitedLabel);
-        invalidLabel.setBorder(BorderFactory.createEmptyBorder(0,4,0,4));
+        invalidLabel.setBorder(BorderFactory.createEmptyBorder(0, 4, 0, 4));
         buttonBar.add(invalidLabel);
 
         buttonBar.add(Box.createHorizontalGlue());
@@ -387,7 +382,7 @@ public class FormsDialog extends JFrame {
 
         JMenuItem applyToAllButton = new JMenuItem("All data batches", UIUtils.getIconFromResources("actions/dialog-layers.png"));
         applyToAllButton.addActionListener(e -> {
-            if(JOptionPane.showConfirmDialog(this,
+            if (JOptionPane.showConfirmDialog(this,
                     "Do you really want to copy the current settings to all other batches?\n" +
                             "This will replace all existing values.",
                     "Apply to all data batches",
@@ -401,14 +396,14 @@ public class FormsDialog extends JFrame {
 
         JMenuItem applyToAllRemainingButton = new JMenuItem("All data remaining batches", UIUtils.getIconFromResources("actions/dialog-layers.png"));
         applyToAllRemainingButton.addActionListener(e -> {
-            if(dataBatchStatuses.stream().noneMatch(dataBatchStatus -> dataBatchStatus == DataBatchStatus.Unvisited)) {
+            if (dataBatchStatuses.stream().noneMatch(dataBatchStatus -> dataBatchStatus == DataBatchStatus.Unvisited)) {
                 JOptionPane.showMessageDialog(this,
                         "There are no remaining unvisited data batches.",
                         "Apply to all remaining batches",
                         JOptionPane.ERROR_MESSAGE);
                 return;
             }
-            if(JOptionPane.showConfirmDialog(this,
+            if (JOptionPane.showConfirmDialog(this,
                     "Do you really want to copy the current settings to all remaining batches?",
                     "Apply to all remaining data batches",
                     JOptionPane.YES_NO_OPTION,
@@ -427,7 +422,7 @@ public class FormsDialog extends JFrame {
         JMenuItem resetVisitedItem = new JMenuItem("'Reviewed' status only", UIUtils.getIconFromResources("actions/eye-slash.png"));
         resetVisitedItem.setToolTipText("Marks all data batches as not reviewed. This will not change any settings.");
         resetVisitedItem.addActionListener(e -> {
-            if(JOptionPane.showConfirmDialog(this,
+            if (JOptionPane.showConfirmDialog(this,
                     "Do you want to set all batches to 'not reviewed'?\n" +
                             "This will not change any settings already made.",
                     "Reset 'Reviewed' status only",
@@ -447,12 +442,12 @@ public class FormsDialog extends JFrame {
         JMenuItem resetCurrentItem = new JMenuItem("Current batch", UIUtils.getIconFromResources("actions/clear-brush.png"));
         resetCurrentItem.setToolTipText("Resets the settings of the currently viewed data batch.");
         resetCurrentItem.addActionListener(e -> {
-            if(JOptionPane.showConfirmDialog(this,
+            if (JOptionPane.showConfirmDialog(this,
                     "Do you want to reset all settings of the current batch?",
                     "Reset current batch",
                     JOptionPane.YES_NO_OPTION,
                     JOptionPane.QUESTION_MESSAGE) == JOptionPane.YES_OPTION) {
-               resetCurrentBatch();
+                resetCurrentBatch();
             }
         });
         resetMenu.add(resetCurrentItem);
@@ -460,7 +455,7 @@ public class FormsDialog extends JFrame {
         JMenuItem resetAllItem = new JMenuItem("All batches", UIUtils.getIconFromResources("actions/clear-brush.png"));
         resetAllItem.setToolTipText("Resets the settings of all data batches.");
         resetAllItem.addActionListener(e -> {
-            if(JOptionPane.showConfirmDialog(this,
+            if (JOptionPane.showConfirmDialog(this,
                     "Do you want to reset all settings of all batches?",
                     "Reset all batches",
                     JOptionPane.YES_NO_OPTION,
@@ -473,7 +468,7 @@ public class FormsDialog extends JFrame {
         JMenuItem resetUnvisitedItem = new JMenuItem("Non-reviewed batches", UIUtils.getIconFromResources("actions/clear-brush.png"));
         resetUnvisitedItem.setToolTipText("Resets the settings of all data batches that are not reviewed.");
         resetUnvisitedItem.addActionListener(e -> {
-            if(JOptionPane.showConfirmDialog(this,
+            if (JOptionPane.showConfirmDialog(this,
                     "Do you want to reset all settings of all non-reviewed batches?",
                     "Reset non-reviewed batches",
                     JOptionPane.YES_NO_OPTION,
@@ -501,7 +496,7 @@ public class FormsDialog extends JFrame {
     private void resetAllBatches(boolean onlyUnvisited) {
         JIPipeProgressInfo progressInfo = new JIPipeProgressInfo();
         for (int i = 0; i < dataBatchList.size(); ++i) {
-            if(onlyUnvisited && dataBatchStatuses.get(i) != DataBatchStatus.Unvisited)
+            if (onlyUnvisited && dataBatchStatuses.get(i) != DataBatchStatus.Unvisited)
                 continue;
             JIPipeDataSlot copy = createFormsInstanceFor(i, progressInfo);
             dataBatchForms.set(i, copy);
@@ -514,10 +509,9 @@ public class FormsDialog extends JFrame {
 
     private void resetCurrentBatch() {
         int selectedRow = dataBatchTableUI.getTable().getSelectedRow();
-        if(selectedRow != -1) {
+        if (selectedRow != -1) {
             selectedRow = dataBatchTableUI.getTable().convertRowIndexToModel(selectedRow);
-        }
-        else {
+        } else {
             return;
         }
         JIPipeDataSlot copy = createFormsInstanceFor(selectedRow, new JIPipeProgressInfo());
@@ -530,22 +524,21 @@ public class FormsDialog extends JFrame {
     }
 
     private void applyCurrentSettingsToAll(boolean includingVisited) {
-        if(!checkCurrentBatch())
+        if (!checkCurrentBatch())
             return;
         int selectedRow = dataBatchTableUI.getTable().getSelectedRow();
-        if(selectedRow != -1) {
+        if (selectedRow != -1) {
             selectedRow = dataBatchTableUI.getTable().convertRowIndexToModel(selectedRow);
-        }
-        else {
+        } else {
             return;
         }
 
         JIPipeDataSlot forms = dataBatchForms.get(selectedRow);
         JIPipeProgressInfo progressInfo = new JIPipeProgressInfo();
         for (int i = 0; i < dataBatchList.size(); i++) {
-            if(i == selectedRow)
+            if (i == selectedRow)
                 continue;
-            if(!includingVisited && dataBatchStatuses.get(i) != DataBatchStatus.Unvisited)
+            if (!includingVisited && dataBatchStatuses.get(i) != DataBatchStatus.Unvisited)
                 continue;
 
             // Just copy the form
@@ -565,12 +558,11 @@ public class FormsDialog extends JFrame {
 
     private void toggleBatchVisited() {
         int selectedRow = dataBatchTableUI.getTable().getSelectedRow();
-        if(selectedRow != -1) {
+        if (selectedRow != -1) {
             selectedRow = dataBatchTableUI.getTable().convertRowIndexToModel(selectedRow);
-            if(visitedButton.isSelected()) {
+            if (visitedButton.isSelected()) {
                 dataBatchStatuses.set(selectedRow, DataBatchStatus.Visited);
-            }
-            else {
+            } else {
                 dataBatchStatuses.set(selectedRow, DataBatchStatus.Unvisited);
             }
             updateBottomBarStats();
@@ -582,7 +574,7 @@ public class FormsDialog extends JFrame {
         updateVisitedStatuses();
         long unvisited = dataBatchStatuses.stream().filter(dataBatchStatus -> dataBatchStatus == DataBatchStatus.Unvisited).count();
         long invalid = dataBatchStatuses.stream().filter(dataBatchStatus -> dataBatchStatus == DataBatchStatus.Invalid).count();
-        if(unvisited > 0) {
+        if (unvisited > 0) {
             if (JOptionPane.showConfirmDialog(FormsDialog.this,
                     "There are " + unvisited + " data batches that are not marked as reviewed. Do you want to continue, anyways?",
                     getTitle(),
@@ -591,7 +583,7 @@ public class FormsDialog extends JFrame {
                 return;
             }
         }
-        if(invalid > 0) {
+        if (invalid > 0) {
             if (JOptionPane.showConfirmDialog(FormsDialog.this,
                     "There are " + invalid + " data batches that report issues. Do you want to continue, anyways?",
                     getTitle(),
@@ -606,11 +598,10 @@ public class FormsDialog extends JFrame {
 
     private void cancelDialog() {
         updateVisitedStatuses();
-        if(dataBatchStatuses.stream().allMatch(dataBatchStatus -> dataBatchStatus == DataBatchStatus.Visited)) {
+        if (dataBatchStatuses.stream().allMatch(dataBatchStatus -> dataBatchStatus == DataBatchStatus.Visited)) {
             cancelled = false;
             dispose();
-        }
-        else {
+        } else {
             if (JOptionPane.showConfirmDialog(FormsDialog.this,
                     "Do you really want to cancel the pipeline?",
                     getTitle(),

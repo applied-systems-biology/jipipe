@@ -16,7 +16,7 @@ package org.hkijena.jipipe.api.history;
 import org.hkijena.jipipe.api.nodes.JIPipeGraph;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 
-import java.awt.Point;
+import java.awt.*;
 import java.util.HashMap;
 import java.util.Map;
 

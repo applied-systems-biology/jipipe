@@ -22,7 +22,7 @@ import org.hkijena.jipipe.ui.parameters.JIPipeParameterEditorUI;
 import org.hkijena.jipipe.ui.plotbuilder.PlotDataSeriesColumnListCellRenderer;
 
 import javax.swing.*;
-import java.awt.BorderLayout;
+import java.awt.*;
 import java.util.Objects;
 
 /**

@@ -19,8 +19,7 @@ import org.hkijena.jipipe.utils.RoundedLineBorder;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
-import java.awt.BorderLayout;
-import java.awt.Dimension;
+import java.awt.*;
 
 /**
  * UI that monitors the queue

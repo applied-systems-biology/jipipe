@@ -1,7 +1,6 @@
 package org.hkijena.jipipe.ui.grapheditor;
 
-import java.awt.Dimension;
-import java.awt.Point;
+import java.awt.*;
 
 /**
  * The direction how a canvas renders the nodes

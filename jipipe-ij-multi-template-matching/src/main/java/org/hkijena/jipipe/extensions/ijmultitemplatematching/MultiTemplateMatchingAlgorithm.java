@@ -27,11 +27,7 @@ import org.hkijena.jipipe.api.data.JIPipeDataInfo;
 import org.hkijena.jipipe.api.data.JIPipeDataSlotInfo;
 import org.hkijena.jipipe.api.data.JIPipeDefaultMutableSlotConfiguration;
 import org.hkijena.jipipe.api.data.JIPipeSlotType;
-import org.hkijena.jipipe.api.nodes.JIPipeInputSlot;
-import org.hkijena.jipipe.api.nodes.JIPipeMergingAlgorithm;
-import org.hkijena.jipipe.api.nodes.JIPipeMergingDataBatch;
-import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
-import org.hkijena.jipipe.api.nodes.JIPipeOutputSlot;
+import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeContextAction;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
@@ -53,8 +49,7 @@ import org.python.core.PyList;
 import org.python.util.PythonInterpreter;
 
 import javax.swing.*;
-import java.awt.Color;
-import java.awt.Rectangle;
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -111,6 +106,10 @@ public class MultiTemplateMatchingAlgorithm extends JIPipeMergingAlgorithm {
         this.assembleTemplatesBackground = new OptionalColorParameter(other.assembleTemplatesBackground);
         this.setRestrictToROI(other.restrictToROI);
         this.withNonMaximaSuppression = other.withNonMaximaSuppression;
+    }
+
+    private static String loadScriptFromResources() {
+        return ResourceUtils.getPluginResourceAsString("extensions/ijmultitemplatematching/template-matching-script.py");
     }
 
     @Override
@@ -482,9 +481,5 @@ public class MultiTemplateMatchingAlgorithm extends JIPipeMergingAlgorithm {
     @JIPipeParameter("assemble-templates-output")
     public void setAssembleTemplatesOutput(OptionalDataInfoRefParameter assembleTemplatesOutput) {
         this.assembleTemplatesOutput = assembleTemplatesOutput;
-    }
-
-    private static String loadScriptFromResources() {
-        return ResourceUtils.getPluginResourceAsString("extensions/ijmultitemplatematching/template-matching-script.py");
     }
 }

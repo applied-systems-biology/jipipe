@@ -22,7 +22,7 @@ import org.hkijena.jipipe.installer.linux.ui.utils.JIPipeRunnerQueue;
 import org.hkijena.jipipe.installer.linux.ui.utils.UIUtils;
 
 import javax.swing.*;
-import java.awt.BorderLayout;
+import java.awt.*;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.nio.file.Files;

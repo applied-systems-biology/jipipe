@@ -7,22 +7,13 @@ import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeAnnotation;
 import org.hkijena.jipipe.api.data.JIPipeAnnotationMergeStrategy;
-import org.hkijena.jipipe.api.nodes.JIPipeDataBatch;
-import org.hkijena.jipipe.api.nodes.JIPipeInputSlot;
-import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
-import org.hkijena.jipipe.api.nodes.JIPipeOutputSlot;
-import org.hkijena.jipipe.api.nodes.JIPipeSimpleIteratingAlgorithm;
+import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.AnnotationsNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.parameters.expressions.TableCellValueQueryExpression;
 import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 @JIPipeDocumentation(name = "Annotate table by merged columns", description = "Copies column values into an annotation. If the column has different values, the annotations are merged according to the selected merging strategy.")
 @JIPipeOrganization(nodeTypeCategory = AnnotationsNodeTypeCategory.class, menuPath = "Generate")

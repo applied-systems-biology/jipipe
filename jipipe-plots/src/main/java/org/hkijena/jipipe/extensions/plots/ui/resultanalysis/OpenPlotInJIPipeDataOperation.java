@@ -1,11 +1,6 @@
 package org.hkijena.jipipe.extensions.plots.ui.resultanalysis;
 
-import org.hkijena.jipipe.api.data.JIPipeData;
-import org.hkijena.jipipe.api.data.JIPipeDataDisplayOperation;
-import org.hkijena.jipipe.api.data.JIPipeDataImportOperation;
-import org.hkijena.jipipe.api.data.JIPipeDataSlot;
-import org.hkijena.jipipe.api.data.JIPipeDataSource;
-import org.hkijena.jipipe.api.data.JIPipeExportedDataTable;
+import org.hkijena.jipipe.api.data.*;
 import org.hkijena.jipipe.extensions.plots.datatypes.PlotData;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.components.DocumentTabPane;

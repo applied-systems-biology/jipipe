@@ -19,8 +19,7 @@ import org.hkijena.jipipe.extensions.settings.GeneralDataSettings;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
-import java.awt.BorderLayout;
-import java.awt.Component;
+import java.awt.*;
 import java.lang.ref.WeakReference;
 import java.util.concurrent.ExecutionException;
 
@@ -85,6 +84,7 @@ public class JIPipeCachedDataPreview extends JPanel {
 
     /**
      * Returns the stored data or null if it was already cleared
+     *
      * @return the data
      */
     public JIPipeVirtualData getData() {
@@ -106,7 +106,7 @@ public class JIPipeCachedDataPreview extends JPanel {
         @Override
         protected Component doInBackground() throws Exception {
             JIPipeVirtualData virtualData = parent.data.get();
-            if(virtualData != null)
+            if (virtualData != null)
                 return virtualData.getData(new JIPipeProgressInfo()).preview(width, width);
             else
                 return new JLabel("N/A");

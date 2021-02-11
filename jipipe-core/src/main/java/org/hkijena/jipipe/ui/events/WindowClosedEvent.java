@@ -13,7 +13,7 @@
 
 package org.hkijena.jipipe.ui.events;
 
-import java.awt.Window;
+import java.awt.*;
 
 /**
  * Triggered when a JIPipe window was closed

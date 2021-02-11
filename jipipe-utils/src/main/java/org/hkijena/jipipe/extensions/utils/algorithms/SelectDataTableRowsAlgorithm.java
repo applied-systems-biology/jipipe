@@ -8,8 +8,10 @@ import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeAnnotation;
 import org.hkijena.jipipe.api.data.JIPipeAnnotationMergeStrategy;
 import org.hkijena.jipipe.api.data.JIPipeData;
-import org.hkijena.jipipe.api.data.JIPipeSlotConfiguration;
-import org.hkijena.jipipe.api.nodes.*;
+import org.hkijena.jipipe.api.nodes.JIPipeInputSlot;
+import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
+import org.hkijena.jipipe.api.nodes.JIPipeOutputSlot;
+import org.hkijena.jipipe.api.nodes.JIPipeParameterSlotAlgorithm;
 import org.hkijena.jipipe.api.nodes.categories.MiscellaneousNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.parameters.generators.IntegerRange;
@@ -37,7 +39,7 @@ public class SelectDataTableRowsAlgorithm extends JIPipeParameterSlotAlgorithm {
     public void runParameterSet(JIPipeProgressInfo progressInfo, List<JIPipeAnnotation> parameterAnnotations) {
         TIntSet allowedRows = new TIntHashSet(limit.getIntegers());
         for (int row = 0; row < getFirstInputSlot().getRowCount(); row++) {
-            if(allowedRows.contains(row)) {
+            if (allowedRows.contains(row)) {
                 getFirstOutputSlot().addData(getFirstInputSlot().getVirtualData(row), getFirstInputSlot().getAnnotations(row), JIPipeAnnotationMergeStrategy.Merge);
             }
         }

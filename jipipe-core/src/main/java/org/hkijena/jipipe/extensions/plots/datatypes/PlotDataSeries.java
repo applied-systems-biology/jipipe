@@ -18,11 +18,7 @@ import com.fasterxml.jackson.annotation.JsonSetter;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.DeserializationContext;
-import com.fasterxml.jackson.databind.JsonDeserializer;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.JsonSerializer;
-import com.fasterxml.jackson.databind.SerializerProvider;
+import com.fasterxml.jackson.databind.*;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.google.common.eventbus.EventBus;
@@ -69,6 +65,10 @@ public class PlotDataSeries extends ResultsTableData implements JIPipeParameterC
     public PlotDataSeries(PlotDataSeries other) {
         super(other);
         this.name = other.name;
+    }
+
+    public static PlotDataSeries importFrom(Path storageFolder) {
+        return new PlotDataSeries(ResultsTableData.importFrom(storageFolder).getTable());
     }
 
     /**
@@ -118,10 +118,6 @@ public class PlotDataSeries extends ResultsTableData implements JIPipeParameterC
     @Override
     public String toString() {
         return getName() + " (" + getTable().getCounter() + " rows)";
-    }
-
-    public static PlotDataSeries importFrom(Path storageFolder) {
-        return new PlotDataSeries(ResultsTableData.importFrom(storageFolder).getTable());
     }
 
     public static class Serializer extends JsonSerializer<PlotDataSeries> {

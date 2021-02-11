@@ -12,13 +12,17 @@ import java.awt.*;
 import java.nio.file.Path;
 
 @JIPipeDocumentation(name = "Group header form", description = "Generates a group header element that allows to structure forms.")
-public class GroupHeaderFormData extends ParameterFormData{
+public class GroupHeaderFormData extends ParameterFormData {
 
     public GroupHeaderFormData() {
     }
 
     public GroupHeaderFormData(GroupHeaderFormData other) {
         super(other);
+    }
+
+    public static GroupHeaderFormData importFrom(Path rowStorage) {
+        return FormData.importFrom(rowStorage, GroupHeaderFormData.class);
     }
 
     @Override
@@ -55,10 +59,6 @@ public class GroupHeaderFormData extends ParameterFormData{
     @Override
     public void writeData(JIPipeMergingDataBatch dataBatch) {
 
-    }
-
-    public static GroupHeaderFormData importFrom(Path rowStorage) {
-        return FormData.importFrom(rowStorage, GroupHeaderFormData.class);
     }
 
 

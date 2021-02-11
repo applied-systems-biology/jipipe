@@ -21,8 +21,7 @@ import org.hkijena.jipipe.utils.ColorUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
-import java.awt.BorderLayout;
-import java.awt.Color;
+import java.awt.*;
 
 /**
  * Parameter editor for {@link String}

@@ -44,6 +44,12 @@ public class StringArrayTableColumn implements MutableTableColumn {
         this.label = label;
     }
 
+    public static StringArrayTableColumn importFrom(Path storagePath) {
+        ResultsTableData resultsTableData = ResultsTableData.importFrom(storagePath);
+        TableColumn source = resultsTableData.getColumnReference(0);
+        return new StringArrayTableColumn(source.getDataAsString(source.getRows()), source.getLabel());
+    }
+
     @Override
     public String[] getDataAsString(int rows) {
         if (rows == data.length)
@@ -126,11 +132,5 @@ public class StringArrayTableColumn implements MutableTableColumn {
     public void display(String displayName, JIPipeWorkbench workbench, JIPipeDataSource source) {
         ResultsTableData data = new ResultsTableData(Collections.singleton(this));
         data.display(displayName, workbench, source);
-    }
-
-    public static StringArrayTableColumn importFrom(Path storagePath) {
-        ResultsTableData resultsTableData = ResultsTableData.importFrom(storagePath);
-        TableColumn source = resultsTableData.getColumnReference(0);
-        return new StringArrayTableColumn(source.getDataAsString(source.getRows()), source.getLabel());
     }
 }

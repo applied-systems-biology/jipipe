@@ -11,8 +11,8 @@ import javax.swing.*;
 import javax.swing.event.TableModelListener;
 import javax.swing.table.TableModel;
 import java.awt.*;
-import java.util.*;
 import java.util.List;
+import java.util.*;
 
 /**
  * A table model that displays data batches
@@ -24,8 +24,8 @@ public class DataBatchTableModel implements TableModel {
     private final List<String> annotationColumns = new ArrayList<>();
     private final List<Component> previews = new ArrayList<>();
     private final List<Map<String, JIPipeVirtualData>> previewedData = new ArrayList<>();
-    private JScrollPane scrollPane;
     private final JTable table;
+    private JScrollPane scrollPane;
 
     public DataBatchTableModel(JTable table, List<JIPipeMergingDataBatch> dataBatchList) {
         this.table = table;
@@ -39,7 +39,7 @@ public class DataBatchTableModel implements TableModel {
             for (Map.Entry<JIPipeDataSlot, Set<Integer>> entry : dataBatch.getInputSlotRows().entrySet()) {
                 inputSlotNameSet.add(entry.getKey().getName());
                 // We just preview any data available
-                if(entry.getValue().size() > 0) {
+                if (entry.getValue().size() > 0) {
                     previewMap.put(entry.getKey().getName(), entry.getKey().getVirtualData(entry.getValue().iterator().next()));
                 }
             }
@@ -69,26 +69,22 @@ public class DataBatchTableModel implements TableModel {
     @Nls
     @Override
     public String getColumnName(int columnIndex) {
-        if(columnIndex == 0) {
+        if (columnIndex == 0) {
             return "Index";
-        }
-        else if(columnIndex - 1 < inputSlotNames.size()) {
+        } else if (columnIndex - 1 < inputSlotNames.size()) {
             return inputSlotNames.get(columnIndex - 1);
-        }
-        else {
+        } else {
             return annotationColumns.get(columnIndex - 1 - inputSlotNames.size());
         }
     }
 
     @Override
     public Class<?> getColumnClass(int columnIndex) {
-        if(columnIndex == 0) {
+        if (columnIndex == 0) {
             return Integer.class;
-        }
-        else if(columnIndex - 1 < inputSlotNames.size()) {
+        } else if (columnIndex - 1 < inputSlotNames.size()) {
             return Component.class;
-        }
-        else {
+        } else {
             return String.class;
         }
     }
@@ -100,28 +96,25 @@ public class DataBatchTableModel implements TableModel {
 
     @Override
     public Object getValueAt(int rowIndex, int columnIndex) {
-        if(columnIndex == 0) {
+        if (columnIndex == 0) {
             return rowIndex;
-        }
-        else if(columnIndex - 1 < inputSlotNames.size()) {
+        } else if (columnIndex - 1 < inputSlotNames.size()) {
             Component preview = previews.get(rowIndex);
-            if(preview == null) {
+            if (preview == null) {
                 String slotName = inputSlotNames.get(columnIndex - 1);
                 JIPipeVirtualData previewed = previewedData.get(rowIndex).getOrDefault(slotName, null);
-                if(previewed != null) {
+                if (previewed != null) {
                     preview = new JIPipeCachedDataPreview(table, previewed, true);
-                }
-                else {
+                } else {
                     preview = new JLabel("N/A");
                 }
                 previews.set(rowIndex, preview);
             }
             return preview;
-        }
-        else {
+        } else {
             String column = annotationColumns.get(columnIndex - 1 - inputSlotNames.size());
             JIPipeAnnotation annotation = dataBatchList.get(rowIndex).getAnnotations().getOrDefault(column, null);
-            if(annotation != null)
+            if (annotation != null)
                 return annotation.getValue();
             else
                 return null;

@@ -34,11 +34,7 @@ import org.hkijena.jipipe.api.nodes.JIPipeGraph;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.categories.MiscellaneousNodeTypeCategory;
-import org.hkijena.jipipe.api.parameters.JIPipeCustomParameterCollection;
-import org.hkijena.jipipe.api.parameters.JIPipeParameter;
-import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
-import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
-import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
+import org.hkijena.jipipe.api.parameters.*;
 import org.hkijena.jipipe.utils.StringUtils;
 
 import java.util.HashMap;
@@ -116,7 +112,7 @@ public class NodeGroup extends GraphWrapperAlgorithm implements JIPipeCustomPara
             BiMap<JIPipeDataSlot, String> exportedInputSlotNames = HashBiMap.create();
             BiMap<JIPipeDataSlot, String> exportedOutputSlotNames = HashBiMap.create();
             for (JIPipeDataSlot slot : getWrappedGraph().getUnconnectedSlots()) {
-                if(!slot.getNode().getInfo().isRunnable())
+                if (!slot.getNode().getInfo().isRunnable())
                     continue;
                 if (slot.isInput()) {
                     String uniqueName = StringUtils.makeUniqueString(slot.getName(), " ", exportedInputSlotNames::containsValue);

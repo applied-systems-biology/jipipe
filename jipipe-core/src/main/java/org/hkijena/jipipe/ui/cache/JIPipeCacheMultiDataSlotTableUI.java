@@ -18,25 +18,16 @@ import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeProject;
 import org.hkijena.jipipe.api.JIPipeProjectCache;
 import org.hkijena.jipipe.api.compartments.algorithms.JIPipeProjectCompartment;
-import org.hkijena.jipipe.api.data.JIPipeAnnotation;
-import org.hkijena.jipipe.api.data.JIPipeData;
-import org.hkijena.jipipe.api.data.JIPipeDataInfo;
-import org.hkijena.jipipe.api.data.JIPipeDataSlot;
-import org.hkijena.jipipe.api.data.JIPipeMergedDataSlotTable;
+import org.hkijena.jipipe.api.data.*;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.extensions.settings.FileChooserSettings;
 import org.hkijena.jipipe.extensions.settings.GeneralDataSettings;
 import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
-import org.hkijena.jipipe.ui.JIPipeProjectWorkbenchPanel;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.JIPipeWorkbenchPanel;
-import org.hkijena.jipipe.ui.components.FormPanel;
-import org.hkijena.jipipe.ui.components.JIPipeComponentCellRenderer;
-import org.hkijena.jipipe.ui.components.PreviewControlUI;
-import org.hkijena.jipipe.ui.components.SearchTextField;
-import org.hkijena.jipipe.ui.components.SearchTextFieldTableRowFilter;
+import org.hkijena.jipipe.ui.components.*;
 import org.hkijena.jipipe.ui.parameters.ParameterPanel;
 import org.hkijena.jipipe.ui.resultanalysis.JIPipeNodeTableCellRenderer;
 import org.hkijena.jipipe.ui.resultanalysis.JIPipeProjectCompartmentTableCellRenderer;
@@ -51,8 +42,7 @@ import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
 import javax.swing.table.TableColumnModel;
-import java.awt.BorderLayout;
-import java.awt.Component;
+import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.nio.file.Path;
@@ -82,7 +72,7 @@ public class JIPipeCacheMultiDataSlotTableUI extends JIPipeWorkbenchPanel {
         table = new JXTable();
         this.multiSlotTable = new JIPipeMergedDataSlotTable(table, withCompartmentAndAlgorithm);
         JIPipeProject project = null;
-        if(getWorkbench() instanceof JIPipeProjectWorkbench) {
+        if (getWorkbench() instanceof JIPipeProjectWorkbench) {
             project = ((JIPipeProjectWorkbench) getWorkbench()).getProject();
         }
         for (JIPipeDataSlot slot : slots) {
@@ -91,7 +81,7 @@ public class JIPipeCacheMultiDataSlotTableUI extends JIPipeWorkbenchPanel {
 
         initialize();
         reloadTable();
-        if(getWorkbench() instanceof JIPipeProjectWorkbench) {
+        if (getWorkbench() instanceof JIPipeProjectWorkbench) {
             ((JIPipeProjectWorkbench) getWorkbench()).getProject().getCache().getEventBus().register(this);
         }
         updateStatus();
@@ -263,7 +253,7 @@ public class JIPipeCacheMultiDataSlotTableUI extends JIPipeWorkbenchPanel {
             label.setFont(label.getFont().deriveFont(26.0f));
             add(label, BorderLayout.CENTER);
 
-            if(getWorkbench() instanceof JIPipeProjectWorkbench) {
+            if (getWorkbench() instanceof JIPipeProjectWorkbench) {
                 ((JIPipeProjectWorkbench) getWorkbench()).getProject().getCache().getEventBus().unregister(this);
             }
             multiSlotTable = null;

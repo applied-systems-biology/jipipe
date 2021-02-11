@@ -28,11 +28,7 @@ import java.io.IOException;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Contains Markdown data
@@ -52,21 +48,6 @@ public class MarkdownDocument {
     public MarkdownDocument(String markdown) {
         this.markdown = markdown;
         render();
-    }
-
-    private void render() {
-        Parser parser = Parser.builder(OPTIONS).build();
-        Node document = parser.parse(markdown);
-        HtmlRenderer renderer = HtmlRenderer.builder(OPTIONS).build();
-        this.renderedHTML = renderer.render(document);
-    }
-
-    public String getRenderedHTML() {
-        return renderedHTML;
-    }
-
-    public String getMarkdown() {
-        return markdown;
     }
 
     /**
@@ -139,6 +120,21 @@ public class MarkdownDocument {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    private void render() {
+        Parser parser = Parser.builder(OPTIONS).build();
+        Node document = parser.parse(markdown);
+        HtmlRenderer renderer = HtmlRenderer.builder(OPTIONS).build();
+        this.renderedHTML = renderer.render(document);
+    }
+
+    public String getRenderedHTML() {
+        return renderedHTML;
+    }
+
+    public String getMarkdown() {
+        return markdown;
     }
 
 

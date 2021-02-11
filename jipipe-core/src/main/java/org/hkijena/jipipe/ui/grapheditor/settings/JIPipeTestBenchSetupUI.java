@@ -21,11 +21,7 @@ import org.hkijena.jipipe.api.testbench.JIPipeTestBenchSettings;
 import org.hkijena.jipipe.extensions.settings.RuntimeSettings;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbenchPanel;
-import org.hkijena.jipipe.ui.components.DocumentTabPane;
-import org.hkijena.jipipe.ui.components.DocumentedComponent;
-import org.hkijena.jipipe.ui.components.JIPipeValidityReportUI;
-import org.hkijena.jipipe.ui.components.MarkdownDocument;
-import org.hkijena.jipipe.ui.components.UserFriendlyErrorUI;
+import org.hkijena.jipipe.ui.components.*;
 import org.hkijena.jipipe.ui.parameters.ParameterPanel;
 import org.hkijena.jipipe.ui.running.JIPipeRunExecuterUI;
 import org.hkijena.jipipe.ui.running.JIPipeRunnerQueue;
@@ -35,7 +31,7 @@ import org.hkijena.jipipe.ui.testbench.JIPipeTestBenchUI;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
-import java.awt.BorderLayout;
+import java.awt.*;
 import java.util.Set;
 import java.util.function.Consumer;
 

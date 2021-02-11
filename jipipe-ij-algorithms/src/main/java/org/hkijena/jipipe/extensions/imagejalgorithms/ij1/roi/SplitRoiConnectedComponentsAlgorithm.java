@@ -43,11 +43,7 @@ import org.jgrapht.alg.connectivity.ConnectivityInspector;
 import org.jgrapht.graph.DefaultEdge;
 import org.jgrapht.graph.DefaultUndirectedGraph;
 
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 @JIPipeDocumentation(name = "Split into connected components", description = "Algorithm that extracts connected components across one or multiple dimensions. The output consists of multiple ROI lists, one for each connected component.")
 @JIPipeOrganization(menuPath = "Split", nodeTypeCategory = RoiNodeTypeCategory.class)

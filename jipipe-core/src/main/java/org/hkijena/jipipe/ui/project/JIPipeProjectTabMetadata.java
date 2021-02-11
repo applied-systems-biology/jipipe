@@ -21,7 +21,7 @@ import org.hkijena.jipipe.ui.compartments.JIPipeCompartmentUI;
 import org.hkijena.jipipe.ui.components.DocumentTabPane;
 import org.hkijena.jipipe.utils.StringUtils;
 
-import java.awt.Component;
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -51,7 +51,7 @@ public class JIPipeProjectTabMetadata {
                 id = "singleton:" + singletonTabId;
             } else if (component instanceof JIPipeCompartmentUI) {
                 JIPipeCompartmentUI graphCompartmentUI = (JIPipeCompartmentUI) component;
-                if(graphCompartmentUI.getCompartment().getGraph() != null) {
+                if (graphCompartmentUI.getCompartment().getGraph() != null) {
                     id = "graph-compartment:" + graphCompartmentUI.getCompartment().getProjectCompartmentId();
                 }
             }

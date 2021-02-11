@@ -8,7 +8,6 @@ import org.hkijena.jipipe.api.nodes.JIPipeOutputSlot;
 import org.hkijena.jipipe.api.nodes.categories.DataSourceNodeTypeCategory;
 import org.hkijena.jipipe.extensions.forms.datatypes.DoubleFormData;
 import org.hkijena.jipipe.extensions.forms.datatypes.FormData;
-import org.hkijena.jipipe.extensions.forms.datatypes.IntegerFormData;
 
 @JIPipeDocumentation(name = "Number input form", description = "Creates a real number input form. " + FormGeneratorAlgorithm.DOCUMENTATION_DESCRIPTION)
 @JIPipeInputSlot(value = FormData.class, slotName = "Existing")

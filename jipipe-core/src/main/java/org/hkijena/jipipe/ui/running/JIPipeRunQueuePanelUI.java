@@ -18,8 +18,7 @@ import org.hkijena.jipipe.api.JIPipeRunnable;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
-import java.awt.BorderLayout;
-import java.awt.Font;
+import java.awt.*;
 
 /**
  * UI that executes an {@link JIPipeRunnable}

@@ -23,7 +23,7 @@ import org.hkijena.jipipe.utils.RoundedLineBorder;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
-import java.awt.BorderLayout;
+import java.awt.*;
 import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.List;

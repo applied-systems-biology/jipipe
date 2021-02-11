@@ -29,11 +29,7 @@ import java.io.IOException;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Contains Markdown data
@@ -55,21 +51,6 @@ public class MarkdownDocument {
     public MarkdownDocument(String markdown) {
         this.markdown = markdown;
         render();
-    }
-
-    private void render() {
-        Parser parser = Parser.builder(OPTIONS).build();
-        Node document = parser.parse(markdown);
-        HtmlRenderer renderer = HtmlRenderer.builder(OPTIONS).build();
-        this.renderedHTML = renderer.render(document);
-    }
-
-    public String getRenderedHTML() {
-        return renderedHTML;
-    }
-
-    public String getMarkdown() {
-        return markdown;
     }
 
     /**
@@ -125,14 +106,14 @@ public class MarkdownDocument {
     /**
      * Loads a document from a resource URL
      *
-     * @param resourcePath resource path
+     * @param resourcePath           resource path
      * @param enableResourceProtocol Allows to target core JIPipe resources with resource://
      * @return the document
      */
     public static MarkdownDocument fromResourceURL(URL resourcePath, boolean enableResourceProtocol) {
         try {
             String md = Resources.toString(resourcePath, Charsets.UTF_8);
-            if(enableResourceProtocol) {
+            if (enableResourceProtocol) {
                 Set<String> resourceURLs = getResourceURLs(md, "resource://");
                 for (String imageURL : resourceURLs) {
                     URL url = resourceReplacementCache.getOrDefault(imageURL, null);
@@ -175,6 +156,21 @@ public class MarkdownDocument {
             index = md.indexOf(protocol, index);
         }
         return imageURLs;
+    }
+
+    private void render() {
+        Parser parser = Parser.builder(OPTIONS).build();
+        Node document = parser.parse(markdown);
+        HtmlRenderer renderer = HtmlRenderer.builder(OPTIONS).build();
+        this.renderedHTML = renderer.render(document);
+    }
+
+    public String getRenderedHTML() {
+        return renderedHTML;
+    }
+
+    public String getMarkdown() {
+        return markdown;
     }
 
 

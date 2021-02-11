@@ -13,13 +13,7 @@
 
 package org.hkijena.jipipe.extensions.imagejdatatypes.display;
 
-import org.hkijena.jipipe.api.data.JIPipeData;
-import org.hkijena.jipipe.api.data.JIPipeDataDisplayOperation;
-import org.hkijena.jipipe.api.data.JIPipeDataImportOperation;
-import org.hkijena.jipipe.api.data.JIPipeDataSlot;
-import org.hkijena.jipipe.api.data.JIPipeDataSource;
-import org.hkijena.jipipe.api.data.JIPipeExportedDataTable;
-import org.hkijena.jipipe.api.data.JIPipeResultSlotDataSource;
+import org.hkijena.jipipe.api.data.*;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ROIListData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.viewer.ImageViewerWindow;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
@@ -28,7 +22,7 @@ import org.hkijena.jipipe.utils.ListSelectionMode;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
-import java.awt.Frame;
+import java.awt.*;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collections;

@@ -58,6 +58,22 @@ public class JIPipeDefaultMutableSlotConfiguration implements JIPipeMutableSlotC
     }
 
     /**
+     * Returns a collection of all unhidden slot data types
+     *
+     * @return the collection
+     */
+    public static Set<Class<? extends JIPipeData>> getUnhiddenRegisteredDataTypes() {
+        return new HashSet<>(JIPipe.getDataTypes().getUnhiddenRegisteredDataTypes().values());
+    }
+
+    /**
+     * @return A builder for creating a configuration
+     */
+    public static Builder builder() {
+        return new Builder();
+    }
+
+    /**
      * Returns true if there is an input slot with name
      *
      * @param name The name
@@ -715,22 +731,6 @@ public class JIPipeDefaultMutableSlotConfiguration implements JIPipeMutableSlotC
     }
 
     /**
-     * Returns a collection of all unhidden slot data types
-     *
-     * @return the collection
-     */
-    public static Set<Class<? extends JIPipeData>> getUnhiddenRegisteredDataTypes() {
-        return new HashSet<>(JIPipe.getDataTypes().getUnhiddenRegisteredDataTypes().values());
-    }
-
-    /**
-     * @return A builder for creating a configuration
-     */
-    public static Builder builder() {
-        return new Builder();
-    }
-
-    /**
      * A builder for creating a configuration
      */
     public static class Builder {
@@ -755,8 +755,8 @@ public class JIPipeDefaultMutableSlotConfiguration implements JIPipeMutableSlotC
         /**
          * Adds an input slot
          *
-         * @param name  Unique slot name
-         * @param klass Slot data class
+         * @param name     Unique slot name
+         * @param klass    Slot data class
          * @param optional Make the slot optional
          * @return The builder
          */

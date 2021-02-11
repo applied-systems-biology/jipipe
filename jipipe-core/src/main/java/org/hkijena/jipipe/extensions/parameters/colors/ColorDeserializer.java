@@ -20,7 +20,7 @@ import com.fasterxml.jackson.databind.JsonDeserializer;
 import com.fasterxml.jackson.databind.JsonNode;
 import org.hkijena.jipipe.utils.ColorUtils;
 
-import java.awt.Color;
+import java.awt.*;
 import java.io.IOException;
 
 /**

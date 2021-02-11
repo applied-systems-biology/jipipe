@@ -26,18 +26,8 @@ import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.JIPipeDependency;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeProgressInfo;
-import org.hkijena.jipipe.api.JIPipeProject;
-import org.hkijena.jipipe.api.JIPipeRun;
-import org.hkijena.jipipe.api.JIPipeValidatable;
-import org.hkijena.jipipe.api.JIPipeValidityReport;
-import org.hkijena.jipipe.api.data.JIPipeData;
-import org.hkijena.jipipe.api.data.JIPipeDataSlot;
-import org.hkijena.jipipe.api.data.JIPipeDataSlotInfo;
-import org.hkijena.jipipe.api.data.JIPipeDefaultMutableSlotConfiguration;
-import org.hkijena.jipipe.api.data.JIPipeSlotConfiguration;
-import org.hkijena.jipipe.api.data.JIPipeSlotType;
+import org.hkijena.jipipe.api.*;
+import org.hkijena.jipipe.api.data.*;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterVisibility;
@@ -45,17 +35,11 @@ import org.hkijena.jipipe.extensions.parameters.primitives.HTMLText;
 import org.hkijena.jipipe.extensions.parameters.primitives.StringParameterSettings;
 import org.hkijena.jipipe.utils.StringUtils;
 
-import java.awt.Point;
+import java.awt.*;
 import java.io.IOException;
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 
 /**
  * An algorithm is is a set of input and output data slots, and a run() function
@@ -367,8 +351,7 @@ public abstract class JIPipeGraphNode implements JIPipeValidatable, JIPipeParame
     public void onParameterChanged(ParameterChangedEvent event) {
         if (event.getSource() == slotConfiguration) {
             getEventBus().post(new JIPipeGraph.NodeSlotsChangedEvent(this));
-        }
-        else if(event.getSource() != this) {
+        } else if (event.getSource() != this) {
             getEventBus().post(event);
         }
     }
@@ -730,7 +713,7 @@ public abstract class JIPipeGraphNode implements JIPipeValidatable, JIPipeParame
     @StringParameterSettings(multiline = true)
     @JIPipeParameter(value = "jipipe:node:description", visibility = JIPipeParameterVisibility.Visible, uiOrder = -999)
     public HTMLText getCustomDescription() {
-        if(customDescription == null)
+        if (customDescription == null)
             customDescription = new HTMLText();
         return customDescription;
     }

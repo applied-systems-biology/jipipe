@@ -17,6 +17,10 @@ public class GeneralDataSettings implements JIPipeParameterCollection {
     private boolean generateCachePreviews = true;
     private boolean generateResultPreviews = true;
 
+    public static GeneralDataSettings getInstance() {
+        return JIPipe.getSettings().getSettings(ID, GeneralDataSettings.class);
+    }
+
     @Override
     public EventBus getEventBus() {
         return eventBus;
@@ -77,9 +81,5 @@ public class GeneralDataSettings implements JIPipeParameterCollection {
     @JIPipeParameter("generate-result-previews")
     public void setGenerateResultPreviews(boolean generateResultPreviews) {
         this.generateResultPreviews = generateResultPreviews;
-    }
-
-    public static GeneralDataSettings getInstance() {
-        return JIPipe.getSettings().getSettings(ID, GeneralDataSettings.class);
     }
 }

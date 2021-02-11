@@ -44,6 +44,15 @@ public class StringData implements JIPipeData {
         this.data = other.data;
     }
 
+    public static StringData importFrom(Path path) {
+        Path file = PathUtils.findFileByExtensionIn(path, ".txt");
+        try {
+            return new StringData(new String(Files.readAllBytes(file), Charsets.UTF_8));
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     @Override
     public void saveTo(Path storageFilePath, String name, boolean forceName, JIPipeProgressInfo progressInfo) {
         try (FileWriter writer = new FileWriter(storageFilePath.resolve(name + getOutputExtension()).toFile())) {
@@ -93,15 +102,6 @@ public class StringData implements JIPipeData {
             return "String (" + CharSetUtils.count(data, "\n") + " lines)";
         } else {
             return data;
-        }
-    }
-
-    public static StringData importFrom(Path path) {
-        Path file = PathUtils.findFileByExtensionIn(path, ".txt");
-        try {
-            return new StringData(new String(Files.readAllBytes(file), Charsets.UTF_8));
-        } catch (IOException e) {
-            throw new RuntimeException(e);
         }
     }
 }

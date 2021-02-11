@@ -18,14 +18,7 @@ import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.data.JIPipeMutableSlotConfiguration;
-import org.hkijena.jipipe.api.history.CompoundGraphHistorySnapshot;
-import org.hkijena.jipipe.api.history.EdgeConnectGraphHistorySnapshot;
-import org.hkijena.jipipe.api.history.EdgeDisconnectAllTargetsGraphHistorySnapshot;
-import org.hkijena.jipipe.api.history.EdgeDisconnectGraphHistorySnapshot;
-import org.hkijena.jipipe.api.history.GraphChangedHistorySnapshot;
-import org.hkijena.jipipe.api.history.JIPipeGraphHistory;
-import org.hkijena.jipipe.api.history.MoveNodesGraphHistorySnapshot;
-import org.hkijena.jipipe.api.history.SlotConfigurationHistorySnapshot;
+import org.hkijena.jipipe.api.history.*;
 import org.hkijena.jipipe.api.nodes.JIPipeGraph;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphEdge;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
@@ -45,8 +38,8 @@ import javax.swing.event.PopupMenuListener;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.util.*;
 import java.util.List;
+import java.util.*;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
@@ -234,10 +227,10 @@ public abstract class JIPipeDataSlotUI extends JIPipeWorkbenchPanel {
 
             addOutputConnectTargetSlotMenu(availableTargets);
 
-            if(!targetSlots.isEmpty())
+            if (!targetSlots.isEmpty())
                 assignButtonMenu.addSeparator();
             addOutputTargetSlotMenu(targetSlots);
-            if(!targetSlots.isEmpty())
+            if (!targetSlots.isEmpty())
                 assignButtonMenu.addSeparator();
 
             addOutputSlotEditMenu();
@@ -285,9 +278,9 @@ public abstract class JIPipeDataSlotUI extends JIPipeWorkbenchPanel {
         for (JIPipeDataSlot source : sortSlotsByDistance(availableSources)) {
             if (!source.getNode().isVisibleIn(compartment))
                 continue;
-            if(itemCount >= 6) {
+            if (itemCount >= 6) {
                 JMenu moreMenu = new JMenu("More sources ...");
-                if(currentMenu instanceof JMenu)
+                if (currentMenu instanceof JMenu)
                     ((JMenu) currentMenu).add(moreMenu);
                 else
                     ((JPopupMenu) currentMenu).add(moreMenu);
@@ -298,7 +291,7 @@ public abstract class JIPipeDataSlotUI extends JIPipeWorkbenchPanel {
                     JIPipe.getDataTypes().getIconFor(source.getAcceptedDataType()));
             connectButton.addActionListener(e -> connectSlot(source, slot));
             installHighlightForConnect(source, connectButton);
-            if(currentMenu instanceof JMenu)
+            if (currentMenu instanceof JMenu)
                 ((JMenu) currentMenu).add(connectButton);
             else
                 ((JPopupMenu) currentMenu).add(connectButton);
@@ -346,9 +339,9 @@ public abstract class JIPipeDataSlotUI extends JIPipeWorkbenchPanel {
         Object currentMenu = assignButtonMenu;
         int itemCount = 0;
         for (JIPipeDataSlot target : sortSlotsByDistance(availableTargets)) {
-            if(itemCount >= 6) {
+            if (itemCount >= 6) {
                 JMenu moreMenu = new JMenu("More targets ...");
-                if(currentMenu instanceof JMenu)
+                if (currentMenu instanceof JMenu)
                     ((JMenu) currentMenu).add(moreMenu);
                 else
                     ((JPopupMenu) currentMenu).add(moreMenu);
@@ -382,7 +375,7 @@ public abstract class JIPipeDataSlotUI extends JIPipeWorkbenchPanel {
                     getGraphUI().repaint();
                 }
             });
-            if(currentMenu instanceof JMenu)
+            if (currentMenu instanceof JMenu)
                 ((JMenu) currentMenu).add(connectButton);
             else
                 ((JPopupMenu) currentMenu).add(connectButton);
@@ -468,7 +461,7 @@ public abstract class JIPipeDataSlotUI extends JIPipeWorkbenchPanel {
 
     private void addShapeToggle(JMenu menu, JIPipeGraphEdge edge) {
         menu.addSeparator();
-        if(edge.getUiShape() != JIPipeGraphEdge.Shape.Elbow) {
+        if (edge.getUiShape() != JIPipeGraphEdge.Shape.Elbow) {
             JMenuItem setShapeItem = new JMenuItem("Draw as elbow", UIUtils.getIconFromResources("actions/standard-connector.png"));
             setShapeItem.addActionListener(e -> {
                 nodeUI.getGraphUI().getGraphHistory().addSnapshotBefore(new GraphChangedHistorySnapshot(getGraph(), "Draw as elbow"));
@@ -477,7 +470,7 @@ public abstract class JIPipeDataSlotUI extends JIPipeWorkbenchPanel {
             });
             menu.add(setShapeItem);
         }
-        if(edge.getUiShape() != JIPipeGraphEdge.Shape.Line) {
+        if (edge.getUiShape() != JIPipeGraphEdge.Shape.Line) {
             JMenuItem setShapeItem = new JMenuItem("Draw as line", UIUtils.getIconFromResources("actions/draw-line.png"));
             setShapeItem.addActionListener(e -> {
                 nodeUI.getGraphUI().getGraphHistory().addSnapshotBefore(new GraphChangedHistorySnapshot(getGraph(), "Draw as line"));

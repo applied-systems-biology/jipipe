@@ -15,8 +15,7 @@ package org.hkijena.jipipe.extensions.plots.utils;
 
 import org.hkijena.jipipe.extensions.parameters.primitives.EnumParameterSettings;
 
-import java.awt.Color;
-import java.awt.Paint;
+import java.awt.*;
 
 @EnumParameterSettings(itemInfo = ColorMapEnumItemInfo.class)
 public enum ColorMap {

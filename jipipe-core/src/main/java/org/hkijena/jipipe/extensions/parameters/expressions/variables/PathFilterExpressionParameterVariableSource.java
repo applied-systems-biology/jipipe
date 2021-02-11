@@ -36,15 +36,15 @@ public class PathFilterExpressionParameterVariableSource implements ExpressionPa
         VARIABLES = ImmutableSet.of(VARIABLE_NAME, VARIABLE_ABSPATH, VARIABLE_PARENT, VARIABLE_PATH);
     }
 
-    @Override
-    public Set<ExpressionParameterVariable> getVariables(JIPipeParameterAccess parameterAccess) {
-        return VARIABLES;
-    }
-
     public static void buildFor(Path path, StaticVariableSet<Object> result) {
         result.set("path", path.toString());
         result.set("absolute_path", path.toAbsolutePath().toString());
         result.set("name", path.getFileName().toString());
         result.set("parent", path.getParent().toString());
+    }
+
+    @Override
+    public Set<ExpressionParameterVariable> getVariables(JIPipeParameterAccess parameterAccess) {
+        return VARIABLES;
     }
 }

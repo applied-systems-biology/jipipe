@@ -25,8 +25,7 @@ import org.jdesktop.swingx.JXTable;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
-import java.awt.BorderLayout;
-import java.awt.Component;
+import java.awt.*;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.util.HashSet;

@@ -35,11 +35,8 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.font.FontRenderContext;
 import java.awt.font.TextLayout;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 
 /**
  * An algorithm UI for vertical display
@@ -68,7 +65,7 @@ public class JIPipeVerticalNodeUI extends JIPipeNodeUI {
         initialize();
         updateAlgorithmSlotUIs();
         updateActivationStatus();
-        if(getNode() instanceof JIPipeCommentNode) {
+        if (getNode() instanceof JIPipeCommentNode) {
             updateCommentNodeDesign();
         }
     }
@@ -399,7 +396,7 @@ public class JIPipeVerticalNodeUI extends JIPipeNodeUI {
     @Override
     public void onAlgorithmParametersChanged(JIPipeParameterCollection.ParameterChangedEvent event) {
         super.onAlgorithmParametersChanged(event);
-        if(event.getSource() == getNode() && getNode() instanceof JIPipeCommentNode) {
+        if (event.getSource() == getNode() && getNode() instanceof JIPipeCommentNode) {
             updateCommentNodeDesign();
         }
     }

@@ -466,6 +466,7 @@ public class JIPipeDataSlot {
 
     /**
      * Adds data as virtual data reference
+     *
      * @param virtualData   the virtual data
      * @param annotations   the annotations
      * @param mergeStrategy merge strategy
@@ -631,6 +632,7 @@ public class JIPipeDataSlot {
     /**
      * Creates a new {@link JIPipeDataSlot} instance that contains only the selected rows.
      * All other attributes are copied.
+     *
      * @param rows the rows
      * @return the sliced slot
      */

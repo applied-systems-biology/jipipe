@@ -20,8 +20,7 @@ import org.hkijena.jipipe.ui.parameters.ParameterPanel;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
-import java.awt.BorderLayout;
-import java.awt.Color;
+import java.awt.*;
 
 /**
  * UI for {@link JIPipePlotSeriesBuilder}

@@ -22,25 +22,18 @@ import org.hkijena.jipipe.api.parameters.JIPipeDummyParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeManualParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.registries.JIPipeExpressionRegistry;
-import org.hkijena.jipipe.extensions.parameters.expressions.DefaultExpressionEvaluator;
-import org.hkijena.jipipe.extensions.parameters.expressions.DefaultExpressionParameter;
-import org.hkijena.jipipe.extensions.parameters.expressions.DefaultExpressionParameterEditorUI;
-import org.hkijena.jipipe.extensions.parameters.expressions.ExpressionFunction;
-import org.hkijena.jipipe.extensions.parameters.expressions.ExpressionOperatorEntry;
+import org.hkijena.jipipe.extensions.parameters.expressions.*;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.JIPipeWorkbenchPanel;
 import org.hkijena.jipipe.ui.components.MarkdownDocument;
 import org.hkijena.jipipe.ui.components.MarkdownReader;
 
 import javax.swing.*;
-import java.awt.BorderLayout;
+import java.awt.*;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * A developer tool to test {@link org.hkijena.jipipe.extensions.parameters.expressions.DefaultExpressionEvaluator}

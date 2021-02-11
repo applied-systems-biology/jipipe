@@ -21,8 +21,7 @@ import org.jfree.chart.renderer.AbstractRenderer;
 import org.jfree.chart.renderer.category.CategoryItemRenderer;
 import org.jfree.chart.renderer.category.StatisticalLineAndShapeRenderer;
 
-import java.awt.BasicStroke;
-import java.awt.Font;
+import java.awt.*;
 import java.nio.file.Path;
 
 /**
@@ -53,6 +52,10 @@ public class LineStatisticalCategoryPlotData extends StatisticalCategoryPlotData
         this.lineThickness = other.lineThickness;
     }
 
+    public static LineStatisticalCategoryPlotData importFrom(Path storagePath) {
+        return PlotData.importFrom(storagePath, LineStatisticalCategoryPlotData.class);
+    }
+
     @Override
     public JFreeChart getChart() {
         JFreeChart chart = ChartFactory.createLineChart(getTitle(), getCategoryAxisLabel(), getValueAxisLabel(), createDataSet());
@@ -81,9 +84,5 @@ public class LineStatisticalCategoryPlotData extends StatisticalCategoryPlotData
     @JIPipeParameter("line-thickness")
     public void setLineThickness(int lineThickness) {
         this.lineThickness = lineThickness;
-    }
-
-    public static LineStatisticalCategoryPlotData importFrom(Path storagePath) {
-        return PlotData.importFrom(storagePath, LineStatisticalCategoryPlotData.class);
     }
 }

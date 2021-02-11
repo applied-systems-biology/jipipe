@@ -21,11 +21,7 @@ import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeAnnotation;
 import org.hkijena.jipipe.api.data.JIPipeDefaultMutableSlotConfiguration;
-import org.hkijena.jipipe.api.nodes.JIPipeInputSlot;
-import org.hkijena.jipipe.api.nodes.JIPipeMergingAlgorithm;
-import org.hkijena.jipipe.api.nodes.JIPipeMergingDataBatch;
-import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
-import org.hkijena.jipipe.api.nodes.JIPipeOutputSlot;
+import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
@@ -36,11 +32,7 @@ import org.hkijena.jipipe.extensions.parameters.primitives.StringParameterSettin
 import org.hkijena.jipipe.utils.ResourceUtils;
 import org.hkijena.jipipe.utils.StringUtils;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static org.hkijena.jipipe.api.nodes.JIPipeMergingAlgorithm.MERGING_ALGORITHM_DESCRIPTION;

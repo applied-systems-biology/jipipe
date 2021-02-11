@@ -13,7 +13,10 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
 import org.hkijena.jipipe.api.parameters.JIPipeReflectionParameterAccess;
 import org.hkijena.jipipe.extensions.forms.utils.SingleAnnotationIOSettings;
-import org.hkijena.jipipe.extensions.parameters.expressions.*;
+import org.hkijena.jipipe.extensions.parameters.expressions.DefaultExpressionParameter;
+import org.hkijena.jipipe.extensions.parameters.expressions.ExpressionParameterSettings;
+import org.hkijena.jipipe.extensions.parameters.expressions.NumberQueryExpressionVariableSource;
+import org.hkijena.jipipe.extensions.parameters.expressions.StringQueryExpression;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 
 import java.awt.*;
@@ -37,6 +40,10 @@ public class IntegerFormData extends ParameterFormData {
         this.validationExpression = new StringQueryExpression(other.validationExpression);
         this.annotationIOSettings = new SingleAnnotationIOSettings(other.annotationIOSettings);
         annotationIOSettings.getEventBus().register(this);
+    }
+
+    public static IntegerFormData importFrom(Path rowStorage) {
+        return FormData.importFrom(rowStorage, IntegerFormData.class);
     }
 
     @JIPipeDocumentation(name = "Initial value", description = "The initial value")
@@ -72,7 +79,7 @@ public class IntegerFormData extends ParameterFormData {
 
     @Override
     public Component getEditor(JIPipeWorkbench workbench) {
-       JIPipeParameterTree tree = new JIPipeParameterTree(this);
+        JIPipeParameterTree tree = new JIPipeParameterTree(this);
         JIPipeReflectionParameterAccess access = (JIPipeReflectionParameterAccess) tree.getParameters().get("initial-value");
         access.setDocumentation(new JIPipeDefaultDocumentation(getName(), getDescription().getBody()));
         return JIPipe.getParameterTypes().createEditorFor(workbench, access);
@@ -83,15 +90,11 @@ public class IntegerFormData extends ParameterFormData {
         return new IntegerFormData(this);
     }
 
-    public static IntegerFormData importFrom(Path rowStorage) {
-        return FormData.importFrom(rowStorage, IntegerFormData.class);
-    }
-
     @Override
     public void reportValidity(JIPipeValidityReport report) {
         StaticVariableSet<Object> variableSet = new StaticVariableSet<>();
         variableSet.set("value", value);
-        if(!validationExpression.test(variableSet)) {
+        if (!validationExpression.test(variableSet)) {
             report.reportIsInvalid("Invalid value!",
                     String.format("The provided value '%s' does not comply to the test '%s'", value, validationExpression.getExpression()),
                     "Please correct your input",
@@ -106,21 +109,21 @@ public class IntegerFormData extends ParameterFormData {
 
     @Override
     public void loadData(JIPipeMergingDataBatch dataBatch) {
-        if(annotationIOSettings.getInputAnnotation().isEnabled()) {
+        if (annotationIOSettings.getInputAnnotation().isEnabled()) {
             JIPipeAnnotation annotation =
                     dataBatch.getAnnotations().getOrDefault(annotationIOSettings.getInputAnnotation().getContent(),
                             null);
-            if(annotation != null) {
-               if(NumberUtils.isCreatable(annotation.getValue())) {
-                   value = NumberUtils.createInteger(annotation.getValue());
-               }
+            if (annotation != null) {
+                if (NumberUtils.isCreatable(annotation.getValue())) {
+                    value = NumberUtils.createInteger(annotation.getValue());
+                }
             }
         }
     }
 
     @Override
     public void writeData(JIPipeMergingDataBatch dataBatch) {
-        if(annotationIOSettings.getOutputAnnotation().isEnabled()) {
+        if (annotationIOSettings.getOutputAnnotation().isEnabled()) {
             annotationIOSettings.getAnnotationMergeStrategy().mergeInto(dataBatch.getAnnotations(),
                     Collections.singletonList(annotationIOSettings.getOutputAnnotation().createAnnotation("" + value)));
         }

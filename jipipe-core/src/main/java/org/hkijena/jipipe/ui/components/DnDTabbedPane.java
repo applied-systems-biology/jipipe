@@ -2,14 +2,7 @@ package org.hkijena.jipipe.ui.components;
 
 import javax.swing.*;
 import javax.swing.plaf.metal.MetalTabbedPaneUI;
-import java.awt.AlphaComposite;
-import java.awt.Color;
-import java.awt.Component;
-import java.awt.Dimension;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
-import java.awt.Point;
-import java.awt.Rectangle;
+import java.awt.*;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
 import java.awt.dnd.*;
@@ -43,6 +36,10 @@ class DnDTabbedPane extends JTabbedPane {
         new DropTarget(glassPane, DnDConstants.ACTION_COPY_OR_MOVE, new TabDropTargetListener(), true);
         DragSource.getDefaultDragSource().createDefaultDragGestureRecognizer(
                 this, DnDConstants.ACTION_COPY_OR_MOVE, new TabDragGestureListener());
+    }
+
+    public static boolean isTopBottomTabPlacement(int tabPlacement) {
+        return tabPlacement == SwingConstants.TOP || tabPlacement == SwingConstants.BOTTOM;
     }
 
     private void clickArrowButton(String actionKey) {
@@ -247,10 +244,6 @@ class DnDTabbedPane extends JTabbedPane {
         tabbedRect.grow(2, 2);
         return tabbedRect;
     }
-
-    public static boolean isTopBottomTabPlacement(int tabPlacement) {
-        return tabPlacement == SwingConstants.TOP || tabPlacement == SwingConstants.BOTTOM;
-    }
 }
 
 class TabTransferable implements Transferable {
@@ -351,6 +344,10 @@ class TabDragGestureListener implements DragGestureListener {
 class TabDropTargetListener implements DropTargetListener {
     private static final Point HIDDEN_POINT = new Point(0, -1000);
 
+    private static Optional<GhostGlassPane> getGhostGlassPane(Component c) {
+        return Optional.ofNullable(c).filter(GhostGlassPane.class::isInstance).map(GhostGlassPane.class::cast);
+    }
+
     @Override
     public void dragEnter(DropTargetDragEvent e) {
         getGhostGlassPane(e.getDropTargetContext().getComponent()).ifPresent(glassPane -> {
@@ -415,10 +412,6 @@ class TabDropTargetListener implements DropTargetListener {
             glassPane.setVisible(false);
             // tabbedPane.dragTabIndex = -1;
         });
-    }
-
-    private static Optional<GhostGlassPane> getGhostGlassPane(Component c) {
-        return Optional.ofNullable(c).filter(GhostGlassPane.class::isInstance).map(GhostGlassPane.class::cast);
     }
 }
 

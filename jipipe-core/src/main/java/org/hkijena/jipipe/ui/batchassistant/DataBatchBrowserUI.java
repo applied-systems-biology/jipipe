@@ -13,25 +13,12 @@
 
 package org.hkijena.jipipe.ui.batchassistant;
 
-import com.google.common.eventbus.Subscribe;
-import org.hkijena.jipipe.api.JIPipeProjectCache;
-import org.hkijena.jipipe.api.JIPipeProjectCacheState;
-import org.hkijena.jipipe.api.JIPipeRun;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
-import org.hkijena.jipipe.api.nodes.JIPipeAlgorithm;
-import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.nodes.JIPipeMergingDataBatch;
-import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
-import org.hkijena.jipipe.ui.JIPipeProjectWorkbenchPanel;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.JIPipeWorkbenchPanel;
-import org.hkijena.jipipe.ui.cache.JIPipeAlgorithmCacheTree;
 import org.hkijena.jipipe.ui.cache.JIPipeCacheDataSlotTableUI;
 import org.hkijena.jipipe.ui.cache.JIPipeCacheMultiDataSlotTableUI;
-import org.hkijena.jipipe.ui.running.JIPipeRunnerQueue;
-import org.hkijena.jipipe.ui.running.RunUIWorkerFinishedEvent;
-import org.hkijena.jipipe.ui.running.RunUIWorkerInterruptedEvent;
-import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
 import javax.swing.tree.DefaultMutableTreeNode;
@@ -40,7 +27,6 @@ import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 /**
  * Browser for a Data batch, similar to the cache browser

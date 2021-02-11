@@ -46,6 +46,15 @@ public class JIPipeManualParameterAccess implements JIPipeParameterAccess {
 
     }
 
+    /**
+     * Creates a new builder
+     *
+     * @return the builder
+     */
+    public static Builder builder() {
+        return new Builder();
+    }
+
     @Override
     public String getKey() {
         return key;
@@ -104,15 +113,6 @@ public class JIPipeManualParameterAccess implements JIPipeParameterAccess {
     @Override
     public int getUIOrder() {
         return uiOrder;
-    }
-
-    /**
-     * Creates a new builder
-     *
-     * @return the builder
-     */
-    public static Builder builder() {
-        return new Builder();
     }
 
     /**

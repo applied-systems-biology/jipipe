@@ -28,11 +28,7 @@ import org.hkijena.jipipe.utils.TooltipUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
-import java.awt.BorderLayout;
-import java.awt.Dimension;
-import java.awt.Font;
-import java.awt.GridLayout;
-import java.awt.Point;
+import java.awt.*;
 import java.awt.font.FontRenderContext;
 import java.awt.font.TextLayout;
 
@@ -64,10 +60,9 @@ public class JIPipeHorizontalDataSlotUI extends JIPipeDataSlotUI {
     protected void reloadButtonStatus() {
         if (getSlot().isInput()) {
             if (getGraph().getSourceSlots(getSlot()).isEmpty()) {
-                if(getSlot().getInfo().isOptional()) {
+                if (getSlot().getInfo().isOptional()) {
                     assignButton.setIcon(new ZoomIcon(UIUtils.getIconFromResources("emblems/slot-unconnected-output-horizontal.png"), getGraphUI()));
-                }
-                else {
+                } else {
                     assignButton.setIcon(new ZoomIcon(UIUtils.getIconFromResources("emblems/slot-unconnected-input-horizontal.png"), getGraphUI()));
                 }
             } else {
@@ -99,7 +94,7 @@ public class JIPipeHorizontalDataSlotUI extends JIPipeDataSlotUI {
     private void initialize() {
         setLayout(new BorderLayout());
 
-        if(getSlot().getNode() instanceof JIPipeCommentNode) {
+        if (getSlot().getNode() instanceof JIPipeCommentNode) {
             setOpaque(false);
         }
 
@@ -130,7 +125,7 @@ public class JIPipeHorizontalDataSlotUI extends JIPipeDataSlotUI {
         nameLabel.setToolTipText(TooltipUtils.getSlotInstanceTooltip(getSlot()));
         nameLabel.setBorder(BorderFactory.createEmptyBorder(0, 5, 0, 5));
         nameLabel.setIcon(new ZoomIcon(JIPipe.getDataTypes().getIconFor(getSlotDataType()), getGraphUI()));
-        if(!(getSlot().getNode() instanceof JIPipeCommentNode)) {
+        if (!(getSlot().getNode() instanceof JIPipeCommentNode)) {
             centerPanel.add(nameLabel);
         }
 

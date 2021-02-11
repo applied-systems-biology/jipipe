@@ -13,18 +13,10 @@
 
 package org.hkijena.jipipe.extensions.filesystem.algorithms;
 
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeHidden;
-import org.hkijena.jipipe.api.JIPipeOrganization;
-import org.hkijena.jipipe.api.JIPipeProgressInfo;
-import org.hkijena.jipipe.api.JIPipeValidityReport;
+import org.hkijena.jipipe.api.*;
 import org.hkijena.jipipe.api.data.JIPipeAnnotation;
 import org.hkijena.jipipe.api.data.JIPipeAnnotationMergeStrategy;
-import org.hkijena.jipipe.api.nodes.JIPipeDataBatch;
-import org.hkijena.jipipe.api.nodes.JIPipeInputSlot;
-import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
-import org.hkijena.jipipe.api.nodes.JIPipeOutputSlot;
-import org.hkijena.jipipe.api.nodes.JIPipeSimpleIteratingAlgorithm;
+import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.AnnotationsNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.filesystem.dataypes.FolderData;

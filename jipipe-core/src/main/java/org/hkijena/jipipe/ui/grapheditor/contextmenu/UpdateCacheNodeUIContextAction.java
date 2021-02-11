@@ -30,17 +30,16 @@ import static org.hkijena.jipipe.ui.grapheditor.JIPipeNodeUI.REQUEST_UPDATE_CACH
 public class UpdateCacheNodeUIContextAction implements NodeUIContextAction {
     @Override
     public boolean matches(Set<JIPipeNodeUI> selection) {
-        if(selection.size() == 1) {
+        if (selection.size() == 1) {
             JIPipeGraphNode node = selection.iterator().next().getNode();
-            if(!node.getInfo().isRunnable())
+            if (!node.getInfo().isRunnable())
                 return false;
-            if(!(node instanceof JIPipeAlgorithm))
+            if (!(node instanceof JIPipeAlgorithm))
                 return false;
-            if(node.getGraph().getAttachment(JIPipeGraphType.class) != JIPipeGraphType.Project)
+            if (node.getGraph().getAttachment(JIPipeGraphType.class) != JIPipeGraphType.Project)
                 return false;
             return true;
-        }
-        else {
+        } else {
             return false;
         }
     }

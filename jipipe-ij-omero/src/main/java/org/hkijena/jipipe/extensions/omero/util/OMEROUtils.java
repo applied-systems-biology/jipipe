@@ -23,12 +23,7 @@ import omero.gateway.SecurityContext;
 import omero.gateway.exception.DSAccessException;
 import omero.gateway.exception.DSOutOfServiceException;
 import omero.gateway.facility.MetadataFacility;
-import omero.gateway.model.AnnotationData;
-import omero.gateway.model.DataObject;
-import omero.gateway.model.MapAnnotationData;
-import omero.gateway.model.TableData;
-import omero.gateway.model.TableDataColumn;
-import omero.gateway.model.TagAnnotationData;
+import omero.gateway.model.*;
 import omero.model.Annotation;
 import omero.model.IObject;
 import omero.model.NamedValue;
@@ -36,18 +31,8 @@ import omero.model.Pixels;
 import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
 import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorCompletionService;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
+import java.util.*;
+import java.util.concurrent.*;
 
 public class OMEROUtils {
 

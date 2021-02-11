@@ -2,21 +2,20 @@ package org.hkijena.jipipe.extensions.forms.datatypes;
 
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
-import org.apache.commons.lang3.math.NumberUtils;
 import org.hkijena.jipipe.JIPipe;
-import org.hkijena.jipipe.api.JIPipeDefaultDocumentation;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeValidityReport;
 import org.hkijena.jipipe.api.data.JIPipeAnnotation;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.nodes.JIPipeMergingDataBatch;
-import org.hkijena.jipipe.api.parameters.*;
+import org.hkijena.jipipe.api.parameters.JIPipeDummyParameterCollection;
+import org.hkijena.jipipe.api.parameters.JIPipeManualParameterAccess;
+import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.forms.utils.SingleAnnotationIOSettings;
 import org.hkijena.jipipe.extensions.parameters.pairs.PairParameter;
 import org.hkijena.jipipe.extensions.parameters.pairs.PairParameterSettings;
 import org.hkijena.jipipe.extensions.parameters.pairs.StringAndStringPairParameter;
 import org.hkijena.jipipe.extensions.parameters.primitives.DynamicStringEnumParameter;
-import org.hkijena.jipipe.extensions.parameters.primitives.OptionalStringParameter;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.utils.StringUtils;
 
@@ -42,6 +41,10 @@ public class EnumFormData extends ParameterFormData {
         this.annotationIOSettings = new SingleAnnotationIOSettings(other.annotationIOSettings);
         this.items = new StringAndStringPairParameter.List(other.items);
         annotationIOSettings.getEventBus().register(this);
+    }
+
+    public static EnumFormData importFrom(Path rowStorage) {
+        return FormData.importFrom(rowStorage, EnumFormData.class);
     }
 
     @JIPipeDocumentation(name = "Initial value", description = "The initial value. Should be the annotation value of the item.")
@@ -107,10 +110,6 @@ public class EnumFormData extends ParameterFormData {
         return new EnumFormData(this);
     }
 
-    public static EnumFormData importFrom(Path rowStorage) {
-        return FormData.importFrom(rowStorage, EnumFormData.class);
-    }
-
     @Override
     public void reportValidity(JIPipeValidityReport report) {
     }
@@ -122,11 +121,11 @@ public class EnumFormData extends ParameterFormData {
 
     @Override
     public void loadData(JIPipeMergingDataBatch dataBatch) {
-        if(annotationIOSettings.getInputAnnotation().isEnabled()) {
+        if (annotationIOSettings.getInputAnnotation().isEnabled()) {
             JIPipeAnnotation annotation =
                     dataBatch.getAnnotations().getOrDefault(annotationIOSettings.getInputAnnotation().getContent(),
                             null);
-            if(annotation != null) {
+            if (annotation != null) {
                 this.value = StringUtils.nullToEmpty(annotation.getValue());
             }
         }
@@ -134,7 +133,7 @@ public class EnumFormData extends ParameterFormData {
 
     @Override
     public void writeData(JIPipeMergingDataBatch dataBatch) {
-        if(annotationIOSettings.getOutputAnnotation().isEnabled()) {
+        if (annotationIOSettings.getOutputAnnotation().isEnabled()) {
             annotationIOSettings.getAnnotationMergeStrategy().mergeInto(dataBatch.getAnnotations(),
                     Collections.singletonList(annotationIOSettings.getOutputAnnotation().createAnnotation(value)));
         }

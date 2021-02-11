@@ -24,7 +24,7 @@ import org.hkijena.jipipe.utils.UIUtils;
 import javax.swing.*;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreeCellRenderer;
-import java.awt.Component;
+import java.awt.*;
 
 /**
  * Renders the tree in {@link JIPipeResultAlgorithmTree}

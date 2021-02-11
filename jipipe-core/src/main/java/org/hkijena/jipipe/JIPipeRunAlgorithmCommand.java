@@ -37,8 +37,7 @@ import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 
 import javax.swing.*;
-import java.awt.Dimension;
-import java.awt.GraphicsEnvironment;
+import java.awt.*;
 import java.io.IOException;
 import java.util.Map;
 
@@ -56,6 +55,15 @@ public class JIPipeRunAlgorithmCommand extends DynamicCommand implements Initial
 
     @Parameter(persist = false)
     private int threads = 1;
+
+    /**
+     * @param args ignored
+     */
+    public static void main(String[] args) {
+        final ImageJ ij = new ImageJ();
+        ij.ui().showUI();
+        ij.command().run(JIPipeRunAlgorithmCommand.class, true);
+    }
 
     @Override
     public void initialize() {
@@ -160,14 +168,5 @@ public class JIPipeRunAlgorithmCommand extends DynamicCommand implements Initial
         }
         IJ.showProgress(3, 3);
         settings.pullOutput();
-    }
-
-    /**
-     * @param args ignored
-     */
-    public static void main(String[] args) {
-        final ImageJ ij = new ImageJ();
-        ij.ui().showUI();
-        ij.command().run(JIPipeRunAlgorithmCommand.class, true);
     }
 }

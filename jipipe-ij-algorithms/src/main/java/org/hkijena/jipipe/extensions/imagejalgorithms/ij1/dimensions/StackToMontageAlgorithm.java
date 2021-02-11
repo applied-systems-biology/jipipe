@@ -25,20 +25,14 @@ import ij.process.ImageProcessor;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
-import org.hkijena.jipipe.api.nodes.JIPipeDataBatch;
-import org.hkijena.jipipe.api.nodes.JIPipeInputSlot;
-import org.hkijena.jipipe.api.nodes.JIPipeIteratingAlgorithm;
-import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
-import org.hkijena.jipipe.api.nodes.JIPipeOutputSlot;
+import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d2.ImagePlus2DData;
 import org.hkijena.jipipe.extensions.parameters.primitives.OptionalIntegerParameter;
 
-import java.awt.Color;
-import java.awt.Font;
-import java.awt.Image;
+import java.awt.*;
 
 /**
  * Implementation of {@link ij.plugin.MontageMaker}

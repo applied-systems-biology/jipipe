@@ -31,7 +31,7 @@ import org.hkijena.jipipe.ui.tableanalyzer.JIPipeTableEditor;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
-import java.awt.Window;
+import java.awt.*;
 import java.lang.ref.WeakReference;
 import java.util.Map;
 
@@ -57,6 +57,21 @@ public class CacheAwareTableEditor extends JIPipeTableEditor {
         loadDataFromDataSource();
 
         project.getCache().getEventBus().register(this);
+    }
+
+    public static void show(JIPipeWorkbench workbench, JIPipeCacheSlotDataSource dataSource, String displayName) {
+        JFrame frame = new JFrame(displayName);
+        frame.setAlwaysOnTop(GeneralUISettings.getInstance().isOpenDataWindowsAlwaysOnTop());
+        CacheAwareTableEditor dataDisplay = new CacheAwareTableEditor(workbench, dataSource);
+        AlwaysOnTopToggle alwaysOnTopToggle = new AlwaysOnTopToggle(frame);
+        alwaysOnTopToggle.addActionListener(e -> GeneralUISettings.getInstance().setOpenDataWindowsAlwaysOnTop(alwaysOnTopToggle.isSelected()));
+        dataDisplay.getToolBar().add(alwaysOnTopToggle);
+        frame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+        frame.setIconImage(UIUtils.getIcon128FromResources("jipipe.png").getImage());
+        frame.setContentPane(dataDisplay);
+        frame.pack();
+        frame.setSize(1024, 768);
+        frame.setVisible(true);
     }
 
     private void initialize() {
@@ -116,20 +131,5 @@ public class CacheAwareTableEditor extends JIPipeTableEditor {
             setTableModel(new ResultsTableData());
             lastVirtualData = null;
         }
-    }
-
-    public static void show(JIPipeWorkbench workbench, JIPipeCacheSlotDataSource dataSource, String displayName) {
-        JFrame frame = new JFrame(displayName);
-        frame.setAlwaysOnTop(GeneralUISettings.getInstance().isOpenDataWindowsAlwaysOnTop());
-        CacheAwareTableEditor dataDisplay = new CacheAwareTableEditor(workbench, dataSource);
-        AlwaysOnTopToggle alwaysOnTopToggle = new AlwaysOnTopToggle(frame);
-        alwaysOnTopToggle.addActionListener(e -> GeneralUISettings.getInstance().setOpenDataWindowsAlwaysOnTop(alwaysOnTopToggle.isSelected()));
-        dataDisplay.getToolBar().add(alwaysOnTopToggle);
-        frame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
-        frame.setIconImage(UIUtils.getIcon128FromResources("jipipe.png").getImage());
-        frame.setContentPane(dataDisplay);
-        frame.pack();
-        frame.setSize(1024, 768);
-        frame.setVisible(true);
     }
 }

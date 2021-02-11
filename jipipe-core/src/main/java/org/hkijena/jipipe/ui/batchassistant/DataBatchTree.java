@@ -13,14 +13,8 @@
 
 package org.hkijena.jipipe.ui.batchassistant;
 
-import com.google.common.collect.BiMap;
-import com.google.common.collect.HashBiMap;
-import org.hkijena.jipipe.api.JIPipeProjectCacheState;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
-import org.hkijena.jipipe.api.nodes.JIPipeDataBatch;
 import org.hkijena.jipipe.api.nodes.JIPipeMergingDataBatch;
-import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
-import org.hkijena.jipipe.ui.JIPipeProjectWorkbenchPanel;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.JIPipeWorkbenchPanel;
 import org.hkijena.jipipe.ui.cache.JIPipeCacheStateTreeCellRenderer;
@@ -32,7 +26,6 @@ import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreePath;
 import java.awt.*;
-import java.util.Comparator;
 import java.util.Map;
 import java.util.Set;
 
@@ -46,7 +39,7 @@ public class DataBatchTree extends JIPipeWorkbenchPanel {
 
     /**
      * @param workbenchUI Workbench ui
-     * @param dataBatch the data batch
+     * @param dataBatch   the data batch
      */
     public DataBatchTree(JIPipeWorkbench workbenchUI, JIPipeMergingDataBatch dataBatch) {
         super(workbenchUI);

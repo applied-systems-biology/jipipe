@@ -24,10 +24,7 @@ import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
 import javax.swing.event.DocumentEvent;
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.Font;
+import java.awt.*;
 import java.util.Objects;
 
 /**
@@ -44,6 +41,14 @@ public class NumberParameterEditorUI extends JIPipeParameterEditorUI {
         super(workbench, parameterAccess);
         initialize();
         reload();
+    }
+
+    public static String formatNumber(double number) {
+        if (number % 1 == 0) {
+            return "" + (long) number;
+        } else {
+            return "" + number;
+        }
     }
 
     @Override
@@ -249,14 +254,6 @@ public class NumberParameterEditorUI extends JIPipeParameterEditorUI {
             } else {
                 setBorder(BorderFactory.createLineBorder(Color.RED, 2));
             }
-        }
-    }
-
-    public static String formatNumber(double number) {
-        if (number % 1 == 0) {
-            return "" + (long) number;
-        } else {
-            return "" + number;
         }
     }
 }

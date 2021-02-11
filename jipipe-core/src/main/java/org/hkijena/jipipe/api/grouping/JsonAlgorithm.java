@@ -54,25 +54,6 @@ public class JsonAlgorithm extends GraphWrapperAlgorithm implements JIPipeCustom
         super(other);
     }
 
-    public GraphNodeParameters getExportedParameters() {
-        return exportedParameters;
-    }
-
-    @Override
-    public Map<String, JIPipeParameterAccess> getParameters() {
-        JIPipeParameterTree standardParameters = new JIPipeParameterTree(this,
-                JIPipeParameterTree.IGNORE_CUSTOM | JIPipeParameterTree.FORCE_REFLECTION);
-        return standardParameters.getParameters();
-    }
-
-    @Override
-    public Map<String, JIPipeParameterCollection> getChildParameterCollections() {
-        this.exportedParameters.setGraph(getWrappedGraph());
-        Map<String, JIPipeParameterCollection> result = new HashMap<>();
-        result.put("exported", new GraphNodeParameterReferenceAccessGroupList(exportedParameters, getWrappedGraph().getParameterTree(), true));
-        return result;
-    }
-
     /**
      * Replaces the targeted {@link JsonAlgorithm} by a {@link NodeGroup}
      *
@@ -110,5 +91,24 @@ public class JsonAlgorithm extends GraphWrapperAlgorithm implements JIPipeCustom
             }
         }
 
+    }
+
+    public GraphNodeParameters getExportedParameters() {
+        return exportedParameters;
+    }
+
+    @Override
+    public Map<String, JIPipeParameterAccess> getParameters() {
+        JIPipeParameterTree standardParameters = new JIPipeParameterTree(this,
+                JIPipeParameterTree.IGNORE_CUSTOM | JIPipeParameterTree.FORCE_REFLECTION);
+        return standardParameters.getParameters();
+    }
+
+    @Override
+    public Map<String, JIPipeParameterCollection> getChildParameterCollections() {
+        this.exportedParameters.setGraph(getWrappedGraph());
+        Map<String, JIPipeParameterCollection> result = new HashMap<>();
+        result.put("exported", new GraphNodeParameterReferenceAccessGroupList(exportedParameters, getWrappedGraph().getParameterTree(), true));
+        return result;
     }
 }

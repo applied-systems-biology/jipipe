@@ -20,18 +20,10 @@ import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
-import org.hkijena.jipipe.api.nodes.JIPipeAlgorithm;
-import org.hkijena.jipipe.api.nodes.JIPipeGraph;
-import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
-import org.hkijena.jipipe.api.nodes.JIPipeIOSlotConfiguration;
-import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
+import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.MiscellaneousNodeTypeCategory;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Algorithm that passes the input to the output
@@ -57,14 +49,6 @@ public class IOInterfaceAlgorithm extends JIPipeAlgorithm {
      */
     public IOInterfaceAlgorithm(IOInterfaceAlgorithm other) {
         super(other);
-    }
-
-    @Override
-    public void run(JIPipeProgressInfo progressInfo) {
-        for (JIPipeDataSlot inputSlot : getInputSlots()) {
-            JIPipeDataSlot outputSlot = getOutputSlot(inputSlot.getName());
-            outputSlot.addData(inputSlot, progressInfo);
-        }
     }
 
     /**
@@ -134,6 +118,14 @@ public class IOInterfaceAlgorithm extends JIPipeAlgorithm {
             for (JIPipeDataSlot target : entry.getValue()) {
                 graph.connect(source, target);
             }
+        }
+    }
+
+    @Override
+    public void run(JIPipeProgressInfo progressInfo) {
+        for (JIPipeDataSlot inputSlot : getInputSlots()) {
+            JIPipeDataSlot outputSlot = getOutputSlot(inputSlot.getName());
+            outputSlot.addData(inputSlot, progressInfo);
         }
     }
 }

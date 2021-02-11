@@ -1,6 +1,5 @@
 package org.hkijena.jipipe.extensions.forms.datatypes;
 
-import com.fathzer.soft.javaluator.StaticVariableSet;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeDefaultDocumentation;
@@ -13,10 +12,6 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
 import org.hkijena.jipipe.api.parameters.JIPipeReflectionParameterAccess;
 import org.hkijena.jipipe.extensions.forms.utils.SingleAnnotationIOSettings;
-import org.hkijena.jipipe.extensions.parameters.expressions.DefaultExpressionParameter;
-import org.hkijena.jipipe.extensions.parameters.expressions.ExpressionParameterSettings;
-import org.hkijena.jipipe.extensions.parameters.expressions.NumberQueryExpressionVariableSource;
-import org.hkijena.jipipe.extensions.parameters.expressions.StringQueryExpression;
 import org.hkijena.jipipe.extensions.parameters.primitives.OptionalStringParameter;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.utils.StringUtils;
@@ -44,6 +39,10 @@ public class BooleanFormData extends ParameterFormData {
         this.trueString = other.trueString;
         this.falseString = other.falseString;
         annotationIOSettings.getEventBus().register(this);
+    }
+
+    public static BooleanFormData importFrom(Path rowStorage) {
+        return FormData.importFrom(rowStorage, BooleanFormData.class);
     }
 
     @JIPipeDocumentation(name = "Initial value", description = "The initial value")
@@ -88,7 +87,7 @@ public class BooleanFormData extends ParameterFormData {
 
     @Override
     public Component getEditor(JIPipeWorkbench workbench) {
-       JIPipeParameterTree tree = new JIPipeParameterTree(this);
+        JIPipeParameterTree tree = new JIPipeParameterTree(this);
         JIPipeReflectionParameterAccess access = (JIPipeReflectionParameterAccess) tree.getParameters().get("initial-value");
         access.setDocumentation(new JIPipeDefaultDocumentation(getName(), getDescription().getBody()));
         return JIPipe.getParameterTypes().createEditorFor(workbench, access);
@@ -97,10 +96,6 @@ public class BooleanFormData extends ParameterFormData {
     @Override
     public JIPipeData duplicate() {
         return new BooleanFormData(this);
-    }
-
-    public static BooleanFormData importFrom(Path rowStorage) {
-        return FormData.importFrom(rowStorage, BooleanFormData.class);
     }
 
     @Override
@@ -114,39 +109,38 @@ public class BooleanFormData extends ParameterFormData {
 
     @Override
     public void loadData(JIPipeMergingDataBatch dataBatch) {
-        if(annotationIOSettings.getInputAnnotation().isEnabled()) {
+        if (annotationIOSettings.getInputAnnotation().isEnabled()) {
             JIPipeAnnotation annotation =
                     dataBatch.getAnnotations().getOrDefault(annotationIOSettings.getInputAnnotation().getContent(),
                             null);
-            if(annotation != null) {
+            if (annotation != null) {
                 String value = StringUtils.nullToEmpty(annotation.getValue());
-                if(trueString.isEnabled() && value.equals(trueString.getContent()))
+                if (trueString.isEnabled() && value.equals(trueString.getContent()))
                     this.value = true;
-                else if(falseString.isEnabled() && value.equals(falseString.getContent()))
+                else if (falseString.isEnabled() && value.equals(falseString.getContent()))
                     this.value = false;
-                else if(value.toLowerCase().startsWith("t"))
+                else if (value.toLowerCase().startsWith("t"))
                     this.value = true;
-                else if(value.toLowerCase().startsWith("f"))
+                else if (value.toLowerCase().startsWith("f"))
                     this.value = false;
-                else if(NumberUtils.isCreatable(annotation.getValue())) {
-                    if(NumberUtils.createInteger(annotation.getValue()) > 0)
+                else if (NumberUtils.isCreatable(annotation.getValue())) {
+                    if (NumberUtils.createInteger(annotation.getValue()) > 0)
                         this.value = true;
-               }
+                }
             }
         }
     }
 
     @Override
     public void writeData(JIPipeMergingDataBatch dataBatch) {
-        if(annotationIOSettings.getOutputAnnotation().isEnabled()) {
-            if(value) {
-                if(trueString.isEnabled()) {
+        if (annotationIOSettings.getOutputAnnotation().isEnabled()) {
+            if (value) {
+                if (trueString.isEnabled()) {
                     annotationIOSettings.getAnnotationMergeStrategy().mergeInto(dataBatch.getAnnotations(),
                             Collections.singletonList(annotationIOSettings.getOutputAnnotation().createAnnotation(trueString.getContent())));
                 }
-            }
-            else {
-                if(falseString.isEnabled()) {
+            } else {
+                if (falseString.isEnabled()) {
                     annotationIOSettings.getAnnotationMergeStrategy().mergeInto(dataBatch.getAnnotations(),
                             Collections.singletonList(annotationIOSettings.getOutputAnnotation().createAnnotation(falseString.getContent())));
                 }

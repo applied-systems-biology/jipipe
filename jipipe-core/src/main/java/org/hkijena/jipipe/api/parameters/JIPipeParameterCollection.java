@@ -22,11 +22,7 @@ import org.hkijena.jipipe.utils.JsonDeserializable;
 import org.hkijena.jipipe.utils.JsonUtils;
 
 import java.io.IOException;
-import java.util.Comparator;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
-import java.util.Stack;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -35,13 +31,6 @@ import java.util.stream.Collectors;
  * Interfaced for a parameterized object
  */
 public interface JIPipeParameterCollection {
-    /**
-     * Gets the event bus that posts events about the parameters
-     *
-     * @return The event bus triggering {@link ParameterChangedEvent} and {@link ParameterStructureChangedEvent}
-     */
-    EventBus getEventBus();
-
     /**
      * Deserializes parameters from JSON
      *
@@ -202,6 +191,13 @@ public interface JIPipeParameterCollection {
         JIPipeParameterTree tree = new JIPipeParameterTree(collection);
         return tree.getParameters().get(key).get(klass);
     }
+
+    /**
+     * Gets the event bus that posts events about the parameters
+     *
+     * @return The event bus triggering {@link ParameterChangedEvent} and {@link ParameterStructureChangedEvent}
+     */
+    EventBus getEventBus();
 
     /**
      * Triggered when a parameter holder's parameters are changed

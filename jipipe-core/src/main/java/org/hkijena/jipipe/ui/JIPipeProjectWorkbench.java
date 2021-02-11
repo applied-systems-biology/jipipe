@@ -33,12 +33,7 @@ import org.hkijena.jipipe.ui.compartments.JIPipeCompartmentGraphUI;
 import org.hkijena.jipipe.ui.compartments.JIPipeCompartmentUI;
 import org.hkijena.jipipe.ui.compendium.JIPipeAlgorithmCompendiumUI;
 import org.hkijena.jipipe.ui.compendium.JIPipeDataTypeCompendiumUI;
-import org.hkijena.jipipe.ui.components.DocumentTabPane;
-import org.hkijena.jipipe.ui.components.MarkdownDocument;
-import org.hkijena.jipipe.ui.components.MarkdownReader;
-import org.hkijena.jipipe.ui.components.MemoryStatusUI;
-import org.hkijena.jipipe.ui.components.RecentProjectsMenu;
-import org.hkijena.jipipe.ui.components.ReloadableValidityChecker;
+import org.hkijena.jipipe.ui.components.*;
 import org.hkijena.jipipe.ui.data.VirtualDataControl;
 import org.hkijena.jipipe.ui.extension.MenuTarget;
 import org.hkijena.jipipe.ui.extensionbuilder.JIPipeJsonExporter;
@@ -58,8 +53,7 @@ import org.jdesktop.swingx.plaf.basic.BasicStatusBarUI;
 import org.scijava.Context;
 
 import javax.swing.*;
-import java.awt.BorderLayout;
-import java.awt.Window;
+import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.awt.event.WindowEvent;
 import java.nio.file.Files;
@@ -263,7 +257,7 @@ public class JIPipeProjectWorkbench extends JPanel implements JIPipeWorkbench {
             project.getEventBus().register(new Object() {
                 @Subscribe
                 public void onCompartmentRemoved(JIPipeProject.CompartmentRemovedEvent event) {
-                    if(event.getCompartment() == compartment) {
+                    if (event.getCompartment() == compartment) {
                         documentTabPane.closeTab(documentTab);
                     }
                 }

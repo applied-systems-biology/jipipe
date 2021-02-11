@@ -10,12 +10,7 @@ import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.data.JIPipeDataSlotInfo;
 import org.hkijena.jipipe.api.data.JIPipeSlotConfiguration;
 import org.hkijena.jipipe.api.data.JIPipeSlotType;
-import org.hkijena.jipipe.api.nodes.JIPipeDataBatch;
-import org.hkijena.jipipe.api.nodes.JIPipeIOSlotConfiguration;
-import org.hkijena.jipipe.api.nodes.JIPipeInputSlot;
-import org.hkijena.jipipe.api.nodes.JIPipeIteratingAlgorithm;
-import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
-import org.hkijena.jipipe.api.nodes.JIPipeOutputSlot;
+import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.RoiNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ROIListData;
@@ -26,12 +21,7 @@ import org.hkijena.jipipe.extensions.parameters.util.LogicalOperation;
 import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
 import org.hkijena.jipipe.utils.StringUtils;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 
 @JIPipeDocumentation(name = "Filter ROI by overlap", description = "Filters the ROI lists by testing for mutual overlap. The nodes filters the ROI of all input slots and puts filtered ROI into their " +
         "corresponding output. If you have more than one input, overlaps are connected according to the logical operation. If only one input is present, no filtering is applied.")
@@ -57,6 +47,15 @@ public class FilterROIByOverlapAlgorithm extends JIPipeIteratingAlgorithm {
         this.outputOverlaps = other.outputOverlaps;
         this.overlapFilter = new DefaultExpressionParameter(other.overlapFilter);
         this.overlapFilterMeasurements = new ImageStatisticsSetParameter(other.overlapFilterMeasurements);
+    }
+
+    private static JIPipeSlotConfiguration generateSlotConfiguration() {
+        JIPipeIOSlotConfiguration configuration = new JIPipeIOSlotConfiguration();
+        configuration.setAllowedInputSlotTypes(Collections.singleton(ROIListData.class));
+        configuration.setAllowedOutputSlotTypes(Collections.singleton(ROIListData.class));
+        configuration.addSlot("ROI 1", new JIPipeDataSlotInfo(ROIListData.class, JIPipeSlotType.Input, null), true);
+        configuration.addSlot("ROI 2", new JIPipeDataSlotInfo(ROIListData.class, JIPipeSlotType.Input, null), true);
+        return configuration;
     }
 
     @Override
@@ -244,15 +243,6 @@ public class FilterROIByOverlapAlgorithm extends JIPipeIteratingAlgorithm {
     @JIPipeParameter("overlap-filter-measurements")
     public void setOverlapFilterMeasurements(ImageStatisticsSetParameter overlapFilterMeasurements) {
         this.overlapFilterMeasurements = overlapFilterMeasurements;
-    }
-
-    private static JIPipeSlotConfiguration generateSlotConfiguration() {
-        JIPipeIOSlotConfiguration configuration = new JIPipeIOSlotConfiguration();
-        configuration.setAllowedInputSlotTypes(Collections.singleton(ROIListData.class));
-        configuration.setAllowedOutputSlotTypes(Collections.singleton(ROIListData.class));
-        configuration.addSlot("ROI 1", new JIPipeDataSlotInfo(ROIListData.class, JIPipeSlotType.Input, null), true);
-        configuration.addSlot("ROI 2", new JIPipeDataSlotInfo(ROIListData.class, JIPipeSlotType.Input, null), true);
-        return configuration;
     }
 
 }

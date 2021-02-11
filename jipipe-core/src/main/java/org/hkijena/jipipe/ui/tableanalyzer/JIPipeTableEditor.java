@@ -39,23 +39,15 @@ import org.jdesktop.swingx.ScrollableSizeHint;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableCellRenderer;
-import java.awt.BorderLayout;
-import java.awt.Component;
-import java.awt.FlowLayout;
-import java.awt.Font;
+import java.awt.*;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.io.BufferedOutputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Objects;
-import java.util.Set;
-import java.util.Stack;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -87,6 +79,24 @@ public class JIPipeTableEditor extends JIPipeWorkbenchPanel {
         this.tableModel = tableModel;
         initialize();
         setTableModel(tableModel);
+    }
+
+    /**
+     * Imports a table from CSV and creates a new {@link JIPipeTableEditor} tab
+     *
+     * @param fileName    CSV file
+     * @param workbenchUI workbench
+     */
+    public static ResultsTableData importTableFromCSV(Path fileName, JIPipeProjectWorkbench workbenchUI) {
+        try {
+            ResultsTableData tableData = ResultsTableData.fromCSV(fileName);
+            // Create table analyzer
+            workbenchUI.getDocumentTabPane().addTab(fileName.getFileName().toString(), UIUtils.getIconFromResources("data-types/results-table.png"),
+                    new JIPipeTableEditor(workbenchUI, tableData), DocumentTabPane.CloseMode.withAskOnCloseButton, true);
+            return tableData;
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     private void initialize() {
@@ -738,24 +748,6 @@ public class JIPipeTableEditor extends JIPipeWorkbenchPanel {
             });
         }
         updateSelectionStatistics();
-    }
-
-    /**
-     * Imports a table from CSV and creates a new {@link JIPipeTableEditor} tab
-     *
-     * @param fileName    CSV file
-     * @param workbenchUI workbench
-     */
-    public static ResultsTableData importTableFromCSV(Path fileName, JIPipeProjectWorkbench workbenchUI) {
-        try {
-            ResultsTableData tableData = ResultsTableData.fromCSV(fileName);
-            // Create table analyzer
-            workbenchUI.getDocumentTabPane().addTab(fileName.getFileName().toString(), UIUtils.getIconFromResources("data-types/results-table.png"),
-                    new JIPipeTableEditor(workbenchUI, tableData), DocumentTabPane.CloseMode.withAskOnCloseButton, true);
-            return tableData;
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
     }
 
     /**

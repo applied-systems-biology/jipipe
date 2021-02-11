@@ -60,10 +60,9 @@ public class JIPipeVerticalDataSlotUI extends JIPipeDataSlotUI {
     protected void reloadButtonStatus() {
         if (getSlot().isInput()) {
             if (getGraph().getSourceSlots(getSlot()).isEmpty()) {
-                if(getSlot().getInfo().isOptional()) {
+                if (getSlot().getInfo().isOptional()) {
                     assignButton.setIcon(new ZoomIcon(UIUtils.getIconFromResources("emblems/slot-unconnected-output-vertical.png"), getGraphUI()));
-                }
-                else {
+                } else {
                     assignButton.setIcon(new ZoomIcon(UIUtils.getIconFromResources("emblems/slot-unconnected-input-vertical.png"), getGraphUI()));
                 }
             } else {
@@ -95,7 +94,7 @@ public class JIPipeVerticalDataSlotUI extends JIPipeDataSlotUI {
     private void initialize() {
         setLayout(new BorderLayout());
 
-        if(getSlot().getNode() instanceof JIPipeCommentNode) {
+        if (getSlot().getNode() instanceof JIPipeCommentNode) {
             setOpaque(false);
         }
 
@@ -125,7 +124,7 @@ public class JIPipeVerticalDataSlotUI extends JIPipeDataSlotUI {
         nameLabel.setToolTipText(TooltipUtils.getSlotInstanceTooltip(getSlot()));
         nameLabel.setBorder(BorderFactory.createEmptyBorder(2, 5, 2, 5));
         nameLabel.setIcon(new ZoomIcon(JIPipe.getDataTypes().getIconFor(getSlotDataType()), getGraphUI()));
-        if(!(getSlot().getNode() instanceof JIPipeCommentNode)) {
+        if (!(getSlot().getNode() instanceof JIPipeCommentNode)) {
             centerPanel.add(nameLabel);
         }
         centerPanel.add(Box.createHorizontalGlue());

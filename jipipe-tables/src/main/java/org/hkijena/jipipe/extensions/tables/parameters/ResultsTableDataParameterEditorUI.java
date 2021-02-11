@@ -9,7 +9,7 @@ import org.hkijena.jipipe.ui.tableanalyzer.JIPipeTableEditor;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
-import java.awt.BorderLayout;
+import java.awt.*;
 
 /**
  * Editor for {@link org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData}

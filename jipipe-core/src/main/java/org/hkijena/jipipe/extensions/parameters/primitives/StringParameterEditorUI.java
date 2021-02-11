@@ -23,8 +23,7 @@ import org.hkijena.jipipe.utils.StringUtils;
 import javax.swing.*;
 import javax.swing.event.DocumentEvent;
 import javax.swing.text.JTextComponent;
-import java.awt.BorderLayout;
-import java.awt.Font;
+import java.awt.*;
 import java.util.Objects;
 
 /**

@@ -23,7 +23,6 @@ import org.hkijena.jipipe.api.compartments.algorithms.JIPipeProjectCompartment;
 import org.hkijena.jipipe.api.history.AddCompartmentGraphHistorySnapshot;
 import org.hkijena.jipipe.api.history.AddNodeGraphHistorySnapshot;
 import org.hkijena.jipipe.api.history.ImportCompartmentGraphHistorySnapshot;
-import org.hkijena.jipipe.api.nodes.JIPipeGraph;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.extensions.core.nodes.JIPipeCommentNode;
@@ -32,13 +31,7 @@ import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
 import org.hkijena.jipipe.ui.components.MarkdownDocument;
 import org.hkijena.jipipe.ui.components.MarkdownReader;
 import org.hkijena.jipipe.ui.grapheditor.*;
-import org.hkijena.jipipe.ui.grapheditor.contextmenu.DeleteCompartmentUIContextAction;
-import org.hkijena.jipipe.ui.grapheditor.contextmenu.ExportCompartmentAsJsonNodeUIContextAction;
-import org.hkijena.jipipe.ui.grapheditor.contextmenu.ExportCompartmentToNodeUIContextAction;
-import org.hkijena.jipipe.ui.grapheditor.contextmenu.InvertSelectionNodeUIContextAction;
-import org.hkijena.jipipe.ui.grapheditor.contextmenu.NodeUIContextAction;
-import org.hkijena.jipipe.ui.grapheditor.contextmenu.SelectAllNodeUIContextAction;
-import org.hkijena.jipipe.ui.grapheditor.contextmenu.SelectAndMoveNodeHereNodeUIContextAction;
+import org.hkijena.jipipe.ui.grapheditor.contextmenu.*;
 import org.hkijena.jipipe.ui.grapheditor.contextmenu.clipboard.GraphCompartmentCopyNodeUIContextAction;
 import org.hkijena.jipipe.ui.grapheditor.contextmenu.clipboard.GraphCompartmentCutNodeUIContextAction;
 import org.hkijena.jipipe.ui.grapheditor.contextmenu.clipboard.GraphCompartmentPasteNodeUIContextAction;
@@ -49,7 +42,7 @@ import org.hkijena.jipipe.utils.TooltipUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
-import java.awt.BorderLayout;
+import java.awt.*;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.io.IOException;
@@ -151,19 +144,17 @@ public class JIPipeCompartmentGraphUI extends JIPipeGraphEditorUI {
             setPropertyPanel(defaultPanel);
         } else if (getSelection().size() == 1) {
             JIPipeGraphNode node = getSelection().iterator().next().getNode();
-            if(node instanceof JIPipeProjectCompartment) {
+            if (node instanceof JIPipeProjectCompartment) {
                 setPropertyPanel(new JIPipeSingleCompartmentSelectionPanelUI(this,
                         (JIPipeProjectCompartment) node));
-            }
-            else {
+            } else {
                 setPropertyPanel(new JIPipeSingleAlgorithmSelectionPanelUI(this, node));
             }
         } else {
-            if(getSelection().stream().allMatch(ui -> ui.getNode() instanceof JIPipeProjectCompartment)) {
+            if (getSelection().stream().allMatch(ui -> ui.getNode() instanceof JIPipeProjectCompartment)) {
                 setPropertyPanel(new JIPipeMultiCompartmentSelectionPanelUI((JIPipeProjectWorkbench) getWorkbench(),
                         getSelection().stream().map(ui -> (JIPipeProjectCompartment) ui.getNode()).collect(Collectors.toSet()), getCanvasUI()));
-            }
-            else {
+            } else {
                 setPropertyPanel(new JIPipeMultiAlgorithmSelectionPanelUI((JIPipeProjectWorkbench) getWorkbench(), getCanvasUI(),
                         getSelection().stream().map(JIPipeNodeUI::getNode).collect(Collectors.toSet())));
             }
@@ -190,7 +181,7 @@ public class JIPipeCompartmentGraphUI extends JIPipeGraphEditorUI {
         importItem.addActionListener(e -> importCompartment());
         menuBar.add(importItem);
 
-        if(JIPipe.getNodes().hasNodeInfoWithId("jipipe:comment")) {
+        if (JIPipe.getNodes().hasNodeInfoWithId("jipipe:comment")) {
             JButton addCommentItem = new JButton("Add comment", UIUtils.getIconFromResources("actions/edit-comment.png"));
             UIUtils.makeFlatH25(addCommentItem);
             addCommentItem.setBorder(BorderFactory.createEmptyBorder(0, 2, 0, 2));

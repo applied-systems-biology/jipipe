@@ -15,16 +15,9 @@ package org.hkijena.jipipe.ui.parameters;
 
 import com.google.common.eventbus.Subscribe;
 import com.google.common.html.HtmlEscapers;
-import org.checkerframework.checker.units.qual.C;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.parameters.JIPipeDynamicParameterCollection;
-import org.hkijena.jipipe.api.parameters.JIPipeMutableParameterAccess;
-import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
-import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
-import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
-import org.hkijena.jipipe.api.parameters.JIPipeParameterTypeInfo;
-import org.hkijena.jipipe.api.parameters.JIPipeParameterVisibility;
+import org.hkijena.jipipe.api.parameters.*;
 import org.hkijena.jipipe.extensions.settings.GeneralUISettings;
 import org.hkijena.jipipe.extensions.settings.GraphEditorUISettings;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
@@ -40,13 +33,8 @@ import org.scijava.Contextual;
 
 import javax.swing.*;
 import java.awt.*;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Comparator;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -120,6 +108,10 @@ public class ParameterPanel extends FormPanel implements Contextual {
             reloadForm();
             this.displayedParameters.getEventBus().register(this);
         }
+    }
+
+    private static List<String> getParameterKeysSortedByParameterName(Map<String, JIPipeParameterAccess> parameters, Collection<String> keys) {
+        return keys.stream().sorted(Comparator.comparing(k0 -> parameters.get(k0).getName())).collect(Collectors.toList());
     }
 
     private void initialize() {
@@ -202,8 +194,8 @@ public class ParameterPanel extends FormPanel implements Contextual {
         collapseButton.setIcon(UIUtils.getIconFromResources("actions/arrow-right.png"));
         collapseButton.setSelectedIcon(UIUtils.getIconFromResources("actions/arrow-down.png"));
         collapseButton.setSelected(!node.isCollapsed());
-        if(!collapseButton.isSelected()) {
-            if(!GeneralUISettings.getInstance().isAllowDefaultCollapsedParameters())
+        if (!collapseButton.isSelected()) {
+            if (!GeneralUISettings.getInstance().isAllowDefaultCollapsedParameters())
                 collapseButton.setSelected(true);
         }
 
@@ -214,8 +206,8 @@ public class ParameterPanel extends FormPanel implements Contextual {
 
             if (!noEmptyGroupHeaders || !groupHeaderIsEmpty) {
                 Component[] leftComponents;
-                if(allowCollapse)
-                    leftComponents = new Component[] {collapseButton};
+                if (allowCollapse)
+                    leftComponents = new Component[]{collapseButton};
                 else
                     leftComponents = new Component[0];
                 GroupHeaderPanel groupHeaderPanel = new GroupHeaderPanel(traversed.getSourceDocumentationName(parameterHolder),
@@ -256,7 +248,7 @@ public class ParameterPanel extends FormPanel implements Contextual {
                 continue;
             if (withSearchBar && !searchField.test(parameterAccess.getName() + " " + parameterAccess.getDescription()))
                 continue;
-            if(allowCollapse && !StringUtils.isNullOrEmpty(searchField.getText())) {
+            if (allowCollapse && !StringUtils.isNullOrEmpty(searchField.getText())) {
                 collapseButton.setSelected(true);
             }
 
@@ -290,12 +282,11 @@ public class ParameterPanel extends FormPanel implements Contextual {
             if (ui.isUILabelEnabled() || parameterHolder instanceof JIPipeDynamicParameterCollection) {
                 addToForm(ui, labelPanel, generateParameterDocumentation(parameterAccess));
                 uiComponents.add(labelPanel);
-            }
-            else
+            } else
                 addToForm(ui, generateParameterDocumentation(parameterAccess));
         }
 
-        if(allowCollapse) {
+        if (allowCollapse) {
             showCollapse(uiComponents, collapseButton.isSelected());
             collapseButton.addActionListener(e -> showCollapse(uiComponents, collapseButton.isSelected()));
         }
@@ -385,9 +376,5 @@ public class ParameterPanel extends FormPanel implements Contextual {
     @Override
     public Context context() {
         return context;
-    }
-
-    private static List<String> getParameterKeysSortedByParameterName(Map<String, JIPipeParameterAccess> parameters, Collection<String> keys) {
-        return keys.stream().sorted(Comparator.comparing(k0 -> parameters.get(k0).getName())).collect(Collectors.toList());
     }
 }

@@ -24,7 +24,7 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.extensions.parameters.roi.Anchor;
 import org.hkijena.jipipe.extensions.parameters.roi.IntModificationParameter;
 
-import java.awt.Color;
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 

@@ -28,7 +28,6 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterVisibility;
 import org.hkijena.jipipe.extensions.parameters.generators.IntegerRange;
-import org.hkijena.jipipe.extensions.parameters.generators.IntegerRangeParameterGenerator;
 import org.hkijena.jipipe.extensions.parameters.generators.OptionalIntegerRange;
 
 import java.util.ArrayList;
@@ -107,7 +106,7 @@ public abstract class JIPipeSimpleIteratingAlgorithm extends JIPipeParameterSlot
 
             if (!supportsParallelization() || !isParallelizationEnabled() || getThreadPool() == null || getThreadPool().getMaxThreads() <= 1) {
                 for (int i = 0; i < getFirstInputSlot().getRowCount(); i++) {
-                    if(withLimit && !allowedIndices.contains(i))
+                    if (withLimit && !allowedIndices.contains(i))
                         continue;
                     if (progressInfo.isCancelled().get())
                         return;
@@ -121,7 +120,7 @@ public abstract class JIPipeSimpleIteratingAlgorithm extends JIPipeParameterSlot
             } else {
                 List<Runnable> tasks = new ArrayList<>();
                 for (int i = 0; i < getFirstInputSlot().getRowCount(); i++) {
-                    if(withLimit && !allowedIndices.contains(i))
+                    if (withLimit && !allowedIndices.contains(i))
                         continue;
                     int rowIndex = i;
                     tasks.add(() -> {
@@ -213,7 +212,7 @@ public abstract class JIPipeSimpleIteratingAlgorithm extends JIPipeParameterSlot
         IntegerRange limit = dataBatchGenerationSettings.getLimit().getContent();
         TIntSet allowedIndices = withLimit ? new TIntHashSet(limit.getIntegers()) : null;
         for (int i = 0; i < slot.getRowCount(); i++) {
-            if(withLimit && !allowedIndices.contains(i))
+            if (withLimit && !allowedIndices.contains(i))
                 continue;
             JIPipeMergingDataBatch dataBatch = new JIPipeMergingDataBatch(this);
             dataBatch.addData(slot, i);

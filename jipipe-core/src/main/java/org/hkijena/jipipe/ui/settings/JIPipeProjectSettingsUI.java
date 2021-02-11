@@ -23,8 +23,7 @@ import org.hkijena.jipipe.ui.parameters.ParameterPanel;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
-import java.awt.BorderLayout;
-import java.awt.Color;
+import java.awt.*;
 
 /**
  * UI around the metadata of an {@link org.hkijena.jipipe.api.JIPipeProject}

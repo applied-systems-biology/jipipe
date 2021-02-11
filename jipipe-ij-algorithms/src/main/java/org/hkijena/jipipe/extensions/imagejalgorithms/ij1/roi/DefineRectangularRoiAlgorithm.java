@@ -26,7 +26,7 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ROIListData;
 import org.hkijena.jipipe.extensions.parameters.roi.RectangleList;
 
-import java.awt.Rectangle;
+import java.awt.*;
 
 /**
  * Wrapper around {@link ij.plugin.frame.RoiManager}

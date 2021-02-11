@@ -28,17 +28,11 @@ import org.jdesktop.swingx.JXTextField;
 
 import javax.swing.*;
 import javax.swing.event.DocumentEvent;
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Component;
-import java.awt.Dimension;
+import java.awt.*;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
-import java.util.Comparator;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
@@ -87,6 +81,28 @@ public class AddAlgorithmSlotPanel extends JPanel {
             nameEditor.requestFocusInWindow();
             nameEditor.selectAll();
         }
+    }
+
+    /**
+     * Shows a dialog for adding slots
+     *
+     * @param parent       parent component
+     * @param graphHistory the graph history
+     * @param algorithm    target algorithm
+     * @param slotType     slot type to be created
+     */
+    public static void showDialog(Component parent, JIPipeGraphHistory graphHistory, JIPipeGraphNode algorithm, JIPipeSlotType slotType) {
+        JDialog dialog = new JDialog();
+        AddAlgorithmSlotPanel panel = new AddAlgorithmSlotPanel(algorithm, slotType, graphHistory);
+        panel.setDialog(dialog);
+        dialog.setContentPane(panel);
+        dialog.setTitle("Add slot");
+        dialog.setModal(true);
+        dialog.pack();
+        dialog.setSize(new Dimension(640, 480));
+        dialog.setLocationRelativeTo(parent);
+        UIUtils.addEscapeListener(dialog);
+        dialog.setVisible(true);
     }
 
     private void setInitialName() {
@@ -145,7 +161,7 @@ public class AddAlgorithmSlotPanel extends JPanel {
         });
         formPanel.addToForm(nameEditor, new JLabel("Slot name"), null);
 
-        if(slotType == JIPipeSlotType.Input) {
+        if (slotType == JIPipeSlotType.Input) {
             optionalInputEditor.setText("Optional input");
             optionalInputEditor.setToolTipText("If enabled, the input slot does not require an incoming edge. The node then will receive an empty data table.");
             formPanel.addWideToForm(optionalInputEditor, null);
@@ -345,27 +361,5 @@ public class AddAlgorithmSlotPanel extends JPanel {
 
     public void setDialog(JDialog dialog) {
         this.dialog = dialog;
-    }
-
-    /**
-     * Shows a dialog for adding slots
-     *
-     * @param parent       parent component
-     * @param graphHistory the graph history
-     * @param algorithm    target algorithm
-     * @param slotType     slot type to be created
-     */
-    public static void showDialog(Component parent, JIPipeGraphHistory graphHistory, JIPipeGraphNode algorithm, JIPipeSlotType slotType) {
-        JDialog dialog = new JDialog();
-        AddAlgorithmSlotPanel panel = new AddAlgorithmSlotPanel(algorithm, slotType, graphHistory);
-        panel.setDialog(dialog);
-        dialog.setContentPane(panel);
-        dialog.setTitle("Add slot");
-        dialog.setModal(true);
-        dialog.pack();
-        dialog.setSize(new Dimension(640, 480));
-        dialog.setLocationRelativeTo(parent);
-        UIUtils.addEscapeListener(dialog);
-        dialog.setVisible(true);
     }
 }

@@ -22,15 +22,9 @@ import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
-import java.awt.BorderLayout;
-import java.awt.Component;
-import java.awt.Dimension;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashSet;
+import java.awt.*;
 import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -57,6 +51,50 @@ public class JIPipeDataTypePicker extends JPanel {
         this.availableDataTypes.addAll(availableDataTypes.stream().sorted(Comparator.comparing(JIPipeDataInfo::getName)).collect(Collectors.toList()));
         initialize();
         refreshTraitList();
+    }
+
+    /**
+     * Shows a dialog to pick traits
+     *
+     * @param parent          parent component
+     * @param mode            mode
+     * @param availableTraits list of available traits
+     * @return picked traits
+     */
+    public static Set<JIPipeDataInfo> showDialog(Component parent, Mode mode, Set<JIPipeDataInfo> availableTraits) {
+        JDialog dialog = new JDialog(SwingUtilities.getWindowAncestor(parent));
+        JIPipeDataTypePicker picker = new JIPipeDataTypePicker(mode, availableTraits);
+
+        JPanel panel = new JPanel(new BorderLayout());
+        panel.add(picker, BorderLayout.CENTER);
+
+        JPanel buttonPanel = new JPanel();
+        buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.X_AXIS));
+        buttonPanel.add(Box.createHorizontalGlue());
+
+        JButton cancelButton = new JButton("Cancel", UIUtils.getIconFromResources("actions/cancel.png"));
+        cancelButton.addActionListener(e -> {
+            picker.setSelectedDataTypes(Collections.emptySet());
+            dialog.setVisible(false);
+        });
+        buttonPanel.add(cancelButton);
+
+        JButton confirmButton = new JButton("Pick", UIUtils.getIconFromResources("actions/checkmark.png"));
+        confirmButton.addActionListener(e -> dialog.setVisible(false));
+        buttonPanel.add(confirmButton);
+
+        panel.add(buttonPanel, BorderLayout.SOUTH);
+
+        dialog.setContentPane(panel);
+        dialog.setTitle("Pick annotation");
+        dialog.setModal(true);
+        dialog.pack();
+        dialog.setSize(new Dimension(500, 600));
+        dialog.setLocationRelativeTo(parent);
+        UIUtils.addEscapeListener(dialog);
+        dialog.setVisible(true);
+
+        return picker.getSelectedDataTypes();
     }
 
     private void initialize() {
@@ -162,50 +200,6 @@ public class JIPipeDataTypePicker extends JPanel {
         this.selectedDataTypes = new HashSet<>(traits);
         eventBus.post(new SelectedDataTypesChangedEvent(this));
         refreshTraitList();
-    }
-
-    /**
-     * Shows a dialog to pick traits
-     *
-     * @param parent          parent component
-     * @param mode            mode
-     * @param availableTraits list of available traits
-     * @return picked traits
-     */
-    public static Set<JIPipeDataInfo> showDialog(Component parent, Mode mode, Set<JIPipeDataInfo> availableTraits) {
-        JDialog dialog = new JDialog(SwingUtilities.getWindowAncestor(parent));
-        JIPipeDataTypePicker picker = new JIPipeDataTypePicker(mode, availableTraits);
-
-        JPanel panel = new JPanel(new BorderLayout());
-        panel.add(picker, BorderLayout.CENTER);
-
-        JPanel buttonPanel = new JPanel();
-        buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.X_AXIS));
-        buttonPanel.add(Box.createHorizontalGlue());
-
-        JButton cancelButton = new JButton("Cancel", UIUtils.getIconFromResources("actions/cancel.png"));
-        cancelButton.addActionListener(e -> {
-            picker.setSelectedDataTypes(Collections.emptySet());
-            dialog.setVisible(false);
-        });
-        buttonPanel.add(cancelButton);
-
-        JButton confirmButton = new JButton("Pick", UIUtils.getIconFromResources("actions/checkmark.png"));
-        confirmButton.addActionListener(e -> dialog.setVisible(false));
-        buttonPanel.add(confirmButton);
-
-        panel.add(buttonPanel, BorderLayout.SOUTH);
-
-        dialog.setContentPane(panel);
-        dialog.setTitle("Pick annotation");
-        dialog.setModal(true);
-        dialog.pack();
-        dialog.setSize(new Dimension(500, 600));
-        dialog.setLocationRelativeTo(parent);
-        UIUtils.addEscapeListener(dialog);
-        dialog.setVisible(true);
-
-        return picker.getSelectedDataTypes();
     }
 
     /**

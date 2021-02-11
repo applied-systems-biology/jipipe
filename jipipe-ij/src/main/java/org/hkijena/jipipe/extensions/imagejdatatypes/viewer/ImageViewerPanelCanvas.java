@@ -16,12 +16,7 @@ package org.hkijena.jipipe.extensions.imagejdatatypes.viewer;
 import com.google.common.eventbus.EventBus;
 
 import javax.swing.*;
-import java.awt.Component;
-import java.awt.Cursor;
-import java.awt.Dimension;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
-import java.awt.Point;
+import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;

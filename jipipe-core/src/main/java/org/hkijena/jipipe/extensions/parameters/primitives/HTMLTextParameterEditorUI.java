@@ -57,7 +57,7 @@ public class HTMLTextParameterEditorUI extends JIPipeParameterEditorUI {
         editor.getDocument().addDocumentListener(new DocumentChangeListener() {
             @Override
             public void changed(DocumentEvent documentEvent) {
-                if(!isReloading) {
+                if (!isReloading) {
                     Object value = getParameterAccess().get(Object.class);
                     String stringValue = "";
                     if (value != null) {

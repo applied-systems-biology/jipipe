@@ -25,7 +25,7 @@ import org.hkijena.jipipe.utils.BusyCursor;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
-import java.awt.Dimension;
+import java.awt.*;
 import java.util.List;
 import java.util.Objects;
 

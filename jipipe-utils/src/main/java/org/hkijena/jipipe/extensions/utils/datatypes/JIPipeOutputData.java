@@ -19,11 +19,7 @@ import org.hkijena.jipipe.extensions.filesystem.dataypes.FolderData;
 import org.hkijena.jipipe.utils.StringUtils;
 
 import java.io.IOException;
-import java.nio.file.FileVisitResult;
-import java.nio.file.FileVisitor;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.StandardCopyOption;
+import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
 
 @JIPipeDocumentation(name = "JIPipe output", description = "Output of a JIPipe run")
@@ -39,6 +35,10 @@ public class JIPipeOutputData extends FolderData {
 
     public JIPipeOutputData(String path) {
         super(path);
+    }
+
+    public static JIPipeOutputData importFrom(Path folder) {
+        return new JIPipeOutputData(FolderData.importFrom(folder).getPath());
     }
 
     @Override
@@ -91,9 +91,5 @@ public class JIPipeOutputData extends FolderData {
             this.setPath(outputPath);
         }
         super.saveTo(storageFilePath, name, forceName, progressInfo);
-    }
-
-    public static JIPipeOutputData importFrom(Path folder) {
-        return new JIPipeOutputData(FolderData.importFrom(folder).getPath());
     }
 }

@@ -26,8 +26,7 @@ import org.jdesktop.swingx.JXTable;
 
 import javax.swing.*;
 import javax.swing.table.TableModel;
-import java.awt.BorderLayout;
-import java.awt.Window;
+import java.awt.*;
 
 /**
  * UI that merges tables

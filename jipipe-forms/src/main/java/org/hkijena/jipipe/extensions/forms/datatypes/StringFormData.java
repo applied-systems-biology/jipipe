@@ -5,19 +5,14 @@ import org.hkijena.jipipe.api.JIPipeDefaultDocumentation;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeValidityReport;
 import org.hkijena.jipipe.api.data.JIPipeAnnotation;
-import org.hkijena.jipipe.api.data.JIPipeAnnotationMergeStrategy;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.nodes.JIPipeMergingDataBatch;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
-import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
 import org.hkijena.jipipe.api.parameters.JIPipeReflectionParameterAccess;
 import org.hkijena.jipipe.extensions.forms.utils.SingleAnnotationIOSettings;
 import org.hkijena.jipipe.extensions.parameters.expressions.StringQueryExpression;
-import org.hkijena.jipipe.extensions.parameters.primitives.HTMLText;
-import org.hkijena.jipipe.extensions.parameters.primitives.OptionalAnnotationNameParameter;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
-import org.hkijena.jipipe.utils.StringUtils;
 
 import java.awt.*;
 import java.nio.file.Path;
@@ -40,6 +35,10 @@ public class StringFormData extends ParameterFormData {
         this.validationExpression = new StringQueryExpression(other.validationExpression);
         this.annotationIOSettings = new SingleAnnotationIOSettings(other.annotationIOSettings);
         annotationIOSettings.getEventBus().register(this);
+    }
+
+    public static StringFormData importFrom(Path rowStorage) {
+        return FormData.importFrom(rowStorage, StringFormData.class);
     }
 
     @JIPipeDocumentation(name = "Initial value", description = "The initial string value")
@@ -74,7 +73,7 @@ public class StringFormData extends ParameterFormData {
 
     @Override
     public Component getEditor(JIPipeWorkbench workbench) {
-       JIPipeParameterTree tree = new JIPipeParameterTree(this);
+        JIPipeParameterTree tree = new JIPipeParameterTree(this);
         JIPipeReflectionParameterAccess access = (JIPipeReflectionParameterAccess) tree.getParameters().get("initial-value");
         access.setDocumentation(new JIPipeDefaultDocumentation(getName(), getDescription().getBody()));
         return JIPipe.getParameterTypes().createEditorFor(workbench, access);
@@ -85,13 +84,9 @@ public class StringFormData extends ParameterFormData {
         return new StringFormData(this);
     }
 
-    public static StringFormData importFrom(Path rowStorage) {
-        return FormData.importFrom(rowStorage, StringFormData.class);
-    }
-
     @Override
     public void reportValidity(JIPipeValidityReport report) {
-        if(!validationExpression.test(value)) {
+        if (!validationExpression.test(value)) {
             report.reportIsInvalid("Invalid value!",
                     String.format("The provided value '%s' does not comply to the test '%s'", value, validationExpression.getExpression()),
                     "Please correct your input",
@@ -106,11 +101,11 @@ public class StringFormData extends ParameterFormData {
 
     @Override
     public void loadData(JIPipeMergingDataBatch dataBatch) {
-        if(annotationIOSettings.getInputAnnotation().isEnabled()) {
+        if (annotationIOSettings.getInputAnnotation().isEnabled()) {
             JIPipeAnnotation annotation =
                     dataBatch.getAnnotations().getOrDefault(annotationIOSettings.getInputAnnotation().getContent(),
                             null);
-            if(annotation != null) {
+            if (annotation != null) {
                 value = annotation.getValue();
             }
         }
@@ -118,7 +113,7 @@ public class StringFormData extends ParameterFormData {
 
     @Override
     public void writeData(JIPipeMergingDataBatch dataBatch) {
-        if(annotationIOSettings.getOutputAnnotation().isEnabled()) {
+        if (annotationIOSettings.getOutputAnnotation().isEnabled()) {
             annotationIOSettings.getAnnotationMergeStrategy().mergeInto(dataBatch.getAnnotations(),
                     Collections.singletonList(annotationIOSettings.getOutputAnnotation().createAnnotation(value)));
         }

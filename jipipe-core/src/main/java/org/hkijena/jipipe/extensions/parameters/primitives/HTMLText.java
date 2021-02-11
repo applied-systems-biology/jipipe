@@ -22,9 +22,9 @@ public class HTMLText {
     }
 
     public HTMLText(String html) {
-        if(html == null)
+        if (html == null)
             html = "";
-        if(!html.contains("<html>"))
+        if (!html.contains("<html>"))
             html = "<html><head></head><body>" + html + "</body></html>";
         this.html = html;
     }
@@ -34,15 +34,15 @@ public class HTMLText {
     }
 
 
-
     /**
      * Returns a copy of this text that introduces line-breaks
+     *
      * @param columns number of columns to break at
      * @return new HTMLText instance
      */
     public HTMLText wrap(int columns) {
         String body = getBody();
-        if(body.isEmpty())
+        if (body.isEmpty())
             return new HTMLText();
         body = body.replace("\r", "").replace("\n", "");
         StringBuilder builder = new StringBuilder();
@@ -63,12 +63,12 @@ public class HTMLText {
      * @return HTML without the root tag
      */
     public String getBody() {
-        if(html == null) {
+        if (html == null) {
             return "";
         }
-        if(body == null) {
+        if (body == null) {
             int bodyLocation = html.indexOf("<body>");
-            if(bodyLocation < 0) {
+            if (bodyLocation < 0) {
                 return "";
             }
             body = html.substring(bodyLocation + "<body>".length()).replace("</body>", "").replace("</html>", "").trim();

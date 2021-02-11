@@ -42,6 +42,10 @@ public class DoubleFormData extends ParameterFormData {
         annotationIOSettings.getEventBus().register(this);
     }
 
+    public static DoubleFormData importFrom(Path rowStorage) {
+        return FormData.importFrom(rowStorage, DoubleFormData.class);
+    }
+
     @JIPipeDocumentation(name = "Initial value", description = "The initial value")
     @JIPipeParameter("initial-value")
     public double getValue() {
@@ -75,7 +79,7 @@ public class DoubleFormData extends ParameterFormData {
 
     @Override
     public Component getEditor(JIPipeWorkbench workbench) {
-       JIPipeParameterTree tree = new JIPipeParameterTree(this);
+        JIPipeParameterTree tree = new JIPipeParameterTree(this);
         JIPipeReflectionParameterAccess access = (JIPipeReflectionParameterAccess) tree.getParameters().get("initial-value");
         access.setDocumentation(new JIPipeDefaultDocumentation(getName(), getDescription().getBody()));
         return JIPipe.getParameterTypes().createEditorFor(workbench, access);
@@ -86,15 +90,11 @@ public class DoubleFormData extends ParameterFormData {
         return new DoubleFormData(this);
     }
 
-    public static DoubleFormData importFrom(Path rowStorage) {
-        return FormData.importFrom(rowStorage, DoubleFormData.class);
-    }
-
     @Override
     public void reportValidity(JIPipeValidityReport report) {
         StaticVariableSet<Object> variableSet = new StaticVariableSet<>();
         variableSet.set("value", value);
-        if(!validationExpression.test(variableSet)) {
+        if (!validationExpression.test(variableSet)) {
             report.reportIsInvalid("Invalid value!",
                     String.format("The provided value '%s' does not comply to the test '%s'", value, validationExpression.getExpression()),
                     "Please correct your input",
@@ -109,21 +109,21 @@ public class DoubleFormData extends ParameterFormData {
 
     @Override
     public void loadData(JIPipeMergingDataBatch dataBatch) {
-        if(annotationIOSettings.getInputAnnotation().isEnabled()) {
+        if (annotationIOSettings.getInputAnnotation().isEnabled()) {
             JIPipeAnnotation annotation =
                     dataBatch.getAnnotations().getOrDefault(annotationIOSettings.getInputAnnotation().getContent(),
                             null);
-            if(annotation != null) {
-               if(NumberUtils.isCreatable(annotation.getValue())) {
-                   value = NumberUtils.createDouble(annotation.getValue());
-               }
+            if (annotation != null) {
+                if (NumberUtils.isCreatable(annotation.getValue())) {
+                    value = NumberUtils.createDouble(annotation.getValue());
+                }
             }
         }
     }
 
     @Override
     public void writeData(JIPipeMergingDataBatch dataBatch) {
-        if(annotationIOSettings.getOutputAnnotation().isEnabled()) {
+        if (annotationIOSettings.getOutputAnnotation().isEnabled()) {
             annotationIOSettings.getAnnotationMergeStrategy().mergeInto(dataBatch.getAnnotations(),
                     Collections.singletonList(annotationIOSettings.getOutputAnnotation().createAnnotation("" + value)));
         }

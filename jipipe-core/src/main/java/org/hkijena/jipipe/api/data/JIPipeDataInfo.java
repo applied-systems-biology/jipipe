@@ -55,6 +55,35 @@ public class JIPipeDataInfo implements Comparable<JIPipeDataInfo> {
     }
 
     /**
+     * Returns a {@link JIPipeDataInfo} instance for the data class.
+     * Does not require the data type to be registered.
+     * Instances are cached.
+     *
+     * @param klass The data class
+     * @return The info instance
+     */
+    public static JIPipeDataInfo getInstance(Class<? extends JIPipeData> klass) {
+        JIPipeDataInfo info = cache.getOrDefault(klass, null);
+        if (info == null) {
+            info = new JIPipeDataInfo(klass);
+            cache.put(klass, info);
+        }
+        return info;
+    }
+
+    /**
+     * Returns a {@link JIPipeDataInfo} instance for the data type ID.
+     * Requires that the data type ID is registered.
+     * Instances are cached.
+     *
+     * @param id Data type ID
+     * @return The info instance
+     */
+    public static JIPipeDataInfo getInstance(String id) {
+        return JIPipeDataInfo.getInstance(JIPipe.getDataTypes().getById(id));
+    }
+
+    /**
      * @return The data class
      */
     public Class<? extends JIPipeData> getDataClass() {
@@ -134,35 +163,6 @@ public class JIPipeDataInfo implements Comparable<JIPipeDataInfo> {
      */
     public JIPipeData newInstance(Object... args) {
         return (JIPipeData) ReflectionUtils.newInstance(dataClass, args);
-    }
-
-    /**
-     * Returns a {@link JIPipeDataInfo} instance for the data class.
-     * Does not require the data type to be registered.
-     * Instances are cached.
-     *
-     * @param klass The data class
-     * @return The info instance
-     */
-    public static JIPipeDataInfo getInstance(Class<? extends JIPipeData> klass) {
-        JIPipeDataInfo info = cache.getOrDefault(klass, null);
-        if (info == null) {
-            info = new JIPipeDataInfo(klass);
-            cache.put(klass, info);
-        }
-        return info;
-    }
-
-    /**
-     * Returns a {@link JIPipeDataInfo} instance for the data type ID.
-     * Requires that the data type ID is registered.
-     * Instances are cached.
-     *
-     * @param id Data type ID
-     * @return The info instance
-     */
-    public static JIPipeDataInfo getInstance(String id) {
-        return JIPipeDataInfo.getInstance(JIPipe.getDataTypes().getById(id));
     }
 
     /**

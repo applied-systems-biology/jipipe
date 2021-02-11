@@ -16,7 +16,7 @@ package org.hkijena.jipipe.ui.components;
 import com.google.common.eventbus.EventBus;
 
 import javax.swing.*;
-import java.awt.Color;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Objects;
@@ -61,7 +61,7 @@ public class ColorChooserButton extends JButton implements ActionListener {
     }
 
     public void setSelectedColor(Color selectedColor) {
-        if(!Objects.equals(selectedColor, this.selectedColor)) {
+        if (!Objects.equals(selectedColor, this.selectedColor)) {
             this.selectedColor = selectedColor;
             icon.setFillColor(selectedColor);
             repaint();

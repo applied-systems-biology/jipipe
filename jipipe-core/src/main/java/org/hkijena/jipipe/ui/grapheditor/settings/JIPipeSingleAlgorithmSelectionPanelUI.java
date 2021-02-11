@@ -35,7 +35,7 @@ import org.hkijena.jipipe.utils.TooltipUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
-import java.awt.BorderLayout;
+import java.awt.*;
 import java.util.Collections;
 import java.util.Map;
 import java.util.Objects;
@@ -84,7 +84,7 @@ public class JIPipeSingleAlgorithmSelectionPanelUI extends JIPipeProjectWorkbenc
 
         if (algorithm.getGraph().getAttachment(JIPipeGraphType.class) == JIPipeGraphType.Project) {
             cacheBrowserTabContent = new JPanel(new BorderLayout());
-            if(algorithm instanceof JIPipeAlgorithm) {
+            if (algorithm instanceof JIPipeAlgorithm) {
                 tabbedPane.addSingletonTab("CACHE_BROWSER", "Cache browser", UIUtils.getIconFromResources("actions/database.png"),
                         cacheBrowserTabContent,
                         DocumentTabPane.CloseMode.withoutCloseButton, false);
@@ -97,7 +97,7 @@ public class JIPipeSingleAlgorithmSelectionPanelUI extends JIPipeProjectWorkbenc
             }
 
             testBenchTabContent = new JPanel(new BorderLayout());
-            if(algorithm.getInfo().isRunnable()) {
+            if (algorithm.getInfo().isRunnable()) {
                 tabbedPane.addSingletonTab("QUICK_RUN", "Quick run", UIUtils.getIconFromResources("actions/media-play.png"),
                         testBenchTabContent,
                         DocumentTabPane.CloseMode.withoutCloseButton, false);

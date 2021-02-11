@@ -7,9 +7,6 @@ import org.hkijena.jipipe.utils.UIUtils;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
-import java.util.List;
-import java.util.ArrayList;
 import java.util.Set;
 
 public class SetNodeHotkeyContextAction implements NodeUIContextAction {
@@ -26,7 +23,7 @@ public class SetNodeHotkeyContextAction implements NodeUIContextAction {
         JPanel contentPanel = new JPanel(new BorderLayout());
         contentPanel.add(new JLabel("Select/Unselect which numeric key should select the node."), BorderLayout.NORTH);
 
-        JPanel dialPanel = new JPanel(new GridLayout(1,9));
+        JPanel dialPanel = new JPanel(new GridLayout(1, 9));
         int[] keys = {KeyEvent.VK_1, KeyEvent.VK_2, KeyEvent.VK_3,
                 KeyEvent.VK_4, KeyEvent.VK_5, KeyEvent.VK_6, KeyEvent.VK_7,
                 KeyEvent.VK_8, KeyEvent.VK_9, KeyEvent.VK_0};
@@ -48,7 +45,7 @@ public class SetNodeHotkeyContextAction implements NodeUIContextAction {
 
         contentPanel.add(dialPanel, BorderLayout.CENTER);
         dialog.setContentPane(contentPanel);
-        dialog.setSize(400,100);
+        dialog.setSize(400, 100);
         dialog.setLocationRelativeTo(null);
         UIUtils.addEscapeListener(dialog);
         dialog.setVisible(true);

@@ -27,7 +27,7 @@ import org.hkijena.jipipe.utils.JsonUtils;
 import org.hkijena.jipipe.utils.PathUtils;
 import org.hkijena.jipipe.utils.StringUtils;
 
-import java.awt.Desktop;
+import java.awt.*;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -42,6 +42,15 @@ import java.util.Map;
 public class ParametersData implements JIPipeData {
 
     private Map<String, Object> parameterData = new HashMap<>();
+
+    public static ParametersData importFrom(Path storageFilePath) {
+        Path targetFile = PathUtils.findFileByExtensionIn(storageFilePath, ".json");
+        try {
+            return JsonUtils.getObjectMapper().readerFor(ParametersData.class).readValue(targetFile.toFile());
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
 
     @Override
     public void saveTo(Path storageFilePath, String name, boolean forceName, JIPipeProgressInfo progressInfo) {
@@ -83,15 +92,6 @@ public class ParametersData implements JIPipeData {
     @Override
     public String toString() {
         return "Parameters (" + String.join(", ", parameterData.keySet()) + ")";
-    }
-
-    public static ParametersData importFrom(Path storageFilePath) {
-        Path targetFile = PathUtils.findFileByExtensionIn(storageFilePath, ".json");
-        try {
-            return JsonUtils.getObjectMapper().readerFor(ParametersData.class).readValue(targetFile.toFile());
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
     }
 
     /**

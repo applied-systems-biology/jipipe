@@ -21,7 +21,7 @@ import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.parameters.JIPipeParameterGeneratorUI;
 import org.hkijena.jipipe.ui.parameters.ParameterPanel;
 
-import java.awt.BorderLayout;
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 

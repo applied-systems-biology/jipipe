@@ -16,14 +16,7 @@ package org.hkijena.jipipe.api.nodes;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.*;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Wraps a set of input and output slots that belong together.
@@ -171,10 +164,10 @@ public class JIPipeMergingDataBatch {
     /**
      * Gets stored data from an input slot
      *
-     * @param slotName     The slot name
+     * @param slotName The slot name
      * @return Input data with provided name
      */
-    public List<JIPipeVirtualData> getVirtualInputData(String slotName ) {
+    public List<JIPipeVirtualData> getVirtualInputData(String slotName) {
         return getVirtualInputData(node.getInputSlot(slotName));
     }
 
@@ -202,7 +195,7 @@ public class JIPipeMergingDataBatch {
     /**
      * Gets stored data from an input slot
      *
-     * @param slot         The slot
+     * @param slot The slot
      * @return Input data with provided name
      */
     public List<JIPipeVirtualData> getVirtualInputData(JIPipeDataSlot slot) {

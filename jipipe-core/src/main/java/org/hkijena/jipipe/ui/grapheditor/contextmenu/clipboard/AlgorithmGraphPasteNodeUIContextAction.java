@@ -25,7 +25,7 @@ import org.hkijena.jipipe.utils.JsonUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
-import java.awt.Point;
+import java.awt.*;
 import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
 import java.util.HashMap;
@@ -34,49 +34,6 @@ import java.util.Map;
 import java.util.Set;
 
 public class AlgorithmGraphPasteNodeUIContextAction implements NodeUIContextAction {
-    @Override
-    public boolean matches(Set<JIPipeNodeUI> selection) {
-        return true;
-    }
-
-    @Override
-    public void run(JIPipeGraphCanvasUI canvasUI, Set<JIPipeNodeUI> selection) {
-        try {
-            String json = UIUtils.getStringFromClipboard();
-            if (json != null) {
-                pasteNodes(canvasUI, json);
-            }
-        } catch (Exception e) {
-            JOptionPane.showMessageDialog(canvasUI.getWorkbench().getWindow(), "The current clipboard contents are no valid nodes/graph.", "Paste nodes", JOptionPane.ERROR_MESSAGE);
-            e.printStackTrace();
-        }
-    }
-
-    @Override
-    public String getName() {
-        return "Paste";
-    }
-
-    @Override
-    public String getDescription() {
-        return "Copies nodes from clipboard into the current graph";
-    }
-
-    @Override
-    public Icon getIcon() {
-        return UIUtils.getIconFromResources("actions/edit-paste.png");
-    }
-
-    @Override
-    public boolean isShowingInOverhang() {
-        return false;
-    }
-
-    @Override
-    public KeyStroke getKeyboardShortcut() {
-        return KeyStroke.getKeyStroke(KeyEvent.VK_V, InputEvent.CTRL_MASK, true);
-    }
-
     public static void pasteNodes(JIPipeGraphCanvasUI canvasUI, String json) throws com.fasterxml.jackson.core.JsonProcessingException {
         JIPipeGraph graph = JsonUtils.getObjectMapper().readValue(json, JIPipeGraph.class);
         if (graph.getNodes().isEmpty()) {
@@ -128,5 +85,48 @@ public class AlgorithmGraphPasteNodeUIContextAction implements NodeUIContextActi
         canvasUI.getGraphHistory().addSnapshotBefore(new PasteNodeGraphHistorySnapshot(canvasUI.getGraph(),
                 new HashSet<>(graph.getNodes().values())));
         canvasUI.getGraph().mergeWith(graph);
+    }
+
+    @Override
+    public boolean matches(Set<JIPipeNodeUI> selection) {
+        return true;
+    }
+
+    @Override
+    public void run(JIPipeGraphCanvasUI canvasUI, Set<JIPipeNodeUI> selection) {
+        try {
+            String json = UIUtils.getStringFromClipboard();
+            if (json != null) {
+                pasteNodes(canvasUI, json);
+            }
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(canvasUI.getWorkbench().getWindow(), "The current clipboard contents are no valid nodes/graph.", "Paste nodes", JOptionPane.ERROR_MESSAGE);
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    public String getName() {
+        return "Paste";
+    }
+
+    @Override
+    public String getDescription() {
+        return "Copies nodes from clipboard into the current graph";
+    }
+
+    @Override
+    public Icon getIcon() {
+        return UIUtils.getIconFromResources("actions/edit-paste.png");
+    }
+
+    @Override
+    public boolean isShowingInOverhang() {
+        return false;
+    }
+
+    @Override
+    public KeyStroke getKeyboardShortcut() {
+        return KeyStroke.getKeyStroke(KeyEvent.VK_V, InputEvent.CTRL_MASK, true);
     }
 }

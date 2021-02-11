@@ -23,7 +23,7 @@ import org.hkijena.jipipe.extensions.settings.GraphEditorUISettings;
 import org.hkijena.jipipe.ui.grapheditor.contextmenu.clipboard.AlgorithmGraphPasteNodeUIContextAction;
 
 import javax.swing.*;
-import java.awt.Point;
+import java.awt.*;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
 import java.awt.dnd.DropTargetDragEvent;
@@ -99,7 +99,7 @@ public class JIPipeGraphCompartmentDragAndDropBehavior implements JIPipeGraphDra
             return;
         } catch (Throwable t) {
             t.printStackTrace();
-            if(GraphEditorUISettings.getInstance().isNotifyInvalidDragAndDrop()) {
+            if (GraphEditorUISettings.getInstance().isNotifyInvalidDragAndDrop()) {
                 JOptionPane.showMessageDialog(canvas, new JLabel("The dropped data is invalid. You can drop files/folders or JSON data that describes JIPipe nodes."), "Invalid drop", JOptionPane.ERROR_MESSAGE);
             }
         }
@@ -117,7 +117,7 @@ public class JIPipeGraphCompartmentDragAndDropBehavior implements JIPipeGraphDra
                 AlgorithmGraphPasteNodeUIContextAction.pasteNodes(canvas, text);
             }
         } catch (Exception e) {
-            if(GraphEditorUISettings.getInstance().isNotifyInvalidDragAndDrop()) {
+            if (GraphEditorUISettings.getInstance().isNotifyInvalidDragAndDrop()) {
                 JOptionPane.showMessageDialog(canvas.getWorkbench().getWindow(),
                         "The dropped string is no valid node/graph.",
                         "Drop nodes",

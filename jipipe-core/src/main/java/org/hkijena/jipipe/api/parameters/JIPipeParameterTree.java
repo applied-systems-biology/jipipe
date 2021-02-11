@@ -98,6 +98,16 @@ public class JIPipeParameterTree implements JIPipeParameterCollection, JIPipeCus
     }
 
     /**
+     * Accesses the parameters of a collection
+     *
+     * @param collection the collection
+     * @return traversed parameters
+     */
+    public static Map<String, JIPipeParameterAccess> getParameters(JIPipeParameterCollection collection) {
+        return (new JIPipeParameterTree(collection)).getParameters();
+    }
+
+    /**
      * Gets the parameters grouped by the source
      *
      * @return all parameters grouped by source
@@ -448,7 +458,7 @@ public class JIPipeParameterTree implements JIPipeParameterCollection, JIPipeCus
         Node node = nodeMap.get(source);
         String name = getSourceDocumentationName(source);
         HTMLText description = node.getDescription();
-        if(description == null)
+        if (description == null)
             description = new HTMLText();
         return new JIPipeDefaultDocumentation(name, description.getBody());
     }
@@ -488,16 +498,6 @@ public class JIPipeParameterTree implements JIPipeParameterCollection, JIPipeCus
                 node.getParameters().inverse().remove(access);
             }
         }
-    }
-
-    /**
-     * Accesses the parameters of a collection
-     *
-     * @param collection the collection
-     * @return traversed parameters
-     */
-    public static Map<String, JIPipeParameterAccess> getParameters(JIPipeParameterCollection collection) {
-        return (new JIPipeParameterTree(collection)).getParameters();
     }
 
     /**

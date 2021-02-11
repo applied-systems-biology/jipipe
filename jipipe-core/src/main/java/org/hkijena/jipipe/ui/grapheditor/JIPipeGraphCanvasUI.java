@@ -13,11 +13,7 @@
 
 package org.hkijena.jipipe.ui.grapheditor;
 
-import com.google.common.collect.BiMap;
-import com.google.common.collect.HashBiMap;
-import com.google.common.collect.ImmutableBiMap;
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.*;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 import org.hkijena.jipipe.JIPipe;
@@ -36,7 +32,6 @@ import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.JIPipeWorkbenchPanel;
 import org.hkijena.jipipe.ui.components.ZoomViewPort;
-import org.hkijena.jipipe.ui.grapheditor.connections.RectangularLineDrawer;
 import org.hkijena.jipipe.ui.grapheditor.contextmenu.NodeUIContextAction;
 import org.hkijena.jipipe.ui.grapheditor.layout.MSTGraphAutoLayoutMethod;
 import org.hkijena.jipipe.ui.grapheditor.layout.SugiyamaGraphAutoLayoutMethod;
@@ -50,13 +45,7 @@ import javax.swing.FocusManager;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.dnd.DropTarget;
-import java.awt.event.ComponentAdapter;
-import java.awt.event.ComponentEvent;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
-import java.awt.event.MouseMotionListener;
-import java.awt.event.MouseWheelEvent;
-import java.awt.event.MouseWheelListener;
+import java.awt.event.*;
 import java.awt.image.BufferedImage;
 import java.util.List;
 import java.util.*;
@@ -1003,10 +992,9 @@ public class JIPipeGraphCanvasUI extends JIPipeWorkbenchPanel implements MouseMo
                     continue;
                 }
             }
-            if(source.getNode() instanceof JIPipeCommentNode || target.getNode() instanceof JIPipeCommentNode) {
+            if (source.getNode() instanceof JIPipeCommentNode || target.getNode() instanceof JIPipeCommentNode) {
                 paintSlotEdge(g, strokeComment, onlySelected, source, target, edge.getUiShape());
-            }
-            else {
+            } else {
                 paintSlotEdge(g, stroke, onlySelected, source, target, edge.getUiShape());
             }
         }
@@ -1077,7 +1065,7 @@ public class JIPipeGraphCanvasUI extends JIPipeWorkbenchPanel implements MouseMo
     }
 
     private Color getEdgeColor(JIPipeDataSlot source, JIPipeDataSlot target) {
-        if(source.getNode() instanceof JIPipeCommentNode || target.getNode() instanceof JIPipeCommentNode)
+        if (source.getNode() instanceof JIPipeCommentNode || target.getNode() instanceof JIPipeCommentNode)
             return COMMENT_EDGE_COLOR;
         if (JIPipeDatatypeRegistry.isTriviallyConvertible(source.getAcceptedDataType(), target.getAcceptedDataType()))
             return Color.DARK_GRAY;
@@ -1193,20 +1181,21 @@ public class JIPipeGraphCanvasUI extends JIPipeWorkbenchPanel implements MouseMo
 
     /**
      * Draws an edge between source point and the target point
-     * @param g the graphics
-     * @param sourcePoint the source point
+     *
+     * @param g            the graphics
+     * @param sourcePoint  the source point
      * @param sourceBounds bounds of the source
-     * @param targetPoint the target point
-     * @param shape the line shape
+     * @param targetPoint  the target point
+     * @param shape        the line shape
      */
     private void drawEdge(Graphics2D g, Point sourcePoint, Rectangle sourceBounds, Point targetPoint, JIPipeGraphEdge.Shape shape) {
         switch (shape) {
             case Elbow:
                 drawElbowEdge(g, sourcePoint, sourceBounds, targetPoint);
-            break;
+                break;
             case Line:
                 g.drawLine(sourcePoint.x, sourcePoint.y, targetPoint.x, targetPoint.y);
-            break;
+                break;
         }
     }
 
@@ -1290,8 +1279,7 @@ public class JIPipeGraphCanvasUI extends JIPipeWorkbenchPanel implements MouseMo
     private void drawElbowEdge_(Graphics2D g, int a0, int b0, int a1, int b1) {
         if (viewMode == JIPipeGraphViewMode.Horizontal) {
             g.drawLine(a0, b0, a1, b1);
-        }
-        else {
+        } else {
             g.drawLine(b0, a0, b1, a1);
         }
     }
@@ -1457,8 +1445,8 @@ public class JIPipeGraphCanvasUI extends JIPipeWorkbenchPanel implements MouseMo
     }
 
     public Point getGraphEditorCursor() {
-        if(graphEditCursor == null)
-            graphEditCursor = new Point(0,0);
+        if (graphEditCursor == null)
+            graphEditCursor = new Point(0, 0);
         return graphEditCursor;
     }
 
@@ -1547,7 +1535,7 @@ public class JIPipeGraphCanvasUI extends JIPipeWorkbenchPanel implements MouseMo
         double oldZoom = this.zoom;
         double normalizedCursorX = getGraphEditorCursor().x / oldZoom;
         double normalizedCursorY = getGraphEditorCursor().y / oldZoom;
-        setGraphEditCursor(new Point((int)Math.round(normalizedCursorX * zoom), (int)Math.round(normalizedCursorY * zoom)));
+        setGraphEditCursor(new Point((int) Math.round(normalizedCursorX * zoom), (int) Math.round(normalizedCursorY * zoom)));
 
         // Zoom nodes
         this.zoom = zoom;

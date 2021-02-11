@@ -40,6 +40,10 @@ public class GraphEditorUISettings implements JIPipeParameterCollection {
     private boolean drawOutsideEdges = true;
     private boolean notifyInvalidDragAndDrop = true;
 
+    public static GraphEditorUISettings getInstance() {
+        return JIPipe.getSettings().getSettings(ID, GraphEditorUISettings.class);
+    }
+
     @Override
     public EventBus getEventBus() {
         return eventBus;
@@ -148,9 +152,5 @@ public class GraphEditorUISettings implements JIPipeParameterCollection {
     @JIPipeParameter("notify-invalid-drag-and-drop")
     public void setNotifyInvalidDragAndDrop(boolean notifyInvalidDragAndDrop) {
         this.notifyInvalidDragAndDrop = notifyInvalidDragAndDrop;
-    }
-
-    public static GraphEditorUISettings getInstance() {
-        return JIPipe.getSettings().getSettings(ID, GraphEditorUISettings.class);
     }
 }

@@ -21,13 +21,7 @@ import org.jdesktop.swingx.ScrollableSizeHint;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.AWTEventListener;
-import java.awt.event.ComponentAdapter;
-import java.awt.event.ComponentEvent;
-import java.awt.event.FocusAdapter;
-import java.awt.event.FocusEvent;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
+import java.awt.event.*;
 import java.lang.ref.WeakReference;
 import java.util.ArrayDeque;
 
@@ -409,8 +403,8 @@ public class FormPanel extends JXPanel {
         private int columnCount = 0;
 
         /**
-         * @param text the text
-         * @param icon the icon
+         * @param text           the text
+         * @param icon           the icon
          * @param leftComponents Components added after the icon
          */
         public GroupHeaderPanel(String text, Icon icon, Component... leftComponents) {

@@ -28,7 +28,7 @@ import org.hkijena.jipipe.ui.components.PickNodeDialog;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
-import java.awt.BorderLayout;
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Stack;

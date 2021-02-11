@@ -23,7 +23,7 @@ import org.jfree.chart.renderer.xy.XYBarRenderer;
 import org.jfree.data.statistics.HistogramDataset;
 import org.jfree.data.statistics.HistogramType;
 
-import java.awt.Font;
+import java.awt.*;
 import java.nio.file.Path;
 import java.util.HashSet;
 import java.util.Set;
@@ -61,6 +61,10 @@ public class HistogramPlotData extends PlotData {
         this.valueAxisLabel = other.valueAxisLabel;
         this.binAxisFontSize = other.binAxisFontSize;
         this.valueAxisFontSize = other.valueAxisFontSize;
+    }
+
+    public static HistogramPlotData importFrom(Path storagePath) {
+        return PlotData.importFrom(storagePath, HistogramPlotData.class);
     }
 
     @Override
@@ -164,10 +168,6 @@ public class HistogramPlotData extends PlotData {
     @JIPipeParameter("value-axis-font-size")
     public void setValueAxisFontSize(int valueAxisFontSize) {
         this.valueAxisFontSize = valueAxisFontSize;
-    }
-
-    public static HistogramPlotData importFrom(Path storagePath) {
-        return PlotData.importFrom(storagePath, HistogramPlotData.class);
     }
 
     /**

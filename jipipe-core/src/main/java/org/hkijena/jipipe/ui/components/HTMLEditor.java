@@ -1,7 +1,6 @@
 package org.hkijena.jipipe.ui.components;
 
 import com.google.common.eventbus.Subscribe;
-import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
@@ -18,7 +17,8 @@ public class HTMLEditor extends JPanel {
     public static final int NONE = 0;
     public static final int WITH_SCROLL_BAR = 1;
     public static final int WITHOUT_TOOLBAR = 2;
-
+    private final Set<String> availableFonts = new HashSet<>(Arrays.asList(GraphicsEnvironment.getLocalGraphicsEnvironment().getAvailableFontFamilyNames()));
+    private final Map<String, Action> availableEditorKitActions = new HashMap<>();
     private JTextPane textPane;
     private HTMLEditorKit editorKit;
     private Map<JToggleButton, BooleanSupplier> updatedButtons = new HashMap<>();
@@ -26,12 +26,19 @@ public class HTMLEditor extends JPanel {
     private JComboBox<Integer> sizeSelection;
     private ColorChooserButton foregroundColorButton;
     private boolean isUpdating = false;
-    private final Set<String> availableFonts = new HashSet<>(Arrays.asList(GraphicsEnvironment.getLocalGraphicsEnvironment().getAvailableFontFamilyNames()));
-    private final Map<String, Action> availableEditorKitActions = new HashMap<>();
 
     public HTMLEditor(int flags) {
         initialize(flags);
         initializeEvents();
+    }
+
+    public static void main(String[] args) {
+        UIUtils.getThemeFromRawSettings().install();
+        JFrame frame = new JFrame();
+        frame.setContentPane(new HTMLEditor(WITH_SCROLL_BAR));
+        frame.setSize(800, 600);
+        frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+        frame.setVisible(true);
     }
 
     public JTextPane getTextPane() {
@@ -55,8 +62,7 @@ public class HTMLEditor extends JPanel {
             fontSelection.setSelectedItem(getSelectionFontFamily());
             sizeSelection.setSelectedItem(getSelectionFontSize());
             foregroundColorButton.setSelectedColor(getSelectionForegroundColor());
-        }
-        finally {
+        } finally {
             isUpdating = false;
         }
     }
@@ -76,10 +82,9 @@ public class HTMLEditor extends JPanel {
         setLayout(new BorderLayout());
         initializeToolBar(flags);
 
-        if((flags & WITH_SCROLL_BAR) == WITH_SCROLL_BAR) {
+        if ((flags & WITH_SCROLL_BAR) == WITH_SCROLL_BAR) {
             add(new JScrollPane(textPane), BorderLayout.CENTER);
-        }
-        else {
+        } else {
             add(textPane, BorderLayout.CENTER);
         }
     }
@@ -95,9 +100,9 @@ public class HTMLEditor extends JPanel {
         fontSelection.setPreferredSize(new Dimension(125, 25));
         fontSelection.setSelectedItem("Dialog");
         fontSelection.addItemListener(e -> {
-            if(!isUpdating) {
+            if (!isUpdating) {
                 String family = fontSelection.getSelectedItem() instanceof String ? (String) fontSelection.getSelectedItem() : "Dialog";
-                if(availableFonts.contains(family)) {
+                if (availableFonts.contains(family)) {
                     new StyledEditorKit.FontFamilyAction(family, family).actionPerformed(new ActionEvent(textPane, e.getID(), family));
                 }
                 updateSelection();
@@ -107,15 +112,15 @@ public class HTMLEditor extends JPanel {
 
         sizeSelection = new JComboBox<>();
         sizeSelection.setPrototypeDisplayValue(99);
-        sizeSelection.setModel(new DefaultComboBoxModel<>(new Integer[] { 8,9,10,11,12,14,16,18,20,22,24,26,28,36,48,72 }));
+        sizeSelection.setModel(new DefaultComboBoxModel<>(new Integer[]{8, 9, 10, 11, 12, 14, 16, 18, 20, 22, 24, 26, 28, 36, 48, 72}));
         sizeSelection.setSelectedItem(12);
         sizeSelection.setEditable(true);
         sizeSelection.setMinimumSize(new Dimension(20, 25));
         sizeSelection.setPreferredSize(new Dimension(50, 25));
         sizeSelection.addItemListener(e -> {
-            if(!isUpdating) {
+            if (!isUpdating) {
                 int size = sizeSelection.getSelectedItem() instanceof Integer ? (int) sizeSelection.getSelectedItem() : 12;
-                size = Math.max(1,size);
+                size = Math.max(1, size);
                 new StyledEditorKit.FontSizeAction("set-font-size", size).actionPerformed(new ActionEvent(textPane, e.getID(), "set-font-size"));
                 updateSelection();
                 textPane.requestFocusInWindow();
@@ -123,14 +128,14 @@ public class HTMLEditor extends JPanel {
         });
 
         // Font family/size
-        JPanel fontSizePanel = new JPanel(new FlowLayout(FlowLayout.LEFT,0,0));
+        JPanel fontSizePanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
         fontSizePanel.setBorder(null);
         fontSizePanel.add(fontSelection);
         fontSizePanel.add(sizeSelection);
         toolbarPanel.add(fontSizePanel);
 
         // Standard formats
-        JPanel standardFormatPanel = new JPanel(new FlowLayout(FlowLayout.LEFT,0,0));
+        JPanel standardFormatPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
         standardFormatPanel.add(createFormatActionButton(new StyledEditorKit.BoldAction(),
                 this::selectionIsBold,
                 "Format bold",
@@ -146,7 +151,7 @@ public class HTMLEditor extends JPanel {
         toolbarPanel.add(standardFormatPanel);
 
         // Extended formats
-        JPanel extendedFormatPanel = new JPanel(new FlowLayout(FlowLayout.LEFT,0,0));
+        JPanel extendedFormatPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
         extendedFormatPanel.add(createFormatActionButton(new StrikeThroughAction(),
                 this::selectionIsStrikeThrough,
                 "Format strike-through",
@@ -162,7 +167,7 @@ public class HTMLEditor extends JPanel {
 
         foregroundColorButton = new ColorChooserButton("");
         UIUtils.makeFlat25x25(foregroundColorButton);
-        toolbarPanel.add(foregroundColorButton,  new GridBagConstraints() {
+        toolbarPanel.add(foregroundColorButton, new GridBagConstraints() {
             {
                 gridx = 6;
                 gridy = 1;
@@ -173,7 +178,7 @@ public class HTMLEditor extends JPanel {
         foregroundColorButton.getEventBus().register(new Object() {
             @Subscribe
             public void onColorSelected(ColorChooserButton.ColorChosenEvent event) {
-                if(!isUpdating) {
+                if (!isUpdating) {
                     new StyledEditorKit.ForegroundAction("set-foreground", event.getColor()).actionPerformed(
                             new ActionEvent(textPane, 0, "set-foreground")
                     );
@@ -186,7 +191,7 @@ public class HTMLEditor extends JPanel {
         toolbarPanel.add(extendedFormatPanel);
 
         // Align panel
-        JPanel alignPanel = new JPanel(new FlowLayout(FlowLayout.LEFT,0,0));
+        JPanel alignPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
         alignPanel.add(createFormatActionButton(new StyledEditorKit.AlignmentAction("Align left", StyleConstants.ALIGN_LEFT),
                 this::selectionIsAlignLeft,
                 "Align left",
@@ -205,14 +210,14 @@ public class HTMLEditor extends JPanel {
                 "actions/format-justify-fill.png"));
         toolbarPanel.add(alignPanel);
 
-        if((flags & WITHOUT_TOOLBAR) != WITHOUT_TOOLBAR) {
+        if ((flags & WITHOUT_TOOLBAR) != WITHOUT_TOOLBAR) {
             add(toolbarPanel, BorderLayout.NORTH);
         }
     }
 
     public int getSelectionFontSize() {
         StyledDocument document = textPane.getStyledDocument();
-        if(document.getLength() == 0)
+        if (document.getLength() == 0)
             return 12;
         int value = 0;
         for (int i = textPane.getSelectionStart(); i <= textPane.getSelectionEnd(); i++) {
@@ -224,7 +229,7 @@ public class HTMLEditor extends JPanel {
 
     public Color getSelectionForegroundColor() {
         StyledDocument document = textPane.getStyledDocument();
-        if(document.getLength() == 0)
+        if (document.getLength() == 0)
             return Color.BLACK;
         Element element = document.getCharacterElement(textPane.getSelectionStart());
         return StyleConstants.getForeground(element.getAttributes());
@@ -232,7 +237,7 @@ public class HTMLEditor extends JPanel {
 
     public String getSelectionFontFamily() {
         StyledDocument document = textPane.getStyledDocument();
-        if(document.getLength() == 0)
+        if (document.getLength() == 0)
             return "Dialog";
         Element element = document.getCharacterElement(textPane.getSelectionStart());
         return StyleConstants.getFontFamily(element.getAttributes());
@@ -240,7 +245,7 @@ public class HTMLEditor extends JPanel {
 
     public boolean selectionIsBold() {
         StyledDocument document = textPane.getStyledDocument();
-        if(document.getLength() == 0)
+        if (document.getLength() == 0)
             return false;
         boolean value = true;
         for (int i = textPane.getSelectionStart(); i <= textPane.getSelectionEnd(); i++) {
@@ -252,7 +257,7 @@ public class HTMLEditor extends JPanel {
 
     public boolean selectionIsItalic() {
         StyledDocument document = textPane.getStyledDocument();
-        if(document.getLength() == 0)
+        if (document.getLength() == 0)
             return false;
         boolean value = true;
         for (int i = textPane.getSelectionStart(); i <= textPane.getSelectionEnd(); i++) {
@@ -264,7 +269,7 @@ public class HTMLEditor extends JPanel {
 
     public boolean selectionIsUnderline() {
         StyledDocument document = textPane.getStyledDocument();
-        if(document.getLength() == 0)
+        if (document.getLength() == 0)
             return false;
         boolean value = true;
         for (int i = textPane.getSelectionStart(); i <= textPane.getSelectionEnd(); i++) {
@@ -276,7 +281,7 @@ public class HTMLEditor extends JPanel {
 
     public boolean selectionIsStrikeThrough() {
         StyledDocument document = textPane.getStyledDocument();
-        if(document.getLength() == 0)
+        if (document.getLength() == 0)
             return false;
         boolean value = true;
         for (int i = textPane.getSelectionStart(); i <= textPane.getSelectionEnd(); i++) {
@@ -288,7 +293,7 @@ public class HTMLEditor extends JPanel {
 
     public boolean selectionIsSubscript() {
         StyledDocument document = textPane.getStyledDocument();
-        if(document.getLength() == 0)
+        if (document.getLength() == 0)
             return false;
         boolean value = true;
         for (int i = textPane.getSelectionStart(); i <= textPane.getSelectionEnd(); i++) {
@@ -300,7 +305,7 @@ public class HTMLEditor extends JPanel {
 
     public boolean selectionIsSuperscript() {
         StyledDocument document = textPane.getStyledDocument();
-        if(document.getLength() == 0)
+        if (document.getLength() == 0)
             return false;
         boolean value = true;
         for (int i = textPane.getSelectionStart(); i <= textPane.getSelectionEnd(); i++) {
@@ -312,7 +317,7 @@ public class HTMLEditor extends JPanel {
 
     public boolean selectionIsAlignLeft() {
         StyledDocument document = textPane.getStyledDocument();
-        if(document.getLength() == 0)
+        if (document.getLength() == 0)
             return false;
         boolean value = true;
         for (int i = textPane.getSelectionStart(); i <= textPane.getSelectionEnd(); i++) {
@@ -324,7 +329,7 @@ public class HTMLEditor extends JPanel {
 
     public boolean selectionIsAlignCenter() {
         StyledDocument document = textPane.getStyledDocument();
-        if(document.getLength() == 0)
+        if (document.getLength() == 0)
             return false;
         boolean value = true;
         for (int i = textPane.getSelectionStart(); i <= textPane.getSelectionEnd(); i++) {
@@ -336,7 +341,7 @@ public class HTMLEditor extends JPanel {
 
     public boolean selectionIsAlignRight() {
         StyledDocument document = textPane.getStyledDocument();
-        if(document.getLength() == 0)
+        if (document.getLength() == 0)
             return false;
         boolean value = true;
         for (int i = textPane.getSelectionStart(); i <= textPane.getSelectionEnd(); i++) {
@@ -348,7 +353,7 @@ public class HTMLEditor extends JPanel {
 
     public boolean selectionIsAlignJustified() {
         StyledDocument document = textPane.getStyledDocument();
-        if(document.getLength() == 0)
+        if (document.getLength() == 0)
             return false;
         boolean value = true;
         for (int i = textPane.getSelectionStart(); i <= textPane.getSelectionEnd(); i++) {
@@ -385,7 +390,7 @@ public class HTMLEditor extends JPanel {
     public String getHTML() {
         try {
             Document document = textPane.getDocument();
-            ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream ();
+            ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
             editorKit.write(byteArrayOutputStream, document, 0, document.getLength());
             //            int bodyStart = value.indexOf("<body>") + "<body>".length();
 //            int bodyEnd = value.indexOf("</body>");
@@ -394,30 +399,19 @@ public class HTMLEditor extends JPanel {
 //            System.out.println(body);
 //            return value.substring(0, bodyStart) + body + "</body></html>";
             return byteArrayOutputStream.toString();
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
 
-    public static void main(String[] args) {
-        UIUtils.getThemeFromRawSettings().install();
-        JFrame frame = new JFrame();
-        frame.setContentPane(new HTMLEditor(WITH_SCROLL_BAR));
-        frame.setSize(800,600);
-        frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-        frame.setVisible(true);
-    }
-
     public void setText(String value) {
-        if(value == null) {
+        if (value == null) {
             textPane.setText("<html><body><p></p></body></html>");
-        }
-        else {
+        } else {
             int bodyStart = value.indexOf("<body>") + "<body>".length();
             int bodyEnd = value.indexOf("</body>");
             String body = value.substring(bodyStart, bodyEnd).trim();
-            if(!body.startsWith("<"))
+            if (!body.startsWith("<"))
                 body = "<p>" + body + "</p>";
             textPane.setText("<html><body>" + body + "</body></html>");
         }

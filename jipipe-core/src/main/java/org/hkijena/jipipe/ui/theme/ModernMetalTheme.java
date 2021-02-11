@@ -22,9 +22,7 @@ import javax.swing.border.Border;
 import javax.swing.plaf.BorderUIResource;
 import javax.swing.plaf.ColorUIResource;
 import javax.swing.plaf.metal.DefaultMetalTheme;
-import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.Insets;
+import java.awt.*;
 import java.util.Arrays;
 import java.util.List;
 

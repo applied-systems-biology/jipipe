@@ -43,23 +43,16 @@ import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.imageio.ImageIO;
+import javax.swing.Timer;
 import javax.swing.*;
 import javax.swing.event.DocumentEvent;
-import java.awt.Adjustable;
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Point;
+import java.awt.*;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.io.IOException;
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class ImageViewerPanel extends JPanel {
@@ -107,6 +100,35 @@ public class ImageViewerPanel extends JPanel {
     public ImageViewerPanel() {
         initialize();
         updateZoomStatus();
+    }
+
+    public static void main(String[] args) {
+        JIPipeUITheme.ModernLight.install();
+        ImagePlus image = IJ.openImage("/data/Mitochondria/data/Mic13 SNAP Deconv.lif - WT_Hela_Mic13_SNAP_Series011_10_cmle_converted.tif");
+//        ImagePlus image = IJ.openImage("/home/rgerst/dots.png");
+        JFrame frame = new JFrame();
+        ImageViewerPanel panel = new ImageViewerPanel();
+        panel.setImage(image);
+        frame.setContentPane(panel);
+        frame.pack();
+        frame.setSize(1280, 1024);
+        frame.setVisible(true);
+    }
+
+    /**
+     * Opens the image in a new frame
+     *
+     * @param image the image
+     * @param title the title
+     * @return the panel
+     */
+    public static ImageViewerPanel showImage(ImagePlus image, String title) {
+        ImageViewerPanel dataDisplay = new ImageViewerPanel();
+        dataDisplay.setImage(image);
+        ImageViewerWindow window = new ImageViewerWindow(dataDisplay);
+        window.setTitle(title);
+        window.setVisible(true);
+        return dataDisplay;
     }
 
     private void initialize() {
@@ -1018,10 +1040,9 @@ public class ImageViewerPanel extends JPanel {
 
     public ImageProcessor generateSlice(int z, int c, int t, boolean withRoi, boolean withRotation) {
         image.setPosition(c + 1, z + 1, t + 1);
-        if(c <= lutEditors.size() - 1) {
+        if (c <= lutEditors.size() - 1) {
             image.setLut(lutEditors.get(c).getLUT());
-        }
-        else {
+        } else {
             image.setLut(null);
         }
         ImageProcessor processor = image.getProcessor();
@@ -1102,35 +1123,6 @@ public class ImageViewerPanel extends JPanel {
     @Subscribe
     public void onPixelHover(ImageViewerPanelCanvas.PixelHoverEvent event) {
         updatePixelInfo();
-    }
-
-    public static void main(String[] args) {
-        JIPipeUITheme.ModernLight.install();
-        ImagePlus image = IJ.openImage("/data/Mitochondria/data/Mic13 SNAP Deconv.lif - WT_Hela_Mic13_SNAP_Series011_10_cmle_converted.tif");
-//        ImagePlus image = IJ.openImage("/home/rgerst/dots.png");
-        JFrame frame = new JFrame();
-        ImageViewerPanel panel = new ImageViewerPanel();
-        panel.setImage(image);
-        frame.setContentPane(panel);
-        frame.pack();
-        frame.setSize(1280, 1024);
-        frame.setVisible(true);
-    }
-
-    /**
-     * Opens the image in a new frame
-     *
-     * @param image the image
-     * @param title the title
-     * @return the panel
-     */
-    public static ImageViewerPanel showImage(ImagePlus image, String title) {
-        ImageViewerPanel dataDisplay = new ImageViewerPanel();
-        dataDisplay.setImage(image);
-        ImageViewerWindow window = new ImageViewerWindow(dataDisplay);
-        window.setTitle(title);
-        window.setVisible(true);
-        return dataDisplay;
     }
 
 }

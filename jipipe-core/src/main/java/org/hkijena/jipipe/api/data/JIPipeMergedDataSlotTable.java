@@ -23,9 +23,7 @@ import org.hkijena.jipipe.ui.cache.JIPipeCachedDataPreview;
 import javax.swing.*;
 import javax.swing.event.TableModelListener;
 import javax.swing.table.TableModel;
-import java.awt.Component;
-import java.awt.Point;
-import java.awt.Rectangle;
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -65,7 +63,7 @@ public class JIPipeMergedDataSlotTable implements TableModel {
                 traitColumns.add(traitColumn);
         }
         JIPipeProjectCompartment compartment = null;
-        if(project != null) {
+        if (project != null) {
             compartment = project.getCompartments().getOrDefault(dataSlot.getNode().getCompartment(), null);
         }
         if (compartment == null) {

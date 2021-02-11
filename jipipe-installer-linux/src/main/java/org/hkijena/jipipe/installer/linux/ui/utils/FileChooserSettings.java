@@ -15,11 +15,7 @@ package org.hkijena.jipipe.installer.linux.ui.utils;
 
 import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
-import java.awt.Component;
-import java.awt.Dialog;
-import java.awt.FileDialog;
-import java.awt.Frame;
-import java.awt.Window;
+import java.awt.*;
 import java.io.File;
 import java.nio.file.Path;
 import java.nio.file.Paths;

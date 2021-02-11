@@ -8,7 +8,6 @@ import org.hkijena.jipipe.api.nodes.JIPipeOutputSlot;
 import org.hkijena.jipipe.api.nodes.categories.DataSourceNodeTypeCategory;
 import org.hkijena.jipipe.extensions.forms.datatypes.FormData;
 import org.hkijena.jipipe.extensions.forms.datatypes.GroupHeaderFormData;
-import org.hkijena.jipipe.extensions.forms.datatypes.StringFormData;
 
 @JIPipeDocumentation(name = "Group header form", description = "Creates a group header element to structure the form. " + FormGeneratorAlgorithm.DOCUMENTATION_DESCRIPTION)
 @JIPipeInputSlot(value = FormData.class, slotName = "Existing")
