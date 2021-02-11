@@ -14,7 +14,9 @@ import org.hkijena.jipipe.api.JIPipeValidityReport;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataSource;
 import org.hkijena.jipipe.api.nodes.JIPipeMergingDataBatch;
+import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
+import org.hkijena.jipipe.extensions.parameters.primitives.OptionalAnnotationNameParameter;
 import org.hkijena.jipipe.extensions.plots.datatypes.PlotData;
 import org.hkijena.jipipe.extensions.plots.datatypes.PlotDataSeries;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
@@ -39,6 +41,16 @@ import java.util.stream.Collectors;
 public abstract class FormData implements JIPipeData, JIPipeParameterCollection, JIPipeValidatable {
 
     private final EventBus eventBus = new EventBus();
+    private TabSettings tabSettings = new TabSettings();
+
+    public FormData() {
+        tabSettings.getEventBus().register(this);
+    }
+
+    public FormData(FormData other) {
+        this.tabSettings = new TabSettings(other.tabSettings);
+        tabSettings.getEventBus().register(this);
+    }
 
     @Override
     public void saveTo(Path storageFilePath, String name, boolean forceName, JIPipeProgressInfo progressInfo) {
@@ -81,6 +93,13 @@ public abstract class FormData implements JIPipeData, JIPipeParameterCollection,
         JIPipeParameterCollection.deserializeParametersFromJson(this, node, new JIPipeValidityReport());
     }
 
+    @JIPipeDocumentation(name = "Form element tab", description = "Form elements can be displayed in different tabs for ease of use. " +
+            "Change following settings to determine where this element is placed.")
+    @JIPipeParameter("form:tabs")
+    public TabSettings getTabSettings() {
+        return tabSettings;
+    }
+
     /**
      * Helper method that simplifies the importFrom() method definition
      * @param storageFilePath the storage folder
@@ -103,6 +122,47 @@ public abstract class FormData implements JIPipeData, JIPipeParameterCollection,
             gen.writeStartObject();
             JIPipeParameterCollection.serializeParametersToJson(value, gen);
             gen.writeEndObject();
+        }
+    }
+
+    public static class TabSettings implements JIPipeParameterCollection {
+        private final EventBus eventBus = new EventBus();
+        private String tab = "General";
+        private OptionalAnnotationNameParameter tabAnnotation = new OptionalAnnotationNameParameter("Tab", true);
+
+        public TabSettings() {
+        }
+
+        public TabSettings(TabSettings other) {
+            this.tab = other.tab;
+            this.tabAnnotation = new OptionalAnnotationNameParameter(other.tabAnnotation);
+        }
+
+        @Override
+        public EventBus getEventBus() {
+            return eventBus;
+        }
+
+        @JIPipeDocumentation(name = "Tab", description = "The tab where this form data will appear in.")
+        @JIPipeParameter("form:tab")
+        public String getTab() {
+            return tab;
+        }
+
+        @JIPipeParameter("form:tab")
+        public void setTab(String tab) {
+            this.tab = tab;
+        }
+
+        @JIPipeDocumentation(name = "Tab annotation", description = "The annotation that contains the tab name.")
+        @JIPipeParameter("form:tab-annotation")
+        public OptionalAnnotationNameParameter getTabAnnotation() {
+            return tabAnnotation;
+        }
+
+        @JIPipeParameter("form:tab-annotation")
+        public void setTabAnnotation(OptionalAnnotationNameParameter tabAnnotation) {
+            this.tabAnnotation = tabAnnotation;
         }
     }
 }

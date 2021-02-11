@@ -16,29 +16,14 @@ import org.hkijena.jipipe.extensions.forms.datatypes.StringFormData;
 @JIPipeInputSlot(value = FormData.class, slotName = "Existing")
 @JIPipeOutputSlot(value = FormData.class, slotName = "Combined")
 @JIPipeOrganization(nodeTypeCategory = DataSourceNodeTypeCategory.class)
-public class StringFormGeneratorAlgorithm extends FormGeneratorAlgorithm {
-
-    private StringFormData formData = new StringFormData();
+public class StringFormGeneratorAlgorithm extends SimpleFormGeneratorAlgorithm {
 
     public StringFormGeneratorAlgorithm(JIPipeNodeInfo info) {
-        super(info);
-        registerSubParameter(formData);
+        super(info, new StringFormData());
     }
 
     public StringFormGeneratorAlgorithm(StringFormGeneratorAlgorithm other) {
         super(other);
-        this.formData = new StringFormData(other.formData);
-        registerSubParameter(formData);
     }
 
-    @JIPipeDocumentation(name = "Form element", description = "Use following settings to setup the generated form element.")
-    @JIPipeParameter("form-data")
-    public StringFormData getFormData() {
-        return formData;
-    }
-
-    @Override
-    public void run(JIPipeDataSlot combined, JIPipeProgressInfo progressInfo) {
-        combined.addData(formData.duplicate(), progressInfo);
-    }
 }

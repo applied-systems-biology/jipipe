@@ -9,6 +9,7 @@ import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.nodes.JIPipeMergingDataBatch;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
+import org.hkijena.jipipe.extensions.forms.utils.SingleAnnotationIOSettings;
 import org.hkijena.jipipe.extensions.parameters.expressions.StringQueryExpression;
 import org.hkijena.jipipe.extensions.parameters.primitives.HTMLText;
 import org.hkijena.jipipe.extensions.parameters.primitives.OptionalAnnotationNameParameter;
@@ -24,21 +25,18 @@ public class StringFormData extends ParameterFormData {
 
     private String value = "";
     private StringQueryExpression validationExpression = new StringQueryExpression();
-    private OptionalAnnotationNameParameter outputAnnotation = new OptionalAnnotationNameParameter("Text", true);
-    private OptionalAnnotationNameParameter inputAnnotation = new OptionalAnnotationNameParameter("", false);
-    private JIPipeAnnotationMergeStrategy annotationMergeStrategy = JIPipeAnnotationMergeStrategy.OverwriteExisting;
+    private SingleAnnotationIOSettings annotationIOSettings = new SingleAnnotationIOSettings();
 
     public StringFormData() {
-
+        annotationIOSettings.getEventBus().register(this);
     }
 
     public StringFormData(StringFormData other) {
         super(other);
         this.value = other.value;
         this.validationExpression = new StringQueryExpression(other.validationExpression);
-        this.outputAnnotation = new OptionalAnnotationNameParameter(other.outputAnnotation);
-        this.inputAnnotation = new OptionalAnnotationNameParameter(other.inputAnnotation);
-        this.annotationMergeStrategy = other.annotationMergeStrategy;
+        this.annotationIOSettings = new SingleAnnotationIOSettings(other.annotationIOSettings);
+        annotationIOSettings.getEventBus().register(this);
     }
 
     @JIPipeDocumentation(name = "Initial value", description = "The initial string value")
@@ -63,38 +61,11 @@ public class StringFormData extends ParameterFormData {
         this.validationExpression = validationExpression;
     }
 
-    @JIPipeDocumentation(name = "Output annotation", description = "Determines into which annotation the user input is written.")
-    @JIPipeParameter("output-annotation")
-    public OptionalAnnotationNameParameter getOutputAnnotation() {
-        return outputAnnotation;
-    }
-
-    @JIPipeParameter("output-annotation")
-    public void setOutputAnnotation(OptionalAnnotationNameParameter outputAnnotation) {
-        this.outputAnnotation = outputAnnotation;
-    }
-
-    @JIPipeDocumentation(name = "Input annotation", description = "The annotation used to override the initial value. If the annotation does not exist, " +
-            "the standard initial value is used.")
-    @JIPipeParameter("input-annotation")
-    public OptionalAnnotationNameParameter getInputAnnotation() {
-        return inputAnnotation;
-    }
-
-    @JIPipeParameter("input-annotation")
-    public void setInputAnnotation(OptionalAnnotationNameParameter inputAnnotation) {
-        this.inputAnnotation = inputAnnotation;
-    }
-
-    @JIPipeDocumentation(name = "Merge output annotation", description = "Determines how the output annotation is merged with existing values.")
-    @JIPipeParameter("merge-strategy")
-    public JIPipeAnnotationMergeStrategy getAnnotationMergeStrategy() {
-        return annotationMergeStrategy;
-    }
-
-    @JIPipeParameter("merge-strategy")
-    public void setAnnotationMergeStrategy(JIPipeAnnotationMergeStrategy annotationMergeStrategy) {
-        this.annotationMergeStrategy = annotationMergeStrategy;
+    @JIPipeDocumentation(name = "Form element I/O", description = "Use following settings to determine how to extract initial values " +
+            "from annotations and where to store the user-defined value.")
+    @JIPipeParameter("form:io")
+    public SingleAnnotationIOSettings getAnnotationIOSettings() {
+        return annotationIOSettings;
     }
 
     @Override
@@ -129,8 +100,10 @@ public class StringFormData extends ParameterFormData {
 
     @Override
     public void loadData(JIPipeMergingDataBatch dataBatch) {
-        if(inputAnnotation.isEnabled()) {
-            JIPipeAnnotation annotation = dataBatch.getAnnotations().getOrDefault(inputAnnotation.getContent(), null);
+        if(annotationIOSettings.getInputAnnotation().isEnabled()) {
+            JIPipeAnnotation annotation =
+                    dataBatch.getAnnotations().getOrDefault(annotationIOSettings.getInputAnnotation().getContent(),
+                            null);
             if(annotation != null) {
                 value = annotation.getValue();
             }
@@ -139,8 +112,9 @@ public class StringFormData extends ParameterFormData {
 
     @Override
     public void writeData(JIPipeMergingDataBatch dataBatch) {
-        if(outputAnnotation.isEnabled()) {
-            annotationMergeStrategy.mergeInto(dataBatch.getAnnotations(), Collections.singletonList(outputAnnotation.createAnnotation(value)));
+        if(annotationIOSettings.getOutputAnnotation().isEnabled()) {
+            annotationIOSettings.getAnnotationMergeStrategy().mergeInto(dataBatch.getAnnotations(),
+                    Collections.singletonList(annotationIOSettings.getOutputAnnotation().createAnnotation(value)));
         }
     }
 }

@@ -5,6 +5,7 @@ import org.hkijena.jipipe.extensions.forms.datatypes.FormData;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.cache.DataBatchTableModel;
 import org.hkijena.jipipe.ui.cache.DataBatchTableUI;
+import org.hkijena.jipipe.ui.components.DocumentTabPane;
 import org.hkijena.jipipe.ui.components.JIPipeComponentCellRenderer;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.jdesktop.swingx.JXTable;
@@ -24,6 +25,7 @@ public class FormsDialog extends JFrame {
     private final List<List<FormData>> dataBatchForms = new ArrayList<>();
     private boolean cancelled = false;
     private DataBatchTableUI dataBatchTableUI;
+    private DocumentTabPane tabPane = new DocumentTabPane();
 
     public FormsDialog(JIPipeWorkbench workbench, List<JIPipeMergingDataBatch> dataBatchList, List<FormData> forms) {
         this.workbench = workbench;
@@ -83,7 +85,7 @@ public class FormsDialog extends JFrame {
         JPanel contentPanel = new JPanel(new BorderLayout());
 
         dataBatchTableUI = new DataBatchTableUI(dataBatchList);
-        JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, dataBatchTableUI, new JPanel());
+        JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, dataBatchTableUI, tabPane);
         splitPane.setDividerSize(3);
         splitPane.setResizeWeight(0.33);
         addComponentListener(new ComponentAdapter() {

@@ -5,6 +5,7 @@ import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataInfo;
 import org.hkijena.jipipe.api.data.JIPipeDataSource;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
+import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.extensions.parameters.primitives.HTMLText;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.components.FormPanel;
@@ -25,6 +26,7 @@ public abstract class ParameterFormData extends FormData {
     }
 
     public ParameterFormData(ParameterFormData other) {
+        super(other);
         this.name = other.name;
         this.description = new HTMLText(other.description);
         this.showName = other.showName;
@@ -87,4 +89,5 @@ public abstract class ParameterFormData extends FormData {
     public void setShowName(boolean showName) {
         this.showName = showName;
     }
+
 }
