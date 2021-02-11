@@ -44,6 +44,7 @@ public abstract class ParameterFormData extends FormData {
         JFrame frame = new JFrame("Preview: " + JIPipeDataInfo.getInstance(getClass()).getName());
         frame.setContentPane(formPanel);
         frame.setSize(640, 480);
+        frame.setLocationRelativeTo(workbench.getWindow());
         frame.setVisible(true);
     }
 
