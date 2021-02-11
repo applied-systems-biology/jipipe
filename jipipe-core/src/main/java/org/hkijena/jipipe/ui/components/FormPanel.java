@@ -405,7 +405,7 @@ public class FormPanel extends JXPanel {
      */
     public static class GroupHeaderPanel extends JPanel {
         private final JLabel titleLabel;
-        private JTextArea descriptionArea;
+        private JTextPane descriptionArea;
         private int columnCount = 0;
 
         /**
@@ -444,7 +444,7 @@ public class FormPanel extends JXPanel {
             });
             ++columnCount;
 
-            descriptionArea = UIUtils.makeReadonlyTextArea("");
+            descriptionArea = UIUtils.makeBorderlessReadonlyTextPane("");
             descriptionArea.setOpaque(false);
             descriptionArea.setBorder(null);
             descriptionArea.setVisible(false);
@@ -481,7 +481,7 @@ public class FormPanel extends JXPanel {
             ++columnCount;
         }
 
-        public JTextArea getDescriptionArea() {
+        public JTextPane getDescriptionArea() {
             return descriptionArea;
         }
 

@@ -83,4 +83,8 @@ public abstract class ParameterFormData extends FormData {
         this.showName = showName;
     }
 
+    @Override
+    public String toString() {
+        return JIPipeData.getNameOf(getClass()) + " [name=" + getName() + "]";
+    }
 }
