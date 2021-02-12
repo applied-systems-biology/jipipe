@@ -37,6 +37,7 @@ public class DefaultJIPipeInputSlot implements JIPipeInputSlot {
         this.value = value;
         this.slotName = slotName;
         this.autoCreate = autoCreate;
+        this.optional = optional;
     }
 
     @Override
