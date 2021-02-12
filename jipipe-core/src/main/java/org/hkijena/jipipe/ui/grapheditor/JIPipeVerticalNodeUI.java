@@ -65,6 +65,7 @@ public class JIPipeVerticalNodeUI extends JIPipeNodeUI {
         initialize();
         updateAlgorithmSlotUIs();
         updateActivationStatus();
+        updateHotkeyInfo();
         if (getNode() instanceof JIPipeCommentNode) {
             updateCommentNodeDesign();
         }
@@ -124,6 +125,45 @@ public class JIPipeVerticalNodeUI extends JIPipeNodeUI {
                 weightx = 1;
             }
         });
+    }
+
+    @Override
+    public void updateHotkeyInfo() {
+        switch (getGraphUI().getNodeHotKeyStorage().getHotkeyFor(getGraphUI().getCompartment(), getNode().getIdInGraph())) {
+            case None:
+                openSettingsButton.setIcon(UIUtils.getIconFromResources("actions/wrench.png"));
+                break;
+            case Slot0:
+                openSettingsButton.setIcon(UIUtils.getIconFromResources("actions/0.png"));
+                break;
+            case Slot1:
+                openSettingsButton.setIcon(UIUtils.getIconFromResources("actions/1.png"));
+                break;
+            case Slot2:
+                openSettingsButton.setIcon(UIUtils.getIconFromResources("actions/2.png"));
+                break;
+            case Slot3:
+                openSettingsButton.setIcon(UIUtils.getIconFromResources("actions/3.png"));
+                break;
+            case Slot4:
+                openSettingsButton.setIcon(UIUtils.getIconFromResources("actions/4.png"));
+                break;
+            case Slot5:
+                openSettingsButton.setIcon(UIUtils.getIconFromResources("actions/5.png"));
+                break;
+            case Slot6:
+                openSettingsButton.setIcon(UIUtils.getIconFromResources("actions/6.png"));
+                break;
+            case Slot7:
+                openSettingsButton.setIcon(UIUtils.getIconFromResources("actions/7.png"));
+                break;
+            case Slot8:
+                openSettingsButton.setIcon(UIUtils.getIconFromResources("actions/8.png"));
+                break;
+            case Slot9:
+                openSettingsButton.setIcon(UIUtils.getIconFromResources("actions/9.png"));
+                break;
+        }
     }
 
     @Override

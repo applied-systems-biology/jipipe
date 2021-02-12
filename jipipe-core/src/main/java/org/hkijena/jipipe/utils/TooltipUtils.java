@@ -273,6 +273,75 @@ public class TooltipUtils {
         return builder.toString();
     }
 
+    /**
+     * Creates a tooltip for an algorithm
+     *
+     * @param node      the algorithm
+     * @param withTitle if a title is displayed
+     * @return the tooltip
+     */
+    public static String getAlgorithmTooltip(JIPipeGraphNode node, boolean withTitle) {
+        StringBuilder builder = new StringBuilder();
+        builder.append("<html>");
+        if (withTitle)
+            builder.append("<u><strong>").append(node.getName()).append("</strong></u><br/>");
+
+        // Write algorithm slot info
+        builder.append("<table>");
+        {
+            List<JIPipeDataSlot> inputSlots = node.getInputSlots();
+            List<JIPipeDataSlot> outputSlots = node.getOutputSlots();
+
+            int displayedSlots = Math.max(inputSlots.size(), outputSlots.size());
+            if (displayedSlots > 0) {
+                builder.append("<tr><td><i>Input</i></td><td><i>Output</i></td></tr>");
+                for (int i = 0; i < displayedSlots; ++i) {
+                    Class<? extends JIPipeData> inputSlot = i < inputSlots.size() ? inputSlots.get(i).getAcceptedDataType() : null;
+                    Class<? extends JIPipeData> outputSlot = i < outputSlots.size() ? outputSlots.get(i).getAcceptedDataType() : null;
+                    builder.append("<tr>");
+                    if (inputSlot != null) {
+                        builder.append("<td>");
+                        builder.append(StringUtils.createIconTextHTMLTableElement(JIPipeData.getNameOf(inputSlot), JIPipe.getDataTypes().getIconURLFor(inputSlot)));
+                        builder.append("</td>");
+                    }
+                    if (outputSlot != null) {
+                        builder.append("<td>");
+                        builder.append(StringUtils.createRightIconTextHTMLTableElement(JIPipeData.getNameOf(outputSlot), JIPipe.getDataTypes().getIconURLFor(outputSlot)));
+                        builder.append("</td>");
+                    }
+                    builder.append("</tr>");
+                }
+            }
+        }
+
+        builder.append("</table>");
+
+        // Write description
+        String description = node.getCustomDescription().wrap(50).getBody();
+        if (description != null && !description.isEmpty())
+            builder.append(description).append("</br>");
+
+//        if (!preferredTraits.isEmpty()) {
+//            builder.append("<br/><br/><strong>Good for<br/>");
+//            insertTraitTable(builder, preferredTraits);
+//        }
+//        if (!unwantedTraits.isEmpty()) {
+//            builder.append("<br/><br/><strong>Bad for<br/>");
+//            insertTraitTable(builder, unwantedTraits);
+//        }
+//        if (!removedTraits.isEmpty()) {
+//            builder.append("<br/><br/><strong>Removes<br/>");
+//            insertTraitTable(builder, removedTraits);
+//        }
+//        if (!addedTraits.isEmpty()) {
+//            builder.append("<br/><br/><strong>Adds<br/>");
+//            insertTraitTable(builder, addedTraits);
+//        }
+
+        builder.append("</html>");
+        return builder.toString();
+    }
+
     //    public static String getTraitTooltip(Class<? extends JIPipeAnnotation> klass) {
 //        String name = JIPipeAnnotation.getNameOf(klass);
 //        String description = JIPipeAnnotation.getDescriptionOf(klass);

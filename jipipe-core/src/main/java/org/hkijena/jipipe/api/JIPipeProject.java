@@ -40,6 +40,7 @@ import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.extensions.parameters.primitives.HTMLText;
 import org.hkijena.jipipe.ui.components.MarkdownDocument;
+import org.hkijena.jipipe.ui.grapheditor.NodeHotKeyStorage;
 import org.hkijena.jipipe.ui.settings.JIPipeProjectInfoParameters;
 import org.hkijena.jipipe.utils.JsonUtils;
 import org.hkijena.jipipe.utils.ReflectionUtils;
@@ -392,6 +393,11 @@ public class JIPipeProject implements JIPipeValidatable {
                 node.setCompartment(newCompartment);
             }
         }
+
+        // Rename compartments in node hot key storage
+        NodeHotKeyStorage.getInstance(compartmentGraph).renameNodeIds(compartmentRenames);
+        NodeHotKeyStorage.getInstance(graph).renameCompartments(compartmentRenames);
+
         for (JIPipeGraphNode node : graph.getNodes().values()) {
             // Rename visible compartments
             node.setVisibleCompartments(node.getVisibleCompartments().stream().map(compartmentRenames::get).collect(Collectors.toSet()));
@@ -405,7 +411,8 @@ public class JIPipeProject implements JIPipeValidatable {
             }
         }
 
-        graph.cleanupIds();
+        Map<String, String> nodeIdRenames = graph.cleanupIds();
+        NodeHotKeyStorage.getInstance(graph).renameNodeIds(nodeIdRenames);
         cache.autoClean(true, true);
     }
 

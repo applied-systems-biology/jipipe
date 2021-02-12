@@ -88,6 +88,7 @@ public class JIPipeGraphCanvasUI extends JIPipeWorkbenchPanel implements MouseMo
     private Set<JIPipeDataSlot> currentHighlightedForDisconnectSourceSlots;
     private double zoom = 1.0;
     private JScrollPane scrollPane;
+    private NodeHotKeyStorage nodeHotKeyStorage;
 
     /**
      * Used to store the minimum dimensions of the canvas to reduce user disruption
@@ -105,6 +106,7 @@ public class JIPipeGraphCanvasUI extends JIPipeWorkbenchPanel implements MouseMo
         super(workbench);
         setLayout(null);
         this.graph = graph;
+        this.nodeHotKeyStorage = NodeHotKeyStorage.getInstance(graph);
         this.compartment = compartment;
         initialize();
         addNewNodes();
@@ -147,6 +149,19 @@ public class JIPipeGraphCanvasUI extends JIPipeWorkbenchPanel implements MouseMo
                         getWorkbench().sendStatusBarText("Executed: " + contextAction.getName());
                         SwingUtilities.invokeLater(() -> contextAction.run(this, selection));
                         return true;
+                    }
+                }
+                if(keyStroke.getModifiers() == 0) {
+                    NodeHotKeyStorage.Hotkey hotkey = NodeHotKeyStorage.Hotkey.fromKeyCode(keyStroke.getKeyCode());
+                    if(hotkey != NodeHotKeyStorage.Hotkey.None) {
+                        String nodeId = nodeHotKeyStorage.getNodeForHotkey(hotkey, compartment);
+                        JIPipeGraphNode node = graph.getNodes().get(nodeId);
+                        if(node != null) {
+                            JIPipeNodeUI nodeUI = nodeUIs.getOrDefault(node, null);
+                            if(nodeUI != null) {
+                                selectOnly(nodeUI);
+                            }
+                        }
                     }
                 }
             }
@@ -1597,6 +1612,10 @@ public class JIPipeGraphCanvasUI extends JIPipeWorkbenchPanel implements MouseMo
 
     public void setScrollPane(JScrollPane scrollPane) {
         this.scrollPane = scrollPane;
+    }
+
+    public NodeHotKeyStorage getNodeHotKeyStorage() {
+        return nodeHotKeyStorage;
     }
 
     /**

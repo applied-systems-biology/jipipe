@@ -101,6 +101,8 @@ public abstract class JIPipeNodeUI extends JIPipeWorkbenchPanel {
         return addSlotButton;
     }
 
+    public abstract void updateHotkeyInfo();
+
     /**
      * Updates the slots
      */
