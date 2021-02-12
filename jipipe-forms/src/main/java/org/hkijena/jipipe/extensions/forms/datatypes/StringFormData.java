@@ -22,7 +22,7 @@ import java.util.Collections;
 public class StringFormData extends ParameterFormData {
 
     private String value = "";
-    private StringQueryExpression validationExpression = new StringQueryExpression();
+    private StringQueryExpression validationExpression = new StringQueryExpression("value != \"\"");
     private SingleAnnotationIOSettings annotationIOSettings = new SingleAnnotationIOSettings();
 
     public StringFormData() {

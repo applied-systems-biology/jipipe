@@ -36,7 +36,7 @@ public class MultiParameterNodeInfo implements JIPipeNodeInfo {
      * Creates a new instance
      */
     public MultiParameterNodeInfo() {
-        this.inputSlots.add(new DefaultJIPipeInputSlot(ParametersData.class, "Parameters", false));
+        this.inputSlots.add(new DefaultJIPipeInputSlot(ParametersData.class, "Parameters", false, false));
     }
 
     @Override

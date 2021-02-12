@@ -268,7 +268,7 @@ public class JsonNodeInfo implements JIPipeNodeInfo, JIPipeValidatable, JIPipePa
             if (entry.getValue().getSlotType() == JIPipeSlotType.Input) {
                 inputSlots.add(new DefaultJIPipeInputSlot(entry.getValue().getDataClass(),
                         entry.getKey(),
-                        true));
+                        true, false));
                 usedSlotNames.add(entry.getKey());
             }
         }
