@@ -300,7 +300,7 @@ public abstract class JIPipeDataSlotUI extends JIPipeWorkbenchPanel {
     }
 
     private void addInputSlotEditMenu(Set<JIPipeDataSlot> sourceSlots) {
-        if (slot.getNode().getSlotConfiguration() instanceof JIPipeMutableSlotConfiguration) {
+        if (slot.getInfo().isUserModifiable() && slot.getNode().getSlotConfiguration() instanceof JIPipeMutableSlotConfiguration) {
             JIPipeMutableSlotConfiguration slotConfiguration = (JIPipeMutableSlotConfiguration) slot.getNode().getSlotConfiguration();
             if (slotConfiguration.canModifyInputSlots()) {
                 if (assignButtonMenu.getComponentCount() > 0)
@@ -318,7 +318,7 @@ public abstract class JIPipeDataSlotUI extends JIPipeWorkbenchPanel {
     }
 
     private void addOutputSlotEditMenu() {
-        if (slot.getNode().getSlotConfiguration() instanceof JIPipeMutableSlotConfiguration) {
+        if (slot.getInfo().isUserModifiable() && slot.getNode().getSlotConfiguration() instanceof JIPipeMutableSlotConfiguration) {
             JIPipeMutableSlotConfiguration slotConfiguration = (JIPipeMutableSlotConfiguration) slot.getNode().getSlotConfiguration();
             if (slotConfiguration.canModifyOutputSlots()) {
                 if (assignButtonMenu.getComponentCount() > 0)

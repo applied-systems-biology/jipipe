@@ -51,6 +51,7 @@ public class JIPipeDataSlotInfo implements JIPipeParameterCollection {
     private boolean virtual;
     private boolean saveOutputs = true;
     private boolean optional = false;
+    private boolean userModifiable = true;
 
     /**
      * @param dataClass     slot data class
@@ -332,6 +333,25 @@ public class JIPipeDataSlotInfo implements JIPipeParameterCollection {
     @JIPipeParameter("is-optional")
     public void setOptional(boolean optional) {
         this.optional = optional;
+    }
+
+    /**
+     * Additional control variable to make a slot not removable/editable.
+     * Use this to have "internal" slots that should never be removed.
+     * This property is not serialized! The node must set it via code!
+     * @return if the slot is removable/editable
+     */
+    public boolean isUserModifiable() {
+        return userModifiable;
+    }
+
+    /**
+     * Set this variable to make a slot not removable/editable.
+     * This property is not serialized! The node must set it via code!
+     * @param userModifiable if the slot is removable/editable
+     */
+    public void setUserModifiable(boolean userModifiable) {
+        this.userModifiable = userModifiable;
     }
 
     /**

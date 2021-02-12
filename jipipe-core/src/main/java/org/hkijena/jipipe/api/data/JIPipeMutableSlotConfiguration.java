@@ -49,6 +49,22 @@ public interface JIPipeMutableSlotConfiguration extends JIPipeSlotConfiguration 
 
     boolean canCreateCompatibleOutputSlot(Class<? extends JIPipeData> acceptedDataType);
 
+    default boolean canRemoveInputSlot(String name, boolean user) {
+        JIPipeDataSlotInfo info = getInputSlots().getOrDefault(name, null);
+        if(info != null) {
+            return info.isUserModifiable() && canModifyInputSlots();
+        }
+        return false;
+    }
+
+    default boolean canRemoveOutputSlot(String name, boolean user) {
+        JIPipeDataSlotInfo info = getOutputSlots().getOrDefault(name, null);
+        if(info != null) {
+            return info.isUserModifiable() && canModifyOutputSlots();
+        }
+        return false;
+    }
+
     JIPipeDataSlotInfo addSlot(String name, JIPipeDataSlotInfo definition, boolean user);
 
     void moveDown(String name, JIPipeSlotType slotType);

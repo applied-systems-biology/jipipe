@@ -206,6 +206,10 @@ public class JIPipeDefaultMutableSlotConfiguration implements JIPipeMutableSlotC
                     throw new UserFriendlyRuntimeException("Input slots can not be modified!", "Unable to remove slot!",
                             "Algorithm slot configuration",
                             "The algorithm is configured, so input slots cannot be removed.", "Contact the authors of the plugin that provides the algorithm.");
+                if(!slot.isUserModifiable())
+                    throw new UserFriendlyRuntimeException("Input slots can not be modified!", "Unable to remove slot!",
+                            "Algorithm slot configuration",
+                            "The slot is configured, so it cannot be removed.", "Contact the authors of the plugin that provides the algorithm.");
             }
 
             inputSlotOrder.remove(name);
@@ -255,6 +259,10 @@ public class JIPipeDefaultMutableSlotConfiguration implements JIPipeMutableSlotC
                     throw new UserFriendlyRuntimeException("Output slots can not be modified!", "Unable to remove slot!",
                             "Algorithm slot configuration",
                             "The algorithm is configured, so output slots cannot be removed.", "Contact the authors of the plugin that provides the algorithm.");
+                if(!slot.isUserModifiable())
+                    throw new UserFriendlyRuntimeException("Input slots can not be modified!", "Unable to remove slot!",
+                            "Algorithm slot configuration",
+                            "The slot is configured, so it cannot be removed.", "Contact the authors of the plugin that provides the algorithm.");
             }
 
             outputSlots.remove(name);
