@@ -18,16 +18,19 @@ import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.JIPipeValidityReport;
 import org.hkijena.jipipe.api.nodes.JIPipeAlgorithm;
+import org.hkijena.jipipe.api.nodes.JIPipeGraph;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.JIPipeOutputSlot;
 import org.hkijena.jipipe.api.nodes.categories.DataSourceNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
+import org.hkijena.jipipe.extensions.filesystem.FilesystemExtensionSettings;
 import org.hkijena.jipipe.extensions.filesystem.dataypes.PathData;
 import org.hkijena.jipipe.extensions.parameters.primitives.FilePathParameterSettings;
 import org.hkijena.jipipe.ui.components.PathEditor;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Objects;
 
 /**
  * Provides an input file
@@ -85,7 +88,14 @@ public class PathDataSource extends JIPipeAlgorithm {
     @JIPipeParameter("path")
     public void setPath(Path path) {
         this.path = path;
-
+        FilesystemExtensionSettings settings = FilesystemExtensionSettings.getInstance();
+        if(settings != null && settings.isAutoLabelOutputWithFileName()) {
+            String name = path != null ? path.getFileName().toString() : "";
+            if(!Objects.equals(getFirstOutputSlot().getInfo().getCustomName(), name)) {
+                getFirstOutputSlot().getInfo().setCustomName(name);
+                getEventBus().post(new JIPipeGraph.NodeSlotsChangedEvent(this));
+            }
+        }
     }
 
     @JIPipeDocumentation(name = "Needs to exist", description = "If true, the selected path needs to exist.")
@@ -134,9 +144,12 @@ public class PathDataSource extends JIPipeAlgorithm {
                 }
             }
             // Make relative if already absolute and workDirectory != null
-            if (path.isAbsolute()) {
-                if (workDirectory != null && path.startsWith(workDirectory)) {
-                    setPath(workDirectory.relativize(path));
+            FilesystemExtensionSettings settings = FilesystemExtensionSettings.getInstance();
+            if(settings == null || settings.isRelativizePaths()) {
+                if (path.isAbsolute()) {
+                    if (workDirectory != null && path.startsWith(workDirectory)) {
+                        setPath(workDirectory.relativize(path));
+                    }
                 }
             }
         }

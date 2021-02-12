@@ -84,6 +84,13 @@ public class FilesystemExtension extends JIPipePrepackagedDefaultJavaExtension {
         registerImageJDataAdapter(new PathDataImageJAdapter(FolderData.class), PathDataImporterUI.class);
 
         registerAlgorithms();
+
+        registerSettingsSheet(FilesystemExtensionSettings.ID,
+                "Filesystem",
+                UIUtils.getIconFromResources("actions/document-open-folder.png"),
+                "Extensions",
+                UIUtils.getIconFromResources("actions/plugins.png"),
+                new FilesystemExtensionSettings());
     }
 
     private void registerAlgorithms() {
