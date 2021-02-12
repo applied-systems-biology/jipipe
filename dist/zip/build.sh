@@ -56,7 +56,7 @@ fi
 rm -r package
 mkdir -p package/dependencies
 
-for component in jipipe-core jipipe-clij jipipe-multiparameters jipipe-filesystem jipipe-ij jipipe-ij-omero jipipe-ij-algorithms jipipe-ij-multi-template-matching jipipe-python jipipe-plots jipipe-tables jipipe-annotation jipipe-utils jipipe-strings jipipe-launcher ij-updater-cli; do
+for component in jipipe-core jipipe-clij jipipe-multiparameters jipipe-filesystem jipipe-ij jipipe-ij-omero jipipe-ij-algorithms jipipe-ij-multi-template-matching jipipe-python jipipe-plots jipipe-tables jipipe-annotation jipipe-utils jipipe-strings jipipe-forms jipipe-launcher ij-updater-cli; do
     cp -v ../../$component/target/$component-$JIPIPE_VERSION.jar package
 done
 for dependency in dependencies/*.jar; do

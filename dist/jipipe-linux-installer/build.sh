@@ -7,7 +7,7 @@ mkdir AppDir
 
 # Copy JIPipe components
 mkdir -p AppDir/usr/share/jipipe-installer/jipipe-bin
-for component in jipipe-core jipipe-clij jipipe-multiparameters jipipe-filesystem jipipe-ij jipipe-ij-algorithms jipipe-ij-multi-template-matching jipipe-python jipipe-plots jipipe-tables jipipe-annotation jipipe-utils jipipe-strings jipipe-launcher ij-updater-cli; do
+for component in jipipe-core jipipe-clij jipipe-multiparameters jipipe-filesystem jipipe-ij jipipe-ij-algorithms jipipe-ij-multi-template-matching jipipe-python jipipe-plots jipipe-tables jipipe-annotation jipipe-utils jipipe-strings jipipe-forms jipipe-launcher ij-updater-cli; do
     cp -v ../../$component/target/$component-$JIPIPE_VERSION.jar AppDir/usr/share/jipipe-installer/jipipe-bin
 done
 
