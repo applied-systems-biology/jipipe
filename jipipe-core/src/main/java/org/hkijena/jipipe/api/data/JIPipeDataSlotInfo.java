@@ -114,6 +114,7 @@ public class JIPipeDataSlotInfo implements JIPipeParameterCollection {
         this.virtual = other.virtual;
         this.saveOutputs = other.saveOutputs;
         this.optional = other.optional;
+        this.userModifiable = other.userModifiable;
     }
 
     /**

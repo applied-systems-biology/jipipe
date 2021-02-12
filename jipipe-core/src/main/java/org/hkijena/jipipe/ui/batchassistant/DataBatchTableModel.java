@@ -22,7 +22,7 @@ public class DataBatchTableModel implements TableModel {
     private final List<JIPipeMergingDataBatch> dataBatchList;
     private final List<String> inputSlotNames = new ArrayList<>();
     private final List<String> annotationColumns = new ArrayList<>();
-    private final List<Component> previews = new ArrayList<>();
+    private final Map<String, List<Component>> previews = new HashMap<>();
     private final List<Map<String, JIPipeVirtualData>> previewedData = new ArrayList<>();
     private final JTable table;
     private JScrollPane scrollPane;
@@ -50,8 +50,12 @@ public class DataBatchTableModel implements TableModel {
         inputSlotNames.addAll(inputSlotNameSet);
         annotationColumns.addAll(annotationColumnSet);
 
-        for (int i = 0; i < dataBatchList.size(); i++) {
-            previews.add(null);
+        for (String name : inputSlotNameSet) {
+            List<Component> previewsForSlot = new ArrayList<>();
+            for (int i = 0; i < dataBatchList.size(); i++) {
+                previewsForSlot.add(null);
+            }
+            previews.put(name, previewsForSlot);
         }
     }
 
@@ -99,16 +103,16 @@ public class DataBatchTableModel implements TableModel {
         if (columnIndex == 0) {
             return rowIndex;
         } else if (columnIndex - 1 < inputSlotNames.size()) {
-            Component preview = previews.get(rowIndex);
+            String slotName = inputSlotNames.get(columnIndex - 1);
+            Component preview = previews.get(slotName).get(rowIndex);
             if (preview == null) {
-                String slotName = inputSlotNames.get(columnIndex - 1);
                 JIPipeVirtualData previewed = previewedData.get(rowIndex).getOrDefault(slotName, null);
                 if (previewed != null) {
                     preview = new JIPipeCachedDataPreview(table, previewed, true);
                 } else {
                     preview = new JLabel("N/A");
                 }
-                previews.set(rowIndex, preview);
+                previews.get(slotName).set(rowIndex, preview);
             }
             return preview;
         } else {
@@ -157,18 +161,20 @@ public class DataBatchTableModel implements TableModel {
 
     public void updateRenderedPreviews() {
         JViewport viewport = scrollPane.getViewport();
-        for (int row = 0; row < previews.size(); row++) {
-            Component component = previews.get(row);
-            if (component instanceof JIPipeCachedDataPreview) {
-                if (((JIPipeCachedDataPreview) component).isRenderedOrRendering())
-                    continue;
-                // We assume view column = 0
-                Rectangle rect = table.getCellRect(row, 0, true);
-                Point pt = viewport.getViewPosition();
-                rect.setLocation(rect.x - pt.x, rect.y - pt.y);
-                boolean overlaps = new Rectangle(viewport.getExtentSize()).intersects(rect);
-                if (overlaps) {
-                    ((JIPipeCachedDataPreview) component).renderPreview();
+        for (List<Component> list : previews.values()) {
+            for (int row = 0; row < list.size(); row++) {
+                Component component = list.get(row);
+                if (component instanceof JIPipeCachedDataPreview) {
+                    if (((JIPipeCachedDataPreview) component).isRenderedOrRendering())
+                        continue;
+                    // We assume view column = 0
+                    Rectangle rect = table.getCellRect(row, 0, true);
+                    Point pt = viewport.getViewPosition();
+                    rect.setLocation(rect.x - pt.x, rect.y - pt.y);
+                    boolean overlaps = new Rectangle(viewport.getExtentSize()).intersects(rect);
+                    if (overlaps) {
+                        ((JIPipeCachedDataPreview) component).renderPreview();
+                    }
                 }
             }
         }

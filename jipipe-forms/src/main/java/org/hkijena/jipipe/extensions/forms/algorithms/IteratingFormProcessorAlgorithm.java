@@ -1,14 +1,9 @@
 package org.hkijena.jipipe.extensions.forms.algorithms;
 
-import gnu.trove.set.TIntSet;
-import gnu.trove.set.hash.TIntHashSet;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
-import org.hkijena.jipipe.api.data.JIPipeAnnotation;
-import org.hkijena.jipipe.api.data.JIPipeAnnotationMergeStrategy;
-import org.hkijena.jipipe.api.data.JIPipeData;
-import org.hkijena.jipipe.api.data.JIPipeDataSlot;
+import org.hkijena.jipipe.api.data.*;
 import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.MiscellaneousNodeTypeCategory;
@@ -17,7 +12,7 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterVisibility;
 import org.hkijena.jipipe.extensions.forms.datatypes.FormData;
 import org.hkijena.jipipe.extensions.forms.ui.FormsDialog;
-import org.hkijena.jipipe.extensions.parameters.generators.IntegerRange;
+import org.hkijena.jipipe.extensions.multiparameters.datatypes.ParametersData;
 import org.hkijena.jipipe.extensions.parameters.primitives.StringParameterSettings;
 import org.hkijena.jipipe.ui.JIPipeDummyWorkbench;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
@@ -30,58 +25,72 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.stream.Collectors;
 
-@JIPipeDocumentation(name = "Form processor (simple iterating)", description = "An algorithm that iterates through each row " +
-        "of its 'Data' slot and shows a user interface during the runtime that allows users to modify annotations via form elements. " +
-        "These forms are provided via the 'Forms' slot, where all contained form elements are shown in the user interface. " +
+import static org.hkijena.jipipe.api.nodes.JIPipeParameterSlotAlgorithm.SLOT_PARAMETERS;
+
+@JIPipeDocumentation(name = "Form processor (iterating)", description = "An algorithm that iterates through groups of data in " +
+        "its 'Data' slot and shows a user interface during the runtime that allows users to modify annotations via form elements. " +
+        "Groups are based on the annotations. " +
+        "These forms are provided via the 'Forms' slot, where all contained form elements are shown in the user interface." +
         "After the user input, the form data objects are stored in an output slot (one set of copies per data batch).")
 @JIPipeOrganization(nodeTypeCategory = MiscellaneousNodeTypeCategory.class, menuPath = "Forms")
-@JIPipeInputSlot(value = JIPipeData.class, slotName = "Data", autoCreate = true)
-@JIPipeInputSlot(value = FormData.class, slotName = "Forms", autoCreate = true)
-@JIPipeOutputSlot(value = JIPipeData.class, slotName = "Data", autoCreate = true)
-@JIPipeOutputSlot(value = FormData.class, slotName = "Forms", autoCreate = true)
-public class SimpleIteratingFormProcessorAlgorithm extends JIPipeAlgorithm implements JIPipeDataBatchAlgorithm {
+@JIPipeInputSlot(value = JIPipeData.class, slotName = "Data")
+@JIPipeInputSlot(value = FormData.class, slotName = "Forms")
+@JIPipeOutputSlot(value = JIPipeData.class, slotName = "Data")
+@JIPipeOutputSlot(value = FormData.class, slotName = "Forms")
+public class IteratingFormProcessorAlgorithm extends JIPipeAlgorithm implements JIPipeDataBatchAlgorithm {
+
+    public static final String SLOT_FORMS = "Forms";
 
     private String tabAnnotation = "Tab";
-    private JIPipeSimpleIteratingAlgorithm.DataBatchGenerationSettings dataBatchGenerationSettings = new JIPipeSimpleIteratingAlgorithm.DataBatchGenerationSettings();
+    private JIPipeMergingAlgorithm.DataBatchGenerationSettings dataBatchGenerationSettings = new JIPipeMergingAlgorithm.DataBatchGenerationSettings();
 
-    public SimpleIteratingFormProcessorAlgorithm(JIPipeNodeInfo info) {
-        super(info);
+    public IteratingFormProcessorAlgorithm(JIPipeNodeInfo info) {
+        super(info, new JIPipeIOSlotConfiguration());
+        updateFormsSlot();
     }
 
-    public SimpleIteratingFormProcessorAlgorithm(SimpleIteratingFormProcessorAlgorithm other) {
+    public IteratingFormProcessorAlgorithm(IteratingFormProcessorAlgorithm other) {
         super(other);
         this.tabAnnotation = other.tabAnnotation;
-        this.dataBatchGenerationSettings = new JIPipeSimpleIteratingAlgorithm.DataBatchGenerationSettings(other.dataBatchGenerationSettings);
+        this.dataBatchGenerationSettings = new JIPipeMergingAlgorithm.DataBatchGenerationSettings(other.dataBatchGenerationSettings);
+        updateFormsSlot();
+    }
+
+    private void updateFormsSlot() {
+        JIPipeMutableSlotConfiguration slotConfiguration = (JIPipeMutableSlotConfiguration) getSlotConfiguration();
+        JIPipeDataSlotInfo existing = slotConfiguration.getInputSlots().getOrDefault(SLOT_FORMS, null);
+        if (existing != null && existing.getDataClass() != FormData.class) {
+            slotConfiguration.removeInputSlot(SLOT_FORMS, false);
+            existing = null;
+        }
+        if (existing == null) {
+            JIPipeDataSlotInfo info = new JIPipeDataSlotInfo(FormData.class, JIPipeSlotType.Input, null);
+            info.setUserModifiable(false);
+            slotConfiguration.addSlot(SLOT_FORMS,
+                    info,
+                    false);
+        }
     }
 
     @Override
     public void run(JIPipeProgressInfo progressInfo) {
-        JIPipeDataSlot dataSlot = getInputSlot("Data");
         JIPipeDataSlot formsSlot = getInputSlot("Forms");
-        JIPipeDataSlot outputDataSlot = getOutputSlot("Data");
         JIPipeDataSlot formsOutputSlot = getOutputSlot("Forms");
 
         if (isPassThrough() || formsSlot.isEmpty()) {
-            // Just copy without changes
-            outputDataSlot.addData(dataSlot, progressInfo);
-        } else if (!dataSlot.isEmpty()) {
-            // Generate data batches and show the user interface
-            List<JIPipeMergingDataBatch> dataBatchList = new ArrayList<>();
-            boolean withLimit = dataBatchGenerationSettings.getLimit().isEnabled();
-            IntegerRange limit = dataBatchGenerationSettings.getLimit().getContent();
-            TIntSet allowedIndices = withLimit ? new TIntHashSet(limit.getIntegers()) : null;
-            for (int row = 0; row < dataSlot.getRowCount(); row++) {
-                if (withLimit && !allowedIndices.contains(row))
-                    continue;
-                JIPipeMergingDataBatch dataBatch = new JIPipeMergingDataBatch(this);
-                dataBatch.addData(dataSlot, row);
-                dataBatch.addGlobalAnnotations(dataSlot.getAnnotations(row), JIPipeAnnotationMergeStrategy.Merge);
-                dataBatchList.add(dataBatch);
+            for (String name : getInputSlotMap().keySet()) {
+                JIPipeDataSlot inputSlot = getInputSlot(name);
+                JIPipeDataSlot outputSlot = getOutputSlot(name);
+                outputSlot.addData(inputSlot, progressInfo);
             }
+        } else {
+            // Generate data batches and show the user interface
+            List<JIPipeMergingDataBatch> dataBatchList = generateDataBatchesDryRun(getEffectiveInputSlots());
 
             if(dataBatchList.isEmpty()) {
-                progressInfo.log("No data batches selected (according to limit). Skipping.");
+                progressInfo.log("No data batches. Skipping.");
                 return;
             }
 
@@ -148,11 +157,17 @@ public class SimpleIteratingFormProcessorAlgorithm extends JIPipeAlgorithm imple
             for (int i = 0; i < dataBatchForms.size(); i++) {
                 JIPipeDataSlot forms = dataBatchForms.get(i);
                 JIPipeMergingDataBatch dataBatch = dataBatchList.get(i);
-                getFirstOutputSlot().addData(dataBatch.getVirtualInputData(dataSlot).get(0),
-                        new ArrayList<>(dataBatch.getAnnotations().values()),
-                        JIPipeAnnotationMergeStrategy.OverwriteExisting);
-
-                // Copy user-modified forms
+                for (String name : getInputSlotMap().keySet()) {
+                    if(!name.equals("Forms")) {
+                        JIPipeDataSlot inputSlot = getInputSlot(name);
+                        JIPipeDataSlot outputSlot = getOutputSlot(name);
+                        for (int row : dataBatch.getInputSlotRows().get(inputSlot)) {
+                            outputSlot.addData(inputSlot.getVirtualData(row),
+                                    new ArrayList<>(dataBatch.getAnnotations().values()),
+                                    JIPipeAnnotationMergeStrategy.OverwriteExisting);
+                        }
+                    }
+                }
                 for (int row = 0; row < forms.getRowCount(); row++) {
                     List<JIPipeAnnotation> annotations = new ArrayList<>(forms.getAnnotations(row));
                     annotations.addAll(dataBatch.getAnnotations().values());
@@ -179,10 +194,10 @@ public class SimpleIteratingFormProcessorAlgorithm extends JIPipeAlgorithm imple
         this.tabAnnotation = tabAnnotation;
     }
 
-    @JIPipeDocumentation(name = "Data batch generation", description = "This algorithm has one input and will iterate through each row of its input and apply the workload. " +
+    @JIPipeDocumentation(name = "Data batch generation", description = "This algorithm will iterate through multiple inputs at once and apply the workload. " +
             "Use following settings to control which data batches are generated.")
     @JIPipeParameter(value = "jipipe:data-batch-generation", visibility = JIPipeParameterVisibility.Visible, collapsed = true)
-    public JIPipeSimpleIteratingAlgorithm.DataBatchGenerationSettings getDataBatchGenerationSettings() {
+    public JIPipeMergingAlgorithm.DataBatchGenerationSettings getDataBatchGenerationSettings() {
         return dataBatchGenerationSettings;
     }
 
@@ -193,24 +208,18 @@ public class SimpleIteratingFormProcessorAlgorithm extends JIPipeAlgorithm imple
 
     @Override
     public List<JIPipeDataSlot> getEffectiveInputSlots() {
-        return Collections.singletonList(getInputSlot("Data"));
+        return getInputSlots().stream().filter(slot -> !slot.getName().equals("Forms")).collect(Collectors.toList());
     }
 
     @Override
     public List<JIPipeMergingDataBatch> generateDataBatchesDryRun(List<JIPipeDataSlot> slots) {
-        List<JIPipeMergingDataBatch> batches = new ArrayList<>();
-        JIPipeDataSlot slot = slots.stream().filter(s -> "Data".equals(s.getName())).findFirst().get();
-        boolean withLimit = dataBatchGenerationSettings.getLimit().isEnabled();
-        IntegerRange limit = dataBatchGenerationSettings.getLimit().getContent();
-        TIntSet allowedIndices = withLimit ? new TIntHashSet(limit.getIntegers()) : null;
-        for (int i = 0; i < slot.getRowCount(); i++) {
-            if (withLimit && !allowedIndices.contains(i))
-                continue;
-            JIPipeMergingDataBatch dataBatch = new JIPipeMergingDataBatch(this);
-            dataBatch.addData(slot, i);
-            dataBatch.addGlobalAnnotations(slot.getAnnotations(i), JIPipeAnnotationMergeStrategy.Merge);
-            batches.add(dataBatch);
-        }
-        return batches;
+        JIPipeMergingDataBatchBuilder builder = new JIPipeMergingDataBatchBuilder();
+        builder.setNode(this);
+        builder.setSlots(slots);
+        builder.setApplyMerging(true);
+        builder.setAnnotationMergeStrategy(dataBatchGenerationSettings.getAnnotationMergeStrategy());
+        builder.setReferenceColumns(dataBatchGenerationSettings.getDataSetMatching(),
+                dataBatchGenerationSettings.getCustomColumns());
+        return builder.build();
     }
 }

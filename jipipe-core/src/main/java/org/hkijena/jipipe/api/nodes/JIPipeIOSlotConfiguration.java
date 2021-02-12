@@ -30,11 +30,14 @@ public class JIPipeIOSlotConfiguration extends JIPipeDefaultMutableSlotConfigura
     @Override
     public JIPipeDataSlotInfo addSlot(String name, JIPipeDataSlotInfo definition, boolean user) {
         JIPipeDataSlotInfo newSlot = super.addSlot(name, definition, user);
+        newSlot.setUserModifiable(definition.isUserModifiable());
         if (newSlot.isInput()) {
             JIPipeDataSlotInfo sisterSlot = new JIPipeDataSlotInfo(definition.getDataClass(), JIPipeSlotType.Output, null);
+            sisterSlot.setUserModifiable(definition.isUserModifiable());
             super.addSlot(name, sisterSlot, user);
         } else if (newSlot.isOutput()) {
             JIPipeDataSlotInfo sisterSlot = new JIPipeDataSlotInfo(definition.getDataClass(), JIPipeSlotType.Input, null);
+            sisterSlot.setUserModifiable(definition.isUserModifiable());
             super.addSlot(name, sisterSlot, user);
         }
         return newSlot;
