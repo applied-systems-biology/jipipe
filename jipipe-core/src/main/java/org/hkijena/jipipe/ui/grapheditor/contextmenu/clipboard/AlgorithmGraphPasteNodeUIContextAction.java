@@ -75,8 +75,8 @@ public class AlgorithmGraphPasteNodeUIContextAction implements NodeUIContextActi
         for (JIPipeGraphNode algorithm : graph.getNodes().values()) {
             Point original = originalLocations.getOrDefault(algorithm, null);
             if (original != null) {
-                original.x = (int) (original.x - minX + cursor.x * canvasUI.getZoom() / canvasUI.getViewMode().getGridWidth());
-                original.y = (int) (original.y - minY + cursor.y * canvasUI.getZoom() / canvasUI.getViewMode().getGridHeight());
+                original.x = (int) (original.x - minX + (cursor.x / canvasUI.getZoom()) / canvasUI.getViewMode().getGridWidth());
+                original.y = (int) (original.y - minY + (cursor.y / canvasUI.getZoom()) / canvasUI.getViewMode().getGridHeight());
                 algorithm.setLocationWithin(compartment, original, canvasUI.getViewMode().name());
             }
         }
