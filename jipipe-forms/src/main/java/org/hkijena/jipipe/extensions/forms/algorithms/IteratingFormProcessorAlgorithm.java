@@ -103,24 +103,32 @@ public class IteratingFormProcessorAlgorithm extends JIPipeAlgorithm implements 
 
             synchronized (lock) {
                 SwingUtilities.invokeLater(() -> {
-                    JIPipeWorkbench workbench = JIPipeWorkbench.tryFindWorkbench(getGraph(), new JIPipeDummyWorkbench());
-                    FormsDialog dialog = new FormsDialog(workbench, dataBatchList, formsSlot, tabAnnotation);
-                    dialog.setTitle(getName());
-                    dialog.setSize(1024, 768);
-                    dialog.setLocationRelativeTo(workbench.getWindow());
-                    dialog.revalidate();
-                    dialog.setVisible(true);
-                    dialog.addWindowListener(new WindowAdapter() {
-                        @Override
-                        public void windowClosed(WindowEvent e) {
-                            cancelled.set(dialog.isCancelled());
-                            uiResult[0] = dialog.getDataBatchForms();
-                            windowOpened.set(false);
-                            synchronized (lock) {
-                                lock.notify();
+                    try {
+                        JIPipeWorkbench workbench = JIPipeWorkbench.tryFindWorkbench(getGraph(), new JIPipeDummyWorkbench());
+                        FormsDialog dialog = new FormsDialog(workbench, dataBatchList, formsSlot, tabAnnotation);
+                        dialog.setTitle(getName());
+                        dialog.setSize(1024, 768);
+                        dialog.setLocationRelativeTo(workbench.getWindow());
+                        dialog.revalidate();
+                        dialog.setVisible(true);
+                        dialog.addWindowListener(new WindowAdapter() {
+                            @Override
+                            public void windowClosed(WindowEvent e) {
+                                cancelled.set(dialog.isCancelled());
+                                uiResult[0] = dialog.getDataBatchForms();
+                                windowOpened.set(false);
+                                synchronized (lock) {
+                                    lock.notify();
+                                }
                             }
+                        });
+                    } catch (Throwable e) {
+                        uiResult[0] = e;
+                        windowOpened.set(false);
+                        synchronized (lock) {
+                            lock.notify();
                         }
-                    });
+                    }
                 });
 
                 try {
@@ -130,6 +138,10 @@ public class IteratingFormProcessorAlgorithm extends JIPipeAlgorithm implements 
                 } catch (InterruptedException e) {
                     throw new RuntimeException(e);
                 }
+            }
+
+            if(uiResult[0] instanceof Throwable) {
+                throw new RuntimeException((Throwable) uiResult[0]);
             }
 
             if (cancelled.get()) {
