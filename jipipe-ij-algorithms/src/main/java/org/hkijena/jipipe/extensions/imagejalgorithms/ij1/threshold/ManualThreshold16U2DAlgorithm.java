@@ -20,6 +20,8 @@ import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.JIPipeValidityReport;
+import org.hkijena.jipipe.api.data.JIPipeAnnotation;
+import org.hkijena.jipipe.api.data.JIPipeAnnotationMergeStrategy;
 import org.hkijena.jipipe.api.data.JIPipeDefaultMutableSlotConfiguration;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
@@ -28,6 +30,10 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscale16UData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleMaskData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
+import org.hkijena.jipipe.extensions.parameters.primitives.OptionalAnnotationNameParameter;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import static org.hkijena.jipipe.extensions.imagejalgorithms.ImageJAlgorithmsExtension.ADD_MASK_QUALIFIER;
 
@@ -43,6 +49,8 @@ public class ManualThreshold16U2DAlgorithm extends JIPipeSimpleIteratingAlgorith
 
     private int minThreshold = 0;
     private int maxThreshold = 65535;
+    private OptionalAnnotationNameParameter minThresholdAnnotation = new OptionalAnnotationNameParameter("Min Threshold", true);
+    private OptionalAnnotationNameParameter maxThresholdAnnotation = new OptionalAnnotationNameParameter("Max Threshold", true);
 
     /**
      * Instantiates a new node type.
@@ -66,6 +74,8 @@ public class ManualThreshold16U2DAlgorithm extends JIPipeSimpleIteratingAlgorith
         super(other);
         this.minThreshold = other.minThreshold;
         this.maxThreshold = other.maxThreshold;
+        this.minThresholdAnnotation = new OptionalAnnotationNameParameter(other.minThresholdAnnotation);
+        this.maxThresholdAnnotation = new OptionalAnnotationNameParameter(other.maxThresholdAnnotation);
     }
 
     @Override
@@ -89,7 +99,18 @@ public class ManualThreshold16U2DAlgorithm extends JIPipeSimpleIteratingAlgorith
                 ((ShortProcessor) ip).findMinAndMax();
             }
         }, progressInfo);
-        dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusGreyscaleMaskData(img), progressInfo);
+        List<JIPipeAnnotation> annotations = new ArrayList<>();
+        if(minThresholdAnnotation.isEnabled()) {
+            annotations.add(minThresholdAnnotation.createAnnotation("" + minThreshold));
+        }
+        if(maxThresholdAnnotation.isEnabled()) {
+            annotations.add(maxThresholdAnnotation.createAnnotation("" + maxThreshold));
+        }
+        dataBatch.addOutputData(getFirstOutputSlot(),
+                new ImagePlusGreyscaleMaskData(img),
+                annotations,
+                JIPipeAnnotationMergeStrategy.Merge,
+                progressInfo);
     }
 
 
@@ -103,7 +124,7 @@ public class ManualThreshold16U2DAlgorithm extends JIPipeSimpleIteratingAlgorith
         }
     }
 
-    @JIPipeDocumentation(name = "Min Threshold", description = "All pixel values less or equal to this are set to zero. The value interval is [0, 65535].")
+    @JIPipeDocumentation(name = "Min threshold", description = "All pixel values less or equal to this are set to zero. The value interval is [0, 65535].")
     @JIPipeParameter(value = "min-threshold", uiOrder = -50)
     public int getMinThreshold() {
         return minThreshold;
@@ -115,7 +136,7 @@ public class ManualThreshold16U2DAlgorithm extends JIPipeSimpleIteratingAlgorith
 
     }
 
-    @JIPipeDocumentation(name = "Max Threshold", description = "All pixel values greater than this are set to zero. The value interval is [0, 65535].")
+    @JIPipeDocumentation(name = "Max threshold", description = "All pixel values greater than this are set to zero. The value interval is [0, 65535].")
     @JIPipeParameter(value = "max-threshold", uiOrder = -40)
     public int getMaxThreshold() {
         return maxThreshold;
@@ -124,5 +145,27 @@ public class ManualThreshold16U2DAlgorithm extends JIPipeSimpleIteratingAlgorith
     @JIPipeParameter("max-threshold")
     public void setMaxThreshold(int maxThreshold) {
         this.maxThreshold = maxThreshold;
+    }
+
+    @JIPipeDocumentation(name = "Min threshold annotation", description = "Annotation added to the output that contains the min threshold")
+    @JIPipeParameter("min-threshold-annotation")
+    public OptionalAnnotationNameParameter getMinThresholdAnnotation() {
+        return minThresholdAnnotation;
+    }
+
+    @JIPipeParameter("min-threshold-annotation")
+    public void setMinThresholdAnnotation(OptionalAnnotationNameParameter minThresholdAnnotation) {
+        this.minThresholdAnnotation = minThresholdAnnotation;
+    }
+
+    @JIPipeDocumentation(name = "Max threshold annotation", description = "Annotation added to the output that contains the max threshold")
+    @JIPipeParameter("min-threshold-annotation")
+    public OptionalAnnotationNameParameter getMaxThresholdAnnotation() {
+        return maxThresholdAnnotation;
+    }
+
+    @JIPipeParameter("min-threshold-annotation")
+    public void setMaxThresholdAnnotation(OptionalAnnotationNameParameter maxThresholdAnnotation) {
+        this.maxThresholdAnnotation = maxThresholdAnnotation;
     }
 }

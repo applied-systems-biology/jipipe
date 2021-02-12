@@ -145,7 +145,7 @@ public class DefaultExpressionEvaluator extends ExpressionEvaluator {
         if (variableName.contains(" ") || variableName.contains("(") || variableName.contains(")"))
             variableName = "$\"" + DefaultExpressionEvaluator.escapeString(variableName) + "\"";
         else {
-            List<String> tokens = DefaultExpressionParameter.EVALUATOR.getKnownNonAlphanumericOperatorTokens();
+            List<String> tokens = DefaultExpressionParameter.getEvaluatorInstance().getKnownNonAlphanumericOperatorTokens();
             boolean processed = false;
             for (String token : tokens) {
                 if (variableName.contains(token)) {
@@ -155,7 +155,7 @@ public class DefaultExpressionEvaluator extends ExpressionEvaluator {
                 }
             }
             if (!processed) {
-                for (Operator operator : DefaultExpressionParameter.EVALUATOR.getOperators()) {
+                for (Operator operator : DefaultExpressionParameter.getEvaluatorInstance().getOperators()) {
                     if (operator.getSymbol().equals(variableName)) {
                         variableName = "$\"" + DefaultExpressionEvaluator.escapeString(variableName) + "\"";
                         processed = true;
@@ -164,7 +164,7 @@ public class DefaultExpressionEvaluator extends ExpressionEvaluator {
                 }
             }
             if (!processed) {
-                for (Constant constant : DefaultExpressionParameter.EVALUATOR.getConstants()) {
+                for (Constant constant : DefaultExpressionParameter.getEvaluatorInstance().getConstants()) {
                     if (constant.getName().equals(variableName)) {
                         variableName = "$\"" + DefaultExpressionEvaluator.escapeString(variableName) + "\"";
                         processed = true;

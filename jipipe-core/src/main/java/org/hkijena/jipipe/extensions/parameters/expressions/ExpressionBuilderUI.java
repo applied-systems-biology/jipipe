@@ -62,9 +62,9 @@ public class ExpressionBuilderUI extends JPanel {
 
     public ExpressionBuilderUI(String expression, Set<ExpressionParameterVariable> variables) {
         this.variables = variables;
-        this.operatorEntryList = ExpressionOperatorEntry.fromEvaluator(DefaultExpressionParameter.EVALUATOR, true);
+        this.operatorEntryList = ExpressionOperatorEntry.fromEvaluator(DefaultExpressionParameter.getEvaluatorInstance(), true);
         this.operatorEntryList.sort(Comparator.comparing(ExpressionOperatorEntry::getName));
-        this.constantEntryList = ExpressionConstantEntry.fromEvaluator(DefaultExpressionParameter.EVALUATOR, true);
+        this.constantEntryList = ExpressionConstantEntry.fromEvaluator(DefaultExpressionParameter.getEvaluatorInstance(), true);
         this.constantEntryList.sort(Comparator.comparing(ExpressionConstantEntry::getName));
         initialize();
         expressionEditor.setText(expression);
@@ -418,13 +418,13 @@ public class ExpressionBuilderUI extends JPanel {
     private void insertOperator(ExpressionOperatorEntry operatorEntry, List<ExpressionBuilderParameterUI> parameterEditorUIList) {
         if (operatorEntry.getOperator().getOperandCount() == 1) {
             if (operatorEntry.getOperator().getAssociativity() == Operator.Associativity.LEFT) {
-                boolean symbolic = DefaultExpressionParameter.EVALUATOR.getKnownNonAlphanumericOperatorTokens().contains(operatorEntry.getOperator().getSymbol());
+                boolean symbolic = DefaultExpressionParameter.getEvaluatorInstance().getKnownNonAlphanumericOperatorTokens().contains(operatorEntry.getOperator().getSymbol());
                 if (symbolic)
                     insertAtCaret(parameterEditorUIList.get(0).getCurrentExpressionValue() + operatorEntry.getOperator().getSymbol());
                 else
                     insertAtCaret(parameterEditorUIList.get(0).getCurrentExpressionValue() + " " + operatorEntry.getOperator().getSymbol());
             } else {
-                boolean symbolic = DefaultExpressionParameter.EVALUATOR.getKnownNonAlphanumericOperatorTokens().contains(operatorEntry.getOperator().getSymbol());
+                boolean symbolic = DefaultExpressionParameter.getEvaluatorInstance().getKnownNonAlphanumericOperatorTokens().contains(operatorEntry.getOperator().getSymbol());
                 if (symbolic)
                     insertAtCaret(operatorEntry.getOperator().getSymbol() + parameterEditorUIList.get(0).getCurrentExpressionValue());
                 else

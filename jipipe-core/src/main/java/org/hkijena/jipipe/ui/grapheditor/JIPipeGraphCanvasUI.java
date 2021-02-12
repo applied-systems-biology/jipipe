@@ -159,7 +159,11 @@ public class JIPipeGraphCanvasUI extends JIPipeWorkbenchPanel implements MouseMo
                         if(node != null) {
                             JIPipeNodeUI nodeUI = nodeUIs.getOrDefault(node, null);
                             if(nodeUI != null) {
-                                selectOnly(nodeUI);
+                                Container graphEditor = SwingUtilities.getAncestorOfClass(JIPipeGraphEditorUI.class, this);
+                                if(graphEditor == null)
+                                    selectOnly(nodeUI);
+                                else
+                                    ((JIPipeGraphEditorUI)graphEditor).selectOnly(nodeUI);
                             }
                         }
                     }
@@ -250,12 +254,12 @@ public class JIPipeGraphCanvasUI extends JIPipeWorkbenchPanel implements MouseMo
                 autoPlaceCloseToCursor(ui);
                 ++newlyPlacedAlgorithms;
             }
-            ui.addComponentListener(new ComponentAdapter() {
-                @Override
-                public void componentResized(ComponentEvent e) {
-                    removeComponentOverlaps();
-                }
-            });
+//            ui.addComponentListener(new ComponentAdapter() {
+//                @Override
+//                public void componentResized(ComponentEvent e) {
+//                    removeComponentOverlaps();
+//                }
+//            });
         }
         revalidate();
         repaint();

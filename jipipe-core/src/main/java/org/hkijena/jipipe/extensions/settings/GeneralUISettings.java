@@ -33,7 +33,7 @@ public class GeneralUISettings implements JIPipeParameterCollection {
     private boolean showProjectInfo = true;
     private boolean showParameterSearchBar = true;
     private boolean neverAskOnClosingTabs = false;
-    private boolean validateOnSave = true;
+    private boolean validateOnSave = false;
     private boolean projectInfoGeneratesPreview = true;
     private boolean addContextActionsToContextMenu = true;
     private boolean maximizeWindows = true;

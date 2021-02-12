@@ -203,7 +203,7 @@ public class NumberParameterEditorUI extends JIPipeParameterEditorUI {
         numberField.addActionListener(e -> {
             // Try using an expression
             try {
-                Object result = DefaultExpressionParameter.EVALUATOR.evaluate(numberField.getText());
+                Object result = DefaultExpressionParameter.getEvaluatorInstance().evaluate(numberField.getText());
                 if (result instanceof Number) {
                     numberField.setText(formatNumber(((Number) result).doubleValue()));
                 }

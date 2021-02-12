@@ -83,6 +83,8 @@ public class JIPipeCompartmentGraphUI extends JIPipeGraphEditorUI {
                 NodeUIContextAction.SEPARATOR,
                 new DeleteCompartmentUIContextAction(),
                 NodeUIContextAction.SEPARATOR,
+                new SetNodeHotkeyContextAction(),
+                NodeUIContextAction.SEPARATOR,
                 new SelectAndMoveNodeHereNodeUIContextAction()
         );
         // Custom entries (from registry)

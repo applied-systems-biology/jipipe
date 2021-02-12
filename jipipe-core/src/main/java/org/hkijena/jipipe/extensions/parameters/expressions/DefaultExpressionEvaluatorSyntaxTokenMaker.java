@@ -35,20 +35,20 @@ public class DefaultExpressionEvaluatorSyntaxTokenMaker extends AbstractTokenMak
     private Set<String> operators;
 
     public DefaultExpressionEvaluatorSyntaxTokenMaker() {
-        knownNonAlphanumericOperatorTokens = DefaultExpressionParameter.EVALUATOR.getKnownNonAlphanumericOperatorTokens();
+        knownNonAlphanumericOperatorTokens = DefaultExpressionParameter.getEvaluatorInstance().getKnownNonAlphanumericOperatorTokens();
     }
 
     @Override
     public TokenMap getWordsToHighlight() {
         TokenMap tokenMap = new TokenMap();
-        for (Constant constant : DefaultExpressionParameter.EVALUATOR.getConstants()) {
+        for (Constant constant : DefaultExpressionParameter.getEvaluatorInstance().getConstants()) {
             tokenMap.put(constant.getName(), Token.RESERVED_WORD);
         }
-        for (Function function : DefaultExpressionParameter.EVALUATOR.getFunctions()) {
+        for (Function function : DefaultExpressionParameter.getEvaluatorInstance().getFunctions()) {
             tokenMap.put(function.getName(), Token.FUNCTION);
         }
         operators = new HashSet<>();
-        for (Operator operator : DefaultExpressionParameter.EVALUATOR.getOperators()) {
+        for (Operator operator : DefaultExpressionParameter.getEvaluatorInstance().getOperators()) {
             tokenMap.put(operator.getSymbol(), Token.OPERATOR);
             operators.add(operator.getSymbol());
         }

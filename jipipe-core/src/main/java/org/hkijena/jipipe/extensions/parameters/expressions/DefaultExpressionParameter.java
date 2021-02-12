@@ -13,11 +13,14 @@
 
 package org.hkijena.jipipe.extensions.parameters.expressions;
 
+import com.google.common.eventbus.Subscribe;
+import org.hkijena.jipipe.JIPipe;
+
 /**
  * An {@link ExpressionParameter} that utilizes the {@link DefaultExpressionEvaluator} to generate results
  */
 public class DefaultExpressionParameter extends ExpressionParameter {
-    public static final DefaultExpressionEvaluator EVALUATOR = new DefaultExpressionEvaluator();
+    private static DefaultExpressionEvaluator EVALUATOR;
 
     public DefaultExpressionParameter() {
     }
@@ -32,6 +35,22 @@ public class DefaultExpressionParameter extends ExpressionParameter {
 
     @Override
     public ExpressionEvaluator getEvaluator() {
+        return EVALUATOR;
+    }
+
+    public static DefaultExpressionEvaluator getEvaluatorInstance() {
+        if(EVALUATOR == null) {
+            EVALUATOR = new DefaultExpressionEvaluator();
+            // Prevent evaluator stuck without registered functions
+            if(JIPipe.getInstance() != null) {
+                JIPipe.getInstance().getEventBus().register(new Object() {
+                    @Subscribe
+                    public void onExtensionRegistered(JIPipe.ExtensionRegisteredEvent event) {
+                        EVALUATOR = new DefaultExpressionEvaluator();
+                    }
+                });
+            }
+        }
         return EVALUATOR;
     }
 }
