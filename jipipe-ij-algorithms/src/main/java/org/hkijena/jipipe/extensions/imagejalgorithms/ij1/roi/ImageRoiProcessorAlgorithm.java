@@ -44,7 +44,7 @@ public abstract class ImageRoiProcessorAlgorithm extends JIPipeIteratingAlgorith
             "The reference image provides information about the area where the ROI are located and can be used to extract statistics. " +
             "You can choose to disable the reference image slot via the 'Require reference image' parameter.\n\n" + ITERATING_ALGORITHM_DESCRIPTION;
 
-    private boolean overrideReferenceImage = false;
+    private boolean overrideReferenceImage = true;
     private UnreferencedRoiToMaskAlgorithm toMaskAlgorithm;
     private boolean preferAssociatedImage = true;
 
