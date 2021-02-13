@@ -35,7 +35,7 @@ public class DefaultExpressionParameter extends ExpressionParameter {
 
     @Override
     public ExpressionEvaluator getEvaluator() {
-        return EVALUATOR;
+        return getEvaluatorInstance();
     }
 
     public static DefaultExpressionEvaluator getEvaluatorInstance() {
