@@ -931,30 +931,42 @@ public class JIPipeGraph implements JIPipeValidatable {
      * Gets all algorithms and all dependent algorithms that are missing inputs or are deactivated by the user
      *
      * @return list of algorithms
+     * @param cascading if predecessors are also checked.
      */
-    public Set<JIPipeGraphNode> getDeactivatedAlgorithms() {
+    public Set<JIPipeGraphNode> getDeactivatedAlgorithms(boolean cascading) {
         Set<JIPipeGraphNode> missing = new HashSet<>();
-        for (JIPipeGraphNode algorithm : traverse()) {
-            if (!algorithm.getInfo().isRunnable())
-                continue;
-            if (algorithm instanceof JIPipeAlgorithm) {
-                if (!((JIPipeAlgorithm) algorithm).isEnabled()) {
-                    missing.add(algorithm);
+        if(cascading) {
+            for (JIPipeGraphNode algorithm : traverse()) {
+                if (!algorithm.getInfo().isRunnable())
                     continue;
+                if (algorithm instanceof JIPipeAlgorithm) {
+                    if (!((JIPipeAlgorithm) algorithm).isEnabled()) {
+                        missing.add(algorithm);
+                        continue;
+                    }
                 }
-            }
-            for (JIPipeDataSlot inputSlot : algorithm.getInputSlots()) {
-                if (inputSlot.getInfo().isOptional())
-                    continue;
-                Set<JIPipeDataSlot> sourceSlots = getSourceSlots(inputSlot);
-                if (sourceSlots.isEmpty()) {
-                    missing.add(algorithm);
-                    break;
-                }
-                for (JIPipeDataSlot sourceSlot : sourceSlots) {
-                    if (missing.contains(sourceSlot.getNode())) {
+                for (JIPipeDataSlot inputSlot : algorithm.getInputSlots()) {
+                    if (inputSlot.getInfo().isOptional())
+                        continue;
+                    Set<JIPipeDataSlot> sourceSlots = getSourceSlots(inputSlot);
+                    if (sourceSlots.isEmpty()) {
                         missing.add(algorithm);
                         break;
+                    }
+                    for (JIPipeDataSlot sourceSlot : sourceSlots) {
+                        if (missing.contains(sourceSlot.getNode())) {
+                            missing.add(algorithm);
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+        else {
+            for (JIPipeGraphNode node : nodes.values()) {
+                if (node instanceof JIPipeAlgorithm) {
+                    if (!((JIPipeAlgorithm) node).isEnabled()) {
+                        missing.add(node);
                     }
                 }
             }

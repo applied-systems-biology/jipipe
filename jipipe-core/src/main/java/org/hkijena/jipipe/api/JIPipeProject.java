@@ -522,7 +522,7 @@ public class JIPipeProject implements JIPipeValidatable {
      * @return list of deactivated nodes
      */
     public Set<JIPipeGraphNode> getDeactivatedAlgorithms() {
-        return graph.getDeactivatedAlgorithms();
+        return graph.getDeactivatedAlgorithms(true);
     }
 
     /**

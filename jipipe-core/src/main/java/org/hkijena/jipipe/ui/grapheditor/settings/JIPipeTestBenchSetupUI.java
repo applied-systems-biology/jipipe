@@ -134,7 +134,7 @@ public class JIPipeTestBenchSetupUI extends JIPipeProjectWorkbenchPanel {
         JIPipeValidityReport report = new JIPipeValidityReport();
         getProject().reportValidity(report, algorithm);
 
-        Set<JIPipeGraphNode> algorithmsWithMissingInput = getProject().getGraph().getDeactivatedAlgorithms();
+        Set<JIPipeGraphNode> algorithmsWithMissingInput = getProject().getGraph().getDeactivatedAlgorithms(true);
         if (algorithmsWithMissingInput.contains(algorithm)) {
             report.forCategory("Test Bench").reportIsInvalid(
                     "Selected algorithm is deactivated or missing inputs!",

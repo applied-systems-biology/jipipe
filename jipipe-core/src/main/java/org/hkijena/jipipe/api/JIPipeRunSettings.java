@@ -33,6 +33,7 @@ public class JIPipeRunSettings implements JIPipeParameterCollection {
     private boolean saveOutputs = true;
     private int numThreads = RuntimeSettings.getInstance().getDefaultRunThreads();
     private boolean silent = false;
+    private boolean ignoreDeactivatedInputs = false;
 
     @JIPipeParameter(value = "output-path", uiOrder = -999)
     @JIPipeDocumentation(name = "Output folder")
@@ -111,5 +112,19 @@ public class JIPipeRunSettings implements JIPipeParameterCollection {
 
     public void setSilent(boolean silent) {
         this.silent = silent;
+    }
+
+    /**
+     * If true, the run will ignore cascading checks for deactivated inputs
+     * and run any node, that is not explicitly deactivated.
+     * If enabled, the data must be provided externally (or the table is empty)
+     * @return if cascading deactivation is ignored
+     */
+    public boolean isIgnoreDeactivatedInputs() {
+        return ignoreDeactivatedInputs;
+    }
+
+    public void setIgnoreDeactivatedInputs(boolean ignoreDeactivatedInputs) {
+        this.ignoreDeactivatedInputs = ignoreDeactivatedInputs;
     }
 }

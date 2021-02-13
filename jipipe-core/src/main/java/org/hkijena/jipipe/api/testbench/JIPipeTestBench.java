@@ -13,6 +13,7 @@
 
 package org.hkijena.jipipe.api.testbench;
 
+import com.google.common.collect.ImmutableList;
 import org.hkijena.jipipe.api.*;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeAlgorithm;
@@ -20,8 +21,7 @@ import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 /**
  * Allows to test one algorithm with multiple parameters
@@ -59,14 +59,20 @@ public class JIPipeTestBench implements JIPipeRunnable, JIPipeValidatable {
         configuration.setNumThreads(settings.getNumThreads());
         configuration.setSaveOutputs(settings.isSaveOutputs());
 
+        // This setting is needed to prevent cascading intelligent deactivation of nodes
+        // due to cache optimization down to the target.
+        // The test bench will handle this!
+        configuration.setIgnoreDeactivatedInputs(true);
+
         testBenchRun = new JIPipeRun(project, configuration);
         testBenchRun.setInfo(info);
         benchedAlgorithm = testBenchRun.getGraph().getNodes().get(projectAlgorithm.getIdInGraph());
         ((JIPipeAlgorithm) benchedAlgorithm).setEnabled(true);
 
         // Disable all algorithms that are not dependencies of the benched algorithm
-        List<JIPipeGraphNode> predecessorAlgorithms = testBenchRun.getGraph()
-                .getPredecessorAlgorithms(benchedAlgorithm, testBenchRun.getGraph().traverse());
+//        List<JIPipeGraphNode> predecessorAlgorithms = testBenchRun.getGraph()
+//                .getPredecessorAlgorithms(benchedAlgorithm, testBenchRun.getGraph().traverse());
+        Set<JIPipeGraphNode> predecessorAlgorithms = findPredecessorsWithoutCache();
         if (!settings.isExcludeSelected())
             predecessorAlgorithms.add(benchedAlgorithm);
         for (JIPipeGraphNode node : testBenchRun.getGraph().getNodes().values()) {
@@ -76,7 +82,46 @@ public class JIPipeTestBench implements JIPipeRunnable, JIPipeValidatable {
                 }
             }
         }
+    }
 
+    private Set<JIPipeGraphNode> findPredecessorsWithoutCache() {
+        JIPipeProjectCacheQuery query = new JIPipeProjectCacheQuery(project);
+        Set<JIPipeGraphNode> predecessors = new HashSet<>();
+        Set<JIPipeGraphNode> handledNodes = new HashSet<>();
+        Stack<JIPipeGraphNode> stack = new Stack<>();
+        stack.push(benchedAlgorithm);
+        JIPipeProgressInfo progressInfo = new JIPipeProgressInfo();
+        while (!stack.isEmpty()) {
+            JIPipeGraphNode node = stack.pop();
+            for (JIPipeDataSlot inputSlot : node.getInputSlots()) {
+                for (JIPipeDataSlot sourceSlot : testBenchRun.getGraph().getSourceSlots(inputSlot)) {
+                    JIPipeGraphNode predecessorNode = sourceSlot.getNode();
+                    if(handledNodes.contains(predecessorNode))
+                        continue;
+                    handledNodes.add(predecessorNode);
+                    if (!predecessorNode.getInfo().isRunnable())
+                        continue;
+                    JIPipeGraphNode projectPredecessorNode = project.getGraph().getEquivalentAlgorithm(predecessorNode);
+                    Map<String, JIPipeDataSlot> cache = query.getCachedCache(projectPredecessorNode);
+
+                    if (cache.isEmpty()) {
+                        // The cache is empty -> This is now a predecessor and must be executed.
+                        // Continue to search for its predecessors
+                        predecessors.add(predecessorNode);
+                        stack.push(predecessorNode);
+                    }
+                    else {
+                        // If the cache is not empty, end searching this branch (we are satisfied)
+                        // We will copy over the values
+                        for (Map.Entry<String, JIPipeDataSlot> cacheEntry : cache.entrySet()) {
+                            JIPipeDataSlot outputSlot = predecessorNode.getOutputSlot(cacheEntry.getKey());
+                            outputSlot.addData(cacheEntry.getValue(), progressInfo);
+                        }
+                    }
+                }
+            }
+        }
+        return predecessors;
     }
 
     @Override
