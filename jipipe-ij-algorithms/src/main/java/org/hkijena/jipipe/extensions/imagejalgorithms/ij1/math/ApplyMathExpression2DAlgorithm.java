@@ -23,8 +23,10 @@ import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleData;
+import org.hkijena.jipipe.extensions.imagejdatatypes.util.GreyscalePixel2DExpressionParameterVariableSource;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.extensions.parameters.expressions.DefaultExpressionParameter;
+import org.hkijena.jipipe.extensions.parameters.expressions.ExpressionParameterSettings;
 
 /**
  * Wrapper around {@link ij.process.ImageProcessor}
@@ -86,6 +88,7 @@ public class ApplyMathExpression2DAlgorithm extends JIPipeSimpleIteratingAlgorit
 
     @JIPipeDocumentation(name = "Function", description = "The function that is applied to each pixel. The expression should return a number.")
     @JIPipeParameter("transformation-function")
+    @ExpressionParameterSettings(variableSource = GreyscalePixel2DExpressionParameterVariableSource.class)
     public DefaultExpressionParameter getTransformation() {
         return transformation;
     }
