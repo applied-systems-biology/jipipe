@@ -134,7 +134,7 @@ public class RunJIPipeProjectAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         settings.setLoadFromCache(false);
         settings.setNumThreads(threads.isEnabled() ? threads.getContent() : RuntimeSettings.getInstance().getDefaultRunThreads());
         JIPipeRun run = new JIPipeRun(project, settings);
-        run.setInfo(progressInfo.resolve("Project " + projectFile.getFileName().toString()));
+        run.setProgressInfo(progressInfo.resolve("Project " + projectFile.getFileName().toString()));
 
         run.run();
 

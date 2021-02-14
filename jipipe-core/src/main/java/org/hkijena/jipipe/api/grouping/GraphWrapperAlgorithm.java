@@ -155,7 +155,7 @@ public class GraphWrapperAlgorithm extends JIPipeAlgorithm {
                 }
             }
             JIPipeGraphRunner runner = new JIPipeGraphRunner(wrappedGraph);
-            runner.setInfo(progressInfo.resolve("Sub-graph"));
+            runner.setProgressInfo(progressInfo.resolve("Sub-graph"));
             runner.setAlgorithmsWithExternalInput(Collections.singleton(getGroupInput()));
             runner.run();
         } finally {

@@ -27,7 +27,7 @@ public class ActivateUpdateSiteRun implements JIPipeRunnable {
 
     private final FilesCollection filesCollection;
     private final List<UpdateSite> updateSites;
-    private JIPipeProgressInfo info = new JIPipeProgressInfo();
+    private JIPipeProgressInfo progressInfo = new JIPipeProgressInfo();
 
     public ActivateUpdateSiteRun(FilesCollection filesCollection, List<UpdateSite> updateSites) {
         this.filesCollection = filesCollection;
@@ -38,7 +38,7 @@ public class ActivateUpdateSiteRun implements JIPipeRunnable {
     public void run() {
         try {
             for (UpdateSite updateSite : updateSites) {
-                filesCollection.activateUpdateSite(updateSite, new ProgressAdapter(info));
+                filesCollection.activateUpdateSite(updateSite, new ProgressAdapter(progressInfo));
             }
         } catch (ParserConfigurationException | IOException | SAXException e) {
             throw new RuntimeException(e);
@@ -47,7 +47,7 @@ public class ActivateUpdateSiteRun implements JIPipeRunnable {
 
     @Override
     public JIPipeProgressInfo getProgressInfo() {
-        return info;
+        return progressInfo;
     }
 
     @Override
@@ -55,7 +55,8 @@ public class ActivateUpdateSiteRun implements JIPipeRunnable {
         return "ImageJ updater: Activate site";
     }
 
-    public void setInfo(JIPipeProgressInfo info) {
-        this.info = info;
+    @Override
+    public void setProgressInfo(JIPipeProgressInfo progressInfo) {
+        this.progressInfo = progressInfo;
     }
 }

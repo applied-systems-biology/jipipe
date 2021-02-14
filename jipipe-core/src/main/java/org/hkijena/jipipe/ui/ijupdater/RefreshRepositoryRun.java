@@ -29,7 +29,7 @@ import java.net.Authenticator;
  */
 public class RefreshRepositoryRun implements JIPipeRunnable {
 
-    private JIPipeProgressInfo info = new JIPipeProgressInfo();
+    private JIPipeProgressInfo progressInfo = new JIPipeProgressInfo();
     private FilesCollection filesCollection;
     private String conflictWarnings;
 
@@ -43,7 +43,7 @@ public class RefreshRepositoryRun implements JIPipeRunnable {
 
         // Look for conflicts
         try {
-            conflictWarnings = filesCollection.downloadIndexAndChecksum(new ProgressAdapter(info));
+            conflictWarnings = filesCollection.downloadIndexAndChecksum(new ProgressAdapter(progressInfo));
         } catch (ParserConfigurationException | SAXException e) {
             throw new RuntimeException(e);
         }
@@ -61,7 +61,7 @@ public class RefreshRepositoryRun implements JIPipeRunnable {
 
     @Override
     public JIPipeProgressInfo getProgressInfo() {
-        return info;
+        return progressInfo;
     }
 
     @Override
@@ -69,7 +69,8 @@ public class RefreshRepositoryRun implements JIPipeRunnable {
         return "ImageJ updater: Refresh";
     }
 
-    public void setInfo(JIPipeProgressInfo info) {
-        this.info = info;
+    @Override
+    public void setProgressInfo(JIPipeProgressInfo progressInfo) {
+        this.progressInfo = progressInfo;
     }
 }

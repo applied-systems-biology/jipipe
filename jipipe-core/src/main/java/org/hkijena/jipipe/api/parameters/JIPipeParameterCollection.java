@@ -140,7 +140,7 @@ public interface JIPipeParameterCollection {
      *
      * @param target        the serialized parameter collection
      * @param jsonGenerator the JSON target
-     * @param filter        filter to conditionally serialize entries
+     * @param filter        filter to conditionally serialize entries. can be null
      */
     static void serializeParametersToJson(JIPipeParameterCollection target, JsonGenerator jsonGenerator, Predicate<Map.Entry<String, JIPipeParameterAccess>> filter) throws IOException {
         JIPipeParameterTree parameterCollection = new JIPipeParameterTree(target);
@@ -154,6 +154,8 @@ public interface JIPipeParameterCollection {
                 jsonGenerator.writeObjectField(String.join("/", top.getPath()), top.getCollection());
             } else if (top.getPersistence() == JIPipeParameterPersistence.Collection) {
                 for (Map.Entry<String, JIPipeParameterAccess> entry : top.getParameters().entrySet()) {
+                    if(filter != null && !filter.test(entry))
+                        continue;
                     JIPipeParameterAccess parameterAccess = entry.getValue();
                     if (parameterAccess.getPersistence() != JIPipeParameterPersistence.None)
                         jsonGenerator.writeObjectField(parameterCollection.getUniqueKey(parameterAccess), parameterAccess.get(Object.class));

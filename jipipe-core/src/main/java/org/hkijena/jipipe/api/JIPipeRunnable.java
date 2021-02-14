@@ -26,6 +26,12 @@ public interface JIPipeRunnable extends Runnable {
     JIPipeProgressInfo getProgressInfo();
 
     /**
+     * Sets the progress info of this runnable
+     * @param progressInfo the info object
+     */
+    void setProgressInfo(JIPipeProgressInfo progressInfo);
+
+    /**
      * A name for the runnable
      *
      * @return the name

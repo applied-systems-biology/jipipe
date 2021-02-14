@@ -41,7 +41,7 @@ public class JIPipeRun implements JIPipeRunnable {
     private final JIPipeProjectCacheQuery cacheQuery;
     private final JIPipeRunSettings configuration;
     JIPipeGraph algorithmGraph;
-    private JIPipeProgressInfo info = new JIPipeProgressInfo();
+    private JIPipeProgressInfo progressInfo = new JIPipeProgressInfo();
     private JIPipeFixedThreadPool threadPool;
 
     /**
@@ -168,21 +168,21 @@ public class JIPipeRun implements JIPipeRunnable {
 
     @Override
     public void run() {
-        info.clearLog();
+        progressInfo.clearLog();
         long startTime = System.currentTimeMillis();
-        info.log("JIPipe run starting at " + StringUtils.formatDateTime(LocalDateTime.now()));
-        info.log("Preparing output folders ...");
+        progressInfo.log("JIPipe run starting at " + StringUtils.formatDateTime(LocalDateTime.now()));
+        progressInfo.log("Preparing output folders ...");
         prepare();
         try {
-            info.log("Running main analysis with " + configuration.getNumThreads() + " threads ...\n");
+            progressInfo.log("Running main analysis with " + configuration.getNumThreads() + " threads ...\n");
             threadPool = new JIPipeFixedThreadPool(configuration.getNumThreads());
-            runAnalysis(info);
+            runAnalysis(progressInfo);
         } catch (Exception e) {
-            info.log(e.toString());
-            info.log(ExceptionUtils.getStackTrace(e));
+            progressInfo.log(e.toString());
+            progressInfo.log(ExceptionUtils.getStackTrace(e));
             try {
                 if (configuration.getOutputPath() != null)
-                    Files.write(configuration.getOutputPath().resolve("log.txt"), info.getLog().toString().getBytes(Charsets.UTF_8));
+                    Files.write(configuration.getOutputPath().resolve("log.txt"), progressInfo.getLog().toString().getBytes(Charsets.UTF_8));
             } catch (IOException ex) {
                 if (!configuration.isSilent())
                     IJ.handleException(ex);
@@ -201,7 +201,7 @@ public class JIPipeRun implements JIPipeRunnable {
         }
 
         // Postprocessing
-        info.log("Postprocessing steps ...");
+        progressInfo.log("Postprocessing steps ...");
         try {
             if (configuration.getOutputPath() != null && configuration.isSaveOutputs())
                 project.saveProject(configuration.getOutputPath().resolve("project.jip"));
@@ -211,12 +211,12 @@ public class JIPipeRun implements JIPipeRunnable {
                     "Check if you can write to the output directory.");
         }
 
-        info.log("Run ending at " + StringUtils.formatDateTime(LocalDateTime.now()));
-        info.log("\nAnalysis required " + StringUtils.formatDuration(System.currentTimeMillis() - startTime) + " to execute.\n");
+        progressInfo.log("Run ending at " + StringUtils.formatDateTime(LocalDateTime.now()));
+        progressInfo.log("\nAnalysis required " + StringUtils.formatDuration(System.currentTimeMillis() - startTime) + " to execute.\n");
 
         try {
             if (configuration.getOutputPath() != null)
-                Files.write(configuration.getOutputPath().resolve("log.txt"), info.getLog().toString().getBytes(Charsets.UTF_8));
+                Files.write(configuration.getOutputPath().resolve("log.txt"), progressInfo.getLog().toString().getBytes(Charsets.UTF_8));
         } catch (IOException e) {
             throw new UserFriendlyRuntimeException(e, "Could not write log '" + configuration.getOutputPath().resolve("log.txt") + "'!",
                     "Pipeline run", "Either the path is invalid, or you have no permission to write to the disk, or the disk space is full",
@@ -432,7 +432,7 @@ public class JIPipeRun implements JIPipeRunnable {
 
     @Override
     public JIPipeProgressInfo getProgressInfo() {
-        return info;
+        return progressInfo;
     }
 
     @Override
@@ -440,7 +440,8 @@ public class JIPipeRun implements JIPipeRunnable {
         return "Run";
     }
 
-    public void setInfo(JIPipeProgressInfo info) {
-        this.info = info;
+    @Override
+    public void setProgressInfo(JIPipeProgressInfo progressInfo) {
+        this.progressInfo = progressInfo;
     }
 }

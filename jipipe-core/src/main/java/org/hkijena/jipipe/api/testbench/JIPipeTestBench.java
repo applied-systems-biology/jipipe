@@ -13,7 +13,6 @@
 
 package org.hkijena.jipipe.api.testbench;
 
-import com.google.common.collect.ImmutableList;
 import org.hkijena.jipipe.api.*;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeAlgorithm;
@@ -27,7 +26,7 @@ import java.util.*;
  * Allows to test one algorithm with multiple parameters
  */
 public class JIPipeTestBench implements JIPipeRunnable, JIPipeValidatable {
-    private JIPipeProgressInfo info = new JIPipeProgressInfo();
+    private JIPipeProgressInfo progressInfo = new JIPipeProgressInfo();
     private JIPipeProject project;
     private JIPipeGraphNode projectAlgorithm;
     private JIPipeTestBenchSettings settings;
@@ -65,7 +64,7 @@ public class JIPipeTestBench implements JIPipeRunnable, JIPipeValidatable {
         configuration.setIgnoreDeactivatedInputs(true);
 
         testBenchRun = new JIPipeRun(project, configuration);
-        testBenchRun.setInfo(info);
+        testBenchRun.setProgressInfo(progressInfo);
         benchedAlgorithm = testBenchRun.getGraph().getNodes().get(projectAlgorithm.getIdInGraph());
         ((JIPipeAlgorithm) benchedAlgorithm).setEnabled(true);
 
@@ -235,7 +234,7 @@ public class JIPipeTestBench implements JIPipeRunnable, JIPipeValidatable {
 
     @Override
     public JIPipeProgressInfo getProgressInfo() {
-        return info;
+        return progressInfo;
     }
 
     @Override
@@ -243,7 +242,8 @@ public class JIPipeTestBench implements JIPipeRunnable, JIPipeValidatable {
         return "Quick run / Update cache";
     }
 
-    public void setInfo(JIPipeProgressInfo info) {
-        this.info = info;
+    @Override
+    public void setProgressInfo(JIPipeProgressInfo progressInfo) {
+        this.progressInfo = progressInfo;
     }
 }

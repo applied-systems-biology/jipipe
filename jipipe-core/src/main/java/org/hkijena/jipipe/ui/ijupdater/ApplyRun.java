@@ -8,7 +8,7 @@ import org.hkijena.jipipe.api.JIPipeRunnable;
 public class ApplyRun implements JIPipeRunnable {
 
     private final FilesCollection filesCollection;
-    private JIPipeProgressInfo info = new JIPipeProgressInfo();
+    private JIPipeProgressInfo progressInfo = new JIPipeProgressInfo();
 
     public ApplyRun(FilesCollection filesCollection) {
         this.filesCollection = filesCollection;
@@ -17,11 +17,11 @@ public class ApplyRun implements JIPipeRunnable {
     @Override
     public void run() {
         final Installer installer =
-                new Installer(filesCollection, new ProgressAdapter(info));
+                new Installer(filesCollection, new ProgressAdapter(progressInfo));
         try {
             installer.start();
             filesCollection.write();
-            info.log("Updated successfully.  Please restart ImageJ!");
+            progressInfo.log("Updated successfully.  Please restart ImageJ!");
         } catch (final Exception e) {
             throw new RuntimeException(e);
         } finally {
@@ -31,7 +31,7 @@ public class ApplyRun implements JIPipeRunnable {
 
     @Override
     public JIPipeProgressInfo getProgressInfo() {
-        return info;
+        return progressInfo;
     }
 
     @Override
@@ -39,7 +39,8 @@ public class ApplyRun implements JIPipeRunnable {
         return "ImageJ updater: Apply";
     }
 
-    public void setInfo(JIPipeProgressInfo info) {
-        this.info = info;
+    @Override
+    public void setProgressInfo(JIPipeProgressInfo progressInfo) {
+        this.progressInfo = progressInfo;
     }
 }

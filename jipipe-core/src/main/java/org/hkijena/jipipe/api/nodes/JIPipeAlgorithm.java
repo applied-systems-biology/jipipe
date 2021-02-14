@@ -168,8 +168,9 @@ public abstract class JIPipeAlgorithm extends JIPipeGraphNode {
      */
     public String getStateId() {
         try (StringWriter writer = new StringWriter()) {
-            JsonGenerator generator = JsonUtils.getObjectMapper().getFactory().createGenerator(writer);
-            STATE_SERIALIZER.serialize(this, generator, null);
+            try (JsonGenerator generator = JsonUtils.getObjectMapper().getFactory().createGenerator(writer)) {
+                STATE_SERIALIZER.serialize(this, generator, null);
+            }
             return writer.toString();
         } catch (IOException e) {
             throw new RuntimeException(e);

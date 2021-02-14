@@ -45,7 +45,7 @@ public class JIPipeCachedSlotToFilesByMetadataExporterRun extends JIPipeWorkbenc
     private final List<JIPipeDataSlot> slots;
     private final boolean splitBySlot;
     private final JIPipeDataByMetadataExporter exporter;
-    private JIPipeProgressInfo info = new JIPipeProgressInfo();
+    private JIPipeProgressInfo progressInfo = new JIPipeProgressInfo();
     private Path outputPath;
 
     /**
@@ -119,10 +119,10 @@ public class JIPipeCachedSlotToFilesByMetadataExporterRun extends JIPipeWorkbenc
     @Override
     public void run() {
         Set<String> existing = new HashSet<>();
-        info.setMaxProgress(slots.size());
+        progressInfo.setMaxProgress(slots.size());
         for (int i = 0; i < slots.size(); i++) {
-            info.setProgress(i + 1);
-            JIPipeProgressInfo subProgress = info.resolveAndLog("Slot", i, slots.size());
+            progressInfo.setProgress(i + 1);
+            JIPipeProgressInfo subProgress = progressInfo.resolveAndLog("Slot", i, slots.size());
             JIPipeDataSlot slot = slots.get(i);
             Path targetPath = outputPath;
             if (splitBySlot) {
@@ -134,7 +134,7 @@ public class JIPipeCachedSlotToFilesByMetadataExporterRun extends JIPipeWorkbenc
                 exporter.writeToFolder(slot, targetPath, subProgress.resolve("Slot " + slot.getName()));
             } catch (Exception e) {
                 IJ.handleException(e);
-                info.log(ExceptionUtils.getStackTrace(e));
+                progressInfo.log(ExceptionUtils.getStackTrace(e));
                 throw new RuntimeException(e);
             }
         }
@@ -166,7 +166,7 @@ public class JIPipeCachedSlotToFilesByMetadataExporterRun extends JIPipeWorkbenc
 
     @Override
     public JIPipeProgressInfo getProgressInfo() {
-        return info;
+        return progressInfo;
     }
 
     @Override
@@ -174,7 +174,8 @@ public class JIPipeCachedSlotToFilesByMetadataExporterRun extends JIPipeWorkbenc
         return "Export cached data to files";
     }
 
-    public void setInfo(JIPipeProgressInfo info) {
-        this.info = info;
+    @Override
+    public void setProgressInfo(JIPipeProgressInfo progressInfo) {
+        this.progressInfo = progressInfo;
     }
 }

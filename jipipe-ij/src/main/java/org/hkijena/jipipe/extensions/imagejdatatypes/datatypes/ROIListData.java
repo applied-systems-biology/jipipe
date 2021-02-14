@@ -295,11 +295,17 @@ public class ROIListData extends ArrayList<Roi> implements JIPipeData {
 
     @Override
     public Component preview(int width, int height) {
-        ROIListData copy = new ROIListData(this);
-        copy.flatten();
-        copy.crop(true, false, false, false);
-        ImagePlus mask = copy.toMask(new Margin(), false, true, 1);
-        mask.setLut(LUT.createLutFromColor(Color.RED));
+        ImagePlus mask;
+        if(isEmpty()) {
+            mask = IJ.createImage("empty", "8-bit", width, height, 1);
+        }
+        else {
+            ROIListData copy = new ROIListData(this);
+            copy.flatten();
+            copy.crop(true, false, false, false);
+            mask = copy.toMask(new Margin(), false, true, 1);
+            mask.setLut(LUT.createLutFromColor(Color.RED));
+        }
         return new ImagePlusData(mask).preview(width, height);
     }
 

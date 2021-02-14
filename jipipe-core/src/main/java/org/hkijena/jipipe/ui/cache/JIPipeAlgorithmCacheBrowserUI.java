@@ -13,18 +13,22 @@
 
 package org.hkijena.jipipe.ui.cache;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.eventbus.Subscribe;
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeProjectCache;
 import org.hkijena.jipipe.api.JIPipeProjectCacheState;
 import org.hkijena.jipipe.api.JIPipeRun;
+import org.hkijena.jipipe.api.JIPipeValidityReport;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeAlgorithm;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
+import org.hkijena.jipipe.extensions.settings.FileChooserSettings;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbenchPanel;
-import org.hkijena.jipipe.ui.running.JIPipeRunnerQueue;
-import org.hkijena.jipipe.ui.running.RunUIWorkerFinishedEvent;
-import org.hkijena.jipipe.ui.running.RunUIWorkerInterruptedEvent;
+import org.hkijena.jipipe.ui.running.*;
+import org.hkijena.jipipe.utils.JsonUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
@@ -32,9 +36,11 @@ import javax.swing.tree.DefaultMutableTreeNode;
 import java.awt.*;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
-import java.util.ArrayList;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.*;
 import java.util.List;
-import java.util.Map;
 
 /**
  * UI around an {@link JIPipeRun} result
@@ -151,12 +157,143 @@ public class JIPipeAlgorithmCacheBrowserUI extends JIPipeProjectWorkbenchPanel {
         toolBar.add(clearOutdatedButton);
 
         JButton clearAllButton = new JButton("Clear all", UIUtils.getIconFromResources("actions/clear-brush.png"));
-        clearAllButton.addActionListener(e -> getProject().getCache().clear((JIPipeAlgorithm) this.graphNode));
+        clearAllButton.addActionListener(e -> getProject().getCache().clear(this.graphNode));
         toolBar.add(clearAllButton);
 
         toolBar.add(Box.createHorizontalGlue());
 
+        JButton importButton = new JButton("Import", UIUtils.getIconFromResources("actions/document-import.png"));
+        importButton.setToolTipText("Imports cached data from a folder");
+        importButton.addActionListener(e -> importCache());
+        toolBar.add(importButton);
+
+        JButton exportButton = new JButton("Export", UIUtils.getIconFromResources("actions/document-export.png"));
+        exportButton.setToolTipText("Exports cached data to a folder");
+        exportButton.addActionListener(e -> exportCache());
+        toolBar.add(exportButton);
+
         add(toolBar, BorderLayout.NORTH);
+    }
+
+    private void exportCache() {
+        Object lastPathComponent = tree.getTree().getLastSelectedPathComponent();
+        Map<JIPipeProjectCacheState, Map<String, JIPipeDataSlot>> stateMap = getProject().getCache().extract(graphNode);
+        if(stateMap.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "There is no cached data to export!", "Export cache", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+        JIPipeProjectCacheState exportedState = null;
+        if (lastPathComponent instanceof DefaultMutableTreeNode) {
+            Object userObject = ((DefaultMutableTreeNode) lastPathComponent).getUserObject();
+            if (userObject instanceof JIPipeDataSlot) {
+                for (Map.Entry<JIPipeProjectCacheState, Map<String, JIPipeDataSlot>> stateMapEntry : stateMap.entrySet()) {
+                    if(stateMapEntry.getValue().containsValue(userObject)) {
+                        exportedState = stateMapEntry.getKey();
+                        break;
+                    }
+                }
+            } else if (userObject instanceof JIPipeProjectCacheState) {
+                exportedState = (JIPipeProjectCacheState) userObject;
+            }
+        }
+        if(exportedState == null) {
+            // Choose the newest state
+            exportedState = stateMap.keySet().stream().max(Comparator.naturalOrder()).get();
+        }
+        Path outputFolder = FileChooserSettings.saveDirectory(this, FileChooserSettings.KEY_DATA, "Export cache");
+        if(outputFolder != null) {
+            // Save the node's state to a file
+            Path nodeStateFile = outputFolder.resolve("node.json");
+            try {
+                Files.createDirectories(outputFolder);
+                JsonUtils.getObjectMapper().writerWithDefaultPrettyPrinter().writeValue(nodeStateFile.toFile(), graphNode);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        JIPipeCachedSlotToOutputExporterRun run = new JIPipeCachedSlotToOutputExporterRun(getWorkbench(), outputFolder,
+                new ArrayList<>(stateMap.get(exportedState).values()), true);
+        JIPipeRunExecuterUI.runInDialog(run);
+    }
+
+    private void importCache() {
+        Path inputFolder = FileChooserSettings.openDirectory(this, FileChooserSettings.KEY_DATA, "Import cache");
+        Path nodeStateFile = inputFolder.resolve("node.json");
+        if(Files.exists(nodeStateFile)) {
+            try {
+                JsonNode node = JsonUtils.getObjectMapper().readerFor(JsonNode.class).readValue(nodeStateFile.toFile());
+                JIPipeValidityReport report = new JIPipeValidityReport();
+                JIPipeGraphNode stateNode = JIPipeGraphNode.fromJsonNode(node, report);
+                if(!report.isValid()) {
+                    UIUtils.openValidityReportDialog(this, report, true);
+                }
+                if(stateNode.getInfo() != graphNode.getInfo()) {
+                    if(JOptionPane.showConfirmDialog(this,
+                            "It looks like that this folder was created for a different node type.\n" +
+                                    "The node you have selected has the type ID '" + graphNode.getInfo().getId() + "',\n" +
+                                    "while the cache folder was created for type ID '" + stateNode.getInfo().getId() + "'.\n\nContinue anyways?",
+                            "Import cache",
+                            JOptionPane.YES_NO_OPTION,
+                            JOptionPane.QUESTION_MESSAGE) == JOptionPane.NO_OPTION) {
+                        return;
+                    }
+                }
+                else  if((graphNode instanceof JIPipeAlgorithm) && (stateNode instanceof JIPipeAlgorithm)) {
+                    String stateId = ((JIPipeAlgorithm) stateNode).getStateId();
+                    String currentStateId = ((JIPipeAlgorithm) graphNode).getStateId();
+                    ObjectNode stateIdJson = JsonUtils.getObjectMapper().readerFor(ObjectNode.class).readValue(stateId);
+                    ObjectNode currentStateIdJson = JsonUtils.getObjectMapper().readerFor(ObjectNode.class).readValue(currentStateId);
+                    stateIdJson.remove("jipipe:node-id");
+                    currentStateIdJson.remove("jipipe:node-id");
+                    if(!Objects.equals(stateIdJson, currentStateIdJson)) {
+                        if(JOptionPane.showConfirmDialog(this,
+                                "The cache folder was created for a different parameter set.\n\nContinue anyways?",
+                                "Import cache",
+                                JOptionPane.YES_NO_OPTION,
+                                JOptionPane.QUESTION_MESSAGE) == JOptionPane.NO_OPTION) {
+                            return;
+                        }
+                    }
+                }
+            }
+            catch (Exception e) {
+                UIUtils.openErrorDialog(this, e);
+                if(JOptionPane.showConfirmDialog(this,
+                        "There was an error while checking for data compatibility.\n\nContinue anyways?",
+                        "Import cache",
+                        JOptionPane.YES_NO_OPTION,
+                        JOptionPane.QUESTION_MESSAGE) == JOptionPane.NO_OPTION) {
+                    return;
+                }
+            }
+        }
+        else {
+            if(JOptionPane.showConfirmDialog(this,
+                    "The folder does not contain 'node.json', which is there to check if " +
+                            "you have chosen the correct node.\n\nContinue anyways?",
+                    "Import cache",
+                    JOptionPane.YES_NO_OPTION,
+                    JOptionPane.QUESTION_MESSAGE) == JOptionPane.NO_OPTION) {
+                return;
+            }
+        }
+        List<String> missingSlots = new ArrayList<>();
+        for (JIPipeDataSlot outputSlot : graphNode.getOutputSlots()) {
+            if(!Files.isDirectory(inputFolder.resolve(outputSlot.getName()))) {
+                missingSlots.add(outputSlot.getName());
+            }
+        }
+        if(!missingSlots.isEmpty()) {
+            if(JOptionPane.showConfirmDialog(this,
+                    "Could not find cached folders for following outputs:\n\n" + String.join("\n", missingSlots) + "\n\nContinue anyways?",
+                    "Import cache",
+                    JOptionPane.YES_NO_OPTION,
+                    JOptionPane.QUESTION_MESSAGE) == JOptionPane.NO_OPTION) {
+                return;
+            }
+        }
+        JIPipeImportCachedSlotOutputRun run = new JIPipeImportCachedSlotOutputRun(getProjectWorkbench().getProject(), graphNode, inputFolder);
+        JIPipeRunExecuterUI.runInDialog(run);
     }
 
     public JToolBar getToolBar() {
