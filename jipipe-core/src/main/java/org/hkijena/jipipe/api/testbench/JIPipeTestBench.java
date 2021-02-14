@@ -129,6 +129,8 @@ public class JIPipeTestBench implements JIPipeRunnable, JIPipeValidatable {
                 }
             }
         }
+        // To be sure
+        predecessors.remove(benchedAlgorithm);
         return predecessors;
     }
 
