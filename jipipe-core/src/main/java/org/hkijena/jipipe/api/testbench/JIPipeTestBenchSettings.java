@@ -33,6 +33,7 @@ public class JIPipeTestBenchSettings implements JIPipeParameterCollection {
     private boolean storeToCache = true;
     private boolean saveOutputs = true;
     private boolean excludeSelected = false;
+    private boolean storeIntermediateResults = false;
     private int numThreads = RuntimeSettings.getInstance().getDefaultTestBenchThreads();
 
     /**
@@ -117,5 +118,16 @@ public class JIPipeTestBenchSettings implements JIPipeParameterCollection {
     @JIPipeParameter("exclude-selected")
     public void setExcludeSelected(boolean excludeSelected) {
         this.excludeSelected = excludeSelected;
+    }
+
+    @JIPipeDocumentation(name = "Store intermediate results", description = "If enabled, all intermediate results are also saved to disk/cache")
+    @JIPipeParameter("store-intermediate-results")
+    public boolean isStoreIntermediateResults() {
+        return storeIntermediateResults;
+    }
+
+    @JIPipeParameter("store-intermediate-results")
+    public void setStoreIntermediateResults(boolean storeIntermediateResults) {
+        this.storeIntermediateResults = storeIntermediateResults;
     }
 }

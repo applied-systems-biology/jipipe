@@ -82,6 +82,14 @@ public class JIPipeTestBench implements JIPipeRunnable, JIPipeValidatable {
                 }
             }
         }
+
+        // Disable storing intermediate results
+        if(!settings.isStoreIntermediateResults()) {
+            HashSet<JIPipeGraphNode> disabled = new HashSet<>(testBenchRun.getGraph().getNodes().values());
+            disabled.remove(benchedAlgorithm);
+            configuration.setDisableSaveToDiskNodes(disabled);
+            configuration.setDisableStoreToCacheNodes(disabled);
+        }
     }
 
     private Set<JIPipeGraphNode> findPredecessorsWithoutCache() {

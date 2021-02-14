@@ -31,6 +31,8 @@ import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.components.MarkdownDocument;
 import org.hkijena.jipipe.ui.components.MarkdownReader;
+import org.hkijena.jipipe.ui.grapheditor.actions.RunAndShowResultsAction;
+import org.hkijena.jipipe.ui.grapheditor.actions.UpdateCacheAction;
 import org.hkijena.jipipe.ui.grapheditor.contextmenu.*;
 import org.hkijena.jipipe.ui.grapheditor.contextmenu.clipboard.AlgorithmGraphCopyNodeUIContextAction;
 import org.hkijena.jipipe.ui.grapheditor.contextmenu.clipboard.AlgorithmGraphCutNodeUIContextAction;
@@ -116,6 +118,9 @@ public class JIPipeGraphCompartmentUI extends JIPipeGraphEditorUI {
                 new RunAndShowResultsNodeUIContextAction(),
                 new UpdateCacheNodeUIContextAction(),
                 new OpenCacheBrowserInWindowUIContextAction(),
+                NodeUIContextAction.SEPARATOR,
+                new RunAndShowIntermediateResultsNodeUIContextAction(),
+                new UpdateCacheShowIntermediateNodeUIContextAction(),
                 NodeUIContextAction.SEPARATOR,
                 new ExportNodeUIContextAction(),
                 NodeUIContextAction.SEPARATOR,
@@ -377,18 +382,33 @@ public class JIPipeGraphCompartmentUI extends JIPipeGraphEditorUI {
      * @param event the event
      */
     @Subscribe
-    public void onAlgorithmActionRequested(JIPipeGraphCanvasUI.AlgorithmUIActionRequestedEvent event) {
-        boolean runAndShowResults = Objects.equals(event.getAction(), JIPipeNodeUI.REQUEST_RUN_AND_SHOW_RESULTS);
-        boolean updateCache = Objects.equals(event.getAction(), JIPipeNodeUI.REQUEST_UPDATE_CACHE);
-        if (runAndShowResults ||
-                updateCache) {
+    public void onAlgorithmActionRequested(JIPipeGraphCanvasUI.NodeUIActionRequestedEvent event) {
+        if(event.getAction() instanceof RunAndShowResultsAction) {
             disableUpdateOnSelection = true;
             selectOnly(event.getUi());
             JIPipeSingleAlgorithmSelectionPanelUI panel = new JIPipeSingleAlgorithmSelectionPanelUI(this,
                     event.getUi().getNode());
             setPropertyPanel(panel);
-            panel.runTestBench(runAndShowResults,
-                    updateCache, false, !updateCache, false);
+            panel.runTestBench(true,
+                    false,
+                    false,
+                    true,
+                    ((RunAndShowResultsAction) event.getAction()).isStoreIntermediateResults(),
+                    false);
+            SwingUtilities.invokeLater(() -> disableUpdateOnSelection = false);
+        }
+        else if(event.getAction() instanceof UpdateCacheAction) {
+            disableUpdateOnSelection = true;
+            selectOnly(event.getUi());
+            JIPipeSingleAlgorithmSelectionPanelUI panel = new JIPipeSingleAlgorithmSelectionPanelUI(this,
+                    event.getUi().getNode());
+            setPropertyPanel(panel);
+            panel.runTestBench(false,
+                    true,
+                    false,
+                    true,
+                    ((UpdateCacheAction) event.getAction()).isStoreIntermediateResults(),
+                    false);
             SwingUtilities.invokeLater(() -> disableUpdateOnSelection = false);
         }
     }

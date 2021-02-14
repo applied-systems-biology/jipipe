@@ -156,7 +156,7 @@ public class JIPipeSingleAlgorithmSelectionPanelUI extends JIPipeProjectWorkbenc
             if (batchAssistantTabContent != null && tabbedPane.getCurrentContent() == batchAssistantTabContent) {
                 if (batchAssistantTabContent.getComponentCount() == 0) {
                     DataBatchAssistantUI browserUI = new DataBatchAssistantUI(getProjectWorkbench(), algorithm,
-                            () -> runTestBench(false, false, true, false, true));
+                            () -> runTestBench(false, false, true, false, false, true));
                     batchAssistantTabContent.add(browserUI, BorderLayout.CENTER);
                 }
             }
@@ -209,20 +209,21 @@ public class JIPipeSingleAlgorithmSelectionPanelUI extends JIPipeProjectWorkbenc
 
     /**
      * Activates and runs the quick run as automatically as possible.
-     *
-     * @param showResults        show results after a successful run
+     *  @param showResults        show results after a successful run
      * @param showCache          show slot cache after a successful run
      * @param showBatchAssistant show batch assistant after a run
      * @param saveOutputs        if the run should save outputs
+     * @param storeIntermediateOutputs if the run should store intermediate outputs
      * @param excludeSelected    if the current algorithm should be excluded
      */
-    public void runTestBench(boolean showResults, boolean showCache, boolean showBatchAssistant, boolean saveOutputs, boolean excludeSelected) {
+    public void runTestBench(boolean showResults, boolean showCache, boolean showBatchAssistant, boolean saveOutputs, boolean storeIntermediateOutputs, boolean excludeSelected) {
         // Activate the quick run
         tabbedPane.switchToContent(testBenchTabContent);
         JIPipeTestBenchSetupUI testBenchSetupUI = (JIPipeTestBenchSetupUI) testBenchTabContent.getComponent(0);
         JIPipeTestBenchSettings settings = new JIPipeTestBenchSettings();
         settings.setSaveOutputs(saveOutputs);
         settings.setExcludeSelected(excludeSelected);
+        settings.setStoreIntermediateResults(storeIntermediateOutputs);
         boolean success = testBenchSetupUI.tryAutoRun(showResults, settings, testBench -> {
             if (showCache) {
                 SwingUtilities.invokeLater(() -> tabbedPane.switchToContent(cacheBrowserTabContent));

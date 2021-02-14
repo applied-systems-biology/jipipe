@@ -14,11 +14,10 @@
 package org.hkijena.jipipe.ui.grapheditor.contextmenu;
 
 import org.hkijena.jipipe.api.JIPipeGraphType;
-import org.hkijena.jipipe.api.nodes.JIPipeAlgorithm;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.ui.grapheditor.JIPipeGraphCanvasUI;
 import org.hkijena.jipipe.ui.grapheditor.JIPipeNodeUI;
-import org.hkijena.jipipe.ui.grapheditor.actions.UpdateCacheAction;
+import org.hkijena.jipipe.ui.grapheditor.actions.RunAndShowResultsAction;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
@@ -26,52 +25,44 @@ import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
 import java.util.Set;
 
-public class UpdateCacheNodeUIContextAction implements NodeUIContextAction {
+public class RunAndShowIntermediateResultsNodeUIContextAction implements NodeUIContextAction {
     @Override
     public boolean matches(Set<JIPipeNodeUI> selection) {
         if (selection.size() == 1) {
             JIPipeGraphNode node = selection.iterator().next().getNode();
             if (!node.getInfo().isRunnable())
                 return false;
-            if (!(node instanceof JIPipeAlgorithm))
-                return false;
             if (node.getGraph().getAttachment(JIPipeGraphType.class) != JIPipeGraphType.Project)
                 return false;
             return true;
-        } else {
-            return false;
         }
+        return false;
     }
 
     @Override
     public void run(JIPipeGraphCanvasUI canvasUI, Set<JIPipeNodeUI> selection) {
         JIPipeNodeUI ui = selection.iterator().next();
-        ui.getEventBus().post(new JIPipeGraphCanvasUI.NodeUIActionRequestedEvent(ui, new UpdateCacheAction(false)));
+        ui.getEventBus().post(new JIPipeGraphCanvasUI.NodeUIActionRequestedEvent(ui, new RunAndShowResultsAction(true)));
     }
 
     @Override
     public String getName() {
-        return "Update cache";
+        return "Show intermediate results";
     }
 
     @Override
     public String getDescription() {
-        return "Runs the pipeline up until this algorithm and caches the results. Nothing is written to disk.";
+        return "Runs the pipeline up until this algorithm and shows the results (including intermediate results).";
     }
 
     @Override
     public Icon getIcon() {
-        return UIUtils.getIconFromResources("actions/database.png");
+        return UIUtils.getIconFromResources("actions/rabbitvcs-update.png");
     }
 
     @Override
     public boolean isShowingInOverhang() {
         return true;
-    }
-
-    @Override
-    public KeyStroke getKeyboardShortcut() {
-        return KeyStroke.getKeyStroke(KeyEvent.VK_SPACE, InputEvent.CTRL_MASK, true);
     }
 
     @Override

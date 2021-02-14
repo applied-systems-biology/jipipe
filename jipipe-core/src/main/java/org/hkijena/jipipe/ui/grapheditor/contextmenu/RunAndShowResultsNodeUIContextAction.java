@@ -17,14 +17,13 @@ import org.hkijena.jipipe.api.JIPipeGraphType;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.ui.grapheditor.JIPipeGraphCanvasUI;
 import org.hkijena.jipipe.ui.grapheditor.JIPipeNodeUI;
+import org.hkijena.jipipe.ui.grapheditor.actions.RunAndShowResultsAction;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
 import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
 import java.util.Set;
-
-import static org.hkijena.jipipe.ui.grapheditor.JIPipeNodeUI.REQUEST_RUN_AND_SHOW_RESULTS;
 
 public class RunAndShowResultsNodeUIContextAction implements NodeUIContextAction {
     @Override
@@ -43,7 +42,7 @@ public class RunAndShowResultsNodeUIContextAction implements NodeUIContextAction
     @Override
     public void run(JIPipeGraphCanvasUI canvasUI, Set<JIPipeNodeUI> selection) {
         JIPipeNodeUI ui = selection.iterator().next();
-        ui.getEventBus().post(new JIPipeGraphCanvasUI.AlgorithmUIActionRequestedEvent(ui, REQUEST_RUN_AND_SHOW_RESULTS));
+        ui.getEventBus().post(new JIPipeGraphCanvasUI.NodeUIActionRequestedEvent(ui, new RunAndShowResultsAction(false)));
     }
 
     @Override

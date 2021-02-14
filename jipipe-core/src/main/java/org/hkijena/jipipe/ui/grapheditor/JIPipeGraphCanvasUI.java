@@ -32,6 +32,8 @@ import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.JIPipeWorkbenchPanel;
 import org.hkijena.jipipe.ui.components.ZoomViewPort;
+import org.hkijena.jipipe.ui.grapheditor.actions.JIPipeNodeUIAction;
+import org.hkijena.jipipe.ui.grapheditor.actions.OpenContextMenuAction;
 import org.hkijena.jipipe.ui.grapheditor.contextmenu.NodeUIContextAction;
 import org.hkijena.jipipe.ui.grapheditor.layout.MSTGraphAutoLayoutMethod;
 import org.hkijena.jipipe.ui.grapheditor.layout.SugiyamaGraphAutoLayoutMethod;
@@ -343,8 +345,8 @@ public class JIPipeGraphCanvasUI extends JIPipeWorkbenchPanel implements MouseMo
      * @param event event
      */
     @Subscribe
-    public void onActionRequested(AlgorithmUIActionRequestedEvent event) {
-        if (JIPipeNodeUI.REQUEST_OPEN_CONTEXT_MENU.equals(event.getAction())) {
+    public void onActionRequested(NodeUIActionRequestedEvent event) {
+        if (event.getAction() instanceof OpenContextMenuAction) {
             if (event.getUi() != null) {
                 openContextMenu(getMousePosition());
             }
@@ -1664,9 +1666,9 @@ public class JIPipeGraphCanvasUI extends JIPipeWorkbenchPanel implements MouseMo
     /**
      * An action that is requested by an {@link JIPipeNodeUI} and passed down to a {@link JIPipeGraphEditorUI}
      */
-    public static class AlgorithmUIActionRequestedEvent {
+    public static class NodeUIActionRequestedEvent {
         private final JIPipeNodeUI ui;
-        private final Object action;
+        private final JIPipeNodeUIAction action;
 
         /**
          * Initializes a new instance
@@ -1674,7 +1676,7 @@ public class JIPipeGraphCanvasUI extends JIPipeWorkbenchPanel implements MouseMo
          * @param ui     the requesting UI
          * @param action the action parameter
          */
-        public AlgorithmUIActionRequestedEvent(JIPipeNodeUI ui, Object action) {
+        public NodeUIActionRequestedEvent(JIPipeNodeUI ui, JIPipeNodeUIAction action) {
             this.ui = ui;
             this.action = action;
         }
@@ -1683,7 +1685,7 @@ public class JIPipeGraphCanvasUI extends JIPipeWorkbenchPanel implements MouseMo
             return ui;
         }
 
-        public Object getAction() {
+        public JIPipeNodeUIAction getAction() {
             return action;
         }
     }

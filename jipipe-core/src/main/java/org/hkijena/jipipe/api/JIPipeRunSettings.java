@@ -14,6 +14,7 @@
 package org.hkijena.jipipe.api;
 
 import com.google.common.eventbus.EventBus;
+import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.extensions.parameters.primitives.FilePathParameterSettings;
@@ -21,6 +22,8 @@ import org.hkijena.jipipe.extensions.settings.RuntimeSettings;
 import org.hkijena.jipipe.ui.components.PathEditor;
 
 import java.nio.file.Path;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * Settings for an {@link JIPipeRun}
@@ -34,6 +37,8 @@ public class JIPipeRunSettings implements JIPipeParameterCollection {
     private int numThreads = RuntimeSettings.getInstance().getDefaultRunThreads();
     private boolean silent = false;
     private boolean ignoreDeactivatedInputs = false;
+    private Set<JIPipeGraphNode> disableStoreToCacheNodes = new HashSet<>();
+    private Set<JIPipeGraphNode> disableSaveToDiskNodes = new HashSet<>();
 
     @JIPipeParameter(value = "output-path", uiOrder = -999)
     @JIPipeDocumentation(name = "Output folder")
@@ -126,5 +131,29 @@ public class JIPipeRunSettings implements JIPipeParameterCollection {
 
     public void setIgnoreDeactivatedInputs(boolean ignoreDeactivatedInputs) {
         this.ignoreDeactivatedInputs = ignoreDeactivatedInputs;
+    }
+
+    /**
+     * Allows to set a list of nodes where storing to cache is disabled
+     * @return the list of nodes
+     */
+    public Set<JIPipeGraphNode> getDisableStoreToCacheNodes() {
+        return disableStoreToCacheNodes;
+    }
+
+    public void setDisableStoreToCacheNodes(Set<JIPipeGraphNode> disableStoreToCacheNodes) {
+        this.disableStoreToCacheNodes = disableStoreToCacheNodes;
+    }
+
+    /**
+     * Allows to exclude specific nodes from saving any outputs to the disk
+     * @return the list of nodes
+     */
+    public Set<JIPipeGraphNode> getDisableSaveToDiskNodes() {
+        return disableSaveToDiskNodes;
+    }
+
+    public void setDisableSaveToDiskNodes(Set<JIPipeGraphNode> disableSaveToDiskNodes) {
+        this.disableSaveToDiskNodes = disableSaveToDiskNodes;
     }
 }

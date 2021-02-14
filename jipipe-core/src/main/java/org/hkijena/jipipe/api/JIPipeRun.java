@@ -150,13 +150,13 @@ public class JIPipeRun implements JIPipeRunnable {
             }
         }
         if (canFlush) {
-            if (configuration.isStoreToCache()) {
+            if (configuration.isStoreToCache() && !configuration.getDisableStoreToCacheNodes().contains(outputSlot.getNode())) {
                 JIPipeGraphNode runAlgorithm = outputSlot.getNode();
                 JIPipeGraphNode projectAlgorithm = cacheQuery.getNode(runAlgorithm.getIdInGraph());
                 JIPipeProjectCacheState stateId = cacheQuery.getCachedId(projectAlgorithm);
                 project.getCache().store(projectAlgorithm, stateId, outputSlot, progressInfo);
             }
-            if (configuration.isSaveOutputs()) {
+            if (configuration.isSaveOutputs() && !configuration.getDisableSaveToDiskNodes().contains(outputSlot.getNode())) {
                 JIPipeProgressInfo saveProgress = progressInfo.resolveAndLog(String.format("Saving data in slot '%s' (data type %s)", outputSlot.getDisplayName(), JIPipeDataInfo.getInstance(outputSlot.getAcceptedDataType()).getName()));
                 outputSlot.flush(configuration.getOutputPath(), saveProgress);
             } else {
