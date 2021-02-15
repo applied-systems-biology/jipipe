@@ -46,7 +46,7 @@ public class ReflectionUtils {
             Manifest manifest = new Manifest(url.openStream());
             return manifest.getMainAttributes();
         } catch (Exception e) {
-            e.printStackTrace();
+//            e.printStackTrace();
             return null;
         }
     }
