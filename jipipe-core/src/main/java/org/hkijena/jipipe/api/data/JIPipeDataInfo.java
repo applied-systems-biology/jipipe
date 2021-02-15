@@ -23,12 +23,11 @@ import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import org.hkijena.jipipe.JIPipe;
+import org.hkijena.jipipe.api.JIPipeCitation;
 import org.hkijena.jipipe.utils.ReflectionUtils;
 
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 
 /**
  * Compound type that contains all metadata of an {@link JIPipeData} type
@@ -44,6 +43,7 @@ public class JIPipeDataInfo implements Comparable<JIPipeDataInfo> {
     private String menuPath;
     private boolean hidden;
     private boolean heavy;
+    private List<String> additionalCitations = new ArrayList<>();
 
     private JIPipeDataInfo(Class<? extends JIPipeData> dataClass) {
         this.dataClass = dataClass;
@@ -52,6 +52,10 @@ public class JIPipeDataInfo implements Comparable<JIPipeDataInfo> {
         this.menuPath = JIPipeData.getMenuPathOf(dataClass);
         this.hidden = JIPipeData.isHidden(dataClass);
         this.heavy = JIPipeData.isHeavy(dataClass);
+        // Load additional citations
+        for (JIPipeCitation citation : dataClass.getAnnotationsByType(JIPipeCitation.class)) {
+            getAdditionalCitations().add(citation.value());
+        }
     }
 
     /**
@@ -123,6 +127,18 @@ public class JIPipeDataInfo implements Comparable<JIPipeDataInfo> {
      */
     public boolean isHeavy() {
         return heavy;
+    }
+
+    /**
+     * A list of additional citations
+     * @return additional citations
+     */
+    public List<String> getAdditionalCitations() {
+        return additionalCitations;
+    }
+
+    public void setAdditionalCitations(List<String> additionalCitations) {
+        this.additionalCitations = additionalCitations;
     }
 
     @Override

@@ -33,6 +33,7 @@ public abstract class JIPipeMutableNodeInfo implements JIPipeNodeInfo {
     private String menuPath;
     private boolean hidden = false;
     private boolean runnable = true;
+    private List<String> additionalCitations = new ArrayList<>();
 
     @Override
     public Class<? extends JIPipeGraphNode> getInstanceClass() {
@@ -163,5 +164,14 @@ public abstract class JIPipeMutableNodeInfo implements JIPipeNodeInfo {
 
     public void setRunnable(boolean runnable) {
         this.runnable = runnable;
+    }
+
+    @Override
+    public List<String> getAdditionalCitations() {
+        return additionalCitations;
+    }
+
+    public void setAdditionalCitations(List<String> additionalCitations) {
+        this.additionalCitations = additionalCitations;
     }
 }

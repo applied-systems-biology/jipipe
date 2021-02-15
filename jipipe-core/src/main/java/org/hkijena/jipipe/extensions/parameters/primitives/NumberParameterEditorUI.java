@@ -21,7 +21,6 @@ import org.hkijena.jipipe.ui.components.DocumentChangeListener;
 import org.hkijena.jipipe.ui.parameters.JIPipeParameterEditorUI;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
-import org.python.antlr.ast.Num;
 
 import javax.swing.*;
 import javax.swing.event.DocumentEvent;

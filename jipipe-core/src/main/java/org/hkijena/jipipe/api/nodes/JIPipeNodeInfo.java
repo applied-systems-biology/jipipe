@@ -137,6 +137,14 @@ public interface JIPipeNodeInfo {
     Set<JIPipeDependency> getDependencies();
 
     /**
+     * Returns a list of additional citations
+     * @return additonal citations
+     */
+    default List<String> getAdditionalCitations() {
+        return Collections.emptyList();
+    }
+
+    /**
      * Returns true if this algorithm should not appear in the list of available algorithms.
      * This is useful if it is a structural algorithm
      *

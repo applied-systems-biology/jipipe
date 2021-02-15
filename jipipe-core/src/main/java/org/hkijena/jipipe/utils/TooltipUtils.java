@@ -121,6 +121,9 @@ public class TooltipUtils {
             builder.append("<table>");
             builder.append("<tr><td><strong>Node type ID</strong></td><td><code>").append(HtmlEscapers.htmlEscaper().escape(info.getId())).append("</code></td></tr>");
             builder.append("<tr><td><strong>Node ID</strong></td><td><code>").append(HtmlEscapers.htmlEscaper().escape(info.getId())).append("</code></td></tr>");
+            for (String dependencyCitation : info.getAdditionalCitations()) {
+                builder.append("<tr><td><strong>Node additional citation</strong></td><td>").append(HtmlEscapers.htmlEscaper().escape(dependencyCitation)).append("</td></tr>");
+            }
             builder.append("<tr><td><strong>Plugin name</strong></td><td>").append(HtmlEscapers.htmlEscaper().escape(source.getMetadata().getName())).append("</td></tr>");
             for (JIPipeAuthorMetadata author : source.getMetadata().getAuthors()) {
                 builder.append("<tr><td><strong>Plugin author</strong></td><td>").append(HtmlEscapers.htmlEscaper().escape(author.getFirstName() + " " + author.getLastName())).append("</td></tr>");
@@ -187,6 +190,9 @@ public class TooltipUtils {
             builder.append("<tr><td><strong>Node type ID</strong></td><td><code>").append(HtmlEscapers.htmlEscaper().escape(info.getId())).append("</code></td></tr>");
             if (node.getGraph() != null)
                 builder.append("<tr><td><strong>Node ID</strong></td><td><code>").append(HtmlEscapers.htmlEscaper().escape(node.getIdInGraph())).append("</code></td></tr>");
+            for (String dependencyCitation : info.getAdditionalCitations()) {
+                builder.append("<tr><td><strong>Node additional citation</strong></td><td>").append(HtmlEscapers.htmlEscaper().escape(dependencyCitation)).append("</td></tr>");
+            }
             builder.append("<tr><td><strong>Plugin name</strong></td><td>").append(HtmlEscapers.htmlEscaper().escape(source.getMetadata().getName())).append("</td></tr>");
             for (JIPipeAuthorMetadata author : source.getMetadata().getAuthors()) {
                 builder.append("<tr><td><strong>Plugin author</strong></td><td>").append(HtmlEscapers.htmlEscaper().escape(author.getFirstName() + " " + author.getLastName())).append("</td></tr>");

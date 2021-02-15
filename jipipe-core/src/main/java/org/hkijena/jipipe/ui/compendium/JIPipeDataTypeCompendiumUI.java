@@ -160,6 +160,9 @@ public class JIPipeDataTypeCompendiumUI extends JIPipeCompendiumUI<JIPipeDataInf
             builder.append("# Developer information\n\n");
             builder.append("<table>");
             builder.append("<tr><td><strong>Data type ID</strong></td><td>").append(HtmlEscapers.htmlEscaper().escape(info.getId())).append("</td></tr>");
+            for (String dependencyCitation : info.getAdditionalCitations()) {
+                builder.append("<tr><td><strong>Data type additional citation</strong></td><td>").append(HtmlEscapers.htmlEscaper().escape(dependencyCitation)).append("</td></tr>");
+            }
             builder.append("<tr><td><strong>Plugin name</strong></td><td>").append(HtmlEscapers.htmlEscaper().escape(source.getMetadata().getName())).append("</td></tr>");
             for (JIPipeAuthorMetadata author : source.getMetadata().getAuthors()) {
                 builder.append("<tr><td><strong>Plugin author</strong></td><td>").append(HtmlEscapers.htmlEscaper().escape(author.getFirstName() + " " + author.getLastName())).append("</td></tr>");

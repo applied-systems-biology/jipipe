@@ -20,9 +20,7 @@ import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import org.apache.commons.lang3.reflect.ConstructorUtils;
 import org.hkijena.jipipe.JIPipeDependency;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeHidden;
-import org.hkijena.jipipe.api.JIPipeOrganization;
+import org.hkijena.jipipe.api.*;
 import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
 import org.hkijena.jipipe.api.nodes.categories.InternalNodeTypeCategory;
 import org.hkijena.jipipe.extensions.parameters.primitives.HTMLText;
@@ -55,6 +53,10 @@ public class JIPipeJavaNodeInfo extends JIPipeMutableNodeInfo {
         setMenuPath(getMenuPathOf(nodeClass));
         if (nodeClass.getAnnotation(JIPipeHidden.class) != null) {
             setHidden(true);
+        }
+        // Load additional citations
+        for (JIPipeCitation citation : nodeClass.getAnnotationsByType(JIPipeCitation.class)) {
+            getAdditionalCitations().add(citation.value());
         }
         initializeSlots();
     }
