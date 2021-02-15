@@ -21,6 +21,7 @@ import org.hkijena.jipipe.ui.components.DocumentChangeListener;
 import org.hkijena.jipipe.ui.parameters.JIPipeParameterEditorUI;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.python.antlr.ast.Num;
 
 import javax.swing.*;
 import javax.swing.event.DocumentEvent;
@@ -65,18 +66,21 @@ public class NumberParameterEditorUI extends JIPipeParameterEditorUI {
 
     private double getCurrentValue() {
         Object value = getParameterAccess().get(Object.class);
+        Number asNumber = 0;
+        if(value instanceof Number)
+            asNumber = (Number) value;
         if (getParameterAccess().getFieldClass() == byte.class || getParameterAccess().getFieldClass() == Byte.class) {
-            return value != null ? (Byte) value : (byte) 0;
+            return asNumber.byteValue();
         } else if (getParameterAccess().getFieldClass() == short.class || getParameterAccess().getFieldClass() == Short.class) {
-            return value != null ? (Short) value : (short) 0;
+            return asNumber.shortValue();
         } else if (getParameterAccess().getFieldClass() == int.class || getParameterAccess().getFieldClass() == Integer.class) {
-            return value != null ? (Integer) value : 0;
+            return asNumber.intValue();
         } else if (getParameterAccess().getFieldClass() == long.class || getParameterAccess().getFieldClass() == Long.class) {
-            return value != null ? (Long) value : 0L;
+            return asNumber.longValue();
         } else if (getParameterAccess().getFieldClass() == float.class || getParameterAccess().getFieldClass() == Float.class) {
-            return value != null ? (Float) value : 0f;
+            return asNumber.floatValue();
         } else if (getParameterAccess().getFieldClass() == double.class || getParameterAccess().getFieldClass() == Double.class) {
-            return value != null ? (Double) value : 0d;
+            return asNumber.doubleValue();
         } else {
             throw new IllegalArgumentException("Unsupported numeric type: " + value);
         }
