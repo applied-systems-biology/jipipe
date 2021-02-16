@@ -30,6 +30,7 @@ import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.binary.Voronoi2DAlgori
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.blur.*;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.color.*;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.contrast.CLAHEContrastEnhancer;
+import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.contrast.HistogramContrastEnhancerAlgorithm;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.contrast.IlluminationCorrection2DAlgorithm;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.convolve.ConvolveByImage2DAlgorithm;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.convolve.ConvolveByParameter2DAlgorithm;
@@ -814,6 +815,10 @@ public class ImageJAlgorithmsExtension extends JIPipePrepackagedDefaultJavaExten
         registerNodeType("ij1-contrast-clahe", CLAHEContrastEnhancer.class, UIUtils.getIconURLFromResources("actions/contrast.png"));
         registerNodeType("ij1-contrast-illumination-correction2d", IlluminationCorrection2DAlgorithm.class, UIUtils.getIconURLFromResources("actions/contrast.png"));
         registerNodeType("ij1-contrast-calibrate", DisplayRangeCalibrationAlgorithm.class, UIUtils.getIconURLFromResources("actions/contrast.png"));
+        registerNodeType("ij1-contrast-histogram-enhancer", HistogramContrastEnhancerAlgorithm.class, UIUtils.getIconURLFromResources("actions/contrast.png"));
+
+        registerEnumParameterType(HistogramContrastEnhancerAlgorithm.Method.class.getCanonicalName(), HistogramContrastEnhancerAlgorithm.Method.class,
+                "Histogram contrast enhancer method", "Available methods");
     }
 
     private void registerEdgeAlgorithms() {
