@@ -182,7 +182,7 @@ public class JIPipeVerticalNodeUI extends JIPipeNodeUI {
         {
             double maxWidth = 0;
             for (JIPipeDataSlotUI ui : slotUIList) {
-                Dimension realSize = JIPipeGraphViewMode.Vertical.gridToRealSize(ui.calculateGridSize(), getGraphUI().getZoom());
+                Dimension realSize = JIPipeGraphViewMode.Vertical.gridToRealSize(ui.calculateGridSize(), 1.0);
                 maxWidth = Math.max(maxWidth, realSize.width);
             }
 

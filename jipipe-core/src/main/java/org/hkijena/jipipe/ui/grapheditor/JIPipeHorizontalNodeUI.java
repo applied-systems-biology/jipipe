@@ -188,7 +188,7 @@ public class JIPipeHorizontalNodeUI extends JIPipeNodeUI {
             double maxInputSlotWidth = 0;
             double maxOutputSlotWidth = 0;
             for (JIPipeDataSlotUI ui : slotUIList) {
-                Dimension realSize = JIPipeGraphViewMode.Horizontal.gridToRealSize(ui.calculateGridSize(), getGraphUI().getZoom());
+                Dimension realSize = JIPipeGraphViewMode.Horizontal.gridToRealSize(ui.calculateGridSize(), 1.0);
                 if (ui.getSlot().isInput()) {
                     maxInputSlotWidth = Math.max(maxInputSlotWidth, realSize.width);
                 } else if (ui.getSlot().isOutput()) {

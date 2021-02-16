@@ -171,7 +171,7 @@ public class JIPipeVerticalDataSlotUI extends JIPipeDataSlotUI {
         FontRenderContext frc = new FontRenderContext(null, false, false);
         TextLayout layout = new TextLayout(getDisplayedName(), getFont(), frc);
         double w = layout.getBounds().getWidth();
-        int labelWidth = (int) Math.ceil(w * 1.0 / JIPipeGraphViewMode.Vertical.getGridWidth())
+        int labelWidth = (int) Math.ceil(w / JIPipeGraphViewMode.Vertical.getGridWidth())
                 * JIPipeGraphViewMode.Vertical.getGridWidth();
         int width = labelWidth + 75;
         Point inGrid = JIPipeGraphViewMode.Vertical.realLocationToGrid(new Point(width, JIPipeGraphViewMode.Vertical.getGridHeight()), 1.0);
