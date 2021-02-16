@@ -171,8 +171,8 @@ public abstract class JIPipeDataSlotUI extends JIPipeWorkbenchPanel {
 
                 if (allowDisconnect) {
                     JMenuItem disconnectButton = new JMenuItem("Disconnect all", UIUtils.getIconFromResources("actions/cancel.png"));
-                    disconnectButton.addActionListener(e -> disconnectAll(Collections.emptySet()));
-                    installHighlightForDisconnect(disconnectButton, Collections.emptySet());
+                    disconnectButton.addActionListener(e -> disconnectAll(targetSlots));
+                    installHighlightForDisconnect(disconnectButton, targetSlots);
                     assignButtonMenu.add(disconnectButton);
 
                     assignButtonMenu.addSeparator();
