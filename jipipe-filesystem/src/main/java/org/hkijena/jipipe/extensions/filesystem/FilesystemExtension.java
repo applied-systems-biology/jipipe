@@ -118,6 +118,7 @@ public class FilesystemExtension extends JIPipePrepackagedDefaultJavaExtension {
         registerNodeType("folder-list-files", ListFiles.class, UIUtils.getIconURLFromResources("actions/view-list-details.png"));
         registerNodeType("folder-list-subfolders", ListSubfolders.class, UIUtils.getIconURLFromResources("actions/view-list-details.png"));
         registerNodeType("data-to-output-path", ConvertDataToOutputPath.class, UIUtils.getIconURLFromResources("actions/folder-new.png"));
+        registerNodeType("modify-path", ModifyPath.class, UIUtils.getIconURLFromResources("actions/insert-math-expression.png"));
 
         registerNodeType("export-data-by-parameter", ExportDataByParameter.class, UIUtils.getIconURLFromResources("actions/document-export.png"));
         registerNodeType("export-data", ExportData.class, UIUtils.getIconURLFromResources("actions/document-export.png"));
