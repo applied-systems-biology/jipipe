@@ -61,6 +61,7 @@ import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.statistics.GreyscalePi
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.statistics.HistogramGenerator;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.threshold.*;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.transform.*;
+import org.hkijena.jipipe.extensions.imagejalgorithms.utils.SimpleImageAndRoiIteratingAlgorithm;
 import org.hkijena.jipipe.extensions.imagejdatatypes.algorithms.DisplayRangeCalibrationAlgorithm;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.color.ImagePlusColor8UData;
@@ -596,6 +597,8 @@ public class ImageJAlgorithmsExtension extends JIPipePrepackagedDefaultJavaExten
                 Neighborhood2D.class,
                 "2D neighborhood",
                 "A 2D neighborhood");
+        registerEnumParameterType("ij1-roi-target", SimpleImageAndRoiIteratingAlgorithm.TargetArea.class,
+                "Target area", "Defines an area where an algorithm is applied");
     }
 
     private void registerROIAlgorithms() {

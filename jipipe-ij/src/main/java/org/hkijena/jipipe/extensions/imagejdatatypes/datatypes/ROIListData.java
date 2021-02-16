@@ -470,6 +470,36 @@ public class ROIListData extends ArrayList<Roi> implements JIPipeData {
         return result;
     }
 
+    /**
+     * Generates a mask image from pure ROI data.
+     * The ROI's reference images are ignored.
+     *
+     * @param width         the image width
+     * @param height the image height
+     * @param drawOutline       whether to draw an outline
+     * @param drawFilledOutline whether to fill the area
+     * @param lineThickness     line thickness for drawing
+     * @return the image
+     */
+    public ImagePlus toMask(int width, int height, boolean drawOutline, boolean drawFilledOutline, int lineThickness) {
+        // Find the bounds and future stack position
+        int sz = 1;
+        int sc = 1;
+        int st = 1;
+        for (Roi roi : this) {
+            int z = roi.getZPosition();
+            int c = roi.getCPosition();
+            int t = roi.getTPosition();
+            sz = Math.max(sz, z);
+            sc = Math.max(sc, c);
+            st = Math.max(st, t);
+        }
+
+        ImagePlus result = IJ.createImage("ROIs", "8-bit", width, height, sc, sz, st);
+        drawMask(drawOutline, drawFilledOutline, lineThickness, result);
+        return result;
+    }
+
     public void draw(ImageProcessor processor, ImageSliceIndex currentIndex, boolean ignoreZ, boolean ignoreC, boolean ignoreT, boolean drawOutline, boolean fillOutline, boolean drawLabel, int defaultLineThickness, Color defaultFillColor, Color defaultLineColor, Collection<Roi> highlighted) {
         ImagePlus tmp = new ImagePlus("tmp", processor);
         final int z = currentIndex.getZ();

@@ -60,6 +60,24 @@ public class Margin implements Function<Rectangle, Rectangle>, JIPipeParameterCo
     }
 
     /**
+     * Creates a margin from a rectangle
+     * @param rectangle the rectangle
+     */
+    public Margin(Rectangle rectangle) {
+        this.left.setUseExactValue(true);
+        this.top.setUseExactValue(true);
+        this.right.setUseExactValue(false);
+        this.bottom.setUseExactValue(false);
+        this.anchor = Anchor.TopLeft;
+        this.width.setUseExactValue(true);
+        this.height.setUseExactValue(true);
+        this.left.setExactValue(rectangle.x);
+        this.top.setExactValue(rectangle.y);
+        this.width.setExactValue(rectangle.width);
+        this.height.setExactValue(rectangle.height);
+    }
+
+    /**
      * Creates a copy
      *
      * @param other the original
