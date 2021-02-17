@@ -110,6 +110,10 @@ public class ParameterTable implements TableModel {
         return columns.get(columnIndex).getFieldClass();
     }
 
+    public ParameterColumn getColumnInfo(int columnIndex) {
+        return columns.get(columnIndex);
+    }
+
     @Override
     public boolean isCellEditable(int rowIndex, int columnIndex) {
         return false;
@@ -125,7 +129,11 @@ public class ParameterTable implements TableModel {
         rows.get(rowIndex).set(columnIndex, aValue);
 //        postTableModelChangedEvent();
         for (TableModelListener listener : listeners) {
-            listener.tableChanged(new TableModelEvent(this, rowIndex));
+            try {
+                listener.tableChanged(new TableModelEvent(this, rowIndex));
+            }
+            catch (IndexOutOfBoundsException e) {
+            }
         }
     }
 
@@ -253,6 +261,7 @@ public class ParameterTable implements TableModel {
      */
     public static class ParameterColumn {
         private String name;
+        private String description;
         private String key;
         private Class<?> fieldClass;
 
@@ -270,6 +279,7 @@ public class ParameterTable implements TableModel {
          */
         public ParameterColumn(ParameterColumn other) {
             this.name = other.name;
+            this.description = other.description;
             this.key = other.key;
             this.fieldClass = other.fieldClass;
         }
@@ -324,6 +334,16 @@ public class ParameterTable implements TableModel {
         @JsonSetter("key")
         public void setKey(String key) {
             this.key = key;
+        }
+
+        @JsonGetter("description")
+        public String getDescription() {
+            return description;
+        }
+
+        @JsonSetter("description")
+        public void setDescription(String description) {
+            this.description = description;
         }
     }
 

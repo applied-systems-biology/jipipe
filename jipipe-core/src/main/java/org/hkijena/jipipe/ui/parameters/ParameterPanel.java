@@ -298,7 +298,7 @@ public class ParameterPanel extends FormPanel implements Contextual {
         }
     }
 
-    private MarkdownDocument generateParameterDocumentation(JIPipeParameterAccess access) {
+    public static MarkdownDocument generateParameterDocumentation(JIPipeParameterAccess access) {
         StringBuilder markdownString = new StringBuilder();
         markdownString.append("# ").append(access.getName()).append("\n\n");
         markdownString.append("<table><tr>");

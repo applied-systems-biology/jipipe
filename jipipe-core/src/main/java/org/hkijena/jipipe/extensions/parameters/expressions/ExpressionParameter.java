@@ -72,4 +72,9 @@ public abstract class ExpressionParameter {
     public Object evaluate(StaticVariableSet<Object> variables) {
         return getEvaluator().evaluate(expression, variables);
     }
+
+    @Override
+    public String toString() {
+        return "Expression: " + expression;
+    }
 }

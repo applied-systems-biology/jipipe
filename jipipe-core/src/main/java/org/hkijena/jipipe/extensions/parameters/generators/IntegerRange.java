@@ -151,6 +151,10 @@ public class IntegerRange {
         return integers;
     }
 
+    @Override
+    public String toString() {
+        return StringUtils.orElse(value, "[Empty]");
+    }
 
     /**
      * Serializes the reference as ID

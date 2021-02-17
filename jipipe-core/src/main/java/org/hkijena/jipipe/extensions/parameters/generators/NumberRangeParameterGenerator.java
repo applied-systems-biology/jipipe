@@ -66,6 +66,7 @@ public class NumberRangeParameterGenerator<T extends Number & Comparable<T>> ext
         maxParameter.setUIOrder(1);
         JIPipeMutableParameterAccess stepSizeParameter = parameters.addParameter("step-size", numberClass);
         stepSizeParameter.setName("Step size");
+        stepSizeParameter.set(1);
         stepSizeParameter.setUIOrder(2);
         parameters.setAllowUserModification(false);
     }

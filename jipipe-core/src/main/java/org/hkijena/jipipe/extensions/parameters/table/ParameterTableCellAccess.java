@@ -56,7 +56,7 @@ public class ParameterTableCellAccess implements JIPipeParameterAccess {
 
     @Override
     public String getDescription() {
-        return null;
+        return table.getColumnInfo(column).getDescription();
     }
 
     @Override
