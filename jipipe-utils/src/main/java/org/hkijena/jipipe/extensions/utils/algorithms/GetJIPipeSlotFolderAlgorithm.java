@@ -42,6 +42,7 @@ public class GetJIPipeSlotFolderAlgorithm extends JIPipeSimpleIteratingAlgorithm
 
     private String nodeId;
     private String slotName;
+    private String compartmentId;
 
     public GetJIPipeSlotFolderAlgorithm(JIPipeNodeInfo info) {
         super(info);
@@ -51,12 +52,13 @@ public class GetJIPipeSlotFolderAlgorithm extends JIPipeSimpleIteratingAlgorithm
         super(other);
         this.nodeId = other.nodeId;
         this.slotName = other.slotName;
+        this.compartmentId = other.compartmentId;
     }
 
     @Override
     protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
         JIPipeOutputData outputData = dataBatch.getInputData(getFirstInputSlot(), JIPipeOutputData.class, progressInfo);
-        Path slotPath = outputData.toPath().resolve("analysis").resolve(nodeId).resolve(slotName);
+        Path slotPath = outputData.toPath().resolve(compartmentId).resolve(nodeId).resolve(slotName);
         dataBatch.addOutputData(getFirstOutputSlot(), new FolderData(slotPath), progressInfo);
     }
 
@@ -65,6 +67,7 @@ public class GetJIPipeSlotFolderAlgorithm extends JIPipeSimpleIteratingAlgorithm
         super.reportValidity(report);
         report.forCategory("Node ID").checkNonEmpty(nodeId, this);
         report.forCategory("Slot name").checkNonEmpty(slotName, this);
+        report.forCategory("Compartment ID").checkNonEmpty(compartmentId, this);
     }
 
     @JIPipeDocumentation(name = "Node ID", description = "The unique identifier of the node that contains the output. You can either use the 'Set output slot' button to auto-configure this value or look up the node ID in the help of the node. " +
@@ -80,7 +83,8 @@ public class GetJIPipeSlotFolderAlgorithm extends JIPipeSimpleIteratingAlgorithm
         this.nodeId = nodeId;
     }
 
-    @JIPipeDocumentation(name = "Slot name", description = "The name of the output slot within the targeted node. You can use the 'Set output slot' button to auto-configure or just type in the name of the output slot.")
+    @JIPipeDocumentation(name = "Slot name", description = "The name of the output slot within the targeted node. " +
+            "You can use the 'Set output slot' button to auto-configure or just type in the name of the output slot.")
     @JIPipeParameter(value = "slot-name", uiOrder = -99)
     @StringParameterSettings(monospace = true, icon = ResourceUtils.RESOURCE_BASE_PATH + "/icons/data-types/slot.png")
     public String getSlotName() {
@@ -90,6 +94,18 @@ public class GetJIPipeSlotFolderAlgorithm extends JIPipeSimpleIteratingAlgorithm
     @JIPipeParameter("slot-name")
     public void setSlotName(String slotName) {
         this.slotName = slotName;
+    }
+
+    @JIPipeDocumentation(name = "Compartment ID", description = "The ID of the compartment, where the data is located. " +
+            "You can use the 'Set output slot' button to auto-configure or just type in the name of the output slot.")
+    @JIPipeParameter("compartment-id")
+    public String getCompartmentId() {
+        return compartmentId;
+    }
+
+    @JIPipeParameter("compartment-id")
+    public void setCompartmentId(String compartmentId) {
+        this.compartmentId = compartmentId;
     }
 
     @JIPipeContextAction(iconURL = ResourceUtils.RESOURCE_BASE_PATH + "/icons/apps/jipipe.png")
@@ -117,6 +133,7 @@ public class GetJIPipeSlotFolderAlgorithm extends JIPipeSimpleIteratingAlgorithm
                             JIPipeDataSlot slot = (JIPipeDataSlot) node.getUserObject();
                             JIPipeParameterCollection.setParameter(this, "node-id", slot.getNode().getIdInGraph());
                             JIPipeParameterCollection.setParameter(this, "slot-name", slot.getName());
+                            JIPipeParameterCollection.setParameter(this, "compartment-id", slot.getNode().getCompartment());
                         } else {
                             JOptionPane.showMessageDialog(workbench.getWindow(), "Please select a slot", "Error", JOptionPane.ERROR_MESSAGE);
                         }
