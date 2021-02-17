@@ -39,6 +39,7 @@ public class GraphEditorUISettings implements JIPipeParameterCollection {
     private boolean askOnDeleteParameter = true;
     private boolean drawOutsideEdges = true;
     private boolean notifyInvalidDragAndDrop = true;
+    private boolean colorSelectedNodeEdges = true;
 
     public static GraphEditorUISettings getInstance() {
         return JIPipe.getSettings().getSettings(ID, GraphEditorUISettings.class);
@@ -152,5 +153,17 @@ public class GraphEditorUISettings implements JIPipeParameterCollection {
     @JIPipeParameter("notify-invalid-drag-and-drop")
     public void setNotifyInvalidDragAndDrop(boolean notifyInvalidDragAndDrop) {
         this.notifyInvalidDragAndDrop = notifyInvalidDragAndDrop;
+    }
+
+    @JIPipeDocumentation(name = "Color selected node edges", description = "If enabled, node edges are assigned a unique color while a connected node is selected. " +
+            "This is to distinguish them better.")
+    @JIPipeParameter("color-selected-node-edges")
+    public boolean isColorSelectedNodeEdges() {
+        return colorSelectedNodeEdges;
+    }
+
+    @JIPipeParameter("color-selected-node-edges")
+    public void setColorSelectedNodeEdges(boolean colorSelectedNodeEdges) {
+        this.colorSelectedNodeEdges = colorSelectedNodeEdges;
     }
 }

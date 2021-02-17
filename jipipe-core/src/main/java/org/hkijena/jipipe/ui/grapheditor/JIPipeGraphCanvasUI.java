@@ -73,9 +73,10 @@ public class JIPipeGraphCanvasUI extends JIPipeWorkbenchPanel implements MouseMo
     private final Set<JIPipeNodeUI> selection = new HashSet<>();
     private final EventBus eventBus = new EventBus();
     private final JIPipeGraphHistory graphHistory = new JIPipeGraphHistory();
+    private final GraphEditorUISettings settings;
     private String compartment;
     private boolean layoutHelperEnabled;
-    private JIPipeGraphViewMode viewMode = GraphEditorUISettings.getInstance().getDefaultViewMode();
+    private JIPipeGraphViewMode viewMode;
     private JIPipeGraphDragAndDropBehavior dragAndDropBehavior;
     private Point graphEditCursor;
     private Point selectionFirst;
@@ -110,6 +111,8 @@ public class JIPipeGraphCanvasUI extends JIPipeWorkbenchPanel implements MouseMo
         this.graph = graph;
         this.nodeHotKeyStorage = NodeHotKeyStorage.getInstance(graph);
         this.compartment = compartment;
+        this.settings = GraphEditorUISettings.getInstance();
+        this.viewMode = settings.getDefaultViewMode();
         initialize();
         addNewNodes();
         graph.getEventBus().register(this);
@@ -326,7 +329,7 @@ public class JIPipeGraphCanvasUI extends JIPipeWorkbenchPanel implements MouseMo
      * Applies a full auto-layout method
      */
     public void autoLayout() {
-        switch (GraphEditorUISettings.getInstance().getAutoLayout()) {
+        switch (settings.getAutoLayout()) {
             case Sugiyama:
                 (new SugiyamaGraphAutoLayoutMethod()).accept(this);
                 break;
@@ -850,14 +853,15 @@ public class JIPipeGraphCanvasUI extends JIPipeWorkbenchPanel implements MouseMo
 
         g.setStroke(STROKE_DEFAULT);
         graphics.setColor(Color.LIGHT_GRAY);
-        if (compartment != null && GraphEditorUISettings.getInstance().isDrawOutsideEdges())
+        if (compartment != null && settings.isDrawOutsideEdges())
             paintOutsideEdges(g, false);
-        paintEdges(g, STROKE_DEFAULT, STROKE_COMMENT, false, false);
+        paintEdges(g, STROKE_DEFAULT, STROKE_COMMENT, false, false, false);
 
         g.setStroke(STROKE_HIGHLIGHT);
-        if (compartment != null && GraphEditorUISettings.getInstance().isDrawOutsideEdges())
+        if (compartment != null && settings.isDrawOutsideEdges())
             paintOutsideEdges(g, true);
-        paintEdges(g, STROKE_HIGHLIGHT, STROKE_COMMENT_HIGHLIGHT, true, true);
+        if(!selection.isEmpty())
+            paintEdges(g, STROKE_HIGHLIGHT, STROKE_COMMENT_HIGHLIGHT, true, true, settings.isColorSelectedNodeEdges());
 
         // Draw selections
         g.setStroke(STROKE_SELECTION);
@@ -1002,26 +1006,64 @@ public class JIPipeGraphCanvasUI extends JIPipeWorkbenchPanel implements MouseMo
         }
     }
 
-    private void paintEdges(Graphics2D g, Stroke stroke, Stroke strokeComment, boolean onlySelected, boolean withHidden) {
-        for (Map.Entry<JIPipeDataSlot, JIPipeDataSlot> kv : graph.getSlotEdges()) {
+    private void paintEdges(Graphics2D g, Stroke stroke, Stroke strokeComment, boolean onlySelected, boolean withHidden, boolean multicolor) {
+        int multiColorMax = 1;
+        Set<Map.Entry<JIPipeDataSlot, JIPipeDataSlot>> slotEdges = graph.getSlotEdges();
+        if(multicolor) {
+            if(onlySelected) {
+                multiColorMax = 0;
+                for (Map.Entry<JIPipeDataSlot, JIPipeDataSlot> kv : slotEdges) {
+                    JIPipeDataSlot source = kv.getKey();
+                    JIPipeDataSlot target = kv.getValue();
+                    JIPipeNodeUI sourceUI = nodeUIs.getOrDefault(source.getNode(), null);
+                    JIPipeNodeUI targetUI = nodeUIs.getOrDefault(target.getNode(), null);
+
+                    if (sourceUI == null || targetUI == null)
+                        continue;
+                    if(selection.contains(sourceUI) ||selection.contains(targetUI)) {
+                        ++multiColorMax;
+                    }
+                }
+            }
+            else {
+                multiColorMax = slotEdges.size();
+            }
+        }
+        int multiColorIndex = 0;
+        for (Map.Entry<JIPipeDataSlot, JIPipeDataSlot> kv : slotEdges) {
             JIPipeDataSlot source = kv.getKey();
             JIPipeDataSlot target = kv.getValue();
             JIPipeGraphEdge edge = graph.getGraph().getEdge(kv.getKey(), kv.getValue());
+
+            // Check for only showing selected nodes
+            JIPipeNodeUI sourceUI = nodeUIs.getOrDefault(source.getNode(), null);
+            JIPipeNodeUI targetUI = nodeUIs.getOrDefault(target.getNode(), null);
+
+            if (sourceUI == null || targetUI == null) {
+                continue;
+            }
+            if(onlySelected && !selection.contains(sourceUI) && !selection.contains(targetUI)) {
+                continue;
+            }
+
+            // Hidden edges
             if (!withHidden) {
                 if (edge.isUiHidden()) {
-                    paintHiddenSlotEdge(g, source, target);
+                    paintHiddenSlotEdge(g, source, target, multicolor, multiColorIndex, multiColorMax);
                     continue;
                 }
             }
             if (source.getNode() instanceof JIPipeCommentNode || target.getNode() instanceof JIPipeCommentNode) {
-                paintSlotEdge(g, strokeComment, onlySelected, source, target, edge.getUiShape());
+                paintSlotEdge(g, strokeComment, source, target, sourceUI, targetUI, edge.getUiShape(), multicolor, multiColorIndex, multiColorMax);
             } else {
-                paintSlotEdge(g, stroke, onlySelected, source, target, edge.getUiShape());
+                paintSlotEdge(g, stroke, source, target, sourceUI, targetUI, edge.getUiShape(), multicolor, multiColorIndex, multiColorMax);
             }
+
+            ++multiColorIndex;
         }
     }
 
-    private void paintHiddenSlotEdge(Graphics2D g, JIPipeDataSlot source, JIPipeDataSlot target) {
+    private void paintHiddenSlotEdge(Graphics2D g, JIPipeDataSlot source, JIPipeDataSlot target, boolean multicolor, int multiColorIndex, int multiColorMax) {
         JIPipeNodeUI sourceUI = nodeUIs.getOrDefault(source.getNode(), null);
         JIPipeNodeUI targetUI = nodeUIs.getOrDefault(target.getNode(), null);
 
@@ -1029,7 +1071,7 @@ public class JIPipeGraphCanvasUI extends JIPipeWorkbenchPanel implements MouseMo
             return;
 
         g.setStroke(STROKE_DEFAULT);
-        g.setColor(getEdgeColor(source, target));
+        g.setColor(getEdgeColor(source, target, multicolor, multiColorIndex, multiColorMax));
 
         PointRange sourcePoint;
         PointRange targetPoint;
@@ -1085,9 +1127,12 @@ public class JIPipeGraphCanvasUI extends JIPipeWorkbenchPanel implements MouseMo
         }
     }
 
-    private Color getEdgeColor(JIPipeDataSlot source, JIPipeDataSlot target) {
+    private Color getEdgeColor(JIPipeDataSlot source, JIPipeDataSlot target, boolean multicolor, int multiColorIndex, int multiColorMax) {
         if (source.getNode() instanceof JIPipeCommentNode || target.getNode() instanceof JIPipeCommentNode)
             return COMMENT_EDGE_COLOR;
+        if(multicolor) {
+            return Color.getHSBColor(1.0f * multiColorIndex / multiColorMax, 0.45f, 0.65f);
+        }
         if (JIPipeDatatypeRegistry.isTriviallyConvertible(source.getAcceptedDataType(), target.getAcceptedDataType()))
             return Color.DARK_GRAY;
         else if (JIPipe.getDataTypes().isConvertible(source.getAcceptedDataType(), target.getAcceptedDataType()))
@@ -1098,25 +1143,20 @@ public class JIPipeGraphCanvasUI extends JIPipeWorkbenchPanel implements MouseMo
 
     private void paintSlotEdge(Graphics2D g,
                                Stroke stroke,
-                               boolean onlySelected,
                                JIPipeDataSlot source,
                                JIPipeDataSlot target,
-                               JIPipeGraphEdge.Shape uiShape) {
-        JIPipeNodeUI sourceUI = nodeUIs.getOrDefault(source.getNode(), null);
-        JIPipeNodeUI targetUI = nodeUIs.getOrDefault(target.getNode(), null);
+                               JIPipeNodeUI sourceUI,
+                               JIPipeNodeUI targetUI,
+                               JIPipeGraphEdge.Shape uiShape,
+                               boolean multicolor,
+                               int multiColorIndex,
+                               int multiColorMax) {
 
         if (sourceUI == null || targetUI == null)
             return;
 
-        if (onlySelected) {
-            if (!selection.contains(sourceUI) && !selection.contains(targetUI))
-                return;
-        } else {
-            if (selection.contains(sourceUI) || selection.contains(targetUI))
-                return;
-        }
         g.setStroke(stroke);
-        g.setColor(getEdgeColor(source, target));
+        g.setColor(getEdgeColor(source, target, multicolor, multiColorIndex, multiColorMax));
 
         PointRange sourcePoint;
         PointRange targetPoint;
