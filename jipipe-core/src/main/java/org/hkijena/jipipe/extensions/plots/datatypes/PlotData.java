@@ -106,7 +106,9 @@ public abstract class PlotData implements JIPipeData, JIPipeParameterCollection,
 
     public static <T extends PlotData> T importFrom(Path storageFilePath, Class<T> klass) {
         try {
-            PlotData plotData = JsonUtils.getObjectMapper().readerFor(klass).readValue(storageFilePath.resolve("plot-metadata.json").toFile());
+            JsonNode node = JsonUtils.getObjectMapper().readerFor(JsonNode.class).readValue(storageFilePath.resolve("plot-metadata.json").toFile());
+            PlotData plotData = JsonUtils.getObjectMapper().readerFor(klass).readValue(node);
+            JIPipeParameterCollection.deserializeParametersFromJson(plotData, node, new JIPipeValidityReport());
             List<Path> seriesFiles = PathUtils.findFilesByExtensionIn(storageFilePath, ".csv").stream()
                     .filter(p -> p.getFileName().toString().matches("series\\d+.csv")).sorted(Comparator.comparing(p -> p.getFileName().toString())).collect(Collectors.toList());
             for (Path seriesFile : seriesFiles) {
