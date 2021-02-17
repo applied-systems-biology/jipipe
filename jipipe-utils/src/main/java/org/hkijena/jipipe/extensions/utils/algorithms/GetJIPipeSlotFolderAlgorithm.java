@@ -99,6 +99,7 @@ public class GetJIPipeSlotFolderAlgorithm extends JIPipeSimpleIteratingAlgorithm
     @JIPipeDocumentation(name = "Compartment ID", description = "The ID of the compartment, where the data is located. " +
             "You can use the 'Set output slot' button to auto-configure or just type in the name of the output slot.")
     @JIPipeParameter("compartment-id")
+    @StringParameterSettings(monospace = true, icon = ResourceUtils.RESOURCE_BASE_PATH + "/icons/data-types/node.png")
     public String getCompartmentId() {
         return compartmentId;
     }
