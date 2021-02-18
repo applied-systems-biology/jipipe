@@ -157,12 +157,12 @@ public class ManualThreshold8U2DAlgorithm extends JIPipeSimpleIteratingAlgorithm
     }
 
     @JIPipeDocumentation(name = "Max threshold annotation", description = "Annotation added to the output that contains the max threshold")
-    @JIPipeParameter("min-threshold-annotation")
+    @JIPipeParameter("max-threshold-annotation")
     public OptionalAnnotationNameParameter getMaxThresholdAnnotation() {
         return maxThresholdAnnotation;
     }
 
-    @JIPipeParameter("min-threshold-annotation")
+    @JIPipeParameter("max-threshold-annotation")
     public void setMaxThresholdAnnotation(OptionalAnnotationNameParameter maxThresholdAnnotation) {
         this.maxThresholdAnnotation = maxThresholdAnnotation;
     }
