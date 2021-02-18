@@ -61,7 +61,7 @@ import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.statistics.GreyscalePi
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.statistics.HistogramGenerator;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.threshold.*;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.transform.*;
-import org.hkijena.jipipe.extensions.imagejalgorithms.utils.SimpleImageAndRoiIteratingAlgorithm;
+import org.hkijena.jipipe.extensions.imagejalgorithms.utils.ImageROITargetArea;
 import org.hkijena.jipipe.extensions.imagejdatatypes.algorithms.DisplayRangeCalibrationAlgorithm;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.color.ImagePlusColor8UData;
@@ -597,7 +597,7 @@ public class ImageJAlgorithmsExtension extends JIPipePrepackagedDefaultJavaExten
                 Neighborhood2D.class,
                 "2D neighborhood",
                 "A 2D neighborhood");
-        registerEnumParameterType("ij1-roi-target", SimpleImageAndRoiIteratingAlgorithm.TargetArea.class,
+        registerEnumParameterType("ij1-roi-target", ImageROITargetArea.class,
                 "Target area", "Defines an area where an algorithm is applied");
     }
 
@@ -721,6 +721,8 @@ public class ImageJAlgorithmsExtension extends JIPipePrepackagedDefaultJavaExten
 
         registerEnumParameterType(AutoThresholder.Method.class.getCanonicalName(), AutoThresholder.Method.class,
                 "Auto threshold method", "Available methods");
+        registerEnumParameterType("slice-threshold-mode", AutoThreshold2DAlgorithm.SliceThresholdMode.class,
+                "Slice thresholding mode", "How multi-slice images are thresholded");
         registerEnumParameterType(LocalAutoThreshold2DAlgorithm.Method.class.getCanonicalName(), LocalAutoThreshold2DAlgorithm.Method.class,
                 "Local auto threshold method", "Available methods");
         registerEnumParameterType("ij1:eigenvalue-selection-2d", EigenvalueSelection2D.class,
