@@ -500,6 +500,36 @@ public class ROIListData extends ArrayList<Roi> implements JIPipeData {
         return result;
     }
 
+    /**
+     * Generates a mask image from pure ROI data.
+     * The ROI's reference images are ignored.
+     *
+     * @param width         the image width
+     * @param height the image height
+     * @param drawOutline       whether to draw an outline
+     * @param drawFilledOutline whether to fill the area
+     * @param lineThickness     line thickness for drawing
+     * @return the image
+     */
+    public ImagePlus getMaskForSlice(int width, int height, boolean drawOutline, boolean drawFilledOutline, int lineThickness, ImageSliceIndex sliceIndex) {
+        // Find the bounds and future stack position
+        int sz = 1;
+        int sc = 1;
+        int st = 1;
+        for (Roi roi : this) {
+            int z = roi.getZPosition();
+            int c = roi.getCPosition();
+            int t = roi.getTPosition();
+            sz = Math.max(sz, z);
+            sc = Math.max(sc, c);
+            st = Math.max(st, t);
+        }
+
+        ImagePlus result = IJ.createImage("ROIs", "8-bit", width, height, 1, 1, 1);
+        drawMaskForSliceIndex(drawOutline, drawFilledOutline, lineThickness, result, sliceIndex);
+        return result;
+    }
+
     public void draw(ImageProcessor processor, ImageSliceIndex currentIndex, boolean ignoreZ, boolean ignoreC, boolean ignoreT, boolean drawOutline, boolean fillOutline, boolean drawLabel, int defaultLineThickness, Color defaultFillColor, Color defaultLineColor, Collection<Roi> highlighted) {
         ImagePlus tmp = new ImagePlus("tmp", processor);
         final int z = currentIndex.getZ();
@@ -577,6 +607,40 @@ public class ROIListData extends ArrayList<Roi> implements JIPipeData {
             }
         }
 
+    }
+
+    /**
+     * Draws the ROI over an existing mask image
+     *
+     * @param drawOutline       whether to draw an outline
+     * @param drawFilledOutline whether to fill the area
+     * @param lineThickness     line thickness for drawing
+     * @param result            the target image
+     */
+    public void drawMaskForSliceIndex(boolean drawOutline, boolean drawFilledOutline, int lineThickness, ImagePlus result, ImageSliceIndex sliceIndex) {
+        ImageProcessor processor = result.getProcessor();
+        processor.setLineWidth(lineThickness);
+        processor.setColor(255);
+
+        int z = sliceIndex.getZ();
+        int c = sliceIndex.getC();
+        int t = sliceIndex.getT();
+
+        for (Roi roi : this) {
+            int rz = roi.getZPosition();
+            int rc = roi.getCPosition();
+            int rt = roi.getTPosition();
+            if (rz != 0 && rz != (z + 1))
+                continue;
+            if (rc != 0 && rc != (c + 1))
+                continue;
+            if (rt != 0 && rt != (t + 1))
+                continue;
+            if (drawFilledOutline)
+                processor.fill(roi);
+            if (drawOutline)
+                roi.drawPixels(processor);
+        }
     }
 
     /**

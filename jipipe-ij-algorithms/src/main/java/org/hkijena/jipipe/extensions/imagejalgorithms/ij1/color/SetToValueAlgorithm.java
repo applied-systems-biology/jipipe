@@ -52,18 +52,18 @@ public class SetToValueAlgorithm extends SimpleImageAndRoiIteratingAlgorithm {
     protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
         ImagePlus image = dataBatch.getInputData(getFirstInputSlot(), ImagePlusData.class, progressInfo).getDuplicateImage();
         image = ImageJUtils.channelsToRGB(image);
-        ImageProcessor roi = getMask(dataBatch, progressInfo);
-        (new ImagePlusData(new ImagePlus("a", roi))).saveTo(Paths.get("D:\\Projects\\JIPipe\\tmp\\roi"), "roi", true, new JIPipeProgressInfo());
         if (image.getType() == ImagePlus.COLOR_RGB) {
             Color color = new Color((int) value);
-            ImageJUtils.forEachSlice(image, ip -> {
+            ImageJUtils.forEachIndexedZCTSlice(image, (ip, index) -> {
+                ImageProcessor roi = getMask(dataBatch, index, progressInfo);
                 ColorProcessor colorProcessor = (ColorProcessor) ip;
                 ip.resetRoi();
                 colorProcessor.setColor(color);
                 ip.fill(roi);
             }, progressInfo);
         } else {
-            ImageJUtils.forEachSlice(image, ip -> {
+            ImageJUtils.forEachIndexedZCTSlice(image, (ip, index) -> {
+                ImageProcessor roi = getMask(dataBatch, index, progressInfo);
                 ip.resetRoi();
                 ip.setValue(value);
                 ip.fill(roi);

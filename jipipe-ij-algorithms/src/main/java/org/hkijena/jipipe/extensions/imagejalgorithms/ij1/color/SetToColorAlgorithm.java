@@ -51,9 +51,9 @@ public class SetToColorAlgorithm extends SimpleImageAndRoiIteratingAlgorithm {
     protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
         ImagePlus image = dataBatch.getInputData(getFirstInputSlot(), ImagePlusData.class, progressInfo).getDuplicateImage();
         image = ImageJUtils.channelsToRGB(image);
-        ImageProcessor roi = getMask(dataBatch, progressInfo);
         if (image.getType() == ImagePlus.COLOR_RGB) {
-            ImageJUtils.forEachSlice(image, ip -> {
+            ImageJUtils.forEachIndexedZCTSlice(image, (ip, index) -> {
+                ImageProcessor roi = getMask(dataBatch, index, progressInfo);
                 ColorProcessor colorProcessor = (ColorProcessor) ip;
                 ip.resetRoi();
                 ip.setMask(roi);
@@ -63,7 +63,8 @@ public class SetToColorAlgorithm extends SimpleImageAndRoiIteratingAlgorithm {
             }, progressInfo);
         } else {
             double value = (color.getRed() + color.getGreen() + color.getBlue()) / 3.0;
-            ImageJUtils.forEachSlice(image, ip -> {
+            ImageJUtils.forEachIndexedZCTSlice(image, (ip, index) -> {
+                ImageProcessor roi = getMask(dataBatch, index, progressInfo);
                 ip.resetRoi();
                 ip.setMask(roi);
                 ip.setValue(value);

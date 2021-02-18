@@ -31,6 +31,7 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d2.greyscale.Imag
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscale8UData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleMaskData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
+import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageSliceIndex;
 import org.hkijena.jipipe.extensions.parameters.expressions.DefaultExpressionParameter;
 import org.hkijena.jipipe.extensions.parameters.expressions.ExpressionParameter;
 import org.hkijena.jipipe.extensions.parameters.expressions.ExpressionParameterSettings;
@@ -82,7 +83,7 @@ public class AutoThreshold2DAlgorithm extends JIPipeIteratingAlgorithm {
         this.darkBackground = other.darkBackground;
         this.thresholdAnnotation = new OptionalAnnotationNameParameter(other.thresholdAnnotation);
         this.thresholdMode = other.thresholdMode;
-        this.thresholdCombinationExpression = new DefaultExpressionParameter(thresholdCombinationExpression);
+        this.thresholdCombinationExpression = new DefaultExpressionParameter(other.thresholdCombinationExpression);
         this.sourceArea = other.sourceArea;
         updateRoiSlot();
     }
@@ -96,11 +97,33 @@ public class AutoThreshold2DAlgorithm extends JIPipeIteratingAlgorithm {
     protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
         ImagePlusData inputData = dataBatch.getInputData(getFirstInputSlot(), ImagePlusGreyscale8UData.class, progressInfo);
         ImagePlus img = inputData.getDuplicateImage();
-        ImageProcessor mask = getMask(dataBatch, progressInfo);
+        ROIListData roiInput = null;
+        ImagePlus maskInput = null;
         AutoThresholder autoThresholder = new AutoThresholder();
+
+        switch (sourceArea) {
+            case InsideRoi:
+            case OutsideRoi:
+                roiInput = dataBatch.getInputData("ROI", ROIListData.class, progressInfo);
+                break;
+            case InsideMask:
+            case OutsideMask:
+                maskInput = dataBatch.getInputData("Mask", ImagePlusGreyscaleMaskData.class, progressInfo).getImage();
+                break;
+        }
+
+        ROIListData finalRoiInput = roiInput;
+        ImagePlus finalMaskInput = maskInput;
+
         if(thresholdMode == SliceThresholdMode.ApplyPerSlice) {
             List<Integer> thresholds = new ArrayList<>();
-            ImageJUtils.forEachSlice(img, ip -> {
+            ImageJUtils.forEachIndexedZCTSlice(img, (ip, index) -> {
+                ImageProcessor mask = getMask(img.getWidth(),
+                        img.getHeight(),
+                        finalRoiInput,
+                        finalMaskInput,
+                        index,
+                        progressInfo);
                 if (!darkBackground)
                     ip.invert();
                 int[] histogram = getHistogram(ip, mask);
@@ -121,16 +144,22 @@ public class AutoThreshold2DAlgorithm extends JIPipeIteratingAlgorithm {
                     JIPipeAnnotationMergeStrategy.Merge,
                     progressInfo);
         }
-        else if(thresholdMode == SliceThresholdMode.CombineThresholdPerSlice) {
+        else if(thresholdMode == SliceThresholdMode.CombineSliceHistograms) {
             int[] combinedHistogram = new int[256];
-            ImageJUtils.forEachSlice(img, ip -> {
+            ImageJUtils.forEachIndexedZCTSlice(img, (ip, index) -> {
+                ImageProcessor mask = getMask(img.getWidth(),
+                        img.getHeight(),
+                        finalRoiInput,
+                        finalMaskInput,
+                        index,
+                        progressInfo);
                 if (!darkBackground)
                     ip.invert();
                 int[] histogram = getHistogram(ip, mask);
                 for (int i = 0; i < histogram.length; i++) {
                     combinedHistogram[i] += histogram[i];
                 }
-            }, progressInfo);
+            }, progressInfo.resolve("Finding histograms"));
             int threshold = autoThresholder.getThreshold(method, combinedHistogram);
             List<JIPipeAnnotation> annotations = new ArrayList<>();
             if(thresholdAnnotation.isEnabled()) {
@@ -145,15 +174,21 @@ public class AutoThreshold2DAlgorithm extends JIPipeIteratingAlgorithm {
                     JIPipeAnnotationMergeStrategy.Merge,
                     progressInfo);
         }
-        else {
+        else if(thresholdMode == SliceThresholdMode.CombineThresholdPerSlice) {
             List<Integer> thresholds = new ArrayList<>();
-            ImageJUtils.forEachSlice(img, ip -> {
+            ImageJUtils.forEachIndexedZCTSlice(img, (ip, index) -> {
+                ImageProcessor mask = getMask(img.getWidth(),
+                        img.getHeight(),
+                        finalRoiInput,
+                        finalMaskInput,
+                        index,
+                        progressInfo);
                 if (!darkBackground)
                     ip.invert();
                 int[] histogram = getHistogram(ip, mask);
                 int threshold = autoThresholder.getThreshold(method, histogram);
                 thresholds.add(threshold);
-            }, progressInfo);
+            }, progressInfo.resolve("Finding thresholds"));
 
             // Combine thresholds
             StaticVariableSet<Object> variableSet = new StaticVariableSet<>();
@@ -276,40 +311,47 @@ public class AutoThreshold2DAlgorithm extends JIPipeIteratingAlgorithm {
         }
     }
 
-    private ImageProcessor getMask(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
+    private ImageProcessor getMask(int width, int height, ROIListData rois, ImagePlus mask, ImageSliceIndex sliceIndex, JIPipeProgressInfo progressInfo) {
         switch (sourceArea) {
             case WholeImage: {
                 return null;
             }
             case InsideRoi: {
-                ROIListData rois = dataBatch.getInputData("ROI", ROIListData.class, progressInfo);
-                ImagePlusData img = dataBatch.getInputData("Input", ImagePlusData.class, progressInfo);
                 if(rois.isEmpty()) {
                     return null;
                 }
                 else {
-                    return rois.toMask(img.getImage().getWidth(), img.getImage().getHeight(),
-                            false, true, 0).getProcessor();
+                    return rois.getMaskForSlice(width, height,
+                            false, true, 0, sliceIndex).getProcessor();
                 }
             }
             case OutsideRoi: {
-                ROIListData rois = dataBatch.getInputData("ROI", ROIListData.class, progressInfo);
-                ImagePlusData img = dataBatch.getInputData("Input", ImagePlusData.class, progressInfo);
                 if(rois.isEmpty()) {
                     return null;
                 }
                 else {
-                    ImageProcessor processor = rois.toMask(img.getImage().getWidth(), img.getImage().getHeight(),
-                            false, true, 0).getProcessor();
+                    ImageProcessor processor = rois.getMaskForSlice(width, height,
+                            false, true, 0, sliceIndex).getProcessor();
                     processor.invert();
                     return processor;
                 }
             }
             case InsideMask: {
-                return dataBatch.getInputData("Mask", ImagePlusData.class, progressInfo).getImage().getProcessor();
+                if(mask.getStackSize() > 1) {
+                    return mask.getStack().getProcessor(sliceIndex.getStackIndex(mask));
+                }
+                else {
+                    return mask.getProcessor();
+                }
             }
             case OutsideMask: {
-                ImageProcessor processor = dataBatch.getInputData("Mask", ImagePlusData.class, progressInfo).getImage().getProcessor().duplicate();
+                ImageProcessor processor;
+                if(mask.getStackSize() > 1) {
+                    processor = mask.getStack().getProcessor(sliceIndex.getStackIndex(mask)).duplicate();
+                }
+                else {
+                    processor = mask.getProcessor().duplicate();
+                }
                 processor.invert();
                 return processor;
             }
@@ -340,7 +382,7 @@ public class AutoThreshold2DAlgorithm extends JIPipeIteratingAlgorithm {
                 slotConfiguration.removeInputSlot("ROI", false);
             }
             if(!slotConfiguration.getInputSlots().containsKey("Mask")) {
-                slotConfiguration.addSlot("Mask", new JIPipeDataSlotInfo(ImagePlus2DGreyscaleMaskData.class, JIPipeSlotType.Input, "Mask"), false);
+                slotConfiguration.addSlot("Mask", new JIPipeDataSlotInfo(ImagePlusGreyscaleMaskData.class, JIPipeSlotType.Input, "Mask"), false);
             }
         }
     }
