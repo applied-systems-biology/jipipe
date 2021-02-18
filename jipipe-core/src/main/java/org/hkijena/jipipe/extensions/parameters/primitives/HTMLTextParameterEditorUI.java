@@ -87,6 +87,7 @@ public class HTMLTextParameterEditorUI extends JIPipeParameterEditorUI {
         if (!isReloading && !Objects.equals(stringValue, editor.getHTML())) {
             isReloading = true;
             editor.setText(stringValue);
+            SwingUtilities.invokeLater(this::revalidate);
             isReloading = false;
         }
     }
