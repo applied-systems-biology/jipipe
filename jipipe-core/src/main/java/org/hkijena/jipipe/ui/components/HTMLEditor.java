@@ -70,7 +70,7 @@ public class HTMLEditor extends JPanel {
     private void initialize(int flags) {
         textPane = new JTextPane();
         textPane.setContentType("text/html");
-        textPane.setMinimumSize(new Dimension(100,32));
+//        textPane.setMinimumSize(new Dimension(100,32));
         editorKit = new HTMLEditorKit();
         for (Action action : editorKit.getActions()) {
             availableEditorKitActions.put(action.getValue(Action.NAME) + "", action);
@@ -92,7 +92,10 @@ public class HTMLEditor extends JPanel {
 
     private void initializeToolBar(int flags) {
 
-        JPanel toolbarPanel = new JPanel(new WrapLayout(WrapLayout.LEFT));
+//        JPanel toolbarPanel = new JPanel(); // new WrapLayout(WrapLayout.LEFT)
+//        toolbarPanel.setLayout(new ModifiedFlowLayout());
+        JToolBar toolbarPanel = new JToolBar();
+        toolbarPanel.setFloatable(false);
 
         fontSelection = new JComboBox<>();
         fontSelection.setModel(new DefaultComboBoxModel<>(GraphicsEnvironment.getLocalGraphicsEnvironment().getAvailableFontFamilyNames()));
@@ -129,39 +132,39 @@ public class HTMLEditor extends JPanel {
         });
 
         // Font family/size
-        JPanel fontSizePanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
-        fontSizePanel.setBorder(null);
-        fontSizePanel.add(fontSelection);
-        fontSizePanel.add(sizeSelection);
-        toolbarPanel.add(fontSizePanel);
+//        JPanel fontSizePanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
+//        fontSizePanel.setBorder(null);
+        toolbarPanel.add(fontSelection);
+        toolbarPanel.add(sizeSelection);
+//        toolbarPanel.add(fontSizePanel);
 
         // Standard formats
-        JPanel standardFormatPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
-        standardFormatPanel.add(createFormatActionButton(new StyledEditorKit.BoldAction(),
+//        JPanel standardFormatPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
+        toolbarPanel.add(createFormatActionButton(new StyledEditorKit.BoldAction(),
                 this::selectionIsBold,
                 "Format bold",
                 "actions/format-text-bold.png"));
-        standardFormatPanel.add(createFormatActionButton(new StyledEditorKit.ItalicAction(),
+        toolbarPanel.add(createFormatActionButton(new StyledEditorKit.ItalicAction(),
                 this::selectionIsItalic,
                 "Format italic",
                 "actions/format-text-italic.png"));
-        standardFormatPanel.add(createFormatActionButton(new StyledEditorKit.UnderlineAction(),
+        toolbarPanel.add(createFormatActionButton(new StyledEditorKit.UnderlineAction(),
                 this::selectionIsUnderline,
                 "Format underlined",
                 "actions/format-text-underline.png"));
-        toolbarPanel.add(standardFormatPanel);
+//        toolbarPanel.add(standardFormatPanel);
 
         // Extended formats
-        JPanel extendedFormatPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
-        extendedFormatPanel.add(createFormatActionButton(new StrikeThroughAction(),
+//        JPanel extendedFormatPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
+        toolbarPanel.add(createFormatActionButton(new StrikeThroughAction(),
                 this::selectionIsStrikeThrough,
                 "Format strike-through",
                 "actions/format-text-strikethrough.png"));
-        extendedFormatPanel.add(createFormatActionButton(new SubscriptAction(),
+        toolbarPanel.add(createFormatActionButton(new SubscriptAction(),
                 this::selectionIsSubscript,
                 "Format as sub-script",
                 "actions/format-text-subscript.png"));
-        extendedFormatPanel.add(createFormatActionButton(new SuperscriptAction(),
+        toolbarPanel.add(createFormatActionButton(new SuperscriptAction(),
                 this::selectionIsSuperscript,
                 "Format as super-script",
                 "actions/format-text-superscript.png"));
@@ -188,28 +191,28 @@ public class HTMLEditor extends JPanel {
                 }
             }
         });
-        extendedFormatPanel.add(foregroundColorButton);
-        toolbarPanel.add(extendedFormatPanel);
+//        extendedFormatPanel.add(foregroundColorButton);
+//        toolbarPanel.add(extendedFormatPanel);
 
         // Align panel
-        JPanel alignPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
-        alignPanel.add(createFormatActionButton(new StyledEditorKit.AlignmentAction("Align left", StyleConstants.ALIGN_LEFT),
+//        JPanel alignPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
+        toolbarPanel.add(createFormatActionButton(new StyledEditorKit.AlignmentAction("Align left", StyleConstants.ALIGN_LEFT),
                 this::selectionIsAlignLeft,
                 "Align left",
                 "actions/format-justify-left.png"));
-        alignPanel.add(createFormatActionButton(new StyledEditorKit.AlignmentAction("Align center", StyleConstants.ALIGN_CENTER),
+        toolbarPanel.add(createFormatActionButton(new StyledEditorKit.AlignmentAction("Align center", StyleConstants.ALIGN_CENTER),
                 this::selectionIsAlignCenter,
                 "Align center",
                 "actions/format-justify-center.png"));
-        alignPanel.add(createFormatActionButton(new StyledEditorKit.AlignmentAction("Align right", StyleConstants.ALIGN_RIGHT),
+        toolbarPanel.add(createFormatActionButton(new StyledEditorKit.AlignmentAction("Align right", StyleConstants.ALIGN_RIGHT),
                 this::selectionIsAlignRight,
                 "Align right",
                 "actions/format-justify-right.png"));
-        alignPanel.add(createFormatActionButton(new StyledEditorKit.AlignmentAction("Align justified", StyleConstants.ALIGN_JUSTIFIED),
+        toolbarPanel.add(createFormatActionButton(new StyledEditorKit.AlignmentAction("Align justified", StyleConstants.ALIGN_JUSTIFIED),
                 this::selectionIsAlignJustified,
                 "Align justified",
                 "actions/format-justify-fill.png"));
-        toolbarPanel.add(alignPanel);
+//        toolbarPanel.add(alignPanel);
 
         if ((flags & WITHOUT_TOOLBAR) != WITHOUT_TOOLBAR) {
             add(toolbarPanel, BorderLayout.NORTH);
