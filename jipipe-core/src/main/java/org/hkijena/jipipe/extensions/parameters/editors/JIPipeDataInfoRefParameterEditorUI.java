@@ -22,8 +22,7 @@ import org.hkijena.jipipe.extensions.parameters.references.JIPipeDataInfoRef;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.components.JIPipeDataTypePicker;
 import org.hkijena.jipipe.ui.parameters.JIPipeParameterEditorUI;
-import org.hkijena.jipipe.utils.TooltipUtils;
-import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.utils.*;
 
 import javax.swing.*;
 import java.awt.*;
@@ -100,11 +99,13 @@ public class JIPipeDataInfoRefParameterEditorUI extends JIPipeParameterEditorUI 
 
     private void initializePicker() {
         Class<? extends JIPipeData> baseClass = JIPipeData.class;
+        ClassFilter classFilter = new AnyClassFilter();
         boolean showHidden = false;
         JIPipeDataParameterSettings settings = getParameterAccess().getAnnotationOfType(JIPipeDataParameterSettings.class);
         if (settings != null) {
             baseClass = settings.dataBaseClass();
             showHidden = settings.showHidden();
+            classFilter = (ClassFilter) ReflectionUtils.newInstance(settings.dataClassFilter());
         }
 
         Set<JIPipeDataInfo> availableTraits = new HashSet<>();
@@ -112,7 +113,7 @@ public class JIPipeDataInfoRefParameterEditorUI extends JIPipeParameterEditorUI 
             JIPipeDataInfo info = JIPipeDataInfo.getInstance(klass);
             if (info.isHidden() && !showHidden)
                 continue;
-            if (baseClass.isAssignableFrom(info.getDataClass())) {
+            if (baseClass.isAssignableFrom(info.getDataClass()) && classFilter.test(info.getDataClass())) {
                 availableTraits.add(info);
             }
         }

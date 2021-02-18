@@ -32,6 +32,7 @@ import org.hkijena.jipipe.extensions.plots.datatypes.PlotData;
 import org.hkijena.jipipe.extensions.plots.datatypes.PlotDataSeries;
 import org.hkijena.jipipe.extensions.plots.datatypes.PlotMetadata;
 import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
+import org.hkijena.jipipe.ui.plotbuilder.PlotDataClassFilter;
 import org.scijava.Priority;
 
 import java.util.HashMap;
@@ -121,7 +122,7 @@ public class PlotGeneratorAlgorithm extends JIPipeAlgorithm {
 
     @JIPipeDocumentation(name = "Plot type", description = "The type of plot to be generated.")
     @JIPipeParameter(value = "plot-type", priority = Priority.HIGH)
-    @JIPipeDataParameterSettings(dataBaseClass = PlotData.class)
+    @JIPipeDataParameterSettings(dataBaseClass = PlotData.class, dataClassFilter = PlotDataClassFilter.class)
     public JIPipeDataInfoRef getPlotType() {
         if (plotType == null) {
             plotType = new JIPipeDataInfoRef();

@@ -14,6 +14,8 @@
 package org.hkijena.jipipe.extensions.parameters.editors;
 
 import org.hkijena.jipipe.api.data.JIPipeData;
+import org.hkijena.jipipe.utils.AnyClassFilter;
+import org.hkijena.jipipe.utils.ClassFilter;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -32,6 +34,12 @@ public @interface JIPipeDataParameterSettings {
      * @return the data base class
      */
     Class<? extends JIPipeData> dataBaseClass() default JIPipeData.class;
+
+    /**
+     * Allows to implement filters for classes
+     * @return class filter instance
+     */
+    Class<? extends ClassFilter> dataClassFilter() default AnyClassFilter.class;
 
     /**
      * If true, users can pick hidden data types

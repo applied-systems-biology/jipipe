@@ -144,7 +144,7 @@ public class JIPipePlotBuilderUI extends JIPipeWorkbenchPanel implements JIPipeP
 
     @JIPipeDocumentation(name = "Plot type", description = "The type of plot to be generated.")
     @JIPipeParameter(value = "plot-type", priority = Priority.HIGH)
-    @JIPipeDataParameterSettings(dataBaseClass = PlotData.class)
+    @JIPipeDataParameterSettings(dataBaseClass = PlotData.class, dataClassFilter = PlotDataClassFilter.class)
     public JIPipeDataInfoRef getPlotType() {
         if (plotType == null) {
             plotType = new JIPipeDataInfoRef();
