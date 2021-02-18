@@ -170,7 +170,7 @@ public class AutoThreshold2DAlgorithm extends JIPipeIteratingAlgorithm {
             dataBatch.addOutputData(getFirstOutputSlot(),
                     new ImagePlusGreyscaleMaskData(img),
                     annotations,
-                    JIPipeAnnotationMergeStrategy.Merge,
+                    JIPipeAnnotationMergeStrategy.OverwriteExisting,
                     progressInfo);
         }
     }

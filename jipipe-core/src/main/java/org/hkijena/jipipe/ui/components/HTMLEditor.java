@@ -70,6 +70,7 @@ public class HTMLEditor extends JPanel {
     private void initialize(int flags) {
         textPane = new JTextPane();
         textPane.setContentType("text/html");
+        textPane.setMinimumSize(new Dimension(100,32));
         editorKit = new HTMLEditorKit();
         for (Action action : editorKit.getActions()) {
             availableEditorKitActions.put(action.getValue(Action.NAME) + "", action);

@@ -68,7 +68,7 @@ public class ImageStackFromFolder extends JIPipeSimpleIteratingAlgorithm {
      */
     public ImageStackFromFolder(JIPipeNodeInfo info) {
         super(info,
-                JIPipeDefaultMutableSlotConfiguration.builder().addInputSlot("Files", FileData.class)
+                JIPipeDefaultMutableSlotConfiguration.builder().addInputSlot("Folder", FolderData.class)
                         .addOutputSlot("Image", ImagePlusData.class, null)
                         .sealOutput()
                         .sealInput()
