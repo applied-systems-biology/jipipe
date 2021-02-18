@@ -20,6 +20,7 @@ import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import com.google.common.collect.ImmutableList;
 import com.google.common.eventbus.EventBus;
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeValidatable;
 import org.hkijena.jipipe.api.JIPipeValidityReport;
 import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
@@ -116,6 +117,10 @@ public class JIPipeDynamicParameterCollection implements JIPipeCustomParameterCo
     public JIPipeMutableParameterAccess addParameter(JIPipeMutableParameterAccess parameterAccess) {
         if (dynamicParameters.containsKey(parameterAccess.getKey()))
             throw new IllegalArgumentException("Parameter with key " + parameterAccess.getKey() + " already exists!");
+        if(parameterAccess.get(Object.class) == null) {
+            // Set default
+            parameterAccess.set(JIPipe.getParameterTypes().getInfoByFieldClass(parameterAccess.getFieldClass()).newInstance());
+        }
         parameterAccess.setParameterHolder(this);
         ParameterAddingEvent event = new ParameterAddingEvent(this, parameterAccess);
         eventBus.post(event);

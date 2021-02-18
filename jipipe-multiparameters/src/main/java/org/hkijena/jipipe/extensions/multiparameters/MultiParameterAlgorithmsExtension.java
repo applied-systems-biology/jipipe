@@ -16,11 +16,14 @@ package org.hkijena.jipipe.extensions.multiparameters;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.JIPipeJavaExtension;
 import org.hkijena.jipipe.extensions.JIPipePrepackagedDefaultJavaExtension;
-import org.hkijena.jipipe.extensions.multiparameters.algorithms.MultiParameterNodeInfo;
+import org.hkijena.jipipe.extensions.multiparameters.algorithms.AnnotationsToParametersAlgorithm;
+import org.hkijena.jipipe.extensions.multiparameters.algorithms.ParametersToAnnotationsAlgorithm;
+import org.hkijena.jipipe.extensions.multiparameters.datasources.ExtractParametersAlgorithm;
 import org.hkijena.jipipe.extensions.multiparameters.datasources.ParametersDataDefinition;
 import org.hkijena.jipipe.extensions.multiparameters.datasources.ParametersDataTableDefinition;
 import org.hkijena.jipipe.extensions.parameters.primitives.HTMLText;
 import org.hkijena.jipipe.extensions.parameters.primitives.StringList;
+import org.hkijena.jipipe.utils.UIUtils;
 import org.scijava.plugin.Plugin;
 
 /**
@@ -51,7 +54,10 @@ public class MultiParameterAlgorithmsExtension extends JIPipePrepackagedDefaultJ
         // Register algorithms
         registerNodeType("parameters-define", ParametersDataDefinition.class);
         registerNodeType("parameters-define-table", ParametersDataTableDefinition.class);
-        registerNodeType(new MultiParameterNodeInfo());
+        registerNodeType("parameters-from-node", ExtractParametersAlgorithm.class);
+
+        registerNodeType("parameters-to-annotations", ParametersToAnnotationsAlgorithm.class, UIUtils.getIconURLFromResources("data-types/parameters.png"));
+        registerNodeType("annotations-to-parameters", AnnotationsToParametersAlgorithm.class, UIUtils.getIconURLFromResources("data-types/parameters.png"));
     }
 
     @Override
