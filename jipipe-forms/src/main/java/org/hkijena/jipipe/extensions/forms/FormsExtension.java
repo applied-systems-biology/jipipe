@@ -72,6 +72,7 @@ public class FormsExtension extends JIPipePrepackagedDefaultJavaExtension {
         registerDatatype("number-form", DoubleFormData.class, UIUtils.getIconURLFromResources("data-types/form.png"), null, null);
         registerDatatype("boolean-form", BooleanFormData.class, UIUtils.getIconURLFromResources("data-types/form.png"), null, null);
         registerDatatype("enum-form", EnumFormData.class, UIUtils.getIconURLFromResources("data-types/form.png"), null, null);
+        registerDatatype("path-form", PathFormData.class, UIUtils.getIconURLFromResources("data-types/form.png"), null, null);
 
         registerNodeType("group-header-form", GroupHeaderFormGeneratorAlgorithm.class, UIUtils.getIconURLFromResources("data-types/form.png"));
         registerNodeType("string-form", StringFormGeneratorAlgorithm.class, UIUtils.getIconURLFromResources("data-types/form.png"));
@@ -79,6 +80,7 @@ public class FormsExtension extends JIPipePrepackagedDefaultJavaExtension {
         registerNodeType("number-form", DoubleFormGeneratorAlgorithm.class, UIUtils.getIconURLFromResources("data-types/form.png"));
         registerNodeType("boolean-form", BooleanFormGeneratorAlgorithm.class, UIUtils.getIconURLFromResources("data-types/form.png"));
         registerNodeType("enum-form", EnumFormGeneratorAlgorithm.class, UIUtils.getIconURLFromResources("data-types/form.png"));
+        registerNodeType("path-form", PathFormGeneratorAlgorithm.class, UIUtils.getIconURLFromResources("data-types/form.png"));
 
         registerNodeType("form-processor-simple-iterating", SimpleIteratingFormProcessorAlgorithm.class, UIUtils.getIconURLFromResources("data-types/form.png"));
         registerNodeType("form-processor-merging", MergingFormProcessorAlgorithm.class, UIUtils.getIconURLFromResources("data-types/form.png"));

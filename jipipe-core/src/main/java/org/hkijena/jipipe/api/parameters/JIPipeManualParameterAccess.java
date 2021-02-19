@@ -21,6 +21,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
@@ -228,6 +229,24 @@ public class JIPipeManualParameterAccess implements JIPipeParameterAccess {
          */
         public Builder setSetter(Function<Object, Boolean> setter) {
             access.setter = setter;
+            return this;
+        }
+
+        /**
+         * Sets the setter
+         *
+         * @param setter the setter
+         * @return this
+         */
+        public <T> Builder setSetter(Consumer<T> setter) {
+            access.setter = value -> { setter.accept((T)value);
+                return true;
+            };
+            return this;
+        }
+
+        public Builder addAnnotation(Annotation annotation) {
+            access.annotations.put(annotation.getClass(), annotation);
             return this;
         }
 

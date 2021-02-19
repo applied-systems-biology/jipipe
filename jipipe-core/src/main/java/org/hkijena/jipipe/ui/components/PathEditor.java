@@ -13,6 +13,7 @@
 
 package org.hkijena.jipipe.ui.components;
 
+import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
 import org.hkijena.jipipe.extensions.settings.FileChooserSettings;
 import org.hkijena.jipipe.extensions.settings.RuntimeSettings;
 import org.hkijena.jipipe.utils.StringUtils;
@@ -247,6 +248,20 @@ public class PathEditor extends JPanel {
     public enum PathMode {
         FilesOnly,
         DirectoriesOnly,
-        FilesAndDirectories
+        FilesAndDirectories;
+
+
+        @Override
+        public String toString() {
+            switch (this) {
+                case FilesOnly:
+                    return "Only files";
+                case DirectoriesOnly:
+                    return "Only directories";
+                case FilesAndDirectories:
+                    return "Files or directories";
+            }
+            throw new UnsupportedOperationException();
+        }
     }
 }

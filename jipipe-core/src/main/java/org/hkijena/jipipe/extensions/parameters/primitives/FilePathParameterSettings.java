@@ -37,7 +37,7 @@ public @interface FilePathParameterSettings {
     PathEditor.PathMode pathMode();
 
     /**
-     * @return File extensions that should be preferred
+     * @return File extensions that should be preferred. Only the extension (without period)
      */
     String[] extensions() default {};
 }
