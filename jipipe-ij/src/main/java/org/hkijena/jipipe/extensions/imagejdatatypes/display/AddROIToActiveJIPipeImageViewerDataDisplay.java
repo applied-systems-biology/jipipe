@@ -16,18 +16,24 @@ package org.hkijena.jipipe.extensions.imagejdatatypes.display;
 import org.hkijena.jipipe.api.data.*;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ROIListData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.viewer.ImageViewerWindow;
+import org.hkijena.jipipe.extensions.imagejdatatypes.viewer.plugins.ImageViewerPanelPlugin;
+import org.hkijena.jipipe.extensions.imagejdatatypes.viewer.plugins.ROIManagerPlugin;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
 import java.nio.file.Path;
+import java.util.stream.Collectors;
 
 public class AddROIToActiveJIPipeImageViewerDataDisplay implements JIPipeDataDisplayOperation, JIPipeDataImportOperation {
     @Override
     public void display(JIPipeData data, String displayName, JIPipeWorkbench workbench, JIPipeDataSource source) {
         ImageViewerWindow activeWindow = ImageViewerWindow.getActiveWindow();
         if (activeWindow != null) {
-            activeWindow.getViewerPanel().importROIs((ROIListData) data);
+            for (ImageViewerPanelPlugin plugin : activeWindow.getViewerPanel().getPlugins().stream()
+                    .filter(plugin -> plugin instanceof ROIManagerPlugin).collect(Collectors.toList())) {
+                ((ROIManagerPlugin)plugin).importROIs((ROIListData) data);
+            }
         } else {
             JOptionPane.showMessageDialog(workbench.getWindow(), "There is no active JIPipe image viewer.", "Add to active image viewer", JOptionPane.ERROR_MESSAGE);
         }

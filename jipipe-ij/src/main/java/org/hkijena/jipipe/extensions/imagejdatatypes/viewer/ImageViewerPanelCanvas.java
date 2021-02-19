@@ -35,6 +35,7 @@ public class ImageViewerPanelCanvas extends JPanel implements MouseListener, Mou
     private JScrollPane scrollPane;
     private Component error = null;
     private BufferedImage renderedError = null;
+    private boolean dragWithLeftMouse = true;
 
     public ImageViewerPanelCanvas() {
         setLayout(null);
@@ -160,7 +161,7 @@ public class ImageViewerPanelCanvas extends JPanel implements MouseListener, Mou
 
     @Override
     public void mousePressed(MouseEvent e) {
-        if (SwingUtilities.isLeftMouseButton(e)) {
+        if (SwingUtilities.isMiddleMouseButton(e) || (dragWithLeftMouse && SwingUtilities.isLeftMouseButton(e))) {
             currentDragOffset = new Point(e.getPoint().x - contentX, e.getPoint().y - contentY);
             setCursor(Cursor.getPredefinedCursor(Cursor.MOVE_CURSOR));
         }
@@ -221,7 +222,7 @@ public class ImageViewerPanelCanvas extends JPanel implements MouseListener, Mou
 
     @Override
     public void mouseMoved(MouseEvent e) {
-        eventBus.post(new PixelHoverEvent(getMouseModelPixelCoordinate()));
+        eventBus.post(new PixelHoverEvent(getMouseModelPixelCoordinate(false)));
     }
 
     public JScrollPane getScrollPane() {
@@ -281,9 +282,10 @@ public class ImageViewerPanelCanvas extends JPanel implements MouseListener, Mou
     /**
      * Gets the pixel coordinates inside the shown image under the mouse.
      *
+     * @param checkBounds If true, check for bounds (if false, negative & larger than the image coordinates will be returned)
      * @return the pixel coordinates. Null if the current mouse position is invalid.
      */
-    public Point getMouseModelPixelCoordinate() {
+    public Point getMouseModelPixelCoordinate(boolean checkBounds) {
         if (image == null)
             return null;
         Point mousePosition = getMousePosition();
@@ -292,14 +294,22 @@ public class ImageViewerPanelCanvas extends JPanel implements MouseListener, Mou
             int y = mousePosition.y;
             x -= contentX;
             y -= contentY;
-            if (x < 0 || y < 0)
+            if (checkBounds && (x < 0 || y < 0))
                 return null;
             int sw = (int) (zoom * image.getWidth());
             int sh = (int) (zoom * image.getHeight());
-            if (x >= sw || y >= sh)
+            if (checkBounds && (x >= sw || y >= sh))
                 return null;
-            double rx = Math.max(0, Math.min(1, 1.0 * x / sw));
-            double ry = Math.max(0, Math.min(1, 1.0 * y / sh));
+            double rx;
+            double ry;
+            if(checkBounds) {
+                rx = Math.max(0, Math.min(1, 1.0 * x / sw));
+                ry = Math.max(0, Math.min(1, 1.0 * y / sh));
+            }
+            else {
+                rx = 1.0 * x / sw;
+                ry = 1.0 * y / sh;
+            }
             int mx = (int) (rx * image.getWidth());
             int my = (int) (ry * image.getHeight());
             return new Point(mx, my);
@@ -332,6 +342,14 @@ public class ImageViewerPanelCanvas extends JPanel implements MouseListener, Mou
         this.contentY = y;
         revalidate();
         repaint();
+    }
+
+    public boolean isDragWithLeftMouse() {
+        return dragWithLeftMouse;
+    }
+
+    public void setDragWithLeftMouse(boolean dragWithLeftMouse) {
+        this.dragWithLeftMouse = dragWithLeftMouse;
     }
 
     public static class PixelHoverEvent {

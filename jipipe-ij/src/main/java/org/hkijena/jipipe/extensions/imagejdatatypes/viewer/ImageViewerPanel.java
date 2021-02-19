@@ -13,39 +13,28 @@
 
 package org.hkijena.jipipe.extensions.imagejdatatypes.viewer;
 
-import com.google.common.eventbus.Subscribe;
-import com.google.common.primitives.Ints;
 import ij.IJ;
 import ij.ImagePlus;
 import ij.gui.ImageWindow;
-import ij.gui.Roi;
 import ij.measure.Calibration;
-import ij.plugin.frame.RoiManager;
-import ij.process.ColorProcessor;
 import ij.process.ImageProcessor;
 import ij.process.ImageStatistics;
 import ij.util.Tools;
-import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ROIListData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.AVICompression;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.HyperstackDimension;
-import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageSliceIndex;
+import org.hkijena.jipipe.extensions.imagejdatatypes.viewer.plugins.*;
 import org.hkijena.jipipe.extensions.settings.FileChooserSettings;
-import org.hkijena.jipipe.ui.components.ColorIcon;
-import org.hkijena.jipipe.ui.components.DocumentChangeListener;
 import org.hkijena.jipipe.ui.components.FormPanel;
 import org.hkijena.jipipe.ui.components.PathEditor;
 import org.hkijena.jipipe.ui.running.JIPipeRunExecuterUI;
 import org.hkijena.jipipe.ui.theme.JIPipeUITheme;
-import org.hkijena.jipipe.utils.BusyCursor;
-import org.hkijena.jipipe.utils.ImageJCalibrationMode;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.imageio.ImageIO;
 import javax.swing.Timer;
 import javax.swing.*;
-import javax.swing.event.DocumentEvent;
 import java.awt.*;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
@@ -77,25 +66,11 @@ public class ImageViewerPanel extends JPanel {
     private FormPanel formPanel = new FormPanel(null, FormPanel.WITH_SCROLLING);
     private JSpinner animationSpeed = new JSpinner(new SpinnerNumberModel(250, 5, 10000, 1));
     private Timer animationTimer = new Timer(250, e -> animateNextSlice());
-    private ImageViewerPanelDisplayRangeControl displayRangeCalibrationControl;
-    private JComboBox<ImageJCalibrationMode> calibrationModes;
-    private List<ImageViewerLUTEditor> lutEditors = new ArrayList<>();
-    private JToggleButton autoCalibrateButton = new JToggleButton("Keep auto-calibrating", UIUtils.getIconFromResources("actions/view-refresh.png"));
     private int rotation = 0;
-    private ROIListData rois = new ROIListData();
-    private JList<Roi> roiJList = new JList<>();
-    private JLabel roiInfoLabel = new JLabel();
-    private boolean roiSeeThroughZ = false;
-    private boolean roiSeeThroughC = false;
-    private boolean roiSeeThroughT = false;
-    private boolean roiDrawOutline = true;
-    private boolean roiFillOutline = false;
-    private boolean roiDrawLabels = false;
-    private boolean roiFilterList = false;
     private JMenuItem exportAllSlicesItem;
     private JMenuItem exportMovieItem;
-    private JLabel pixelInfoLabel = new JLabel(UIUtils.getIconFromResources("actions/tool-pointer.png"), JLabel.LEFT);
     private JToolBar toolBar = new JToolBar();
+    private List<ImageViewerPanelPlugin> plugins = new ArrayList<>();
 
     public ImageViewerPanel() {
         initialize();
@@ -124,6 +99,10 @@ public class ImageViewerPanel extends JPanel {
      */
     public static ImageViewerPanel showImage(ImagePlus image, String title) {
         ImageViewerPanel dataDisplay = new ImageViewerPanel();
+        dataDisplay.setPlugins(Arrays.asList(new CalibrationPlugin(dataDisplay),
+                new PixelInfoPlugin(dataDisplay),
+                new LUTManagerPlugin(dataDisplay),
+                new ROIManagerPlugin(dataDisplay)));
         dataDisplay.setImage(image);
         ImageViewerWindow window = new ImageViewerWindow(dataDisplay);
         window.setTitle(title);
@@ -131,13 +110,18 @@ public class ImageViewerPanel extends JPanel {
         return dataDisplay;
     }
 
+    public List<ImageViewerPanelPlugin> getPlugins() {
+        return plugins;
+    }
+
+    public void setPlugins(List<ImageViewerPanelPlugin> plugins) {
+        this.plugins = plugins;
+    }
+
     private void initialize() {
         setLayout(new BorderLayout());
         scrollPane = new JScrollPane(canvas);
         canvas.setScrollPane(scrollPane);
-
-        initializeCalibrationControls();
-
         initializeToolbar();
         canvas.addMouseWheelListener(e -> {
             if (e.isControlDown()) {
@@ -169,70 +153,12 @@ public class ImageViewerPanel extends JPanel {
         bottomPanel = new FormPanel(null, FormPanel.NONE);
         add(bottomPanel, BorderLayout.SOUTH);
 
-        // Setup ROI
-        roiJList.setCellRenderer(new RoiListCellRenderer());
-        roiJList.addListSelectionListener(e -> uploadSliceToCanvas());
-
         // Register slider events
         stackSlider.addAdjustmentListener(e -> refreshSlice());
         channelSlider.addAdjustmentListener(e -> refreshSlice());
         frameSlider.addAdjustmentListener(e -> refreshSlice());
 
         initializeAnimationControls();
-        updatePixelInfo();
-    }
-
-    private void updatePixelInfo() {
-        if (image != null) {
-            Point coordinate = canvas.getMouseModelPixelCoordinate();
-            if (coordinate != null) {
-                String value = "";
-                try {
-                    if (slice != null) {
-                        if (slice instanceof ColorProcessor) {
-                            Color color = ((ColorProcessor) slice).getColor(coordinate.x, coordinate.y);
-                            value = String.format("RGB(%d, %d, %d)", color.getRed(), color.getGreen(), color.getBlue());
-                        } else {
-                            value = "Intensity: " + slice.getf(coordinate.x, coordinate.y);
-                        }
-                    }
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-                pixelInfoLabel.setText("x: " + coordinate.x + " y: " + coordinate.y + " " + value);
-            } else {
-                pixelInfoLabel.setText("No info available");
-            }
-        } else {
-            pixelInfoLabel.setText("No info available");
-        }
-    }
-
-    public ImageJCalibrationMode getSelectedCalibration() {
-        return (ImageJCalibrationMode) calibrationModes.getSelectedItem();
-    }
-
-    public void setSelectedCalibration(ImageJCalibrationMode mode) {
-        calibrationModes.setSelectedItem(mode);
-    }
-
-    private void initializeCalibrationControls() {
-        calibrationModes = new JComboBox<>();
-        calibrationModes.setModel(new DefaultComboBoxModel<>(ImageJCalibrationMode.values()));
-        calibrationModes.setSelectedItem(ImageJCalibrationMode.AutomaticImageJ);
-        displayRangeCalibrationControl = new ImageViewerPanelDisplayRangeControl(this);
-        calibrationModes.addActionListener(e -> {
-            displayRangeCalibrationControl.applyCalibration(true);
-        });
-        autoCalibrateButton.addActionListener(e -> {
-            if (autoCalibrateButton.isSelected()) {
-                if (calibrationModes.getSelectedItem() != ImageJCalibrationMode.AutomaticImageJ) {
-                    calibrationModes.setSelectedItem(ImageJCalibrationMode.AutomaticImageJ);
-                } else {
-                    displayRangeCalibrationControl.applyCalibration(true);
-                }
-            }
-        });
     }
 
     private void initializeAnimationControls() {
@@ -552,18 +478,21 @@ public class ImageViewerPanel extends JPanel {
     }
 
     public void setImage(ImagePlus image) {
-        this.lutEditors.clear();
         this.image = image;
+        if(image != null) {
+            this.statistics = image.getStatistics();
+        }
+        else {
+            this.statistics = null;
+        }
         refreshSliders();
         refreshSlice();
         refreshImageInfo();
         refreshFormPanel();
         refreshMenus();
-        for (ImageViewerLUTEditor lutEditor : lutEditors) {
-            lutEditor.applyLUT();
+        for (ImageViewerPanelPlugin plugin : plugins) {
+            plugin.onImageChanged();
         }
-        displayRangeCalibrationControl.applyCalibration(true);
-        updateROIJList();
         revalidate();
         repaint();
     }
@@ -576,377 +505,18 @@ public class ImageViewerPanel extends JPanel {
 
     private void refreshFormPanel() {
         formPanel.clear();
-        initializeCalibrationPanel();
-        initializeLUTPanel();
-        initializeROIPanel();
+        for (ImageViewerPanelPlugin plugin : plugins) {
+            plugin.createPalettePanel(formPanel);
+        }
         if (image != null && (image.getNChannels() > 1 || image.getNSlices() > 1 || image.getNFrames() > 1)) {
             formPanel.addGroupHeader("Animation", UIUtils.getIconFromResources("actions/filmgrain.png"));
             formPanel.addToForm(animationSpeed, new JLabel("Speed (ms)"), null);
         }
-
         formPanel.addVerticalGlue();
-    }
-
-    private void initializeROIPanel() {
-        if (image == null)
-            return;
-        FormPanel.GroupHeaderPanel headerPanel = formPanel.addGroupHeader("ROI", UIUtils.getIconFromResources("data-types/roi.png"));
-        JButton importROIsButton = new JButton("Import", UIUtils.getIconFromResources("actions/document-import.png"));
-        importROIsButton.setToolTipText("Imports ROIs from the ImageJ ROI manager");
-        importROIsButton.addActionListener(e -> importROIs());
-        headerPanel.addColumn(importROIsButton);
-
-        JButton exportROIsButton = new JButton(UIUtils.getIconFromResources("actions/document-export.png"));
-        exportROIsButton.setToolTipText("Exports ROIs to the ImageJ ROI manager");
-        exportROIsButton.addActionListener(e -> exportROIs());
-        headerPanel.addColumn(exportROIsButton);
-
-        JPanel panel = new JPanel(new BorderLayout());
-        panel.setBorder(BorderFactory.createEtchedBorder());
-        JToolBar listToolBar = new JToolBar();
-        listToolBar.setFloatable(false);
-        panel.add(listToolBar, BorderLayout.NORTH);
-
-        listToolBar.add(roiInfoLabel);
-        listToolBar.add(Box.createHorizontalGlue());
-
-        {
-            JToggleButton toggle = new JToggleButton(UIUtils.getIconFromResources("actions/eye.png"));
-            toggle.setToolTipText("Show only visible ROI");
-            toggle.setSelected(roiFilterList);
-            toggle.addActionListener(e -> {
-                roiFilterList = toggle.isSelected();
-                updateROIJList();
-            });
-            listToolBar.add(toggle);
-        }
-        listToolBar.addSeparator();
-
-        JButton selectAllButton = new JButton(UIUtils.getIconFromResources("actions/edit-select-all.png"));
-        selectAllButton.setToolTipText("Select all");
-        selectAllButton.addActionListener(e -> {
-            roiJList.setSelectionInterval(0, roiJList.getModel().getSize() - 1);
-        });
-        listToolBar.add(selectAllButton);
-
-        JButton deselectAllButton = new JButton(UIUtils.getIconFromResources("actions/edit-select-none.png"));
-        deselectAllButton.setToolTipText("Clear selection");
-        deselectAllButton.addActionListener(e -> {
-            roiJList.clearSelection();
-        });
-        listToolBar.add(deselectAllButton);
-
-        JButton invertSelectionButton = new JButton(UIUtils.getIconFromResources("actions/object-inverse.png"));
-        invertSelectionButton.setToolTipText("Invert selection");
-        invertSelectionButton.addActionListener(e -> {
-            Set<Integer> selectedIndices = Arrays.stream(roiJList.getSelectedIndices()).boxed().collect(Collectors.toSet());
-            roiJList.clearSelection();
-            Set<Integer> newSelectedIndices = new HashSet<>();
-            for (int i = 0; i < roiJList.getModel().getSize(); i++) {
-                if (!selectedIndices.contains(i))
-                    newSelectedIndices.add(i);
-            }
-            roiJList.setSelectedIndices(Ints.toArray(newSelectedIndices));
-        });
-        listToolBar.add(invertSelectionButton);
-
-        listToolBar.addSeparator();
-
-        JButton removeButton = new JButton(UIUtils.getIconFromResources("actions/delete.png"));
-        removeButton.setToolTipText("Remove selected ROIs");
-        removeButton.addActionListener(e -> removeSelectedROIs());
-        listToolBar.add(removeButton);
-
-        JScrollPane scrollPane = new JScrollPane(roiJList);
-        panel.add(scrollPane, BorderLayout.CENTER);
-
-        JToolBar viewToolBar = new JToolBar();
-        viewToolBar.setFloatable(false);
-
-        {
-            JToggleButton toggle = new JToggleButton(UIUtils.getIconFromResources("actions/object-stroke.png"));
-            toggle.setToolTipText("Draw outline");
-            toggle.setSelected(roiDrawOutline);
-            toggle.addActionListener(e -> {
-                roiDrawOutline = toggle.isSelected();
-                uploadSliceToCanvas();
-            });
-            viewToolBar.add(toggle);
-        }
-        {
-            JToggleButton toggle = new JToggleButton(UIUtils.getIconFromResources("actions/object-fill.png"));
-            toggle.setToolTipText("Fill outline");
-            toggle.setSelected(roiFillOutline);
-            toggle.addActionListener(e -> {
-                roiFillOutline = toggle.isSelected();
-                uploadSliceToCanvas();
-            });
-            viewToolBar.add(toggle);
-        }
-        {
-            JToggleButton toggle = new JToggleButton(UIUtils.getIconFromResources("actions/edit-select-text.png"));
-            toggle.setToolTipText("Draw labels");
-            toggle.setSelected(roiDrawLabels);
-            toggle.addActionListener(e -> {
-                roiDrawLabels = toggle.isSelected();
-                uploadSliceToCanvas();
-            });
-            viewToolBar.add(toggle);
-        }
-
-        viewToolBar.addSeparator();
-
-        JButton editButton = new JButton(UIUtils.getIconFromResources("actions/edit.png"));
-        JPopupMenu editMenu = new JPopupMenu();
-        UIUtils.addReloadablePopupMenuToComponent(editButton, editMenu, () -> reloadEditRoiMenu(editMenu));
-        viewToolBar.add(editButton);
-
-        viewToolBar.add(Box.createHorizontalGlue());
-
-        if (image.getNSlices() > 1) {
-            JToggleButton toggle = new JToggleButton(UIUtils.getIconFromResources("actions/layer-flatten-z.png"));
-            toggle.setToolTipText("Show all ROIs regardless of Z axis.");
-            toggle.setSelected(roiSeeThroughZ);
-            toggle.addActionListener(e -> {
-                roiSeeThroughZ = toggle.isSelected();
-                uploadSliceToCanvas();
-            });
-            viewToolBar.add(toggle);
-        }
-        if (image.getNFrames() > 1) {
-            JToggleButton toggle = new JToggleButton(UIUtils.getIconFromResources("actions/layer-flatten-t.png"));
-            toggle.setToolTipText("Show all ROIs regardless of time axis.");
-            toggle.setSelected(roiSeeThroughT);
-            toggle.addActionListener(e -> {
-                roiSeeThroughT = toggle.isSelected();
-                uploadSliceToCanvas();
-            });
-            viewToolBar.add(toggle);
-        }
-        if (image.getNChannels() > 1) {
-            JToggleButton toggle = new JToggleButton(UIUtils.getIconFromResources("actions/layer-flatten-c.png"));
-            toggle.setToolTipText("Show all ROIs regardless of channel axis.");
-            toggle.setSelected(roiSeeThroughC);
-            toggle.addActionListener(e -> {
-                roiSeeThroughC = toggle.isSelected();
-                uploadSliceToCanvas();
-            });
-            viewToolBar.add(toggle);
-        }
-
-        panel.add(viewToolBar, BorderLayout.SOUTH);
-
-        formPanel.addWideToForm(panel, null);
     }
 
     public ImageSliceIndex getCurrentSlicePosition() {
         return new ImageSliceIndex(stackSlider.getValue() - 1, channelSlider.getValue() - 1, frameSlider.getValue() - 1);
-    }
-
-    private void reloadEditRoiMenu(JPopupMenu menu) {
-        List<Roi> selectedRois = roiJList.getSelectedValuesList();
-        menu.removeAll();
-        if (selectedRois.isEmpty()) {
-            JMenuItem noSelection = new JMenuItem("No ROI selected");
-            noSelection.setEnabled(false);
-            menu.add(noSelection);
-            return;
-        }
-
-        Color currentStrokeColor = selectedRois.stream().map(Roi::getStrokeColor).filter(Objects::nonNull).findAny().orElse(Color.YELLOW);
-        JMenuItem setLineColorItem = new JMenuItem("Set line color ...", new ColorIcon(16, 16, currentStrokeColor));
-        setLineColorItem.addActionListener(e -> {
-            Color value = JColorChooser.showDialog(this, "Set line color", currentStrokeColor);
-            if (value != null) {
-                for (Roi roi : selectedRois) {
-                    roi.setStrokeColor(value);
-                }
-                roiJList.repaint();
-                uploadSliceToCanvas();
-            }
-        });
-        menu.add(setLineColorItem);
-
-        Color currentFillColor = selectedRois.stream().map(Roi::getFillColor).filter(Objects::nonNull).findAny().orElse(Color.RED);
-        JMenuItem setFillColorItem = new JMenuItem("Set fill color ...", new ColorIcon(16, 16, currentFillColor));
-        setFillColorItem.addActionListener(e -> {
-            Color value = JColorChooser.showDialog(this, "Set fill color", currentFillColor);
-            if (value != null) {
-                for (Roi roi : selectedRois) {
-                    roi.setFillColor(value);
-                }
-                roiJList.repaint();
-                uploadSliceToCanvas();
-            }
-        });
-        menu.add(setFillColorItem);
-
-        int currentStrokeThickness = Math.max(1, selectedRois.stream().map(Roi::getStrokeWidth).min(Comparator.naturalOrder()).get().intValue());
-        JMenuItem setStrokeThicknessItem = new JMenuItem("Set line width ...", UIUtils.getIconFromResources("actions/transform-affect-stroke.png"));
-        setStrokeThicknessItem.addActionListener(e -> {
-            Integer value = UIUtils.getIntegerByDialog(this, "Set line width", "Please put the line width here:", currentStrokeThickness, 1, Integer.MAX_VALUE);
-            if (value != null) {
-                for (Roi roi : selectedRois) {
-                    roi.setStrokeWidth(value);
-                }
-                roiJList.repaint();
-                uploadSliceToCanvas();
-            }
-        });
-        menu.add(setStrokeThicknessItem);
-
-        String currentName = selectedRois.stream().map(Roi::getName).filter(Objects::nonNull).findAny().orElse("");
-        JMenuItem setNameItem = new JMenuItem("Set name ...", UIUtils.getIconFromResources("actions/tag.png"));
-        setNameItem.addActionListener(e -> {
-            String value = JOptionPane.showInputDialog(this, "Please set the name of the ROIs:", currentName);
-            if (value != null) {
-                for (Roi roi : selectedRois) {
-                    roi.setName(value);
-                }
-                roiJList.repaint();
-                uploadSliceToCanvas();
-            }
-        });
-        menu.add(setNameItem);
-
-        menu.addSeparator();
-
-        int currentZPosition = Math.max(0, selectedRois.stream().map(Roi::getZPosition).min(Comparator.naturalOrder()).get());
-        JMenuItem setZPositionItem = new JMenuItem("Set Z position ...", UIUtils.getIconFromResources("actions/mark-location.png"));
-        setZPositionItem.addActionListener(e -> {
-            Integer value = UIUtils.getIntegerByDialog(this, "Set Z position", "The first index is 1. Set it to zero to make the ROI appear on all Z planes.", currentZPosition, 0, Integer.MAX_VALUE);
-            if (value != null) {
-                for (Roi roi : selectedRois) {
-                    roi.setPosition(roi.getCPosition(), value, roi.getTPosition());
-                }
-                roiJList.repaint();
-                uploadSliceToCanvas();
-            }
-        });
-        menu.add(setZPositionItem);
-
-        int currentCPosition = Math.max(0, selectedRois.stream().map(Roi::getZPosition).min(Comparator.naturalOrder()).get());
-        JMenuItem setCPositionItem = new JMenuItem("Set C position ...", UIUtils.getIconFromResources("actions/mark-location.png"));
-        setCPositionItem.addActionListener(e -> {
-            Integer value = UIUtils.getIntegerByDialog(this, "Set C position", "The first index is 1. Set it to zero to make the ROI appear on all channel planes.", currentCPosition, 0, Integer.MAX_VALUE);
-            if (value != null) {
-                for (Roi roi : selectedRois) {
-                    roi.setPosition(value, roi.getZPosition(), roi.getTPosition());
-                }
-                roiJList.repaint();
-                uploadSliceToCanvas();
-            }
-        });
-        menu.add(setCPositionItem);
-
-        int currentTPosition = Math.max(0, selectedRois.stream().map(Roi::getZPosition).min(Comparator.naturalOrder()).get());
-        JMenuItem setTPositionItem = new JMenuItem("Set T position ...", UIUtils.getIconFromResources("actions/mark-location.png"));
-        setTPositionItem.addActionListener(e -> {
-            Integer value = UIUtils.getIntegerByDialog(this, "Set T position", "The first index is 1. Set it to zero to make the ROI appear on all frame planes.", currentTPosition, 0, Integer.MAX_VALUE);
-            if (value != null) {
-                for (Roi roi : selectedRois) {
-                    roi.setPosition(roi.getCPosition(), roi.getZPosition(), value);
-                }
-                roiJList.repaint();
-                uploadSliceToCanvas();
-            }
-        });
-        menu.add(setTPositionItem);
-    }
-
-    public void removeSelectedROIs() {
-        rois.removeAll(roiJList.getSelectedValuesList());
-        updateROIJList();
-    }
-
-    public void exportROIs() {
-        rois.addToRoiManager(RoiManager.getRoiManager());
-    }
-
-    public void importROIs() {
-        for (Roi roi : RoiManager.getRoiManager().getRoisAsArray()) {
-            rois.add((Roi) roi.clone());
-        }
-        updateROIJList();
-    }
-
-    private void updateROIJList() {
-        DefaultListModel<Roi> model = new DefaultListModel<>();
-        int[] selectedIndices = roiJList.getSelectedIndices();
-        ImageSliceIndex currentIndex = new ImageSliceIndex(stackSlider.getValue() - 1, channelSlider.getValue() - 1, frameSlider.getValue() - 1);
-        for (Roi roi : rois) {
-            if (roiFilterList && !ROIListData.isVisibleIn(roi, currentIndex, roiSeeThroughZ, roiSeeThroughC, roiSeeThroughT))
-                continue;
-            model.addElement(roi);
-        }
-        roiJList.setModel(model);
-        roiJList.setSelectedIndices(selectedIndices);
-        roiInfoLabel.setText(rois.size() + " ROI");
-        uploadSliceToCanvas();
-    }
-
-    private void initializeLUTPanel() {
-        if (image == null)
-            return;
-        if (image.getType() == ImagePlus.COLOR_256 || image.getType() == ImagePlus.COLOR_RGB) {
-            FormPanel.GroupHeaderPanel headerPanel = formPanel.addGroupHeader("LUT", UIUtils.getIconFromResources("actions/color-gradient.png"));
-            JButton toRGBButton = new JButton("Split channels", UIUtils.getIconFromResources("actions/channelmixer.png"));
-            headerPanel.add(toRGBButton);
-            toRGBButton.addActionListener(e -> splitChannels());
-        } else {
-            while (lutEditors.size() < image.getNChannels()) {
-                ImageViewerLUTEditor editor = new ImageViewerLUTEditor(this, lutEditors.size());
-                editor.loadLUTFromImage();
-                lutEditors.add(editor);
-            }
-            FormPanel.GroupHeaderPanel headerPanel = formPanel.addGroupHeader("LUT", UIUtils.getIconFromResources("actions/color-gradient.png"));
-            if (image.getNChannels() == 3) {
-                JButton toRGBButton = new JButton("Convert to RGB", UIUtils.getIconFromResources("actions/colors-rgb.png"));
-                headerPanel.add(toRGBButton);
-                toRGBButton.addActionListener(e -> convertImageToRGB());
-            }
-            for (int channel = 0; channel < image.getNChannels(); channel++) {
-                ImageViewerLUTEditor editor = lutEditors.get(channel);
-                JTextField channelNameEditor = new JTextField(editor.getChannelName());
-                channelNameEditor.setOpaque(false);
-                channelNameEditor.setBorder(null);
-                channelNameEditor.getDocument().addDocumentListener(new DocumentChangeListener() {
-                    @Override
-                    public void changed(DocumentEvent documentEvent) {
-                        editor.setChannelName(channelNameEditor.getText());
-                    }
-                });
-                formPanel.addToForm(editor, channelNameEditor, null);
-            }
-        }
-    }
-
-    private void splitChannels() {
-        if (image != null) {
-            try (BusyCursor cursor = new BusyCursor(this)) {
-                setImage(ImageJUtils.rgbToChannels(image));
-            }
-        }
-    }
-
-    private void convertImageToRGB() {
-        if (image != null) {
-            try (BusyCursor cursor = new BusyCursor(this)) {
-                setImage(ImageJUtils.channelsToRGB(image));
-            }
-        }
-    }
-
-    private void initializeCalibrationPanel() {
-        FormPanel.GroupHeaderPanel headerPanel = formPanel.addGroupHeader("Display range", UIUtils.getIconFromResources("actions/contrast.png"));
-        headerPanel.addColumn(autoCalibrateButton);
-        formPanel.addToForm(calibrationModes, new JLabel("Calibration type"), null);
-        formPanel.addWideToForm(displayRangeCalibrationControl, null);
-        formPanel.addWideToForm(pixelInfoLabel, null);
-    }
-
-    public void applyCalibrationTo(ImagePlus foreign) {
-        displayRangeCalibrationControl.applyCalibration(foreign);
     }
 
     public void refreshImageInfo() {
@@ -1024,41 +594,28 @@ public class ImageViewerPanel extends JPanel {
             stackSliderLabel.setText(String.format("Slice (Z) %d/%d", stack, image.getNSlices()));
             frameSliderLabel.setText(String.format("Frame (T) %d/%d", frame, image.getNFrames()));
             channelSliderLabel.setText(String.format("Channel (C) %d/%d", channel, image.getNChannels()));
+//            System.out.println("bps: " + image.getDisplayRangeMin() + ", " + image.getDisplayRangeMax());
             image.setPosition(channel, stack, frame);
-            if (autoCalibrateButton.isSelected()) {
-                displayRangeCalibrationControl.applyCalibration(false);
-            }
-            if (roiFilterList) {
-                updateROIJList();
-            }
             this.slice = image.getProcessor();
             this.statistics = image.getStatistics();
+            for (ImageViewerPanelPlugin plugin : plugins) {
+//                System.out.println(plugin + ": " + image.getDisplayRangeMin() + ", " + image.getDisplayRangeMax());
+                plugin.onSliceChanged();
+//                System.out.println(plugin + "(A): " + image.getDisplayRangeMin() + ", " + image.getDisplayRangeMax());
+            }
             uploadSliceToCanvas();
-            displayRangeCalibrationControl.updateSliders();
         }
     }
 
-    public ImageProcessor generateSlice(int z, int c, int t, boolean withRoi, boolean withRotation) {
+    public ImageProcessor generateSlice(int z, int c, int t, boolean withRotation) {
         image.setPosition(c + 1, z + 1, t + 1);
-        if (c <= lutEditors.size() - 1) {
-            image.setLut(lutEditors.get(c).getLUT());
-        } else {
-            image.setLut(null);
+        for (ImageViewerPanelPlugin plugin : plugins) {
+            plugin.beforeDraw(z,c,t);
         }
+//        System.out.println(Arrays.stream(image.getLuts()).map(Object::toString).collect(Collectors.joining(" ")));
         ImageProcessor processor = image.getProcessor();
-        if (withRoi && !(processor instanceof ColorProcessor) && !rois.isEmpty()) {
-            processor = new ColorProcessor(processor.getBufferedImage());
-            rois.draw(processor, new ImageSliceIndex(z, c, t),
-                    roiSeeThroughZ,
-                    roiSeeThroughC,
-                    roiSeeThroughT,
-                    roiDrawOutline,
-                    roiFillOutline,
-                    roiDrawLabels,
-                    1,
-                    Color.RED,
-                    Color.YELLOW,
-                    roiJList.getSelectedValuesList());
+        for (ImageViewerPanelPlugin plugin : plugins) {
+            processor = plugin.draw(z,c,t,processor);
         }
         if (withRotation && rotation != 0) {
             if (rotation == 90)
@@ -1078,8 +635,11 @@ public class ImageViewerPanel extends JPanel {
             ImageProcessor processor = generateSlice(stackSlider.getValue() - 1,
                     channelSlider.getValue() - 1,
                     frameSlider.getValue() - 1,
-                    true,
                     true);
+            if(processor == null) {
+                canvas.setImage(null);
+                return;
+            }
             canvas.setImage(processor.getBufferedImage());
         } else {
             canvas.setImage(null);
@@ -1106,23 +666,6 @@ public class ImageViewerPanel extends JPanel {
 
     public ImageStatistics getStatistics() {
         return statistics;
-    }
-
-    public void disableAutoCalibration() {
-        autoCalibrateButton.setSelected(false);
-    }
-
-    public void importROIs(ROIListData rois) {
-        for (Roi roi : rois) {
-            this.rois.add((Roi) roi.clone());
-        }
-        updateROIJList();
-        uploadSliceToCanvas();
-    }
-
-    @Subscribe
-    public void onPixelHover(ImageViewerPanelCanvas.PixelHoverEvent event) {
-        updatePixelInfo();
     }
 
 }

@@ -16,6 +16,8 @@ package org.hkijena.jipipe.extensions.imagejdatatypes.display;
 import org.hkijena.jipipe.api.data.*;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ROIListData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.viewer.ImageViewerWindow;
+import org.hkijena.jipipe.extensions.imagejdatatypes.viewer.plugins.ImageViewerPanelPlugin;
+import org.hkijena.jipipe.extensions.imagejdatatypes.viewer.plugins.ROIManagerPlugin;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.components.WindowListCellRenderer;
 import org.hkijena.jipipe.utils.ListSelectionMode;
@@ -28,6 +30,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class AddROIToJIPipeImageViewerDataDisplay implements JIPipeDataDisplayOperation, JIPipeDataImportOperation {
     @Override
@@ -50,7 +53,10 @@ public class AddROIToJIPipeImageViewerDataDisplay implements JIPipeDataDisplayOp
                 new WindowListCellRenderer<>(),
                 ListSelectionMode.MultipleInterval);
         for (ImageViewerWindow window : selected) {
-            window.getViewerPanel().importROIs((ROIListData) data);
+            for (ImageViewerPanelPlugin plugin : window.getViewerPanel().getPlugins().stream()
+                    .filter(plugin -> plugin instanceof ROIManagerPlugin).collect(Collectors.toList())) {
+                ((ROIManagerPlugin)plugin).importROIs((ROIListData) data);
+            }
         }
     }
 

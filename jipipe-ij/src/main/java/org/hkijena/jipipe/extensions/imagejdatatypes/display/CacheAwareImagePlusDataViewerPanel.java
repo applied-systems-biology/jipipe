@@ -26,6 +26,10 @@ import org.hkijena.jipipe.api.nodes.JIPipeAlgorithm;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.viewer.ImageViewerPanel;
 import org.hkijena.jipipe.extensions.imagejdatatypes.viewer.ImageViewerWindow;
+import org.hkijena.jipipe.extensions.imagejdatatypes.viewer.plugins.CalibrationPlugin;
+import org.hkijena.jipipe.extensions.imagejdatatypes.viewer.plugins.LUTManagerPlugin;
+import org.hkijena.jipipe.extensions.imagejdatatypes.viewer.plugins.PixelInfoPlugin;
+import org.hkijena.jipipe.extensions.imagejdatatypes.viewer.plugins.ROIManagerPlugin;
 import org.hkijena.jipipe.extensions.settings.GeneralUISettings;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
@@ -35,6 +39,7 @@ import org.hkijena.jipipe.utils.UIUtils;
 import javax.swing.*;
 import java.awt.*;
 import java.lang.ref.WeakReference;
+import java.util.Arrays;
 import java.util.Map;
 
 public class CacheAwareImagePlusDataViewerPanel extends ImageViewerPanel {
@@ -48,6 +53,10 @@ public class CacheAwareImagePlusDataViewerPanel extends ImageViewerPanel {
     private WeakReference<JIPipeVirtualData> lastVirtualData;
 
     public CacheAwareImagePlusDataViewerPanel(JIPipeWorkbench workbench, JIPipeCacheSlotDataSource dataSource) {
+        setPlugins(Arrays.asList(new CalibrationPlugin(this),
+                new PixelInfoPlugin(this),
+                new LUTManagerPlugin(this),
+                new ROIManagerPlugin(this)));
         this.project = ((JIPipeProjectWorkbench) workbench).getProject();
         this.workbench = workbench;
         this.dataSource = dataSource;
