@@ -3,7 +3,6 @@ package org.hkijena.jipipe.extensions.nodetoolboxtool;
 import org.hkijena.jipipe.api.nodes.JIPipeGraph;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.utils.JsonUtils;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
@@ -38,7 +37,6 @@ public class NodeToolBoxTransferHandler extends TransferHandler {
                     return flavor.isFlavorTextType();
                 }
 
-                @NotNull
                 @Override
                 public Object getTransferData(DataFlavor flavor) throws UnsupportedFlavorException, IOException {
                     return json;

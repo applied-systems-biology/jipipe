@@ -6,7 +6,6 @@ import org.hkijena.jipipe.extensions.parameters.expressions.ExpressionFunction;
 import org.hkijena.jipipe.extensions.parameters.expressions.ParameterInfo;
 import org.hkijena.jipipe.utils.StringUtils;
 
-import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.List;
 
@@ -21,15 +20,14 @@ public class GetParentDirectoryFunction extends ExpressionFunction {
         String pathString = StringUtils.nullToEmpty(parameters.get(0));
         try {
             return Paths.get(pathString).getParent().toString();
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             return false;
         }
     }
 
     @Override
     public ParameterInfo getParameterInfo(int index) {
-        if(index == 0) {
+        if (index == 0) {
             return new ParameterInfo("Path", "String that contains the path", String.class);
         }
         return null;

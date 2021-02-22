@@ -22,8 +22,6 @@ import org.hkijena.jipipe.ui.grapheditor.actions.UpdateCacheAction;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
-import java.awt.event.InputEvent;
-import java.awt.event.KeyEvent;
 import java.util.Set;
 
 public class UpdateCacheShowIntermediateNodeUIContextAction implements NodeUIContextAction {

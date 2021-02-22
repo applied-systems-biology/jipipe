@@ -83,7 +83,7 @@ public class ImageViewerPanelDisplayRangeControl extends JPanel implements Thumb
             double displayRangeMin = calibrationPlugin.getCurrentImage().getDisplayRangeMin();
             double displayRangeMax = calibrationPlugin.getCurrentImage().getDisplayRangeMax();
             ImageStatistics statistics = calibrationPlugin.getViewerPanel().getStatistics();
-            if(statistics == null)
+            if (statistics == null)
                 return;
             double min = statistics.min;
             double max = statistics.max;

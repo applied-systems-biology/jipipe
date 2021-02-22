@@ -27,7 +27,6 @@ import ij.process.*;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.extensions.parameters.roi.Anchor;
 import org.hkijena.jipipe.utils.ImageJCalibrationMode;
-import org.jetbrains.annotations.NotNull;
 
 import java.awt.*;
 import java.awt.geom.AffineTransform;
@@ -723,7 +722,7 @@ public class ImageJUtils {
         }
 
         @Override
-        public int compareTo(@NotNull GradientStop o) {
+        public int compareTo(GradientStop o) {
             return Float.compare(fraction, o.fraction);
         }
     }

@@ -33,16 +33,15 @@ import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.imageio.ImageIO;
-import javax.swing.Timer;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.io.IOException;
 import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
-import java.util.*;
-import java.util.stream.Collectors;
 
 public class ImageViewerPanel extends JPanel {
     private final JButton zoomStatusButton = new JButton();
@@ -479,10 +478,9 @@ public class ImageViewerPanel extends JPanel {
 
     public void setImage(ImagePlus image) {
         this.image = image;
-        if(image != null) {
+        if (image != null) {
             this.statistics = image.getStatistics();
-        }
-        else {
+        } else {
             this.statistics = null;
         }
         refreshSliders();
@@ -610,12 +608,12 @@ public class ImageViewerPanel extends JPanel {
     public ImageProcessor generateSlice(int z, int c, int t, boolean withRotation) {
         image.setPosition(c + 1, z + 1, t + 1);
         for (ImageViewerPanelPlugin plugin : plugins) {
-            plugin.beforeDraw(z,c,t);
+            plugin.beforeDraw(z, c, t);
         }
 //        System.out.println(Arrays.stream(image.getLuts()).map(Object::toString).collect(Collectors.joining(" ")));
         ImageProcessor processor = image.getProcessor();
         for (ImageViewerPanelPlugin plugin : plugins) {
-            processor = plugin.draw(z,c,t,processor);
+            processor = plugin.draw(z, c, t, processor);
         }
         if (withRotation && rotation != 0) {
             if (rotation == 90)
@@ -636,7 +634,7 @@ public class ImageViewerPanel extends JPanel {
                     channelSlider.getValue() - 1,
                     frameSlider.getValue() - 1,
                     true);
-            if(processor == null) {
+            if (processor == null) {
                 canvas.setImage(null);
                 return;
             }

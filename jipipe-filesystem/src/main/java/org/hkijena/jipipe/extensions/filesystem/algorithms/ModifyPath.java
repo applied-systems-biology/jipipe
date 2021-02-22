@@ -38,17 +38,16 @@ public class ModifyPath extends JIPipeSimpleIteratingAlgorithm {
     protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
         PathData input = dataBatch.getInputData(getFirstInputSlot(), PathData.class, progressInfo);
         StaticVariableSet<Object> variableSet = new StaticVariableSet<>();
-        if(accessAnnotations) {
+        if (accessAnnotations) {
             for (JIPipeAnnotation annotation : dataBatch.getAnnotations().values()) {
                 variableSet.set(annotation.getName(), annotation.getValue());
             }
         }
         PathFilterExpressionParameterVariableSource.buildFor(input.toPath(), variableSet);
         Object result = expression.evaluate(variableSet);
-        if(result instanceof String) {
+        if (result instanceof String) {
             dataBatch.addOutputData(getFirstOutputSlot(), new PathData(Paths.get(StringUtils.nullToEmpty(result))), progressInfo);
-        }
-        else {
+        } else {
             progressInfo.log("Expression generated value '" + result + "', which is not a string. Dropping this data.");
         }
     }

@@ -37,6 +37,7 @@ public @interface JIPipeDataParameterSettings {
 
     /**
      * Allows to implement filters for classes
+     *
      * @return class filter instance
      */
     Class<? extends ClassFilter> dataClassFilter() default AnyClassFilter.class;

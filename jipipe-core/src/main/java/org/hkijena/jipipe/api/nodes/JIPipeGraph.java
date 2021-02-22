@@ -930,12 +930,12 @@ public class JIPipeGraph implements JIPipeValidatable {
     /**
      * Gets all algorithms and all dependent algorithms that are missing inputs or are deactivated by the user
      *
-     * @return list of algorithms
      * @param cascading if predecessors are also checked.
+     * @return list of algorithms
      */
     public Set<JIPipeGraphNode> getDeactivatedAlgorithms(boolean cascading) {
         Set<JIPipeGraphNode> missing = new HashSet<>();
-        if(cascading) {
+        if (cascading) {
             for (JIPipeGraphNode algorithm : traverse()) {
                 if (!algorithm.getInfo().isRunnable())
                     continue;
@@ -961,8 +961,7 @@ public class JIPipeGraph implements JIPipeValidatable {
                     }
                 }
             }
-        }
-        else {
+        } else {
             for (JIPipeGraphNode node : nodes.values()) {
                 if (node instanceof JIPipeAlgorithm) {
                     if (!((JIPipeAlgorithm) node).isEnabled()) {

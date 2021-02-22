@@ -29,6 +29,7 @@ import org.hkijena.jipipe.extensions.parameters.primitives.StringParameterSettin
 import org.hkijena.jipipe.utils.ResourceUtils;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
@@ -94,7 +95,9 @@ public abstract class JIPipeIteratingAlgorithm extends JIPipeParameterSlotAlgori
         builder.setAnnotationMergeStrategy(dataBatchGenerationSettings.annotationMergeStrategy);
         builder.setReferenceColumns(dataBatchGenerationSettings.dataSetMatching,
                 dataBatchGenerationSettings.customColumns);
-        return builder.build();
+        List<JIPipeMergingDataBatch> dataBatches = builder.build();
+        dataBatches.sort(Comparator.naturalOrder());
+        return dataBatches;
     }
 
     @Override

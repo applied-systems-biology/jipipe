@@ -33,16 +33,11 @@ public class DefaultExpressionParameter extends ExpressionParameter {
         super(other);
     }
 
-    @Override
-    public ExpressionEvaluator getEvaluator() {
-        return getEvaluatorInstance();
-    }
-
     public static DefaultExpressionEvaluator getEvaluatorInstance() {
-        if(EVALUATOR == null) {
+        if (EVALUATOR == null) {
             EVALUATOR = new DefaultExpressionEvaluator();
             // Prevent evaluator stuck without registered functions
-            if(JIPipe.getInstance() != null) {
+            if (JIPipe.getInstance() != null) {
                 JIPipe.getInstance().getEventBus().register(new Object() {
                     @Subscribe
                     public void onExtensionRegistered(JIPipe.ExtensionRegisteredEvent event) {
@@ -52,5 +47,10 @@ public class DefaultExpressionParameter extends ExpressionParameter {
             }
         }
         return EVALUATOR;
+    }
+
+    @Override
+    public ExpressionEvaluator getEvaluator() {
+        return getEvaluatorInstance();
     }
 }

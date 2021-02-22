@@ -239,7 +239,8 @@ public class JIPipeManualParameterAccess implements JIPipeParameterAccess {
          * @return this
          */
         public <T> Builder setSetter(Consumer<T> setter) {
-            access.setter = value -> { setter.accept((T)value);
+            access.setter = value -> {
+                setter.accept((T) value);
                 return true;
             };
             return this;

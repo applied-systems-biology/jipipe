@@ -45,15 +45,13 @@ public class SetNodeHotkeyContextAction implements NodeUIContextAction {
 
             String currentNodeId = hotKeyStorage.getNodeForHotkey(NodeHotKeyStorage.Hotkey.fromIndex(number), compartment);
             JIPipeGraphNode currentNode = canvasUI.getGraph().getNodes().getOrDefault(currentNodeId, null);
-            if(node == currentNode) {
+            if (node == currentNode) {
                 button.setSelected(true);
                 button.setToolTipText(TooltipUtils.getAlgorithmTooltip(currentNode, true));
-            }
-            else if(currentNode != null) {
+            } else if (currentNode != null) {
                 button.setForeground(Color.RED);
                 button.setToolTipText(TooltipUtils.getAlgorithmTooltip(currentNode, true));
-            }
-            else {
+            } else {
                 button.setToolTipText("This slot is currently empty");
             }
 
@@ -65,10 +63,9 @@ public class SetNodeHotkeyContextAction implements NodeUIContextAction {
                     JComponent.WHEN_IN_FOCUSED_WINDOW);
 
             button.addActionListener(e -> {
-                if(button.isSelected()) {
+                if (button.isSelected()) {
                     hotKeyStorage.setHotkey(compartment, node.getIdInGraph(), NodeHotKeyStorage.Hotkey.fromIndex(number));
-                }
-                else {
+                } else {
                     hotKeyStorage.setHotkey(compartment, node.getIdInGraph(), NodeHotKeyStorage.Hotkey.None);
                 }
                 dialog.dispose();

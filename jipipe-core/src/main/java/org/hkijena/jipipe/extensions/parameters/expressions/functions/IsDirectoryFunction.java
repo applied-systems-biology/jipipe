@@ -21,15 +21,14 @@ public class IsDirectoryFunction extends ExpressionFunction {
         String pathString = StringUtils.nullToEmpty(parameters.get(0));
         try {
             return Files.isDirectory(Paths.get(pathString));
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             return false;
         }
     }
 
     @Override
     public ParameterInfo getParameterInfo(int index) {
-        if(index == 0) {
+        if (index == 0) {
             return new ParameterInfo("Path", "String that contains the path", String.class);
         }
         return null;

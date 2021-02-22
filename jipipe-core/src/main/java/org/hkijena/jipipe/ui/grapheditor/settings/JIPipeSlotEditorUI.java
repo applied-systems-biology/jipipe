@@ -140,7 +140,7 @@ public class JIPipeSlotEditorUI extends JPanel {
 
     private void editSlot() {
         JIPipeDataSlot slot = getSelectedSlot();
-        if(!slot.getInfo().isUserModifiable()) {
+        if (!slot.getInfo().isUserModifiable()) {
             JOptionPane.showMessageDialog(this, "This slot cannot be edited.", "Edit slot", JOptionPane.ERROR_MESSAGE);
             return;
         }
@@ -226,7 +226,7 @@ public class JIPipeSlotEditorUI extends JPanel {
         }
         JIPipeMutableSlotConfiguration slotConfiguration = (JIPipeMutableSlotConfiguration) algorithm.getSlotConfiguration();
         for (JIPipeDataSlot slot : toRemove) {
-            if(!slot.getInfo().isUserModifiable()) {
+            if (!slot.getInfo().isUserModifiable()) {
                 JOptionPane.showMessageDialog(this,
                         String.format("The slot '%s' cannot be remove.", slot.getName()),
                         "Remove slot",

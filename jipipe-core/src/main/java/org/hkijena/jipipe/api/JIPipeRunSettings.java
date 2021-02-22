@@ -123,6 +123,7 @@ public class JIPipeRunSettings implements JIPipeParameterCollection {
      * If true, the run will ignore cascading checks for deactivated inputs
      * and run any node, that is not explicitly deactivated.
      * If enabled, the data must be provided externally (or the table is empty)
+     *
      * @return if cascading deactivation is ignored
      */
     public boolean isIgnoreDeactivatedInputs() {
@@ -135,6 +136,7 @@ public class JIPipeRunSettings implements JIPipeParameterCollection {
 
     /**
      * Allows to set a list of nodes where storing to cache is disabled
+     *
      * @return the list of nodes
      */
     public Set<JIPipeGraphNode> getDisableStoreToCacheNodes() {
@@ -147,6 +149,7 @@ public class JIPipeRunSettings implements JIPipeParameterCollection {
 
     /**
      * Allows to exclude specific nodes from saving any outputs to the disk
+     *
      * @return the list of nodes
      */
     public Set<JIPipeGraphNode> getDisableSaveToDiskNodes() {

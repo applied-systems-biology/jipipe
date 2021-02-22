@@ -15,7 +15,6 @@ import org.hkijena.jipipe.ui.batchassistant.DataBatchTableUI;
 import org.hkijena.jipipe.ui.components.*;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.jdesktop.swingx.JXTable;
-import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
 import java.awt.*;
@@ -290,7 +289,6 @@ public class FormsDialog extends JFrame {
                 .ifPresent(documentTab -> tabPane.switchToContent(documentTab.getContent()));
     }
 
-    @NotNull
     private JIPipeValidityReport getReportForDataBatch(int selectedRow, JIPipeProgressInfo progressInfo) {
         JIPipeValidityReport report = new JIPipeValidityReport();
         JIPipeDataSlot formsForRow = dataBatchForms.get(selectedRow);

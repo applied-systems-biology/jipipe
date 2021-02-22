@@ -16,7 +16,6 @@ package org.hkijena.jipipe.ui.cache;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.eventbus.Subscribe;
-import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeProjectCache;
 import org.hkijena.jipipe.api.JIPipeProjectCacheState;
 import org.hkijena.jipipe.api.JIPipeRun;
@@ -27,7 +26,10 @@ import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.extensions.settings.FileChooserSettings;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbenchPanel;
-import org.hkijena.jipipe.ui.running.*;
+import org.hkijena.jipipe.ui.running.JIPipeRunExecuterUI;
+import org.hkijena.jipipe.ui.running.JIPipeRunnerQueue;
+import org.hkijena.jipipe.ui.running.RunUIWorkerFinishedEvent;
+import org.hkijena.jipipe.ui.running.RunUIWorkerInterruptedEvent;
 import org.hkijena.jipipe.utils.JsonUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 
@@ -39,8 +41,8 @@ import java.awt.event.ComponentEvent;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.*;
 import java.util.List;
+import java.util.*;
 
 /**
  * UI around an {@link JIPipeRun} result
@@ -178,7 +180,7 @@ public class JIPipeAlgorithmCacheBrowserUI extends JIPipeProjectWorkbenchPanel {
     private void exportCache() {
         Object lastPathComponent = tree.getTree().getLastSelectedPathComponent();
         Map<JIPipeProjectCacheState, Map<String, JIPipeDataSlot>> stateMap = getProject().getCache().extract(graphNode);
-        if(stateMap.isEmpty()) {
+        if (stateMap.isEmpty()) {
             JOptionPane.showMessageDialog(this, "There is no cached data to export!", "Export cache", JOptionPane.ERROR_MESSAGE);
             return;
         }
@@ -187,7 +189,7 @@ public class JIPipeAlgorithmCacheBrowserUI extends JIPipeProjectWorkbenchPanel {
             Object userObject = ((DefaultMutableTreeNode) lastPathComponent).getUserObject();
             if (userObject instanceof JIPipeDataSlot) {
                 for (Map.Entry<JIPipeProjectCacheState, Map<String, JIPipeDataSlot>> stateMapEntry : stateMap.entrySet()) {
-                    if(stateMapEntry.getValue().containsValue(userObject)) {
+                    if (stateMapEntry.getValue().containsValue(userObject)) {
                         exportedState = stateMapEntry.getKey();
                         break;
                     }
@@ -196,12 +198,12 @@ public class JIPipeAlgorithmCacheBrowserUI extends JIPipeProjectWorkbenchPanel {
                 exportedState = (JIPipeProjectCacheState) userObject;
             }
         }
-        if(exportedState == null) {
+        if (exportedState == null) {
             // Choose the newest state
             exportedState = stateMap.keySet().stream().max(Comparator.naturalOrder()).get();
         }
         Path outputFolder = FileChooserSettings.saveDirectory(this, FileChooserSettings.KEY_DATA, "Export cache");
-        if(outputFolder != null) {
+        if (outputFolder != null) {
             // Save the node's state to a file
             Path nodeStateFile = outputFolder.resolve("node.json");
             try {
@@ -219,16 +221,16 @@ public class JIPipeAlgorithmCacheBrowserUI extends JIPipeProjectWorkbenchPanel {
     private void importCache() {
         Path inputFolder = FileChooserSettings.openDirectory(this, FileChooserSettings.KEY_DATA, "Import cache");
         Path nodeStateFile = inputFolder.resolve("node.json");
-        if(Files.exists(nodeStateFile)) {
+        if (Files.exists(nodeStateFile)) {
             try {
                 JsonNode node = JsonUtils.getObjectMapper().readerFor(JsonNode.class).readValue(nodeStateFile.toFile());
                 JIPipeValidityReport report = new JIPipeValidityReport();
                 JIPipeGraphNode stateNode = JIPipeGraphNode.fromJsonNode(node, report);
-                if(!report.isValid()) {
+                if (!report.isValid()) {
                     UIUtils.openValidityReportDialog(this, report, true);
                 }
-                if(stateNode.getInfo() != graphNode.getInfo()) {
-                    if(JOptionPane.showConfirmDialog(this,
+                if (stateNode.getInfo() != graphNode.getInfo()) {
+                    if (JOptionPane.showConfirmDialog(this,
                             "It looks like that this folder was created for a different node type.\n" +
                                     "The node you have selected has the type ID '" + graphNode.getInfo().getId() + "',\n" +
                                     "while the cache folder was created for type ID '" + stateNode.getInfo().getId() + "'.\n\nContinue anyways?",
@@ -237,16 +239,15 @@ public class JIPipeAlgorithmCacheBrowserUI extends JIPipeProjectWorkbenchPanel {
                             JOptionPane.QUESTION_MESSAGE) == JOptionPane.NO_OPTION) {
                         return;
                     }
-                }
-                else  if((graphNode instanceof JIPipeAlgorithm) && (stateNode instanceof JIPipeAlgorithm)) {
+                } else if ((graphNode instanceof JIPipeAlgorithm) && (stateNode instanceof JIPipeAlgorithm)) {
                     String stateId = ((JIPipeAlgorithm) stateNode).getStateId();
                     String currentStateId = ((JIPipeAlgorithm) graphNode).getStateId();
                     ObjectNode stateIdJson = JsonUtils.getObjectMapper().readerFor(ObjectNode.class).readValue(stateId);
                     ObjectNode currentStateIdJson = JsonUtils.getObjectMapper().readerFor(ObjectNode.class).readValue(currentStateId);
                     stateIdJson.remove("jipipe:node-id");
                     currentStateIdJson.remove("jipipe:node-id");
-                    if(!Objects.equals(stateIdJson, currentStateIdJson)) {
-                        if(JOptionPane.showConfirmDialog(this,
+                    if (!Objects.equals(stateIdJson, currentStateIdJson)) {
+                        if (JOptionPane.showConfirmDialog(this,
                                 "The cache folder was created for a different parameter set.\n\nContinue anyways?",
                                 "Import cache",
                                 JOptionPane.YES_NO_OPTION,
@@ -255,10 +256,9 @@ public class JIPipeAlgorithmCacheBrowserUI extends JIPipeProjectWorkbenchPanel {
                         }
                     }
                 }
-            }
-            catch (Exception e) {
+            } catch (Exception e) {
                 UIUtils.openErrorDialog(this, e);
-                if(JOptionPane.showConfirmDialog(this,
+                if (JOptionPane.showConfirmDialog(this,
                         "There was an error while checking for data compatibility.\n\nContinue anyways?",
                         "Import cache",
                         JOptionPane.YES_NO_OPTION,
@@ -266,9 +266,8 @@ public class JIPipeAlgorithmCacheBrowserUI extends JIPipeProjectWorkbenchPanel {
                     return;
                 }
             }
-        }
-        else {
-            if(JOptionPane.showConfirmDialog(this,
+        } else {
+            if (JOptionPane.showConfirmDialog(this,
                     "The folder does not contain 'node.json', which is there to check if " +
                             "you have chosen the correct node.\n\nContinue anyways?",
                     "Import cache",
@@ -279,12 +278,12 @@ public class JIPipeAlgorithmCacheBrowserUI extends JIPipeProjectWorkbenchPanel {
         }
         List<String> missingSlots = new ArrayList<>();
         for (JIPipeDataSlot outputSlot : graphNode.getOutputSlots()) {
-            if(!Files.isDirectory(inputFolder.resolve(outputSlot.getName()))) {
+            if (!Files.isDirectory(inputFolder.resolve(outputSlot.getName()))) {
                 missingSlots.add(outputSlot.getName());
             }
         }
-        if(!missingSlots.isEmpty()) {
-            if(JOptionPane.showConfirmDialog(this,
+        if (!missingSlots.isEmpty()) {
+            if (JOptionPane.showConfirmDialog(this,
                     "Could not find cached folders for following outputs:\n\n" + String.join("\n", missingSlots) + "\n\nContinue anyways?",
                     "Import cache",
                     JOptionPane.YES_NO_OPTION,

@@ -83,7 +83,7 @@ public class JIPipeTestBench implements JIPipeRunnable, JIPipeValidatable {
         }
 
         // Disable storing intermediate results
-        if(!settings.isStoreIntermediateResults()) {
+        if (!settings.isStoreIntermediateResults()) {
             HashSet<JIPipeGraphNode> disabled = new HashSet<>(testBenchRun.getGraph().getNodes().values());
             disabled.remove(benchedAlgorithm);
             configuration.setDisableSaveToDiskNodes(disabled);
@@ -103,7 +103,7 @@ public class JIPipeTestBench implements JIPipeRunnable, JIPipeValidatable {
             for (JIPipeDataSlot inputSlot : node.getInputSlots()) {
                 for (JIPipeDataSlot sourceSlot : testBenchRun.getGraph().getSourceSlots(inputSlot)) {
                     JIPipeGraphNode predecessorNode = sourceSlot.getNode();
-                    if(handledNodes.contains(predecessorNode))
+                    if (handledNodes.contains(predecessorNode))
                         continue;
                     handledNodes.add(predecessorNode);
                     if (!predecessorNode.getInfo().isRunnable())
@@ -116,8 +116,7 @@ public class JIPipeTestBench implements JIPipeRunnable, JIPipeValidatable {
                         // Continue to search for its predecessors
                         predecessors.add(predecessorNode);
                         stack.push(predecessorNode);
-                    }
-                    else {
+                    } else {
                         // If the cache is not empty, end searching this branch (we are satisfied)
                         // We will copy over the values
                         for (Map.Entry<String, JIPipeDataSlot> cacheEntry : cache.entrySet()) {
@@ -238,12 +237,12 @@ public class JIPipeTestBench implements JIPipeRunnable, JIPipeValidatable {
     }
 
     @Override
-    public String getTaskLabel() {
-        return "Quick run / Update cache";
+    public void setProgressInfo(JIPipeProgressInfo progressInfo) {
+        this.progressInfo = progressInfo;
     }
 
     @Override
-    public void setProgressInfo(JIPipeProgressInfo progressInfo) {
-        this.progressInfo = progressInfo;
+    public String getTaskLabel() {
+        return "Quick run / Update cache";
     }
 }

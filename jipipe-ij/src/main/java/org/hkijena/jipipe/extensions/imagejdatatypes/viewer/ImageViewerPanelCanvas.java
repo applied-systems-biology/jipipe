@@ -302,11 +302,10 @@ public class ImageViewerPanelCanvas extends JPanel implements MouseListener, Mou
                 return null;
             double rx;
             double ry;
-            if(checkBounds) {
+            if (checkBounds) {
                 rx = Math.max(0, Math.min(1, 1.0 * x / sw));
                 ry = Math.max(0, Math.min(1, 1.0 * y / sh));
-            }
-            else {
+            } else {
                 rx = 1.0 * x / sw;
                 ry = 1.0 * y / sh;
             }

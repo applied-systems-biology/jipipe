@@ -89,9 +89,9 @@ public class FolderDataSource extends JIPipeAlgorithm {
     public void setFolderPath(Path folderPath) {
         this.folderPath = folderPath;
         FilesystemExtensionSettings settings = FilesystemExtensionSettings.getInstance();
-        if(settings != null && settings.isAutoLabelOutputWithFileName()) {
+        if (settings != null && settings.isAutoLabelOutputWithFileName()) {
             String name = folderPath != null ? folderPath.getFileName().toString() : "";
-            if(!Objects.equals(getFirstOutputSlot().getInfo().getCustomName(), name)) {
+            if (!Objects.equals(getFirstOutputSlot().getInfo().getCustomName(), name)) {
                 getFirstOutputSlot().getInfo().setCustomName(name);
                 getEventBus().post(new JIPipeGraph.NodeSlotsChangedEvent(this));
             }
@@ -145,7 +145,7 @@ public class FolderDataSource extends JIPipeAlgorithm {
             }
             // Make relative if already absolute and workDirectory != null
             FilesystemExtensionSettings settings = FilesystemExtensionSettings.getInstance();
-            if(settings == null || settings.isRelativizePaths()) {
+            if (settings == null || settings.isRelativizePaths()) {
                 if (folderPath.isAbsolute()) {
                     if (workDirectory != null && folderPath.startsWith(workDirectory)) {
                         setFolderPath(workDirectory.relativize(folderPath));

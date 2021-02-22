@@ -209,12 +209,13 @@ public class JIPipeSingleAlgorithmSelectionPanelUI extends JIPipeProjectWorkbenc
 
     /**
      * Activates and runs the quick run as automatically as possible.
-     *  @param showResults        show results after a successful run
-     * @param showCache          show slot cache after a successful run
-     * @param showBatchAssistant show batch assistant after a run
-     * @param saveOutputs        if the run should save outputs
+     *
+     * @param showResults              show results after a successful run
+     * @param showCache                show slot cache after a successful run
+     * @param showBatchAssistant       show batch assistant after a run
+     * @param saveOutputs              if the run should save outputs
      * @param storeIntermediateOutputs if the run should store intermediate outputs
-     * @param excludeSelected    if the current algorithm should be excluded
+     * @param excludeSelected          if the current algorithm should be excluded
      */
     public void runTestBench(boolean showResults, boolean showCache, boolean showBatchAssistant, boolean saveOutputs, boolean storeIntermediateOutputs, boolean excludeSelected) {
         // Activate the quick run

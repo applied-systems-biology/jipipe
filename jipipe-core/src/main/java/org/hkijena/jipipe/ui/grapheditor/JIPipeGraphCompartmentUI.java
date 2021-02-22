@@ -383,7 +383,7 @@ public class JIPipeGraphCompartmentUI extends JIPipeGraphEditorUI {
      */
     @Subscribe
     public void onAlgorithmActionRequested(JIPipeGraphCanvasUI.NodeUIActionRequestedEvent event) {
-        if(event.getAction() instanceof RunAndShowResultsAction) {
+        if (event.getAction() instanceof RunAndShowResultsAction) {
             disableUpdateOnSelection = true;
             selectOnly(event.getUi());
             JIPipeSingleAlgorithmSelectionPanelUI panel = new JIPipeSingleAlgorithmSelectionPanelUI(this,
@@ -396,8 +396,7 @@ public class JIPipeGraphCompartmentUI extends JIPipeGraphEditorUI {
                     ((RunAndShowResultsAction) event.getAction()).isStoreIntermediateResults(),
                     false);
             SwingUtilities.invokeLater(() -> disableUpdateOnSelection = false);
-        }
-        else if(event.getAction() instanceof UpdateCacheAction) {
+        } else if (event.getAction() instanceof UpdateCacheAction) {
             disableUpdateOnSelection = true;
             selectOnly(event.getUi());
             JIPipeSingleAlgorithmSelectionPanelUI panel = new JIPipeSingleAlgorithmSelectionPanelUI(this,

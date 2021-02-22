@@ -154,7 +154,7 @@ public interface JIPipeParameterCollection {
                 jsonGenerator.writeObjectField(String.join("/", top.getPath()), top.getCollection());
             } else if (top.getPersistence() == JIPipeParameterPersistence.Collection) {
                 for (Map.Entry<String, JIPipeParameterAccess> entry : top.getParameters().entrySet()) {
-                    if(filter != null && !filter.test(entry))
+                    if (filter != null && !filter.test(entry))
                         continue;
                     JIPipeParameterAccess parameterAccess = entry.getValue();
                     if (parameterAccess.getPersistence() != JIPipeParameterPersistence.None)

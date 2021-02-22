@@ -113,12 +113,12 @@ public class JIPipeCachedSlotToOutputExporterRun extends JIPipeWorkbenchPanel im
     }
 
     @Override
-    public String getTaskLabel() {
-        return "Export cached data";
+    public void setProgressInfo(JIPipeProgressInfo progressInfo) {
+        this.progressInfo = progressInfo;
     }
 
     @Override
-    public void setProgressInfo(JIPipeProgressInfo progressInfo) {
-        this.progressInfo = progressInfo;
+    public String getTaskLabel() {
+        return "Export cached data";
     }
 }

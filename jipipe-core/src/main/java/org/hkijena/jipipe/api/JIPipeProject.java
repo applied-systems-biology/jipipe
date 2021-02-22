@@ -519,16 +519,15 @@ public class JIPipeProject implements JIPipeValidatable {
         JIPipeValidityReport checkNodesReport = report.forCategory("Check nodes");
         for (JIPipeGraphNode graphNode : graph.getNodes().values()) {
             String compartment = graphNode.getCompartment();
-            if(StringUtils.isNullOrEmpty(compartment)) {
+            if (StringUtils.isNullOrEmpty(compartment)) {
                 checkNodesReport.reportIsInvalid("Node has no compartment!",
                         "The node '" + graphNode.getIdInGraph() + "' has no compartment assigned!",
                         "This was repaired automatically by deleting the node. Please inform the JIPipe developers about this issue.",
                         graphNode);
                 graph.removeNode(graphNode, false);
-            }
-            else {
+            } else {
                 JIPipeGraphNode compartmentNode = compartmentGraph.getNodes().getOrDefault(compartment, null);
-                if(compartmentNode == null) {
+                if (compartmentNode == null) {
                     checkNodesReport.reportIsInvalid("Node has invalid compartment!",
                             "The node '" + graphNode.getIdInGraph() + "' is assigned to compartment '" + compartment + "', but it does not exist!",
                             "This was repaired automatically by deleting the node. Please inform the JIPipe developers about this issue.",

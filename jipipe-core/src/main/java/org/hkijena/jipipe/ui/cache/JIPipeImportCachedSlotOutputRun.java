@@ -5,11 +5,9 @@ import org.hkijena.jipipe.api.*;
 import org.hkijena.jipipe.api.data.*;
 import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
-import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -51,7 +49,7 @@ public class JIPipeImportCachedSlotOutputRun implements JIPipeRunnable {
             JIPipeDataSlot outputSlot = graphNode.getOutputSlots().get(i);
             slotProgressInfo.log("Slot '" + outputSlot.getName() + "'");
             Path slotFolder = inputFolder.resolve(outputSlot.getName());
-            if(!Files.isDirectory(slotFolder)) {
+            if (!Files.isDirectory(slotFolder)) {
                 slotProgressInfo.log("Folder " + slotFolder + " does not exist. Skipping.");
                 continue;
             }
@@ -68,7 +66,7 @@ public class JIPipeImportCachedSlotOutputRun implements JIPipeRunnable {
             JIPipeProgressInfo slotProgressInfo = this.progressInfo.resolveAndLog("Storing into cache", i, graphNode.getOutputSlots().size());
             JIPipeDataSlot outputSlot = graphNode.getOutputSlots().get(i);
             JIPipeDataSlot tempSlot = loadedSlotMap.getOrDefault(outputSlot.getName(), null);
-            if(tempSlot == null)
+            if (tempSlot == null)
                 continue;
             slotProgressInfo.log("Slot '" + outputSlot.getName() + "'");
             project.getCache().store(graphNode, state, tempSlot, slotProgressInfo);

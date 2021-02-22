@@ -23,7 +23,7 @@ public class FilesystemExtensionSettings implements JIPipeParameterCollection {
     }
 
     public static FilesystemExtensionSettings getInstance() {
-        if(JIPipe.getInstance() != null)
+        if (JIPipe.getInstance() != null)
             return JIPipe.getSettings().getSettings(ID, FilesystemExtensionSettings.class);
         else
             return null;

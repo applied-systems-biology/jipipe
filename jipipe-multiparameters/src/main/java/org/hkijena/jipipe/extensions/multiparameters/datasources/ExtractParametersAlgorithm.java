@@ -95,7 +95,7 @@ public class ExtractParametersAlgorithm extends JIPipeAlgorithm {
             ParametersData parametersData = new ParametersData();
 
             for (Map.Entry<String, JIPipeParameterAccess> entry : tree.getParameters().entrySet()) {
-                if(parameterKeyFilter.test(entry.getKey())) {
+                if (parameterKeyFilter.test(entry.getKey())) {
                     Object value = entry.getValue().get(Object.class);
                     value = JIPipe.getParameterTypes().getInfoByFieldClass(entry.getValue().getFieldClass()).duplicate(value);
                     parametersData.getParameterData().put(entry.getKey(), value);
@@ -105,7 +105,7 @@ public class ExtractParametersAlgorithm extends JIPipeAlgorithm {
             List<JIPipeAnnotation> annotationList = new ArrayList<>();
             nodeIdAnnotation.addAnnotationIfEnabled(annotationList, node.getIdInGraph());
             nodeNameAnnotation.addAnnotationIfEnabled(annotationList, node.getName());
-            getFirstOutputSlot().addData(parametersData, annotationList, JIPipeAnnotationMergeStrategy.OverwriteExisting,progressInfo);
+            getFirstOutputSlot().addData(parametersData, annotationList, JIPipeAnnotationMergeStrategy.OverwriteExisting, progressInfo);
         }
     }
 }

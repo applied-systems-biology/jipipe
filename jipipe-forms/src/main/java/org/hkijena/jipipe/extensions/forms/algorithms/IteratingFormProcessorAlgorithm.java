@@ -12,7 +12,6 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterVisibility;
 import org.hkijena.jipipe.extensions.forms.datatypes.FormData;
 import org.hkijena.jipipe.extensions.forms.ui.FormsDialog;
-import org.hkijena.jipipe.extensions.multiparameters.datatypes.ParametersData;
 import org.hkijena.jipipe.extensions.parameters.primitives.StringParameterSettings;
 import org.hkijena.jipipe.ui.JIPipeDummyWorkbench;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
@@ -22,12 +21,10 @@ import javax.swing.*;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.util.ArrayList;
-import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
-
-import static org.hkijena.jipipe.api.nodes.JIPipeParameterSlotAlgorithm.SLOT_PARAMETERS;
 
 @JIPipeDocumentation(name = "Form processor (iterating)", description = "An algorithm that iterates through groups of data in " +
         "its 'Data' slot and shows a user interface during the runtime that allows users to modify annotations via form elements. " +
@@ -89,7 +86,7 @@ public class IteratingFormProcessorAlgorithm extends JIPipeAlgorithm implements 
             // Generate data batches and show the user interface
             List<JIPipeMergingDataBatch> dataBatchList = generateDataBatchesDryRun(getEffectiveInputSlots());
 
-            if(dataBatchList.isEmpty()) {
+            if (dataBatchList.isEmpty()) {
                 progressInfo.log("No data batches. Skipping.");
                 return;
             }
@@ -140,7 +137,7 @@ public class IteratingFormProcessorAlgorithm extends JIPipeAlgorithm implements 
                 }
             }
 
-            if(uiResult[0] instanceof Throwable) {
+            if (uiResult[0] instanceof Throwable) {
                 throw new RuntimeException((Throwable) uiResult[0]);
             }
 
@@ -170,7 +167,7 @@ public class IteratingFormProcessorAlgorithm extends JIPipeAlgorithm implements 
                 JIPipeDataSlot forms = dataBatchForms.get(i);
                 JIPipeMergingDataBatch dataBatch = dataBatchList.get(i);
                 for (String name : getInputSlotMap().keySet()) {
-                    if(!name.equals("Forms")) {
+                    if (!name.equals("Forms")) {
                         JIPipeDataSlot inputSlot = getInputSlot(name);
                         JIPipeDataSlot outputSlot = getOutputSlot(name);
                         for (int row : dataBatch.getInputSlotRows().get(inputSlot)) {
@@ -232,6 +229,8 @@ public class IteratingFormProcessorAlgorithm extends JIPipeAlgorithm implements 
         builder.setAnnotationMergeStrategy(dataBatchGenerationSettings.getAnnotationMergeStrategy());
         builder.setReferenceColumns(dataBatchGenerationSettings.getDataSetMatching(),
                 dataBatchGenerationSettings.getCustomColumns());
-        return builder.build();
+        List<JIPipeMergingDataBatch> dataBatches = builder.build();
+        dataBatches.sort(Comparator.naturalOrder());
+        return dataBatches;
     }
 }

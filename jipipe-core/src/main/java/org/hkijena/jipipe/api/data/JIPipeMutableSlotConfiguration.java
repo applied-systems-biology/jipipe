@@ -51,7 +51,7 @@ public interface JIPipeMutableSlotConfiguration extends JIPipeSlotConfiguration 
 
     default boolean canRemoveInputSlot(String name, boolean user) {
         JIPipeDataSlotInfo info = getInputSlots().getOrDefault(name, null);
-        if(info != null) {
+        if (info != null) {
             return info.isUserModifiable() && canModifyInputSlots();
         }
         return false;
@@ -59,7 +59,7 @@ public interface JIPipeMutableSlotConfiguration extends JIPipeSlotConfiguration 
 
     default boolean canRemoveOutputSlot(String name, boolean user) {
         JIPipeDataSlotInfo info = getOutputSlots().getOrDefault(name, null);
-        if(info != null) {
+        if (info != null) {
             return info.isUserModifiable() && canModifyOutputSlots();
         }
         return false;

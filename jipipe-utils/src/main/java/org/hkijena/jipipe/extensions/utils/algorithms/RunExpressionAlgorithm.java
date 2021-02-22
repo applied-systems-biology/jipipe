@@ -92,7 +92,7 @@ public class RunExpressionAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         variableSet.set("data_type", JIPipeDataInfo.getInstance(data.getClass()).getId());
         Object result = expression.evaluate(variableSet);
         List<JIPipeAnnotation> annotationList = new ArrayList<>();
-        if(result != null && writeToAnnotation.isEnabled()) {
+        if (result != null && writeToAnnotation.isEnabled()) {
             annotationList.add(writeToAnnotation.createAnnotation(result.toString()));
         }
         dataBatch.addOutputData(getFirstOutputSlot(), data, annotationList, writeToAnnotationMergeStrategy, progressInfo);

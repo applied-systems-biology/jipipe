@@ -14,17 +14,10 @@
 package org.hkijena.jipipe.extensions.parameters.table;
 
 import com.google.common.eventbus.Subscribe;
-import org.hkijena.jipipe.JIPipe;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.nodes.JIPipeGraph;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
-import org.hkijena.jipipe.api.parameters.*;
-import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
+import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
-import org.hkijena.jipipe.ui.components.AddDynamicParameterPanel;
-import org.hkijena.jipipe.ui.components.ParameterTreeUI;
 import org.hkijena.jipipe.ui.parameters.JIPipeParameterEditorUI;
-import org.hkijena.jipipe.ui.parameters.JIPipeParameterGeneratorUI;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.jdesktop.swingx.JXTable;
 
@@ -33,11 +26,6 @@ import javax.swing.event.TableModelEvent;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableModel;
 import java.awt.*;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.stream.Collectors;
 
 /**
  * UI for {@link ParameterTable}
@@ -90,7 +78,7 @@ public class ParameterTableEditorUI extends JIPipeParameterEditorUI {
                 getWorkbench().getWindow(),
                 getParameterAccess(),
                 getParameter(ParameterTable.class));
-        if(getParameterAccess().getSource() instanceof JIPipeGraphNode) {
+        if (getParameterAccess().getSource() instanceof JIPipeGraphNode) {
             window.setTitle(((JIPipeGraphNode) getParameterAccess().getSource()).getName() + ": " + getParameterAccess().getName());
         }
     }

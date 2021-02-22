@@ -52,21 +52,20 @@ public class HistogramContrastEnhancerAlgorithm extends JIPipeSimpleIteratingAlg
                 stretchHistogram(img, saturatedPixels, img.getType() != ImagePlus.COLOR_RGB);
                 break;
             case EqualizeHistogram:
-                if(img.getType() != ImagePlus.GRAY32) {
+                if (img.getType() != ImagePlus.GRAY32) {
                     equalize(img, false);
                 }
                 break;
             case EqualizeHistogramClassic:
-                if(img.getType() != ImagePlus.GRAY32) {
+                if (img.getType() != ImagePlus.GRAY32) {
                     equalize(img, true);
                 }
                 break;
         }
-        
+
         dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusData(img), progressInfo);
     }
 
-  
 
     @JIPipeDocumentation(name = "Saturated pixels (%)", description = "Only used if histogram stretching is used.\n" +
             "Determines the number of pixels in the image that are allowed to become saturated. " +
@@ -79,7 +78,7 @@ public class HistogramContrastEnhancerAlgorithm extends JIPipeSimpleIteratingAlg
 
     @JIPipeParameter("saturated-pixels")
     public boolean setSaturatedPixels(double saturatedPixels) {
-        if(saturatedPixels < 0 ||saturatedPixels > 100)
+        if (saturatedPixels < 0 || saturatedPixels > 100)
             return false;
         this.saturatedPixels = saturatedPixels;
         return true;
@@ -115,36 +114,13 @@ public class HistogramContrastEnhancerAlgorithm extends JIPipeSimpleIteratingAlg
         this.useStackHistogram = useStackHistogram;
     }
 
-    public enum Method {
-        StretchHistogram,
-        StretchHistogramAndNormalize,
-        EqualizeHistogram,
-        EqualizeHistogramClassic;
-
-
-        @Override
-        public String toString() {
-            switch (this) {
-                case StretchHistogram:
-                    return "Stretch histogram";
-                case StretchHistogramAndNormalize:
-                    return "Stretch histogram + normalize";
-                case EqualizeHistogram:
-                    return "Equalize histogram";
-                case EqualizeHistogramClassic:
-                    return "Equalize histogram (Classic)";
-            }
-            throw new UnsupportedOperationException();
-        }
-    }
-
     public void stretchHistogram(ImagePlus imp, double saturated, boolean normalize) {
         ImageStatistics stats = null;
         if (useStackHistogram)
             stats = new StackStatistics(imp);
         int stackSize = imp.getStackSize();
         ImageStack stack = imp.getStack();
-        for (int i=1; i<=stackSize; i++) {
+        for (int i = 1; i <= stackSize; i++) {
             IJ.showProgress(i, stackSize);
             ImageProcessor ip = stack.getProcessor(i);
             ip.setRoi(imp.getRoi());
@@ -161,11 +137,11 @@ public class HistogramContrastEnhancerAlgorithm extends JIPipeSimpleIteratingAlg
 
     public void stretchHistogram(ImageProcessor ip, double saturated, ImageStatistics stats, boolean normalize) {
         int[] a = getMinAndMax(ip, saturated, stats);
-        int hmin=a[0], hmax=a[1];
-        if (hmax>hmin) {
-            double min = stats.histMin+hmin*stats.binSize;
-            double max = stats.histMin+hmax*stats.binSize;
-            if (stats.histogram16!=null && ip instanceof ShortProcessor) {
+        int hmin = a[0], hmax = a[1];
+        if (hmax > hmin) {
+            double min = stats.histMin + hmin * stats.binSize;
+            double max = stats.histMin + hmax * stats.binSize;
+            if (stats.histogram16 != null && ip instanceof ShortProcessor) {
                 min = hmin;
                 max = hmax;
             }
@@ -181,11 +157,11 @@ public class HistogramContrastEnhancerAlgorithm extends JIPipeSimpleIteratingAlg
     void stretchCompositeImageHistogram(CompositeImage imp, double saturated, ImageStatistics stats) {
         ImageProcessor ip = imp.getProcessor();
         int[] a = getMinAndMax(ip, saturated, stats);
-        int hmin=a[0], hmax=a[1];
-        if (hmax>hmin) {
-            double min = stats.histMin+hmin*stats.binSize;
-            double max = stats.histMin+hmax*stats.binSize;
-            if (stats.histogram16!=null && imp.getBitDepth()==16) {
+        int hmin = a[0], hmax = a[1];
+        if (hmax > hmin) {
+            double min = stats.histMin + hmin * stats.binSize;
+            double max = stats.histMin + hmax * stats.binSize;
+            if (stats.histogram16 != null && imp.getBitDepth() == 16) {
                 min = hmin;
                 max = hmax;
             }
@@ -215,22 +191,22 @@ public class HistogramContrastEnhancerAlgorithm extends JIPipeSimpleIteratingAlg
         int hmin, hmax;
         int threshold;
         int[] histogram = stats.histogram;
-        if (stats.histogram16!=null && ip instanceof ShortProcessor)
+        if (stats.histogram16 != null && ip instanceof ShortProcessor)
             histogram = stats.histogram16;
         int hsize = histogram.length;
-        if (saturated>0.0)
-            threshold = (int)(stats.pixelCount*saturated/200.0);
+        if (saturated > 0.0)
+            threshold = (int) (stats.pixelCount * saturated / 200.0);
         else
             threshold = 0;
         int i = -1;
         boolean found = false;
         int count = 0;
-        int maxindex = hsize-1;
+        int maxindex = hsize - 1;
         do {
             i++;
             count += histogram[i];
-            found = count>threshold;
-        } while (!found && i<maxindex);
+            found = count > threshold;
+        } while (!found && i < maxindex);
         hmin = i;
 
         i = hsize;
@@ -238,11 +214,12 @@ public class HistogramContrastEnhancerAlgorithm extends JIPipeSimpleIteratingAlg
         do {
             i--;
             count += histogram[i];
-            found = count>threshold;
-        } while (!found && i>0);
+            found = count > threshold;
+        } while (!found && i > 0);
         hmax = i;
         int[] a = new int[2];
-        a[0]=hmin; a[1]=hmax;
+        a[0] = hmin;
+        a[1] = hmax;
         return a;
     }
 
@@ -250,18 +227,19 @@ public class HistogramContrastEnhancerAlgorithm extends JIPipeSimpleIteratingAlg
         int min2 = 0;
         int max2 = 255;
         int range = 256;
-        if (ip instanceof ShortProcessor)
-        {max2 = 65535; range=65536;}
-        else if (ip instanceof FloatProcessor)
+        if (ip instanceof ShortProcessor) {
+            max2 = 65535;
+            range = 65536;
+        } else if (ip instanceof FloatProcessor)
             normalizeFloat(ip, min, max);
         int[] lut = new int[range];
-        for (int i=0; i<range; i++) {
-            if (i<=min)
+        for (int i = 0; i < range; i++) {
+            if (i <= min)
                 lut[i] = 0;
-            else if (i>=max)
+            else if (i >= max)
                 lut[i] = max2;
             else
-                lut[i] = (int)(((double)(i-min)/(max-min))*max2);
+                lut[i] = (int) (((double) (i - min) / (max - min)) * max2);
         }
         applyTable(ip, lut);
     }
@@ -269,29 +247,29 @@ public class HistogramContrastEnhancerAlgorithm extends JIPipeSimpleIteratingAlg
     void applyTable(ImageProcessor ip, int[] lut) {
         if (false) {
             ImageProcessor mask = ip.getMask();
-            if (mask!=null) ip.snapshot();
+            if (mask != null) ip.snapshot();
             ip.applyTable(lut);
-            if (mask!=null) ip.reset(mask);
+            if (mask != null) ip.reset(mask);
         } else
             ip.applyTable(lut);
     }
 
     void normalizeFloat(ImageProcessor ip, double min, double max) {
-        double scale = max>min?1.0/(max-min):1.0;
-        int size = ip.getWidth()*ip.getHeight();
-        float[] pixels = (float[])ip.getPixels();
+        double scale = max > min ? 1.0 / (max - min) : 1.0;
+        int size = ip.getWidth() * ip.getHeight();
+        float[] pixels = (float[]) ip.getPixels();
         double v;
-        for (int i=0; i<size; i++) {
+        for (int i = 0; i < size; i++) {
             v = pixels[i] - min;
-            if (v<0.0) v = 0.0;
+            if (v < 0.0) v = 0.0;
             v *= scale;
-            if (v>1.0) v = 1.0;
-            pixels[i] = (float)v;
+            if (v > 1.0) v = 1.0;
+            pixels[i] = (float) v;
         }
     }
 
     public void equalize(ImagePlus imp, boolean classicEqualization) {
-        if (imp.getBitDepth()==32) {
+        if (imp.getBitDepth() == 32) {
             IJ.showMessage("Contrast Enhancer", "Equalization of 32-bit images not supported.");
             return;
         }
@@ -299,7 +277,7 @@ public class HistogramContrastEnhancerAlgorithm extends JIPipeSimpleIteratingAlg
         if (useStackHistogram) {
             ImageStatistics stats = new StackStatistics(imp);
             histogram = stats.histogram;
-            if (stats.histogram16!=null && imp.getBitDepth()==16)
+            if (stats.histogram16 != null && imp.getBitDepth() == 16)
                 histogram = stats.histogram16;
         }
         {
@@ -307,17 +285,17 @@ public class HistogramContrastEnhancerAlgorithm extends JIPipeSimpleIteratingAlg
             //int[] mask = imp.getMask();
             //Rectangle rect = imp.get
             ImageStack stack = imp.getStack();
-            for (int i=1; i<=stackSize; i++) {
+            for (int i = 1; i <= stackSize; i++) {
                 IJ.showProgress(i, stackSize);
                 ImageProcessor ip = stack.getProcessor(i);
-                if (histogram==null)
+                if (histogram == null)
                     histogram = ip.getHistogram();
                 equalize(ip, histogram, classicEqualization);
             }
         }
         if (imp.getBitDepth() == 16 && imp.getStackSize() > 1) {
             ImageStack stack = imp.getStack();
-            ImageProcessor ip = stack.getProcessor(stack.size()/2);
+            ImageProcessor ip = stack.getProcessor(stack.size() / 2);
             ImageStatistics stats = ip.getStats();
             imp.getProcessor().setMinAndMax(stats.min, stats.max);
         } else
@@ -325,14 +303,14 @@ public class HistogramContrastEnhancerAlgorithm extends JIPipeSimpleIteratingAlg
     }
 
     /**
-     Changes the tone curves of images. 
-     It should bring up the detail in the flat regions of your image.
-     Histogram Equalization can enhance meaningless detail and hide 
-     important but small high-contrast features. This method uses a
-     similar algorithm, but uses the square root of the histogram 
-     values, so its effects are less extreme. Hold the alt key down 
-     to use the standard histogram equalization algorithm.
-     This code was contributed by Richard Kirk (rak@cre.canon.co.uk).
+     * Changes the tone curves of images.
+     * It should bring up the detail in the flat regions of your image.
+     * Histogram Equalization can enhance meaningless detail and hide
+     * important but small high-contrast features. This method uses a
+     * similar algorithm, but uses the square root of the histogram
+     * values, so its effects are less extreme. Hold the alt key down
+     * to use the standard histogram equalization algorithm.
+     * This code was contributed by Richard Kirk (rak@cre.canon.co.uk).
      */
     public void equalize(ImageProcessor ip, boolean classicEqualization) {
         equalize(ip, ip.getHistogram(), classicEqualization);
@@ -342,7 +320,7 @@ public class HistogramContrastEnhancerAlgorithm extends JIPipeSimpleIteratingAlg
         ip.resetRoi();
         int max;
         int range;
-        if (ip instanceof ShortProcessor) {	// Short
+        if (ip instanceof ShortProcessor) {    // Short
             max = 65535;
             range = 65535;
         } else { //bytes
@@ -351,17 +329,17 @@ public class HistogramContrastEnhancerAlgorithm extends JIPipeSimpleIteratingAlg
         }
         double sum;
         sum = getWeightedValue(histogram, 0, classicEqualization);
-        for (int i=1; i<max; i++)
+        for (int i = 1; i < max; i++)
             sum += 2 * getWeightedValue(histogram, i, classicEqualization);
         sum += getWeightedValue(histogram, max, classicEqualization);
-        double scale = range/sum;
-        int[] lut = new int[range+1];
+        double scale = range / sum;
+        int[] lut = new int[range + 1];
         lut[0] = 0;
         sum = getWeightedValue(histogram, 0, classicEqualization);
-        for (int i=1; i<max; i++) {
+        for (int i = 1; i < max; i++) {
             double delta = getWeightedValue(histogram, i, classicEqualization);
             sum += delta;
-            lut[i] = (int)Math.round(sum*scale);
+            lut[i] = (int) Math.round(sum * scale);
             sum += delta;
         }
         lut[max] = max;
@@ -370,7 +348,30 @@ public class HistogramContrastEnhancerAlgorithm extends JIPipeSimpleIteratingAlg
 
     private double getWeightedValue(int[] histogram, int i, boolean classicEqualization) {
         int h = histogram[i];
-        if (h<2 || classicEqualization) return h;
+        if (h < 2 || classicEqualization) return h;
         return Math.sqrt(h);
+    }
+
+    public enum Method {
+        StretchHistogram,
+        StretchHistogramAndNormalize,
+        EqualizeHistogram,
+        EqualizeHistogramClassic;
+
+
+        @Override
+        public String toString() {
+            switch (this) {
+                case StretchHistogram:
+                    return "Stretch histogram";
+                case StretchHistogramAndNormalize:
+                    return "Stretch histogram + normalize";
+                case EqualizeHistogram:
+                    return "Equalize histogram";
+                case EqualizeHistogramClassic:
+                    return "Equalize histogram (Classic)";
+            }
+            throw new UnsupportedOperationException();
+        }
     }
 }

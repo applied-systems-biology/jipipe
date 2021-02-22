@@ -90,9 +90,9 @@ public class PathListDataSource extends JIPipeAlgorithm {
     public void setPaths(PathList paths) {
         this.paths = paths;
         FilesystemExtensionSettings settings = FilesystemExtensionSettings.getInstance();
-        if(settings != null && settings.isAutoLabelOutputWithFileName()) {
-            String name =  paths.size() == 1 ? paths.get(0).getFileName().toString() : "";
-            if(!Objects.equals(getFirstOutputSlot().getInfo().getCustomName(), name)) {
+        if (settings != null && settings.isAutoLabelOutputWithFileName()) {
+            String name = paths.size() == 1 ? paths.get(0).getFileName().toString() : "";
+            if (!Objects.equals(getFirstOutputSlot().getInfo().getCustomName(), name)) {
                 getFirstOutputSlot().getInfo().setCustomName(name);
                 getEventBus().post(new JIPipeGraph.NodeSlotsChangedEvent(this));
             }
@@ -152,7 +152,7 @@ public class PathListDataSource extends JIPipeAlgorithm {
                 }
                 // Make relative if already absolute and workDirectory != null
                 FilesystemExtensionSettings settings = FilesystemExtensionSettings.getInstance();
-                if(settings == null || settings.isRelativizePaths()) {
+                if (settings == null || settings.isRelativizePaths()) {
                     if (folderPath.isAbsolute()) {
                         if (workDirectory != null && folderPath.startsWith(workDirectory)) {
                             folderPath = workDirectory.relativize(folderPath);

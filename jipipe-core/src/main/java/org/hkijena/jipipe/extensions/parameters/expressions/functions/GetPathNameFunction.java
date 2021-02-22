@@ -20,15 +20,14 @@ public class GetPathNameFunction extends ExpressionFunction {
         String pathString = StringUtils.nullToEmpty(parameters.get(0));
         try {
             return Paths.get(pathString).getFileName().toString();
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             return false;
         }
     }
 
     @Override
     public ParameterInfo getParameterInfo(int index) {
-        if(index == 0) {
+        if (index == 0) {
             return new ParameterInfo("Path", "String that contains the path", String.class);
         }
         return null;

@@ -61,6 +61,7 @@ public class Margin implements Function<Rectangle, Rectangle>, JIPipeParameterCo
 
     /**
      * Creates a margin from a rectangle
+     *
      * @param rectangle the rectangle
      */
     public Margin(Rectangle rectangle) {

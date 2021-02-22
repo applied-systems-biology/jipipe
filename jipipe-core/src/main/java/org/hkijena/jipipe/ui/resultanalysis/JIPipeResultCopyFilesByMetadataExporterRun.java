@@ -220,12 +220,12 @@ public class JIPipeResultCopyFilesByMetadataExporterRun extends JIPipeWorkbenchP
     }
 
     @Override
-    public String getTaskLabel() {
-        return "Export result data as files";
+    public void setProgressInfo(JIPipeProgressInfo progressInfo) {
+        this.progressInfo = progressInfo;
     }
 
     @Override
-    public void setProgressInfo(JIPipeProgressInfo progressInfo) {
-        this.progressInfo = progressInfo;
+    public String getTaskLabel() {
+        return "Export result data as files";
     }
 }

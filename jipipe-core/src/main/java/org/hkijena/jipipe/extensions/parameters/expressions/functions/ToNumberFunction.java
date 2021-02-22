@@ -18,7 +18,6 @@ import org.apache.commons.lang3.math.NumberUtils;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.extensions.parameters.expressions.ExpressionFunction;
 import org.hkijena.jipipe.extensions.parameters.expressions.ParameterInfo;
-import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -53,7 +52,6 @@ public class ToNumberFunction extends ExpressionFunction {
         }
     }
 
-    @NotNull
     public Object convert(Object value) {
         if (value instanceof Number)
             return value;

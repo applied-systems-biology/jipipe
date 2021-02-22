@@ -23,16 +23,15 @@ import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.util.*;
 import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class ParameterTableEditorWindow extends JFrame {
+    private static final Map<ParameterTable, ParameterTableEditorWindow> OPEN_WINDOWS = new HashMap<>();
     private final JIPipeWorkbench workbench;
     private final JIPipeParameterAccess parameterAccess;
     private final ParameterTable parameterTable;
-    private static final Map<ParameterTable, ParameterTableEditorWindow> OPEN_WINDOWS = new HashMap<>();
-
     private JXTable table;
     private FormPanel palettePanel;
     private JPanel currentPaletteGroup;
@@ -51,6 +50,23 @@ public class ParameterTableEditorWindow extends JFrame {
         });
         initialize();
         reload();
+    }
+
+    public static ParameterTableEditorWindow getInstance(JIPipeWorkbench workbench, Component parent, JIPipeParameterAccess parameterAccess, ParameterTable parameterTable) {
+        ParameterTableEditorWindow window = OPEN_WINDOWS.getOrDefault(parameterTable, null);
+        if (window == null) {
+            window = new ParameterTableEditorWindow(workbench, parameterAccess, parameterTable);
+            window.setSize(1024, 768);
+            window.setLocationRelativeTo(parent);
+            window.setTitle(parameterAccess.getName());
+            window.setVisible(true);
+            OPEN_WINDOWS.put(parameterTable, window);
+            return window;
+        } else {
+            window.toFront();
+            window.repaint();
+        }
+        return window;
     }
 
     private void initialize() {
@@ -98,22 +114,21 @@ public class ParameterTableEditorWindow extends JFrame {
         int[] selectedRows = getSelectedRows(true);
 
         // Selection control
-        if(selectedRows.length > 0) {
+        if (selectedRows.length > 0) {
             if (selectedColumns.length > 1) {
                 palettePanel.addGroupHeader("Please select only one column", UIUtils.getIconFromResources("emblems/warning.png"));
             } else if (selectedColumns.length == 1) {
-                if(selectedRows.length == 1) {
+                if (selectedRows.length == 1) {
                     palettePanel.addGroupHeader("Edit parameter", UIUtils.getIconFromResources("actions/document-edit.png"));
                     ParameterTableCellAccess access = new ParameterTableCellAccess(getParameterAccess(), parameterTable,
-                           selectedRows[0], selectedColumns[0]);
+                            selectedRows[0], selectedColumns[0]);
                     JIPipeParameterEditorUI editor = JIPipe.getParameterTypes().createEditorFor(getWorkbench(), access);
                     palettePanel.addWideToForm(editor, ParameterPanel.generateParameterDocumentation(access));
-                }
-                else {
+                } else {
                     palettePanel.addGroupHeader("Edit multiple parameters", UIUtils.getIconFromResources("actions/document-edit.png"));
                     List<JIPipeParameterAccess> accessList = new ArrayList<>();
                     for (int row : selectedRows) {
-                        accessList.add( new ParameterTableCellAccess(getParameterAccess(), parameterTable,
+                        accessList.add(new ParameterTableCellAccess(getParameterAccess(), parameterTable,
                                 row, selectedColumns[0]));
                     }
                     JIPipeMultiParameterAccess multiParameterAccess = new JIPipeMultiParameterAccess(accessList);
@@ -144,7 +159,7 @@ public class ParameterTableEditorWindow extends JFrame {
                 "Defines a custom column (advanced users).",
                 UIUtils.getIconFromResources("actions/code-context.png"),
                 this::addCustomColumn);
-        if(selectedColumns.length > 0) {
+        if (selectedColumns.length > 0) {
             addSeparatorToPalette();
             addActionToPalette("Remove",
                     "Remove selected columns",
@@ -160,10 +175,10 @@ public class ParameterTableEditorWindow extends JFrame {
                 "Adds an empty row at the end of the table.",
                 UIUtils.getIconFromResources("actions/add.png"),
                 this::addRow);
-        if(selectedColumns.length == 1) {
+        if (selectedColumns.length == 1) {
             JPopupMenu generateMenu = new JPopupMenu();
             createGenerateMenuFor(selectedColumns[0], generateMenu);
-            if(generateMenu.getComponentCount() > 0) {
+            if (generateMenu.getComponentCount() > 0) {
                 JButton generateButton = addActionToPalette("Generate new",
                         "Generates new rows",
                         UIUtils.getIconFromResources("actions/tools-wizard.png"),
@@ -172,18 +187,19 @@ public class ParameterTableEditorWindow extends JFrame {
                 UIUtils.addPopupMenuToComponent(generateButton, generateMenu);
             }
         }
-        if(selectedRows.length > 0 && selectedColumns.length == 1) {
+        if (selectedRows.length > 0 && selectedColumns.length == 1) {
             JPopupMenu generateMenu = new JPopupMenu();
             createReplaceMenuFor(selectedColumns[0], generateMenu);
-            if(generateMenu.getComponentCount() > 0) {
+            if (generateMenu.getComponentCount() > 0) {
                 JButton generateButton = addActionToPalette("Replace selection by generated",
                         "Generates parameter values and replaces the selected items by these values",
                         UIUtils.getIconFromResources("actions/tools-wizard.png"),
-                        () -> {});
+                        () -> {
+                        });
                 UIUtils.addPopupMenuToComponent(generateButton, generateMenu);
             }
         }
-        if(selectedRows.length > 0) {
+        if (selectedRows.length > 0) {
             addSeparatorToPalette();
             addActionToPalette("Remove",
                     "Remove selected rows",
@@ -232,7 +248,7 @@ public class ParameterTableEditorWindow extends JFrame {
 
     private void generateAndReplaceRows(int columnIndex, Class<? extends JIPipeParameterGeneratorUI> generator) {
         int[] selectedRows = getSelectedRows(false);
-        if(selectedRows.length == 0) {
+        if (selectedRows.length == 0) {
             JOptionPane.showMessageDialog(this,
                     "There are no rows selected!",
                     "Replace parameter values",
@@ -249,46 +265,41 @@ public class ParameterTableEditorWindow extends JFrame {
                 return;
             }
             String strategy = "Skip remaining rows";
-            if(generatedObjects.size() < selectedRows.length) {
+            if (generatedObjects.size() < selectedRows.length) {
                 Object result = JOptionPane.showInputDialog(this, String.format("You have selected %d rows, but only %d values were generated.\n" +
                                 "What should be done with the remaining rows?", selectedRows.length, generatedObjects.size()),
                         "Replace parameter values", JOptionPane.QUESTION_MESSAGE, null, new Object[]{"Skip remaining rows", "Repeat last generated value", "Cycle generated values"}, strategy);
-                if(result == null ||Objects.equals(result, "Cancel"))
+                if (result == null || Objects.equals(result, "Cancel"))
                     return;
                 strategy = result.toString();
             }
-            if(strategy.equals("Skip remaining rows")) {
+            if (strategy.equals("Skip remaining rows")) {
                 for (int i = 0; i < Math.min(generatedObjects.size(), selectedRows.length); i++) {
                     parameterTable.setValueAt(generatedObjects.get(i), selectedRows[i], columnIndex);
                 }
-            }
-            else if(strategy.equals("Repeat last generated value")) {
+            } else if (strategy.equals("Repeat last generated value")) {
                 for (int i = 0; i < selectedRows.length; i++) {
-                    if(i <= generatedObjects.size() - 1 ) {
+                    if (i <= generatedObjects.size() - 1) {
                         parameterTable.setValueAt(generatedObjects.get(i), selectedRows[i], columnIndex);
-                    }
-                    else {
+                    } else {
                         Object lastObject = generatedObjects.get(generatedObjects.size() - 1);
                         JIPipeParameterTypeInfo info = JIPipe.getParameterTypes().getInfoByFieldClass(lastObject.getClass());
                         Object copy = info.duplicate(lastObject);
                         parameterTable.setValueAt(copy, selectedRows[i], columnIndex);
                     }
                 }
-            }
-            else if(strategy.equals("Cycle generated values")) {
+            } else if (strategy.equals("Cycle generated values")) {
                 for (int i = 0; i < selectedRows.length; i++) {
-                    if(i <= generatedObjects.size() - 1 ) {
+                    if (i <= generatedObjects.size() - 1) {
                         parameterTable.setValueAt(generatedObjects.get(i), selectedRows[i], columnIndex);
-                    }
-                    else {
+                    } else {
                         Object lastObject = generatedObjects.get(i % generatedObjects.size());
                         JIPipeParameterTypeInfo info = JIPipe.getParameterTypes().getInfoByFieldClass(lastObject.getClass());
                         Object copy = info.duplicate(lastObject);
                         parameterTable.setValueAt(copy, selectedRows[i], columnIndex);
                     }
                 }
-            }
-            else {
+            } else {
                 throw new UnsupportedOperationException();
             }
         }
@@ -297,7 +308,7 @@ public class ParameterTableEditorWindow extends JFrame {
     private void generateNewRows(int columnIndex, Class<? extends JIPipeParameterGeneratorUI> generator) {
         List<Object> generatedObjects = JIPipeParameterGeneratorUI.showDialog(this, getWorkbench(), generator);
         if (generatedObjects != null) {
-            if(generatedObjects.isEmpty()) {
+            if (generatedObjects.isEmpty()) {
                 JOptionPane.showMessageDialog(this,
                         "The list of generated parameters is empty!",
                         "Generate new rows",
@@ -380,6 +391,7 @@ public class ParameterTableEditorWindow extends JFrame {
         }
         reload();
     }
+
     private void removeSelectedColumns() {
         int[] selectedColumns = getSelectedColumns(true);
         table.setModel(new DefaultTableModel());
@@ -388,7 +400,6 @@ public class ParameterTableEditorWindow extends JFrame {
         }
         reload();
     }
-
 
     /**
      * Returns selected rows as sorted array of model indices
@@ -437,14 +448,14 @@ public class ParameterTableEditorWindow extends JFrame {
         JButton button = new JButton(name, icon);
         button.setToolTipText(description);
         UIUtils.makeFlat(button);
-        button.setBorder(BorderFactory.createEmptyBorder(2,16,2,2));
+        button.setBorder(BorderFactory.createEmptyBorder(2, 16, 2, 2));
 //        button.setVerticalTextPosition(SwingConstants.BOTTOM);
         button.setHorizontalAlignment(SwingConstants.LEFT);
 //        button.setHorizontalTextPosition(SwingConstants.CENTER);
 //        button.setMinimumSize(new Dimension(50, 50));
 //        button.setPreferredSize(new Dimension(50,50));
         button.addActionListener(e -> action.run());
-        palettePanel.addWideToForm(button,null);
+        palettePanel.addWideToForm(button, null);
 //        currentPaletteGroup.add(button);
         return button;
     }
@@ -461,24 +472,6 @@ public class ParameterTableEditorWindow extends JFrame {
 //        currentPaletteGroup.setMinimumSize(new Dimension(50,50));
 //        palettePanel.addWideToForm(currentPaletteGroup, null);
         return groupHeaderPanel;
-    }
-
-    public static ParameterTableEditorWindow getInstance(JIPipeWorkbench workbench, Component parent, JIPipeParameterAccess parameterAccess, ParameterTable parameterTable) {
-        ParameterTableEditorWindow window = OPEN_WINDOWS.getOrDefault(parameterTable, null);
-        if(window == null) {
-            window = new ParameterTableEditorWindow(workbench, parameterAccess, parameterTable);
-            window.setSize(1024,768);
-            window.setLocationRelativeTo(parent);
-            window.setTitle(parameterAccess.getName());
-            window.setVisible(true);
-            OPEN_WINDOWS.put(parameterTable, window);
-            return window;
-        }
-        else {
-            window.toFront();
-            window.repaint();
-        }
-        return window;
     }
 
     public ParameterTable getParameterTable() {

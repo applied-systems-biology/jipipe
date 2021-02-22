@@ -1,7 +1,5 @@
 package org.hkijena.jipipe.extensions.forms.algorithms;
 
-import gnu.trove.set.TIntSet;
-import gnu.trove.set.hash.TIntHashSet;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
@@ -17,7 +15,6 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterVisibility;
 import org.hkijena.jipipe.extensions.forms.datatypes.FormData;
 import org.hkijena.jipipe.extensions.forms.ui.FormsDialog;
-import org.hkijena.jipipe.extensions.parameters.generators.IntegerRange;
 import org.hkijena.jipipe.extensions.parameters.primitives.StringParameterSettings;
 import org.hkijena.jipipe.ui.JIPipeDummyWorkbench;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
@@ -28,6 +25,7 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -70,7 +68,7 @@ public class MergingFormProcessorAlgorithm extends JIPipeAlgorithm implements JI
             // Generate data batches and show the user interface
             List<JIPipeMergingDataBatch> dataBatchList = generateDataBatchesDryRun(getEffectiveInputSlots());
 
-            if(dataBatchList.isEmpty()) {
+            if (dataBatchList.isEmpty()) {
                 progressInfo.log("No data batches selected (according to limit). Skipping.");
                 return;
             }
@@ -121,7 +119,7 @@ public class MergingFormProcessorAlgorithm extends JIPipeAlgorithm implements JI
                 }
             }
 
-            if(uiResult[0] instanceof Throwable) {
+            if (uiResult[0] instanceof Throwable) {
                 throw new RuntimeException((Throwable) uiResult[0]);
             }
 
@@ -207,6 +205,8 @@ public class MergingFormProcessorAlgorithm extends JIPipeAlgorithm implements JI
         builder.setAnnotationMergeStrategy(dataBatchGenerationSettings.getAnnotationMergeStrategy());
         builder.setReferenceColumns(dataBatchGenerationSettings.getDataSetMatching(),
                 dataBatchGenerationSettings.getCustomColumns());
-        return builder.build();
+        List<JIPipeMergingDataBatch> dataBatches = builder.build();
+        dataBatches.sort(Comparator.naturalOrder());
+        return dataBatches;
     }
 }

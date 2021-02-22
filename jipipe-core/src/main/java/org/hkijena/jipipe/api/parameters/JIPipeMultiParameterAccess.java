@@ -58,7 +58,7 @@ public class JIPipeMultiParameterAccess implements JIPipeParameterAccess {
     public <T> boolean set(T value) {
         boolean success = true;
         for (JIPipeParameterAccess access : accessList) {
-          success &= access.set(value);
+            success &= access.set(value);
         }
         return success;
     }

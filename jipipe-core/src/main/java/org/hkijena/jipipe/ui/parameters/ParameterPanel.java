@@ -114,6 +114,30 @@ public class ParameterPanel extends FormPanel implements Contextual {
         return keys.stream().sorted(Comparator.comparing(k0 -> parameters.get(k0).getName())).collect(Collectors.toList());
     }
 
+    public static MarkdownDocument generateParameterDocumentation(JIPipeParameterAccess access) {
+        StringBuilder markdownString = new StringBuilder();
+        markdownString.append("# ").append(access.getName()).append("\n\n");
+        markdownString.append("<table><tr>");
+        markdownString.append("<td><img src=\"").append(ResourceUtils.getPluginResource("icons/actions/dialog-xml-editor.png")).append("\" /></td>");
+        markdownString.append("<td><strong>Unique identifier</strong>: <code>");
+        markdownString.append(HtmlEscapers.htmlEscaper().escape(access.getKey())).append("</code></td></tr>\n\n");
+
+        JIPipeParameterTypeInfo info = JIPipe.getParameterTypes().getInfoByFieldClass(access.getFieldClass());
+        if (info != null) {
+            markdownString.append("<td><img src=\"").append(ResourceUtils.getPluginResource("icons/data-types/data-type.png")).append("\" /></td>");
+            markdownString.append("<td><strong>").append(HtmlEscapers.htmlEscaper().escape(info.getName())).append("</strong>: ");
+            markdownString.append(HtmlEscapers.htmlEscaper().escape(info.getDescription())).append("</td></tr>");
+        }
+        markdownString.append("</table>\n\n");
+
+        if (access.getDescription() != null && !access.getDescription().isEmpty()) {
+            markdownString.append(access.getDescription());
+        } else {
+            markdownString.append("No description provided.");
+        }
+        return new MarkdownDocument(markdownString.toString());
+    }
+
     private void initialize() {
         if (withSearchBar) {
             JToolBar toolBar = new JToolBar();
@@ -296,30 +320,6 @@ public class ParameterPanel extends FormPanel implements Contextual {
         for (Component component : uiComponents) {
             component.setVisible(selected);
         }
-    }
-
-    public static MarkdownDocument generateParameterDocumentation(JIPipeParameterAccess access) {
-        StringBuilder markdownString = new StringBuilder();
-        markdownString.append("# ").append(access.getName()).append("\n\n");
-        markdownString.append("<table><tr>");
-        markdownString.append("<td><img src=\"").append(ResourceUtils.getPluginResource("icons/actions/dialog-xml-editor.png")).append("\" /></td>");
-        markdownString.append("<td><strong>Unique identifier</strong>: <code>");
-        markdownString.append(HtmlEscapers.htmlEscaper().escape(access.getKey())).append("</code></td></tr>\n\n");
-
-        JIPipeParameterTypeInfo info = JIPipe.getParameterTypes().getInfoByFieldClass(access.getFieldClass());
-        if (info != null) {
-            markdownString.append("<td><img src=\"").append(ResourceUtils.getPluginResource("icons/data-types/data-type.png")).append("\" /></td>");
-            markdownString.append("<td><strong>").append(HtmlEscapers.htmlEscaper().escape(info.getName())).append("</strong>: ");
-            markdownString.append(HtmlEscapers.htmlEscaper().escape(info.getDescription())).append("</td></tr>");
-        }
-        markdownString.append("</table>\n\n");
-
-        if (access.getDescription() != null && !access.getDescription().isEmpty()) {
-            markdownString.append(access.getDescription());
-        } else {
-            markdownString.append("No description provided.");
-        }
-        return new MarkdownDocument(markdownString.toString());
     }
 
     private void removeDynamicParameter(String key, JIPipeDynamicParameterCollection parameterHolder) {

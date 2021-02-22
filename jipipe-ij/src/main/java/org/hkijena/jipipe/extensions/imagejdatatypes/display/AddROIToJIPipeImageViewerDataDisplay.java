@@ -55,7 +55,7 @@ public class AddROIToJIPipeImageViewerDataDisplay implements JIPipeDataDisplayOp
         for (ImageViewerWindow window : selected) {
             for (ImageViewerPanelPlugin plugin : window.getViewerPanel().getPlugins().stream()
                     .filter(plugin -> plugin instanceof ROIManagerPlugin).collect(Collectors.toList())) {
-                ((ROIManagerPlugin)plugin).importROIs((ROIListData) data);
+                ((ROIManagerPlugin) plugin).importROIs((ROIListData) data);
             }
         }
     }

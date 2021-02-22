@@ -100,10 +100,10 @@ public class ManualThreshold16U2DAlgorithm extends JIPipeSimpleIteratingAlgorith
             }
         }, progressInfo);
         List<JIPipeAnnotation> annotations = new ArrayList<>();
-        if(minThresholdAnnotation.isEnabled()) {
+        if (minThresholdAnnotation.isEnabled()) {
             annotations.add(minThresholdAnnotation.createAnnotation("" + minThreshold));
         }
-        if(maxThresholdAnnotation.isEnabled()) {
+        if (maxThresholdAnnotation.isEnabled()) {
             annotations.add(maxThresholdAnnotation.createAnnotation("" + maxThreshold));
         }
         dataBatch.addOutputData(getFirstOutputSlot(),

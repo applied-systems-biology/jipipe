@@ -170,12 +170,12 @@ public class JIPipeCachedSlotToFilesByMetadataExporterRun extends JIPipeWorkbenc
     }
 
     @Override
-    public String getTaskLabel() {
-        return "Export cached data to files";
+    public void setProgressInfo(JIPipeProgressInfo progressInfo) {
+        this.progressInfo = progressInfo;
     }
 
     @Override
-    public void setProgressInfo(JIPipeProgressInfo progressInfo) {
-        this.progressInfo = progressInfo;
+    public String getTaskLabel() {
+        return "Export cached data to files";
     }
 }

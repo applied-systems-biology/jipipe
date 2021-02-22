@@ -206,7 +206,7 @@ public class JIPipeDefaultMutableSlotConfiguration implements JIPipeMutableSlotC
                     throw new UserFriendlyRuntimeException("Input slots can not be modified!", "Unable to remove slot!",
                             "Algorithm slot configuration",
                             "The algorithm is configured, so input slots cannot be removed.", "Contact the authors of the plugin that provides the algorithm.");
-                if(!slot.isUserModifiable())
+                if (!slot.isUserModifiable())
                     throw new UserFriendlyRuntimeException("Input slots can not be modified!", "Unable to remove slot!",
                             "Algorithm slot configuration",
                             "The slot is configured, so it cannot be removed.", "Contact the authors of the plugin that provides the algorithm.");
@@ -259,7 +259,7 @@ public class JIPipeDefaultMutableSlotConfiguration implements JIPipeMutableSlotC
                     throw new UserFriendlyRuntimeException("Output slots can not be modified!", "Unable to remove slot!",
                             "Algorithm slot configuration",
                             "The algorithm is configured, so output slots cannot be removed.", "Contact the authors of the plugin that provides the algorithm.");
-                if(!slot.isUserModifiable())
+                if (!slot.isUserModifiable())
                     throw new UserFriendlyRuntimeException("Input slots can not be modified!", "Unable to remove slot!",
                             "Algorithm slot configuration",
                             "The slot is configured, so it cannot be removed.", "Contact the authors of the plugin that provides the algorithm.");
@@ -777,9 +777,9 @@ public class JIPipeDefaultMutableSlotConfiguration implements JIPipeMutableSlotC
         /**
          * Adds an input slot
          *
-         * @param name     Unique slot name
-         * @param klass    Slot data class
-         * @param optional Make the slot optional (default false in other overload)
+         * @param name           Unique slot name
+         * @param klass          Slot data class
+         * @param optional       Make the slot optional (default false in other overload)
          * @param userModifiable Make slot user-modifiable (default true in other overload)
          * @return The builder
          */
@@ -834,7 +834,7 @@ public class JIPipeDefaultMutableSlotConfiguration implements JIPipeMutableSlotC
          * @param klass                  Slot data class
          * @param inheritedSlot          From which slot the data type is inherited. Slot name of an input or '*' to select the first available slot. Can be null or empty.
          * @param inheritanceConversions Instructions on how to convert inherited slot types.
-         * @param userModifiable Make slot user-modifiable (default true in other overloads)
+         * @param userModifiable         Make slot user-modifiable (default true in other overloads)
          * @return The builder
          */
         public Builder addOutputSlot(String name, Class<? extends JIPipeData> klass, String inheritedSlot, Map<Class<? extends JIPipeData>, Class<? extends JIPipeData>> inheritanceConversions, boolean userModifiable) {

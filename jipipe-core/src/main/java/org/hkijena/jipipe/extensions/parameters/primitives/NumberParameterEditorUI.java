@@ -66,7 +66,7 @@ public class NumberParameterEditorUI extends JIPipeParameterEditorUI {
     private double getCurrentValue() {
         Object value = getParameterAccess().get(Object.class);
         Number asNumber = 0;
-        if(value instanceof Number)
+        if (value instanceof Number)
             asNumber = (Number) value;
         if (getParameterAccess().getFieldClass() == byte.class || getParameterAccess().getFieldClass() == Byte.class) {
             return asNumber.byteValue();

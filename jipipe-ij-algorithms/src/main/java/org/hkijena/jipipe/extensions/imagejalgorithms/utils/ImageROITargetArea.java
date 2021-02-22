@@ -4,7 +4,7 @@ import ij.ImagePlus;
 import ij.process.ByteProcessor;
 import ij.process.ImageProcessor;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ROIListData;
-import org.jetbrains.annotations.NotNull;
+
 
 public enum ImageROITargetArea {
     WholeImage,
@@ -13,11 +13,20 @@ public enum ImageROITargetArea {
     InsideMask,
     OutsideMask;
 
+    public static ByteProcessor createWhiteMask(ImagePlus img) {
+        ByteProcessor processor = new ByteProcessor(img.getWidth(), img.getHeight());
+        processor.setValue(255);
+        processor.setRoi(0, 0, processor.getWidth(), processor.getHeight());
+        processor.fill();
+        return processor;
+    }
+
     /**
      * Gets the appropriate mask for the current setting
+     *
      * @param inputImage the input image
-     * @param rois the list of Rois (can be null if not InsideRoi and OutsideRoi)
-     * @param mask the mask (can be null if not InsideMask and OutsideMask)
+     * @param rois       the list of Rois (can be null if not InsideRoi and OutsideRoi)
+     * @param mask       the mask (can be null if not InsideMask and OutsideMask)
      * @return the mask
      */
     public ImageProcessor getMask(ImagePlus inputImage, ROIListData rois, ImagePlus mask) {
@@ -26,19 +35,17 @@ public enum ImageROITargetArea {
                 return createWhiteMask(inputImage);
             }
             case InsideRoi: {
-                if(rois.isEmpty()) {
+                if (rois.isEmpty()) {
                     return createWhiteMask(inputImage);
-                }
-                else {
+                } else {
                     return rois.toMask(inputImage.getWidth(), inputImage.getHeight(),
                             false, true, 0).getProcessor();
                 }
             }
             case OutsideRoi: {
-                if(rois.isEmpty()) {
+                if (rois.isEmpty()) {
                     return createWhiteMask(inputImage);
-                }
-                else {
+                } else {
                     ImageProcessor processor = rois.toMask(inputImage.getWidth(), inputImage.getHeight(),
                             false, true, 0).getProcessor();
                     processor.invert();
@@ -55,15 +62,6 @@ public enum ImageROITargetArea {
             }
         }
         throw new UnsupportedOperationException();
-    }
-
-    @NotNull
-    public static ByteProcessor createWhiteMask(ImagePlus img) {
-        ByteProcessor processor = new ByteProcessor(img.getWidth(), img.getHeight());
-        processor.setValue(255);
-        processor.setRoi(0,0, processor.getWidth(), processor.getHeight());
-        processor.fill();
-        return processor;
     }
 
     @Override

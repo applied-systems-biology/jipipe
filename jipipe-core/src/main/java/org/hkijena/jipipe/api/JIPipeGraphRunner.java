@@ -45,10 +45,6 @@ public class JIPipeGraphRunner implements JIPipeRunnable {
         this.algorithmGraph = algorithmGraph;
     }
 
-    public void setProgressInfo(JIPipeProgressInfo progressInfo) {
-        this.progressInfo = progressInfo;
-    }
-
     @Override
     public void run() {
         Set<JIPipeGraphNode> unExecutableAlgorithms = algorithmGraph.getDeactivatedAlgorithms(algorithmsWithExternalInput);
@@ -174,6 +170,10 @@ public class JIPipeGraphRunner implements JIPipeRunnable {
     @Override
     public JIPipeProgressInfo getProgressInfo() {
         return progressInfo;
+    }
+
+    public void setProgressInfo(JIPipeProgressInfo progressInfo) {
+        this.progressInfo = progressInfo;
     }
 
     @Override

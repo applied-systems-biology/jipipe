@@ -117,7 +117,7 @@ public class JIPipeDynamicParameterCollection implements JIPipeCustomParameterCo
     public JIPipeMutableParameterAccess addParameter(JIPipeMutableParameterAccess parameterAccess) {
         if (dynamicParameters.containsKey(parameterAccess.getKey()))
             throw new IllegalArgumentException("Parameter with key " + parameterAccess.getKey() + " already exists!");
-        if(parameterAccess.get(Object.class) == null) {
+        if (parameterAccess.get(Object.class) == null) {
             // Set default
             parameterAccess.set(JIPipe.getParameterTypes().getInfoByFieldClass(parameterAccess.getFieldClass()).newInstance());
         }

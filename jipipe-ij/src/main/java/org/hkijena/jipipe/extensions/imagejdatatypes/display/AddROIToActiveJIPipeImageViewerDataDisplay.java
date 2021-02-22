@@ -32,7 +32,7 @@ public class AddROIToActiveJIPipeImageViewerDataDisplay implements JIPipeDataDis
         if (activeWindow != null) {
             for (ImageViewerPanelPlugin plugin : activeWindow.getViewerPanel().getPlugins().stream()
                     .filter(plugin -> plugin instanceof ROIManagerPlugin).collect(Collectors.toList())) {
-                ((ROIManagerPlugin)plugin).importROIs((ROIListData) data);
+                ((ROIManagerPlugin) plugin).importROIs((ROIListData) data);
             }
         } else {
             JOptionPane.showMessageDialog(workbench.getWindow(), "There is no active JIPipe image viewer.", "Add to active image viewer", JOptionPane.ERROR_MESSAGE);

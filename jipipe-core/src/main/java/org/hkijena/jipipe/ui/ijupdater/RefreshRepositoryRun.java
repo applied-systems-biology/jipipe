@@ -65,12 +65,12 @@ public class RefreshRepositoryRun implements JIPipeRunnable {
     }
 
     @Override
-    public String getTaskLabel() {
-        return "ImageJ updater: Refresh";
+    public void setProgressInfo(JIPipeProgressInfo progressInfo) {
+        this.progressInfo = progressInfo;
     }
 
     @Override
-    public void setProgressInfo(JIPipeProgressInfo progressInfo) {
-        this.progressInfo = progressInfo;
+    public String getTaskLabel() {
+        return "ImageJ updater: Refresh";
     }
 }

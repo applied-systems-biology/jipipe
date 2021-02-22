@@ -436,12 +436,12 @@ public class JIPipeRun implements JIPipeRunnable {
     }
 
     @Override
-    public String getTaskLabel() {
-        return "Run";
+    public void setProgressInfo(JIPipeProgressInfo progressInfo) {
+        this.progressInfo = progressInfo;
     }
 
     @Override
-    public void setProgressInfo(JIPipeProgressInfo progressInfo) {
-        this.progressInfo = progressInfo;
+    public String getTaskLabel() {
+        return "Run";
     }
 }

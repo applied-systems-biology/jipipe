@@ -15,8 +15,8 @@ import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
 import java.awt.*;
-import java.util.*;
 import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class ROIManagerPlugin extends ImageViewerPanelPlugin {
@@ -198,7 +198,7 @@ public class ROIManagerPlugin extends ImageViewerPanelPlugin {
 
     @Override
     public ImageProcessor draw(int z, int c, int t, ImageProcessor processor) {
-        if(!rois.isEmpty()) {
+        if (!rois.isEmpty()) {
             processor = new ColorProcessor(processor.getBufferedImage());
             rois.draw(processor, new ImageSliceIndex(z, c, t),
                     roiSeeThroughZ,

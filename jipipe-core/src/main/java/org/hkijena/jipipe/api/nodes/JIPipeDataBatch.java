@@ -19,16 +19,13 @@ import org.hkijena.jipipe.api.data.JIPipeAnnotationMergeStrategy;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Wraps a set of input and output slots that belong together
  * This can be used for convenience
  */
-public class JIPipeDataBatch {
+public class JIPipeDataBatch implements Comparable<JIPipeDataBatch> {
     private JIPipeGraphNode node;
     private Map<JIPipeDataSlot, Integer> inputSlotRows;
     private Map<String, JIPipeAnnotation> annotations = new HashMap<>();
@@ -280,5 +277,23 @@ public class JIPipeDataBatch {
         List<JIPipeAnnotation> finalAnnotations = new ArrayList<>(annotations.values());
         finalAnnotations.addAll(additionalAnnotations);
         slot.addData(data, finalAnnotations, mergeStrategy, progressInfo);
+    }
+
+    @Override
+    public int compareTo(JIPipeDataBatch o) {
+        Set<String> annotationKeySet = new HashSet<>(annotations.keySet());
+        annotationKeySet.addAll(o.annotations.keySet());
+        List<String> annotationKeys = new ArrayList<>(annotationKeySet);
+        annotationKeys.sort(Comparator.naturalOrder());
+        for (String key : annotationKeys) {
+            JIPipeAnnotation here = annotations.getOrDefault(key, null);
+            JIPipeAnnotation there = o.annotations.getOrDefault(key, null);
+            String hereValue = here != null ? here.getValue() : "";
+            String thereValue = there != null ? there.getValue() : "";
+            int c = hereValue.compareTo(thereValue);
+            if (c != 0)
+                return c;
+        }
+        return 0;
     }
 }

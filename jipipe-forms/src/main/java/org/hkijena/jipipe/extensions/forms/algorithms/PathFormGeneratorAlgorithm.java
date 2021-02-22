@@ -8,7 +8,6 @@ import org.hkijena.jipipe.api.nodes.JIPipeOutputSlot;
 import org.hkijena.jipipe.api.nodes.categories.DataSourceNodeTypeCategory;
 import org.hkijena.jipipe.extensions.forms.datatypes.FormData;
 import org.hkijena.jipipe.extensions.forms.datatypes.PathFormData;
-import org.hkijena.jipipe.extensions.forms.datatypes.StringFormData;
 
 @JIPipeDocumentation(name = "Path input form", description = "Creates a path input form. " + FormGeneratorAlgorithm.DOCUMENTATION_DESCRIPTION)
 @JIPipeInputSlot(value = FormData.class, slotName = "Existing")

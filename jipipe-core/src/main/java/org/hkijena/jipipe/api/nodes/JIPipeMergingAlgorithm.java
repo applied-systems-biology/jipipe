@@ -28,10 +28,7 @@ import org.hkijena.jipipe.extensions.parameters.expressions.StringQueryExpressio
 import org.hkijena.jipipe.extensions.parameters.primitives.StringParameterSettings;
 import org.hkijena.jipipe.utils.ResourceUtils;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
@@ -107,7 +104,9 @@ public abstract class JIPipeMergingAlgorithm extends JIPipeParameterSlotAlgorith
         builder.setAnnotationMergeStrategy(dataBatchGenerationSettings.annotationMergeStrategy);
         builder.setReferenceColumns(dataBatchGenerationSettings.dataSetMatching,
                 dataBatchGenerationSettings.customColumns);
-        return builder.build();
+        List<JIPipeMergingDataBatch> dataBatches = builder.build();
+        dataBatches.sort(Comparator.naturalOrder());
+        return dataBatches;
     }
 
     @Override

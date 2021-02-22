@@ -6,12 +6,9 @@ import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeAnnotation;
-import org.hkijena.jipipe.api.data.JIPipeAnnotationMergeStrategy;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
 import org.hkijena.jipipe.api.nodes.*;
-import org.hkijena.jipipe.api.nodes.categories.AnnotationsNodeTypeCategory;
-import org.hkijena.jipipe.api.nodes.categories.DataSourceNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.categories.MiscellaneousNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeDynamicParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
@@ -19,8 +16,6 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.extensions.multiparameters.datatypes.ParametersData;
 import org.hkijena.jipipe.utils.JsonUtils;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 
 @JIPipeDocumentation(name = "Annotations to parameters", description = "Converts annotations into parameter data.")
@@ -68,7 +63,7 @@ public class AnnotationsToParametersAlgorithm extends JIPipeParameterlessSimpleI
         ParametersData data = new ParametersData();
         for (Map.Entry<String, JIPipeParameterAccess> entry : extractedParameters.getParameters().entrySet()) {
             JIPipeAnnotation annotation = dataBatch.getAnnotationOfType(entry.getKey());
-            if(annotation != null) {
+            if (annotation != null) {
                 try {
                     Object value = JsonUtils.getObjectMapper().readerFor(entry.getValue().getFieldClass()).readValue(annotation.getValue());
                     data.getParameterData().put(entry.getKey(), value);
@@ -78,12 +73,10 @@ public class AnnotationsToParametersAlgorithm extends JIPipeParameterlessSimpleI
                     try {
                         Object value = JsonUtils.getObjectMapper().readerFor(entry.getValue().getFieldClass()).readValue("\"" + annotation.getValue() + "\"");
                         data.getParameterData().put(entry.getKey(), value);
-                    }
-                    catch (JsonProcessingException e1) {
-                        if(ignoreInvalidValues) {
+                    } catch (JsonProcessingException e1) {
+                        if (ignoreInvalidValues) {
                             progressInfo.log("Cannot load parameter of type " + entry.getValue().getFieldClass().getCanonicalName() + " from " + annotation.getValue());
-                        }
-                        else {
+                        } else {
                             throw new UserFriendlyRuntimeException(e, "Cannot convert value to parameter!",
                                     getName(),
                                     String.format("The node attempted to load a parameter from an annotation '%s' with value '%s', but this value is not valid.", entry.getKey(), annotation.getValue()),
@@ -91,8 +84,7 @@ public class AnnotationsToParametersAlgorithm extends JIPipeParameterlessSimpleI
                         }
                     }
                 }
-            }
-            else {
+            } else {
                 Object value = entry.getValue().get(Object.class);
                 // Duplicate the value
                 value = JIPipe.getParameterTypes().getInfoByFieldClass(entry.getValue().getFieldClass()).duplicate(value);

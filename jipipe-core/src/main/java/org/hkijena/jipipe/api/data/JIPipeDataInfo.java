@@ -131,6 +131,7 @@ public class JIPipeDataInfo implements Comparable<JIPipeDataInfo> {
 
     /**
      * A list of additional citations
+     *
      * @return additional citations
      */
     public List<String> getAdditionalCitations() {

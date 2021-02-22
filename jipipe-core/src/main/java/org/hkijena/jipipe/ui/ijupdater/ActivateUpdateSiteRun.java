@@ -51,12 +51,12 @@ public class ActivateUpdateSiteRun implements JIPipeRunnable {
     }
 
     @Override
-    public String getTaskLabel() {
-        return "ImageJ updater: Activate site";
+    public void setProgressInfo(JIPipeProgressInfo progressInfo) {
+        this.progressInfo = progressInfo;
     }
 
     @Override
-    public void setProgressInfo(JIPipeProgressInfo progressInfo) {
-        this.progressInfo = progressInfo;
+    public String getTaskLabel() {
+        return "ImageJ updater: Activate site";
     }
 }

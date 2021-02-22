@@ -74,6 +74,59 @@ public class NiblackLocalAutoThreshold2DAlgorithm extends JIPipeSimpleIteratingA
         this.modifier = other.modifier;
     }
 
+    public static void Niblack(ImagePlus imp, int radius, double k_value, int c_value, boolean doIwhite) {
+        // Niblack recommends K_VALUE = -0.2 for images with black foreground
+        // objects, and K_VALUE = +0.2 for images with white foreground objects.
+        // Niblack W. (1986) "An introduction to Digital Image Processing" Prentice-Hall.
+        // Ported to ImageJ plugin from E Celebi's fourier_0.8 routines
+        // This version uses a circular local window, instead of a rectagular one
+
+        ImagePlus Meanimp, Varimp;
+        ImageProcessor ip = imp.getProcessor(), ipMean, ipVar;
+
+        byte object;
+        byte backg;
+
+        if (doIwhite) {
+            object = (byte) 0xff;
+            backg = (byte) 0;
+        } else {
+            object = (byte) 0;
+            backg = (byte) 0xff;
+        }
+
+        Meanimp = duplicateImage(ip);
+        ImageConverter ic = new ImageConverter(Meanimp);
+        ic.convertToGray32();
+
+        ipMean = Meanimp.getProcessor();
+        RankFilters rf = new RankFilters();
+        rf.rank(ipMean, radius, rf.MEAN);// Mean
+        //Meanimp.show();
+        Varimp = duplicateImage(ip);
+        ic = new ImageConverter(Varimp);
+        ic.convertToGray32();
+        ipVar = Varimp.getProcessor();
+        rf.rank(ipVar, radius, rf.VARIANCE); //Variance
+        //Varimp.show();
+        byte[] pixels = (byte[]) ip.getPixels();
+        float[] mean = (float[]) ipMean.getPixels();
+        float[] var = (float[]) ipVar.getPixels();
+
+        for (int i = 0; i < pixels.length; i++)
+            pixels[i] = ((pixels[i] & 0xff) > (int) (mean[i] + k_value * Math.sqrt(var[i]) - c_value)) ? object : backg;
+        //imp.updateAndDraw();
+    }
+
+    public static ImagePlus duplicateImage(ImageProcessor iProcessor) {
+        int w = iProcessor.getWidth();
+        int h = iProcessor.getHeight();
+        ImagePlus iPlus = NewImage.createByteImage("Image", w, h, 1, NewImage.FILL_BLACK);
+        ImageProcessor imageProcessor = iPlus.getProcessor();
+        imageProcessor.copyBits(iProcessor, 0, 0, Blitter.COPY);
+        return iPlus;
+    }
+
     @JIPipeDocumentation(name = "K", description = "Value of the parameter 'k' in the threshold formula (see Niblack, 1986). A recommended value is 0.2.")
     @JIPipeParameter("k")
     public double getK() {
@@ -93,7 +146,7 @@ public class NiblackLocalAutoThreshold2DAlgorithm extends JIPipeSimpleIteratingA
 
     @JIPipeParameter("radius")
     public boolean setRadius(int radius) {
-        if(radius <= 0)
+        if (radius <= 0)
             return false;
         this.radius = radius;
         return true;
@@ -108,7 +161,7 @@ public class NiblackLocalAutoThreshold2DAlgorithm extends JIPipeSimpleIteratingA
     protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
         ImagePlusData inputData = dataBatch.getInputData(getFirstInputSlot(), ImagePlusGreyscale8UData.class, progressInfo);
         ImagePlus img = inputData.getDuplicateImage();
-        if(!darkBackground) {
+        if (!darkBackground) {
             img.getProcessor().invert();
         }
         Niblack(img, radius, k, modifier, true);
@@ -135,59 +188,5 @@ public class NiblackLocalAutoThreshold2DAlgorithm extends JIPipeSimpleIteratingA
     @JIPipeParameter("modifier")
     public void setModifier(int modifier) {
         this.modifier = modifier;
-    }
-
-    public static void Niblack(ImagePlus imp, int radius,  double k_value, int c_value, boolean doIwhite  ) {
-        // Niblack recommends K_VALUE = -0.2 for images with black foreground
-        // objects, and K_VALUE = +0.2 for images with white foreground objects.
-        // Niblack W. (1986) "An introduction to Digital Image Processing" Prentice-Hall.
-        // Ported to ImageJ plugin from E Celebi's fourier_0.8 routines
-        // This version uses a circular local window, instead of a rectagular one
-
-        ImagePlus Meanimp, Varimp;
-        ImageProcessor ip=imp.getProcessor(), ipMean, ipVar;
-
-        byte object;
-        byte backg ;
-
-        if (doIwhite){
-            object =  (byte) 0xff;
-            backg =   (byte) 0;
-        }
-        else {
-            object =  (byte) 0;
-            backg =  (byte) 0xff;
-        }
-
-        Meanimp=duplicateImage(ip);
-        ImageConverter ic = new ImageConverter(Meanimp);
-        ic.convertToGray32();
-
-        ipMean=Meanimp.getProcessor();
-        RankFilters rf=new RankFilters();
-        rf.rank(ipMean, radius, rf.MEAN);// Mean
-        //Meanimp.show();
-        Varimp=duplicateImage(ip);
-        ic = new ImageConverter(Varimp);
-        ic.convertToGray32();
-        ipVar=Varimp.getProcessor();
-        rf.rank(ipVar, radius, rf.VARIANCE); //Variance
-        //Varimp.show();
-        byte[] pixels = (byte []) ip.getPixels();
-        float[] mean = (float []) ipMean.getPixels();
-        float[] var = (float []) ipVar.getPixels();
-
-        for (int i=0; i<pixels.length; i++)
-            pixels[i] = ( (pixels[i] &0xff) > (int)( mean[i] + k_value * Math.sqrt ( var[i] ) - c_value)) ? object : backg;
-        //imp.updateAndDraw();
-    }
-
-    public static ImagePlus duplicateImage(ImageProcessor iProcessor){
-        int w=iProcessor.getWidth();
-        int h=iProcessor.getHeight();
-        ImagePlus iPlus= NewImage.createByteImage("Image", w, h, 1, NewImage.FILL_BLACK);
-        ImageProcessor imageProcessor=iPlus.getProcessor();
-        imageProcessor.copyBits(iProcessor, 0,0, Blitter.COPY);
-        return iPlus;
     }
 }

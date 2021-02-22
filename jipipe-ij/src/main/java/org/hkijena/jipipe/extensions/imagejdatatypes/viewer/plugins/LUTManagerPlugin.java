@@ -16,7 +16,7 @@ import javax.swing.event.DocumentEvent;
 import java.util.ArrayList;
 import java.util.List;
 
-public class LUTManagerPlugin extends ImageViewerPanelPlugin{
+public class LUTManagerPlugin extends ImageViewerPanelPlugin {
 
     private List<ImageViewerLUTEditor> lutEditors = new ArrayList<>();
 
@@ -95,13 +95,12 @@ public class LUTManagerPlugin extends ImageViewerPanelPlugin{
 
     @Override
     public void beforeDraw(int z, int c, int t) {
-        if(getCurrentImage() instanceof CompositeImage) {
+        if (getCurrentImage() instanceof CompositeImage) {
             CompositeImage image = (CompositeImage) getCurrentImage();
             if (c <= lutEditors.size() - 1) {
                 image.setChannelLut(lutEditors.get(c).getLUT(), c + 1);
             }
-        }
-        else {
+        } else {
             ImagePlus image = getCurrentImage();
             if (c <= lutEditors.size() - 1) {
                 image.setLut(lutEditors.get(c).getLUT());

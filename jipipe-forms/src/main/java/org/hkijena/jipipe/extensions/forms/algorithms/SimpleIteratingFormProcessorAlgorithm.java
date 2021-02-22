@@ -80,7 +80,7 @@ public class SimpleIteratingFormProcessorAlgorithm extends JIPipeAlgorithm imple
                 dataBatchList.add(dataBatch);
             }
 
-            if(dataBatchList.isEmpty()) {
+            if (dataBatchList.isEmpty()) {
                 progressInfo.log("No data batches selected (according to limit). Skipping.");
                 return;
             }
@@ -113,8 +113,7 @@ public class SimpleIteratingFormProcessorAlgorithm extends JIPipeAlgorithm imple
                                 }
                             }
                         });
-                    }
-                    catch (Throwable e) {
+                    } catch (Throwable e) {
                         uiResult[0] = e;
                         windowOpened.set(false);
                         synchronized (lock) {
@@ -132,7 +131,7 @@ public class SimpleIteratingFormProcessorAlgorithm extends JIPipeAlgorithm imple
                 }
             }
 
-            if(uiResult[0] instanceof Throwable) {
+            if (uiResult[0] instanceof Throwable) {
                 throw new RuntimeException((Throwable) uiResult[0]);
             }
 

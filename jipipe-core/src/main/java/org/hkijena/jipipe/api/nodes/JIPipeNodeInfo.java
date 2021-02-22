@@ -138,6 +138,7 @@ public interface JIPipeNodeInfo {
 
     /**
      * Returns a list of additional citations
+     *
      * @return additonal citations
      */
     default List<String> getAdditionalCitations() {

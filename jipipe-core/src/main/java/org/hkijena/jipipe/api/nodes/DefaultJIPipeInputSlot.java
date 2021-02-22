@@ -31,7 +31,7 @@ public class DefaultJIPipeInputSlot implements JIPipeInputSlot {
      * @param value      the value
      * @param slotName   the slot name
      * @param autoCreate if the slot should be automatically created
-     * @param optional if the slot is optional
+     * @param optional   if the slot is optional
      */
     public DefaultJIPipeInputSlot(Class<? extends JIPipeData> value, String slotName, boolean autoCreate, boolean optional) {
         this.value = value;

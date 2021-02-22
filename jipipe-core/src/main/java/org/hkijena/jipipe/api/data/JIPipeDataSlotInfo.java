@@ -340,6 +340,7 @@ public class JIPipeDataSlotInfo implements JIPipeParameterCollection {
      * Additional control variable to make a slot not removable/editable.
      * Use this to have "internal" slots that should never be removed.
      * This property is not serialized! The node must set it via code!
+     *
      * @return if the slot is removable/editable
      */
     public boolean isUserModifiable() {
@@ -349,6 +350,7 @@ public class JIPipeDataSlotInfo implements JIPipeParameterCollection {
     /**
      * Set this variable to make a slot not removable/editable.
      * This property is not serialized! The node must set it via code!
+     *
      * @param userModifiable if the slot is removable/editable
      */
     public void setUserModifiable(boolean userModifiable) {

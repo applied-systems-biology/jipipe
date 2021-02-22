@@ -75,6 +75,82 @@ public class PhansalkarLocalAutoThreshold2DAlgorithm extends JIPipeSimpleIterati
         this.radius = other.radius;
     }
 
+    public static void Phansalkar(ImagePlus imp, int radius, double k_value, double r_value, double p_value, double q_value, boolean doIwhite) {
+        // This is a modification of Sauvola's thresholding method to deal with low contrast images.
+        // Phansalskar N. et al. Adaptive local thresholding for detection of nuclei in diversity stained
+        // cytology images.International Conference on Communications and Signal Processing (ICCSP), 2011,
+        // 218 - 220.
+        // In this method, the threshold t = mean*(1+p*exp(-q*mean)+k*((stdev/r)-1))
+        // Phansalkar recommends k = 0.25, r = 0.5, p = 2 and q = 10. In this plugin, k and r are the
+        // parameters 1 and 2 respectively, but the values of p and q are fixed.
+        //
+        // Implemented from Phansalkar's paper description by G. Landini
+        // This version uses a circular local window, instead of a rectagular one
+
+        ImagePlus Meanimp, Varimp, Orimp;
+        ImageProcessor ip = imp.getProcessor(), ipMean, ipVar, ipOri;
+        byte object;
+        byte backg;
+
+        if (doIwhite) {
+            object = (byte) 0xff;
+            backg = (byte) 0;
+        } else {
+            object = (byte) 0;
+            backg = (byte) 0xff;
+        }
+
+        Meanimp = duplicateImage(ip);
+        ContrastEnhancer ce = new ContrastEnhancer();
+        ce.setNormalize(true); // Needs to be true for correct normalization
+        ce.stretchHistogram(Meanimp, 0.0);
+        ImageConverter ic = new ImageConverter(Meanimp);
+        ic.convertToGray32();
+        ipMean = Meanimp.getProcessor();
+        ipMean.multiply(1.0 / 255);
+
+        Orimp = duplicateImage(ip);
+        ce.stretchHistogram(Orimp, 0.0);
+        ic = new ImageConverter(Orimp);
+        ic.convertToGray32();
+        ipOri = Orimp.getProcessor();
+        ipOri.multiply(1.0 / 255); //original to compare
+        //Orimp.show();
+
+        RankFilters rf = new RankFilters();
+        rf.rank(ipMean, radius, rf.MEAN);// Mean
+
+        //Meanimp.show();
+        Varimp = duplicateImage(ip);
+        ce.stretchHistogram(Varimp, 0.0);
+        ic = new ImageConverter(Varimp);
+        ic.convertToGray32();
+        ipVar = Varimp.getProcessor();
+        ipVar.multiply(1.0 / 255);
+
+        rf.rank(ipVar, radius, rf.VARIANCE); //Variance
+        ipVar.sqrt(); //SD
+
+        //Varimp.show();
+        byte[] pixels = (byte[]) ip.getPixels();
+        float[] ori = (float[]) ipOri.getPixels();
+        float[] mean = (float[]) ipMean.getPixels();
+        float[] sd = (float[]) ipVar.getPixels();
+
+        for (int i = 0; i < pixels.length; i++)
+            pixels[i] = ((ori[i]) > (mean[i] * (1.0 + p_value * Math.exp(-q_value * mean[i]) + k_value * ((sd[i] / r_value) - 1.0)))) ? object : backg;
+        //imp.updateAndDraw();
+    }
+
+    public static ImagePlus duplicateImage(ImageProcessor iProcessor) {
+        int w = iProcessor.getWidth();
+        int h = iProcessor.getHeight();
+        ImagePlus iPlus = NewImage.createByteImage("Image", w, h, 1, NewImage.FILL_BLACK);
+        ImageProcessor imageProcessor = iPlus.getProcessor();
+        imageProcessor.copyBits(iProcessor, 0, 0, Blitter.COPY);
+        return iPlus;
+    }
+
     @JIPipeDocumentation(name = "K", description = "Value of the parameter 'k' in the threshold formula (see Phansalskar et al., 2011). A recommended value is 0.25.")
     @JIPipeParameter("k")
     public double getK() {
@@ -127,7 +203,7 @@ public class PhansalkarLocalAutoThreshold2DAlgorithm extends JIPipeSimpleIterati
 
     @JIPipeParameter("radius")
     public boolean setRadius(int radius) {
-        if(radius <= 0)
+        if (radius <= 0)
             return false;
         this.radius = radius;
         return true;
@@ -142,7 +218,7 @@ public class PhansalkarLocalAutoThreshold2DAlgorithm extends JIPipeSimpleIterati
     protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
         ImagePlusData inputData = dataBatch.getInputData(getFirstInputSlot(), ImagePlusGreyscale8UData.class, progressInfo);
         ImagePlus img = inputData.getDuplicateImage();
-        if(!darkBackground) {
+        if (!darkBackground) {
             img.getProcessor().invert();
         }
         Phansalkar(img, radius, k, r, p, q, true);
@@ -158,82 +234,5 @@ public class PhansalkarLocalAutoThreshold2DAlgorithm extends JIPipeSimpleIterati
     @JIPipeParameter("dark-background")
     public void setDarkBackground(boolean darkBackground) {
         this.darkBackground = darkBackground;
-    }
-
-    public static void Phansalkar(ImagePlus imp, int radius,  double k_value, double r_value, double p_value, double q_value, boolean doIwhite) {
-        // This is a modification of Sauvola's thresholding method to deal with low contrast images.
-        // Phansalskar N. et al. Adaptive local thresholding for detection of nuclei in diversity stained
-        // cytology images.International Conference on Communications and Signal Processing (ICCSP), 2011,
-        // 218 - 220.
-        // In this method, the threshold t = mean*(1+p*exp(-q*mean)+k*((stdev/r)-1))
-        // Phansalkar recommends k = 0.25, r = 0.5, p = 2 and q = 10. In this plugin, k and r are the
-        // parameters 1 and 2 respectively, but the values of p and q are fixed.
-        //
-        // Implemented from Phansalkar's paper description by G. Landini
-        // This version uses a circular local window, instead of a rectagular one
-
-        ImagePlus Meanimp, Varimp, Orimp;
-        ImageProcessor ip=imp.getProcessor(), ipMean, ipVar, ipOri;
-        byte object;
-        byte backg;
-
-        if (doIwhite){
-            object =  (byte) 0xff;
-            backg =   (byte) 0;
-        }
-        else {
-            object =  (byte) 0;
-            backg =  (byte) 0xff;
-        }
-
-        Meanimp=duplicateImage(ip);
-        ContrastEnhancer ce = new ContrastEnhancer();
-        ce.setNormalize(true); // Needs to be true for correct normalization
-        ce.stretchHistogram(Meanimp, 0.0);
-        ImageConverter ic = new ImageConverter(Meanimp);
-        ic.convertToGray32();
-        ipMean=Meanimp.getProcessor();
-        ipMean.multiply(1.0/255);
-
-        Orimp=duplicateImage(ip);
-        ce.stretchHistogram(Orimp, 0.0);
-        ic = new ImageConverter(Orimp);
-        ic.convertToGray32();
-        ipOri=Orimp.getProcessor();
-        ipOri.multiply(1.0/255); //original to compare
-        //Orimp.show();
-
-        RankFilters rf=new RankFilters();
-        rf.rank(ipMean, radius, rf.MEAN);// Mean
-
-        //Meanimp.show();
-        Varimp=duplicateImage(ip);
-        ce.stretchHistogram(Varimp, 0.0);
-        ic = new ImageConverter(Varimp);
-        ic.convertToGray32();
-        ipVar=Varimp.getProcessor();
-        ipVar.multiply(1.0/255);
-
-        rf.rank(ipVar, radius, rf.VARIANCE); //Variance
-        ipVar.sqrt(); //SD
-
-        //Varimp.show();
-        byte[] pixels = (byte []) ip.getPixels();
-        float[] ori = (float []) ipOri.getPixels();
-        float[] mean = (float []) ipMean.getPixels();
-        float[] sd = (float []) ipVar.getPixels();
-
-        for (int i=0; i<pixels.length; i++)
-            pixels[i] = ( (ori[i]) > ( mean[i] * (1.0 + p_value * Math.exp(-q_value * mean[i]) + k_value * (( sd[i] / r_value)- 1.0)))) ? object : backg;
-        //imp.updateAndDraw();
-    }
-
-    public static ImagePlus duplicateImage(ImageProcessor iProcessor){
-        int w=iProcessor.getWidth();
-        int h=iProcessor.getHeight();
-        ImagePlus iPlus= NewImage.createByteImage("Image", w, h, 1, NewImage.FILL_BLACK);
-        ImageProcessor imageProcessor=iPlus.getProcessor();
-        imageProcessor.copyBits(iProcessor, 0,0, Blitter.COPY);
-        return iPlus;
     }
 }

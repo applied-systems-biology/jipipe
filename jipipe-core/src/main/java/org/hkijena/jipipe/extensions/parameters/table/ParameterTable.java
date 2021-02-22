@@ -131,8 +131,7 @@ public class ParameterTable implements TableModel {
         for (TableModelListener listener : listeners) {
             try {
                 listener.tableChanged(new TableModelEvent(this, rowIndex));
-            }
-            catch (IndexOutOfBoundsException e) {
+            } catch (IndexOutOfBoundsException e) {
             }
         }
     }

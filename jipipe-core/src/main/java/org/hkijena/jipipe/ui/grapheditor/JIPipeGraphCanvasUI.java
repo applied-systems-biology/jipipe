@@ -156,19 +156,19 @@ public class JIPipeGraphCanvasUI extends JIPipeWorkbenchPanel implements MouseMo
                         return true;
                     }
                 }
-                if(keyStroke.getModifiers() == 0) {
+                if (keyStroke.getModifiers() == 0) {
                     NodeHotKeyStorage.Hotkey hotkey = NodeHotKeyStorage.Hotkey.fromKeyCode(keyStroke.getKeyCode());
-                    if(hotkey != NodeHotKeyStorage.Hotkey.None) {
+                    if (hotkey != NodeHotKeyStorage.Hotkey.None) {
                         String nodeId = nodeHotKeyStorage.getNodeForHotkey(hotkey, compartment);
                         JIPipeGraphNode node = graph.getNodes().get(nodeId);
-                        if(node != null) {
+                        if (node != null) {
                             JIPipeNodeUI nodeUI = nodeUIs.getOrDefault(node, null);
-                            if(nodeUI != null) {
+                            if (nodeUI != null) {
                                 Container graphEditor = SwingUtilities.getAncestorOfClass(JIPipeGraphEditorUI.class, this);
-                                if(graphEditor == null)
+                                if (graphEditor == null)
                                     selectOnly(nodeUI);
                                 else
-                                    ((JIPipeGraphEditorUI)graphEditor).selectOnly(nodeUI);
+                                    ((JIPipeGraphEditorUI) graphEditor).selectOnly(nodeUI);
                             }
                         }
                     }
@@ -860,7 +860,7 @@ public class JIPipeGraphCanvasUI extends JIPipeWorkbenchPanel implements MouseMo
         g.setStroke(STROKE_HIGHLIGHT);
         if (compartment != null && settings.isDrawOutsideEdges())
             paintOutsideEdges(g, true);
-        if(!selection.isEmpty())
+        if (!selection.isEmpty())
             paintEdges(g, STROKE_HIGHLIGHT, STROKE_COMMENT_HIGHLIGHT, true, true, settings.isColorSelectedNodeEdges());
 
         // Draw selections
@@ -1009,8 +1009,8 @@ public class JIPipeGraphCanvasUI extends JIPipeWorkbenchPanel implements MouseMo
     private void paintEdges(Graphics2D g, Stroke stroke, Stroke strokeComment, boolean onlySelected, boolean withHidden, boolean multicolor) {
         int multiColorMax = 1;
         Set<Map.Entry<JIPipeDataSlot, JIPipeDataSlot>> slotEdges = graph.getSlotEdges();
-        if(multicolor) {
-            if(onlySelected) {
+        if (multicolor) {
+            if (onlySelected) {
                 multiColorMax = 0;
                 for (Map.Entry<JIPipeDataSlot, JIPipeDataSlot> kv : slotEdges) {
                     JIPipeDataSlot source = kv.getKey();
@@ -1020,12 +1020,11 @@ public class JIPipeGraphCanvasUI extends JIPipeWorkbenchPanel implements MouseMo
 
                     if (sourceUI == null || targetUI == null)
                         continue;
-                    if(selection.contains(sourceUI) ||selection.contains(targetUI)) {
+                    if (selection.contains(sourceUI) || selection.contains(targetUI)) {
                         ++multiColorMax;
                     }
                 }
-            }
-            else {
+            } else {
                 multiColorMax = slotEdges.size();
             }
         }
@@ -1042,7 +1041,7 @@ public class JIPipeGraphCanvasUI extends JIPipeWorkbenchPanel implements MouseMo
             if (sourceUI == null || targetUI == null) {
                 continue;
             }
-            if(onlySelected && !selection.contains(sourceUI) && !selection.contains(targetUI)) {
+            if (onlySelected && !selection.contains(sourceUI) && !selection.contains(targetUI)) {
                 continue;
             }
 
@@ -1130,7 +1129,7 @@ public class JIPipeGraphCanvasUI extends JIPipeWorkbenchPanel implements MouseMo
     private Color getEdgeColor(JIPipeDataSlot source, JIPipeDataSlot target, boolean multicolor, int multiColorIndex, int multiColorMax) {
         if (source.getNode() instanceof JIPipeCommentNode || target.getNode() instanceof JIPipeCommentNode)
             return COMMENT_EDGE_COLOR;
-        if(multicolor) {
+        if (multicolor) {
             return Color.getHSBColor(1.0f * multiColorIndex / multiColorMax, 0.45f, 0.65f);
         }
         if (JIPipeDatatypeRegistry.isTriviallyConvertible(source.getAcceptedDataType(), target.getAcceptedDataType()))

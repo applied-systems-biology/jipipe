@@ -89,9 +89,9 @@ public class FileDataSource extends JIPipeAlgorithm {
     public void setFileName(Path fileName) {
         this.fileName = fileName;
         FilesystemExtensionSettings settings = FilesystemExtensionSettings.getInstance();
-        if(settings != null && settings.isAutoLabelOutputWithFileName()) {
+        if (settings != null && settings.isAutoLabelOutputWithFileName()) {
             String name = fileName != null ? fileName.getFileName().toString() : "";
-            if(!Objects.equals(getFirstOutputSlot().getInfo().getCustomName(), name)) {
+            if (!Objects.equals(getFirstOutputSlot().getInfo().getCustomName(), name)) {
                 getFirstOutputSlot().getInfo().setCustomName(name);
                 getEventBus().post(new JIPipeGraph.NodeSlotsChangedEvent(this));
             }
@@ -145,7 +145,7 @@ public class FileDataSource extends JIPipeAlgorithm {
             }
             // Make relative if already absolute and workDirectory != null
             FilesystemExtensionSettings settings = FilesystemExtensionSettings.getInstance();
-            if(settings == null || settings.isRelativizePaths()) {
+            if (settings == null || settings.isRelativizePaths()) {
                 if (fileName.isAbsolute()) {
                     if (workDirectory != null && fileName.startsWith(workDirectory)) {
                         setFileName(workDirectory.relativize(fileName));

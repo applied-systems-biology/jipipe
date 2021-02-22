@@ -20,8 +20,19 @@ public class NodeHotKeyStorage {
     public NodeHotKeyStorage() {
     }
 
+    public static NodeHotKeyStorage getInstance(JIPipeGraph graph) {
+        Object instance = graph.getAdditionalMetadata().getOrDefault("node-hotkeys", null);
+        if (instance instanceof NodeHotKeyStorage) {
+            return (NodeHotKeyStorage) instance;
+        }
+        instance = new NodeHotKeyStorage();
+        graph.getAdditionalMetadata().put("node-hotkeys", instance);
+        return (NodeHotKeyStorage) instance;
+    }
+
     /**
      * Renames a node to another Id
+     *
      * @param renamingMap map from old to new value
      */
     public void renameNodeIds(Map<String, String> renamingMap) {
@@ -35,22 +46,23 @@ public class NodeHotKeyStorage {
 
     public void setHotkey(String compartment, String nodeId, Hotkey hotkey) {
         Map<Hotkey, String> compartmentMap = hotkeys.getOrDefault(compartment, null);
-        if(compartmentMap == null) {
+        if (compartmentMap == null) {
             compartmentMap = new HashMap<>();
             hotkeys.put(compartment, compartmentMap);
         }
         for (Map.Entry<Hotkey, String> entry : ImmutableList.copyOf(compartmentMap.entrySet())) {
-            if(nodeId.equals(entry.getValue())) {
+            if (nodeId.equals(entry.getValue())) {
                 compartmentMap.remove(entry.getKey());
             }
         }
-        if(hotkey != Hotkey.None) {
+        if (hotkey != Hotkey.None) {
             compartmentMap.put(hotkey, nodeId);
         }
     }
 
     /**
      * Renames the internal compartment mappings
+     *
      * @param renamingMap map from old to new value
      */
     public void renameCompartments(Map<String, String> renamingMap) {
@@ -63,7 +75,7 @@ public class NodeHotKeyStorage {
 
     public String getNodeForHotkey(Hotkey hotkey, String compartment) {
         Map<Hotkey, String> hotkeyMap = hotkeys.getOrDefault(compartment, null);
-        if(hotkeyMap == null)
+        if (hotkeyMap == null)
             return null;
         return hotkeyMap.getOrDefault(hotkey, null);
     }
@@ -80,10 +92,10 @@ public class NodeHotKeyStorage {
 
     public Hotkey getHotkeyFor(String compartment, String id) {
         Map<Hotkey, String> hotkeyMap = hotkeys.getOrDefault(compartment, null);
-        if(hotkeyMap == null)
+        if (hotkeyMap == null)
             return Hotkey.None;
         for (Map.Entry<Hotkey, String> entry : hotkeyMap.entrySet()) {
-            if(Objects.equals(entry.getValue(), id))
+            if (Objects.equals(entry.getValue(), id))
                 return entry.getKey();
         }
         return Hotkey.None;
@@ -164,16 +176,6 @@ public class NodeHotKeyStorage {
             }
             return None;
         }
-    }
-
-    public static NodeHotKeyStorage getInstance(JIPipeGraph graph) {
-        Object instance = graph.getAdditionalMetadata().getOrDefault("node-hotkeys", null);
-        if(instance instanceof NodeHotKeyStorage) {
-            return (NodeHotKeyStorage) instance;
-        }
-        instance = new NodeHotKeyStorage();
-        graph.getAdditionalMetadata().put("node-hotkeys", instance);
-        return (NodeHotKeyStorage) instance;
     }
 
 }

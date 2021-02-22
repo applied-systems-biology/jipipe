@@ -39,10 +39,9 @@ public class PixelInfoPlugin extends ImageViewerPanelPlugin {
     private void updatePixelInfo(Point coordinate) {
         if (getCurrentImage() != null) {
             if (coordinate != null) {
-                if(coordinate.x < 0 || coordinate.y < 0 || coordinate.x >= getCurrentImage().getWidth() ||coordinate.y >= getCurrentImage().getHeight()) {
+                if (coordinate.x < 0 || coordinate.y < 0 || coordinate.x >= getCurrentImage().getWidth() || coordinate.y >= getCurrentImage().getHeight()) {
                     pixelInfoLabel.setText("x: " + coordinate.x + " y: " + coordinate.y + " (Outside image)");
-                }
-                else {
+                } else {
                     String value = "";
                     try {
                         ImageProcessor slice = getViewerPanel().getSlice();

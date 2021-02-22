@@ -296,10 +296,9 @@ public class ROIListData extends ArrayList<Roi> implements JIPipeData {
     @Override
     public Component preview(int width, int height) {
         ImagePlus mask;
-        if(isEmpty()) {
+        if (isEmpty()) {
             mask = IJ.createImage("empty", "8-bit", width, height, 1);
-        }
-        else {
+        } else {
             ROIListData copy = new ROIListData(this);
             copy.flatten();
             copy.crop(true, false, false, false);
@@ -474,8 +473,8 @@ public class ROIListData extends ArrayList<Roi> implements JIPipeData {
      * Generates a mask image from pure ROI data.
      * The ROI's reference images are ignored.
      *
-     * @param width         the image width
-     * @param height the image height
+     * @param width             the image width
+     * @param height            the image height
      * @param drawOutline       whether to draw an outline
      * @param drawFilledOutline whether to fill the area
      * @param lineThickness     line thickness for drawing
@@ -504,8 +503,8 @@ public class ROIListData extends ArrayList<Roi> implements JIPipeData {
      * Generates a mask image from pure ROI data.
      * The ROI's reference images are ignored.
      *
-     * @param width         the image width
-     * @param height the image height
+     * @param width             the image width
+     * @param height            the image height
      * @param drawOutline       whether to draw an outline
      * @param drawFilledOutline whether to fill the area
      * @param lineThickness     line thickness for drawing

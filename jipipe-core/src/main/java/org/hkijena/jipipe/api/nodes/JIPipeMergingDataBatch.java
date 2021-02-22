@@ -22,7 +22,7 @@ import java.util.*;
  * Wraps a set of input and output slots that belong together.
  * This is a less restricted variant of {@link JIPipeDataBatch} used by {@link JIPipeMergingAlgorithm}
  */
-public class JIPipeMergingDataBatch {
+public class JIPipeMergingDataBatch implements Comparable<JIPipeMergingDataBatch> {
     private JIPipeGraphNode node;
     private Map<JIPipeDataSlot, Set<Integer>> inputSlotRows;
     private Map<String, JIPipeAnnotation> annotations = new HashMap<>();
@@ -405,5 +405,23 @@ public class JIPipeMergingDataBatch {
             dummy.addData(sourceSlot.getVirtualData(row), annotations, JIPipeAnnotationMergeStrategy.Merge);
         }
         return dummy;
+    }
+
+    @Override
+    public int compareTo(JIPipeMergingDataBatch o) {
+        Set<String> annotationKeySet = new HashSet<>(annotations.keySet());
+        annotationKeySet.addAll(o.annotations.keySet());
+        List<String> annotationKeys = new ArrayList<>(annotationKeySet);
+        annotationKeys.sort(Comparator.naturalOrder());
+        for (String key : annotationKeys) {
+            JIPipeAnnotation here = annotations.getOrDefault(key, null);
+            JIPipeAnnotation there = o.annotations.getOrDefault(key, null);
+            String hereValue = here != null ? here.getValue() : "";
+            String thereValue = there != null ? there.getValue() : "";
+            int c = hereValue.compareTo(thereValue);
+            if (c != 0)
+                return c;
+        }
+        return 0;
     }
 }

@@ -72,6 +72,55 @@ public class ContrastLocalAutoThreshold2DAlgorithm extends JIPipeSimpleIterating
         this.radius = other.radius;
     }
 
+    public static void Contrast(ImagePlus imp, int radius, boolean doIwhite) {
+        // G. Landini, 2013
+        // Based on a simple contrast toggle. This procedure does not have user-provided parameters other than the kernel radius
+        // Sets the pixel value to either white or black depending on whether its current value is closest to the local Max or Min respectively
+        // The procedure is similar to Toggle Contrast Enhancement (see Soille, Morphological Image Analysis (2004), p. 259
+
+        ImagePlus Maximp, Minimp;
+        ImageProcessor ip = imp.getProcessor(), ipMax, ipMin;
+        int c_value = 0;
+        int mid_gray;
+        byte object;
+        byte backg;
+
+
+        if (doIwhite) {
+            object = (byte) 0xff;
+            backg = (byte) 0;
+        } else {
+            object = (byte) 0;
+            backg = (byte) 0xff;
+        }
+
+        Maximp = duplicateImage(ip);
+        ipMax = Maximp.getProcessor();
+        RankFilters rf = new RankFilters();
+        rf.rank(ipMax, radius, rf.MAX);// Maximum
+        //Maximp.show();
+        Minimp = duplicateImage(ip);
+        ipMin = Minimp.getProcessor();
+        rf.rank(ipMin, radius, rf.MIN); //Minimum
+        //Minimp.show();
+        byte[] pixels = (byte[]) ip.getPixels();
+        byte[] max = (byte[]) ipMax.getPixels();
+        byte[] min = (byte[]) ipMin.getPixels();
+        for (int i = 0; i < pixels.length; i++) {
+            pixels[i] = ((Math.abs(max[i] & 0xff - pixels[i] & 0xff) <= Math.abs(pixels[i] & 0xff - min[i] & 0xff)) && ((pixels[i] & 0xff) != 0)) ? object : backg;
+        }
+        //imp.updateAndDraw();
+    }
+
+    public static ImagePlus duplicateImage(ImageProcessor iProcessor) {
+        int w = iProcessor.getWidth();
+        int h = iProcessor.getHeight();
+        ImagePlus iPlus = NewImage.createByteImage("Image", w, h, 1, NewImage.FILL_BLACK);
+        ImageProcessor imageProcessor = iPlus.getProcessor();
+        imageProcessor.copyBits(iProcessor, 0, 0, Blitter.COPY);
+        return iPlus;
+    }
+
     @JIPipeDocumentation(name = "Radius", description = "The radius of the circular local window.")
     @JIPipeParameter("radius")
     public int getRadius() {
@@ -80,7 +129,7 @@ public class ContrastLocalAutoThreshold2DAlgorithm extends JIPipeSimpleIterating
 
     @JIPipeParameter("radius")
     public boolean setRadius(int radius) {
-        if(radius <= 0)
+        if (radius <= 0)
             return false;
         this.radius = radius;
         return true;
@@ -95,7 +144,7 @@ public class ContrastLocalAutoThreshold2DAlgorithm extends JIPipeSimpleIterating
     protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
         ImagePlusData inputData = dataBatch.getInputData(getFirstInputSlot(), ImagePlusGreyscale8UData.class, progressInfo);
         ImagePlus img = inputData.getDuplicateImage();
-        if(!darkBackground) {
+        if (!darkBackground) {
             img.getProcessor().invert();
         }
         Contrast(img, radius, true);
@@ -111,55 +160,5 @@ public class ContrastLocalAutoThreshold2DAlgorithm extends JIPipeSimpleIterating
     @JIPipeParameter("dark-background")
     public void setDarkBackground(boolean darkBackground) {
         this.darkBackground = darkBackground;
-    }
-
-    public static void Contrast(ImagePlus imp, int radius, boolean doIwhite) {
-        // G. Landini, 2013
-        // Based on a simple contrast toggle. This procedure does not have user-provided parameters other than the kernel radius
-        // Sets the pixel value to either white or black depending on whether its current value is closest to the local Max or Min respectively
-        // The procedure is similar to Toggle Contrast Enhancement (see Soille, Morphological Image Analysis (2004), p. 259
-
-        ImagePlus Maximp, Minimp;
-        ImageProcessor ip=imp.getProcessor(), ipMax, ipMin;
-        int c_value =0;
-        int mid_gray;
-        byte object;
-        byte backg;
-
-
-        if (doIwhite){
-            object =  (byte) 0xff;
-            backg =   (byte) 0;
-        }
-        else {
-            object =  (byte) 0;
-            backg =  (byte) 0xff;
-        }
-
-        Maximp=duplicateImage(ip);
-        ipMax=Maximp.getProcessor();
-        RankFilters rf=new RankFilters();
-        rf.rank(ipMax, radius, rf.MAX);// Maximum
-        //Maximp.show();
-        Minimp=duplicateImage(ip);
-        ipMin=Minimp.getProcessor();
-        rf.rank(ipMin, radius, rf.MIN); //Minimum
-        //Minimp.show();
-        byte[] pixels = (byte [])ip.getPixels();
-        byte[] max = (byte [])ipMax.getPixels();
-        byte[] min = (byte [])ipMin.getPixels();
-        for (int i=0; i<pixels.length; i++) {
-            pixels[i] = ((Math.abs(max[i]&0xff- pixels[i]&0xff) <= Math.abs(pixels[i]&0xff- min[i]&0xff)) && ((pixels[i]&0xff) != 0)) ? object :  backg;
-        }
-        //imp.updateAndDraw();
-    }
-
-    public static ImagePlus duplicateImage(ImageProcessor iProcessor){
-        int w=iProcessor.getWidth();
-        int h=iProcessor.getHeight();
-        ImagePlus iPlus= NewImage.createByteImage("Image", w, h, 1, NewImage.FILL_BLACK);
-        ImageProcessor imageProcessor=iPlus.getProcessor();
-        imageProcessor.copyBits(iProcessor, 0,0, Blitter.COPY);
-        return iPlus;
     }
 }
