@@ -648,6 +648,10 @@ public class ImageJAlgorithmsExtension extends JIPipePrepackagedDefaultJavaExten
                 SplitRoiConnectedComponentsAlgorithm.DimensionOperation.class,
                 "Dimension operation",
                 "Determines how a dimension is incorporated");
+        registerEnumParameterType("roi-label",
+                RoiLabel.class,
+                "ROI label",
+                "Determines how ROI labels are drawn");
     }
 
     private void registerConvolutionAlgorithms() {

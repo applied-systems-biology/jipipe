@@ -51,11 +51,14 @@ public class RoiToRGBAlgorithm extends JIPipeIteratingAlgorithm {
 
     private boolean drawOutline = true;
     private boolean drawFilledOutline = false;
-    private boolean drawLabel = false;
+    private RoiLabel drawnLabel = RoiLabel.None;
     private OptionalColorParameter overrideFillColor = new OptionalColorParameter();
     private OptionalColorParameter overrideLineColor = new OptionalColorParameter();
     private OptionalDoubleParameter overrideLineWidth = new OptionalDoubleParameter();
     private boolean drawOver = true;
+    private Color labelForeground = Color.WHITE;
+    private OptionalColorParameter labelBackground = new OptionalColorParameter(Color.BLACK, false);
+    private int labelSize = 9;
 
     /**
      * Instantiates a new node type.
@@ -82,11 +85,14 @@ public class RoiToRGBAlgorithm extends JIPipeIteratingAlgorithm {
         super(other);
         this.drawOutline = other.drawOutline;
         this.drawFilledOutline = other.drawFilledOutline;
-        this.drawLabel = other.drawLabel;
+        this.drawnLabel = other.drawnLabel;
         this.overrideFillColor = new OptionalColorParameter(other.overrideFillColor);
         this.overrideLineColor = new OptionalColorParameter(other.overrideLineColor);
         this.overrideLineWidth = new OptionalDoubleParameter(other.overrideLineWidth);
         this.drawOver = other.drawOver;
+        this.labelForeground = other.labelForeground;
+        this.labelBackground = other.labelBackground;
+        this.labelSize = other.labelSize;
     }
 
     @Override
@@ -105,7 +111,7 @@ public class RoiToRGBAlgorithm extends JIPipeIteratingAlgorithm {
         Map<Roi, Point> roiCentroids = new HashMap<>();
         Map<Roi, Integer> roiIndices = new HashMap<>();
         Filler roiFiller = new Filler();
-        if (drawLabel) {
+        if (drawnLabel != RoiLabel.None) {
 //            RoiStatisticsAlgorithm statisticsAlgorithm =
 //                    JIPipe.createNode("ij1-roi-statistics", RoiStatisticsAlgorithm.class);
 //            statisticsAlgorithm.setAllSlotsVirtual(false, false, null);
@@ -136,6 +142,8 @@ public class RoiToRGBAlgorithm extends JIPipeIteratingAlgorithm {
             result = IJ.createImage("ROIs", "RGB", sx, sy, sc, sz, st);
         }
 
+        Font labelFont = new Font(Font.DIALOG, Font.PLAIN, labelSize);
+
         // Draw ROI
         for (int z = 0; z < sz; z++) {
             for (int c = 0; c < sc; c++) {
@@ -164,9 +172,17 @@ public class RoiToRGBAlgorithm extends JIPipeIteratingAlgorithm {
                             processor.setColor(color);
                             roi.drawPixels(processor);
                         }
-                        if (drawLabel) {
+                        if (drawnLabel != RoiLabel.None) {
                             Point centroid = roiCentroids.get(roi);
-                            roiFiller.drawLabel(result, processor, roiIndices.get(roi), new Rectangle(centroid.x, centroid.y, 0, 0));
+                            drawnLabel.draw(result,
+                                    processor,
+                                    roi,
+                                    roiIndices.get(roi),
+                                    new Rectangle(centroid.x, centroid.y, 0, 0),
+                                    labelForeground,
+                                    labelBackground.getContent(),
+                                    labelFont,
+                                    labelBackground.isEnabled());
                         }
                     }
                 }
@@ -198,15 +214,51 @@ public class RoiToRGBAlgorithm extends JIPipeIteratingAlgorithm {
         this.drawFilledOutline = drawFilledOutline;
     }
 
-    @JIPipeDocumentation(name = "Draw labels", description = "If enabled, draw the ROI labels")
-    @JIPipeParameter("draw-label")
-    public boolean isDrawLabel() {
-        return drawLabel;
+    @JIPipeDocumentation(name = "Draw labels", description = "Allows to draw labels on top of ROI.")
+    @JIPipeParameter("drawn-label")
+    public RoiLabel isDrawnLabel() {
+        return drawnLabel;
     }
 
-    @JIPipeParameter("draw-label")
-    public void setDrawLabel(boolean drawLabel) {
-        this.drawLabel = drawLabel;
+    @JIPipeParameter("drawn-label")
+    public void setDrawnLabel(RoiLabel drawnLabel) {
+        this.drawnLabel = drawnLabel;
+    }
+
+    @JIPipeDocumentation(name = "Label foreground", description = "The text color of the label (if enabled)")
+    @JIPipeParameter("label-foreground")
+    public Color getLabelForeground() {
+        return labelForeground;
+    }
+
+    @JIPipeParameter("label-foreground")
+    public void setLabelForeground(Color labelForeground) {
+        this.labelForeground = labelForeground;
+    }
+
+    @JIPipeDocumentation(name = "Label background", description = "The background color of the label (if enabled)")
+    @JIPipeParameter("label-background")
+    public OptionalColorParameter getLabelBackground() {
+        return labelBackground;
+    }
+
+    @JIPipeParameter("label-background")
+    public void setLabelBackground(OptionalColorParameter labelBackground) {
+        this.labelBackground = labelBackground;
+    }
+
+    @JIPipeDocumentation(name = "Label size", description = "Font size of drawn labels")
+    @JIPipeParameter("label-size")
+    public int getLabelSize() {
+        return labelSize;
+    }
+
+    @JIPipeParameter("label-size")
+    public boolean setLabelSize(int labelSize) {
+        if(labelSize < 1)
+            return false;
+        this.labelSize = labelSize;
+        return true;
     }
 
     @JIPipeDocumentation(name = "Override fill color", description = "If enabled, the fill color will be overridden by this value. " +
