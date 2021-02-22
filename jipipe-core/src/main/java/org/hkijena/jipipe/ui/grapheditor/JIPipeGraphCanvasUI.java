@@ -811,14 +811,14 @@ public class JIPipeGraphCanvasUI extends JIPipeWorkbenchPanel implements MouseMo
             Point cursorBackup = graphEditCursor;
             try {
                 if (viewMode == JIPipeGraphViewMode.Horizontal)
-                    this.graphEditCursor = new Point(targetNode.getRightX() + 4 * viewMode.getGridWidth(),
-                            targetNode.getY());
+                    setGraphEditCursor(new Point(targetNode.getRightX() + 4 * viewMode.getGridWidth(),
+                            targetNode.getY()));
                 else
-                    this.graphEditCursor = new Point(targetNode.getX(), targetNode.getBottomY() + 4 * viewMode.getGridHeight());
+                    setGraphEditCursor(new Point(targetNode.getX(), targetNode.getBottomY() + 4 * viewMode.getGridHeight()));
                 autoPlaceTargetAdjacent(sourceNode, event.getSource(), targetNode, event.getTarget());
                 autoExpandLeftTop();
             } finally {
-                this.graphEditCursor = cursorBackup;
+                setGraphEditCursor(cursorBackup);
             }
         }
 
