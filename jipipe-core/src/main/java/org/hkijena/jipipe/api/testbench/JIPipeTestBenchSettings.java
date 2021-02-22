@@ -31,7 +31,7 @@ public class JIPipeTestBenchSettings implements JIPipeParameterCollection {
     private Path outputPath;
     private boolean loadFromCache = true;
     private boolean storeToCache = true;
-    private boolean saveOutputs = true;
+    private boolean saveToDisk = true;
     private boolean excludeSelected = false;
     private boolean storeIntermediateResults = false;
     private int numThreads = RuntimeSettings.getInstance().getDefaultTestBenchThreads();
@@ -99,13 +99,13 @@ public class JIPipeTestBenchSettings implements JIPipeParameterCollection {
 
     @JIPipeDocumentation(name = "Save to output folder", description = "If enabled, outputs are saved.")
     @JIPipeParameter("save-outputs")
-    public boolean isSaveOutputs() {
-        return saveOutputs;
+    public boolean isSaveToDisk() {
+        return saveToDisk;
     }
 
     @JIPipeParameter("save-outputs")
-    public void setSaveOutputs(boolean saveOutputs) {
-        this.saveOutputs = saveOutputs;
+    public void setSaveToDisk(boolean saveToDisk) {
+        this.saveToDisk = saveToDisk;
     }
 
     @JIPipeDocumentation(name = "Exclude selected algorithm", description = "If enabled, only dependency algorithms are executed. " +

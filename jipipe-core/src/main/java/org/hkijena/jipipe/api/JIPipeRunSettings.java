@@ -33,7 +33,7 @@ public class JIPipeRunSettings implements JIPipeParameterCollection {
     private Path outputPath;
     private boolean loadFromCache = true;
     private boolean storeToCache = false;
-    private boolean saveOutputs = true;
+    private boolean saveToDisk = true;
     private int numThreads = RuntimeSettings.getInstance().getDefaultRunThreads();
     private boolean silent = false;
     private boolean ignoreDeactivatedInputs = false;
@@ -98,12 +98,12 @@ public class JIPipeRunSettings implements JIPipeParameterCollection {
         return eventBus;
     }
 
-    public boolean isSaveOutputs() {
-        return saveOutputs;
+    public boolean isSaveToDisk() {
+        return saveToDisk;
     }
 
-    public void setSaveOutputs(boolean saveOutputs) {
-        this.saveOutputs = saveOutputs;
+    public void setSaveToDisk(boolean saveToDisk) {
+        this.saveToDisk = saveToDisk;
     }
 
     /**

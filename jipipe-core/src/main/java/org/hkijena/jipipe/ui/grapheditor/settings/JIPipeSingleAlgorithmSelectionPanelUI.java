@@ -209,20 +209,19 @@ public class JIPipeSingleAlgorithmSelectionPanelUI extends JIPipeProjectWorkbenc
 
     /**
      * Activates and runs the quick run as automatically as possible.
-     *
-     * @param showResults              show results after a successful run
+     *  @param showResults              show results after a successful run
      * @param showCache                show slot cache after a successful run
      * @param showBatchAssistant       show batch assistant after a run
-     * @param saveOutputs              if the run should save outputs
+     * @param saveToDisk              if the run should save outputs
      * @param storeIntermediateOutputs if the run should store intermediate outputs
      * @param excludeSelected          if the current algorithm should be excluded
      */
-    public void runTestBench(boolean showResults, boolean showCache, boolean showBatchAssistant, boolean saveOutputs, boolean storeIntermediateOutputs, boolean excludeSelected) {
+    public void runTestBench(boolean showResults, boolean showCache, boolean showBatchAssistant, boolean saveToDisk, boolean storeIntermediateOutputs, boolean excludeSelected) {
         // Activate the quick run
         tabbedPane.switchToContent(testBenchTabContent);
         JIPipeTestBenchSetupUI testBenchSetupUI = (JIPipeTestBenchSetupUI) testBenchTabContent.getComponent(0);
         JIPipeTestBenchSettings settings = new JIPipeTestBenchSettings();
-        settings.setSaveOutputs(saveOutputs);
+        settings.setSaveToDisk(saveToDisk);
         settings.setExcludeSelected(excludeSelected);
         settings.setStoreIntermediateResults(storeIntermediateOutputs);
         boolean success = testBenchSetupUI.tryAutoRun(showResults, settings, testBench -> {

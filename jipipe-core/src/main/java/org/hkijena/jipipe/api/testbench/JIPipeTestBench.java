@@ -56,7 +56,7 @@ public class JIPipeTestBench implements JIPipeRunnable, JIPipeValidatable {
         configuration.setLoadFromCache(settings.isLoadFromCache());
         configuration.setStoreToCache(settings.isStoreToCache());
         configuration.setNumThreads(settings.getNumThreads());
-        configuration.setSaveOutputs(settings.isSaveOutputs());
+        configuration.setSaveToDisk(settings.isSaveToDisk());
 
         // This setting is needed to prevent cascading intelligent deactivation of nodes
         // due to cache optimization down to the target.

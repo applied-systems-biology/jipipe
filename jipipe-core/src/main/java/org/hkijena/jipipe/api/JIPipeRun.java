@@ -156,7 +156,7 @@ public class JIPipeRun implements JIPipeRunnable {
                 JIPipeProjectCacheState stateId = cacheQuery.getCachedId(projectAlgorithm);
                 project.getCache().store(projectAlgorithm, stateId, outputSlot, progressInfo);
             }
-            if (configuration.isSaveOutputs() && !configuration.getDisableSaveToDiskNodes().contains(outputSlot.getNode())) {
+            if (configuration.isSaveToDisk() && !configuration.getDisableSaveToDiskNodes().contains(outputSlot.getNode())) {
                 JIPipeProgressInfo saveProgress = progressInfo.resolveAndLog(String.format("Saving data in slot '%s' (data type %s)", outputSlot.getDisplayName(), JIPipeDataInfo.getInstance(outputSlot.getAcceptedDataType()).getName()));
                 outputSlot.flush(configuration.getOutputPath(), saveProgress);
             } else {
@@ -173,6 +173,7 @@ public class JIPipeRun implements JIPipeRunnable {
         progressInfo.log("JIPipe run starting at " + StringUtils.formatDateTime(LocalDateTime.now()));
         progressInfo.log("Preparing output folders ...");
         prepare();
+        progressInfo.log("Outputs will be written to " + configuration.getOutputPath());
         try {
             progressInfo.log("Running main analysis with " + configuration.getNumThreads() + " threads ...\n");
             threadPool = new JIPipeFixedThreadPool(configuration.getNumThreads());
@@ -203,7 +204,7 @@ public class JIPipeRun implements JIPipeRunnable {
         // Postprocessing
         progressInfo.log("Postprocessing steps ...");
         try {
-            if (configuration.getOutputPath() != null && configuration.isSaveOutputs())
+            if (configuration.getOutputPath() != null && configuration.isSaveToDisk())
                 project.saveProject(configuration.getOutputPath().resolve("project.jip"));
         } catch (IOException e) {
             throw new UserFriendlyRuntimeException(e, "Could not save project to '" + configuration.getOutputPath().resolve("project.jip") + "'!",

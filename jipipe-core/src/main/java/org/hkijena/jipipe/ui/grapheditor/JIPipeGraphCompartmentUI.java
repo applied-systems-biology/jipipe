@@ -405,7 +405,7 @@ public class JIPipeGraphCompartmentUI extends JIPipeGraphEditorUI {
             panel.runTestBench(false,
                     true,
                     false,
-                    true,
+                    false,
                     ((UpdateCacheAction) event.getAction()).isStoreIntermediateResults(),
                     false);
             SwingUtilities.invokeLater(() -> disableUpdateOnSelection = false);
