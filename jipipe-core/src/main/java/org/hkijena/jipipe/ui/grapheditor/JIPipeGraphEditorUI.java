@@ -90,6 +90,7 @@ public abstract class JIPipeGraphEditorUI extends JIPipeWorkbenchPanel implement
         algorithmGraph.getEventBus().register(this);
         updateNavigation();
         initializeHotkeys();
+        SwingUtilities.invokeLater(canvasUI::crop);
     }
 
     private static int[] rankNavigationEntry(Object value, String[] searchStrings) {
