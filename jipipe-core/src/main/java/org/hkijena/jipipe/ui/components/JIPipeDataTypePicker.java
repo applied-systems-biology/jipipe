@@ -128,6 +128,8 @@ public class JIPipeDataTypePicker extends JPanel {
         if (reloading)
             return;
         boolean changed = false;
+        if(mode == Mode.Single)
+            selectedDataTypes.clear();
         for (JIPipeDataInfo trait : availableDataTypes) {
             if (hiddenDataTypes.contains(trait))
                 continue;

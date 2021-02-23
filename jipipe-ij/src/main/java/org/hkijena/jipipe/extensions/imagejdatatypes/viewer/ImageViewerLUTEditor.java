@@ -13,6 +13,7 @@
 
 package org.hkijena.jipipe.extensions.imagejdatatypes.viewer;
 
+import ij.CompositeImage;
 import ij.ImagePlus;
 import ij.process.LUT;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
@@ -77,6 +78,10 @@ public class ImageViewerLUTEditor extends JPanel implements ThumbListener {
         slider.getModel().getThumbAt(0).setObject(black);
         slider.getModel().getThumbAt(1).setObject(white);
         isUpdating = false;
+    }
+
+    public int getTargetChannel() {
+        return targetChannel;
     }
 
     public LUT getLUT() {
@@ -244,13 +249,13 @@ public class ImageViewerLUTEditor extends JPanel implements ThumbListener {
         ImagePlus image = imageViewerPanel.getImage();
         if (image != null) {
             if (targetChannel < image.getNChannels()) {
-                int z = image.getZ();
+                if (image instanceof CompositeImage) {
+                    CompositeImage compositeImage = (CompositeImage) image;
+                    compositeImage.setChannelLut(getLUT(), targetChannel + 1);
+                }
                 int c = image.getC();
-                int t = image.getT();
-                image.setPosition(targetChannel + 1, 1, 1);
-                image.setLut(getLUT());
-                image.setPosition(c, z, t);
-                if (c == targetChannel + 1) {
+                if(c == targetChannel + 1) {
+                    image.setLut(getLUT());
                     imageViewerPanel.uploadSliceToCanvas();
                 }
             }

@@ -30,9 +30,9 @@ public class LUTManagerPlugin extends ImageViewerPanelPlugin {
 
     @Override
     public void createPalettePanel(FormPanel formPanel) {
-        this.lutEditors.clear();
-        if (getCurrentImage() == null)
+        if (getCurrentImage() == null) {
             return;
+        }
         if (getCurrentImage().getType() == ImagePlus.COLOR_256 || getCurrentImage().getType() == ImagePlus.COLOR_RGB) {
             FormPanel.GroupHeaderPanel headerPanel = formPanel.addGroupHeader("LUT", UIUtils.getIconFromResources("actions/color-gradient.png"));
             JButton toRGBButton = new JButton("Split channels", UIUtils.getIconFromResources("actions/channelmixer.png"));
@@ -99,6 +99,7 @@ public class LUTManagerPlugin extends ImageViewerPanelPlugin {
             CompositeImage image = (CompositeImage) getCurrentImage();
             if (c <= lutEditors.size() - 1) {
                 image.setChannelLut(lutEditors.get(c).getLUT(), c + 1);
+                image.setLut(lutEditors.get(c).getLUT());
             }
         } else {
             ImagePlus image = getCurrentImage();

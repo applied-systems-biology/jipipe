@@ -55,6 +55,7 @@ import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.morphology.*;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.noise.AddNoise2DAlgorithm;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.noise.DespeckleFilter2DAlgorithm;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.noise.RemoveOutliersFilter2DAlgorithm;
+import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.opticalflow.MSEBlockFlowAlgorithm;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.roi.*;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.sharpen.LaplacianSharpen2DAlgorithm;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.statistics.GreyscalePixelsGenerator;
@@ -519,6 +520,7 @@ public class ImageJAlgorithmsExtension extends JIPipePrepackagedDefaultJavaExten
         registerConvolutionAlgorithms();
         registerROIAlgorithms();
         registerLUTAlgorithms();
+        registerOpticalFlowAlgorithms();
 
         registerNodeType("ij1-generate-filter-kernel", GenerateStructureElementAlgorithm.class, UIUtils.getIconURLFromResources("actions/morphology.png"));
         registerNodeType("ij1-data-to-preview", DataToPreviewAlgorithm.class, UIUtils.getIconURLFromResources("actions/viewimage.png"));
@@ -531,6 +533,10 @@ public class ImageJAlgorithmsExtension extends JIPipePrepackagedDefaultJavaExten
         registerGlobalParameters();
 
 //        registerIJ2Algorithms();
+    }
+
+    private void registerOpticalFlowAlgorithms() {
+        registerNodeType("ij-optical-flow-mse-block-flow", MSEBlockFlowAlgorithm.class, UIUtils.getIconURLFromResources("actions/object-tweak-rotate.png"));
     }
 
     private void registerIOAlgorithms() {

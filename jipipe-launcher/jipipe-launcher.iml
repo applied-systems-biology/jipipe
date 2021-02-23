@@ -9,8 +9,6 @@
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
-    <orderEntry type="library" scope="RUNTIME" name="Maven: sc.fiji:Auto_Local_Threshold:1.10.1" level="project" />
-    <orderEntry type="library" scope="RUNTIME" name="Maven: sc.fiji:Threshold_Colour:2.0.1" level="project" />
     <orderEntry type="module" module-name="jipipe-core" />
     <orderEntry type="library" name="Maven: net.imagej:imagej:2.1.0" level="project" />
     <orderEntry type="library" name="Maven: net.imagej:imagej-common:0.33.0" level="project" />
@@ -304,6 +302,7 @@
     <orderEntry type="library" scope="RUNTIME" name="Maven: sc.fiji:imagescience:3.0.0" level="project" />
     <orderEntry type="library" scope="RUNTIME" name="Maven: sc.fiji:Image_5D:2.0.2" level="project" />
     <orderEntry type="library" scope="RUNTIME" name="Maven: mpicbg:mpicbg:1.4.0" level="project" />
+    <orderEntry type="library" scope="RUNTIME" name="Maven: mpicbg:mpicbg_:1.4.0" level="project" />
     <orderEntry type="library" scope="RUNTIME" name="Maven: sc.fiji:Auto_Local_Threshold:1.10.1" level="project" />
     <orderEntry type="library" scope="RUNTIME" name="Maven: sc.fiji:Threshold_Colour:2.0.1" level="project" />
     <orderEntry type="module" module-name="jipipe-ij-multi-template-matching" scope="RUNTIME" />
