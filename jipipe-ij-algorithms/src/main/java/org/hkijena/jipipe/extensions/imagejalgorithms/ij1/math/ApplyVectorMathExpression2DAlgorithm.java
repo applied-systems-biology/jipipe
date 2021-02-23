@@ -124,6 +124,7 @@ public class ApplyVectorMathExpression2DAlgorithm extends JIPipeSimpleIteratingA
                 for (int t = 0; t < img.getNFrames(); t++) {
                     for (int z = 0; z < img.getNSlices(); z++) {
 
+                        progressInfo.resolveAndLog("Slice", iterationIndex++, img.getStackSize()).log("z=" + z + ", t=" + t);
                         // Get result processor
                         ImageProcessor resultProcessor = result.getStack().getProcessor(result.getStackIndex(1, z + 1, t + 1));
 
@@ -134,7 +135,7 @@ public class ApplyVectorMathExpression2DAlgorithm extends JIPipeSimpleIteratingA
                                 vector.clear();
                                 for (int c = 0; c < img.getNChannels(); c++) {
                                     int index = img.getStackIndex(c + 1, z + 1, t + 1);
-                                    progressInfo.resolveAndLog("Slice", iterationIndex++, img.getStackSize()).log("z=" + z + ", c=" + c + ", t=" + t);
+
                                     ImageProcessor ip = img.getImageStack().getProcessor(index);
                                     double value = ip.getf(x, y);
                                     vector.add(value);
@@ -159,6 +160,8 @@ public class ApplyVectorMathExpression2DAlgorithm extends JIPipeSimpleIteratingA
                 for (int t = 0; t < img.getNFrames(); t++) {
                     for (int c = 0; c < img.getNChannels(); c++) {
 
+                        progressInfo.resolveAndLog("Slice", iterationIndex++, img.getStackSize()).log("c=" + c + ", t=" + t);
+
                         // Get result processor
                         ImageProcessor resultProcessor = result.getStack().getProcessor(result.getStackIndex(c + 1, 1, t + 1));
 
@@ -169,7 +172,6 @@ public class ApplyVectorMathExpression2DAlgorithm extends JIPipeSimpleIteratingA
                                 vector.clear();
                                 for (int z = 0; z < img.getNSlices(); z++) {
                                     int index = img.getStackIndex(c + 1, z + 1, t + 1);
-                                    progressInfo.resolveAndLog("Slice", iterationIndex++, img.getStackSize()).log("z=" + z + ", c=" + c + ", t=" + t);
                                     ImageProcessor ip = img.getImageStack().getProcessor(index);
                                     double value = ip.getf(x, y);
                                     vector.add(value);
@@ -194,6 +196,8 @@ public class ApplyVectorMathExpression2DAlgorithm extends JIPipeSimpleIteratingA
                 for (int z = 0; z < img.getNSlices(); z++) {
                     for (int c = 0; c < img.getNChannels(); c++) {
 
+                        progressInfo.resolveAndLog("Slice", iterationIndex++, img.getStackSize()).log("z=" + z + ", c=" + c);
+
                         // Get result processor
                         ImageProcessor resultProcessor = result.getStack().getProcessor(result.getStackIndex(c + 1, z + 1, 1));
 
@@ -204,7 +208,6 @@ public class ApplyVectorMathExpression2DAlgorithm extends JIPipeSimpleIteratingA
                                 vector.clear();
                                 for (int t = 0; t < img.getNFrames(); t++) {
                                     int index = img.getStackIndex(c + 1, z + 1, t + 1);
-                                    progressInfo.resolveAndLog("Slice", iterationIndex++, img.getStackSize()).log("z=" + z + ", c=" + c + ", t=" + t);
                                     ImageProcessor ip = img.getImageStack().getProcessor(index);
                                     double value = ip.getf(x, y);
                                     vector.add(value);

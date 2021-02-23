@@ -35,6 +35,7 @@ public class MSEBlockFlowAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     private int blockRadius = 8;
     private int maxDistance = 7;
     private boolean outputPolarCoordinates = true;
+    private boolean relativeDistances = true;
 
     public MSEBlockFlowAlgorithm(JIPipeNodeInfo info) {
         super(info);
@@ -45,6 +46,18 @@ public class MSEBlockFlowAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         this.blockRadius = other.blockRadius;
         this.maxDistance = other.maxDistance;
         this.outputPolarCoordinates = other.outputPolarCoordinates;
+        this.relativeDistances = other.relativeDistances;
+    }
+
+    @JIPipeDocumentation(name = "Relative distances", description = "If enabled, the output radius or x/y are relative to the max distance.")
+    @JIPipeParameter("relative-distances")
+    public boolean isRelativeDistances() {
+        return relativeDistances;
+    }
+
+    @JIPipeParameter("relative-distances")
+    public void setRelativeDistances(boolean relativeDistances) {
+        this.relativeDistances = relativeDistances;
     }
 
     @JIPipeDocumentation(name = "Block radius", description = "Determines the local vicinity that is used to calculate the similarity of two pixels.")
@@ -195,7 +208,7 @@ public class MSEBlockFlowAlgorithm extends JIPipeSimpleIteratingAlgorithm {
                     (byte[]) ipY.getPixels(),
                     (float[]) r.getPixels(),
                     (float[]) phi.getPixels(),
-                    maxDistance);
+                    relativeDistances ? maxDistance : 1.0);
         }
         else {
             algebraicToCartesian(
@@ -203,7 +216,7 @@ public class MSEBlockFlowAlgorithm extends JIPipeSimpleIteratingAlgorithm {
                     (byte[]) ipY.getPixels(),
                     (float[]) r.getPixels(),
                     (float[]) phi.getPixels(),
-                    maxDistance);
+                    relativeDistances ? maxDistance : 1.0);
         }
     }
 

@@ -35,6 +35,7 @@ public class MSEGaussianFlowAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     private int sigma = 4;
     private int maxDistance = 7;
     private boolean outputPolarCoordinates = true;
+    private boolean relativeDistances = true;
 
     public MSEGaussianFlowAlgorithm(JIPipeNodeInfo info) {
         super(info);
@@ -45,6 +46,18 @@ public class MSEGaussianFlowAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         this.sigma = other.sigma;
         this.maxDistance = other.maxDistance;
         this.outputPolarCoordinates = other.outputPolarCoordinates;
+        this.relativeDistances = other.relativeDistances;
+    }
+
+    @JIPipeDocumentation(name = "Relative distances", description = "If enabled, the output radius or x/y are relative to the max distance.")
+    @JIPipeParameter("relative-distances")
+    public boolean isRelativeDistances() {
+        return relativeDistances;
+    }
+
+    @JIPipeParameter("relative-distances")
+    public void setRelativeDistances(boolean relativeDistances) {
+        this.relativeDistances = relativeDistances;
     }
 
     @JIPipeDocumentation(name = "Sigma", description = "Determines the local vicinity that is used to calculate the similarity of two pixels.")
@@ -194,7 +207,7 @@ public class MSEGaussianFlowAlgorithm extends JIPipeSimpleIteratingAlgorithm {
                     (byte[]) ipY.getPixels(),
                     (float[]) r.getPixels(),
                     (float[]) phi.getPixels(),
-                    maxDistance);
+                    relativeDistances ? maxDistance : 1.0);
         }
         else {
             algebraicToCartesian(
@@ -202,7 +215,7 @@ public class MSEGaussianFlowAlgorithm extends JIPipeSimpleIteratingAlgorithm {
                     (byte[]) ipY.getPixels(),
                     (float[]) r.getPixels(),
                     (float[]) phi.getPixels(),
-                    maxDistance);
+                    relativeDistances ? maxDistance : 1.0);
         }
     }
 
