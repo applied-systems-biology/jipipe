@@ -250,6 +250,7 @@ public class StandardParametersExtension extends JIPipePrepackagedDefaultJavaExt
         registerExpressionFunction(new GetTimeHoursFunction());
         registerExpressionFunction(new GetTimeMinutesFunction());
         registerExpressionFunction(new GetTimeSecondsFunction());
+        registerExpressionFunction(new GetItemFunction());
     }
 
     private void registerScriptParameters() {
