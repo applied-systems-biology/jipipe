@@ -146,6 +146,15 @@ public class FilterROIByOverlapAlgorithm extends JIPipeIteratingAlgorithm {
 
     private void putMeasurementsIntoVariable(Roi first, Roi second, StaticVariableSet<Object> variableSet, Roi overlap, ImagePlus referenceImage, ROIListData temp) {
 
+        variableSet.set("First.z", first.getZPosition());
+        variableSet.set("First.c", first.getCPosition());
+        variableSet.set("First.t", first.getTPosition());
+        variableSet.set("First.name", StringUtils.nullToEmpty(first.getName()));
+        variableSet.set("Second.z", second.getZPosition());
+        variableSet.set("Second.c", second.getCPosition());
+        variableSet.set("Second.t", second.getTPosition());
+        variableSet.set("Second.name", StringUtils.nullToEmpty(second.getName()));
+
         // Add first ROI info
         temp.clear();
         temp.add(first);

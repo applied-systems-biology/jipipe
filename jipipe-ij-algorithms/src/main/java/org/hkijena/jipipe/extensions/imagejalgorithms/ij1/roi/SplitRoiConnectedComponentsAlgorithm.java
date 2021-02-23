@@ -30,11 +30,15 @@ import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.JIPipeOutputSlot;
 import org.hkijena.jipipe.api.nodes.categories.RoiNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
+import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ROIListData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.measure.ImageStatisticsSetParameter;
+import org.hkijena.jipipe.extensions.imagejdatatypes.util.measure.MeasurementExpressionParameterVariableSource;
 import org.hkijena.jipipe.extensions.parameters.expressions.DefaultExpressionParameter;
 import org.hkijena.jipipe.extensions.parameters.expressions.ExpressionParameterSettings;
+import org.hkijena.jipipe.extensions.parameters.expressions.ExpressionParameterVariable;
+import org.hkijena.jipipe.extensions.parameters.expressions.ExpressionParameterVariableSource;
 import org.hkijena.jipipe.extensions.parameters.primitives.OptionalAnnotationNameParameter;
 import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
 import org.hkijena.jipipe.utils.StringUtils;
@@ -59,6 +63,7 @@ public class SplitRoiConnectedComponentsAlgorithm extends ImageRoiProcessorAlgor
     private OptionalAnnotationNameParameter componentNameAnnotation = new OptionalAnnotationNameParameter("Component", true);
     private DefaultExpressionParameter overlapFilter = new DefaultExpressionParameter();
     private ImageStatisticsSetParameter overlapFilterMeasurements = new ImageStatisticsSetParameter();
+    private DefaultExpressionParameter graphPostprocessing = new DefaultExpressionParameter();
     private boolean splitAtJunctions = false;
     private boolean trySolveJunctions = true;
 
@@ -77,6 +82,7 @@ public class SplitRoiConnectedComponentsAlgorithm extends ImageRoiProcessorAlgor
         this.overlapFilterMeasurements = new ImageStatisticsSetParameter(other.overlapFilterMeasurements);
         this.splitAtJunctions = other.splitAtJunctions;
         this.trySolveJunctions = other.trySolveJunctions;
+        this.graphPostprocessing = new DefaultExpressionParameter(other.graphPostprocessing);
     }
 
     @Override
@@ -142,7 +148,7 @@ public class SplitRoiConnectedComponentsAlgorithm extends ImageRoiProcessorAlgor
                 Roi overlap = calculateOverlap(temp, roi1, roi2);
                 if (overlap != null) {
                     if (withFiltering) {
-                        putMeasurementsIntoVariable(measurements, i, j, referenceImage, variableSet, overlap, temp);
+                        putMeasurementsIntoVariable(measurements, i, j, referenceImage, variableSet, overlap, temp, roi1, roi2);
                         if (!overlapFilter.test(variableSet))
                             continue;
                     }
@@ -188,6 +194,38 @@ public class SplitRoiConnectedComponentsAlgorithm extends ImageRoiProcessorAlgor
             }
         }
 
+        if(!StringUtils.isNullOrEmpty(graphPostprocessing.getExpression())) {
+            StaticVariableSet<Object> postprocessingVariableSet = new StaticVariableSet<>();
+            postprocessingVariableSet.set("KEEP", "KEEP");
+            postprocessingVariableSet.set("ISOLATE", "ISOLATE");
+            postprocessingVariableSet.set("REMOVE", "REMOVE");
+            for (Integer index : ImmutableList.copyOf(graph.vertexSet())) {
+                Roi roi = input.get(index);
+                postprocessingVariableSet.set("z", roi.getZPosition());
+                postprocessingVariableSet.set("c", roi.getCPosition());
+                postprocessingVariableSet.set("t", roi.getTPosition());
+                postprocessingVariableSet.set("name", StringUtils.nullToEmpty(roi.getName()));
+                postprocessingVariableSet.set("degree", graph.degreeOf(index));
+                Object result = graphPostprocessing.evaluate(postprocessingVariableSet);
+                if("KEEP".equals(result)) {
+                    // Do nothing
+                }
+                else if("ISOLATE".equals(result)) {
+                    graph.removeAllEdges(graph.edgesOf(index));
+                }
+                else if("REMOVE".equals(result)) {
+                    graph.removeVertex(index);
+                }
+                else {
+                    throw new UserFriendlyRuntimeException("Unsupported return value: " + result,
+                            "Invalid return value for graph postprocessing!",
+                            getName(),
+                            "Graph postprocessing expressions only can return one of following values: KEEP, ISOLATE, or REMOVE",
+                            "Check if your expression is correct.");
+                }
+            }
+        }
+
 //        DOTExporter<Integer, DefaultEdge> dotExporter = new DOTExporter<>();
 //        dotExporter.setVertexAttributeProvider(index -> {
 //            Map<String, Attribute> result = new HashMap<>();
@@ -211,6 +249,26 @@ public class SplitRoiConnectedComponentsAlgorithm extends ImageRoiProcessorAlgor
             }
             ++outputIndex;
         }
+    }
+
+    @JIPipeDocumentation(name = "Graph postprocessing", description = "Expression that allows to modify the overlap graph (each node represents a ROI, edges represent an overlap)." +
+            " The connected components of the overlap graph are later converted into their respective connected components." +
+            "This is applied after all processing steps. If not empty, this expression is executed for each node in the overlap graph. " +
+            "Return one of following variables to determine what should be done with the node:" +
+            "<ul>" +
+            "<li>KEEP leaves the node alone</li>" +
+            "<li>REMOVE removes node</li>" +
+            "<li>ISOLATE removes all edges of the node</li>" +
+            "</ul>")
+    @JIPipeParameter("graph-postprocessing")
+    @ExpressionParameterSettings(variableSource = GraphPostprocessingVariables.class)
+    public DefaultExpressionParameter getGraphPostprocessing() {
+        return graphPostprocessing;
+    }
+
+    @JIPipeParameter("graph-postprocessing")
+    public void setGraphPostprocessing(DefaultExpressionParameter graphPostprocessing) {
+        this.graphPostprocessing = graphPostprocessing;
     }
 
     /**
@@ -264,7 +322,17 @@ public class SplitRoiConnectedComponentsAlgorithm extends ImageRoiProcessorAlgor
         return false;
     }
 
-    private void putMeasurementsIntoVariable(ResultsTableData inputMeasurements, int first, int second, ImagePlus referenceImage, StaticVariableSet<Object> variableSet, Roi overlap, ROIListData temp) {
+    private void putMeasurementsIntoVariable(ResultsTableData inputMeasurements, int first, int second, ImagePlus referenceImage, StaticVariableSet<Object> variableSet, Roi overlap, ROIListData temp, Roi roi1, Roi roi2) {
+
+        variableSet.set("First.z", roi1.getZPosition());
+        variableSet.set("First.c", roi1.getCPosition());
+        variableSet.set("First.t", roi1.getTPosition());
+        variableSet.set("First.name", roi1.getName());
+        variableSet.set("Second.z", roi2.getZPosition());
+        variableSet.set("Second.c", roi2.getCPosition());
+        variableSet.set("Second.t", roi2.getTPosition());
+        variableSet.set("Second.name", roi2.getName());
+
         for (int col = 0; col < inputMeasurements.getColumnCount(); col++) {
             variableSet.set("First." + inputMeasurements.getColumnName(col), inputMeasurements.getValueAt(first, col));
             variableSet.set("Second." + inputMeasurements.getColumnName(col), inputMeasurements.getValueAt(second, col));
@@ -424,5 +492,27 @@ public class SplitRoiConnectedComponentsAlgorithm extends ImageRoiProcessorAlgor
         Merge,
         Follow,
         Split
+    }
+
+    public static class GraphPostprocessingVariables implements ExpressionParameterVariableSource {
+
+        public static final Set<ExpressionParameterVariable> VARIABLES;
+
+        static {
+            VARIABLES = new HashSet<>();
+            VARIABLES.add(new ExpressionParameterVariable("Degree", "Degree of the node", "degree"));
+            VARIABLES.add(new ExpressionParameterVariable("Z", "The Z location of the ROI (first index is 1, zero indicates no Z constraint)", "z"));
+            VARIABLES.add(new ExpressionParameterVariable("C", "The channel (C) location of the ROI (first index is 1, zero indicates no C constraint)", "c"));
+            VARIABLES.add(new ExpressionParameterVariable("T", "The frame (T) location of the ROI (first index is 1, zero indicates no T constraint)", "t"));
+            VARIABLES.add(new ExpressionParameterVariable("Name", "The name of the ROI (empty string if not set)", "name"));
+            VARIABLES.add(new ExpressionParameterVariable("Return: Keep node", "Return value that indicates that the node should be kept.", "KEEP"));
+            VARIABLES.add(new ExpressionParameterVariable("Return: Isolate node", "Return value that indicates that the node's edges should be removed.", "ISOLATE"));
+            VARIABLES.add(new ExpressionParameterVariable("Return: Remove node", "Return value that indicates that the node should be removed.", "REMOVE"));
+        }
+
+        @Override
+        public Set<ExpressionParameterVariable> getVariables(JIPipeParameterAccess parameterAccess) {
+            return VARIABLES;
+        }
     }
 }
