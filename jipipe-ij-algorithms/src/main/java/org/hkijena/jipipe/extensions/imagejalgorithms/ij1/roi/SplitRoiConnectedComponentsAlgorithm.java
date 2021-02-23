@@ -207,7 +207,12 @@ public class SplitRoiConnectedComponentsAlgorithm extends ImageRoiProcessorAlgor
                 postprocessingVariableSet.set("name", StringUtils.nullToEmpty(roi.getName()));
                 postprocessingVariableSet.set("degree", graph.degreeOf(index));
                 Object result = graphPostprocessing.evaluate(postprocessingVariableSet);
-                if("KEEP".equals(result)) {
+                if(result instanceof Boolean) {
+                    if(!(boolean) result) {
+                        graph.removeVertex(index);
+                    }
+                }
+                else if("KEEP".equals(result)) {
                     // Do nothing
                 }
                 else if("ISOLATE".equals(result)) {
@@ -220,7 +225,7 @@ public class SplitRoiConnectedComponentsAlgorithm extends ImageRoiProcessorAlgor
                     throw new UserFriendlyRuntimeException("Unsupported return value: " + result,
                             "Invalid return value for graph postprocessing!",
                             getName(),
-                            "Graph postprocessing expressions only can return one of following values: KEEP, ISOLATE, or REMOVE",
+                            "Graph postprocessing expressions only can return one of following values: KEEP, ISOLATE, or REMOVE. Boolean values are also allowed (true = KEEP, false = REMOVE)",
                             "Check if your expression is correct.");
                 }
             }
@@ -256,8 +261,8 @@ public class SplitRoiConnectedComponentsAlgorithm extends ImageRoiProcessorAlgor
             "This is applied after all processing steps. If not empty, this expression is executed for each node in the overlap graph. " +
             "Return one of following variables to determine what should be done with the node:" +
             "<ul>" +
-            "<li>KEEP leaves the node alone</li>" +
-            "<li>REMOVE removes node</li>" +
+            "<li>KEEP leaves the node alone (Alternative: Return boolean true)</li>" +
+            "<li>REMOVE removes node (Alternative: Return boolean false)</li>" +
             "<li>ISOLATE removes all edges of the node</li>" +
             "</ul>")
     @JIPipeParameter("graph-postprocessing")
