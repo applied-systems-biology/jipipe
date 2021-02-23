@@ -56,6 +56,8 @@ import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.noise.AddNoise2DAlgori
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.noise.DespeckleFilter2DAlgorithm;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.noise.RemoveOutliersFilter2DAlgorithm;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.opticalflow.MSEBlockFlowAlgorithm;
+import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.opticalflow.MSEGaussianFlowAlgorithm;
+import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.opticalflow.PMCCBlockFlowAlgorithm;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.roi.*;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.sharpen.LaplacianSharpen2DAlgorithm;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.statistics.GreyscalePixelsGenerator;
@@ -537,6 +539,8 @@ public class ImageJAlgorithmsExtension extends JIPipePrepackagedDefaultJavaExten
 
     private void registerOpticalFlowAlgorithms() {
         registerNodeType("ij-optical-flow-mse-block-flow", MSEBlockFlowAlgorithm.class, UIUtils.getIconURLFromResources("actions/object-tweak-rotate.png"));
+        registerNodeType("ij-optical-flow-mse-gaussian-flow", MSEGaussianFlowAlgorithm.class, UIUtils.getIconURLFromResources("actions/object-tweak-rotate.png"));
+        registerNodeType("ij-optical-flow-pmcc-block-flow", PMCCBlockFlowAlgorithm.class, UIUtils.getIconURLFromResources("actions/object-tweak-rotate.png"));
     }
 
     private void registerIOAlgorithms() {

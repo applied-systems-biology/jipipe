@@ -3,9 +3,9 @@ package org.hkijena.jipipe.extensions.imagejalgorithms.ij1.opticalflow;
 import ij.CompositeImage;
 import ij.ImagePlus;
 import ij.ImageStack;
+import ij.plugin.filter.GaussianBlur;
 import ij.process.ByteProcessor;
 import ij.process.FloatProcessor;
-import mpicbg.ij.integral.Mean;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
@@ -17,47 +17,47 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.utils.ImageJCalibrationMode;
 
 /**
- * Adapted from {@link mpicbg.ij.plugin.MSEBlockFlow}, as the methods there are all protected/private
+ * Adapted from {@link mpicbg.ij.plugin.MSEGaussianFlow}, as the methods there are all protected/private
  */
-@JIPipeDocumentation(name = "Optical flow (Integral Block MSE)", description = "Transfers image sequences into an optic flow field.\n" +
+@JIPipeDocumentation(name = "Optical flow (Gaussian Window MSE)", description = "Transfers image sequences into an optic flow field.\n" +
         "Flow fields are calculated for each pair (t,t+1) of the sequence with length |T| independently. " +
         "The motion vector for each pixel in image t is estimated by searching the most similar looking pixel in image t+1. " +
-        "The similarity measure is the sum of square differences of all pixels in a local vicinity. " +
-        "The local vicinity is defined by a block and is calculated using an IntegralImage. " +
-        "Both the size of the block and the search radius are parameters of the method.\n\n" +
+        "The similarity measure is the sum of differences of all pixels in a local vicinity. The local vicinity is defined by a Gaussian. " +
+        "Both the standard deviation of the Gaussian (the size of the local vicinity) and the search radius are parameters of the method.\n\n" +
         "The output is a two-channel image with (T-1) items. The pixels in each channel describe the relative location" +
         " of the next similar pixel in polar coordinates (default) or cartesian coordinates.")
 @JIPipeOrganization(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Optical flow")
 @JIPipeInputSlot(value = ImagePlus3DGreyscale32FData.class, slotName = "Input", autoCreate = true)
 @JIPipeOutputSlot(value = ImagePlus3DGreyscale32FData.class, slotName = "Vector field", autoCreate = true)
-public class MSEBlockFlowAlgorithm extends JIPipeSimpleIteratingAlgorithm {
+public class MSEGaussianFlowAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
-    private int blockRadius = 8;
+    private static final GaussianBlur GAUSSIAN_BLUR = new GaussianBlur();
+    private int sigma = 4;
     private int maxDistance = 7;
     private boolean outputPolarCoordinates = true;
 
-    public MSEBlockFlowAlgorithm(JIPipeNodeInfo info) {
+    public MSEGaussianFlowAlgorithm(JIPipeNodeInfo info) {
         super(info);
     }
 
-    public MSEBlockFlowAlgorithm(MSEBlockFlowAlgorithm other) {
+    public MSEGaussianFlowAlgorithm(MSEGaussianFlowAlgorithm other) {
         super(other);
-        this.blockRadius = other.blockRadius;
+        this.sigma = other.sigma;
         this.maxDistance = other.maxDistance;
         this.outputPolarCoordinates = other.outputPolarCoordinates;
     }
 
-    @JIPipeDocumentation(name = "Block radius", description = "Determines the local vicinity that is used to calculate the similarity of two pixels.")
-    @JIPipeParameter("block-radius")
-    public int getBlockRadius() {
-        return blockRadius;
+    @JIPipeDocumentation(name = "Sigma", description = "Determines the local vicinity that is used to calculate the similarity of two pixels.")
+    @JIPipeParameter("sigma")
+    public int getSigma() {
+        return sigma;
     }
 
-    @JIPipeParameter("block-radius")
+    @JIPipeParameter("sigma")
     public boolean setBlockRadius(int blockRadius) {
         if(blockRadius <= 0)
             return false;
-        this.blockRadius = blockRadius;
+        this.sigma = blockRadius;
         return true;
     }
 
@@ -168,8 +168,7 @@ public class MSEBlockFlowAlgorithm extends JIPipeSimpleIteratingAlgorithm {
                 subtractShifted( ip1, ip2, ipD, xo, yo );
 
                 // blur in order to compare small regions instead of single pixels
-                final Mean mean = new Mean( ipD );
-                mean.mean( blockRadius );
+                GAUSSIAN_BLUR.blurFloat( ipD, sigma, sigma, 0.002 );
 
                 final float[] ipDPixels = ( float[] )ipD.getPixels();
                 final float[] ipDMinPixels = ( float[] )ipDMin.getPixels();

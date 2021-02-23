@@ -3,9 +3,9 @@ package org.hkijena.jipipe.extensions.imagejalgorithms.ij1.opticalflow;
 import ij.CompositeImage;
 import ij.ImagePlus;
 import ij.ImageStack;
-import ij.process.ByteProcessor;
+import ij.process.ColorProcessor;
 import ij.process.FloatProcessor;
-import mpicbg.ij.integral.Mean;
+import mpicbg.ij.integral.BlockPMCC;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
@@ -16,13 +16,15 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d3.greyscale.Imag
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.utils.ImageJCalibrationMode;
 
+import java.util.Arrays;
+
 /**
- * Adapted from {@link mpicbg.ij.plugin.MSEBlockFlow}, as the methods there are all protected/private
+ * Adapted from {@link mpicbg.ij.plugin.PMCCBlockFlow}, as the methods there are all protected/private
  */
-@JIPipeDocumentation(name = "Optical flow (Integral Block MSE)", description = "Transfers image sequences into an optic flow field.\n" +
+@JIPipeDocumentation(name = "Optical flow (PMCC Block MSE)", description = "Transfers image sequences into an optic flow field.\n" +
         "Flow fields are calculated for each pair (t,t+1) of the sequence with length |T| independently. " +
         "The motion vector for each pixel in image t is estimated by searching the most similar looking pixel in image t+1. " +
-        "The similarity measure is the sum of square differences of all pixels in a local vicinity. " +
+        "The similarity measure is Pearson Product-Moment Correlation Coefficient of all pixels in a local vicinity. " +
         "The local vicinity is defined by a block and is calculated using an IntegralImage. " +
         "Both the size of the block and the search radius are parameters of the method.\n\n" +
         "The output is a two-channel image with (T-1) items. The pixels in each channel describe the relative location" +
@@ -30,17 +32,17 @@ import org.hkijena.jipipe.utils.ImageJCalibrationMode;
 @JIPipeOrganization(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Optical flow")
 @JIPipeInputSlot(value = ImagePlus3DGreyscale32FData.class, slotName = "Input", autoCreate = true)
 @JIPipeOutputSlot(value = ImagePlus3DGreyscale32FData.class, slotName = "Vector field", autoCreate = true)
-public class MSEBlockFlowAlgorithm extends JIPipeSimpleIteratingAlgorithm {
+public class PMCCBlockFlowAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     private int blockRadius = 8;
     private int maxDistance = 7;
     private boolean outputPolarCoordinates = true;
 
-    public MSEBlockFlowAlgorithm(JIPipeNodeInfo info) {
+    public PMCCBlockFlowAlgorithm(JIPipeNodeInfo info) {
         super(info);
     }
 
-    public MSEBlockFlowAlgorithm(MSEBlockFlowAlgorithm other) {
+    public PMCCBlockFlowAlgorithm(PMCCBlockFlowAlgorithm other) {
         super(other);
         this.blockRadius = other.blockRadius;
         this.maxDistance = other.maxDistance;
@@ -149,41 +151,66 @@ public class MSEBlockFlowAlgorithm extends JIPipeSimpleIteratingAlgorithm {
             final FloatProcessor r,
             final FloatProcessor phi)
     {
-        final ByteProcessor ipX = new ByteProcessor( ip1.getWidth(), ip1.getHeight() );
-        final ByteProcessor ipY = new ByteProcessor( ip1.getWidth(), ip1.getHeight() );
-        final FloatProcessor ipD = new FloatProcessor( ip1.getWidth(), ip1.getHeight() );
-        final FloatProcessor ipDMin = new FloatProcessor( ip1.getWidth(), ip1.getHeight() );
+        final BlockPMCC bc = new BlockPMCC( ip1.getWidth(), ip1.getHeight(), ip1, ip2 );
+        //final BlockPMCC bc = new BlockPMCC( ip1, ip2 );
 
-        final float[] ipDMinInitPixels = ( float[] )ipDMin.getPixels();
-        for ( int i = 0; i < ipDMinInitPixels.length; ++i )
-            ipDMinInitPixels[ i ] = Float.MAX_VALUE;
+        final FloatProcessor ipR = bc.getTargetProcessor();
+        final ColorProcessor ipX = new ColorProcessor( ipR.getWidth(), ipR.getHeight() );
+        final ColorProcessor ipY = new ColorProcessor( ipR.getWidth(), ipR.getHeight() );
 
-        for ( byte yo = ( byte )-maxDistance; yo <= maxDistance; ++yo )
+        /* init */
         {
-            for ( byte xo = ( byte )-maxDistance; xo <= maxDistance; ++xo )
+            final float[] ipRMaxPixels = ( float[] )r.getPixels();
+            Arrays.fill(ipRMaxPixels, -1);
+        }
+
+        for ( int yo = -maxDistance; yo <= maxDistance; ++yo )
+        {
+            for ( int xo = -maxDistance; xo <= maxDistance; ++xo )
             {
                 // continue if radius is larger than maxDistance
                 if ( yo * yo + xo * xo > maxDistance * maxDistance ) continue;
 
-                subtractShifted( ip1, ip2, ipD, xo, yo );
+                bc.setOffset( xo, yo );
+                bc.rSignedSquare( blockRadius );
 
-                // blur in order to compare small regions instead of single pixels
-                final Mean mean = new Mean( ipD );
-                mean.mean( blockRadius );
+//				stack.addSlice( xo + " " + yo, ipR.duplicate() );
 
-                final float[] ipDPixels = ( float[] )ipD.getPixels();
-                final float[] ipDMinPixels = ( float[] )ipDMin.getPixels();
-                final byte[] ipXPixels = ( byte[] )ipX.getPixels();
-                final byte[] ipYPixels = ( byte[] )ipY.getPixels();
+                final float[] ipRPixels = ( float[] )ipR.getPixels();
+                final float[] ipRMaxPixels = ( float[] )r.getPixels();
+                final int[] ipXPixels = ( int[] )ipX.getPixels();
+                final int[] ipYPixels = ( int[] )ipY.getPixels();
 
                 // update the translation fields
-                for ( int i = 0; i < ipDPixels.length; ++i )
+                final int h = ipR.getHeight() - maxDistance;
+                final int width = ipR.getWidth();
+                final int w = width - maxDistance;
+                for ( int y = maxDistance; y < h; ++y )
                 {
-                    if ( ipDPixels[ i ] < ipDMinPixels[ i ] )
+                    final int row = y * width;
+                    final int rowR;
+                    if ( yo < 0 )
+                        rowR = row;
+                    else
+                        rowR = ( y - yo ) * width;
+                    for ( int x = maxDistance; x < w; ++x )
                     {
-                        ipDMinPixels[ i ] = ipDPixels[ i ];
-                        ipXPixels[ i ] = xo;
-                        ipYPixels[ i ] = yo;
+                        final int i = row + x;
+                        final int iR;
+                        if ( xo < 0 )
+                            iR = rowR + x;
+                        else
+                            iR = rowR + ( x - xo );
+
+                        final float ipRPixel = ipRPixels[ iR ];
+                        final float ipRMaxPixel = ipRMaxPixels[ i ];
+
+                        if ( ipRPixel > ipRMaxPixel )
+                        {
+                            ipRMaxPixels[ i ] = ipRPixel;
+                            ipXPixels[ i ] = xo;
+                            ipYPixels[ i ] = yo;
+                        }
                     }
                 }
             }
@@ -191,16 +218,16 @@ public class MSEBlockFlowAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
         if(outputPolarCoordinates) {
             algebraicToPolar(
-                    (byte[]) ipX.getPixels(),
-                    (byte[]) ipY.getPixels(),
+                    (int[]) ipX.getPixels(),
+                    (int[]) ipY.getPixels(),
                     (float[]) r.getPixels(),
                     (float[]) phi.getPixels(),
                     maxDistance);
         }
         else {
             algebraicToCartesian(
-                    (byte[]) ipX.getPixels(),
-                    (byte[]) ipY.getPixels(),
+                    (int[]) ipX.getPixels(),
+                    (int[]) ipY.getPixels(),
                     (float[]) r.getPixels(),
                     (float[]) phi.getPixels(),
                     maxDistance);
@@ -208,8 +235,8 @@ public class MSEBlockFlowAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     }
 
     private void algebraicToPolar(
-            final byte[] ipXPixels,
-            final byte[] ipYPixels,
+            final int[] ipXPixels,
+            final int[] ipYPixels,
             final float[] ipRPixels,
             final float[] ipPhiPixels,
             final double max )
@@ -229,8 +256,8 @@ public class MSEBlockFlowAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     }
 
     private void algebraicToCartesian(
-            final byte[] ipXPixels,
-            final byte[] ipYPixels,
+            final int[] ipXPixels,
+            final int[] ipYPixels,
             final float[] ipCXPixels,
             final float[] ipCYhiPixels,
             final double max )
@@ -246,62 +273,4 @@ public class MSEBlockFlowAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         }
     }
 
-    private void subtractShifted(
-            final FloatProcessor a,
-            final FloatProcessor b,
-            final FloatProcessor c,
-            final int xo,
-            final int yo )
-    {
-        final float[] af = ( float[] )a.getPixels();
-        final float[] bf = ( float[] )b.getPixels();
-        final float[] cf = ( float[] )c.getPixels();
-
-        final int w = a.getWidth();
-        final int h = a.getHeight();
-
-        for ( int y = 0; y < h; ++y )
-        {
-            int yb = y + yo;
-            if ( yb < 0 || yb >= h )
-                yb = pingPong( yb, h - 1 );
-            final int yAdd = y * w;
-            final int ybAdd = yb * w;
-
-            for ( int x = 0; x < a.getWidth(); ++x )
-            {
-                int xb = x + xo;
-                if ( xb < 0 || xb >= w )
-                    xb = pingPong( xb, w - 1 );
-
-                final int i = yAdd + x;
-                final float d = bf[ ybAdd + xb ] - af[ i ];
-                cf[ i ] = d * d;
-            }
-        }
-    }
-
-    private int pingPong( final int a, final int mod )
-    {
-        int x = a;
-        final int p = 2 * mod;
-        if ( x < 0 ) x = -x;
-        if ( x >= mod )
-        {
-            if ( x <= p )
-                x = p - x;
-            else
-            {
-                /* catches mod == 1 to no additional cost */
-                try
-                {
-                    x %= p;
-                    if ( x >= mod )
-                        x = p - x;
-                }
-                catch ( ArithmeticException e ){ x = 0; }
-            }
-        }
-        return x;
-    }
 }
