@@ -43,6 +43,7 @@ import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.utils.ColorUtils;
 import org.hkijena.jipipe.utils.PathUtils;
 
+import javax.swing.*;
 import java.awt.*;
 import java.io.*;
 import java.nio.file.Path;
@@ -310,25 +311,40 @@ public class ROIListData extends ArrayList<Roi> implements JIPipeData {
         Map<Optional<ImagePlus>, ROIListData> byImage = groupByReferenceImage();
 
         RoiManager roiManager = null;
+        if (Macro.getOptions() != null && Interpreter.isBatchMode())
+            roiManager = Interpreter.getBatchModeRoiManager();
         if (roiManager == null) {
-            if (Macro.getOptions() != null && Interpreter.isBatchMode())
-                roiManager = Interpreter.getBatchModeRoiManager();
-            if (roiManager == null) {
-                Frame frame = WindowManager.getFrame("ROI Manager");
-                if (frame == null)
-                    IJ.run("ROI Manager...");
-                frame = WindowManager.getFrame("ROI Manager");
-                if (frame == null || !(frame instanceof RoiManager)) {
-                    return;
-                }
-                roiManager = (RoiManager) frame;
+            Frame frame = WindowManager.getFrame("ROI Manager");
+            if (frame == null)
+                IJ.run("ROI Manager...");
+            frame = WindowManager.getFrame("ROI Manager");
+            if (!(frame instanceof RoiManager)) {
+                return;
             }
+            roiManager = (RoiManager) frame;
         }
 
         ImagePlus fallbackImage = WindowManager.getCurrentImage();
         Margin margin = new Margin();
         margin.getWidth().setUseExactValue(false);
         margin.getHeight().setUseExactValue(false);
+
+        if(roiManager.getCount() > 0) {
+            int result = JOptionPane.showOptionDialog(workbench.getWindow(),
+                    "The current ROI manager already contains ROI. What should be done?",
+                    "Show ROI",
+                    JOptionPane.YES_NO_CANCEL_OPTION,
+                    JOptionPane.QUESTION_MESSAGE,
+                    null,
+                    new Object[]{"Add to list", "New list", "Cancel"},
+                    "Add to list");
+            if(result == JOptionPane.NO_OPTION) {
+                roiManager.reset();
+            }
+            else if(result == JOptionPane.CANCEL_OPTION) {
+                return;
+            }
+        }
 
         for (Map.Entry<Optional<ImagePlus>, ROIListData> entry : byImage.entrySet()) {
             if (!entry.getKey().isPresent()) {
