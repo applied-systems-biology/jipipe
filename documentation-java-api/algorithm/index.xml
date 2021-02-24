@@ -29,7 +29,7 @@ A solution can be JIPipeIteratingAlgorithm or JIPipeSimpleIteratingAlgorithm tha
       <guid>https://www.jipipe.org/documentation-java-api/algorithm/merging-algorithms/</guid>
       <description>You might need to develop an algorithm that does not simply iterate through its input(s), but organize it into groups to be merged. JIPipe comes with JIPipeMergingAlgorithm that uses the annotation attached during processing to find data rows that belong to the same data set. The implementation creates JIPipeMergingDataBatch instances that represent multiple data rows merged into one group.
 Please access data via the data interface.
- The only difference to JIPipeAlgorithm is that you need to override a different function called runIteration.</description>
+The only difference to JIPipeAlgorithm is that you need to override a different function called runIteration.</description>
     </item>
     
     <item>
@@ -53,7 +53,7 @@ For many cases, the default implementation JIPipeMutableSlotConfiguration is suf
       <description>You can add parameters to your algorithm by creating a property with a getter and setter. Then you annotate the getter and setter with the same @JIPipeParameter keys. Also add an @JIPipeDocumentation annotation to either the getter or setter.
 Parameters are automatically serialized and deserialized.
 Please make sure to send an event when the parameter is set, so the UI can update.
-// ... see previous tutorials public class MyAlgorithm extends JIPipeIteratingAlgorithm { private float roundness = 0.</description>
+// ... see previous tutorialspublic class MyAlgorithm extends JIPipeIteratingAlgorithm {private float roundness = 0.</description>
     </item>
     
     <item>

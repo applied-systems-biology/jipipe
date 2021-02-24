@@ -5,7 +5,7 @@
     
       <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-<meta name="revised" content="2021-01-20T13:21:41 CET">
+<meta name="revised" content="2021-02-24T01:06:25 CET">
 <title>Creating an algorithm :: JIPipe for ImageJ</title>
 <link rel="shortcut icon" href="../../images/favicon.png" type="image/x-icon" />
 <link href="../../css/font-awesome.min.css" rel="stylesheet">
@@ -24,7 +24,7 @@
 
     
   </head>
-  <body data-url="../../documentation-java-api/algorithm/">
+  <body data-url="/documentation-java-api/algorithm/">
     
       <header>
   <div class="logo">
@@ -148,10 +148,11 @@
     </li>
         </ul>
     </li>
-    <li data-nav-id="https://www.jipipe.org/documentation/" class="dd-item haschildren
+    <li data-nav-id="https://www.jipipe.org/documentation/" class="dd-item parent haschildren
         ">
       <div>
-      <a href="../../documentation/">Documentation</a><i class="fa fa-angle-right fa-lg category-icon"></i><i class="fa fa-circle-thin read-icon"></i>
+      <a href="../../documentation/">Documentation</a>
+            <i class="fa fa-angle-down fa-lg category-icon"></i><i class="fa fa-circle-thin read-icon"></i>
       </div>
         <ul>
       <li data-nav-id="https://www.jipipe.org/documentation/batch-pipelines/" class="dd-item">
@@ -505,7 +506,23 @@
     <option value="/faq/" >
    Frequently asked questions</option>
     <option value="/documentation/" >
-   Documentation</option>
+   Documentation</option> 
+      <option value="/documentation/batch-pipelines/" >- Batch pipelines</option>
+      <option value="/documentation/graph-editor/" >- Pipeline editor</option>
+      <option value="/documentation/expressions/" >- Expression parameters</option>
+      <option value="/documentation/graph-compartment/" >- Graph compartments</option>
+      <option value="/documentation/result-analysis/" >- Running a pipeline</option>
+      <option value="/documentation/quick-run/" >- Running a single node</option>
+      <option value="/documentation/cache/" >- Data caching</option>
+      <option value="/documentation/imagej-integration/" >- ImageJ integration</option>
+      <option value="/documentation/plugins/" >- Managing plugins</option>
+    <option value="/documentation/standard-library/" >
+  - 
+   Standard library</option>
+    <option value="/documentation/create-json-extensions/" >
+  - 
+   Extension builder</option>
+  
     <option value="/documentation-java-api/" >
    Java API documentation</option> 
       <option value="/documentation-java-api/javadocs/" >- JavaDocs</option>
@@ -607,6 +624,10 @@
 <span style="color:#75715e">// Input and output slots autoCreate automatically creates the slots if set to true and no slot configuration was provided
 </span><span style="color:#75715e"></span><span style="color:#75af00">@AlgorithmInputSlot</span><span style="color:#f92672">(</span><span style="color:#111">value</span> <span style="color:#f92672">=</span> <span style="color:#111">ImagePlusData</span><span style="color:#f92672">.</span><span style="color:#75af00">class</span><span style="color:#f92672">,</span> <span style="color:#111">slotName</span> <span style="color:#f92672">=</span> <span style="color:#d88200">&#34;Input&#34;</span><span style="color:#f92672">,</span> <span style="color:#111">autoCreate</span> <span style="color:#f92672">=</span> <span style="color:#00a8c8">true</span><span style="color:#f92672">)</span>
 <span style="color:#75af00">@AlgorithmOutputSlot</span><span style="color:#f92672">(</span><span style="color:#111">value</span> <span style="color:#f92672">=</span> <span style="color:#111">ImagePlusData</span><span style="color:#f92672">.</span><span style="color:#75af00">class</span><span style="color:#f92672">,</span> <span style="color:#111">slotName</span> <span style="color:#f92672">=</span> <span style="color:#d88200">&#34;Output&#34;</span><span style="color:#f92672">,</span> <span style="color:#111">autoCreate</span> <span style="color:#f92672">=</span> <span style="color:#00a8c8">true</span><span style="color:#f92672">)</span>
+
+<span style="color:#75715e">// You can add multiple JIPipeCitation annotations to provide citations for this node only
+</span><span style="color:#75715e"></span><span style="color:#75af00">@JIPipeCitation</span><span style="color:#f92672">(</span><span style="color:#d88200">&#34;Additional citation&#34;</span><span style="color:#f92672">)</span>
+
 <span style="color:#00a8c8">public</span> <span style="color:#00a8c8">class</span> <span style="color:#75af00">MyAlgorithm</span> <span style="color:#00a8c8">extends</span> <span style="color:#111">JIPipeAlgorithm</span> <span style="color:#f92672">{</span>
 
     <span style="color:#75715e">/*

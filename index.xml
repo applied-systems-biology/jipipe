@@ -78,7 +78,7 @@ Can I save data by their metadata? Yes, use the node Miscellaneous &amp;gt; Expo
       
       <guid>https://www.jipipe.org/documentation-json-api/graph-node/</guid>
       <description>This document describes the properties of the JSON API object. You also can access the document in JSON Schema format: algorithm-node.schema.json
- Node in a graph   jipipe:slot-configuration:  object   [object Object]      User-defined slots. Might be ignored depending on the algorithm. The keys are the slot names. See slot-definition        jipipe:algorithm-ui-location:  object   [object Object]     Locations of this node within the UI.</description>
+Node in a graphjipipe:slot-configuration:object[object Object]User-defined slots. Might be ignored depending on the algorithm. The keys are the slot names.See slot-definitionjipipe:algorithm-ui-location:object[object Object]Locations of this node within the UI.</description>
     </item>
     
     <item>
@@ -89,7 +89,7 @@ Can I save data by their metadata? Yes, use the node Miscellaneous &amp;gt; Expo
       <guid>https://www.jipipe.org/documentation/batch-pipelines/</guid>
       <description>JIPipe was designed to always process data in batches, meaning that algorithms always work on multiple data sets at once. This greatly reduces the required work to upscale a processing pipeline from one or few to a large amount of data sets.
 We will use this pipeline as example:
-mermaid.initialize({startOnLoad:true}); graph LR; A[File] -- B[Load image] B -- C[Apply gaussian]  In the pipeline, a file is provided as input. Then the file is loaded as image.</description>
+mermaid.initialize({startOnLoad:true});graph LR;A[File] -- B[Load image]B -- C[Apply gaussian] In the pipeline, a file is provided as input. Then the file is loaded as image.</description>
     </item>
     
     <item>
@@ -109,7 +109,7 @@ A solution can be JIPipeIteratingAlgorithm or JIPipeSimpleIteratingAlgorithm tha
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
       <guid>https://www.jipipe.org/tutorials/analysis/</guid>
-      <description>This tutorial is also available as video.   1. First start On starting JIPipe, you will see such a screen: It contains a short introduction, the graph compartment editor, an three pre-defined graph compartments Preprocessing, Analysis, and Postprocessing. As described in the graph compartment documentation, you can ignore graph graph compartments. But in this tutorial we will make use of its capabilities to clearly separate the pipeline into the mentioned tree steps.</description>
+      <description>This tutorial is also available as video.1. First startOn starting JIPipe, you will see such a screen: It contains a short introduction, the graph compartment editor,an three pre-defined graph compartments Preprocessing, Analysis, and Postprocessing. As described in the graph compartment documentation, youcan ignore graph graph compartments. But in this tutorial we will make use of its capabilities to clearly separate the pipeline into the mentioned tree steps.</description>
     </item>
     
     <item>
@@ -138,7 +138,7 @@ An user interface is shown when a user select a row in the results table. There 
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
       <guid>https://www.jipipe.org/tutorials/analysis_video/</guid>
-      <description> This tutorial is also available as text tutorial.   </description>
+      <description>This tutorial is also available as text tutorial.</description>
     </item>
     
     <item>
@@ -149,7 +149,7 @@ An user interface is shown when a user select a row in the results table. There 
       <guid>https://www.jipipe.org/documentation-java-api/algorithm/merging-algorithms/</guid>
       <description>You might need to develop an algorithm that does not simply iterate through its input(s), but organize it into groups to be merged. JIPipe comes with JIPipeMergingAlgorithm that uses the annotation attached during processing to find data rows that belong to the same data set. The implementation creates JIPipeMergingDataBatch instances that represent multiple data rows merged into one group.
 Please access data via the data interface.
- The only difference to JIPipeAlgorithm is that you need to override a different function called runIteration.</description>
+The only difference to JIPipeAlgorithm is that you need to override a different function called runIteration.</description>
     </item>
     
     <item>
@@ -159,7 +159,7 @@ Please access data via the data interface.
       
       <guid>https://www.jipipe.org/documentation-json-api/algorithm/</guid>
       <description>This document describes the properties of the JSON API object. You also can access the document in JSON Schema format: algorithm.schema.json
- Defines a new node type   id:  string       Unique algorithm ID   metadata:  See metadata        General algorithm metadata   category:  string   org.hkijena.jipipe:miscellaneous      The category   exported-parameters:  object   [object Object]     List of parameters that will be exported to users of the node   graph:  See graph        This graph is executed when the algorithm is run   menu-path:  string       Optional menu path within the category menu   jipipe:project-type:  string  , x ∈ { graph-wrapper-algorithm  (default) }       Identifies the JSON as algorithm      Example { &amp;#34;id&amp;#34; : &amp;#34;folder-list-tif&amp;#34;, &amp;#34;metadata&amp;#34; : { &amp;#34;name&amp;#34; : &amp;#34;List TIFF files&amp;#34;, &amp;#34;description&amp;#34; : &amp;#34;Lists all TIFF files in a folder&amp;#34;, &amp;#34;authors&amp;#34; : &amp;#34;Ruman Gerst&amp;#34;, &amp;#34;website&amp;#34; : &amp;#34;&amp;#34;, &amp;#34;license&amp;#34; : &amp;#34;BSD-2&amp;#34;, &amp;#34;citation&amp;#34; : &amp;#34;&amp;#34; }, &amp;#34;category&amp;#34; : &amp;#34;Converter&amp;#34;, &amp;#34;parameter-visibilities&amp;#34; : { &amp;#34;visible-keys&amp;#34; : [ ] }, &amp;#34;graph&amp;#34; : { &amp;#34;nodes&amp;#34; : { &amp;#34;default-preprocessing-filter-files&amp;#34; : { &amp;#34;jipipe:slot-configuration&amp;#34; : { &amp;#34;Files&amp;#34; : { &amp;#34;slot-data-type&amp;#34; : &amp;#34;file&amp;#34;, &amp;#34;slot-type&amp;#34; : &amp;#34;Input&amp;#34;, &amp;#34;inherited-slot&amp;#34; : null, &amp;#34;name&amp;#34; : &amp;#34;Files&amp;#34;, &amp;#34;custom-name&amp;#34; : null, &amp;#34;inheritance-conversions&amp;#34; : { } }, &amp;#34;Filtered files&amp;#34; : { &amp;#34;slot-data-type&amp;#34; : &amp;#34;file&amp;#34;, &amp;#34;slot-type&amp;#34; : &amp;#34;Output&amp;#34;, &amp;#34;inherited-slot&amp;#34; : null, &amp;#34;name&amp;#34; : &amp;#34;Filtered files&amp;#34;, &amp;#34;custom-name&amp;#34; : null, &amp;#34;inheritance-conversions&amp;#34; : { } } }, &amp;#34;jipipe:algorithm-ui-location&amp;#34; : { &amp;#34;{Vertical}&amp;#34; : { &amp;#34;x&amp;#34; : 25, &amp;#34;y&amp;#34; : 250 } }, &amp;#34;jipipe:algorithm-type&amp;#34; : &amp;#34;file-filter&amp;#34;, &amp;#34;jipipe:algorithm-compartment&amp;#34; : &amp;#34;DEFAULT&amp;#34;, &amp;#34;name&amp;#34; : &amp;#34;Filter *.</description>
+Defines a new node typeid:stringUnique algorithm IDmetadata:See metadataGeneral algorithm metadatacategory:stringorg.hkijena.jipipe:miscellaneousThe categoryexported-parameters:object[object Object]List of parameters that will be exported to users of the nodegraph:See graphThis graph is executed when the algorithm is runmenu-path:stringOptional menu path within the category menujipipe:project-type:string, x ∈ {graph-wrapper-algorithm(default)}Identifies the JSON as algorithmExample {&amp;#34;id&amp;#34; : &amp;#34;folder-list-tif&amp;#34;,&amp;#34;metadata&amp;#34; : {&amp;#34;name&amp;#34; : &amp;#34;List TIFF files&amp;#34;,&amp;#34;description&amp;#34; : &amp;#34;Lists all TIFF files in a folder&amp;#34;,&amp;#34;authors&amp;#34; : &amp;#34;Ruman Gerst&amp;#34;,&amp;#34;website&amp;#34; : &amp;#34;&amp;#34;,&amp;#34;license&amp;#34; : &amp;#34;BSD-2&amp;#34;,&amp;#34;citation&amp;#34; : &amp;#34;&amp;#34;},&amp;#34;category&amp;#34; : &amp;#34;Converter&amp;#34;,&amp;#34;parameter-visibilities&amp;#34; : {&amp;#34;visible-keys&amp;#34; : [ ]},&amp;#34;graph&amp;#34; : {&amp;#34;nodes&amp;#34; : {&amp;#34;default-preprocessing-filter-files&amp;#34; : {&amp;#34;jipipe:slot-configuration&amp;#34; : {&amp;#34;Files&amp;#34; : {&amp;#34;slot-data-type&amp;#34; : &amp;#34;file&amp;#34;,&amp;#34;slot-type&amp;#34; : &amp;#34;Input&amp;#34;,&amp;#34;inherited-slot&amp;#34; : null,&amp;#34;name&amp;#34; : &amp;#34;Files&amp;#34;,&amp;#34;custom-name&amp;#34; : null,&amp;#34;inheritance-conversions&amp;#34; : { }},&amp;#34;Filtered files&amp;#34; : {&amp;#34;slot-data-type&amp;#34; : &amp;#34;file&amp;#34;,&amp;#34;slot-type&amp;#34; : &amp;#34;Output&amp;#34;,&amp;#34;inherited-slot&amp;#34; : null,&amp;#34;name&amp;#34; : &amp;#34;Filtered files&amp;#34;,&amp;#34;custom-name&amp;#34; : null,&amp;#34;inheritance-conversions&amp;#34; : { }}},&amp;#34;jipipe:algorithm-ui-location&amp;#34; : {&amp;#34;{Vertical}&amp;#34; : {&amp;#34;x&amp;#34; : 25,&amp;#34;y&amp;#34; : 250}},&amp;#34;jipipe:algorithm-type&amp;#34; : &amp;#34;file-filter&amp;#34;,&amp;#34;jipipe:algorithm-compartment&amp;#34; : &amp;#34;DEFAULT&amp;#34;,&amp;#34;name&amp;#34; : &amp;#34;Filter *.</description>
     </item>
     
     <item>
@@ -168,7 +168,7 @@ Please access data via the data interface.
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
       <guid>https://www.jipipe.org/tutorials/extension/</guid>
-      <description>1. Existing pipeline In this tutorial, we will create a custom algorithm extension based on parts of the pipeline created in the other tutorial. Please open the project file for the pipeline and navigate to the Preprocessing tab.    2. Selecting the algorithms Please select the following algorithms (you can either do this by holding the Shift keyboard button and clicking the nodes or dragging a selection around the nodes):  Folder list Path to annotation List files Import image  After selecting the algorithms, right-click a selected node and click Export.</description>
+      <description>1. Existing pipelineIn this tutorial, we will create a custom algorithm extension based on parts of the pipeline created in the other tutorial.Please open the project file for the pipeline and navigate to the Preprocessing tab.2. Selecting the algorithmsPlease select the following algorithms (you can either do this by holding the Shift keyboard button and clicking the nodes or dragging a selection around the nodes):Folder listPath to annotationList filesImport imageAfter selecting the algorithms, right-click a selected node and click Export.</description>
     </item>
     
     <item>
@@ -178,7 +178,7 @@ Please access data via the data interface.
       
       <guid>https://www.jipipe.org/documentation-java-api/create-extension/</guid>
       <description>Prerequisities  Java 8 (Java 9+ are not working)  If you are using Windows or a Linux distribution without Java 8, we recommend AdoptOpenJDK (Please choose OpenJDK 8)   Maven  Creating the project The project should have following structure:
-Project root └── pom.xml └── src └── main ├── java └── resources Both the java and resources folder should contain a folder structure that is equivalent the groupId and artifactId of the project.</description>
+Project root└── pom.xml└── src└── main├── java└── resourcesBoth the java and resources folder should contain a folder structure that is equivalent the groupId and artifactId of the project.</description>
     </item>
     
     <item>
@@ -250,7 +250,7 @@ By default, there are four data types that can be used as input and output:</des
       
       <guid>https://www.jipipe.org/documentation-json-api/dependency/</guid>
       <description>This document describes the properties of the JSON API object. You also can access the document in JSON Schema format: dependency.schema.json
- Project or extension dependency. Refers to a JIPipe extension.   metadata:  See metadata         id:  string       Unique ID of this dependency should have format  .  :       version:  string       Version of this dependency      Example { &amp;#34;metadata&amp;#34; : { &amp;#34;name&amp;#34; : &amp;#34;Filesystem types and algorithms&amp;#34;, &amp;#34;description&amp;#34; : &amp;#34;Data types and algorithms for interacting with files and folders&amp;#34;, &amp;#34;authors&amp;#34; : &amp;#34;Zoltán Cseresnyés, Ruman Gerst&amp;#34;, &amp;#34;website&amp;#34; : &amp;#34;https://applied-systems-biology.</description>
+Project or extension dependency. Refers to a JIPipe extension.metadata:See metadataid:stringUnique ID of this dependency should have format.:version:stringVersion of this dependencyExample {&amp;#34;metadata&amp;#34; : {&amp;#34;name&amp;#34; : &amp;#34;Filesystem types and algorithms&amp;#34;,&amp;#34;description&amp;#34; : &amp;#34;Data types and algorithms for interacting with files and folders&amp;#34;,&amp;#34;authors&amp;#34; : &amp;#34;Zoltán Cseresnyés, Ruman Gerst&amp;#34;,&amp;#34;website&amp;#34; : &amp;#34;https://applied-systems-biology.</description>
     </item>
     
     <item>
@@ -294,7 +294,7 @@ To define parameters, use the algorithms found in Add data &amp;gt; Parameters. 
       <description>You can add parameters to your algorithm by creating a property with a getter and setter. Then you annotate the getter and setter with the same @JIPipeParameter keys. Also add an @JIPipeDocumentation annotation to either the getter or setter.
 Parameters are automatically serialized and deserialized.
 Please make sure to send an event when the parameter is set, so the UI can update.
-// ... see previous tutorials public class MyAlgorithm extends JIPipeIteratingAlgorithm { private float roundness = 0.</description>
+// ... see previous tutorialspublic class MyAlgorithm extends JIPipeIteratingAlgorithm {private float roundness = 0.</description>
     </item>
     
     <item>
@@ -325,7 +325,7 @@ How algorithms are registered Algorithm instances are created by an JIPipeNodeIn
       
       <guid>https://www.jipipe.org/documentation-json-api/graph-edge/</guid>
       <description>This document describes the properties of the JSON API object. You also can access the document in JSON Schema format: graph-edge.schema.json
- Edge in a graph   source-node:  string       Algorithm ID of the edge source   target-node:  string       Algorithm ID of the edge target   source-slot:  string       Slot name within the edge source algorithm   target-slot:  string       Slot name within the edge target algorithm      Example { &amp;#34;source-node&amp;#34; : &amp;#34;default-preprocessing-list-files&amp;#34;, &amp;#34;target-node&amp;#34; : &amp;#34;default-preprocessing-filter-files&amp;#34;, &amp;#34;source-slot&amp;#34; : &amp;#34;Files&amp;#34;, &amp;#34;target-slot&amp;#34; : &amp;#34;Files&amp;#34; } </description>
+Edge in a graphsource-node:stringAlgorithm ID of the edge sourcetarget-node:stringAlgorithm ID of the edge targetsource-slot:stringSlot name within the edge source algorithmtarget-slot:stringSlot name within the edge target algorithmExample {&amp;#34;source-node&amp;#34; : &amp;#34;default-preprocessing-list-files&amp;#34;,&amp;#34;target-node&amp;#34; : &amp;#34;default-preprocessing-filter-files&amp;#34;,&amp;#34;source-slot&amp;#34; : &amp;#34;Files&amp;#34;,&amp;#34;target-slot&amp;#34; : &amp;#34;Files&amp;#34;}</description>
     </item>
     
     <item>
@@ -366,7 +366,7 @@ We recommend to use the algorithms in Annotation &amp;gt; Generate while setting
       
       <guid>https://www.jipipe.org/documentation-json-api/graph/</guid>
       <description>This document describes the properties of the JSON API object. You also can access the document in JSON Schema format: graph.schema.json
- A graph   nodes:  object   [object Object]      The nodes. Keys are the unique algorithm instance IDs. See graph-node        edges:  object[]       The edges. IDs in the edge definition must be consistent to the IDs in the &#39;nodes&#39; entry See graph-edge           Example { &amp;#34;nodes&amp;#34; : { &amp;#34;default-preprocessing-filter-files&amp;#34; : { &amp;#34;jipipe:slot-configuration&amp;#34; : { &amp;#34;Files&amp;#34; : { &amp;#34;slot-data-type&amp;#34; : &amp;#34;file&amp;#34;, &amp;#34;slot-type&amp;#34; : &amp;#34;Input&amp;#34;, &amp;#34;inherited-slot&amp;#34; : null, &amp;#34;name&amp;#34; : &amp;#34;Files&amp;#34;, &amp;#34;custom-name&amp;#34; : null, &amp;#34;inheritance-conversions&amp;#34; : { } }, &amp;#34;Filtered files&amp;#34; : { &amp;#34;slot-data-type&amp;#34; : &amp;#34;file&amp;#34;, &amp;#34;slot-type&amp;#34; : &amp;#34;Output&amp;#34;, &amp;#34;inherited-slot&amp;#34; : null, &amp;#34;name&amp;#34; : &amp;#34;Filtered files&amp;#34;, &amp;#34;custom-name&amp;#34; : null, &amp;#34;inheritance-conversions&amp;#34; : { } } }, &amp;#34;jipipe:algorithm-ui-location&amp;#34; : { &amp;#34;{Vertical}&amp;#34; : { &amp;#34;x&amp;#34; : 25, &amp;#34;y&amp;#34; : 250 } }, &amp;#34;jipipe:algorithm-type&amp;#34; : &amp;#34;file-filter&amp;#34;, &amp;#34;jipipe:algorithm-compartment&amp;#34; : &amp;#34;DEFAULT&amp;#34;, &amp;#34;name&amp;#34; : &amp;#34;Filter *.</description>
+A graphnodes:object[object Object]The nodes. Keys are the unique algorithm instance IDs.See graph-nodeedges:object[]The edges. IDs in the edge definition must be consistent to the IDs in the &#39;nodes&#39; entrySee graph-edgeExample {&amp;#34;nodes&amp;#34; : {&amp;#34;default-preprocessing-filter-files&amp;#34; : {&amp;#34;jipipe:slot-configuration&amp;#34; : {&amp;#34;Files&amp;#34; : {&amp;#34;slot-data-type&amp;#34; : &amp;#34;file&amp;#34;,&amp;#34;slot-type&amp;#34; : &amp;#34;Input&amp;#34;,&amp;#34;inherited-slot&amp;#34; : null,&amp;#34;name&amp;#34; : &amp;#34;Files&amp;#34;,&amp;#34;custom-name&amp;#34; : null,&amp;#34;inheritance-conversions&amp;#34; : { }},&amp;#34;Filtered files&amp;#34; : {&amp;#34;slot-data-type&amp;#34; : &amp;#34;file&amp;#34;,&amp;#34;slot-type&amp;#34; : &amp;#34;Output&amp;#34;,&amp;#34;inherited-slot&amp;#34; : null,&amp;#34;name&amp;#34; : &amp;#34;Filtered files&amp;#34;,&amp;#34;custom-name&amp;#34; : null,&amp;#34;inheritance-conversions&amp;#34; : { }}},&amp;#34;jipipe:algorithm-ui-location&amp;#34; : {&amp;#34;{Vertical}&amp;#34; : {&amp;#34;x&amp;#34; : 25,&amp;#34;y&amp;#34; : 250}},&amp;#34;jipipe:algorithm-type&amp;#34; : &amp;#34;file-filter&amp;#34;,&amp;#34;jipipe:algorithm-compartment&amp;#34; : &amp;#34;DEFAULT&amp;#34;,&amp;#34;name&amp;#34; : &amp;#34;Filter *.</description>
     </item>
     
     <item>
@@ -397,7 +397,7 @@ Accessing the cache Cache items are assigned a unique identifier ( Snapshot) tha
       
       <guid>https://www.jipipe.org/documentation-json-api/json-extension/</guid>
       <description>This document describes the properties of the JSON API object. You also can access the document in JSON Schema format: json-extension.schema.json
- An extension that can be put into the ImageJ plugin folder   id:  string       Unique ID of this extension. Should have format  .  :       version:  string       Version of this extension   metadata:  See metadata        General metadata about the extension   algorithms:  object[]       List of added algorithms See algorithm           Example { &amp;#34;id&amp;#34; : &amp;#34;org.</description>
+An extension that can be put into the ImageJ plugin folderid:stringUnique ID of this extension. Should have format.:version:stringVersion of this extensionmetadata:See metadataGeneral metadata about the extensionalgorithms:object[]List of added algorithmsSee algorithmExample {&amp;#34;id&amp;#34; : &amp;#34;org.</description>
     </item>
     
     <item>
@@ -439,7 +439,7 @@ Creating plots Plots can be created via the Analyze &amp;gt; Plot &amp;gt; Plot 
       
       <guid>https://www.jipipe.org/documentation-json-api/metadata/</guid>
       <description>This document describes the properties of the JSON API object. You also can access the document in JSON Schema format: metadata.schema.json
- Commonly used metadata type in JIPipe.   name:  string       A name   description:  string       A description   authors:  string       Comma-separated list of authors   website:  string       Website of the project   license:  string       Name of the license   citation:  string       Citation for the publication      Example { &amp;#34;name&amp;#34; : &amp;#34;Image property annotations&amp;#34;, &amp;#34;description&amp;#34; : &amp;#34;Commonly used annotations for describing image properties&amp;#34;, &amp;#34;authors&amp;#34; : &amp;#34;Zoltán Cseresnyés, Ruman Gerst&amp;#34;, &amp;#34;website&amp;#34; : &amp;#34;https://applied-systems-biology.</description>
+Commonly used metadata type in JIPipe.name:stringA namedescription:stringA descriptionauthors:stringComma-separated list of authorswebsite:stringWebsite of the projectlicense:stringName of the licensecitation:stringCitation for the publicationExample {&amp;#34;name&amp;#34; : &amp;#34;Image property annotations&amp;#34;,&amp;#34;description&amp;#34; : &amp;#34;Commonly used annotations for describing image properties&amp;#34;,&amp;#34;authors&amp;#34; : &amp;#34;Zoltán Cseresnyés, Ruman Gerst&amp;#34;,&amp;#34;website&amp;#34; : &amp;#34;https://applied-systems-biology.</description>
     </item>
     
     <item>
@@ -461,7 +461,7 @@ You can find the nodes in the Miscellaneous menu. You can find algorithms equiva
       <guid>https://www.jipipe.org/documentation-java-api/usage-in-java/</guid>
       <description>The JIPipe API allows you to run algorithms, graphs, and projects in a pure Java environment without the need for a GUI or through ImageJ1 or ImageJ2 scripts.
 Prerequisites To use the JIPipe API JIPipe must be initialized first. This requires an ImageJ instance or any other way to load SciJava plugins. The following example shows how to initialize JIPipe.
-public static void main(String[] args) { // Extract necessary SciJava variables  // An alternative is to create a @Plugin and execute this plugin via ImageJ  final ImageJ ij = new ImageJ(); Context context = ij.</description>
+public static void main(String[] args) {// Extract necessary SciJava variables // An alternative is to create a @Plugin and execute this plugin via ImageJ final ImageJ ij = new ImageJ();Context context = ij.</description>
     </item>
     
     <item>
@@ -471,7 +471,7 @@ public static void main(String[] args) { // Extract necessary SciJava variables 
       
       <guid>https://www.jipipe.org/documentation-json-api/point/</guid>
       <description>This document describes the properties of the JSON API object. You also can access the document in JSON Schema format: point.schema.json
- A point   x:  integer       X coordinate   y:  integer       Y coordinate      Example { &amp;#34;x&amp;#34; : 2900, &amp;#34;y&amp;#34; : 100 } </description>
+A pointx:integerX coordinatey:integerY coordinateExample {&amp;#34;x&amp;#34; : 2900,&amp;#34;y&amp;#34; : 100}</description>
     </item>
     
     <item>
@@ -481,7 +481,7 @@ public static void main(String[] args) { // Extract necessary SciJava variables 
       
       <guid>https://www.jipipe.org/documentation-json-api/project/</guid>
       <description>This document describes the properties of the JSON API object. You also can access the document in JSON Schema format: project.schema.json
- An analysis project   jipipe:project-type:  string  , x ∈ { project  (default) }       Used to identify this JSON as JIPipe project   metadata:  See metadata    [object Object]      General information about the project   dependencies:  object[]       Dependencies of this project See dependency        graph:  See graph    [object Object]      Contains the pipeline nodes   compartments:  object   [object Object]      For organization of compartments  compartment-graph:  See graph    [object Object]      Structural graph of compartments          Example { &amp;#34;jipipe:project-type&amp;#34; : &amp;#34;project&amp;#34;, &amp;#34;metadata&amp;#34; : { &amp;#34;name&amp;#34; : &amp;#34;Empty (3 compartments)&amp;#34;, &amp;#34;description&amp;#34; : &amp;#34;This template contains three compartments &amp;#39;Preprocessing&amp;#39;, &amp;#39;Analysis&amp;#39;, and &amp;#39;Postprocessing&amp;#39; that are connected to each other.</description>
+An analysis projectjipipe:project-type:string, x ∈ {project(default)}Used to identify this JSON as JIPipe projectmetadata:See metadata[object Object]General information about the projectdependencies:object[]Dependencies of this projectSee dependencygraph:See graph[object Object]Contains the pipeline nodescompartments:object[object Object]For organization of compartmentscompartment-graph:See graph[object Object]Structural graph of compartmentsExample {&amp;#34;jipipe:project-type&amp;#34; : &amp;#34;project&amp;#34;,&amp;#34;metadata&amp;#34; : {&amp;#34;name&amp;#34; : &amp;#34;Empty (3 compartments)&amp;#34;,&amp;#34;description&amp;#34; : &amp;#34;This template contains three compartments &amp;#39;Preprocessing&amp;#39;, &amp;#39;Analysis&amp;#39;, and &amp;#39;Postprocessing&amp;#39; that are connected to each other.</description>
     </item>
     
     <item>
@@ -491,7 +491,7 @@ public static void main(String[] args) { // Extract necessary SciJava variables 
       
       <guid>https://www.jipipe.org/documentation-json-api/slot-definition/</guid>
       <description>This document describes the properties of the JSON API object. You also can access the document in JSON Schema format: slot-definition.schema.json
- Defines a data slot   slot-data-type:  string       The data type ID of the data stored in this slot   slot-type:  string  , x ∈ { Input  , Output  }       Determines if the slot is an input or an output   inherited-slot:  object      Only valid for output slot.</description>
+Defines a data slotslot-data-type:stringThe data type ID of the data stored in this slotslot-type:string, x ∈ {Input,Output}Determines if the slot is an input or an outputinherited-slot:objectOnly valid for output slot.</description>
     </item>
     
     <item>

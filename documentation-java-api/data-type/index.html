@@ -5,7 +5,7 @@
     
       <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-<meta name="revised" content="2021-01-20T13:21:41 CET">
+<meta name="revised" content="2021-02-24T01:06:25 CET">
 <title>Creating a data type :: JIPipe for ImageJ</title>
 <link rel="shortcut icon" href="../../images/favicon.png" type="image/x-icon" />
 <link href="../../css/font-awesome.min.css" rel="stylesheet">
@@ -24,7 +24,7 @@
 
     
   </head>
-  <body data-url="../../documentation-java-api/data-type/">
+  <body data-url="/documentation-java-api/data-type/">
     
       <header>
   <div class="logo">
@@ -148,10 +148,11 @@
     </li>
         </ul>
     </li>
-    <li data-nav-id="https://www.jipipe.org/documentation/" class="dd-item haschildren
+    <li data-nav-id="https://www.jipipe.org/documentation/" class="dd-item parent haschildren
         ">
       <div>
-      <a href="../../documentation/">Documentation</a><i class="fa fa-angle-right fa-lg category-icon"></i><i class="fa fa-circle-thin read-icon"></i>
+      <a href="../../documentation/">Documentation</a>
+            <i class="fa fa-angle-down fa-lg category-icon"></i><i class="fa fa-circle-thin read-icon"></i>
       </div>
         <ul>
       <li data-nav-id="https://www.jipipe.org/documentation/batch-pipelines/" class="dd-item">
@@ -505,7 +506,23 @@
     <option value="/faq/" >
    Frequently asked questions</option>
     <option value="/documentation/" >
-   Documentation</option>
+   Documentation</option> 
+      <option value="/documentation/batch-pipelines/" >- Batch pipelines</option>
+      <option value="/documentation/graph-editor/" >- Pipeline editor</option>
+      <option value="/documentation/expressions/" >- Expression parameters</option>
+      <option value="/documentation/graph-compartment/" >- Graph compartments</option>
+      <option value="/documentation/result-analysis/" >- Running a pipeline</option>
+      <option value="/documentation/quick-run/" >- Running a single node</option>
+      <option value="/documentation/cache/" >- Data caching</option>
+      <option value="/documentation/imagej-integration/" >- ImageJ integration</option>
+      <option value="/documentation/plugins/" >- Managing plugins</option>
+    <option value="/documentation/standard-library/" >
+  - 
+   Standard library</option>
+    <option value="/documentation/create-json-extensions/" >
+  - 
+   Extension builder</option>
+  
     <option value="/documentation-java-api/" >
    Java API documentation</option> 
       <option value="/documentation-java-api/javadocs/" >- JavaDocs</option>
@@ -569,7 +586,9 @@ In such cases <strong>all file or folder names</strong> within the storage path 
 <li><code>display()</code> shows the data in ImageJ, JIPipe, or any other GUI</li>
 <li><code>preview()</code> generates a GUI component that acts as thumbnail/preview of the contained data</li>
 </ul>
-<div class="highlight"><pre style="color:#272822;background-color:#fafafa;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#00a8c8">public</span> <span style="color:#00a8c8">class</span> <span style="color:#75af00">MyData</span> <span style="color:#00a8c8">implements</span> <span style="color:#111">JIPipeData</span> <span style="color:#f92672">{</span>
+<div class="highlight"><pre style="color:#272822;background-color:#fafafa;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#75af00">@JIPipeDocumentation</span><span style="color:#f92672">(</span><span style="color:#111">name</span> <span style="color:#f92672">=</span> <span style="color:#d88200">&#34;My data&#34;</span><span style="color:#f92672">,</span> <span style="color:#111">description</span> <span style="color:#f92672">=</span> <span style="color:#d88200">&#34;This is some data&#34;</span><span style="color:#f92672">)</span>
+<span style="color:#75715e">// You can use @JIPipeHidden to hide this data from data type list UIs
+</span><span style="color:#75715e"></span><span style="color:#00a8c8">public</span> <span style="color:#00a8c8">class</span> <span style="color:#75af00">MyData</span> <span style="color:#00a8c8">implements</span> <span style="color:#111">JIPipeData</span> <span style="color:#f92672">{</span>
     <span style="color:#111">String</span> <span style="color:#111">value</span><span style="color:#f92672">;</span>
 
     <span style="color:#00a8c8">public</span> <span style="color:#75af00">MyData</span><span style="color:#f92672">()</span> <span style="color:#f92672">{</span>
