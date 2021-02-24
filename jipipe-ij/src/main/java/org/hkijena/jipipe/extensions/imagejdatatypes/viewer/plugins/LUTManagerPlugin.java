@@ -2,6 +2,7 @@ package org.hkijena.jipipe.extensions.imagejdatatypes.viewer.plugins;
 
 import ij.CompositeImage;
 import ij.ImagePlus;
+import ij.process.ColorProcessor;
 import ij.process.ImageProcessor;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.extensions.imagejdatatypes.viewer.ImageViewerLUTEditor;
@@ -89,25 +90,39 @@ public class LUTManagerPlugin extends ImageViewerPanelPlugin {
 
     @Override
     public ImageProcessor draw(int z, int c, int t, ImageProcessor processor) {
+        if(!(processor instanceof ColorProcessor)) {
+            if (c <= lutEditors.size() - 1) {
+                processor.setLut(lutEditors.get(c).getLUT());
+            }
+        }
+        
+        // Workaround: setting LUT overrides calibration for some reason
+        // Recalibrate again
+        for (ImageViewerPanelPlugin plugin : getViewerPanel().getPlugins()) {
+            if(plugin instanceof CalibrationPlugin) {
+                plugin.beforeDraw(z,c,t);
+            }
+        }
+
         return processor;
     }
 
 
     @Override
     public void beforeDraw(int z, int c, int t) {
-        if(getCurrentImage().getType() != ImagePlus.COLOR_RGB) {
-            if (getCurrentImage() instanceof CompositeImage) {
-                CompositeImage image = (CompositeImage) getCurrentImage();
-                if (c <= lutEditors.size() - 1) {
-                    image.setChannelLut(lutEditors.get(c).getLUT(), c + 1);
-                    image.setLut(lutEditors.get(c).getLUT());
-                }
-            } else {
-                ImagePlus image = getCurrentImage();
-                if (c <= lutEditors.size() - 1) {
-                    image.setLut(lutEditors.get(c).getLUT());
-                }
-            }
-        }
+//        if(getCurrentImage().getType() != ImagePlus.COLOR_RGB) {
+//            if (getCurrentImage() instanceof CompositeImage) {
+//                CompositeImage image = (CompositeImage) getCurrentImage();
+//                if (c <= lutEditors.size() - 1) {
+//                    image.setChannelLut(lutEditors.get(c).getLUT(), c + 1);
+//                    image.setLut(lutEditors.get(c).getLUT());
+//                }
+//            } else {
+//                ImagePlus image = getCurrentImage();
+//                if (c <= lutEditors.size() - 1) {
+//                    image.setLut(lutEditors.get(c).getLUT());
+//                }
+//            }
+//        }
     }
 }

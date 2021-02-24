@@ -66,7 +66,7 @@ public class CalibrationPlugin extends ImageViewerPanelPlugin {
 
     @Override
     public void beforeDraw(int z, int c, int t) {
-
+        displayRangeCalibrationControl.applyCalibration(false);
     }
 
     public ImageJCalibrationMode getSelectedCalibration() {
