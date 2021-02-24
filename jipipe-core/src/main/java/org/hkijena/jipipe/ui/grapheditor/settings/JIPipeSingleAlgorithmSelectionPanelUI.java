@@ -156,7 +156,7 @@ public class JIPipeSingleAlgorithmSelectionPanelUI extends JIPipeProjectWorkbenc
             if (batchAssistantTabContent != null && tabbedPane.getCurrentContent() == batchAssistantTabContent) {
                 if (batchAssistantTabContent.getComponentCount() == 0) {
                     DataBatchAssistantUI browserUI = new DataBatchAssistantUI(getProjectWorkbench(), algorithm,
-                            () -> runTestBench(false, false, true, false, false, true));
+                            () -> runTestBench(false, false, true, false, true, true));
                     batchAssistantTabContent.add(browserUI, BorderLayout.CENTER);
                 }
             }
