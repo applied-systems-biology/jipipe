@@ -15,6 +15,7 @@ package org.hkijena.jipipe.extensions.imagejalgorithms.ij1.math;
 
 import com.fathzer.soft.javaluator.StaticVariableSet;
 import ij.IJ;
+import ij.ImageJ;
 import ij.ImagePlus;
 import ij.process.ImageProcessor;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
@@ -29,6 +30,7 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.PixelCoordinate2DExpressionParameterVariableSource;
+import org.hkijena.jipipe.extensions.imagejdatatypes.util.PixelCoordinate5DExpressionParameterVariableSource;
 import org.hkijena.jipipe.extensions.parameters.expressions.DefaultExpressionParameter;
 import org.hkijena.jipipe.extensions.parameters.expressions.ExpressionParameterSettings;
 import org.hkijena.jipipe.utils.ImageJCalibrationMode;
@@ -36,8 +38,7 @@ import org.hkijena.jipipe.utils.ImageJCalibrationMode;
 /**
  * Wrapper around {@link ij.process.ImageProcessor}
  */
-@JIPipeDocumentation(name = "Generate from math expression", description = "Applies a mathematical operation to each pixel. " +
-        "This node uses JIPipe's expression parameter instead of the functions integrated in ImageJ, which might have a lower performance.")
+@JIPipeDocumentation(name = "Generate from math expression", description = "Applies a mathematical operation to each pixel. The value is written into the image.")
 @JIPipeOrganization(nodeTypeCategory = DataSourceNodeTypeCategory.class)
 @JIPipeOutputSlot(value = ImagePlusData.class, slotName = "Output", autoCreate = true)
 public class GenerateFromMathExpression2D extends JIPipeSimpleIteratingAlgorithm {
@@ -45,6 +46,9 @@ public class GenerateFromMathExpression2D extends JIPipeSimpleIteratingAlgorithm
     private DefaultExpressionParameter function = new DefaultExpressionParameter("x + y");
     private int width = 256;
     private int height = 256;
+    private int sizeZ = 1;
+    private int sizeC = 1;
+    private int sizeT = 1;
 
     /**
      * Instantiates a new node type.
@@ -65,6 +69,9 @@ public class GenerateFromMathExpression2D extends JIPipeSimpleIteratingAlgorithm
         this.function = new DefaultExpressionParameter(other.function);
         this.width = other.width;
         this.height = other.height;
+        this.sizeZ = other.sizeZ;
+        this.sizeC = other.sizeC;
+        this.sizeT = other.sizeT;
     }
 
     @Override
@@ -74,20 +81,24 @@ public class GenerateFromMathExpression2D extends JIPipeSimpleIteratingAlgorithm
 
     @Override
     protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
-        ImagePlus img = IJ.createImage("Generated", "32-bit", width, height, 1);
-        ImageProcessor ip = img.getProcessor();
+        ImagePlus img = IJ.createHyperStack("Generated", width, height,  sizeC, sizeZ, sizeT, 32);
         StaticVariableSet<Object> variableSet = new StaticVariableSet<>();
         variableSet.set("width", width);
         variableSet.set("height", height);
 
-        for (int y = 0; y < ip.getHeight(); y++) {
-            for (int x = 0; x < ip.getWidth(); x++) {
-                variableSet.set("x", (double) x);
-                variableSet.set("y", (double) y);
-                float value = ((Number) function.evaluate(variableSet)).floatValue();
-                ip.setf(x, y, value);
+        ImageJUtils.forEachIndexedZCTSlice(img, (ip, index) -> {
+            for (int y = 0; y < ip.getHeight(); y++) {
+                for (int x = 0; x < ip.getWidth(); x++) {
+                    variableSet.set("z", (double) index.getZ());
+                    variableSet.set("c", (double) index.getC());
+                    variableSet.set("t", (double) index.getT());
+                    variableSet.set("x", (double) x);
+                    variableSet.set("y", (double) y);
+                    float value = ((Number) function.evaluate(variableSet)).floatValue();
+                    ip.setf(x, y, value);
+                }
             }
-        }
+        }, progressInfo);
 
         ImageJUtils.calibrate(img, ImageJCalibrationMode.AutomaticImageJ, 0, 0);
 
@@ -96,7 +107,7 @@ public class GenerateFromMathExpression2D extends JIPipeSimpleIteratingAlgorithm
 
     @JIPipeDocumentation(name = "Function", description = "The function that is applied to each pixel. The expression should return a number.")
     @JIPipeParameter("function")
-    @ExpressionParameterSettings(variableSource = PixelCoordinate2DExpressionParameterVariableSource.class)
+    @ExpressionParameterSettings(variableSource = PixelCoordinate5DExpressionParameterVariableSource.class)
     public DefaultExpressionParameter getFunction() {
         return function;
     }
@@ -126,5 +137,38 @@ public class GenerateFromMathExpression2D extends JIPipeSimpleIteratingAlgorithm
     @JIPipeParameter("height")
     public void setHeight(int height) {
         this.height = height;
+    }
+
+    @JIPipeDocumentation(name = "Number of slices (Z)", description = "Number of generated Z slices.")
+    @JIPipeParameter("size-z")
+    public int getSizeZ() {
+        return sizeZ;
+    }
+
+    @JIPipeParameter("size-z")
+    public void setSizeZ(int sizeZ) {
+        this.sizeZ = sizeZ;
+    }
+
+    @JIPipeDocumentation(name = "Number of channels (C)", description = "Number of generated channel slices.")
+    @JIPipeParameter("size-c")
+    public int getSizeC() {
+        return sizeC;
+    }
+
+    @JIPipeParameter("size-c")
+    public void setSizeC(int sizeC) {
+        this.sizeC = sizeC;
+    }
+
+    @JIPipeDocumentation(name = "Number of frames (T)", description = "Number of generated frame slices.")
+    @JIPipeParameter("size-t")
+    public int getSizeT() {
+        return sizeT;
+    }
+
+    @JIPipeParameter("size-t")
+    public void setSizeT(int sizeT) {
+        this.sizeT = sizeT;
     }
 }
