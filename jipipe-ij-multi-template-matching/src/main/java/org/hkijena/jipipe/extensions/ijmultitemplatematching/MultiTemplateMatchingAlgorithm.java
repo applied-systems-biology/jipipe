@@ -116,7 +116,7 @@ public class MultiTemplateMatchingAlgorithm extends JIPipeMergingAlgorithm {
     protected void runIteration(JIPipeMergingDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
         List<ImagePlus> images = new ArrayList<>();
         List<ImagePlus> templates = new ArrayList<>();
-        ROIListData mergedRois = new ROIListData();
+        ROIListData mergedSearchRois = new ROIListData();
 
         for (ImagePlusData image : dataBatch.getInputData("Image", ImagePlusData.class, progressInfo)) {
             images.add(image.getImage());
@@ -129,10 +129,10 @@ public class MultiTemplateMatchingAlgorithm extends JIPipeMergingAlgorithm {
         }
         if (restrictToROI) {
             for (ROIListData roi : dataBatch.getInputData("ROI", ROIListData.class, progressInfo)) {
-                mergedRois.addAll(roi);
+                mergedSearchRois.addAll(roi);
             }
         }
-        Roi searchRoi = mergedRois.isEmpty() ? null : new ShapeRoi(mergedRois.getBounds());
+        Roi searchRoi = mergedSearchRois.isEmpty() ? null : new ShapeRoi(mergedSearchRois.getBounds());
 
         PythonInterpreter pythonInterpreter = new PythonInterpreter();
         pythonInterpreter.set("Method", templateMatchingMethod.getIndex());
