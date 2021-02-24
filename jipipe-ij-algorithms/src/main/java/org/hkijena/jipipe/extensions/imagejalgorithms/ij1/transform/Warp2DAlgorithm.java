@@ -28,6 +28,7 @@ public class Warp2DAlgorithm extends JIPipeIteratingAlgorithm {
     private boolean invertTransform = false;
     private boolean polarCoordinates = false;
     private boolean absoluteCoordinates = false;
+    private WrapMode wrapMode = WrapMode.None;
 
     public Warp2DAlgorithm(JIPipeNodeInfo info) {
         super(info);
@@ -39,6 +40,7 @@ public class Warp2DAlgorithm extends JIPipeIteratingAlgorithm {
         this.invertTransform = other.invertTransform;
         this.polarCoordinates = other.polarCoordinates;
         this.absoluteCoordinates = other.absoluteCoordinates;
+        this.wrapMode = other.wrapMode;
     }
 
     @JIPipeDocumentation(name = "Vector dimension", description = "Determines which dimension stores the vector coordinates. " +
@@ -86,6 +88,17 @@ public class Warp2DAlgorithm extends JIPipeIteratingAlgorithm {
     @JIPipeParameter("absolute-coordinates")
     public void setAbsoluteCoordinates(boolean absoluteCoordinates) {
         this.absoluteCoordinates = absoluteCoordinates;
+    }
+
+    @JIPipeDocumentation(name = "Wrap mode", description = "Determines what to do with source/target pixels that are outside the image. 'None' means that the pixel is skipped.")
+    @JIPipeParameter("wrap-mode")
+    public WrapMode getWrapMode() {
+        return wrapMode;
+    }
+
+    @JIPipeParameter("wrap-mode")
+    public void setWrapMode(WrapMode wrapMode) {
+        this.wrapMode = wrapMode;
     }
 
     @Override
@@ -198,25 +211,19 @@ public class Warp2DAlgorithm extends JIPipeIteratingAlgorithm {
                         ty = _sy;
                     }
 
-                    // Correct source position
-                    while(sx < 0) {
-                        sx += inputProcessor.getWidth();
-                    }
-                    while(sy < 0) {
-                        sy += inputProcessor.getHeight();
-                    }
-                    sx = sx % inputProcessor.getWidth();
-                    sy = sy % inputProcessor.getHeight();
+                    sx = wrapMode.wrap(sx, 0,inputProcessor.getWidth());
+                    sy = wrapMode.wrap(sy, 0,inputProcessor.getHeight());
+                    tx = wrapMode.wrap(tx, 0,resultProcessor.getWidth());
+                    ty = wrapMode.wrap(ty, 0,resultProcessor.getHeight());
 
-                    // Correct target position
-                    while(tx < 0) {
-                        tx += inputProcessor.getWidth();
-                    }
-                    while(ty < 0) {
-                        ty += inputProcessor.getHeight();
-                    }
-                    tx = tx % inputProcessor.getWidth();
-                    ty = ty % inputProcessor.getHeight();
+                    if(sx < 0 || sx >= inputProcessor.getWidth())
+                        continue;
+                    if(sy < 0 || sy >= inputProcessor.getHeight())
+                        continue;
+                    if(tx < 0 || tx >= resultProcessor.getWidth())
+                        continue;
+                    if(ty < 0 || ty >= resultProcessor.getHeight())
+                        continue;
 
                     // Copy pixel
                     resultProcessor.set(tx, ty, inputProcessor.get(sx, sy));

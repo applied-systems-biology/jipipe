@@ -85,6 +85,9 @@ public class GenerateFromMathExpression2D extends JIPipeSimpleIteratingAlgorithm
         ExpressionParameters variableSet = new ExpressionParameters();
         variableSet.set("width", width);
         variableSet.set("height", height);
+        variableSet.set("num_z", sizeZ);
+        variableSet.set("num_c", sizeC);
+        variableSet.set("num_t", sizeT);
 
         ImageJUtils.forEachIndexedZCTSlice(img, (ip, index) -> {
             for (int y = 0; y < ip.getHeight(); y++) {

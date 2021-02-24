@@ -24,6 +24,9 @@ public class VectorPixel5DExpressionParameterVariableSource implements Expressio
         VARIABLES.add(new ExpressionParameterVariable("Z coordinate", "The Z coordinate within the image (first index is zero)", "z"));
         VARIABLES.add(new ExpressionParameterVariable("Channel coordinate", "The channel (C) coordinate within the image (first index is zero)", "c"));
         VARIABLES.add(new ExpressionParameterVariable("Frame coordinate", "The frame (T) coordinate within the image (first index is zero)", "t"));
+        VARIABLES.add(new ExpressionParameterVariable("Number of channels", "Number of channel planes", "num_c"));
+        VARIABLES.add(new ExpressionParameterVariable("Number of Z slices", "Number of Z planes", "num_z"));
+        VARIABLES.add(new ExpressionParameterVariable("Number of frames", "Number of T planes", "num_t"));
     }
 
     @Override

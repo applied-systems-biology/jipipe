@@ -13,6 +13,7 @@
 
 package org.hkijena.jipipe.extensions.imagejalgorithms.ij1.math;
 
+import org.hkijena.jipipe.extensions.imagejdatatypes.util.*;
 import org.hkijena.jipipe.extensions.parameters.expressions.ExpressionParameters;
 import gnu.trove.list.array.TDoubleArrayList;
 import ij.IJ;
@@ -27,10 +28,6 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscale32FData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleData;
-import org.hkijena.jipipe.extensions.imagejdatatypes.util.HyperstackDimension;
-import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
-import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageSliceIndex;
-import org.hkijena.jipipe.extensions.imagejdatatypes.util.VectorPixel2DExpressionParameterVariableSource;
 import org.hkijena.jipipe.extensions.parameters.expressions.DefaultExpressionParameter;
 import org.hkijena.jipipe.extensions.parameters.expressions.ExpressionParameterSettings;
 
@@ -86,6 +83,10 @@ public class ApplyVectorMathExpression2DAlgorithm extends JIPipeSimpleIteratingA
         ExpressionParameters variableSet = new ExpressionParameters();
         variableSet.set("width", inputData.getImage().getWidth());
         variableSet.set("height", inputData.getImage().getHeight());
+        variableSet.set("num_z", inputData.getImage().getNSlices());
+        variableSet.set("num_c", inputData.getImage().getNChannels());
+        variableSet.set("num_t", inputData.getImage().getNFrames());
+        variableSet.set("num_output_components", outputVectorSize);
         {
             ImagePlus img = inputData.getImage();
             ImagePlus result;
@@ -235,7 +236,7 @@ public class ApplyVectorMathExpression2DAlgorithm extends JIPipeSimpleIteratingA
         if(expressionResult instanceof List) {
             List<?> collection = (List<?>) expressionResult;
             for (int i = 0; i < outputVectorSize; i++) {
-                resultProcessors.get(0).setf(x, y, ((Number)collection.get(i)).floatValue());
+                resultProcessors.get(i).setf(x, y, ((Number)collection.get(i)).floatValue());
             }
         }
         else {
@@ -260,7 +261,7 @@ public class ApplyVectorMathExpression2DAlgorithm extends JIPipeSimpleIteratingA
 
     @JIPipeDocumentation(name = "Function", description = "The function that is applied to each vector. The expression should return a number.")
     @JIPipeParameter("transformation-function")
-    @ExpressionParameterSettings(variableSource = VectorPixel2DExpressionParameterVariableSource.class)
+    @ExpressionParameterSettings(variableSource = VectorPixel5DExpressionParameterVariableSource.class)
     public DefaultExpressionParameter getTransformation() {
         return transformation;
     }
