@@ -138,6 +138,7 @@ public class StandardParametersExtension extends JIPipePrepackagedDefaultJavaExt
     private void registerExpressionParameters() {
         registerParameterType("expression",
                 DefaultExpressionParameter.class,
+                DefaultExpressionParameter.List.class,
                 null,
                 null,
                 "Expression",

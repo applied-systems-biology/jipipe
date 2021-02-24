@@ -15,6 +15,9 @@ package org.hkijena.jipipe.extensions.parameters.expressions;
 
 import com.google.common.eventbus.Subscribe;
 import org.hkijena.jipipe.JIPipe;
+import org.hkijena.jipipe.extensions.parameters.collections.ListParameter;
+
+import java.util.Collection;
 
 /**
  * An {@link ExpressionParameter} that utilizes the {@link DefaultExpressionEvaluator} to generate results
@@ -52,5 +55,18 @@ public class DefaultExpressionParameter extends ExpressionParameter {
     @Override
     public ExpressionEvaluator getEvaluator() {
         return getEvaluatorInstance();
+    }
+
+    public static class List extends ListParameter<DefaultExpressionParameter> {
+        public List() {
+            super(DefaultExpressionParameter.class);
+        }
+
+        public List(Collection<DefaultExpressionParameter> other) {
+            super(DefaultExpressionParameter.class);
+            for (DefaultExpressionParameter parameter : other) {
+                add(new DefaultExpressionParameter(parameter));
+            }
+        }
     }
 }
