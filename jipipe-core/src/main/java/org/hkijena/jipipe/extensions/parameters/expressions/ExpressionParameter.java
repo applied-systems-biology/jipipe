@@ -15,7 +15,7 @@ package org.hkijena.jipipe.extensions.parameters.expressions;
 
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonSetter;
-import com.fathzer.soft.javaluator.StaticVariableSet;
+import org.hkijena.jipipe.extensions.parameters.expressions.ExpressionParameters;
 
 /**
  * A parameter that contains an expression.
@@ -59,7 +59,7 @@ public abstract class ExpressionParameter {
      * @param variables the variables
      * @return the result
      */
-    public boolean test(StaticVariableSet<Object> variables) {
+    public boolean test(ExpressionParameters variables) {
         return getEvaluator().test(expression, variables);
     }
 
@@ -69,7 +69,7 @@ public abstract class ExpressionParameter {
      * @param variables the variables
      * @return the result
      */
-    public Object evaluate(StaticVariableSet<Object> variables) {
+    public Object evaluate(ExpressionParameters variables) {
         return getEvaluator().evaluate(expression, variables);
     }
 

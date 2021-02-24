@@ -13,7 +13,7 @@
 
 package org.hkijena.jipipe.extensions.tables.algorithms;
 
-import com.fathzer.soft.javaluator.StaticVariableSet;
+import org.hkijena.jipipe.extensions.parameters.expressions.ExpressionParameters;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
@@ -64,7 +64,7 @@ public class FilterTableAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
         ResultsTableData input = dataBatch.getInputData(getFirstInputSlot(), ResultsTableData.class, progressInfo);
         List<Integer> selectedRows = new ArrayList<>();
-        StaticVariableSet<Object> variableSet = new StaticVariableSet<>();
+        ExpressionParameters variableSet = new ExpressionParameters();
         for (int row = 0; row < input.getRowCount(); row++) {
             for (int col = 0; col < input.getColumnCount(); col++) {
                 variableSet.set(input.getColumnName(col), input.getValueAt(row, col));

@@ -13,7 +13,7 @@
 
 package org.hkijena.jipipe.extensions.imagejalgorithms.ij1.threshold;
 
-import com.fathzer.soft.javaluator.StaticVariableSet;
+import org.hkijena.jipipe.extensions.parameters.expressions.ExpressionParameters;
 import ij.ImagePlus;
 import ij.process.AutoThresholder;
 import ij.process.ImageProcessor;
@@ -131,7 +131,7 @@ public class AutoThreshold2DAlgorithm extends JIPipeIteratingAlgorithm {
             }, progressInfo);
             List<JIPipeAnnotation> annotations = new ArrayList<>();
             if (thresholdAnnotation.isEnabled()) {
-                StaticVariableSet<Object> variableSet = new StaticVariableSet<>();
+                ExpressionParameters variableSet = new ExpressionParameters();
                 variableSet.set("thresholds", thresholds);
                 String result = thresholdCombinationExpression.evaluate(variableSet) + "";
                 annotations.add(thresholdAnnotation.createAnnotation(result));
@@ -187,7 +187,7 @@ public class AutoThreshold2DAlgorithm extends JIPipeIteratingAlgorithm {
             }, progressInfo.resolve("Finding thresholds"));
 
             // Combine thresholds
-            StaticVariableSet<Object> variableSet = new StaticVariableSet<>();
+            ExpressionParameters variableSet = new ExpressionParameters();
             variableSet.set("thresholds", thresholds);
             Number combined = (Number) thresholdCombinationExpression.evaluate(variableSet);
             int threshold = Math.min(255, Math.max(0, combined.intValue()));

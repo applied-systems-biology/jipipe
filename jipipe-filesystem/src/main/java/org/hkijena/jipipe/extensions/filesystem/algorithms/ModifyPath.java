@@ -1,6 +1,6 @@
 package org.hkijena.jipipe.extensions.filesystem.algorithms;
 
-import com.fathzer.soft.javaluator.StaticVariableSet;
+import org.hkijena.jipipe.extensions.parameters.expressions.ExpressionParameters;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
@@ -37,7 +37,7 @@ public class ModifyPath extends JIPipeSimpleIteratingAlgorithm {
     @Override
     protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
         PathData input = dataBatch.getInputData(getFirstInputSlot(), PathData.class, progressInfo);
-        StaticVariableSet<Object> variableSet = new StaticVariableSet<>();
+        ExpressionParameters variableSet = new ExpressionParameters();
         if (accessAnnotations) {
             for (JIPipeAnnotation annotation : dataBatch.getAnnotations().values()) {
                 variableSet.set(annotation.getName(), annotation.getValue());

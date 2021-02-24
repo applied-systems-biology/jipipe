@@ -66,8 +66,8 @@ public class LUTManagerPlugin extends ImageViewerPanelPlugin {
         }
 
         // Apply LUT after creating the panel
-        for (ImageViewerLUTEditor lutEditor : lutEditors) {
-            lutEditor.applyLUT();
+        for (int i = 0; i < Math.min(getCurrentImage().getNChannels(), lutEditors.size()); i++) {
+            lutEditors.get(i).applyLUT();
         }
     }
 
@@ -95,16 +95,18 @@ public class LUTManagerPlugin extends ImageViewerPanelPlugin {
 
     @Override
     public void beforeDraw(int z, int c, int t) {
-        if (getCurrentImage() instanceof CompositeImage) {
-            CompositeImage image = (CompositeImage) getCurrentImage();
-            if (c <= lutEditors.size() - 1) {
-                image.setChannelLut(lutEditors.get(c).getLUT(), c + 1);
-                image.setLut(lutEditors.get(c).getLUT());
-            }
-        } else {
-            ImagePlus image = getCurrentImage();
-            if (c <= lutEditors.size() - 1) {
-                image.setLut(lutEditors.get(c).getLUT());
+        if(getCurrentImage().getType() != ImagePlus.COLOR_RGB) {
+            if (getCurrentImage() instanceof CompositeImage) {
+                CompositeImage image = (CompositeImage) getCurrentImage();
+                if (c <= lutEditors.size() - 1) {
+                    image.setChannelLut(lutEditors.get(c).getLUT(), c + 1);
+                    image.setLut(lutEditors.get(c).getLUT());
+                }
+            } else {
+                ImagePlus image = getCurrentImage();
+                if (c <= lutEditors.size() - 1) {
+                    image.setLut(lutEditors.get(c).getLUT());
+                }
             }
         }
     }

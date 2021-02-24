@@ -13,7 +13,7 @@
 
 package org.hkijena.jipipe.extensions.imagejalgorithms.ij1.roi;
 
-import com.fathzer.soft.javaluator.StaticVariableSet;
+import org.hkijena.jipipe.extensions.parameters.expressions.ExpressionParameters;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeOrganization;
@@ -106,7 +106,7 @@ public class FilterRoiByStatisticsAlgorithm extends ImageRoiProcessorAlgorithm {
 
         // Apply filter
         ROIListData outputData = new ROIListData();
-        StaticVariableSet<Object> variableSet = new StaticVariableSet<>();
+        ExpressionParameters variableSet = new ExpressionParameters();
         for (int row = 0; row < allStatistics.getRowCount(); row++) {
             for (int col = 0; col < allStatistics.getColumnCount(); col++) {
                 variableSet.set(allStatistics.getColumnName(col), allStatistics.getValueAt(row, col));

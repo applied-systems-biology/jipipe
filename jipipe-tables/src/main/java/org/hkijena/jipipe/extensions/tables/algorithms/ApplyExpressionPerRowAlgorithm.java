@@ -1,6 +1,6 @@
 package org.hkijena.jipipe.extensions.tables.algorithms;
 
-import com.fathzer.soft.javaluator.StaticVariableSet;
+import org.hkijena.jipipe.extensions.parameters.expressions.ExpressionParameters;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
@@ -36,7 +36,7 @@ public class ApplyExpressionPerRowAlgorithm extends JIPipeSimpleIteratingAlgorit
     @Override
     protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
         ResultsTableData data = (ResultsTableData) dataBatch.getInputData(getFirstInputSlot(), ResultsTableData.class, progressInfo).duplicate();
-        StaticVariableSet<Object> variableSet = new StaticVariableSet<>();
+        ExpressionParameters variableSet = new ExpressionParameters();
         variableSet.set("num_rows", data.getRowCount());
         for (ExpressionTableColumnGeneratorProcessor expression : expressionList) {
             List<Object> generatedValues = new ArrayList<>();

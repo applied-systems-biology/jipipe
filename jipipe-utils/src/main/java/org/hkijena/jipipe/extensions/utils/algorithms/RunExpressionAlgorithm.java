@@ -1,6 +1,6 @@
 package org.hkijena.jipipe.extensions.utils.algorithms;
 
-import com.fathzer.soft.javaluator.StaticVariableSet;
+import org.hkijena.jipipe.extensions.parameters.expressions.ExpressionParameters;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
@@ -84,7 +84,7 @@ public class RunExpressionAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     @Override
     protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
         JIPipeData data = dataBatch.getInputData(getFirstInputSlot(), JIPipeData.class, progressInfo);
-        StaticVariableSet<Object> variableSet = new StaticVariableSet<>();
+        ExpressionParameters variableSet = new ExpressionParameters();
         for (JIPipeAnnotation annotation : dataBatch.getAnnotations().values()) {
             variableSet.set(annotation.getName(), annotation.getValue());
         }

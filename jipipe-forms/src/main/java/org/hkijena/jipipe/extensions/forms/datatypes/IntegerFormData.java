@@ -1,6 +1,6 @@
 package org.hkijena.jipipe.extensions.forms.datatypes;
 
-import com.fathzer.soft.javaluator.StaticVariableSet;
+import org.hkijena.jipipe.extensions.parameters.expressions.ExpressionParameters;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeDefaultDocumentation;
@@ -92,7 +92,7 @@ public class IntegerFormData extends ParameterFormData {
 
     @Override
     public void reportValidity(JIPipeValidityReport report) {
-        StaticVariableSet<Object> variableSet = new StaticVariableSet<>();
+        ExpressionParameters variableSet = new ExpressionParameters();
         variableSet.set("value", value);
         if (!validationExpression.test(variableSet)) {
             report.reportIsInvalid("Invalid value!",

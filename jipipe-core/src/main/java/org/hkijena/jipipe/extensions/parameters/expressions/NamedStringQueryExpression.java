@@ -13,7 +13,7 @@
 
 package org.hkijena.jipipe.extensions.parameters.expressions;
 
-import com.fathzer.soft.javaluator.StaticVariableSet;
+import org.hkijena.jipipe.extensions.parameters.expressions.ExpressionParameters;
 import org.hkijena.jipipe.extensions.parameters.collections.ListParameter;
 import org.hkijena.jipipe.extensions.parameters.pairs.PairParameter;
 
@@ -42,7 +42,7 @@ public class NamedStringQueryExpression extends PairParameter<String, StringQuer
      * @return if queried
      */
     public boolean test(String key, String value) {
-        StaticVariableSet<Object> variableSet = new StaticVariableSet<>();
+        ExpressionParameters variableSet = new ExpressionParameters();
         variableSet.set("key", key);
         variableSet.set("value", value);
         return getValue().test(variableSet);
@@ -73,7 +73,7 @@ public class NamedStringQueryExpression extends PairParameter<String, StringQuer
             for (NamedStringQueryExpression expression : this) {
                 expressionMap.put(expression.getKey(), expression.getValue());
             }
-            StaticVariableSet<Object> variableSet = new StaticVariableSet<>();
+            ExpressionParameters variableSet = new ExpressionParameters();
             for (Map.Entry<String, String> entry : input.entrySet()) {
                 variableSet.set("key", entry.getKey());
                 variableSet.set("value", entry.getValue());

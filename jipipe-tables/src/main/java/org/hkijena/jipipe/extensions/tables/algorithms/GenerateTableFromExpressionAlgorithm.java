@@ -13,7 +13,7 @@
 
 package org.hkijena.jipipe.extensions.tables.algorithms;
 
-import com.fathzer.soft.javaluator.StaticVariableSet;
+import org.hkijena.jipipe.extensions.parameters.expressions.ExpressionParameters;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
@@ -72,7 +72,7 @@ public class GenerateTableFromExpressionAlgorithm extends JIPipeSimpleIteratingA
     protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
         ResultsTableData table = new ResultsTableData();
         table.addRows(generatedRows);
-        StaticVariableSet<Object> variableSet = new StaticVariableSet<>();
+        ExpressionParameters variableSet = new ExpressionParameters();
         variableSet.set("num_rows", generatedRows);
         variableSet.set("num_cols", columns.size());
         for (ExpressionTableColumnGeneratorProcessor entry : columns) {

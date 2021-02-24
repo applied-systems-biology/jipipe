@@ -13,7 +13,7 @@
 
 package org.hkijena.jipipe.extensions.parameters.expressions.functions;
 
-import com.fathzer.soft.javaluator.StaticVariableSet;
+import org.hkijena.jipipe.extensions.parameters.expressions.ExpressionParameters;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.extensions.parameters.expressions.ExpressionFunction;
 import org.hkijena.jipipe.extensions.parameters.expressions.ParameterInfo;
@@ -29,7 +29,7 @@ public class EqualsStringPredicateFunction extends ExpressionFunction {
     }
 
     @Override
-    public Object evaluate(List<Object> parameters, StaticVariableSet<Object> variables) {
+    public Object evaluate(List<Object> parameters, ExpressionParameters variables) {
         String text = "" + parameters.get(0);
         String pattern = "" + parameters.get(1);
         return Objects.equals(text, pattern);

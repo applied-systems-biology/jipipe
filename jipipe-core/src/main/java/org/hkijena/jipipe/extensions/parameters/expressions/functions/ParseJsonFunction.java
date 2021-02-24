@@ -15,7 +15,7 @@ package org.hkijena.jipipe.extensions.parameters.expressions.functions;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
-import com.fathzer.soft.javaluator.StaticVariableSet;
+import org.hkijena.jipipe.extensions.parameters.expressions.ExpressionParameters;
 import com.google.common.collect.ImmutableList;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.extensions.parameters.expressions.ExpressionFunction;
@@ -34,7 +34,7 @@ public class ParseJsonFunction extends ExpressionFunction {
     }
 
     @Override
-    public Object evaluate(List<Object> parameters, StaticVariableSet<Object> variables) {
+    public Object evaluate(List<Object> parameters, ExpressionParameters variables) {
         try {
             JsonNode node = JsonUtils.getObjectMapper().readTree(parameters.get(0) + "");
             return parseJson(node);

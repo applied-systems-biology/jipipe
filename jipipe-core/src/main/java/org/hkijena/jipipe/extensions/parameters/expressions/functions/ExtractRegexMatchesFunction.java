@@ -1,6 +1,6 @@
 package org.hkijena.jipipe.extensions.parameters.expressions.functions;
 
-import com.fathzer.soft.javaluator.StaticVariableSet;
+import org.hkijena.jipipe.extensions.parameters.expressions.ExpressionParameters;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.extensions.parameters.expressions.ExpressionFunction;
 import org.hkijena.jipipe.extensions.parameters.expressions.ParameterInfo;
@@ -35,7 +35,7 @@ public class ExtractRegexMatchesFunction extends ExpressionFunction {
     }
 
     @Override
-    public Object evaluate(List<Object> parameters, StaticVariableSet<Object> variables) {
+    public Object evaluate(List<Object> parameters, ExpressionParameters variables) {
         String haystack = "" + parameters.get(0);
         String pattern = "" + parameters.get(1);
         Matcher matcher = Pattern.compile(pattern).matcher(haystack);

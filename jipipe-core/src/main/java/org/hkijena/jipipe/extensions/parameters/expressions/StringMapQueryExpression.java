@@ -13,7 +13,7 @@
 
 package org.hkijena.jipipe.extensions.parameters.expressions;
 
-import com.fathzer.soft.javaluator.StaticVariableSet;
+import org.hkijena.jipipe.extensions.parameters.expressions.ExpressionParameters;
 
 import java.util.Collection;
 import java.util.Map;
@@ -40,7 +40,7 @@ public class StringMapQueryExpression extends DefaultExpressionParameter {
      * @return if matches
      */
     public boolean test(Map<String, String> map) {
-        StaticVariableSet<Object> variableSet = new StaticVariableSet<>();
+        ExpressionParameters variableSet = new ExpressionParameters();
         for (Map.Entry<String, String> entry : map.entrySet()) {
             variableSet.set(entry.getKey(), entry.getValue());
         }
@@ -54,7 +54,7 @@ public class StringMapQueryExpression extends DefaultExpressionParameter {
      * @return if matches
      */
     public boolean test(Collection<String> values) {
-        StaticVariableSet<Object> variableSet = new StaticVariableSet<>();
+        ExpressionParameters variableSet = new ExpressionParameters();
         for (String value : values) {
             variableSet.set(value, value);
         }

@@ -13,7 +13,7 @@
 
 package org.hkijena.jipipe.extensions.imagejdatatypes.parameters;
 
-import com.fathzer.soft.javaluator.StaticVariableSet;
+import org.hkijena.jipipe.extensions.parameters.expressions.ExpressionParameters;
 import ij.ImagePlus;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.extensions.parameters.expressions.ExpressionParameterVariable;
@@ -42,7 +42,7 @@ public class ImageQueryExpressionVariableSource implements ExpressionParameterVa
      * @param imagePlus   the image
      * @param variableSet the target
      */
-    public static void buildVariablesSet(ImagePlus imagePlus, StaticVariableSet<Object> variableSet) {
+    public static void buildVariablesSet(ImagePlus imagePlus, ExpressionParameters variableSet) {
         variableSet.set("width", imagePlus.getWidth());
         variableSet.set("height", imagePlus.getHeight());
         switch (imagePlus.getType()) {

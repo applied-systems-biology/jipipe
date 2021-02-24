@@ -15,7 +15,7 @@ package org.hkijena.jipipe.utils;
 
 import com.fathzer.soft.javaluator.Function;
 import com.fathzer.soft.javaluator.Operator;
-import com.fathzer.soft.javaluator.StaticVariableSet;
+import org.hkijena.jipipe.extensions.parameters.expressions.ExpressionParameters;
 import com.google.common.html.HtmlEscapers;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.parameters.JIPipeDummyParameterCollection;
@@ -123,7 +123,7 @@ public class ExpressionTesterUI extends JIPipeWorkbenchPanel {
         resultOutput.append("<td><pre>").append(HtmlEscapers.htmlEscaper().escape(expressionToEvaluate)).append("</pre></td></tr>");
         Object result;
         try {
-            result = evaluator.evaluate(expressionToEvaluate, new StaticVariableSet<>());
+            result = evaluator.evaluate(expressionToEvaluate, new ExpressionParameters());
             if (result instanceof Collection) {
                 List<Object> values = new ArrayList<>();
                 for (Object item : (Collection<?>) result) {

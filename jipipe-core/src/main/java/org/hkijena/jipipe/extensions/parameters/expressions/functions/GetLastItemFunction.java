@@ -1,6 +1,6 @@
 package org.hkijena.jipipe.extensions.parameters.expressions.functions;
 
-import com.fathzer.soft.javaluator.StaticVariableSet;
+import org.hkijena.jipipe.extensions.parameters.expressions.ExpressionParameters;
 import com.google.common.collect.ImmutableList;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.extensions.parameters.expressions.ExpressionFunction;
@@ -27,7 +27,7 @@ public class GetLastItemFunction extends ExpressionFunction {
     }
 
     @Override
-    public Object evaluate(List<Object> parameters, StaticVariableSet<Object> variables) {
+    public Object evaluate(List<Object> parameters, ExpressionParameters variables) {
         Object target = parameters.get(0);
         if (target instanceof List) {
             List<?> list = (List<?>) target;

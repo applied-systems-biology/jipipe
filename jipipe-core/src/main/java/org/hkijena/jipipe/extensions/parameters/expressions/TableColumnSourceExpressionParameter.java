@@ -13,7 +13,7 @@
 
 package org.hkijena.jipipe.extensions.parameters.expressions;
 
-import com.fathzer.soft.javaluator.StaticVariableSet;
+import org.hkijena.jipipe.extensions.parameters.expressions.ExpressionParameters;
 import org.hkijena.jipipe.api.JIPipeValidatable;
 import org.hkijena.jipipe.api.JIPipeValidityReport;
 import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
@@ -55,7 +55,7 @@ public class TableColumnSourceExpressionParameter extends DefaultExpressionParam
      * @return the column
      */
     public TableColumn pickColumn(ResultsTableData table) {
-        StaticVariableSet<Object> variableSet = new StaticVariableSet<>();
+        ExpressionParameters variableSet = new ExpressionParameters();
         variableSet.set("num_rows", table.getRowCount());
         variableSet.set("num_cols", table.getColumnCount());
 

@@ -13,7 +13,7 @@
 
 package org.hkijena.jipipe.extensions.parameters.expressions.operators;
 
-import com.fathzer.soft.javaluator.StaticVariableSet;
+import org.hkijena.jipipe.extensions.parameters.expressions.ExpressionParameters;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.extensions.parameters.expressions.ExpressionOperator;
 import org.hkijena.jipipe.extensions.parameters.expressions.ParameterInfo;
@@ -29,7 +29,7 @@ public class VariableExistsOperator extends ExpressionOperator {
     @Override
     public Object evaluate(Iterator<Object> operands, Object evaluationContext) {
         String left = operands.next() + "";
-        return ((StaticVariableSet<Object>) evaluationContext).get(left) != null;
+        return ((ExpressionParameters) evaluationContext).get(left) != null;
     }
 
     @Override

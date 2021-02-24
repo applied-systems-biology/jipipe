@@ -13,7 +13,7 @@
 
 package org.hkijena.jipipe.extensions.parameters.expressions.functions;
 
-import com.fathzer.soft.javaluator.StaticVariableSet;
+import org.hkijena.jipipe.extensions.parameters.expressions.ExpressionParameters;
 import org.hkijena.jipipe.extensions.parameters.expressions.ExpressionFunction;
 import org.hkijena.jipipe.extensions.parameters.expressions.ParameterInfo;
 import org.hkijena.jipipe.extensions.tables.ColumnOperation;
@@ -56,7 +56,7 @@ public class ColumnOperationAdapterFunction extends ExpressionFunction {
     }
 
     @Override
-    public Object evaluate(List<Object> parameters, StaticVariableSet<Object> variables) {
+    public Object evaluate(List<Object> parameters, ExpressionParameters variables) {
         if (parameters.stream().anyMatch(o -> o instanceof Collection)) {
             // Requires parameter expansion
             List<Object> unExpanded = parameters;

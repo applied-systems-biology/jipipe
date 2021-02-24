@@ -294,7 +294,7 @@ public class DefaultExpressionEvaluator extends ExpressionEvaluator {
     @Override
     protected Object evaluate(Function function, Iterator<Object> arguments, Object evaluationContext) {
         if (function instanceof ExpressionFunction) {
-            return ((ExpressionFunction) function).evaluate(ImmutableList.copyOf(arguments), (StaticVariableSet<Object>) evaluationContext);
+            return ((ExpressionFunction) function).evaluate(ImmutableList.copyOf(arguments), (ExpressionParameters) evaluationContext);
         } else {
             throw new UnsupportedOperationException();
         }
@@ -371,7 +371,7 @@ public class DefaultExpressionEvaluator extends ExpressionEvaluator {
 
     @Override
     protected Object toValue(String literal, Object evaluationContext) {
-        StaticVariableSet<Object> variableSet = (StaticVariableSet<Object>) evaluationContext;
+        ExpressionParameters variableSet = (ExpressionParameters) evaluationContext;
         if (NumberUtils.isCreatable(literal))
             return NumberUtils.createDouble(literal);
         else if (literal.length() >= 2 && literal.startsWith("\"") && literal.endsWith("\""))
@@ -390,5 +390,35 @@ public class DefaultExpressionEvaluator extends ExpressionEvaluator {
 
     public List<String> getKnownNonAlphanumericOperatorTokens() {
         return knownNonAlphanumericOperatorTokens;
+    }
+
+    /**
+     * Deep-copies an object.
+     * Supports handling {@link Collection} and {@link Map}
+     * @param object the object
+     * @return the copy
+     */
+    public static Object deepCopyObject(Object object) {
+        if(object == null)
+            return null;
+        if(object instanceof Collection) {
+            List<Object> result = new ArrayList<>();
+            Collection<?> collection = (Collection<?>) object;
+            for (Object item : collection) {
+                result.add(deepCopyObject(item));
+            }
+            return result;
+        }
+        else if(object instanceof Map) {
+            Map<?, ?> map = (Map<?, ?>) object;
+            Map<Object, Object> result = new HashMap<>();
+            for (Map.Entry<?, ?> entry : map.entrySet()) {
+                result.put(deepCopyObject(entry.getKey()), deepCopyObject(entry.getValue()));
+            }
+            return result;
+        }
+        else {
+            return object;
+        }
     }
 }

@@ -13,7 +13,7 @@
 
 package org.hkijena.jipipe.extensions.parameters.expressions;
 
-import com.fathzer.soft.javaluator.StaticVariableSet;
+import org.hkijena.jipipe.extensions.parameters.expressions.ExpressionParameters;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -52,7 +52,7 @@ public class StringQueryExpression extends DefaultExpressionParameter implements
     public String queryFirst(Collection<String> strings) {
         if (strings.isEmpty())
             return null;
-        StaticVariableSet<Object> variableSet = new StaticVariableSet<>();
+        ExpressionParameters variableSet = new ExpressionParameters();
         try {
             Object evaluationResult = evaluate(variableSet);
             if (evaluationResult instanceof String) {
@@ -82,9 +82,9 @@ public class StringQueryExpression extends DefaultExpressionParameter implements
      * @param strings existing annotations for the data
      * @return the annotation that matches the query or null if none matches
      */
-    public List<String> queryAll(Collection<String> strings) {
-        List<String> result = new ArrayList<>();
-        StaticVariableSet<Object> variableSet = new StaticVariableSet<>();
+    public java.util.List<String> queryAll(Collection<String> strings) {
+        java.util.List<String> result = new ArrayList<>();
+        ExpressionParameters variableSet = new ExpressionParameters();
         try {
             Object evaluationResult = evaluate(variableSet);
             if (evaluationResult instanceof String) {
@@ -120,7 +120,7 @@ public class StringQueryExpression extends DefaultExpressionParameter implements
     public boolean test(String string) {
         if ("true".equals(getExpression()) || getExpression().trim().isEmpty())
             return true;
-        StaticVariableSet<Object> variableSet = new StaticVariableSet<>();
+        ExpressionParameters variableSet = new ExpressionParameters();
         variableSet.set("value", string);
         try {
             Object evaluationResult = evaluate(variableSet);
@@ -145,7 +145,7 @@ public class StringQueryExpression extends DefaultExpressionParameter implements
     public boolean testAnyOf(Collection<String> strings) {
         if ("true".equals(getExpression()) || getExpression().trim().isEmpty())
             return true;
-        StaticVariableSet<Object> variableSet = new StaticVariableSet<>();
+        ExpressionParameters variableSet = new ExpressionParameters();
         for (String string : strings) {
             try {
                 variableSet.set("value", string);

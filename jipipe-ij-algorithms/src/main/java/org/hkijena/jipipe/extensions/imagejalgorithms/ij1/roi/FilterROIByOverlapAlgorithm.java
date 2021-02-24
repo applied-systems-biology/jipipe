@@ -1,6 +1,6 @@
 package org.hkijena.jipipe.extensions.imagejalgorithms.ij1.roi;
 
-import com.fathzer.soft.javaluator.StaticVariableSet;
+import org.hkijena.jipipe.extensions.parameters.expressions.ExpressionParameters;
 import ij.ImagePlus;
 import ij.gui.Roi;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
@@ -71,7 +71,7 @@ public class FilterROIByOverlapAlgorithm extends JIPipeIteratingAlgorithm {
 
         if (roiMap.size() > 1) {
             boolean withFiltering = !StringUtils.isNullOrEmpty(overlapFilter.getExpression());
-            StaticVariableSet<Object> variableSet = new StaticVariableSet<>();
+            ExpressionParameters variableSet = new ExpressionParameters();
             ROIListData temp = new ROIListData();
             for (Map.Entry<String, ROIListData> entry : roiMap.entrySet()) {
                 JIPipeProgressInfo subProgress = progressInfo.resolveAndLog("Testing overlaps for input '" + entry.getKey() + "'");
@@ -144,7 +144,7 @@ public class FilterROIByOverlapAlgorithm extends JIPipeIteratingAlgorithm {
         }
     }
 
-    private void putMeasurementsIntoVariable(Roi first, Roi second, StaticVariableSet<Object> variableSet, Roi overlap, ImagePlus referenceImage, ROIListData temp) {
+    private void putMeasurementsIntoVariable(Roi first, Roi second, ExpressionParameters variableSet, Roi overlap, ImagePlus referenceImage, ROIListData temp) {
 
         variableSet.set("First.z", first.getZPosition());
         variableSet.set("First.c", first.getCPosition());

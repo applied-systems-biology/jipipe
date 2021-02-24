@@ -14,7 +14,7 @@
 package org.hkijena.jipipe.extensions.parameters.expressions;
 
 import com.fathzer.soft.javaluator.Function;
-import com.fathzer.soft.javaluator.StaticVariableSet;
+import org.hkijena.jipipe.extensions.parameters.expressions.ExpressionParameters;
 
 import java.util.List;
 
@@ -37,7 +37,7 @@ public abstract class ExpressionFunction extends Function {
      * @param variables  the set of current variables
      * @return the result
      */
-    public abstract Object evaluate(List<Object> parameters, StaticVariableSet<Object> variables);
+    public abstract Object evaluate(List<Object> parameters, ExpressionParameters variables);
 
     /**
      * Returns info about the parameter at index

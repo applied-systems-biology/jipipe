@@ -13,7 +13,7 @@
 
 package org.hkijena.jipipe.extensions.parameters.expressions;
 
-import com.fathzer.soft.javaluator.StaticVariableSet;
+import org.hkijena.jipipe.extensions.parameters.expressions.ExpressionParameters;
 import org.hkijena.jipipe.extensions.parameters.expressions.variables.PathFilterExpressionParameterVariableSource;
 
 import java.nio.file.Path;
@@ -48,7 +48,7 @@ public class PathQueryExpression extends DefaultExpressionParameter implements P
     public Path queryFirst(Collection<Path> strings) {
         if (strings.isEmpty())
             return null;
-        StaticVariableSet<Object> variableSet = new StaticVariableSet<>();
+        ExpressionParameters variableSet = new ExpressionParameters();
         for (Path string : strings) {
             PathFilterExpressionParameterVariableSource.buildFor(string, variableSet);
             if (test(variableSet))
@@ -63,9 +63,9 @@ public class PathQueryExpression extends DefaultExpressionParameter implements P
      * @param strings existing annotations for the data
      * @return the annotation that matches the query or null if none matches
      */
-    public List<Path> queryAll(Collection<Path> strings) {
-        List<Path> result = new ArrayList<>();
-        StaticVariableSet<Object> variableSet = new StaticVariableSet<>();
+    public java.util.List<Path> queryAll(Collection<Path> strings) {
+        java.util.List<Path> result = new ArrayList<>();
+        ExpressionParameters variableSet = new ExpressionParameters();
         for (Path string : strings) {
             PathFilterExpressionParameterVariableSource.buildFor(string, variableSet);
             if (test(variableSet))
@@ -84,7 +84,7 @@ public class PathQueryExpression extends DefaultExpressionParameter implements P
     public boolean test(Path string) {
         if ("true".equals(getExpression()) || getExpression().trim().isEmpty())
             return true;
-        StaticVariableSet<Object> variableSet = new StaticVariableSet<>();
+        ExpressionParameters variableSet = new ExpressionParameters();
         PathFilterExpressionParameterVariableSource.buildFor(string, variableSet);
         return test(variableSet);
     }
@@ -98,7 +98,7 @@ public class PathQueryExpression extends DefaultExpressionParameter implements P
     public boolean testAnyOf(Collection<Path> strings) {
         if ("true".equals(getExpression()) || getExpression().trim().isEmpty())
             return true;
-        StaticVariableSet<Object> variableSet = new StaticVariableSet<>();
+        ExpressionParameters variableSet = new ExpressionParameters();
         for (Path string : strings) {
             PathFilterExpressionParameterVariableSource.buildFor(string, variableSet);
             if (test(variableSet))

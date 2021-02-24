@@ -13,7 +13,7 @@
 
 package org.hkijena.jipipe.extensions.imagejalgorithms.ij1.math;
 
-import com.fathzer.soft.javaluator.StaticVariableSet;
+import org.hkijena.jipipe.extensions.parameters.expressions.ExpressionParameters;
 import ij.IJ;
 import ij.ImageJ;
 import ij.ImagePlus;
@@ -82,7 +82,7 @@ public class GenerateFromMathExpression2D extends JIPipeSimpleIteratingAlgorithm
     @Override
     protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
         ImagePlus img = IJ.createHyperStack("Generated", width, height,  sizeC, sizeZ, sizeT, 32);
-        StaticVariableSet<Object> variableSet = new StaticVariableSet<>();
+        ExpressionParameters variableSet = new ExpressionParameters();
         variableSet.set("width", width);
         variableSet.set("height", height);
 

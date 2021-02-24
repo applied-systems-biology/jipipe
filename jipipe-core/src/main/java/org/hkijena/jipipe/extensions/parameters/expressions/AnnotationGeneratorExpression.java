@@ -13,7 +13,7 @@
 
 package org.hkijena.jipipe.extensions.parameters.expressions;
 
-import com.fathzer.soft.javaluator.StaticVariableSet;
+import org.hkijena.jipipe.extensions.parameters.expressions.ExpressionParameters;
 import org.hkijena.jipipe.api.data.JIPipeAnnotation;
 
 import java.util.Collection;
@@ -46,7 +46,7 @@ public class AnnotationGeneratorExpression extends DefaultExpressionParameter {
      * @return the annotation value
      */
     public String generateAnnotationValue(Collection<JIPipeAnnotation> annotations, String dataString) {
-        StaticVariableSet<Object> variableSet = new StaticVariableSet<>();
+        ExpressionParameters variableSet = new ExpressionParameters();
         for (JIPipeAnnotation annotation : annotations) {
             variableSet.set(annotation.getName(), annotation.getValue());
         }
@@ -62,7 +62,7 @@ public class AnnotationGeneratorExpression extends DefaultExpressionParameter {
      * @return the test results.
      */
     public boolean test(Collection<JIPipeAnnotation> annotations, String dataString) {
-        StaticVariableSet<Object> variableSet = new StaticVariableSet<>();
+        ExpressionParameters variableSet = new ExpressionParameters();
         for (JIPipeAnnotation annotation : annotations) {
             variableSet.set(annotation.getName(), annotation.getValue());
         }

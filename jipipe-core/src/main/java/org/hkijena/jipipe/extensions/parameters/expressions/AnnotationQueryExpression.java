@@ -13,7 +13,7 @@
 
 package org.hkijena.jipipe.extensions.parameters.expressions;
 
-import com.fathzer.soft.javaluator.StaticVariableSet;
+import org.hkijena.jipipe.extensions.parameters.expressions.ExpressionParameters;
 import org.hkijena.jipipe.api.data.JIPipeAnnotation;
 
 import java.util.ArrayList;
@@ -50,7 +50,7 @@ public class AnnotationQueryExpression extends DefaultExpressionParameter {
      * @return the annotation that matches the query or null if none matches
      */
     public JIPipeAnnotation queryFirst(Collection<JIPipeAnnotation> annotations) {
-        StaticVariableSet<Object> variableSet = new StaticVariableSet<>();
+        ExpressionParameters variableSet = new ExpressionParameters();
         try {
             Object evaluationResult = evaluate(variableSet);
             if (evaluationResult instanceof String) {
@@ -78,9 +78,9 @@ public class AnnotationQueryExpression extends DefaultExpressionParameter {
      * @param annotations existing annotations for the data
      * @return the annotation that matches the query or null if none matches
      */
-    public List<JIPipeAnnotation> queryAll(Collection<JIPipeAnnotation> annotations) {
-        List<JIPipeAnnotation> result = new ArrayList<>();
-        StaticVariableSet<Object> variableSet = new StaticVariableSet<>();
+    public java.util.List<JIPipeAnnotation> queryAll(Collection<JIPipeAnnotation> annotations) {
+        java.util.List<JIPipeAnnotation> result = new ArrayList<>();
+        ExpressionParameters variableSet = new ExpressionParameters();
         try {
             Object evaluationResult = evaluate(variableSet);
             if (evaluationResult instanceof String) {

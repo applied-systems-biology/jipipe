@@ -13,7 +13,7 @@
 
 package org.hkijena.jipipe.extensions.imagejalgorithms.ij1.io;
 
-import com.fathzer.soft.javaluator.StaticVariableSet;
+import org.hkijena.jipipe.extensions.parameters.expressions.ExpressionParameters;
 import ij.ImagePlus;
 import ij.WindowManager;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
@@ -74,7 +74,7 @@ public class ImagePlusFromGUI extends JIPipeSimpleIteratingAlgorithm {
                 }
             }
         }
-        StaticVariableSet<Object> variableSet = new StaticVariableSet<>();
+        ExpressionParameters variableSet = new ExpressionParameters();
         for (ImagePlus rawImage : rawImages) {
             ImageQueryExpressionVariableSource.buildVariablesSet(rawImage, variableSet);
             if (imageFilters.test(variableSet)) {

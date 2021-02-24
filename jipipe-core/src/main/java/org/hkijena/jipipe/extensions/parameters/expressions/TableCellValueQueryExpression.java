@@ -13,7 +13,7 @@
 
 package org.hkijena.jipipe.extensions.parameters.expressions;
 
-import com.fathzer.soft.javaluator.StaticVariableSet;
+import org.hkijena.jipipe.extensions.parameters.expressions.ExpressionParameters;
 import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
 
 /**
@@ -47,7 +47,7 @@ public class TableCellValueQueryExpression extends DefaultExpressionParameter {
     public boolean test(ResultsTableData tableData, int row, int col) {
         if ("true".equals(getExpression()) || getExpression().trim().isEmpty())
             return true;
-        StaticVariableSet<Object> variableSet = new StaticVariableSet<>();
+        ExpressionParameters variableSet = new ExpressionParameters();
         variableSet.set("row", row);
         variableSet.set("column", col);
         variableSet.set("column_name", tableData.getColumnName(col));

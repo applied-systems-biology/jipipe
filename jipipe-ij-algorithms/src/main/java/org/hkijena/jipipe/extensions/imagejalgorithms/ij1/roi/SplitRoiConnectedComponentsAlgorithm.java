@@ -13,7 +13,7 @@
 
 package org.hkijena.jipipe.extensions.imagejalgorithms.ij1.roi;
 
-import com.fathzer.soft.javaluator.StaticVariableSet;
+import org.hkijena.jipipe.extensions.parameters.expressions.ExpressionParameters;
 import com.google.common.collect.ImmutableList;
 import ij.ImagePlus;
 import ij.gui.Roi;
@@ -99,7 +99,7 @@ public class SplitRoiConnectedComponentsAlgorithm extends ImageRoiProcessorAlgor
 
         boolean withFiltering = !StringUtils.isNullOrEmpty(overlapFilter.getExpression());
         ROIListData temp = new ROIListData();
-        StaticVariableSet<Object> variableSet = new StaticVariableSet<>();
+        ExpressionParameters variableSet = new ExpressionParameters();
         ResultsTableData measurements = null;
         ImagePlus referenceImage = null;
         if (withFiltering) {
@@ -195,7 +195,7 @@ public class SplitRoiConnectedComponentsAlgorithm extends ImageRoiProcessorAlgor
         }
 
         if(!StringUtils.isNullOrEmpty(graphPostprocessing.getExpression())) {
-            StaticVariableSet<Object> postprocessingVariableSet = new StaticVariableSet<>();
+            ExpressionParameters postprocessingVariableSet = new ExpressionParameters();
             postprocessingVariableSet.set("KEEP", "KEEP");
             postprocessingVariableSet.set("ISOLATE", "ISOLATE");
             postprocessingVariableSet.set("REMOVE", "REMOVE");
@@ -327,7 +327,7 @@ public class SplitRoiConnectedComponentsAlgorithm extends ImageRoiProcessorAlgor
         return false;
     }
 
-    private void putMeasurementsIntoVariable(ResultsTableData inputMeasurements, int first, int second, ImagePlus referenceImage, StaticVariableSet<Object> variableSet, Roi overlap, ROIListData temp, Roi roi1, Roi roi2) {
+    private void putMeasurementsIntoVariable(ResultsTableData inputMeasurements, int first, int second, ImagePlus referenceImage, ExpressionParameters variableSet, Roi overlap, ROIListData temp, Roi roi1, Roi roi2) {
 
         variableSet.set("First.z", roi1.getZPosition());
         variableSet.set("First.c", roi1.getCPosition());

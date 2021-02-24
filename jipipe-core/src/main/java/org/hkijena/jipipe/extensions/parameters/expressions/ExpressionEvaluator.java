@@ -15,7 +15,7 @@ package org.hkijena.jipipe.extensions.parameters.expressions;
 
 import com.fathzer.soft.javaluator.AbstractEvaluator;
 import com.fathzer.soft.javaluator.Parameters;
-import com.fathzer.soft.javaluator.StaticVariableSet;
+import org.hkijena.jipipe.extensions.parameters.expressions.ExpressionParameters;
 import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
 
 /**
@@ -39,7 +39,7 @@ public abstract class ExpressionEvaluator extends AbstractEvaluator<Object> {
      * @param expression the expression
      * @param variables  set of variables to use
      */
-    public boolean test(String expression, StaticVariableSet<Object> variables) {
+    public boolean test(String expression, ExpressionParameters variables) {
         Object result = evaluate(expression, variables);
         if (result instanceof Boolean) {
             return (boolean) result;

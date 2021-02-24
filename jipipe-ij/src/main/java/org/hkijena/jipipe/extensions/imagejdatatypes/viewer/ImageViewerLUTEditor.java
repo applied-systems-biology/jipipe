@@ -247,7 +247,7 @@ public class ImageViewerLUTEditor extends JPanel implements ThumbListener {
 
     public void applyLUT() {
         ImagePlus image = imageViewerPanel.getImage();
-        if (image != null) {
+        if (image != null && image.getType() != ImagePlus.COLOR_RGB) {
             if (targetChannel < image.getNChannels()) {
                 if (image instanceof CompositeImage) {
                     CompositeImage compositeImage = (CompositeImage) image;

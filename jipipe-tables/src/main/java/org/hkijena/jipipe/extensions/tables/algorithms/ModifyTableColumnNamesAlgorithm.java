@@ -1,6 +1,6 @@
 package org.hkijena.jipipe.extensions.tables.algorithms;
 
-import com.fathzer.soft.javaluator.StaticVariableSet;
+import org.hkijena.jipipe.extensions.parameters.expressions.ExpressionParameters;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
@@ -42,7 +42,7 @@ public class ModifyTableColumnNamesAlgorithm extends JIPipeSimpleIteratingAlgori
         ResultsTableData input = dataBatch.getInputData(getFirstInputSlot(), ResultsTableData.class, progressInfo);
         ResultsTableData output = new ResultsTableData();
         output.addRows(input.getRowCount());
-        StaticVariableSet<Object> variableSet = new StaticVariableSet<>();
+        ExpressionParameters variableSet = new ExpressionParameters();
         Set<String> existing = new HashSet<>();
         for (int col = 0; col < input.getColumnCount(); col++) {
             String name = input.getColumnName(col);

@@ -13,7 +13,7 @@
 
 package org.hkijena.jipipe.extensions.imagejalgorithms.ij1.io;
 
-import com.fathzer.soft.javaluator.StaticVariableSet;
+import org.hkijena.jipipe.extensions.parameters.expressions.ExpressionParameters;
 import ij.WindowManager;
 import ij.measure.ResultsTable;
 import ij.text.TextWindow;
@@ -53,7 +53,7 @@ public class ResultsTableFromGUI extends JIPipeSimpleIteratingAlgorithm {
 
     @Override
     protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
-        StaticVariableSet<Object> variableSet = new StaticVariableSet<>();
+        ExpressionParameters variableSet = new ExpressionParameters();
         for (Window window : WindowManager.getAllNonImageWindows()) {
             if (window instanceof TextWindow) {
                 ResultsTable resultsTable = ((TextWindow) window).getResultsTable();
