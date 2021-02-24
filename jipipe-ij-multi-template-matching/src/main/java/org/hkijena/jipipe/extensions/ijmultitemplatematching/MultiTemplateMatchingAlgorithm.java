@@ -151,15 +151,15 @@ public class MultiTemplateMatchingAlgorithm extends JIPipeMergingAlgorithm {
 
         for (int i = 0; i < images.size(); i++) {
             ImagePlus image = images.get(i);
-            RoiManager roiManager = new RoiManager(false);
+            ROIListData detectedROIs = new ROIListData();
             ResultsTableData measurements = new ResultsTableData();
             pythonInterpreter.set("ImpImage", image);
-            pythonInterpreter.set("rm", roiManager);
+            pythonInterpreter.set("rm", detectedROIs);
             pythonInterpreter.set("Table", measurements.getTable());
             pythonInterpreter.set("progress", progressInfo.resolve("Image", i, images.size()));
             pythonInterpreter.exec(SCRIPT);
-
-            dataBatch.addOutputData("ROI", new ROIListData(roiManager), progressInfo);
+            
+            dataBatch.addOutputData("ROI", detectedROIs, progressInfo);
             dataBatch.addOutputData("Measurements", measurements, progressInfo);
 
             if (assembleTemplates) {

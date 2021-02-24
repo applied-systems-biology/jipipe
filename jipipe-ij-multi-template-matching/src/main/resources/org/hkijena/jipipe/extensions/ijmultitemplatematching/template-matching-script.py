@@ -17,7 +17,7 @@ from utils import AddToTable
 # max_overlap is set externally
 # score_threshold is set externally
 # tolerance is set externally
-# rm is set externally and contains a RoiManager
+# rm is set externally and contains a ROIListData
 # Table is set externally and contains the ResultsTable
 # Bool_SearchRoi is set externally
 # searchRoi is set externally
@@ -111,13 +111,13 @@ for hit in Hits_AfterNMS:
     roi = Roi(*hit['BBox'])
     roi.setName(hit['TemplateName'])
 
-    rm.addRoi(roi)
+    rm.add(roi)
 
     Xcorner, Ycorner = hit['BBox'][0], hit['BBox'][1]
     Xcenter, Ycenter = CornerToCenter(Xcorner, Ycorner, hit['BBox'][2], hit['BBox'][3])
 
     Dico = {'Image': ImName, 'Template': hit['TemplateName'], 'Xcorner': Xcorner, 'Ycorner': Ycorner,
             'Xcenter': Xcenter, 'Ycenter': Ycenter, 'Score': hit['Score']}
-    Dico['Roi Index'] = rm.getCount()
+    Dico['Roi Index'] = rm.size()
     AddToTable(Table, Dico,
                Order=("Image", "Template", "Score", "Roi Index", "Xcorner", "Ycorner", "Xcenter", "Ycenter"))
