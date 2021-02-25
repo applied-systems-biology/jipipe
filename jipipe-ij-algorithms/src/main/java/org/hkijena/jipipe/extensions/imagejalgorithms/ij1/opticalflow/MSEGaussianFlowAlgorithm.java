@@ -13,6 +13,7 @@ import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d3.greyscale.ImagePlus3DGreyscale32FData;
+import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d4.greyscale.ImagePlus4DGreyscale32FData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.utils.ImageJCalibrationMode;
 
@@ -28,7 +29,7 @@ import org.hkijena.jipipe.utils.ImageJCalibrationMode;
         " of the next similar pixel in polar coordinates (default) or cartesian coordinates.")
 @JIPipeOrganization(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Optical flow")
 @JIPipeInputSlot(value = ImagePlus3DGreyscale32FData.class, slotName = "Input", autoCreate = true)
-@JIPipeOutputSlot(value = ImagePlus3DGreyscale32FData.class, slotName = "Vector field", autoCreate = true)
+@JIPipeOutputSlot(value = ImagePlus4DGreyscale32FData.class, slotName = "Vector field", autoCreate = true)
 public class MSEGaussianFlowAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     private static final GaussianBlur GAUSSIAN_BLUR = new GaussianBlur();
@@ -153,7 +154,7 @@ public class MSEGaussianFlowAlgorithm extends JIPipeSimpleIteratingAlgorithm {
             ImageJUtils.calibrate(impFlowVectors, ImageJCalibrationMode.AutomaticImageJ, 0, 0);
         }
 
-        dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlus3DGreyscale32FData(impFlowVectors), progressInfo);
+        dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlus4DGreyscale32FData(impFlowVectors), progressInfo);
     }
 
     public void opticFlow(
