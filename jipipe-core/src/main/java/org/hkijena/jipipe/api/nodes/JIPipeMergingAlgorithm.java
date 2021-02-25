@@ -221,7 +221,7 @@ public abstract class JIPipeMergingAlgorithm extends JIPipeParameterSlotAlgorith
 
     public static class DataBatchGenerationSettings implements JIPipeParameterCollection {
         private final EventBus eventBus = new EventBus();
-        private JIPipeColumnGrouping dataSetMatching = JIPipeColumnGrouping.PrefixHashIntersection;
+        private JIPipeColumnGrouping dataSetMatching = JIPipeColumnGrouping.PrefixHashUnion;
         private boolean skipIncompleteDataSets = false;
         private StringQueryExpression customColumns = new StringQueryExpression();
         private JIPipeAnnotationMergeStrategy annotationMergeStrategy = JIPipeAnnotationMergeStrategy.Merge;

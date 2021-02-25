@@ -65,7 +65,8 @@ public class BioFormatsImporter extends JIPipeSimpleIteratingAlgorithm {
     private boolean stitchTiles;
     private boolean autoScale = true;
     private boolean extractRois = true;
-    private OptionalAnnotationNameParameter titleAnnotation = new OptionalAnnotationNameParameter();
+    private OptionalAnnotationNameParameter titleAnnotation = new OptionalAnnotationNameParameter("Image title", false);
+    private OptionalAnnotationNameParameter seriesAnnotation = new OptionalAnnotationNameParameter("Series", true);
     private RectangleList cropRegions = new RectangleList();
     private boolean openAllSeries = false;
     private IntegerList seriesToImport = new IntegerList();
@@ -79,7 +80,6 @@ public class BioFormatsImporter extends JIPipeSimpleIteratingAlgorithm {
                 .allowOutputSlotInheritance(true)
                 .seal()
                 .build());
-        titleAnnotation.setContent("Image title");
         seriesToImport.add(0);
     }
 
@@ -105,6 +105,7 @@ public class BioFormatsImporter extends JIPipeSimpleIteratingAlgorithm {
         this.extractRois = other.extractRois;
         this.openAllSeries = other.openAllSeries;
         this.seriesToImport = new IntegerList(other.seriesToImport);
+        this.seriesAnnotation = new OptionalAnnotationNameParameter(other.seriesAnnotation);
     }
 
     @Override
@@ -117,7 +118,7 @@ public class BioFormatsImporter extends JIPipeSimpleIteratingAlgorithm {
             throw new RuntimeException(e);
         }
 
-        options.setId(inputFile.getPath().toString());
+        options.setId(inputFile.getPath());
         options.setWindowless(true);
         options.setQuiet(true);
         options.setShowMetadata(false);
@@ -162,8 +163,25 @@ public class BioFormatsImporter extends JIPipeSimpleIteratingAlgorithm {
 
             for (ImagePlus image : images) {
                 List<JIPipeAnnotation> traits = new ArrayList<>();
+                String title = image.getTitle();
                 if (titleAnnotation.isEnabled()) {
-                    traits.add(new JIPipeAnnotation(titleAnnotation.getContent(), image.getTitle()));
+                    traits.add(new JIPipeAnnotation(titleAnnotation.getContent(), title));
+                }
+                if(seriesAnnotation.isEnabled()) {
+                    int idx = title.lastIndexOf('#');
+                    if(idx != -1 && !(idx == title.length() - 1)) {
+                        String numericString = title.substring(idx + 1);
+                        try {
+                            int series = Integer.parseInt(numericString);
+                            seriesAnnotation.addAnnotationIfEnabled(traits, "" + series);
+                        }
+                        catch (NumberFormatException e) {
+                            seriesAnnotation.addAnnotationIfEnabled(traits, "1");
+                        }
+                    }
+                    else {
+                        seriesAnnotation.addAnnotationIfEnabled(traits, "1");
+                    }
                 }
 
                 ROIListData rois = new ROIListData();
@@ -338,7 +356,7 @@ public class BioFormatsImporter extends JIPipeSimpleIteratingAlgorithm {
 
     }
 
-    @JIPipeDocumentation(name = "Title annotation", description = "Optional annotation type where the image title is written.")
+    @JIPipeDocumentation(name = "Annotate with title", description = "Optional annotation type where the image title is written.")
     @JIPipeParameter("title-annotation")
     public OptionalAnnotationNameParameter getTitleAnnotation() {
         return titleAnnotation;
@@ -381,5 +399,17 @@ public class BioFormatsImporter extends JIPipeSimpleIteratingAlgorithm {
     @JIPipeParameter("series-to-import")
     public void setSeriesToImport(IntegerList seriesToImport) {
         this.seriesToImport = seriesToImport;
+    }
+
+    @JIPipeDocumentation(name = "Annotate with series", description = "If enabled, attempt to extract the series number (starting with 1) from the last part of the image title. " +
+            "The algorithm will take a look at the end of the title and expects a string '#[series]'. If none could be found, 1 will be returned.")
+    @JIPipeParameter("series-annotation")
+    public OptionalAnnotationNameParameter getSeriesAnnotation() {
+        return seriesAnnotation;
+    }
+
+    @JIPipeParameter("series-annotation")
+    public void setSeriesAnnotation(OptionalAnnotationNameParameter seriesAnnotation) {
+        this.seriesAnnotation = seriesAnnotation;
     }
 }
