@@ -270,10 +270,12 @@ public class ExpressionBuilderUI extends JPanel {
                     HtmlEscapers.htmlEscaper().escape(variable.getKey())), UIUtils.getIconFromResources("actions/insert-function.png"));
             groupHeader.setDescription(variable.getDescription());
 
-            JButton insertButton = new JButton("Insert", UIUtils.getIconFromResources("actions/insert-object.png"));
-            insertButton.addActionListener(e -> insertAtCaret(variable.getKey()));
-            inserterButtonPanel.add(Box.createHorizontalGlue());
-            inserterButtonPanel.add(insertButton);
+            if(!StringUtils.isNullOrEmpty(((ExpressionParameterVariable) value).getKey())) {
+                JButton insertButton = new JButton("Insert", UIUtils.getIconFromResources("actions/insert-object.png"));
+                insertButton.addActionListener(e -> insertAtCaret(variable.getKey()));
+                inserterButtonPanel.add(Box.createHorizontalGlue());
+                inserterButtonPanel.add(insertButton);
+            }
         } else if (value instanceof ExpressionConstantEntry) {
             ExpressionConstantEntry constantEntry = (ExpressionConstantEntry) value;
             FormPanel.GroupHeaderPanel groupHeader = inserterForm.addGroupHeader(String.format("<html><i style=\"color: #0000ff; \">Constant</i> %s (<code><strong>%s</strong></code>)</html>",
