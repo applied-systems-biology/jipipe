@@ -54,6 +54,7 @@ public class FilterRoiByStatisticsAlgorithm extends ImageRoiProcessorAlgorithm {
     private RoiStatisticsAlgorithm roiStatisticsAlgorithm =
             JIPipe.createNode("ij1-roi-statistics", RoiStatisticsAlgorithm.class);
     private ImageStatisticsSetParameter measurements = new ImageStatisticsSetParameter();
+    private boolean outputEmptyLists = true;
 
     /**
      * Instantiates a new node type.
@@ -74,6 +75,7 @@ public class FilterRoiByStatisticsAlgorithm extends ImageRoiProcessorAlgorithm {
         roiStatisticsAlgorithm.setAllSlotsVirtual(false, false, null);
         this.filters = new DefaultExpressionParameter(other.filters);
         this.measurements = new ImageStatisticsSetParameter(other.measurements);
+        this.outputEmptyLists = other.outputEmptyLists;
     }
 
     @Override
@@ -116,7 +118,9 @@ public class FilterRoiByStatisticsAlgorithm extends ImageRoiProcessorAlgorithm {
             }
         }
 
-        dataBatch.addOutputData(getFirstOutputSlot(), outputData, progressInfo);
+        if(!outputData.isEmpty() || outputEmptyLists) {
+            dataBatch.addOutputData(getFirstOutputSlot(), outputData, progressInfo);
+        }
     }
 
     @JIPipeParameter("filter")
@@ -150,5 +154,16 @@ public class FilterRoiByStatisticsAlgorithm extends ImageRoiProcessorAlgorithm {
         if (UIUtils.confirmResetParameters(parent, "Load example")) {
             setFilters(new DefaultExpressionParameter("Area > 100 AND Circ. >= 0.6"));
         }
+    }
+
+    @JIPipeDocumentation(name = "Output empty lists", description = "If enabled, the node will also output empty lists.")
+    @JIPipeParameter("output-empty-lists")
+    public boolean isOutputEmptyLists() {
+        return outputEmptyLists;
+    }
+
+    @JIPipeParameter("output-empty-lists")
+    public void setOutputEmptyLists(boolean outputEmptyLists) {
+        this.outputEmptyLists = outputEmptyLists;
     }
 }
