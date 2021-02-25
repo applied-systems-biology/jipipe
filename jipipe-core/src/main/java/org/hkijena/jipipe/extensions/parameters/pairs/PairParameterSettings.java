@@ -24,17 +24,17 @@ public @interface PairParameterSettings {
     /**
      * @return Optional label for the key
      */
-    String keyLabel() default "";
+    String keyLabel() default "Key";
 
     /**
      * @return Optional label for the value
      */
-    String valueLabel() default "";
+    String valueLabel() default "Value";
 
     /**
      * @return If the parameters are shown in one row - separated with an arrow. Otherwise display them in two rows
      */
-    boolean singleRow() default true;
+    boolean singleRow() default false;
 
     /**
      * @return If a chevron/arrow is shown in the single row mode

@@ -53,10 +53,10 @@ public class PairParameterEditorUI extends JIPipeParameterEditorUI {
         PairParameterKeyAccess<?, ?> keyAccess = new PairParameterKeyAccess<>(getParameterAccess(), renaming);
         PairParameterValueAccess<?, ?> valueAccess = new PairParameterValueAccess<>(getParameterAccess(), renaming);
 
-        String keyLabel = "";
-        String valueLabel = "";
-        boolean singleRow = true;
-        boolean singleRowChevron = true;
+        String keyLabel = "Key";
+        String valueLabel = "Value";
+        boolean singleRow = false;
+        boolean singleRowChevron = false;
 
         if (getParameterAccess().getFieldClass().getAnnotation(PairParameterSettings.class) != null) {
             PairParameterSettings settings = getParameterAccess().getFieldClass().getAnnotation(PairParameterSettings.class);

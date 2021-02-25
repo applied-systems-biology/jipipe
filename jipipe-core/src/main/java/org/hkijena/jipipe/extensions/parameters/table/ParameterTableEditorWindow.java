@@ -303,6 +303,7 @@ public class ParameterTableEditorWindow extends JFrame {
                 throw new UnsupportedOperationException();
             }
         }
+        reload();
     }
 
     private void generateNewRows(int columnIndex, Class<? extends JIPipeParameterGeneratorUI> generator) {
@@ -320,6 +321,7 @@ public class ParameterTableEditorWindow extends JFrame {
                 parameterTable.setValueAt(generatedObject, parameterTable.getRowCount() - 1, columnIndex);
             }
         }
+        reload();
     }
 
     private void importColumnFromAlgorithm() {

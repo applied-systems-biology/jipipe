@@ -28,6 +28,7 @@ public class Warp2DAlgorithm extends JIPipeIteratingAlgorithm {
     private boolean invertTransform = false;
     private boolean polarCoordinates = false;
     private boolean absoluteCoordinates = false;
+    private double multiplier = 1.0;
     private WrapMode wrapMode = WrapMode.None;
 
     public Warp2DAlgorithm(JIPipeNodeInfo info) {
@@ -41,6 +42,7 @@ public class Warp2DAlgorithm extends JIPipeIteratingAlgorithm {
         this.polarCoordinates = other.polarCoordinates;
         this.absoluteCoordinates = other.absoluteCoordinates;
         this.wrapMode = other.wrapMode;
+        this.multiplier = other.multiplier;
     }
 
     @JIPipeDocumentation(name = "Vector dimension", description = "Determines which dimension stores the vector coordinates. " +
@@ -99,6 +101,18 @@ public class Warp2DAlgorithm extends JIPipeIteratingAlgorithm {
     @JIPipeParameter("wrap-mode")
     public void setWrapMode(WrapMode wrapMode) {
         this.wrapMode = wrapMode;
+    }
+
+    @JIPipeDocumentation(name = "Transform multiplier", description = "Determines the relative amount of the transform. Zero means that no transform is applied. One (default) that " +
+            "the transform is applied without any additional changes.")
+    @JIPipeParameter("multiplier")
+    public double getMultiplier() {
+        return multiplier;
+    }
+
+    @JIPipeParameter("multiplier")
+    public void setMultiplier(double multiplier) {
+        this.multiplier = multiplier;
     }
 
     @Override
@@ -209,6 +223,15 @@ public class Warp2DAlgorithm extends JIPipeIteratingAlgorithm {
                         sy = ty;
                         tx = _sx;
                         ty = _sy;
+                    }
+
+                    if(multiplier == 0.0) {
+                        tx = sx;
+                        ty = sy;
+                    }
+                    else if(multiplier != 1.0) {
+                        tx = (int)(sx + multiplier * (tx - sx));
+                        ty = (int)(sy + multiplier * (ty - sy));
                     }
 
                     sx = wrapMode.wrap(sx, 0,inputProcessor.getWidth());
