@@ -39,6 +39,7 @@ public class PMCCBlockFlowAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     private int maxDistance = 7;
     private boolean outputPolarCoordinates = true;
     private boolean relativeDistances = true;
+    private boolean addLastIdentityField = false;
 
     public PMCCBlockFlowAlgorithm(JIPipeNodeInfo info) {
         super(info);
@@ -50,6 +51,19 @@ public class PMCCBlockFlowAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         this.maxDistance = other.maxDistance;
         this.outputPolarCoordinates = other.outputPolarCoordinates;
         this.relativeDistances = other.relativeDistances;
+        this.addLastIdentityField = other.addLastIdentityField;
+    }
+
+    @JIPipeDocumentation(name = "Add identity field at end", description = "If enabled, the output will contain as many planes as the input. " +
+            "The last slide will map to identity (zero image)")
+    @JIPipeParameter("add-last-identity-field")
+    public boolean isAddLastIdentityField() {
+        return addLastIdentityField;
+    }
+
+    @JIPipeParameter("add-last-identity-field")
+    public void setAddLastIdentityField(boolean addLastIdentityField) {
+        this.addLastIdentityField = addLastIdentityField;
     }
 
     @JIPipeDocumentation(name = "Relative distances", description = "If enabled, the output radius or x/y are relative to the max distance.")
@@ -107,7 +121,10 @@ public class PMCCBlockFlowAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
         ImagePlus imp = dataBatch.getInputData(getFirstInputSlot(), ImagePlus3DGreyscale32FData.class, progressInfo).getImage();
         ImageStack seq = imp.getStack();
-        ImageStack seqFlowVectors = new ImageStack( imp.getWidth(), imp.getHeight(), 2 * seq.getSize() - 2 );
+        int outputSize = 2 * seq.getSize() - 2;
+        if(addLastIdentityField)
+            outputSize += 2;
+        ImageStack seqFlowVectors = new ImageStack( imp.getWidth(), imp.getHeight(), outputSize );
 
         FloatProcessor ip1;
         FloatProcessor ip2 = ( FloatProcessor )seq.getProcessor( 1 ).convertToFloat();
@@ -150,6 +167,12 @@ public class PMCCBlockFlowAlgorithm extends JIPipeSimpleIteratingAlgorithm {
             }
             impFlowVectors.setPosition( 1, 1, i );
             imp.setSlice( i + 1 );
+        }
+
+        if(addLastIdentityField) {
+            seqFlowVectors.setPixels(new float[imp.getWidth() * imp.getHeight()], 2 * seq.getSize());
+            seqFlowVectors.setPixels(new float[imp.getWidth() * imp.getHeight()], 2 * seq.getSize() - 1);
+            impFlowVectors.setDimensions( 2, 1, seq.getSize() );
         }
 
         if(!outputPolarCoordinates) {
