@@ -11,7 +11,7 @@
  * See the LICENSE file provided with the code for the full license.
  */
 
-package org.hkijena.jipipe.extensions.imagejalgorithms.ij1.threshold;
+package org.hkijena.jipipe.extensions.imagejalgorithms.ij1.threshold.local;
 
 import ij.ImagePlus;
 import ij.gui.NewImage;
@@ -36,24 +36,24 @@ import static org.hkijena.jipipe.extensions.imagejalgorithms.ImageJAlgorithmsExt
  * Segmenter node that thresholds via an auto threshold
  * Based on code from {@link fiji.threshold.Auto_Local_Threshold}
  */
-@JIPipeDocumentation(name = "Local auto threshold 2D (Contrast)", description = "Applies a local auto-thresholding algorithm. " +
+@JIPipeDocumentation(name = "Local auto threshold 2D (Bernsen)", description = "Applies a local auto-thresholding algorithm. " +
         "If higher-dimensional data is provided, the filter is applied to each 2D slice.\n\n" +
-        "Based on a simple contrast toggle. This procedure does not have user-provided parameters other than the kernel radius.\n" +
-        "Sets the pixel value to either white or black depending on whether its current value is closest to the local Max or Min respectively.\n" +
-        "The procedure is similar to Toggle Contrast Enhancement (see Soille, Morphological Image Analysis (2004), p. 259")
-@JIPipeOrganization(menuPath = "Threshold", nodeTypeCategory = ImagesNodeTypeCategory.class)
+        "Bernsen recommends a radius of 15 and a contrast threshold of 15.")
+@JIPipeOrganization(menuPath = "Threshold\nLocal", nodeTypeCategory = ImagesNodeTypeCategory.class)
 @JIPipeInputSlot(value = ImagePlusGreyscale8UData.class, slotName = "Input")
 @JIPipeOutputSlot(value = ImagePlusGreyscaleMaskData.class, slotName = "Output")
-@JIPipeCitation("G. Landini, 2013")
-public class ContrastLocalAutoThreshold2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
+@JIPipeCitation("Bernsen J. (1986) \"Dynamic Thresholding of Grey-Level Images\" Proc. of the 8th Int. Conf. on Pattern Recognition, pp. 1251-1255")
+@JIPipeCitation("Sezgin M. and Sankur B. (2004) \"Survey over Image Thresholding Techniques and Quantitative Performance Evaluation\" Journal of Electronic Imaging, 13(1): 146-165")
+public class BernsenLocalAutoThreshold2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     private boolean darkBackground = true;
+    private int contrastThreshold = 15;
     private int radius = 15;
 
     /**
      * @param info the info
      */
-    public ContrastLocalAutoThreshold2DAlgorithm(JIPipeNodeInfo info) {
+    public BernsenLocalAutoThreshold2DAlgorithm(JIPipeNodeInfo info) {
         super(info, JIPipeDefaultMutableSlotConfiguration.builder().addInputSlot("Input", ImagePlusGreyscale8UData.class)
                 .addOutputSlot("Output", ImagePlusGreyscaleMaskData.class, "Input", ADD_MASK_QUALIFIER)
                 .allowOutputSlotInheritance(true)
@@ -66,25 +66,30 @@ public class ContrastLocalAutoThreshold2DAlgorithm extends JIPipeSimpleIterating
      *
      * @param other the original
      */
-    public ContrastLocalAutoThreshold2DAlgorithm(ContrastLocalAutoThreshold2DAlgorithm other) {
+    public BernsenLocalAutoThreshold2DAlgorithm(BernsenLocalAutoThreshold2DAlgorithm other) {
         super(other);
         this.darkBackground = other.darkBackground;
+        this.contrastThreshold = other.contrastThreshold;
         this.radius = other.radius;
     }
 
-    public static void Contrast(ImagePlus imp, int radius, boolean doIwhite) {
-        // G. Landini, 2013
-        // Based on a simple contrast toggle. This procedure does not have user-provided parameters other than the kernel radius
-        // Sets the pixel value to either white or black depending on whether its current value is closest to the local Max or Min respectively
-        // The procedure is similar to Toggle Contrast Enhancement (see Soille, Morphological Image Analysis (2004), p. 259
-
+    public static void Bernsen(ImagePlus imp, int radius, double contrast_threshold, boolean doIwhite) {
+        // Bernsen recommends WIN_SIZE = 31 and CONTRAST_THRESHOLD = 15.
+        //  1) Bernsen J. (1986) "Dynamic Thresholding of Grey-Level Images"
+        //    Proc. of the 8th Int. Conf. on Pattern Recognition, pp. 1251-1255
+        //  2) Sezgin M. and Sankur B. (2004) "Survey over Image Thresholding
+        //   Techniques and Quantitative Performance Evaluation" Journal of
+        //   Electronic Imaging, 13(1): 146-165
+        //   http://citeseer.ist.psu.edu/sezgin04survey.html
+        // Ported to ImageJ plugin from E Celebi's fourier_0.8 routines
+        // This version uses a circular local window, instead of a rectagular one
         ImagePlus Maximp, Minimp;
         ImageProcessor ip = imp.getProcessor(), ipMax, ipMin;
-        int c_value = 0;
+        int local_contrast;
         int mid_gray;
         byte object;
         byte backg;
-
+        int temp;
 
         if (doIwhite) {
             object = (byte) 0xff;
@@ -106,8 +111,15 @@ public class ContrastLocalAutoThreshold2DAlgorithm extends JIPipeSimpleIterating
         byte[] pixels = (byte[]) ip.getPixels();
         byte[] max = (byte[]) ipMax.getPixels();
         byte[] min = (byte[]) ipMin.getPixels();
+
         for (int i = 0; i < pixels.length; i++) {
-            pixels[i] = ((Math.abs(max[i] & 0xff - pixels[i] & 0xff) <= Math.abs(pixels[i] & 0xff - min[i] & 0xff)) && ((pixels[i] & 0xff) != 0)) ? object : backg;
+            local_contrast = (max[i] & 0xff) - (min[i] & 0xff);
+            mid_gray = ((min[i] & 0xff) + (max[i] & 0xff)) / 2;
+            temp = pixels[i] & 0x0000ff;
+            if (local_contrast < contrast_threshold)
+                pixels[i] = (mid_gray >= 128) ? object : backg;  //Low contrast region
+            else
+                pixels[i] = (temp >= mid_gray) ? object : backg;
         }
         //imp.updateAndDraw();
     }
@@ -119,6 +131,17 @@ public class ContrastLocalAutoThreshold2DAlgorithm extends JIPipeSimpleIterating
         ImageProcessor imageProcessor = iPlus.getProcessor();
         imageProcessor.copyBits(iProcessor, 0, 0, Blitter.COPY);
         return iPlus;
+    }
+
+    @JIPipeDocumentation(name = "Contrast threshold", description = "The contrast threshold. Bernsen recommends a value of 15.")
+    @JIPipeParameter("contrast-threshold")
+    public int getContrastThreshold() {
+        return contrastThreshold;
+    }
+
+    @JIPipeParameter("contrast-threshold")
+    public void setContrastThreshold(int contrastThreshold) {
+        this.contrastThreshold = contrastThreshold;
     }
 
     @JIPipeDocumentation(name = "Radius", description = "The radius of the circular local window.")
@@ -147,7 +170,7 @@ public class ContrastLocalAutoThreshold2DAlgorithm extends JIPipeSimpleIterating
         if (!darkBackground) {
             img.getProcessor().invert();
         }
-        Contrast(img, radius, true);
+        Bernsen(img, radius, contrastThreshold, true);
         dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusGreyscaleMaskData(img), progressInfo);
     }
 

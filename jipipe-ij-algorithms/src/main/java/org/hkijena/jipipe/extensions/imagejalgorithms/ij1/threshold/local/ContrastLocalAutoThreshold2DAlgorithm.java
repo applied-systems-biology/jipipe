@@ -11,13 +11,12 @@
  * See the LICENSE file provided with the code for the full license.
  */
 
-package org.hkijena.jipipe.extensions.imagejalgorithms.ij1.threshold;
+package org.hkijena.jipipe.extensions.imagejalgorithms.ij1.threshold.local;
 
 import ij.ImagePlus;
 import ij.gui.NewImage;
 import ij.plugin.filter.RankFilters;
 import ij.process.Blitter;
-import ij.process.ImageConverter;
 import ij.process.ImageProcessor;
 import org.hkijena.jipipe.api.JIPipeCitation;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
@@ -37,22 +36,24 @@ import static org.hkijena.jipipe.extensions.imagejalgorithms.ImageJAlgorithmsExt
  * Segmenter node that thresholds via an auto threshold
  * Based on code from {@link fiji.threshold.Auto_Local_Threshold}
  */
-@JIPipeDocumentation(name = "Local auto threshold 2D (Sauvola)", description = "Applies a local auto-thresholding algorithm. " +
-        "If higher-dimensional data is provided, the filter is applied to each 2D slice.")
-@JIPipeOrganization(menuPath = "Threshold", nodeTypeCategory = ImagesNodeTypeCategory.class)
+@JIPipeDocumentation(name = "Local auto threshold 2D (Contrast)", description = "Applies a local auto-thresholding algorithm. " +
+        "If higher-dimensional data is provided, the filter is applied to each 2D slice.\n\n" +
+        "Based on a simple contrast toggle. This procedure does not have user-provided parameters other than the kernel radius.\n" +
+        "Sets the pixel value to either white or black depending on whether its current value is closest to the local Max or Min respectively.\n" +
+        "The procedure is similar to Toggle Contrast Enhancement (see Soille, Morphological Image Analysis (2004), p. 259")
+@JIPipeOrganization(menuPath = "Threshold\nLocal", nodeTypeCategory = ImagesNodeTypeCategory.class)
 @JIPipeInputSlot(value = ImagePlusGreyscale8UData.class, slotName = "Input")
 @JIPipeOutputSlot(value = ImagePlusGreyscaleMaskData.class, slotName = "Output")
-@JIPipeCitation("Sauvola J. and Pietaksinen M. (2000) \"Adaptive Document Image Binarization\" Pattern Recognition, 33(2): 225-236")
-public class SauvolaLocalAutoThreshold2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
+@JIPipeCitation("G. Landini, 2013")
+public class ContrastLocalAutoThreshold2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
+
     private boolean darkBackground = true;
-    private double k = 0.5;
-    private double r = 128;
     private int radius = 15;
 
     /**
      * @param info the info
      */
-    public SauvolaLocalAutoThreshold2DAlgorithm(JIPipeNodeInfo info) {
+    public ContrastLocalAutoThreshold2DAlgorithm(JIPipeNodeInfo info) {
         super(info, JIPipeDefaultMutableSlotConfiguration.builder().addInputSlot("Input", ImagePlusGreyscale8UData.class)
                 .addOutputSlot("Output", ImagePlusGreyscaleMaskData.class, "Input", ADD_MASK_QUALIFIER)
                 .allowOutputSlotInheritance(true)
@@ -65,27 +66,25 @@ public class SauvolaLocalAutoThreshold2DAlgorithm extends JIPipeSimpleIteratingA
      *
      * @param other the original
      */
-    public SauvolaLocalAutoThreshold2DAlgorithm(SauvolaLocalAutoThreshold2DAlgorithm other) {
+    public ContrastLocalAutoThreshold2DAlgorithm(ContrastLocalAutoThreshold2DAlgorithm other) {
         super(other);
         this.darkBackground = other.darkBackground;
-        this.k = other.k;
         this.radius = other.radius;
-        this.r = other.r;
     }
 
-    public static void Sauvola(ImagePlus imp, int radius, double k_value, double r_value, boolean doIwhite) {
-        // Sauvola recommends K_VALUE = 0.5 and R_VALUE = 128.
-        // This is a modification of Niblack's thresholding method.
-        // Sauvola J. and Pietaksinen M. (2000) "Adaptive Document Image Binarization"
-        // Pattern Recognition, 33(2): 225-236
-        // http://www.ee.oulu.fi/mvg/publications/show_pdf.php?ID=24
-        // Ported to ImageJ plugin from E Celebi's fourier_0.8 routines
-        // This version uses a circular local window, instead of a rectagular one
+    public static void Contrast(ImagePlus imp, int radius, boolean doIwhite) {
+        // G. Landini, 2013
+        // Based on a simple contrast toggle. This procedure does not have user-provided parameters other than the kernel radius
+        // Sets the pixel value to either white or black depending on whether its current value is closest to the local Max or Min respectively
+        // The procedure is similar to Toggle Contrast Enhancement (see Soille, Morphological Image Analysis (2004), p. 259
 
-        ImagePlus Meanimp, Varimp;
-        ImageProcessor ip = imp.getProcessor(), ipMean, ipVar;
+        ImagePlus Maximp, Minimp;
+        ImageProcessor ip = imp.getProcessor(), ipMax, ipMin;
+        int c_value = 0;
+        int mid_gray;
         byte object;
         byte backg;
+
 
         if (doIwhite) {
             object = (byte) 0xff;
@@ -95,26 +94,21 @@ public class SauvolaLocalAutoThreshold2DAlgorithm extends JIPipeSimpleIteratingA
             backg = (byte) 0xff;
         }
 
-        Meanimp = duplicateImage(ip);
-        ImageConverter ic = new ImageConverter(Meanimp);
-        ic.convertToGray32();
-
-        ipMean = Meanimp.getProcessor();
+        Maximp = duplicateImage(ip);
+        ipMax = Maximp.getProcessor();
         RankFilters rf = new RankFilters();
-        rf.rank(ipMean, radius, rf.MEAN);// Mean
-        //Meanimp.show();
-        Varimp = duplicateImage(ip);
-        ic = new ImageConverter(Varimp);
-        ic.convertToGray32();
-        ipVar = Varimp.getProcessor();
-        rf.rank(ipVar, radius, rf.VARIANCE); //Variance
-        //Varimp.show();
+        rf.rank(ipMax, radius, rf.MAX);// Maximum
+        //Maximp.show();
+        Minimp = duplicateImage(ip);
+        ipMin = Minimp.getProcessor();
+        rf.rank(ipMin, radius, rf.MIN); //Minimum
+        //Minimp.show();
         byte[] pixels = (byte[]) ip.getPixels();
-        float[] mean = (float[]) ipMean.getPixels();
-        float[] var = (float[]) ipVar.getPixels();
-
-        for (int i = 0; i < pixels.length; i++)
-            pixels[i] = ((pixels[i] & 0xff) > (int) (mean[i] * (1.0 + k_value * ((Math.sqrt(var[i]) / r_value) - 1.0)))) ? object : backg;
+        byte[] max = (byte[]) ipMax.getPixels();
+        byte[] min = (byte[]) ipMin.getPixels();
+        for (int i = 0; i < pixels.length; i++) {
+            pixels[i] = ((Math.abs(max[i] & 0xff - pixels[i] & 0xff) <= Math.abs(pixels[i] & 0xff - min[i] & 0xff)) && ((pixels[i] & 0xff) != 0)) ? object : backg;
+        }
         //imp.updateAndDraw();
     }
 
@@ -125,28 +119,6 @@ public class SauvolaLocalAutoThreshold2DAlgorithm extends JIPipeSimpleIteratingA
         ImageProcessor imageProcessor = iPlus.getProcessor();
         imageProcessor.copyBits(iProcessor, 0, 0, Blitter.COPY);
         return iPlus;
-    }
-
-    @JIPipeDocumentation(name = "K", description = "Value of the parameter 'k' in the threshold formula (see Sauvola et al., 2000). A recommended value is 0.5.")
-    @JIPipeParameter("k")
-    public double getK() {
-        return k;
-    }
-
-    @JIPipeParameter("k")
-    public void setK(double k) {
-        this.k = k;
-    }
-
-    @JIPipeDocumentation(name = "R", description = "Value of the parameter 'r' in the threshold formula (see Sauvola et al., 2000). A recommended value is 128.")
-    @JIPipeParameter("r")
-    public double getR() {
-        return r;
-    }
-
-    @JIPipeParameter("r")
-    public void setR(double r) {
-        this.r = r;
     }
 
     @JIPipeDocumentation(name = "Radius", description = "The radius of the circular local window.")
@@ -175,7 +147,7 @@ public class SauvolaLocalAutoThreshold2DAlgorithm extends JIPipeSimpleIteratingA
         if (!darkBackground) {
             img.getProcessor().invert();
         }
-        Sauvola(img, radius, k, r, true);
+        Contrast(img, radius, true);
         dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusGreyscaleMaskData(img), progressInfo);
     }
 

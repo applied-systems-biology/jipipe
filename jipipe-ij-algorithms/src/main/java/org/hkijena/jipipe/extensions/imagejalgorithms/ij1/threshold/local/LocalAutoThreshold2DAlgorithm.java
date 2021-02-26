@@ -11,7 +11,7 @@
  * See the LICENSE file provided with the code for the full license.
  */
 
-package org.hkijena.jipipe.extensions.imagejalgorithms.ij1.threshold;
+package org.hkijena.jipipe.extensions.imagejalgorithms.ij1.threshold.local;
 
 import ij.IJ;
 import ij.ImagePlus;
@@ -46,7 +46,7 @@ import static org.hkijena.jipipe.extensions.imagejalgorithms.ImageJAlgorithmsExt
         "MidGray (threshold is average of min and max pixel values)\n" +
         "Otsu (threshold is the local otsu threshold)\n\n" +
         "If higher-dimensional data is provided, the filter is applied to each 2D slice.")
-@JIPipeOrganization(menuPath = "Threshold", nodeTypeCategory = ImagesNodeTypeCategory.class)
+@JIPipeOrganization(menuPath = "Threshold\nLocal", nodeTypeCategory = ImagesNodeTypeCategory.class)
 @JIPipeInputSlot(value = ImagePlusGreyscale8UData.class, slotName = "Input")
 @JIPipeOutputSlot(value = ImagePlusGreyscaleMaskData.class, slotName = "Output")
 public class LocalAutoThreshold2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {

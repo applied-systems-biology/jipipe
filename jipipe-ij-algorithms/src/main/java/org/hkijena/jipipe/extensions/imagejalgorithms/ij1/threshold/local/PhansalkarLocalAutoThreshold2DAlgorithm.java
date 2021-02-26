@@ -11,10 +11,11 @@
  * See the LICENSE file provided with the code for the full license.
  */
 
-package org.hkijena.jipipe.extensions.imagejalgorithms.ij1.threshold;
+package org.hkijena.jipipe.extensions.imagejalgorithms.ij1.threshold.local;
 
 import ij.ImagePlus;
 import ij.gui.NewImage;
+import ij.plugin.ContrastEnhancer;
 import ij.plugin.filter.RankFilters;
 import ij.process.Blitter;
 import ij.process.ImageConverter;
@@ -37,23 +38,26 @@ import static org.hkijena.jipipe.extensions.imagejalgorithms.ImageJAlgorithmsExt
  * Segmenter node that thresholds via an auto threshold
  * Based on code from {@link fiji.threshold.Auto_Local_Threshold}
  */
-@JIPipeDocumentation(name = "Local auto threshold 2D (Niblack)", description = "Applies a local auto-thresholding algorithm. " +
+@JIPipeDocumentation(name = "Local auto threshold 2D (Phansalkar)", description = "Applies a local auto-thresholding algorithm. " +
+        "The threshold is calculated as <code>t = mean * (1 + p * exp(-q * mean) + k * ((stdev / r) - 1))</code>.\n\n" +
         "If higher-dimensional data is provided, the filter is applied to each 2D slice.")
-@JIPipeOrganization(menuPath = "Threshold", nodeTypeCategory = ImagesNodeTypeCategory.class)
+@JIPipeOrganization(menuPath = "Threshold\nLocal", nodeTypeCategory = ImagesNodeTypeCategory.class)
 @JIPipeInputSlot(value = ImagePlusGreyscale8UData.class, slotName = "Input")
 @JIPipeOutputSlot(value = ImagePlusGreyscaleMaskData.class, slotName = "Output")
-@JIPipeCitation("Niblack W. (1986) \"An introduction to Digital Image Processing\" Prentice-Hall.")
-public class NiblackLocalAutoThreshold2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
-
-    private int modifier = 0;
+@JIPipeCitation("Phansalskar N. et al. Adaptive local thresholding for detection of nuclei in diversity stained cytology images. " +
+        "International Conference on Communications and Signal Processing (ICCSP), 2011, 218 - 220.")
+public class PhansalkarLocalAutoThreshold2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     private boolean darkBackground = true;
-    private double k = 0.2;
+    private double k = 0.25;
+    private double r = 0.5;
+    private double p = 2;
+    private double q = 10;
     private int radius = 15;
 
     /**
      * @param info the info
      */
-    public NiblackLocalAutoThreshold2DAlgorithm(JIPipeNodeInfo info) {
+    public PhansalkarLocalAutoThreshold2DAlgorithm(JIPipeNodeInfo info) {
         super(info, JIPipeDefaultMutableSlotConfiguration.builder().addInputSlot("Input", ImagePlusGreyscale8UData.class)
                 .addOutputSlot("Output", ImagePlusGreyscaleMaskData.class, "Input", ADD_MASK_QUALIFIER)
                 .allowOutputSlotInheritance(true)
@@ -61,29 +65,30 @@ public class NiblackLocalAutoThreshold2DAlgorithm extends JIPipeSimpleIteratingA
                 .build());
     }
 
-    /**
-     * Copies the algorithm
-     *
-     * @param other the original
-     */
-    public NiblackLocalAutoThreshold2DAlgorithm(NiblackLocalAutoThreshold2DAlgorithm other) {
+    public PhansalkarLocalAutoThreshold2DAlgorithm(PhansalkarLocalAutoThreshold2DAlgorithm other) {
         super(other);
         this.darkBackground = other.darkBackground;
         this.k = other.k;
+        this.r = other.r;
+        this.p = other.p;
+        this.q = other.q;
         this.radius = other.radius;
-        this.modifier = other.modifier;
     }
 
-    public static void Niblack(ImagePlus imp, int radius, double k_value, int c_value, boolean doIwhite) {
-        // Niblack recommends K_VALUE = -0.2 for images with black foreground
-        // objects, and K_VALUE = +0.2 for images with white foreground objects.
-        // Niblack W. (1986) "An introduction to Digital Image Processing" Prentice-Hall.
-        // Ported to ImageJ plugin from E Celebi's fourier_0.8 routines
+    public static void Phansalkar(ImagePlus imp, int radius, double k_value, double r_value, double p_value, double q_value, boolean doIwhite) {
+        // This is a modification of Sauvola's thresholding method to deal with low contrast images.
+        // Phansalskar N. et al. Adaptive local thresholding for detection of nuclei in diversity stained
+        // cytology images.International Conference on Communications and Signal Processing (ICCSP), 2011,
+        // 218 - 220.
+        // In this method, the threshold t = mean*(1+p*exp(-q*mean)+k*((stdev/r)-1))
+        // Phansalkar recommends k = 0.25, r = 0.5, p = 2 and q = 10. In this plugin, k and r are the
+        // parameters 1 and 2 respectively, but the values of p and q are fixed.
+        //
+        // Implemented from Phansalkar's paper description by G. Landini
         // This version uses a circular local window, instead of a rectagular one
 
-        ImagePlus Meanimp, Varimp;
-        ImageProcessor ip = imp.getProcessor(), ipMean, ipVar;
-
+        ImagePlus Meanimp, Varimp, Orimp;
+        ImageProcessor ip = imp.getProcessor(), ipMean, ipVar, ipOri;
         byte object;
         byte backg;
 
@@ -96,25 +101,44 @@ public class NiblackLocalAutoThreshold2DAlgorithm extends JIPipeSimpleIteratingA
         }
 
         Meanimp = duplicateImage(ip);
+        ContrastEnhancer ce = new ContrastEnhancer();
+        ce.setNormalize(true); // Needs to be true for correct normalization
+        ce.stretchHistogram(Meanimp, 0.0);
         ImageConverter ic = new ImageConverter(Meanimp);
         ic.convertToGray32();
-
         ipMean = Meanimp.getProcessor();
+        ipMean.multiply(1.0 / 255);
+
+        Orimp = duplicateImage(ip);
+        ce.stretchHistogram(Orimp, 0.0);
+        ic = new ImageConverter(Orimp);
+        ic.convertToGray32();
+        ipOri = Orimp.getProcessor();
+        ipOri.multiply(1.0 / 255); //original to compare
+        //Orimp.show();
+
         RankFilters rf = new RankFilters();
         rf.rank(ipMean, radius, rf.MEAN);// Mean
+
         //Meanimp.show();
         Varimp = duplicateImage(ip);
+        ce.stretchHistogram(Varimp, 0.0);
         ic = new ImageConverter(Varimp);
         ic.convertToGray32();
         ipVar = Varimp.getProcessor();
+        ipVar.multiply(1.0 / 255);
+
         rf.rank(ipVar, radius, rf.VARIANCE); //Variance
+        ipVar.sqrt(); //SD
+
         //Varimp.show();
         byte[] pixels = (byte[]) ip.getPixels();
+        float[] ori = (float[]) ipOri.getPixels();
         float[] mean = (float[]) ipMean.getPixels();
-        float[] var = (float[]) ipVar.getPixels();
+        float[] sd = (float[]) ipVar.getPixels();
 
         for (int i = 0; i < pixels.length; i++)
-            pixels[i] = ((pixels[i] & 0xff) > (int) (mean[i] + k_value * Math.sqrt(var[i]) - c_value)) ? object : backg;
+            pixels[i] = ((ori[i]) > (mean[i] * (1.0 + p_value * Math.exp(-q_value * mean[i]) + k_value * ((sd[i] / r_value) - 1.0)))) ? object : backg;
         //imp.updateAndDraw();
     }
 
@@ -127,7 +151,7 @@ public class NiblackLocalAutoThreshold2DAlgorithm extends JIPipeSimpleIteratingA
         return iPlus;
     }
 
-    @JIPipeDocumentation(name = "K", description = "Value of the parameter 'k' in the threshold formula (see Niblack, 1986). A recommended value is 0.2.")
+    @JIPipeDocumentation(name = "K", description = "Value of the parameter 'k' in the threshold formula (see Phansalskar et al., 2011). A recommended value is 0.25.")
     @JIPipeParameter("k")
     public double getK() {
         return k;
@@ -136,6 +160,39 @@ public class NiblackLocalAutoThreshold2DAlgorithm extends JIPipeSimpleIteratingA
     @JIPipeParameter("k")
     public void setK(double k) {
         this.k = k;
+    }
+
+    @JIPipeDocumentation(name = "R", description = "Value of the parameter 'r' in the threshold formula (see Phansalskar et al., 2011). A recommended value is 0.5.")
+    @JIPipeParameter("r")
+    public double getR() {
+        return r;
+    }
+
+    @JIPipeParameter("r")
+    public void setR(double r) {
+        this.r = r;
+    }
+
+    @JIPipeDocumentation(name = "P", description = "Value of the parameter 'p' in the threshold formula (see Phansalskar et al., 2011). A recommended value is 2.")
+    @JIPipeParameter("p")
+    public double getP() {
+        return p;
+    }
+
+    @JIPipeParameter("p")
+    public void setP(double p) {
+        this.p = p;
+    }
+
+    @JIPipeDocumentation(name = "Q", description = "Value of the parameter 'q' in the threshold formula (see Phansalskar et al., 2011). A recommended value is 10.")
+    @JIPipeParameter("q")
+    public double getQ() {
+        return q;
+    }
+
+    @JIPipeParameter("q")
+    public void setQ(double q) {
+        this.q = q;
     }
 
     @JIPipeDocumentation(name = "Radius", description = "The radius of the circular local window.")
@@ -164,7 +221,7 @@ public class NiblackLocalAutoThreshold2DAlgorithm extends JIPipeSimpleIteratingA
         if (!darkBackground) {
             img.getProcessor().invert();
         }
-        Niblack(img, radius, k, modifier, true);
+        Phansalkar(img, radius, k, r, p, q, true);
         dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusGreyscaleMaskData(img), progressInfo);
     }
 
@@ -177,16 +234,5 @@ public class NiblackLocalAutoThreshold2DAlgorithm extends JIPipeSimpleIteratingA
     @JIPipeParameter("dark-background")
     public void setDarkBackground(boolean darkBackground) {
         this.darkBackground = darkBackground;
-    }
-
-    @JIPipeDocumentation(name = "Modifier", description = "This value is subtracted from each calculated local threshold.")
-    @JIPipeParameter("modifier")
-    public int getModifier() {
-        return modifier;
-    }
-
-    @JIPipeParameter("modifier")
-    public void setModifier(int modifier) {
-        this.modifier = modifier;
     }
 }
