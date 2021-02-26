@@ -23,13 +23,16 @@ import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.AnnotationsNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeContextAction;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
-import org.hkijena.jipipe.extensions.parameters.expressions.AnnotationGeneratorExpression;
-import org.hkijena.jipipe.extensions.parameters.expressions.NamedAnnotationGeneratorExpression;
+import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
+import org.hkijena.jipipe.extensions.parameters.expressions.*;
 import org.hkijena.jipipe.extensions.parameters.pairs.PairParameterSettings;
 import org.hkijena.jipipe.extensions.parameters.primitives.StringParameterSettings;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.utils.ResourceUtils;
 import org.hkijena.jipipe.utils.UIUtils;
+
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * Algorithm that annotates all data with the same annotation
@@ -81,6 +84,7 @@ public class AnnotateByExpression extends JIPipeSimpleIteratingAlgorithm {
     @JIPipeParameter("generated-annotation")
     @PairParameterSettings(keyLabel = "Value", valueLabel = "Name", singleRow = false)
     @StringParameterSettings(monospace = true)
+    @ExpressionParameterSettings(variableSource = VariableSource.class)
     public NamedAnnotationGeneratorExpression.List getAnnotations() {
         return annotations;
     }
@@ -110,6 +114,23 @@ public class AnnotateByExpression extends JIPipeSimpleIteratingAlgorithm {
             expression.setKey(new AnnotationGeneratorExpression("\"My value\""));
             expression.setValue("My annotation");
             getEventBus().post(new ParameterChangedEvent(this, "generated-annotation"));
+        }
+    }
+
+    public static class VariableSource implements ExpressionParameterVariableSource {
+
+        public static final Set<ExpressionParameterVariable> VARIABLES;
+
+        static {
+            VARIABLES = new HashSet<>();
+            VARIABLES.add(new ExpressionParameterVariable("<Annotations>",
+                    "Annotations of the source ROI list are available (use Update Cache to find the list of annotations)",
+                    ""));
+        }
+
+        @Override
+        public Set<ExpressionParameterVariable> getVariables(JIPipeParameterAccess parameterAccess) {
+            return VARIABLES;
         }
     }
 }

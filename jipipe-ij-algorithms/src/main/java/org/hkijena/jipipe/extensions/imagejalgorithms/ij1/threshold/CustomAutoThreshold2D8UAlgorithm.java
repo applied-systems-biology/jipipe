@@ -13,10 +13,12 @@
 
 package org.hkijena.jipipe.extensions.imagejalgorithms.ij1.threshold;
 
-import org.hkijena.jipipe.extensions.parameters.expressions.ExpressionParameters;
+import com.google.common.primitives.Longs;
+import gnu.trove.list.array.TByteArrayList;
 import ij.ImagePlus;
-import ij.process.AutoThresholder;
+import ij.process.ByteProcessor;
 import ij.process.ImageProcessor;
+import ij.process.ImageStatistics;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
@@ -24,6 +26,7 @@ import org.hkijena.jipipe.api.data.*;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
+import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.extensions.imagejalgorithms.utils.ImageROITargetArea;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ROIListData;
@@ -31,29 +34,29 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePl
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleMaskData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageSliceIndex;
-import org.hkijena.jipipe.extensions.parameters.expressions.DefaultExpressionParameter;
-import org.hkijena.jipipe.extensions.parameters.expressions.ExpressionParameterSettings;
+import org.hkijena.jipipe.extensions.parameters.expressions.*;
 import org.hkijena.jipipe.extensions.parameters.primitives.OptionalAnnotationNameParameter;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import static org.hkijena.jipipe.extensions.imagejalgorithms.ImageJAlgorithmsExtension.ADD_MASK_QUALIFIER;
 
 /**
  * Thresholding node that thresholds via an auto threshold
  */
-@JIPipeDocumentation(name = "Auto threshold 2D", description = "Applies an auto-thresholding algorithm. " +
+@JIPipeDocumentation(name = "Custom auto threshold 2D (8-bit)", description = "Allows to implement a custom thresholding method via expressions. " +
         "If higher-dimensional data is provided, the filter is applied to each 2D slice.")
 @JIPipeOrganization(menuPath = "Threshold", nodeTypeCategory = ImagesNodeTypeCategory.class)
 @JIPipeInputSlot(value = ImagePlusGreyscale8UData.class, slotName = "Input")
 @JIPipeOutputSlot(value = ImagePlusGreyscaleMaskData.class, slotName = "Output")
-public class AutoThreshold2DAlgorithm extends JIPipeIteratingAlgorithm {
+public class CustomAutoThreshold2D8UAlgorithm extends JIPipeIteratingAlgorithm {
 
-    private AutoThresholder.Method method = AutoThresholder.Method.Default;
-    private boolean darkBackground = true;
+    private DefaultExpressionParameter thresholdCalculationExpression = new DefaultExpressionParameter("MAX(0, FIRST_INDEX_WHERE(\"index > 0 AND item > 0\", histogram) - 1)");
     private OptionalAnnotationNameParameter thresholdAnnotation = new OptionalAnnotationNameParameter("Threshold", true);
-    private SliceThresholdMode thresholdMode = SliceThresholdMode.ApplyPerSlice;
+    private AutoThreshold2DAlgorithm.SliceThresholdMode thresholdMode = AutoThreshold2DAlgorithm.SliceThresholdMode.ApplyPerSlice;
 
     private DefaultExpressionParameter thresholdCombinationExpression = new DefaultExpressionParameter("MIN(thresholds)");
     private ImageROITargetArea sourceArea = ImageROITargetArea.WholeImage;
@@ -61,7 +64,7 @@ public class AutoThreshold2DAlgorithm extends JIPipeIteratingAlgorithm {
     /**
      * @param info the info
      */
-    public AutoThreshold2DAlgorithm(JIPipeNodeInfo info) {
+    public CustomAutoThreshold2D8UAlgorithm(JIPipeNodeInfo info) {
         super(info, JIPipeDefaultMutableSlotConfiguration.builder().addInputSlot("Input", ImagePlusGreyscale8UData.class)
                 .addOutputSlot("Output", ImagePlusGreyscaleMaskData.class, "Input", ADD_MASK_QUALIFIER)
                 .allowOutputSlotInheritance(true)
@@ -75,10 +78,9 @@ public class AutoThreshold2DAlgorithm extends JIPipeIteratingAlgorithm {
      *
      * @param other the original
      */
-    public AutoThreshold2DAlgorithm(AutoThreshold2DAlgorithm other) {
+    public CustomAutoThreshold2D8UAlgorithm(CustomAutoThreshold2D8UAlgorithm other) {
         super(other);
-        this.method = other.method;
-        this.darkBackground = other.darkBackground;
+        this.thresholdCalculationExpression = new DefaultExpressionParameter(other.thresholdCalculationExpression);
         this.thresholdAnnotation = new OptionalAnnotationNameParameter(other.thresholdAnnotation);
         this.thresholdMode = other.thresholdMode;
         this.thresholdCombinationExpression = new DefaultExpressionParameter(other.thresholdCombinationExpression);
@@ -97,7 +99,12 @@ public class AutoThreshold2DAlgorithm extends JIPipeIteratingAlgorithm {
         ImagePlus img = inputData.getDuplicateImage();
         ROIListData roiInput = null;
         ImagePlus maskInput = null;
-        AutoThresholder autoThresholder = new AutoThresholder();
+        ExpressionParameters parameters = new ExpressionParameters();
+        parameters.set("width", img.getWidth());
+        parameters.set("height", img.getHeight());
+        parameters.set("size_z", img.getNSlices());
+        parameters.set("size_c", img.getNChannels());
+        parameters.set("size_t", img.getNFrames());
 
         switch (sourceArea) {
             case InsideRoi:
@@ -113,19 +120,22 @@ public class AutoThreshold2DAlgorithm extends JIPipeIteratingAlgorithm {
         ROIListData finalRoiInput = roiInput;
         ImagePlus finalMaskInput = maskInput;
 
-        if (thresholdMode == SliceThresholdMode.ApplyPerSlice) {
+        if (thresholdMode == AutoThreshold2DAlgorithm.SliceThresholdMode.ApplyPerSlice) {
             List<Integer> thresholds = new ArrayList<>();
+            TByteArrayList pixels = new TByteArrayList(img.getWidth() * img.getHeight());
             ImageJUtils.forEachIndexedZCTSlice(img, (ip, index) -> {
                 ImageProcessor mask = getMask(img.getWidth(),
                         img.getHeight(),
                         finalRoiInput,
                         finalMaskInput,
-                        index,
-                        progressInfo);
-                if (!darkBackground)
-                    ip.invert();
-                int[] histogram = getHistogram(ip, mask);
-                int threshold = autoThresholder.getThreshold(method, histogram);
+                        index
+                );
+
+                // Collect all pixels
+                pixels.clear();
+                getMaskedPixels(ip, mask, pixels);
+                ImageStatistics statistics = new ByteProcessor(pixels.size(), 1, pixels.toArray()).getStatistics();
+                int threshold = getThreshold(parameters, statistics);
                 ip.threshold(threshold);
                 thresholds.add(threshold);
             }, progressInfo);
@@ -141,23 +151,20 @@ public class AutoThreshold2DAlgorithm extends JIPipeIteratingAlgorithm {
                     annotations,
                     JIPipeAnnotationMergeStrategy.Merge,
                     progressInfo);
-        } else if (thresholdMode == SliceThresholdMode.CombineSliceStatistics) {
-            int[] combinedHistogram = new int[256];
+        } else if (thresholdMode == AutoThreshold2DAlgorithm.SliceThresholdMode.CombineSliceStatistics) {
+            TByteArrayList pixels = new TByteArrayList(img.getWidth() * img.getHeight() *
+                    img.getNFrames() * img.getNChannels() * img.getNSlices());
             ImageJUtils.forEachIndexedZCTSlice(img, (ip, index) -> {
                 ImageProcessor mask = getMask(img.getWidth(),
                         img.getHeight(),
                         finalRoiInput,
                         finalMaskInput,
-                        index,
-                        progressInfo);
-                if (!darkBackground)
-                    ip.invert();
-                int[] histogram = getHistogram(ip, mask);
-                for (int i = 0; i < histogram.length; i++) {
-                    combinedHistogram[i] += histogram[i];
-                }
-            }, progressInfo.resolve("Finding histograms"));
-            int threshold = autoThresholder.getThreshold(method, combinedHistogram);
+                        index
+                );
+                getMaskedPixels(ip, mask, pixels);
+            }, progressInfo.resolve("Combining pixels"));
+            ImageStatistics statistics = new ByteProcessor(pixels.size(), 1, pixels.toArray()).getStatistics();
+            int threshold = getThreshold(parameters, statistics);
             List<JIPipeAnnotation> annotations = new ArrayList<>();
             if (thresholdAnnotation.isEnabled()) {
                 annotations.add(thresholdAnnotation.createAnnotation("" + threshold));
@@ -170,19 +177,20 @@ public class AutoThreshold2DAlgorithm extends JIPipeIteratingAlgorithm {
                     annotations,
                     JIPipeAnnotationMergeStrategy.Merge,
                     progressInfo);
-        } else if (thresholdMode == SliceThresholdMode.CombineThresholdPerSlice) {
+        } else if (thresholdMode == AutoThreshold2DAlgorithm.SliceThresholdMode.CombineThresholdPerSlice) {
             List<Integer> thresholds = new ArrayList<>();
+            TByteArrayList pixels = new TByteArrayList(img.getWidth() * img.getHeight());
             ImageJUtils.forEachIndexedZCTSlice(img, (ip, index) -> {
                 ImageProcessor mask = getMask(img.getWidth(),
                         img.getHeight(),
                         finalRoiInput,
                         finalMaskInput,
-                        index,
-                        progressInfo);
-                if (!darkBackground)
-                    ip.invert();
-                int[] histogram = getHistogram(ip, mask);
-                int threshold = autoThresholder.getThreshold(method, histogram);
+                        index
+                );
+                pixels.clear();
+                getMaskedPixels(ip, mask, pixels);
+                ImageStatistics statistics = new ByteProcessor(pixels.size(), 1, pixels.toArray()).getStatistics();
+                int threshold = getThreshold(parameters, statistics);
                 thresholds.add(threshold);
             }, progressInfo.resolve("Finding thresholds"));
 
@@ -190,7 +198,7 @@ public class AutoThreshold2DAlgorithm extends JIPipeIteratingAlgorithm {
             ExpressionParameters variableSet = new ExpressionParameters();
             variableSet.set("thresholds", thresholds);
             Number combined = (Number) thresholdCombinationExpression.evaluate(variableSet);
-            int threshold = Math.min(255, Math.max(0, combined.intValue()));
+            int threshold = combined.intValue();
             List<JIPipeAnnotation> annotations = new ArrayList<>();
             if (thresholdAnnotation.isEnabled()) {
                 annotations.add(thresholdAnnotation.createAnnotation("" + threshold));
@@ -206,26 +214,40 @@ public class AutoThreshold2DAlgorithm extends JIPipeIteratingAlgorithm {
         }
     }
 
-    @JIPipeParameter("method")
-    @JIPipeDocumentation(name = "Method")
-    public AutoThresholder.Method getMethod() {
-        return method;
+    private void getMaskedPixels(ImageProcessor ip, ImageProcessor mask, TByteArrayList target) {
+        byte[] imageBytes = (byte[]) ip.getPixels();
+        byte[] maskBytes = mask != null ? (byte[]) mask.getPixels() : null;
+        for (int i = 0; i < imageBytes.length; i++) {
+            if(mask == null || maskBytes[i] > 0) {
+                target.add(imageBytes[i]);
+            }
+        }
     }
 
-    @JIPipeParameter("method")
-    public void setMethod(AutoThresholder.Method method) {
-        this.method = method;
+    private int getThreshold(ExpressionParameters parameters, ImageStatistics statistics) {
+        parameters.set("histogram", Longs.asList(statistics.getHistogram()));
+        parameters.set("num_pixels", statistics.area);
+        parameters.set("min_value", statistics.min);
+        parameters.set("max_value", statistics.max);
+        parameters.set("mean_value", statistics.mean);
+        parameters.set("stdev_value", statistics.stdDev);
+        parameters.set("modal_value", statistics.mode);
+        Number number = (Number) thresholdCalculationExpression.evaluate(parameters);
+        return number.intValue();
     }
 
-    @JIPipeDocumentation(name = "Dark background", description = "If the background color is dark. Disable this if your image has a bright background.")
-    @JIPipeParameter("dark-background")
-    public boolean isDarkBackground() {
-        return darkBackground;
+    @JIPipeDocumentation(name = "Thresholding function", description = "This expression is executed for each set of slices. " +
+            "The expression should return a number that will be used as threshold. A pixel is set to 255 if its value is larger than " +
+            "this threshold.")
+    @JIPipeParameter("thresholding-function")
+    @ExpressionParameterSettings(variableSource = VariableSource.class)
+    public DefaultExpressionParameter getThresholdCalculationExpression() {
+        return thresholdCalculationExpression;
     }
 
-    @JIPipeParameter("dark-background")
-    public void setDarkBackground(boolean darkBackground) {
-        this.darkBackground = darkBackground;
+    @JIPipeParameter("thresholding-function")
+    public void setThresholdCalculationExpression(DefaultExpressionParameter thresholdCalculationExpression) {
+        this.thresholdCalculationExpression = thresholdCalculationExpression;
     }
 
     @JIPipeDocumentation(name = "Threshold annotation", description = "Puts the generated threshold(s) into an annotation.")
@@ -242,16 +264,16 @@ public class AutoThreshold2DAlgorithm extends JIPipeIteratingAlgorithm {
     @JIPipeDocumentation(name = "Multi-slice thresholding", description = "Determines how thresholds are calculated if an image has multiple slices. " +
             "<ul>" +
             "<li><b>Apply threshold per slice</b> calculates and applies the threshold for each slice.</li>" +
-            "<li><b>Combine slice statistics</b> merges the slice histograms into one, which is then used for threshold calculation.</li>" +
-            "<li><b>Combine thresholds per slice</b> calculates the threshold for each slice. One threshold for all slices is calculated via the math expression.</li>" +
+            "<li><b>Combine slice statistics</b> calculates statistics for all pixels in the image.</li>" +
+            "<li><b>Combine thresholds per slice</b> calculates the threshold for each slice. One threshold for all slices is calculated via another math expression.</li>" +
             "</ul>")
     @JIPipeParameter("slice-threshold-mode")
-    public SliceThresholdMode getThresholdMode() {
+    public AutoThreshold2DAlgorithm.SliceThresholdMode getThresholdMode() {
         return thresholdMode;
     }
 
     @JIPipeParameter("slice-threshold-mode")
-    public void setThresholdMode(SliceThresholdMode thresholdMode) {
+    public void setThresholdMode(AutoThreshold2DAlgorithm.SliceThresholdMode thresholdMode) {
         this.thresholdMode = thresholdMode;
     }
 
@@ -306,7 +328,7 @@ public class AutoThreshold2DAlgorithm extends JIPipeIteratingAlgorithm {
         }
     }
 
-    private ImageProcessor getMask(int width, int height, ROIListData rois, ImagePlus mask, ImageSliceIndex sliceIndex, JIPipeProgressInfo progressInfo) {
+    private ImageProcessor getMask(int width, int height, ROIListData rois, ImagePlus mask, ImageSliceIndex sliceIndex) {
         switch (sourceArea) {
             case WholeImage: {
                 return null;
@@ -376,23 +398,37 @@ public class AutoThreshold2DAlgorithm extends JIPipeIteratingAlgorithm {
         }
     }
 
-    public enum SliceThresholdMode {
-        ApplyPerSlice,
-        CombineSliceStatistics,
-        CombineThresholdPerSlice;
-
-
+    public static class VariableSource implements ExpressionParameterVariableSource {
         @Override
-        public String toString() {
-            switch (this) {
-                case ApplyPerSlice:
-                    return "Apply threshold per slice";
-                case CombineSliceStatistics:
-                    return "Combine slice statistics";
-                case CombineThresholdPerSlice:
-                    return "Combine thresholds per slice";
-            }
-            throw new UnsupportedOperationException();
+        public Set<ExpressionParameterVariable> getVariables(JIPipeParameterAccess parameterAccess) {
+            Set<ExpressionParameterVariable> result = new HashSet<>();
+            result.add(new ExpressionParameterVariable("Image width", "The width of the image", "width"));
+            result.add(new ExpressionParameterVariable("Image height", "The height of the image", "height"));
+            result.add(new ExpressionParameterVariable("Image Z slices", "The number of Z slices in the image", "size_z"));
+            result.add(new ExpressionParameterVariable("Image channels", "The number of channel (C) slices in the image", "size_c"));
+            result.add(new ExpressionParameterVariable("Image frames", "The number of frames (T) in the image", "size_t"));
+            result.add(new ExpressionParameterVariable("Histogram",
+                    "An array the represents the histogram (index is the pixel value, value is the number of pixels with this value) of the currently analyzed area",
+                    "histogram"));
+            result.add(new ExpressionParameterVariable("Number of pixels",
+                    "The number of pixels that are incorporated in the statistics",
+                    "num_pixels"));
+            result.add(new ExpressionParameterVariable("Minimum pixel value",
+                    "The minimum pixel value",
+                    "min_value"));
+            result.add(new ExpressionParameterVariable("Maximum pixel value",
+                    "The maximum pixel value",
+                    "max_value"));
+            result.add(new ExpressionParameterVariable("Mean pixel value",
+                    "The mean pixel value",
+                    "mean_value"));
+            result.add(new ExpressionParameterVariable("Standard deviation pixel value",
+                    "The standard deviation of the pixel values",
+                    "stdev_value"));
+            result.add(new ExpressionParameterVariable("Modal pixel value",
+                    "The modes of the pixel values",
+                    "modal_value"));
+            return result;
         }
     }
 }

@@ -59,7 +59,7 @@ public class UpdateCacheShowIntermediateNodeUIContextAction implements NodeUICon
 
     @Override
     public Icon getIcon() {
-        return UIUtils.getIconFromResources("actions/rabbitvcs-update.png");
+        return UIUtils.getIconFromResources("actions/cache-intermediate-results.png");
     }
 
     @Override

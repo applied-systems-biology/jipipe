@@ -256,6 +256,27 @@ public class StandardParametersExtension extends JIPipePrepackagedDefaultJavaExt
         registerExpressionFunction(new EvaluateFunction());
         registerExpressionFunction(new ForEachFunction());
         registerExpressionFunction(new SequenceFunction());
+        registerExpressionFunction(new FirstIndexOfFunction());
+        registerExpressionFunction(new LastIndexOfFunction());
+        registerExpressionFunction(new WhereFunction());
+        registerExpressionFunction(new HistogramFunction());
+        registerExpressionFunction(new HistogramThresholdHuang());
+        registerExpressionFunction(new HistogramThresholdImageJDefault());
+        registerExpressionFunction(new HistogramThresholdIntermodes());
+        registerExpressionFunction(new HistogramThresholdImageJIsoData());
+        registerExpressionFunction(new HistogramThresholdIsoData());
+        registerExpressionFunction(new HistogramThresholdLi());
+        registerExpressionFunction(new HistogramThresholdMaxEntropy());
+        registerExpressionFunction(new HistogramThresholdMean());
+        registerExpressionFunction(new HistogramThresholdMinError());
+        registerExpressionFunction(new HistogramThresholdMinimum());
+        registerExpressionFunction(new HistogramThresholdMoments());
+        registerExpressionFunction(new HistogramThresholdOtsu());
+        registerExpressionFunction(new HistogramThresholdPercentile());
+        registerExpressionFunction(new HistogramThresholdRenyi());
+        registerExpressionFunction(new HistogramThresholdShanbhag());
+        registerExpressionFunction(new HistogramThresholdTriangle());
+        registerExpressionFunction(new HistogramThresholdYen());
     }
 
     private void registerScriptParameters() {

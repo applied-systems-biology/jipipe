@@ -25,7 +25,7 @@ public class StatisticsMaxIntegratingColumnOperation implements IntegratingColum
     public TableColumn apply(TableColumn column) {
         double max = Double.NEGATIVE_INFINITY;
         for (int i = 0; i < column.getRows(); i++) {
-            max = Math.min(column.getRowAsDouble(i), max);
+            max = Math.max(column.getRowAsDouble(i), max);
         }
         return new DoubleArrayTableColumn(new double[]{max}, column.getLabel());
     }

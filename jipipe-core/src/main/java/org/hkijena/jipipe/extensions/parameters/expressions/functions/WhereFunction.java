@@ -14,10 +14,10 @@ import java.util.Map;
 
 import static org.hkijena.jipipe.extensions.parameters.expressions.functions.EvaluateFunction.parseVariableAssignment;
 
-@JIPipeDocumentation(name = "Foreach loop", description = "Repeats an expression for all items of the second parameter. ")
-public class ForEachFunction extends ExpressionFunction {
-    public ForEachFunction() {
-        super("FOREACH", 2, Integer.MAX_VALUE);
+@JIPipeDocumentation(name = "Indices where", description = "Finds all indices of the array where the condition applies. Returns an empty array if none match.")
+public class WhereFunction extends ExpressionFunction {
+    public WhereFunction() {
+        super("WHERE", 2, Integer.MAX_VALUE);
     }
 
     @Override
@@ -34,7 +34,7 @@ public class ForEachFunction extends ExpressionFunction {
         }
 
         // Evaluate iterated
-        Collection<?> sequence;
+        List<?> sequence;
         String variableName;
         if(parameters.get(1) instanceof String) {
             String assignment = (String) parameters.get(1);
@@ -49,40 +49,40 @@ public class ForEachFunction extends ExpressionFunction {
             }
             variableName = assignment.substring(0, separatorIndex);
             String expression = assignment.substring(separatorIndex + 1);
-            sequence = (Collection<?>) DefaultExpressionParameter.getEvaluatorInstance().evaluate(expression, variables);
+            sequence = (List<?>) DefaultExpressionParameter.getEvaluatorInstance().evaluate(expression, variables);
         }
         else {
             variableName = "item";
-            sequence = (Collection<?>) parameters.get(1);
+            sequence = (List<?>) parameters.get(1);
         }
 
         String loopedExpression = (String) parameters.get(0);
-        List<Object> result = new ArrayList<>();
-        int i = 0;
-        for (Object item : sequence) {
-            localVariables.put(variableName, item);
+        List<Integer> result = new ArrayList<>();
+        for (int i = 0; i < sequence.size(); ++i) {
+            localVariables.put(variableName, sequence.get(i));
             localVariables.put("index", i);
-            result.add(DefaultExpressionParameter.getEvaluatorInstance().evaluate(loopedExpression, localVariables));
-            ++i;
+            boolean test = DefaultExpressionParameter.getEvaluatorInstance().test(loopedExpression, localVariables);
+            if(test) {
+                result.add(i);
+            }
         }
-
         return result;
     }
 
     @Override
     public ParameterInfo getParameterInfo(int index) {
         if(index == 0) {
-            return new ParameterInfo("Expression", "String that contains the evaluated expression", String.class);
+            return new ParameterInfo("Condition", "String that contains an expression for the condition", String.class);
         }
         else if(index == 1) {
             return new ParameterInfo("Sequence", "The sequence to be looped. Can be a string or array. " +
                     "If it is an array, the current item is assigned to a variable 'item'." +
                     "If it is a string, it must have following format: [Variable name]=[Expression]." +
-                    " The result of [Expression] is looped through. The item is assigned to the variable [Variable name].", Collection.class, String.class);
+                    " The result of [Condition] is looped through. The item is assigned to the variable [Variable name].", Collection.class, String.class);
         }
         else {
             return new ParameterInfo("Variable " + index, "String that has following format: [Variable name]=[Expression]." +
-                    " The result of [Expression] is assigned to [Variable name] for the evaluated expression", String.class);
+                    " The result of [Condition] is assigned to [Variable name] for the evaluated expression", String.class);
         }
     }
 }

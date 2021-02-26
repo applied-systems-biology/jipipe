@@ -726,6 +726,9 @@ public class ImageJAlgorithmsExtension extends JIPipePrepackagedDefaultJavaExten
         registerNodeType("ij1-threshold-percentile2d-8u", PercentileThreshold8U2DAlgorithm.class, UIUtils.getIconURLFromResources("actions/segment.png"));
         registerNodeType("ij1-threshold-manual2d-16u", ManualThreshold16U2DAlgorithm.class, UIUtils.getIconURLFromResources("actions/segment.png"));
         registerNodeType("ij1-threshold-auto2d", AutoThreshold2DAlgorithm.class, UIUtils.getIconURLFromResources("actions/segment.png"));
+        registerNodeType("ij1-threshold-expression2d-8u", CustomAutoThreshold2D8UAlgorithm.class, UIUtils.getIconURLFromResources("actions/segment.png"));
+        registerNodeType("ij1-threshold-expression2d-16u", CustomAutoThreshold2D16UAlgorithm.class, UIUtils.getIconURLFromResources("actions/segment.png"));
+        registerNodeType("ij1-threshold-expression2d-32f", CustomAutoThreshold2D32FAlgorithm.class, UIUtils.getIconURLFromResources("actions/segment.png"));
         registerNodeType("ij1-threshold-local-auto2d", LocalAutoThreshold2DAlgorithm.class, UIUtils.getIconURLFromResources("actions/segment.png"));
         registerNodeType("ij1-threshold-local-auto2d-bernsen", BernsenLocalAutoThreshold2DAlgorithm.class, UIUtils.getIconURLFromResources("actions/segment.png"));
         registerNodeType("ij1-threshold-local-auto2d-niblack", NiblackLocalAutoThreshold2DAlgorithm.class, UIUtils.getIconURLFromResources("actions/segment.png"));

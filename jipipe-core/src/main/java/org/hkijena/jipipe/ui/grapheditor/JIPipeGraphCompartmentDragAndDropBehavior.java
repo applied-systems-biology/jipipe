@@ -21,6 +21,7 @@ import org.hkijena.jipipe.extensions.filesystem.datasources.PathListDataSource;
 import org.hkijena.jipipe.extensions.parameters.primitives.PathList;
 import org.hkijena.jipipe.extensions.settings.GraphEditorUISettings;
 import org.hkijena.jipipe.ui.grapheditor.contextmenu.clipboard.AlgorithmGraphPasteNodeUIContextAction;
+import org.hkijena.jipipe.utils.StringUtils;
 
 import javax.swing.*;
 import java.awt.*;
@@ -68,6 +69,10 @@ public class JIPipeGraphCompartmentDragAndDropBehavior implements JIPipeGraphDra
 
     @Override
     public synchronized void drop(DropTargetDropEvent dtde) {
+        if(canvas.getCurrentConnectionDragSource() != null || canvas.getCurrentConnectionDragTarget() != null) {
+            dtde.rejectDrop();
+            return;
+        }
         try {
             Transferable tr = dtde.getTransferable();
             DataFlavor[] flavors = tr.getTransferDataFlavors();
