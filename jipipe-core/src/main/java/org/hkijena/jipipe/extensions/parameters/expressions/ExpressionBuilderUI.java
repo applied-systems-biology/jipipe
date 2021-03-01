@@ -306,6 +306,7 @@ public class ExpressionBuilderUI extends JPanel {
                 ParameterInfo info = operatorEntry.getParameterInfo(i);
                 ExpressionBuilderParameterUI parameterUI = new ExpressionBuilderParameterUI();
                 JLabel infoLabel = new JLabel(info.getName());
+                infoLabel.setToolTipText(info.getDescription());
                 appendTooltipForParameterLabel(info, infoLabel);
                 inserterForm.addToForm(parameterUI, infoLabel, null);
                 parameterEditorUIList.add(parameterUI);
@@ -337,6 +338,7 @@ public class ExpressionBuilderUI extends JPanel {
                         ParameterInfo info = functionEntry.getFunction().getParameterInfo(parameterEditorUIList.size());
                         ExpressionBuilderParameterUI parameterUI = new ExpressionBuilderParameterUI();
                         JLabel infoLabel = new JLabel(info.getName());
+                        infoLabel.setToolTipText(info.getDescription());
                         appendTooltipForParameterLabel(info, infoLabel);
                         inserterForm.removeLastRow();
                         inserterForm.addToForm(parameterUI, infoLabel, null);

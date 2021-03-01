@@ -63,6 +63,22 @@ public class ImageJUtils {
     }
 
     /**
+     * Gets slice from image
+     * @param img the image
+     * @return the processor
+     */
+    public static ImageProcessor getSlice(ImagePlus img, int z, int c, int t) {
+        if(img.isStack()) {
+            return img.getStack().getProcessor(img.getStackIndex(c + 1, z + 1, t + 1));
+        }
+        else {
+            if(z != 0 ||c != 0 ||t != 0)
+                throw new IndexOutOfBoundsException("Accessing stack index z=" + z + ", c=" + c + ", t=" + t);
+            return img.getProcessor();
+        }
+    }
+
+    /**
      * Rotates the image by a specified amount of degrees to the right
      *
      * @param img          the image
