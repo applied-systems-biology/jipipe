@@ -68,7 +68,7 @@ public class TablesExtension extends JIPipePrepackagedDefaultJavaExtension {
 
     @Override
     public String getDependencyVersion() {
-        return "2021.2";
+        return "2021.3";
     }
 
     @Override
