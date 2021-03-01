@@ -162,7 +162,7 @@ public class StackCombinerAlgorithm extends JIPipeIteratingAlgorithm {
         }, progressInfo.resolve("Copying original image"));
     }
 
-    @JIPipeDocumentation(name = "Combine via ...", description = "Determines to which dimension the slices should be added to. The other dimensions must have exactly " +
+    @JIPipeDocumentation(name = "Combine ...", description = "Determines to which dimension the slices should be added to. The other dimensions must have exactly " +
             "the same size. Example: If Z is selected, the number of channels and frames must be equal in both input stacks.")
     @JIPipeParameter("target-dimension")
     public HyperstackDimension getTargetDimension() {
