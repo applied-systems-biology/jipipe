@@ -87,7 +87,7 @@ public abstract class ImageRoiProcessorAlgorithm extends JIPipeIteratingAlgorith
      *
      * @param dataBatch    the input data
      * @param progressInfo progress
-     * @return reference image
+     * @return map of reference image to ROI list. The key can be null!
      */
     protected Map<ImagePlusData, ROIListData> getReferenceImage(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
         if (overrideReferenceImage) {

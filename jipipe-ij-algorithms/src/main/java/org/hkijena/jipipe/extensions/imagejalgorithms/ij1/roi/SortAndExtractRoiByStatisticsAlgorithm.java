@@ -101,14 +101,18 @@ public class SortAndExtractRoiByStatisticsAlgorithm extends ImageRoiProcessorAlg
 
         ROIListData outputData = new ROIListData();
 
-        roiStatisticsAlgorithm.setOverrideReferenceImage(true);
-
         for (Map.Entry<ImagePlusData, ROIListData> entry : getReferenceImage(dataBatch, progressInfo).entrySet()) {
             ROIListData data = entry.getValue();
             // Obtain statistics
             roiStatisticsAlgorithm.clearSlotData();
             roiStatisticsAlgorithm.getInputSlot("ROI").addData(data, progressInfo);
-            roiStatisticsAlgorithm.getInputSlot("Reference").addData(entry.getKey(), progressInfo);
+            if(entry.getKey() == null) {
+                roiStatisticsAlgorithm.setOverrideReferenceImage(false);
+            }
+            else {
+                roiStatisticsAlgorithm.setOverrideReferenceImage(true);
+                roiStatisticsAlgorithm.getInputSlot("Reference").addData(entry.getKey(), progressInfo);
+            }
             roiStatisticsAlgorithm.run(progressInfo);
             ResultsTableData statistics = roiStatisticsAlgorithm.getFirstOutputSlot().getData(0, ResultsTableData.class, progressInfo);
 

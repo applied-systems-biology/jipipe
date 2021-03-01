@@ -93,13 +93,17 @@ public class FilterRoiByStatisticsAlgorithm extends ImageRoiProcessorAlgorithm {
         ROIListData allROIs = new ROIListData();
         ResultsTableData allStatistics = new ResultsTableData();
 
-        roiStatisticsAlgorithm.setOverrideReferenceImage(true);
-
         for (Map.Entry<ImagePlusData, ROIListData> entry : getReferenceImage(dataBatch, progressInfo).entrySet()) {
             // Obtain statistics
             roiStatisticsAlgorithm.clearSlotData();
             roiStatisticsAlgorithm.getInputSlot("ROI").addData(entry.getValue(), progressInfo);
-            roiStatisticsAlgorithm.getInputSlot("Reference").addData(entry.getKey(), progressInfo);
+            if(entry.getKey() == null) {
+                roiStatisticsAlgorithm.setOverrideReferenceImage(false);
+            }
+            else {
+                roiStatisticsAlgorithm.setOverrideReferenceImage(true);
+                roiStatisticsAlgorithm.getInputSlot("Reference").addData(entry.getKey(), progressInfo);
+            }
             roiStatisticsAlgorithm.run(progressInfo);
             ResultsTableData statistics = roiStatisticsAlgorithm.getFirstOutputSlot().getData(0, ResultsTableData.class, progressInfo);
             allROIs.addAll(entry.getValue());
