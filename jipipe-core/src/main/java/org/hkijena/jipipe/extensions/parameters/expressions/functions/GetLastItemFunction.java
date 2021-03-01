@@ -13,7 +13,7 @@ import java.util.List;
 public class GetLastItemFunction extends ExpressionFunction {
 
     public GetLastItemFunction() {
-        super("LAST_OF", 1);
+        super("LAST_OF", 1, 2);
     }
 
     @Override
@@ -21,6 +21,8 @@ public class GetLastItemFunction extends ExpressionFunction {
         switch (index) {
             case 0:
                 return new ParameterInfo("array", "An array or a string", String.class, Collection.class);
+            case 1:
+                return new ParameterInfo("N", "Allows to select the Nth last item", Integer.class);
             default:
                 return null;
         }
@@ -29,14 +31,16 @@ public class GetLastItemFunction extends ExpressionFunction {
     @Override
     public Object evaluate(List<Object> parameters, ExpressionParameters variables) {
         Object target = parameters.get(0);
+        int n = parameters.size() > 1 ? ((Number)parameters.get(1)).intValue() : 0;
         if (target instanceof List) {
             List<?> list = (List<?>) target;
-            return (list).get(list.size() - 1);
+            return (list).get(list.size() - 1 - n);
         } else if (target instanceof Collection) {
             ImmutableList<?> list = ImmutableList.copyOf((Collection<?>) target);
-            return list.get(list.size() - 1);
+            return list.get(list.size() - 1 - n);
         } else if (target instanceof String) {
-            return "" + target.toString().charAt(0);
+            String s = target.toString();
+            return "" + s.charAt(s.length() - 1 - n);
         } else {
             throw new UnsupportedOperationException("Element access does not support " + target);
         }
