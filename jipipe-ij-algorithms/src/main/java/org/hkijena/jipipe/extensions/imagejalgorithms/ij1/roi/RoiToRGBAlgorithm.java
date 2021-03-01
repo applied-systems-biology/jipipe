@@ -59,6 +59,7 @@ public class RoiToRGBAlgorithm extends JIPipeIteratingAlgorithm {
     private Color labelForeground = Color.WHITE;
     private OptionalColorParameter labelBackground = new OptionalColorParameter(Color.BLACK, false);
     private int labelSize = 9;
+    private double opacity = 1.0;
 
     /**
      * Instantiates a new node type.
@@ -93,6 +94,7 @@ public class RoiToRGBAlgorithm extends JIPipeIteratingAlgorithm {
         this.labelForeground = other.labelForeground;
         this.labelBackground = other.labelBackground;
         this.labelSize = other.labelSize;
+        this.opacity = other.opacity;
     }
 
     @Override
@@ -110,23 +112,7 @@ public class RoiToRGBAlgorithm extends JIPipeIteratingAlgorithm {
         // ROI statistics needed for labels
         Map<Roi, Point> roiCentroids = new HashMap<>();
         Map<Roi, Integer> roiIndices = new HashMap<>();
-        Filler roiFiller = new Filler();
         if (drawnLabel != RoiLabel.None) {
-//            RoiStatisticsAlgorithm statisticsAlgorithm =
-//                    JIPipe.createNode("ij1-roi-statistics", RoiStatisticsAlgorithm.class);
-//            statisticsAlgorithm.setAllSlotsVirtual(false, false, null);
-//            statisticsAlgorithm.setOverrideReferenceImage(true);
-//            statisticsAlgorithm.getMeasurements().setNativeValue(Measurement.Centroid.getNativeValue());
-//            statisticsAlgorithm.getInputSlot("ROI").addData(inputData, progressInfo);
-//            statisticsAlgorithm.getInputSlot("Reference").addData(new ImagePlusData(reference), progressInfo);
-//            statisticsAlgorithm.run(progressInfo);
-//            ResultsTableData centroids = statisticsAlgorithm.getFirstOutputSlot().getData(0, ResultsTableData.class, progressInfo);
-//            for (int row = 0; row < centroids.getRowCount(); row++) {
-//                Point centroid = new Point((int) centroids.getValueAsDouble(row, "X"),
-//                        (int) centroids.getValueAsDouble(row, "Y"));
-//                roiCentroids.put(inputData.get(row), centroid);
-//                roiIndices.put(inputData.get(row), row);
-//            }
             for (int i = 0; i < inputData.size(); i++) {
                 Roi roi = inputData.get(i);
                 roiIndices.put(roi, i);
@@ -149,6 +135,7 @@ public class RoiToRGBAlgorithm extends JIPipeIteratingAlgorithm {
             for (int c = 0; c < sc; c++) {
                 for (int t = 0; t < st; t++) {
                     int stackIndex = result.getStackIndex(c + 1, z + 1, t + 1);
+                    ImageProcessor originalProcessor = opacity != 1.0 ? result.getStack().getProcessor(stackIndex).duplicate() : null;
                     ImageProcessor processor = result.getStack().getProcessor(stackIndex);
                     for (Roi roi : inputData) {
                         int rz = roi.getZPosition();
@@ -185,11 +172,44 @@ public class RoiToRGBAlgorithm extends JIPipeIteratingAlgorithm {
                                     labelBackground.isEnabled());
                         }
                     }
+
+                    // Apply opacity
+                    if(originalProcessor != null) {
+                        int[] originalBytes = (int[]) originalProcessor.getPixels();
+                        int[] bytes = (int[]) processor.getPixels();
+                        for (int i = 0; i < bytes.length; i++) {
+                            int rs = (originalBytes[i]&0xff0000)>>16;
+                            int gs = (originalBytes[i]&0xff00)>>8;
+                            int bs = originalBytes[i]&0xff;
+                            int rt = (bytes[i]&0xff0000)>>16;
+                            int gt = (bytes[i]&0xff00)>>8;
+                            int bt = bytes[i]&0xff;
+                            int r = Math.min(255,Math.max((int)(rs + opacity * (rt - rs)), 0));
+                            int g = Math.min(255,Math.max((int)(gs + opacity * (gt - gs)), 0));
+                            int b = Math.min(255,Math.max((int)(bs + opacity * (bt - bs)), 0));
+                            int rgb = b + (g << 8) + (r << 16);
+                            bytes[i] = rgb;
+                        }
+                    }
                 }
             }
         }
 
         dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusData(result), progressInfo);
+    }
+
+    @JIPipeDocumentation(name = "Opacity", description = "Opacity of the added ROI and labels. If zero, they are not visible. If set to one, they are fully visible.")
+    @JIPipeParameter("opacity")
+    public double getOpacity() {
+        return opacity;
+    }
+
+    @JIPipeParameter("opacity")
+    public boolean setOpacity(double opacity) {
+        if(opacity < 0 || opacity > 1)
+            return false;
+        this.opacity = opacity;
+        return true;
     }
 
     @JIPipeDocumentation(name = "Draw outline", description = "If enabled, draw a white outline of the ROI")
