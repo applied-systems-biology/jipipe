@@ -1,5 +1,6 @@
 package org.hkijena.jipipe.extensions.imagejalgorithms.ij1.dimensions;
 
+import com.google.common.collect.Sets;
 import ij.ImagePlus;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeOrganization;
@@ -26,18 +27,19 @@ import java.util.Set;
 @JIPipeOrganization(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Dimensions")
 public class ReorderDimensionsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
-    private HyperstackDimensionPairParameter.List hyperstackReassignments = new HyperstackDimensionPairParameter.List();
+    private HyperstackDimension targetZ = HyperstackDimension.Depth;
+    private HyperstackDimension targetC = HyperstackDimension.Channel;
+    private HyperstackDimension targetT = HyperstackDimension.Frame;
 
     public ReorderDimensionsAlgorithm(JIPipeNodeInfo info) {
         super(info);
-        hyperstackReassignments.add(new HyperstackDimensionPairParameter(HyperstackDimension.Depth, HyperstackDimension.Depth));
-        hyperstackReassignments.add(new HyperstackDimensionPairParameter(HyperstackDimension.Channel, HyperstackDimension.Channel));
-        hyperstackReassignments.add(new HyperstackDimensionPairParameter(HyperstackDimension.Frame, HyperstackDimension.Frame));
     }
 
     public ReorderDimensionsAlgorithm(ReorderDimensionsAlgorithm other) {
         super(other);
-        this.hyperstackReassignments = new HyperstackDimensionPairParameter.List(other.hyperstackReassignments);
+        this.targetZ = other.targetZ;
+        this.targetC = other.targetC;
+        this.targetT = other.targetT;
     }
 
     @Override
@@ -52,92 +54,98 @@ public class ReorderDimensionsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         ImagePlus reorganized = image.duplicate();
         reorganized.setTitle(image.getTitle());
 
-        if (image.isStack() && !image.isHyperStack()) {
-            int z = image.getStackSize();
-            reorganized.setDimensions(1, z, 1);
-        }
-
         int depth = reorganized.getNSlices();
         int channels = reorganized.getNChannels();
         int frames = reorganized.getNFrames();
-        int newDepth = depth;
-        int newChannels = channels;
-        int newFrames = frames;
+        int newDepth;
+        int newChannels;
+        int newFrames;
 
-        for (HyperstackDimensionPairParameter reassignment : hyperstackReassignments) {
-            int source;
-            switch (reassignment.getKey()) {
-                case Depth:
-                    source = depth;
-                    break;
-                case Frame:
-                    source = frames;
-                    break;
-                case Channel:
-                    source = channels;
-                    break;
-                default:
-                    throw new UnsupportedOperationException();
-            }
-            switch (reassignment.getValue()) {
-                case Depth:
-                    newDepth = source;
-                    break;
-                case Frame:
-                    newFrames = source;
-                    break;
-                case Channel:
-                    newChannels = channels;
-                    break;
-                default:
-                    throw new UnsupportedOperationException();
-            }
+        switch (targetZ) {
+            case Channel:
+                newDepth = channels;
+                break;
+            case Depth:
+                newDepth = depth;
+                break;
+            case Frame:
+                newDepth = frames;
+                break;
+            default:
+                throw new UnsupportedOperationException();
+        }
+        switch (targetC) {
+            case Channel:
+                newChannels = channels;
+                break;
+            case Depth:
+                newChannels = depth;
+                break;
+            case Frame:
+                newChannels = frames;
+                break;
+            default:
+                throw new UnsupportedOperationException();
+        }
+        switch (targetT) {
+            case Channel:
+                newFrames = channels;
+                break;
+            case Depth:
+                newFrames = depth;
+                break;
+            case Frame:
+                newFrames = frames;
+                break;
+            default:
+                throw new UnsupportedOperationException();
         }
 
         reorganized.setDimensions(newChannels, newDepth, newFrames);
         dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusData(reorganized), progressInfo);
     }
 
-    @JIPipeDocumentation(name = "Reassignments", description = "Determines which channel is assigned to which other channel. To switch two channels, add two entries " +
-            "into the list and assign the switching. For example A -> B and B -> A. Only having A -> B is not sufficient and will generate an error message.")
-    @JIPipeParameter("hyperstack-reassignments")
-    public HyperstackDimensionPairParameter.List getHyperstackReassignments() {
-        return hyperstackReassignments;
-    }
-
-    @JIPipeParameter("hyperstack-reassignments")
-    public void setHyperstackReassignments(HyperstackDimensionPairParameter.List hyperstackReassignments) {
-        this.hyperstackReassignments = hyperstackReassignments;
-    }
-
     @Override
     public void reportValidity(JIPipeValidityReport report) {
         super.reportValidity(report);
-        if (!hyperstackReassignments.isEmpty()) {
-            Set<HyperstackDimension> sources = new HashSet<>();
-            Set<HyperstackDimension> targets = new HashSet<>();
-            for (HyperstackDimensionPairParameter reassignment : hyperstackReassignments) {
-                sources.add(reassignment.getKey());
-                targets.add(reassignment.getValue());
-            }
-            if (sources.size() != hyperstackReassignments.size()) {
-                report.forCategory("Reassignments").reportIsInvalid("Invalid dimension reassignments!",
-                        "You have duplicate assignment sources.",
-                        "Please remove duplicate assignments",
-                        this);
-            }
-            if (targets.size() != hyperstackReassignments.size()) {
-                report.forCategory("Reassignments").reportIsInvalid("Invalid dimension reassignments!",
-                        "You have duplicate assignment targets.",
-                        "Please remove duplicate assignments",
-                        this);
-            }
-            if (!sources.equals(targets)) {
-                report.forCategory("Reassignments").reportIsInvalid("Invalid dimension reassignments!",
-                        "You have incomplete assignments.",
-                        "Please check that no dimensions are lost during reassignment.",
-                        this);
-            }
+        if(Sets.newHashSet(targetC, targetT, targetZ).size() != 3) {
+            report.forCategory("Dimensions").reportIsInvalid("Duplicate target dimensions!",
+                    "You cannot have duplicate target dimensions.",
+                    "Check that all targe dimensions are only used once.",
+                    this);
         }
+    }
+
+    @JIPipeDocumentation(name = "Move Z to ...", description = "Determines how the Z dimension is re-mapped.")
+    @JIPipeParameter("target-z")
+    public HyperstackDimension getTargetZ() {
+        return targetZ;
+    }
+
+    @JIPipeParameter("target-z")
+    public void setTargetZ(HyperstackDimension targetZ) {
+        this.targetZ = targetZ;
+    }
+
+    @JIPipeDocumentation(name = "Move C to ...", description = "Determines how the C (channel) dimension is re-mapped.")
+    @JIPipeParameter("target-c")
+    public HyperstackDimension getTargetC() {
+        return targetC;
+    }
+
+    @JIPipeParameter("target-c")
+    public void setTargetC(HyperstackDimension targetC) {
+        this.targetC = targetC;
+    }
+
+    @JIPipeDocumentation(name = "Move T to ...", description = "Determines how the T (time) dimension is re-mapped.")
+    @JIPipeParameter("target-t")
+    public HyperstackDimension getTargetT() {
+        return targetT;
+    }
+
+    @JIPipeParameter("target-t")
+    public void setTargetT(HyperstackDimension targetT) {
+        this.targetT = targetT;
     }
 }
