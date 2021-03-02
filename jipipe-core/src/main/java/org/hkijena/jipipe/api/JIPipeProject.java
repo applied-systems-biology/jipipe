@@ -68,6 +68,7 @@ public class JIPipeProject implements JIPipeValidatable {
     private Map<String, Object> additionalMetadata = new HashMap<>();
     private Path workDirectory;
     private JIPipeProjectCache cache;
+    private boolean isCleaningUp;
 
     /**
      * A JIPipe project
@@ -284,6 +285,8 @@ public class JIPipeProject implements JIPipeValidatable {
      */
     @Subscribe
     public void onCompartmentGraphChanged(JIPipeGraph.GraphChangedEvent event) {
+        if(isCleaningUp)
+            return;
         if (event.getGraph() == compartmentGraph) {
             for (JIPipeGraphNode algorithm : compartmentGraph.getNodes().values()) {
                 if (algorithm instanceof JIPipeProjectCompartment) {
@@ -377,44 +380,50 @@ public class JIPipeProject implements JIPipeValidatable {
      * Re-assigns graph node Ids based on their name
      */
     public void cleanupGraph() {
-        Map<String, String> compartmentRenames = compartmentGraph.cleanupIds();
-        Map<String, Set<JIPipeGraphNode>> compartmentNodes = new HashMap<>();
-        for (Map.Entry<String, String> entry : compartmentRenames.entrySet()) {
-            if (compartmentGraph.getNodes().get(entry.getValue()) instanceof JIPipeProjectCompartment) {
-                Set<JIPipeGraphNode> nodes = graph.getNodes().values().stream().filter(node -> Objects.equals(node.getCompartment(), entry.getKey())).collect(Collectors.toSet());
-                compartmentNodes.put(entry.getKey(), nodes);
-                eventBus.post(new CompartmentRenamedEvent((JIPipeProjectCompartment) compartmentGraph.getNodes().get(entry.getValue())));
+        try {
+            isCleaningUp = true;
+            Map<String, String> compartmentRenames = compartmentGraph.cleanupIds();
+            Map<String, Set<JIPipeGraphNode>> compartmentNodes = new HashMap<>();
+            for (Map.Entry<String, String> entry : compartmentRenames.entrySet()) {
+                if (compartmentGraph.getNodes().get(entry.getValue()) instanceof JIPipeProjectCompartment) {
+                    Set<JIPipeGraphNode> nodes = graph.getNodes().values().stream().filter(node -> Objects.equals(node.getCompartment(), entry.getKey())).collect(Collectors.toSet());
+                    compartmentNodes.put(entry.getKey(), nodes);
+                    eventBus.post(new CompartmentRenamedEvent((JIPipeProjectCompartment) compartmentGraph.getNodes().get(entry.getValue())));
+                }
             }
-        }
-        for (Map.Entry<String, Set<JIPipeGraphNode>> entry : compartmentNodes.entrySet()) {
-            String newCompartment = compartmentRenames.get(entry.getKey());
-            for (JIPipeGraphNode node : entry.getValue()) {
+            for (Map.Entry<String, Set<JIPipeGraphNode>> entry : compartmentNodes.entrySet()) {
+                String newCompartment = compartmentRenames.get(entry.getKey());
+                for (JIPipeGraphNode node : entry.getValue()) {
 
-                // Rename own compartment
-                node.setCompartment(newCompartment);
+                    // Rename own compartment
+                    node.setCompartment(newCompartment);
+                }
             }
-        }
 
-        // Rename compartments in node hot key storage
-        NodeHotKeyStorage.getInstance(compartmentGraph).renameNodeIds(compartmentRenames);
-        NodeHotKeyStorage.getInstance(graph).renameCompartments(compartmentRenames);
+            // Rename compartments in node hot key storage
+            NodeHotKeyStorage.getInstance(compartmentGraph).renameNodeIds(compartmentRenames);
+            NodeHotKeyStorage.getInstance(graph).renameCompartments(compartmentRenames);
 
-        for (JIPipeGraphNode node : graph.getNodes().values()) {
-            // Rename visible compartments
-            node.setVisibleCompartments(node.getVisibleCompartments().stream().map(compartmentRenames::get).collect(Collectors.toSet()));
+            for (JIPipeGraphNode node : graph.getNodes().values()) {
+                // Rename visible compartments
+                node.setVisibleCompartments(node.getVisibleCompartments().stream().map(compartmentRenames::get).collect(Collectors.toSet()));
 
-            // Rename locations
-            ImmutableList<Map.Entry<String, Map<String, Point>>> locationEntries = ImmutableList.copyOf(node.getLocations().entrySet());
-            node.getLocations().clear();
-            for (Map.Entry<String, Map<String, Point>> entry : locationEntries) {
-                String newId = compartmentRenames.get(entry.getKey());
-                node.getLocations().put(newId, entry.getValue());
+                // Rename locations
+                ImmutableList<Map.Entry<String, Map<String, Point>>> locationEntries = ImmutableList.copyOf(node.getLocations().entrySet());
+                node.getLocations().clear();
+                for (Map.Entry<String, Map<String, Point>> entry : locationEntries) {
+                    String newId = compartmentRenames.get(entry.getKey());
+                    node.getLocations().put(newId, entry.getValue());
+                }
             }
-        }
 
-        Map<String, String> nodeIdRenames = graph.cleanupIds();
-        NodeHotKeyStorage.getInstance(graph).renameNodeIds(nodeIdRenames);
-        cache.autoClean(true, true);
+            Map<String, String> nodeIdRenames = graph.cleanupIds();
+            NodeHotKeyStorage.getInstance(graph).renameNodeIds(nodeIdRenames);
+            cache.autoClean(true, true);
+        }
+        finally {
+            isCleaningUp = false;
+        }
     }
 
     public Map<String, Object> getAdditionalMetadata() {

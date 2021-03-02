@@ -17,6 +17,8 @@ import com.google.common.eventbus.Subscribe;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeDefaultDocumentation;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.JIPipeProject;
+import org.hkijena.jipipe.api.compartments.algorithms.JIPipeProjectCompartment;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.grouping.NodeGroup;
 import org.hkijena.jipipe.api.history.AddNodeGraphHistorySnapshot;
@@ -62,6 +64,7 @@ public class JIPipeGraphCompartmentUI extends JIPipeGraphEditorUI {
 
     private JPanel defaultPanel;
     private boolean disableUpdateOnSelection = false;
+    private JIPipeProjectCompartment compartmentInstance;
 
     /**
      * Creates a project graph compartment editor
@@ -75,7 +78,26 @@ public class JIPipeGraphCompartmentUI extends JIPipeGraphEditorUI {
         initializeDefaultPanel();
         setPropertyPanel(defaultPanel);
 
+        JIPipeProject project = algorithmGraph.getAttachment(JIPipeProject.class);
+        if(project != null) {
+            compartmentInstance = project.getCompartments().getOrDefault(compartment, null);
+        }
+
         // Set D&D and Copy&Paste behavior
+        initializeContextActions();
+    }
+
+    @Override
+    public String getCompartment() {
+        if(compartmentInstance == null) {
+            return super.getCompartment();
+        }
+        else {
+            return compartmentInstance.getProjectCompartmentId();
+        }
+    }
+
+    private void initializeContextActions() {
         getCanvasUI().setDragAndDropBehavior(new JIPipeGraphCompartmentDragAndDropBehavior());
         List<NodeUIContextAction> nodeSpecificContextActions = new ArrayList<>();
         if (GeneralUISettings.getInstance().isAddContextActionsToContextMenu()) {
@@ -90,7 +112,7 @@ public class JIPipeGraphCompartmentUI extends JIPipeGraphEditorUI {
                     if (documentationAnnotation == null) {
                         documentationAnnotation = new JIPipeDefaultDocumentation(method.getName(), "");
                     }
-                    URL iconURL = null;
+                    URL iconURL;
                     if (!StringUtils.isNullOrEmpty(actionAnnotation.iconURL())) {
                         iconURL = ResourceUtils.class.getResource(actionAnnotation.iconURL());
                     } else {
@@ -164,6 +186,7 @@ public class JIPipeGraphCompartmentUI extends JIPipeGraphEditorUI {
 
         getCanvasUI().setContextActions(actions);
     }
+
 
     /**
      * Initializes the "Add nodes" menus

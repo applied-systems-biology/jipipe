@@ -211,7 +211,11 @@ public class JIPipeGraph implements JIPipeValidatable {
      * @return the attachment or null
      */
     public <T> T getAttachment(Class<T> klass) {
-        return (T) attachments.getOrDefault(klass, null);
+        Object result = attachments.getOrDefault(klass, null);
+        if(result != null)
+            return (T)result ;
+        else
+            return null;
     }
 
     /**

@@ -159,7 +159,7 @@ public class JIPipeGraphCanvasUI extends JIPipeWorkbenchPanel implements MouseMo
                 if (keyStroke.getModifiers() == 0) {
                     NodeHotKeyStorage.Hotkey hotkey = NodeHotKeyStorage.Hotkey.fromKeyCode(keyStroke.getKeyCode());
                     if (hotkey != NodeHotKeyStorage.Hotkey.None) {
-                        String nodeId = nodeHotKeyStorage.getNodeForHotkey(hotkey, compartment);
+                        String nodeId = nodeHotKeyStorage.getNodeForHotkey(hotkey, getCompartment());
                         JIPipeGraphNode node = graph.getNodes().get(nodeId);
                         if (node != null) {
                             JIPipeNodeUI nodeUI = nodeUIs.getOrDefault(node, null);
@@ -212,7 +212,7 @@ public class JIPipeGraphCanvasUI extends JIPipeWorkbenchPanel implements MouseMo
     private void removeOldNodes() {
         Set<JIPipeGraphNode> toRemove = new HashSet<>();
         for (Map.Entry<JIPipeGraphNode, JIPipeNodeUI> kv : nodeUIs.entrySet()) {
-            if (!graph.containsNode(kv.getKey()) || !kv.getKey().isVisibleIn(compartment))
+            if (!graph.containsNode(kv.getKey()) || !kv.getKey().isVisibleIn(getCompartment()))
                 toRemove.add(kv.getKey());
         }
         for (JIPipeGraphNode algorithm : toRemove) {
@@ -236,7 +236,7 @@ public class JIPipeGraphCanvasUI extends JIPipeWorkbenchPanel implements MouseMo
         int newlyPlacedAlgorithms = 0;
         JIPipeNodeUI ui = null;
         for (JIPipeGraphNode algorithm : graph.traverse()) {
-            if (!algorithm.isVisibleIn(compartment))
+            if (!algorithm.isVisibleIn(getCompartment()))
                 continue;
             if (nodeUIs.containsKey(algorithm))
                 continue;
@@ -289,7 +289,7 @@ public class JIPipeGraphCanvasUI extends JIPipeWorkbenchPanel implements MouseMo
         boolean detected = false;
         for (int i = traversed.size() - 1; i >= 0; --i) {
             JIPipeGraphNode algorithm = traversed.get(i);
-            if (!algorithm.isVisibleIn(compartment))
+            if (!algorithm.isVisibleIn(getCompartment()))
                 continue;
             JIPipeNodeUI ui = nodeUIs.getOrDefault(algorithm, null);
             if (ui != null) {
@@ -853,12 +853,12 @@ public class JIPipeGraphCanvasUI extends JIPipeWorkbenchPanel implements MouseMo
 
         g.setStroke(STROKE_DEFAULT);
         graphics.setColor(Color.LIGHT_GRAY);
-        if (compartment != null && settings.isDrawOutsideEdges())
+        if (getCompartment() != null && settings.isDrawOutsideEdges())
             paintOutsideEdges(g, false);
         paintEdges(g, STROKE_DEFAULT, STROKE_COMMENT, false, false, false);
 
         g.setStroke(STROKE_HIGHLIGHT);
-        if (compartment != null && settings.isDrawOutsideEdges())
+        if (getCompartment() != null && settings.isDrawOutsideEdges())
             paintOutsideEdges(g, true);
         if (!selection.isEmpty())
             paintEdges(g, STROKE_HIGHLIGHT, STROKE_COMMENT_HIGHLIGHT, true, true, settings.isColorSelectedNodeEdges());
@@ -1185,7 +1185,7 @@ public class JIPipeGraphCanvasUI extends JIPipeWorkbenchPanel implements MouseMo
                 Point sourcePoint = new Point();
                 Point targetPoint = new Point();
                 if (viewMode == JIPipeGraphViewMode.Horizontal) {
-                    if (compartment == null || compartment.equals(ui.getNode().getCompartment())) {
+                    if (getCompartment() == null || getCompartment().equals(ui.getNode().getCompartment())) {
                         sourcePoint.x = ui.getX() + ui.getWidth();
                         sourcePoint.y = ui.getY() + viewMode.getGridHeight() / 2;
                         targetPoint.x = getWidth();
@@ -1197,7 +1197,7 @@ public class JIPipeGraphCanvasUI extends JIPipeWorkbenchPanel implements MouseMo
                         targetPoint.y = sourcePoint.y;
                     }
                 } else {
-                    if (compartment == null || compartment.equals(ui.getNode().getCompartment())) {
+                    if (getCompartment() == null || getCompartment().equals(ui.getNode().getCompartment())) {
                         sourcePoint.x = ui.getX() + ui.getWidth() / 2;
                         sourcePoint.y = ui.getY() + ui.getHeight();
                         targetPoint.x = sourcePoint.x;
