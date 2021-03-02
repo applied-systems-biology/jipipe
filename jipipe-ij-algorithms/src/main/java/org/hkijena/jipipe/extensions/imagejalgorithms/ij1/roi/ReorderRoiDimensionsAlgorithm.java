@@ -78,7 +78,7 @@ public class ReorderRoiDimensionsAlgorithm extends JIPipeSimpleIteratingAlgorith
         dataBatch.addOutputData(getFirstOutputSlot(), rois, progressInfo);
     }
 
-    @JIPipeDocumentation(name = "Move Z to ...", description = "Determines how the Z dimension is re-mapped.")
+    @JIPipeDocumentation(name = "Copy Z to ...", description = "Determines how the Z dimension is re-mapped.")
     @JIPipeParameter("target-z")
     public HyperstackDimension getTargetZ() {
         return targetZ;
@@ -89,7 +89,7 @@ public class ReorderRoiDimensionsAlgorithm extends JIPipeSimpleIteratingAlgorith
         this.targetZ = targetZ;
     }
 
-    @JIPipeDocumentation(name = "Move C to ...", description = "Determines how the C (channel) dimension is re-mapped.")
+    @JIPipeDocumentation(name = "Copy C to ...", description = "Determines how the C (channel) dimension is re-mapped.")
     @JIPipeParameter("target-c")
     public HyperstackDimension getTargetC() {
         return targetC;
@@ -100,7 +100,7 @@ public class ReorderRoiDimensionsAlgorithm extends JIPipeSimpleIteratingAlgorith
         this.targetC = targetC;
     }
 
-    @JIPipeDocumentation(name = "Move T to ...", description = "Determines how the T (time) dimension is re-mapped.")
+    @JIPipeDocumentation(name = "Copy T to ...", description = "Determines how the T (time) dimension is re-mapped.")
     @JIPipeParameter("target-t")
     public HyperstackDimension getTargetT() {
         return targetT;
