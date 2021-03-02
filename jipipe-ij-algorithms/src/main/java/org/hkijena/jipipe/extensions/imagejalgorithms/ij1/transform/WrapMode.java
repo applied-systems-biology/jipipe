@@ -3,6 +3,7 @@ package org.hkijena.jipipe.extensions.imagejalgorithms.ij1.transform;
 public enum WrapMode {
     None,
     Wrap,
+    Replicate,
     Mirror;
 
     public int wrap(int value, int min, int max) {
@@ -16,11 +17,13 @@ public enum WrapMode {
                     value += width;
                 }
                 return min + (value % width);
+            case Replicate:
+                return Math.max(min, Math.min(max, value));
             case Mirror:
-                if(value < min)
-                    return 2 * min - value;
+                if (value < min)
+                    return  2 * min - value;
                 else if(value > max)
-                    return 2 * max - value;
+                    return  2 * max - value;
                 else
                     return value;
             default:
