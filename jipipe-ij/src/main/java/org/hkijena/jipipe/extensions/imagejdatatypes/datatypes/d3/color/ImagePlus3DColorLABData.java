@@ -17,18 +17,23 @@ import ij.ImagePlus;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeHeavyData;
 import org.hkijena.jipipe.api.JIPipeOrganization;
+import org.hkijena.jipipe.extensions.imagejdatatypes.color.ColorSpace;
+import org.hkijena.jipipe.extensions.imagejdatatypes.color.LABColorSpace;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
-import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.color.ImagePlusColor8UData;
+import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.color.ColoredImagePlusData;
+import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.color.ImagePlusColorLABData;
+import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d3.ImagePlus3DData;
 
+import java.awt.*;
 import java.nio.file.Path;
 
 /**
- * 8-bit color 3D image
+ * RGB color 3D image
  */
-@JIPipeDocumentation(name = "3D Image (8-bit color)")
+@JIPipeDocumentation(name = "3D image (LAB)")
 @JIPipeOrganization(menuPath = "Images\n3D\nColor")
 @JIPipeHeavyData
-public class ImagePlus3DColor8UData extends ImagePlus3DColorData {
+public class ImagePlus3DColorLABData extends ImagePlus3DData implements ColoredImagePlusData {
 
     /**
      * The dimensionality of this data
@@ -36,14 +41,29 @@ public class ImagePlus3DColor8UData extends ImagePlus3DColorData {
     public static final int DIMENSIONALITY = 3;
 
     /**
+     * The color space of this image
+     */
+    public static final ColorSpace COLOR_SPACE = new LABColorSpace();
+
+    /**
      * @param image wrapped image
      */
-    public ImagePlus3DColor8UData(ImagePlus image) {
-        super(ImagePlusColor8UData.convertIfNeeded(image));
+    public ImagePlus3DColorLABData(ImagePlus image) {
+        super(ImagePlusColorLABData.convertIfNeeded(image));
+    }
+
+    @Override
+    public ColorSpace getColorSpace() {
+        return COLOR_SPACE;
     }
 
     public static ImagePlusData importFrom(Path storageFolder) {
-        return new ImagePlus3DColor8UData(ImagePlusData.importImagePlusFrom(storageFolder));
+        return new ImagePlus3DColorLABData(ImagePlusData.importImagePlusFrom(storageFolder));
+    }
+
+    @Override
+    public Component preview(int width, int height) {
+        return ImagePlusColorLABData.generatePreview(this.getImage(), width, height);
     }
 
     /**
@@ -52,6 +72,6 @@ public class ImagePlus3DColor8UData extends ImagePlus3DColorData {
      * @return the converted data
      */
     public static ImagePlusData convertFrom(ImagePlusData data) {
-        return new ImagePlus3DColor8UData(data.getImage());
+        return new ImagePlus3DColorLABData(ImagePlusColorLABData.convertFrom(data).getImage());
     }
 }

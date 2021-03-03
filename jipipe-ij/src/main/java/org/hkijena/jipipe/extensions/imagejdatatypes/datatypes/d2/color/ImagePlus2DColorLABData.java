@@ -17,19 +17,23 @@ import ij.ImagePlus;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeHeavyData;
 import org.hkijena.jipipe.api.JIPipeOrganization;
+import org.hkijena.jipipe.extensions.imagejdatatypes.color.ColorSpace;
+import org.hkijena.jipipe.extensions.imagejdatatypes.color.LABColorSpace;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
-import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.color.ImagePlusColorData;
+import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.color.ColoredImagePlusData;
+import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.color.ImagePlusColorLABData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d2.ImagePlus2DData;
 
+import java.awt.*;
 import java.nio.file.Path;
 
 /**
- * Colored 2D image
+ * RGB colored 2D image
  */
-@JIPipeDocumentation(name = "2D image (color)")
+@JIPipeDocumentation(name = "2D image (LAB)")
 @JIPipeOrganization(menuPath = "Images\n2D\nColor")
 @JIPipeHeavyData
-public class ImagePlus2DColorData extends ImagePlus2DData {
+public class ImagePlus2DColorLABData extends ImagePlus2DData implements ColoredImagePlusData {
 
     /**
      * The dimensionality of this data
@@ -37,14 +41,29 @@ public class ImagePlus2DColorData extends ImagePlus2DData {
     public static final int DIMENSIONALITY = 2;
 
     /**
+     * The color space of this image
+     */
+    public static final ColorSpace COLOR_SPACE = new LABColorSpace();
+
+    /**
      * @param image wrapped image
      */
-    public ImagePlus2DColorData(ImagePlus image) {
-        super(ImagePlusColorData.convertIfNeeded(image));
+    public ImagePlus2DColorLABData(ImagePlus image) {
+        super(ImagePlusColorLABData.convertIfNeeded(image));
+    }
+
+    @Override
+    public ColorSpace getColorSpace() {
+        return COLOR_SPACE;
     }
 
     public static ImagePlusData importFrom(Path storageFolder) {
-        return new ImagePlus2DColorData(ImagePlusData.importImagePlusFrom(storageFolder));
+        return new ImagePlus2DColorLABData(ImagePlusData.importImagePlusFrom(storageFolder));
+    }
+
+    @Override
+    public Component preview(int width, int height) {
+        return ImagePlusColorLABData.generatePreview(this.getImage(), width, height);
     }
 
     /**
@@ -53,6 +72,6 @@ public class ImagePlus2DColorData extends ImagePlus2DData {
      * @return the converted data
      */
     public static ImagePlusData convertFrom(ImagePlusData data) {
-        return new ImagePlus2DColorData(data.getImage());
+        return new ImagePlus2DColorLABData(ImagePlusColorLABData.convertFrom(data).getImage());
     }
 }

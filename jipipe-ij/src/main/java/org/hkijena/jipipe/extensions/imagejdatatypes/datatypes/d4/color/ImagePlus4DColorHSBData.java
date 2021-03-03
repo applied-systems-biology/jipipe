@@ -17,9 +17,13 @@ import ij.ImagePlus;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeHeavyData;
 import org.hkijena.jipipe.api.JIPipeOrganization;
+import org.hkijena.jipipe.extensions.imagejdatatypes.color.ColorSpace;
+import org.hkijena.jipipe.extensions.imagejdatatypes.color.HSBColorSpace;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
+import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.color.ColoredImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.color.ImagePlusColorHSBData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.color.ImagePlusColorRGBData;
+import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d4.ImagePlus4DData;
 
 import java.awt.*;
 import java.nio.file.Path;
@@ -30,7 +34,7 @@ import java.nio.file.Path;
 @JIPipeDocumentation(name = "4D image (HSB)")
 @JIPipeOrganization(menuPath = "Images\n4D\nColor")
 @JIPipeHeavyData
-public class ImagePlus4DColorHSBData extends ImagePlus4DColorData {
+public class ImagePlus4DColorHSBData extends ImagePlus4DData implements ColoredImagePlusData {
 
     /**
      * The dimensionality of this data
@@ -38,10 +42,20 @@ public class ImagePlus4DColorHSBData extends ImagePlus4DColorData {
     public static final int DIMENSIONALITY = 4;
 
     /**
+     * The color space of this image
+     */
+    public static final ColorSpace COLOR_SPACE = new HSBColorSpace();
+
+    /**
      * @param image wrapped image
      */
     public ImagePlus4DColorHSBData(ImagePlus image) {
         super(ImagePlusColorHSBData.convertIfNeeded(image));
+    }
+
+    @Override
+    public ColorSpace getColorSpace() {
+        return COLOR_SPACE;
     }
 
     public static ImagePlusData importFrom(Path storageFolder) {

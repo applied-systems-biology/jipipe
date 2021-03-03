@@ -46,6 +46,60 @@ public class ImageJUtils {
     }
 
     /**
+     * Converts an RGB image to LAB
+     * L is stored unsigned (0-255)
+     * A is stored signed (-128-127)
+     * B is stored signed (-128-127)
+     * @param img the input image (must be RGB)
+     * @param progressInfo the progress info
+     */
+    public static void convertRGBToLAB(ImagePlus img, JIPipeProgressInfo progressInfo) {
+        ColorSpaceConverter converter = new ColorSpaceConverter();
+        forEachSlice(img, ip -> {
+            int width = ip.getWidth();
+            int height = ip.getHeight();
+            int[] pixels = (int[]) ip.getPixels();
+            for (int i=0; i < width*height; i++) {
+                int c = pixels[i];
+                double[] lab = converter.RGBtoLAB(c);
+                int l = (int)Math.max(0, Math.min(255, lab[0]));
+                int a = (byte)Math.max(Byte.MIN_VALUE, Math.min(Byte.MAX_VALUE, lab[1]));
+                int b = (byte)Math.max(Byte.MIN_VALUE, Math.min(Byte.MAX_VALUE, lab[2]));
+                pixels[i] = (l << 16) + (a << 8) + b;
+            }
+        }, progressInfo);
+    }
+
+    /**
+     * Converts an LAB image to RGB
+     * L is stored unsigned (0-255)
+     * A is stored signed (-128-127)
+     * B is stored signed (-128-127)
+     * @param img the input image (must be RGB)
+     * @param progressInfo the progress info
+     */
+    public static void convertLABToRGB(ImagePlus img, JIPipeProgressInfo progressInfo) {
+        ColorSpaceConverter converter = new ColorSpaceConverter();
+        forEachSlice(img, ip -> {
+            int width = ip.getWidth();
+            int height = ip.getHeight();
+            int[] pixels = (int[]) ip.getPixels();
+            double[] lab = new double[3];
+            for (int i=0; i < width*height; i++) {
+                int c = pixels[i];
+                int l = (c&0xff0000)>>16;
+                int a = ((c&0xff00)>>8) - Byte.MIN_VALUE;
+                int b = (c&0xff) - Byte.MIN_VALUE;
+                lab[0] = l;
+                lab[1] = a;
+                lab[2] = b;
+                int[] rgb = converter.LABtoRGB(lab);
+                pixels[i] = (rgb[0] << 16) + (rgb[1] << 8) + rgb[2];
+            }
+        }, progressInfo);
+    }
+
+    /**
      * Converts an RGB image to HSB (re-using the same components)
      * @param img the input image (must be RGB)
      * @param progressInfo the progress info
@@ -63,9 +117,9 @@ public class ImageJUtils {
                 g = (c&0xff00)>>8;
                 b = c&0xff;
                 Color.RGBtoHSB(r, g, b, hsb);
-                int H = (byte)((int)(hsb[0]*255.0));
-                int S = (byte)((int)(hsb[1]*255.0));
-                int B = (byte)((int)(hsb[2]*255.0));
+                int H = ((int)(hsb[0]*255.0));
+                int S = ((int)(hsb[1]*255.0));
+                int B = ((int)(hsb[2]*255.0));
                 pixels[i] = (H << 16) + (S << 8) + B;
             }
         }, progressInfo);

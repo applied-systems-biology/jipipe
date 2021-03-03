@@ -19,6 +19,8 @@ import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeHeavyData;
 import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
+import org.hkijena.jipipe.extensions.imagejdatatypes.color.ColorSpace;
+import org.hkijena.jipipe.extensions.imagejdatatypes.color.RGBColorSpace;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d2.color.ImagePlus2DColorHSBData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d3.color.ImagePlus3DColorHSBData;
@@ -36,7 +38,7 @@ import java.nio.file.Path;
 @JIPipeDocumentation(name = "Image (RGB)")
 @JIPipeOrganization(menuPath = "Images\nColor")
 @JIPipeHeavyData
-public class ImagePlusColorRGBData extends ImagePlusColorData {
+public class ImagePlusColorRGBData extends ImagePlusData implements ColoredImagePlusData {
 
     /**
      * The dimensionality of this data.
@@ -45,10 +47,20 @@ public class ImagePlusColorRGBData extends ImagePlusColorData {
     public static final int DIMENSIONALITY = -1;
 
     /**
+     * The color space of this image
+     */
+    public static final ColorSpace COLOR_SPACE = new RGBColorSpace();
+
+    /**
      * @param image wrapped image
      */
     public ImagePlusColorRGBData(ImagePlus image) {
         super(ImagePlusColorRGBData.convertIfNeeded(image));
+    }
+
+    @Override
+    public ColorSpace getColorSpace() {
+        return COLOR_SPACE;
     }
 
     /**
@@ -85,11 +97,9 @@ public class ImagePlusColorRGBData extends ImagePlusColorData {
             // Standard method: Greyscale -> RGB
             return new ImagePlusColorRGBData(data.getImage());
         }
-        else if(data instanceof ImagePlusColorHSBData || data instanceof ImagePlus2DColorHSBData ||
-                data instanceof ImagePlus3DColorHSBData || data instanceof ImagePlus4DColorHSBData ||data instanceof ImagePlus5DColorHSBData) {
-            // Handle case: HSB -> RGB
+        else if(data instanceof ColoredImagePlusData) {
             ImagePlus copy = data.getDuplicateImage();
-            ImageJUtils.convertHSBToRGB(copy, new JIPipeProgressInfo());
+            COLOR_SPACE.convert(copy, ((ColoredImagePlusData) data).getColorSpace(), new JIPipeProgressInfo());
             return new ImagePlusColorRGBData(copy);
         }
         else {

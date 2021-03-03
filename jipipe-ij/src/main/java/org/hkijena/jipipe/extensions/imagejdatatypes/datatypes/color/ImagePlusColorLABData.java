@@ -14,19 +14,16 @@
 package org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.color;
 
 import ij.ImagePlus;
+import ij.process.ImageConverter;
 import ij.process.ImageProcessor;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeHeavyData;
 import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.extensions.imagejdatatypes.color.ColorSpace;
-import org.hkijena.jipipe.extensions.imagejdatatypes.color.HSBColorSpace;
+import org.hkijena.jipipe.extensions.imagejdatatypes.color.LABColorSpace;
 import org.hkijena.jipipe.extensions.imagejdatatypes.color.RGBColorSpace;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
-import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d2.color.ImagePlus2DColorRGBData;
-import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d3.color.ImagePlus3DColorRGBData;
-import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d4.color.ImagePlus4DColorRGBData;
-import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d5.color.ImagePlus5DColorRGBData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 
 import javax.swing.*;
@@ -35,14 +32,14 @@ import java.awt.image.BufferedImage;
 import java.nio.file.Path;
 
 /**
- * HSV colored image without dimension.
+ * LAB colored image without dimension.
  * These image data types exist to address general processing solely based on bit-depth (e.g. process all 2D image planes).
  * Conversion works through {@link org.hkijena.jipipe.extensions.imagejdatatypes.algorithms.ImplicitImageTypeConverter}
  */
-@JIPipeDocumentation(name = "Image (HSB)")
+@JIPipeDocumentation(name = "Image (LAB)")
 @JIPipeOrganization(menuPath = "Images\nColor")
 @JIPipeHeavyData
-public class ImagePlusColorHSBData extends ImagePlusData implements ColoredImagePlusData {
+public class ImagePlusColorLABData extends ImagePlusData implements ColoredImagePlusData {
 
     /**
      * The dimensionality of this data.
@@ -53,13 +50,13 @@ public class ImagePlusColorHSBData extends ImagePlusData implements ColoredImage
     /**
      * The color space of this image
      */
-    public static final ColorSpace COLOR_SPACE = new HSBColorSpace();
+    public static final ColorSpace COLOR_SPACE = new LABColorSpace();
 
     /**
      * @param image wrapped image
      */
-    public ImagePlusColorHSBData(ImagePlus image) {
-        super(ImagePlusColorHSBData.convertIfNeeded(image));
+    public ImagePlusColorLABData(ImagePlus image) {
+        super(ImagePlusColorLABData.convertIfNeeded(image));
     }
 
     @Override
@@ -76,17 +73,19 @@ public class ImagePlusColorHSBData extends ImagePlusData implements ColoredImage
      */
     public static ImagePlus convertIfNeeded(ImagePlus image) {
         if (image.getType() != ImagePlus.COLOR_RGB) {
-            // A copy is guaranteed here
-            ImagePlus copy = ImagePlusColorRGBData.convertIfNeeded(image);
-            ImageJUtils.convertRGBToHSB(copy, new JIPipeProgressInfo());
-            return copy;
+            String title = image.getTitle();
+            image = image.duplicate();
+            image.setTitle(title);
+            ImageConverter.setDoScaling(true);
+            ImageConverter ic = new ImageConverter(image);
+            ic.convertToRGB();
+            ImageJUtils.convertRGBToLAB(image, new JIPipeProgressInfo());
         }
-        // ImageJ does not differentiate between color spaces, so we cannot convert. The convertFrom() method will handle this correctly.
         return image;
     }
 
     public static ImagePlusData importFrom(Path storageFolder) {
-        return new ImagePlusColorHSBData(ImagePlusData.importImagePlusFrom(storageFolder));
+        return new ImagePlusColorLABData(ImagePlusData.importImagePlusFrom(storageFolder));
     }
 
     /**
@@ -97,16 +96,16 @@ public class ImagePlusColorHSBData extends ImagePlusData implements ColoredImage
     public static ImagePlusData convertFrom(ImagePlusData data) {
         ImagePlus image = data.getImage();
         if (image.getType() != ImagePlus.COLOR_RGB) {
-            // This will go through the standard method (greyscale -> RGB -> HSB)
-            return new ImagePlusColorHSBData(image);
+            // Standard method: Greyscale -> RGB
+            return new ImagePlusColorLABData(data.getImage());
         }
         else if(data instanceof ColoredImagePlusData) {
             ImagePlus copy = data.getDuplicateImage();
             COLOR_SPACE.convert(copy, ((ColoredImagePlusData) data).getColorSpace(), new JIPipeProgressInfo());
-            return new ImagePlusColorHSBData(copy);
+            return new ImagePlusColorLABData(copy);
         }
         else {
-            return new ImagePlusColorHSBData(image);
+            return new ImagePlusColorLABData(data.getImage());
         }
     }
 
@@ -130,7 +129,7 @@ public class ImagePlusColorHSBData extends ImagePlusData implements ColoredImage
         int imageWidth = (int) (image.getWidth() * factor);
         int imageHeight = (int) (image.getHeight() * factor);
         ImagePlus firstSliceImage= new ImagePlus("Preview", image.getProcessor().duplicate());
-        ImageJUtils.convertHSBToRGB(firstSliceImage, new JIPipeProgressInfo());
+        ImageJUtils.convertLABToRGB(firstSliceImage, new JIPipeProgressInfo());
         ImageProcessor resized = firstSliceImage.getProcessor().resize(imageWidth, imageHeight, smooth);
         BufferedImage bufferedImage = resized.getBufferedImage();
         return new JLabel(new ImageIcon(bufferedImage));

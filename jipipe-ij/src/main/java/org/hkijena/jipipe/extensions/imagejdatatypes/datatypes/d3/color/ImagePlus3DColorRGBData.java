@@ -17,8 +17,12 @@ import ij.ImagePlus;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeHeavyData;
 import org.hkijena.jipipe.api.JIPipeOrganization;
+import org.hkijena.jipipe.extensions.imagejdatatypes.color.ColorSpace;
+import org.hkijena.jipipe.extensions.imagejdatatypes.color.RGBColorSpace;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
+import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.color.ColoredImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.color.ImagePlusColorRGBData;
+import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d3.ImagePlus3DData;
 
 import java.nio.file.Path;
 
@@ -28,7 +32,7 @@ import java.nio.file.Path;
 @JIPipeDocumentation(name = "3D image (RGB)")
 @JIPipeOrganization(menuPath = "Images\n3D\nColor")
 @JIPipeHeavyData
-public class ImagePlus3DColorRGBData extends ImagePlus3DColorData {
+public class ImagePlus3DColorRGBData extends ImagePlus3DData implements ColoredImagePlusData {
 
     /**
      * The dimensionality of this data
@@ -36,10 +40,20 @@ public class ImagePlus3DColorRGBData extends ImagePlus3DColorData {
     public static final int DIMENSIONALITY = 3;
 
     /**
+     * The color space of this image
+     */
+    public static final ColorSpace COLOR_SPACE = new RGBColorSpace();
+
+    /**
      * @param image wrapped image
      */
     public ImagePlus3DColorRGBData(ImagePlus image) {
         super(ImagePlusColorRGBData.convertIfNeeded(image));
+    }
+
+    @Override
+    public ColorSpace getColorSpace() {
+        return COLOR_SPACE;
     }
 
     public static ImagePlusData importFrom(Path storageFolder) {

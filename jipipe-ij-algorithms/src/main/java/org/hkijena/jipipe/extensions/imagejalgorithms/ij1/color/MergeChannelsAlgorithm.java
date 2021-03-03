@@ -46,7 +46,7 @@ import java.util.Map;
 import java.util.Set;
 
 import static org.hkijena.jipipe.api.nodes.JIPipeIteratingAlgorithm.ITERATING_ALGORITHM_DESCRIPTION;
-import static org.hkijena.jipipe.extensions.imagejalgorithms.ImageJAlgorithmsExtension.TO_COLOR_CONVERSION;
+import static org.hkijena.jipipe.extensions.imagejalgorithms.ImageJAlgorithmsExtension.TO_COLOR_RGB_CONVERSION;
 
 /**
  * Wrapper around {@link ImageProcessor}
@@ -67,9 +67,9 @@ public class MergeChannelsAlgorithm extends JIPipeIteratingAlgorithm {
      * @param info the info
      */
     public MergeChannelsAlgorithm(JIPipeNodeInfo info) {
-        super(info, JIPipeDefaultMutableSlotConfiguration.builder().restrictInputTo(TO_COLOR_CONVERSION.keySet())
+        super(info, JIPipeDefaultMutableSlotConfiguration.builder().restrictInputTo(TO_COLOR_RGB_CONVERSION.keySet())
                 .restrictInputSlotCount(ChannelColor.values().length)
-                .addOutputSlot("Output", ImagePlusData.class, "Input", TO_COLOR_CONVERSION)
+                .addOutputSlot("Output", ImagePlusData.class, "Input", TO_COLOR_RGB_CONVERSION)
                 .allowOutputSlotInheritance(true)
                 .sealOutput()
                 .build());
