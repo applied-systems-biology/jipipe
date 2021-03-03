@@ -70,4 +70,13 @@ public class ImagePlus5DData extends ImagePlusData {
     public static ImagePlusData importFrom(Path storageFolder) {
         return new ImagePlus5DData(ImagePlusData.importImagePlusFrom(storageFolder));
     }
+
+    /**
+     * Converts the incoming image data into the current format.
+     * @param data the data
+     * @return the converted data
+     */
+    public static ImagePlusData convertFrom(ImagePlusData data) {
+        return new ImagePlus5DData(data.getImage());
+    }
 }

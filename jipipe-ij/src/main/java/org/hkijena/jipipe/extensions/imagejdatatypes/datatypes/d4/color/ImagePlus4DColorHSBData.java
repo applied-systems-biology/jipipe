@@ -11,24 +11,26 @@
  * See the LICENSE file provided with the code for the full license.
  */
 
-package org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d4.greyscale;
+package org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d4.color;
 
 import ij.ImagePlus;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeHeavyData;
 import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
-import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscale8UData;
+import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.color.ImagePlusColorHSBData;
+import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.color.ImagePlusColorRGBData;
 
+import java.awt.*;
 import java.nio.file.Path;
 
 /**
- * 8-bit greyscale 4D image
+ * RGB color 4D image
  */
-@JIPipeDocumentation(name = "4D image (8 bit)")
-@JIPipeOrganization(menuPath = "Images\n4D\nGreyscale")
+@JIPipeDocumentation(name = "4D image (HSB)")
+@JIPipeOrganization(menuPath = "Images\n4D\nColor")
 @JIPipeHeavyData
-public class ImagePlus4DGreyscale8UData extends ImagePlus4DGreyscaleData {
+public class ImagePlus4DColorHSBData extends ImagePlus4DColorData {
 
     /**
      * The dimensionality of this data
@@ -38,12 +40,17 @@ public class ImagePlus4DGreyscale8UData extends ImagePlus4DGreyscaleData {
     /**
      * @param image wrapped image
      */
-    public ImagePlus4DGreyscale8UData(ImagePlus image) {
-        super(ImagePlusGreyscale8UData.convertIfNeeded(image));
+    public ImagePlus4DColorHSBData(ImagePlus image) {
+        super(ImagePlusColorHSBData.convertIfNeeded(image));
     }
 
     public static ImagePlusData importFrom(Path storageFolder) {
-        return new ImagePlus4DGreyscale8UData(ImagePlusData.importImagePlusFrom(storageFolder));
+        return new ImagePlus4DColorHSBData(ImagePlusData.importImagePlusFrom(storageFolder));
+    }
+
+    @Override
+    public Component preview(int width, int height) {
+        return ImagePlusColorHSBData.generatePreview(this.getImage(), width, height);
     }
 
     /**
@@ -52,6 +59,6 @@ public class ImagePlus4DGreyscale8UData extends ImagePlus4DGreyscaleData {
      * @return the converted data
      */
     public static ImagePlusData convertFrom(ImagePlusData data) {
-        return new ImagePlus4DGreyscale8UData(data.getImage());
+        return new ImagePlus4DColorHSBData(ImagePlusColorHSBData.convertFrom(data).getImage());
     }
 }

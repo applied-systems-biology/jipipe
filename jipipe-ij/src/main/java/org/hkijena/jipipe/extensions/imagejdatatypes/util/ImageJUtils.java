@@ -46,6 +46,54 @@ public class ImageJUtils {
     }
 
     /**
+     * Converts an RGB image to HSB (re-using the same components)
+     * @param img the input image (must be RGB)
+     * @param progressInfo the progress info
+     */
+    public static void convertRGBToHSB(ImagePlus img, JIPipeProgressInfo progressInfo) {
+        forEachSlice(img, ip -> {
+            int width = ip.getWidth();
+            int height = ip.getHeight();
+            int c,r,g,b;
+            float[]hsb = new float[3];
+            int[] pixels = (int[]) ip.getPixels();
+            for (int i=0; i < width*height; i++) {
+                c = pixels[i];
+                r = (c&0xff0000)>>16;
+                g = (c&0xff00)>>8;
+                b = c&0xff;
+                Color.RGBtoHSB(r, g, b, hsb);
+                int H = (byte)((int)(hsb[0]*255.0));
+                int S = (byte)((int)(hsb[1]*255.0));
+                int B = (byte)((int)(hsb[2]*255.0));
+                pixels[i] = (H << 16) + (S << 8) + B;
+            }
+        }, progressInfo);
+    }
+
+    /**
+     * Converts an HSB image to RGB (re-using the same components)
+     * @param img the input image (must be RGB)
+     * @param progressInfo the progress info
+     */
+    public static void convertHSBToRGB(ImagePlus img, JIPipeProgressInfo progressInfo) {
+        forEachSlice(img, ip -> {
+            int width = ip.getWidth();
+            int height = ip.getHeight();
+            int c,H,S,B;
+            int[] pixels = (int[]) ip.getPixels();
+            for (int i=0; i < width*height; i++) {
+                c = pixels[i];
+                H = (c&0xff0000)>>16;
+                S = (c&0xff00)>>8;
+                B = c&0xff;
+                int rgb = Color.HSBtoRGB(H / 255.0f, S / 255.0f, B / 255.0f);
+                pixels[i] = rgb;
+            }
+        }, progressInfo);
+    }
+
+    /**
      * Gets slice from image
      * @param img the image
      * @param index the index (zero-based)

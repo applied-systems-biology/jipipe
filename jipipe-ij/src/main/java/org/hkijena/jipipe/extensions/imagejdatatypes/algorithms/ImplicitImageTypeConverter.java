@@ -19,11 +19,15 @@ import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataConverter;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+
 /**
  * An implicit converter between {@link org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData} types
  */
 public class ImplicitImageTypeConverter implements JIPipeDataConverter {
 
+    private final Method convertFunction;
     private Class<? extends JIPipeData> inputType;
     private Class<? extends JIPipeData> outputType;
 
@@ -34,6 +38,11 @@ public class ImplicitImageTypeConverter implements JIPipeDataConverter {
     public ImplicitImageTypeConverter(Class<? extends JIPipeData> inputType, Class<? extends JIPipeData> outputType) {
         this.inputType = inputType;
         this.outputType = outputType;
+        try {
+            this.convertFunction = outputType.getDeclaredMethod("convertFrom", ImagePlusData.class);
+        } catch (NoSuchMethodException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
@@ -48,7 +57,10 @@ public class ImplicitImageTypeConverter implements JIPipeDataConverter {
 
     @Override
     public JIPipeData convert(JIPipeData input) {
-        ImagePlus img = ((ImagePlusData) input).getImage();
-        return JIPipe.createData(outputType, img);
+        try {
+            return (JIPipeData) convertFunction.invoke(null, (ImagePlusData)input);
+        } catch (IllegalAccessException | InvocationTargetException e) {
+            throw new RuntimeException(e);
+        }
     }
 }

@@ -50,4 +50,13 @@ public class ImagePlusFFT4DData extends ImagePlusFFT2DData {
     public static ImagePlusData importFrom(Path storageFolder) {
         return new ImagePlusFFT4DData(ImagePlusData.importImagePlusFrom(storageFolder));
     }
+
+    /**
+     * Converts the incoming image data into the current format.
+     * @param data the data
+     * @return the converted data
+     */
+    public static ImagePlusData convertFrom(ImagePlusData data) {
+        return new ImagePlusFFT4DData(data.getImage());
+    }
 }

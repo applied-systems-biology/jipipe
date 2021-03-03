@@ -54,6 +54,7 @@ public class ImagePlusGreyscale16UData extends ImagePlusGreyscaleData {
      */
     public static ImagePlus convertIfNeeded(ImagePlus image) {
         if (image.getType() != ImagePlus.GRAY16) {
+            image = image.duplicate();
             ImageConverter.setDoScaling(true);
             ImageConverter ic = new ImageConverter(image);
             ic.convertToGray16();
@@ -63,5 +64,14 @@ public class ImagePlusGreyscale16UData extends ImagePlusGreyscaleData {
 
     public static ImagePlusData importFrom(Path storageFolder) {
         return new ImagePlusGreyscale16UData(ImagePlusData.importImagePlusFrom(storageFolder));
+    }
+
+    /**
+     * Converts the incoming image data into the current format.
+     * @param data the data
+     * @return the converted data
+     */
+    public static ImagePlusData convertFrom(ImagePlusData data) {
+        return new ImagePlusGreyscale16UData(data.getImage());
     }
 }

@@ -45,4 +45,13 @@ public class ImagePlus3DColorRGBData extends ImagePlus3DColorData {
     public static ImagePlusData importFrom(Path storageFolder) {
         return new ImagePlus3DColorRGBData(ImagePlusData.importImagePlusFrom(storageFolder));
     }
+
+    /**
+     * Converts the incoming image data into the current format.
+     * @param data the data
+     * @return the converted data
+     */
+    public static ImagePlusData convertFrom(ImagePlusData data) {
+        return new ImagePlus3DColorRGBData(ImagePlusColorRGBData.convertFrom(data).getImage());
+    }
 }

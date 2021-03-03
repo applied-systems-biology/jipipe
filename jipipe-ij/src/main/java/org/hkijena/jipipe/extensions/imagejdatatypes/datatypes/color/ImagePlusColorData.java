@@ -55,8 +55,7 @@ public class ImagePlusColorData extends ImagePlusData {
      */
     public static ImagePlus convertIfNeeded(ImagePlus image) {
         if (image.getType() != ImagePlus.COLOR_256 && image.getType() != ImagePlus.COLOR_RGB) {
-            if (JIPipe.getInstance() != null)
-                JIPipe.getInstance().getLogService().warn("Attempt to store non-color data into a color image. Converting to RGB.");
+            image = image.duplicate();
             ImageConverter.setDoScaling(true);
             ImageConverter ic = new ImageConverter(image);
             ic.convertToRGB();
@@ -66,5 +65,14 @@ public class ImagePlusColorData extends ImagePlusData {
 
     public static ImagePlusData importFrom(Path storageFolder) {
         return new ImagePlusColorData(ImagePlusData.importImagePlusFrom(storageFolder));
+    }
+
+    /**
+     * Converts the incoming image data into the current format.
+     * @param data the data
+     * @return the converted data
+     */
+    public static ImagePlusData convertFrom(ImagePlusData data) {
+        return new ImagePlusColorData(data.getImage());
     }
 }

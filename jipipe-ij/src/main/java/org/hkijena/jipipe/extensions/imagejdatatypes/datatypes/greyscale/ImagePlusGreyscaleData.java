@@ -57,9 +57,8 @@ public class ImagePlusGreyscaleData extends ImagePlusData {
         if (image.getType() != ImagePlus.GRAY8 &&
                 image.getType() != ImagePlus.GRAY16 &&
                 image.getType() != ImagePlus.GRAY32) {
+            image = image.duplicate();
             ImageConverter.setDoScaling(true);
-            if (JIPipe.getInstance() != null)
-                JIPipe.getInstance().getLogService().warn("Attempt to store non-grayscale data into a grayscale image. Converting to 32-bit floating point.");
             ImageConverter ic = new ImageConverter(image);
             ic.convertToGray32();
         }
@@ -68,5 +67,14 @@ public class ImagePlusGreyscaleData extends ImagePlusData {
 
     public static ImagePlusData importFrom(Path storageFolder) {
         return new ImagePlusGreyscaleData(ImagePlusData.importImagePlusFrom(storageFolder));
+    }
+
+    /**
+     * Converts the incoming image data into the current format.
+     * @param data the data
+     * @return the converted data
+     */
+    public static ImagePlusData convertFrom(ImagePlusData data) {
+        return new ImagePlusGreyscaleData(data.getImage());
     }
 }

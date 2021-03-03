@@ -45,4 +45,13 @@ public class ImagePlus3DGreyscale16UData extends ImagePlus3DGreyscaleData {
     public static ImagePlusData importFrom(Path storageFolder) {
         return new ImagePlus3DGreyscale16UData(ImagePlusData.importImagePlusFrom(storageFolder));
     }
+
+    /**
+     * Converts the incoming image data into the current format.
+     * @param data the data
+     * @return the converted data
+     */
+    public static ImagePlusData convertFrom(ImagePlusData data) {
+        return new ImagePlus3DGreyscale16UData(data.getImage());
+    }
 }

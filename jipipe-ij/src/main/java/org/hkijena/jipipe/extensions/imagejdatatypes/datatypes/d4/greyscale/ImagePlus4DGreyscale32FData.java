@@ -45,4 +45,13 @@ public class ImagePlus4DGreyscale32FData extends ImagePlus4DGreyscaleData {
     public static ImagePlusData importFrom(Path storageFolder) {
         return new ImagePlus4DGreyscale32FData(ImagePlusData.importImagePlusFrom(storageFolder));
     }
+
+    /**
+     * Converts the incoming image data into the current format.
+     * @param data the data
+     * @return the converted data
+     */
+    public static ImagePlusData convertFrom(ImagePlusData data) {
+        return new ImagePlus4DGreyscale32FData(data.getImage());
+    }
 }

@@ -162,4 +162,13 @@ public class ImagePlusData implements JIPipeData {
         return JIPipeDataInfo.getInstance(getClass()).getName() + " (" + image + ")";
     }
 
+    /**
+     * Converts the incoming image data into the current format.
+     * @param data the data
+     * @return the converted data
+     */
+    public static ImagePlusData convertFrom(ImagePlusData data) {
+        return new ImagePlusData(data.getImage());
+    }
+
 }

@@ -18,7 +18,13 @@ import ij.process.ImageConverter;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeHeavyData;
 import org.hkijena.jipipe.api.JIPipeOrganization;
+import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
+import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d2.color.ImagePlus2DColorHSBData;
+import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d3.color.ImagePlus3DColorHSBData;
+import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d4.color.ImagePlus4DColorHSBData;
+import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d5.color.ImagePlus5DColorHSBData;
+import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 
 import java.nio.file.Path;
 
@@ -54,6 +60,9 @@ public class ImagePlusColorRGBData extends ImagePlusColorData {
      */
     public static ImagePlus convertIfNeeded(ImagePlus image) {
         if (image.getType() != ImagePlus.COLOR_RGB) {
+            String title = image.getTitle();
+            image = image.duplicate();
+            image.setTitle(title);
             ImageConverter.setDoScaling(true);
             ImageConverter ic = new ImageConverter(image);
             ic.convertToRGB();
@@ -63,5 +72,28 @@ public class ImagePlusColorRGBData extends ImagePlusColorData {
 
     public static ImagePlusData importFrom(Path storageFolder) {
         return new ImagePlusColorRGBData(ImagePlusData.importImagePlusFrom(storageFolder));
+    }
+
+    /**
+     * Converts the incoming image data into the current format.
+     * @param data the data
+     * @return the converted data
+     */
+    public static ImagePlusData convertFrom(ImagePlusData data) {
+        ImagePlus image = data.getImage();
+        if (image.getType() != ImagePlus.COLOR_RGB) {
+            // Standard method: Greyscale -> RGB
+            return new ImagePlusColorRGBData(data.getImage());
+        }
+        else if(data instanceof ImagePlusColorHSBData || data instanceof ImagePlus2DColorHSBData ||
+                data instanceof ImagePlus3DColorHSBData || data instanceof ImagePlus4DColorHSBData ||data instanceof ImagePlus5DColorHSBData) {
+            // Handle case: HSB -> RGB
+            ImagePlus copy = data.getDuplicateImage();
+            ImageJUtils.convertHSBToRGB(copy, new JIPipeProgressInfo());
+            return new ImagePlusColorRGBData(copy);
+        }
+        else {
+            return new ImagePlusColorRGBData(data.getImage());
+        }
     }
 }

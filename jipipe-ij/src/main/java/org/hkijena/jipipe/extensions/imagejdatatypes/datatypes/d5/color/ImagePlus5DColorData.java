@@ -46,4 +46,13 @@ public class ImagePlus5DColorData extends ImagePlus5DData {
     public static ImagePlusData importFrom(Path storageFolder) {
         return new ImagePlus5DColorData(ImagePlusData.importImagePlusFrom(storageFolder));
     }
+
+    /**
+     * Converts the incoming image data into the current format.
+     * @param data the data
+     * @return the converted data
+     */
+    public static ImagePlusData convertFrom(ImagePlusData data) {
+        return new ImagePlus5DColorData(data.getImage());
+    }
 }

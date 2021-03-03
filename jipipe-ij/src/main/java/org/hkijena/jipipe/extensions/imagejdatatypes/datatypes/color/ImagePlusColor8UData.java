@@ -54,6 +54,7 @@ public class ImagePlusColor8UData extends ImagePlusColorData {
      */
     public static ImagePlus convertIfNeeded(ImagePlus image) {
         if (image.getType() != ImagePlus.COLOR_256) {
+            image = image.duplicate();
             ImageConverter.setDoScaling(true);
             ImageConverter ic = new ImageConverter(image);
             ic.convertToRGB();
@@ -64,5 +65,14 @@ public class ImagePlusColor8UData extends ImagePlusColorData {
 
     public static ImagePlusData importFrom(Path storageFolder) {
         return new ImagePlusColor8UData(ImagePlusData.importImagePlusFrom(storageFolder));
+    }
+
+    /**
+     * Converts the incoming image data into the current format.
+     * @param data the data
+     * @return the converted data
+     */
+    public static ImagePlusData convertFrom(ImagePlusData data) {
+        return new ImagePlusColor8UData(data.getImage());
     }
 }
