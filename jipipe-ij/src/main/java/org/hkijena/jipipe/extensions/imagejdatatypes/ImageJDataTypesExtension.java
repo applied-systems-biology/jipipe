@@ -20,6 +20,9 @@ import org.hkijena.jipipe.api.registries.JIPipeDatatypeRegistry;
 import org.hkijena.jipipe.extensions.JIPipePrepackagedDefaultJavaExtension;
 import org.hkijena.jipipe.extensions.core.data.OpenInNativeApplicationDataImportOperation;
 import org.hkijena.jipipe.extensions.imagejdatatypes.algorithms.*;
+import org.hkijena.jipipe.extensions.imagejdatatypes.algorithms.color.ToHSBColorSpaceConverterAlgorithm;
+import org.hkijena.jipipe.extensions.imagejdatatypes.algorithms.color.ToLABColorSpaceConverterAlgorithm;
+import org.hkijena.jipipe.extensions.imagejdatatypes.algorithms.color.ToRGBColorSpaceConverterAlgorithm;
 import org.hkijena.jipipe.extensions.imagejdatatypes.compat.*;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datasources.BioFormatsImporter;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datasources.ImagePlusFromFile;
@@ -295,6 +298,10 @@ public class ImageJDataTypesExtension extends JIPipePrepackagedDefaultJavaExtens
         registerNodeType("convert-imagej-image", ImageTypeConverter.class, UIUtils.getIconURLFromResources("actions/viewimage.png"));
         registerNodeType("export-imagej-bioformats", BioFormatsExporter.class, UIUtils.getIconURLFromResources("apps/bioformats.png"));
         registerNodeType("image-properties-to-annotation", ImagePropertiesToAnnotationAlgorithm.class, UIUtils.getIconURLFromResources("data-types/annotation-table.png"));
+
+        registerNodeType("ij1-color-convert-to-rgb", ToRGBColorSpaceConverterAlgorithm.class, UIUtils.getIconURLFromResources("data-types/imgplus-color-rgb.png"));
+        registerNodeType("ij1-color-convert-to-hsb", ToHSBColorSpaceConverterAlgorithm.class, UIUtils.getIconURLFromResources("data-types/imgplus-color-hsb.png"));
+        registerNodeType("ij1-color-convert-to-lab", ToLABColorSpaceConverterAlgorithm.class, UIUtils.getIconURLFromResources("data-types/imgplus-color-lab.png"));
 
         // Register parameter editors
         registerEnumParameterType("import-imagej-bioformats:color-mode", OMEColorMode.class,

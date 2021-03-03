@@ -63,8 +63,8 @@ public class ImageJUtils {
                 int c = pixels[i];
                 double[] lab = converter.RGBtoLAB(c);
                 int l = (int)Math.max(0, Math.min(255, lab[0]));
-                int a = (byte)Math.max(Byte.MIN_VALUE, Math.min(Byte.MAX_VALUE, lab[1]));
-                int b = (byte)Math.max(Byte.MIN_VALUE, Math.min(Byte.MAX_VALUE, lab[2]));
+                int a = (int)Math.max(Byte.MIN_VALUE, Math.min(Byte.MAX_VALUE, lab[1])) - (int)Byte.MIN_VALUE;
+                int b = (int)Math.max(Byte.MIN_VALUE, Math.min(Byte.MAX_VALUE, lab[2])) - (int)Byte.MIN_VALUE;
                 pixels[i] = (l << 16) + (a << 8) + b;
             }
         }, progressInfo);
@@ -88,8 +88,8 @@ public class ImageJUtils {
             for (int i=0; i < width*height; i++) {
                 int c = pixels[i];
                 int l = (c&0xff0000)>>16;
-                int a = ((c&0xff00)>>8) - Byte.MIN_VALUE;
-                int b = (c&0xff) - Byte.MIN_VALUE;
+                int a = ((c&0xff00)>>8) + Byte.MIN_VALUE;
+                int b = (c&0xff) + Byte.MIN_VALUE;
                 lab[0] = l;
                 lab[1] = a;
                 lab[2] = b;
@@ -862,3 +862,4 @@ public class ImageJUtils {
         }
     }
 }
+
