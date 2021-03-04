@@ -49,7 +49,7 @@ public class FloatNumberRangeParameter extends NumberRangeParameter {
 
     @JsonGetter("max")
     public float getMax() {
-        return getMinNumber().floatValue();
+        return getMaxNumber().floatValue();
     }
 
     @JsonSetter("max")

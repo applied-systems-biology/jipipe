@@ -12,5 +12,6 @@ import java.util.function.Supplier;
 public @interface NumberRangeParameterSettings {
     double min();
     double max();
-    Class<? extends Supplier<Paint>> trackBackground() default DefaultTrackBackground.class;
+    Class<? extends PaintGenerator> trackBackground() default DefaultTrackBackground.class;
+    NumberRangeInvertedMode invertedMode() default NumberRangeInvertedMode.SwitchMinMax;
 }

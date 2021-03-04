@@ -37,6 +37,7 @@ public class NumberRangeParameterEditorUI extends JIPipeParameterEditorUI implem
     public NumberRangeParameterEditorUI(JIPipeWorkbench workbench, JIPipeParameterAccess parameterAccess) {
         super(workbench, parameterAccess);
         initialize();
+        reload();
     }
 
     private void initialize() {
@@ -80,7 +81,7 @@ public class NumberRangeParameterEditorUI extends JIPipeParameterEditorUI implem
             @Override
             public void changed(DocumentEvent documentEvent) {
                 if(!isUpdatingTextBoxes) {
-                    String s = StringUtils.nullToEmpty(minEditor.getText());
+                    String s = StringUtils.nullToEmpty(maxEditor.getText());
                     s = s.replace(',', '.').replace(" ", ""); // Allow usage of comma as separator
                     if(NumberUtils.isCreatable(s)) {
                         NumberRangeParameter parameter = getParameter(NumberRangeParameter.class);
@@ -123,11 +124,20 @@ public class NumberRangeParameterEditorUI extends JIPipeParameterEditorUI implem
         if(parameterSettings != null) {
             min = (float)parameterSettings.min();
             max = (float)parameterSettings.max();
-            trackRenderer.setTrackBackground(((Supplier<Paint>)ReflectionUtils.newInstance(parameterSettings.trackBackground())).get());
+            trackRenderer.setTrackBackgroundGenerator((PaintGenerator) ReflectionUtils.newInstance(parameterSettings.trackBackground()));
+            trackRenderer.setInvertedMode(parameterSettings.invertedMode());
         }
         slider.getModel().setMinimumValue(min);
         slider.getModel().setMaximumValue(max);
+        FontMetrics fontMetrics = minEditor.getFontMetrics(minEditor.getFont());
+        int minWidth = Math.max(fontMetrics.stringWidth("" + min), fontMetrics.stringWidth("" + max));
+        minEditor.setMinimumSize(new Dimension(minWidth, 16));
+        maxEditor.setMinimumSize(new Dimension(minWidth, 16));
+        minEditor.setPreferredSize(new Dimension(minWidth, 21));
+        maxEditor.setPreferredSize(new Dimension(minWidth, 21));
         updateThumbs();
+        updateTextFields();
+        revalidate();
     }
 
     @Override
@@ -207,10 +217,11 @@ public class NumberRangeParameterEditorUI extends JIPipeParameterEditorUI implem
 
         private JXMultiThumbSlider<DisplayRangeStop> slider;
         private boolean logarithmic = true;
-        private Paint trackBackground;
+        private PaintGenerator trackBackgroundGenerator;
+        NumberRangeInvertedMode invertedMode = NumberRangeInvertedMode.SwitchMinMax;
 
         public TrackRenderer() {
-            this.trackBackground = UIManager.getColor("Panel.background");
+            this.trackBackgroundGenerator = new DefaultTrackBackground();
         }
 
         @Override
@@ -219,13 +230,21 @@ public class NumberRangeParameterEditorUI extends JIPipeParameterEditorUI implem
             paintComponent(g);
         }
 
-        public Paint getTrackBackground() {
-            return trackBackground;
+        public PaintGenerator getTrackBackgroundGenerator() {
+            return trackBackgroundGenerator;
         }
 
-        public void setTrackBackground(Paint trackBackground) {
-            this.trackBackground = trackBackground;
+        public void setTrackBackgroundGenerator(PaintGenerator trackBackgroundGenerator) {
+            this.trackBackgroundGenerator = trackBackgroundGenerator;
             repaint();
+        }
+
+        public NumberRangeInvertedMode getInvertedMode() {
+            return invertedMode;
+        }
+
+        public void setInvertedMode(NumberRangeInvertedMode invertedMode) {
+            this.invertedMode = invertedMode;
         }
 
         @Override
@@ -233,25 +252,49 @@ public class NumberRangeParameterEditorUI extends JIPipeParameterEditorUI implem
             Graphics2D g = (Graphics2D) gfx;
             int w = slider.getWidth() - 2 * ThumbRenderer.SIZE;
             int h = slider.getHeight();
-            g.setPaint(trackBackground);
-            g.fillRect(0, 0, slider.getWidth(), slider.getHeight());
+            g.setColor(UIManager.getColor("Panel.background"));
+            g.fillRect(0,0,slider.getWidth(), slider.getHeight());
+            g.setPaint(trackBackgroundGenerator.generate(ThumbRenderer.SIZE,0,w, slider.getHeight()));
+            g.fillRect(ThumbRenderer.SIZE, ThumbRenderer.SIZE + 2, w, slider.getHeight() - ThumbRenderer.SIZE - 2);
             g.setColor(UIManager.getColor("Button.borderColor"));
-//            g.drawLine(0, h, w + 2 * ThumbRenderer.SIZE, h);
-            g.drawRect(0,0,slider.getWidth(),h-1);
-            g.setColor(UIManager.getColor("Label.foreground"));
+            g.drawRect(ThumbRenderer.SIZE,0,w,h-1);
+            g.drawRect(ThumbRenderer.SIZE,ThumbRenderer.SIZE + 2,w,h-1-ThumbRenderer.SIZE-2);
+
+            float min = slider.getModel().getMinimumValue();
+            float max = slider.getModel().getMaximumValue();
 
             Thumb<DisplayRangeStop> thumb0 = slider.getModel().getThumbAt(0);
-            float position0 = Math.max(0, Math.min(thumb0.getPosition(), 1));
+            float position0 = (thumb0.getPosition() - min) / (max - min);
             int x0 = ThumbRenderer.SIZE - 1 + (int) (w * position0);
-            g.fillRect(x0, 4, 2, h + 4);
 
             Thumb<DisplayRangeStop> thumb1 = slider.getModel().getThumbAt(1);
-            float position1 = Math.max(0, Math.min(thumb1.getPosition(), 1));
+            float position1 = (thumb1.getPosition() - min) / (max - min);
             int x1 = ThumbRenderer.SIZE - 1 + (int) (w * position1);
-            g.fillRect(x1, 4, 2, h + 4);
 
+            // Range indicator
             g.setColor(ModernMetalTheme.PRIMARY5);
-            g.drawLine(x0, h - 1, x1, h- 1);
+            switch (invertedMode) {
+                case SwitchMinMax:
+                    g.fillRect(Math.min(x0, x1), 1, Math.abs(x1 -x0), ThumbRenderer.SIZE + 1);
+                    break;
+                case OutsideMinMax:
+                    if(x0 <= x1) {
+                        g.fillRect(x0, 1, Math.abs(x1 -x0), ThumbRenderer.SIZE + 1);
+                    }
+                    else {
+                        int xStart = ThumbRenderer.SIZE;
+                        int xEnd = slider.getWidth() - ThumbRenderer.SIZE;
+                        g.fillRect(xStart, 1, Math.max(0, x1 - xStart), ThumbRenderer.SIZE + 1);
+                        g.fillRect(x0, 1, Math.max(0, xEnd - x0), ThumbRenderer.SIZE + 1);
+                    }
+                    break;
+            }
+
+
+            // Vertical lines
+            g.setColor(UIManager.getColor("Label.foreground"));
+            g.fillRect(x0, 4, 2, h + 4);
+            g.fillRect(x1, 4, 2, h + 4);
         }
 
         @Override

@@ -54,6 +54,7 @@ public class ManualThreshold32F2DAlgorithm extends JIPipeSimpleIteratingAlgorith
     private float maxThreshold = 1;
     private OptionalAnnotationNameParameter minThresholdAnnotation = new OptionalAnnotationNameParameter("Min Threshold", true);
     private OptionalAnnotationNameParameter maxThresholdAnnotation = new OptionalAnnotationNameParameter("Max Threshold", true);
+    private JIPipeAnnotationMergeStrategy thresholdAnnotationStrategy = JIPipeAnnotationMergeStrategy.OverwriteExisting;
 
     /**
      * Instantiates a new node type.
@@ -79,6 +80,7 @@ public class ManualThreshold32F2DAlgorithm extends JIPipeSimpleIteratingAlgorith
         this.maxThreshold = other.maxThreshold;
         this.minThresholdAnnotation = new OptionalAnnotationNameParameter(other.minThresholdAnnotation);
         this.maxThresholdAnnotation = new OptionalAnnotationNameParameter(other.maxThresholdAnnotation);
+        this.thresholdAnnotationStrategy = other.thresholdAnnotationStrategy;
     }
 
     @Override
@@ -121,7 +123,7 @@ public class ManualThreshold32F2DAlgorithm extends JIPipeSimpleIteratingAlgorith
         dataBatch.addOutputData(getFirstOutputSlot(),
                 new ImagePlusGreyscaleMaskData(outputImage),
                 annotations,
-                JIPipeAnnotationMergeStrategy.Merge,
+                thresholdAnnotationStrategy,
                 progressInfo);
     }
 
@@ -168,5 +170,16 @@ public class ManualThreshold32F2DAlgorithm extends JIPipeSimpleIteratingAlgorith
     @JIPipeParameter("max-threshold-annotation")
     public void setMaxThresholdAnnotation(OptionalAnnotationNameParameter maxThresholdAnnotation) {
         this.maxThresholdAnnotation = maxThresholdAnnotation;
+    }
+
+    @JIPipeDocumentation(name = "Threshold annotation strategy", description = "Determines what happens if annotations are already present.")
+    @JIPipeParameter("threshold-annotation-strategy")
+    public JIPipeAnnotationMergeStrategy getThresholdAnnotationStrategy() {
+        return thresholdAnnotationStrategy;
+    }
+
+    @JIPipeParameter("threshold-annotation-strategy")
+    public void setThresholdAnnotationStrategy(JIPipeAnnotationMergeStrategy thresholdAnnotationStrategy) {
+        this.thresholdAnnotationStrategy = thresholdAnnotationStrategy;
     }
 }

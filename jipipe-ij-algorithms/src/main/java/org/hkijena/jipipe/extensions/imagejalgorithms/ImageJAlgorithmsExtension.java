@@ -63,6 +63,9 @@ import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.sharpen.LaplacianSharp
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.statistics.GreyscalePixelsGenerator;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.statistics.HistogramGenerator;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.threshold.*;
+import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.threshold.color.ManualHSBThreshold2DAlgorithm;
+import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.threshold.color.ManualLABThreshold2DAlgorithm;
+import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.threshold.color.ManualRGBThreshold2DAlgorithm;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.threshold.local.*;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.transform.*;
 import org.hkijena.jipipe.extensions.imagejalgorithms.utils.ImageROITargetArea;
@@ -701,6 +704,9 @@ public class ImageJAlgorithmsExtension extends JIPipePrepackagedDefaultJavaExten
     }
 
     private void registerThresholdAlgorithms() {
+        registerNodeType("ij1-threshold-manual2d-color-hsb", ManualHSBThreshold2DAlgorithm.class, UIUtils.getIconURLFromResources("actions/segment.png"));
+        registerNodeType("ij1-threshold-manual2d-color-rgb", ManualRGBThreshold2DAlgorithm.class, UIUtils.getIconURLFromResources("actions/segment.png"));
+        registerNodeType("ij1-threshold-manual2d-color-lab", ManualLABThreshold2DAlgorithm.class, UIUtils.getIconURLFromResources("actions/segment.png"));
         registerNodeType("ij1-threshold-manual2d-8u", ManualThreshold8U2DAlgorithm.class, UIUtils.getIconURLFromResources("actions/segment.png"));
         registerNodeType("ij1-threshold-percentile2d-8u", PercentileThreshold8U2DAlgorithm.class, UIUtils.getIconURLFromResources("actions/segment.png"));
         registerNodeType("ij1-threshold-manual2d-16u", ManualThreshold16U2DAlgorithm.class, UIUtils.getIconURLFromResources("actions/segment.png"));

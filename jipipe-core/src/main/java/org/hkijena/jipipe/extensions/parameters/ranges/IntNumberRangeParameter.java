@@ -38,22 +38,22 @@ public class IntNumberRangeParameter extends NumberRangeParameter {
     }
 
     @JsonGetter("min")
-    public float getMin() {
+    public int getMin() {
         return getMinNumber().intValue();
     }
 
     @JsonSetter("min")
-    public void setMin(float min) {
+    public void setMin(int min) {
         setMinNumber(min);
     }
 
     @JsonGetter("max")
-    public float getMax() {
-        return getMinNumber().intValue();
+    public int getMax() {
+        return getMaxNumber().intValue();
     }
 
     @JsonSetter("max")
-    public void setMax(float max) {
+    public void setMax(int max) {
         setMaxNumber(max);
     }
 }

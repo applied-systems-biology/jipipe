@@ -60,6 +60,7 @@ public class CustomAutoThreshold2D8UAlgorithm extends JIPipeIteratingAlgorithm {
 
     private DefaultExpressionParameter thresholdCombinationExpression = new DefaultExpressionParameter("MIN(thresholds)");
     private ImageROITargetArea sourceArea = ImageROITargetArea.WholeImage;
+    private JIPipeAnnotationMergeStrategy thresholdAnnotationStrategy = JIPipeAnnotationMergeStrategy.OverwriteExisting;
 
     /**
      * @param info the info
@@ -85,6 +86,7 @@ public class CustomAutoThreshold2D8UAlgorithm extends JIPipeIteratingAlgorithm {
         this.thresholdMode = other.thresholdMode;
         this.thresholdCombinationExpression = new DefaultExpressionParameter(other.thresholdCombinationExpression);
         this.sourceArea = other.sourceArea;
+        this.thresholdAnnotationStrategy = other.thresholdAnnotationStrategy;
         updateRoiSlot();
     }
 
@@ -209,7 +211,7 @@ public class CustomAutoThreshold2D8UAlgorithm extends JIPipeIteratingAlgorithm {
             dataBatch.addOutputData(getFirstOutputSlot(),
                     new ImagePlusGreyscaleMaskData(img),
                     annotations,
-                    JIPipeAnnotationMergeStrategy.OverwriteExisting,
+                    thresholdAnnotationStrategy,
                     progressInfo);
         }
     }
@@ -300,6 +302,17 @@ public class CustomAutoThreshold2D8UAlgorithm extends JIPipeIteratingAlgorithm {
     public void setSourceArea(ImageROITargetArea sourceArea) {
         this.sourceArea = sourceArea;
         updateRoiSlot();
+    }
+
+    @JIPipeDocumentation(name = "Threshold annotation strategy", description = "Determines what happens if annotations are already present.")
+    @JIPipeParameter("threshold-annotation-strategy")
+    public JIPipeAnnotationMergeStrategy getThresholdAnnotationStrategy() {
+        return thresholdAnnotationStrategy;
+    }
+
+    @JIPipeParameter("threshold-annotation-strategy")
+    public void setThresholdAnnotationStrategy(JIPipeAnnotationMergeStrategy thresholdAnnotationStrategy) {
+        this.thresholdAnnotationStrategy = thresholdAnnotationStrategy;
     }
 
     private int[] getHistogram(ImageProcessor ip, ImageProcessor foregroundMask) {
