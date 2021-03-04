@@ -1,4 +1,4 @@
-package org.hkijena.jipipe.extensions.imagejalgorithms.ij1.color;
+package org.hkijena.jipipe.extensions.imagejalgorithms.ij1.threshold.color;
 
 import ij.IJ;
 import ij.ImagePlus;
@@ -15,12 +15,8 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.color.ColorSpace;
 import org.hkijena.jipipe.extensions.imagejdatatypes.color.HSBColorSpace;
 import org.hkijena.jipipe.extensions.imagejdatatypes.color.LABColorSpace;
 import org.hkijena.jipipe.extensions.imagejdatatypes.color.RGBColorSpace;
-import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.color.ColoredImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.color.ImagePlusColorData;
-import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscale16UData;
-import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscale32FData;
-import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscale8UData;
-import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleData;
+import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.*;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ColorPixel5DExpressionParameterVariableSource;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.extensions.parameters.editors.JIPipeDataParameterSettings;
@@ -28,69 +24,40 @@ import org.hkijena.jipipe.extensions.parameters.expressions.DefaultExpressionPar
 import org.hkijena.jipipe.extensions.parameters.expressions.ExpressionParameterSettings;
 import org.hkijena.jipipe.extensions.parameters.expressions.ExpressionParameters;
 import org.hkijena.jipipe.extensions.parameters.references.JIPipeDataInfoRef;
-import org.hkijena.jipipe.utils.ImageJCalibrationMode;
 
-import java.util.List;
-
-@JIPipeDocumentation(name = "Color to greyscale (Expression)", description = "Applies a mathematical operation to each pixel to convert the color " +
+@JIPipeDocumentation(name = "Custom color auto threshold", description = "Applies a mathematical operation to each pixel to convert the color " +
         "into a greyscale value.")
 @JIPipeOrganization(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Color")
 @JIPipeInputSlot(value = ImagePlusColorData.class, slotName = "Input", autoCreate = true)
-@JIPipeOutputSlot(value = ImagePlusGreyscaleData.class, slotName = "Output", autoCreate = true)
-public class ColorToGreyscaleExpression2D extends JIPipeSimpleIteratingAlgorithm {
+@JIPipeOutputSlot(value = ImagePlusGreyscaleMaskData.class, slotName = "Output", autoCreate = true)
+public class ColorThresholdExpression2D extends JIPipeSimpleIteratingAlgorithm {
 
-    private DefaultExpressionParameter expression = new DefaultExpressionParameter("(r + g + b) / 3");
-    private JIPipeDataInfoRef outputType = new JIPipeDataInfoRef(JIPipeDataInfo.getInstance(ImagePlusGreyscale32FData.class));
+    private DefaultExpressionParameter expression = new DefaultExpressionParameter("B > 50");
 
     private static ColorSpace COLOR_SPACE_RGB = new RGBColorSpace();
     private static ColorSpace COLOR_SPACE_HSB = new HSBColorSpace();
     private static ColorSpace COLOR_SPACE_LAB = new LABColorSpace();
 
-    public ColorToGreyscaleExpression2D(JIPipeNodeInfo info) {
+    public ColorThresholdExpression2D(JIPipeNodeInfo info) {
         super(info);
-        updateSlots();
     }
 
-    public ColorToGreyscaleExpression2D(ColorToGreyscaleExpression2D other) {
+    public ColorThresholdExpression2D(ColorThresholdExpression2D other) {
         super(other);
         this.expression = new DefaultExpressionParameter(other.expression);
-        this.outputType = new JIPipeDataInfoRef(other.outputType);
-        updateSlots();
-    }
-
-    private void updateSlots() {
-        getFirstOutputSlot().setAcceptedDataType(outputType.getInfo().getDataClass());
-        getEventBus().post(new JIPipeGraph.NodeSlotsChangedEvent(this));
-    }
-
-    @JIPipeDocumentation(name = "Output type", description = "Determines which data type is generated. Please note that the generic greyscale output " +
-            "is 32-bit float.")
-    @JIPipeParameter("output-type")
-    @JIPipeDataParameterSettings(dataBaseClass = ImagePlusGreyscaleData.class)
-    public JIPipeDataInfoRef getOutputType() {
-        return outputType;
-    }
-
-    @JIPipeParameter("output-type")
-    public void setOutputType(JIPipeDataInfoRef outputType) {
-        this.outputType = outputType;
-        updateSlots();
     }
 
     @Override
     protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
         ImagePlusColorData inputData = dataBatch.getInputData(getFirstInputSlot(), ImagePlusColorData.class, progressInfo);
         ImagePlus img = inputData.getImage();
-        ImagePlus result;
-        if(ImagePlusGreyscale8UData.class.isAssignableFrom(outputType.getInfo().getDataClass())) {
-            result = IJ.createHyperStack("Greyscale", img.getWidth(), img.getHeight(), img.getNChannels(), img.getNSlices(), img.getNFrames(), 8);
-        }
-        else if(ImagePlusGreyscale16UData.class.isAssignableFrom(outputType.getInfo().getDataClass())) {
-            result = IJ.createHyperStack("Greyscale", img.getWidth(), img.getHeight(), img.getNChannels(), img.getNSlices(), img.getNFrames(), 16);
-        }
-        else {
-            result = IJ.createHyperStack("Greyscale", img.getWidth(), img.getHeight(), img.getNChannels(), img.getNSlices(), img.getNFrames(), 32);
-        }
+        ImagePlus result = IJ.createHyperStack("Greyscale",
+                img.getWidth(),
+                img.getHeight(),
+                img.getNChannels(),
+                img.getNSlices(),
+                img.getNFrames(),
+                8);
 
         ExpressionParameters variableSet = new ExpressionParameters();
         variableSet.set("width", img.getWidth());
@@ -137,17 +104,26 @@ public class ColorToGreyscaleExpression2D extends JIPipeSimpleIteratingAlgorithm
                     variableSet.set("Lb", lb);
 
                     Object evaluationResult = expression.evaluate(variableSet);
-                    resultProcessor.setf(x,y, ((Number)evaluationResult).floatValue());
+                    if(evaluationResult instanceof Boolean) {
+                        if((boolean)evaluationResult) {
+                            resultProcessor.set(x,y,255);
+                        }
+                    }
+                    else {
+                        int number = ((Number)evaluationResult).intValue();
+                        if(number > 0) {
+                            resultProcessor.set(x,y,255);
+                        }
+                    }
                 }
             }
         }, progressInfo);
 
-        ImageJUtils.calibrate(result, ImageJCalibrationMode.AutomaticImageJ, 0,0);
-        dataBatch.addOutputData(getFirstOutputSlot(), JIPipe.createData(outputType.getInfo().getDataClass(), result), progressInfo);
+        dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusGreyscaleData(result), progressInfo);
     }
 
     @JIPipeDocumentation(name = "Expression", description = "This expression is executed for each pixel. It provides the pixel components in the " +
-            "original color space, as well as in other color spaces. The expression must return a number that will be stored as greyscale value.")
+            "original color space, as well as in other color spaces. The expression must return a boolean value or a number (<=0 = background, >0 = foreground).")
     @JIPipeParameter("expression")
     @ExpressionParameterSettings(variableSource = ColorPixel5DExpressionParameterVariableSource.class)
     public DefaultExpressionParameter getExpression() {
