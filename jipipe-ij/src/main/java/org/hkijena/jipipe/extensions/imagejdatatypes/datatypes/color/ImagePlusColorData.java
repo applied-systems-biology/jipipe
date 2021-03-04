@@ -113,4 +113,9 @@ public class ImagePlusColorData extends ImagePlusData implements ColoredImagePlu
     public Component preview(int width, int height) {
         return ImageJUtils.generatePreview(this.getImage(), getColorSpace(), width, height);
     }
+
+    @Override
+    public String toString() {
+        return super.toString() + " [" + getColorSpace() + " colors]";
+    }
 }

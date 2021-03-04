@@ -16,4 +16,9 @@ public class RGBColorSpace implements ColorSpace {
             imgSpace.convertToRGB(img, progressInfo);
         }
     }
+
+    @Override
+    public String toString() {
+        return "RGB";
+    }
 }

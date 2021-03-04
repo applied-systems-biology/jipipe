@@ -17,4 +17,9 @@ public class LABColorSpace implements ColorSpace{
             ImageJUtils.convertRGBToLAB(img, progressInfo);
         }
     }
+
+    @Override
+    public String toString() {
+        return "L*a*b*";
+    }
 }

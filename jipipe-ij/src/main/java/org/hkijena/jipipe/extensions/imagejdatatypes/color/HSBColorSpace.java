@@ -17,4 +17,9 @@ public class HSBColorSpace implements ColorSpace{
             ImageJUtils.convertRGBToHSB(img, progressInfo);
         }
     }
+
+    @Override
+    public String toString() {
+        return "HSB";
+    }
 }

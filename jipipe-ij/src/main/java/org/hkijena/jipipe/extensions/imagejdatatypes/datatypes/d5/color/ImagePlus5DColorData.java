@@ -24,7 +24,9 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.color.ColoredImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d3.ImagePlus3DData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d5.ImagePlus5DData;
+import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 
+import java.awt.*;
 import java.nio.file.Path;
 
 /**
@@ -102,5 +104,15 @@ public class ImagePlus5DColorData extends ImagePlus5DData implements ColoredImag
         else {
             return new ImagePlus5DColorData(image);
         }
+    }
+
+    @Override
+    public Component preview(int width, int height) {
+        return ImageJUtils.generatePreview(this.getImage(), getColorSpace(), width, height);
+    }
+
+    @Override
+    public String toString() {
+        return super.toString() + " [" + getColorSpace() + " colors]";
     }
 }
