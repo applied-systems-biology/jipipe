@@ -25,6 +25,7 @@ import ij.gui.PolygonRoi;
 import ij.plugin.PlugIn;
 import ij.process.*;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
+import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
 import org.hkijena.jipipe.extensions.imagejdatatypes.color.ColorSpace;
 import org.hkijena.jipipe.extensions.parameters.roi.Anchor;
 import org.hkijena.jipipe.utils.ImageJCalibrationMode;
@@ -46,6 +47,42 @@ import java.util.stream.Collectors;
 public class ImageJUtils {
     private ImageJUtils() {
 
+    }
+
+    public static boolean imagesHaveSameSize(ImagePlus... images) {
+        if(images.length < 2)
+            return true;
+        ImagePlus referenceImage=images[0];
+        int width = referenceImage.getWidth();
+        int height = referenceImage.getHeight();
+        int nZ = referenceImage.getNSlices();
+        int nC = referenceImage.getNChannels();
+        int nT = referenceImage.getNFrames();
+        for (ImagePlus image : images) {
+            if(image.getWidth() != width || image.getHeight() != height ||
+                    image.getNFrames() != nT || image.getNChannels() != nC ||image.getNSlices() != nZ) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    public static boolean imagesHaveSameSize(Collection<ImagePlus> images) {
+        if(images.size() < 2)
+            return true;
+        ImagePlus referenceImage=images.iterator().next();
+        int width = referenceImage.getWidth();
+        int height = referenceImage.getHeight();
+        int nZ = referenceImage.getNSlices();
+        int nC = referenceImage.getNChannels();
+        int nT = referenceImage.getNFrames();
+        for (ImagePlus image : images) {
+            if(image.getWidth() != width || image.getHeight() != height ||
+                    image.getNFrames() != nT || image.getNChannels() != nC ||image.getNSlices() != nZ) {
+                return false;
+            }
+        }
+        return true;
     }
 
     /**
