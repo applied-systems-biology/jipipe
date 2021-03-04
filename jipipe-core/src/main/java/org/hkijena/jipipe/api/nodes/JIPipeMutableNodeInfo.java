@@ -26,7 +26,7 @@ public abstract class JIPipeMutableNodeInfo implements JIPipeNodeInfo {
     private Class<? extends JIPipeGraphNode> nodeClass;
     private String id;
     private String name;
-    private HTMLText description;
+    private HTMLText description = new HTMLText();
     private JIPipeNodeTypeCategory category;
     private List<JIPipeInputSlot> inputSlots = new ArrayList<>();
     private List<JIPipeOutputSlot> outputSlots = new ArrayList<>();

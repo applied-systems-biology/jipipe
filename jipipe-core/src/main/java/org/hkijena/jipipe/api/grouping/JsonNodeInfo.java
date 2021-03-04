@@ -51,7 +51,7 @@ public class JsonNodeInfo implements JIPipeNodeInfo, JIPipeValidatable, JIPipePa
     private final EventBus eventBus = new EventBus();
     private String id;
     private String name;
-    private HTMLText description;
+    private HTMLText description = new HTMLText();
     private List<JIPipeInputSlot> inputSlots = new ArrayList<>();
     private List<JIPipeOutputSlot> outputSlots = new ArrayList<>();
     private JIPipeGraph graph = new JIPipeGraph();
@@ -149,6 +149,8 @@ public class JsonNodeInfo implements JIPipeNodeInfo, JIPipeValidatable, JIPipePa
     @StringParameterSettings(multiline = true)
     @JsonGetter("description")
     public HTMLText getDescription() {
+        if(description == null)
+            description = new HTMLText();
         return description;
     }
 

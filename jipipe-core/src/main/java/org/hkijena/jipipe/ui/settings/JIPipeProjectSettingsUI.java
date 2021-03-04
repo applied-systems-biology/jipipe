@@ -54,7 +54,7 @@ public class JIPipeProjectSettingsUI extends JIPipeProjectWorkbenchPanel {
 
         FormPanel parameterUI = new FormPanel(MarkdownDocument.fromPluginResource("documentation/project-settings-parameters.md"),
                 FormPanel.WITH_SCROLLING | FormPanel.WITH_DOCUMENTATION);
-        GraphNodeParametersUI graphNodeParametersUI = new GraphNodeParametersUI(getWorkbench(), getPipelineParameters().getExportedParameters());
+        GraphNodeParametersUI graphNodeParametersUI = new GraphNodeParametersUI(getWorkbench(), getPipelineParameters().getExportedParameters(), FormPanel.NONE);
         graphNodeParametersUI.setBorder(BorderFactory.createLineBorder(Color.DARK_GRAY));
         parameterUI.addWideToForm(graphNodeParametersUI, null);
         parameterUI.addVerticalGlue();

@@ -15,6 +15,7 @@ package org.hkijena.jipipe.api.grouping.parameters;
 
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
+import org.hkijena.jipipe.ui.components.FormPanel;
 import org.hkijena.jipipe.ui.parameters.JIPipeParameterEditorUI;
 import org.hkijena.jipipe.utils.UIUtils;
 
@@ -46,7 +47,7 @@ public class GraphNodeParameterEditorUI extends JIPipeParameterEditorUI {
 
     private void editParameters() {
         GraphNodeParameters parameters = getParameter(GraphNodeParameters.class);
-        GraphNodeParametersUI panel = new GraphNodeParametersUI(getWorkbench(), parameters);
+        GraphNodeParametersUI panel = new GraphNodeParametersUI(getWorkbench(), parameters, FormPanel.WITH_SCROLLING);
         JDialog editorDialog = new JDialog();
         editorDialog.setTitle("Edit parameters");
         editorDialog.setContentPane(panel);

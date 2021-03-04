@@ -1,6 +1,7 @@
 package org.hkijena.jipipe.ui.components;
 
 import com.google.common.eventbus.Subscribe;
+import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
@@ -400,15 +401,21 @@ public class HTMLEditor extends JPanel {
     }
 
     public void setText(String value) {
-        if (value == null) {
+        if (StringUtils.isNullOrEmpty(value )) {
             textPane.setText("<html><body><p></p></body></html>");
         } else {
-            int bodyStart = value.indexOf("<body>") + "<body>".length();
-            int bodyEnd = value.indexOf("</body>");
-            String body = value.substring(bodyStart, bodyEnd).trim();
-            if (!body.startsWith("<"))
-                body = "<p>" + body + "</p>";
-            textPane.setText("<html><body>" + body + "</body></html>");
+            try {
+                int bodyStart = value.indexOf("<body>") + "<body>".length();
+                int bodyEnd = value.indexOf("</body>");
+                String body = value.substring(bodyStart, bodyEnd).trim();
+                if (!body.startsWith("<"))
+                    body = "<p>" + body + "</p>";
+                textPane.setText("<html><body>" + body + "</body></html>");
+            }
+            catch (IndexOutOfBoundsException e) {
+                e.printStackTrace();
+                textPane.setText("<html><body><p></p></body></html>");
+            }
         }
 
         // Workaround https://stackoverflow.com/questions/1527021/html-jtextpane-newline-support

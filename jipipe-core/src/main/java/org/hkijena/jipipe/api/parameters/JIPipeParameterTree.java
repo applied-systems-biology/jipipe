@@ -623,7 +623,7 @@ public class JIPipeParameterTree implements JIPipeParameterCollection, JIPipeCus
         private String key;
         private JIPipeParameterVisibility visibility = JIPipeParameterVisibility.Visible;
         private String name;
-        private HTMLText description;
+        private HTMLText description = new HTMLText();
         private int order;
         private int uiOrder;
         private BiMap<String, JIPipeParameterAccess> parameters = HashBiMap.create();

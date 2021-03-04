@@ -41,14 +41,17 @@ public class GraphNodeParametersUI extends JIPipeWorkbenchPanel {
     private final GraphNodeParameters parameters;
     private FormPanel content;
     private JIPipeParameterTree tree;
+    private int formPanelFlags;
 
     /**
      * @param workbench  the workbench
      * @param parameters the parameters to edit
+     * @param formPanelFlags
      */
-    public GraphNodeParametersUI(JIPipeWorkbench workbench, GraphNodeParameters parameters) {
+    public GraphNodeParametersUI(JIPipeWorkbench workbench, GraphNodeParameters parameters, int formPanelFlags) {
         super(workbench);
         this.parameters = parameters;
+        this.formPanelFlags = formPanelFlags;
         parameters.getEventBus().register(this);
         parameters.getGraph().getEventBus().register(this);
         initialize();
@@ -78,7 +81,7 @@ public class GraphNodeParametersUI extends JIPipeWorkbenchPanel {
 
         add(toolBar, BorderLayout.NORTH);
 
-        content = new FormPanel(null, FormPanel.WITH_SCROLLING);
+        content = new FormPanel(null, formPanelFlags);
         content.setBorder(null);
         add(content, BorderLayout.CENTER);
     }
@@ -121,7 +124,10 @@ public class GraphNodeParametersUI extends JIPipeWorkbenchPanel {
 
     private void refreshContent() {
         tree = getParameters().getGraph().getParameterTree();
-        int scrollValue = content.getScrollPane().getVerticalScrollBar().getValue();
+        int scrollValue = 0;
+        if(content.getScrollPane() != null) {
+            scrollValue = content.getScrollPane().getVerticalScrollBar().getValue();
+        }
         content.clear();
         for (GraphNodeParameterReferenceGroup referenceGroup : parameters.getParameterReferenceGroups()) {
             GraphNodeParameterReferenceGroupUI groupUI = new GraphNodeParameterReferenceGroupUI(this, referenceGroup);
@@ -131,7 +137,10 @@ public class GraphNodeParametersUI extends JIPipeWorkbenchPanel {
             content.addToForm(groupUI, removeButton, null);
         }
         content.addVerticalGlue();
-        SwingUtilities.invokeLater(() -> content.getScrollPane().getVerticalScrollBar().setValue(scrollValue));
+        if(content.getScrollPane() != null) {
+            int finalScrollValue = scrollValue;
+            SwingUtilities.invokeLater(() -> content.getScrollPane().getVerticalScrollBar().setValue(finalScrollValue));
+        }
     }
 
     /**

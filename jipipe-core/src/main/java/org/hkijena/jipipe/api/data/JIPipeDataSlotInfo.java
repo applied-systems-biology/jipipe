@@ -414,9 +414,14 @@ public class JIPipeDataSlotInfo implements JIPipeParameterCollection {
                 for (Map.Entry<String, JsonNode> entry : ImmutableList.copyOf(conversionsNode.fields())) {
                     String idKey = entry.getKey();
                     String idValue = entry.getValue().asText();
-                    JIPipeDataInfo key = JIPipeDataInfo.getInstance(idKey);
-                    JIPipeDataInfo value = JIPipeDataInfo.getInstance(idValue);
-                    definition.inheritanceConversions.put(key, value);
+                    try {
+                        JIPipeDataInfo key = JIPipeDataInfo.getInstance(idKey);
+                        JIPipeDataInfo value = JIPipeDataInfo.getInstance(idValue);
+                        definition.inheritanceConversions.put(key, value);
+                    }
+                    catch (Exception e) {
+                        e.printStackTrace();
+                    }
                 }
             }
             JsonNode customNameNode = node.path("custom-name");

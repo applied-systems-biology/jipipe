@@ -31,7 +31,7 @@ public class GraphNodeParameterReferenceGroup {
     private final EventBus eventBus = new EventBus();
     private List<GraphNodeParameterReference> content = new ArrayList<>();
     private String name;
-    private HTMLText description;
+    private HTMLText description = new HTMLText();
 
     /**
      * Creates a new instance
