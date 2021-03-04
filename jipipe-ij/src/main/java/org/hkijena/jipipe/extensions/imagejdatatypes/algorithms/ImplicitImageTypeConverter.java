@@ -13,8 +13,6 @@
 
 package org.hkijena.jipipe.extensions.imagejdatatypes.algorithms;
 
-import ij.ImagePlus;
-import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataConverter;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
@@ -58,7 +56,7 @@ public class ImplicitImageTypeConverter implements JIPipeDataConverter {
     @Override
     public JIPipeData convert(JIPipeData input) {
         try {
-            return (JIPipeData) convertFunction.invoke(null, (ImagePlusData)input);
+            return (JIPipeData) convertFunction.invoke(null, (ImagePlusData) input);
         } catch (IllegalAccessException | InvocationTargetException e) {
             throw new RuntimeException(e);
         }

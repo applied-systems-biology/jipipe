@@ -79,26 +79,6 @@ public class JIPipeAlgorithmTargetFinderUI extends JPanel {
         reloadAlgorithmList();
     }
 
-    /**
-     * Finds all algorithms that fit to the slot according to the information in {@link JIPipeNodeInfo}
-     *
-     * @param slot The target slot
-     * @return Unsorted list of algorithm infos
-     */
-    public static List<JIPipeNodeInfo> findCompatibleTargetAlgorithms(JIPipeDataSlot slot) {
-        Class<? extends JIPipeData> outputSlotDataClass = slot.getAcceptedDataType();
-        List<JIPipeNodeInfo> result = new ArrayList<>();
-        for (JIPipeNodeInfo info : JIPipe.getNodes().getRegisteredNodeInfos().values()) {
-            for (Class<? extends JIPipeData> inputSlotDataClass : info.getInputSlots().stream().map(JIPipeInputSlot::value).collect(Collectors.toList())) {
-                if (JIPipe.getDataTypes().isConvertible(outputSlotDataClass, inputSlotDataClass)) {
-                    result.add(info);
-                    break;
-                }
-            }
-        }
-        return result;
-    }
-
     private void scrollToBeginning() {
         formPanel.getScrollPane().getVerticalScrollBar().setValue(0);
     }
@@ -260,5 +240,25 @@ public class JIPipeAlgorithmTargetFinderUI extends JPanel {
      */
     public String getCompartment() {
         return compartment;
+    }
+
+    /**
+     * Finds all algorithms that fit to the slot according to the information in {@link JIPipeNodeInfo}
+     *
+     * @param slot The target slot
+     * @return Unsorted list of algorithm infos
+     */
+    public static List<JIPipeNodeInfo> findCompatibleTargetAlgorithms(JIPipeDataSlot slot) {
+        Class<? extends JIPipeData> outputSlotDataClass = slot.getAcceptedDataType();
+        List<JIPipeNodeInfo> result = new ArrayList<>();
+        for (JIPipeNodeInfo info : JIPipe.getNodes().getRegisteredNodeInfos().values()) {
+            for (Class<? extends JIPipeData> inputSlotDataClass : info.getInputSlots().stream().map(JIPipeInputSlot::value).collect(Collectors.toList())) {
+                if (JIPipe.getDataTypes().isConvertible(outputSlotDataClass, inputSlotDataClass)) {
+                    result.add(info);
+                    break;
+                }
+            }
+        }
+        return result;
     }
 }

@@ -13,11 +13,11 @@
 
 package org.hkijena.jipipe.extensions.imagejdatatypes.parameters;
 
-import org.hkijena.jipipe.extensions.parameters.expressions.ExpressionParameters;
 import ij.ImagePlus;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.extensions.parameters.expressions.ExpressionParameterVariable;
 import org.hkijena.jipipe.extensions.parameters.expressions.ExpressionParameterVariableSource;
+import org.hkijena.jipipe.extensions.parameters.expressions.ExpressionParameters;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -34,6 +34,11 @@ public class ImageQueryExpressionVariableSource implements ExpressionParameterVa
         VARIABLES.add(new ExpressionParameterVariable("Image channels", "The channels (number of channel slices) of the image", "num_channels"));
         VARIABLES.add(new ExpressionParameterVariable("Image frames", "The frames of the image", "num_frames"));
         VARIABLES.add(new ExpressionParameterVariable("Image title", "The title of the image", "title"));
+    }
+
+    @Override
+    public Set<ExpressionParameterVariable> getVariables(JIPipeParameterAccess parameterAccess) {
+        return VARIABLES;
     }
 
     /**
@@ -66,10 +71,5 @@ public class ImageQueryExpressionVariableSource implements ExpressionParameterVa
         variableSet.set("num_channels", imagePlus.getNChannels());
         variableSet.set("num_frames", imagePlus.getNFrames());
         variableSet.set("title", imagePlus.getTitle());
-    }
-
-    @Override
-    public Set<ExpressionParameterVariable> getVariables(JIPipeParameterAccess parameterAccess) {
-        return VARIABLES;
     }
 }

@@ -67,25 +67,6 @@ public class JIPipeJsonExporter extends JIPipeGraphEditorUI {
 //        ));
 //    }
 
-    /**
-     * Creates a new exporter tab
-     *
-     * @param workbench   the workbench
-     * @param nodeGroup   the exported algorithm. Will be copied.
-     * @param name        predefined name
-     * @param description predefined description
-     */
-    public static void createExporter(JIPipeProjectWorkbench workbench, NodeGroup nodeGroup, String name, HTMLText description) {
-        JIPipeJsonExporter exporter = new JIPipeJsonExporter(workbench, (NodeGroup) nodeGroup.duplicate());
-        exporter.getNodeInfo().setName(name);
-        exporter.getNodeInfo().setDescription(description);
-        workbench.getDocumentTabPane().addTab("Export algorithm '" + name + "'",
-                UIUtils.getIconFromResources("actions/document-export.png"),
-                exporter,
-                DocumentTabPane.CloseMode.withAskOnCloseButton);
-        workbench.getDocumentTabPane().switchToLastTab();
-    }
-
     private void initialize() {
         exportPanel = new JPanel(new BorderLayout());
 
@@ -173,5 +154,24 @@ public class JIPipeJsonExporter extends JIPipeGraphEditorUI {
      */
     public JsonNodeInfo getNodeInfo() {
         return nodeInfo;
+    }
+
+    /**
+     * Creates a new exporter tab
+     *
+     * @param workbench   the workbench
+     * @param nodeGroup   the exported algorithm. Will be copied.
+     * @param name        predefined name
+     * @param description predefined description
+     */
+    public static void createExporter(JIPipeProjectWorkbench workbench, NodeGroup nodeGroup, String name, HTMLText description) {
+        JIPipeJsonExporter exporter = new JIPipeJsonExporter(workbench, (NodeGroup) nodeGroup.duplicate());
+        exporter.getNodeInfo().setName(name);
+        exporter.getNodeInfo().setDescription(description);
+        workbench.getDocumentTabPane().addTab("Export algorithm '" + name + "'",
+                UIUtils.getIconFromResources("actions/document-export.png"),
+                exporter,
+                DocumentTabPane.CloseMode.withAskOnCloseButton);
+        workbench.getDocumentTabPane().switchToLastTab();
     }
 }

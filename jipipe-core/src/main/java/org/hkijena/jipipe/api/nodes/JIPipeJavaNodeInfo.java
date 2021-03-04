@@ -64,6 +64,42 @@ public class JIPipeJavaNodeInfo extends JIPipeMutableNodeInfo {
         initializeSlots();
     }
 
+    private void initializeSlots() {
+        for (JIPipeInputSlot slot : getInstanceClass().getAnnotationsByType(JIPipeInputSlot.class)) {
+            getInputSlots().add(slot);
+        }
+        for (JIPipeOutputSlot slot : getInstanceClass().getAnnotationsByType(JIPipeOutputSlot.class)) {
+            getOutputSlots().add(slot);
+        }
+    }
+
+    @Override
+    public JIPipeGraphNode duplicate(JIPipeGraphNode algorithm) {
+        try {
+            return ConstructorUtils.getMatchingAccessibleConstructor(getInstanceClass(), algorithm.getClass()).newInstance(algorithm);
+        } catch (InstantiationException | IllegalAccessException | InvocationTargetException e) {
+            throw new UserFriendlyRuntimeException(e, "Unable to copy algorithm '" + algorithm.getName() + "'!",
+                    "Undefined", "There is a programming error in the algorithm's code.",
+                    "Please contact the developer of the plugin that created the algorithm.");
+        }
+    }
+
+    @Override
+    public Set<JIPipeDependency> getDependencies() {
+        return Collections.emptySet();
+    }
+
+    @Override
+    public JIPipeGraphNode newInstance() {
+        try {
+            return getInstanceClass().getConstructor(JIPipeNodeInfo.class).newInstance(this);
+        } catch (InstantiationException | IllegalAccessException | NoSuchMethodException | InvocationTargetException e) {
+            throw new UserFriendlyRuntimeException(e, "Unable to create an algorithm instance!",
+                    "Undefined", "There is a programming error in an algorithm's code.",
+                    "Please contact the developer of the plugin that created the algorithm.");
+        }
+    }
+
     /**
      * Returns the name of an algorithm
      *
@@ -123,42 +159,6 @@ public class JIPipeJavaNodeInfo extends JIPipeMutableNodeInfo {
             return annotations[0].menuPath();
         } else {
             return "";
-        }
-    }
-
-    private void initializeSlots() {
-        for (JIPipeInputSlot slot : getInstanceClass().getAnnotationsByType(JIPipeInputSlot.class)) {
-            getInputSlots().add(slot);
-        }
-        for (JIPipeOutputSlot slot : getInstanceClass().getAnnotationsByType(JIPipeOutputSlot.class)) {
-            getOutputSlots().add(slot);
-        }
-    }
-
-    @Override
-    public JIPipeGraphNode duplicate(JIPipeGraphNode algorithm) {
-        try {
-            return ConstructorUtils.getMatchingAccessibleConstructor(getInstanceClass(), algorithm.getClass()).newInstance(algorithm);
-        } catch (InstantiationException | IllegalAccessException | InvocationTargetException e) {
-            throw new UserFriendlyRuntimeException(e, "Unable to copy algorithm '" + algorithm.getName() + "'!",
-                    "Undefined", "There is a programming error in the algorithm's code.",
-                    "Please contact the developer of the plugin that created the algorithm.");
-        }
-    }
-
-    @Override
-    public Set<JIPipeDependency> getDependencies() {
-        return Collections.emptySet();
-    }
-
-    @Override
-    public JIPipeGraphNode newInstance() {
-        try {
-            return getInstanceClass().getConstructor(JIPipeNodeInfo.class).newInstance(this);
-        } catch (InstantiationException | IllegalAccessException | NoSuchMethodException | InvocationTargetException e) {
-            throw new UserFriendlyRuntimeException(e, "Unable to create an algorithm instance!",
-                    "Undefined", "There is a programming error in an algorithm's code.",
-                    "Please contact the developer of the plugin that created the algorithm.");
         }
     }
 

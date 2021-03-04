@@ -17,7 +17,6 @@ import javax.swing.*;
 import javax.swing.event.DocumentEvent;
 import java.awt.*;
 import java.awt.event.MouseEvent;
-import java.util.function.Supplier;
 
 public class NumberRangeParameterEditorUI extends JIPipeParameterEditorUI implements ThumbListener {
 
@@ -62,13 +61,13 @@ public class NumberRangeParameterEditorUI extends JIPipeParameterEditorUI implem
         minEditor.getDocument().addDocumentListener(new DocumentChangeListener() {
             @Override
             public void changed(DocumentEvent documentEvent) {
-                if(!isUpdatingTextBoxes) {
+                if (!isUpdatingTextBoxes) {
                     String s = StringUtils.nullToEmpty(minEditor.getText());
                     s = s.replace(',', '.').replace(" ", ""); // Allow usage of comma as separator
-                    if(NumberUtils.isCreatable(s)) {
+                    if (NumberUtils.isCreatable(s)) {
                         NumberRangeParameter parameter = getParameter(NumberRangeParameter.class);
                         double value = NumberUtils.createDouble(s);
-                        if(value != parameter.getMinNumber().doubleValue()) {
+                        if (value != parameter.getMinNumber().doubleValue()) {
                             parameter.setMinNumber(value);
                             setParameter(parameter, false);
                             updateThumbs();
@@ -80,13 +79,13 @@ public class NumberRangeParameterEditorUI extends JIPipeParameterEditorUI implem
         maxEditor.getDocument().addDocumentListener(new DocumentChangeListener() {
             @Override
             public void changed(DocumentEvent documentEvent) {
-                if(!isUpdatingTextBoxes) {
+                if (!isUpdatingTextBoxes) {
                     String s = StringUtils.nullToEmpty(maxEditor.getText());
                     s = s.replace(',', '.').replace(" ", ""); // Allow usage of comma as separator
-                    if(NumberUtils.isCreatable(s)) {
+                    if (NumberUtils.isCreatable(s)) {
                         NumberRangeParameter parameter = getParameter(NumberRangeParameter.class);
                         double value = NumberUtils.createDouble(s);
-                        if(value != parameter.getMaxNumber().doubleValue()) {
+                        if (value != parameter.getMaxNumber().doubleValue()) {
                             parameter.setMaxNumber(value);
                             setParameter(parameter, false);
                             updateThumbs();
@@ -105,8 +104,7 @@ public class NumberRangeParameterEditorUI extends JIPipeParameterEditorUI implem
             NumberRangeParameter parameter = getParameter(NumberRangeParameter.class);
             slider.getModel().getThumbAt(0).setPosition(parameter.getMinNumber().floatValue());
             slider.getModel().getThumbAt(1).setPosition(parameter.getMaxNumber().floatValue());
-        }
-        finally {
+        } finally {
             isUpdatingThumbs = false;
         }
     }
@@ -121,9 +119,9 @@ public class NumberRangeParameterEditorUI extends JIPipeParameterEditorUI implem
         NumberRangeParameterSettings parameterSettings = getParameterAccess().getAnnotationOfType(NumberRangeParameterSettings.class);
         float min = 0;
         float max = 1;
-        if(parameterSettings != null) {
-            min = (float)parameterSettings.min();
-            max = (float)parameterSettings.max();
+        if (parameterSettings != null) {
+            min = (float) parameterSettings.min();
+            max = (float) parameterSettings.max();
             trackRenderer.setTrackBackgroundGenerator((PaintGenerator) ReflectionUtils.newInstance(parameterSettings.trackBackground()));
             trackRenderer.setInvertedMode(parameterSettings.invertedMode());
         }
@@ -142,12 +140,11 @@ public class NumberRangeParameterEditorUI extends JIPipeParameterEditorUI implem
 
     @Override
     public void thumbMoved(int thumb, float pos) {
-        if(!isUpdatingThumbs) {
+        if (!isUpdatingThumbs) {
             NumberRangeParameter parameter = getParameter(NumberRangeParameter.class);
-            if(thumb == 0) {
+            if (thumb == 0) {
                 parameter.setMinNumber(pos);
-            }
-            else if(thumb == 1) {
+            } else if (thumb == 1) {
                 parameter.setMaxNumber(pos);
             }
             setParameter(parameter, false);
@@ -161,8 +158,7 @@ public class NumberRangeParameterEditorUI extends JIPipeParameterEditorUI implem
             NumberRangeParameter parameter = getParameter(NumberRangeParameter.class);
             minEditor.setText(parameter.getMinNumber() + "");
             maxEditor.setText(parameter.getMaxNumber() + "");
-        }
-        finally {
+        } finally {
             isUpdatingTextBoxes = false;
         }
     }
@@ -215,10 +211,10 @@ public class NumberRangeParameterEditorUI extends JIPipeParameterEditorUI implem
 
     public static class TrackRenderer extends JComponent implements org.jdesktop.swingx.multislider.TrackRenderer {
 
+        NumberRangeInvertedMode invertedMode = NumberRangeInvertedMode.SwitchMinMax;
         private JXMultiThumbSlider<DisplayRangeStop> slider;
         private boolean logarithmic = true;
         private PaintGenerator trackBackgroundGenerator;
-        NumberRangeInvertedMode invertedMode = NumberRangeInvertedMode.SwitchMinMax;
 
         public TrackRenderer() {
             this.trackBackgroundGenerator = new DefaultTrackBackground();
@@ -253,12 +249,12 @@ public class NumberRangeParameterEditorUI extends JIPipeParameterEditorUI implem
             int w = slider.getWidth() - 2 * ThumbRenderer.SIZE;
             int h = slider.getHeight();
             g.setColor(UIManager.getColor("Panel.background"));
-            g.fillRect(0,0,slider.getWidth(), slider.getHeight());
-            g.setPaint(trackBackgroundGenerator.generate(ThumbRenderer.SIZE,0,w, slider.getHeight()));
+            g.fillRect(0, 0, slider.getWidth(), slider.getHeight());
+            g.setPaint(trackBackgroundGenerator.generate(ThumbRenderer.SIZE, 0, w, slider.getHeight()));
             g.fillRect(ThumbRenderer.SIZE, ThumbRenderer.SIZE + 2, w, slider.getHeight() - ThumbRenderer.SIZE - 2);
             g.setColor(UIManager.getColor("Button.borderColor"));
-            g.drawRect(ThumbRenderer.SIZE,0,w,h-1);
-            g.drawRect(ThumbRenderer.SIZE,ThumbRenderer.SIZE + 2,w,h-1-ThumbRenderer.SIZE-2);
+            g.drawRect(ThumbRenderer.SIZE, 0, w, h - 1);
+            g.drawRect(ThumbRenderer.SIZE, ThumbRenderer.SIZE + 2, w, h - 1 - ThumbRenderer.SIZE - 2);
 
             float min = slider.getModel().getMinimumValue();
             float max = slider.getModel().getMaximumValue();
@@ -275,13 +271,12 @@ public class NumberRangeParameterEditorUI extends JIPipeParameterEditorUI implem
             g.setColor(ModernMetalTheme.PRIMARY5);
             switch (invertedMode) {
                 case SwitchMinMax:
-                    g.fillRect(Math.min(x0, x1), 1, Math.abs(x1 -x0), ThumbRenderer.SIZE + 1);
+                    g.fillRect(Math.min(x0, x1), 1, Math.abs(x1 - x0), ThumbRenderer.SIZE + 1);
                     break;
                 case OutsideMinMax:
-                    if(x0 <= x1) {
-                        g.fillRect(x0, 1, Math.abs(x1 -x0), ThumbRenderer.SIZE + 1);
-                    }
-                    else {
+                    if (x0 <= x1) {
+                        g.fillRect(x0, 1, Math.abs(x1 - x0), ThumbRenderer.SIZE + 1);
+                    } else {
                         int xStart = ThumbRenderer.SIZE;
                         int xEnd = slider.getWidth() - ThumbRenderer.SIZE;
                         g.fillRect(xStart, 1, Math.max(0, x1 - xStart), ThumbRenderer.SIZE + 1);

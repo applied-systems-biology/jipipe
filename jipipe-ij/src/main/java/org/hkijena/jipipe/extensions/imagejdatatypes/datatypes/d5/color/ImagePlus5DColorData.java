@@ -22,7 +22,6 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.color.ColorSpace;
 import org.hkijena.jipipe.extensions.imagejdatatypes.color.RGBColorSpace;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.color.ColoredImagePlusData;
-import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d3.ImagePlus3DData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d5.ImagePlus5DData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 
@@ -63,6 +62,16 @@ public class ImagePlus5DColorData extends ImagePlus5DData implements ColoredImag
         return colorSpace;
     }
 
+    @Override
+    public Component preview(int width, int height) {
+        return ImageJUtils.generatePreview(this.getImage(), getColorSpace(), width, height);
+    }
+
+    @Override
+    public String toString() {
+        return super.toString() + " [" + getColorSpace() + " colors]";
+    }
+
     /**
      * Converts an {@link ImagePlus} to the color space of this data.
      * Does not guarantee that the input image is copied.
@@ -89,6 +98,7 @@ public class ImagePlus5DColorData extends ImagePlus5DData implements ColoredImag
     /**
      * Converts the incoming image data into the current format.
      * Copies the color space if provided with an {@link ColoredImagePlusData}
+     *
      * @param data the data
      * @return the converted data
      */
@@ -97,22 +107,10 @@ public class ImagePlus5DColorData extends ImagePlus5DData implements ColoredImag
         if (image.getType() != ImagePlus.COLOR_RGB) {
             // This will go through the standard method (greyscale -> RGB -> HSB)
             return new ImagePlus5DColorData(image);
-        }
-        else if(data instanceof ColoredImagePlusData) {
+        } else if (data instanceof ColoredImagePlusData) {
             return new ImagePlus5DColorData(image, ((ColoredImagePlusData) data).getColorSpace());
-        }
-        else {
+        } else {
             return new ImagePlus5DColorData(image);
         }
-    }
-
-    @Override
-    public Component preview(int width, int height) {
-        return ImageJUtils.generatePreview(this.getImage(), getColorSpace(), width, height);
-    }
-
-    @Override
-    public String toString() {
-        return super.toString() + " [" + getColorSpace() + " colors]";
     }
 }

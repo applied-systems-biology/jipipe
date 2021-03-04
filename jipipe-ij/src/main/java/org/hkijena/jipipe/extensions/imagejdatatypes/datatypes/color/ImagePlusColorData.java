@@ -15,20 +15,15 @@ package org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.color;
 
 import ij.ImagePlus;
 import ij.process.ImageConverter;
-import ij.process.ImageProcessor;
-import net.imagej.legacy.convert.TableToResultsTableConverters;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeHeavyData;
 import org.hkijena.jipipe.api.JIPipeOrganization;
-import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.extensions.imagejdatatypes.color.ColorSpace;
 import org.hkijena.jipipe.extensions.imagejdatatypes.color.RGBColorSpace;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 
-import javax.swing.*;
 import java.awt.*;
-import java.awt.image.BufferedImage;
 import java.nio.file.Path;
 
 /**
@@ -66,6 +61,16 @@ public class ImagePlusColorData extends ImagePlusData implements ColoredImagePlu
         return colorSpace;
     }
 
+    @Override
+    public Component preview(int width, int height) {
+        return ImageJUtils.generatePreview(this.getImage(), getColorSpace(), width, height);
+    }
+
+    @Override
+    public String toString() {
+        return super.toString() + " [" + getColorSpace() + " colors]";
+    }
+
     /**
      * Converts an {@link ImagePlus} to the color space of this data.
      * Does not guarantee that the input image is copied.
@@ -92,6 +97,7 @@ public class ImagePlusColorData extends ImagePlusData implements ColoredImagePlu
     /**
      * Converts the incoming image data into the current format.
      * Copies the color space if provided with an {@link ColoredImagePlusData}
+     *
      * @param data the data
      * @return the converted data
      */
@@ -100,22 +106,10 @@ public class ImagePlusColorData extends ImagePlusData implements ColoredImagePlu
         if (image.getType() != ImagePlus.COLOR_RGB) {
             // This will go through the standard method (greyscale -> RGB -> HSB)
             return new ImagePlusColorData(image);
-        }
-        else if(data instanceof ColoredImagePlusData) {
+        } else if (data instanceof ColoredImagePlusData) {
             return new ImagePlusColorData(image, ((ColoredImagePlusData) data).getColorSpace());
-        }
-        else {
+        } else {
             return new ImagePlusColorData(image);
         }
-    }
-
-    @Override
-    public Component preview(int width, int height) {
-        return ImageJUtils.generatePreview(this.getImage(), getColorSpace(), width, height);
-    }
-
-    @Override
-    public String toString() {
-        return super.toString() + " [" + getColorSpace() + " colors]";
     }
 }

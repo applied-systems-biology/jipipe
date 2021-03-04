@@ -22,8 +22,6 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.color.RGBColorSpace;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.color.ColoredImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.color.ImagePlusColorRGBData;
-import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d4.ImagePlus4DData;
-import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d5.ImagePlus5DData;
 
 import java.nio.file.Path;
 
@@ -63,6 +61,7 @@ public class ImagePlus5DColorRGBData extends ImagePlus5DColorData implements Col
 
     /**
      * Converts the incoming image data into the current format.
+     *
      * @param data the data
      * @return the converted data
      */

@@ -50,14 +50,6 @@ public class IntModificationParameter implements Function<Integer, Integer> {
         this.useExactValue = other.useExactValue;
     }
 
-    public static IntModificationParameter exact(int value) {
-        return new IntModificationParameter(value, 1, true);
-    }
-
-    public static IntModificationParameter relative(int value) {
-        return new IntModificationParameter(0, value, false);
-    }
-
     @Override
     public Integer apply(Integer integer) {
         if (useExactValue)
@@ -94,5 +86,13 @@ public class IntModificationParameter implements Function<Integer, Integer> {
     @JsonSetter("use-exact-value")
     public void setUseExactValue(boolean useExactValue) {
         this.useExactValue = useExactValue;
+    }
+
+    public static IntModificationParameter exact(int value) {
+        return new IntModificationParameter(value, 1, true);
+    }
+
+    public static IntModificationParameter relative(int value) {
+        return new IntModificationParameter(0, value, false);
     }
 }

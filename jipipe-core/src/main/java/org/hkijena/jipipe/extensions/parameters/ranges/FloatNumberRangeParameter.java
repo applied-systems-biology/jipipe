@@ -5,7 +5,7 @@ import com.fasterxml.jackson.annotation.JsonSetter;
 
 public class FloatNumberRangeParameter extends NumberRangeParameter {
 
-    public  FloatNumberRangeParameter() {
+    public FloatNumberRangeParameter() {
         super(0.0f, 1.0f);
     }
 
@@ -18,23 +18,23 @@ public class FloatNumberRangeParameter extends NumberRangeParameter {
     }
 
     @Override
-    public void setMinNumber(Number minNumber) {
-        super.setMinNumber(minNumber.floatValue());
-    }
-
-    @Override
-    public void setMaxNumber(Number maxNumber) {
-        super.setMaxNumber(maxNumber.floatValue());
-    }
-
-    @Override
     public Number getMinNumber() {
         return super.getMinNumber().floatValue();
     }
 
     @Override
+    public void setMinNumber(Number minNumber) {
+        super.setMinNumber(minNumber.floatValue());
+    }
+
+    @Override
     public Number getMaxNumber() {
         return super.getMaxNumber().floatValue();
+    }
+
+    @Override
+    public void setMaxNumber(Number maxNumber) {
+        super.setMaxNumber(maxNumber.floatValue());
     }
 
     @JsonGetter("min")

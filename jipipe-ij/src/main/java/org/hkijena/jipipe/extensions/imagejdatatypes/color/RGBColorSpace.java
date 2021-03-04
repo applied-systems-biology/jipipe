@@ -11,17 +11,16 @@ public class RGBColorSpace implements ColorSpace {
 
     @Override
     public void convert(ImagePlus img, ColorSpace imgSpace, JIPipeProgressInfo progressInfo) {
-        if(imgSpace.getClass() != RGBColorSpace.class) {
+        if (imgSpace.getClass() != RGBColorSpace.class) {
             imgSpace.convertToRGB(img, progressInfo);
         }
     }
 
     @Override
     public int convert(int pixel, ColorSpace imgSpace) {
-        if(imgSpace.getClass() != RGBColorSpace.class) {
+        if (imgSpace.getClass() != RGBColorSpace.class) {
             return imgSpace.convertToRGB(pixel);
-        }
-        else {
+        } else {
             return pixel;
         }
     }

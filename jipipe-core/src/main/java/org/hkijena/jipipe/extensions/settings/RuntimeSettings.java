@@ -48,64 +48,6 @@ public class RuntimeSettings implements JIPipeParameterCollection {
     public RuntimeSettings() {
     }
 
-    public static RuntimeSettings getInstance() {
-        return JIPipe.getSettings().getSettings(ID, RuntimeSettings.class);
-    }
-
-    /**
-     * Generates a temporary directory
-     *
-     * @param baseName optional base name
-     * @return a temporary directory
-     */
-    public static Path generateTempDirectory(String baseName) {
-        if (JIPipe.getInstance() == null || !JIPipe.getInstance().getSettingsRegistry().getRegisteredSheets().containsKey(ID)) {
-            try {
-                return Files.createTempDirectory("JIPipe" + baseName);
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-        }
-        OptionalPathParameter tempDirectory = getInstance().getTempDirectory();
-        if (tempDirectory.isEnabled()) {
-            try {
-                return Files.createTempDirectory(tempDirectory.getContent(), "JIPipe" + baseName);
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-        } else {
-            try {
-                return Files.createTempDirectory("JIPipe" + baseName);
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-        }
-    }
-
-    /**
-     * Generates a temporary directory
-     *
-     * @param prefix prefix
-     * @param suffix suffix
-     * @return a temporary directory
-     */
-    public static Path generateTempFile(String prefix, String suffix) {
-        OptionalPathParameter tempDirectory = getInstance().getTempDirectory();
-        if (tempDirectory.isEnabled()) {
-            try {
-                return Files.createTempFile(tempDirectory.getContent(), "JIPipe" + prefix, suffix);
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-        } else {
-            try {
-                return Files.createTempFile("JIPipe" + prefix, suffix);
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-        }
-    }
-
     @Override
     public EventBus getEventBus() {
         return eventBus;
@@ -225,5 +167,63 @@ public class RuntimeSettings implements JIPipeParameterCollection {
     @JIPipeParameter("log-limit")
     public void setLogLimit(int logLimit) {
         this.logLimit = logLimit;
+    }
+
+    public static RuntimeSettings getInstance() {
+        return JIPipe.getSettings().getSettings(ID, RuntimeSettings.class);
+    }
+
+    /**
+     * Generates a temporary directory
+     *
+     * @param baseName optional base name
+     * @return a temporary directory
+     */
+    public static Path generateTempDirectory(String baseName) {
+        if (JIPipe.getInstance() == null || !JIPipe.getInstance().getSettingsRegistry().getRegisteredSheets().containsKey(ID)) {
+            try {
+                return Files.createTempDirectory("JIPipe" + baseName);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
+        OptionalPathParameter tempDirectory = getInstance().getTempDirectory();
+        if (tempDirectory.isEnabled()) {
+            try {
+                return Files.createTempDirectory(tempDirectory.getContent(), "JIPipe" + baseName);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        } else {
+            try {
+                return Files.createTempDirectory("JIPipe" + baseName);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
+    }
+
+    /**
+     * Generates a temporary directory
+     *
+     * @param prefix prefix
+     * @param suffix suffix
+     * @return a temporary directory
+     */
+    public static Path generateTempFile(String prefix, String suffix) {
+        OptionalPathParameter tempDirectory = getInstance().getTempDirectory();
+        if (tempDirectory.isEnabled()) {
+            try {
+                return Files.createTempFile(tempDirectory.getContent(), "JIPipe" + prefix, suffix);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        } else {
+            try {
+                return Files.createTempFile("JIPipe" + prefix, suffix);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
     }
 }

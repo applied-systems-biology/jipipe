@@ -246,7 +246,7 @@ public class JIPipeAlgorithmSourceFinderAlgorithmUI extends JPanel {
      */
     @Subscribe
     public void onAlgorithmSlotsChanged(JIPipeGraph.NodeSlotsChangedEvent event) {
-        if(!isDisplayable())
+        if (!isDisplayable())
             return;
         reloadSlotUI();
     }
@@ -258,7 +258,7 @@ public class JIPipeAlgorithmSourceFinderAlgorithmUI extends JPanel {
      */
     @Subscribe
     public void onAlgorithmFinderSuccess(AlgorithmFinderSuccessEvent event) {
-        if(!isDisplayable())
+        if (!isDisplayable())
             return;
         eventBus.post(event);
     }

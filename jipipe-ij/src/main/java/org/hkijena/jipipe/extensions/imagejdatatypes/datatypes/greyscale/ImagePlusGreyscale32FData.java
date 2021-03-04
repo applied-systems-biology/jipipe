@@ -68,6 +68,7 @@ public class ImagePlusGreyscale32FData extends ImagePlusGreyscaleData {
 
     /**
      * Converts the incoming image data into the current format.
+     *
      * @param data the data
      * @return the converted data
      */

@@ -18,23 +18,23 @@ public class IntNumberRangeParameter extends NumberRangeParameter {
     }
 
     @Override
-    public void setMinNumber(Number minNumber) {
-        super.setMinNumber(minNumber.intValue());
-    }
-
-    @Override
-    public void setMaxNumber(Number maxNumber) {
-        super.setMaxNumber(maxNumber.intValue());
-    }
-
-    @Override
     public Number getMinNumber() {
         return super.getMinNumber().intValue();
     }
 
     @Override
+    public void setMinNumber(Number minNumber) {
+        super.setMinNumber(minNumber.intValue());
+    }
+
+    @Override
     public Number getMaxNumber() {
         return super.getMaxNumber().intValue();
+    }
+
+    @Override
+    public void setMaxNumber(Number maxNumber) {
+        super.setMaxNumber(maxNumber.intValue());
     }
 
     @JsonGetter("min")

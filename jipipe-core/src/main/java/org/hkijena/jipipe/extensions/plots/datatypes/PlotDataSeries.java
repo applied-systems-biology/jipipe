@@ -67,10 +67,6 @@ public class PlotDataSeries extends ResultsTableData implements JIPipeParameterC
         this.name = other.name;
     }
 
-    public static PlotDataSeries importFrom(Path storageFolder) {
-        return new PlotDataSeries(ResultsTableData.importFrom(storageFolder).getTable());
-    }
-
     /**
      * Gets a copy of a column by name
      *
@@ -118,6 +114,10 @@ public class PlotDataSeries extends ResultsTableData implements JIPipeParameterC
     @Override
     public String toString() {
         return getName() + " (" + getTable().getCounter() + " rows)";
+    }
+
+    public static PlotDataSeries importFrom(Path storageFolder) {
+        return new PlotDataSeries(ResultsTableData.importFrom(storageFolder).getTable());
     }
 
     public static class Serializer extends JsonSerializer<PlotDataSeries> {

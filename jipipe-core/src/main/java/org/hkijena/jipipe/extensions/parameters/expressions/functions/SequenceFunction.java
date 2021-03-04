@@ -17,14 +17,12 @@ public class SequenceFunction extends ExpressionFunction {
 
     @Override
     public ParameterInfo getParameterInfo(int index) {
-        if(index == 0) {
+        if (index == 0) {
             return new ParameterInfo("First limit", "If only the first limit is provided, the sequence is generated as [0, First limit). " +
                     "Otherwise, the sequence is generated as [First limit, Second limit)");
-        }
-        else if(index == 1) {
+        } else if (index == 1) {
             return new ParameterInfo("Second limit", "Upper limit of the sequence. Not inclusive.");
-        }
-        else {
+        } else {
             return new ParameterInfo("Step", "The distance between two consecutive sequence items.");
         }
     }
@@ -34,46 +32,43 @@ public class SequenceFunction extends ExpressionFunction {
         double start;
         double end;
         double step;
-        if(parameters.size() == 1) {
+        if (parameters.size() == 1) {
             start = 0;
-            end = ((Number)parameters.get(0)).doubleValue();
+            end = ((Number) parameters.get(0)).doubleValue();
             step = 1;
-        }
-        else if(parameters.size() == 2) {
-            start = ((Number)parameters.get(0)).doubleValue();
-            end = ((Number)parameters.get(1)).doubleValue();
+        } else if (parameters.size() == 2) {
+            start = ((Number) parameters.get(0)).doubleValue();
+            end = ((Number) parameters.get(1)).doubleValue();
             step = 1;
-        }
-        else {
-            start = ((Number)parameters.get(0)).doubleValue();
-            end = ((Number)parameters.get(1)).doubleValue();
-            step = ((Number)parameters.get(2)).doubleValue();
+        } else {
+            start = ((Number) parameters.get(0)).doubleValue();
+            end = ((Number) parameters.get(1)).doubleValue();
+            step = ((Number) parameters.get(2)).doubleValue();
         }
 
-        if(step == 0) {
+        if (step == 0) {
             throw new UnsupportedOperationException("Step variable is zero!");
         }
 
         List<Double> result = new ArrayList<>();
-        if(start < end) {
-            if(step < 0)
+        if (start < end) {
+            if (step < 0)
                 step = -step;
             double current = start;
             do {
                 result.add(current);
                 current += step;
             }
-            while(current < end);
-        }
-        else {
-            if(step > 0)
+            while (current < end);
+        } else {
+            if (step > 0)
                 step = -step;
             double current = start;
             do {
                 result.add(current);
                 current += step;
             }
-            while(current > end);
+            while (current > end);
         }
         return result;
     }

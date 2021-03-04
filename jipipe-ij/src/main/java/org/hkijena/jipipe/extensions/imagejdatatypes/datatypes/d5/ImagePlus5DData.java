@@ -73,6 +73,7 @@ public class ImagePlus5DData extends ImagePlusData {
 
     /**
      * Converts the incoming image data into the current format.
+     *
      * @param data the data
      * @return the converted data
      */

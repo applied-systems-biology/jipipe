@@ -43,10 +43,6 @@ public class GeneralUISettings implements JIPipeParameterCollection {
     private boolean allowDefaultCollapsedParameters = true;
     private JIPipeUITheme theme = JIPipeUITheme.ModernLight;
 
-    public static GeneralUISettings getInstance() {
-        return JIPipe.getSettings().getSettings(ID, GeneralUISettings.class);
-    }
-
     @Override
     public EventBus getEventBus() {
         return eventBus;
@@ -199,5 +195,9 @@ public class GeneralUISettings implements JIPipeParameterCollection {
     @JIPipeParameter("allow-default-collapsed-parameters")
     public void setAllowDefaultCollapsedParameters(boolean allowDefaultCollapsedParameters) {
         this.allowDefaultCollapsedParameters = allowDefaultCollapsedParameters;
+    }
+
+    public static GeneralUISettings getInstance() {
+        return JIPipe.getSettings().getSettings(ID, GeneralUISettings.class);
     }
 }

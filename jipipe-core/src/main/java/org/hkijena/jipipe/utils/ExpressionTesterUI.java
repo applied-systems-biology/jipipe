@@ -15,7 +15,6 @@ package org.hkijena.jipipe.utils;
 
 import com.fathzer.soft.javaluator.Function;
 import com.fathzer.soft.javaluator.Operator;
-import org.hkijena.jipipe.extensions.parameters.expressions.ExpressionParameters;
 import com.google.common.html.HtmlEscapers;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.parameters.JIPipeDummyParameterCollection;

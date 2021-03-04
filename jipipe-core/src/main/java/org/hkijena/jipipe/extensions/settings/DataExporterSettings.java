@@ -26,10 +26,6 @@ import java.util.Map;
 public class DataExporterSettings extends JIPipeDataByMetadataExporter {
     public static final String ID = "data-exporter";
 
-    public static DataExporterSettings getInstance() {
-        return JIPipe.getSettings().getSettings(ID, DataExporterSettings.class);
-    }
-
     /**
      * Copies parameters into the settings storage
      *
@@ -41,5 +37,9 @@ public class DataExporterSettings extends JIPipeDataByMetadataExporter {
         for (Map.Entry<String, JIPipeParameterAccess> entry : source.getParameters().entrySet()) {
             target.getParameters().get(entry.getKey()).set(entry.getValue().get(Object.class));
         }
+    }
+
+    public static DataExporterSettings getInstance() {
+        return JIPipe.getSettings().getSettings(ID, DataExporterSettings.class);
     }
 }

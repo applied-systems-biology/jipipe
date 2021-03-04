@@ -53,6 +53,7 @@ public class ImagePlusFFT3DData extends ImagePlusFFT2DData {
 
     /**
      * Converts the incoming image data into the current format.
+     *
      * @param data the data
      * @return the converted data
      */

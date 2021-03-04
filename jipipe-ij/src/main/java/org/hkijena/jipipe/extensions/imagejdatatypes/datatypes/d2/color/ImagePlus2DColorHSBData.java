@@ -22,8 +22,6 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.color.HSBColorSpace;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.color.ColoredImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.color.ImagePlusColorHSBData;
-import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.color.ImagePlusColorRGBData;
-import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d2.ImagePlus2DData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 
 import java.awt.*;
@@ -59,17 +57,18 @@ public class ImagePlus2DColorHSBData extends ImagePlus2DColorData implements Col
         return COLOR_SPACE;
     }
 
-    public static ImagePlusData importFrom(Path storageFolder) {
-        return new ImagePlus2DColorHSBData(ImagePlusData.importImagePlusFrom(storageFolder));
-    }
-
     @Override
     public Component preview(int width, int height) {
         return ImageJUtils.generatePreview(this.getImage(), getColorSpace(), width, height);
     }
 
+    public static ImagePlusData importFrom(Path storageFolder) {
+        return new ImagePlus2DColorHSBData(ImagePlusData.importImagePlusFrom(storageFolder));
+    }
+
     /**
      * Converts the incoming image data into the current format.
+     *
      * @param data the data
      * @return the converted data
      */

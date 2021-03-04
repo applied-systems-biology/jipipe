@@ -15,20 +15,16 @@ package org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.color;
 
 import ij.ImagePlus;
 import ij.process.ImageConverter;
-import ij.process.ImageProcessor;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeHeavyData;
 import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.extensions.imagejdatatypes.color.ColorSpace;
 import org.hkijena.jipipe.extensions.imagejdatatypes.color.LABColorSpace;
-import org.hkijena.jipipe.extensions.imagejdatatypes.color.RGBColorSpace;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 
-import javax.swing.*;
 import java.awt.*;
-import java.awt.image.BufferedImage;
 import java.nio.file.Path;
 
 /**
@@ -64,6 +60,11 @@ public class ImagePlusColorLABData extends ImagePlusColorData implements Colored
         return COLOR_SPACE;
     }
 
+    @Override
+    public Component preview(int width, int height) {
+        return ImageJUtils.generatePreview(this.getImage(), getColorSpace(), width, height);
+    }
+
     /**
      * Converts an {@link ImagePlus} to the color space of this data.
      * Does not guarantee that the input image is copied.
@@ -90,6 +91,7 @@ public class ImagePlusColorLABData extends ImagePlusColorData implements Colored
 
     /**
      * Converts the incoming image data into the current format.
+     *
      * @param data the data
      * @return the converted data
      */
@@ -98,19 +100,12 @@ public class ImagePlusColorLABData extends ImagePlusColorData implements Colored
         if (image.getType() != ImagePlus.COLOR_RGB) {
             // Standard method: Greyscale -> RGB
             return new ImagePlusColorLABData(data.getImage());
-        }
-        else if(data instanceof ColoredImagePlusData) {
+        } else if (data instanceof ColoredImagePlusData) {
             ImagePlus copy = data.getDuplicateImage();
             COLOR_SPACE.convert(copy, ((ColoredImagePlusData) data).getColorSpace(), new JIPipeProgressInfo());
             return new ImagePlusColorLABData(copy);
-        }
-        else {
+        } else {
             return new ImagePlusColorLABData(data.getImage());
         }
-    }
-
-    @Override
-    public Component preview(int width, int height) {
-        return ImageJUtils.generatePreview(this.getImage(), getColorSpace(), width, height);
     }
 }

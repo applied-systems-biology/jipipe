@@ -33,6 +33,43 @@ public class CLIJSettings implements JIPipeParameterCollection {
         contrastEnhancer = new DisplayRangeCalibrationAlgorithm(new JIPipeJavaNodeInfo("", DisplayRangeCalibrationAlgorithm.class));
     }
 
+    @Override
+    public EventBus getEventBus() {
+        return eventBus;
+    }
+
+    @JIPipeDocumentation(name = "Graphics card device", description = "Relevant if you have multiple graphics cards available. " +
+            "The first device is zero. " +
+            "This determines which graphics card should be used. Changing this setting might require a ImageJ restart to take effect.")
+    @JIPipeParameter("device")
+    public int getDevice() {
+        return device;
+    }
+
+    @JIPipeParameter("device")
+    public void setDevice(int device) {
+        this.device = device;
+    }
+
+    @JIPipeDocumentation(name = "Auto-calibrate images", description = "Apply auto-calibration after extracting an image from the GPU. " +
+            "This is helpful if you see only black or white output images. Calibration does not modify the contained data, but only " +
+            "how the image is displayed in ImageJ.")
+    @JIPipeParameter("auto-calibrate-after-pull")
+    public boolean isAutoCalibrateAfterPulling() {
+        return autoCalibrateAfterPulling;
+    }
+
+    @JIPipeParameter("auto-calibrate-after-pull")
+    public void setAutoCalibrateAfterPulling(boolean autoCalibrateAfterPulling) {
+        this.autoCalibrateAfterPulling = autoCalibrateAfterPulling;
+    }
+
+    @JIPipeDocumentation(name = "Calibration settings", description = "Following settings will be used if you enable auto-calibration:")
+    @JIPipeParameter(value = "contrast-enhancer", uiExcludeSubParameters = {"jipipe:data-batch-generation", "jipipe:parameter-slot-algorithm", "duplicate-image"})
+    public DisplayRangeCalibrationAlgorithm getContrastEnhancer() {
+        return contrastEnhancer;
+    }
+
     public static CLIJSettings getInstance() {
         return JIPipe.getSettings().getSettings(ID, CLIJSettings.class);
     }
@@ -87,42 +124,5 @@ public class CLIJSettings implements JIPipeParameterCollection {
         }
 
         getInstance().initialized = true;
-    }
-
-    @Override
-    public EventBus getEventBus() {
-        return eventBus;
-    }
-
-    @JIPipeDocumentation(name = "Graphics card device", description = "Relevant if you have multiple graphics cards available. " +
-            "The first device is zero. " +
-            "This determines which graphics card should be used. Changing this setting might require a ImageJ restart to take effect.")
-    @JIPipeParameter("device")
-    public int getDevice() {
-        return device;
-    }
-
-    @JIPipeParameter("device")
-    public void setDevice(int device) {
-        this.device = device;
-    }
-
-    @JIPipeDocumentation(name = "Auto-calibrate images", description = "Apply auto-calibration after extracting an image from the GPU. " +
-            "This is helpful if you see only black or white output images. Calibration does not modify the contained data, but only " +
-            "how the image is displayed in ImageJ.")
-    @JIPipeParameter("auto-calibrate-after-pull")
-    public boolean isAutoCalibrateAfterPulling() {
-        return autoCalibrateAfterPulling;
-    }
-
-    @JIPipeParameter("auto-calibrate-after-pull")
-    public void setAutoCalibrateAfterPulling(boolean autoCalibrateAfterPulling) {
-        this.autoCalibrateAfterPulling = autoCalibrateAfterPulling;
-    }
-
-    @JIPipeDocumentation(name = "Calibration settings", description = "Following settings will be used if you enable auto-calibration:")
-    @JIPipeParameter(value = "contrast-enhancer", uiExcludeSubParameters = {"jipipe:data-batch-generation", "jipipe:parameter-slot-algorithm", "duplicate-image"})
-    public DisplayRangeCalibrationAlgorithm getContrastEnhancer() {
-        return contrastEnhancer;
     }
 }

@@ -9,22 +9,25 @@ import org.hkijena.jipipe.api.JIPipeProgressInfo;
 public interface ColorSpace {
     /**
      * Converts the color image into RGB (in-place)
-     * @param img the image
-     * @param progressInfo  the progress info
+     *
+     * @param img          the image
+     * @param progressInfo the progress info
      */
     void convertToRGB(ImagePlus img, JIPipeProgressInfo progressInfo);
 
     /**
      * Converts the image into the current color space
-     * @param img the image
-     * @param imgSpace the color space of the image
+     *
+     * @param img          the image
+     * @param imgSpace     the color space of the image
      * @param progressInfo the progress
      */
     void convert(ImagePlus img, ColorSpace imgSpace, JIPipeProgressInfo progressInfo);
 
     /**
      * Converts a single pixel from its source image space into this one
-     * @param pixel the pixel (24 bit)
+     *
+     * @param pixel    the pixel (24 bit)
      * @param imgSpace the pixel image space
      * @return the converted pixel
      */
@@ -32,6 +35,7 @@ public interface ColorSpace {
 
     /**
      * Converts a single pixel from its source image space into RGB
+     *
      * @param pixel the pixel (24 bit)
      * @return the converted pixel (in RGB)
      */

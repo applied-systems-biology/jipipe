@@ -45,13 +45,12 @@ public class JIPipeCachedDataDisplayCacheControl extends JIPipeProjectWorkbenchP
     }
 
     private void updateRunnerQueueStatus() {
-        if(JIPipeRunnerQueue.getInstance().isEmpty()) {
+        if (JIPipeRunnerQueue.getInstance().isEmpty()) {
             updateCacheButton.setVisible(true);
             runnerQueue.setVisible(false);
             revalidate();
             repaint();
-        }
-        else {
+        } else {
             updateCacheButton.setVisible(false);
             runnerQueue.setVisible(true);
             revalidate();

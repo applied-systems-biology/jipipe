@@ -22,11 +22,6 @@ import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.extensions.imagejdatatypes.color.ColorSpace;
 import org.hkijena.jipipe.extensions.imagejdatatypes.color.RGBColorSpace;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
-import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d2.color.ImagePlus2DColorHSBData;
-import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d3.color.ImagePlus3DColorHSBData;
-import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d4.color.ImagePlus4DColorHSBData;
-import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d5.color.ImagePlus5DColorHSBData;
-import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 
 import java.nio.file.Path;
 
@@ -88,6 +83,7 @@ public class ImagePlusColorRGBData extends ImagePlusColorData implements Colored
 
     /**
      * Converts the incoming image data into the current format.
+     *
      * @param data the data
      * @return the converted data
      */
@@ -96,13 +92,11 @@ public class ImagePlusColorRGBData extends ImagePlusColorData implements Colored
         if (image.getType() != ImagePlus.COLOR_RGB) {
             // Standard method: Greyscale -> RGB
             return new ImagePlusColorRGBData(data.getImage());
-        }
-        else if(data instanceof ColoredImagePlusData) {
+        } else if (data instanceof ColoredImagePlusData) {
             ImagePlus copy = data.getDuplicateImage();
             COLOR_SPACE.convert(copy, ((ColoredImagePlusData) data).getColorSpace(), new JIPipeProgressInfo());
             return new ImagePlusColorRGBData(copy);
-        }
-        else {
+        } else {
             return new ImagePlusColorRGBData(data.getImage());
         }
     }

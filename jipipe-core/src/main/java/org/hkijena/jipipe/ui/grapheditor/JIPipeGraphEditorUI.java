@@ -93,86 +93,6 @@ public abstract class JIPipeGraphEditorUI extends JIPipeWorkbenchPanel implement
         SwingUtilities.invokeLater(canvasUI::crop);
     }
 
-    private static int[] rankNavigationEntry(Object value, String[] searchStrings) {
-        if (searchStrings == null || searchStrings.length == 0)
-            return new int[0];
-        String nameHayStack;
-        String descriptionHayStack;
-        if (value instanceof JIPipeNodeUI) {
-            JIPipeGraphNode node = ((JIPipeNodeUI) value).getNode();
-            nameHayStack = node.getName();
-            descriptionHayStack = StringUtils.orElse(node.getCustomDescription().getBody(), node.getInfo().getDescription().getBody());
-        } else if (value instanceof JIPipeNodeInfo) {
-            JIPipeNodeInfo info = (JIPipeNodeInfo) value;
-            if (info.isHidden())
-                return null;
-            nameHayStack = StringUtils.orElse(info.getName(), "").toLowerCase();
-            descriptionHayStack = StringUtils.orElse(info.getDescription().getBody(), "").toLowerCase();
-        } else {
-            return null;
-        }
-
-        nameHayStack = nameHayStack.toLowerCase();
-        descriptionHayStack = descriptionHayStack.toLowerCase();
-
-        int[] ranks = new int[2];
-
-        for (String string : searchStrings) {
-            if (nameHayStack.contains(string.toLowerCase()))
-                --ranks[0];
-            if (descriptionHayStack.contains(string.toLowerCase()))
-                --ranks[1];
-        }
-
-        if (ranks[0] == 0 && ranks[1] == 0)
-            return null;
-
-        return ranks;
-    }
-
-    public static void installContextActionsInto(JToolBar toolBar, Set<JIPipeNodeUI> selection, List<NodeUIContextAction> actionList, JIPipeGraphCanvasUI canvasUI) {
-        JPopupMenu overhang = new JPopupMenu();
-        boolean scheduledSeparator = false;
-        for (NodeUIContextAction action : actionList) {
-            if (action == null) {
-                scheduledSeparator = true;
-                continue;
-            }
-            boolean matches = action.matches(selection);
-            if (!matches && !action.disableOnNonMatch())
-                continue;
-            if (!action.isShowingInOverhang()) {
-                if (scheduledSeparator)
-                    toolBar.add(Box.createHorizontalStrut(4));
-                JButton button = new JButton(action.getIcon());
-                UIUtils.makeFlat25x25(button);
-                button.setToolTipText("<html><strong>" + action.getName() + "</strong><br/>" + action.getDescription() + "</html>");
-                if (matches)
-                    button.addActionListener(e -> action.run(canvasUI, ImmutableSet.copyOf(selection)));
-                else
-                    button.setEnabled(false);
-                toolBar.add(button);
-            } else {
-                JMenuItem item = new JMenuItem(action.getName(), action.getIcon());
-                item.setToolTipText(action.getDescription());
-                if (matches)
-                    item.addActionListener(e -> action.run(canvasUI, ImmutableSet.copyOf(selection)));
-                else
-                    item.setEnabled(false);
-                overhang.add(item);
-            }
-        }
-
-        if (overhang.getComponentCount() > 0) {
-            toolBar.add(Box.createHorizontalStrut(4));
-            JButton button = new JButton("...");
-            UIUtils.makeFlat25x25(button);
-            button.setToolTipText("More actions ...");
-            UIUtils.addPopupMenuToComponent(button, overhang);
-            toolBar.add(button);
-        }
-    }
-
     private void initializeHotkeys() {
         KeyboardFocusManager focusManager = KeyboardFocusManager.getCurrentKeyboardFocusManager();
         focusManager.addKeyEventDispatcher(e -> {
@@ -765,6 +685,86 @@ public abstract class JIPipeGraphEditorUI extends JIPipeWorkbenchPanel implement
             model.addElement(info);
         }
         navigator.setModel(model);
+    }
+
+    private static int[] rankNavigationEntry(Object value, String[] searchStrings) {
+        if (searchStrings == null || searchStrings.length == 0)
+            return new int[0];
+        String nameHayStack;
+        String descriptionHayStack;
+        if (value instanceof JIPipeNodeUI) {
+            JIPipeGraphNode node = ((JIPipeNodeUI) value).getNode();
+            nameHayStack = node.getName();
+            descriptionHayStack = StringUtils.orElse(node.getCustomDescription().getBody(), node.getInfo().getDescription().getBody());
+        } else if (value instanceof JIPipeNodeInfo) {
+            JIPipeNodeInfo info = (JIPipeNodeInfo) value;
+            if (info.isHidden())
+                return null;
+            nameHayStack = StringUtils.orElse(info.getName(), "").toLowerCase();
+            descriptionHayStack = StringUtils.orElse(info.getDescription().getBody(), "").toLowerCase();
+        } else {
+            return null;
+        }
+
+        nameHayStack = nameHayStack.toLowerCase();
+        descriptionHayStack = descriptionHayStack.toLowerCase();
+
+        int[] ranks = new int[2];
+
+        for (String string : searchStrings) {
+            if (nameHayStack.contains(string.toLowerCase()))
+                --ranks[0];
+            if (descriptionHayStack.contains(string.toLowerCase()))
+                --ranks[1];
+        }
+
+        if (ranks[0] == 0 && ranks[1] == 0)
+            return null;
+
+        return ranks;
+    }
+
+    public static void installContextActionsInto(JToolBar toolBar, Set<JIPipeNodeUI> selection, List<NodeUIContextAction> actionList, JIPipeGraphCanvasUI canvasUI) {
+        JPopupMenu overhang = new JPopupMenu();
+        boolean scheduledSeparator = false;
+        for (NodeUIContextAction action : actionList) {
+            if (action == null) {
+                scheduledSeparator = true;
+                continue;
+            }
+            boolean matches = action.matches(selection);
+            if (!matches && !action.disableOnNonMatch())
+                continue;
+            if (!action.isShowingInOverhang()) {
+                if (scheduledSeparator)
+                    toolBar.add(Box.createHorizontalStrut(4));
+                JButton button = new JButton(action.getIcon());
+                UIUtils.makeFlat25x25(button);
+                button.setToolTipText("<html><strong>" + action.getName() + "</strong><br/>" + action.getDescription() + "</html>");
+                if (matches)
+                    button.addActionListener(e -> action.run(canvasUI, ImmutableSet.copyOf(selection)));
+                else
+                    button.setEnabled(false);
+                toolBar.add(button);
+            } else {
+                JMenuItem item = new JMenuItem(action.getName(), action.getIcon());
+                item.setToolTipText(action.getDescription());
+                if (matches)
+                    item.addActionListener(e -> action.run(canvasUI, ImmutableSet.copyOf(selection)));
+                else
+                    item.setEnabled(false);
+                overhang.add(item);
+            }
+        }
+
+        if (overhang.getComponentCount() > 0) {
+            toolBar.add(Box.createHorizontalStrut(4));
+            JButton button = new JButton("...");
+            UIUtils.makeFlat25x25(button);
+            button.setToolTipText("More actions ...");
+            UIUtils.addPopupMenuToComponent(button, overhang);
+            toolBar.add(button);
+        }
     }
 
     /**

@@ -1,9 +1,9 @@
 package org.hkijena.jipipe.extensions.parameters.expressions.functions;
 
-import org.hkijena.jipipe.extensions.parameters.expressions.ExpressionParameters;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.extensions.parameters.expressions.DefaultExpressionEvaluator;
 import org.hkijena.jipipe.extensions.parameters.expressions.ExpressionFunction;
+import org.hkijena.jipipe.extensions.parameters.expressions.ExpressionParameters;
 import org.hkijena.jipipe.extensions.parameters.expressions.ParameterInfo;
 
 import java.util.ArrayList;
@@ -18,10 +18,9 @@ public class CopyNFunction extends ExpressionFunction {
 
     @Override
     public ParameterInfo getParameterInfo(int index) {
-        if(index == 0) {
+        if (index == 0) {
             return new ParameterInfo("Object", "The object to be copied");
-        }
-        else {
+        } else {
             return new ParameterInfo("Copies", "Number of copies to make", Number.class);
         }
     }
@@ -29,15 +28,15 @@ public class CopyNFunction extends ExpressionFunction {
     @Override
     public Object evaluate(List<Object> parameters, ExpressionParameters variables) {
         Object source = parameters.get(0);
-        int n = ((Number)parameters.get(1)).intValue();
+        int n = ((Number) parameters.get(1)).intValue();
 
-        if(n <= 0)
+        if (n <= 0)
             return null;
-        if(n == 1)
+        if (n == 1)
             return source;
         List<Object> result = new ArrayList<>();
         for (int i = 0; i < n; i++) {
-           result.add(DefaultExpressionEvaluator.deepCopyObject(source));
+            result.add(DefaultExpressionEvaluator.deepCopyObject(source));
         }
         return result;
     }

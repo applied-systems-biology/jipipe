@@ -3,10 +3,8 @@ package org.hkijena.jipipe.extensions.imagejdatatypes.algorithms.color;
 import ij.ImagePlus;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeDefaultMutableSlotConfiguration;
-import org.hkijena.jipipe.api.data.JIPipeSlotConfiguration;
 import org.hkijena.jipipe.api.nodes.JIPipeDataBatch;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.JIPipeSimpleIteratingAlgorithm;
@@ -24,10 +22,10 @@ public abstract class ColorSpaceConverterAlgorithm extends JIPipeSimpleIterating
 
     public ColorSpaceConverterAlgorithm(JIPipeNodeInfo info, Class<? extends ColoredImagePlusData> outputDataType) {
         super(info, JIPipeDefaultMutableSlotConfiguration.builder()
-        .addInputSlot("Input", ImagePlusData.class)
-        .addOutputSlot("Output", outputDataType, null)
-        .seal()
-        .build());
+                .addInputSlot("Input", ImagePlusData.class)
+                .addOutputSlot("Output", outputDataType, null)
+                .seal()
+                .build());
         this.outputDataType = outputDataType;
         try {
             this.outputColorSpace = (ColorSpace) outputDataType.getDeclaredField("COLOR_SPACE").get(null);
@@ -58,7 +56,7 @@ public abstract class ColorSpaceConverterAlgorithm extends JIPipeSimpleIterating
     protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
         ImagePlusData input = dataBatch.getInputData(getFirstInputSlot(), ImagePlusData.class, progressInfo);
         ImagePlus image = input.getImage();
-        if(image.getType() != ImagePlus.COLOR_RGB || reinterpret) {
+        if (image.getType() != ImagePlus.COLOR_RGB || reinterpret) {
             // Convert to RGB via native method or reinterpretation method
             ImagePlusData outputData = (ImagePlusData) JIPipe.createData(outputDataType, image);
             dataBatch.addOutputData(getFirstOutputSlot(), outputData, progressInfo);
@@ -67,10 +65,9 @@ public abstract class ColorSpaceConverterAlgorithm extends JIPipeSimpleIterating
 
         ColorSpace inputColorSpace;
 
-        if(input instanceof ColoredImagePlusData) {
+        if (input instanceof ColoredImagePlusData) {
             inputColorSpace = ((ColoredImagePlusData) input).getColorSpace();
-        }
-        else {
+        } else {
             // Fallback to RGB (default)
             inputColorSpace = new RGBColorSpace();
         }

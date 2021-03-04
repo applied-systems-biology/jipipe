@@ -18,12 +18,12 @@ public class NumberRangeParameter {
         return minNumber;
     }
 
-    public Number getMaxNumber() {
-        return maxNumber;
-    }
-
     public void setMinNumber(Number minNumber) {
         this.minNumber = minNumber;
+    }
+
+    public Number getMaxNumber() {
+        return maxNumber;
     }
 
     public void setMaxNumber(Number maxNumber) {

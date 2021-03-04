@@ -67,18 +67,6 @@ public class JIPipeDatatypeRegistry {
     }
 
     /**
-     * Returns true if the input data type can be trivially converted into the output data type.
-     * A trivial conversion is applied when the input data is the same as the output data type or inherits from it.
-     *
-     * @param inputDataType  the input data type
-     * @param outputDataType the output data type
-     * @return if the output data type can be assigned from the input data type without any explicit conversion rules
-     */
-    public static boolean isTriviallyConvertible(Class<? extends JIPipeData> inputDataType, Class<? extends JIPipeData> outputDataType) {
-        return outputDataType.isAssignableFrom(inputDataType);
-    }
-
-    /**
      * Registers a data converter that allows implicit conversion between data types
      *
      * @param converter the converter
@@ -475,6 +463,18 @@ public class JIPipeDatatypeRegistry {
      */
     public URL getIconURLFor(JIPipeDataInfo info) {
         return getIconURLFor(info.getDataClass());
+    }
+
+    /**
+     * Returns true if the input data type can be trivially converted into the output data type.
+     * A trivial conversion is applied when the input data is the same as the output data type or inherits from it.
+     *
+     * @param inputDataType  the input data type
+     * @param outputDataType the output data type
+     * @return if the output data type can be assigned from the input data type without any explicit conversion rules
+     */
+    public static boolean isTriviallyConvertible(Class<? extends JIPipeData> inputDataType, Class<? extends JIPipeData> outputDataType) {
+        return outputDataType.isAssignableFrom(inputDataType);
     }
 
     /**
