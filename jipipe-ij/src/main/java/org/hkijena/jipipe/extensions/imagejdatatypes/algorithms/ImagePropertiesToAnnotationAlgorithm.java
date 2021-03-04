@@ -24,6 +24,7 @@ import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.AnnotationsNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
+import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.color.ColoredImagePlusData;
 import org.hkijena.jipipe.extensions.parameters.primitives.OptionalAnnotationNameParameter;
 
 import java.util.ArrayList;
@@ -47,6 +48,7 @@ public class ImagePropertiesToAnnotationAlgorithm extends JIPipeSimpleIteratingA
     private OptionalAnnotationNameParameter framesSizeAnnotation = new OptionalAnnotationNameParameter();
     private OptionalAnnotationNameParameter imageTypeAnnotation = new OptionalAnnotationNameParameter();
     private OptionalAnnotationNameParameter bitDepthAnnotation = new OptionalAnnotationNameParameter();
+    private OptionalAnnotationNameParameter colorSpaceAnnotation = new OptionalAnnotationNameParameter();
 
     /**
      * Creates a new instance
@@ -64,6 +66,7 @@ public class ImagePropertiesToAnnotationAlgorithm extends JIPipeSimpleIteratingA
         framesSizeAnnotation.setContent("Image frame count");
         imageTypeAnnotation.setContent("Image type");
         bitDepthAnnotation.setContent("Image bit depth");
+        colorSpaceAnnotation.setContent("Color space");
     }
 
     /**
@@ -82,6 +85,7 @@ public class ImagePropertiesToAnnotationAlgorithm extends JIPipeSimpleIteratingA
         this.framesSizeAnnotation = new OptionalAnnotationNameParameter(other.framesSizeAnnotation);
         this.imageTypeAnnotation = new OptionalAnnotationNameParameter(other.imageTypeAnnotation);
         this.bitDepthAnnotation = new OptionalAnnotationNameParameter(other.bitDepthAnnotation);
+        this.colorSpaceAnnotation = new OptionalAnnotationNameParameter(other.colorSpaceAnnotation);
     }
 
     @Override
@@ -105,6 +109,8 @@ public class ImagePropertiesToAnnotationAlgorithm extends JIPipeSimpleIteratingA
             report.forCategory("Annotate with image type").checkNonEmpty(getImageTypeAnnotation().getContent(), this);
         if (getBitDepthAnnotation().isEnabled())
             report.forCategory("Annotate with bit depth").checkNonEmpty(getBitDepthAnnotation().getContent(), this);
+        if (getBitDepthAnnotation().isEnabled())
+            report.forCategory("Annotate with color space").checkNonEmpty(getColorSpaceAnnotation().getContent(), this);
     }
 
     @Override
@@ -159,6 +165,19 @@ public class ImagePropertiesToAnnotationAlgorithm extends JIPipeSimpleIteratingA
         }
         if (getBitDepthAnnotation().isEnabled()) {
             annotations.add(new JIPipeAnnotation(getBitDepthAnnotation().getContent(), "" + inputData.getImage().getBitDepth()));
+        }
+        if (getColorSpaceAnnotation().isEnabled()) {
+            String colorSpace;
+            if(inputData instanceof ColoredImagePlusData) {
+                colorSpace = ((ColoredImagePlusData) inputData).getColorSpace().toString();
+            }
+            else if(inputData.getImage().getType() ==ImagePlus.COLOR_RGB) {
+                colorSpace = "RGB";
+            }
+            else {
+                colorSpace = "Greyscale";
+            }
+            annotations.add(new JIPipeAnnotation(getBitDepthAnnotation().getContent(), colorSpace));
         }
 
         dataBatch.addOutputData(getFirstOutputSlot(), inputData, annotations, JIPipeAnnotationMergeStrategy.Merge, progressInfo);
@@ -271,5 +290,17 @@ public class ImagePropertiesToAnnotationAlgorithm extends JIPipeSimpleIteratingA
     @JIPipeParameter("image-plane-number-annotation")
     public void setPlaneNumberAnnotation(OptionalAnnotationNameParameter planeNumberAnnotation) {
         this.planeNumberAnnotation = planeNumberAnnotation;
+    }
+
+    @JIPipeDocumentation(name = "Annotate with color space", description = "If enabled, the color space is stored in an annotation. If a greyscale image is " +
+            "provided, the color space will be 'Greyscale'.")
+    @JIPipeParameter("color-space-annotation")
+    public OptionalAnnotationNameParameter getColorSpaceAnnotation() {
+        return colorSpaceAnnotation;
+    }
+
+    @JIPipeParameter("color-space-annotation")
+    public void setColorSpaceAnnotation(OptionalAnnotationNameParameter colorSpaceAnnotation) {
+        this.colorSpaceAnnotation = colorSpaceAnnotation;
     }
 }
