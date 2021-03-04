@@ -106,8 +106,6 @@ public class JIPipeTableEditor extends JIPipeWorkbenchPanel {
 
         toolBar.setFloatable(false);
 
-        addLeftToolbarButtons(toolBar);
-
         JButton openButton = new JButton("Open", UIUtils.getIconFromResources("actions/document-open-folder.png"));
         {
             JPopupMenu exportPopup = UIUtils.addPopupMenuToComponent(openButton);
@@ -147,8 +145,6 @@ public class JIPipeTableEditor extends JIPipeWorkbenchPanel {
         JButton createPlotButton = new JButton("Create plot", UIUtils.getIconFromResources("actions/office-chart-line.png"));
         createPlotButton.addActionListener(e -> createNewPlot());
         toolBar.add(createPlotButton);
-
-        addRightToolbarButtons(toolBar);
 
         add(toolBar, BorderLayout.NORTH);
 
@@ -283,14 +279,6 @@ public class JIPipeTableEditor extends JIPipeWorkbenchPanel {
 
     public JToolBar getToolBar() {
         return toolBar;
-    }
-
-    protected void addRightToolbarButtons(JToolBar toolBar) {
-
-    }
-
-    protected void addLeftToolbarButtons(JToolBar toolBar) {
-
     }
 
     private void exportToImageJ() {

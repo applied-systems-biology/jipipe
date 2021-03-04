@@ -33,6 +33,7 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.viewer.plugins.ROIManagerPl
 import org.hkijena.jipipe.extensions.settings.GeneralUISettings;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
+import org.hkijena.jipipe.ui.cache.JIPipeCachedDataDisplayCacheControl;
 import org.hkijena.jipipe.ui.components.AlwaysOnTopToggle;
 import org.hkijena.jipipe.utils.UIUtils;
 
@@ -49,7 +50,7 @@ public class CacheAwareImagePlusDataViewerPanel extends ImageViewerPanel {
     private final String slotName;
     private JIPipeCacheSlotDataSource dataSource;
     private Component errorPanel;
-    private JToggleButton cacheAwareToggle;
+    private JIPipeCachedDataDisplayCacheControl cacheAwareToggle;
     private WeakReference<JIPipeVirtualData> lastVirtualData;
 
     public CacheAwareImagePlusDataViewerPanel(JIPipeWorkbench workbench, JIPipeCacheSlotDataSource dataSource) {
@@ -62,6 +63,7 @@ public class CacheAwareImagePlusDataViewerPanel extends ImageViewerPanel {
         this.dataSource = dataSource;
         this.algorithm = (JIPipeAlgorithm) project.getGraph().getEquivalentAlgorithm(dataSource.getSlot().getNode());
         this.slotName = dataSource.getSlot().getName();
+        this.cacheAwareToggle = new JIPipeCachedDataDisplayCacheControl((JIPipeProjectWorkbench) workbench, algorithm);
         initialize();
         loadImageFromDataSource();
 
@@ -81,14 +83,11 @@ public class CacheAwareImagePlusDataViewerPanel extends ImageViewerPanel {
     }
 
     private void initialize() {
-        cacheAwareToggle.setSelected(true);
-        cacheAwareToggle.addActionListener(e -> {
-            if (cacheAwareToggle.isSelected()) {
-                reloadFromCurrentCache();
-            }
-        });
+        cacheAwareToggle.installRefreshOnActivate(this::reloadFromCurrentCache);
         errorPanel = new JLabel(String.format("No data available in node '%s', slot '%s', row %d", algorithm.getName(), slotName, dataSource.getRow()),
                 UIUtils.getIconFromResources("emblems/no-data.png"), JLabel.LEFT);
+        getToolBar().add(Box.createHorizontalStrut(8), 0);
+        getToolBar().add(cacheAwareToggle, 0);
     }
 
     private void loadImageFromDataSource() {
@@ -101,13 +100,6 @@ public class CacheAwareImagePlusDataViewerPanel extends ImageViewerPanel {
         lastVirtualData = new WeakReference<>(virtualData);
     }
 
-    @Override
-    protected void addLeftToolbarButtons(JToolBar toolBar) {
-        super.addLeftToolbarButtons(toolBar);
-        this.cacheAwareToggle = new JToggleButton("Refresh to cache", UIUtils.getIconFromResources("actions/view-refresh.png"));
-        toolBar.add(cacheAwareToggle);
-    }
-
     @Subscribe
     public void onCacheUpdated(JIPipeProjectCache.ModifiedEvent event) {
         Window window = SwingUtilities.getWindowAncestor(this);
@@ -115,7 +107,7 @@ public class CacheAwareImagePlusDataViewerPanel extends ImageViewerPanel {
             return;
         if (!isDisplayable())
             return;
-        if (!cacheAwareToggle.isSelected())
+        if (!cacheAwareToggle.shouldRefreshToCache())
             return;
         reloadFromCurrentCache();
     }

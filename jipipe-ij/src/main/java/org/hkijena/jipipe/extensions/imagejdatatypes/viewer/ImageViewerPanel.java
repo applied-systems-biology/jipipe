@@ -214,8 +214,6 @@ public class ImageViewerPanel extends JPanel {
         JButton openInImageJButton = new JButton("Open in ImageJ", UIUtils.getIconFromResources("apps/imagej.png"));
         openInImageJButton.addActionListener(e -> openInImageJ());
 
-        addLeftToolbarButtons(toolBar);
-
         toolBar.add(openInImageJButton);
         toolBar.add(Box.createHorizontalStrut(8));
         toolBar.add(imageInfoLabel);
@@ -413,9 +411,6 @@ public class ImageViewerPanel extends JPanel {
         rotation = (rotation + 90) % 360;
         refreshImageInfo();
         refreshSlice();
-    }
-
-    protected void addLeftToolbarButtons(JToolBar toolBar) {
     }
 
     private void updateZoomStatus() {
