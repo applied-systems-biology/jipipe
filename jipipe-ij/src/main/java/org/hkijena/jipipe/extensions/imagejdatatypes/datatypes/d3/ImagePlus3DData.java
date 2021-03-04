@@ -88,6 +88,6 @@ public class ImagePlus3DData extends ImagePlusData {
      * @return the converted data
      */
     public static ImagePlusData convertFrom(ImagePlusData data) {
-        return new ImagePlus3DData(data.getImage());
+        return new ImagePlus3DData(data.getImage(), data.getColorSpace());
     }
 }
