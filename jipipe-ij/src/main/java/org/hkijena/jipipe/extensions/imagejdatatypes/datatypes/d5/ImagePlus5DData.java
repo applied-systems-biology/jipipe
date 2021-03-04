@@ -18,6 +18,7 @@ import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeHeavyData;
 import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
+import org.hkijena.jipipe.extensions.imagejdatatypes.color.ColorSpace;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 
@@ -41,6 +42,15 @@ public class ImagePlus5DData extends ImagePlusData {
      */
     public ImagePlus5DData(ImagePlus image) {
         super(convertIfNeeded(image));
+        checkDimensions(image);
+    }
+
+    public ImagePlus5DData(ImagePlus image, ColorSpace colorSpace) {
+        super(convertIfNeeded(image), colorSpace);
+        checkDimensions(image);
+    }
+
+    private void checkDimensions(ImagePlus image) {
         if (getImage().getNDimensions() > 5) {
             throw new UserFriendlyRuntimeException(new IllegalArgumentException("Trying to fit higher-dimensional data into " + DIMENSIONALITY + "D data!"),
                     "Trying to fit higher-dimensional data into " + DIMENSIONALITY + "D data!",

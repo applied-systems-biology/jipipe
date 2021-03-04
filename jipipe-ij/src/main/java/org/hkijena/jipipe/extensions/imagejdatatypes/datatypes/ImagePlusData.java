@@ -26,6 +26,9 @@ import org.hkijena.jipipe.api.data.JIPipeDataInfo;
 import org.hkijena.jipipe.api.data.JIPipeDataSource;
 import org.hkijena.jipipe.api.exceptions.UserFriendlyNullPointerException;
 import org.hkijena.jipipe.extensions.imagejdatatypes.ImageJDataTypesSettings;
+import org.hkijena.jipipe.extensions.imagejdatatypes.color.ColorSpace;
+import org.hkijena.jipipe.extensions.imagejdatatypes.color.RGBColorSpace;
+import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.color.ColoredImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.display.CacheAwareImagePlusDataViewerPanel;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
@@ -41,7 +44,7 @@ import java.nio.file.Path;
  */
 @JIPipeDocumentation(name = "Image")
 @JIPipeHeavyData
-public class ImagePlusData implements JIPipeData {
+public class ImagePlusData implements JIPipeData, ColoredImagePlusData {
 
     /**
      * The dimensionality of this data.
@@ -50,6 +53,7 @@ public class ImagePlusData implements JIPipeData {
     public static final int DIMENSIONALITY = -1;
 
     private final ImagePlus image;
+    private ColorSpace colorSpace = new RGBColorSpace();
 
     /**
      * @param image wrapped image
@@ -64,6 +68,24 @@ public class ImagePlusData implements JIPipeData {
                             "If you cannot solve the issue, please contact the plugin's author.");
         }
         this.image = image;
+    }
+
+    /**
+     *
+     * @param image the wrapped image
+     * @param colorSpace the color space. please not that it is ignored if the image is greyscale
+     */
+    public ImagePlusData(ImagePlus image, ColorSpace colorSpace) {
+        if (image == null) {
+            throw new UserFriendlyNullPointerException("ImagePlus cannot be null!", "No image provided!",
+                    "Internal JIPipe image type",
+                    "An algorithm tried to pass an empty ImageJ image back to JIPipe. This is not allowed. " +
+                            "Either the algorithm inputs are wrong, or there is an error in the program code.",
+                    "Please check the inputs via the quick run to see if they are satisfying the algorithm's assumptions. " +
+                            "If you cannot solve the issue, please contact the plugin's author.");
+        }
+        this.image = image;
+        this.colorSpace = colorSpace;
     }
 
     public ImagePlus getImage() {
@@ -127,6 +149,11 @@ public class ImagePlusData implements JIPipeData {
         return JIPipeDataInfo.getInstance(getClass()).getName() + " (" + image + ")";
     }
 
+    @Override
+    public ColorSpace getColorSpace() {
+        return colorSpace;
+    }
+
     public static ImagePlus importImagePlusFrom(Path storageFilePath) {
         Path targetFile = PathUtils.findFileByExtensionIn(storageFilePath, ".tif");
         if (targetFile == null) {
@@ -169,7 +196,7 @@ public class ImagePlusData implements JIPipeData {
      * @return the converted data
      */
     public static ImagePlusData convertFrom(ImagePlusData data) {
-        return new ImagePlusData(data.getImage());
+        return new ImagePlusData(data.getImage(), data.getColorSpace());
     }
 
 }

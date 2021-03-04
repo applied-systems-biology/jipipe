@@ -43,7 +43,6 @@ public class ImagePlus4DColorData extends ImagePlus4DData implements ColoredImag
      * -1 means that we do not have information about the dimensionality
      */
     public static final int DIMENSIONALITY = 4;
-    private ColorSpace colorSpace = new RGBColorSpace();
 
     /**
      * @param image wrapped image
@@ -53,13 +52,7 @@ public class ImagePlus4DColorData extends ImagePlus4DData implements ColoredImag
     }
 
     public ImagePlus4DColorData(ImagePlus image, ColorSpace colorSpace) {
-        super(ImagePlus4DColorData.convertIfNeeded(image));
-        this.colorSpace = colorSpace;
-    }
-
-    @Override
-    public ColorSpace getColorSpace() {
-        return colorSpace;
+        super(ImagePlus4DColorData.convertIfNeeded(image), colorSpace);
     }
 
     @Override
@@ -107,10 +100,8 @@ public class ImagePlus4DColorData extends ImagePlus4DData implements ColoredImag
         if (image.getType() != ImagePlus.COLOR_RGB) {
             // This will go through the standard method (greyscale -> RGB -> HSB)
             return new ImagePlus4DColorData(image);
-        } else if (data instanceof ColoredImagePlusData) {
-            return new ImagePlus4DColorData(image, ((ColoredImagePlusData) data).getColorSpace());
         } else {
-            return new ImagePlus4DColorData(image);
+            return new ImagePlus4DColorData(image, ((ColoredImagePlusData) data).getColorSpace());
         }
     }
 }

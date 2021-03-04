@@ -106,10 +106,8 @@ public class ImagePlusColorData extends ImagePlusData implements ColoredImagePlu
         if (image.getType() != ImagePlus.COLOR_RGB) {
             // This will go through the standard method (greyscale -> RGB -> HSB)
             return new ImagePlusColorData(image);
-        } else if (data instanceof ColoredImagePlusData) {
-            return new ImagePlusColorData(image, ((ColoredImagePlusData) data).getColorSpace());
         } else {
-            return new ImagePlusColorData(image);
+            return new ImagePlusColorData(image, ((ColoredImagePlusData) data).getColorSpace());
         }
     }
 }
