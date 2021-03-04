@@ -21,4 +21,19 @@ public interface ColorSpace {
      * @param progressInfo the progress
      */
     void convert(ImagePlus img, ColorSpace imgSpace, JIPipeProgressInfo progressInfo);
+
+    /**
+     * Converts a single pixel from its source image space into this one
+     * @param pixel the pixel (24 bit)
+     * @param imgSpace the pixel image space
+     * @return the converted pixel
+     */
+    int convert(int pixel, ColorSpace imgSpace);
+
+    /**
+     * Converts a single pixel from its source image space into RGB
+     * @param pixel the pixel (24 bit)
+     * @return the converted pixel (in RGB)
+     */
+    int convertToRGB(int pixel);
 }

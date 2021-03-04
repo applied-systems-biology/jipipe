@@ -23,7 +23,7 @@ import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleData;
-import org.hkijena.jipipe.extensions.imagejdatatypes.util.GreyscalePixel2DExpressionParameterVariableSource;
+import org.hkijena.jipipe.extensions.imagejdatatypes.util.GreyscalePixel5DExpressionParameterVariableSource;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.extensions.parameters.expressions.DefaultExpressionParameter;
 import org.hkijena.jipipe.extensions.parameters.expressions.ExpressionParameterSettings;
@@ -31,8 +31,7 @@ import org.hkijena.jipipe.extensions.parameters.expressions.ExpressionParameterS
 /**
  * Wrapper around {@link ij.process.ImageProcessor}
  */
-@JIPipeDocumentation(name = "Math expression", description = "Applies a mathematical operation to each pixel. " +
-        "This node uses JIPipe's expression parameter instead of the functions integrated in ImageJ, which might have a lower performance.")
+@JIPipeDocumentation(name = "Math expression", description = "Applies a mathematical operation to each pixel.")
 @JIPipeOrganization(menuPath = "Math", nodeTypeCategory = ImagesNodeTypeCategory.class)
 @JIPipeInputSlot(value = ImagePlusGreyscaleData.class, slotName = "Input", autoCreate = true)
 @JIPipeOutputSlot(value = ImagePlusGreyscaleData.class, slotName = "Output", autoCreate = true)
@@ -71,10 +70,16 @@ public class ApplyMathExpression2DAlgorithm extends JIPipeSimpleIteratingAlgorit
         ExpressionParameters variableSet = new ExpressionParameters();
         variableSet.set("width", img.getWidth());
         variableSet.set("height", img.getHeight());
-        ImageJUtils.forEachSlice(img, ip -> {
+        variableSet.set("num_z", inputData.getImage().getNSlices());
+        variableSet.set("num_c", inputData.getImage().getNChannels());
+        variableSet.set("num_t", inputData.getImage().getNFrames());
+        ImageJUtils.forEachIndexedZCTSlice(img, (ip, index) -> {
             for (int y = 0; y < ip.getHeight(); y++) {
                 for (int x = 0; x < ip.getWidth(); x++) {
                     double value = ip.getf(x, y);
+                    variableSet.set("z", index.getZ());
+                    variableSet.set("c", index.getC());
+                    variableSet.set("t", index.getT());
                     variableSet.set("x", (double) x);
                     variableSet.set("y", (double) y);
                     variableSet.set("value", value);
@@ -88,7 +93,7 @@ public class ApplyMathExpression2DAlgorithm extends JIPipeSimpleIteratingAlgorit
 
     @JIPipeDocumentation(name = "Function", description = "The function that is applied to each pixel. The expression should return a number.")
     @JIPipeParameter("transformation-function")
-    @ExpressionParameterSettings(variableSource = GreyscalePixel2DExpressionParameterVariableSource.class)
+    @ExpressionParameterSettings(variableSource = GreyscalePixel5DExpressionParameterVariableSource.class)
     public DefaultExpressionParameter getTransformation() {
         return transformation;
     }

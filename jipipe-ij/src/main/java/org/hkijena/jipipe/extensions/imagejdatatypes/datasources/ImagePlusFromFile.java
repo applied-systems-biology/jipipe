@@ -76,7 +76,7 @@ public class ImagePlusFromFile extends JIPipeSimpleIteratingAlgorithm {
      */
     public ImagePlusFromFile(ImagePlusFromFile other) {
         super(other);
-        this.generatedImageType = new JIPipeDataInfoRef(other.generatedImageType);
+        setGeneratedImageType(new JIPipeDataInfoRef(other.generatedImageType));
         this.titleAnnotation = new OptionalAnnotationNameParameter(other.titleAnnotation);
         this.removeLut = other.removeLut;
     }
