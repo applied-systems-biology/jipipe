@@ -82,7 +82,7 @@ public class JsonNodeInfo implements JIPipeNodeInfo, JIPipeValidatable, JIPipePa
      */
     public JsonNodeInfo(NodeGroup group) {
         graph = new JIPipeGraph(group.getWrappedGraph());
-        exportedParameters = new GraphNodeParameters();
+        exportedParameters = new GraphNodeParameters(group.getExportedParameters());
         exportedParameters.setGraph(getGraph());
         graph.getEventBus().register(this);
         category.setValue((new MiscellaneousNodeTypeCategory()).getId());

@@ -49,8 +49,14 @@ public class ExportNodeUIContextAction implements NodeUIContextAction {
 
         JIPipeProjectWorkbench projectWorkbench = (JIPipeProjectWorkbench) canvasUI.getWorkbench();
         JIPipeProject project = projectWorkbench.getProject();
-        JIPipeGraph graph = project.getGraph().extract(algorithms, true);
-        NodeGroup group = new NodeGroup(graph, true);
+        NodeGroup group;
+        if(algorithms.size() > 1 || !(algorithms.iterator().next() instanceof NodeGroup)) {
+            JIPipeGraph graph = project.getGraph().extract(algorithms, true);
+            group = new NodeGroup(graph, true);
+        }
+        else {
+            group =  new NodeGroup((NodeGroup) algorithms.iterator().next());
+        }
         JIPipeJsonExporter exporter = new JIPipeJsonExporter(projectWorkbench, group);
         projectWorkbench.getDocumentTabPane().addTab("Export custom algorithm",
                 UIUtils.getIconFromResources("actions/document-export.png"),
