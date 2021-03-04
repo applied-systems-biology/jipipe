@@ -11,57 +11,54 @@
  * See the LICENSE file provided with the code for the full license.
  */
 
-package org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.color;
+package org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d3.color;
 
 import ij.ImagePlus;
 import ij.process.ImageConverter;
-import ij.process.ImageProcessor;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeHeavyData;
 import org.hkijena.jipipe.api.JIPipeOrganization;
-import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.extensions.imagejdatatypes.color.ColorSpace;
-import org.hkijena.jipipe.extensions.imagejdatatypes.color.LABColorSpace;
 import org.hkijena.jipipe.extensions.imagejdatatypes.color.RGBColorSpace;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
-import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
+import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.color.ColoredImagePlusData;
+import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d2.ImagePlus2DData;
+import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d3.ImagePlus3DData;
 
-import javax.swing.*;
-import java.awt.*;
-import java.awt.image.BufferedImage;
 import java.nio.file.Path;
 
 /**
- * LAB colored image without dimension.
- * These image data types exist to address general processing solely based on bit-depth (e.g. process all 2D image planes).
+ * A colored image without dimension.
+ * It acts as base and intermediate type between colored images. The convertFrom(data) method copies the color space
  * Conversion works through {@link org.hkijena.jipipe.extensions.imagejdatatypes.algorithms.ImplicitImageTypeConverter}
  */
-@JIPipeDocumentation(name = "Image (LAB)")
-@JIPipeOrganization(menuPath = "Images\nColor")
+@JIPipeDocumentation(name = "3D Image (Color)")
+@JIPipeOrganization(menuPath = "Images\n3D\nColor")
 @JIPipeHeavyData
-public class ImagePlusColorLABData extends ImagePlusColorData implements ColoredImagePlusData {
+public class ImagePlus3DColorData extends ImagePlus3DData implements ColoredImagePlusData {
 
     /**
      * The dimensionality of this data.
      * -1 means that we do not have information about the dimensionality
      */
-    public static final int DIMENSIONALITY = -1;
-
-    /**
-     * The color space of this image
-     */
-    public static final ColorSpace COLOR_SPACE = new LABColorSpace();
+    public static final int DIMENSIONALITY = 3;
+    private ColorSpace colorSpace = new RGBColorSpace();
 
     /**
      * @param image wrapped image
      */
-    public ImagePlusColorLABData(ImagePlus image) {
-        super(ImagePlusColorLABData.convertIfNeeded(image));
+    public ImagePlus3DColorData(ImagePlus image) {
+        super(ImagePlus3DColorData.convertIfNeeded(image));
+    }
+
+    public ImagePlus3DColorData(ImagePlus image, ColorSpace colorSpace) {
+        super(ImagePlus3DColorData.convertIfNeeded(image));
+        this.colorSpace = colorSpace;
     }
 
     @Override
     public ColorSpace getColorSpace() {
-        return COLOR_SPACE;
+        return colorSpace;
     }
 
     /**
@@ -79,38 +76,31 @@ public class ImagePlusColorLABData extends ImagePlusColorData implements Colored
             ImageConverter.setDoScaling(true);
             ImageConverter ic = new ImageConverter(image);
             ic.convertToRGB();
-            ImageJUtils.convertRGBToLAB(image, new JIPipeProgressInfo());
         }
         return image;
     }
 
     public static ImagePlusData importFrom(Path storageFolder) {
-        return new ImagePlusColorLABData(ImagePlusData.importImagePlusFrom(storageFolder));
+        return new ImagePlus3DColorData(ImagePlusData.importImagePlusFrom(storageFolder));
     }
 
     /**
      * Converts the incoming image data into the current format.
+     * Copies the color space if provided with an {@link ColoredImagePlusData}
      * @param data the data
      * @return the converted data
      */
     public static ImagePlusData convertFrom(ImagePlusData data) {
         ImagePlus image = data.getImage();
         if (image.getType() != ImagePlus.COLOR_RGB) {
-            // Standard method: Greyscale -> RGB
-            return new ImagePlusColorLABData(data.getImage());
+            // This will go through the standard method (greyscale -> RGB -> HSB)
+            return new ImagePlus3DColorData(image);
         }
         else if(data instanceof ColoredImagePlusData) {
-            ImagePlus copy = data.getDuplicateImage();
-            COLOR_SPACE.convert(copy, ((ColoredImagePlusData) data).getColorSpace(), new JIPipeProgressInfo());
-            return new ImagePlusColorLABData(copy);
+            return new ImagePlus3DColorData(image, ((ColoredImagePlusData) data).getColorSpace());
         }
         else {
-            return new ImagePlusColorLABData(data.getImage());
+            return new ImagePlus3DColorData(image);
         }
-    }
-
-    @Override
-    public Component preview(int width, int height) {
-        return ImageJUtils.generatePreview(this.getImage(), getColorSpace(), width, height);
     }
 }

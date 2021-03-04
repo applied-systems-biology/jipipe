@@ -25,12 +25,15 @@ import ij.gui.PolygonRoi;
 import ij.plugin.PlugIn;
 import ij.process.*;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
+import org.hkijena.jipipe.extensions.imagejdatatypes.color.ColorSpace;
 import org.hkijena.jipipe.extensions.parameters.roi.Anchor;
 import org.hkijena.jipipe.utils.ImageJCalibrationMode;
 
+import javax.swing.*;
 import java.awt.*;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.PathIterator;
+import java.awt.image.BufferedImage;
 import java.util.List;
 import java.util.*;
 import java.util.function.BiConsumer;
@@ -43,6 +46,27 @@ import java.util.stream.Collectors;
 public class ImageJUtils {
     private ImageJUtils() {
 
+    }
+
+    /**
+     * Generates a preview for a colored image with color space
+     * @param image the image
+     * @param width the width
+     * @param height the height
+     * @return the preview
+     */
+    public static Component generatePreview(ImagePlus image, ColorSpace colorSpace, int width, int height) {
+        double factorX = 1.0 * width / image.getWidth();
+        double factorY = 1.0 * height / image.getHeight();
+        double factor = Math.max(factorX, factorY);
+        boolean smooth = factor < 0;
+        int imageWidth = (int) (image.getWidth() * factor);
+        int imageHeight = (int) (image.getHeight() * factor);
+        ImagePlus firstSliceImage= new ImagePlus("Preview", image.getProcessor().duplicate());
+        colorSpace.convertToRGB(firstSliceImage, new JIPipeProgressInfo());
+        ImageProcessor resized = firstSliceImage.getProcessor().resize(imageWidth, imageHeight, smooth);
+        BufferedImage bufferedImage = resized.getBufferedImage();
+        return new JLabel(new ImageIcon(bufferedImage));
     }
 
     /**

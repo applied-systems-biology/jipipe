@@ -32,7 +32,7 @@ import java.nio.file.Path;
 @JIPipeDocumentation(name = "4D image (RGB)")
 @JIPipeOrganization(menuPath = "Images\n4D\nColor")
 @JIPipeHeavyData
-public class ImagePlus4DColorRGBData extends ImagePlus4DData implements ColoredImagePlusData {
+public class ImagePlus4DColorRGBData extends ImagePlus4DColorData implements ColoredImagePlusData {
 
     /**
      * The dimensionality of this data

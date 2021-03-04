@@ -44,7 +44,7 @@ import java.util.logging.Level;
 @JIPipeDocumentation(name = "Image (HSB)")
 @JIPipeOrganization(menuPath = "Images\nColor")
 @JIPipeHeavyData
-public class ImagePlusColorHSBData extends ImagePlusData implements ColoredImagePlusData {
+public class ImagePlusColorHSBData extends ImagePlusColorData implements ColoredImagePlusData {
 
     /**
      * The dimensionality of this data.
@@ -114,27 +114,6 @@ public class ImagePlusColorHSBData extends ImagePlusData implements ColoredImage
 
     @Override
     public Component preview(int width, int height) {
-        return generatePreview(this.getImage(), width, height);
-    }
-
-    /**
-     * Generates a preview for a HSB image
-     * @param image the image
-     * @param width the width
-     * @param height the height
-     * @return the preview
-     */
-    public static Component generatePreview(ImagePlus image, int width, int height) {
-        double factorX = 1.0 * width / image.getWidth();
-        double factorY = 1.0 * height / image.getHeight();
-        double factor = Math.max(factorX, factorY);
-        boolean smooth = factor < 0;
-        int imageWidth = (int) (image.getWidth() * factor);
-        int imageHeight = (int) (image.getHeight() * factor);
-        ImagePlus firstSliceImage= new ImagePlus("Preview", image.getProcessor().duplicate());
-        ImageJUtils.convertHSBToRGB(firstSliceImage, new JIPipeProgressInfo());
-        ImageProcessor resized = firstSliceImage.getProcessor().resize(imageWidth, imageHeight, smooth);
-        BufferedImage bufferedImage = resized.getBufferedImage();
-        return new JLabel(new ImageIcon(bufferedImage));
+        return ImageJUtils.generatePreview(this.getImage(), getColorSpace(), width, height);
     }
 }

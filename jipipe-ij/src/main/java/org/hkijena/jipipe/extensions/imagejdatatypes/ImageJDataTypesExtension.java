@@ -31,25 +31,30 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.datasources.ResultsTableFro
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.OMEImageData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ROIListData;
+import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.color.ImagePlusColorData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.color.ImagePlusColorHSBData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.color.ImagePlusColorLABData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.color.ImagePlusColorRGBData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d2.ImagePlus2DData;
+import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d2.color.ImagePlus2DColorData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d2.color.ImagePlus2DColorHSBData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d2.color.ImagePlus2DColorLABData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d2.color.ImagePlus2DColorRGBData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d2.greyscale.*;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d3.ImagePlus3DData;
+import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d3.color.ImagePlus3DColorData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d3.color.ImagePlus3DColorHSBData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d3.color.ImagePlus3DColorLABData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d3.color.ImagePlus3DColorRGBData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d3.greyscale.*;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d4.ImagePlus4DData;
+import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d4.color.ImagePlus4DColorData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d4.color.ImagePlus4DColorHSBData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d4.color.ImagePlus4DColorLABData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d4.color.ImagePlus4DColorRGBData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d4.greyscale.*;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d5.ImagePlus5DData;
+import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d5.color.ImagePlus5DColorData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d5.color.ImagePlus5DColorHSBData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d5.color.ImagePlus5DColorLABData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d5.color.ImagePlus5DColorRGBData;
@@ -88,11 +93,11 @@ public class ImageJDataTypesExtension extends JIPipePrepackagedDefaultJavaExtens
 
     public static final List<Class<? extends JIPipeData>> IMAGE_TYPES = Arrays.asList(
             ImagePlusData.class, ImagePlus2DData.class, ImagePlus3DData.class, ImagePlus4DData.class, ImagePlus5DData.class,
-            ImagePlusColorHSBData.class, ImagePlusColorRGBData.class,
-            ImagePlus2DColorHSBData.class, ImagePlus2DColorRGBData.class,
-            ImagePlus3DColorHSBData.class, ImagePlus3DColorRGBData.class,
-            ImagePlus4DColorHSBData.class, ImagePlus4DColorRGBData.class,
-            ImagePlus5DColorHSBData.class, ImagePlus5DColorRGBData.class,
+            ImagePlusColorHSBData.class, ImagePlusColorRGBData.class, ImagePlusColorData.class, ImagePlusColorLABData.class,
+            ImagePlus2DColorHSBData.class, ImagePlus2DColorRGBData.class, ImagePlus2DColorData.class, ImagePlus2DColorLABData.class,
+            ImagePlus3DColorHSBData.class, ImagePlus3DColorRGBData.class, ImagePlus3DColorData.class, ImagePlus3DColorLABData.class,
+            ImagePlus4DColorHSBData.class, ImagePlus4DColorRGBData.class, ImagePlus4DColorData.class, ImagePlus4DColorLABData.class,
+            ImagePlus5DColorHSBData.class, ImagePlus5DColorRGBData.class, ImagePlus5DColorData.class, ImagePlus5DColorLABData.class,
             ImagePlusGreyscaleData.class, ImagePlusGreyscale32FData.class, ImagePlusGreyscaleMaskData.class, ImagePlusGreyscale8UData.class, ImagePlusGreyscale8UData.class, ImagePlusGreyscale16UData.class,
             ImagePlus2DGreyscaleData.class, ImagePlus2DGreyscale32FData.class, ImagePlus2DGreyscaleMaskData.class, ImagePlus2DGreyscale8UData.class, ImagePlus2DGreyscale8UData.class, ImagePlus2DGreyscale16UData.class,
             ImagePlus3DGreyscaleData.class, ImagePlus3DGreyscale32FData.class, ImagePlus3DGreyscaleMaskData.class, ImagePlus3DGreyscale8UData.class, ImagePlus3DGreyscale8UData.class, ImagePlus3DGreyscale16UData.class,
@@ -135,11 +140,11 @@ public class ImageJDataTypesExtension extends JIPipePrepackagedDefaultJavaExtens
             ImagePlus5DGreyscale32FData.class);
 
     public static final List<Class<? extends JIPipeData>> IMAGE_TYPES_COLOR = Arrays.asList(
-            ImagePlusColorHSBData.class, ImagePlusColorRGBData.class,
-            ImagePlus2DColorHSBData.class, ImagePlus2DColorRGBData.class,
-            ImagePlus3DColorHSBData.class, ImagePlus3DColorRGBData.class,
-            ImagePlus4DColorHSBData.class, ImagePlus4DColorRGBData.class,
-            ImagePlus5DColorHSBData.class, ImagePlus5DColorRGBData.class);
+            ImagePlusColorHSBData.class, ImagePlusColorRGBData.class, ImagePlusColorData.class, ImagePlusColorLABData.class,
+            ImagePlus2DColorHSBData.class, ImagePlus2DColorRGBData.class, ImagePlus2DColorData.class, ImagePlus2DColorLABData.class,
+            ImagePlus3DColorHSBData.class, ImagePlus3DColorRGBData.class, ImagePlus3DColorData.class, ImagePlus3DColorLABData.class,
+            ImagePlus4DColorHSBData.class, ImagePlus4DColorRGBData.class, ImagePlus4DColorData.class, ImagePlus4DColorLABData.class,
+            ImagePlus5DColorHSBData.class, ImagePlus5DColorRGBData.class, ImagePlus5DColorData.class, ImagePlus5DColorLABData.class);
 
     public static final List<Class<? extends JIPipeData>> IMAGE_TYPES_COLOR_HSB = Arrays.asList(
             ImagePlusColorHSBData.class,
@@ -147,6 +152,13 @@ public class ImageJDataTypesExtension extends JIPipePrepackagedDefaultJavaExtens
             ImagePlus3DColorHSBData.class,
             ImagePlus4DColorHSBData.class,
             ImagePlus5DColorHSBData.class);
+
+    public static final List<Class<? extends JIPipeData>> IMAGE_TYPES_COLOR_LAB = Arrays.asList(
+            ImagePlusColorLABData.class,
+            ImagePlus2DColorLABData.class,
+            ImagePlus3DColorLABData.class,
+            ImagePlus4DColorLABData.class,
+            ImagePlus5DColorLABData.class);
 
     public static final List<Class<? extends JIPipeData>> IMAGE_TYPES_COLOR_RGB = Arrays.asList(
             ImagePlusColorRGBData.class,
@@ -223,6 +235,7 @@ public class ImageJDataTypesExtension extends JIPipePrepackagedDefaultJavaExtens
         registerImageDataType("imagej-imgplus-greyscale-16u", ImagePlusGreyscale16UData.class, "icons/data-types/imgplus-greyscale-16u.png");
         registerImageDataType("imagej-imgplus-greyscale-32f", ImagePlusGreyscale32FData.class, "icons/data-types/imgplus-greyscale-32f.png");
         registerImageDataType("imagej-imgplus-greyscale-mask", ImagePlusGreyscaleMaskData.class, "icons/data-types/imgplus-greyscale-mask.png");
+        registerImageDataType("imagej-imgplus-color", ImagePlusColorData.class, "icons/data-types/imgplus-color.png");
         registerImageDataType("imagej-imgplus-color-rgb", ImagePlusColorRGBData.class, "icons/data-types/imgplus-color-rgb.png");
         registerImageDataType("imagej-imgplus-color-hsb", ImagePlusColorHSBData.class, "icons/data-types/imgplus-color-hsb.png");
         registerImageDataType("imagej-imgplus-color-lab", ImagePlusColorLABData.class, "icons/data-types/imgplus-color-lab.png");
@@ -232,6 +245,7 @@ public class ImageJDataTypesExtension extends JIPipePrepackagedDefaultJavaExtens
         registerImageDataType("imagej-imgplus-2d-greyscale-16u", ImagePlus2DGreyscale16UData.class, "icons/data-types/imgplus-2d-greyscale-16u.png");
         registerImageDataType("imagej-imgplus-2d-greyscale-32f", ImagePlus2DGreyscale32FData.class, "icons/data-types/imgplus-2d-greyscale-32f.png");
         registerImageDataType("imagej-imgplus-2d-greyscale-mask", ImagePlus2DGreyscaleMaskData.class, "icons/data-types/imgplus-2d-greyscale-mask.png");
+        registerImageDataType("imagej-imgplus-2d-color", ImagePlus2DColorData.class, "icons/data-types/imgplus-2d-color.png");
         registerImageDataType("imagej-imgplus-2d-color-rgb", ImagePlus2DColorRGBData.class, "icons/data-types/imgplus-2d-color-rgb.png");
         registerImageDataType("imagej-imgplus-2d-color-hsb", ImagePlus2DColorHSBData.class, "icons/data-types/imgplus-2d-color-hsb.png");
         registerImageDataType("imagej-imgplus-2d-color-lab", ImagePlus2DColorLABData.class, "icons/data-types/imgplus-2d-color-lab.png");
@@ -241,6 +255,7 @@ public class ImageJDataTypesExtension extends JIPipePrepackagedDefaultJavaExtens
         registerImageDataType("imagej-imgplus-3d-greyscale-16u", ImagePlus3DGreyscale16UData.class, "icons/data-types/imgplus-3d-greyscale-16u.png");
         registerImageDataType("imagej-imgplus-3d-greyscale-32f", ImagePlus3DGreyscale32FData.class, "icons/data-types/imgplus-3d-greyscale-32f.png");
         registerImageDataType("imagej-imgplus-3d-greyscale-mask", ImagePlus3DGreyscaleMaskData.class, "icons/data-types/imgplus-3d-greyscale-mask.png");
+        registerImageDataType("imagej-imgplus-3d-color", ImagePlus3DColorData.class, "icons/data-types/imgplus-3d-color.png");
         registerImageDataType("imagej-imgplus-3d-color-rgb", ImagePlus3DColorRGBData.class, "icons/data-types/imgplus-3d-color-rgb.png");
         registerImageDataType("imagej-imgplus-3d-color-hsb", ImagePlus3DColorHSBData.class, "icons/data-types/imgplus-3d-color-hsb.png");
         registerImageDataType("imagej-imgplus-3d-color-lab", ImagePlus3DColorLABData.class, "icons/data-types/imgplus-3d-color-lab.png");
@@ -250,6 +265,7 @@ public class ImageJDataTypesExtension extends JIPipePrepackagedDefaultJavaExtens
         registerImageDataType("imagej-imgplus-4d-greyscale-16u", ImagePlus4DGreyscale16UData.class, "icons/data-types/imgplus-4d-greyscale-16u.png");
         registerImageDataType("imagej-imgplus-4d-greyscale-32f", ImagePlus4DGreyscale32FData.class, "icons/data-types/imgplus-4d-greyscale-32f.png");
         registerImageDataType("imagej-imgplus-4d-greyscale-mask", ImagePlus4DGreyscaleMaskData.class, "icons/data-types/imgplus-4d-greyscale-mask.png");
+        registerImageDataType("imagej-imgplus-4d-color", ImagePlus4DColorData.class, "icons/data-types/imgplus-4d-color.png");
         registerImageDataType("imagej-imgplus-4d-color-rgb", ImagePlus4DColorRGBData.class, "icons/data-types/imgplus-4d-color-rgb.png");
         registerImageDataType("imagej-imgplus-4d-color-hsb", ImagePlus4DColorHSBData.class, "icons/data-types/imgplus-4d-color-hsb.png");
         registerImageDataType("imagej-imgplus-4d-color-lab", ImagePlus4DColorLABData.class, "icons/data-types/imgplus-4d-color-lab.png");
@@ -259,6 +275,7 @@ public class ImageJDataTypesExtension extends JIPipePrepackagedDefaultJavaExtens
         registerImageDataType("imagej-imgplus-5d-greyscale-16u", ImagePlus5DGreyscale16UData.class, "icons/data-types/imgplus-5d-greyscale-16u.png");
         registerImageDataType("imagej-imgplus-5d-greyscale-32f", ImagePlus5DGreyscale32FData.class, "icons/data-types/imgplus-5d-greyscale-32f.png");
         registerImageDataType("imagej-imgplus-5d-greyscale-mask", ImagePlus5DGreyscaleMaskData.class, "icons/data-types/imgplus-5d-greyscale-mask.png");
+        registerImageDataType("imagej-imgplus-5d-color", ImagePlus5DColorData.class, "icons/data-types/imgplus-5d-color.png");
         registerImageDataType("imagej-imgplus-5d-color-rgb", ImagePlus5DColorRGBData.class, "icons/data-types/imgplus-5d-color-rgb.png");
         registerImageDataType("imagej-imgplus-5d-color-hsb", ImagePlus5DColorHSBData.class, "icons/data-types/imgplus-5d-color-hsb.png");
         registerImageDataType("imagej-imgplus-5d-color-lab", ImagePlus5DColorLABData.class, "icons/data-types/imgplus-5d-color-lab.png");

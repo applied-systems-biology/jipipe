@@ -23,6 +23,7 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.color.ColoredImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.color.ImagePlusColorLABData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d3.ImagePlus3DData;
+import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 
 import java.awt.*;
 import java.nio.file.Path;
@@ -33,7 +34,7 @@ import java.nio.file.Path;
 @JIPipeDocumentation(name = "3D image (LAB)")
 @JIPipeOrganization(menuPath = "Images\n3D\nColor")
 @JIPipeHeavyData
-public class ImagePlus3DColorLABData extends ImagePlus3DData implements ColoredImagePlusData {
+public class ImagePlus3DColorLABData extends ImagePlus3DColorData implements ColoredImagePlusData {
 
     /**
      * The dimensionality of this data
@@ -63,7 +64,7 @@ public class ImagePlus3DColorLABData extends ImagePlus3DData implements ColoredI
 
     @Override
     public Component preview(int width, int height) {
-        return ImagePlusColorLABData.generatePreview(this.getImage(), width, height);
+        return ImageJUtils.generatePreview(this.getImage(), getColorSpace(), width, height);
     }
 
     /**

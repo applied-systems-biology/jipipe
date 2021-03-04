@@ -25,6 +25,7 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.color.ImagePlusCo
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.color.ImagePlusColorRGBData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d4.ImagePlus4DData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d5.ImagePlus5DData;
+import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 
 import java.awt.*;
 import java.nio.file.Path;
@@ -35,7 +36,7 @@ import java.nio.file.Path;
 @JIPipeDocumentation(name = "5D image (HSB)")
 @JIPipeOrganization(menuPath = "Images\n5D\nColor")
 @JIPipeHeavyData
-public class ImagePlus5DColorHSBData extends ImagePlus5DData implements ColoredImagePlusData {
+public class ImagePlus5DColorHSBData extends ImagePlus5DColorData implements ColoredImagePlusData {
 
     /**
      * The dimensionality of this data
@@ -65,7 +66,7 @@ public class ImagePlus5DColorHSBData extends ImagePlus5DData implements ColoredI
 
     @Override
     public Component preview(int width, int height) {
-        return ImagePlusColorHSBData.generatePreview(this.getImage(), width, height);
+        return ImageJUtils.generatePreview(this.getImage(), getColorSpace(), width, height);
     }
 
     /**
