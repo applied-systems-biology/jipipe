@@ -56,13 +56,15 @@ import static org.hkijena.jipipe.extensions.imagejalgorithms.ImageJAlgorithmsExt
 @JIPipeOutputSlot(value = ImagePlusGreyscaleMaskData.class, slotName = "Output")
 public class CustomAutoThreshold2D16UAlgorithm extends JIPipeIteratingAlgorithm {
 
-    private DefaultExpressionParameter thresholdCalculationExpression = new DefaultExpressionParameter("MAX(0, FIRST_INDEX_WHERE(\"index > 0 AND item > 0\", histogram) - 1)");
+    private DefaultExpressionParameter thresholdCalculationExpression = new DefaultExpressionParameter("MAX(0, FIRST_INDEX_WHERE(\"index > 0 AND item > 0\", stat_histogram) - 1)");
     private OptionalAnnotationNameParameter thresholdAnnotation = new OptionalAnnotationNameParameter("Threshold", true);
     private AutoThreshold2DAlgorithm.SliceThresholdMode thresholdMode = AutoThreshold2DAlgorithm.SliceThresholdMode.ApplyPerSlice;
 
     private DefaultExpressionParameter thresholdCombinationExpression = new DefaultExpressionParameter("MIN(thresholds)");
     private ImageROITargetArea sourceArea = ImageROITargetArea.WholeImage;
     private JIPipeAnnotationMergeStrategy thresholdAnnotationStrategy = JIPipeAnnotationMergeStrategy.OverwriteExisting;
+
+    private boolean accessPixels = true;
 
     /**
      * @param info the info
@@ -89,6 +91,7 @@ public class CustomAutoThreshold2D16UAlgorithm extends JIPipeIteratingAlgorithm 
         this.thresholdCombinationExpression = new DefaultExpressionParameter(other.thresholdCombinationExpression);
         this.sourceArea = other.sourceArea;
         this.thresholdAnnotationStrategy = other.thresholdAnnotationStrategy;
+        this.accessPixels = other.accessPixels;
         updateRoiSlot();
     }
 
@@ -111,6 +114,11 @@ public class CustomAutoThreshold2D16UAlgorithm extends JIPipeIteratingAlgorithm 
         ROIListData roiInput = null;
         ImagePlus maskInput = null;
         ExpressionParameters parameters = new ExpressionParameters();
+
+        for (JIPipeAnnotation annotation : dataBatch.getAnnotations().values()) {
+            parameters.set(annotation.getName(), annotation.getValue());
+        }
+
         parameters.set("width", inputImage.getWidth());
         parameters.set("height", inputImage.getHeight());
         parameters.set("size_z", inputImage.getNSlices());
@@ -153,7 +161,7 @@ public class CustomAutoThreshold2D16UAlgorithm extends JIPipeIteratingAlgorithm 
             pixels.clear();
             getMaskedPixels(ip, mask, pixels);
             ImageStatistics statistics = new ShortProcessor(pixels.size(), 1, pixels.toArray(), inputImage.getProcessor().getColorModel()).getStatistics();
-            int threshold = getThreshold(parameters, statistics);
+            int threshold = getThreshold(parameters, statistics, pixels);
             thresholds.add(threshold);
         }, progressInfo.resolve("Finding thresholds"));
 
@@ -193,7 +201,7 @@ public class CustomAutoThreshold2D16UAlgorithm extends JIPipeIteratingAlgorithm 
             getMaskedPixels(ip, mask, pixels);
         }, progressInfo.resolve("Combining pixels"));
         ImageStatistics statistics = new ShortProcessor(pixels.size(), 1, pixels.toArray(), inputImage.getProcessor().getColorModel()).getStatistics();
-        int threshold = getThreshold(parameters, statistics);
+        int threshold = getThreshold(parameters, statistics, pixels);
         List<JIPipeAnnotation> annotations = new ArrayList<>();
         if (thresholdAnnotation.isEnabled()) {
             annotations.add(thresholdAnnotation.createAnnotation("" + threshold));
@@ -227,7 +235,7 @@ public class CustomAutoThreshold2D16UAlgorithm extends JIPipeIteratingAlgorithm 
             pixels.clear();
             getMaskedPixels(ip, mask, pixels);
             ImageStatistics statistics = new ShortProcessor(pixels.size(), 1, pixels.toArray(), inputImage.getProcessor().getColorModel()).getStatistics();
-            int threshold = getThreshold(parameters, statistics);
+            int threshold = getThreshold(parameters, statistics, pixels);
 
             // Get target processor and threshold
             ByteProcessor targetProcessor = (ByteProcessor) (outputImage.isStack() ?
@@ -261,14 +269,27 @@ public class CustomAutoThreshold2D16UAlgorithm extends JIPipeIteratingAlgorithm 
         }
     }
 
-    private int getThreshold(ExpressionParameters parameters, ImageStatistics statistics) {
-        parameters.set("histogram", Longs.asList(statistics.getHistogram()));
-        parameters.set("num_pixels", statistics.area);
-        parameters.set("min_value", statistics.min);
-        parameters.set("max_value", statistics.max);
-        parameters.set("mean_value", statistics.mean);
-        parameters.set("stdev_value", statistics.stdDev);
-        parameters.set("modal_value", statistics.mode);
+    private int getThreshold(ExpressionParameters parameters, ImageStatistics statistics, TShortArrayList pixels) {
+        parameters.set("stat_histogram", Longs.asList(statistics.getHistogram()));
+        parameters.set("stat_area", statistics.area);
+        parameters.set("stat_stdev", statistics.stdDev);
+        parameters.set("stat_min", statistics.min);
+        parameters.set("stat_max", statistics.max);
+        parameters.set("stat_mean", statistics.mean);
+        parameters.set("stat_mode", statistics.dmode);
+        parameters.set("stat_median", statistics.median);
+        parameters.set("stat_kurtosis", statistics.kurtosis);
+        parameters.set("stat_int_den", statistics.area * statistics.mean);
+        parameters.set("stat_raw_int_den", statistics.pixelCount * statistics.umean);
+        parameters.set("stat_skewness", statistics.skewness);
+        parameters.set("stat_area_fraction", statistics.areaFraction);
+        if(accessPixels) {
+            List<Integer> pixelList = new ArrayList<>();
+            for (int i = 0; i < pixels.size(); i++) {
+                pixelList.add(Short.toUnsignedInt(pixels.get(i)));
+            }
+            parameters.set("pixels", pixelList);
+        }
         Number number = (Number) thresholdCalculationExpression.evaluate(parameters);
         return number.intValue();
     }
@@ -358,6 +379,18 @@ public class CustomAutoThreshold2D16UAlgorithm extends JIPipeIteratingAlgorithm 
         updateRoiSlot();
     }
 
+    @JIPipeDocumentation(name = "Pixels are available as variables", description = "If enabled, the list of all pixels that are considered for the statistics are available as variable 'pixels'. " +
+            "Please note that this will slow down the performance due to necessary conversions.")
+    @JIPipeParameter("access-pixels")
+    public boolean isAccessPixels() {
+        return accessPixels;
+    }
+
+    @JIPipeParameter("access-pixels")
+    public void setAccessPixels(boolean accessPixels) {
+        this.accessPixels = accessPixels;
+    }
+
     private ImageProcessor getMask(int width, int height, ROIListData rois, ImagePlus mask, ImageSliceIndex sliceIndex) {
         switch (sourceArea) {
             case WholeImage: {
@@ -432,6 +465,9 @@ public class CustomAutoThreshold2D16UAlgorithm extends JIPipeIteratingAlgorithm 
         @Override
         public Set<ExpressionParameterVariable> getVariables(JIPipeParameterAccess parameterAccess) {
             Set<ExpressionParameterVariable> result = new HashSet<>();
+            result.add(new ExpressionParameterVariable("<Annotations>",
+                    "Annotations of the input image are available (use Update Cache to find the list of annotations)",
+                    ""));
             result.add(new ExpressionParameterVariable("Image width", "The width of the image", "width"));
             result.add(new ExpressionParameterVariable("Image height", "The height of the image", "height"));
             result.add(new ExpressionParameterVariable("Image Z slices", "The number of Z slices in the image", "size_z"));
@@ -439,25 +475,19 @@ public class CustomAutoThreshold2D16UAlgorithm extends JIPipeIteratingAlgorithm 
             result.add(new ExpressionParameterVariable("Image frames", "The number of frames (T) in the image", "size_t"));
             result.add(new ExpressionParameterVariable("Histogram",
                     "An array the represents the histogram (index is the pixel value, value is the number of pixels with this value) of the currently analyzed area",
-                    "histogram"));
-            result.add(new ExpressionParameterVariable("Number of pixels",
-                    "The number of pixels that are incorporated in the statistics",
-                    "num_pixels"));
-            result.add(new ExpressionParameterVariable("Minimum pixel value",
-                    "The minimum pixel value",
-                    "min_value"));
-            result.add(new ExpressionParameterVariable("Maximum pixel value",
-                    "The maximum pixel value",
-                    "max_value"));
-            result.add(new ExpressionParameterVariable("Mean pixel value",
-                    "The mean pixel value",
-                    "mean_value"));
-            result.add(new ExpressionParameterVariable("Standard deviation pixel value",
-                    "The standard deviation of the pixel values",
-                    "stdev_value"));
-            result.add(new ExpressionParameterVariable("Modal pixel value",
-                    "The modes of the pixel values",
-                    "modal_value"));
+                    "stat_histogram"));
+            result.add(new ExpressionParameterVariable("Area", "Area of selection in square pixels.", "stat_area"));
+            result.add(new ExpressionParameterVariable("Pixel value standard deviation", "Measures the standard deviation of greyscale pixel values", "stat_stdev"));
+            result.add(new ExpressionParameterVariable("Pixel value min", "Measures the minimum of greyscale pixel values", "stat_min"));
+            result.add(new ExpressionParameterVariable("Pixel value max", "Measures the maximum of greyscale pixel values", "stat_max"));
+            result.add(new ExpressionParameterVariable("Pixel value mean", "Measures the mean of greyscale pixel values", "stat_mean"));
+            result.add(new ExpressionParameterVariable("Pixel value mode", "Most frequently occurring gray value within the selection", "stat_mode"));
+            result.add(new ExpressionParameterVariable("Pixel value median", "The median value of the pixels in the image or selection", "stat_median"));
+            result.add(new ExpressionParameterVariable("Pixel value kurtosis", "The fourth order moment about the greyscale pixel value mean", "stat_kurtosis"));
+            result.add(new ExpressionParameterVariable("Pixel value integrated density", "The product of Area and Mean Gray Value", "stat_int_den"));
+            result.add(new ExpressionParameterVariable("Pixel value raw integrated density", "The sum of the values of the pixels in the image or selection", "stat_raw_int_den"));
+            result.add(new ExpressionParameterVariable("Pixel value skewness", "The sum of the values of the pixels in the image or selection", "stat_skewness"));
+            result.add(new ExpressionParameterVariable("Area fraction", "The percentage of non-zero pixels", "stat_area_fraction"));
             return result;
         }
     }
