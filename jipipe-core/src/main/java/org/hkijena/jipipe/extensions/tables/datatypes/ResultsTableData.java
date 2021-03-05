@@ -26,8 +26,10 @@ import gnu.trove.map.TIntIntMap;
 import gnu.trove.map.hash.TIntIntHashMap;
 import gnu.trove.set.TIntSet;
 import gnu.trove.set.hash.TIntHashSet;
+import ij.ImagePlus;
 import ij.macro.Variable;
 import ij.measure.ResultsTable;
+import ij.process.ImageStatistics;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeCacheSlotDataSource;
@@ -666,6 +668,27 @@ public class ResultsTableData implements JIPipeData, TableModel {
         if (aValue instanceof Number) {
             table.setValue(columnIndex, rowIndex, ((Number) aValue).doubleValue());
         } else {
+            table.setValue(columnIndex, rowIndex, "" + aValue);
+        }
+    }
+
+    public void setValueAt(Object aValue, int rowIndex, String column) {
+        if (aValue instanceof Number) {
+            int columnIndex = getOrCreateColumnIndex(column, false);
+            table.setValue(columnIndex, rowIndex, ((Number) aValue).doubleValue());
+        } else {
+            int columnIndex = getOrCreateColumnIndex(column, true);
+            table.setValue(columnIndex, rowIndex, "" + aValue);
+        }
+    }
+
+    public void setLastValue(Object aValue, String column) {
+        int rowIndex = getRowCount() - 1;
+        if (aValue instanceof Number) {
+            int columnIndex = getOrCreateColumnIndex(column, false);
+            table.setValue(columnIndex, rowIndex, ((Number) aValue).doubleValue());
+        } else {
+            int columnIndex = getOrCreateColumnIndex(column, true);
             table.setValue(columnIndex, rowIndex, "" + aValue);
         }
     }

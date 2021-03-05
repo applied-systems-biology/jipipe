@@ -14,7 +14,10 @@
 package org.hkijena.jipipe.extensions.imagejdatatypes.util;
 
 import gnu.trove.list.TIntList;
+import gnu.trove.list.array.TByteArrayList;
+import gnu.trove.list.array.TFloatArrayList;
 import gnu.trove.list.array.TIntArrayList;
+import gnu.trove.list.array.TShortArrayList;
 import gnu.trove.map.TIntIntMap;
 import gnu.trove.map.hash.TIntIntHashMap;
 import ij.IJ;
@@ -25,7 +28,9 @@ import ij.gui.PolygonRoi;
 import ij.plugin.PlugIn;
 import ij.process.*;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
+import org.hkijena.jipipe.extensions.imagejdatatypes.util.measure.ImageStatisticsSetParameter;
 import org.hkijena.jipipe.extensions.parameters.roi.Anchor;
+import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
 import org.hkijena.jipipe.utils.ImageJCalibrationMode;
 
 import java.awt.*;
@@ -783,6 +788,36 @@ public class ImageJUtils {
             }
         }
         return image;
+    }
+
+    public static void getMaskedPixels_8U(ImageProcessor ip, ImageProcessor mask, TByteArrayList target) {
+        byte[] imageBytes = (byte[]) ip.getPixels();
+        byte[] maskBytes = mask != null ? (byte[]) mask.getPixels() : null;
+        for (int i = 0; i < imageBytes.length; i++) {
+            if(mask == null || maskBytes[i] > 0) {
+                target.add(imageBytes[i]);
+            }
+        }
+    }
+
+    public static void getMaskedPixels_16U(ImageProcessor ip, ImageProcessor mask, TShortArrayList target) {
+        short[] imageBytes = (short[]) ip.getPixels();
+        byte[] maskBytes = mask != null ? (byte[]) mask.getPixels() : null;
+        for (int i = 0; i < imageBytes.length; i++) {
+            if(mask == null || maskBytes[i] > 0) {
+                target.add(imageBytes[i]);
+            }
+        }
+    }
+
+    public static void getMaskedPixels_32F(ImageProcessor ip, ImageProcessor mask, TFloatArrayList target) {
+        float[] imageBytes = (float[]) ip.getPixels();
+        byte[] maskBytes = mask != null ? (byte[]) mask.getPixels() : null;
+        for (int i = 0; i < imageBytes.length; i++) {
+            if(mask == null || maskBytes[i] > 0) {
+                target.add(imageBytes[i]);
+            }
+        }
     }
 
     public static class GradientStop implements Comparable<GradientStop> {

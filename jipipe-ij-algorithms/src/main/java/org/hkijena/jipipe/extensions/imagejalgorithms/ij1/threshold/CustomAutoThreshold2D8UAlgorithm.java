@@ -133,7 +133,7 @@ public class CustomAutoThreshold2D8UAlgorithm extends JIPipeIteratingAlgorithm {
 
                 // Collect all pixels
                 pixels.clear();
-                getMaskedPixels(ip, mask, pixels);
+                ImageJUtils.getMaskedPixels_8U(ip, mask, pixels);
                 ImageStatistics statistics = new ByteProcessor(pixels.size(), 1, pixels.toArray()).getStatistics();
                 int threshold = getThreshold(parameters, statistics);
                 ip.threshold(threshold);
@@ -161,7 +161,7 @@ public class CustomAutoThreshold2D8UAlgorithm extends JIPipeIteratingAlgorithm {
                         finalMaskInput,
                         index
                 );
-                getMaskedPixels(ip, mask, pixels);
+                ImageJUtils.getMaskedPixels_8U(ip, mask, pixels);
             }, progressInfo.resolve("Combining pixels"));
             ImageStatistics statistics = new ByteProcessor(pixels.size(), 1, pixels.toArray()).getStatistics();
             int threshold = getThreshold(parameters, statistics);
@@ -188,7 +188,7 @@ public class CustomAutoThreshold2D8UAlgorithm extends JIPipeIteratingAlgorithm {
                         index
                 );
                 pixels.clear();
-                getMaskedPixels(ip, mask, pixels);
+                ImageJUtils.getMaskedPixels_8U(ip, mask, pixels);
                 ImageStatistics statistics = new ByteProcessor(pixels.size(), 1, pixels.toArray()).getStatistics();
                 int threshold = getThreshold(parameters, statistics);
                 thresholds.add(threshold);
@@ -211,16 +211,6 @@ public class CustomAutoThreshold2D8UAlgorithm extends JIPipeIteratingAlgorithm {
                     annotations,
                     JIPipeAnnotationMergeStrategy.OverwriteExisting,
                     progressInfo);
-        }
-    }
-
-    private void getMaskedPixels(ImageProcessor ip, ImageProcessor mask, TByteArrayList target) {
-        byte[] imageBytes = (byte[]) ip.getPixels();
-        byte[] maskBytes = mask != null ? (byte[]) mask.getPixels() : null;
-        for (int i = 0; i < imageBytes.length; i++) {
-            if(mask == null || maskBytes[i] > 0) {
-                target.add(imageBytes[i]);
-            }
         }
     }
 
