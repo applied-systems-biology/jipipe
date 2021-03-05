@@ -107,7 +107,7 @@ public class DefaultExpressionParameterEditorUI extends JIPipeParameterEditorUI 
     }
 
     private void editInFunctionBuilder() {
-        String expression = ExpressionBuilderUI.showDialog(this, expressionEditor.getText(), variables);
+        String expression = ExpressionBuilderUI.showDialog(getWorkbench().getWindow(), expressionEditor.getText(), variables);
         if (expression != null)
             expressionEditor.setText(expression);
     }

@@ -27,6 +27,7 @@ import org.hkijena.jipipe.utils.JsonUtils;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.function.Supplier;
 
 /**
  * A parameter that is a collection of another parameter type
@@ -35,6 +36,7 @@ import java.util.ArrayList;
 @JsonDeserialize(using = ListParameter.Deserializer.class)
 public abstract class ListParameter<T> extends ArrayList<T> implements JIPipeValidatable {
     private Class<T> contentClass;
+    private Supplier<T> customInstanceGenerator;
 
     /**
      * @param contentClass the stored content
@@ -54,6 +56,11 @@ public abstract class ListParameter<T> extends ArrayList<T> implements JIPipeVal
      * @return the instance
      */
     public T addNewInstance() {
+        if(customInstanceGenerator != null) {
+            T instance = customInstanceGenerator.get();
+            add(instance);
+            return instance;
+        }
         try {
             T instance = getContentClass().newInstance();
             add(instance);
@@ -71,6 +78,14 @@ public abstract class ListParameter<T> extends ArrayList<T> implements JIPipeVal
                 report.forCategory("Item #" + (i + 1)).report(validatable);
             }
         }
+    }
+
+    public Supplier<T> getCustomInstanceGenerator() {
+        return customInstanceGenerator;
+    }
+
+    public void setCustomInstanceGenerator(Supplier<T> customInstanceGenerator) {
+        this.customInstanceGenerator = customInstanceGenerator;
     }
 
     /**

@@ -302,6 +302,7 @@ public class StandardParametersExtension extends JIPipePrepackagedDefaultJavaExt
         registerExpressionFunction(new HistogramThresholdYen());
         registerExpressionFunction(new AccumulateFunction());
         registerExpressionFunction(new RunFunctionFunction());
+        registerExpressionFunction(new PercentileFunction());
     }
 
     private void registerScriptParameters() {

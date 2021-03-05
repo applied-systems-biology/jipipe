@@ -14,6 +14,7 @@
 package org.hkijena.jipipe.extensions.imagejalgorithms.ij1.analyze;
 
 import com.google.common.primitives.Floats;
+import com.google.common.primitives.Longs;
 import gnu.trove.list.array.TByteArrayList;
 import gnu.trove.list.array.TFloatArrayList;
 import gnu.trove.list.array.TShortArrayList;
@@ -28,6 +29,7 @@ import org.hkijena.jipipe.api.data.JIPipeMutableSlotConfiguration;
 import org.hkijena.jipipe.api.data.JIPipeSlotType;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
+import org.hkijena.jipipe.api.parameters.JIPipeContextAction;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.imagejalgorithms.utils.ImageROITargetArea;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
@@ -39,15 +41,16 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageSliceIndex;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageStatistics5DExpressionParameterVariableSource;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.measure.ImageStatisticsSetParameter;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.measure.Measurement;
-import org.hkijena.jipipe.extensions.parameters.expressions.ExpressionParameterSettings;
-import org.hkijena.jipipe.extensions.parameters.expressions.ExpressionParameters;
+import org.hkijena.jipipe.extensions.parameters.expressions.*;
 import org.hkijena.jipipe.extensions.parameters.primitives.OptionalStringParameter;
 import org.hkijena.jipipe.extensions.parameters.primitives.StringParameterSettings;
 import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
 import org.hkijena.jipipe.extensions.tables.parameters.collections.ExpressionTableColumnGeneratorProcessorParameterList;
 import org.hkijena.jipipe.extensions.tables.parameters.processors.ExpressionTableColumnGeneratorProcessor;
+import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.utils.NaturalOrderComparator;
 import org.hkijena.jipipe.utils.ResourceUtils;
+import org.hkijena.jipipe.utils.UIUtils;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -77,6 +80,7 @@ public class ImageStatisticsExpressionAlgorithm extends JIPipeIteratingAlgorithm
      */
     public ImageStatisticsExpressionAlgorithm(JIPipeNodeInfo info) {
         super(info);
+        this.columns.setCustomInstanceGenerator(() -> new ExpressionTableColumnGeneratorProcessor("",""));
         updateRoiSlot();
     }
 
@@ -92,6 +96,7 @@ public class ImageStatisticsExpressionAlgorithm extends JIPipeIteratingAlgorithm
         this.applyPerSlice = other.applyPerSlice;
         this.targetArea = other.targetArea;
         this.columns = new ExpressionTableColumnGeneratorProcessorParameterList(other.columns);
+        this.columns.setCustomInstanceGenerator(() -> new ExpressionTableColumnGeneratorProcessor("",""));
         updateRoiSlot();
     }
 
@@ -158,6 +163,7 @@ public class ImageStatisticsExpressionAlgorithm extends JIPipeIteratingAlgorithm
             ImageStatistics statistics = (new FloatProcessor(pixelsList.size(), 1, Floats.toArray(pixelsList))).getStatistics();
 
             // Write statistics to expressions
+            parameters.set("stat_histogram", Longs.asList(statistics.getHistogram()));
             parameters.set("stat_area", statistics.area);
             parameters.set("stat_stdev", statistics.stdDev);
             parameters.set("stat_min", statistics.min);
@@ -170,10 +176,12 @@ public class ImageStatisticsExpressionAlgorithm extends JIPipeIteratingAlgorithm
             parameters.set("stat_raw_int_den", statistics.pixelCount * statistics.umean);
             parameters.set("stat_skewness", statistics.skewness);
             parameters.set("stat_area_fraction", statistics.areaFraction);
+            parameters.set("pixels", pixelsList);
 
             resultsTableData.addRow();
             for (ExpressionTableColumnGeneratorProcessor columnGenerator : columns){
-
+                Object expressionResult = columnGenerator.getKey().evaluate(parameters);
+                resultsTableData.setLastValue(expressionResult, columnGenerator.getValue());
             }
 
             ++currentIndexBatch;
@@ -183,91 +191,18 @@ public class ImageStatisticsExpressionAlgorithm extends JIPipeIteratingAlgorithm
 
     }
 
-    public static void addStatisticsRow(ResultsTableData resultsTableData, ImageStatistics statistics, ImageStatisticsSetParameter measurements, Collection<ImageSliceIndex> slices, int allPixels, int width, int height) {
-        resultsTableData.addRow();
-
-        final double perimeter = 2 * width + 2 * height;
-        final double major = Math.max(width / 2.0, height / 2.0);
-        final double minor = Math.min(width / 2.0, height / 2.0);
-        final double area = statistics.pixelCount;
-
-        for (Measurement measurement : measurements.getValues()) {
-            switch (measurement) {
-                case StackPosition:
-                    resultsTableData.setLastValue(slices.stream().map(s -> s.getC() + "").sorted(NaturalOrderComparator.INSTANCE).collect(Collectors.joining(", ")), "Ch");
-                    resultsTableData.setLastValue(slices.stream().map(s -> s.getZ() + "").sorted(NaturalOrderComparator.INSTANCE).collect(Collectors.joining(", ")), "Slice");
-                    resultsTableData.setLastValue(slices.stream().map(s -> s.getT() + "").sorted(NaturalOrderComparator.INSTANCE).collect(Collectors.joining(", ")), "Frame");
-                    break;
-                case Area:
-                    resultsTableData.setLastValue(area, "Area");
-                    break;
-                case PixelValueMinMax:
-                    resultsTableData.setLastValue(statistics.min, "Min");
-                    resultsTableData.setLastValue(statistics.max, "Max");
-                    break;
-                case PixelValueStandardDeviation:
-                    resultsTableData.setLastValue(statistics.stdDev, "StdDev");
-                    break;
-                case Centroid:
-                    resultsTableData.setLastValue(width / 2, "X");
-                    resultsTableData.setLastValue(height / 2, "Y");
-                    break;
-                case CenterOfMass:
-                    resultsTableData.setLastValue(width / 2, "XM");
-                    resultsTableData.setLastValue(height / 2, "YM");
-                    break;
-                case BoundingRectangle:
-                    resultsTableData.setLastValue(0, "BX");
-                    resultsTableData.setLastValue(0, "BY");
-                    resultsTableData.setLastValue(width, "Width");
-                    resultsTableData.setLastValue(height, "Height");
-                    break;
-                case ShapeDescriptors:
-                    resultsTableData.setLastValue(4.0*Math.PI*((width * height)/(perimeter*perimeter)), "Circ.");
-                    resultsTableData.setLastValue(major / minor, "AR");
-                    resultsTableData.setLastValue(4.0*(width * height)/(Math.PI*major*major), "Round");
-                    resultsTableData.setLastValue(1, "Solidity");
-                    break;
-                case IntegratedDensity:
-                    resultsTableData.setLastValue(area * statistics.mean, "IntDen");
-                    resultsTableData.setLastValue(statistics.pixelCount * statistics.umean, "RawIntDen");
-                    break;
-                case PixelValueSkewness:
-                    resultsTableData.setLastValue(statistics.skewness, "Skew");
-                    break;
-                case AreaFraction:
-                    resultsTableData.setLastValue(statistics.areaFraction, "%Area");
-                    break;
-                case PixelValueMean:
-                    resultsTableData.setLastValue(statistics.mean, "Mean");
-                    break;
-                case PixelValueModal:
-                    resultsTableData.setLastValue(statistics.dmode, "Mode");
-                    break;
-                case PixelValueMedian:
-                    resultsTableData.setLastValue(statistics.median, "Median");
-                    break;
-                case PixelValueKurtosis:
-                    resultsTableData.setLastValue(statistics.kurtosis, "Kurt");
-                    break;
-                case FitEllipse:
-                    resultsTableData.setLastValue(major, "Major");
-                    resultsTableData.setLastValue(minor, "Minor");
-                    resultsTableData.setLastValue(0, "Angle");
-                    break;
-                case FeretDiameter:
-                    double hyp = Math.sqrt(width * width + height * height);
-                    resultsTableData.setLastValue(hyp, "Feret");
-                    resultsTableData.setLastValue(0, "FeretX");
-                    resultsTableData.setLastValue(0, "FeretY");
-                    resultsTableData.setLastValue( Math.toDegrees(Math.asin(height / hyp)), "FeretAngle");
-                    break;
-                case Perimeter:
-                    resultsTableData.setLastValue(perimeter, "Perim.");
-                    break;
-            }
+    @JIPipeDocumentation(name = "Load example", description = "Loads example parameters that showcase how to use this algorithm.")
+    @JIPipeContextAction(iconURL = ResourceUtils.RESOURCE_BASE_PATH + "/icons/actions/graduation-cap.png")
+    public void setToExample(JIPipeWorkbench parent) {
+        if (UIUtils.confirmResetParameters(parent, "Load example")) {
+            columns.clear();
+            columns.add(new ExpressionTableColumnGeneratorProcessor("HISTOGRAM_THRESHOLD_OTSU(stat_histogram)", "Otsu threshold"));
+            columns.add(new ExpressionTableColumnGeneratorProcessor("PERCENTILE(pixels, 30)", "30th percentile"));
+            columns.add(new ExpressionTableColumnGeneratorProcessor("(stat_max + stat_min) / 2", "Middle gray"));
+            getEventBus().post(new ParameterChangedEvent(this, "columns"));
         }
     }
+
 
     @JIPipeDocumentation(name = "Apply per slice", description = "If true, the operation is applied for each Z-slice separately. If false, all Z-slices are put together.")
     @JIPipeParameter("apply-per-slice")
@@ -316,7 +251,7 @@ public class ImageStatisticsExpressionAlgorithm extends JIPipeIteratingAlgorithm
     }
 
     @JIPipeDocumentation(name = "Generated columns", description = "Use these expressions to generate the table columns. The expressions contain statistics, as well as incoming annotations of the current image.")
-    @JIPipeParameter("columns")
+    @JIPipeParameter(value = "columns", uiOrder = -30)
     @ExpressionParameterSettings(variableSource = ImageStatistics5DExpressionParameterVariableSource.class)
     public ExpressionTableColumnGeneratorProcessorParameterList getColumns() {
         return columns;
@@ -325,6 +260,7 @@ public class ImageStatisticsExpressionAlgorithm extends JIPipeIteratingAlgorithm
     @JIPipeParameter("columns")
     public void setColumns(ExpressionTableColumnGeneratorProcessorParameterList columns) {
         this.columns = columns;
+        this.columns.setCustomInstanceGenerator(() -> new ExpressionTableColumnGeneratorProcessor("",""));
     }
 
     public ImageProcessor getMask(JIPipeDataBatch dataBatch, ImageSliceIndex sliceIndex, JIPipeProgressInfo progressInfo) {

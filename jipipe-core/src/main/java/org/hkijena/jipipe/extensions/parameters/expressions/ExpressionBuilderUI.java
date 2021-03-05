@@ -105,7 +105,7 @@ public class ExpressionBuilderUI extends JPanel {
         dialog.setTitle("Expression builder");
         dialog.pack();
         dialog.setSize(800, 600);
-        dialog.setLocationRelativeTo(null);
+        dialog.setLocationRelativeTo(parent);
         dialog.setVisible(true);
         return confirmed.get() ? expressionBuilderUI.getExpression() : null;
     }

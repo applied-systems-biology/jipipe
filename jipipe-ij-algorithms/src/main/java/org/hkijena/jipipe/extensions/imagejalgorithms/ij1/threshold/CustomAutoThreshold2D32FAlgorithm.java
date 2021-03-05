@@ -13,6 +13,7 @@
 
 package org.hkijena.jipipe.extensions.imagejalgorithms.ij1.threshold;
 
+import com.google.common.primitives.Longs;
 import gnu.trove.list.array.TFloatArrayList;
 import ij.IJ;
 import ij.ImagePlus;
@@ -257,7 +258,7 @@ public class CustomAutoThreshold2D32FAlgorithm extends JIPipeIteratingAlgorithm 
     }
 
     private float getThreshold(ExpressionParameters parameters, ImageStatistics statistics) {
-//        parameters.set("histogram", Longs.asList(statistics.getHistogram()));
+        parameters.set("histogram", Longs.asList(statistics.getHistogram()));
         parameters.set("num_pixels", statistics.area);
         parameters.set("min_value", statistics.min);
         parameters.set("max_value", statistics.max);
@@ -458,9 +459,9 @@ public class CustomAutoThreshold2D32FAlgorithm extends JIPipeIteratingAlgorithm 
             result.add(new ExpressionParameterVariable("Image Z slices", "The number of Z slices in the image", "size_z"));
             result.add(new ExpressionParameterVariable("Image channels", "The number of channel (C) slices in the image", "size_c"));
             result.add(new ExpressionParameterVariable("Image frames", "The number of frames (T) in the image", "size_t"));
-//            result.add(new ExpressionParameterVariable("Histogram",
-//                    "An array the represents the histogram (index is the pixel value, value is the number of pixels with this value) of the currently analyzed area",
-//                    "histogram"));
+            result.add(new ExpressionParameterVariable("Histogram",
+                    "An array the represents the histogram (index is the pixel value, value is the number of pixels with this value) of the currently analyzed area",
+                    "histogram"));
             result.add(new ExpressionParameterVariable("Number of pixels",
                     "The number of pixels that are incorporated in the statistics",
                     "num_pixels"));

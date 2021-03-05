@@ -38,6 +38,10 @@ public class ImageStatistics5DExpressionParameterVariableSource implements Expre
         VARIABLES.add(new ExpressionParameterVariable("Pixel value raw integrated density", "The sum of the values of the pixels in the image or selection", "stat_raw_int_den"));
         VARIABLES.add(new ExpressionParameterVariable("Pixel value skewness", "The sum of the values of the pixels in the image or selection", "stat_skewness"));
         VARIABLES.add(new ExpressionParameterVariable("Area fraction", "The percentage of non-zero pixels", "stat_area_fraction"));
+
+        VARIABLES.add(new ExpressionParameterVariable("Histogram",
+                "An array the represents the histogram (index is the pixel value, value is the number of pixels with this value) of the currently analyzed area",
+                "stat_histogram"));
     }
 
     @Override

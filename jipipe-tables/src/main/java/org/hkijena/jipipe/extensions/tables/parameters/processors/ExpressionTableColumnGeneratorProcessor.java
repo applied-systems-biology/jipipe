@@ -31,6 +31,12 @@ public class ExpressionTableColumnGeneratorProcessor extends PairParameter<Defau
         setValue("");
     }
 
+    public ExpressionTableColumnGeneratorProcessor(String expression, String columnName) {
+        super(DefaultExpressionParameter.class, String.class);
+        setKey(new DefaultExpressionParameter(expression));
+        setValue(columnName);
+    }
+
     /**
      * Creates a copy
      *
