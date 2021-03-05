@@ -38,10 +38,6 @@ class DnDTabbedPane extends JTabbedPane {
                 this, DnDConstants.ACTION_COPY_OR_MOVE, new TabDragGestureListener());
     }
 
-    public static boolean isTopBottomTabPlacement(int tabPlacement) {
-        return tabPlacement == SwingConstants.TOP || tabPlacement == SwingConstants.BOTTOM;
-    }
-
     private void clickArrowButton(String actionKey) {
         JButton scrollForwardButton = null;
         JButton scrollBackwardButton = null;
@@ -244,6 +240,10 @@ class DnDTabbedPane extends JTabbedPane {
         tabbedRect.grow(2, 2);
         return tabbedRect;
     }
+
+    public static boolean isTopBottomTabPlacement(int tabPlacement) {
+        return tabPlacement == SwingConstants.TOP || tabPlacement == SwingConstants.BOTTOM;
+    }
 }
 
 class TabTransferable implements Transferable {
@@ -344,10 +344,6 @@ class TabDragGestureListener implements DragGestureListener {
 class TabDropTargetListener implements DropTargetListener {
     private static final Point HIDDEN_POINT = new Point(0, -1000);
 
-    private static Optional<GhostGlassPane> getGhostGlassPane(Component c) {
-        return Optional.ofNullable(c).filter(GhostGlassPane.class::isInstance).map(GhostGlassPane.class::cast);
-    }
-
     @Override
     public void dragEnter(DropTargetDragEvent e) {
         getGhostGlassPane(e.getDropTargetContext().getComponent()).ifPresent(glassPane -> {
@@ -412,6 +408,10 @@ class TabDropTargetListener implements DropTargetListener {
             glassPane.setVisible(false);
             // tabbedPane.dragTabIndex = -1;
         });
+    }
+
+    private static Optional<GhostGlassPane> getGhostGlassPane(Component c) {
+        return Optional.ofNullable(c).filter(GhostGlassPane.class::isInstance).map(GhostGlassPane.class::cast);
     }
 }
 

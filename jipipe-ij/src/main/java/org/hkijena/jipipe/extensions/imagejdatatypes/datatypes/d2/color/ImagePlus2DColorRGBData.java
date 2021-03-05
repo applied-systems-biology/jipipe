@@ -17,7 +17,10 @@ import ij.ImagePlus;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeHeavyData;
 import org.hkijena.jipipe.api.JIPipeOrganization;
+import org.hkijena.jipipe.extensions.imagejdatatypes.color.ColorSpace;
+import org.hkijena.jipipe.extensions.imagejdatatypes.color.RGBColorSpace;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
+import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.color.ColoredImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.color.ImagePlusColorRGBData;
 
 import java.nio.file.Path;
@@ -28,12 +31,17 @@ import java.nio.file.Path;
 @JIPipeDocumentation(name = "2D image (RGB)")
 @JIPipeOrganization(menuPath = "Images\n2D\nColor")
 @JIPipeHeavyData
-public class ImagePlus2DColorRGBData extends ImagePlus2DColorData {
+public class ImagePlus2DColorRGBData extends ImagePlus2DColorData implements ColoredImagePlusData {
 
     /**
      * The dimensionality of this data
      */
     public static final int DIMENSIONALITY = 2;
+
+    /**
+     * The color space of this image
+     */
+    public static final ColorSpace COLOR_SPACE = new RGBColorSpace();
 
     /**
      * @param image wrapped image
@@ -42,12 +50,18 @@ public class ImagePlus2DColorRGBData extends ImagePlus2DColorData {
         super(ImagePlusColorRGBData.convertIfNeeded(image));
     }
 
+    @Override
+    public ColorSpace getColorSpace() {
+        return COLOR_SPACE;
+    }
+
     public static ImagePlusData importFrom(Path storageFolder) {
         return new ImagePlus2DColorRGBData(ImagePlusData.importImagePlusFrom(storageFolder));
     }
 
     /**
      * Converts the incoming image data into the current format.
+     *
      * @param data the data
      * @return the converted data
      */

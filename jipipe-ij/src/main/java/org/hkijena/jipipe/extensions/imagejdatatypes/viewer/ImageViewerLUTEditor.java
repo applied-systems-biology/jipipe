@@ -254,7 +254,7 @@ public class ImageViewerLUTEditor extends JPanel implements ThumbListener {
                     compositeImage.setChannelLut(getLUT(), targetChannel + 1);
                 }
                 int c = image.getC();
-                if(c == targetChannel + 1) {
+                if (c == targetChannel + 1) {
                     image.setLut(getLUT());
                     imageViewerPanel.uploadSliceToCanvas();
                 }

@@ -28,14 +28,16 @@ import ij.gui.PolygonRoi;
 import ij.plugin.PlugIn;
 import ij.process.*;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
-import org.hkijena.jipipe.extensions.imagejdatatypes.util.measure.ImageStatisticsSetParameter;
+import org.hkijena.jipipe.extensions.imagejdatatypes.color.ColorSpace;
 import org.hkijena.jipipe.extensions.parameters.roi.Anchor;
 import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
 import org.hkijena.jipipe.utils.ImageJCalibrationMode;
 
+import javax.swing.*;
 import java.awt.*;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.PathIterator;
+import java.awt.image.BufferedImage;
 import java.util.List;
 import java.util.*;
 import java.util.function.BiConsumer;
@@ -50,27 +52,142 @@ public class ImageJUtils {
 
     }
 
+    public static boolean imagesHaveSameSize(ImagePlus... images) {
+        if (images.length < 2)
+            return true;
+        ImagePlus referenceImage = images[0];
+        int width = referenceImage.getWidth();
+        int height = referenceImage.getHeight();
+        int nZ = referenceImage.getNSlices();
+        int nC = referenceImage.getNChannels();
+        int nT = referenceImage.getNFrames();
+        for (ImagePlus image : images) {
+            if (image.getWidth() != width || image.getHeight() != height ||
+                    image.getNFrames() != nT || image.getNChannels() != nC || image.getNSlices() != nZ) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    public static boolean imagesHaveSameSize(Collection<ImagePlus> images) {
+        if (images.size() < 2)
+            return true;
+        ImagePlus referenceImage = images.iterator().next();
+        int width = referenceImage.getWidth();
+        int height = referenceImage.getHeight();
+        int nZ = referenceImage.getNSlices();
+        int nC = referenceImage.getNChannels();
+        int nT = referenceImage.getNFrames();
+        for (ImagePlus image : images) {
+            if (image.getWidth() != width || image.getHeight() != height ||
+                    image.getNFrames() != nT || image.getNChannels() != nC || image.getNSlices() != nZ) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    /**
+     * Generates a preview for a colored image with color space
+     *
+     * @param image  the image
+     * @param width  the width
+     * @param height the height
+     * @return the preview
+     */
+    public static Component generatePreview(ImagePlus image, ColorSpace colorSpace, int width, int height) {
+        double factorX = 1.0 * width / image.getWidth();
+        double factorY = 1.0 * height / image.getHeight();
+        double factor = Math.max(factorX, factorY);
+        boolean smooth = factor < 0;
+        int imageWidth = (int) (image.getWidth() * factor);
+        int imageHeight = (int) (image.getHeight() * factor);
+        ImagePlus firstSliceImage = new ImagePlus("Preview", image.getProcessor().duplicate());
+        colorSpace.convertToRGB(firstSliceImage, new JIPipeProgressInfo());
+        ImageProcessor resized = firstSliceImage.getProcessor().resize(imageWidth, imageHeight, smooth);
+        BufferedImage bufferedImage = resized.getBufferedImage();
+        return new JLabel(new ImageIcon(bufferedImage));
+    }
+
+    /**
+     * Converts an RGB image to LAB
+     * L is stored unsigned (0-255)
+     * A is stored signed (-128-127)
+     * B is stored signed (-128-127)
+     *
+     * @param img          the input image (must be RGB)
+     * @param progressInfo the progress info
+     */
+    public static void convertRGBToLAB(ImagePlus img, JIPipeProgressInfo progressInfo) {
+        ColorSpaceConverter converter = new ColorSpaceConverter();
+        forEachSlice(img, ip -> {
+            int width = ip.getWidth();
+            int height = ip.getHeight();
+            int[] pixels = (int[]) ip.getPixels();
+            for (int i = 0; i < width * height; i++) {
+                int c = pixels[i];
+                double[] lab = converter.RGBtoLAB(c);
+                int l = (int) Math.max(0, Math.min(255, lab[0]));
+                int a = (int) Math.max(Byte.MIN_VALUE, Math.min(Byte.MAX_VALUE, lab[1])) - (int) Byte.MIN_VALUE;
+                int b = (int) Math.max(Byte.MIN_VALUE, Math.min(Byte.MAX_VALUE, lab[2])) - (int) Byte.MIN_VALUE;
+                pixels[i] = (l << 16) + (a << 8) + b;
+            }
+        }, progressInfo);
+    }
+
+    /**
+     * Converts an LAB image to RGB
+     * L is stored unsigned (0-255)
+     * A is stored signed (-128-127)
+     * B is stored signed (-128-127)
+     *
+     * @param img          the input image (must be RGB)
+     * @param progressInfo the progress info
+     */
+    public static void convertLABToRGB(ImagePlus img, JIPipeProgressInfo progressInfo) {
+        ColorSpaceConverter converter = new ColorSpaceConverter();
+        forEachSlice(img, ip -> {
+            int width = ip.getWidth();
+            int height = ip.getHeight();
+            int[] pixels = (int[]) ip.getPixels();
+            double[] lab = new double[3];
+            for (int i = 0; i < width * height; i++) {
+                int c = pixels[i];
+                int l = (c & 0xff0000) >> 16;
+                int a = ((c & 0xff00) >> 8) + Byte.MIN_VALUE;
+                int b = (c & 0xff) + Byte.MIN_VALUE;
+                lab[0] = l;
+                lab[1] = a;
+                lab[2] = b;
+                int[] rgb = converter.LABtoRGB(lab);
+                pixels[i] = (rgb[0] << 16) + (rgb[1] << 8) + rgb[2];
+            }
+        }, progressInfo);
+    }
+
     /**
      * Converts an RGB image to HSB (re-using the same components)
-     * @param img the input image (must be RGB)
+     *
+     * @param img          the input image (must be RGB)
      * @param progressInfo the progress info
      */
     public static void convertRGBToHSB(ImagePlus img, JIPipeProgressInfo progressInfo) {
         forEachSlice(img, ip -> {
             int width = ip.getWidth();
             int height = ip.getHeight();
-            int c,r,g,b;
-            float[]hsb = new float[3];
+            int c, r, g, b;
+            float[] hsb = new float[3];
             int[] pixels = (int[]) ip.getPixels();
-            for (int i=0; i < width*height; i++) {
+            for (int i = 0; i < width * height; i++) {
                 c = pixels[i];
-                r = (c&0xff0000)>>16;
-                g = (c&0xff00)>>8;
-                b = c&0xff;
+                r = (c & 0xff0000) >> 16;
+                g = (c & 0xff00) >> 8;
+                b = c & 0xff;
                 Color.RGBtoHSB(r, g, b, hsb);
-                int H = (byte)((int)(hsb[0]*255.0));
-                int S = (byte)((int)(hsb[1]*255.0));
-                int B = (byte)((int)(hsb[2]*255.0));
+                int H = ((int) (hsb[0] * 255.0));
+                int S = ((int) (hsb[1] * 255.0));
+                int B = ((int) (hsb[2] * 255.0));
                 pixels[i] = (H << 16) + (S << 8) + B;
             }
         }, progressInfo);
@@ -78,20 +195,21 @@ public class ImageJUtils {
 
     /**
      * Converts an HSB image to RGB (re-using the same components)
-     * @param img the input image (must be RGB)
+     *
+     * @param img          the input image (must be RGB)
      * @param progressInfo the progress info
      */
     public static void convertHSBToRGB(ImagePlus img, JIPipeProgressInfo progressInfo) {
         forEachSlice(img, ip -> {
             int width = ip.getWidth();
             int height = ip.getHeight();
-            int c,H,S,B;
+            int c, H, S, B;
             int[] pixels = (int[]) ip.getPixels();
-            for (int i=0; i < width*height; i++) {
+            for (int i = 0; i < width * height; i++) {
                 c = pixels[i];
-                H = (c&0xff0000)>>16;
-                S = (c&0xff00)>>8;
-                B = c&0xff;
+                H = (c & 0xff0000) >> 16;
+                S = (c & 0xff00) >> 8;
+                B = c & 0xff;
                 int rgb = Color.HSBtoRGB(H / 255.0f, S / 255.0f, B / 255.0f);
                 pixels[i] = rgb;
             }
@@ -100,16 +218,16 @@ public class ImageJUtils {
 
     /**
      * Gets slice from image
-     * @param img the image
+     *
+     * @param img   the image
      * @param index the index (zero-based)
      * @return the processor
      */
     public static ImageProcessor getSlice(ImagePlus img, ImageSliceIndex index) {
-        if(img.isStack()) {
+        if (img.isStack()) {
             return img.getStack().getProcessor(img.getStackIndex(index.getC() + 1, index.getZ() + 1, index.getT() + 1));
-        }
-        else {
-            if(index.getZ() != 0 ||index. getC() != 0 ||index.getT() != 0)
+        } else {
+            if (index.getZ() != 0 || index.getC() != 0 || index.getT() != 0)
                 throw new IndexOutOfBoundsException("Accessing stack index " + index);
             return img.getProcessor();
         }
@@ -117,15 +235,15 @@ public class ImageJUtils {
 
     /**
      * Gets slice from image
+     *
      * @param img the image
      * @return the processor
      */
     public static ImageProcessor getSlice(ImagePlus img, int z, int c, int t) {
-        if(img.isStack()) {
+        if (img.isStack()) {
             return img.getStack().getProcessor(img.getStackIndex(c + 1, z + 1, t + 1));
-        }
-        else {
-            if(z != 0 ||c != 0 ||t != 0)
+        } else {
+            if (z != 0 || c != 0 || t != 0)
                 throw new IndexOutOfBoundsException("Accessing stack index z=" + z + ", c=" + c + ", t=" + t);
             return img.getProcessor();
         }
@@ -843,3 +961,4 @@ public class ImageJUtils {
         }
     }
 }
+

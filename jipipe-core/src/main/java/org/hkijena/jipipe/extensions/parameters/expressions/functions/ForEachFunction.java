@@ -29,17 +29,17 @@ public class ForEachFunction extends ExpressionFunction {
 
         // Evaluate other parameters
         for (int i = 2; i < parameters.size(); i++) {
-            String parameter = (String)parameters.get(i);
+            String parameter = (String) parameters.get(i);
             parseVariableAssignment(variables, localVariables, parameter);
         }
 
         // Evaluate iterated
         Collection<?> sequence;
         String variableName;
-        if(parameters.get(1) instanceof String) {
+        if (parameters.get(1) instanceof String) {
             String assignment = (String) parameters.get(1);
             int separatorIndex = assignment.indexOf('=');
-            if(separatorIndex < 0) {
+            if (separatorIndex < 0) {
                 throw new UserFriendlyRuntimeException("Variable assignment '" + assignment + "' is invalid: Missing '='.",
                         "Invalid variable assignment expression!",
                         "Assignment '" + assignment + "'",
@@ -50,8 +50,7 @@ public class ForEachFunction extends ExpressionFunction {
             variableName = assignment.substring(0, separatorIndex);
             String expression = assignment.substring(separatorIndex + 1);
             sequence = (Collection<?>) DefaultExpressionParameter.getEvaluatorInstance().evaluate(expression, variables);
-        }
-        else {
+        } else {
             variableName = "item";
             sequence = (Collection<?>) parameters.get(1);
         }
@@ -71,16 +70,14 @@ public class ForEachFunction extends ExpressionFunction {
 
     @Override
     public ParameterInfo getParameterInfo(int index) {
-        if(index == 0) {
+        if (index == 0) {
             return new ParameterInfo("Expression", "String that contains the evaluated expression", String.class);
-        }
-        else if(index == 1) {
+        } else if (index == 1) {
             return new ParameterInfo("Sequence", "The sequence to be looped. Can be a string or array. " +
                     "If it is an array, the current item is assigned to a variable 'item'." +
                     "If it is a string, it must have following format: [Variable name]=[Expression]." +
                     " The result of [Expression] is looped through. The item is assigned to the variable [Variable name].", Collection.class, String.class);
-        }
-        else {
+        } else {
             return new ParameterInfo("Variable " + index, "String that has following format: [Variable name]=[Expression]." +
                     " The result of [Expression] is assigned to [Variable name] for the evaluated expression", String.class);
         }

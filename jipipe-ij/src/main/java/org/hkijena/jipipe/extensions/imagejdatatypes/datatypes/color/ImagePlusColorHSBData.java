@@ -14,21 +14,16 @@
 package org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.color;
 
 import ij.ImagePlus;
-import ij.process.ImageProcessor;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeHeavyData;
 import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
+import org.hkijena.jipipe.extensions.imagejdatatypes.color.ColorSpace;
+import org.hkijena.jipipe.extensions.imagejdatatypes.color.HSBColorSpace;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
-import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d2.color.ImagePlus2DColorRGBData;
-import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d3.color.ImagePlus3DColorRGBData;
-import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d4.color.ImagePlus4DColorRGBData;
-import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d5.color.ImagePlus5DColorRGBData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 
-import javax.swing.*;
 import java.awt.*;
-import java.awt.image.BufferedImage;
 import java.nio.file.Path;
 
 /**
@@ -39,7 +34,7 @@ import java.nio.file.Path;
 @JIPipeDocumentation(name = "Image (HSB)")
 @JIPipeOrganization(menuPath = "Images\nColor")
 @JIPipeHeavyData
-public class ImagePlusColorHSBData extends ImagePlusColorData {
+public class ImagePlusColorHSBData extends ImagePlusColorData implements ColoredImagePlusData {
 
     /**
      * The dimensionality of this data.
@@ -48,10 +43,25 @@ public class ImagePlusColorHSBData extends ImagePlusColorData {
     public static final int DIMENSIONALITY = -1;
 
     /**
+     * The color space of this image
+     */
+    public static final ColorSpace COLOR_SPACE = new HSBColorSpace();
+
+    /**
      * @param image wrapped image
      */
     public ImagePlusColorHSBData(ImagePlus image) {
         super(ImagePlusColorHSBData.convertIfNeeded(image));
+    }
+
+    @Override
+    public ColorSpace getColorSpace() {
+        return COLOR_SPACE;
+    }
+
+    @Override
+    public Component preview(int width, int height) {
+        return ImageJUtils.generatePreview(this.getImage(), getColorSpace(), width, height);
     }
 
     /**
@@ -78,6 +88,7 @@ public class ImagePlusColorHSBData extends ImagePlusColorData {
 
     /**
      * Converts the incoming image data into the current format.
+     *
      * @param data the data
      * @return the converted data
      */
@@ -86,42 +97,12 @@ public class ImagePlusColorHSBData extends ImagePlusColorData {
         if (image.getType() != ImagePlus.COLOR_RGB) {
             // This will go through the standard method (greyscale -> RGB -> HSB)
             return new ImagePlusColorHSBData(image);
-        }
-        else if(data instanceof ImagePlusColorRGBData || data instanceof ImagePlus2DColorRGBData || data instanceof ImagePlus3DColorRGBData
-                || data instanceof ImagePlus4DColorRGBData || data instanceof ImagePlus5DColorRGBData) {
-            // Handle case: RGB -> HSB
+        } else if (data instanceof ColoredImagePlusData) {
             ImagePlus copy = data.getDuplicateImage();
-            ImageJUtils.convertRGBToHSB(copy, new JIPipeProgressInfo());
+            COLOR_SPACE.convert(copy, ((ColoredImagePlusData) data).getColorSpace(), new JIPipeProgressInfo());
             return new ImagePlusColorHSBData(copy);
-        }
-        else {
+        } else {
             return new ImagePlusColorHSBData(image);
         }
-    }
-
-    @Override
-    public Component preview(int width, int height) {
-        return generatePreview(this.getImage(), width, height);
-    }
-
-    /**
-     * Generates a preview for a HSB image
-     * @param image the image
-     * @param width the width
-     * @param height the height
-     * @return the preview
-     */
-    public static Component generatePreview(ImagePlus image, int width, int height) {
-        double factorX = 1.0 * width / image.getWidth();
-        double factorY = 1.0 * height / image.getHeight();
-        double factor = Math.max(factorX, factorY);
-        boolean smooth = factor < 0;
-        int imageWidth = (int) (image.getWidth() * factor);
-        int imageHeight = (int) (image.getHeight() * factor);
-        ImagePlus firstSliceImage= new ImagePlus("Preview", image.getProcessor().duplicate());
-        ImageJUtils.convertHSBToRGB(firstSliceImage, new JIPipeProgressInfo());
-        ImageProcessor resized = firstSliceImage.getProcessor().resize(imageWidth, imageHeight, smooth);
-        BufferedImage bufferedImage = resized.getBufferedImage();
-        return new JLabel(new ImageIcon(bufferedImage));
     }
 }

@@ -26,10 +26,6 @@ import java.nio.file.Path;
  */
 @JIPipeDocumentation(name = "Row index table column", description = "A table column that generates each row based on the current row index")
 public class RowIndexTableColumn implements TableColumn {
-    public static RowIndexTableColumn importFrom(Path storagePath) {
-        return new RowIndexTableColumn();
-    }
-
     @Override
     public String getLabel() {
         return "Generate: Row index";
@@ -91,5 +87,9 @@ public class RowIndexTableColumn implements TableColumn {
     @Override
     public void display(String displayName, JIPipeWorkbench workbench, JIPipeDataSource source) {
 
+    }
+
+    public static RowIndexTableColumn importFrom(Path storagePath) {
+        return new RowIndexTableColumn();
     }
 }

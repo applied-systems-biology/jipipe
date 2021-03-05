@@ -64,10 +64,6 @@ public class AnnotationTableData extends ResultsTableData {
         super(other);
     }
 
-    public static AnnotationTableData importFrom(Path storageFolder) {
-        return new AnnotationTableData(ResultsTableData.importFrom(storageFolder));
-    }
-
     /**
      * Adds a new column that contains annotation data and returns its index-
      * If the column already exists, its index is returned.
@@ -97,5 +93,9 @@ public class AnnotationTableData extends ResultsTableData {
     @Override
     public String toString() {
         return "Annotation table (" + getRowCount() + "x" + getColumnCount() + ")";
+    }
+
+    public static AnnotationTableData importFrom(Path storageFolder) {
+        return new AnnotationTableData(ResultsTableData.importFrom(storageFolder));
     }
 }

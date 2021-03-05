@@ -66,41 +66,6 @@ public class ImagePlusData implements JIPipeData {
         this.image = image;
     }
 
-    public static ImagePlus importImagePlusFrom(Path storageFilePath) {
-        Path targetFile = PathUtils.findFileByExtensionIn(storageFilePath, ".tif");
-        if (targetFile == null) {
-            throw new UserFriendlyNullPointerException("Could not find TIFF file in '" + storageFilePath + "'!",
-                    "Unable to find file in location '" + storageFilePath + "'",
-                    "ImagePlusData loading",
-                    "JIPipe needs to load the image from a folder, but it could not find any matching file.",
-                    "Please contact the JIPipe developers about this issue.");
-        }
-        if (ImageJDataTypesSettings.getInstance().isUseBioFormats()) {
-            OMEImageData omeImageData = OMEImageData.importFrom(storageFilePath);
-            return omeImageData.getImage();
-        } else {
-            return IJ.openImage(targetFile.toString());
-        }
-    }
-
-    public static ImagePlusData importFrom(Path storageFilePath) {
-        return new ImagePlusData(importImagePlusFrom(storageFilePath));
-    }
-
-    /**
-     * Gets the dimensionality of {@link ImagePlusData}
-     *
-     * @param klass the class
-     * @return the dimensionality
-     */
-    public static int getDimensionalityOf(Class<? extends ImagePlusData> klass) {
-        try {
-            return klass.getDeclaredField("DIMENSIONALITY").getInt(null);
-        } catch (IllegalAccessException | NoSuchFieldException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
     public ImagePlus getImage() {
         return image;
     }
@@ -162,8 +127,44 @@ public class ImagePlusData implements JIPipeData {
         return JIPipeDataInfo.getInstance(getClass()).getName() + " (" + image + ")";
     }
 
+    public static ImagePlus importImagePlusFrom(Path storageFilePath) {
+        Path targetFile = PathUtils.findFileByExtensionIn(storageFilePath, ".tif");
+        if (targetFile == null) {
+            throw new UserFriendlyNullPointerException("Could not find TIFF file in '" + storageFilePath + "'!",
+                    "Unable to find file in location '" + storageFilePath + "'",
+                    "ImagePlusData loading",
+                    "JIPipe needs to load the image from a folder, but it could not find any matching file.",
+                    "Please contact the JIPipe developers about this issue.");
+        }
+        if (ImageJDataTypesSettings.getInstance().isUseBioFormats()) {
+            OMEImageData omeImageData = OMEImageData.importFrom(storageFilePath);
+            return omeImageData.getImage();
+        } else {
+            return IJ.openImage(targetFile.toString());
+        }
+    }
+
+    public static ImagePlusData importFrom(Path storageFilePath) {
+        return new ImagePlusData(importImagePlusFrom(storageFilePath));
+    }
+
+    /**
+     * Gets the dimensionality of {@link ImagePlusData}
+     *
+     * @param klass the class
+     * @return the dimensionality
+     */
+    public static int getDimensionalityOf(Class<? extends ImagePlusData> klass) {
+        try {
+            return klass.getDeclaredField("DIMENSIONALITY").getInt(null);
+        } catch (IllegalAccessException | NoSuchFieldException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     /**
      * Converts the incoming image data into the current format.
+     *
      * @param data the data
      * @return the converted data
      */

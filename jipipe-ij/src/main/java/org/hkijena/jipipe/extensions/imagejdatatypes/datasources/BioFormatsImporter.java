@@ -167,19 +167,17 @@ public class BioFormatsImporter extends JIPipeSimpleIteratingAlgorithm {
                 if (titleAnnotation.isEnabled()) {
                     traits.add(new JIPipeAnnotation(titleAnnotation.getContent(), title));
                 }
-                if(seriesAnnotation.isEnabled()) {
+                if (seriesAnnotation.isEnabled()) {
                     int idx = title.lastIndexOf('#');
-                    if(idx != -1 && !(idx == title.length() - 1)) {
+                    if (idx != -1 && !(idx == title.length() - 1)) {
                         String numericString = title.substring(idx + 1);
                         try {
                             int series = Integer.parseInt(numericString);
                             seriesAnnotation.addAnnotationIfEnabled(traits, "" + series);
-                        }
-                        catch (NumberFormatException e) {
+                        } catch (NumberFormatException e) {
                             seriesAnnotation.addAnnotationIfEnabled(traits, "1");
                         }
-                    }
-                    else {
+                    } else {
                         seriesAnnotation.addAnnotationIfEnabled(traits, "1");
                     }
                 }

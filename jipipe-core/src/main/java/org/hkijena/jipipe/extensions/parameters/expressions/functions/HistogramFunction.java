@@ -7,7 +7,6 @@ import org.hkijena.jipipe.extensions.parameters.expressions.ParameterInfo;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Comparator;
 import java.util.List;
 
 @JIPipeDocumentation(name = "Calculate histogram (non-negative integers)", description = "Calculates the histogram of the incoming list of numbers. The calculation will ignore negative integer values." +
@@ -36,7 +35,7 @@ public class HistogramFunction extends ExpressionFunction {
         }
         for (Number number : collection) {
             int val = number.intValue();
-            if(val >= 0) {
+            if (val >= 0) {
                 histogram.set(val, histogram.get(val) + 1);
             }
         }

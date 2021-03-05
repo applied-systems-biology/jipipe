@@ -120,77 +120,6 @@ public class ResultsTableData implements JIPipeData, TableModel {
         this.table = (ResultsTable) other.table.clone();
     }
 
-    public static ResultsTableData importFrom(Path storagePath) {
-        try {
-            return new ResultsTableData(ResultsTable.open(PathUtils.findFileByExtensionIn(storagePath, ".csv").toString()));
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    /**
-     * Converts a Python dictionary of column name to row data list to a results table
-     *
-     * @param tableDict the dictionary
-     * @return equivalent results table
-     */
-    public static ResultsTableData fromPython(PyDictionary tableDict) {
-        Map<String, TableColumn> columns = new HashMap<>();
-        for (Object key : tableDict.keys()) {
-            String columnKey = "" + key;
-            List<Object> rows = (List<Object>) tableDict.get(key);
-            boolean isNumeric = true;
-            for (Object row : rows) {
-                isNumeric &= row instanceof Number;
-            }
-            if (isNumeric) {
-                double[] data = new double[rows.size()];
-                for (int i = 0; i < rows.size(); i++) {
-                    data[i] = ((Number) rows.get(i)).doubleValue();
-                }
-                columns.put(columnKey, new DoubleArrayTableColumn(data, columnKey));
-            } else {
-                String[] data = new String[rows.size()];
-                for (int i = 0; i < rows.size(); i++) {
-                    data[i] = "" + rows.get(i);
-                }
-                columns.put(columnKey, new StringArrayTableColumn(data, columnKey));
-            }
-        }
-        return new ResultsTableData(columns);
-    }
-
-    /**
-     * Loads a table from CSV
-     *
-     * @param file the file
-     * @return the table
-     * @throws IOException thrown by {@link ResultsTable}
-     */
-    public static ResultsTableData fromCSV(Path file) throws IOException {
-        return new ResultsTableData(ResultsTable.open(file.toString()));
-    }
-
-    /**
-     * Converts a table model into a string results table
-     *
-     * @param model the model
-     * @return the results table
-     */
-    public static ResultsTableData fromTableModel(TableModel model) {
-        ResultsTableData resultsTableData = new ResultsTableData();
-        for (int col = 0; col < model.getColumnCount(); col++) {
-            resultsTableData.addColumn(model.getColumnName(col), true);
-        }
-        for (int row = 0; row < model.getRowCount(); row++) {
-            resultsTableData.addRow();
-            for (int col = 0; col < model.getColumnCount(); col++) {
-                resultsTableData.setValueAt("" + model.getValueAt(row, col), row, col);
-            }
-        }
-        return resultsTableData;
-    }
-
     private void importFromColumns(Map<String, TableColumn> columns) {
         this.table = new ResultsTable();
 
@@ -1166,6 +1095,77 @@ public class ResultsTableData implements JIPipeData, TableModel {
 
     public ResultsTableData getRow(int row) {
         return getRows(Collections.singleton(row));
+    }
+
+    public static ResultsTableData importFrom(Path storagePath) {
+        try {
+            return new ResultsTableData(ResultsTable.open(PathUtils.findFileByExtensionIn(storagePath, ".csv").toString()));
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    /**
+     * Converts a Python dictionary of column name to row data list to a results table
+     *
+     * @param tableDict the dictionary
+     * @return equivalent results table
+     */
+    public static ResultsTableData fromPython(PyDictionary tableDict) {
+        Map<String, TableColumn> columns = new HashMap<>();
+        for (Object key : tableDict.keys()) {
+            String columnKey = "" + key;
+            List<Object> rows = (List<Object>) tableDict.get(key);
+            boolean isNumeric = true;
+            for (Object row : rows) {
+                isNumeric &= row instanceof Number;
+            }
+            if (isNumeric) {
+                double[] data = new double[rows.size()];
+                for (int i = 0; i < rows.size(); i++) {
+                    data[i] = ((Number) rows.get(i)).doubleValue();
+                }
+                columns.put(columnKey, new DoubleArrayTableColumn(data, columnKey));
+            } else {
+                String[] data = new String[rows.size()];
+                for (int i = 0; i < rows.size(); i++) {
+                    data[i] = "" + rows.get(i);
+                }
+                columns.put(columnKey, new StringArrayTableColumn(data, columnKey));
+            }
+        }
+        return new ResultsTableData(columns);
+    }
+
+    /**
+     * Loads a table from CSV
+     *
+     * @param file the file
+     * @return the table
+     * @throws IOException thrown by {@link ResultsTable}
+     */
+    public static ResultsTableData fromCSV(Path file) throws IOException {
+        return new ResultsTableData(ResultsTable.open(file.toString()));
+    }
+
+    /**
+     * Converts a table model into a string results table
+     *
+     * @param model the model
+     * @return the results table
+     */
+    public static ResultsTableData fromTableModel(TableModel model) {
+        ResultsTableData resultsTableData = new ResultsTableData();
+        for (int col = 0; col < model.getColumnCount(); col++) {
+            resultsTableData.addColumn(model.getColumnName(col), true);
+        }
+        for (int row = 0; row < model.getRowCount(); row++) {
+            resultsTableData.addRow();
+            for (int col = 0; col < model.getColumnCount(); col++) {
+                resultsTableData.setValueAt("" + model.getValueAt(row, col), row, col);
+            }
+        }
+        return resultsTableData;
     }
 
     /**

@@ -1,10 +1,10 @@
 package org.hkijena.jipipe.extensions.parameters.expressions.functions;
 
-import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
-import org.hkijena.jipipe.extensions.parameters.expressions.ExpressionParameters;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
 import org.hkijena.jipipe.extensions.parameters.expressions.DefaultExpressionParameter;
 import org.hkijena.jipipe.extensions.parameters.expressions.ExpressionFunction;
+import org.hkijena.jipipe.extensions.parameters.expressions.ExpressionParameters;
 import org.hkijena.jipipe.extensions.parameters.expressions.ParameterInfo;
 import org.hkijena.jipipe.utils.StringUtils;
 
@@ -20,10 +20,9 @@ public class EvaluateFunction extends ExpressionFunction {
 
     @Override
     public ParameterInfo getParameterInfo(int index) {
-        if(index == 0) {
+        if (index == 0) {
             return new ParameterInfo("Expression", "String that contains the evaluated expression", String.class);
-        }
-        else {
+        } else {
             return new ParameterInfo("Variable " + index, "String that has following format: [Variable name]=[Expression]." +
                     " The result of [Expression] is assigned to [Variable name] for the evaluated expression", String.class);
         }
@@ -33,7 +32,7 @@ public class EvaluateFunction extends ExpressionFunction {
     public Object evaluate(List<Object> parameters, ExpressionParameters variables) {
         ExpressionParameters localVariables;
 
-        if(parameters.size() > 1) {
+        if (parameters.size() > 1) {
             localVariables = new ExpressionParameters();
             for (Map.Entry<String, Object> entry : variables.entrySet()) {
                 localVariables.put(entry.getKey(), entry.getValue());
@@ -41,11 +40,10 @@ public class EvaluateFunction extends ExpressionFunction {
 
             // Add other variables
             for (int i = 1; i < parameters.size(); i++) {
-                String parameter = (String)parameters.get(i);
+                String parameter = (String) parameters.get(i);
                 parseVariableAssignment(variables, localVariables, parameter);
             }
-        }
-        else {
+        } else {
             localVariables = variables;
         }
 
@@ -54,7 +52,7 @@ public class EvaluateFunction extends ExpressionFunction {
 
     public static void parseVariableAssignment(ExpressionParameters source, ExpressionParameters target, String assignment) {
         int separatorIndex = assignment.indexOf('=');
-        if(separatorIndex < 0) {
+        if (separatorIndex < 0) {
             throw new UserFriendlyRuntimeException("Variable assignment '" + assignment + "' is invalid: Missing '='.",
                     "Invalid variable assignment expression!",
                     "Assignment '" + assignment + "'",

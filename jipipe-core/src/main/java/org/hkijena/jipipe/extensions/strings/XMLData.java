@@ -31,15 +31,6 @@ public class XMLData extends StringData {
         super(other);
     }
 
-    public static XMLData importFrom(Path path) {
-        Path file = PathUtils.findFileByExtensionIn(path, ".xml");
-        try {
-            return new XMLData(new String(Files.readAllBytes(file), Charsets.UTF_8));
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
     @Override
     public String getOutputExtension() {
         return ".xml";
@@ -48,5 +39,14 @@ public class XMLData extends StringData {
     @Override
     public String getMimeType() {
         return "text-xml";
+    }
+
+    public static XMLData importFrom(Path path) {
+        Path file = PathUtils.findFileByExtensionIn(path, ".xml");
+        try {
+            return new XMLData(new String(Files.readAllBytes(file), Charsets.UTF_8));
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 }

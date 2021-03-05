@@ -48,6 +48,7 @@ public class ImagePlus2DGreyscale16UData extends ImagePlus2DGreyscaleData {
 
     /**
      * Converts the incoming image data into the current format.
+     *
      * @param data the data
      * @return the converted data
      */

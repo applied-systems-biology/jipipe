@@ -53,25 +53,6 @@ public class UnsatisfiedDependenciesDialog extends JDialog {
         initialize();
     }
 
-    /**
-     * Shows the dialog
-     *
-     * @param workbench          the parent
-     * @param fileName           the project file or folder. Only for informational purposes
-     * @param dependencySet      the unsatisfied dependencies
-     * @param missingUpdateSites missing update sites
-     * @return if loading should be continued anyways
-     */
-    public static boolean showDialog(JIPipeWorkbench workbench, Path fileName, Set<JIPipeDependency> dependencySet, Set<JIPipeImageJUpdateSiteDependency> missingUpdateSites) {
-        UnsatisfiedDependenciesDialog dialog = new UnsatisfiedDependenciesDialog(workbench, fileName, dependencySet, missingUpdateSites);
-        dialog.setModal(true);
-        dialog.pack();
-        dialog.setSize(1024, 768);
-        dialog.setLocationRelativeTo(workbench.getWindow());
-        dialog.setVisible(true);
-        return dialog.continueLoading;
-    }
-
     private void initialize() {
         setTitle("Missing dependencies detected");
         JPanel content = new JPanel(new BorderLayout(8, 8));
@@ -146,5 +127,24 @@ public class UnsatisfiedDependenciesDialog extends JDialog {
 
     public boolean isContinueLoading() {
         return continueLoading;
+    }
+
+    /**
+     * Shows the dialog
+     *
+     * @param workbench          the parent
+     * @param fileName           the project file or folder. Only for informational purposes
+     * @param dependencySet      the unsatisfied dependencies
+     * @param missingUpdateSites missing update sites
+     * @return if loading should be continued anyways
+     */
+    public static boolean showDialog(JIPipeWorkbench workbench, Path fileName, Set<JIPipeDependency> dependencySet, Set<JIPipeImageJUpdateSiteDependency> missingUpdateSites) {
+        UnsatisfiedDependenciesDialog dialog = new UnsatisfiedDependenciesDialog(workbench, fileName, dependencySet, missingUpdateSites);
+        dialog.setModal(true);
+        dialog.pack();
+        dialog.setSize(1024, 768);
+        dialog.setLocationRelativeTo(workbench.getWindow());
+        dialog.setVisible(true);
+        return dialog.continueLoading;
     }
 }

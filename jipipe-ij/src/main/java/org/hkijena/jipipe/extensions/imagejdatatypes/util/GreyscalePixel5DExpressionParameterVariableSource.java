@@ -10,7 +10,7 @@ import java.util.Set;
 /**
  * Variable source that allows to address x, y, and value
  */
-public class GreyscalePixel2DExpressionParameterVariableSource implements ExpressionParameterVariableSource {
+public class GreyscalePixel5DExpressionParameterVariableSource implements ExpressionParameterVariableSource {
 
     private final static Set<ExpressionParameterVariable> VARIABLES;
 
@@ -20,6 +20,12 @@ public class GreyscalePixel2DExpressionParameterVariableSource implements Expres
         VARIABLES.add(new ExpressionParameterVariable("Image height", "The height of the image", "height"));
         VARIABLES.add(new ExpressionParameterVariable("X coordinate", "The X coordinate within the image", "x"));
         VARIABLES.add(new ExpressionParameterVariable("Y coordinate", "The Y coordinate within the image", "y"));
+        VARIABLES.add(new ExpressionParameterVariable("Z coordinate", "The Z coordinate within the image (first index is zero)", "z"));
+        VARIABLES.add(new ExpressionParameterVariable("Channel coordinate", "The channel (C) coordinate within the image (first index is zero)", "c"));
+        VARIABLES.add(new ExpressionParameterVariable("Frame coordinate", "The frame (T) coordinate within the image (first index is zero)", "t"));
+        VARIABLES.add(new ExpressionParameterVariable("Number of channels", "Number of channel planes", "num_c"));
+        VARIABLES.add(new ExpressionParameterVariable("Number of Z slices", "Number of Z planes", "num_z"));
+        VARIABLES.add(new ExpressionParameterVariable("Number of frames", "Number of T planes", "num_t"));
         VARIABLES.add(new ExpressionParameterVariable("Value", "The greyscale value at the (x,y) position", "value"));
     }
 

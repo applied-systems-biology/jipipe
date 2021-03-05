@@ -32,6 +32,13 @@ import java.util.stream.Collectors;
  */
 public interface JIPipeParameterCollection {
     /**
+     * Gets the event bus that posts events about the parameters
+     *
+     * @return The event bus triggering {@link ParameterChangedEvent} and {@link ParameterStructureChangedEvent}
+     */
+    EventBus getEventBus();
+
+    /**
      * Deserializes parameters from JSON
      *
      * @param target the target object that contains the parameters
@@ -193,13 +200,6 @@ public interface JIPipeParameterCollection {
         JIPipeParameterTree tree = new JIPipeParameterTree(collection);
         return tree.getParameters().get(key).get(klass);
     }
-
-    /**
-     * Gets the event bus that posts events about the parameters
-     *
-     * @return The event bus triggering {@link ParameterChangedEvent} and {@link ParameterStructureChangedEvent}
-     */
-    EventBus getEventBus();
 
     /**
      * Triggered when a parameter holder's parameters are changed

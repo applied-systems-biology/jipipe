@@ -17,18 +17,23 @@ import ij.ImagePlus;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeHeavyData;
 import org.hkijena.jipipe.api.JIPipeOrganization;
+import org.hkijena.jipipe.extensions.imagejdatatypes.color.ColorSpace;
+import org.hkijena.jipipe.extensions.imagejdatatypes.color.LABColorSpace;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
-import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.color.ImagePlusColor8UData;
+import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.color.ColoredImagePlusData;
+import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.color.ImagePlusColorLABData;
+import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 
+import java.awt.*;
 import java.nio.file.Path;
 
 /**
- * 8-bit color 4D image
+ * RGB color 4D image
  */
-@JIPipeDocumentation(name = "4D Image (8-bit color)")
+@JIPipeDocumentation(name = "4D image (LAB)")
 @JIPipeOrganization(menuPath = "Images\n4D\nColor")
 @JIPipeHeavyData
-public class ImagePlus4DColor8UData extends ImagePlus4DColorData {
+public class ImagePlus4DColorLABData extends ImagePlus4DColorData implements ColoredImagePlusData {
 
     /**
      * The dimensionality of this data
@@ -36,22 +41,38 @@ public class ImagePlus4DColor8UData extends ImagePlus4DColorData {
     public static final int DIMENSIONALITY = 4;
 
     /**
+     * The color space of this image
+     */
+    public static final ColorSpace COLOR_SPACE = new LABColorSpace();
+
+    /**
      * @param image wrapped image
      */
-    public ImagePlus4DColor8UData(ImagePlus image) {
-        super(ImagePlusColor8UData.convertIfNeeded(image));
+    public ImagePlus4DColorLABData(ImagePlus image) {
+        super(ImagePlusColorLABData.convertIfNeeded(image));
+    }
+
+    @Override
+    public ColorSpace getColorSpace() {
+        return COLOR_SPACE;
+    }
+
+    @Override
+    public Component preview(int width, int height) {
+        return ImageJUtils.generatePreview(this.getImage(), getColorSpace(), width, height);
     }
 
     public static ImagePlusData importFrom(Path storageFolder) {
-        return new ImagePlus4DColor8UData(ImagePlusData.importImagePlusFrom(storageFolder));
+        return new ImagePlus4DColorLABData(ImagePlusData.importImagePlusFrom(storageFolder));
     }
 
     /**
      * Converts the incoming image data into the current format.
+     *
      * @param data the data
      * @return the converted data
      */
     public static ImagePlusData convertFrom(ImagePlusData data) {
-        return new ImagePlus4DColor8UData(data.getImage());
+        return new ImagePlus4DColorLABData(ImagePlusColorLABData.convertFrom(data).getImage());
     }
 }

@@ -1,6 +1,5 @@
 package org.hkijena.jipipe.extensions.imagejdatatypes.viewer.plugins;
 
-import ij.CompositeImage;
 import ij.ImagePlus;
 import ij.process.ColorProcessor;
 import ij.process.ImageProcessor;
@@ -90,17 +89,17 @@ public class LUTManagerPlugin extends ImageViewerPanelPlugin {
 
     @Override
     public ImageProcessor draw(int z, int c, int t, ImageProcessor processor) {
-        if(!(processor instanceof ColorProcessor)) {
+        if (!(processor instanceof ColorProcessor)) {
             if (c <= lutEditors.size() - 1) {
                 processor.setLut(lutEditors.get(c).getLUT());
             }
         }
-        
+
         // Workaround: setting LUT overrides calibration for some reason
         // Recalibrate again
         for (ImageViewerPanelPlugin plugin : getViewerPanel().getPlugins()) {
-            if(plugin instanceof CalibrationPlugin) {
-                plugin.beforeDraw(z,c,t);
+            if (plugin instanceof CalibrationPlugin) {
+                plugin.beforeDraw(z, c, t);
             }
         }
 

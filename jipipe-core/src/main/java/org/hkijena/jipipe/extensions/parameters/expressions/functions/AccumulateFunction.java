@@ -40,10 +40,9 @@ public class AccumulateFunction extends ExpressionFunction {
 
     @Override
     public ParameterInfo getParameterInfo(int index) {
-        if(index == 0) {
+        if (index == 0) {
             return new ParameterInfo("Sequence", "The array to be accumulated.", Collection.class);
-        }
-        else {
+        } else {
             return new ParameterInfo("Operator", "A valid operator string (e.g., +, -, /, ...)", String.class);
         }
     }

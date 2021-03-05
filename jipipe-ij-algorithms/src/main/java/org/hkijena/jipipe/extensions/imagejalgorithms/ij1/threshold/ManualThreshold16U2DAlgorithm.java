@@ -26,11 +26,15 @@ import org.hkijena.jipipe.api.data.JIPipeDefaultMutableSlotConfiguration;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
+import org.hkijena.jipipe.extensions.imagejalgorithms.utils.BlackToWhiteTrackBackground;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscale16UData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleMaskData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.extensions.parameters.primitives.OptionalAnnotationNameParameter;
+import org.hkijena.jipipe.extensions.parameters.ranges.IntNumberRangeParameter;
+import org.hkijena.jipipe.extensions.parameters.ranges.NumberRangeInvertedMode;
+import org.hkijena.jipipe.extensions.parameters.ranges.NumberRangeParameterSettings;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -47,10 +51,10 @@ import static org.hkijena.jipipe.extensions.imagejalgorithms.ImageJAlgorithmsExt
 @JIPipeOutputSlot(value = ImagePlusGreyscaleMaskData.class, slotName = "Output")
 public class ManualThreshold16U2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
-    private int minThreshold = 0;
-    private int maxThreshold = 65535;
+    private IntNumberRangeParameter threshold = new IntNumberRangeParameter(0,65536);
     private OptionalAnnotationNameParameter minThresholdAnnotation = new OptionalAnnotationNameParameter("Min Threshold", true);
     private OptionalAnnotationNameParameter maxThresholdAnnotation = new OptionalAnnotationNameParameter("Max Threshold", true);
+    private JIPipeAnnotationMergeStrategy thresholdAnnotationStrategy = JIPipeAnnotationMergeStrategy.OverwriteExisting;
 
     /**
      * Instantiates a new node type.
@@ -72,10 +76,10 @@ public class ManualThreshold16U2DAlgorithm extends JIPipeSimpleIteratingAlgorith
      */
     public ManualThreshold16U2DAlgorithm(ManualThreshold16U2DAlgorithm other) {
         super(other);
-        this.minThreshold = other.minThreshold;
-        this.maxThreshold = other.maxThreshold;
+        this.threshold = new IntNumberRangeParameter(other.threshold);
         this.minThresholdAnnotation = new OptionalAnnotationNameParameter(other.minThresholdAnnotation);
         this.maxThresholdAnnotation = new OptionalAnnotationNameParameter(other.maxThresholdAnnotation);
+        this.thresholdAnnotationStrategy = other.thresholdAnnotationStrategy;
     }
 
     @Override
@@ -87,6 +91,8 @@ public class ManualThreshold16U2DAlgorithm extends JIPipeSimpleIteratingAlgorith
     protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
         ImagePlusData inputData = dataBatch.getInputData(getFirstInputSlot(), ImagePlusGreyscale16UData.class, progressInfo);
         ImagePlus img = inputData.getDuplicateImage();
+        int minThreshold = threshold.getMin();
+        int maxThreshold = threshold.getMax();
         ImageJUtils.forEachSlice(img, ip -> {
             for (int i = 0; i < ip.getPixelCount(); i++) {
                 int v = ip.get(i);
@@ -109,42 +115,20 @@ public class ManualThreshold16U2DAlgorithm extends JIPipeSimpleIteratingAlgorith
         dataBatch.addOutputData(getFirstOutputSlot(),
                 new ImagePlusGreyscaleMaskData(img),
                 annotations,
-                JIPipeAnnotationMergeStrategy.Merge,
+                thresholdAnnotationStrategy,
                 progressInfo);
     }
 
-
-    @Override
-    public void reportValidity(JIPipeValidityReport report) {
-        report.forCategory("Min threshold").checkIfWithin(this, minThreshold, 0, 65535, true, true);
-        report.forCategory("Max threshold").checkIfWithin(this, maxThreshold, 0, 65535, true, true);
-        if (maxThreshold < minThreshold) {
-            report.forCategory("Thresholds").reportIsInvalid("Max threshold is smaller than min threshold!", "The maximum pixel value to keep is less than the minimum pixel value to keep.",
-                    "Please update the parameters", this);
-        }
+    @JIPipeDocumentation(name = "Threshold", description = "Determines the threshold. If min and max are inverted, values outside the defined range are returned")
+    @NumberRangeParameterSettings(min = 0, max = 65536, trackBackground = BlackToWhiteTrackBackground.class, invertedMode = NumberRangeInvertedMode.OutsideMinMax)
+    @JIPipeParameter("threshold")
+    public IntNumberRangeParameter getThreshold() {
+        return threshold;
     }
 
-    @JIPipeDocumentation(name = "Min threshold", description = "All pixel values less or equal to this are set to zero. The value interval is [0, 65535].")
-    @JIPipeParameter(value = "min-threshold", uiOrder = -50)
-    public int getMinThreshold() {
-        return minThreshold;
-    }
-
-    @JIPipeParameter("min-threshold")
-    public void setMinThreshold(int minThreshold) {
-        this.minThreshold = minThreshold;
-
-    }
-
-    @JIPipeDocumentation(name = "Max threshold", description = "All pixel values greater than this are set to zero. The value interval is [0, 65535].")
-    @JIPipeParameter(value = "max-threshold", uiOrder = -40)
-    public int getMaxThreshold() {
-        return maxThreshold;
-    }
-
-    @JIPipeParameter("max-threshold")
-    public void setMaxThreshold(int maxThreshold) {
-        this.maxThreshold = maxThreshold;
+    @JIPipeParameter("threshold")
+    public void setThreshold(IntNumberRangeParameter threshold) {
+        this.threshold = threshold;
     }
 
     @JIPipeDocumentation(name = "Min threshold annotation", description = "Annotation added to the output that contains the min threshold")
@@ -167,5 +151,16 @@ public class ManualThreshold16U2DAlgorithm extends JIPipeSimpleIteratingAlgorith
     @JIPipeParameter("max-threshold-annotation")
     public void setMaxThresholdAnnotation(OptionalAnnotationNameParameter maxThresholdAnnotation) {
         this.maxThresholdAnnotation = maxThresholdAnnotation;
+    }
+
+    @JIPipeDocumentation(name = "Threshold annotation strategy", description = "Determines what happens if annotations are already present.")
+    @JIPipeParameter("threshold-annotation-strategy")
+    public JIPipeAnnotationMergeStrategy getThresholdAnnotationStrategy() {
+        return thresholdAnnotationStrategy;
+    }
+
+    @JIPipeParameter("threshold-annotation-strategy")
+    public void setThresholdAnnotationStrategy(JIPipeAnnotationMergeStrategy thresholdAnnotationStrategy) {
+        this.thresholdAnnotationStrategy = thresholdAnnotationStrategy;
     }
 }

@@ -58,6 +58,52 @@ public class ParameterTreeUI extends JPanel {
         rebuildModel();
     }
 
+    private void initialize() {
+        setLayout(new BorderLayout());
+        treeComponent = new JTree();
+        treeComponent.setCellRenderer(new Renderer());
+        treeScrollPane = new JScrollPane(treeComponent);
+        add(treeScrollPane, BorderLayout.CENTER);
+        searchTextField = new SearchTextField();
+        searchTextField.addActionListener(e -> rebuildModel());
+        add(searchTextField, BorderLayout.NORTH);
+    }
+
+    public JIPipeParameterTree getTree() {
+        return tree;
+    }
+
+    public void setTree(JIPipeParameterTree tree) {
+        this.tree = tree;
+        rebuildModel();
+    }
+
+    /**
+     * Recreates the tree model
+     */
+    public void rebuildModel() {
+        DefaultMutableTreeNode root = new DefaultMutableTreeNode(tree.getRoot());
+        DefaultTreeModel model = new DefaultTreeModel(root);
+        traverse(root, tree.getRoot(), false);
+        treeComponent.setModel(model);
+        UIUtils.expandAllTree(treeComponent);
+    }
+
+    private void traverse(DefaultMutableTreeNode uiNode, JIPipeParameterTree.Node node, boolean noSearch) {
+        for (JIPipeParameterAccess value : node.getParameters().values()) {
+            if (noSearch || searchTextField.test(value.getName())) {
+                DefaultMutableTreeNode parameterUINode = new DefaultMutableTreeNode(value);
+                uiNode.add(parameterUINode);
+            }
+        }
+        for (JIPipeParameterTree.Node child : node.getChildren().values()) {
+            DefaultMutableTreeNode childUINode = new DefaultMutableTreeNode(child);
+            traverse(childUINode, child, noSearch || searchTextField.test(child.getName()));
+            if (childUINode.getChildCount() > 0)
+                uiNode.add(childUINode);
+        }
+    }
+
     /**
      * Picks a node or parameter
      *
@@ -111,52 +157,6 @@ public class ParameterTreeUI extends JPanel {
             }
         }
         return selected;
-    }
-
-    private void initialize() {
-        setLayout(new BorderLayout());
-        treeComponent = new JTree();
-        treeComponent.setCellRenderer(new Renderer());
-        treeScrollPane = new JScrollPane(treeComponent);
-        add(treeScrollPane, BorderLayout.CENTER);
-        searchTextField = new SearchTextField();
-        searchTextField.addActionListener(e -> rebuildModel());
-        add(searchTextField, BorderLayout.NORTH);
-    }
-
-    public JIPipeParameterTree getTree() {
-        return tree;
-    }
-
-    public void setTree(JIPipeParameterTree tree) {
-        this.tree = tree;
-        rebuildModel();
-    }
-
-    /**
-     * Recreates the tree model
-     */
-    public void rebuildModel() {
-        DefaultMutableTreeNode root = new DefaultMutableTreeNode(tree.getRoot());
-        DefaultTreeModel model = new DefaultTreeModel(root);
-        traverse(root, tree.getRoot(), false);
-        treeComponent.setModel(model);
-        UIUtils.expandAllTree(treeComponent);
-    }
-
-    private void traverse(DefaultMutableTreeNode uiNode, JIPipeParameterTree.Node node, boolean noSearch) {
-        for (JIPipeParameterAccess value : node.getParameters().values()) {
-            if (noSearch || searchTextField.test(value.getName())) {
-                DefaultMutableTreeNode parameterUINode = new DefaultMutableTreeNode(value);
-                uiNode.add(parameterUINode);
-            }
-        }
-        for (JIPipeParameterTree.Node child : node.getChildren().values()) {
-            DefaultMutableTreeNode childUINode = new DefaultMutableTreeNode(child);
-            traverse(childUINode, child, noSearch || searchTextField.test(child.getName()));
-            if (childUINode.getChildCount() > 0)
-                uiNode.add(childUINode);
-        }
     }
 
     /**

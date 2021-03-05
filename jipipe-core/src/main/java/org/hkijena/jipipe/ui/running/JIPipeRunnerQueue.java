@@ -39,15 +39,6 @@ public class JIPipeRunnerQueue {
     }
 
     /**
-     * @return Singleton instance
-     */
-    public static JIPipeRunnerQueue getInstance() {
-        if (instance == null)
-            instance = new JIPipeRunnerQueue();
-        return instance;
-    }
-
-    /**
      * Determines if a runnable is enqueued or running
      *
      * @param runnable the runnable
@@ -175,5 +166,14 @@ public class JIPipeRunnerQueue {
      */
     public JIPipeRunnable getCurrentRun() {
         return currentlyRunningWorker != null ? currentlyRunningWorker.getRun() : null;
+    }
+
+    /**
+     * @return Singleton instance
+     */
+    public static JIPipeRunnerQueue getInstance() {
+        if (instance == null)
+            instance = new JIPipeRunnerQueue();
+        return instance;
     }
 }

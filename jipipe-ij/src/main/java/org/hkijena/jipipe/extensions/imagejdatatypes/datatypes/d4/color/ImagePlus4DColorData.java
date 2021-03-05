@@ -14,33 +14,81 @@
 package org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d4.color;
 
 import ij.ImagePlus;
+import ij.process.ImageConverter;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeHeavyData;
 import org.hkijena.jipipe.api.JIPipeOrganization;
+import org.hkijena.jipipe.extensions.imagejdatatypes.color.ColorSpace;
+import org.hkijena.jipipe.extensions.imagejdatatypes.color.RGBColorSpace;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
-import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.color.ImagePlusColorData;
+import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.color.ColoredImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d4.ImagePlus4DData;
+import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 
+import java.awt.*;
 import java.nio.file.Path;
 
 /**
- * Color 4D image
+ * A colored image without dimension.
+ * It acts as base and intermediate type between colored images. The convertFrom(data) method copies the color space
+ * Conversion works through {@link org.hkijena.jipipe.extensions.imagejdatatypes.algorithms.ImplicitImageTypeConverter}
  */
-@JIPipeDocumentation(name = "4D image (color)")
-@JIPipeOrganization(menuPath = "Images\n4D\nColor")
+@JIPipeDocumentation(name = "4D Image (Color)")
+@JIPipeOrganization(menuPath = "Images\n3D\nColor")
 @JIPipeHeavyData
-public class ImagePlus4DColorData extends ImagePlus4DData {
+public class ImagePlus4DColorData extends ImagePlus4DData implements ColoredImagePlusData {
 
     /**
-     * The dimensionality of this data
+     * The dimensionality of this data.
+     * -1 means that we do not have information about the dimensionality
      */
     public static final int DIMENSIONALITY = 4;
+    private ColorSpace colorSpace = new RGBColorSpace();
 
     /**
      * @param image wrapped image
      */
     public ImagePlus4DColorData(ImagePlus image) {
-        super(ImagePlusColorData.convertIfNeeded(image));
+        super(ImagePlus4DColorData.convertIfNeeded(image));
+    }
+
+    public ImagePlus4DColorData(ImagePlus image, ColorSpace colorSpace) {
+        super(ImagePlus4DColorData.convertIfNeeded(image));
+        this.colorSpace = colorSpace;
+    }
+
+    @Override
+    public ColorSpace getColorSpace() {
+        return colorSpace;
+    }
+
+    @Override
+    public Component preview(int width, int height) {
+        return ImageJUtils.generatePreview(this.getImage(), getColorSpace(), width, height);
+    }
+
+    @Override
+    public String toString() {
+        return super.toString() + " [" + getColorSpace() + " colors]";
+    }
+
+    /**
+     * Converts an {@link ImagePlus} to the color space of this data.
+     * Does not guarantee that the input image is copied.
+     *
+     * @param image the image
+     * @return converted image.
+     */
+    public static ImagePlus convertIfNeeded(ImagePlus image) {
+        if (image.getType() != ImagePlus.COLOR_RGB) {
+            String title = image.getTitle();
+            image = image.duplicate();
+            image.setTitle(title);
+            ImageConverter.setDoScaling(true);
+            ImageConverter ic = new ImageConverter(image);
+            ic.convertToRGB();
+        }
+        return image;
     }
 
     public static ImagePlusData importFrom(Path storageFolder) {
@@ -49,10 +97,20 @@ public class ImagePlus4DColorData extends ImagePlus4DData {
 
     /**
      * Converts the incoming image data into the current format.
+     * Copies the color space if provided with an {@link ColoredImagePlusData}
+     *
      * @param data the data
      * @return the converted data
      */
     public static ImagePlusData convertFrom(ImagePlusData data) {
-        return new ImagePlus4DColorData(data.getImage());
+        ImagePlus image = data.getImage();
+        if (image.getType() != ImagePlus.COLOR_RGB) {
+            // This will go through the standard method (greyscale -> RGB -> HSB)
+            return new ImagePlus4DColorData(image);
+        } else if (data instanceof ColoredImagePlusData) {
+            return new ImagePlus4DColorData(image, ((ColoredImagePlusData) data).getColorSpace());
+        } else {
+            return new ImagePlus4DColorData(image);
+        }
     }
 }

@@ -48,6 +48,7 @@ public class ImagePlus5DGreyscaleMaskData extends ImagePlus5DGreyscale8UData {
 
     /**
      * Converts the incoming image data into the current format.
+     *
      * @param data the data
      * @return the converted data
      */

@@ -15,10 +15,10 @@ package org.hkijena.jipipe.extensions.parameters.expressions.functions;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
-import org.hkijena.jipipe.extensions.parameters.expressions.ExpressionParameters;
 import com.google.common.collect.ImmutableList;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.extensions.parameters.expressions.ExpressionFunction;
+import org.hkijena.jipipe.extensions.parameters.expressions.ExpressionParameters;
 import org.hkijena.jipipe.utils.JsonUtils;
 
 import java.util.ArrayList;

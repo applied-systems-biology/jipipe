@@ -46,6 +46,10 @@ import org.hkijena.jipipe.extensions.parameters.pairs.*;
 import org.hkijena.jipipe.extensions.parameters.patterns.StringPatternExtraction;
 import org.hkijena.jipipe.extensions.parameters.patterns.StringPatternExtractionParameterEditorUI;
 import org.hkijena.jipipe.extensions.parameters.primitives.*;
+import org.hkijena.jipipe.extensions.parameters.ranges.FloatNumberRangeParameter;
+import org.hkijena.jipipe.extensions.parameters.ranges.IntNumberRangeParameter;
+import org.hkijena.jipipe.extensions.parameters.ranges.NumberRangeParameter;
+import org.hkijena.jipipe.extensions.parameters.ranges.NumberRangeParameterEditorUI;
 import org.hkijena.jipipe.extensions.parameters.references.*;
 import org.hkijena.jipipe.extensions.parameters.roi.*;
 import org.hkijena.jipipe.extensions.parameters.scripts.ImageJMacro;
@@ -130,9 +134,28 @@ public class StandardParametersExtension extends JIPipePrepackagedDefaultJavaExt
         registerPatternParameters();
         registerScriptParameters();
         registerExpressionParameters();
+        registerRangeParameters();
 
         registerMenuExtension(ParameterTesterMenuExtension.class);
         registerMenuExtension(ExpressionTesterMenuExtension.class);
+    }
+
+    private void registerRangeParameters() {
+        registerParameterEditor(NumberRangeParameter.class, NumberRangeParameterEditorUI.class);
+        registerParameterType("number-range-float",
+                FloatNumberRangeParameter.class,
+                null,
+                null,
+                "Number range (float)",
+                "A range of numbers",
+                null);
+        registerParameterType("number-range-integer",
+                IntNumberRangeParameter.class,
+                null,
+                null,
+                "Number range (int)",
+                "A range of numbers",
+                null);
     }
 
     private void registerExpressionParameters() {

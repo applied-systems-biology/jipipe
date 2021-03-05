@@ -57,6 +57,7 @@ public class AutoThreshold2DAlgorithm extends JIPipeIteratingAlgorithm {
 
     private DefaultExpressionParameter thresholdCombinationExpression = new DefaultExpressionParameter("MIN(thresholds)");
     private ImageROITargetArea sourceArea = ImageROITargetArea.WholeImage;
+    private JIPipeAnnotationMergeStrategy thresholdAnnotationStrategy = JIPipeAnnotationMergeStrategy.OverwriteExisting;
 
     /**
      * @param info the info
@@ -83,6 +84,7 @@ public class AutoThreshold2DAlgorithm extends JIPipeIteratingAlgorithm {
         this.thresholdMode = other.thresholdMode;
         this.thresholdCombinationExpression = new DefaultExpressionParameter(other.thresholdCombinationExpression);
         this.sourceArea = other.sourceArea;
+        this.thresholdAnnotationStrategy = other.thresholdAnnotationStrategy;
         updateRoiSlot();
     }
 
@@ -201,9 +203,20 @@ public class AutoThreshold2DAlgorithm extends JIPipeIteratingAlgorithm {
             dataBatch.addOutputData(getFirstOutputSlot(),
                     new ImagePlusGreyscaleMaskData(img),
                     annotations,
-                    JIPipeAnnotationMergeStrategy.OverwriteExisting,
+                    thresholdAnnotationStrategy,
                     progressInfo);
         }
+    }
+
+    @JIPipeDocumentation(name = "Threshold annotation strategy", description = "Determines what happens if annotations are already present.")
+    @JIPipeParameter("threshold-annotation-strategy")
+    public JIPipeAnnotationMergeStrategy getThresholdAnnotationStrategy() {
+        return thresholdAnnotationStrategy;
+    }
+
+    @JIPipeParameter("threshold-annotation-strategy")
+    public void setThresholdAnnotationStrategy(JIPipeAnnotationMergeStrategy thresholdAnnotationStrategy) {
+        this.thresholdAnnotationStrategy = thresholdAnnotationStrategy;
     }
 
     @JIPipeParameter("method")

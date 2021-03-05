@@ -29,10 +29,6 @@ import java.nio.file.Path;
 @JIPipeDocumentation(name = "Output data", description = "Output of a compartment")
 @JIPipeHidden
 public class JIPipeCompartmentOutputData implements JIPipeData {
-    public static JIPipeCompartmentOutputData importFrom(Path path) {
-        return new JIPipeCompartmentOutputData();
-    }
-
     @Override
     public void saveTo(Path storageFilePath, String name, boolean forceName, JIPipeProgressInfo progressInfo) {
 
@@ -46,5 +42,9 @@ public class JIPipeCompartmentOutputData implements JIPipeData {
     @Override
     public void display(String displayName, JIPipeWorkbench workbench, JIPipeDataSource source) {
 
+    }
+
+    public static JIPipeCompartmentOutputData importFrom(Path path) {
+        return new JIPipeCompartmentOutputData();
     }
 }

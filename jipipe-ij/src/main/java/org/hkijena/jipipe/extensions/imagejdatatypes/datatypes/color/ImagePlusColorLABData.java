@@ -18,19 +18,24 @@ import ij.process.ImageConverter;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeHeavyData;
 import org.hkijena.jipipe.api.JIPipeOrganization;
+import org.hkijena.jipipe.api.JIPipeProgressInfo;
+import org.hkijena.jipipe.extensions.imagejdatatypes.color.ColorSpace;
+import org.hkijena.jipipe.extensions.imagejdatatypes.color.LABColorSpace;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
+import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 
+import java.awt.*;
 import java.nio.file.Path;
 
 /**
- * 8-bit color image without dimension.
+ * LAB colored image without dimension.
  * These image data types exist to address general processing solely based on bit-depth (e.g. process all 2D image planes).
  * Conversion works through {@link org.hkijena.jipipe.extensions.imagejdatatypes.algorithms.ImplicitImageTypeConverter}
  */
-@JIPipeDocumentation(name = "Image (8-bit color)")
+@JIPipeDocumentation(name = "Image (LAB)")
 @JIPipeOrganization(menuPath = "Images\nColor")
 @JIPipeHeavyData
-public class ImagePlusColor8UData extends ImagePlusColorData {
+public class ImagePlusColorLABData extends ImagePlusColorData implements ColoredImagePlusData {
 
     /**
      * The dimensionality of this data.
@@ -39,10 +44,25 @@ public class ImagePlusColor8UData extends ImagePlusColorData {
     public static final int DIMENSIONALITY = -1;
 
     /**
+     * The color space of this image
+     */
+    public static final ColorSpace COLOR_SPACE = new LABColorSpace();
+
+    /**
      * @param image wrapped image
      */
-    public ImagePlusColor8UData(ImagePlus image) {
-        super(convertIfNeeded(image));
+    public ImagePlusColorLABData(ImagePlus image) {
+        super(ImagePlusColorLABData.convertIfNeeded(image));
+    }
+
+    @Override
+    public ColorSpace getColorSpace() {
+        return COLOR_SPACE;
+    }
+
+    @Override
+    public Component preview(int width, int height) {
+        return ImageJUtils.generatePreview(this.getImage(), getColorSpace(), width, height);
     }
 
     /**
@@ -53,26 +73,39 @@ public class ImagePlusColor8UData extends ImagePlusColorData {
      * @return converted image.
      */
     public static ImagePlus convertIfNeeded(ImagePlus image) {
-        if (image.getType() != ImagePlus.COLOR_256) {
+        if (image.getType() != ImagePlus.COLOR_RGB) {
+            String title = image.getTitle();
             image = image.duplicate();
+            image.setTitle(title);
             ImageConverter.setDoScaling(true);
             ImageConverter ic = new ImageConverter(image);
             ic.convertToRGB();
-            ic.convertRGBtoIndexedColor(256);
+            ImageJUtils.convertRGBToLAB(image, new JIPipeProgressInfo());
         }
         return image;
     }
 
     public static ImagePlusData importFrom(Path storageFolder) {
-        return new ImagePlusColor8UData(ImagePlusData.importImagePlusFrom(storageFolder));
+        return new ImagePlusColorLABData(ImagePlusData.importImagePlusFrom(storageFolder));
     }
 
     /**
      * Converts the incoming image data into the current format.
+     *
      * @param data the data
      * @return the converted data
      */
     public static ImagePlusData convertFrom(ImagePlusData data) {
-        return new ImagePlusColor8UData(data.getImage());
+        ImagePlus image = data.getImage();
+        if (image.getType() != ImagePlus.COLOR_RGB) {
+            // Standard method: Greyscale -> RGB
+            return new ImagePlusColorLABData(data.getImage());
+        } else if (data instanceof ColoredImagePlusData) {
+            ImagePlus copy = data.getDuplicateImage();
+            COLOR_SPACE.convert(copy, ((ColoredImagePlusData) data).getColorSpace(), new JIPipeProgressInfo());
+            return new ImagePlusColorLABData(copy);
+        } else {
+            return new ImagePlusColorLABData(data.getImage());
+        }
     }
 }

@@ -79,7 +79,7 @@ public class JIPipeGraphCompartmentUI extends JIPipeGraphEditorUI {
         setPropertyPanel(defaultPanel);
 
         JIPipeProject project = algorithmGraph.getAttachment(JIPipeProject.class);
-        if(project != null) {
+        if (project != null) {
             compartmentInstance = project.getCompartments().getOrDefault(compartment, null);
         }
 
@@ -89,10 +89,9 @@ public class JIPipeGraphCompartmentUI extends JIPipeGraphEditorUI {
 
     @Override
     public String getCompartment() {
-        if(compartmentInstance == null) {
+        if (compartmentInstance == null) {
             return super.getCompartment();
-        }
-        else {
+        } else {
             return compartmentInstance.getProjectCompartmentId();
         }
     }
@@ -187,6 +186,118 @@ public class JIPipeGraphCompartmentUI extends JIPipeGraphEditorUI {
         getCanvasUI().setContextActions(actions);
     }
 
+    private void initializeDefaultPanel() {
+        defaultPanel = new JPanel(new BorderLayout());
+
+        JSplitPane splitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT);
+        splitPane.setDividerSize(3);
+        splitPane.setResizeWeight(0.33);
+        addComponentListener(new ComponentAdapter() {
+            @Override
+            public void componentResized(ComponentEvent e) {
+                super.componentResized(e);
+                splitPane.setDividerLocation(0.33);
+            }
+        });
+        defaultPanel.add(splitPane, BorderLayout.CENTER);
+
+        JIPipeGraphEditorMinimap minimap = new JIPipeGraphEditorMinimap(this);
+        splitPane.setTopComponent(minimap);
+
+        MarkdownReader markdownReader = new MarkdownReader(false);
+        markdownReader.setDocument(MarkdownDocument.fromPluginResource("documentation/algorithm-graph.md"));
+        splitPane.setBottomComponent(markdownReader);
+    }
+
+//    @Override
+//    public void installNodeUIFeatures(JIPipeAlgorithmUI ui) {
+//        ui.installContextMenu(Arrays.asList(
+//                new OpenSettingsAlgorithmContextMenuFeature(),
+//                new AddToSelectionAlgorithmContextMenuFeature(),
+//                new SeparatorAlgorithmContextMenuFeature(),
+//                new RunAndShowResultsAlgorithmContextMenuFeature(),
+//                new SeparatorAlgorithmContextMenuFeature(),
+//                new CutCopyAlgorithmContextMenuFeature(),
+//                new SeparatorAlgorithmContextMenuFeature(),
+//                new EnableDisablePassThroughAlgorithmContextMenuFeature(),
+//                new SeparatorAlgorithmContextMenuFeature(),
+//                new JsonAlgorithmToGroupAlgorithmContextMenuFeature(),
+//                new CollapseIOInterfaceAlgorithmContextMenuFeature(),
+//                new DeleteAlgorithmContextMenuFeature()
+//        ));
+//    }
+
+    @Override
+    public void reloadMenuBar() {
+        getMenuBar().removeAll();
+        getAddableAlgorithms().clear();
+        initializeAddNodesMenus(this, getMenuBar(), getAddableAlgorithms());
+        initializeCommonActions();
+        updateNavigation();
+    }
+
+    @Override
+    protected void updateSelection() {
+        super.updateSelection();
+        if (disableUpdateOnSelection)
+            return;
+        if (getSelection().isEmpty()) {
+            setPropertyPanel(defaultPanel);
+        } else if (getSelection().size() == 1) {
+            JIPipeNodeUI ui = getSelection().iterator().next();
+            setPropertyPanel(new JIPipeSingleAlgorithmSelectionPanelUI(this, ui.getNode()));
+        } else {
+            setPropertyPanel(new JIPipeMultiAlgorithmSelectionPanelUI((JIPipeProjectWorkbench) getWorkbench(), getCanvasUI(),
+                    getSelection().stream().map(JIPipeNodeUI::getNode).collect(Collectors.toSet())));
+        }
+    }
+
+    @Subscribe
+    public void onDefaultActionRequested(JIPipeGraphCanvasUI.DefaultAlgorithmUIActionRequestedEvent event) {
+        if (event.getUi().getNode() instanceof NodeGroup) {
+            if (event.getUi().getNode() instanceof NodeGroup) {
+                if (getWorkbench() instanceof JIPipeProjectWorkbench) {
+                    JIPipeNodeGroupUI.openGroupNodeGraph(getWorkbench(), (NodeGroup) event.getUi().getNode(), true);
+                }
+            }
+        }
+    }
+
+    /**
+     * Listens to events of algorithms requesting some action
+     *
+     * @param event the event
+     */
+    @Subscribe
+    public void onAlgorithmActionRequested(JIPipeGraphCanvasUI.NodeUIActionRequestedEvent event) {
+        if (event.getAction() instanceof RunAndShowResultsAction) {
+            disableUpdateOnSelection = true;
+            selectOnly(event.getUi());
+            JIPipeSingleAlgorithmSelectionPanelUI panel = new JIPipeSingleAlgorithmSelectionPanelUI(this,
+                    event.getUi().getNode());
+            setPropertyPanel(panel);
+            panel.runTestBench(true,
+                    false,
+                    false,
+                    true,
+                    ((RunAndShowResultsAction) event.getAction()).isStoreIntermediateResults(),
+                    false);
+            SwingUtilities.invokeLater(() -> disableUpdateOnSelection = false);
+        } else if (event.getAction() instanceof UpdateCacheAction) {
+            disableUpdateOnSelection = true;
+            selectOnly(event.getUi());
+            JIPipeSingleAlgorithmSelectionPanelUI panel = new JIPipeSingleAlgorithmSelectionPanelUI(this,
+                    event.getUi().getNode());
+            setPropertyPanel(panel);
+            panel.runTestBench(false,
+                    true,
+                    false,
+                    false,
+                    ((UpdateCacheAction) event.getAction()).isStoreIntermediateResults(),
+                    false);
+            SwingUtilities.invokeLater(() -> disableUpdateOnSelection = false);
+        }
+    }
 
     /**
      * Initializes the "Add nodes" menus
@@ -212,24 +323,6 @@ public class JIPipeGraphCompartmentUI extends JIPipeGraphEditorUI {
             }
         }
     }
-
-//    @Override
-//    public void installNodeUIFeatures(JIPipeAlgorithmUI ui) {
-//        ui.installContextMenu(Arrays.asList(
-//                new OpenSettingsAlgorithmContextMenuFeature(),
-//                new AddToSelectionAlgorithmContextMenuFeature(),
-//                new SeparatorAlgorithmContextMenuFeature(),
-//                new RunAndShowResultsAlgorithmContextMenuFeature(),
-//                new SeparatorAlgorithmContextMenuFeature(),
-//                new CutCopyAlgorithmContextMenuFeature(),
-//                new SeparatorAlgorithmContextMenuFeature(),
-//                new EnableDisablePassThroughAlgorithmContextMenuFeature(),
-//                new SeparatorAlgorithmContextMenuFeature(),
-//                new JsonAlgorithmToGroupAlgorithmContextMenuFeature(),
-//                new CollapseIOInterfaceAlgorithmContextMenuFeature(),
-//                new DeleteAlgorithmContextMenuFeature()
-//        ));
-//    }
 
     /**
      * Initializes a menu for one algorithm category
@@ -338,100 +431,5 @@ public class JIPipeGraphCompartmentUI extends JIPipeGraphEditorUI {
         }
         while (changed);
 
-    }
-
-    private void initializeDefaultPanel() {
-        defaultPanel = new JPanel(new BorderLayout());
-
-        JSplitPane splitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT);
-        splitPane.setDividerSize(3);
-        splitPane.setResizeWeight(0.33);
-        addComponentListener(new ComponentAdapter() {
-            @Override
-            public void componentResized(ComponentEvent e) {
-                super.componentResized(e);
-                splitPane.setDividerLocation(0.33);
-            }
-        });
-        defaultPanel.add(splitPane, BorderLayout.CENTER);
-
-        JIPipeGraphEditorMinimap minimap = new JIPipeGraphEditorMinimap(this);
-        splitPane.setTopComponent(minimap);
-
-        MarkdownReader markdownReader = new MarkdownReader(false);
-        markdownReader.setDocument(MarkdownDocument.fromPluginResource("documentation/algorithm-graph.md"));
-        splitPane.setBottomComponent(markdownReader);
-    }
-
-    @Override
-    public void reloadMenuBar() {
-        getMenuBar().removeAll();
-        getAddableAlgorithms().clear();
-        initializeAddNodesMenus(this, getMenuBar(), getAddableAlgorithms());
-        initializeCommonActions();
-        updateNavigation();
-    }
-
-    @Override
-    protected void updateSelection() {
-        super.updateSelection();
-        if (disableUpdateOnSelection)
-            return;
-        if (getSelection().isEmpty()) {
-            setPropertyPanel(defaultPanel);
-        } else if (getSelection().size() == 1) {
-            JIPipeNodeUI ui = getSelection().iterator().next();
-            setPropertyPanel(new JIPipeSingleAlgorithmSelectionPanelUI(this, ui.getNode()));
-        } else {
-            setPropertyPanel(new JIPipeMultiAlgorithmSelectionPanelUI((JIPipeProjectWorkbench) getWorkbench(), getCanvasUI(),
-                    getSelection().stream().map(JIPipeNodeUI::getNode).collect(Collectors.toSet())));
-        }
-    }
-
-    @Subscribe
-    public void onDefaultActionRequested(JIPipeGraphCanvasUI.DefaultAlgorithmUIActionRequestedEvent event) {
-        if (event.getUi().getNode() instanceof NodeGroup) {
-            if (event.getUi().getNode() instanceof NodeGroup) {
-                if (getWorkbench() instanceof JIPipeProjectWorkbench) {
-                    JIPipeNodeGroupUI.openGroupNodeGraph(getWorkbench(), (NodeGroup) event.getUi().getNode(), true);
-                }
-            }
-        }
-    }
-
-    /**
-     * Listens to events of algorithms requesting some action
-     *
-     * @param event the event
-     */
-    @Subscribe
-    public void onAlgorithmActionRequested(JIPipeGraphCanvasUI.NodeUIActionRequestedEvent event) {
-        if (event.getAction() instanceof RunAndShowResultsAction) {
-            disableUpdateOnSelection = true;
-            selectOnly(event.getUi());
-            JIPipeSingleAlgorithmSelectionPanelUI panel = new JIPipeSingleAlgorithmSelectionPanelUI(this,
-                    event.getUi().getNode());
-            setPropertyPanel(panel);
-            panel.runTestBench(true,
-                    false,
-                    false,
-                    true,
-                    ((RunAndShowResultsAction) event.getAction()).isStoreIntermediateResults(),
-                    false);
-            SwingUtilities.invokeLater(() -> disableUpdateOnSelection = false);
-        } else if (event.getAction() instanceof UpdateCacheAction) {
-            disableUpdateOnSelection = true;
-            selectOnly(event.getUi());
-            JIPipeSingleAlgorithmSelectionPanelUI panel = new JIPipeSingleAlgorithmSelectionPanelUI(this,
-                    event.getUi().getNode());
-            setPropertyPanel(panel);
-            panel.runTestBench(false,
-                    true,
-                    false,
-                    false,
-                    ((UpdateCacheAction) event.getAction()).isStoreIntermediateResults(),
-                    false);
-            SwingUtilities.invokeLater(() -> disableUpdateOnSelection = false);
-        }
     }
 }

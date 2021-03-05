@@ -18,7 +18,10 @@ import ij.IJ;
 import ij.ImagePlus;
 import ij.Macro;
 import ij.WindowManager;
-import ij.gui.*;
+import ij.gui.PointRoi;
+import ij.gui.PolygonRoi;
+import ij.gui.Roi;
+import ij.gui.ShapeRoi;
 import ij.io.RoiDecoder;
 import ij.io.RoiEncoder;
 import ij.macro.Interpreter;
@@ -87,139 +90,6 @@ public class ROIListData extends ArrayList<Roi> implements JIPipeData {
      */
     public ROIListData(RoiManager roiManager) {
         this.addAll(Arrays.asList(roiManager.getRoisAsArray()));
-    }
-
-    /**
-     * Creates a 2D 8-bit black image that covers the region of all provided ROI
-     *
-     * @param rois the rois
-     * @return the image. 1x1 pixel if no ROI or empty roi are provided
-     */
-    public static ImagePlus createDummyImageFor(Collection<ROIListData> rois) {
-        int width = 1;
-        int height = 1;
-        for (ROIListData data : rois) {
-            Rectangle bounds = data.getBounds();
-            int w = Math.max(0, bounds.x) + bounds.width;
-            int h = Math.max(0, bounds.y) + bounds.height;
-            width = Math.max(w, width);
-            height = Math.max(h, height);
-        }
-        return IJ.createImage("empty", "8-bit", width, height, 1);
-    }
-
-    /**
-     * Loads {@link Roi} from a path that contains a zip/roi file
-     *
-     * @param storageFilePath path that contains a zip/roi file
-     */
-    public static ROIListData importFrom(Path storageFilePath) {
-        ROIListData result = new ROIListData();
-        Path zipFile = PathUtils.findFileByExtensionIn(storageFilePath, ".zip");
-        Path roiFile = PathUtils.findFileByExtensionIn(storageFilePath, ".roi");
-        if (zipFile != null) {
-            result.addAll(loadRoiListFromFile(zipFile));
-        } else if (roiFile != null) {
-            result.addAll(loadRoiListFromFile(roiFile));
-        } else {
-            throw new RuntimeException(new FileNotFoundException("Could not find a .roi or .zip file in " + storageFilePath));
-        }
-        return result;
-    }
-
-    /**
-     * Loads a set of ROI from a zip file
-     *
-     * @param fileName the zip file
-     * @return the Roi list
-     */
-    public static List<Roi> loadRoiListFromFile(Path fileName) {
-        // Code adapted from ImageJ RoiManager
-        List<Roi> result = new ArrayList<>();
-
-        if (fileName.toString().toLowerCase().endsWith(".roi")) {
-            try {
-                Roi roi = new RoiDecoder(fileName.toString()).getRoi();
-                if (roi != null)
-                    result.add(roi);
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-        } else {
-            ZipInputStream in = null;
-            ByteArrayOutputStream out = null;
-            int nRois = 0;
-            try {
-                in = new ZipInputStream(new FileInputStream(fileName.toFile()));
-                byte[] buf = new byte[1024];
-                int len;
-                ZipEntry entry = in.getNextEntry();
-                while (entry != null) {
-                    String name = entry.getName();
-                    if (name.endsWith(".roi")) {
-                        out = new ByteArrayOutputStream();
-                        while ((len = in.read(buf)) > 0)
-                            out.write(buf, 0, len);
-                        out.close();
-                        byte[] bytes = out.toByteArray();
-                        RoiDecoder rd = new RoiDecoder(bytes, name);
-                        Roi roi = rd.getRoi();
-                        if (roi != null) {
-                            name = name.substring(0, name.length() - 4);
-                            result.add(roi);
-                            nRois++;
-                        }
-                    }
-                    entry = in.getNextEntry();
-                }
-                in.close();
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            } finally {
-                if (in != null)
-                    try {
-                        in.close();
-                    } catch (IOException e) {
-                    }
-                if (out != null)
-                    try {
-                        out.close();
-                    } catch (IOException e) {
-                    }
-            }
-        }
-
-        return result;
-    }
-
-    /**
-     * Gets the centroid of a ROI
-     *
-     * @param roi the roi
-     * @return the centroid
-     */
-    public static Point getCentroid(Roi roi) {
-        return new Point((int) roi.getContourCentroid()[0], (int) roi.getContourCentroid()[1]);
-    }
-
-    /**
-     * Returns true if the ROI is visible at given slice index
-     *
-     * @param roi      the roi
-     * @param location slice index, zero-based
-     * @param ignoreZ  ignore Z constraint
-     * @param ignoreC  ignore C constraint
-     * @param ignoreT  ignore T constraint
-     * @return if the ROI is visible
-     */
-    public static boolean isVisibleIn(Roi roi, ImageSliceIndex location, boolean ignoreZ, boolean ignoreC, boolean ignoreT) {
-        if (!ignoreZ && roi.getZPosition() > 0 && roi.getZPosition() != (location.getZ() + 1))
-            return false;
-        if (!ignoreC && roi.getCPosition() > 0 && roi.getCPosition() != (location.getC() + 1))
-            return false;
-        if (!ignoreT && roi.getTPosition() > 0 && roi.getTPosition() != (location.getT() + 1))
-            return false;
-        return true;
     }
 
     /**
@@ -329,7 +199,7 @@ public class ROIListData extends ArrayList<Roi> implements JIPipeData {
         margin.getWidth().setUseExactValue(false);
         margin.getHeight().setUseExactValue(false);
 
-        if(roiManager.getCount() > 0) {
+        if (roiManager.getCount() > 0) {
             int result = JOptionPane.showOptionDialog(workbench.getWindow(),
                     "The current ROI manager already contains ROI. What should be done?",
                     "Show ROI",
@@ -338,10 +208,9 @@ public class ROIListData extends ArrayList<Roi> implements JIPipeData {
                     null,
                     new Object[]{"Add to list", "New list", "Cancel"},
                     "Add to list");
-            if(result == JOptionPane.NO_OPTION) {
+            if (result == JOptionPane.NO_OPTION) {
                 roiManager.reset();
-            }
-            else if(result == JOptionPane.CANCEL_OPTION) {
+            } else if (result == JOptionPane.CANCEL_OPTION) {
                 return;
             }
         }
@@ -1092,5 +961,138 @@ public class ROIListData extends ArrayList<Roi> implements JIPipeData {
             }
         }
         return Math.max(0, result);
+    }
+
+    /**
+     * Creates a 2D 8-bit black image that covers the region of all provided ROI
+     *
+     * @param rois the rois
+     * @return the image. 1x1 pixel if no ROI or empty roi are provided
+     */
+    public static ImagePlus createDummyImageFor(Collection<ROIListData> rois) {
+        int width = 1;
+        int height = 1;
+        for (ROIListData data : rois) {
+            Rectangle bounds = data.getBounds();
+            int w = Math.max(0, bounds.x) + bounds.width;
+            int h = Math.max(0, bounds.y) + bounds.height;
+            width = Math.max(w, width);
+            height = Math.max(h, height);
+        }
+        return IJ.createImage("empty", "8-bit", width, height, 1);
+    }
+
+    /**
+     * Loads {@link Roi} from a path that contains a zip/roi file
+     *
+     * @param storageFilePath path that contains a zip/roi file
+     */
+    public static ROIListData importFrom(Path storageFilePath) {
+        ROIListData result = new ROIListData();
+        Path zipFile = PathUtils.findFileByExtensionIn(storageFilePath, ".zip");
+        Path roiFile = PathUtils.findFileByExtensionIn(storageFilePath, ".roi");
+        if (zipFile != null) {
+            result.addAll(loadRoiListFromFile(zipFile));
+        } else if (roiFile != null) {
+            result.addAll(loadRoiListFromFile(roiFile));
+        } else {
+            throw new RuntimeException(new FileNotFoundException("Could not find a .roi or .zip file in " + storageFilePath));
+        }
+        return result;
+    }
+
+    /**
+     * Loads a set of ROI from a zip file
+     *
+     * @param fileName the zip file
+     * @return the Roi list
+     */
+    public static List<Roi> loadRoiListFromFile(Path fileName) {
+        // Code adapted from ImageJ RoiManager
+        List<Roi> result = new ArrayList<>();
+
+        if (fileName.toString().toLowerCase().endsWith(".roi")) {
+            try {
+                Roi roi = new RoiDecoder(fileName.toString()).getRoi();
+                if (roi != null)
+                    result.add(roi);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        } else {
+            ZipInputStream in = null;
+            ByteArrayOutputStream out = null;
+            int nRois = 0;
+            try {
+                in = new ZipInputStream(new FileInputStream(fileName.toFile()));
+                byte[] buf = new byte[1024];
+                int len;
+                ZipEntry entry = in.getNextEntry();
+                while (entry != null) {
+                    String name = entry.getName();
+                    if (name.endsWith(".roi")) {
+                        out = new ByteArrayOutputStream();
+                        while ((len = in.read(buf)) > 0)
+                            out.write(buf, 0, len);
+                        out.close();
+                        byte[] bytes = out.toByteArray();
+                        RoiDecoder rd = new RoiDecoder(bytes, name);
+                        Roi roi = rd.getRoi();
+                        if (roi != null) {
+                            name = name.substring(0, name.length() - 4);
+                            result.add(roi);
+                            nRois++;
+                        }
+                    }
+                    entry = in.getNextEntry();
+                }
+                in.close();
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            } finally {
+                if (in != null)
+                    try {
+                        in.close();
+                    } catch (IOException e) {
+                    }
+                if (out != null)
+                    try {
+                        out.close();
+                    } catch (IOException e) {
+                    }
+            }
+        }
+
+        return result;
+    }
+
+    /**
+     * Gets the centroid of a ROI
+     *
+     * @param roi the roi
+     * @return the centroid
+     */
+    public static Point getCentroid(Roi roi) {
+        return new Point((int) roi.getContourCentroid()[0], (int) roi.getContourCentroid()[1]);
+    }
+
+    /**
+     * Returns true if the ROI is visible at given slice index
+     *
+     * @param roi      the roi
+     * @param location slice index, zero-based
+     * @param ignoreZ  ignore Z constraint
+     * @param ignoreC  ignore C constraint
+     * @param ignoreT  ignore T constraint
+     * @return if the ROI is visible
+     */
+    public static boolean isVisibleIn(Roi roi, ImageSliceIndex location, boolean ignoreZ, boolean ignoreC, boolean ignoreT) {
+        if (!ignoreZ && roi.getZPosition() > 0 && roi.getZPosition() != (location.getZ() + 1))
+            return false;
+        if (!ignoreC && roi.getCPosition() > 0 && roi.getCPosition() != (location.getC() + 1))
+            return false;
+        if (!ignoreT && roi.getTPosition() > 0 && roi.getTPosition() != (location.getT() + 1))
+            return false;
+        return true;
     }
 }

@@ -225,7 +225,7 @@ public class FindParticles2D extends JIPipeSimpleIteratingAlgorithm {
         }
     }
 
-    @JIPipeParameter("min-particle-size")
+    @JIPipeParameter(value = "min-particle-size", uiOrder = -20)
     @JIPipeDocumentation(name = "Min particle size")
     public double getMinParticleSize() {
         return minParticleSize;
@@ -237,7 +237,7 @@ public class FindParticles2D extends JIPipeSimpleIteratingAlgorithm {
 
     }
 
-    @JIPipeParameter("max-particle-size")
+    @JIPipeParameter(value = "max-particle-size", uiOrder = -19)
     @JIPipeDocumentation(name = "Max particle size")
     public double getMaxParticleSize() {
         return maxParticleSize;
@@ -249,7 +249,7 @@ public class FindParticles2D extends JIPipeSimpleIteratingAlgorithm {
 
     }
 
-    @JIPipeParameter("min-particle-circularity")
+    @JIPipeParameter(value = "min-particle-circularity", uiOrder = -18)
     @JIPipeDocumentation(name = "Min particle circularity")
     public double getMinParticleCircularity() {
         return minParticleCircularity;
@@ -268,7 +268,7 @@ public class FindParticles2D extends JIPipeSimpleIteratingAlgorithm {
         return true;
     }
 
-    @JIPipeParameter("max-particle-circularity")
+    @JIPipeParameter(value = "max-particle-circularity", uiOrder = -17)
     @JIPipeDocumentation(name = "Max particle circularity")
     public double getMaxParticleCircularity() {
         return maxParticleCircularity;
