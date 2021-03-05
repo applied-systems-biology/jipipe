@@ -66,10 +66,9 @@ import static org.hkijena.jipipe.extensions.imagejalgorithms.ij1.roi.ImageRoiPro
 public class ImageStatisticsAlgorithm extends JIPipeIteratingAlgorithm {
 
     private ImageStatisticsSetParameter measurements = new ImageStatisticsSetParameter();
-    private boolean applyPerSlice = false;
-    private boolean applyPerChannel = false;
-    private boolean applyPerFrame = false;
-    private OptionalStringParameter indexAnnotation = new OptionalStringParameter();
+    private boolean applyPerSlice = true;
+    private boolean applyPerChannel = true;
+    private boolean applyPerFrame = true;
     private ImageROITargetArea targetArea = ImageROITargetArea.WholeImage;
 
     /**
@@ -79,7 +78,6 @@ public class ImageStatisticsAlgorithm extends JIPipeIteratingAlgorithm {
      */
     public ImageStatisticsAlgorithm(JIPipeNodeInfo info) {
         super(info);
-        indexAnnotation.setContent("Image index");
         updateRoiSlot();
     }
 
@@ -94,7 +92,6 @@ public class ImageStatisticsAlgorithm extends JIPipeIteratingAlgorithm {
         this.applyPerChannel = other.applyPerChannel;
         this.applyPerFrame = other.applyPerFrame;
         this.applyPerSlice = other.applyPerSlice;
-        this.indexAnnotation = other.indexAnnotation;
         this.targetArea = other.targetArea;
         updateRoiSlot();
     }
@@ -187,6 +184,8 @@ public class ImageStatisticsAlgorithm extends JIPipeIteratingAlgorithm {
             ++currentIndexBatch;
         }
 
+        dataBatch.addOutputData(getFirstOutputSlot(), resultsTableData, progressInfo);
+
     }
 
     public static void addStatisticsRow(ResultsTableData resultsTableData, ImageStatistics statistics, ImageStatisticsSetParameter measurements, Collection<ImageSliceIndex> slices, int allPixels, int width, int height) {
@@ -195,6 +194,7 @@ public class ImageStatisticsAlgorithm extends JIPipeIteratingAlgorithm {
         final double perimeter = 2 * width + 2 * height;
         final double major = Math.max(width / 2.0, height / 2.0);
         final double minor = Math.min(width / 2.0, height / 2.0);
+        final double area = statistics.area;
 
         for (Measurement measurement : measurements.getValues()) {
             switch (measurement) {
@@ -204,7 +204,7 @@ public class ImageStatisticsAlgorithm extends JIPipeIteratingAlgorithm {
                     resultsTableData.setLastValue(slices.stream().map(s -> s.getT() + "").sorted(NaturalOrderComparator.INSTANCE).collect(Collectors.joining(", ")), "Frame");
                     break;
                 case Area:
-                    resultsTableData.setLastValue(statistics.area, "Area");
+                    resultsTableData.setLastValue(area, "Area");
                     break;
                 case PixelValueMinMax:
                     resultsTableData.setLastValue(statistics.min, "Min");
@@ -234,14 +234,14 @@ public class ImageStatisticsAlgorithm extends JIPipeIteratingAlgorithm {
                     resultsTableData.setLastValue(1, "Solidity");
                     break;
                 case IntegratedDensity:
-                    resultsTableData.setLastValue(statistics.area * statistics.mean, "IntDen");
+                    resultsTableData.setLastValue(area * statistics.mean, "IntDen");
                     resultsTableData.setLastValue(statistics.pixelCount * statistics.umean, "RawIntDen");
                     break;
                 case PixelValueSkewness:
                     resultsTableData.setLastValue(statistics.skewness, "Skew");
                     break;
                 case AreaFraction:
-                    resultsTableData.setLastValue(statistics.area / allPixels, "%Area");
+                    resultsTableData.setLastValue(area / allPixels, "%Area");
                     break;
                 case PixelValueMean:
                     resultsTableData.setLastValue(statistics.mean, "Mean");
@@ -284,19 +284,6 @@ public class ImageStatisticsAlgorithm extends JIPipeIteratingAlgorithm {
     @JIPipeParameter("measurements")
     public void setMeasurements(ImageStatisticsSetParameter measurements) {
         this.measurements = measurements;
-    }
-
-    @JIPipeDocumentation(name = "Generated annotation", description = "Optional. The annotation will contain the image slice position that was " +
-            "used to generate the statistics.")
-    @JIPipeParameter("index-annotation")
-    @StringParameterSettings(monospace = true, icon = ResourceUtils.RESOURCE_BASE_PATH + "/icons/data-types/annotation.png")
-    public OptionalStringParameter getIndexAnnotation() {
-        return indexAnnotation;
-    }
-
-    @JIPipeParameter("index-annotation")
-    public void setIndexAnnotation(OptionalStringParameter indexAnnotation) {
-        this.indexAnnotation = indexAnnotation;
     }
 
     @JIPipeDocumentation(name = "Apply per slice", description = "If true, the operation is applied for each Z-slice separately. If false, all Z-slices are put together.")
@@ -348,12 +335,12 @@ public class ImageStatisticsAlgorithm extends JIPipeIteratingAlgorithm {
     public ImageProcessor getMask(JIPipeDataBatch dataBatch, ImageSliceIndex sliceIndex, JIPipeProgressInfo progressInfo) {
         switch (targetArea) {
             case WholeImage: {
-                ImagePlusData img = dataBatch.getInputData("Input", ImagePlusData.class, progressInfo);
+                ImagePlusData img = dataBatch.getInputData("Image", ImagePlusData.class, progressInfo);
                 return ImageROITargetArea.createWhiteMask(img.getImage());
             }
             case InsideRoi: {
                 ROIListData rois = dataBatch.getInputData("ROI", ROIListData.class, progressInfo);
-                ImagePlusData img = dataBatch.getInputData("Input", ImagePlusData.class, progressInfo);
+                ImagePlusData img = dataBatch.getInputData("Image", ImagePlusData.class, progressInfo);
                 if (rois.isEmpty()) {
                     return ImageROITargetArea.createWhiteMask(img.getImage());
                 } else {
@@ -363,7 +350,7 @@ public class ImageStatisticsAlgorithm extends JIPipeIteratingAlgorithm {
             }
             case OutsideRoi: {
                 ROIListData rois = dataBatch.getInputData("ROI", ROIListData.class, progressInfo);
-                ImagePlusData img = dataBatch.getInputData("Input", ImagePlusData.class, progressInfo);
+                ImagePlusData img = dataBatch.getInputData("Image", ImagePlusData.class, progressInfo);
                 if (rois.isEmpty()) {
                     return ImageROITargetArea.createWhiteMask(img.getImage());
                 } else {

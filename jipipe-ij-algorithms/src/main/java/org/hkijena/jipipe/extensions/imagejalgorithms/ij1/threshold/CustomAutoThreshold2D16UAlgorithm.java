@@ -255,7 +255,7 @@ public class CustomAutoThreshold2D16UAlgorithm extends JIPipeIteratingAlgorithm 
         short[] imageBytes = (short[]) ip.getPixels();
         byte[] maskBytes = mask != null ? (byte[]) mask.getPixels() : null;
         for (int i = 0; i < imageBytes.length; i++) {
-            if(mask == null || maskBytes[i] > 0) {
+            if(mask == null || Byte.toUnsignedInt(maskBytes[i]) > 0) {
                 target.add(imageBytes[i]);
             }
         }
