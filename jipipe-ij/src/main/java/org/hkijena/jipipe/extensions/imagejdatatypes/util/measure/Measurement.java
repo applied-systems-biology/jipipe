@@ -138,7 +138,7 @@ public enum Measurement {
                         "Note that ImageJ cannot calculate the major and minor axis lengths if Pixel Aspect Ratio is not 1.0.";
             case FeretDiameter:
                 return "The longest distance between any two points along the selection boundary, also known as maximum caliper. " +
-                        "Uses the Feret heading. FeretAngle (0-180 degrees) is the angle between the Feret's diameter and a line parallel to the x-axis of the image. " +
+                        "Uses the 'Feret' heading. FeretAngle (0-180 degrees) is the angle between the Feret's diameter and a line parallel to the x-axis of the image. " +
                         "MinFeret is the minimum caliper diameter. " +
                         "The starting coordinates of the Feret's diameter (FeretX and FeretY) are also generated.";
             case PixelValueMedian:
