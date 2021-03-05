@@ -13,6 +13,7 @@
 
 package org.hkijena.jipipe.extensions.imagejalgorithms.ij1.analyze;
 
+import com.google.common.primitives.Floats;
 import gnu.trove.list.array.TByteArrayList;
 import gnu.trove.list.array.TFloatArrayList;
 import gnu.trove.list.array.TShortArrayList;
@@ -21,6 +22,7 @@ import ij.process.*;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
+import org.hkijena.jipipe.api.data.JIPipeAnnotation;
 import org.hkijena.jipipe.api.data.JIPipeDataSlotInfo;
 import org.hkijena.jipipe.api.data.JIPipeMutableSlotConfiguration;
 import org.hkijena.jipipe.api.data.JIPipeSlotType;
@@ -34,10 +36,18 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePl
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleMaskData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageSliceIndex;
+import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageStatistics5DExpressionParameterVariableSource;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.measure.ImageStatisticsSetParameter;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.measure.Measurement;
+import org.hkijena.jipipe.extensions.parameters.expressions.ExpressionParameterSettings;
+import org.hkijena.jipipe.extensions.parameters.expressions.ExpressionParameters;
+import org.hkijena.jipipe.extensions.parameters.primitives.OptionalStringParameter;
+import org.hkijena.jipipe.extensions.parameters.primitives.StringParameterSettings;
 import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
+import org.hkijena.jipipe.extensions.tables.parameters.collections.ExpressionTableColumnGeneratorProcessorParameterList;
+import org.hkijena.jipipe.extensions.tables.parameters.processors.ExpressionTableColumnGeneratorProcessor;
 import org.hkijena.jipipe.utils.NaturalOrderComparator;
+import org.hkijena.jipipe.utils.ResourceUtils;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -48,19 +58,17 @@ import java.util.stream.Collectors;
 /**
  * Wrapper around {@link ij.plugin.frame.RoiManager}
  */
-@JIPipeDocumentation(name = "Extract image statistics", description = "Extracts statistics of the whole image or a masked part. Please note " +
-        "that this node will not be able to extract the shape of masked areas. All shape-description features (Centroid, Perimeter, ...) are calculated on the " +
-        "rectangle formed by the image dimensions.")
+@JIPipeDocumentation(name = "Extract image statistics (Expression)", description = "Extracts statistics of the whole image or a masked part. The table columns are created via expressions.")
 @JIPipeOrganization(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Analyze")
 @JIPipeInputSlot(value = ImagePlusGreyscaleData.class, slotName = "Image", autoCreate = true)
 @JIPipeOutputSlot(value = ResultsTableData.class, slotName = "Measurements", autoCreate = true)
 public class ImageStatisticsExpressionAlgorithm extends JIPipeIteratingAlgorithm {
 
-    private ImageStatisticsSetParameter measurements = new ImageStatisticsSetParameter();
     private boolean applyPerSlice = true;
     private boolean applyPerChannel = true;
     private boolean applyPerFrame = true;
     private ImageROITargetArea targetArea = ImageROITargetArea.WholeImage;
+    private ExpressionTableColumnGeneratorProcessorParameterList columns = new ExpressionTableColumnGeneratorProcessorParameterList();
 
     /**
      * Instantiates a new node type.
@@ -79,11 +87,11 @@ public class ImageStatisticsExpressionAlgorithm extends JIPipeIteratingAlgorithm
      */
     public ImageStatisticsExpressionAlgorithm(ImageStatisticsExpressionAlgorithm other) {
         super(other);
-        this.measurements = new ImageStatisticsSetParameter(other.measurements);
         this.applyPerChannel = other.applyPerChannel;
         this.applyPerFrame = other.applyPerFrame;
         this.applyPerSlice = other.applyPerSlice;
         this.targetArea = other.targetArea;
+        this.columns = new ExpressionTableColumnGeneratorProcessorParameterList(other.columns);
         updateRoiSlot();
     }
 
@@ -113,64 +121,60 @@ public class ImageStatisticsExpressionAlgorithm extends JIPipeIteratingAlgorithm
             return copy;
         }));
 
-        TByteArrayList pixels8u = new TByteArrayList();
-        TShortArrayList pixels16u = new TShortArrayList();
-        TFloatArrayList pixels32f = new TFloatArrayList();
+        List<Float> pixelsList = new ArrayList<>();
 
         ResultsTableData resultsTableData = new ResultsTableData();
 
         int currentIndexBatch = 0;
+        ExpressionParameters parameters = new ExpressionParameters();
+        parameters.set("width", img.getWidth());
+        parameters.set("height", img.getHeight());
+        parameters.set("num_z", img.getNSlices());
+        parameters.set("num_c", img.getNChannels());
+        parameters.set("num_t", img.getNFrames());
+
+        for (JIPipeAnnotation annotation : dataBatch.getAnnotations().values()) {
+            parameters.set(annotation.getName(), annotation.getValue());
+        }
+
         for (List<ImageSliceIndex> indices : groupedIndices.values()) {
             JIPipeProgressInfo batchProgress = progressInfo.resolveAndLog("Batch", currentIndexBatch, groupedIndices.size());
 
-            // Ensure the capacity of the pixel buffers
-            int requestedCapacity = img.getWidth() * img.getHeight() * indices.size();
+            parameters.set("c", indices.stream().map(ImageSliceIndex::getC).sorted().collect(Collectors.toList()));
+            parameters.set("z", indices.stream().map(ImageSliceIndex::getZ).sorted().collect(Collectors.toList()));
+            parameters.set("t", indices.stream().map(ImageSliceIndex::getT).sorted().collect(Collectors.toList()));
 
-            if(img.getBitDepth() == 8) {
-                pixels8u.clear();
-                pixels8u.ensureCapacity(requestedCapacity);
-            }
-            else if(img.getBitDepth() == 16) {
-                pixels16u.clear();
-                pixels16u.ensureCapacity(requestedCapacity);
-            }
-            else if(img.getBitDepth() == 32) {
-                pixels32f.clear();
-                pixels32f.ensureCapacity(requestedCapacity);
-            }
+            pixelsList.clear();
 
             // Fetch the pixel buffers
             for (ImageSliceIndex index : indices) {
                 JIPipeProgressInfo indexProgress = batchProgress.resolveAndLog("Slice " + index);
                 ImageProcessor ip = ImageJUtils.getSlice(img, index);
                 ImageProcessor mask = getMask(dataBatch, index, indexProgress);
-                if(img.getBitDepth() == 8) {
-                    ImageJUtils.getMaskedPixels_8U(ip, mask, pixels8u);
-                }
-                else if(img.getBitDepth() == 16) {
-                    ImageJUtils.getMaskedPixels_16U(ip, mask, pixels16u);
-                }
-                else if(img.getBitDepth() == 32) {
-                    ImageJUtils.getMaskedPixels_32F(ip, mask, pixels32f);
-                }
+                ImageJUtils.getMaskedPixels_Slow(ip, mask, pixelsList);
             }
 
             // Generate statistics
-            ImageStatistics statistics;
-            if(img.getBitDepth() == 8) {
-               statistics = (new ByteProcessor(pixels8u.size(), 1, pixels8u.toArray())).getStatistics();
-            }
-            else if(img.getBitDepth() == 16) {
-                statistics = (new ShortProcessor(pixels16u.size(), 1, pixels16u.toArray(), null)).getStatistics();
-            }
-            else if(img.getBitDepth() == 32) {
-                statistics = (new FloatProcessor(pixels32f.size(), 1, pixels32f.toArray())).getStatistics();
-            }
-            else {
-                throw new UnsupportedOperationException();
-            }
+            ImageStatistics statistics = (new FloatProcessor(pixelsList.size(), 1, Floats.toArray(pixelsList))).getStatistics();
 
-            addStatisticsRow(resultsTableData, statistics, measurements, indices, requestedCapacity, img.getWidth(), img.getHeight());
+            // Write statistics to expressions
+            parameters.set("stat_area", statistics.area);
+            parameters.set("stat_stdev", statistics.stdDev);
+            parameters.set("stat_min", statistics.min);
+            parameters.set("stat_max", statistics.max);
+            parameters.set("stat_mean", statistics.mean);
+            parameters.set("stat_mode", statistics.dmode);
+            parameters.set("stat_median", statistics.median);
+            parameters.set("stat_kurtosis", statistics.kurtosis);
+            parameters.set("stat_int_den", statistics.area * statistics.mean);
+            parameters.set("stat_raw_int_den", statistics.pixelCount * statistics.umean);
+            parameters.set("stat_skewness", statistics.skewness);
+            parameters.set("stat_area_fraction", statistics.areaFraction);
+
+            resultsTableData.addRow();
+            for (ExpressionTableColumnGeneratorProcessor columnGenerator : columns){
+
+            }
 
             ++currentIndexBatch;
         }
@@ -185,7 +189,7 @@ public class ImageStatisticsExpressionAlgorithm extends JIPipeIteratingAlgorithm
         final double perimeter = 2 * width + 2 * height;
         final double major = Math.max(width / 2.0, height / 2.0);
         final double minor = Math.min(width / 2.0, height / 2.0);
-        final double area = statistics.area;
+        final double area = statistics.pixelCount;
 
         for (Measurement measurement : measurements.getValues()) {
             switch (measurement) {
@@ -232,7 +236,7 @@ public class ImageStatisticsExpressionAlgorithm extends JIPipeIteratingAlgorithm
                     resultsTableData.setLastValue(statistics.skewness, "Skew");
                     break;
                 case AreaFraction:
-                    resultsTableData.setLastValue(area / allPixels, "%Area");
+                    resultsTableData.setLastValue(statistics.areaFraction, "%Area");
                     break;
                 case PixelValueMean:
                     resultsTableData.setLastValue(statistics.mean, "Mean");
@@ -263,18 +267,6 @@ public class ImageStatisticsExpressionAlgorithm extends JIPipeIteratingAlgorithm
                     break;
             }
         }
-    }
-
-    @JIPipeDocumentation(name = "Extracted measurements", description = "Please select which measurements should be extracted. " +
-            "Each measurement will be assigned to one or multiple output table columns.<br/><br/>" + ImageStatisticsSetParameter.ALL_DESCRIPTIONS)
-    @JIPipeParameter("measurements")
-    public ImageStatisticsSetParameter getMeasurements() {
-        return measurements;
-    }
-
-    @JIPipeParameter("measurements")
-    public void setMeasurements(ImageStatisticsSetParameter measurements) {
-        this.measurements = measurements;
     }
 
     @JIPipeDocumentation(name = "Apply per slice", description = "If true, the operation is applied for each Z-slice separately. If false, all Z-slices are put together.")
@@ -321,6 +313,18 @@ public class ImageStatisticsExpressionAlgorithm extends JIPipeIteratingAlgorithm
     public void setTargetArea(ImageROITargetArea targetArea) {
         this.targetArea = targetArea;
         updateRoiSlot();
+    }
+
+    @JIPipeDocumentation(name = "Generated columns", description = "Use these expressions to generate the table columns. The expressions contain statistics, as well as incoming annotations of the current image.")
+    @JIPipeParameter("columns")
+    @ExpressionParameterSettings(variableSource = ImageStatistics5DExpressionParameterVariableSource.class)
+    public ExpressionTableColumnGeneratorProcessorParameterList getColumns() {
+        return columns;
+    }
+
+    @JIPipeParameter("columns")
+    public void setColumns(ExpressionTableColumnGeneratorProcessorParameterList columns) {
+        this.columns = columns;
     }
 
     public ImageProcessor getMask(JIPipeDataBatch dataBatch, ImageSliceIndex sliceIndex, JIPipeProgressInfo progressInfo) {
