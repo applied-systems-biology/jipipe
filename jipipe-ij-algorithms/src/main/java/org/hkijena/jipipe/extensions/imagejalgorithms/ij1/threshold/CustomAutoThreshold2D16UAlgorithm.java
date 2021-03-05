@@ -56,7 +56,7 @@ import static org.hkijena.jipipe.extensions.imagejalgorithms.ImageJAlgorithmsExt
 @JIPipeOutputSlot(value = ImagePlusGreyscaleMaskData.class, slotName = "Output")
 public class CustomAutoThreshold2D16UAlgorithm extends JIPipeIteratingAlgorithm {
 
-    private DefaultExpressionParameter thresholdCalculationExpression = new DefaultExpressionParameter("MAX(0, FIRST_INDEX_WHERE(\"index > 0 AND item > 0\", stat_histogram) - 1)");
+    private DefaultExpressionParameter thresholdCalculationExpression = new DefaultExpressionParameter("(stat_max + stat_min) / 2");
     private OptionalAnnotationNameParameter thresholdAnnotation = new OptionalAnnotationNameParameter("Threshold", true);
     private AutoThreshold2DAlgorithm.SliceThresholdMode thresholdMode = AutoThreshold2DAlgorithm.SliceThresholdMode.ApplyPerSlice;
 
