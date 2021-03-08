@@ -22,6 +22,9 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.eventbus.EventBus;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
+import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
+import org.hkijena.jipipe.api.nodes.JIPipeInputSlot;
+import org.hkijena.jipipe.api.nodes.JIPipeOutputSlot;
 import org.hkijena.jipipe.utils.JsonUtils;
 
 import java.io.IOException;
@@ -998,6 +1001,25 @@ public class JIPipeDefaultMutableSlotConfiguration implements JIPipeMutableSlotC
          */
         public JIPipeDefaultMutableSlotConfiguration build() {
             return object;
+        }
+
+        /**
+         * Adds slots from parameter annotations (with autoCreate)
+         * @param klass the node class
+         * @return the builder
+         */
+        public Builder addFromAnnotations(Class<? extends JIPipeGraphNode> klass) {
+            for (JIPipeInputSlot slot : klass.getAnnotationsByType(JIPipeInputSlot.class)) {
+                if(slot.autoCreate() && !object.inputSlots.containsKey(slot.slotName())) {
+                    addInputSlot(slot.slotName(), slot.value());
+                }
+            }
+            for (JIPipeOutputSlot slot : klass.getAnnotationsByType(JIPipeOutputSlot.class)) {
+                if(slot.autoCreate() && !object.outputSlots.containsKey(slot.slotName())) {
+                    addOutputSlot(slot.slotName(), slot.value(), slot.inheritedSlot());
+                }
+            }
+            return this;
         }
     }
 }

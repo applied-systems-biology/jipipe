@@ -93,6 +93,9 @@ public class JIPipeMergingDataBatchBuilder {
             case SplitAll:
                 referenceColumns = REFERENCE_COLUMN_SPLIT_ALL;
                 break;
+            case None:
+                referenceColumns = Collections.emptySet();
+                break;
             default:
                 throw new UnsupportedOperationException("Unknown column matching strategy: " + columnGrouping);
         }

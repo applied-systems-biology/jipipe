@@ -10,6 +10,7 @@ public enum JIPipeColumnGrouping {
     PrefixHashIntersection,
     MergeAll,
     SplitAll,
+    None,
     Custom;
 
 
@@ -28,6 +29,8 @@ public enum JIPipeColumnGrouping {
                 return "All into one batch";
             case SplitAll:
                 return "Each into its own batch";
+            case None:
+                return "No column (multiply inputs)";
             case Custom:
                 return "Custom (see 'Custom grouping columns')";
             default:

@@ -17,6 +17,7 @@ import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.JIPipeJavaExtension;
 import org.hkijena.jipipe.extensions.JIPipePrepackagedDefaultJavaExtension;
 import org.hkijena.jipipe.extensions.multiparameters.algorithms.AnnotationsToParametersAlgorithm;
+import org.hkijena.jipipe.extensions.multiparameters.algorithms.MergeParametersAlgorithm;
 import org.hkijena.jipipe.extensions.multiparameters.algorithms.ParametersToAnnotationsAlgorithm;
 import org.hkijena.jipipe.extensions.multiparameters.datasources.ExtractParametersAlgorithm;
 import org.hkijena.jipipe.extensions.multiparameters.datasources.ParametersDataDefinition;
@@ -58,6 +59,7 @@ public class MultiParameterAlgorithmsExtension extends JIPipePrepackagedDefaultJ
 
         registerNodeType("parameters-to-annotations", ParametersToAnnotationsAlgorithm.class, UIUtils.getIconURLFromResources("data-types/parameters.png"));
         registerNodeType("annotations-to-parameters", AnnotationsToParametersAlgorithm.class, UIUtils.getIconURLFromResources("data-types/parameters.png"));
+        registerNodeType("parameters-merge", MergeParametersAlgorithm.class, UIUtils.getIconURLFromResources("actions/rabbitvcs-merge.png"));
     }
 
     @Override
