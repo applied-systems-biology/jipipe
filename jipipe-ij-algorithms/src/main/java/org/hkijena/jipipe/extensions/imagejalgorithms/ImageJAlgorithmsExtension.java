@@ -695,6 +695,7 @@ public class ImageJAlgorithmsExtension extends JIPipePrepackagedDefaultJavaExten
     private void registerDimensionAlgorithms() {
         registerNodeType("ij1-dimensions-stack-to-2d", StackTo2DAlgorithm.class, UIUtils.getIconURLFromResources("actions/layer-bottom.png"));
         registerNodeType("ij1-dimensions-stacksplitter", StackSplitterAlgorithm.class, UIUtils.getIconURLFromResources("actions/split.png"));
+        registerNodeType("ij1-dimensions-hyper-stacksplitter", HyperstackSplitterAlgorithm.class, UIUtils.getIconURLFromResources("actions/split.png"));
         registerNodeType("ij1-dimensions-expression-slicer", ExpressionSlicerAlgorithm.class, UIUtils.getIconURLFromResources("actions/split.png"));
         registerNodeType("ij1-dimensions-stackmerger", StackMergerAlgorithm.class, UIUtils.getIconURLFromResources("actions/draw-cuboid.png"));
         registerNodeType("ij1-dimensions-stackinverter", StackInverterAlgorithm.class, UIUtils.getIconURLFromResources("actions/layer-previous.png"));

@@ -22,6 +22,7 @@ import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.JIPipeValidityReport;
 import org.hkijena.jipipe.api.data.JIPipeAnnotation;
 import org.hkijena.jipipe.api.data.JIPipeAnnotationMergeStrategy;
+import org.hkijena.jipipe.api.data.JIPipeDefaultMutableSlotConfiguration;
 import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
@@ -61,7 +62,11 @@ public class StackSplitterAlgorithm extends JIPipeSimpleIteratingAlgorithm {
      * @param info the info
      */
     public StackSplitterAlgorithm(JIPipeNodeInfo info) {
-        super(info);
+        super(info, JIPipeDefaultMutableSlotConfiguration.builder()
+        .addInputSlot("Input", ImagePlusData.class)
+        .addOutputSlot("Output", ImagePlusData.class, "Input")
+        .sealInput()
+        .build());
         stackAssignments = new OutputSlotMapParameterCollection(IntegerRange.class,
                 this,
                 IntegerRange::new,
