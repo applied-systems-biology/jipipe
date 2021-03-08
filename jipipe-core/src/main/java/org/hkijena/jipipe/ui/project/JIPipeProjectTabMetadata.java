@@ -21,6 +21,7 @@ import org.hkijena.jipipe.ui.compartments.JIPipeCompartmentUI;
 import org.hkijena.jipipe.ui.components.DocumentTabPane;
 import org.hkijena.jipipe.utils.StringUtils;
 
+import javax.swing.*;
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -91,6 +92,12 @@ public class JIPipeProjectTabMetadata {
                 documentTabPane.switchToContent(tab.getContent());
             }
         }
+
+        // Workaround slow computers not loading properly
+        SwingUtilities.invokeLater(() -> {
+            documentTabPane.revalidate();
+            documentTabPane.repaint();
+        });
     }
 
     @JsonGetter("open-tabs")
