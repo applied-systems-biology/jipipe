@@ -128,7 +128,7 @@ public class JIPipeGraphCompartmentUI extends JIPipeGraphEditorUI {
             }
         }
 
-        List<NodeUIContextAction> actions = Arrays.asList(
+        List<NodeUIContextAction> actions = new ArrayList<>(Arrays.asList(
                 new SelectAllNodeUIContextAction(),
                 new InvertSelectionNodeUIContextAction(),
                 NodeUIContextAction.SEPARATOR,
@@ -163,7 +163,7 @@ public class JIPipeGraphCompartmentUI extends JIPipeGraphEditorUI {
                 new DeleteNodeUIContextAction(),
                 NodeUIContextAction.SEPARATOR,
                 new SelectAndMoveNodeHereNodeUIContextAction()
-        );
+        ));
 
         // Custom entries (from registry)
         List<NodeUIContextAction> registeredEntries = JIPipe.getCustomMenus().getRegisteredContextMenuActions().stream()

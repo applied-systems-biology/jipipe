@@ -78,6 +78,10 @@ public class ParameterTreeUI extends JPanel {
         rebuildModel();
     }
 
+    public JTree getTreeComponent() {
+        return treeComponent;
+    }
+
     /**
      * Recreates the tree model
      */

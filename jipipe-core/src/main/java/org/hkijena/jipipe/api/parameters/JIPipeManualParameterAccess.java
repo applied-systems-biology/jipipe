@@ -233,6 +233,16 @@ public class JIPipeManualParameterAccess implements JIPipeParameterAccess {
         }
 
         /**
+         * Sets the unique key
+         * @param key the key
+         * @return this
+         */
+        public Builder setKey(String key) {
+            access.key = key;
+            return this;
+        }
+
+        /**
          * Sets the setter
          *
          * @param setter the setter
@@ -284,7 +294,7 @@ public class JIPipeManualParameterAccess implements JIPipeParameterAccess {
                             "Please contact the authors of the algorithm.");
                 }
             };
-            return setFieldClass(getter.getReturnType()).setGetter(getterSupplier).setSetter(setterConsumer);
+            return setSource(source).setFieldClass(getter.getReturnType()).setGetter(getterSupplier).setSetter(setterConsumer);
         }
 
         /**
@@ -299,7 +309,7 @@ public class JIPipeManualParameterAccess implements JIPipeParameterAccess {
                 JIPipeDummyParameterCollection collection = new JIPipeDummyParameterCollection();
                 Method getter = JIPipeDummyParameterCollection.class.getDeclaredMethod("get");
                 Method setter = JIPipeDummyParameterCollection.class.getDeclaredMethod("accept", Object.class);
-                return setFieldClass(fieldClass).reflectionAccess(collection, getter, setter);
+                return reflectionAccess(collection, getter, setter).setFieldClass(fieldClass).setKey("value");
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }

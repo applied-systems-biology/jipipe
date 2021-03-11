@@ -70,8 +70,8 @@ public class UpdateSiteListUI extends JPanel {
             return;
         }
         FormPanel formPanel = new FormPanel(null, FormPanel.NONE);
-        FancyTextField nameField = new FancyTextField(null, "");
-        FancyTextField urlField = new FancyTextField(new JLabel(UIUtils.getIconFromResources("actions/web-browser.png")), "");
+        FancyTextField nameField = new FancyTextField(null, "", true);
+        FancyTextField urlField = new FancyTextField(new JLabel(UIUtils.getIconFromResources("actions/web-browser.png")), "", true);
         urlField.styleText(true, false, false);
         formPanel.addToForm(nameField, new JLabel("Name"), null);
         formPanel.addToForm(urlField, new JLabel("URL"), null);

@@ -76,7 +76,7 @@ public class StringParameterEditorUI extends JIPipeParameterEditorUI {
                 iconLabel = new JLabel(imageIcon);
             }
 
-            FancyTextField textField = new FancyTextField(iconLabel, prompt);
+            FancyTextField textField = new FancyTextField(iconLabel, prompt, true);
             textComponent = textField.getTextField();
             add(textField, BorderLayout.CENTER);
         }

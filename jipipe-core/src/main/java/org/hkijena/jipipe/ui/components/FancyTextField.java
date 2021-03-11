@@ -31,12 +31,13 @@ public class FancyTextField extends JPanel {
 
     /**
      * Creates a new instance
-     *
-     * @param icon   Optional icon displayed to the left
+     *  @param icon   Optional icon displayed to the left
      * @param prompt prompt
+     * @param withClearButton if a clear button should be added
      */
-    public FancyTextField(JLabel icon, String prompt) {
+    public FancyTextField(JLabel icon, String prompt, boolean withClearButton) {
         setLayout(new BorderLayout(4, 0));
+        setOpaque(true);
         setBackground(UIManager.getColor("TextField.background"));
         setBorder(BorderFactory.createEtchedBorder());
 
@@ -44,13 +45,15 @@ public class FancyTextField extends JPanel {
         textField.setBorder(null);
         add(textField, BorderLayout.CENTER);
 
-        JButton clearButton = new JButton(UIUtils.getIconFromResources("actions/edit-clear.png"));
-        clearButton.setOpaque(false);
-        clearButton.setToolTipText("Clear");
-        clearButton.addActionListener(e -> setText(""));
-        UIUtils.makeFlat25x25(clearButton);
-        clearButton.setBorder(null);
-        add(clearButton, BorderLayout.EAST);
+        if(withClearButton) {
+            JButton clearButton = new JButton(UIUtils.getIconFromResources("actions/edit-clear.png"));
+            clearButton.setOpaque(false);
+            clearButton.setToolTipText("Clear");
+            clearButton.addActionListener(e -> setText(""));
+            UIUtils.makeFlat25x25(clearButton);
+            clearButton.setBorder(null);
+            add(clearButton, BorderLayout.EAST);
+        }
 
         if (icon != null) {
             add(icon, BorderLayout.WEST);

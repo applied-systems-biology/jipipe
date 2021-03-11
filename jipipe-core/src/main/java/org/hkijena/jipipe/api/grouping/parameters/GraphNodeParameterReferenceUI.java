@@ -59,7 +59,7 @@ public class GraphNodeParameterReferenceUI extends JPanel {
                     reference.getPath(),
                     referencedParameter.getDescription()));
             FancyTextField nameEditor = new FancyTextField(new JLabel(UIUtils.getIconFromResources("actions/configure.png")),
-                    reference.getOriginalName(tree));
+                    reference.getOriginalName(tree), true);
             nameEditor.setText(reference.getName(tree));
             nameEditor.getTextField().getDocument().addDocumentListener(new DocumentChangeListener() {
                 @Override

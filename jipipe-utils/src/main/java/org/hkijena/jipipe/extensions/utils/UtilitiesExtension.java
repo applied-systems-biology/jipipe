@@ -24,6 +24,7 @@ import org.hkijena.jipipe.extensions.filesystem.resultanalysis.OpenPathDataOpera
 import org.hkijena.jipipe.extensions.parameters.primitives.HTMLText;
 import org.hkijena.jipipe.extensions.parameters.primitives.StringList;
 import org.hkijena.jipipe.extensions.utils.algorithms.*;
+import org.hkijena.jipipe.extensions.utils.contextmenu.ParameterExplorerContextMenuAction;
 import org.hkijena.jipipe.extensions.utils.datatypes.JIPipeOutputData;
 import org.hkijena.jipipe.extensions.utils.datatypes.PathDataToJIPipeOutputConverter;
 import org.hkijena.jipipe.extensions.utils.display.ImportJIPipeProjectDataOperation;
@@ -68,6 +69,9 @@ public class UtilitiesExtension extends JIPipePrepackagedDefaultJavaExtension {
         JIPipeJavaNodeInfo commentNodeInfo = new JIPipeJavaNodeInfo("jipipe:comment", JIPipeCommentNode.class);
         commentNodeInfo.setRunnable(false);
         registerNodeType(commentNodeInfo, UIUtils.getIconURLFromResources("actions/edit-comment.png"));
+
+        // Parameter explorer
+        registerContextMenuAction(new ParameterExplorerContextMenuAction());
     }
 
     @Override
