@@ -8,6 +8,7 @@ import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.components.FormPanel;
 import org.hkijena.jipipe.ui.components.MarkdownDocument;
 import org.hkijena.jipipe.ui.components.ParameterTreeUI;
+import org.hkijena.jipipe.ui.components.ReadonlyCopyableTextField;
 import org.hkijena.jipipe.utils.JsonUtils;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
@@ -28,17 +29,17 @@ public class ParameterExplorerWindow extends JFrame {
     private ParameterTreeUI parameterTreeUI;
     private JPanel contentPanel = new JPanel(new BorderLayout());
     private FormPanel formPanel;
-    private JTextField nameLabel;
-    private JTextField typeLabel;
-    private JTextField nameIdLabel;
-    private JTextField typeIdLabel;
+    private ReadonlyCopyableTextField nameLabel;
+    private ReadonlyCopyableTextField typeLabel;
+    private ReadonlyCopyableTextField nameIdLabel;
+    private ReadonlyCopyableTextField typeIdLabel;
     private JTextPane typeDescriptionLabel;
     private JIPipeParameterAccess currentValue;
     private JIPipeParameterAccess testerValue;
     private JPanel currentValuePanel = new JPanel(new BorderLayout());
     private JPanel testerValuePanel = new JPanel(new BorderLayout());
-    private JTextField currentValueJson;
-    private JTextField testerValueJson;
+    private ReadonlyCopyableTextField currentValueJson;
+    private ReadonlyCopyableTextField testerValueJson;
 
     public ParameterExplorerWindow(JIPipeWorkbench workbench, JIPipeParameterCollection parameterCollection) {
         this.workbench = workbench;
@@ -98,12 +99,10 @@ public class ParameterExplorerWindow extends JFrame {
     }
 
     private void initializeFormPanel() {
-        nameLabel = UIUtils.makeReadonlyTextField("");
-        nameIdLabel = UIUtils.makeReadonlyTextField("");
-        nameIdLabel.setFont(new Font(Font.MONOSPACED, Font.PLAIN, 12));
-        typeLabel = UIUtils.makeReadonlyTextField("");
-        typeIdLabel = UIUtils.makeReadonlyTextField("");
-        typeIdLabel.setFont(new Font(Font.MONOSPACED, Font.PLAIN, 12));
+        nameLabel = new ReadonlyCopyableTextField("", false);
+        nameIdLabel = new ReadonlyCopyableTextField("", true);
+        typeLabel = new ReadonlyCopyableTextField("", false);
+        typeIdLabel = new ReadonlyCopyableTextField("", true);
         typeDescriptionLabel = UIUtils.makeReadonlyTextPane("");
 
         formPanel.addGroupHeader("General info", UIUtils.getIconFromResources("actions/help-info.png"));
@@ -130,15 +129,8 @@ public class ParameterExplorerWindow extends JFrame {
 
         formPanel.addWideToForm(currentValuePanel, null);
 
-        currentValueJson = UIUtils.makeReadonlyTextField("");
-        currentValueJson.setFont(new Font(Font.MONOSPACED, Font.PLAIN, 12));
-        JPanel currentValueJsonPanel = new JPanel(new BorderLayout());
-        currentValueJsonPanel.add(currentValueJson, BorderLayout.CENTER);
-        JButton copyCurrentValueJsonButton = new JButton(UIUtils.getIconFromResources("actions/edit-copy.png"));
-        copyCurrentValueJsonButton.setToolTipText("Copy current value");
-        copyCurrentValueJsonButton.addActionListener(e -> copyCurrentValueJson());
-        currentValueJsonPanel.add(copyCurrentValueJsonButton, BorderLayout.EAST);
-        formPanel.addToForm(currentValueJsonPanel, new JLabel("As JSON"), new MarkdownDocument("The current parameter value in JSON format. " +
+        currentValueJson = new ReadonlyCopyableTextField("", true);
+        formPanel.addToForm(currentValueJson, new JLabel("As JSON"), new MarkdownDocument("The current parameter value in JSON format. " +
                 "This can be directly converted into parameter data."));
 
         // Value tester
@@ -166,15 +158,8 @@ public class ParameterExplorerWindow extends JFrame {
 
         formPanel.addWideToForm(testerValuePanel, null);
 
-        testerValueJson = UIUtils.makeReadonlyTextField("");
-        testerValueJson.setFont(new Font(Font.MONOSPACED, Font.PLAIN, 12));
-        JPanel testerValueJsonPanel = new JPanel(new BorderLayout());
-        testerValueJsonPanel.add(testerValueJson, BorderLayout.CENTER);
-        JButton copyTesterValueJsonButton = new JButton(UIUtils.getIconFromResources("actions/edit-copy.png"));
-        copyTesterValueJsonButton.setToolTipText("Copy current value");
-        copyTesterValueJsonButton.addActionListener(e -> copyTesterValueJson());
-        testerValueJsonPanel.add(copyTesterValueJsonButton, BorderLayout.EAST);
-        formPanel.addToForm(testerValueJsonPanel, new JLabel("As JSON"), new MarkdownDocument("The current tester value in JSON format. " +
+        testerValueJson = new ReadonlyCopyableTextField("", true);
+        formPanel.addToForm(testerValueJson, new JLabel("As JSON"), new MarkdownDocument("The current tester value in JSON format. " +
                 "This can be directly converted into parameter data."));
 
         formPanel.addVerticalGlue();
@@ -214,25 +199,12 @@ public class ParameterExplorerWindow extends JFrame {
         }
     }
 
-    private void copyTesterValueJson() {
-        StringSelection selection = new StringSelection(testerValueJson.getText());
-        Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
-        clipboard.setContents(selection, selection);
-    }
-
-    private void copyCurrentValueJson() {
-        StringSelection selection = new StringSelection(currentValueJson.getText());
-        Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
-        clipboard.setContents(selection, selection);
-    }
-
     private void updateCurrentValueJson() {
         try {
             String valueAsString = JsonUtils.getObjectMapper().writeValueAsString(currentValue.get(Object.class));
             currentValueJson.setText(valueAsString);
         }
         catch (Exception e) {
-
         }
     }
 
@@ -242,7 +214,6 @@ public class ParameterExplorerWindow extends JFrame {
             testerValueJson.setText(valueAsString);
         }
         catch (Exception e) {
-
         }
     }
 
@@ -288,7 +259,12 @@ public class ParameterExplorerWindow extends JFrame {
 
         currentValue = null;
         nameLabel.setText("<Please select one parameter>");
+        nameIdLabel.setText("");
         typeLabel.setText("");
+        typeIdLabel.setText("");
+        typeDescriptionLabel.setText("");
+        currentValueJson.setText("");
+        testerValueJson.setText("");
 
         TreePath selectionPath = parameterTreeUI.getTreeComponent().getSelectionPath();
         if(selectionPath == null) {
@@ -312,6 +288,7 @@ public class ParameterExplorerWindow extends JFrame {
         currentValue = parameterAccess;
         testerValue = JIPipeManualParameterAccess.builder()
                 .dummyAccess(typeInfo.getFieldClass())
+                .setAnnotationSupplier(parameterAccess::getAnnotationOfType)
                 .setName(parameterAccess.getName())
                 .build();
         testerValue.set(typeInfo.newInstance());

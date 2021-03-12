@@ -35,6 +35,7 @@ public class JIPipeManualParameterAccess implements JIPipeParameterAccess {
     private String description;
     private JIPipeParameterVisibility visibility = JIPipeParameterVisibility.TransitiveVisible;
     private Map<Class<? extends Annotation>, Annotation> annotations = new HashMap<>();
+    private Function<Class<? extends Annotation>, Annotation> annotationSupplier;
     private Class<?> fieldClass;
     private Supplier<Object> getter;
     private Function<Object, Boolean> setter;
@@ -69,7 +70,21 @@ public class JIPipeManualParameterAccess implements JIPipeParameterAccess {
 
     @Override
     public <T extends Annotation> T getAnnotationOfType(Class<T> klass) {
-        return (T) annotations.getOrDefault(klass, null);
+        Annotation result = annotations.getOrDefault(klass, null);
+        if(result == null && annotationSupplier != null)
+            result = annotationSupplier.apply(klass);
+        if(result != null)
+            return (T) result;
+        else
+            return null;
+    }
+
+    public Function<Class<? extends Annotation>, Annotation> getAnnotationSupplier() {
+        return annotationSupplier;
+    }
+
+    public void setAnnotationSupplier(Function<Class<? extends Annotation>, Annotation> annotationSupplier) {
+        this.annotationSupplier = annotationSupplier;
     }
 
     @Override
@@ -258,6 +273,11 @@ public class JIPipeManualParameterAccess implements JIPipeParameterAccess {
 
         public Builder addAnnotation(Annotation annotation) {
             access.annotations.put(annotation.getClass(), annotation);
+            return this;
+        }
+
+        public Builder setAnnotationSupplier(Function<Class<? extends Annotation>, Annotation> supplier) {
+            access.setAnnotationSupplier(supplier);
             return this;
         }
 
