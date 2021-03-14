@@ -1,6 +1,8 @@
 package org.hkijena.jipipe.extensions.r.algorithms;
 
 import com.github.rcaller.rstuff.RCaller;
+import com.github.rcaller.rstuff.RCallerOptions;
+import com.github.rcaller.rstuff.RCode;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
@@ -11,6 +13,7 @@ import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.categories.MiscellaneousNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
+import org.hkijena.jipipe.extensions.r.RExtensionSettings;
 import org.hkijena.jipipe.extensions.r.parameters.RScriptParameter;
 import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
 
@@ -19,6 +22,7 @@ import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
 public class IteratingRScriptAlgorithm extends JIPipeIteratingAlgorithm {
 
     private RScriptParameter script = new RScriptParameter();
+    private RCaller rCaller;
 
     public IteratingRScriptAlgorithm(JIPipeNodeInfo info) {
         super(info, JIPipeDefaultMutableSlotConfiguration.builder()
@@ -33,7 +37,23 @@ public class IteratingRScriptAlgorithm extends JIPipeIteratingAlgorithm {
     }
 
     @Override
+    public void run(JIPipeProgressInfo progressInfo) {
+        try {
+            if(!isPassThrough()) {
+                rCaller = RCaller.create(RExtensionSettings.createRCallerOptions());
+            }
+            super.run(progressInfo);
+        }
+        finally {
+            rCaller = null;
+        }
+    }
+
+    @Override
     protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
+        RCode code = RCode.create();
+        rCaller.setRCode(code);
+
     }
 
     @JIPipeDocumentation(name = "Script")

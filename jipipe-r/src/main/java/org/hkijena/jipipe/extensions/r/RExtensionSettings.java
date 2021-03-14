@@ -13,6 +13,10 @@
 
 package org.hkijena.jipipe.extensions.r;
 
+import com.github.rcaller.rstuff.FailurePolicy;
+import com.github.rcaller.rstuff.RCaller;
+import com.github.rcaller.rstuff.RCallerOptions;
+import com.github.rcaller.rstuff.RProcessStartUpOptions;
 import com.github.rcaller.util.Globals;
 import com.google.common.eventbus.EventBus;
 import org.hkijena.jipipe.JIPipe;
@@ -81,5 +85,28 @@ public class RExtensionSettings implements JIPipeParameterCollection {
 
     public static RExtensionSettings getInstance() {
         return JIPipe.getSettings().getSettings(ID, RExtensionSettings.class);
+    }
+
+    public static RCallerOptions createRCallerOptions() {
+        String executable = Globals.R_current;
+        String scriptExecutable = Globals.Rscript_current;
+        FailurePolicy failurePolicy = FailurePolicy.RETRY_5;
+        long maxWaitTime = Long.MAX_VALUE;
+        long initialWaitTime = 100;
+        if(JIPipe.getInstance() != null) {
+            RExtensionSettings instance = getInstance();
+            if(instance.RExecutable.isEnabled()) {
+                executable = instance.RExecutable.getContent().toString();
+            }
+            if(instance.RScriptExecutable.isEnabled()) {
+                scriptExecutable = instance.RScriptExecutable.getContent().toString();
+            }
+        }
+        return RCallerOptions.create(scriptExecutable,
+                executable,
+                failurePolicy,
+                maxWaitTime,
+                initialWaitTime,
+                RProcessStartUpOptions.create());
     }
 }
