@@ -22,6 +22,7 @@
         <module name="jipipe-python" />
         <module name="jipipe-installer-linux" />
         <module name="jipipe-ij-algorithms" />
+        <module name="jipipe-r" />
         <module name="jipipe-multiparameters" />
         <module name="jipipe-plots" />
         <module name="ij-updater-cli" />
@@ -45,6 +46,7 @@
       <module name="jipipe-multiparameters" target="1.8" />
       <module name="jipipe-plots" target="1.8" />
       <module name="jipipe-python" target="1.8" />
+      <module name="jipipe-r" target="1.8" />
       <module name="jipipe-standalone" target="1.8" />
       <module name="jipipe-strings" target="1.8" />
       <module name="jipipe-tables" target="1.8" />

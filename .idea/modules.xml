@@ -18,6 +18,7 @@
       <module fileurl="file://$PROJECT_DIR$/jipipe-multiparameters/jipipe-multiparameters.iml" filepath="$PROJECT_DIR$/jipipe-multiparameters/jipipe-multiparameters.iml" />
       <module fileurl="file://$PROJECT_DIR$/jipipe-plots/jipipe-plots.iml" filepath="$PROJECT_DIR$/jipipe-plots/jipipe-plots.iml" />
       <module fileurl="file://$PROJECT_DIR$/jipipe-python/jipipe-python.iml" filepath="$PROJECT_DIR$/jipipe-python/jipipe-python.iml" />
+      <module fileurl="file://$PROJECT_DIR$/jipipe-r/jipipe-r.iml" filepath="$PROJECT_DIR$/jipipe-r/jipipe-r.iml" />
       <module fileurl="file://$PROJECT_DIR$/jipipe-strings/jipipe-strings.iml" filepath="$PROJECT_DIR$/jipipe-strings/jipipe-strings.iml" />
       <module fileurl="file://$PROJECT_DIR$/jipipe-tables/jipipe-tables.iml" filepath="$PROJECT_DIR$/jipipe-tables/jipipe-tables.iml" />
       <module fileurl="file://$PROJECT_DIR$/jipipe-utils/jipipe-utils.iml" filepath="$PROJECT_DIR$/jipipe-utils/jipipe-utils.iml" />

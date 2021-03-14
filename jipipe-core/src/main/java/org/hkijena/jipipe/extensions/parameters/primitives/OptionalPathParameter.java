@@ -30,6 +30,13 @@ public class OptionalPathParameter extends OptionalParameter<Path> {
         super(Path.class);
     }
 
+    public OptionalPathParameter(Path value, boolean enabled) {
+        super(Path.class);
+        setContent(value);
+        setEnabled(enabled);
+    }
+
+
     /**
      * Creates a copy
      *
