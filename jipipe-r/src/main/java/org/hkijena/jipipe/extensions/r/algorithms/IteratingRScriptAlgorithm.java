@@ -192,7 +192,11 @@ public class IteratingRScriptAlgorithm extends JIPipeIteratingAlgorithm {
         }
     }
 
-    @JIPipeDocumentation(name = "Script")
+    @JIPipeDocumentation(name = "Script", description = "The script that contains the R commands. " +
+            "You have access to variables 'Input.[Input name].File' and 'Output.[Output name].File' that point to the input/output files for " +
+            "the specified slot. By default, CSV tables will be read and written automatically into variables named according to the slot. " +
+            "Annotations are also available as variables, and within the 'Annotations' list variable that also contains annotation names " +
+            "that cannot be written into variables.")
     @JIPipeParameter("script")
     public RScriptParameter getScript() {
         return script;
@@ -253,8 +257,20 @@ public class IteratingRScriptAlgorithm extends JIPipeIteratingAlgorithm {
     }
 
     private enum Examples {
-        LoadIris("Load IRIS data set", "library(datasets)\n\nOutput <- iris", new JIPipeInputSlot[0], new JIPipeOutputSlot[] {
-                new DefaultJIPipeOutputSlot(ResultsTableData.class, "Output", null, false)
+        LoadIris("Load IRIS data set", "library(datasets)\n\nTable <- iris",
+                new JIPipeInputSlot[0], new JIPipeOutputSlot[] {
+                new DefaultJIPipeOutputSlot(ResultsTableData.class, "Table", null, false)
+        }),
+        PlotIris("Plot IRIS data set", "library(datasets)\n" +
+                "\n" +
+                "# You must write into the provided file\n" +
+                "png(Output.Plot.File, width = 800, height = 600)\n" +
+                "plot(iris$Petal.Length, iris$Petal.Width, pch=21, bg=c(\"red\",\"green3\",\"blue\")[unclass(iris$Species)], main=\"Edgar Anderson's Iris Data\")\n" +
+                "dev.off()\n" +
+                "\n" +
+                "# JIPipe will automatically load the data in Output.Plot.File",
+                new JIPipeInputSlot[0], new JIPipeOutputSlot[] {
+                new DefaultJIPipeOutputSlot(ImagePlusData.class, "Plot", null, false)
         });
 
         private final String name;
