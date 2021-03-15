@@ -12,6 +12,10 @@ public class RScriptParameter extends ScriptParameter {
         super(other);
     }
 
+    public RScriptParameter(String code) {
+        setCode(code);
+    }
+
     @Override
     public String getMimeType() {
         return "text/x-r";
