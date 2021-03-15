@@ -25,9 +25,12 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.extensions.parameters.primitives.FilePathParameterSettings;
 import org.hkijena.jipipe.extensions.parameters.primitives.OptionalPathParameter;
+import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.components.PathEditor;
 import org.hkijena.jipipe.utils.StringUtils;
 
+import javax.swing.*;
+import java.nio.file.Files;
 import java.nio.file.Paths;
 
 public class RExtensionSettings implements JIPipeParameterCollection {
@@ -59,7 +62,7 @@ public class RExtensionSettings implements JIPipeParameterCollection {
         return eventBus;
     }
 
-    @JIPipeDocumentation(name = "R executable", description = "Allows to override the R executable. Must point to R.exe (Windows) or equivalent on other systems.")
+    @JIPipeDocumentation(name = "Override R executable", description = "Allows to override the R executable. Must point to R.exe (Windows) or equivalent on other systems.")
     @JIPipeParameter("r-executable")
     @FilePathParameterSettings(pathMode = PathEditor.PathMode.FilesOnly, ioMode = PathEditor.IOMode.Open)
     public OptionalPathParameter getRExecutable() {
@@ -71,7 +74,7 @@ public class RExtensionSettings implements JIPipeParameterCollection {
         this.RExecutable = RExecutable;
     }
 
-    @JIPipeDocumentation(name = "RScript executable", description = "Allows to override the RScript executable. Must point to RScript.exe (Windows) or equivalent on other systems.")
+    @JIPipeDocumentation(name = "Override RScript executable", description = "Allows to override the RScript executable. Must point to RScript.exe (Windows) or equivalent on other systems.")
     @JIPipeParameter("rscript-executable")
     @FilePathParameterSettings(pathMode = PathEditor.PathMode.FilesOnly, ioMode = PathEditor.IOMode.Open)
     public OptionalPathParameter getRScriptExecutable() {
@@ -85,6 +88,32 @@ public class RExtensionSettings implements JIPipeParameterCollection {
 
     public static RExtensionSettings getInstance() {
         return JIPipe.getSettings().getSettings(ID, RExtensionSettings.class);
+    }
+
+    /**
+     * Checks the R settings
+     * @return if the settings are correct
+     */
+    public static boolean checkRSettings() {
+        String executable = Globals.R_current;
+        String scriptExecutable = Globals.Rscript_current;
+        if(JIPipe.getInstance() != null) {
+            RExtensionSettings instance = getInstance();
+            if(instance.RExecutable.isEnabled()) {
+                executable = instance.RExecutable.getContent().toString();
+            }
+            if(instance.RScriptExecutable.isEnabled()) {
+                scriptExecutable = instance.RScriptExecutable.getContent().toString();
+            }
+        }
+        boolean invalid = false;
+        if(StringUtils.isNullOrEmpty(executable) || !Files.exists(Paths.get(executable))) {
+            invalid = true;
+        }
+        if(StringUtils.isNullOrEmpty(scriptExecutable) || !Files.exists(Paths.get(scriptExecutable))) {
+            invalid = true;
+        }
+        return !invalid;
     }
 
     public static RCallerOptions createRCallerOptions() {

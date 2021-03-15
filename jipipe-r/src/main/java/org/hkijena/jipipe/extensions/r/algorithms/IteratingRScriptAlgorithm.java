@@ -13,6 +13,7 @@ import org.hkijena.jipipe.api.JIPipeValidityReport;
 import org.hkijena.jipipe.api.data.JIPipeAnnotation;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.data.JIPipeDefaultMutableSlotConfiguration;
+import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.MiscellaneousNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeContextAction;
@@ -70,6 +71,16 @@ public class IteratingRScriptAlgorithm extends JIPipeIteratingAlgorithm {
     public void run(JIPipeProgressInfo progressInfo) {
         try {
             if(!isPassThrough()) {
+                if(!RExtensionSettings.checkRSettings()) {
+                    throw new UserFriendlyRuntimeException("The R installation is invalid!\n" +
+                            "R=" + RExtensionSettings.getInstance().getRExecutable() + "\n" +
+                            "RScript=" + RExtensionSettings.getInstance().getRScriptExecutable(),
+                            "R is not configured!",
+                            getName(),
+                            "This node requires an installation of R. Either R is not installed or JIPipe cannot find R.",
+                            "Please install R from https://www.r-project.org/. If R is installed, go to Project > Application settings > Extensions > R  integration and " +
+                                    "manually override R executable and RScript executable (please refer to the documentation in the settings page).");
+                }
                 rCaller = RCaller.create(RExtensionSettings.createRCallerOptions());
             }
             super.run(progressInfo);
