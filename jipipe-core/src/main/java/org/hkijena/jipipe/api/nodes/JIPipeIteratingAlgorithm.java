@@ -14,6 +14,8 @@
 package org.hkijena.jipipe.api.nodes;
 
 import com.google.common.eventbus.EventBus;
+import gnu.trove.set.TIntSet;
+import gnu.trove.set.hash.TIntHashSet;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeAnnotation;
@@ -25,6 +27,8 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterVisibility;
 import org.hkijena.jipipe.extensions.parameters.expressions.StringQueryExpression;
+import org.hkijena.jipipe.extensions.parameters.generators.IntegerRange;
+import org.hkijena.jipipe.extensions.parameters.generators.OptionalIntegerRange;
 import org.hkijena.jipipe.extensions.parameters.primitives.StringParameterSettings;
 import org.hkijena.jipipe.utils.ResourceUtils;
 
@@ -97,6 +101,18 @@ public abstract class JIPipeIteratingAlgorithm extends JIPipeParameterSlotAlgori
                 dataBatchGenerationSettings.customColumns);
         List<JIPipeMergingDataBatch> dataBatches = builder.build();
         dataBatches.sort(Comparator.naturalOrder());
+        boolean withLimit = dataBatchGenerationSettings.getLimit().isEnabled();
+        IntegerRange limit = dataBatchGenerationSettings.getLimit().getContent();
+        TIntSet allowedIndices = withLimit ? new TIntHashSet(limit.getIntegers()) : null;
+        if(withLimit) {
+            List<JIPipeMergingDataBatch> limitedBatches = new ArrayList<>();
+            for (int i = 0; i < dataBatches.size(); i++) {
+                if(allowedIndices.contains(i)) {
+                    limitedBatches.add(dataBatches.get(i));
+                }
+            }
+            dataBatches = limitedBatches;
+        }
         return dataBatches;
     }
 
@@ -250,6 +266,7 @@ public abstract class JIPipeIteratingAlgorithm extends JIPipeParameterSlotAlgori
         private boolean skipIncompleteDataSets = false;
         private StringQueryExpression customColumns = new StringQueryExpression();
         private JIPipeAnnotationMergeStrategy annotationMergeStrategy = JIPipeAnnotationMergeStrategy.Merge;
+        private OptionalIntegerRange limit = new OptionalIntegerRange(new IntegerRange("0-9"), false);
 
         public DataBatchGenerationSettings() {
         }
@@ -259,6 +276,7 @@ public abstract class JIPipeIteratingAlgorithm extends JIPipeParameterSlotAlgori
             this.skipIncompleteDataSets = other.skipIncompleteDataSets;
             this.customColumns = new StringQueryExpression(other.customColumns);
             this.annotationMergeStrategy = other.annotationMergeStrategy;
+            this.limit = new OptionalIntegerRange(other.limit);
         }
 
         @Override
@@ -319,6 +337,17 @@ public abstract class JIPipeIteratingAlgorithm extends JIPipeParameterSlotAlgori
         @JIPipeParameter("annotation-merge-strategy")
         public void setAnnotationMergeStrategy(JIPipeAnnotationMergeStrategy annotationMergeStrategy) {
             this.annotationMergeStrategy = annotationMergeStrategy;
+        }
+
+        @JIPipeDocumentation(name = "Limit", description = "Limits which data batches are generated. The first index is zero.\n" + IntegerRange.DOCUMENTATION_DESCRIPTION)
+        @JIPipeParameter(value = "limit")
+        public OptionalIntegerRange getLimit() {
+            return limit;
+        }
+
+        @JIPipeParameter("limit")
+        public void setLimit(OptionalIntegerRange limit) {
+            this.limit = limit;
         }
     }
 }

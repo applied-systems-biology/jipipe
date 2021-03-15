@@ -53,7 +53,7 @@ public class IteratingRScriptAlgorithm extends JIPipeIteratingAlgorithm {
     protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
         RCode code = RCode.create();
         rCaller.setRCode(code);
-
+        // TODO: RCaller's default methods are not sufficient (cannot return multiple variables)
     }
 
     @JIPipeDocumentation(name = "Script")
