@@ -16,10 +16,12 @@ import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.MiscellaneousNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeContextAction;
+import org.hkijena.jipipe.api.parameters.JIPipeDynamicParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.r.RExtensionSettings;
+import org.hkijena.jipipe.extensions.r.RUtils;
 import org.hkijena.jipipe.extensions.r.parameters.RScriptParameter;
 import org.hkijena.jipipe.extensions.settings.RuntimeSettings;
 import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
@@ -50,12 +52,14 @@ public class MergingRScriptAlgorithm extends JIPipeMergingAlgorithm {
     private boolean annotationsAsVariables = true;
     private boolean customWriteCSV = false;
     private boolean customReadCSV = false;
+    private JIPipeDynamicParameterCollection variables = new JIPipeDynamicParameterCollection(RUtils.ALLOWED_PARAMETER_CLASSES);
 
     public MergingRScriptAlgorithm(JIPipeNodeInfo info) {
         super(info, JIPipeDefaultMutableSlotConfiguration.builder()
         .restrictInputTo(ResultsTableData.class)
         .restrictOutputTo(ResultsTableData.class, ImagePlusData.class)
         .build());
+        registerSubParameter(variables);
     }
 
     public MergingRScriptAlgorithm(MergingRScriptAlgorithm other) {
@@ -64,6 +68,8 @@ public class MergingRScriptAlgorithm extends JIPipeMergingAlgorithm {
         this.customWriteCSV = other.customWriteCSV;
         this.customReadCSV = other.customReadCSV;
         this.annotationsAsVariables = other.annotationsAsVariables;
+        this.variables = new JIPipeDynamicParameterCollection(other.variables);
+        registerSubParameter(variables);
     }
 
     @Override
@@ -110,6 +116,9 @@ public class MergingRScriptAlgorithm extends JIPipeMergingAlgorithm {
                 generatedPlots.put(outputSlot.getName(), tempFile);
             }
         }
+
+        // Add user variables
+        RUtils.parametersToVariables(code, variables, true, true);
 
         // Add annotations
         if(annotationsAsVariables) {
@@ -269,6 +278,13 @@ public class MergingRScriptAlgorithm extends JIPipeMergingAlgorithm {
                 ((Examples) result).apply(this);
             }
         }
+    }
+
+    @JIPipeParameter("variables")
+    @JIPipeDocumentation(name = "Script variables", description = "The parameters are passed as variables to the R script. The variables are named according to the " +
+            "unique name (if valid variable names) and are also stored in a list 'ParameterVariables'.")
+    public JIPipeDynamicParameterCollection getVariables() {
+        return variables;
     }
 
     private enum Examples {
