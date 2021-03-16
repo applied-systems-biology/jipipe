@@ -136,7 +136,7 @@ public class RUtils {
         for (Map.Entry<String, Path> entry : inputSlotPaths.entrySet()) {
             code.addRCode("JIPipe.InputSlotFolders$\"" + MacroUtils.escapeString(entry.getKey()) + "\" <- \""
                     + MacroUtils.escapeString(entry.getValue() + "") + "\"");
-            code.addRCode("JIPipe.InputSlotFolders$\"" + MacroUtils.escapeString(entry.getKey()) + "\" <- "
+            code.addRCode("JIPipe.InputSlotRowCounts$\"" + MacroUtils.escapeString(entry.getKey()) + "\" <- "
                     + slotRowCount.apply(entry.getKey()));
         }
 
