@@ -1,12 +1,17 @@
 package org.hkijena.jipipe.extensions.r;
 
+import org.fife.ui.rsyntaxtextarea.AbstractTokenMakerFactory;
+import org.fife.ui.rsyntaxtextarea.TokenMakerFactory;
 import org.hkijena.jipipe.JIPipeJavaExtension;
 import org.hkijena.jipipe.extensions.JIPipePrepackagedDefaultJavaExtension;
 import org.hkijena.jipipe.extensions.imagejdatatypes.ImageJDataTypesSettings;
 import org.hkijena.jipipe.extensions.parameters.primitives.HTMLText;
 import org.hkijena.jipipe.extensions.parameters.primitives.StringList;
+import org.hkijena.jipipe.extensions.r.algorithms.ImportRDatasetAlgorithm;
 import org.hkijena.jipipe.extensions.r.algorithms.IteratingRScriptAlgorithm;
+import org.hkijena.jipipe.extensions.r.algorithms.MergingRScriptAlgorithm;
 import org.hkijena.jipipe.extensions.r.parameters.RScriptParameter;
+import org.hkijena.jipipe.extensions.r.ui.RTokenMaker;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.scijava.plugin.Plugin;
 
@@ -48,6 +53,9 @@ public class RExtension extends JIPipePrepackagedDefaultJavaExtension {
 
     @Override
     public void register() {
+        AbstractTokenMakerFactory atmf = (AbstractTokenMakerFactory) TokenMakerFactory.getDefaultInstance();
+        atmf.putMapping("text/x-r-script", RTokenMaker.class.getName());
+
         registerParameterType("r-script",
                 RScriptParameter.class,
                 null,
@@ -62,5 +70,9 @@ public class RExtension extends JIPipePrepackagedDefaultJavaExtension {
                 UIUtils.getIconFromResources("actions/plugins.png"),
                 new RExtensionSettings());
         registerNodeType("r-script-iterating", IteratingRScriptAlgorithm.class, UIUtils.getIconURLFromResources("apps/rlogo_icon.png"));
+        registerNodeType("r-script-merging", MergingRScriptAlgorithm.class, UIUtils.getIconURLFromResources("apps/rlogo_icon.png"));
+
+        registerEnumParameterType("r-import-dataset:dataset", ImportRDatasetAlgorithm.Dataset.class, "R dataset", "A dataset from the R datasets package");
+        registerNodeType("r-import-dataset", ImportRDatasetAlgorithm.class, UIUtils.getIconURLFromResources("apps/rlogo_icon.png"));
     }
 }

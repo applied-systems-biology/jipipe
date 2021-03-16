@@ -1,7 +1,6 @@
 package org.hkijena.jipipe.extensions.r.algorithms;
 
 import com.github.rcaller.rstuff.RCaller;
-import com.github.rcaller.rstuff.RCallerOptions;
 import com.github.rcaller.rstuff.RCode;
 import ij.IJ;
 import ij.ImagePlus;
@@ -22,29 +21,29 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.r.RExtensionSettings;
 import org.hkijena.jipipe.extensions.r.parameters.RScriptParameter;
-import org.hkijena.jipipe.extensions.settings.FileChooserSettings;
 import org.hkijena.jipipe.extensions.settings.RuntimeSettings;
 import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.utils.MacroUtils;
 import org.hkijena.jipipe.utils.ResourceUtils;
-import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
-import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
-@JIPipeDocumentation(name = "R script (iterating)", description = "Allows to execute a custom R script. " +
-        "The inputs are made available as data frames accessible via variables named according to the slot name. Additionally, variables 'Input.[Input name].File'" +
+@JIPipeDocumentation(name = "R script (merging)", description = "Allows to execute a custom R script. " +
+        "The inputs are made available as list of data frames accessible via variables named according to the slot name. Additionally, variables 'Input.[Input name].Files' (string vectors)" +
         " are made available. Outputs must be written into the files according to 'Output.[Input name].File' (done automatically by default for data frames). Plots should be written in a standard pixel format like PNG. " +
         "SVG/PS/PDF is not supported. " +
         "Annotations are available as variables and inside an 'Annotations' list variable.")
 @JIPipeOrganization(nodeTypeCategory = MiscellaneousNodeTypeCategory.class, menuPath = "R script")
-public class IteratingRScriptAlgorithm extends JIPipeIteratingAlgorithm {
+public class MergingRScriptAlgorithm extends JIPipeMergingAlgorithm {
 
     private RScriptParameter script = new RScriptParameter();
     private RCaller rCaller;
@@ -52,14 +51,14 @@ public class IteratingRScriptAlgorithm extends JIPipeIteratingAlgorithm {
     private boolean customWriteCSV = false;
     private boolean customReadCSV = false;
 
-    public IteratingRScriptAlgorithm(JIPipeNodeInfo info) {
+    public MergingRScriptAlgorithm(JIPipeNodeInfo info) {
         super(info, JIPipeDefaultMutableSlotConfiguration.builder()
         .restrictInputTo(ResultsTableData.class)
         .restrictOutputTo(ResultsTableData.class, ImagePlusData.class)
         .build());
     }
 
-    public IteratingRScriptAlgorithm(IteratingRScriptAlgorithm other) {
+    public MergingRScriptAlgorithm(MergingRScriptAlgorithm other) {
         super(other);
         this.script = new RScriptParameter(other.script);
         this.customWriteCSV = other.customWriteCSV;
@@ -91,7 +90,7 @@ public class IteratingRScriptAlgorithm extends JIPipeIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
+    protected void runIteration(JIPipeMergingDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
         RCode code = RCode.create();
 
         // RCaller provides its own methods for serialization, but
@@ -136,13 +135,18 @@ public class IteratingRScriptAlgorithm extends JIPipeIteratingAlgorithm {
             code.addString("Output." + entry.getKey() + ".File", MacroUtils.escapeString(entry.getValue().toAbsolutePath().toString()));
         }
         for (JIPipeDataSlot inputSlot : getEffectiveInputSlots()) {
-            ResultsTableData resultsTableData = dataBatch.getInputData(inputSlot, ResultsTableData.class, progressInfo);
-            Path tempFile = RuntimeSettings.generateTempFile("jipipe-r", ".csv");
-            resultsTableData.saveAsCSV(tempFile);
-
-            code.addString("Input." + inputSlot.getName() + ".File", MacroUtils.escapeString(tempFile.toAbsolutePath().toString()));
+            List<String> tempFiles = new ArrayList<>();
+            for (ResultsTableData inputTable : dataBatch.getInputData(inputSlot, ResultsTableData.class, progressInfo)) {
+                Path tempFile = RuntimeSettings.generateTempFile("jipipe-r", ".csv");
+                inputTable.saveAsCSV(tempFile);
+                tempFiles.add(tempFile.toAbsolutePath().toString());
+            }
+            code.addStringArray("Input." + inputSlot.getName() + ".Files", tempFiles.stream().map(MacroUtils::escapeString).toArray(String[]::new));
             if(!customReadCSV) {
-                code.addRCode(inputSlot.getName() + " <- read.csv(file=\"" + MacroUtils.escapeString(tempFile.toAbsolutePath().toString()) + "\")");
+                code.addRCode(inputSlot.getName() + " <- list()");
+                for (int i = 0; i < tempFiles.size(); i++) {
+                    code.addRCode(inputSlot.getName() + "[[" + (i + 1) + "]]" + " <- read.csv(file=\"" + MacroUtils.escapeString(tempFiles.get(i)) + "\")");
+                }
             }
         }
 
@@ -231,7 +235,7 @@ public class IteratingRScriptAlgorithm extends JIPipeIteratingAlgorithm {
         this.customWriteCSV = customWriteCSV;
     }
 
-    @JIPipeDocumentation(name = "Custom read CSV", description = "If enabled, the script is only provided with variables 'Input.[Input name].File' " +
+    @JIPipeDocumentation(name = "Custom read CSV", description = "If enabled, the script is only provided with variables 'Input.[Input name].Files' " +
             "that will contain the CSV file for the corresponding table input. You must manually read the file via read.csv or other methods.")
     @JIPipeParameter("custom-read-csv")
     public boolean isCustomReadCSV() {
@@ -296,7 +300,7 @@ public class IteratingRScriptAlgorithm extends JIPipeIteratingAlgorithm {
             this.outputSlots = outputSlots;
         }
 
-        public void apply(IteratingRScriptAlgorithm algorithm) {
+        public void apply(MergingRScriptAlgorithm algorithm) {
             JIPipeParameterCollection.setParameter(algorithm, "script", new RScriptParameter(code));
             JIPipeParameterCollection.setParameter(algorithm, "custom-write-csv", false);
             JIPipeDefaultMutableSlotConfiguration slotConfiguration = (JIPipeDefaultMutableSlotConfiguration) algorithm.getSlotConfiguration();

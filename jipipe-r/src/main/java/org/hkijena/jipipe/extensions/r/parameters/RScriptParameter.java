@@ -18,7 +18,7 @@ public class RScriptParameter extends ScriptParameter {
 
     @Override
     public String getMimeType() {
-        return "text/x-r";
+        return "text/x-r-script";
     }
 
     @Override
