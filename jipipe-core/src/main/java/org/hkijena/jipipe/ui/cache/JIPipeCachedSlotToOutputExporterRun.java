@@ -72,7 +72,7 @@ public class JIPipeCachedSlotToOutputExporterRun extends JIPipeWorkbenchPanel im
                 if (!Files.isDirectory(targetPath))
                     Files.createDirectories(targetPath);
                 slot.setStoragePath(targetPath);
-                slot.save(null, slotProgress);
+                slot.saveToStoragePath(null, slotProgress);
             } catch (Exception e) {
                 IJ.handleException(e);
                 progressInfo.log(ExceptionUtils.getStackTrace(e));

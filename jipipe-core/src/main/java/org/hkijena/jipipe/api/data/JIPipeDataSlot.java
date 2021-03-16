@@ -344,10 +344,10 @@ public class JIPipeDataSlot {
     public void flush(Path basePath, JIPipeProgressInfo saveProgress) {
         if (getNode() instanceof JIPipeAlgorithm) {
             if (getInfo().isSaveOutputs()) {
-                save(basePath, saveProgress);
+                saveToStoragePath(basePath, saveProgress);
             }
         } else {
-            save(basePath, saveProgress);
+            saveToStoragePath(basePath, saveProgress);
         }
         destroy();
     }
@@ -411,41 +411,51 @@ public class JIPipeDataSlot {
 
     /**
      * Saves the data to the storage path
+     * Info: This method only works for output slots and saves to the storage path.
      *
      * @param basePath     the base path to where all results are stored relative to. If null, there is no base path
      * @param saveProgress the progress for saving
      */
-    public void save(Path basePath, JIPipeProgressInfo saveProgress) {
+    public void saveToStoragePath(Path basePath, JIPipeProgressInfo saveProgress) {
         if (isOutput() && storagePath != null && data != null) {
+            save(storagePath, basePath, saveProgress);
+        }
+    }
 
-            // Save data
-            List<Integer> indices = new ArrayList<>();
-            for (int row = 0; row < getRowCount(); ++row) {
-                JIPipeProgressInfo rowProgress = saveProgress.resolveAndLog("Row", row, getRowCount());
-                Path path = storagePath.resolve("" + row);
-                if (!Files.isDirectory(path)) {
-                    try {
-                        Files.createDirectories(path);
-                    } catch (IOException e) {
-                        throw new UserFriendlyRuntimeException(e, "Unable to create directory '" + path + "'!",
-                                "Data slot '" + getDisplayName() + "'", "The path might be invalid, or you might not have the permissions to write in a parent folder.",
-                                "Check if the path is valid, and you have write-access.");
-                    }
+    /**
+     * Saves the data contained in this slot into the storage path.
+     * @param storagePath the path that contains the data folders and table
+     * @param basePath the base path of all stored data. Stored in the table that allows later to find the internal path relative to the output folder. Can be null.
+     * @param saveProgress save progress
+     */
+    public void save(Path storagePath, Path basePath, JIPipeProgressInfo saveProgress) {
+        // Save data
+        List<Integer> indices = new ArrayList<>();
+        for (int row = 0; row < getRowCount(); ++row) {
+            JIPipeProgressInfo rowProgress = saveProgress.resolveAndLog("Row", row, getRowCount());
+            Path path = storagePath.resolve("" + row);
+            if (!Files.isDirectory(path)) {
+                try {
+                    Files.createDirectories(path);
+                } catch (IOException e) {
+                    throw new UserFriendlyRuntimeException(e, "Unable to create directory '" + path + "'!",
+                            "Data slot '" + getDisplayName() + "'", "The path might be invalid, or you might not have the permissions to write in a parent folder.",
+                            "Check if the path is valid, and you have write-access.");
                 }
-
-                indices.add(row);
-                data.get(row).getData(saveProgress.resolve("Load virtual data")).saveTo(path, getName(), false, rowProgress);
             }
 
-            JIPipeExportedDataTable dataTable = new JIPipeExportedDataTable(this, basePath, indices);
-            try {
-                dataTable.saveAsJson(storagePath.resolve("data-table.json"));
-                dataTable.saveAsCSV(storagePath.resolve("data-table.csv"));
-            } catch (IOException e) {
-                throw new UserFriendlyRuntimeException(e, "Unable to save data table!",
-                        "Data slot '" + getDisplayName() + "'", "JIPipe tried to write files into '" + storagePath + "'.",
-                        "Check if you have permissions to write into the path, and if there is enough disk space.");
-            }
+            indices.add(row);
+            data.get(row).getData(saveProgress.resolve("Load virtual data")).saveTo(path, getName(), false, rowProgress);
+        }
+
+        JIPipeExportedDataTable dataTable = new JIPipeExportedDataTable(this, basePath, indices);
+        try {
+            dataTable.saveAsJson(storagePath.resolve("data-table.json"));
+            dataTable.saveAsCSV(storagePath.resolve("data-table.csv"));
+        } catch (IOException e) {
+            throw new UserFriendlyRuntimeException(e, "Unable to save data table!",
+                    "Data slot '" + getDisplayName() + "'", "JIPipe tried to write files into '" + storagePath + "'.",
+                    "Check if you have permissions to write into the path, and if there is enough disk space.");
         }
     }
 

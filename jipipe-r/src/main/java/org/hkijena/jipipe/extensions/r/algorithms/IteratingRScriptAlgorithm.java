@@ -1,18 +1,11 @@
 package org.hkijena.jipipe.extensions.r.algorithms;
 
 import com.github.rcaller.rstuff.RCaller;
-import com.github.rcaller.rstuff.RCallerOptions;
 import com.github.rcaller.rstuff.RCode;
-import ij.IJ;
-import ij.ImagePlus;
-import ij.process.ColorProcessor;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeOrganization;
-import org.hkijena.jipipe.api.JIPipeProgressInfo;
-import org.hkijena.jipipe.api.JIPipeValidityReport;
-import org.hkijena.jipipe.api.data.JIPipeAnnotation;
-import org.hkijena.jipipe.api.data.JIPipeDataSlot;
-import org.hkijena.jipipe.api.data.JIPipeDefaultMutableSlotConfiguration;
+import org.apache.commons.io.FileUtils;
+import org.hkijena.jipipe.JIPipe;
+import org.hkijena.jipipe.api.*;
+import org.hkijena.jipipe.api.data.*;
 import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.MiscellaneousNodeTypeCategory;
@@ -20,51 +13,59 @@ import org.hkijena.jipipe.api.parameters.JIPipeContextAction;
 import org.hkijena.jipipe.api.parameters.JIPipeDynamicParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
-import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
-import org.hkijena.jipipe.extensions.parameters.generators.IntegerRange;
-import org.hkijena.jipipe.extensions.parameters.primitives.DoubleList;
-import org.hkijena.jipipe.extensions.parameters.primitives.IntegerList;
-import org.hkijena.jipipe.extensions.parameters.primitives.StringList;
+import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.color.ImagePlusColorRGBData;
 import org.hkijena.jipipe.extensions.r.RExtensionSettings;
 import org.hkijena.jipipe.extensions.r.RUtils;
 import org.hkijena.jipipe.extensions.r.parameters.RScriptParameter;
-import org.hkijena.jipipe.extensions.settings.FileChooserSettings;
 import org.hkijena.jipipe.extensions.settings.RuntimeSettings;
 import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
-import org.hkijena.jipipe.utils.MacroUtils;
 import org.hkijena.jipipe.utils.ResourceUtils;
-import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
-import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.Map;
 
 @JIPipeDocumentation(name = "R script (iterating)", description = "Allows to execute a custom R script. " +
-        "The inputs are made available as data frames accessible via variables named according to the slot name. Additionally, variables 'Input.[Input name].File'" +
-        " are made available. Outputs must be written into the files according to 'Output.[Input name].File' (done automatically by default for data frames). Plots should be written in a standard pixel format like PNG. " +
-        "SVG/PS/PDF is not supported. " +
-        "Annotations are available as variables and inside an 'Annotations' list variable.")
+        "The script comes with various API functions and variables that allow to communicate with JIPipe: " +
+        "<ul>" +
+        "<li><code>JIPipe.InputSlotRowCounts</code> contains named row counts for each slot</li>" +
+        "<li><code>JIPipe.Annotations</code> contains the list of annotations (key-value)</li>" +
+        "<li><code>JIPipe.Variables</code> contains the list of variables defined by parameters (key-value). " +
+        "If a parameter's unique key is a valid variable name, it will also be available as variable.</li>" +
+        "<li><code>JIPipe.GetInputFolder(slot, row=0)</code> returns the data folder of the specified slot. " +
+        "The data folder contains the input row stored in standardized JIPipe format.</li>" +
+        "<li><code>JIPipe.GetInputAsDataFrame(slot, row=0)</code> reads the specified input data row as data frame.</li>" +
+        "<li><code>JIPipe.AddOutputFolder(slot, annotations=list())</code> adds a new output folder into the specified" +
+        " output slot and returns the folder path. Optionally, you can assign annotations to add as list of named strings. " +
+        "Please note that the folder must contain data according to the slot's data type (an image file or a CSV file respectively)</li>" +
+        "<li><code>JIPipe.AddOutputDataFrame(data, slot, annotations=list())</code> adds the specified data frame into the specified output slot. " +
+        "Optionally, you can add annotations to the data.</li>" +
+        "<li><code>JIPipe.AddOutputPNGImagePath(data, slot, annotations=list())</code> generates an image file path to be added as output and return the path. " +
+        "Please note that you must use png() or other functions to actually write this file." +
+        "Optionally, you can add annotations to the data.</li>" +
+        "<li><code>JIPipe.AddOutputTIFFImagePath(data, slot, annotations=list())</code> generates an image file path to be added as output and return the path. " +
+        "Please note that you must use tiff() or other functions to actually write this file." +
+        "Optionally, you can add annotations to the data.</li>" +
+        "</ul>")
 @JIPipeOrganization(nodeTypeCategory = MiscellaneousNodeTypeCategory.class, menuPath = "R script")
+@JIPipeInputSlot(ResultsTableData.class)
+@JIPipeOutputSlot(ImagePlusColorRGBData.class)
+@JIPipeOutputSlot(ResultsTableData.class)
 public class IteratingRScriptAlgorithm extends JIPipeIteratingAlgorithm {
-
-
 
     private RScriptParameter script = new RScriptParameter();
     private RCaller rCaller;
-    private boolean annotationsAsVariables = true;
-    private boolean customWriteCSV = false;
-    private boolean customReadCSV = false;
     private JIPipeDynamicParameterCollection variables = new JIPipeDynamicParameterCollection(RUtils.ALLOWED_PARAMETER_CLASSES);
+    private JIPipeAnnotationMergeStrategy annotationMergeStrategy = JIPipeAnnotationMergeStrategy.Merge;
 
     public IteratingRScriptAlgorithm(JIPipeNodeInfo info) {
         super(info, JIPipeDefaultMutableSlotConfiguration.builder()
         .restrictInputTo(ResultsTableData.class)
-        .restrictOutputTo(ResultsTableData.class, ImagePlusData.class)
+        .restrictOutputTo(ResultsTableData.class, ImagePlusColorRGBData.class)
         .build());
         registerSubParameter(variables);
     }
@@ -72,10 +73,8 @@ public class IteratingRScriptAlgorithm extends JIPipeIteratingAlgorithm {
     public IteratingRScriptAlgorithm(IteratingRScriptAlgorithm other) {
         super(other);
         this.script = new RScriptParameter(other.script);
-        this.customWriteCSV = other.customWriteCSV;
-        this.customReadCSV = other.customReadCSV;
-        this.annotationsAsVariables = other.annotationsAsVariables;
         this.variables = new JIPipeDynamicParameterCollection(other.variables);
+        this.annotationMergeStrategy = other.annotationMergeStrategy;
         registerSubParameter(variables);
     }
 
@@ -94,6 +93,7 @@ public class IteratingRScriptAlgorithm extends JIPipeIteratingAlgorithm {
                                     "manually override R executable and RScript executable (please refer to the documentation in the settings page).");
                 }
                 rCaller = RCaller.create(RExtensionSettings.createRCallerOptions());
+                rCaller.redirectROutputToStream(new JIPipeProgressInfoOutputStream(progressInfo));
             }
             super.run(progressInfo);
         }
@@ -105,131 +105,103 @@ public class IteratingRScriptAlgorithm extends JIPipeIteratingAlgorithm {
     @Override
     protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
         RCode code = RCode.create();
+        code.getCode().setLength(0);
 
         // RCaller provides its own methods for serialization, but
         // we don't need them (not compatible to data types)
 
-        // Generate files for each output
-        Map<String, Path> generatedTables = new HashMap<>();
-        Map<String, Path> generatedPlots = new HashMap<>();
-
-        for (JIPipeDataSlot outputSlot : getOutputSlots()) {
-            if(ResultsTableData.class.isAssignableFrom(outputSlot.getAcceptedDataType())) {
-                Path tempFile = RuntimeSettings.generateTempFile("jipipe-r", ".csv");
-                generatedTables.put(outputSlot.getName(), tempFile);
-            }
-            else if(ImagePlusData.class.isAssignableFrom(outputSlot.getAcceptedDataType())) {
-                Path tempFile = RuntimeSettings.generateTempFile("jipipe-r", ".png");
-                generatedPlots.put(outputSlot.getName(), tempFile);
-            }
-        }
-
         // Add user variables
-        RUtils.parametersToVariables(code, variables, true, true);
+        RUtils.parametersToR(code, variables);
 
         // Add annotations
-        if(annotationsAsVariables) {
-            code.addRCode("Annotations <- list()");
-            for (JIPipeAnnotation annotation : dataBatch.getAnnotations().values()) {
-                if(MacroUtils.isValidVariableName(annotation.getName())) {
-                    code.addString(annotation.getName(), annotation.getValue());
-                }
-                else {
-                    progressInfo.log("Info: Tried to add annotation '" + annotation.getName() + "' as variable, but the name is not a valid variable name. " +
-                            "Only accessible via the 'Annotations' list.");
-                }
-                code.addRCode(String.format("Annotations$\"%s\" <- \"%s\"", MacroUtils.escapeString(annotation.getName()),
-                        MacroUtils.escapeString(annotation.getValue())));
-            }
+        RUtils.annotationsToR(code, dataBatch.getAnnotations().values());
+
+        Map<String, Path> inputSlotPaths = new HashMap<>();
+        for (JIPipeDataSlot slot : getEffectiveInputSlots()) {
+            Path tempPath = RuntimeSettings.generateTempDirectory("r-input");
+            progressInfo.log("Input slot '" + slot.getName() + "' is stored in " + tempPath);
+            JIPipeDataSlot dummy = dataBatch.toDummySlot(slot.getInfo(), this, slot);
+            dummy.save(tempPath, null, progressInfo);
+            inputSlotPaths.put(slot.getName(), tempPath);
         }
 
-        // Add I/O variables
-        for (Map.Entry<String, Path> entry : generatedTables.entrySet()) {
-            code.addString("Output." + entry.getKey() + ".File", MacroUtils.escapeString(entry.getValue().toAbsolutePath().toString()));
-        }
-        for (Map.Entry<String, Path> entry : generatedPlots.entrySet()) {
-            code.addString("Output." + entry.getKey() + ".File", MacroUtils.escapeString(entry.getValue().toAbsolutePath().toString()));
-        }
-        for (JIPipeDataSlot inputSlot : getEffectiveInputSlots()) {
-            ResultsTableData resultsTableData = dataBatch.getInputData(inputSlot, ResultsTableData.class, progressInfo);
-            Path tempFile = RuntimeSettings.generateTempFile("jipipe-r", ".csv");
-            resultsTableData.saveAsCSV(tempFile);
+        RUtils.inputSlotsToR(code, inputSlotPaths, slotName -> getInputSlot(slotName).getRowCount());
+        RUtils.installInputLoaderCode(code);
 
-            code.addString("Input." + inputSlot.getName() + ".File", MacroUtils.escapeString(tempFile.toAbsolutePath().toString()));
-            if(!customReadCSV) {
-                code.addRCode(inputSlot.getName() + " <- read.csv(file=\"" + MacroUtils.escapeString(tempFile.toAbsolutePath().toString()) + "\")");
-            }
+        Map<String, Path> outputSlotPaths = new HashMap<>();
+        for (JIPipeDataSlot slot : getOutputSlots()) {
+            Path tempPath = RuntimeSettings.generateTempDirectory("r-output");
+            progressInfo.log("Output slot '" + slot.getName() + "' is stored in " + tempPath);
+            outputSlotPaths.put(slot.getName(), tempPath);
         }
+        RUtils.outputSlotsToR(code, getOutputSlots(), outputSlotPaths);
+        RUtils.installOutputGeneratorCode(code);
 
         code.addRCode(script.getCode());
         rCaller.setRCode(code);
+        RUtils.installPostprocessorCode(code);
 
-        // Add code after main code
-        if(!customWriteCSV) {
-            for (Map.Entry<String, Path> entry : generatedTables.entrySet()) {
-                code.addRCode("write.csv(" + entry.getKey() + ", file=\"" + MacroUtils.escapeString(entry.getValue().toAbsolutePath().toString()) + "\")");
-            }
-        }
-
+        progressInfo.log(code.getCode().toString());
         rCaller.runOnly();
 
-        // Extract outputs
         for (JIPipeDataSlot outputSlot : getOutputSlots()) {
-            if (ResultsTableData.class.isAssignableFrom(outputSlot.getAcceptedDataType())) {
-                Path tableFile = generatedTables.get(outputSlot.getName());
-                try {
-                    ResultsTableData resultsTableData = ResultsTableData.fromCSV(tableFile);
-                    dataBatch.addOutputData(outputSlot, resultsTableData, progressInfo);
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
-                }
-            }
-            else  if(ImagePlusData.class.isAssignableFrom(outputSlot.getAcceptedDataType())) {
-                Path imageFile = generatedPlots.get(outputSlot.getName());
-                ImagePlus image =  IJ.openImage(imageFile.toString());
-                if(image.getBitDepth() != 24) {
-                    // R saved indexed colors that break apart easily, so we enforce RGB conversion
-                    ColorProcessor colorProcessor = new ColorProcessor(image.getProcessor().getBufferedImage());
-                    image.setProcessor(colorProcessor);
-                }
-                dataBatch.addOutputData(outputSlot, new ImagePlusData(image), progressInfo);
+            Path storagePath = outputSlotPaths.get(outputSlot.getName());
+            JIPipeExportedDataTable table = JIPipeExportedDataTable.loadFromJson(outputSlotPaths.get(outputSlot.getName()).resolve("data-table.json"));
+            for (int row = 0; row < table.getRowCount(); row++) {
+                JIPipeDataInfo dataInfo = table.getDataTypeOf(row);
+                Path rowStoragePath = table.getRowStoragePath(storagePath, row);
+                JIPipeData data = JIPipe.importData(rowStoragePath, dataInfo.getDataClass());
+                dataBatch.addOutputData(outputSlot, data, table.getRowList().get(row).getAnnotations(), annotationMergeStrategy, progressInfo);
             }
         }
-    }
 
-    @Override
-    public void reportValidity(JIPipeValidityReport report) {
-        super.reportValidity(report);
-        for (JIPipeDataSlot outputSlot : getOutputSlots()) {
-            if(!MacroUtils.isValidVariableName(outputSlot.getName())) {
-                report.forCategory("Output slots").reportIsInvalid("Invalid output slot name!",
-                        "All output slots must have valid R variable names. Following name is not valid: " + outputSlot.getName(),
-                        "Change the slot name.",
-                        this);
+        // Clean up
+        progressInfo.log("Cleaning up ...");
+        for (Map.Entry<String, Path> entry : inputSlotPaths.entrySet()) {
+            try {
+                FileUtils.deleteDirectory(entry.getValue().toFile());
+            } catch (IOException e) {
+                e.printStackTrace();
             }
         }
-        for (JIPipeDataSlot inputSlot : getEffectiveInputSlots()) {
-            if(!MacroUtils.isValidVariableName(inputSlot.getName())) {
-                report.forCategory("Input slots").reportIsInvalid("Invalid input slot name!",
-                        "All input slots must have valid R variable names. Following name is not valid: " + inputSlot.getName(),
-                        "Change the slot name.",
-                        this);
+        for (Map.Entry<String, Path> entry : outputSlotPaths.entrySet()) {
+            try {
+                FileUtils.deleteDirectory(entry.getValue().toFile());
+            } catch (IOException e) {
+                e.printStackTrace();
             }
         }
     }
 
     @JIPipeParameter("variables")
     @JIPipeDocumentation(name = "Script variables", description = "The parameters are passed as variables to the R script. The variables are named according to the " +
-            "unique name (if valid variable names) and are also stored in a list 'ParameterVariables'.")
+            "unique name (if valid variable names) and are also stored in a list 'JIPipe.Variables'.")
     public JIPipeDynamicParameterCollection getVariables() {
         return variables;
     }
 
     @JIPipeDocumentation(name = "Script", description = "The script that contains the R commands. " +
-            "You have access to variables 'Input.[Input name].File' and 'Output.[Output name].File' that point to the input/output files for " +
-            "the specified slot. By default, CSV tables will be read and written automatically into variables named according to the slot. " +
-            "Annotations are also available as variables, and within the 'Annotations' list variable that also contains annotation names " +
-            "that cannot be written into variables.")
+            "The script comes with various API functions and variables that allow to communicate with JIPipe: " +
+            "<ul>" +
+            "<li><code>JIPipe.InputSlotRowCounts</code> contains named row counts for each slot</li>" +
+            "<li><code>JIPipe.Annotations</code> contains the list of annotations (key-value)</li>" +
+            "<li><code>JIPipe.Variables</code> contains the list of variables defined by parameters (key-value). " +
+            "If a parameter's unique key is a valid variable name, it will also be available as variable.</li>" +
+            "<li><code>JIPipe.GetInputFolder(slot, row=0)</code> returns the data folder of the specified slot. " +
+            "The data folder contains the input row stored in standardized JIPipe format.</li>" +
+            "<li><code>JIPipe.GetInputAsDataFrame(slot, row=0)</code> reads the specified input data row as data frame.</li>" +
+            "<li><code>JIPipe.AddOutputFolder(slot, annotations=list())</code> adds a new output folder into the specified" +
+            " output slot and returns the folder path. Optionally, you can assign annotations to add as list of named strings. " +
+            "Please note that the folder must contain data according to the slot's data type (an image file or a CSV file respectively)</li>" +
+            "<li><code>JIPipe.AddOutputDataFrame(data, slot, annotations=list())</code> adds the specified data frame into the specified output slot. " +
+            "Optionally, you can add annotations to the data.</li>" +
+            "<li><code>JIPipe.AddOutputPNGImagePath(data, slot, annotations=list())</code> generates an image file path to be added as output and return the path. " +
+            "Please note that you must use png() or other functions to actually write this file." +
+            "Optionally, you can add annotations to the data.</li>" +
+            "<li><code>JIPipe.AddOutputTIFFImagePath(data, slot, annotations=list())</code> generates an image file path to be added as output and return the path. " +
+            "Please note that you must use tiff() or other functions to actually write this file." +
+            "Optionally, you can add annotations to the data.</li>" +
+            "</ul>")
     @JIPipeParameter("script")
     public RScriptParameter getScript() {
         return script;
@@ -240,41 +212,16 @@ public class IteratingRScriptAlgorithm extends JIPipeIteratingAlgorithm {
         this.script = script;
     }
 
-    @JIPipeDocumentation(name = "Custom write CSV", description = "If enabled, " +
-            "the script is provided with variables 'Output.[Output name].File' that will contain the CSV file for the corresponding table output. " +
-            "Must be manually written via write.csv or other methods.")
-    @JIPipeParameter("custom-write-csv")
-    public boolean isCustomWriteCSV() {
-        return customWriteCSV;
+    @JIPipeDocumentation(name = "Annotation merge strategy", description = "Determines how annotations that are added in the R script are " +
+            "merged into existing annotations.")
+    @JIPipeParameter("annotation-merge-strategy")
+    public JIPipeAnnotationMergeStrategy getAnnotationMergeStrategy() {
+        return annotationMergeStrategy;
     }
 
-    @JIPipeParameter("custom-write-csv")
-    public void setCustomWriteCSV(boolean customWriteCSV) {
-        this.customWriteCSV = customWriteCSV;
-    }
-
-    @JIPipeDocumentation(name = "Custom read CSV", description = "If enabled, the script is only provided with variables 'Input.[Input name].File' " +
-            "that will contain the CSV file for the corresponding table input. You must manually read the file via read.csv or other methods.")
-    @JIPipeParameter("custom-read-csv")
-    public boolean isCustomReadCSV() {
-        return customReadCSV;
-    }
-
-    @JIPipeParameter("custom-read-csv")
-    public void setCustomReadCSV(boolean customReadCSV) {
-        this.customReadCSV = customReadCSV;
-    }
-
-    @JIPipeDocumentation(name = "Add annotations as variables", description = "If enabled, annotations are added as variables (if compatible to code). " +
-            "Alternatively, all annotations are available in a list 'Annotations'")
-    @JIPipeParameter("annotations-as-variables")
-    public boolean isAnnotationsAsVariables() {
-        return annotationsAsVariables;
-    }
-
-    @JIPipeParameter("annotations-as-variables")
-    public void setAnnotationsAsVariables(boolean annotationsAsVariables) {
-        this.annotationsAsVariables = annotationsAsVariables;
+    @JIPipeParameter("annotation-merge-strategy")
+    public void setAnnotationMergeStrategy(JIPipeAnnotationMergeStrategy annotationMergeStrategy) {
+        this.annotationMergeStrategy = annotationMergeStrategy;
     }
 
     @JIPipeDocumentation(name = "Load example", description = "Loads example parameters that showcase how to use this algorithm.")
@@ -290,21 +237,27 @@ public class IteratingRScriptAlgorithm extends JIPipeIteratingAlgorithm {
     }
 
     private enum Examples {
-        LoadIris("Load IRIS data set", "library(datasets)\n\nTable <- iris",
+        LoadIris("Load IRIS data set", "library(datasets)\n\nJIPipe.AddOutputDataFrame(slot=\"Table\", data=iris)",
                 new JIPipeInputSlot[0], new JIPipeOutputSlot[] {
                 new DefaultJIPipeOutputSlot(ResultsTableData.class, "Table", null, false)
         }),
         PlotIris("Plot IRIS data set", "library(datasets)\n" +
                 "\n" +
-                "# You must write into the provided file\n" +
-                "png(Output.Plot.File, width = 800, height = 600)\n" +
+                "# Generate the output file name\n" +
+                "png.file.name <- JIPipe.AddOutputPNGImagePath(slot=\"Plot\")\n\n" +
+                "# Use standard R functions. Write into this file.\n" +
+                "png(png.file.name, width = 800, height = 600)\n" +
                 "plot(iris$Petal.Length, iris$Petal.Width, pch=21, bg=c(\"red\",\"green3\",\"blue\")[unclass(iris$Species)], main=\"Edgar Anderson's Iris Data\")\n" +
                 "dev.off()\n" +
                 "\n" +
-                "# JIPipe will automatically load the data in Output.Plot.File",
+                "# JIPipe will automatically load the data",
                 new JIPipeInputSlot[0], new JIPipeOutputSlot[] {
-                new DefaultJIPipeOutputSlot(ImagePlusData.class, "Plot", null, false)
-        });
+                new DefaultJIPipeOutputSlot(ImagePlusColorRGBData.class, "Plot", null, false)
+        }),
+        SummarizeTable("Summarize table", "input <- JIPipe.GetInputAsDataFrame(\"Input\")\n" +
+                "JIPipe.AddOutputDataFrame(slot=\"Output\", data=summary(input))",
+                new JIPipeInputSlot[] { new DefaultJIPipeInputSlot(ResultsTableData.class, "Input", false, false) },
+                new JIPipeOutputSlot[] { new DefaultJIPipeOutputSlot(ResultsTableData.class, "Output", null, false) });
 
         private final String name;
         private final String code;
@@ -320,7 +273,6 @@ public class IteratingRScriptAlgorithm extends JIPipeIteratingAlgorithm {
 
         public void apply(IteratingRScriptAlgorithm algorithm) {
             JIPipeParameterCollection.setParameter(algorithm, "script", new RScriptParameter(code));
-            JIPipeParameterCollection.setParameter(algorithm, "custom-write-csv", false);
             JIPipeDefaultMutableSlotConfiguration slotConfiguration = (JIPipeDefaultMutableSlotConfiguration) algorithm.getSlotConfiguration();
             slotConfiguration.clearInputSlots(true);
             slotConfiguration.clearOutputSlots(true);

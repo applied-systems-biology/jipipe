@@ -14,10 +14,7 @@
 package org.hkijena.jipipe.api.nodes;
 
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
-import org.hkijena.jipipe.api.data.JIPipeAnnotation;
-import org.hkijena.jipipe.api.data.JIPipeAnnotationMergeStrategy;
-import org.hkijena.jipipe.api.data.JIPipeData;
-import org.hkijena.jipipe.api.data.JIPipeDataSlot;
+import org.hkijena.jipipe.api.data.*;
 
 import java.util.*;
 
@@ -277,6 +274,23 @@ public class JIPipeDataBatch implements Comparable<JIPipeDataBatch> {
         List<JIPipeAnnotation> finalAnnotations = new ArrayList<>(annotations.values());
         finalAnnotations.addAll(additionalAnnotations);
         slot.addData(data, finalAnnotations, mergeStrategy, progressInfo);
+    }
+
+    /**
+     * Creates a new dummy slot that contains the data of one input slot and the annotations of this batch
+     *
+     * @param info       info of the new slot
+     * @param node       the node that will own the new slot
+     * @param sourceSlot the source slot
+     * @return a new dummy slot
+     */
+    public JIPipeDataSlot toDummySlot(JIPipeDataSlotInfo info, JIPipeGraphNode node, JIPipeDataSlot sourceSlot) {
+        JIPipeDataSlot dummy = new JIPipeDataSlot(info, node);
+        ArrayList<JIPipeAnnotation> annotations = new ArrayList<>(getAnnotations().values());
+        for (int row = 0; row < sourceSlot.getRowCount(); row++) {
+            dummy.addData(sourceSlot.getVirtualData(row), annotations, JIPipeAnnotationMergeStrategy.Merge);
+        }
+        return dummy;
     }
 
     @Override

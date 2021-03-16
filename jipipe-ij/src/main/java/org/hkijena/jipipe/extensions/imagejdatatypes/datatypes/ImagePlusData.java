@@ -155,15 +155,16 @@ public class ImagePlusData implements JIPipeData, ColoredImagePlusData {
     }
 
     public static ImagePlus importImagePlusFrom(Path storageFilePath) {
-        Path targetFile = PathUtils.findFileByExtensionIn(storageFilePath, ".tif");
+        Path targetFile = PathUtils.findFileByExtensionIn(storageFilePath, ".tif", ".tiff", ".png", ".jpg", ".jpeg", ".bmp");
         if (targetFile == null) {
-            throw new UserFriendlyNullPointerException("Could not find TIFF file in '" + storageFilePath + "'!",
+            throw new UserFriendlyNullPointerException("Could not find a compatible image file in '" + storageFilePath + "'!",
                     "Unable to find file in location '" + storageFilePath + "'",
                     "ImagePlusData loading",
                     "JIPipe needs to load the image from a folder, but it could not find any matching file.",
                     "Please contact the JIPipe developers about this issue.");
         }
-        if (ImageJDataTypesSettings.getInstance().isUseBioFormats()) {
+        String fileName = targetFile.toString().toLowerCase();
+        if ((fileName.endsWith(".tiff") || fileName.endsWith(".tif")) && ImageJDataTypesSettings.getInstance().isUseBioFormats()) {
             OMEImageData omeImageData = OMEImageData.importFrom(storageFilePath);
             return omeImageData.getImage();
         } else {

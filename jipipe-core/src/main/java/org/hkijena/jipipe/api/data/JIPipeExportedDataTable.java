@@ -25,6 +25,7 @@ import javax.swing.event.TableModelListener;
 import javax.swing.table.TableModel;
 import java.io.IOException;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -53,8 +54,11 @@ public class JIPipeExportedDataTable implements TableModel {
         this.slotName = slot.getName();
         if (basePath != null) {
             this.internalPath = basePath.relativize(slot.getStoragePath()).toString();
-        } else {
+        } else if(slot.getStoragePath() != null) {
             this.internalPath = slot.getStoragePath().toString();
+        }
+        else {
+            this.internalPath = "";
         }
         this.acceptedDataType = slot.getAcceptedDataType();
         this.rowList = new ArrayList<>();
@@ -168,6 +172,16 @@ public class JIPipeExportedDataTable implements TableModel {
      */
     public void saveAsJson(Path fileName) throws IOException {
         JsonUtils.getObjectMapper().writerWithDefaultPrettyPrinter().writeValue(fileName.toFile(), this);
+    }
+
+    /**
+     * Gets the storage path of the specified row
+     * @param storagePath the storage path that contains the data table
+     * @param row the row index
+     * @return the path pointing to the data for the row
+     */
+    public Path getRowStoragePath(Path storagePath, int row) {
+        return storagePath.resolve("" + row);
     }
 
     /**
