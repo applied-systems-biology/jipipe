@@ -30,11 +30,12 @@ import java.util.HashMap;
 import java.util.Map;
 
 @JIPipeDocumentation(name = "R script (iterating)", description = "Allows to execute a custom R script. " +
+        "The script is repeated for each data batch. Please note the each data batch only contains one item (row) per slot. " +
         "The script comes with various API functions and variables that allow to communicate with JIPipe: " +
         "<ul>" +
-        "<li><code>JIPipe.InputSlotRowCounts</code> contains named row counts for each slot</li>" +
-        "<li><code>JIPipe.Annotations</code> contains the list of annotations (key-value)</li>" +
-        "<li><code>JIPipe.Variables</code> contains the list of variables defined by parameters (key-value). " +
+        "<li><code>JIPipe.InputSlotRowCounts</code> contains named row counts for each slot. Is always 1 for each slot.</li>" +
+        "<li><code>JIPipe.Annotations</code> contains the list of annotations (named strings)</li>" +
+        "<li><code>JIPipe.Variables</code> contains the list of variables defined by parameters (named values). " +
         "If a parameter's unique key is a valid variable name, it will also be available as variable.</li>" +
         "<li><code>JIPipe.GetInputFolder(slot, row=0)</code> returns the data folder of the specified slot. " +
         "The data folder contains the input row stored in standardized JIPipe format.</li>" +
@@ -183,9 +184,9 @@ public class IteratingRScriptAlgorithm extends JIPipeIteratingAlgorithm {
     @JIPipeDocumentation(name = "Script", description = "The script that contains the R commands. " +
             "The script comes with various API functions and variables that allow to communicate with JIPipe: " +
             "<ul>" +
-            "<li><code>JIPipe.InputSlotRowCounts</code> contains named row counts for each slot</li>" +
-            "<li><code>JIPipe.Annotations</code> contains the list of annotations (key-value)</li>" +
-            "<li><code>JIPipe.Variables</code> contains the list of variables defined by parameters (key-value). " +
+            "<li><code>JIPipe.InputSlotRowCounts</code> contains named row counts for each slot. Is always 1 for each slot.</li>" +
+            "<li><code>JIPipe.Annotations</code> contains the list of annotations (named strings)</li>" +
+            "<li><code>JIPipe.Variables</code> contains the list of variables defined by parameters (named values). " +
             "If a parameter's unique key is a valid variable name, it will also be available as variable.</li>" +
             "<li><code>JIPipe.GetInputFolder(slot, row=0)</code> returns the data folder of the specified slot. " +
             "The data folder contains the input row stored in standardized JIPipe format.</li>" +
