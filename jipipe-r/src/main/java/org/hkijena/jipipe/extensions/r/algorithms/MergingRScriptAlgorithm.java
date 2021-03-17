@@ -66,10 +66,7 @@ public class MergingRScriptAlgorithm extends JIPipeMergingAlgorithm {
     private JIPipeDynamicParameterCollection variables = new JIPipeDynamicParameterCollection(RUtils.ALLOWED_PARAMETER_CLASSES);
 
     public MergingRScriptAlgorithm(JIPipeNodeInfo info) {
-        super(info, JIPipeDefaultMutableSlotConfiguration.builder()
-        .restrictInputTo(ResultsTableData.class)
-        .restrictOutputTo(ResultsTableData.class, ImagePlusColorRGBData.class)
-        .build());
+        super(info, JIPipeDefaultMutableSlotConfiguration.builder().build());
         registerSubParameter(variables);
     }
 

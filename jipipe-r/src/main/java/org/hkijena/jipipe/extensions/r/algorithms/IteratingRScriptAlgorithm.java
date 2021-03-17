@@ -64,10 +64,7 @@ public class IteratingRScriptAlgorithm extends JIPipeIteratingAlgorithm {
     private JIPipeAnnotationMergeStrategy annotationMergeStrategy = JIPipeAnnotationMergeStrategy.Merge;
 
     public IteratingRScriptAlgorithm(JIPipeNodeInfo info) {
-        super(info, JIPipeDefaultMutableSlotConfiguration.builder()
-        .restrictInputTo(ResultsTableData.class)
-        .restrictOutputTo(ResultsTableData.class, ImagePlusColorRGBData.class)
-        .build());
+        super(info, JIPipeDefaultMutableSlotConfiguration.builder().build());
         registerSubParameter(variables);
     }
 
