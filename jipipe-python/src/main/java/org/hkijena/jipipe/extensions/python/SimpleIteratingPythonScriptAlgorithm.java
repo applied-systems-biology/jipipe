@@ -44,7 +44,8 @@ import java.util.ArrayList;
 /**
  * An algorithm that allows to run Python code
  */
-@JIPipeDocumentation(name = "Python script (simple iterating)", description = "Runs a Python script that iterates through each data batch in one input slot. " +
+@JIPipeDocumentation(name = "Jython script (simple iterating)", description = "Runs a Python script that iterates through each data batch in one input slot. " +
+        "This node uses Jython, a Java interpreter for Python that currently does not support native functions (e.g. Numpy), but can access all Java types." +
         "Access to the data batch is done via a variable 'data_batch' that provides access to all input and output data, as well as annotations. " +
         "Input slots can be accessed from variables 'input_slots' (array), 'input_slots_map' (map from name to slot). " +
         "The first (and only) input slot is also accessible via the 'input_slot' variable. " +
