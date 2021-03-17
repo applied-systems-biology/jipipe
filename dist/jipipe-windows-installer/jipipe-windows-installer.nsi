@@ -80,6 +80,7 @@ Section "Common files (Required)" SEC01
   File "..\..\jipipe-tables\target\jipipe-tables-${PRODUCT_VERSION}.jar"
   File "..\..\jipipe-utils\target\jipipe-utils-${PRODUCT_VERSION}.jar"
   File "..\..\jipipe-forms\target\jipipe-forms-${PRODUCT_VERSION}.jar"
+  File "..\..\jipipe-r\target\jipipe-r-${PRODUCT_VERSION}.jar"
 
   ; JIPipe dependencies
   inetc::get "https://maven.scijava.org/service/local/repositories/central/content/com/github/vatbub/mslinks/1.0.5/mslinks-1.0.5.jar" "$INSTDIR\Fiji.app\jars\mslinks-1.0.5.jar"
@@ -114,6 +115,7 @@ Section "Common files (Required)" SEC01
   inetc::get "https://maven.scijava.org/service/local/repositories/central/content/com/openhtmltopdf/openhtmltopdf-rtl-support/1.0.4/openhtmltopdf-rtl-support-1.0.4.jar" "$INSTDIR\Fiji.app\jars\openhtmltopdf-rtl-support-1.0.4.jar"
   inetc::get "https://maven.scijava.org/service/local/repositories/central/content/com/openhtmltopdf/openhtmltopdf-pdfbox/1.0.4/openhtmltopdf-pdfbox-1.0.4.jar" "$INSTDIR\Fiji.app\jars\openhtmltopdf-pdfbox-1.0.4.jar"
   inetc::get "https://maven.scijava.org/service/local/repositories/central/content/com/fathzer/javaluator/3.0.3/javaluator-3.0.3.jar" "$INSTDIR\Fiji.app\jars\javaluator-3.0.3.jar"
+  inetc::get "https://maven.scijava.org/service/local/repositories/central/content/com/github/jbytecode/RCaller/3.0/RCaller-3.0.jar" "$INSTDIR\Fiji.app\jars\RCaller-3.0.jar"
   inetc::get "https://github.com/ome/omero-insight/releases/download/v5.5.14/omero_ij-5.5.14-all.jar" "$INSTDIR\Fiji.app\plugins\omero_ij-5.5.14-all.jar"
 
   ; Bootstrap update sites

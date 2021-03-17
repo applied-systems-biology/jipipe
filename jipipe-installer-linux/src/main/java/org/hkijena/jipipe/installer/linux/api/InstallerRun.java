@@ -71,6 +71,7 @@ public class InstallerRun implements JIPipeRunnable {
             "https://maven.scijava.org/service/local/repositories/central/content/com/openhtmltopdf/openhtmltopdf-rtl-support/1.0.4/openhtmltopdf-rtl-support-1.0.4.jar",
             "https://maven.scijava.org/service/local/repositories/central/content/com/openhtmltopdf/openhtmltopdf-pdfbox/1.0.4/openhtmltopdf-pdfbox-1.0.4.jar",
             "https://maven.scijava.org/service/local/repositories/central/content/com/fathzer/javaluator/3.0.3/javaluator-3.0.3.jar",
+            "https://maven.scijava.org/service/local/repositories/central/content/com/github/jbytecode/RCaller/3.0/RCaller-3.0.jar",
             "https://github.com/ome/omero-insight/releases/download/v5.5.14/omero_ij-5.5.14-all.jar"
     };
 
