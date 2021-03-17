@@ -449,8 +449,8 @@ Creating plots Plots can be created via the Analyze &amp;gt; Plot &amp;gt; Plot 
       
       <guid>https://www.jipipe.org/documentation/standard-library/python/</guid>
       <description>The standard library contains nodes that allow to run Python scripts using the Jython library. Python scripts have access to all JIPipe and ImageJ APIs that are available at runtime.
-You can find the nodes in the Miscellaneous menu. You can find algorithms equivalent to each of the Java standard algorithms:
-   Algorithm type Purpose     JIPipeAlgorithm The base class of all algorithms. It provides no included functionality outside of absolutely necessary ones.</description>
+Due to restrictions in the Jython library, Python libraries that are built on a native backend (such as Numpy) will not work.
+As JIPipe builds on the functionality provided by ImageJ. Please refer to the ImageJ documentation to find information on how to expand Jython with additional libraries.</description>
     </item>
     
     <item>
@@ -472,6 +472,17 @@ public static void main(String[] args) {// Extract necessary SciJava variables
       <guid>https://www.jipipe.org/documentation-json-api/point/</guid>
       <description>This document describes the properties of the JSON API object. You also can access the document in JSON Schema format: point.schema.json
 A pointx:integerX coordinatey:integerY coordinateExample {&amp;#34;x&amp;#34; : 2900,&amp;#34;y&amp;#34; : 100}</description>
+    </item>
+    
+    <item>
+      <title>R integration</title>
+      <link>https://www.jipipe.org/documentation/standard-library/r-integration/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://www.jipipe.org/documentation/standard-library/r-integration/</guid>
+      <description>The standard library contains nodes that allow to run R scripts using the RCaller library that allows to run any existing R installation. This means that you will need to install a distribution of R.
+You will need to install R (https://www.r-project.org/) and setup JIPipe to find this installation.
+Setting up R If not already done, please install R. Then open JIPipe and navigate to Project &amp;gt; Application settings &amp;gt; Extensions &amp;gt; R integration.</description>
     </item>
     
     <item>

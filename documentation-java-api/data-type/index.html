@@ -5,7 +5,7 @@
     
       <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-<meta name="revised" content="2021-02-24T01:06:25 CET">
+<meta name="revised" content="2021-03-17T17:31:22 CET">
 <title>Creating a data type :: JIPipe for ImageJ</title>
 <link rel="shortcut icon" href="../../images/favicon.png" type="image/x-icon" />
 <link href="../../css/font-awesome.min.css" rel="stylesheet">
@@ -270,6 +270,13 @@
         <div>
           <a href="../../documentation/standard-library/python/">
             Python integration
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
+      <li data-nav-id="https://www.jipipe.org/documentation/standard-library/r-integration/" class="dd-item">
+        <div>
+          <a href="../../documentation/standard-library/r-integration/">
+            R integration
           </a><i class="fa fa-circle-thin read-icon"></i>
         </div>
     </li>
@@ -576,7 +583,8 @@
 <p>JIPipe requires that data can be saved to a folder within the output directory. We also
 recommend that you include code that can load the data back into JIPipe or ImageJ in some form.</p>
 <p>There are no requirements on the constructor of the data type.
-The only requirement is that there is a function <code>importFrom(Path)</code> that imports <code>JIPipeData</code> from a row storage folder.</p>
+The only requirements are that there is a function <code>importFrom(Path)</code> that imports <code>JIPipeData</code> from a row storage folder, and an annotation of type
+<a href="../../apidocs/org/hkijena/jipipe/core/api/data/JIPipeDataStorageDocumentation.html">@JIPipeStorageDocumentation</a> that explains the structure of the storage folder.</p>
 <p>The folder that is provided in <code>storageFilePath</code> is unique to the data and empty.
 The name parameter in <code>storageFilePath</code> is usually the data slot name and can be used as template for file names. It can be ignored <strong>undless</strong> <code>forceName</code> is true.
 The reason behind this is that then the name is pre-generated in a unique way for saving the data at a non-standard location (e.g. exporting the data).
@@ -587,8 +595,10 @@ In such cases <strong>all file or folder names</strong> within the storage path 
 <li><code>preview()</code> generates a GUI component that acts as thumbnail/preview of the contained data</li>
 </ul>
 <div class="highlight"><pre style="color:#272822;background-color:#fafafa;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#75af00">@JIPipeDocumentation</span><span style="color:#f92672">(</span><span style="color:#111">name</span> <span style="color:#f92672">=</span> <span style="color:#d88200">&#34;My data&#34;</span><span style="color:#f92672">,</span> <span style="color:#111">description</span> <span style="color:#f92672">=</span> <span style="color:#d88200">&#34;This is some data&#34;</span><span style="color:#f92672">)</span>
+<span style="color:#75af00">@JIPipeStorageDocumentation</span><span style="color:#f92672">(</span><span style="color:#d88200">&#34;Contains exactly one *.json file that stores the string value.&#34;</span><span style="color:#f92672">)</span>
 <span style="color:#75715e">// You can use @JIPipeHidden to hide this data from data type list UIs
 </span><span style="color:#75715e"></span><span style="color:#00a8c8">public</span> <span style="color:#00a8c8">class</span> <span style="color:#75af00">MyData</span> <span style="color:#00a8c8">implements</span> <span style="color:#111">JIPipeData</span> <span style="color:#f92672">{</span>
+
     <span style="color:#111">String</span> <span style="color:#111">value</span><span style="color:#f92672">;</span>
 
     <span style="color:#00a8c8">public</span> <span style="color:#75af00">MyData</span><span style="color:#f92672">()</span> <span style="color:#f92672">{</span>

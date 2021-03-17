@@ -5,7 +5,7 @@
     
       <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-<meta name="revised" content="2021-02-24T01:06:25 CET">
+<meta name="revised" content="2021-03-17T17:31:22 CET">
 <title>Python integration :: JIPipe for ImageJ</title>
 <link rel="shortcut icon" href="../../../images/favicon.png" type="image/x-icon" />
 <link href="../../../css/font-awesome.min.css" rel="stylesheet">
@@ -274,6 +274,13 @@
           </a><i class="fa fa-circle-thin read-icon"></i>
         </div>
     </li>
+      <li data-nav-id="https://www.jipipe.org/documentation/standard-library/r-integration/" class="dd-item">
+        <div>
+          <a href="../../../documentation/standard-library/r-integration/">
+            R integration
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
         </ul>
     </li>
     <li data-nav-id="https://www.jipipe.org/documentation/create-json-extensions/" class="dd-item
@@ -525,6 +532,7 @@
       <option value="/documentation/standard-library/annotations/" >-- Data annotation algorithms</option>
       <option value="/documentation/standard-library/plots-tables/" >-- Plots and tables</option>
       <option value="/documentation/standard-library/python/"  selected>-- Python integration</option>
+      <option value="/documentation/standard-library/r-integration/" >-- R integration</option>
   
     <option value="/documentation/create-json-extensions/" >
   - 
@@ -565,38 +573,6 @@
     <p>The standard library contains nodes that allow to run Python scripts using
 the <a href="https://www.jython.org/">Jython</a> library. Python scripts have access to all
 JIPipe and ImageJ APIs that are available at runtime.</p>
-<p>You can find the nodes in the <code>Miscellaneous</code> menu. You can find algorithms equivalent
-to each of the Java standard algorithms:</p>
-<table>
-<thead>
-<tr>
-<th>Algorithm type</th>
-<th>Purpose</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><a href="../../../apidocs/org/hkijena/jipipe/api/nodes/JIPipeAlgorithm.html">JIPipeAlgorithm</a></td>
-<td>The base class of all algorithms. It provides no included functionality outside of absolutely necessary ones.</td>
-</tr>
-<tr>
-<td><a href="../../../apidocs/org/hkijena/jipipe/api/nodes/JIPipeParameterSlotAlgorithm.html">JIPipeParameterSlotAlgorithm</a></td>
-<td>This algorithm allows users to run multiple parameter sets by optionally enabling an additional slot <code>Parameters</code>.</td>
-</tr>
-<tr>
-<td><a href="../../../apidocs/org/hkijena/jipipe/api/nodes/JIPipeAlgorithm.html">JIPipeSimpleIteratingAlgorithm</a></td>
-<td>A JIPipeParameterSlotAlgorithm that has one input slot and iterates over the input rows.</td>
-</tr>
-<tr>
-<td><a href="../../../apidocs/org/hkijena/jipipe/api/nodes/JIPipeIteratingAlgorithm.html">JIPipeIteratingAlgorithm</a></td>
-<td>A JIPipeParameterSlotAlgorithm that can have multiple input slots and match annotations of the input data to create data batches.</td>
-</tr>
-<tr>
-<td><a href="../../../apidocs/org/hkijena/jipipe/api/nodes/JIPipeMergingAlgorithm.html">JIPipeMergingAlgorithm</a></td>
-<td>A JIPipeParameterSlotAlgorithm that can have multiple input slots and match annotations of the input data to create data batches. The difference to JIPipeIteratingAlgorithm is that a batch can have duplicate items per slot.</td>
-</tr>
-</tbody>
-</table>
 <p>
 <div class="notices info" ><p><p>Due to restrictions in the Jython library, Python libraries that are built
 on a native backend (such as Numpy) will not work.</p>
@@ -607,6 +583,77 @@ on a native backend (such as Numpy) will not work.</p>
 how to expand Jython with additional libraries.</p>
 </p></div>
 </p>
+<p>You can find the nodes in the <code>Miscellaneous</code> menu. You can find algorithms equivalent
+to each of the Java standard algorithms:</p>
+<table>
+<thead>
+<tr>
+<th>Node</th>
+<th>Based on</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Python script (multi-parameter capable)</td>
+<td><a href="../../../apidocs/org/hkijena/jipipe/api/nodes/JIPipeParameterSlotAlgorithm.html">JIPipeParameterSlotAlgorithm</a></td>
+<td>This algorithm allows users to run multiple parameter sets by optionally enabling an additional slot <code>Parameters</code>.</td>
+</tr>
+<tr>
+<td>Python script (simple iterating)</td>
+<td><a href="../../../apidocs/org/hkijena/jipipe/api/nodes/JIPipeAlgorithm.html">JIPipeSimpleIteratingAlgorithm</a></td>
+<td>A JIPipeParameterSlotAlgorithm that has one input slot and iterates over the input rows.</td>
+</tr>
+<tr>
+<td>Python script (iterating)</td>
+<td><a href="../../../apidocs/org/hkijena/jipipe/api/nodes/JIPipeIteratingAlgorithm.html">JIPipeIteratingAlgorithm</a></td>
+<td>A JIPipeParameterSlotAlgorithm that can have multiple input slots and match annotations of the input data to create data batches.</td>
+</tr>
+<tr>
+<td>Python script (merging)</td>
+<td><a href="../../../apidocs/org/hkijena/jipipe/api/nodes/JIPipeMergingAlgorithm.html">JIPipeMergingAlgorithm</a></td>
+<td>A JIPipeParameterSlotAlgorithm that can have multiple input slots and match annotations of the input data to create data batches. The difference to JIPipeIteratingAlgorithm is that a batch can have duplicate items per slot.</td>
+</tr>
+</tbody>
+</table>
+<h2 id="common-functions">Common functions</h2>
+<p>All Python script nodes share a set of variables that are available in the code:</p>
+<table>
+<thead>
+<tr>
+<th>Variable</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>input_slots</code></td>
+<td>A list of all effective input slots. This means, slots like the &lsquo;Parameters&rsquo; slot are not listed here. Each slot is using the Jython API to access the native Java data type. Refer to the <a href="../../../apidocs/org/hkijena/jipipe/api/data/JIPipeDataSlot.html">JIPipeDataSlot</a> documentation for further information.</td>
+</tr>
+<tr>
+<td><code>output_slots</code></td>
+<td>A list of all output slots.   Each slot is using the Jython API to access the native Java data type. Refer to the <a href="../../../apidocs/org/hkijena/jipipe/api/data/JIPipeDataSlot.html">JIPipeDataSlot</a> documentation for further information.</td>
+</tr>
+<tr>
+<td><code>input_slot_map</code></td>
+<td>A dictionary from input slot name to input slot instance.</td>
+</tr>
+<tr>
+<td><code>output_slot_map</code></td>
+<td>A dictionary from output slot name to output slot instance.</td>
+</tr>
+</tbody>
+</table>
+<h2 id="data-batch-access">Data batch access</h2>
+<p>Python nodes based on <a href="../../../apidocs/org/hkijena/jipipe/api/nodes/JIPipeAlgorithm.html">JIPipeSimpleIteratingAlgorithm</a>,  <a href="../../../apidocs/org/hkijena/jipipe/api/nodes/JIPipeIteratingAlgorithm.html">JIPipeIteratingAlgorithm</a>, and
+<a href="../../../apidocs/org/hkijena/jipipe/api/nodes/JIPipeMergingAlgorithm.html">JIPipeMergingAlgorithm</a> repeat the script for each data batch (or at least once if there is none).
+Data batches organize the data of various input slots into one bundle that should be processed. Access to this data batch is provided via a variable <code>data_batch</code>.</p>
+<p>This variable points to an instance of <a href="../../../apidocs/org/hkijena/jipipe/api/nodes/JIPipeDataBatch.html">JIPipeDataBatch</a> (or <a href="../../../apidocs/org/hkijena/jipipe/api/nodes/JIPipeMergingDataBatch.html">JIPipeMergingDataBatch</a> for the merging algorithm).</p>
+<h2 id="script-parameters">Script parameters</h2>
+<p>Each node provides means to define Python variables inside the JIPipe environment via custom parameters. Each parameter value is passed as variable into Python - the name of the variable
+being determined by the unique ID of the parameter.</p>
+<p>All Python nodes are multi-parameter capable (including iterating and merging nodes). &ldquo;Python script (multi-parameter capable)&rdquo; provides a unique variable <code>parameter_annotations</code>
+that contains any annotations of the current parameter set.</p>
 
 
     
@@ -614,7 +661,7 @@ how to expand Jython with additional libraries.</p>
         <div class="chevrons">
     <div id="navigation">
 <a class="nav nav-prev" href="../../../documentation/standard-library/plots-tables/" title="Plots and tables"> <i class="fa fa-chevron-left"></i><label>Plots and tables</label></a>
-    <a class="nav nav-next" href="../../../documentation/create-json-extensions/" title="Extension builder" style="margin-right: 0px;"><label>Extension builder</label><i class="fa fa-chevron-right"></i></a></div>
+    <a class="nav nav-next" href="../../../documentation/standard-library/r-integration/" title="R integration" style="margin-right: 0px;"><label>R integration</label><i class="fa fa-chevron-right"></i></a></div>
   </div>
 
   </section>
