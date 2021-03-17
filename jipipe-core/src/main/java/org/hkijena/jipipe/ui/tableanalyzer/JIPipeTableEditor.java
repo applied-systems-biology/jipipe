@@ -81,6 +81,24 @@ public class JIPipeTableEditor extends JIPipeWorkbenchPanel {
         setTableModel(tableModel);
     }
 
+    /**
+     * Imports a table from CSV and creates a new {@link JIPipeTableEditor} tab
+     *
+     * @param fileName    CSV file
+     * @param workbenchUI workbench
+     */
+    public static ResultsTableData importTableFromCSV(Path fileName, JIPipeProjectWorkbench workbenchUI) {
+        try {
+            ResultsTableData tableData = ResultsTableData.fromCSV(fileName);
+            // Create table analyzer
+            workbenchUI.getDocumentTabPane().addTab(fileName.getFileName().toString(), UIUtils.getIconFromResources("data-types/results-table.png"),
+                    new JIPipeTableEditor(workbenchUI, tableData), DocumentTabPane.CloseMode.withAskOnCloseButton, true);
+            return tableData;
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     private void initialize() {
         setLayout(new BorderLayout());
 
@@ -718,24 +736,6 @@ public class JIPipeTableEditor extends JIPipeWorkbenchPanel {
             });
         }
         updateSelectionStatistics();
-    }
-
-    /**
-     * Imports a table from CSV and creates a new {@link JIPipeTableEditor} tab
-     *
-     * @param fileName    CSV file
-     * @param workbenchUI workbench
-     */
-    public static ResultsTableData importTableFromCSV(Path fileName, JIPipeProjectWorkbench workbenchUI) {
-        try {
-            ResultsTableData tableData = ResultsTableData.fromCSV(fileName);
-            // Create table analyzer
-            workbenchUI.getDocumentTabPane().addTab(fileName.getFileName().toString(), UIUtils.getIconFromResources("data-types/results-table.png"),
-                    new JIPipeTableEditor(workbenchUI, tableData), DocumentTabPane.CloseMode.withAskOnCloseButton, true);
-            return tableData;
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
     }
 
     /**

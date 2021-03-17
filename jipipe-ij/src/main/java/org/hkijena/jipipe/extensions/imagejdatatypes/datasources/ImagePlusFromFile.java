@@ -81,6 +81,43 @@ public class ImagePlusFromFile extends JIPipeSimpleIteratingAlgorithm {
         this.removeLut = other.removeLut;
     }
 
+    /**
+     * Loads an image from a file path
+     *
+     * @param fileName     the image file name
+     * @param progressInfo progress
+     * @return the generated data
+     */
+    public static ImagePlus readImageFrom(Path fileName, JIPipeProgressInfo progressInfo) {
+        ImagePlus image;
+        String fileNameString = fileName.getFileName().toString();
+        if (fileNameString.endsWith(".ome.tiff") || fileNameString.endsWith(".ome.tif") || fileNameString.endsWith(".czi")) {
+            // Pass to bioformats
+            progressInfo.log("Using BioFormats importer. Please use the Bio-Formats importer node for more settings.");
+            BioFormatsImporter importer = JIPipe.createNode(BioFormatsImporter.class);
+            importer.setAllSlotsVirtual(false, false, null);
+            importer.getFirstInputSlot().addData(new FileData(fileName), progressInfo);
+            importer.run(progressInfo);
+            image = importer.getFirstOutputSlot().getData(0, OMEImageData.class, progressInfo).getImage();
+        } else {
+            image = IJ.openImage(fileName.toString());
+        }
+        if (image == null) {
+            // Try Bioformats again?
+            // Pass to bioformats
+            progressInfo.log("Using BioFormats importer. Please use the Bio-Formats importer node for more settings.");
+            BioFormatsImporter importer = JIPipe.createNode(BioFormatsImporter.class);
+            importer.setAllSlotsVirtual(false, false, null);
+            importer.getFirstInputSlot().addData(new FileData(fileName), progressInfo);
+            importer.run(progressInfo);
+            image = importer.getFirstOutputSlot().getData(0, OMEImageData.class, progressInfo).getImage();
+        }
+        if (image == null) {
+            throw new NullPointerException("Image could not be loaded!");
+        }
+        return image;
+    }
+
     @JIPipeDocumentation(name = "Remove LUT", description = "If enabled, remove the LUT information if present")
     @JIPipeParameter("remove-lut")
     public boolean isRemoveLut() {
@@ -165,42 +202,5 @@ public class ImagePlusFromFile extends JIPipeSimpleIteratingAlgorithm {
         this.generatedImageType = generatedImageType;
         getFirstOutputSlot().setAcceptedDataType(generatedImageType.getInfo().getDataClass());
         getEventBus().post(new JIPipeGraph.NodeSlotsChangedEvent(this));
-    }
-
-    /**
-     * Loads an image from a file path
-     *
-     * @param fileName     the image file name
-     * @param progressInfo progress
-     * @return the generated data
-     */
-    public static ImagePlus readImageFrom(Path fileName, JIPipeProgressInfo progressInfo) {
-        ImagePlus image;
-        String fileNameString = fileName.getFileName().toString();
-        if (fileNameString.endsWith(".ome.tiff") || fileNameString.endsWith(".ome.tif") || fileNameString.endsWith(".czi")) {
-            // Pass to bioformats
-            progressInfo.log("Using BioFormats importer. Please use the Bio-Formats importer node for more settings.");
-            BioFormatsImporter importer = JIPipe.createNode(BioFormatsImporter.class);
-            importer.setAllSlotsVirtual(false, false, null);
-            importer.getFirstInputSlot().addData(new FileData(fileName), progressInfo);
-            importer.run(progressInfo);
-            image = importer.getFirstOutputSlot().getData(0, OMEImageData.class, progressInfo).getImage();
-        } else {
-            image = IJ.openImage(fileName.toString());
-        }
-        if (image == null) {
-            // Try Bioformats again?
-            // Pass to bioformats
-            progressInfo.log("Using BioFormats importer. Please use the Bio-Formats importer node for more settings.");
-            BioFormatsImporter importer = JIPipe.createNode(BioFormatsImporter.class);
-            importer.setAllSlotsVirtual(false, false, null);
-            importer.getFirstInputSlot().addData(new FileData(fileName), progressInfo);
-            importer.run(progressInfo);
-            image = importer.getFirstOutputSlot().getData(0, OMEImageData.class, progressInfo).getImage();
-        }
-        if (image == null) {
-            throw new NullPointerException("Image could not be loaded!");
-        }
-        return image;
     }
 }

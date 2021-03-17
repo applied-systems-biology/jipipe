@@ -30,7 +30,6 @@ import ij.process.*;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.extensions.imagejdatatypes.color.ColorSpace;
 import org.hkijena.jipipe.extensions.parameters.roi.Anchor;
-import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
 import org.hkijena.jipipe.utils.ImageJCalibrationMode;
 
 import javax.swing.*;
@@ -911,7 +910,7 @@ public class ImageJUtils {
     public static void getMaskedPixels_Slow(ImageProcessor ip, ImageProcessor mask, List<Float> target) {
         byte[] maskBytes = mask != null ? (byte[]) mask.getPixels() : null;
         for (int i = 0; i < ip.getWidth() * ip.getHeight(); i++) {
-            if(mask == null || Byte.toUnsignedInt(maskBytes[i]) > 0) {
+            if (mask == null || Byte.toUnsignedInt(maskBytes[i]) > 0) {
                 target.add(ip.getf(i));
             }
         }
@@ -921,7 +920,7 @@ public class ImageJUtils {
         byte[] imageBytes = (byte[]) ip.getPixels();
         byte[] maskBytes = mask != null ? (byte[]) mask.getPixels() : null;
         for (int i = 0; i < imageBytes.length; i++) {
-            if(mask == null || Byte.toUnsignedInt(maskBytes[i]) > 0) {
+            if (mask == null || Byte.toUnsignedInt(maskBytes[i]) > 0) {
                 target.add(imageBytes[i]);
             }
         }
@@ -931,7 +930,7 @@ public class ImageJUtils {
         short[] imageBytes = (short[]) ip.getPixels();
         byte[] maskBytes = mask != null ? (byte[]) mask.getPixels() : null;
         for (int i = 0; i < imageBytes.length; i++) {
-            if(mask == null || Byte.toUnsignedInt(maskBytes[i]) > 0) {
+            if (mask == null || Byte.toUnsignedInt(maskBytes[i]) > 0) {
                 target.add(imageBytes[i]);
             }
         }
@@ -941,7 +940,7 @@ public class ImageJUtils {
         float[] imageBytes = (float[]) ip.getPixels();
         byte[] maskBytes = mask != null ? (byte[]) mask.getPixels() : null;
         for (int i = 0; i < imageBytes.length; i++) {
-            if(mask == null || Byte.toUnsignedInt(maskBytes[i]) > 0) {
+            if (mask == null || Byte.toUnsignedInt(maskBytes[i]) > 0) {
                 target.add(imageBytes[i]);
             }
         }

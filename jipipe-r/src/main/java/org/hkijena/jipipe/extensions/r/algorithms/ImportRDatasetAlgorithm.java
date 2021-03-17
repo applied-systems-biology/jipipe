@@ -6,7 +6,10 @@ import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
-import org.hkijena.jipipe.api.nodes.*;
+import org.hkijena.jipipe.api.nodes.JIPipeDataBatch;
+import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
+import org.hkijena.jipipe.api.nodes.JIPipeOutputSlot;
+import org.hkijena.jipipe.api.nodes.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.nodes.categories.DataSourceNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.parameters.primitives.EnumItemInfo;
@@ -41,8 +44,8 @@ public class ImportRDatasetAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     @Override
     public void run(JIPipeProgressInfo progressInfo) {
         try {
-            if(!isPassThrough()) {
-                if(!RExtensionSettings.checkRSettings()) {
+            if (!isPassThrough()) {
+                if (!RExtensionSettings.checkRSettings()) {
                     throw new UserFriendlyRuntimeException("The R installation is invalid!\n" +
                             "R=" + RExtensionSettings.getInstance().getRExecutable() + "\n" +
                             "RScript=" + RExtensionSettings.getInstance().getRScriptExecutable(),
@@ -55,8 +58,7 @@ public class ImportRDatasetAlgorithm extends JIPipeSimpleIteratingAlgorithm {
                 rCaller = RCaller.create(RExtensionSettings.createRCallerOptions());
             }
             super.run(progressInfo);
-        }
-        finally {
+        } finally {
             rCaller = null;
         }
     }
@@ -212,7 +214,7 @@ public class ImportRDatasetAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
         @Override
         public String getTooltip(Object value) {
-            if(value instanceof Dataset) {
+            if (value instanceof Dataset) {
                 return ((Dataset) value).getDescription();
             }
             return null;

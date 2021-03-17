@@ -20,6 +20,16 @@ public class NodeHotKeyStorage {
     public NodeHotKeyStorage() {
     }
 
+    public static NodeHotKeyStorage getInstance(JIPipeGraph graph) {
+        Object instance = graph.getAdditionalMetadata().getOrDefault("node-hotkeys", null);
+        if (instance instanceof NodeHotKeyStorage) {
+            return (NodeHotKeyStorage) instance;
+        }
+        instance = new NodeHotKeyStorage();
+        graph.getAdditionalMetadata().put("node-hotkeys", instance);
+        return (NodeHotKeyStorage) instance;
+    }
+
     /**
      * Renames a node to another Id
      *
@@ -89,16 +99,6 @@ public class NodeHotKeyStorage {
                 return entry.getKey();
         }
         return Hotkey.None;
-    }
-
-    public static NodeHotKeyStorage getInstance(JIPipeGraph graph) {
-        Object instance = graph.getAdditionalMetadata().getOrDefault("node-hotkeys", null);
-        if (instance instanceof NodeHotKeyStorage) {
-            return (NodeHotKeyStorage) instance;
-        }
-        instance = new NodeHotKeyStorage();
-        graph.getAdditionalMetadata().put("node-hotkeys", instance);
-        return (NodeHotKeyStorage) instance;
     }
 
     public enum Hotkey {

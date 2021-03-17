@@ -70,6 +70,18 @@ public class CacheAwareImagePlusDataViewerPanel extends ImageViewerPanel {
         project.getCache().getEventBus().register(this);
     }
 
+    public static void show(JIPipeWorkbench workbench, JIPipeCacheSlotDataSource dataSource, String displayName) {
+        CacheAwareImagePlusDataViewerPanel dataDisplay = new CacheAwareImagePlusDataViewerPanel(workbench, dataSource);
+        ImageViewerWindow window = new ImageViewerWindow(dataDisplay);
+        window.setAlwaysOnTop(GeneralUISettings.getInstance().isOpenDataWindowsAlwaysOnTop());
+        AlwaysOnTopToggle alwaysOnTopToggle = new AlwaysOnTopToggle(window);
+        alwaysOnTopToggle.addActionListener(e -> GeneralUISettings.getInstance().setOpenDataWindowsAlwaysOnTop(alwaysOnTopToggle.isSelected()));
+        dataDisplay.getToolBar().add(alwaysOnTopToggle);
+        window.setTitle(displayName);
+        window.setLocationRelativeTo(workbench.getWindow());
+        window.setVisible(true);
+    }
+
     private void initialize() {
         cacheAwareToggle.installRefreshOnActivate(this::reloadFromCurrentCache);
         errorPanel = new JLabel(String.format("No data available in node '%s', slot '%s', row %d", algorithm.getName(), slotName, dataSource.getRow()),
@@ -112,17 +124,5 @@ public class CacheAwareImagePlusDataViewerPanel extends ImageViewerPanel {
             lastVirtualData = null;
             getCanvas().setError(errorPanel);
         }
-    }
-
-    public static void show(JIPipeWorkbench workbench, JIPipeCacheSlotDataSource dataSource, String displayName) {
-        CacheAwareImagePlusDataViewerPanel dataDisplay = new CacheAwareImagePlusDataViewerPanel(workbench, dataSource);
-        ImageViewerWindow window = new ImageViewerWindow(dataDisplay);
-        window.setAlwaysOnTop(GeneralUISettings.getInstance().isOpenDataWindowsAlwaysOnTop());
-        AlwaysOnTopToggle alwaysOnTopToggle = new AlwaysOnTopToggle(window);
-        alwaysOnTopToggle.addActionListener(e -> GeneralUISettings.getInstance().setOpenDataWindowsAlwaysOnTop(alwaysOnTopToggle.isSelected()));
-        dataDisplay.getToolBar().add(alwaysOnTopToggle);
-        window.setTitle(displayName);
-        window.setLocationRelativeTo(workbench.getWindow());
-        window.setVisible(true);
     }
 }

@@ -23,7 +23,7 @@ public class ReadonlyCopyableTextField extends JPanel {
         textField.setText(text);
         textField.setEditable(false);
         textField.setBackground(UIManager.getColor("TextField.background"));
-        if(monospace) {
+        if (monospace) {
             textField.setFont(new Font(Font.MONOSPACED, Font.PLAIN, 12));
         }
 
@@ -51,11 +51,11 @@ public class ReadonlyCopyableTextField extends JPanel {
         return textField.getText();
     }
 
-    public JTextField getTextField() {
-        return textField;
-    }
-
     public void setText(String text) {
         textField.setText(text);
+    }
+
+    public JTextField getTextField() {
+        return textField;
     }
 }

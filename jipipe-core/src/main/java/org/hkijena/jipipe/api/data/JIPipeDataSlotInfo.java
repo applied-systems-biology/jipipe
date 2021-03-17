@@ -127,6 +127,80 @@ public class JIPipeDataSlotInfo implements JIPipeParameterCollection {
         this(dataClass, slotType, null);
     }
 
+    /**
+     * Applies inheritance conversion.
+     * This is a text replacement system with termination condition of never visiting the same time twice.
+     *
+     * @param definition The slot definition
+     * @param dataClass  The slot data
+     * @return The converted data
+     */
+    public static Class<? extends JIPipeData> applyInheritanceConversion(JIPipeDataSlotInfo definition, Class<? extends JIPipeData> dataClass) {
+        Set<JIPipeDataInfo> visited = new HashSet<>();
+        JIPipeDataInfo currentData = JIPipeDataInfo.getInstance(dataClass);
+        JIPipeDataInfo lastData = currentData;
+        visited.add(currentData);
+        while (true) {
+            currentData = definition.inheritanceConversions.getOrDefault(currentData, null);
+            if (currentData == null)
+                return lastData.getDataClass();
+            lastData = currentData;
+            if (visited.contains(currentData))
+                return currentData.getDataClass();
+            visited.add(currentData);
+        }
+    }
+
+    /**
+     * Creates the composition of two inheritance conversions.
+     * The result is outer(inner(x))
+     *
+     * @param outer the outer conversion
+     * @param inner the inner conversion
+     * @return Inheritance conversion that is outer(inner(x))
+     */
+    public static Map<Class<? extends JIPipeData>, Class<? extends JIPipeData>> composeRawInheritanceConversions(Map<Class<? extends JIPipeData>, Class<? extends JIPipeData>> outer,
+                                                                                                                 Map<Class<? extends JIPipeData>, Class<? extends JIPipeData>> inner) {
+        Map<Class<? extends JIPipeData>, Class<? extends JIPipeData>> result = new HashMap<>(inner);
+        for (Map.Entry<Class<? extends JIPipeData>, Class<? extends JIPipeData>> entry : result.entrySet()) {
+            Class<? extends JIPipeData> transformed = outer.getOrDefault(entry.getValue(), null);
+            if (transformed != null) {
+                entry.setValue(transformed);
+            }
+        }
+        return result;
+    }
+
+    /**
+     * Creates the composition of two inheritance conversions.
+     * The result is outer(inner(x))
+     *
+     * @param outer the outer conversion
+     * @param inner the inner conversion
+     * @return Inheritance conversion that is outer(inner(x))
+     */
+    public static Map<JIPipeDataInfo, JIPipeDataInfo> composeInheritanceConversions(Map<JIPipeDataInfo, JIPipeDataInfo> outer,
+                                                                                    Map<JIPipeDataInfo, JIPipeDataInfo> inner) {
+        Map<JIPipeDataInfo, JIPipeDataInfo> result = new HashMap<>(inner);
+        for (Map.Entry<JIPipeDataInfo, JIPipeDataInfo> entry : result.entrySet()) {
+            JIPipeDataInfo transformed = outer.getOrDefault(entry.getValue(), null);
+            if (transformed != null) {
+                entry.setValue(transformed);
+            }
+        }
+        return result;
+    }
+
+    /**
+     * Returns true if the provided string is a valid slot name
+     *
+     * @param slotName the name
+     * @return if the name is valid
+     */
+    public static boolean isValidName(String slotName) {
+        return slotName.matches("[\\w.\\-,# ]+");
+    }
+
     private void setVirtualByDataType() {
         if (JIPipe.getInstance() != null && JIPipe.getSettings().getRegisteredSheets().containsKey(VirtualDataSettings.ID)
                 && VirtualDataSettings.getInstance().isLargeVirtualDataTypesByDefault()) {
@@ -298,80 +372,6 @@ public class JIPipeDataSlotInfo implements JIPipeParameterCollection {
     }
 
     /**
-     * Applies inheritance conversion.
-     * This is a text replacement system with termination condition of never visiting the same time twice.
-     *
-     * @param definition The slot definition
-     * @param dataClass  The slot data
-     * @return The converted data
-     */
-    public static Class<? extends JIPipeData> applyInheritanceConversion(JIPipeDataSlotInfo definition, Class<? extends JIPipeData> dataClass) {
-        Set<JIPipeDataInfo> visited = new HashSet<>();
-        JIPipeDataInfo currentData = JIPipeDataInfo.getInstance(dataClass);
-        JIPipeDataInfo lastData = currentData;
-        visited.add(currentData);
-        while (true) {
-            currentData = definition.inheritanceConversions.getOrDefault(currentData, null);
-            if (currentData == null)
-                return lastData.getDataClass();
-            lastData = currentData;
-            if (visited.contains(currentData))
-                return currentData.getDataClass();
-            visited.add(currentData);
-        }
-    }
-
-    /**
-     * Creates the composition of two inheritance conversions.
-     * The result is outer(inner(x))
-     *
-     * @param outer the outer conversion
-     * @param inner the inner conversion
-     * @return Inheritance conversion that is outer(inner(x))
-     */
-    public static Map<Class<? extends JIPipeData>, Class<? extends JIPipeData>> composeRawInheritanceConversions(Map<Class<? extends JIPipeData>, Class<? extends JIPipeData>> outer,
-                                                                                                                 Map<Class<? extends JIPipeData>, Class<? extends JIPipeData>> inner) {
-        Map<Class<? extends JIPipeData>, Class<? extends JIPipeData>> result = new HashMap<>(inner);
-        for (Map.Entry<Class<? extends JIPipeData>, Class<? extends JIPipeData>> entry : result.entrySet()) {
-            Class<? extends JIPipeData> transformed = outer.getOrDefault(entry.getValue(), null);
-            if (transformed != null) {
-                entry.setValue(transformed);
-            }
-        }
-        return result;
-    }
-
-    /**
-     * Creates the composition of two inheritance conversions.
-     * The result is outer(inner(x))
-     *
-     * @param outer the outer conversion
-     * @param inner the inner conversion
-     * @return Inheritance conversion that is outer(inner(x))
-     */
-    public static Map<JIPipeDataInfo, JIPipeDataInfo> composeInheritanceConversions(Map<JIPipeDataInfo, JIPipeDataInfo> outer,
-                                                                                    Map<JIPipeDataInfo, JIPipeDataInfo> inner) {
-        Map<JIPipeDataInfo, JIPipeDataInfo> result = new HashMap<>(inner);
-        for (Map.Entry<JIPipeDataInfo, JIPipeDataInfo> entry : result.entrySet()) {
-            JIPipeDataInfo transformed = outer.getOrDefault(entry.getValue(), null);
-            if (transformed != null) {
-                entry.setValue(transformed);
-            }
-        }
-        return result;
-    }
-
-    /**
-     * Returns true if the provided string is a valid slot name
-     *
-     * @param slotName the name
-     * @return if the name is valid
-     */
-    public static boolean isValidName(String slotName) {
-        return slotName.matches("[\\w.\\-,# ]+");
-    }
-
-    /**
      * Serializes an {@link JIPipeDataSlotInfo}
      */
     public static class Serializer extends JsonSerializer<JIPipeDataSlotInfo> {
@@ -418,8 +418,7 @@ public class JIPipeDataSlotInfo implements JIPipeParameterCollection {
                         JIPipeDataInfo key = JIPipeDataInfo.getInstance(idKey);
                         JIPipeDataInfo value = JIPipeDataInfo.getInstance(idValue);
                         definition.inheritanceConversions.put(key, value);
-                    }
-                    catch (Exception e) {
+                    } catch (Exception e) {
                         e.printStackTrace();
                     }
                 }

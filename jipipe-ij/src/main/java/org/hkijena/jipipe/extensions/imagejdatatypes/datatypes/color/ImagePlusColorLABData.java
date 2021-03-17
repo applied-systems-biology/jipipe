@@ -55,16 +55,6 @@ public class ImagePlusColorLABData extends ImagePlusColorData implements Colored
         super(ImagePlusColorLABData.convertIfNeeded(image));
     }
 
-    @Override
-    public ColorSpace getColorSpace() {
-        return COLOR_SPACE;
-    }
-
-    @Override
-    public Component preview(int width, int height) {
-        return ImageJUtils.generatePreview(this.getImage(), getColorSpace(), width, height);
-    }
-
     /**
      * Converts an {@link ImagePlus} to the color space of this data.
      * Does not guarantee that the input image is copied.
@@ -107,5 +97,15 @@ public class ImagePlusColorLABData extends ImagePlusColorData implements Colored
         } else {
             return new ImagePlusColorLABData(data.getImage());
         }
+    }
+
+    @Override
+    public ColorSpace getColorSpace() {
+        return COLOR_SPACE;
+    }
+
+    @Override
+    public Component preview(int width, int height) {
+        return ImageJUtils.generatePreview(this.getImage(), getColorSpace(), width, height);
     }
 }

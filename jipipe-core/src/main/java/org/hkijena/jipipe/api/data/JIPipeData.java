@@ -19,7 +19,6 @@ import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.utils.StringUtils;
 
 import java.awt.*;
-import java.lang.reflect.Field;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.*;
@@ -34,46 +33,6 @@ import java.util.stream.Collectors;
  */
 @JIPipeDocumentation(name = "Data", description = "Generic data")
 public interface JIPipeData {
-
-    /**
-     * Saves the data to a folder
-     *
-     * @param storageFilePath A folder that already exists
-     * @param name            A name reference that can be used to generate filename(s)
-     * @param forceName       If enabled, the data is saved potentially destructively. Generated files must always contain the name parameter. This is used to collect results for humans or other algorithms.
-     * @param progressInfo    the progress
-     */
-    void saveTo(Path storageFilePath, String name, boolean forceName, JIPipeProgressInfo progressInfo);
-
-    /**
-     * Duplicates the data
-     *
-     * @return a deep copy of the data
-     */
-    JIPipeData duplicate();
-
-    /**
-     * This function should display the data in the GUI.
-     * The UI can handle multiple of such operations via {@link JIPipeDataDisplayOperation} that can be registered separately.
-     * This item will always be shown as "Default" in the list of operations.
-     *
-     * @param displayName a name that can be used
-     * @param workbench   the workbench
-     * @param source      optional source of the data. Can be null or any kind of data type (e.g. {@link JIPipeDataSlot})
-     */
-    void display(String displayName, JIPipeWorkbench workbench, JIPipeDataSource source);
-
-    /**
-     * This function generates a preview component for usage within the GUI
-     * Can return null
-     *
-     * @param width  the target width
-     * @param height the target height
-     * @return the component or null if none should be available
-     */
-    default Component preview(int width, int height) {
-        return null;
-    }
 
     /**
      * Returns the name of a data type
@@ -143,24 +102,22 @@ public interface JIPipeData {
     /**
      * Returns the storage documentation for the data type or null if none was provided.
      * Will go through parent classes to find a storage documentation
+     *
      * @param klass the class
      * @return the storage documentation
      */
     static HTMLText getStorageDocumentation(Class<? extends JIPipeData> klass) {
         JIPipeDataStorageDocumentation annotation = klass.getAnnotation(JIPipeDataStorageDocumentation.class);
-        if(annotation != null) {
+        if (annotation != null) {
             return new HTMLText(annotation.value());
-        }
-        else {
-            if(klass == JIPipeData.class) {
+        } else {
+            if (klass == JIPipeData.class) {
                 return null;
-            }
-            else {
+            } else {
                 Class<?> superclass = klass.getSuperclass();
-                if(superclass != null && JIPipeData.class.isAssignableFrom(superclass)) {
+                if (superclass != null && JIPipeData.class.isAssignableFrom(superclass)) {
                     return getStorageDocumentation((Class<? extends JIPipeData>) superclass);
-                }
-                else {
+                } else {
                     return null;
                 }
             }
@@ -196,6 +153,46 @@ public interface JIPipeData {
         }
 
         return result;
+    }
+
+    /**
+     * Saves the data to a folder
+     *
+     * @param storageFilePath A folder that already exists
+     * @param name            A name reference that can be used to generate filename(s)
+     * @param forceName       If enabled, the data is saved potentially destructively. Generated files must always contain the name parameter. This is used to collect results for humans or other algorithms.
+     * @param progressInfo    the progress
+     */
+    void saveTo(Path storageFilePath, String name, boolean forceName, JIPipeProgressInfo progressInfo);
+
+    /**
+     * Duplicates the data
+     *
+     * @return a deep copy of the data
+     */
+    JIPipeData duplicate();
+
+    /**
+     * This function should display the data in the GUI.
+     * The UI can handle multiple of such operations via {@link JIPipeDataDisplayOperation} that can be registered separately.
+     * This item will always be shown as "Default" in the list of operations.
+     *
+     * @param displayName a name that can be used
+     * @param workbench   the workbench
+     * @param source      optional source of the data. Can be null or any kind of data type (e.g. {@link JIPipeDataSlot})
+     */
+    void display(String displayName, JIPipeWorkbench workbench, JIPipeDataSource source);
+
+    /**
+     * This function generates a preview component for usage within the GUI
+     * Can return null
+     *
+     * @param width  the target width
+     * @param height the target height
+     * @return the component or null if none should be available
+     */
+    default Component preview(int width, int height) {
+        return null;
     }
 
 }

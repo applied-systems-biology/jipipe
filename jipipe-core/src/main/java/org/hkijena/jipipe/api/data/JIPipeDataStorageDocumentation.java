@@ -13,6 +13,7 @@ import java.lang.annotation.Target;
 public @interface JIPipeDataStorageDocumentation {
     /**
      * The storage documentation. Can contain HTML.
+     *
      * @return the storage documentation.
      */
     String value();

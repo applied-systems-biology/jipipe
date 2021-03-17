@@ -424,8 +424,9 @@ public class JIPipeDataSlot {
 
     /**
      * Saves the data contained in this slot into the storage path.
-     * @param storagePath the path that contains the data folders and table
-     * @param basePath the base path of all stored data. Stored in the table that allows later to find the internal path relative to the output folder. Can be null.
+     *
+     * @param storagePath  the path that contains the data folders and table
+     * @param basePath     the base path of all stored data. Stored in the table that allows later to find the internal path relative to the output folder. Can be null.
      * @param saveProgress save progress
      */
     public void save(Path storagePath, Path basePath, JIPipeProgressInfo saveProgress) {

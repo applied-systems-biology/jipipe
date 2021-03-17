@@ -282,7 +282,7 @@ public class ImageViewerPanelCanvas extends JPanel implements MouseListener, Mou
     /**
      * Gets the pixel coordinates inside the shown image under the mouse.
      *
-     * @param checkBounds If true, check for bounds (if false, negative & larger than the image coordinates will be returned)
+     * @param checkBounds If true, check for bounds (if false, negative and larger than the image coordinates will be returned)
      * @return the pixel coordinates. Null if the current mouse position is invalid.
      */
     public Point getMouseModelPixelCoordinate(boolean checkBounds) {

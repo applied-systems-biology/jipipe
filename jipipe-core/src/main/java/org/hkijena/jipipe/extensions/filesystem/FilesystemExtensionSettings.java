@@ -8,7 +8,7 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 
 /**
  * Settings for Filesystem.
- * Stored in the core library for drag & drop reasons
+ * Stored in the core library for drag and drop reasons
  */
 public class FilesystemExtensionSettings implements JIPipeParameterCollection {
 

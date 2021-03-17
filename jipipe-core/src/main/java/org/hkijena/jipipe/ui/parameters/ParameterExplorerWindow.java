@@ -14,10 +14,10 @@ import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
-import javax.swing.tree.*;
+import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.DefaultTreeModel;
+import javax.swing.tree.TreePath;
 import java.awt.*;
-import java.awt.datatransfer.Clipboard;
-import java.awt.datatransfer.StringSelection;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.util.Objects;
@@ -51,7 +51,7 @@ public class ParameterExplorerWindow extends JFrame {
         parameterCollection.getEventBus().register(new Object() {
             @Subscribe
             public void onParameterChanged(JIPipeParameterCollection.ParameterChangedEvent event) {
-                if(currentValue != null && Objects.equals(event.getKey(), currentValue.getKey())) {
+                if (currentValue != null && Objects.equals(event.getKey(), currentValue.getKey())) {
                     updateCurrentValueJson();
                 }
             }
@@ -61,7 +61,7 @@ public class ParameterExplorerWindow extends JFrame {
         JTree treeComponent = parameterTreeUI.getTreeComponent();
         DefaultTreeModel model = (DefaultTreeModel) treeComponent.getModel();
         DefaultMutableTreeNode rootNode = (DefaultMutableTreeNode) model.getRoot();
-        if(rootNode.getChildCount() > 0) {
+        if (rootNode.getChildCount() > 0) {
             DefaultMutableTreeNode child = (DefaultMutableTreeNode) rootNode.getChildAt(0);
             treeComponent.setSelectionPath(new TreePath(child.getPath()));
         }
@@ -71,7 +71,7 @@ public class ParameterExplorerWindow extends JFrame {
         setIconImage(UIUtils.getIcon128FromResources("jipipe.png").getImage());
         setTitle((parameterCollection instanceof JIPipeGraphNode) ? "Parameter explorer: " + ((JIPipeGraphNode) parameterCollection).getName() : "Parameter explorer");
 
-        getContentPane().setLayout(new BorderLayout(8,8));
+        getContentPane().setLayout(new BorderLayout(8, 8));
 
         this.parameterTreeUI = new ParameterTreeUI(parameterTree);
 
@@ -167,34 +167,32 @@ public class ParameterExplorerWindow extends JFrame {
 
     private void pasteTesterValueJson() {
         String clipboard = UIUtils.getStringFromClipboard();
-        if(StringUtils.isNullOrEmpty(clipboard)) {
+        if (StringUtils.isNullOrEmpty(clipboard)) {
             JOptionPane.showMessageDialog(this, "The clipboard is empty!", "Paste JSON", JOptionPane.ERROR_MESSAGE);
             return;
         }
         try {
             Object data = JsonUtils.getObjectMapper().readerFor(currentValue.getFieldClass()).readValue(clipboard);
             testerValue.set(data);
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             JOptionPane.showMessageDialog(this, "The pasted data is not valid for this parameter!\n"
-                    +e.getMessage(), "Paste JSON", JOptionPane.ERROR_MESSAGE);
+                    + e.getMessage(), "Paste JSON", JOptionPane.ERROR_MESSAGE);
             e.printStackTrace();
         }
     }
 
     private void pasteCurrentValueJson() {
         String clipboard = UIUtils.getStringFromClipboard();
-        if(StringUtils.isNullOrEmpty(clipboard)) {
+        if (StringUtils.isNullOrEmpty(clipboard)) {
             JOptionPane.showMessageDialog(this, "The clipboard is empty!", "Paste JSON", JOptionPane.ERROR_MESSAGE);
             return;
         }
         try {
             Object data = JsonUtils.getObjectMapper().readerFor(currentValue.getFieldClass()).readValue(clipboard);
             currentValue.set(data);
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             JOptionPane.showMessageDialog(this, "The pasted data is not valid for this parameter!\n"
-                    +e.getMessage(), "Paste JSON", JOptionPane.ERROR_MESSAGE);
+                    + e.getMessage(), "Paste JSON", JOptionPane.ERROR_MESSAGE);
             e.printStackTrace();
         }
     }
@@ -203,8 +201,7 @@ public class ParameterExplorerWindow extends JFrame {
         try {
             String valueAsString = JsonUtils.getObjectMapper().writeValueAsString(currentValue.get(Object.class));
             currentValueJson.setText(valueAsString);
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
         }
     }
 
@@ -212,41 +209,39 @@ public class ParameterExplorerWindow extends JFrame {
         try {
             String valueAsString = JsonUtils.getObjectMapper().writeValueAsString(testerValue.get(Object.class));
             testerValueJson.setText(valueAsString);
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
         }
     }
 
     private void writeTesterValueIntoCurrent() {
-        if(currentValue == null)
+        if (currentValue == null)
             return;
         JIPipeParameterTypeInfo typeInfo = JIPipe.getParameterTypes().getInfoByFieldClass(currentValue.getFieldClass());
         currentValue.set(typeInfo.duplicate(testerValue.get(Object.class)));
     }
 
     private void copyCurrentValueIntoTester() {
-        if(currentValue == null)
+        if (currentValue == null)
             return;
         JIPipeParameterTypeInfo typeInfo = JIPipe.getParameterTypes().getInfoByFieldClass(currentValue.getFieldClass());
         testerValue.set(typeInfo.duplicate(currentValue.get(Object.class)));
     }
 
     private void resetTesterValue() {
-        if(currentValue == null)
+        if (currentValue == null)
             return;
         JIPipeParameterTypeInfo typeInfo = JIPipe.getParameterTypes().getInfoByFieldClass(currentValue.getFieldClass());
         testerValue.set(typeInfo.newInstance());
     }
 
     private void resetCurrentValue() {
-        if(currentValue == null)
+        if (currentValue == null)
             return;
-        if(parameterCollection instanceof JIPipeGraphNode) {
-            JIPipeGraphNode newNode = JIPipe.createNode(((JIPipeGraphNode)parameterCollection).getClass());
+        if (parameterCollection instanceof JIPipeGraphNode) {
+            JIPipeGraphNode newNode = JIPipe.createNode(((JIPipeGraphNode) parameterCollection).getClass());
             JIPipeParameterTree tempTree = new JIPipeParameterTree(newNode);
             currentValue.set(tempTree.getParameters().get(parameterTree.getUniqueKey(currentValue)).get(Object.class));
-        }
-        else {
+        } else {
             JIPipeParameterTypeInfo typeInfo = JIPipe.getParameterTypes().getInfoByFieldClass(currentValue.getFieldClass());
             currentValue.set(typeInfo.newInstance());
         }
@@ -267,13 +262,13 @@ public class ParameterExplorerWindow extends JFrame {
         testerValueJson.setText("");
 
         TreePath selectionPath = parameterTreeUI.getTreeComponent().getSelectionPath();
-        if(selectionPath == null) {
+        if (selectionPath == null) {
             formPanel.revalidate();
             formPanel.repaint();
             return;
         }
         DefaultMutableTreeNode selectedNode = (DefaultMutableTreeNode) selectionPath.getLastPathComponent();
-        if(!(selectedNode.getUserObject() instanceof JIPipeParameterAccess)) {
+        if (!(selectedNode.getUserObject() instanceof JIPipeParameterAccess)) {
             formPanel.revalidate();
             formPanel.repaint();
             return;
@@ -297,7 +292,7 @@ public class ParameterExplorerWindow extends JFrame {
         testerValue.getSource().getEventBus().register(new Object() {
             @Subscribe
             public void onParameterChanged(JIPipeParameterCollection.ParameterChangedEvent event) {
-                if(testerValue != null) {
+                if (testerValue != null) {
                     updateTesterValueJson();
                 }
             }
@@ -307,7 +302,7 @@ public class ParameterExplorerWindow extends JFrame {
         currentValuePanel.add(JIPipe.getParameterTypes().createEditorFor(workbench, parameterAccess), BorderLayout.CENTER);
         testerValuePanel.add(JIPipe.getParameterTypes().createEditorFor(workbench, testerValue), BorderLayout.CENTER);
 
-       // Load info
+        // Load info
         nameLabel.setText(parameterAccess.getName());
         nameIdLabel.setText(parameterTree.getUniqueKey(parameterAccess));
         typeLabel.setText(typeInfo.getName());

@@ -39,6 +39,27 @@ public class JIPipeRunExecuterUI extends JPanel {
         JIPipeRunnerQueue.getInstance().getEventBus().register(this);
     }
 
+    public static void runInDialog(JIPipeRunnable run) {
+        JDialog dialog = new JDialog();
+        dialog.setTitle(run.getTaskLabel());
+        JIPipeRunExecuterUI ui = new JIPipeRunExecuterUI(run);
+        dialog.setContentPane(ui);
+        dialog.pack();
+        dialog.revalidate();
+        dialog.repaint();
+        dialog.setSize(640, 480);
+        dialog.setModal(true);
+        JIPipeRunnerQueue.getInstance().getEventBus().register(new Object() {
+            @Subscribe
+            public void onWorkerFinished(RunUIWorkerFinishedEvent event) {
+                if (event.getRun() == run)
+                    dialog.setVisible(false);
+            }
+        });
+        JIPipeRunnerQueue.getInstance().enqueue(run);
+        dialog.setVisible(true);
+    }
+
     private void initialize() {
         setLayout(new BorderLayout(8, 8));
 
@@ -126,27 +147,6 @@ public class JIPipeRunExecuterUI extends JPanel {
             progressBar.setString("(" + progressBar.getValue() + "/" + progressBar.getMaximum() + ") " + event.getStatus().getMessage());
             log.append("[" + event.getStatus().getProgress() + "/" + event.getStatus().getMaxProgress() + "] " + event.getStatus().getMessage() + "\n");
         }
-    }
-
-    public static void runInDialog(JIPipeRunnable run) {
-        JDialog dialog = new JDialog();
-        dialog.setTitle(run.getTaskLabel());
-        JIPipeRunExecuterUI ui = new JIPipeRunExecuterUI(run);
-        dialog.setContentPane(ui);
-        dialog.pack();
-        dialog.revalidate();
-        dialog.repaint();
-        dialog.setSize(640, 480);
-        dialog.setModal(true);
-        JIPipeRunnerQueue.getInstance().getEventBus().register(new Object() {
-            @Subscribe
-            public void onWorkerFinished(RunUIWorkerFinishedEvent event) {
-                if (event.getRun() == run)
-                    dialog.setVisible(false);
-            }
-        });
-        JIPipeRunnerQueue.getInstance().enqueue(run);
-        dialog.setVisible(true);
     }
 
 }

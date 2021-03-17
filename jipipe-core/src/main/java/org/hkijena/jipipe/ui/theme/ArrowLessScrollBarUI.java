@@ -22,6 +22,10 @@ import javax.swing.plaf.basic.BasicScrollBarUI;
 import java.awt.*;
 
 public class ArrowLessScrollBarUI extends BasicScrollBarUI {
+    public static ComponentUI createUI(JComponent c) {
+        return new ArrowLessScrollBarUI();
+    }
+
     @Override
     protected JButton createDecreaseButton(int orientation) {
         if (JIPipe.getInstance() == null || GeneralUISettings.getInstance().getTheme().isModern())
@@ -44,10 +48,6 @@ public class ArrowLessScrollBarUI extends BasicScrollBarUI {
         jbutton.setMinimumSize(new Dimension(0, 0));
         jbutton.setMaximumSize(new Dimension(0, 0));
         return jbutton;
-    }
-
-    public static ComponentUI createUI(JComponent c) {
-        return new ArrowLessScrollBarUI();
     }
 
 }

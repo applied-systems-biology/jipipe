@@ -25,7 +25,6 @@ import javax.swing.event.TableModelListener;
 import javax.swing.table.TableModel;
 import java.io.IOException;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -54,10 +53,9 @@ public class JIPipeExportedDataTable implements TableModel {
         this.slotName = slot.getName();
         if (basePath != null) {
             this.internalPath = basePath.relativize(slot.getStoragePath()).toString();
-        } else if(slot.getStoragePath() != null) {
+        } else if (slot.getStoragePath() != null) {
             this.internalPath = slot.getStoragePath().toString();
-        }
-        else {
+        } else {
             this.internalPath = "";
         }
         this.acceptedDataType = slot.getAcceptedDataType();
@@ -72,6 +70,22 @@ public class JIPipeExportedDataTable implements TableModel {
     }
 
     public JIPipeExportedDataTable() {
+    }
+
+    /**
+     * Loads the table from JSON
+     *
+     * @param fileName JSON file
+     * @return Loaded table
+     */
+    public static JIPipeExportedDataTable loadFromJson(Path fileName) {
+        try {
+            return JsonUtils.getObjectMapper().readerFor(JIPipeExportedDataTable.class).readValue(fileName.toFile());
+        } catch (IOException e) {
+            throw new UserFriendlyRuntimeException(e, "Unable to load data table from '" + fileName + "'!",
+                    "Load JIPipe results", "Either the file is inaccessible, or corrupt.",
+                    "Check if the file is readable and contains valid JSON data.");
+        }
     }
 
     /**
@@ -176,8 +190,9 @@ public class JIPipeExportedDataTable implements TableModel {
 
     /**
      * Gets the storage path of the specified row
+     *
      * @param storagePath the storage path that contains the data table
-     * @param row the row index
+     * @param row         the row index
      * @return the path pointing to the data for the row
      */
     public Path getRowStoragePath(Path storagePath, int row) {
@@ -305,22 +320,6 @@ public class JIPipeExportedDataTable implements TableModel {
     @Override
     public void removeTableModelListener(TableModelListener l) {
 
-    }
-
-    /**
-     * Loads the table from JSON
-     *
-     * @param fileName JSON file
-     * @return Loaded table
-     */
-    public static JIPipeExportedDataTable loadFromJson(Path fileName) {
-        try {
-            return JsonUtils.getObjectMapper().readerFor(JIPipeExportedDataTable.class).readValue(fileName.toFile());
-        } catch (IOException e) {
-            throw new UserFriendlyRuntimeException(e, "Unable to load data table from '" + fileName + "'!",
-                    "Load JIPipe results", "Either the file is inaccessible, or corrupt.",
-                    "Check if the file is readable and contains valid JSON data.");
-        }
     }
 
     /**

@@ -76,6 +76,39 @@ public class ImageViewerPanel extends JPanel {
         updateZoomStatus();
     }
 
+    public static void main(String[] args) {
+        JIPipeUITheme.ModernLight.install();
+        ImagePlus image = IJ.openImage("/data/Mitochondria/data/Mic13 SNAP Deconv.lif - WT_Hela_Mic13_SNAP_Series011_10_cmle_converted.tif");
+//        ImagePlus image = IJ.openImage("/home/rgerst/dots.png");
+        JFrame frame = new JFrame();
+        ImageViewerPanel panel = new ImageViewerPanel();
+        panel.setImage(image);
+        frame.setContentPane(panel);
+        frame.pack();
+        frame.setSize(1280, 1024);
+        frame.setVisible(true);
+    }
+
+    /**
+     * Opens the image in a new frame
+     *
+     * @param image the image
+     * @param title the title
+     * @return the panel
+     */
+    public static ImageViewerPanel showImage(ImagePlus image, String title) {
+        ImageViewerPanel dataDisplay = new ImageViewerPanel();
+        dataDisplay.setPlugins(Arrays.asList(new CalibrationPlugin(dataDisplay),
+                new PixelInfoPlugin(dataDisplay),
+                new LUTManagerPlugin(dataDisplay),
+                new ROIManagerPlugin(dataDisplay)));
+        dataDisplay.setImage(image);
+        ImageViewerWindow window = new ImageViewerWindow(dataDisplay);
+        window.setTitle(title);
+        window.setVisible(true);
+        return dataDisplay;
+    }
+
     public List<ImageViewerPanelPlugin> getPlugins() {
         return plugins;
     }
@@ -626,39 +659,6 @@ public class ImageViewerPanel extends JPanel {
 
     public ImageStatistics getStatistics() {
         return statistics;
-    }
-
-    public static void main(String[] args) {
-        JIPipeUITheme.ModernLight.install();
-        ImagePlus image = IJ.openImage("/data/Mitochondria/data/Mic13 SNAP Deconv.lif - WT_Hela_Mic13_SNAP_Series011_10_cmle_converted.tif");
-//        ImagePlus image = IJ.openImage("/home/rgerst/dots.png");
-        JFrame frame = new JFrame();
-        ImageViewerPanel panel = new ImageViewerPanel();
-        panel.setImage(image);
-        frame.setContentPane(panel);
-        frame.pack();
-        frame.setSize(1280, 1024);
-        frame.setVisible(true);
-    }
-
-    /**
-     * Opens the image in a new frame
-     *
-     * @param image the image
-     * @param title the title
-     * @return the panel
-     */
-    public static ImageViewerPanel showImage(ImagePlus image, String title) {
-        ImageViewerPanel dataDisplay = new ImageViewerPanel();
-        dataDisplay.setPlugins(Arrays.asList(new CalibrationPlugin(dataDisplay),
-                new PixelInfoPlugin(dataDisplay),
-                new LUTManagerPlugin(dataDisplay),
-                new ROIManagerPlugin(dataDisplay)));
-        dataDisplay.setImage(image);
-        ImageViewerWindow window = new ImageViewerWindow(dataDisplay);
-        window.setTitle(title);
-        window.setVisible(true);
-        return dataDisplay;
     }
 
 }

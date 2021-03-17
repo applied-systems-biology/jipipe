@@ -104,10 +104,10 @@ public abstract class JIPipeIteratingAlgorithm extends JIPipeParameterSlotAlgori
         boolean withLimit = dataBatchGenerationSettings.getLimit().isEnabled();
         IntegerRange limit = dataBatchGenerationSettings.getLimit().getContent();
         TIntSet allowedIndices = withLimit ? new TIntHashSet(limit.getIntegers()) : null;
-        if(withLimit) {
+        if (withLimit) {
             List<JIPipeMergingDataBatch> limitedBatches = new ArrayList<>();
             for (int i = 0; i < dataBatches.size(); i++) {
-                if(allowedIndices.contains(i)) {
+                if (allowedIndices.contains(i)) {
                     limitedBatches.add(dataBatches.get(i));
                 }
             }

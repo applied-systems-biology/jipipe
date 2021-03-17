@@ -155,7 +155,7 @@ public class JIPipeDataTypeCompendiumUI extends JIPipeCompendiumUI<JIPipeDataInf
         builder.append("</table>\n\n");
 
         // Storage information
-        if(info.getStorageDocumentation() != null) {
+        if (info.getStorageDocumentation() != null) {
             builder.append("# Data storage\n\n");
             builder.append("Following information was provided about the standardized storage of this data type:\n\n");
             builder.append(info.getStorageDocumentation().getBody());

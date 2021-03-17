@@ -44,8 +44,8 @@ public class GraphNodeParametersUI extends JIPipeWorkbenchPanel {
     private int formPanelFlags;
 
     /**
-     * @param workbench  the workbench
-     * @param parameters the parameters to edit
+     * @param workbench      the workbench
+     * @param parameters     the parameters to edit
      * @param formPanelFlags
      */
     public GraphNodeParametersUI(JIPipeWorkbench workbench, GraphNodeParameters parameters, int formPanelFlags) {
@@ -125,7 +125,7 @@ public class GraphNodeParametersUI extends JIPipeWorkbenchPanel {
     private void refreshContent() {
         tree = getParameters().getGraph().getParameterTree();
         int scrollValue = 0;
-        if(content.getScrollPane() != null) {
+        if (content.getScrollPane() != null) {
             scrollValue = content.getScrollPane().getVerticalScrollBar().getValue();
         }
         content.clear();
@@ -137,7 +137,7 @@ public class GraphNodeParametersUI extends JIPipeWorkbenchPanel {
             content.addToForm(groupUI, removeButton, null);
         }
         content.addVerticalGlue();
-        if(content.getScrollPane() != null) {
+        if (content.getScrollPane() != null) {
             int finalScrollValue = scrollValue;
             SwingUtilities.invokeLater(() -> content.getScrollPane().getVerticalScrollBar().setValue(finalScrollValue));
         }

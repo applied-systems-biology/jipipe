@@ -81,8 +81,8 @@ public class MergingRScriptAlgorithm extends JIPipeMergingAlgorithm {
     @Override
     public void run(JIPipeProgressInfo progressInfo) {
         try {
-            if(!isPassThrough()) {
-                if(!RExtensionSettings.checkRSettings()) {
+            if (!isPassThrough()) {
+                if (!RExtensionSettings.checkRSettings()) {
                     throw new UserFriendlyRuntimeException("The R installation is invalid!\n" +
                             "R=" + RExtensionSettings.getInstance().getRExecutable() + "\n" +
                             "RScript=" + RExtensionSettings.getInstance().getRScriptExecutable(),
@@ -95,8 +95,7 @@ public class MergingRScriptAlgorithm extends JIPipeMergingAlgorithm {
                 rCaller = RCaller.create(RExtensionSettings.createRCallerOptions());
             }
             super.run(progressInfo);
-        }
-        finally {
+        } finally {
             rCaller = null;
         }
     }
@@ -222,7 +221,7 @@ public class MergingRScriptAlgorithm extends JIPipeMergingAlgorithm {
         if (UIUtils.confirmResetParameters(parent, "Load example")) {
             Object result = JOptionPane.showInputDialog(parent.getWindow(), "Please select the example:",
                     "Load example", JOptionPane.PLAIN_MESSAGE, null, Examples.values(), Examples.LoadIris);
-            if(result instanceof Examples) {
+            if (result instanceof Examples) {
                 ((Examples) result).apply(this);
             }
         }
@@ -237,7 +236,7 @@ public class MergingRScriptAlgorithm extends JIPipeMergingAlgorithm {
 
     private enum Examples {
         LoadIris("Load IRIS data set", "library(datasets)\n\nJIPipe.AddOutputDataFrame(slot=\"Table\", data=iris)",
-                new JIPipeInputSlot[0], new JIPipeOutputSlot[] {
+                new JIPipeInputSlot[0], new JIPipeOutputSlot[]{
                 new DefaultJIPipeOutputSlot(ResultsTableData.class, "Table", null, false)
         }),
         PlotIris("Plot IRIS data set", "library(datasets)\n" +
@@ -250,7 +249,7 @@ public class MergingRScriptAlgorithm extends JIPipeMergingAlgorithm {
                 "dev.off()\n" +
                 "\n" +
                 "# JIPipe will automatically load the data",
-                new JIPipeInputSlot[0], new JIPipeOutputSlot[] {
+                new JIPipeInputSlot[0], new JIPipeOutputSlot[]{
                 new DefaultJIPipeOutputSlot(ImagePlusColorRGBData.class, "Plot", null, false)
         });
 

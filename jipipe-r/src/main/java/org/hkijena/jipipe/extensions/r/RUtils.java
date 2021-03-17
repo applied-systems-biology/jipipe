@@ -19,7 +19,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
-import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 public class RUtils {
@@ -40,7 +39,8 @@ public class RUtils {
 
     /**
      * Converts annotations into R code.
-     * @param code the code
+     *
+     * @param code        the code
      * @param annotations the annotations
      */
     public static void annotationsToR(RCode code, Collection<JIPipeAnnotation> annotations) {
@@ -54,7 +54,8 @@ public class RUtils {
     /**
      * Converts parameters into R code. Only parameters in ALLOWED_PARAMETER_CLASSES are converted.
      * All parameters are also available in a list JIPipe.Variables
-     * @param code the code
+     *
+     * @param code                the code
      * @param parameterCollection the parameters
      */
     public static void parametersToR(RCode code, JIPipeParameterCollection parameterCollection) {
@@ -64,65 +65,50 @@ public class RUtils {
             String value = null;
 
             Object o = entry.getValue().get(Object.class);
-            if(o instanceof String) {
+            if (o instanceof String) {
                 value = "\"" + MacroUtils.escapeString((String) o) + "\"";
-            }
-            else  if(o instanceof Path) {
+            } else if (o instanceof Path) {
                 value = "\"" + MacroUtils.escapeString("" + o) + "\"";
-            }
-            else if(o instanceof Number) {
-                if(o instanceof Float) {
+            } else if (o instanceof Number) {
+                if (o instanceof Float) {
                     float num = (float) o;
-                    if(Float.isNaN(num)) {
+                    if (Float.isNaN(num)) {
                         value = "NaN";
-                    }
-                    else if(num == Float.POSITIVE_INFINITY) {
+                    } else if (num == Float.POSITIVE_INFINITY) {
                         value = "Inf";
-                    }
-                    else if(num == Float.NEGATIVE_INFINITY) {
+                    } else if (num == Float.NEGATIVE_INFINITY) {
                         value = "-Inf";
-                    }
-                    else {
+                    } else {
                         value = "" + num;
                     }
-                }
-                else if(o instanceof Double) {
+                } else if (o instanceof Double) {
                     double num = (double) o;
-                    if(Double.isNaN(num)) {
+                    if (Double.isNaN(num)) {
                         value = "NaN";
-                    }
-                    else if(num == Double.POSITIVE_INFINITY) {
+                    } else if (num == Double.POSITIVE_INFINITY) {
                         value = "Inf";
-                    }
-                    else if(num == Double.NEGATIVE_INFINITY) {
+                    } else if (num == Double.NEGATIVE_INFINITY) {
                         value = "-Inf";
-                    }
-                    else {
+                    } else {
                         value = "" + num;
                     }
-                }
-                else {
+                } else {
                     value = "" + o;
                 }
-            }
-            else if(o instanceof Boolean) {
-                value = (boolean)o ? "TRUE" : "FALSE";
-            }
-            else if(o instanceof IntegerList) {
+            } else if (o instanceof Boolean) {
+                value = (boolean) o ? "TRUE" : "FALSE";
+            } else if (o instanceof IntegerList) {
                 value = "c(" + ((IntegerList) o).stream().map(i -> i + "").collect(Collectors.joining(", ")) + ")";
-            }
-            else if(o instanceof DoubleList) {
+            } else if (o instanceof DoubleList) {
                 value = "c(" + ((DoubleList) o).stream().map(i -> i + "").collect(Collectors.joining(", ")) + ")";
-            }
-            else if(o instanceof IntegerRange) {
+            } else if (o instanceof IntegerRange) {
                 value = "c(" + ((IntegerRange) o).getIntegers().stream().map(i -> i + "").collect(Collectors.joining(", ")) + ")";
-            }
-            else if(o instanceof StringList) {
+            } else if (o instanceof StringList) {
                 value = "c(" + ((StringList) o).stream().map(s -> "\"" + MacroUtils.escapeString(s) + "\"").collect(Collectors.joining(", ")) + ")";
             }
 
-            if(value != null) {
-                if(MacroUtils.isValidVariableName(entry.getKey())) {
+            if (value != null) {
+                if (MacroUtils.isValidVariableName(entry.getKey())) {
                     code.addRCode(entry.getKey() + " <- " + value);
                 }
                 code.addRCode("JIPipe.Variables$\"" + entry.getKey() + "\" <- " + value);
@@ -161,7 +147,7 @@ public class RUtils {
             code.addRCode("JIPipe.OutputSlots.Table$\"" + MacroUtils.escapeString(entry.getKey()) + "\" <- " +
                     "list(rows=list(), " +
                     "slot=\"" + MacroUtils.escapeString(entry.getKey()) + "\", " +
-                    "\"data-type\"=\"" + MacroUtils.escapeString(JIPipeDataInfo.getInstance(outputSlotMap.get(entry.getKey()).getAcceptedDataType()).getId()) +  "\")");
+                    "\"data-type\"=\"" + MacroUtils.escapeString(JIPipeDataInfo.getInstance(outputSlotMap.get(entry.getKey()).getAcceptedDataType()).getId()) + "\")");
         }
 
         // The getter function

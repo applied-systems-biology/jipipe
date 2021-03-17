@@ -130,6 +130,22 @@ public abstract class JIPipeGraphNode implements JIPipeValidatable, JIPipeParame
         slotConfiguration.getEventBus().register(this);
     }
 
+    public static <T extends JIPipeGraphNode> T fromJsonNode(JsonNode node, JIPipeValidityReport issues) {
+        String id = node.get("jipipe:node-info-id").asText();
+        if (!JIPipe.getNodes().hasNodeInfoWithId(id)) {
+            System.err.println("Unable to find node with ID '" + id + "'. Skipping.");
+            issues.forCategory("Nodes").forCategory(id).reportIsInvalid("Unable to find node type '" + id + "'!",
+                    "The JSON data requested to load a node of type '" + id + "', but it is not known to JIPipe.",
+                    "Please check if all extensions are are correctly loaded.",
+                    node);
+            return null;
+        }
+        JIPipeNodeInfo info = JIPipe.getNodes().getInfoById(id);
+        JIPipeGraphNode algorithm = info.newInstance();
+        algorithm.fromJson(node, issues.forCategory("Nodes").forCategory(id));
+        return (T) algorithm;
+    }
+
     /**
      * Synchronizes the slots with the slot definition
      */
@@ -958,22 +974,6 @@ public abstract class JIPipeGraphNode implements JIPipeValidatable, JIPipeParame
             if (apply)
                 slot.applyVirtualState(progressInfo);
         }
-    }
-
-    public static <T extends JIPipeGraphNode> T fromJsonNode(JsonNode node, JIPipeValidityReport issues) {
-        String id = node.get("jipipe:node-info-id").asText();
-        if (!JIPipe.getNodes().hasNodeInfoWithId(id)) {
-            System.err.println("Unable to find node with ID '" + id + "'. Skipping.");
-            issues.forCategory("Nodes").forCategory(id).reportIsInvalid("Unable to find node type '" + id + "'!",
-                    "The JSON data requested to load a node of type '" + id + "', but it is not known to JIPipe.",
-                    "Please check if all extensions are are correctly loaded.",
-                    node);
-            return null;
-        }
-        JIPipeNodeInfo info = JIPipe.getNodes().getInfoById(id);
-        JIPipeGraphNode algorithm = info.newInstance();
-        algorithm.fromJson(node, issues.forCategory("Nodes").forCategory(id));
-        return (T) algorithm;
     }
 
     /**

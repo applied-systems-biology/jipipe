@@ -31,8 +31,9 @@ public class FancyTextField extends JPanel {
 
     /**
      * Creates a new instance
-     *  @param icon   Optional icon displayed to the left
-     * @param prompt prompt
+     *
+     * @param icon            Optional icon displayed to the left
+     * @param prompt          prompt
      * @param withClearButton if a clear button should be added
      */
     public FancyTextField(JLabel icon, String prompt, boolean withClearButton) {
@@ -45,7 +46,7 @@ public class FancyTextField extends JPanel {
         textField.setBorder(null);
         add(textField, BorderLayout.CENTER);
 
-        if(withClearButton) {
+        if (withClearButton) {
             JButton clearButton = new JButton(UIUtils.getIconFromResources("actions/edit-clear.png"));
             clearButton.setOpaque(false);
             clearButton.setToolTipText("Clear");

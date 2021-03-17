@@ -76,6 +76,72 @@ public class JIPipeProjectWindow extends JFrame {
         loadProject(project, showIntroduction, isNewProject);
     }
 
+    /**
+     * Tries to find the window that belongs to the provided project
+     *
+     * @param project the project
+     * @return the window or null if none is found
+     */
+    public static JIPipeProjectWindow getWindowFor(JIPipeProject project) {
+        for (JIPipeProjectWindow window : OPEN_WINDOWS) {
+            if (window.project == project)
+                return window;
+        }
+        return null;
+    }
+
+    /**
+     * Creates a new project instance based on the current template selection
+     *
+     * @return the project
+     */
+    public static JIPipeProject getDefaultTemplateProject() {
+        JIPipeProject project = null;
+        if (ProjectsSettings.getInstance().getProjectTemplate().getValue() != null) {
+            try {
+                project = ProjectsSettings.getInstance().getProjectTemplate().getValue().load();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        if (project == null) {
+            project = new JIPipeProject();
+        }
+        return project;
+    }
+
+    /**
+     * Creates a new window
+     *
+     * @param context          context
+     * @param project          The project
+     * @param showIntroduction show an introduction
+     * @param isNewProject     if the project is a new empty project
+     * @return The window
+     */
+    public static JIPipeProjectWindow newWindow(Context context, JIPipeProject project, boolean showIntroduction, boolean isNewProject) {
+        JIPipeProjectWindow frame = new JIPipeProjectWindow(context, project, showIntroduction, isNewProject);
+        frame.pack();
+        frame.setSize(1024, 768);
+        frame.setVisible(true);
+//        frame.setExtendedState(frame.getExtendedState() | JFrame.MAXIMIZED_BOTH);
+        return frame;
+    }
+
+    /**
+     * @return All open project windows
+     */
+    public static Set<JIPipeProjectWindow> getOpenWindows() {
+        return Collections.unmodifiableSet(OPEN_WINDOWS);
+    }
+
+    /**
+     * @return EventBus that generate window open/close events
+     */
+    public static EventBus getWindowsEvents() {
+        return WINDOWS_EVENTS;
+    }
+
     private void initialize() {
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         getContentPane().setLayout(new BorderLayout(8, 8));
@@ -348,71 +414,5 @@ public class JIPipeProjectWindow extends JFrame {
      */
     public Path getProjectSavePath() {
         return projectSavePath;
-    }
-
-    /**
-     * Tries to find the window that belongs to the provided project
-     *
-     * @param project the project
-     * @return the window or null if none is found
-     */
-    public static JIPipeProjectWindow getWindowFor(JIPipeProject project) {
-        for (JIPipeProjectWindow window : OPEN_WINDOWS) {
-            if (window.project == project)
-                return window;
-        }
-        return null;
-    }
-
-    /**
-     * Creates a new project instance based on the current template selection
-     *
-     * @return the project
-     */
-    public static JIPipeProject getDefaultTemplateProject() {
-        JIPipeProject project = null;
-        if (ProjectsSettings.getInstance().getProjectTemplate().getValue() != null) {
-            try {
-                project = ProjectsSettings.getInstance().getProjectTemplate().getValue().load();
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-        if (project == null) {
-            project = new JIPipeProject();
-        }
-        return project;
-    }
-
-    /**
-     * Creates a new window
-     *
-     * @param context          context
-     * @param project          The project
-     * @param showIntroduction show an introduction
-     * @param isNewProject     if the project is a new empty project
-     * @return The window
-     */
-    public static JIPipeProjectWindow newWindow(Context context, JIPipeProject project, boolean showIntroduction, boolean isNewProject) {
-        JIPipeProjectWindow frame = new JIPipeProjectWindow(context, project, showIntroduction, isNewProject);
-        frame.pack();
-        frame.setSize(1024, 768);
-        frame.setVisible(true);
-//        frame.setExtendedState(frame.getExtendedState() | JFrame.MAXIMIZED_BOTH);
-        return frame;
-    }
-
-    /**
-     * @return All open project windows
-     */
-    public static Set<JIPipeProjectWindow> getOpenWindows() {
-        return Collections.unmodifiableSet(OPEN_WINDOWS);
-    }
-
-    /**
-     * @return EventBus that generate window open/close events
-     */
-    public static EventBus getWindowsEvents() {
-        return WINDOWS_EVENTS;
     }
 }

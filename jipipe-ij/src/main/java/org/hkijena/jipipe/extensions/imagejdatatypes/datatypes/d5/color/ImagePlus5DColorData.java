@@ -19,7 +19,6 @@ import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeHeavyData;
 import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.extensions.imagejdatatypes.color.ColorSpace;
-import org.hkijena.jipipe.extensions.imagejdatatypes.color.RGBColorSpace;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.color.ColoredImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d5.ImagePlus5DData;
@@ -53,16 +52,6 @@ public class ImagePlus5DColorData extends ImagePlus5DData implements ColoredImag
 
     public ImagePlus5DColorData(ImagePlus image, ColorSpace colorSpace) {
         super(ImagePlus5DColorData.convertIfNeeded(image), colorSpace);
-    }
-
-    @Override
-    public Component preview(int width, int height) {
-        return ImageJUtils.generatePreview(this.getImage(), getColorSpace(), width, height);
-    }
-
-    @Override
-    public String toString() {
-        return super.toString() + " [" + getColorSpace() + " colors]";
     }
 
     /**
@@ -103,5 +92,15 @@ public class ImagePlus5DColorData extends ImagePlus5DData implements ColoredImag
         } else {
             return new ImagePlus5DColorData(image, ((ColoredImagePlusData) data).getColorSpace());
         }
+    }
+
+    @Override
+    public Component preview(int width, int height) {
+        return ImageJUtils.generatePreview(this.getImage(), getColorSpace(), width, height);
+    }
+
+    @Override
+    public String toString() {
+        return super.toString() + " [" + getColorSpace() + " colors]";
     }
 }

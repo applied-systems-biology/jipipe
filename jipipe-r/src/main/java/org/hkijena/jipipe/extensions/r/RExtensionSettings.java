@@ -14,7 +14,6 @@
 package org.hkijena.jipipe.extensions.r;
 
 import com.github.rcaller.rstuff.FailurePolicy;
-import com.github.rcaller.rstuff.RCaller;
 import com.github.rcaller.rstuff.RCallerOptions;
 import com.github.rcaller.rstuff.RProcessStartUpOptions;
 import com.github.rcaller.util.Globals;
@@ -25,11 +24,9 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.extensions.parameters.primitives.FilePathParameterSettings;
 import org.hkijena.jipipe.extensions.parameters.primitives.OptionalPathParameter;
-import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.components.PathEditor;
 import org.hkijena.jipipe.utils.StringUtils;
 
-import javax.swing.*;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 
@@ -43,18 +40,72 @@ public class RExtensionSettings implements JIPipeParameterCollection {
     private OptionalPathParameter RScriptExecutable = new OptionalPathParameter();
 
     public RExtensionSettings() {
-        if(!StringUtils.isNullOrEmpty(Globals.R_current)) {
+        if (!StringUtils.isNullOrEmpty(Globals.R_current)) {
             try {
                 RExecutable.setContent(Paths.get(Globals.R_current));
-            }catch (Exception e) {
+            } catch (Exception e) {
             }
         }
-        if(!StringUtils.isNullOrEmpty(Globals.Rscript_current)) {
+        if (!StringUtils.isNullOrEmpty(Globals.Rscript_current)) {
             try {
                 RScriptExecutable.setContent(Paths.get(Globals.Rscript_current));
-            }catch (Exception e) {
+            } catch (Exception e) {
             }
         }
+    }
+
+    public static RExtensionSettings getInstance() {
+        return JIPipe.getSettings().getSettings(ID, RExtensionSettings.class);
+    }
+
+    /**
+     * Checks the R settings
+     *
+     * @return if the settings are correct
+     */
+    public static boolean checkRSettings() {
+        String executable = Globals.R_current;
+        String scriptExecutable = Globals.Rscript_current;
+        if (JIPipe.getInstance() != null) {
+            RExtensionSettings instance = getInstance();
+            if (instance.RExecutable.isEnabled()) {
+                executable = instance.RExecutable.getContent().toString();
+            }
+            if (instance.RScriptExecutable.isEnabled()) {
+                scriptExecutable = instance.RScriptExecutable.getContent().toString();
+            }
+        }
+        boolean invalid = false;
+        if (StringUtils.isNullOrEmpty(executable) || !Files.exists(Paths.get(executable))) {
+            invalid = true;
+        }
+        if (StringUtils.isNullOrEmpty(scriptExecutable) || !Files.exists(Paths.get(scriptExecutable))) {
+            invalid = true;
+        }
+        return !invalid;
+    }
+
+    public static RCallerOptions createRCallerOptions() {
+        String executable = Globals.R_current;
+        String scriptExecutable = Globals.Rscript_current;
+        FailurePolicy failurePolicy = FailurePolicy.RETRY_5;
+        long maxWaitTime = Long.MAX_VALUE;
+        long initialWaitTime = 100;
+        if (JIPipe.getInstance() != null) {
+            RExtensionSettings instance = getInstance();
+            if (instance.RExecutable.isEnabled()) {
+                executable = instance.RExecutable.getContent().toString();
+            }
+            if (instance.RScriptExecutable.isEnabled()) {
+                scriptExecutable = instance.RScriptExecutable.getContent().toString();
+            }
+        }
+        return RCallerOptions.create(scriptExecutable,
+                executable,
+                failurePolicy,
+                maxWaitTime,
+                initialWaitTime,
+                RProcessStartUpOptions.create());
     }
 
     @Override
@@ -84,58 +135,5 @@ public class RExtensionSettings implements JIPipeParameterCollection {
     @JIPipeParameter("rscript-executable")
     public void setRScriptExecutable(OptionalPathParameter RScriptExecutable) {
         this.RScriptExecutable = RScriptExecutable;
-    }
-
-    public static RExtensionSettings getInstance() {
-        return JIPipe.getSettings().getSettings(ID, RExtensionSettings.class);
-    }
-
-    /**
-     * Checks the R settings
-     * @return if the settings are correct
-     */
-    public static boolean checkRSettings() {
-        String executable = Globals.R_current;
-        String scriptExecutable = Globals.Rscript_current;
-        if(JIPipe.getInstance() != null) {
-            RExtensionSettings instance = getInstance();
-            if(instance.RExecutable.isEnabled()) {
-                executable = instance.RExecutable.getContent().toString();
-            }
-            if(instance.RScriptExecutable.isEnabled()) {
-                scriptExecutable = instance.RScriptExecutable.getContent().toString();
-            }
-        }
-        boolean invalid = false;
-        if(StringUtils.isNullOrEmpty(executable) || !Files.exists(Paths.get(executable))) {
-            invalid = true;
-        }
-        if(StringUtils.isNullOrEmpty(scriptExecutable) || !Files.exists(Paths.get(scriptExecutable))) {
-            invalid = true;
-        }
-        return !invalid;
-    }
-
-    public static RCallerOptions createRCallerOptions() {
-        String executable = Globals.R_current;
-        String scriptExecutable = Globals.Rscript_current;
-        FailurePolicy failurePolicy = FailurePolicy.RETRY_5;
-        long maxWaitTime = Long.MAX_VALUE;
-        long initialWaitTime = 100;
-        if(JIPipe.getInstance() != null) {
-            RExtensionSettings instance = getInstance();
-            if(instance.RExecutable.isEnabled()) {
-                executable = instance.RExecutable.getContent().toString();
-            }
-            if(instance.RScriptExecutable.isEnabled()) {
-                scriptExecutable = instance.RScriptExecutable.getContent().toString();
-            }
-        }
-        return RCallerOptions.create(scriptExecutable,
-                executable,
-                failurePolicy,
-                maxWaitTime,
-                initialWaitTime,
-                RProcessStartUpOptions.create());
     }
 }
