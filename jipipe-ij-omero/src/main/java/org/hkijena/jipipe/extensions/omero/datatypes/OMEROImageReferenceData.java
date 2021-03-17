@@ -19,6 +19,7 @@ import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataSource;
+import org.hkijena.jipipe.api.data.JIPipeDataStorageDocumentation;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.utils.JsonUtils;
 import org.hkijena.jipipe.utils.PathUtils;
@@ -27,6 +28,7 @@ import java.io.IOException;
 import java.nio.file.Path;
 
 @JIPipeDocumentation(name = "OMERO Image", description = "An OMERO image ID")
+@JIPipeDataStorageDocumentation("Contains a single *.json file that stores the <pre>image-id</pre> in a JSON object.")
 public class OMEROImageReferenceData implements JIPipeData {
     private long imageId;
 

@@ -20,6 +20,7 @@ import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataSource;
+import org.hkijena.jipipe.api.data.JIPipeDataStorageDocumentation;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.utils.JsonUtils;
 import org.hkijena.jipipe.utils.PathUtils;
@@ -33,6 +34,13 @@ import java.nio.file.Paths;
  * Encapsulates a {@link java.nio.file.Path}
  */
 @JIPipeDocumentation(name = "Path", description = "A file or folder")
+@JIPipeDataStorageDocumentation("Contains a single *.json file. The JSON data has following structure: " +
+        "<pre>" +
+        "{\n" +
+        "    \"jipipe:data-type\": \"[Data type ID]\",\n" +
+        "    \"path\": \"[The path]\"\n" +
+        "}" +
+        "</pre>")
 public class PathData implements JIPipeData {
     private String path;
 

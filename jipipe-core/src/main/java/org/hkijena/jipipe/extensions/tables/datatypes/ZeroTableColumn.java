@@ -17,6 +17,7 @@ import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataSource;
+import org.hkijena.jipipe.api.data.JIPipeDataStorageDocumentation;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 
 import java.nio.file.Path;
@@ -25,6 +26,7 @@ import java.nio.file.Path;
  * Generates numbers from 0 to row count
  */
 @JIPipeDocumentation(name = "Zero table column", description = "A table column that generates zeros for each row.")
+@JIPipeDataStorageDocumentation("This is a structural data type. The storage folder is empty.")
 public class ZeroTableColumn implements TableColumn {
     @Override
     public String getLabel() {

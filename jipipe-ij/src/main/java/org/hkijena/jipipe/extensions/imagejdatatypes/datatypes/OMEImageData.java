@@ -46,6 +46,7 @@ import org.hkijena.jipipe.api.JIPipeHeavyData;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataSource;
+import org.hkijena.jipipe.api.data.JIPipeDataStorageDocumentation;
 import org.hkijena.jipipe.api.exceptions.UserFriendlyNullPointerException;
 import org.hkijena.jipipe.extensions.imagejdatatypes.ImageJDataTypesSettings;
 import org.hkijena.jipipe.extensions.imagejdatatypes.parameters.OMEExporterSettings;
@@ -68,6 +69,9 @@ import java.util.List;
 @JIPipeDocumentation(name = "OME Image", description = "Image that contains additional OME-XML metadata. " +
         "It can be converted into an image, a ROI list, or an XML text.")
 @JIPipeHeavyData
+@JIPipeDataStorageDocumentation("Contains one or multiple files in *.tif or *.ome.tif format. If OME TIFF is used, multiple tiff files can be present (due to the " +
+        "ability of OME TIFF to link them together). Although, we do recommend having multiple files, as sometimes OME TIFF can store absolute paths. " +
+        "If only standard TIFF files are present, only one will be loaded.")
 public class OMEImageData implements JIPipeData {
 
     private final ImagePlus image;

@@ -19,6 +19,7 @@ import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataSource;
+import org.hkijena.jipipe.api.data.JIPipeDataStorageDocumentation;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.utils.JsonUtils;
 import org.hkijena.jipipe.utils.PathUtils;
@@ -30,6 +31,7 @@ import java.nio.file.Path;
  * Data that stores a reference to an OMERO project
  */
 @JIPipeDocumentation(name = "OMERO Project", description = "An OMERO project ID")
+@JIPipeDataStorageDocumentation("Contains a single *.json file that stores the <pre>project-id</pre> in a JSON object.")
 public class OMEROProjectReferenceData implements JIPipeData {
     private long projectId;
 

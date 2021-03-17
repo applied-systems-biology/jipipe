@@ -18,6 +18,7 @@ import org.hkijena.jipipe.api.JIPipeHidden;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataSource;
+import org.hkijena.jipipe.api.data.JIPipeDataStorageDocumentation;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 
 import java.nio.file.Path;
@@ -28,6 +29,7 @@ import java.nio.file.Path;
  */
 @JIPipeDocumentation(name = "Output data", description = "Output of a compartment")
 @JIPipeHidden
+@JIPipeDataStorageDocumentation("This is a structural data type. The storage folder is empty.")
 public class JIPipeCompartmentOutputData implements JIPipeData {
     @Override
     public void saveTo(Path storageFilePath, String name, boolean forceName, JIPipeProgressInfo progressInfo) {

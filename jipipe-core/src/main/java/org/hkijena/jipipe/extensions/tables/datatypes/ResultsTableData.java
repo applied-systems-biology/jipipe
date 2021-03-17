@@ -35,6 +35,7 @@ import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeCacheSlotDataSource;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataSource;
+import org.hkijena.jipipe.api.data.JIPipeDataStorageDocumentation;
 import org.hkijena.jipipe.extensions.tables.ConvertingColumnOperation;
 import org.hkijena.jipipe.extensions.tables.IntegratingColumnOperation;
 import org.hkijena.jipipe.extensions.tables.TableColumnReference;
@@ -66,6 +67,7 @@ import java.util.stream.Collectors;
 @JIPipeDocumentation(name = "Results table")
 @JsonSerialize(using = ResultsTableData.Serializer.class)
 @JsonDeserialize(using = ResultsTableData.Deserializer.class)
+@JIPipeDataStorageDocumentation("Contains a single *.csv file that contains the table data.")
 public class ResultsTableData implements JIPipeData, TableModel {
 
     private ResultsTable table;

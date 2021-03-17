@@ -15,6 +15,7 @@ package org.hkijena.jipipe.extensions.strings;
 
 import com.google.common.base.Charsets;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.data.JIPipeDataStorageDocumentation;
 import org.hkijena.jipipe.utils.PathUtils;
 
 import java.io.IOException;
@@ -22,6 +23,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 
 @JIPipeDocumentation(name = "XML", description = "Text in extended markup language (XML)")
+@JIPipeDataStorageDocumentation("Contains a single *.xml file that stores the current data.")
 public class XMLData extends StringData {
     public XMLData(String data) {
         super(data);

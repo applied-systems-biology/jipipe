@@ -425,6 +425,11 @@ public class JIPipe extends AbstractService implements JIPipeRegistry {
                 issues.getErroneousDataTypes().add(dataType);
                 e.printStackTrace();
             }
+            JIPipeDataInfo info = JIPipeDataInfo.getInstance(dataType);
+            if(info.getStorageDocumentation() == null) {
+                logService.warn("Data type '" + dataType + "' has no storage documentation.");
+                issues.getErroneousDataTypes().add(dataType);
+            }
         }
         if (extensionSettings.isValidateNodeTypes()) {
             for (JIPipeNodeInfo info : ImmutableList.copyOf(nodeRegistry.getRegisteredNodeInfos().values())) {

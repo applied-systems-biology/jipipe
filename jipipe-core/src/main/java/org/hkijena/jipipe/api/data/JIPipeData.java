@@ -14,10 +14,12 @@
 package org.hkijena.jipipe.api.data;
 
 import org.hkijena.jipipe.api.*;
+import org.hkijena.jipipe.extensions.parameters.primitives.HTMLText;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.utils.StringUtils;
 
 import java.awt.*;
+import java.lang.reflect.Field;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.*;
@@ -26,7 +28,9 @@ import java.util.stream.Collectors;
 /**
  * Base class for any JIPipe data wrapper class
  * There must be a static function importFrom(Path) that imports the data from a row storage folder.
- * The static method can be omitted for abstract data types or interfaces.
+ * Additionally, there must be a annotation of type {@link JIPipeDataStorageDocumentation} that describes the structure of a valid row storage folder for humans.
+ * The static importFrom(Path) method and the {@link JIPipeDataStorageDocumentation} annotation can be omitted for abstract data types or interfaces.
+ * {@link JIPipeDataStorageDocumentation} can be inherited from parent classes.
  */
 @JIPipeDocumentation(name = "Data", description = "Generic data")
 public interface JIPipeData {
@@ -134,6 +138,33 @@ public interface JIPipeData {
      */
     static boolean isHeavy(Class<? extends JIPipeData> klass) {
         return klass.getAnnotationsByType(JIPipeHeavyData.class).length > 0;
+    }
+
+    /**
+     * Returns the storage documentation for the data type or null if none was provided.
+     * Will go through parent classes to find a storage documentation
+     * @param klass the class
+     * @return the storage documentation
+     */
+    static HTMLText getStorageDocumentation(Class<? extends JIPipeData> klass) {
+        JIPipeDataStorageDocumentation annotation = klass.getAnnotation(JIPipeDataStorageDocumentation.class);
+        if(annotation != null) {
+            return new HTMLText(annotation.value());
+        }
+        else {
+            if(klass == JIPipeData.class) {
+                return null;
+            }
+            else {
+                Class<?> superclass = klass.getSuperclass();
+                if(superclass != null && JIPipeData.class.isAssignableFrom(superclass)) {
+                    return getStorageDocumentation((Class<? extends JIPipeData>) superclass);
+                }
+                else {
+                    return null;
+                }
+            }
+        }
     }
 
     /**

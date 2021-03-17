@@ -14,14 +14,19 @@
 package org.hkijena.jipipe.extensions.multiparameters.datatypes;
 
 import com.fasterxml.jackson.core.JsonGenerator;
+import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonSerializer;
-import com.fasterxml.jackson.databind.SerializerProvider;
+import com.fasterxml.jackson.databind.*;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.google.common.collect.ImmutableList;
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataSource;
+import org.hkijena.jipipe.api.data.JIPipeDataStorageDocumentation;
+import org.hkijena.jipipe.api.parameters.JIPipeParameterTypeInfo;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.utils.JsonUtils;
 import org.hkijena.jipipe.utils.PathUtils;
@@ -39,6 +44,11 @@ import java.util.Map;
  */
 @JIPipeDocumentation(name = "Parameters", description = "Contains algorithm parameters")
 @JsonSerialize(using = ParametersData.Serializer.class)
+@JsonDeserialize(using = ParametersData.Deserializer.class)
+@JIPipeDataStorageDocumentation("Contains a single *.json file that stores the parameters. " +
+        "The JSON data is an object with keys being the parameter keys. The value is an object with two " +
+        "items <code>value</code> and <code>type-id</code>. <code>value</code> contains the serialized parameter value." +
+        " <code>type-id</code> contains the standardized parameter type ID.")
 public class ParametersData implements JIPipeData {
 
     private Map<String, Object> parameterData = new HashMap<>();
@@ -101,8 +111,30 @@ public class ParametersData implements JIPipeData {
         @Override
         public void serialize(ParametersData value, JsonGenerator gen, SerializerProvider serializers) throws IOException, JsonProcessingException {
             gen.writeStartObject();
-            gen.writeObjectField("data", value.parameterData);
+            for (Map.Entry<String, Object> entry : value.parameterData.entrySet()) {
+                gen.writeFieldName(entry.getKey());
+                gen.writeStartObject();
+                gen.writeObjectField("value", entry.getValue());
+                gen.writeStringField("type-id", JIPipe.getParameterTypes().getInfoByFieldClass(entry.getValue().getClass()).getId());
+                gen.writeEndObject();
+            }
             gen.writeEndObject();
+        }
+    }
+
+    public static class Deserializer extends JsonDeserializer<ParametersData> {
+        @Override
+        public ParametersData deserialize(JsonParser jsonParser, DeserializationContext deserializationContext) throws IOException, JsonProcessingException {
+            JsonNode node = jsonParser.readValueAsTree();
+            ParametersData parametersData = new ParametersData();
+            for (String key : ImmutableList.copyOf(node.fieldNames())) {
+                   JsonNode entryNode = node.get(key);
+                   String typeId = entryNode.get("type-id").asText();
+                   JIPipeParameterTypeInfo typeInfo = JIPipe.getParameterTypes().getInfoById(typeId);
+                   Object value = JsonUtils.getObjectMapper().readerFor(typeInfo.getFieldClass()).readValue(entryNode.get("value"));
+                   parametersData.parameterData.put(key, value);
+            }
+            return parametersData;
         }
     }
 }

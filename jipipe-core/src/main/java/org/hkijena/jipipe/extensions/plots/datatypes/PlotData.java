@@ -30,6 +30,7 @@ import org.hkijena.jipipe.api.JIPipeValidityReport;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataInfo;
 import org.hkijena.jipipe.api.data.JIPipeDataSource;
+import org.hkijena.jipipe.api.data.JIPipeDataStorageDocumentation;
 import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
@@ -63,6 +64,17 @@ import java.util.stream.Collectors;
  */
 @JIPipeDocumentation(name = "Plot", description = "A plot")
 @JsonSerialize(using = PlotData.Serializer.class)
+@JIPipeDataStorageDocumentation("The folder contains following files:<br/>" +
+        "<ul>" +
+        "<li><code>plot-metadata.json</code> contains the serialized information about the plot.</li>" +
+        "<li><code>series[Index].csv</code> contains the data of series [Index].</li>" +
+        "</ul><br/><br/>" +
+        "The plot metadata JSON contains entries <code>title</code>, <code>export-width</code>," +
+        "<code>export-height</code>, <code>background-color</code>, <code>grid-color</code>, " +
+        "<code>with-legend</code>, <code>title-font-size</code>, <code>legend-font-size</code>, <code>color-map</code>, and <code>plot-series</code>.<br/>" +
+        "<code>plot-series</code> is mandatory and is a list of objects with each object having an object <code>metadata</code>, and " +
+        "a string element <code>file-name</code>. The file name must point at the corresponding <code>series[Index].csv</code> file of the series. " +
+        "Additional metadata in the root object and series metadata depend on the exact plot type.")
 public abstract class PlotData implements JIPipeData, JIPipeParameterCollection, JIPipeValidatable {
 
     private EventBus eventBus = new EventBus();

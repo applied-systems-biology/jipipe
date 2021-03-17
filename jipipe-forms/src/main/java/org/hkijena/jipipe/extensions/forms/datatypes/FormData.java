@@ -11,6 +11,7 @@ import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.JIPipeValidatable;
 import org.hkijena.jipipe.api.JIPipeValidityReport;
 import org.hkijena.jipipe.api.data.JIPipeData;
+import org.hkijena.jipipe.api.data.JIPipeDataStorageDocumentation;
 import org.hkijena.jipipe.api.nodes.JIPipeMergingDataBatch;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
@@ -30,6 +31,7 @@ import java.nio.file.Paths;
  */
 @JIPipeDocumentation(name = "Form", description = "Data that describes a user input element.")
 @JsonSerialize(using = FormData.Serializer.class)
+@JIPipeDataStorageDocumentation("Contains a file forms.json that stores all metadata of the current form type in JSON format.")
 public abstract class FormData implements JIPipeData, JIPipeParameterCollection, JIPipeValidatable {
 
     private final EventBus eventBus = new EventBus();

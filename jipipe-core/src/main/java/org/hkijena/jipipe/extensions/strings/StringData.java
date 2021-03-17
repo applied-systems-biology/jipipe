@@ -19,6 +19,7 @@ import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataSource;
+import org.hkijena.jipipe.api.data.JIPipeDataStorageDocumentation;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.texteditor.JIPipeTextEditor;
 import org.hkijena.jipipe.utils.PathUtils;
@@ -32,6 +33,7 @@ import java.nio.file.Path;
  * A data type that contains a string
  */
 @JIPipeDocumentation(name = "String", description = "A text")
+@JIPipeDataStorageDocumentation("Contains a single *.txt file that stores the current string.")
 public class StringData implements JIPipeData {
 
     private final String data;

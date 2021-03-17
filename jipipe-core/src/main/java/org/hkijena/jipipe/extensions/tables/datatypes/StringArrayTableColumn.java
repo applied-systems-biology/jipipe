@@ -17,6 +17,7 @@ import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataSource;
+import org.hkijena.jipipe.api.data.JIPipeDataStorageDocumentation;
 import org.hkijena.jipipe.extensions.tables.MutableTableColumn;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 
@@ -28,6 +29,7 @@ import java.util.Collections;
  * {@link TableColumn} that contains doubles.
  */
 @JIPipeDocumentation(name = "String table column", description = "A table column that contains text values")
+@JIPipeDataStorageDocumentation("Contains a single *.csv file that contains the table data.")
 public class StringArrayTableColumn implements MutableTableColumn {
 
     private String[] data;

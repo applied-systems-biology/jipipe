@@ -24,6 +24,7 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeCitation;
+import org.hkijena.jipipe.extensions.parameters.primitives.HTMLText;
 import org.hkijena.jipipe.utils.ReflectionUtils;
 
 import java.io.IOException;
@@ -43,6 +44,7 @@ public class JIPipeDataInfo implements Comparable<JIPipeDataInfo> {
     private String menuPath;
     private boolean hidden;
     private boolean heavy;
+    private HTMLText storageDocumentation;
     private List<String> additionalCitations = new ArrayList<>();
 
     private JIPipeDataInfo(Class<? extends JIPipeData> dataClass) {
@@ -52,6 +54,7 @@ public class JIPipeDataInfo implements Comparable<JIPipeDataInfo> {
         this.menuPath = JIPipeData.getMenuPathOf(dataClass);
         this.hidden = JIPipeData.isHidden(dataClass);
         this.heavy = JIPipeData.isHeavy(dataClass);
+        this.storageDocumentation = JIPipeData.getStorageDocumentation(dataClass);
         // Load additional citations
         for (JIPipeCitation citation : dataClass.getAnnotationsByType(JIPipeCitation.class)) {
             getAdditionalCitations().add(citation.value());
@@ -98,6 +101,10 @@ public class JIPipeDataInfo implements Comparable<JIPipeDataInfo> {
      */
     public boolean isHeavy() {
         return heavy;
+    }
+
+    public HTMLText getStorageDocumentation() {
+        return storageDocumentation;
     }
 
     /**
