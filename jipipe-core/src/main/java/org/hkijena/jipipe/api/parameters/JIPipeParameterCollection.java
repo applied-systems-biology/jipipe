@@ -90,7 +90,7 @@ public interface JIPipeParameterCollection {
                                     issues.forCategory(key).reportIsInvalid("Could not load parameter '" + key + "'!",
                                             "The data might be not compatible with your operating system or from an older or newer JIPipe version.",
                                             "Please check the value of the parameter.",
-                                            node.get(key));
+                                            "In: node.get(key)\n\n" + e);
                                 }
 
 

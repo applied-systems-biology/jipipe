@@ -175,7 +175,7 @@ public class ImagePlusFromFile extends JIPipeSimpleIteratingAlgorithm {
 
     @JIPipeDocumentation(name = "Title annotation", description = "Optional annotation type where the image title is written.")
     @JIPipeParameter("title-annotation")
-    public OptionalStringParameter getTitleAnnotation() {
+    public OptionalAnnotationNameParameter getTitleAnnotation() {
         return titleAnnotation;
     }
 
