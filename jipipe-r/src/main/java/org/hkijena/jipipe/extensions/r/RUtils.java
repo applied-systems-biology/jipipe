@@ -157,7 +157,7 @@ public class RUtils {
                 "dir.create(result); " +
                 "data.type <- JIPipe.OutputSlots.Table[[slot]][[\"data-type\"]]; " +
                 ".GlobalEnv$JIPipe.OutputSlots.Table[[slot]][[\"rows\"]][[count + 1]] <- list(index=count, " +
-                "traits=annotations, " +
+                "annotations=annotations, " +
                 "\"true-data-type\"=data.type); " +
                 "return(result);" +
                 "}");

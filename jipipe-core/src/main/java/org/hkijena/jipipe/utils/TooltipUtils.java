@@ -260,23 +260,6 @@ public class TooltipUtils {
         if (description != null && !description.isEmpty())
             builder.append(description).append("</br>");
 
-//        if (!preferredTraits.isEmpty()) {
-//            builder.append("<br/><br/><strong>Good for<br/>");
-//            insertTraitTable(builder, preferredTraits);
-//        }
-//        if (!unwantedTraits.isEmpty()) {
-//            builder.append("<br/><br/><strong>Bad for<br/>");
-//            insertTraitTable(builder, unwantedTraits);
-//        }
-//        if (!removedTraits.isEmpty()) {
-//            builder.append("<br/><br/><strong>Removes<br/>");
-//            insertTraitTable(builder, removedTraits);
-//        }
-//        if (!addedTraits.isEmpty()) {
-//            builder.append("<br/><br/><strong>Adds<br/>");
-//            insertTraitTable(builder, addedTraits);
-//        }
-
         builder.append("</html>");
         return builder.toString();
     }
@@ -329,58 +312,9 @@ public class TooltipUtils {
         if (description != null && !description.isEmpty())
             builder.append(description).append("</br>");
 
-//        if (!preferredTraits.isEmpty()) {
-//            builder.append("<br/><br/><strong>Good for<br/>");
-//            insertTraitTable(builder, preferredTraits);
-//        }
-//        if (!unwantedTraits.isEmpty()) {
-//            builder.append("<br/><br/><strong>Bad for<br/>");
-//            insertTraitTable(builder, unwantedTraits);
-//        }
-//        if (!removedTraits.isEmpty()) {
-//            builder.append("<br/><br/><strong>Removes<br/>");
-//            insertTraitTable(builder, removedTraits);
-//        }
-//        if (!addedTraits.isEmpty()) {
-//            builder.append("<br/><br/><strong>Adds<br/>");
-//            insertTraitTable(builder, addedTraits);
-//        }
-
         builder.append("</html>");
         return builder.toString();
     }
-
-    //    public static String getTraitTooltip(Class<? extends JIPipeAnnotation> klass) {
-//        String name = JIPipeAnnotation.getNameOf(klass);
-//        String description = JIPipeAnnotation.getDescriptionOf(klass);
-//        StringBuilder builder = new StringBuilder();
-//        builder.append("<html><u><strong>");
-//        builder.append(name);
-//        builder.append("</u></strong>");
-//        if(description != null && !description.isEmpty()) {
-//            builder.append("<br/>")
-//                .append(description);
-//        }
-//
-//        Set<Class<? extends JIPipeAnnotation>> categories = JIPipeAnnotation.getCategoriesOf(klass);
-//        if(!categories.isEmpty()) {
-//            builder.append("<br/><br/>");
-//            builder.append("<strong>Inherited annotations</strong><br/>");
-//            builder.append("<table>");
-//            for (Class<? extends JIPipeAnnotation> trait : categories) {
-//                builder.append("<tr>");
-//                builder.append("<td>").append("<img src=\"")
-//                        .append(JIPipeUITraitRegistry.getInstance().getIconURLFor(trait))
-//                        .append("\"/>").append("</td>");
-//                builder.append("<td>").append(JIPipeAnnotation.getNameOf(trait)).append("</td>");
-//                builder.append("</tr>");
-//            }
-//            builder.append("</table>");
-//        }
-//        builder.append("</html>");
-//
-//        return builder.toString();
-//    }
 
     /**
      * Creates a tooltip for an {@link JIPipeDataSlot}

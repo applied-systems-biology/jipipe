@@ -32,7 +32,7 @@ import org.hkijena.jipipe.extensions.filesystem.dataypes.PathData;
 @JIPipeInputSlot(value = PathData.class, slotName = "Child", autoCreate = true)
 @JIPipeOutputSlot(value = PathData.class, slotName = "Output", autoCreate = true)
 
-// Traits
+
 public class RelativizePaths extends JIPipeIteratingAlgorithm {
 
     /**

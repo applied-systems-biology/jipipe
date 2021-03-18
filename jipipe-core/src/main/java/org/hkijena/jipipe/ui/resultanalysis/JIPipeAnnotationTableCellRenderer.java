@@ -22,12 +22,12 @@ import java.awt.*;
 /**
  * Renders {@link JIPipeAnnotation}
  */
-public class JIPipeTraitTableCellRenderer extends JLabel implements TableCellRenderer {
+public class JIPipeAnnotationTableCellRenderer extends JLabel implements TableCellRenderer {
 
     /**
      * Creates a new renderer
      */
-    public JIPipeTraitTableCellRenderer() {
+    public JIPipeAnnotationTableCellRenderer() {
         setOpaque(true);
         setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
     }

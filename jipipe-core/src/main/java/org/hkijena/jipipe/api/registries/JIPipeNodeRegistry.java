@@ -262,9 +262,9 @@ public class JIPipeNodeRegistry implements JIPipeValidatable {
     }
 
     /**
-     * Registers a custom icon for a trait
+     * Registers a custom icon for a node
      *
-     * @param info         the trait type
+     * @param info         the node type
      * @param resourcePath icon url
      */
     public void registerIcon(JIPipeNodeInfo info, URL resourcePath) {
@@ -273,9 +273,9 @@ public class JIPipeNodeRegistry implements JIPipeValidatable {
     }
 
     /**
-     * Returns the icon resource path URL for a trait
+     * Returns the icon resource path URL for a node
      *
-     * @param klass trait type
+     * @param klass node type
      * @return icon url
      */
     public URL getIconURLFor(JIPipeNodeInfo klass) {
@@ -283,9 +283,9 @@ public class JIPipeNodeRegistry implements JIPipeValidatable {
     }
 
     /**
-     * Returns the icon for a trait
+     * Returns the icon for a node
      *
-     * @param info trait type
+     * @param info node type
      * @return icon instance
      */
     public ImageIcon getIconFor(JIPipeNodeInfo info) {

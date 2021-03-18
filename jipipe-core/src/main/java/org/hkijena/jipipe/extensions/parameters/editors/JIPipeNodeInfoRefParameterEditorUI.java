@@ -52,14 +52,14 @@ public class JIPipeNodeInfoRefParameterEditorUI extends JIPipeParameterEditorUI 
         setLayout(new BorderLayout());
 
         currentlyDisplayed = new JButton();
-        currentlyDisplayed.addActionListener(e -> pickTrait());
+        currentlyDisplayed.addActionListener(e -> pickNodeInfo());
         UIUtils.makeFlat(currentlyDisplayed);
         add(currentlyDisplayed, BorderLayout.CENTER);
 
         JButton selectButton = new JButton(UIUtils.getIconFromResources("actions/edit.png"));
         UIUtils.makeFlat(selectButton);
         selectButton.setToolTipText("Select algorithm type");
-        selectButton.addActionListener(e -> pickTrait());
+        selectButton.addActionListener(e -> pickNodeInfo());
         add(selectButton, BorderLayout.EAST);
 
         initializePicker();
@@ -80,7 +80,7 @@ public class JIPipeNodeInfoRefParameterEditorUI extends JIPipeParameterEditorUI 
         if (info != null) {
             currentlyDisplayed.setText(info.getName());
             currentlyDisplayed.setToolTipText(TooltipUtils.getAlgorithmTooltip(info));
-            currentlyDisplayed.addActionListener(e -> pickTrait());
+            currentlyDisplayed.addActionListener(e -> pickNodeInfo());
             currentlyDisplayed.setIcon(UIUtils.getIconFromColor(UIUtils.getFillColorFor(info)));
             picker.setSelectedInfos(Collections.singleton(info));
         } else {
@@ -96,7 +96,7 @@ public class JIPipeNodeInfoRefParameterEditorUI extends JIPipeParameterEditorUI 
         picker.getEventBus().register(this);
     }
 
-    private void pickTrait() {
+    private void pickNodeInfo() {
         pickerDialog.pack();
         pickerDialog.setSize(new Dimension(500, 400));
         pickerDialog.setLocationRelativeTo(this);
@@ -104,7 +104,7 @@ public class JIPipeNodeInfoRefParameterEditorUI extends JIPipeParameterEditorUI 
     }
 
     /**
-     * Triggered when a trait is selected
+     * Triggered when a node is selected
      *
      * @param event Generated event
      */

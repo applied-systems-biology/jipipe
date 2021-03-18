@@ -32,7 +32,7 @@ import org.hkijena.jipipe.extensions.filesystem.dataypes.FolderData;
 @JIPipeInputSlot(value = JIPipeData.class, slotName = "Data", autoCreate = true)
 @JIPipeOutputSlot(value = FolderData.class, slotName = "Output path", autoCreate = true)
 
-// Traits
+
 public class ConvertDataToOutputPath extends JIPipeSimpleIteratingAlgorithm {
 
     /**

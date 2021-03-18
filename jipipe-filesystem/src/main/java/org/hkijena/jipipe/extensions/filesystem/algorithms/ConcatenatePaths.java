@@ -31,7 +31,7 @@ import org.hkijena.jipipe.extensions.filesystem.dataypes.PathData;
 @JIPipeInputSlot(value = PathData.class, slotName = "Right", autoCreate = true)
 @JIPipeOutputSlot(value = PathData.class, slotName = "Output", autoCreate = true)
 
-// Traits
+
 public class ConcatenatePaths extends JIPipeIteratingAlgorithm {
 
     /**

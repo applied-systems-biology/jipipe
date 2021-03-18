@@ -42,7 +42,7 @@ public class JIPipeDataSlotTableColumnHeaderRenderer implements TableCellRendere
         if (modelColumn < 3) {
             return defaultRenderer.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
         } else {
-            String info = dataTable.getTraitColumns().get(modelColumn - 3);
+            String info = dataTable.getAnnotationColumns().get(modelColumn - 3);
             String html = String.format("<html><table><tr><td><img src=\"%s\"/></td><td>%s</tr>",
                     UIUtils.getIconFromResources("data-types/annotation.png"),
                     info);

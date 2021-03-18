@@ -43,27 +43,27 @@ public class JIPipeDataTypePicker extends JPanel {
 
     /**
      * @param mode               the mode
-     * @param availableDataTypes list of available trait types
+     * @param availableDataTypes list of available data types
      */
     public JIPipeDataTypePicker(Mode mode, Set<JIPipeDataInfo> availableDataTypes) {
         this.mode = mode;
         this.availableDataTypes = new ArrayList<>();
         this.availableDataTypes.addAll(availableDataTypes.stream().sorted(Comparator.comparing(JIPipeDataInfo::getName)).collect(Collectors.toList()));
         initialize();
-        refreshTraitList();
+        refreshDataInfoList();
     }
 
     /**
-     * Shows a dialog to pick traits
+     * Shows a dialog to data types
      *
      * @param parent          parent component
      * @param mode            mode
-     * @param availableTraits list of available traits
-     * @return picked traits
+     * @param availableDataInfos list of available traits
+     * @return picked data types
      */
-    public static Set<JIPipeDataInfo> showDialog(Component parent, Mode mode, Set<JIPipeDataInfo> availableTraits) {
+    public static Set<JIPipeDataInfo> showDialog(Component parent, Mode mode, Set<JIPipeDataInfo> availableDataInfos) {
         JDialog dialog = new JDialog(SwingUtilities.getWindowAncestor(parent));
-        JIPipeDataTypePicker picker = new JIPipeDataTypePicker(mode, availableTraits);
+        JIPipeDataTypePicker picker = new JIPipeDataTypePicker(mode, availableDataInfos);
 
         JPanel panel = new JPanel(new BorderLayout());
         panel.add(picker, BorderLayout.CENTER);
@@ -103,7 +103,7 @@ public class JIPipeDataTypePicker extends JPanel {
         toolBar.setFloatable(false);
 
         searchField = new SearchTextField();
-        searchField.addActionListener(e -> refreshTraitList());
+        searchField.addActionListener(e -> refreshDataInfoList());
         toolBar.add(searchField);
 
         add(toolBar, BorderLayout.NORTH);
@@ -130,20 +130,20 @@ public class JIPipeDataTypePicker extends JPanel {
         boolean changed = false;
         if (mode == Mode.Single)
             selectedDataTypes.clear();
-        for (JIPipeDataInfo trait : availableDataTypes) {
-            if (hiddenDataTypes.contains(trait))
+        for (JIPipeDataInfo dataInfo : availableDataTypes) {
+            if (hiddenDataTypes.contains(dataInfo))
                 continue;
-            boolean uiSelected = dataTypeList.getSelectedValuesList().contains(trait);
-            boolean modelSelected = selectedDataTypes.contains(trait);
+            boolean uiSelected = dataTypeList.getSelectedValuesList().contains(dataInfo);
+            boolean modelSelected = selectedDataTypes.contains(dataInfo);
             if (uiSelected != modelSelected) {
                 if (modelSelected) {
-                    selectedDataTypes.remove(trait);
-                    eventBus.post(new DataTypeDeselectedEvent(this, trait));
+                    selectedDataTypes.remove(dataInfo);
+                    eventBus.post(new DataTypeDeselectedEvent(this, dataInfo));
                     changed = true;
                 }
                 if (uiSelected) {
-                    selectedDataTypes.add(trait);
-                    eventBus.post(new DataTypeSelectedEvent(this, trait));
+                    selectedDataTypes.add(dataInfo);
+                    eventBus.post(new DataTypeSelectedEvent(this, dataInfo));
                     changed = true;
                 }
             }
@@ -157,7 +157,7 @@ public class JIPipeDataTypePicker extends JPanel {
     /**
      * Refreshes the list
      */
-    public void refreshTraitList() {
+    public void refreshDataInfoList() {
         if (reloading)
             return;
         reloading = true;
@@ -166,14 +166,14 @@ public class JIPipeDataTypePicker extends JPanel {
         model.clear();
         List<Integer> selectedIndices = new ArrayList<>();
 
-        for (JIPipeDataInfo trait : availableDataTypes) {
-            if (!searchField.test(trait.getName() + " " + trait.getDescription())) {
-                hiddenDataTypes.add(trait);
+        for (JIPipeDataInfo dataInfo : availableDataTypes) {
+            if (!searchField.test(dataInfo.getName() + " " + dataInfo.getDescription())) {
+                hiddenDataTypes.add(dataInfo);
                 continue;
             }
 
-            model.addElement(trait);
-            if (selectedDataTypes.contains(trait)) {
+            model.addElement(dataInfo);
+            if (selectedDataTypes.contains(dataInfo)) {
                 selectedIndices.add(model.size() - 1);
             }
         }
@@ -191,17 +191,17 @@ public class JIPipeDataTypePicker extends JPanel {
 
     public void setMode(Mode mode) {
         this.mode = mode;
-        refreshTraitList();
+        refreshDataInfoList();
     }
 
     public Set<JIPipeDataInfo> getSelectedDataTypes() {
         return Collections.unmodifiableSet(selectedDataTypes);
     }
 
-    public void setSelectedDataTypes(Set<JIPipeDataInfo> traits) {
-        this.selectedDataTypes = new HashSet<>(traits);
+    public void setSelectedDataTypes(Set<JIPipeDataInfo> dataInfos) {
+        this.selectedDataTypes = new HashSet<>(dataInfos);
         eventBus.post(new SelectedDataTypesChangedEvent(this));
-        refreshTraitList();
+        refreshDataInfoList();
     }
 
     /**
@@ -214,7 +214,7 @@ public class JIPipeDataTypePicker extends JPanel {
     }
 
     /**
-     * Generated when a trait is selected
+     * Generated when a data type is selected
      */
     public static class SelectedDataTypesChangedEvent {
         private JIPipeDataTypePicker dataTypePicker;
@@ -262,7 +262,7 @@ public class JIPipeDataTypePicker extends JPanel {
     }
 
     /**
-     * Generated when a trait is selected
+     * Generated when a data type is selected
      */
     public static class DataTypeSelectedEvent {
         private JIPipeDataTypePicker dataTypePicker;
@@ -270,7 +270,7 @@ public class JIPipeDataTypePicker extends JPanel {
 
         /**
          * @param dataTypePicker event source
-         * @param dataInfo       picked trait
+         * @param dataInfo       picked data type
          */
         public DataTypeSelectedEvent(JIPipeDataTypePicker dataTypePicker, JIPipeDataInfo dataInfo) {
             this.dataTypePicker = dataTypePicker;
@@ -287,7 +287,7 @@ public class JIPipeDataTypePicker extends JPanel {
     }
 
     /**
-     * Generated when a trait is deselected
+     * Generated when a data type is deselected
      */
     public static class DataTypeDeselectedEvent {
         private JIPipeDataTypePicker dataTypePicker;
@@ -295,7 +295,7 @@ public class JIPipeDataTypePicker extends JPanel {
 
         /**
          * @param dataTypePicker event source
-         * @param dataInfo       deselected trait
+         * @param dataInfo       deselected data type
          */
         public DataTypeDeselectedEvent(JIPipeDataTypePicker dataTypePicker, JIPipeDataInfo dataInfo) {
             this.dataTypePicker = dataTypePicker;

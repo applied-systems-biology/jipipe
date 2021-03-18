@@ -31,7 +31,7 @@ public class JIPipeMergedExportedDataTable implements TableModel {
     private ArrayList<JIPipeProjectCompartment> compartmentList = new ArrayList<>();
     private ArrayList<JIPipeGraphNode> algorithmList = new ArrayList<>();
     private ArrayList<JIPipeExportedDataTable.Row> rowList = new ArrayList<>();
-    private List<String> traitColumns = new ArrayList<>();
+    private List<String> annotationColumns = new ArrayList<>();
     private ArrayList<JIPipeDataSlot> slotList = new ArrayList<>();
 
     /**
@@ -42,9 +42,9 @@ public class JIPipeMergedExportedDataTable implements TableModel {
      * @param table    The table
      */
     public void add(JIPipeProject project, JIPipeDataSlot dataSlot, JIPipeExportedDataTable table) {
-        for (String traitColumn : table.getTraitColumns()) {
-            if (!traitColumns.contains(traitColumn))
-                traitColumns.add(traitColumn);
+        for (String annotationColumn : table.getAnnotationColumns()) {
+            if (!annotationColumns.contains(annotationColumn))
+                annotationColumns.add(annotationColumn);
         }
         String compartmentName = dataSlot.getNode().getCompartment();
         JIPipeProjectCompartment compartment = project.getCompartments().get(compartmentName);
@@ -65,7 +65,7 @@ public class JIPipeMergedExportedDataTable implements TableModel {
 
     @Override
     public int getColumnCount() {
-        return traitColumns.size() + 5;
+        return annotationColumns.size() + 5;
     }
 
     @Override
@@ -81,7 +81,7 @@ public class JIPipeMergedExportedDataTable implements TableModel {
         else if (columnIndex == 4)
             return "Preview";
         else
-            return traitColumns.get(columnIndex - 5);
+            return annotationColumns.get(columnIndex - 5);
     }
 
     @Override
@@ -118,8 +118,8 @@ public class JIPipeMergedExportedDataTable implements TableModel {
         else if (columnIndex == 4)
             return rowList.get(rowIndex);
         else {
-            String traitColumn = traitColumns.get(columnIndex - 5);
-            return rowList.get(rowIndex).getAnnotations().stream().filter(t -> t.nameEquals(traitColumn)).findFirst().orElse(null);
+            String annotationColumn = annotationColumns.get(columnIndex - 5);
+            return rowList.get(rowIndex).getAnnotations().stream().filter(t -> t.nameEquals(annotationColumn)).findFirst().orElse(null);
         }
     }
 
@@ -141,8 +141,8 @@ public class JIPipeMergedExportedDataTable implements TableModel {
     /**
      * @return Additional columns
      */
-    public List<String> getTraitColumns() {
-        return traitColumns;
+    public List<String> getAnnotationColumns() {
+        return annotationColumns;
     }
 
     /**

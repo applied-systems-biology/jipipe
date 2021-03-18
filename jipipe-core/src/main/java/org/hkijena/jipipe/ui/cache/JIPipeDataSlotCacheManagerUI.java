@@ -163,13 +163,13 @@ public class JIPipeDataSlotCacheManagerUI extends JIPipeProjectWorkbenchPanel {
         JIPipeProjectCache cache = getProject().getCache();
         Map<JIPipeProjectCacheState, Map<String, JIPipeDataSlot>> stateMap = cache.extract(getDataSlot().getNode());
         int dataRows = 0;
-        Set<String> traitTypes = new HashSet<>();
+        Set<String> annotationTypes = new HashSet<>();
         if (stateMap != null) {
             for (Map<String, JIPipeDataSlot> slotMap : stateMap.values()) {
                 JIPipeDataSlot equivalentSlot = slotMap.getOrDefault(getDataSlot().getName(), null);
                 if (equivalentSlot != null) {
                     dataRows += equivalentSlot.getRowCount();
-                    traitTypes.addAll(equivalentSlot.getAnnotationColumns());
+                    annotationTypes.addAll(equivalentSlot.getAnnotationColumns());
                 }
             }
         }
@@ -180,20 +180,20 @@ public class JIPipeDataSlotCacheManagerUI extends JIPipeProjectWorkbenchPanel {
         } else {
             cacheButton.setVisible(false);
         }
-        if (dataRows > 0 && !traitTypes.isEmpty()) {
+        if (dataRows > 0 && !annotationTypes.isEmpty()) {
             annotationButton.setVisible(true);
-            generateAnnotationButtonTooltip(traitTypes);
+            generateAnnotationButtonTooltip(annotationTypes);
         } else {
             annotationButton.setVisible(false);
         }
     }
 
-    private void generateAnnotationButtonTooltip(Set<String> traitTypes) {
+    private void generateAnnotationButtonTooltip(Set<String> annotationTypes) {
         StringBuilder builder = new StringBuilder();
         builder.append("<html>");
         builder.append("This output data is annotated in at least one snapshot.<br/><br/>");
         builder.append("<table>");
-        for (String info : traitTypes.stream().sorted().collect(Collectors.toList())) {
+        for (String info : annotationTypes.stream().sorted().collect(Collectors.toList())) {
             builder.append("<tr><td><img src=\"").append(UIUtils.getIconFromResources("data-types/annotation.png")).append("\"/><td><strong>");
             builder.append(HtmlEscapers.htmlEscaper().escape(info)).append("</strong></td></tr>");
         }

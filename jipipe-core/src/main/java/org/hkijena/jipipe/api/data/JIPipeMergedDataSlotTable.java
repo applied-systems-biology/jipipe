@@ -38,7 +38,7 @@ public class JIPipeMergedDataSlotTable implements TableModel {
     private final GeneralDataSettings dataSettings = GeneralDataSettings.getInstance();
     private ArrayList<JIPipeProjectCompartment> compartmentList = new ArrayList<>();
     private ArrayList<JIPipeGraphNode> algorithmList = new ArrayList<>();
-    private List<String> traitColumns = new ArrayList<>();
+    private List<String> annotationColumns = new ArrayList<>();
     private ArrayList<JIPipeDataSlot> slotList = new ArrayList<>();
     private ArrayList<Integer> rowList = new ArrayList<>();
     private List<Component> previewCache = new ArrayList<>();
@@ -58,9 +58,9 @@ public class JIPipeMergedDataSlotTable implements TableModel {
      * @param dataSlot The data slot
      */
     public void add(JIPipeProject project, JIPipeDataSlot dataSlot) {
-        for (String traitColumn : dataSlot.getAnnotationColumns()) {
-            if (!traitColumns.contains(traitColumn))
-                traitColumns.add(traitColumn);
+        for (String annotationColumn : dataSlot.getAnnotationColumns()) {
+            if (!annotationColumns.contains(annotationColumn))
+                annotationColumns.add(annotationColumn);
         }
         JIPipeProjectCompartment compartment = null;
         if (project != null) {
@@ -98,9 +98,9 @@ public class JIPipeMergedDataSlotTable implements TableModel {
     @Override
     public int getColumnCount() {
         if (withCompartmentAndAlgorithm)
-            return traitColumns.size() + 6;
+            return annotationColumns.size() + 6;
         else
-            return traitColumns.size() + 4;
+            return annotationColumns.size() + 4;
     }
 
     @Override
@@ -119,7 +119,7 @@ public class JIPipeMergedDataSlotTable implements TableModel {
             else if (columnIndex == 5)
                 return "String representation";
             else
-                return traitColumns.get(columnIndex - 6);
+                return annotationColumns.get(columnIndex - 6);
         } else {
             if (columnIndex == 0)
                 return "Index";
@@ -130,7 +130,7 @@ public class JIPipeMergedDataSlotTable implements TableModel {
             else if (columnIndex == 3)
                 return "String representation";
             else
-                return traitColumns.get(columnIndex - 4);
+                return annotationColumns.get(columnIndex - 4);
         }
     }
 
@@ -201,9 +201,9 @@ public class JIPipeMergedDataSlotTable implements TableModel {
             } else if (columnIndex == 5)
                 return "" + slotList.get(rowIndex).getVirtualData(rowList.get(rowIndex)).getStringRepresentation();
             else {
-                String traitColumn = traitColumns.get(columnIndex - 6);
+                String annotationColumn = annotationColumns.get(columnIndex - 6);
                 JIPipeDataSlot slot = slotList.get(rowIndex);
-                return slot.getAnnotationOr(rowList.get(rowIndex), traitColumn, null);
+                return slot.getAnnotationOr(rowList.get(rowIndex), annotationColumn, null);
             }
         } else {
             if (columnIndex == 0)
@@ -226,9 +226,9 @@ public class JIPipeMergedDataSlotTable implements TableModel {
             } else if (columnIndex == 3)
                 return "" + slotList.get(rowIndex).getVirtualData(rowList.get(rowIndex)).getStringRepresentation();
             else {
-                String traitColumn = traitColumns.get(columnIndex - 4);
+                String annotationColumn = annotationColumns.get(columnIndex - 4);
                 JIPipeDataSlot slot = slotList.get(rowIndex);
-                return slot.getAnnotationOr(rowList.get(rowIndex), traitColumn, null);
+                return slot.getAnnotationOr(rowList.get(rowIndex), annotationColumn, null);
             }
         }
     }
@@ -251,8 +251,8 @@ public class JIPipeMergedDataSlotTable implements TableModel {
     /**
      * @return Additional columns
      */
-    public List<String> getTraitColumns() {
-        return traitColumns;
+    public List<String> getAnnotationColumns() {
+        return annotationColumns;
     }
 
     /**

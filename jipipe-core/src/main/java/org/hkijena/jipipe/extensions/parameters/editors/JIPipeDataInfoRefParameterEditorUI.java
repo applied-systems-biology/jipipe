@@ -54,14 +54,14 @@ public class JIPipeDataInfoRefParameterEditorUI extends JIPipeParameterEditorUI 
         setLayout(new BorderLayout());
 
         currentlyDisplayed = new JButton();
-        currentlyDisplayed.addActionListener(e -> pickTrait());
+        currentlyDisplayed.addActionListener(e -> pickDataInfo());
         UIUtils.makeFlat(currentlyDisplayed);
         add(currentlyDisplayed, BorderLayout.CENTER);
 
         JButton selectButton = new JButton(UIUtils.getIconFromResources("actions/edit.png"));
         UIUtils.makeFlat(selectButton);
         selectButton.setToolTipText("Select data type");
-        selectButton.addActionListener(e -> pickTrait());
+        selectButton.addActionListener(e -> pickDataInfo());
         add(selectButton, BorderLayout.EAST);
 
         initializePicker();
@@ -108,21 +108,21 @@ public class JIPipeDataInfoRefParameterEditorUI extends JIPipeParameterEditorUI 
             classFilter = (ClassFilter) ReflectionUtils.newInstance(settings.dataClassFilter());
         }
 
-        Set<JIPipeDataInfo> availableTraits = new HashSet<>();
+        Set<JIPipeDataInfo> availableInfos = new HashSet<>();
         for (Class<? extends JIPipeData> klass : JIPipe.getDataTypes().getRegisteredDataTypes().values()) {
             JIPipeDataInfo info = JIPipeDataInfo.getInstance(klass);
             if (info.isHidden() && !showHidden)
                 continue;
             if (baseClass.isAssignableFrom(info.getDataClass()) && classFilter.test(info.getDataClass())) {
-                availableTraits.add(info);
+                availableInfos.add(info);
             }
         }
 
-        picker = new JIPipeDataTypePicker(JIPipeDataTypePicker.Mode.Single, availableTraits);
+        picker = new JIPipeDataTypePicker(JIPipeDataTypePicker.Mode.Single, availableInfos);
         picker.getEventBus().register(this);
     }
 
-    private void pickTrait() {
+    private void pickDataInfo() {
         pickerDialog.pack();
         pickerDialog.setSize(new Dimension(500, 400));
         pickerDialog.setLocationRelativeTo(this);
@@ -130,12 +130,12 @@ public class JIPipeDataInfoRefParameterEditorUI extends JIPipeParameterEditorUI 
     }
 
     /**
-     * Triggered when a trait is selected
+     * Triggered when a node is selected
      *
      * @param event Generated event
      */
     @Subscribe
-    public void onTraitSelected(JIPipeDataTypePicker.SelectedDataTypesChangedEvent event) {
+    public void onDataInfoSelected(JIPipeDataTypePicker.SelectedDataTypesChangedEvent event) {
         if (pickerDialog.isVisible()) {
             pickerDialog.setVisible(false);
             JIPipeDataInfoRef infoRef = getParameter(JIPipeDataInfoRef.class);

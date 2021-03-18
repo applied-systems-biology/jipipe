@@ -179,7 +179,7 @@ public class DownloadOMEROImageAlgorithm extends JIPipeSimpleIteratingAlgorithm 
             }
 
             for (ImagePlus image : images) {
-                List<JIPipeAnnotation> traits = new ArrayList<>();
+                List<JIPipeAnnotation> annotations = new ArrayList<>();
 
                 if (addKeyValuePairsAsAnnotations || tagAnnotation.isEnabled()) {
                     try (Gateway gateway = new Gateway(new OMEROToJIPipeLogger(progressInfo))) {
@@ -191,12 +191,12 @@ public class DownloadOMEROImageAlgorithm extends JIPipeSimpleIteratingAlgorithm 
                         ImageData imageData = browseFacility.getImage(context, imageReferenceData.getImageId());
                         if (addKeyValuePairsAsAnnotations) {
                             for (Map.Entry<String, String> entry : OMEROUtils.getKeyValuePairAnnotations(metadata, context, imageData).entrySet()) {
-                                traits.add(new JIPipeAnnotation(entry.getKey(), entry.getValue()));
+                                annotations.add(new JIPipeAnnotation(entry.getKey(), entry.getValue()));
                             }
                         }
                         if (tagAnnotation.isEnabled()) {
                             List<String> sortedTags = OMEROUtils.getTagAnnotations(metadata, context, imageData).stream().sorted().collect(Collectors.toList());
-                            traits.add(new JIPipeAnnotation(tagAnnotation.getContent(), JsonUtils.toJsonString(sortedTags)));
+                            annotations.add(new JIPipeAnnotation(tagAnnotation.getContent(), JsonUtils.toJsonString(sortedTags)));
                         }
 
                     } catch (Exception e) {
@@ -205,7 +205,7 @@ public class DownloadOMEROImageAlgorithm extends JIPipeSimpleIteratingAlgorithm 
                 }
 
                 if (titleAnnotation.isEnabled()) {
-                    traits.add(new JIPipeAnnotation(titleAnnotation.getContent(), image.getTitle()));
+                    annotations.add(new JIPipeAnnotation(titleAnnotation.getContent(), image.getTitle()));
                 }
 
                 ROIListData rois = new ROIListData();
@@ -213,7 +213,7 @@ public class DownloadOMEROImageAlgorithm extends JIPipeSimpleIteratingAlgorithm 
                     rois = ROIHandler.openROIs(process.getOMEMetadata(), new ImagePlus[]{image});
                 }
 
-                dataBatch.addOutputData(getFirstOutputSlot(), new OMEImageData(image, rois, omexmlMetadata), traits, JIPipeAnnotationMergeStrategy.Merge, progressInfo);
+                dataBatch.addOutputData(getFirstOutputSlot(), new OMEImageData(image, rois, omexmlMetadata), annotations, JIPipeAnnotationMergeStrategy.Merge, progressInfo);
             }
         } catch (FormatException | IOException e) {
             throw new RuntimeException(e);

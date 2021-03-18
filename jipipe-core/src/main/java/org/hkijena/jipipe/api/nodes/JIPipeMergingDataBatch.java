@@ -310,7 +310,7 @@ public class JIPipeMergingDataBatch implements Comparable<JIPipeMergingDataBatch
 
     /**
      * Writes output data into the provided slot
-     * Please note that annotations that are added to all traits should be set up till this point
+     * Please note that annotations that are added to all annotations should be set up till this point
      *
      * @param slot         Slot instance
      * @param data         Added data
@@ -326,7 +326,7 @@ public class JIPipeMergingDataBatch implements Comparable<JIPipeMergingDataBatch
 
     /**
      * Writes output data into the provided slot
-     * Please note that annotations that are added to all traits should be set up till this point
+     * Please note that annotations that are added to all annotations should be set up till this point
      *
      * @param slot                  Slot instance
      * @param data                  Added data

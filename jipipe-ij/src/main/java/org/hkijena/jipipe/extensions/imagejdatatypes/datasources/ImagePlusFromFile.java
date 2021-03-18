@@ -136,9 +136,9 @@ public class ImagePlusFromFile extends JIPipeSimpleIteratingAlgorithm {
         if (enableVirtual && !removeLut && fileData.getPath().toString().endsWith(".tif") && getFirstOutputSlot().isVirtual()) {
             // Alternative path for virtual data to get rid of load-saving-load
             // Only works for something that is directly compatible to the row storage format (TIFF)
-            List<JIPipeAnnotation> traits = new ArrayList<>(dataBatch.getAnnotations().values());
+            List<JIPipeAnnotation> annotations = new ArrayList<>(dataBatch.getAnnotations().values());
             if (titleAnnotation.isEnabled()) {
-                traits.add(new JIPipeAnnotation(titleAnnotation.getContent(), fileData.toPath().getFileName().toString()));
+                annotations.add(new JIPipeAnnotation(titleAnnotation.getContent(), fileData.toPath().getFileName().toString()));
             }
             Path targetPath = VirtualDataSettings.generateTempDirectory("virtual");
             if (!SystemUtils.IS_OS_WINDOWS) {
@@ -157,7 +157,7 @@ public class ImagePlusFromFile extends JIPipeSimpleIteratingAlgorithm {
                 }
             }
             JIPipeVirtualData virtualData = new JIPipeVirtualData(generatedImageType.getInfo().getDataClass(), targetPath, "VIRTUAL: " + fileData.toPath().getFileName());
-            getFirstOutputSlot().addData(virtualData, traits, JIPipeAnnotationMergeStrategy.Merge);
+            getFirstOutputSlot().addData(virtualData, annotations, JIPipeAnnotationMergeStrategy.Merge);
         } else {
             ImagePlusData outputData;
             ImagePlus image = readImageFrom(fileData.toPath(), progressInfo);
@@ -165,11 +165,11 @@ public class ImagePlusFromFile extends JIPipeSimpleIteratingAlgorithm {
                 image.getProcessor().setLut(null);
             }
             outputData = (ImagePlusData) JIPipe.createData(generatedImageType.getInfo().getDataClass(), image);
-            List<JIPipeAnnotation> traits = new ArrayList<>();
+            List<JIPipeAnnotation> annotations = new ArrayList<>();
             if (titleAnnotation.isEnabled()) {
-                traits.add(new JIPipeAnnotation(titleAnnotation.getContent(), outputData.getImage().getTitle()));
+                annotations.add(new JIPipeAnnotation(titleAnnotation.getContent(), outputData.getImage().getTitle()));
             }
-            dataBatch.addOutputData(getFirstOutputSlot(), outputData, traits, JIPipeAnnotationMergeStrategy.Merge, progressInfo);
+            dataBatch.addOutputData(getFirstOutputSlot(), outputData, annotations, JIPipeAnnotationMergeStrategy.Merge, progressInfo);
         }
     }
 

@@ -35,7 +35,7 @@ import org.hkijena.jipipe.utils.StringUtils;
 @JIPipeInputSlot(value = PathData.class, slotName = "Input", autoCreate = true)
 @JIPipeOutputSlot(value = PathData.class, slotName = "Output", autoCreate = true)
 
-// Traits
+
 public class RenameByString extends JIPipeSimpleIteratingAlgorithm {
 
     private String pathName = "";

@@ -53,12 +53,10 @@ import java.util.List;
         "If higher-dimensional data is provided, the results are generated for each 2D slice.")
 @JIPipeOrganization(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Analyze")
 
-// Algorithm data flow
 @JIPipeInputSlot(value = ImagePlusGreyscaleMaskData.class, slotName = "Mask")
 @JIPipeOutputSlot(value = ROIListData.class, slotName = "ROI")
 @JIPipeOutputSlot(value = ResultsTableData.class, slotName = "Measurements")
 
-// Algorithm traits
 public class FindParticles2D extends JIPipeSimpleIteratingAlgorithm {
     private double minParticleSize = 0;
     private double maxParticleSize = Double.POSITIVE_INFINITY;
@@ -165,9 +163,9 @@ public class FindParticles2D extends JIPipeSimpleIteratingAlgorithm {
                     }
                 }
 
-                List<JIPipeAnnotation> traits = new ArrayList<>();
+                List<JIPipeAnnotation> annotations = new ArrayList<>();
                 if (annotationType.isEnabled() && !StringUtils.isNullOrEmpty(annotationType.getContent())) {
-                    traits.add(new JIPipeAnnotation(annotationType.getContent(), "" + index));
+                    annotations.add(new JIPipeAnnotation(annotationType.getContent(), "" + index));
                 }
                 ROIListData rois = new ROIListData(Arrays.asList(manager.getRoisAsArray()));
                 ImagePlus roiReferenceImage = new ImagePlus(inputData.getImage().getTitle(), ip.duplicate());
@@ -176,8 +174,8 @@ public class FindParticles2D extends JIPipeSimpleIteratingAlgorithm {
                     roi.setImage(roiReferenceImage);
                 }
 
-                dataBatch.addOutputData("ROI", rois, traits, JIPipeAnnotationMergeStrategy.Merge, progressInfo);
-                dataBatch.addOutputData("Measurements", new ResultsTableData(table), traits, JIPipeAnnotationMergeStrategy.Merge, progressInfo);
+                dataBatch.addOutputData("ROI", rois, annotations, JIPipeAnnotationMergeStrategy.Merge, progressInfo);
+                dataBatch.addOutputData("Measurements", new ResultsTableData(table), annotations, JIPipeAnnotationMergeStrategy.Merge, progressInfo);
             }, progressInfo);
         } else {
             ResultsTableData mergedResultsTable = new ResultsTableData(new ResultsTable());

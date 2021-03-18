@@ -68,11 +68,11 @@ public class AnnotationTableData extends ResultsTableData {
      * Adds a new column that contains annotation data and returns its index-
      * If the column already exists, its index is returned.
      *
-     * @param traitInfo the annotation type
+     * @param name the annotation type
      * @return index
      */
-    public int addAnnotationColumn(String traitInfo) {
-        return addColumn(traitInfo, true);
+    public int addAnnotationColumn(String name) {
+        return addColumn(name, true);
     }
 
     /**

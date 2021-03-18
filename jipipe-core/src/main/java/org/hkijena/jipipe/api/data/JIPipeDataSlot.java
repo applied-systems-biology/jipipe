@@ -139,9 +139,9 @@ public class JIPipeDataSlot {
     public synchronized List<JIPipeAnnotation> getAnnotations(int row) {
         List<JIPipeAnnotation> result = new ArrayList<>();
         for (String info : annotationColumns) {
-            JIPipeAnnotation trait = getOrCreateAnnotationColumnData(info).get(row);
-            if (trait != null)
-                result.add(trait);
+            JIPipeAnnotation annotation = getOrCreateAnnotationColumnData(info).get(row);
+            if (annotation != null)
+                result.add(annotation);
         }
         return result;
     }
@@ -156,9 +156,9 @@ public class JIPipeDataSlot {
         List<JIPipeAnnotation> result = new ArrayList<>();
         for (String info : annotationColumns) {
             for (int row : rows) {
-                JIPipeAnnotation trait = getOrCreateAnnotationColumnData(info).get(row);
-                if (trait != null)
-                    result.add(trait);
+                JIPipeAnnotation annotation = getOrCreateAnnotationColumnData(info).get(row);
+                if (annotation != null)
+                    result.add(annotation);
             }
         }
         return result;
@@ -177,11 +177,11 @@ public class JIPipeDataSlot {
     }
 
     /**
-     * Gets the annotation column for the trait info or creates it
+     * Gets the annotation column or creates it
      * Ensures that the output size is equal to getRowCount()
      *
      * @param info Annotation type
-     * @return All trait instances of the provided type. Size is getRowCount()
+     * @return All annotation instances of the provided type. Size is getRowCount()
      */
     private synchronized List<JIPipeAnnotation> getOrCreateAnnotationColumnData(String info) {
         ArrayList<JIPipeAnnotation> arrayList = annotations.getOrDefault(info, null);
@@ -200,7 +200,7 @@ public class JIPipeDataSlot {
      * Adds a data row
      *
      * @param value        The data
-     * @param annotations  Optional traits
+     * @param annotations  Optional annotations
      * @param progressInfo progress for data storage
      */
     public synchronized void addData(JIPipeData value, List<JIPipeAnnotation> annotations, JIPipeAnnotationMergeStrategy mergeStrategy, JIPipeProgressInfo progressInfo) {
@@ -216,9 +216,9 @@ public class JIPipeDataSlot {
         }
         JIPipeVirtualData virtualData = new JIPipeVirtualData(JIPipe.getDataTypes().convert(value, getAcceptedDataType()));
         data.add(virtualData);
-        for (JIPipeAnnotation trait : annotations) {
-            List<JIPipeAnnotation> traitArray = getOrCreateAnnotationColumnData(trait.getName());
-            traitArray.set(getRowCount() - 1, trait);
+        for (JIPipeAnnotation annotation : annotations) {
+            List<JIPipeAnnotation> annotationArray = getOrCreateAnnotationColumnData(annotation.getName());
+            annotationArray.set(getRowCount() - 1, annotation);
         }
         if (info.isVirtual())
             virtualData.makeVirtual(progressInfo, false);
@@ -231,11 +231,11 @@ public class JIPipeDataSlot {
      * @param overwrite  If false, existing annotations of the same type are not overwritten
      */
     public synchronized void addAnnotationToAllData(JIPipeAnnotation annotation, boolean overwrite) {
-        List<JIPipeAnnotation> traitArray = getOrCreateAnnotationColumnData(annotation.getName());
+        List<JIPipeAnnotation> annotationArray = getOrCreateAnnotationColumnData(annotation.getName());
         for (int i = 0; i < getRowCount(); ++i) {
-            if (!overwrite && traitArray.get(i) != null)
+            if (!overwrite && annotationArray.get(i) != null)
                 continue;
-            traitArray.set(i, annotation);
+            annotationArray.set(i, annotation);
         }
     }
 
@@ -263,25 +263,25 @@ public class JIPipeDataSlot {
     }
 
     /**
-     * Finds the row that matches the given traits
+     * Finds the row that matches the given annotations
      *
-     * @param traits A valid annotation list with size equals to getRowCount()
+     * @param annotations A valid annotation list with size equals to getRowCount()
      * @return row index greater or equal to 0 if found, otherwise -1
      */
-    public int findRowWithAnnotations(List<JIPipeAnnotation> traits) {
-        String[] infoMap = new String[traits.size()];
-        for (int i = 0; i < traits.size(); ++i) {
-            int infoIndex = annotationColumns.indexOf(traits.get(i).getName());
+    public int findRowWithAnnotations(List<JIPipeAnnotation> annotations) {
+        String[] infoMap = new String[annotations.size()];
+        for (int i = 0; i < annotations.size(); ++i) {
+            int infoIndex = annotationColumns.indexOf(annotations.get(i).getName());
             if (infoIndex == -1)
                 return -1;
             infoMap[i] = annotationColumns.get(infoIndex);
         }
         for (int row = 0; row < data.size(); ++row) {
             boolean equal = true;
-            for (int i = 0; i < traits.size(); ++i) {
+            for (int i = 0; i < annotations.size(); ++i) {
                 String info = infoMap[i];
-                JIPipeAnnotation rowTrait = annotations.get(info).get(row);
-                if (!JIPipeAnnotation.nameEquals(traits.get(i), rowTrait)) {
+                JIPipeAnnotation rowAnnotation = this.annotations.get(info).get(row);
+                if (!JIPipeAnnotation.nameEquals(annotations.get(i), rowAnnotation)) {
                     equal = false;
                 }
             }
@@ -292,9 +292,9 @@ public class JIPipeDataSlot {
     }
 
     /**
-     * Returns true if all rows are unique according to their traits
+     * Returns true if all rows are unique according to their annotations
      *
-     * @return if all rows are unique according to their traits
+     * @return if all rows are unique according to their annotations
      */
     public boolean isDataUnique() {
         return uniqueData;
@@ -494,9 +494,9 @@ public class JIPipeDataSlot {
             annotations = mergeStrategy.merge(annotations);
         }
         data.add(virtualData);
-        for (JIPipeAnnotation trait : annotations) {
-            List<JIPipeAnnotation> traitArray = getOrCreateAnnotationColumnData(trait.getName());
-            traitArray.set(getRowCount() - 1, trait);
+        for (JIPipeAnnotation annotation : annotations) {
+            List<JIPipeAnnotation> annotationArray = getOrCreateAnnotationColumnData(annotation.getName());
+            annotationArray.set(getRowCount() - 1, annotation);
         }
     }
 

@@ -30,12 +30,8 @@ import java.nio.file.Paths;
  */
 @JIPipeDocumentation(name = "Concatenate paths by parameter", description = "Concatenates the input paths by a string.")
 @JIPipeOrganization(menuPath = "Modify", nodeTypeCategory = FileSystemNodeTypeCategory.class)
-
-
 @JIPipeInputSlot(value = PathData.class, slotName = "Input", autoCreate = true)
 @JIPipeOutputSlot(value = PathData.class, slotName = "Output", autoCreate = true)
-
-// Traits
 public class ConcatenateByParameter extends JIPipeSimpleIteratingAlgorithm {
 
     private Path subPath = Paths.get("");

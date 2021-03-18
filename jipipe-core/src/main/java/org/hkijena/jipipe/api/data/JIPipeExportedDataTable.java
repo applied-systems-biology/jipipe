@@ -40,7 +40,7 @@ public class JIPipeExportedDataTable implements TableModel {
     private String internalPath;
     private Class<? extends JIPipeData> acceptedDataType;
     private List<Row> rowList;
-    private List<String> traitColumns;
+    private List<String> annotationColumns;
 
     /**
      * Initializes a new table from a slot
@@ -215,12 +215,12 @@ public class JIPipeExportedDataTable implements TableModel {
             table.addValue("jipipe:true-data-type", row.trueDataType);
             table.addValue("jipipe:internal-path", internalPath);
             table.addValue("jipipe:index", row.index);
-            for (String traitColumn : getTraitColumns()) {
-                JIPipeAnnotation existing = row.annotations.stream().filter(t -> t.nameEquals(traitColumn)).findFirst().orElse(null);
+            for (String annotationColumn : getAnnotationColumns()) {
+                JIPipeAnnotation existing = row.annotations.stream().filter(t -> t.nameEquals(annotationColumn)).findFirst().orElse(null);
                 if (existing != null)
-                    table.addValue(traitColumn, existing.getValue());
+                    table.addValue(annotationColumn, existing.getValue());
                 else
-                    table.addValue(traitColumn, "");
+                    table.addValue(annotationColumn, "");
             }
         }
         table.saveAs(fileName.toString());
@@ -229,15 +229,15 @@ public class JIPipeExportedDataTable implements TableModel {
     /**
      * @return Additional columns
      */
-    public List<String> getTraitColumns() {
-        if (traitColumns == null) {
-            Set<String> registeredTraits = new HashSet<>();
+    public List<String> getAnnotationColumns() {
+        if (annotationColumns == null) {
+            Set<String> registeredAnnotations = new HashSet<>();
             for (Row row : rowList) {
-                registeredTraits.addAll(row.annotations.stream().map(JIPipeAnnotation::getName).collect(Collectors.toSet()));
+                registeredAnnotations.addAll(row.annotations.stream().map(JIPipeAnnotation::getName).collect(Collectors.toSet()));
             }
-            traitColumns = new ArrayList<>(registeredTraits);
+            annotationColumns = new ArrayList<>(registeredAnnotations);
         }
-        return traitColumns;
+        return annotationColumns;
     }
 
     @Override
@@ -247,7 +247,7 @@ public class JIPipeExportedDataTable implements TableModel {
 
     @Override
     public int getColumnCount() {
-        return getTraitColumns().size() + 3;
+        return getAnnotationColumns().size() + 3;
     }
 
     @Override
@@ -259,7 +259,7 @@ public class JIPipeExportedDataTable implements TableModel {
         else if (columnIndex == 2) {
             return "Preview";
         } else
-            return traitColumns.get(columnIndex - 3);
+            return annotationColumns.get(columnIndex - 3);
     }
 
     @Override
@@ -288,8 +288,8 @@ public class JIPipeExportedDataTable implements TableModel {
         } else if (columnIndex == 2)
             return rowList.get(rowIndex);
         else {
-            String traitColumn = traitColumns.get(columnIndex - 3);
-            return rowList.get(rowIndex).annotations.stream().filter(t -> t.nameEquals(traitColumn)).findFirst().orElse(null);
+            String annotationColumn = annotationColumns.get(columnIndex - 3);
+            return rowList.get(rowIndex).annotations.stream().filter(t -> t.nameEquals(annotationColumn)).findFirst().orElse(null);
         }
     }
 
@@ -357,7 +357,7 @@ public class JIPipeExportedDataTable implements TableModel {
         /**
          * @return Annotations
          */
-        @JsonGetter("traits")
+        @JsonGetter("annotations")
         public List<JIPipeAnnotation> getAnnotations() {
             return annotations;
         }
@@ -367,8 +367,17 @@ public class JIPipeExportedDataTable implements TableModel {
          *
          * @param annotations List of annotations
          */
-        @JsonSetter("traits")
+        @JsonSetter("annotations")
         public void setAnnotations(List<JIPipeAnnotation> annotations) {
+            this.annotations = annotations;
+        }
+
+        /**
+         * Compatibility function to allow reading tables in an older format
+         * @param annotations List of annotations
+         */
+        @JsonSetter("traits")
+        public void setTraits(List<JIPipeAnnotation> annotations) {
             this.annotations = annotations;
         }
 

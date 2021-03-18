@@ -40,7 +40,7 @@ import java.nio.file.Path;
 @JIPipeInputSlot(value = PathData.class, slotName = "Input", autoCreate = true)
 @JIPipeOutputSlot(value = PathData.class, slotName = "Output", autoCreate = true, inheritedSlot = "Input")
 
-// Traits
+
 public class FilterPaths extends JIPipeSimpleIteratingAlgorithm {
 
     //    private PathFilter filter = new PathFilter();

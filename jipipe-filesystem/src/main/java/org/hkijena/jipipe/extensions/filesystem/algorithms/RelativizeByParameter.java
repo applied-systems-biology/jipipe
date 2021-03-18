@@ -36,7 +36,7 @@ import java.nio.file.Paths;
 @JIPipeInputSlot(value = PathData.class, slotName = "Child", autoCreate = true)
 @JIPipeOutputSlot(value = PathData.class, slotName = "Output", autoCreate = true)
 
-// Traits
+
 public class RelativizeByParameter extends JIPipeSimpleIteratingAlgorithm {
 
     private Path parentPath = Paths.get("");

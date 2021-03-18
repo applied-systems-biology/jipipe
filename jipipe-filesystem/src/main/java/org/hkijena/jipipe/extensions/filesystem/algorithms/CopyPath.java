@@ -47,7 +47,7 @@ import java.util.stream.Collectors;
 @JIPipeInputSlot(value = PathData.class, slotName = "Destination", autoCreate = true)
 @JIPipeOutputSlot(value = PathData.class, slotName = "Copied path", autoCreate = true)
 
-// Traits
+
 public class CopyPath extends JIPipeIteratingAlgorithm {
 
     private boolean skipInvalid = false;

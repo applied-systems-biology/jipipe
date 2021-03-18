@@ -44,23 +44,23 @@ public class JIPipeNodeInfoPicker extends JPanel {
 
     /**
      * @param mode           the mode
-     * @param availableInfos list of available trait types
+     * @param availableInfos list of available node types
      */
     public JIPipeNodeInfoPicker(Mode mode, Set<JIPipeNodeInfo> availableInfos) {
         this.mode = mode;
         this.availableInfos = new ArrayList<>();
         this.availableInfos.addAll(availableInfos.stream().sorted(Comparator.comparing(JIPipeNodeInfo::getName)).collect(Collectors.toList()));
         initialize();
-        refreshTraitList();
+        refreshNodeInfoList();
     }
 
     /**
-     * Shows a dialog to pick traits
+     * Shows a dialog to pick nodes
      *
      * @param parent              parent component
      * @param mode                mode
-     * @param availableAlgorithms list of available traits
-     * @return picked traits
+     * @param availableAlgorithms list of available nodes
+     * @return picked nodes
      */
     public static Set<JIPipeNodeInfo> showDialog(Component parent, Mode mode, Set<JIPipeNodeInfo> availableAlgorithms) {
         JDialog dialog = new JDialog(SwingUtilities.getWindowAncestor(parent));
@@ -115,7 +115,7 @@ public class JIPipeNodeInfoPicker extends JPanel {
         toolBar.setFloatable(false);
 
         searchField = new SearchTextField();
-        searchField.addActionListener(e -> refreshTraitList());
+        searchField.addActionListener(e -> refreshNodeInfoList());
         toolBar.add(searchField);
 
         add(toolBar, BorderLayout.NORTH);
@@ -140,34 +140,34 @@ public class JIPipeNodeInfoPicker extends JPanel {
         if (reloading)
             return;
         boolean changed = false;
-        for (JIPipeNodeInfo trait : availableInfos) {
-            if (hiddenItems.contains(trait))
+        for (JIPipeNodeInfo nodeInfo : availableInfos) {
+            if (hiddenItems.contains(nodeInfo))
                 continue;
-            boolean uiSelected = nodeInfoJList.getSelectedValuesList().contains(trait);
-            boolean modelSelected = selectedInfos.contains(trait);
+            boolean uiSelected = nodeInfoJList.getSelectedValuesList().contains(nodeInfo);
+            boolean modelSelected = selectedInfos.contains(nodeInfo);
             if (uiSelected != modelSelected) {
                 if (modelSelected) {
-                    selectedInfos.remove(trait);
-                    eventBus.post(new AlgorithmDeselectedEvent(this, trait));
+                    selectedInfos.remove(nodeInfo);
+                    eventBus.post(new AlgorithmDeselectedEvent(this, nodeInfo));
                     changed = true;
                 }
                 if (uiSelected) {
-                    selectedInfos.add(trait);
-                    eventBus.post(new NodeSelectedEvent(this, trait));
+                    selectedInfos.add(nodeInfo);
+                    eventBus.post(new NodeSelectedEvent(this, nodeInfo));
                     changed = true;
                 }
             }
         }
 
         if (changed) {
-            eventBus.post(new SelectedTraitsChangedEvent(this));
+            eventBus.post(new SelectedInfosChangedEvent(this));
         }
     }
 
     /**
      * Refreshes the list
      */
-    public void refreshTraitList() {
+    public void refreshNodeInfoList() {
         reloading = true;
         DefaultListModel<JIPipeNodeInfo> model = (DefaultListModel<JIPipeNodeInfo>) nodeInfoJList.getModel();
         hiddenItems.clear();
@@ -175,14 +175,14 @@ public class JIPipeNodeInfoPicker extends JPanel {
         String[] searchStrings = getSearchStrings();
         List<Integer> selectedIndices = new ArrayList<>();
 
-        for (JIPipeNodeInfo trait : availableInfos) {
-            if (!searchStringsMatches(trait, searchStrings)) {
-                hiddenItems.add(trait);
+        for (JIPipeNodeInfo nodeInfo : availableInfos) {
+            if (!searchStringsMatches(nodeInfo, searchStrings)) {
+                hiddenItems.add(nodeInfo);
                 continue;
             }
 
-            model.addElement(trait);
-            if (selectedInfos.contains(trait)) {
+            model.addElement(nodeInfo);
+            if (selectedInfos.contains(nodeInfo)) {
                 selectedIndices.add(model.size() - 1);
             }
         }
@@ -190,14 +190,14 @@ public class JIPipeNodeInfoPicker extends JPanel {
         reloading = false;
     }
 
-    private boolean searchStringsMatches(JIPipeNodeInfo trait, String[] strings) {
-        if (trait == null)
+    private boolean searchStringsMatches(JIPipeNodeInfo nodeInfo, String[] strings) {
+        if (nodeInfo == null)
             return true;
         if (strings == null)
             return true;
-        String traitName = trait.getName() + " " + trait.getDescription();
+        String name = nodeInfo.getName() + " " + nodeInfo.getDescription();
         for (String str : strings) {
-            if (traitName.toLowerCase().contains(str.toLowerCase()))
+            if (name.toLowerCase().contains(str.toLowerCase()))
                 return true;
         }
         return false;
@@ -224,17 +224,17 @@ public class JIPipeNodeInfoPicker extends JPanel {
 
     public void setMode(Mode mode) {
         this.mode = mode;
-        refreshTraitList();
+        refreshNodeInfoList();
     }
 
     public Set<JIPipeNodeInfo> getSelectedInfos() {
         return Collections.unmodifiableSet(selectedInfos);
     }
 
-    public void setSelectedInfos(Set<JIPipeNodeInfo> traits) {
-        this.selectedInfos = new HashSet<>(traits);
-        eventBus.post(new SelectedTraitsChangedEvent(this));
-        refreshTraitList();
+    public void setSelectedInfos(Set<JIPipeNodeInfo> nodeInfos) {
+        this.selectedInfos = new HashSet<>(nodeInfos);
+        eventBus.post(new SelectedInfosChangedEvent(this));
+        refreshNodeInfoList();
     }
 
     /**
@@ -247,15 +247,15 @@ public class JIPipeNodeInfoPicker extends JPanel {
     }
 
     /**
-     * Generated when a trait is selected
+     * Generated when a node is selected
      */
-    public static class SelectedTraitsChangedEvent {
+    public static class SelectedInfosChangedEvent {
         private JIPipeNodeInfoPicker picker;
 
         /**
          * @param picker event source
          */
-        public SelectedTraitsChangedEvent(JIPipeNodeInfoPicker picker) {
+        public SelectedInfosChangedEvent(JIPipeNodeInfoPicker picker) {
             this.picker = picker;
         }
 
@@ -295,7 +295,7 @@ public class JIPipeNodeInfoPicker extends JPanel {
     }
 
     /**
-     * Generated when a trait is selected
+     * Generated when a node is selected
      */
     public static class NodeSelectedEvent {
         private JIPipeNodeInfoPicker picker;
@@ -303,7 +303,7 @@ public class JIPipeNodeInfoPicker extends JPanel {
 
         /**
          * @param picker event source
-         * @param info   picked trait
+         * @param info   picked node
          */
         public NodeSelectedEvent(JIPipeNodeInfoPicker picker, JIPipeNodeInfo info) {
             this.picker = picker;
@@ -320,7 +320,7 @@ public class JIPipeNodeInfoPicker extends JPanel {
     }
 
     /**
-     * Generated when a trait is deselected
+     * Generated when a node is deselected
      */
     public static class AlgorithmDeselectedEvent {
         private JIPipeNodeInfoPicker picker;
@@ -328,7 +328,7 @@ public class JIPipeNodeInfoPicker extends JPanel {
 
         /**
          * @param picker event source
-         * @param info   deselected trait
+         * @param info   deselected node
          */
         public AlgorithmDeselectedEvent(JIPipeNodeInfoPicker picker, JIPipeNodeInfo info) {
             this.picker = picker;

@@ -126,27 +126,6 @@ public class JIPipeDataBatch implements Comparable<JIPipeDataBatch> {
         return getInputData(node.getInputSlot(slotName), dataClass, progressInfo);
     }
 
-    //    private void initialize(List<JIPipeDataSlot> inputSlots, int referenceInputSlotRow) {
-//        JIPipeDataSlot referenceInputSlot = inputSlots.get(0);
-//        inputSlotRows.put(referenceInputSlot, referenceInputSlotRow);
-//        annotations = referenceInputSlot.getAnnotations(referenceInputSlotRow);
-//        for (JIPipeDataSlot inputSlot : inputSlots) {
-//            if (inputSlot != referenceInputSlot) {
-//                int row = inputSlot.findRowWithTraits(annotations);
-//                if (row == -1)
-//                    throw new UserFriendlyRuntimeException("Could not find matching input slot for provided annotations!",
-//                            "Unable to group input data!",
-//                            "Algorithm '" + algorithm.getName() + "'", "The algorithm '" + algorithm.getName() + "' has multiple input data slots. Tho process it, JIPipe must find input data " +
-//                            "that belongs to the same data set. It uses annotations for this purpose. If you have duplicate annotations, or missing columns, then " +
-//                            "JIPipe is not able to find matching data.",
-//                            "Run the quick run on each input data set and check that annotation columns with unique values are created. You can have " +
-//                                    "multiple columns - all of them will be taken into consideration. If you do not have annotations, use nodes in the 'Annotation' " +
-//                                    "category to add them early on during file processing.");
-//                inputSlotRows.put(inputSlot, row);
-//            }
-//        }
-//    }
-
     /**
      * Gets stored data from an input slot
      *
@@ -242,7 +221,7 @@ public class JIPipeDataBatch implements Comparable<JIPipeDataBatch> {
 
     /**
      * Writes output data into the provided slot
-     * Please note that annotations that are added to all traits should be set up till this point
+     * Please note that annotations that are added to all annotations should be set up till this point
      *
      * @param slot         Slot instance
      * @param data         Added data
@@ -258,7 +237,7 @@ public class JIPipeDataBatch implements Comparable<JIPipeDataBatch> {
 
     /**
      * Writes output data into the provided slot
-     * Please note that annotations that are added to all traits should be set up till this point
+     * Please note that annotations that are added to all annotations should be set up till this point
      *
      * @param slot                  Slot instance
      * @param data                  Added data

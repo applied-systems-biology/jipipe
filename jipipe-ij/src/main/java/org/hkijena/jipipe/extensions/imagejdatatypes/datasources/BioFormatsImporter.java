@@ -162,10 +162,10 @@ public class BioFormatsImporter extends JIPipeSimpleIteratingAlgorithm {
             }
 
             for (ImagePlus image : images) {
-                List<JIPipeAnnotation> traits = new ArrayList<>();
+                List<JIPipeAnnotation> annotations = new ArrayList<>();
                 String title = image.getTitle();
                 if (titleAnnotation.isEnabled()) {
-                    traits.add(new JIPipeAnnotation(titleAnnotation.getContent(), title));
+                    annotations.add(new JIPipeAnnotation(titleAnnotation.getContent(), title));
                 }
                 if (seriesAnnotation.isEnabled()) {
                     int idx = title.lastIndexOf('#');
@@ -173,12 +173,12 @@ public class BioFormatsImporter extends JIPipeSimpleIteratingAlgorithm {
                         String numericString = title.substring(idx + 1);
                         try {
                             int series = Integer.parseInt(numericString);
-                            seriesAnnotation.addAnnotationIfEnabled(traits, "" + series);
+                            seriesAnnotation.addAnnotationIfEnabled(annotations, "" + series);
                         } catch (NumberFormatException e) {
-                            seriesAnnotation.addAnnotationIfEnabled(traits, "1");
+                            seriesAnnotation.addAnnotationIfEnabled(annotations, "1");
                         }
                     } else {
-                        seriesAnnotation.addAnnotationIfEnabled(traits, "1");
+                        seriesAnnotation.addAnnotationIfEnabled(annotations, "1");
                     }
                 }
 
@@ -187,7 +187,7 @@ public class BioFormatsImporter extends JIPipeSimpleIteratingAlgorithm {
                     rois = ROIHandler.openROIs(process.getOMEMetadata(), new ImagePlus[]{image});
                 }
 
-                dataBatch.addOutputData(getFirstOutputSlot(), new OMEImageData(image, rois, omexmlMetadata), traits, JIPipeAnnotationMergeStrategy.Merge, progressInfo);
+                dataBatch.addOutputData(getFirstOutputSlot(), new OMEImageData(image, rois, omexmlMetadata), annotations, JIPipeAnnotationMergeStrategy.Merge, progressInfo);
             }
         } catch (FormatException | IOException e) {
             throw new RuntimeException(e);

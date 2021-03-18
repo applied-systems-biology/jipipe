@@ -30,7 +30,7 @@ import org.hkijena.jipipe.extensions.filesystem.dataypes.PathData;
 @JIPipeInputSlot(value = PathData.class, slotName = "Input", autoCreate = true)
 @JIPipeOutputSlot(value = PathData.class, slotName = "Output", autoCreate = true)
 
-// Traits
+
 public class ExtractFileName extends JIPipeSimpleIteratingAlgorithm {
 
 

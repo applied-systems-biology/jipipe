@@ -43,7 +43,7 @@ import java.util.stream.Stream;
 @JIPipeInputSlot(value = FolderData.class, slotName = "Folders", autoCreate = true)
 @JIPipeOutputSlot(value = FolderData.class, slotName = "Subfolders", autoCreate = true)
 
-// Traits
+
 public class ListSubfolders extends JIPipeSimpleIteratingAlgorithm {
 
     private PathQueryExpression filters = new PathQueryExpression("");
