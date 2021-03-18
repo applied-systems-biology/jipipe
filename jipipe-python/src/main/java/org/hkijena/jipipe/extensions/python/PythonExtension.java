@@ -41,11 +41,11 @@ public class PythonExtension extends JIPipePrepackagedDefaultJavaExtension {
 
     @Override
     public void register() {
-        registerNodeType("python-script", PythonScriptAlgorithm.class, UIUtils.getIconURLFromResources("apps/python.png"));
-        registerNodeType("python-script-multi-parameter", ParameterSlotPythonScriptAlgorithm.class, UIUtils.getIconURLFromResources("apps/python.png"));
-        registerNodeType("python-script-iterating-simple", SimpleIteratingPythonScriptAlgorithm.class, UIUtils.getIconURLFromResources("apps/python.png"));
-        registerNodeType("python-script-iterating", IteratingPythonScriptAlgorithm.class, UIUtils.getIconURLFromResources("apps/python.png"));
-        registerNodeType("python-script-merging", MergingPythonScriptAlgorithm.class, UIUtils.getIconURLFromResources("apps/python.png"));
+        registerNodeType("python-script", JythonScriptAlgorithm.class, UIUtils.getIconURLFromResources("apps/python.png"));
+        registerNodeType("python-script-multi-parameter", ParameterSlotJythonScriptAlgorithm.class, UIUtils.getIconURLFromResources("apps/python.png"));
+        registerNodeType("python-script-iterating-simple", SimpleIteratingJythonScriptAlgorithm.class, UIUtils.getIconURLFromResources("apps/python.png"));
+        registerNodeType("python-script-iterating", IteratingJythonScriptAlgorithm.class, UIUtils.getIconURLFromResources("apps/python.png"));
+        registerNodeType("python-script-merging", MergingJythonScriptAlgorithm.class, UIUtils.getIconURLFromResources("apps/python.png"));
     }
 
     @Override

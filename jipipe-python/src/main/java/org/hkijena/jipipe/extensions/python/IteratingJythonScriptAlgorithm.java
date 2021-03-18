@@ -23,8 +23,8 @@ import org.hkijena.jipipe.api.data.JIPipeDataSlotInfo;
 import org.hkijena.jipipe.api.data.JIPipeDefaultMutableSlotConfiguration;
 import org.hkijena.jipipe.api.data.JIPipeSlotType;
 import org.hkijena.jipipe.api.nodes.JIPipeDataBatch;
+import org.hkijena.jipipe.api.nodes.JIPipeIteratingAlgorithm;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
-import org.hkijena.jipipe.api.nodes.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.nodes.categories.MiscellaneousNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeContextAction;
 import org.hkijena.jipipe.api.parameters.JIPipeDynamicParameterCollection;
@@ -44,14 +44,13 @@ import java.util.ArrayList;
 /**
  * An algorithm that allows to run Python code
  */
-@JIPipeDocumentation(name = "Jython script (simple iterating)", description = "Runs a Python script that iterates through each data batch in one input slot. " +
-        "This node uses Jython, a Java interpreter for Python that currently does not support native functions (e.g. Numpy), but can access all Java types." +
+@JIPipeDocumentation(name = "Jython script (iterating)", description = "Runs a Python script that iterates through each data batch in the input slots. " +
+        "This node uses Jython, a Java interpreter for Python that currently does not support native functions (e.g. Numpy), but can access all Java types. " +
         "Access to the data batch is done via a variable 'data_batch' that provides access to all input and output data, as well as annotations. " +
         "Input slots can be accessed from variables 'input_slots' (array), 'input_slots_map' (map from name to slot). " +
-        "The first (and only) input slot is also accessible via the 'input_slot' variable. " +
         "Output slots can be accessed from variables 'output_slots' (array), 'output_slots_map' (map from name to slot).")
 @JIPipeOrganization(nodeTypeCategory = MiscellaneousNodeTypeCategory.class, menuPath = "Python script")
-public class SimpleIteratingPythonScriptAlgorithm extends JIPipeSimpleIteratingAlgorithm {
+public class IteratingJythonScriptAlgorithm extends JIPipeIteratingAlgorithm {
 
     private PythonScript code = new PythonScript();
     private JIPipeDynamicParameterCollection scriptParameters = new JIPipeDynamicParameterCollection(true,
@@ -62,10 +61,8 @@ public class SimpleIteratingPythonScriptAlgorithm extends JIPipeSimpleIteratingA
      *
      * @param info the info
      */
-    public SimpleIteratingPythonScriptAlgorithm(JIPipeNodeInfo info) {
-        super(info, JIPipeDefaultMutableSlotConfiguration.builder()
-                .restrictInputSlotCount(1)
-                .build());
+    public IteratingJythonScriptAlgorithm(JIPipeNodeInfo info) {
+        super(info, JIPipeDefaultMutableSlotConfiguration.builder().build());
         registerSubParameter(scriptParameters);
     }
 
@@ -74,7 +71,7 @@ public class SimpleIteratingPythonScriptAlgorithm extends JIPipeSimpleIteratingA
      *
      * @param other the info
      */
-    public SimpleIteratingPythonScriptAlgorithm(SimpleIteratingPythonScriptAlgorithm other) {
+    public IteratingJythonScriptAlgorithm(IteratingJythonScriptAlgorithm other) {
         super(other);
         this.code = new PythonScript(other.code);
         this.scriptParameters = new JIPipeDynamicParameterCollection(other.scriptParameters);
@@ -93,7 +90,7 @@ public class SimpleIteratingPythonScriptAlgorithm extends JIPipeSimpleIteratingA
             code.setCode("from org.hkijena.jipipe.extensions.tables.datatypes import ResultsTableData\n" +
                     "\n" +
                     "# Fetch the input table from the first input slot\n" +
-                    "input_table = data_batch.getInputData(input_slot, ResultsTableData)\n" +
+                    "input_table = data_batch.getInputData(input_slots[0], ResultsTableData)\n" +
                     "\n" +
                     "table = ResultsTableData()\n" +
                     "\n" +
@@ -138,15 +135,11 @@ public class SimpleIteratingPythonScriptAlgorithm extends JIPipeSimpleIteratingA
         pythonInterpreter.set("output_slots", new ArrayList<>(getOutputSlots()));
         pythonInterpreter.set("input_slot_map", inputSlotMap);
         pythonInterpreter.set("output_slot_map", outputSlotMap);
-        if (!getNonParameterInputSlots().isEmpty()) {
-            pythonInterpreter.set("input_slot", getFirstInputSlot());
-        }
         pythonInterpreter.exec(code.getCode());
     }
 
     @JIPipeDocumentation(name = "Script", description = "Access to the data batch is done via a variable 'data_batch' that provides access to all input and output data, as well as annotations." +
             "Input slots can be accessed from variables 'input_slots' (array), 'input_slots_map' (map from name to slot). " +
-            "The first (and only) input slot is also accessible via the 'input_slot' variable. " +
             "Output slots can be accessed from variables 'output_slots' (array), 'output_slots_map' (map from name to slot).")
     @JIPipeParameter("code")
     public PythonScript getCode() {

@@ -49,7 +49,7 @@ import java.util.ArrayList;
         "Output slots can be accessed from variables 'output_slots' (array), 'output_slots_map' (map from name to slot)." +
         "Slots are of their respective JIPipe types (JIPipeDataSlot) and are fully accessible from within Python.")
 @JIPipeOrganization(nodeTypeCategory = MiscellaneousNodeTypeCategory.class, menuPath = "Python script")
-public class PythonScriptAlgorithm extends JIPipeAlgorithm {
+public class JythonScriptAlgorithm extends JIPipeAlgorithm {
 
     private PythonScript code = new PythonScript();
     private JIPipeDynamicParameterCollection scriptParameters = new JIPipeDynamicParameterCollection(true,
@@ -60,7 +60,7 @@ public class PythonScriptAlgorithm extends JIPipeAlgorithm {
      *
      * @param info the info
      */
-    public PythonScriptAlgorithm(JIPipeNodeInfo info) {
+    public JythonScriptAlgorithm(JIPipeNodeInfo info) {
         super(info, JIPipeDefaultMutableSlotConfiguration.builder().build());
         registerSubParameter(scriptParameters);
     }
@@ -70,7 +70,7 @@ public class PythonScriptAlgorithm extends JIPipeAlgorithm {
      *
      * @param other the info
      */
-    public PythonScriptAlgorithm(PythonScriptAlgorithm other) {
+    public JythonScriptAlgorithm(JythonScriptAlgorithm other) {
         super(other);
         this.code = new PythonScript(other.code);
         this.scriptParameters = new JIPipeDynamicParameterCollection(other.scriptParameters);

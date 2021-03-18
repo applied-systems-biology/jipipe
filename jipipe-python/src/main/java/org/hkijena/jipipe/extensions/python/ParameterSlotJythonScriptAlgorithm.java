@@ -49,7 +49,7 @@ import java.util.List;
         "This algorithm is capable of running over multiple parameter sets via an additional slot. Automatically generated annotations generated based on " +
         "the parameters are available as variable 'parameter_annotations'. Please do not forget to pass the annotations to the output if you want to want this.")
 @JIPipeOrganization(nodeTypeCategory = MiscellaneousNodeTypeCategory.class, menuPath = "Python script")
-public class ParameterSlotPythonScriptAlgorithm extends JIPipeParameterSlotAlgorithm {
+public class ParameterSlotJythonScriptAlgorithm extends JIPipeParameterSlotAlgorithm {
 
     private PythonScript code = new PythonScript();
     private JIPipeDynamicParameterCollection scriptParameters = new JIPipeDynamicParameterCollection(true,
@@ -60,7 +60,7 @@ public class ParameterSlotPythonScriptAlgorithm extends JIPipeParameterSlotAlgor
      *
      * @param info the info
      */
-    public ParameterSlotPythonScriptAlgorithm(JIPipeNodeInfo info) {
+    public ParameterSlotJythonScriptAlgorithm(JIPipeNodeInfo info) {
         super(info, JIPipeDefaultMutableSlotConfiguration.builder()
                 .addOutputSlot("Table", ResultsTableData.class, null)
                 .build());
@@ -72,7 +72,7 @@ public class ParameterSlotPythonScriptAlgorithm extends JIPipeParameterSlotAlgor
      *
      * @param other the info
      */
-    public ParameterSlotPythonScriptAlgorithm(ParameterSlotPythonScriptAlgorithm other) {
+    public ParameterSlotJythonScriptAlgorithm(ParameterSlotJythonScriptAlgorithm other) {
         super(other);
         this.code = new PythonScript(other.code);
         this.scriptParameters = new JIPipeDynamicParameterCollection(other.scriptParameters);

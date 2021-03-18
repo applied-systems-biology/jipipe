@@ -51,7 +51,7 @@ import java.util.ArrayList;
         "Input slots can be accessed from variables 'input_slots' (array), 'input_slots_map' (map from name to slot). " +
         "Output slots can be accessed from variables 'output_slots' (array), 'output_slots_map' (map from name to slot).")
 @JIPipeOrganization(nodeTypeCategory = MiscellaneousNodeTypeCategory.class, menuPath = "Python script")
-public class MergingPythonScriptAlgorithm extends JIPipeMergingAlgorithm {
+public class MergingJythonScriptAlgorithm extends JIPipeMergingAlgorithm {
 
     private PythonScript code = new PythonScript();
     private JIPipeDynamicParameterCollection scriptParameters = new JIPipeDynamicParameterCollection(true,
@@ -62,7 +62,7 @@ public class MergingPythonScriptAlgorithm extends JIPipeMergingAlgorithm {
      *
      * @param info the info
      */
-    public MergingPythonScriptAlgorithm(JIPipeNodeInfo info) {
+    public MergingJythonScriptAlgorithm(JIPipeNodeInfo info) {
         super(info, JIPipeDefaultMutableSlotConfiguration.builder().build());
         registerSubParameter(scriptParameters);
     }
@@ -72,7 +72,7 @@ public class MergingPythonScriptAlgorithm extends JIPipeMergingAlgorithm {
      *
      * @param other the info
      */
-    public MergingPythonScriptAlgorithm(MergingPythonScriptAlgorithm other) {
+    public MergingJythonScriptAlgorithm(MergingJythonScriptAlgorithm other) {
         super(other);
         this.code = new PythonScript(other.code);
         this.scriptParameters = new JIPipeDynamicParameterCollection(other.scriptParameters);
