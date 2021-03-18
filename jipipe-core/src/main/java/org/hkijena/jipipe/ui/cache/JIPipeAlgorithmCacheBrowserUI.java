@@ -212,10 +212,10 @@ public class JIPipeAlgorithmCacheBrowserUI extends JIPipeProjectWorkbenchPanel {
             } catch (IOException e) {
                 e.printStackTrace();
             }
+            JIPipeCachedSlotToOutputExporterRun run = new JIPipeCachedSlotToOutputExporterRun(getWorkbench(), outputFolder,
+                    new ArrayList<>(stateMap.get(exportedState).values()), true);
+            JIPipeRunExecuterUI.runInDialog(run);
         }
-        JIPipeCachedSlotToOutputExporterRun run = new JIPipeCachedSlotToOutputExporterRun(getWorkbench(), outputFolder,
-                new ArrayList<>(stateMap.get(exportedState).values()), true);
-        JIPipeRunExecuterUI.runInDialog(run);
     }
 
     private void importCache() {
