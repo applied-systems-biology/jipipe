@@ -219,7 +219,7 @@ public class JIPipeExportedDataTable implements TableModel {
         ResultsTable table = new ResultsTable();
         for (Row row : rowList) {
             table.incrementCounter();
-            table.addValue("jipipe:algorithm-id", nodeId);
+            table.addValue("jipipe:node-id", nodeId);
             table.addValue("jipipe:slot", slotName);
             table.addValue("jipipe:data-type", JIPipe.getDataTypes().getIdOf(acceptedDataType));
             table.addValue("jipipe:true-data-type", row.trueDataType);
