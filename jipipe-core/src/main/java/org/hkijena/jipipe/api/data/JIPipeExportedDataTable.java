@@ -35,7 +35,7 @@ import java.util.stream.Collectors;
  * Contains all metadata exported from an {@link JIPipeDataSlot}
  */
 public class JIPipeExportedDataTable implements TableModel {
-    private String algorithmId;
+    private String nodeId;
     private String slotName;
     private String internalPath;
     private Class<? extends JIPipeData> acceptedDataType;
@@ -49,7 +49,7 @@ public class JIPipeExportedDataTable implements TableModel {
      * @param indices output path index for each slot row
      */
     public JIPipeExportedDataTable(JIPipeDataSlot slot, Path basePath, List<Integer> indices) {
-        this.algorithmId = slot.getNode().getInfo().getId();
+        this.nodeId = slot.getNode().getInfo().getId();
         this.slotName = slot.getName();
         if (basePath != null) {
             this.internalPath = basePath.relativize(slot.getStoragePath()).toString();
@@ -91,19 +91,29 @@ public class JIPipeExportedDataTable implements TableModel {
     /**
      * @return Gets the algorithm ID
      */
-    @JsonGetter("algorithm-id")
-    public String getAlgorithmId() {
-        return algorithmId;
+    @JsonGetter("node-id")
+    public String getNodeId() {
+        return nodeId;
     }
 
     /**
      * Sets the algorithm ID
      *
-     * @param algorithmId the algorithm ID
+     * @param nodeId the algorithm ID
+     */
+    @JsonSetter("node-id")
+    private void setNodeId(String nodeId) {
+        this.nodeId = nodeId;
+    }
+
+    /**
+     * Compatibility function to allow reading tables in an older format
+     *
+     * @param nodeId the algorithm ID
      */
     @JsonSetter("algorithm-id")
-    private void setAlgorithmId(String algorithmId) {
-        this.algorithmId = algorithmId;
+    private void setAlgorithmId(String nodeId) {
+        this.nodeId = nodeId;
     }
 
     /**
@@ -209,7 +219,7 @@ public class JIPipeExportedDataTable implements TableModel {
         ResultsTable table = new ResultsTable();
         for (Row row : rowList) {
             table.incrementCounter();
-            table.addValue("jipipe:algorithm-id", algorithmId);
+            table.addValue("jipipe:algorithm-id", nodeId);
             table.addValue("jipipe:slot", slotName);
             table.addValue("jipipe:data-type", JIPipe.getDataTypes().getIdOf(acceptedDataType));
             table.addValue("jipipe:true-data-type", row.trueDataType);
