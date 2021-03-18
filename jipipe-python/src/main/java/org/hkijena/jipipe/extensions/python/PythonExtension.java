@@ -17,6 +17,7 @@ import org.hkijena.jipipe.JIPipeJavaExtension;
 import org.hkijena.jipipe.extensions.JIPipePrepackagedDefaultJavaExtension;
 import org.hkijena.jipipe.extensions.parameters.primitives.HTMLText;
 import org.hkijena.jipipe.extensions.parameters.primitives.StringList;
+import org.hkijena.jipipe.extensions.python.algorithm.*;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.scijava.plugin.Plugin;
 
@@ -41,6 +42,13 @@ public class PythonExtension extends JIPipePrepackagedDefaultJavaExtension {
 
     @Override
     public void register() {
+        registerSettingsSheet(PythonExtensionSettings.ID,
+                "Python integration",
+                UIUtils.getIconFromResources("apps/python.png"),
+                "Extensions",
+                UIUtils.getIconFromResources("actions/plugins.png"),
+                new PythonExtensionSettings());
+
         registerNodeType("python-script", JythonScriptAlgorithm.class, UIUtils.getIconURLFromResources("apps/python.png"));
         registerNodeType("python-script-multi-parameter", ParameterSlotJythonScriptAlgorithm.class, UIUtils.getIconURLFromResources("apps/python.png"));
         registerNodeType("python-script-iterating-simple", SimpleIteratingJythonScriptAlgorithm.class, UIUtils.getIconURLFromResources("apps/python.png"));
