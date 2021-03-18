@@ -5,6 +5,7 @@ import com.github.rcaller.rstuff.RCode;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
+import org.hkijena.jipipe.api.JIPipeValidityReport;
 import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
 import org.hkijena.jipipe.api.nodes.JIPipeDataBatch;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
@@ -42,19 +43,18 @@ public class ImportRDatasetAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     }
 
     @Override
+    public void reportValidity(JIPipeValidityReport report) {
+        super.reportValidity(report);
+        if(!isPassThrough()) {
+            RExtensionSettings.checkRSettings(report);
+        }
+    }
+
+    @Override
     public void run(JIPipeProgressInfo progressInfo) {
         try {
             if (!isPassThrough()) {
-                if (!RExtensionSettings.checkRSettings()) {
-                    throw new UserFriendlyRuntimeException("The R installation is invalid!\n" +
-                            "R=" + RExtensionSettings.getInstance().getRExecutable() + "\n" +
-                            "RScript=" + RExtensionSettings.getInstance().getRScriptExecutable(),
-                            "R is not configured!",
-                            getName(),
-                            "This node requires an installation of R. Either R is not installed or JIPipe cannot find R.",
-                            "Please install R from https://www.r-project.org/. If R is installed, go to Project > Application settings > Extensions > R  integration and " +
-                                    "manually override R executable and RScript executable (please refer to the documentation in the settings page).");
-                }
+                RExtensionSettings.checkRSettings();
                 rCaller = RCaller.create(RExtensionSettings.createRCallerOptions());
             }
             super.run(progressInfo);

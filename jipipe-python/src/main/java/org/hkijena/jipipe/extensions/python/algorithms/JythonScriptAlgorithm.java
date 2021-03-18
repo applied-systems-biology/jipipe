@@ -11,7 +11,7 @@
  * See the LICENSE file provided with the code for the full license.
  */
 
-package org.hkijena.jipipe.extensions.python.algorithm;
+package org.hkijena.jipipe.extensions.python.algorithms;
 
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
@@ -32,7 +32,7 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameterPersistence;
 import org.hkijena.jipipe.extensions.parameters.scripts.PythonScript;
 import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
-import org.hkijena.jipipe.utils.PythonUtils;
+import org.hkijena.jipipe.utils.JythonUtils;
 import org.hkijena.jipipe.utils.ResourceUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.python.core.PyDictionary;
@@ -113,7 +113,7 @@ public class JythonScriptAlgorithm extends JIPipeAlgorithm {
         }
 
         PythonInterpreter pythonInterpreter = new PythonInterpreter();
-        PythonUtils.passParametersToPython(pythonInterpreter, scriptParameters);
+        JythonUtils.passParametersToPython(pythonInterpreter, scriptParameters);
         PyDictionary inputSlotMap = new PyDictionary();
         PyDictionary outputSlotMap = new PyDictionary();
         for (JIPipeDataSlot inputSlot : getInputSlots()) {
@@ -133,8 +133,8 @@ public class JythonScriptAlgorithm extends JIPipeAlgorithm {
     @Override
     public void reportValidity(JIPipeValidityReport report) {
         super.reportValidity(report);
-        PythonUtils.checkScriptValidity(code.getCode(), scriptParameters, report.forCategory("Script"));
-        PythonUtils.checkScriptParametersValidity(scriptParameters, report.forCategory("Script parameters"));
+        JythonUtils.checkScriptValidity(code.getCode(), scriptParameters, report.forCategory("Script"));
+        JythonUtils.checkScriptParametersValidity(scriptParameters, report.forCategory("Script parameters"));
     }
 
     @JIPipeDocumentation(name = "Script", description = "Input slots can be accessed from variables 'input_slots' (array), 'input_slots_map' (map from name to slot). " +

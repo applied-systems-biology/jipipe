@@ -11,7 +11,7 @@
  * See the LICENSE file provided with the code for the full license.
  */
 
-package org.hkijena.jipipe.extensions.python.algorithm;
+package org.hkijena.jipipe.extensions.python.algorithms;
 
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
@@ -31,9 +31,10 @@ import org.hkijena.jipipe.api.parameters.JIPipeDynamicParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterPersistence;
 import org.hkijena.jipipe.extensions.parameters.scripts.PythonScript;
+import org.hkijena.jipipe.extensions.python.PythonExtensionSettings;
 import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
-import org.hkijena.jipipe.utils.PythonUtils;
+import org.hkijena.jipipe.utils.JythonUtils;
 import org.hkijena.jipipe.utils.ResourceUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.python.core.PyDictionary;
@@ -44,13 +45,10 @@ import java.util.ArrayList;
 /**
  * An algorithm that allows to run Python code
  */
-@JIPipeDocumentation(name = "Jython script (iterating)", description = "Runs a Python script that iterates through each data batch in the input slots. " +
-        "This node uses Jython, a Java interpreter for Python that currently does not support native functions (e.g. Numpy), but can access all Java types. " +
-        "Access to the data batch is done via a variable 'data_batch' that provides access to all input and output data, as well as annotations. " +
-        "Input slots can be accessed from variables 'input_slots' (array), 'input_slots_map' (map from name to slot). " +
-        "Output slots can be accessed from variables 'output_slots' (array), 'output_slots_map' (map from name to slot).")
+@JIPipeDocumentation(name = "Python script (iterating)", description = "Runs a Python script that iterates through each data batch in the input slots. " +
+        "This node uses an existing dedicated Python interpreter that must be set up in the application settings. ")
 @JIPipeOrganization(nodeTypeCategory = MiscellaneousNodeTypeCategory.class, menuPath = "Python script")
-public class IteratingJythonScriptAlgorithm extends JIPipeIteratingAlgorithm {
+public class IteratingPythonScriptAlgorithm extends JIPipeIteratingAlgorithm {
 
     private PythonScript code = new PythonScript();
     private JIPipeDynamicParameterCollection scriptParameters = new JIPipeDynamicParameterCollection(true,
@@ -61,7 +59,7 @@ public class IteratingJythonScriptAlgorithm extends JIPipeIteratingAlgorithm {
      *
      * @param info the info
      */
-    public IteratingJythonScriptAlgorithm(JIPipeNodeInfo info) {
+    public IteratingPythonScriptAlgorithm(JIPipeNodeInfo info) {
         super(info, JIPipeDefaultMutableSlotConfiguration.builder().build());
         registerSubParameter(scriptParameters);
     }
@@ -71,7 +69,7 @@ public class IteratingJythonScriptAlgorithm extends JIPipeIteratingAlgorithm {
      *
      * @param other the info
      */
-    public IteratingJythonScriptAlgorithm(IteratingJythonScriptAlgorithm other) {
+    public IteratingPythonScriptAlgorithm(IteratingPythonScriptAlgorithm other) {
         super(other);
         this.code = new PythonScript(other.code);
         this.scriptParameters = new JIPipeDynamicParameterCollection(other.scriptParameters);
@@ -114,28 +112,15 @@ public class IteratingJythonScriptAlgorithm extends JIPipeIteratingAlgorithm {
     @Override
     public void reportValidity(JIPipeValidityReport report) {
         super.reportValidity(report);
-        PythonUtils.checkScriptValidity(code.getCode(), scriptParameters, report.forCategory("Script"));
-        PythonUtils.checkScriptParametersValidity(scriptParameters, report.forCategory("Script parameters"));
+        JythonUtils.checkScriptParametersValidity(scriptParameters, report.forCategory("Script parameters"));
+        if(!isPassThrough()) {
+            PythonExtensionSettings.checkPythonSettings(report.forCategory("Python"));
+        }
     }
 
     @Override
     protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
-        PythonInterpreter pythonInterpreter = new PythonInterpreter();
-        PythonUtils.passParametersToPython(pythonInterpreter, scriptParameters);
-        pythonInterpreter.set("data_batch", dataBatch);
-        PyDictionary inputSlotMap = new PyDictionary();
-        PyDictionary outputSlotMap = new PyDictionary();
-        for (JIPipeDataSlot inputSlot : getNonParameterInputSlots()) {
-            inputSlotMap.put(inputSlot.getName(), inputSlot);
-        }
-        for (JIPipeDataSlot outputSlot : getOutputSlots()) {
-            outputSlotMap.put(outputSlot.getName(), outputSlot);
-        }
-        pythonInterpreter.set("input_slots", new ArrayList<>(getNonParameterInputSlots()));
-        pythonInterpreter.set("output_slots", new ArrayList<>(getOutputSlots()));
-        pythonInterpreter.set("input_slot_map", inputSlotMap);
-        pythonInterpreter.set("output_slot_map", outputSlotMap);
-        pythonInterpreter.exec(code.getCode());
+        
     }
 
     @JIPipeDocumentation(name = "Script", description = "Access to the data batch is done via a variable 'data_batch' that provides access to all input and output data, as well as annotations." +

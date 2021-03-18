@@ -20,6 +20,8 @@ import com.github.rcaller.util.Globals;
 import com.google.common.eventbus.EventBus;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.JIPipeValidityReport;
+import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.extensions.parameters.primitives.FilePathParameterSettings;
@@ -59,11 +61,41 @@ public class RExtensionSettings implements JIPipeParameterCollection {
     }
 
     /**
+     * Checks if the R settings are valid or throws an exception
+     */
+    public static void checkRSettings() {
+        if(!RSettingsAreValid()) {
+            throw new UserFriendlyRuntimeException("The R installation is invalid!\n" +
+                    "R=" + RExtensionSettings.getInstance().getRExecutable() + "\n" +
+                    "RScript=" + RExtensionSettings.getInstance().getRScriptExecutable(),
+                    "R is not configured!",
+                    "Project > Application settings > Extensions > R  integration",
+                    "This node requires an installation of R. Either R is not installed or JIPipe cannot find R.",
+                    "Please install R from https://www.r-project.org/. If R is installed, go to Project > Application settings > Extensions > R  integration and " +
+                            "manually override R executable and RScript executable (please refer to the documentation in the settings page).");
+        }
+    }
+
+    /**
+     * Checks if the R settings are valid or reports an invalid state
+     * @param report the report
+     */
+    public static void checkRSettings(JIPipeValidityReport report) {
+        if(!RSettingsAreValid()) {
+            report.reportIsInvalid("R is not configured!",
+                    "Project > Application settings > Extensions > R  integration",
+                    "This node requires an installation of R. Either R is not installed or JIPipe cannot find R.",
+                    "Please install R from https://www.r-project.org/. If R is installed, go to Project > Application settings > Extensions > R  integration and " +
+                            "manually override R executable and RScript executable (please refer to the documentation in the settings page).");
+        }
+    }
+
+    /**
      * Checks the R settings
      *
      * @return if the settings are correct
      */
-    public static boolean checkRSettings() {
+    public static boolean RSettingsAreValid() {
         String executable = Globals.R_current;
         String scriptExecutable = Globals.Rscript_current;
         if (JIPipe.getInstance() != null) {
@@ -107,6 +139,8 @@ public class RExtensionSettings implements JIPipeParameterCollection {
                 initialWaitTime,
                 RProcessStartUpOptions.create());
     }
+
+
 
     @Override
     public EventBus getEventBus() {

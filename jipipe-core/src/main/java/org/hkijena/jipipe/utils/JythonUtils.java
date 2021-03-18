@@ -27,9 +27,9 @@ import java.util.Map;
 /**
  * Utilities for Jython
  */
-public class PythonUtils {
+public class JythonUtils {
 
-    private PythonUtils() {
+    private JythonUtils() {
 
     }
 
@@ -56,7 +56,7 @@ public class PythonUtils {
     public static void checkScriptValidity(String code, JIPipeCustomParameterCollection scriptParameters, JIPipeValidityReport report) {
         try {
             PythonInterpreter pythonInterpreter = new PythonInterpreter();
-            PythonUtils.passParametersToPython(pythonInterpreter, scriptParameters);
+            JythonUtils.passParametersToPython(pythonInterpreter, scriptParameters);
             PyCode compile = pythonInterpreter.compile(code);
             if (compile == null) {
                 report.reportIsInvalid("The script is invalid!",
