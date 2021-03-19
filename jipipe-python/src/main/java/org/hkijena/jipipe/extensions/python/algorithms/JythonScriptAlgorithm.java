@@ -18,12 +18,9 @@ import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.JIPipeValidityReport;
-import org.hkijena.jipipe.api.data.JIPipeDataSlot;
-import org.hkijena.jipipe.api.data.JIPipeDataSlotInfo;
-import org.hkijena.jipipe.api.data.JIPipeDefaultMutableSlotConfiguration;
-import org.hkijena.jipipe.api.data.JIPipeSlotType;
-import org.hkijena.jipipe.api.nodes.JIPipeAlgorithm;
+import org.hkijena.jipipe.api.data.*;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
+import org.hkijena.jipipe.api.nodes.JIPipeParameterSlotAlgorithm;
 import org.hkijena.jipipe.api.nodes.categories.MiscellaneousNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeContextAction;
 import org.hkijena.jipipe.api.parameters.JIPipeDynamicParameterCollection;
@@ -39,17 +36,20 @@ import org.python.core.PyDictionary;
 import org.python.util.PythonInterpreter;
 
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * An algorithm that allows to run Python code
  */
-@JIPipeDocumentation(name = "Jython script", description = "Runs a Python script that has direct access to all input data slots. " +
+@JIPipeDocumentation(name = "Jython script (multi-parameter capable)", description = "Runs a Python script that has direct access to all input data slots. " +
         "This node uses Jython, a Java interpreter for Python that currently does not support native functions (e.g. Numpy), but can access all Java types." +
         "Input slots can be accessed from variables 'input_slots' (array), 'input_slots_map' (map from name to slot). " +
         "Output slots can be accessed from variables 'output_slots' (array), 'output_slots_map' (map from name to slot)." +
-        "Slots are of their respective JIPipe types (JIPipeDataSlot) and are fully accessible from within Python.")
+        "Slots are of their respective JIPipe types (JIPipeDataSlot) and are fully accessible from within Python. " +
+        "This algorithm is capable of running over multiple parameter sets via an additional slot. Automatically generated annotations generated based on " +
+        "the parameters are available as variable 'parameter_annotations'. Please do not forget to pass the annotations to the output if you want to want this.")
 @JIPipeOrganization(nodeTypeCategory = MiscellaneousNodeTypeCategory.class, menuPath = "Python script")
-public class JythonScriptAlgorithm extends JIPipeAlgorithm {
+public class JythonScriptAlgorithm extends JIPipeParameterSlotAlgorithm {
 
     private PythonScript code = new PythonScript();
     private JIPipeDynamicParameterCollection scriptParameters = new JIPipeDynamicParameterCollection(true,
@@ -61,7 +61,9 @@ public class JythonScriptAlgorithm extends JIPipeAlgorithm {
      * @param info the info
      */
     public JythonScriptAlgorithm(JIPipeNodeInfo info) {
-        super(info, JIPipeDefaultMutableSlotConfiguration.builder().build());
+        super(info, JIPipeDefaultMutableSlotConfiguration.builder()
+                .addOutputSlot("Table", ResultsTableData.class, null)
+                .build());
         registerSubParameter(scriptParameters);
     }
 
@@ -99,30 +101,25 @@ public class JythonScriptAlgorithm extends JIPipeAlgorithm {
                     "\n" +
                     "# The output is written into the output slot\n" +
                     "# You can add annotations via an overload of addData()\n" +
-                    "output_slot_map[\"Table\"].addData(table, [JIPipeAnnotation(\"Dataset\", \"Generated\")])\n");
+                    "output_Table.addData(table, [JIPipeAnnotation(\"Dataset\", \"Generated\")])\n");
             getEventBus().post(new ParameterChangedEvent(this, "code"));
         }
     }
 
     @Override
-    public void run(JIPipeProgressInfo progressInfo) {
-        if (isPassThrough() && canAutoPassThrough()) {
-            progressInfo.log("Data passed through to output");
-            runPassThrough(progressInfo);
-            return;
-        }
-
+    public void runParameterSet(JIPipeProgressInfo progressInfo, List<JIPipeAnnotation> parameterAnnotations) {
         PythonInterpreter pythonInterpreter = new PythonInterpreter();
         JythonUtils.passParametersToPython(pythonInterpreter, scriptParameters);
+        pythonInterpreter.set("parameter_annotations", parameterAnnotations);
         PyDictionary inputSlotMap = new PyDictionary();
         PyDictionary outputSlotMap = new PyDictionary();
-        for (JIPipeDataSlot inputSlot : getInputSlots()) {
+        for (JIPipeDataSlot inputSlot : getNonParameterInputSlots()) {
             inputSlotMap.put(inputSlot.getName(), inputSlot);
         }
         for (JIPipeDataSlot outputSlot : getOutputSlots()) {
             outputSlotMap.put(outputSlot.getName(), outputSlot);
         }
-        pythonInterpreter.set("input_slots", new ArrayList<>(getInputSlots()));
+        pythonInterpreter.set("input_slots", new ArrayList<>(getNonParameterInputSlots()));
         pythonInterpreter.set("output_slots", new ArrayList<>(getOutputSlots()));
         pythonInterpreter.set("input_slot_map", inputSlotMap);
         pythonInterpreter.set("output_slot_map", outputSlotMap);
@@ -137,9 +134,7 @@ public class JythonScriptAlgorithm extends JIPipeAlgorithm {
         JythonUtils.checkScriptParametersValidity(scriptParameters, report.forCategory("Script parameters"));
     }
 
-    @JIPipeDocumentation(name = "Script", description = "Input slots can be accessed from variables 'input_slots' (array), 'input_slots_map' (map from name to slot). " +
-            "Output slots can be accessed from variables 'output_slots' (array), 'output_slots_map' (map from name to slot)." +
-            "Slots are of their respective JIPipe types (JIPipeDataSlot) and are fully accessible from within Python.")
+    @JIPipeDocumentation(name = "Script", description = "Access to the data batch is done via a variable 'data_batch' that provides access to all input and output data, as well as annotations.")
     @JIPipeParameter("code")
     public PythonScript getCode() {
         return code;

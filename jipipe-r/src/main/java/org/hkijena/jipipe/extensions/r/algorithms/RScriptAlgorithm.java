@@ -25,17 +25,16 @@ import org.hkijena.jipipe.utils.UIUtils;
 import javax.swing.*;
 import java.io.IOException;
 import java.nio.file.Path;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-@JIPipeDocumentation(name = "R script (iterating)", description = "Allows to execute a custom R script. " +
-        "The script is repeated for each data batch. Please note the each data batch only contains one item (row) per slot. " +
+@JIPipeDocumentation(name = "R script", description = "Allows to execute a custom R script. " +
+        "The script is executed one and has access to all input data of the node. " +
         "The script comes with various API functions and variables that allow to communicate with JIPipe: " +
         "<ul>" +
-        "<li><code>JIPipe.InputSlotRowCounts</code> contains named row counts for each slot. Is always 1 for each slot.</li>" +
-        "<li><code>JIPipe.Annotations</code> contains the list of annotations (named strings)</li>" +
+        "<li><code>JIPipe.InputSlotRowCounts</code> contains named row counts for each slot.</li>" +
+        "<li><code>JIPipe.InputSlotRowAnnotations</code> contains the list of annotations (named strings) for each slot.</li>" +
         "<li><code>JIPipe.Variables</code> contains the list of variables defined by parameters (named values). " +
         "If a parameter's unique key is a valid variable name, it will also be available as variable.</li>" +
         "<li><code>JIPipe.GetInputFolder(slot, row=0)</code> returns the data folder of the specified slot. " +
@@ -57,23 +56,21 @@ import java.util.Map;
 @JIPipeInputSlot(ResultsTableData.class)
 @JIPipeOutputSlot(ImagePlusColorRGBData.class)
 @JIPipeOutputSlot(ResultsTableData.class)
-public class IteratingRScriptAlgorithm extends JIPipeIteratingAlgorithm {
+public class RScriptAlgorithm extends JIPipeParameterSlotAlgorithm {
 
     private RScriptParameter script = new RScriptParameter();
     private RCaller rCaller;
     private JIPipeDynamicParameterCollection variables = new JIPipeDynamicParameterCollection(RUtils.ALLOWED_PARAMETER_CLASSES);
-    private JIPipeAnnotationMergeStrategy annotationMergeStrategy = JIPipeAnnotationMergeStrategy.Merge;
 
-    public IteratingRScriptAlgorithm(JIPipeNodeInfo info) {
+    public RScriptAlgorithm(JIPipeNodeInfo info) {
         super(info, JIPipeDefaultMutableSlotConfiguration.builder().build());
         registerSubParameter(variables);
     }
 
-    public IteratingRScriptAlgorithm(IteratingRScriptAlgorithm other) {
+    public RScriptAlgorithm(RScriptAlgorithm other) {
         super(other);
         this.script = new RScriptParameter(other.script);
         this.variables = new JIPipeDynamicParameterCollection(other.variables);
-        this.annotationMergeStrategy = other.annotationMergeStrategy;
         registerSubParameter(variables);
     }
 
@@ -100,7 +97,7 @@ public class IteratingRScriptAlgorithm extends JIPipeIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
+    public void runParameterSet(JIPipeProgressInfo progressInfo, List<JIPipeAnnotation> parameterAnnotations) {
         RCode code = RCode.create();
         code.getCode().setLength(0);
 
@@ -110,21 +107,15 @@ public class IteratingRScriptAlgorithm extends JIPipeIteratingAlgorithm {
         // Add user variables
         RUtils.parametersToR(code, variables);
 
-        // Add annotations
-        RUtils.annotationsToR(code, dataBatch.getAnnotations().values());
-
         Map<String, Path> inputSlotPaths = new HashMap<>();
-        List<JIPipeDataSlot> dummySlots = new ArrayList<>();
         for (JIPipeDataSlot slot : getEffectiveInputSlots()) {
             Path tempPath = RuntimeSettings.generateTempDirectory("r-input");
             progressInfo.log("Input slot '" + slot.getName() + "' is stored in " + tempPath);
-            JIPipeDataSlot dummy = dataBatch.toDummySlot(slot.getInfo(), this, slot);
-            dummy.save(tempPath, null, progressInfo);
+            slot.save(tempPath, null, progressInfo);
             inputSlotPaths.put(slot.getName(), tempPath);
-            dummySlots.add(dummy);
         }
 
-        RUtils.inputSlotsToR(code, inputSlotPaths, dummySlots);
+        RUtils.inputSlotsToR(code, inputSlotPaths, getEffectiveInputSlots());
         RUtils.installInputLoaderCode(code);
 
         Map<String, Path> outputSlotPaths = new HashMap<>();
@@ -150,7 +141,7 @@ public class IteratingRScriptAlgorithm extends JIPipeIteratingAlgorithm {
                 JIPipeDataInfo dataInfo = table.getDataTypeOf(row);
                 Path rowStoragePath = table.getRowStoragePath(storagePath, row);
                 JIPipeData data = JIPipe.importData(rowStoragePath, dataInfo.getDataClass());
-                dataBatch.addOutputData(outputSlot, data, table.getRowList().get(row).getAnnotations(), annotationMergeStrategy, progressInfo);
+                outputSlot.addData(data, table.getRowList().get(row).getAnnotations(), JIPipeAnnotationMergeStrategy.OverwriteExisting, progressInfo);
             }
         }
 
@@ -182,8 +173,8 @@ public class IteratingRScriptAlgorithm extends JIPipeIteratingAlgorithm {
     @JIPipeDocumentation(name = "Script", description = "The script that contains the R commands. " +
             "The script comes with various API functions and variables that allow to communicate with JIPipe: " +
             "<ul>" +
-            "<li><code>JIPipe.InputSlotRowCounts</code> contains named row counts for each slot. Is always 1 for each slot.</li>" +
-            "<li><code>JIPipe.Annotations</code> contains the list of annotations (named strings)</li>" +
+            "<li><code>JIPipe.InputSlotRowCounts</code> contains named row counts for each slot.</li>" +
+            "<li><code>JIPipe.InputSlotRowAnnotations</code> contains the list of annotations (named strings) for each slot.</li>" +
             "<li><code>JIPipe.Variables</code> contains the list of variables defined by parameters (named values). " +
             "If a parameter's unique key is a valid variable name, it will also be available as variable.</li>" +
             "<li><code>JIPipe.GetInputFolder(slot, row=0)</code> returns the data folder of the specified slot. " +
@@ -209,18 +200,6 @@ public class IteratingRScriptAlgorithm extends JIPipeIteratingAlgorithm {
     @JIPipeParameter("script")
     public void setScript(RScriptParameter script) {
         this.script = script;
-    }
-
-    @JIPipeDocumentation(name = "Annotation merge strategy", description = "Determines how annotations that are added in the R script are " +
-            "merged into existing annotations.")
-    @JIPipeParameter("annotation-merge-strategy")
-    public JIPipeAnnotationMergeStrategy getAnnotationMergeStrategy() {
-        return annotationMergeStrategy;
-    }
-
-    @JIPipeParameter("annotation-merge-strategy")
-    public void setAnnotationMergeStrategy(JIPipeAnnotationMergeStrategy annotationMergeStrategy) {
-        this.annotationMergeStrategy = annotationMergeStrategy;
     }
 
     @JIPipeDocumentation(name = "Load example", description = "Loads example parameters that showcase how to use this algorithm.")
@@ -270,7 +249,7 @@ public class IteratingRScriptAlgorithm extends JIPipeIteratingAlgorithm {
             this.outputSlots = outputSlots;
         }
 
-        public void apply(IteratingRScriptAlgorithm algorithm) {
+        public void apply(RScriptAlgorithm algorithm) {
             JIPipeParameterCollection.setParameter(algorithm, "script", new RScriptParameter(code));
             JIPipeDefaultMutableSlotConfiguration slotConfiguration = (JIPipeDefaultMutableSlotConfiguration) algorithm.getSlotConfiguration();
             slotConfiguration.clearInputSlots(true);

@@ -23,6 +23,7 @@ import org.hkijena.jipipe.api.data.*;
 import org.hkijena.jipipe.api.nodes.JIPipeDataBatch;
 import org.hkijena.jipipe.api.nodes.JIPipeIteratingAlgorithm;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
+import org.hkijena.jipipe.api.nodes.JIPipeParameterSlotAlgorithm;
 import org.hkijena.jipipe.api.nodes.categories.MiscellaneousNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeContextAction;
 import org.hkijena.jipipe.api.parameters.JIPipeDynamicParameterCollection;
@@ -37,25 +38,22 @@ import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.utils.JythonUtils;
 import org.hkijena.jipipe.utils.ResourceUtils;
 import org.hkijena.jipipe.utils.UIUtils;
-import org.python.core.Py;
-import org.python.core.PyDictionary;
-import org.python.util.PythonInterpreter;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
  * An algorithm that allows to run Python code
  */
-@JIPipeDocumentation(name = "Python script (iterating)", description = "Runs a Python script that iterates through each data batch in the input slots. " +
+@JIPipeDocumentation(name = "Python script", description = "Runs a Python script that is executed once and has access to all incoming data. " +
         "This node uses an existing dedicated Python interpreter that must be set up in the application settings. ")
 @JIPipeOrganization(nodeTypeCategory = MiscellaneousNodeTypeCategory.class, menuPath = "Python script")
-public class IteratingPythonScriptAlgorithm extends JIPipeIteratingAlgorithm {
+public class PythonScriptAlgorithm extends JIPipeParameterSlotAlgorithm {
 
     private PythonScript code = new PythonScript();
     private JIPipeDynamicParameterCollection scriptParameters = new JIPipeDynamicParameterCollection(true,
@@ -67,7 +65,7 @@ public class IteratingPythonScriptAlgorithm extends JIPipeIteratingAlgorithm {
      *
      * @param info the info
      */
-    public IteratingPythonScriptAlgorithm(JIPipeNodeInfo info) {
+    public PythonScriptAlgorithm(JIPipeNodeInfo info) {
         super(info, JIPipeDefaultMutableSlotConfiguration.builder().build());
         registerSubParameter(scriptParameters);
     }
@@ -77,7 +75,7 @@ public class IteratingPythonScriptAlgorithm extends JIPipeIteratingAlgorithm {
      *
      * @param other the info
      */
-    public IteratingPythonScriptAlgorithm(IteratingPythonScriptAlgorithm other) {
+    public PythonScriptAlgorithm(PythonScriptAlgorithm other) {
         super(other);
         this.code = new PythonScript(other.code);
         this.scriptParameters = new JIPipeDynamicParameterCollection(other.scriptParameters);
@@ -92,8 +90,8 @@ public class IteratingPythonScriptAlgorithm extends JIPipeIteratingAlgorithm {
             JIPipeDefaultMutableSlotConfiguration slotConfiguration = (JIPipeDefaultMutableSlotConfiguration) getSlotConfiguration();
             slotConfiguration.clearInputSlots(true);
             slotConfiguration.clearOutputSlots(true);
-            slotConfiguration.addSlot("Input", new JIPipeDataSlotInfo(ResultsTableData.class, JIPipeSlotType.Input, null), true);
-            slotConfiguration.addSlot("Output", new JIPipeDataSlotInfo(ResultsTableData.class, JIPipeSlotType.Output, null), true);
+            slotConfiguration.addSlot("Table", new JIPipeDataSlotInfo(ResultsTableData.class, JIPipeSlotType.Input, null), true);
+            slotConfiguration.addSlot("Table", new JIPipeDataSlotInfo(ResultsTableData.class, JIPipeSlotType.Output, null), true);
             code.setCode("from jipipe.imagej import *\n" +
                     "\n" +
                     "# Get the input slot\n" +
@@ -108,7 +106,7 @@ public class IteratingPythonScriptAlgorithm extends JIPipeIteratingAlgorithm {
                     "dso = jipipe_outputs[\"Output\"]\n" +
                     "\n" +
                     "# Add the table to the output slot\n" +
-                    "add_table(table, dso)\n");
+                    "add_table(table, dso)\n\n");
             getEventBus().post(new ParameterChangedEvent(this, "code"));
         }
     }
@@ -123,7 +121,7 @@ public class IteratingPythonScriptAlgorithm extends JIPipeIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
+    public void runParameterSet(JIPipeProgressInfo progressInfo, List<JIPipeAnnotation> parameterAnnotations) {
         StringBuilder code = new StringBuilder();
 
         // Install the adapter that provides the JIPipe API
@@ -132,16 +130,12 @@ public class IteratingPythonScriptAlgorithm extends JIPipeIteratingAlgorithm {
         // Add user variables
         PythonUtils.parametersToPython(code, scriptParameters);
 
-        // Add annotations
-        PythonUtils.annotationsToPython(code, dataBatch.getAnnotations().values());
-
         // Install input slots
         Map<String, Path> inputSlotPaths = new HashMap<>();
         for (JIPipeDataSlot slot : getEffectiveInputSlots()) {
             Path tempPath = RuntimeSettings.generateTempDirectory("py-input");
             progressInfo.log("Input slot '" + slot.getName() + "' is stored in " + tempPath);
-            JIPipeDataSlot dummy = dataBatch.toDummySlot(slot.getInfo(), this, slot);
-            dummy.save(tempPath, null, progressInfo);
+            slot.save(tempPath, null, progressInfo);
             inputSlotPaths.put(slot.getName(), tempPath);
         }
         PythonUtils.inputSlotsToPython(code, inputSlotPaths);
@@ -175,7 +169,7 @@ public class IteratingPythonScriptAlgorithm extends JIPipeIteratingAlgorithm {
                 JIPipeDataInfo dataInfo = table.getDataTypeOf(row);
                 Path rowStoragePath = table.getRowStoragePath(storagePath, row);
                 JIPipeData data = JIPipe.importData(rowStoragePath, dataInfo.getDataClass());
-                dataBatch.addOutputData(outputSlot, data, table.getRowList().get(row).getAnnotations(), annotationMergeStrategy, progressInfo);
+                outputSlot.addData(data, table.getRowList().get(row).getAnnotations(), JIPipeAnnotationMergeStrategy.OverwriteExisting, progressInfo);
             }
         }
 
@@ -202,7 +196,6 @@ public class IteratingPythonScriptAlgorithm extends JIPipeIteratingAlgorithm {
             "<ul>" +
             "<li><code>jipipe_inputs</code> is a dict of input slots.</li>" +
             "<li><code>jipipe_outputs</code> is a dict of output slots.</li>" +
-            "<li><code>jipipe_annotations</code> is a dict of annotation variables of the current data batch.</li>" +
             "<li><code>jipipe_variables</code> is a dict of variables passed from the script parameters.</li>" +
             "</ul>" +
             "The script is designed to be used with the JIPipe Python API (supplied automatically by default). " +

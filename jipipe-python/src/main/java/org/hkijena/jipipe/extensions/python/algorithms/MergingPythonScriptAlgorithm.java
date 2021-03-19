@@ -86,28 +86,26 @@ public class MergingPythonScriptAlgorithm extends JIPipeMergingAlgorithm {
             JIPipeDefaultMutableSlotConfiguration slotConfiguration = (JIPipeDefaultMutableSlotConfiguration) getSlotConfiguration();
             slotConfiguration.clearInputSlots(true);
             slotConfiguration.clearOutputSlots(true);
-            slotConfiguration.addSlot("Table", new JIPipeDataSlotInfo(ResultsTableData.class, JIPipeSlotType.Input, null), true);
-            slotConfiguration.addSlot("Table", new JIPipeDataSlotInfo(ResultsTableData.class, JIPipeSlotType.Output, null), true);
-            code.setCode("from org.hkijena.jipipe.extensions.tables.datatypes import ResultsTableData\n" +
+            slotConfiguration.addSlot("Input", new JIPipeDataSlotInfo(ResultsTableData.class, JIPipeSlotType.Input, null), true);
+            slotConfiguration.addSlot("Output", new JIPipeDataSlotInfo(ResultsTableData.class, JIPipeSlotType.Output, null), true);
+            code.setCode("from jipipe.imagej import *\n" +
                     "\n" +
-                    "# Fetch the input table from the first input slot\n" +
-                    "input_table = data_batch.getInputData(input_slots[0], ResultsTableData)\n" +
+                    "# Get the input slot\n" +
+                    "ds = jipipe_inputs[\"Input\"]\n" +
                     "\n" +
-                    "table = ResultsTableData()\n" +
+                    "# Get the output slot\n" +
+                    "dso = jipipe_outputs[\"Output\"]\n" +
                     "\n" +
-                    "for col in range(input_table.getColumnCount()):\n" +
-                    "\ttable.addColumn(\"MEAN(\" + input_table.getColumnName(col) + \")\", True)\n" +
+                    "# Go through all tables, print, and add to output\n" +
+                    "for row in range(ds.rows):\n" +
                     "\n" +
-                    "table.addRow()\n" +
-                    "\n" +
-                    "for col in range(input_table.getColumnCount()):\n" +
-                    "\tcolumn = input_table.getColumnReference(col)\n" +
-                    "\tcolumn_data = column.getDataAsDouble(column.getRows())\n" +
-                    "\ttable.setValueAt(sum(column_data) / column.getRows(), 0, col)\n" +
-                    "\n" +
-                    "# Write the generated data\n" +
-                    "# Annotations are automatically transferred\n" +
-                    "data_batch.addOutputData(output_slots[0], table)\n");
+                    "\t# Get the first table from the slot\n" +
+                    "\ttable = load_table_file(data_slot=ds, row=0)\n" +
+                    "\t\n" +
+                    "\tprint(table)\n" +
+                    "\t\n" +
+                    "\t# Add the table to the output slot\n" +
+                    "\tadd_table(table, dso)\n");
             getEventBus().post(new ParameterChangedEvent(this, "code"));
         }
     }

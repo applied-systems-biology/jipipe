@@ -9,7 +9,6 @@ import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.JIPipeValidityReport;
 import org.hkijena.jipipe.api.data.*;
-import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.MiscellaneousNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeContextAction;
@@ -29,7 +28,9 @@ import org.hkijena.jipipe.utils.UIUtils;
 import javax.swing.*;
 import java.io.IOException;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @JIPipeDocumentation(name = "R script (merging)", description = "Allows to execute a custom R script. " +
@@ -115,15 +116,17 @@ public class MergingRScriptAlgorithm extends JIPipeMergingAlgorithm {
         RUtils.annotationsToR(code, dataBatch.getAnnotations().values());
 
         Map<String, Path> inputSlotPaths = new HashMap<>();
+        List<JIPipeDataSlot> dummySlots = new ArrayList<>();
         for (JIPipeDataSlot slot : getEffectiveInputSlots()) {
             Path tempPath = RuntimeSettings.generateTempDirectory("r-input");
             progressInfo.log("Input slot '" + slot.getName() + "' is stored in " + tempPath);
             JIPipeDataSlot dummy = dataBatch.toDummySlot(slot.getInfo(), this, slot);
             dummy.save(tempPath, null, progressInfo);
             inputSlotPaths.put(slot.getName(), tempPath);
+            dummySlots.add(dummy);
         }
 
-        RUtils.inputSlotsToR(code, inputSlotPaths, slotName -> getInputSlot(slotName).getRowCount());
+        RUtils.inputSlotsToR(code, inputSlotPaths, dummySlots);
         RUtils.installInputLoaderCode(code);
 
         Map<String, Path> outputSlotPaths = new HashMap<>();

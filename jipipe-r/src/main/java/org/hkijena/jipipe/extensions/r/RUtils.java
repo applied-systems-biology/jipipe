@@ -116,14 +116,38 @@ public class RUtils {
         }
     }
 
-    public static void inputSlotsToR(RCode code, Map<String, Path> inputSlotPaths, Function<String, Integer> slotRowCount) {
+    public static void inputSlotsToR(RCode code, Map<String, Path> inputSlotPaths, List<JIPipeDataSlot> inputSlots) {
+
+        Map<String, JIPipeDataSlot> inputSlotMap = new HashMap<>();
+        for (JIPipeDataSlot outputSlot : inputSlots) {
+            inputSlotMap.put(outputSlot.getName(), outputSlot);
+        }
+
         code.addRCode("JIPipe.InputSlotFolders <- list()");
         code.addRCode("JIPipe.InputSlotRowCounts <- list()");
+        code.addRCode("JIPipe.InputSlotRowAnnotations <- list()");
         for (Map.Entry<String, Path> entry : inputSlotPaths.entrySet()) {
-            code.addRCode("JIPipe.InputSlotFolders$\"" + MacroUtils.escapeString(entry.getKey()) + "\" <- \""
+            JIPipeDataSlot slot = inputSlotMap.get(entry.getKey());
+            String escapedKey = MacroUtils.escapeString(entry.getKey());
+            code.addRCode("JIPipe.InputSlotFolders$\"" + escapedKey + "\" <- \""
                     + MacroUtils.escapeString(entry.getValue() + "") + "\"");
-            code.addRCode("JIPipe.InputSlotRowCounts$\"" + MacroUtils.escapeString(entry.getKey()) + "\" <- "
-                    + slotRowCount.apply(entry.getKey()));
+            code.addRCode("JIPipe.InputSlotRowCounts$\"" + escapedKey + "\" <- "
+                    + slot.getRowCount());
+            code.addRCode("JIPipe.InputSlotRowAnnotations$\"" + escapedKey + "\" <- list()");
+            StringBuilder stringBuilder = new StringBuilder();
+            for (int row = 0; row < slot.getRowCount(); row++) {
+                stringBuilder.setLength(0);
+                for (JIPipeAnnotation annotation : slot.getAnnotations(row)) {
+                    if(stringBuilder.length() > 0)
+                        stringBuilder.append(", ");
+                    stringBuilder.append("\"")
+                            .append(MacroUtils.escapeString(annotation.getName()))
+                            .append("\" = \"")
+                            .append(MacroUtils.escapeString(annotation.getValue()))
+                            .append("\"");
+                }
+                code.addRCode("JIPipe.InputSlotRowAnnotations$\"" + escapedKey + "\"[[" + row + 1 + "]] <- list(" + stringBuilder.toString() + ")");
+            }
         }
 
         // The getter function
