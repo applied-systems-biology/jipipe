@@ -1,6 +1,7 @@
 from jipipe import data_slot
 from jipipe.imagej import *
 from pathlib import Path
+import jipipe.data_slot
 
 if __name__ == '__main__':
     # ds = data_slot.import_from_folder("E:\\Projects\\tmp\\Neuer Ordner\\Image")

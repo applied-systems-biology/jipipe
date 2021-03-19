@@ -35,6 +35,7 @@ public class PythonExtensionSettings implements JIPipeParameterCollection {
     private final EventBus eventBus = new EventBus();
 
     private Path pythonExecutable;
+    private boolean providePythonAdapter = true;
 
     public PythonExtensionSettings() {
     }
@@ -109,5 +110,17 @@ public class PythonExtensionSettings implements JIPipeParameterCollection {
     @JIPipeParameter("python-executable")
     public void setPythonExecutable(Path pythonExecutable) {
         this.pythonExecutable = pythonExecutable;
+    }
+
+    @JIPipeDocumentation(name = "Provide Python adapter", description = "If enabled, JIPipe will provide any Python node with the JIPipe Python Adapter modules. " +
+            "You may want to disable this if you installed a JIPipe adapter into your Python library.")
+    @JIPipeParameter("provide-python-adapter")
+    public boolean isProvidePythonAdapter() {
+        return providePythonAdapter;
+    }
+
+    @JIPipeParameter("provide-python-adapter")
+    public void setProvidePythonAdapter(boolean providePythonAdapter) {
+        this.providePythonAdapter = providePythonAdapter;
     }
 }
