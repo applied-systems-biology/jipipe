@@ -51,6 +51,10 @@
   </url>
   
   <url>
+    <loc>https://www.jipipe.org/documentation/standard-library/python/api/</loc>
+  </url>
+  
+  <url>
     <loc>https://www.jipipe.org/documentation-java-api/data-type/result-ui/</loc>
   </url>
   
@@ -211,15 +215,19 @@
   </url>
   
   <url>
+    <loc>https://www.jipipe.org/documentation/standard-library/jython/</loc>
+  </url>
+  
+  <url>
     <loc>https://www.jipipe.org/documentation-json-api/metadata/</loc>
   </url>
   
   <url>
-    <loc>https://www.jipipe.org/documentation/standard-library/python/</loc>
+    <loc>https://www.jipipe.org/documentation-java-api/usage-in-java/</loc>
   </url>
   
   <url>
-    <loc>https://www.jipipe.org/documentation-java-api/usage-in-java/</loc>
+    <loc>https://www.jipipe.org/documentation/standard-library/python/</loc>
   </url>
   
   <url>

@@ -5,7 +5,7 @@
     
       <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-<meta name="revised" content="2021-03-17T17:31:22 CET">
+<meta name="revised" content="2021-03-19T17:24:50 CET">
 <title>Python integration :: JIPipe for ImageJ</title>
 <link rel="shortcut icon" href="../../../images/favicon.png" type="image/x-icon" />
 <link href="../../../css/font-awesome.min.css" rel="stylesheet">
@@ -267,12 +267,28 @@
           </a><i class="fa fa-circle-thin read-icon"></i>
         </div>
     </li>
-      <li data-nav-id="https://www.jipipe.org/documentation/standard-library/python/" class="dd-item active">
+      <li data-nav-id="https://www.jipipe.org/documentation/standard-library/jython/" class="dd-item">
         <div>
-          <a href="../../../documentation/standard-library/python/">
-            Python integration
+          <a href="../../../documentation/standard-library/jython/">
+            Jython integration
           </a><i class="fa fa-circle-thin read-icon"></i>
         </div>
+    </li>
+    <li data-nav-id="https://www.jipipe.org/documentation/standard-library/python/" class="dd-item parent active haschildren
+        ">
+      <div>
+      <a href="../../../documentation/standard-library/python/">Python integration</a>
+            <i class="fa fa-angle-down fa-lg category-icon"></i><i class="fa fa-circle-thin read-icon"></i>
+      </div>
+        <ul>
+      <li data-nav-id="https://www.jipipe.org/documentation/standard-library/python/api/" class="dd-item">
+        <div>
+          <a href="../../../documentation/standard-library/python/api/">
+            Python API
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
+        </ul>
     </li>
       <li data-nav-id="https://www.jipipe.org/documentation/standard-library/r-integration/" class="dd-item">
         <div>
@@ -531,7 +547,12 @@
       <option value="/documentation/standard-library/multi-parameter/" >-- Multi-parameter algorithms</option>
       <option value="/documentation/standard-library/annotations/" >-- Data annotation algorithms</option>
       <option value="/documentation/standard-library/plots-tables/" >-- Plots and tables</option>
-      <option value="/documentation/standard-library/python/"  selected>-- Python integration</option>
+      <option value="/documentation/standard-library/jython/" >-- Jython integration</option>
+    <option value="/documentation/standard-library/python/"  selected>
+  -- 
+   Python integration</option> 
+      <option value="/documentation/standard-library/python/api/" >--- Python API</option>
+  
       <option value="/documentation/standard-library/r-integration/" >-- R integration</option>
   
     <option value="/documentation/create-json-extensions/" >
@@ -570,19 +591,28 @@
     
     
     
-    <p>The standard library contains nodes that allow to run Python scripts using
-the <a href="https://www.jython.org/">Jython</a> library. Python scripts have access to all
-JIPipe and ImageJ APIs that are available at runtime.</p>
-<p>
-<div class="notices info" ><p><p>Due to restrictions in the Jython library, Python libraries that are built
-on a native backend (such as Numpy) will not work.</p>
-</p></div>
 
-
-<div class="notices info" ><p><p>As JIPipe builds on the functionality provided by ImageJ. Please refer to the ImageJ documentation to find information on
-how to expand Jython with additional libraries.</p>
-</p></div>
-</p>
+<p>The standard library contains nodes that allow to run Python scripts using an existing
+installation of Python. This means you will need to download <a href="https://www.python.org/">Python</a>,
+<a href="https://www.anaconda.com/">Anaconda</a>, or <a href="https://docs.conda.io/en/latest/miniconda.html">Miniconda</a>.</p>
+<h2 id="setting-up-python">Setting up Python</h2>
+<p>If not already done, please install <a href="https://www.python.org/">Python</a>. Then open JIPipe and
+navigate to <code>Project &gt; Application settings &gt; Extensions &gt; Python integration</code>.</p>
+<p>Depending on the used Python distribution, you will need to put in different settings:</p>
+<h3 id="standard-python">Standard Python</h3>
+<p>If you use the global System Python from <a href="https://www.python.org/">https://www.python.org/</a> (No virtualenv), set <code>Python executable</code> to the main Python executable (<code>python.exe</code>).</p>
+<p>Set <code>Python arguments</code> to <code>ARRAY(script_file)</code>.</p>
+<h3 id="conda">Conda</h3>
+<p>If you use a Python distribution provided by <a href="https://www.anaconda.com/">Anaconda</a> or <a href="https://docs.conda.io/en/latest/miniconda.html">Miniconda</a>, you need
+to set <code>Python executable</code> to <code>conda.exe</code>. You will find it in the Conda installation folder (e.g., <code>Scripts/conda.exe</code> on Windows).</p>
+<p>Set <code>Python arguments</code> to <code>ARRAY(&quot;run&quot;, &quot;-n&quot;, &quot;base&quot;, &quot;python&quot;, script_file)</code>. Please note the that <code>script_file</code> is not quoted.
+You can replace &ldquo;base&rdquo; by the name of another Conda environment if needed.</p>
+<h3 id="virtualenv">virtualenv</h3>
+<p>virtualenv environments do not have a way to run scripts directly (like Conda does). You can try to set <code>Python executable</code> to the Python executable contained
+in the environment (e.g., <code>Scripts/python.exe</code> on Windows). Set <code>Python arguments</code> to <code>ARRAY(script_file)</code>.</p>
+<p>If this does not work, you will need to write a wrapper script (bat/sh) file that activates the environment before running the script.
+Please ensure that <code>script_file</code> is always passed in some way.</p>
+<h1 id="included-nodes">Included nodes</h1>
 <p>You can find the nodes in the <code>Miscellaneous</code> menu. You can find algorithms equivalent
 to each of the Java standard algorithms:</p>
 <table>
@@ -595,7 +625,7 @@ to each of the Java standard algorithms:</p>
 </thead>
 <tbody>
 <tr>
-<td>Python script (multi-parameter capable)</td>
+<td>Python script</td>
 <td><a href="../../../apidocs/org/hkijena/jipipe/api/nodes/JIPipeParameterSlotAlgorithm.html">JIPipeParameterSlotAlgorithm</a></td>
 <td>This algorithm allows users to run multiple parameter sets by optionally enabling an additional slot <code>Parameters</code>.</td>
 </tr>
@@ -627,28 +657,26 @@ to each of the Java standard algorithms:</p>
 </thead>
 <tbody>
 <tr>
-<td><code>input_slots</code></td>
-<td>A list of all effective input slots. This means, slots like the &lsquo;Parameters&rsquo; slot are not listed here. Each slot is using the Jython API to access the native Java data type. Refer to the <a href="../../../apidocs/org/hkijena/jipipe/api/data/JIPipeDataSlot.html">JIPipeDataSlot</a> documentation for further information.</td>
+<td><code>jipipe_inputs</code></td>
+<td>A dict of slot name to an instance of <a href="../../../documentation/standard-library/python/api/#dataslot-objects">DataSlot</a>. Each item represents the input data of the current data batch/current input.</td>
 </tr>
 <tr>
-<td><code>output_slots</code></td>
-<td>A list of all output slots.   Each slot is using the Jython API to access the native Java data type. Refer to the <a href="../../../apidocs/org/hkijena/jipipe/api/data/JIPipeDataSlot.html">JIPipeDataSlot</a> documentation for further information.</td>
-</tr>
-<tr>
-<td><code>input_slot_map</code></td>
-<td>A dictionary from input slot name to input slot instance.</td>
-</tr>
-<tr>
-<td><code>output_slot_map</code></td>
-<td>A dictionary from output slot name to output slot instance.</td>
+<td><code>jipipe_outputs</code></td>
+<td>A dict of slot name to an instance of <a href="../../../documentation/standard-library/python/api/#dataslot-objects">DataSlot</a>. Each item represents the output data of the current data batch/current output.</td>
 </tr>
 </tbody>
 </table>
-<h2 id="data-batch-access">Data batch access</h2>
+<h2 id="data-io">Data I/O</h2>
 <p>Python nodes based on <a href="../../../apidocs/org/hkijena/jipipe/api/nodes/JIPipeAlgorithm.html">JIPipeSimpleIteratingAlgorithm</a>,  <a href="../../../apidocs/org/hkijena/jipipe/api/nodes/JIPipeIteratingAlgorithm.html">JIPipeIteratingAlgorithm</a>, and
 <a href="../../../apidocs/org/hkijena/jipipe/api/nodes/JIPipeMergingAlgorithm.html">JIPipeMergingAlgorithm</a> repeat the script for each data batch (or at least once if there is none).
-Data batches organize the data of various input slots into one bundle that should be processed. Access to this data batch is provided via a variable <code>data_batch</code>.</p>
-<p>This variable points to an instance of <a href="../../../apidocs/org/hkijena/jipipe/api/nodes/JIPipeDataBatch.html">JIPipeDataBatch</a> (or <a href="../../../apidocs/org/hkijena/jipipe/api/nodes/JIPipeMergingDataBatch.html">JIPipeMergingDataBatch</a> for the merging algorithm).</p>
+Data batches organize the data of various input slots into one bundle that should be processed.</p>
+<p>Data access is handled through temporary folders that contain input/output data in JIPipe standardized format. The nodes are supplied with a <a href="../../../documentation/standard-library/python/api/">Python API</a>
+that allows to read/write data and metadata in this format.</p>
+<p>You can choose to not use the reading/writing functions provided by this package and access the input/output folders directly.</p>
+
+<div class="notices info" ><p><p>Each JIPipe data type provides information about the structure of the data folder. You can find it in [?] &gt; Data type compendium.</p>
+</p></div>
+
 <h2 id="script-parameters">Script parameters</h2>
 <p>Each node provides means to define Python variables inside the JIPipe environment via custom parameters. Each parameter value is passed as variable into Python - the name of the variable
 being determined by the unique ID of the parameter.</p>
@@ -656,12 +684,13 @@ being determined by the unique ID of the parameter.</p>
 that contains any annotations of the current parameter set.</p>
 
 
+
     
     
         <div class="chevrons">
     <div id="navigation">
-<a class="nav nav-prev" href="../../../documentation/standard-library/plots-tables/" title="Plots and tables"> <i class="fa fa-chevron-left"></i><label>Plots and tables</label></a>
-    <a class="nav nav-next" href="../../../documentation/standard-library/r-integration/" title="R integration" style="margin-right: 0px;"><label>R integration</label><i class="fa fa-chevron-right"></i></a></div>
+<a class="nav nav-prev" href="../../../documentation/standard-library/jython/" title="Jython integration"> <i class="fa fa-chevron-left"></i><label>Jython integration</label></a>
+    <a class="nav nav-next" href="../../../documentation/standard-library/python/api/" title="Python API" style="margin-right: 0px;"><label>Python API</label><i class="fa fa-chevron-right"></i></a></div>
   </div>
 
   </section>

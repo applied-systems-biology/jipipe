@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Python integration on JIPipe for ImageJ</title>
+    <link>https://www.jipipe.org/documentation/standard-library/python/</link>
+    <description>Recent content in Python integration on JIPipe for ImageJ</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    
+	<atom:link href="https://www.jipipe.org/documentation/standard-library/python/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>Python API</title>
+      <link>https://www.jipipe.org/documentation/standard-library/python/api/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://www.jipipe.org/documentation/standard-library/python/api/</guid>
+      <description>jipipe 
+jipipe.data_slot This file provides functions that are used to manage the contents of a data slot
+Zoltán Cseresnyés, Ruman Gerst
+Research Group Applied Systems Biology - Head: Prof. Dr. Marc Thilo Figge https://www.leibniz-hki.de/en/applied-systems-biology.html HKI-Center for Systems Biology of Infection Leibniz Institute for Natural Product Research and Infection Biology - Hans Knöll Institute (HKI) Adolf-Reichwein-Straße 23, 07745 Jena, Germany
+The project code is licensed under BSD 2-Clause. See the LICENSE file provided with the code for the full license.</description>
+    </item>
+    
+  </channel>
+</rss>

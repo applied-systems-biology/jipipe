@@ -5,7 +5,7 @@
     
       <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-<meta name="revised" content="2021-03-17T17:31:22 CET">
+<meta name="revised" content="2021-03-19T17:24:50 CET">
 <title>R integration :: JIPipe for ImageJ</title>
 <link rel="shortcut icon" href="../../../images/favicon.png" type="image/x-icon" />
 <link href="../../../css/font-awesome.min.css" rel="stylesheet">
@@ -267,12 +267,27 @@
           </a><i class="fa fa-circle-thin read-icon"></i>
         </div>
     </li>
-      <li data-nav-id="https://www.jipipe.org/documentation/standard-library/python/" class="dd-item">
+      <li data-nav-id="https://www.jipipe.org/documentation/standard-library/jython/" class="dd-item">
         <div>
-          <a href="../../../documentation/standard-library/python/">
-            Python integration
+          <a href="../../../documentation/standard-library/jython/">
+            Jython integration
           </a><i class="fa fa-circle-thin read-icon"></i>
         </div>
+    </li>
+    <li data-nav-id="https://www.jipipe.org/documentation/standard-library/python/" class="dd-item haschildren
+        ">
+      <div>
+      <a href="../../../documentation/standard-library/python/">Python integration</a><i class="fa fa-angle-right fa-lg category-icon"></i><i class="fa fa-circle-thin read-icon"></i>
+      </div>
+        <ul>
+      <li data-nav-id="https://www.jipipe.org/documentation/standard-library/python/api/" class="dd-item">
+        <div>
+          <a href="../../../documentation/standard-library/python/api/">
+            Python API
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
+        </ul>
     </li>
       <li data-nav-id="https://www.jipipe.org/documentation/standard-library/r-integration/" class="dd-item active">
         <div>
@@ -531,7 +546,10 @@
       <option value="/documentation/standard-library/multi-parameter/" >-- Multi-parameter algorithms</option>
       <option value="/documentation/standard-library/annotations/" >-- Data annotation algorithms</option>
       <option value="/documentation/standard-library/plots-tables/" >-- Plots and tables</option>
-      <option value="/documentation/standard-library/python/" >-- Python integration</option>
+      <option value="/documentation/standard-library/jython/" >-- Jython integration</option>
+    <option value="/documentation/standard-library/python/" >
+  -- 
+   Python integration</option>
       <option value="/documentation/standard-library/r-integration/"  selected>-- R integration</option>
   
     <option value="/documentation/create-json-extensions/" >
@@ -577,7 +595,7 @@ This means that you will need to install a distribution of <a href="https://www.
 <div class="notices info" ><p><p>You will need to install R (<a href="https://www.r-project.org/">https://www.r-project.org/</a>) and setup JIPipe to find this installation.</p>
 </p></div>
 
-<h2 id="setting-up-r">Setting up R</h2>
+<h1 id="setting-up-r">Setting up R</h1>
 <p>If not already done, please install <a href="https://www.r-project.org/">R</a>. Then open JIPipe and
 navigate to <code>Project &gt; Application settings &gt; Extensions &gt; R integration</code>.</p>
 <p>Here you will find two settings <code>Override R executable</code> and <code>Override RScript executable</code>.
@@ -587,7 +605,7 @@ please set them to the correct paths:</p>
 <li>The R executable should point to R.exe (Windows) or R (RScript). Example: <code>C:\Program Files\R\R-4.0.4\bin\R.exe</code> or <code>/usr/bin/R</code></li>
 <li>The RScript executable should point to RScript.exe (Windows) or RScript (Linux). Example: <code>C:\Program Files\R\R-4.0.4\bin\RScript.exe</code> or <code>/usr/bin/RScript</code></li>
 </ul>
-<h2 id="included-nodes">Included nodes</h2>
+<h1 id="included-nodes">Included nodes</h1>
 <p>You can find the R scripting nodes in the <code>Miscellaneous</code> menu. You can find algorithms equivalent
 to following Java standard algorithms:</p>
 <table>
@@ -613,7 +631,7 @@ to following Java standard algorithms:</p>
 </table>
 <p>Both nodes share a similar R API to communicate with JIPipe - the difference being how many data items can be processed in each iteration. All nodes repeat the script for each data batch (or at least once if there is none).
 Data batches organize the data of various input slots into one bundle that should be processed.</p>
-<h2 id="data-io">Data I/O</h2>
+<h1 id="data-io">Data I/O</h1>
 <p>As R is run in a separate environment, the data is communicated by writing it to the hard drive from one process and reading it back inside the other process.
 Currently, the nodes are designed for following data types:</p>
 <table>
@@ -638,7 +656,7 @@ Currently, the nodes are designed for following data types:</p>
 </tbody>
 </table>
 <p>Other data types <em>are</em> supported, although there are no predefined utility functions to load/save them for now.</p>
-<h3 id="loading-results-tables">Loading results tables</h3>
+<h2 id="loading-results-tables">Loading results tables</h2>
 <p>Result tables can be loaded via the <code>JIPipe.GetInputAsDataFrame(slot, row=0)</code> function. The <code>slot</code> parameter must be identical to the name of the input slot.
 The <code>row</code> parameter indicates which item of the current data batch should be returned. Please note that <code>row</code> can only be zero if you are using R script (iterating).</p>
 <p>If you have multiple rows, you can find their count in <code>JIPipe.InputSlotRowCounts</code></p>
@@ -646,14 +664,14 @@ The <code>row</code> parameter indicates which item of the current data batch sh
   <span style="color:#75715e"># Note that the row has zero-based indices</span>
   <span style="color:#111">table</span> <span style="color:#f92672">&lt;-</span> <span style="color:#75af00">JIPipe.GetInputAsDataFrame</span><span style="color:#111">(</span><span style="color:#111">slot</span><span style="color:#f92672">=</span><span style="color:#d88200">&#34;Tables&#34;</span><span style="color:#111">,</span> <span style="color:#111">row</span><span style="color:#f92672">=</span><span style="color:#111">i</span><span style="color:#ae81ff">-1</span><span style="color:#111">)</span>
 <span style="color:#111">}</span>
-</code></pre></div><h3 id="writing-result-tables">Writing result tables</h3>
+</code></pre></div><h2 id="writing-result-tables">Writing result tables</h2>
 <p>Result tables can be written via a function <code>JIPipe.AddOutputDataFrame(data, slot, annotations=list())</code>. This will <strong>add</strong> a new result table to the specified output.
 Please note, that you can add <em>multiple</em> outputs.</p>
 <p>The provided data must be of a type compatible with <code>write.csv</code>, like <code>data.frame</code>.</p>
 <p>Optionally, you can provide a list of annotations that should be added to the specified output data as list of named strings.</p>
 <div class="highlight"><pre style="color:#272822;background-color:#fafafa;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-R" data-lang="R"><span style="color:#75af00">library</span><span style="color:#111">(</span><span style="color:#111">datasets</span><span style="color:#111">)</span>
 <span style="color:#75af00">JIPipe.AddOutputDataFrame</span><span style="color:#111">(</span><span style="color:#111">iris</span><span style="color:#111">,</span> <span style="color:#d88200">&#34;Tables&#34;</span><span style="color:#111">,</span> <span style="color:#111">annotations</span><span style="color:#f92672">=</span><span style="color:#75af00">list</span><span style="color:#111">(</span><span style="color:#d88200">&#34;data set&#34;</span><span style="color:#f92672">=</span><span style="color:#d88200">&#34;Iris&#34;</span><span style="color:#111">))</span>
-</code></pre></div><h3 id="writing-plots-or-other-images">Writing plots or other images</h3>
+</code></pre></div><h2 id="writing-plots-or-other-images">Writing plots or other images</h2>
 <p>As R does not have a dedicated data type for images, the JIPipe API will only provide means to generate a valid output file name.
 For this, two methods <code>JIPipe.AddOutputPNGImagePath(data, slot, annotations=list())</code> and <code>JIPipe.AddOutputTIFFImagePath(data, slot, annotations=list())</code>
 are available that produce a path for PNG or TIFF files respectively.</p>
@@ -672,7 +690,7 @@ are available that produce a path for PNG or TIFF files respectively.</p>
 <span style="color:#75af00">dev.off</span><span style="color:#111">()</span>
 
 <span style="color:#75715e"># JIPipe will automatically load the data</span>
-</code></pre></div><h3 id="reading-and-writing-other-data-types">Reading and writing other data types</h3>
+</code></pre></div><h2 id="reading-and-writing-other-data-types">Reading and writing other data types</h2>
 <p>Currently, only reading and writing of tables, as well as writing of image data is supported via convience functions.
 The node supports all other JIPipe data types, although import and export must be written via custom functions.</p>
 <p>JIPipe provides the input of each data item via a dedicated folder that contains all files related to this data.
@@ -683,7 +701,7 @@ to obtain a valid path to such a folder and register the output.</p>
 <div class="notices info" ><p><p>Each JIPipe data type provides information about the structure of the data folder. You can find it in [?] &gt; Data type compendium.</p>
 </p></div>
 
-<h2 id="script-parameters">Script parameters</h2>
+<h1 id="script-parameters">Script parameters</h1>
 <p>Each node provides means to define R variables inside the JIPipe environment via custom parameters. Each parameter value is passed as variable into R - the name of the variable
 being determined by the unique ID of the parameter.</p>
 <p>Independent of the compatibility of a parameter&rsquo;s unique key, all variables are also provided as named list entries in <code>JIPipe.Variables</code>.</p>
@@ -693,7 +711,7 @@ being determined by the unique ID of the parameter.</p>
     
         <div class="chevrons">
     <div id="navigation">
-<a class="nav nav-prev" href="../../../documentation/standard-library/python/" title="Python integration"> <i class="fa fa-chevron-left"></i><label>Python integration</label></a>
+<a class="nav nav-prev" href="../../../documentation/standard-library/python/api/" title="Python API"> <i class="fa fa-chevron-left"></i><label>Python API</label></a>
     <a class="nav nav-next" href="../../../documentation/create-json-extensions/" title="Extension builder" style="margin-right: 0px;"><label>Extension builder</label><i class="fa fa-chevron-right"></i></a></div>
   </div>
 
