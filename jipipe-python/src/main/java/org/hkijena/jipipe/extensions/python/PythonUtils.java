@@ -8,12 +8,14 @@ import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
+import org.hkijena.jipipe.extensions.parameters.expressions.ExpressionParameters;
 import org.hkijena.jipipe.extensions.parameters.generators.IntegerRange;
 import org.hkijena.jipipe.extensions.parameters.primitives.DoubleList;
 import org.hkijena.jipipe.extensions.parameters.primitives.IntegerList;
 import org.hkijena.jipipe.extensions.parameters.primitives.StringList;
 import org.hkijena.jipipe.extensions.settings.RuntimeSettings;
 import org.hkijena.jipipe.utils.MacroUtils;
+import org.hkijena.jipipe.utils.StringUtils;
 import org.reflections.Reflections;
 import org.reflections.scanners.ResourcesScanner;
 import org.reflections.util.ClasspathHelper;
@@ -212,7 +214,22 @@ public class PythonUtils {
     public static void runPython(Path scriptFile, JIPipeProgressInfo progressInfo) {
         Path pythonExecutable = PythonExtensionSettings.getInstance().getPythonExecutable();
         CommandLine commandLine = new CommandLine(pythonExecutable.toFile());
-        commandLine.addArgument(scriptFile.toString());
+
+        ExpressionParameters parameters = new ExpressionParameters();
+        parameters.set("script_file", scriptFile.toString());
+        parameters.set("python_executable", PythonExtensionSettings.getInstance().getPythonExecutable().toString());
+        Object evaluationResult = PythonExtensionSettings.getInstance().getPythonArguments().evaluate(parameters);
+        for(Object item : (Collection<?>)evaluationResult) {
+            commandLine.addArgument(StringUtils.nullToEmpty(item));
+        }
+        progressInfo.log("Running Python: " + Arrays.stream(commandLine.toStrings()).map(s -> {
+            if(s.contains(" ")) {
+                return "\"" + MacroUtils.escapeString(s) + "\"";
+            }
+            else {
+                return MacroUtils.escapeString(s);
+            }
+        }).collect(Collectors.joining(" ")));
 
         LogOutputStream progressInfoLog = new LogOutputStream() {
             @Override
