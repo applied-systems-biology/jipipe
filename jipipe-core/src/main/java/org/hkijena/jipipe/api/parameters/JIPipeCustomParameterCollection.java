@@ -38,4 +38,11 @@ public interface JIPipeCustomParameterCollection extends JIPipeParameterCollecti
     default Map<String, JIPipeParameterCollection> getChildParameterCollections() {
         return Collections.emptyMap();
     }
+
+    /**
+     * If true, also include parameters discovered via reflection.
+     * Custom parameters are added/override reflection parameters
+     * @return if parameters also should be discovered via reflection
+     */
+    default boolean getIncludeReflectionParameters() { return false; }
 }

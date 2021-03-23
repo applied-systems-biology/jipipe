@@ -154,6 +154,9 @@ public class JIPipeParameterTree implements JIPipeParameterCollection, JIPipeCus
      */
     public void merge(JIPipeParameterCollection source, Node target) {
         if (!forceReflection && source instanceof JIPipeCustomParameterCollection) {
+            if(((JIPipeCustomParameterCollection) source).getIncludeReflectionParameters() && !ignoreReflectionParameters) {
+                addReflectionParameters(source, target);
+            }
             if (ignoreCustomParameters)
                 return;
             for (Map.Entry<String, JIPipeParameterAccess> entry : ((JIPipeCustomParameterCollection) source).getParameters().entrySet()) {
@@ -169,13 +172,12 @@ public class JIPipeParameterTree implements JIPipeParameterCollection, JIPipeCus
 
                 merge(child, childNode);
             }
-            addContextActions(source, target);
         } else {
             if (ignoreReflectionParameters)
                 return;
             addReflectionParameters(source, target);
-            addContextActions(source, target);
         }
+        addContextActions(source, target);
         source.getEventBus().register(this);
     }
 

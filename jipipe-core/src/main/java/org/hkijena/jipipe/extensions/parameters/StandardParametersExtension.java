@@ -20,6 +20,7 @@ import org.hkijena.jipipe.JIPipeImageJUpdateSiteDependency;
 import org.hkijena.jipipe.JIPipeJavaExtension;
 import org.hkijena.jipipe.api.JIPipeAuthorMetadata;
 import org.hkijena.jipipe.api.data.JIPipeAnnotationMergeStrategy;
+import org.hkijena.jipipe.api.grouping.GraphWrapperAlgorithm;
 import org.hkijena.jipipe.api.nodes.JIPipeColumnGrouping;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollectionVisibilities;
@@ -117,6 +118,10 @@ public class StandardParametersExtension extends JIPipePrepackagedDefaultJavaExt
                 "ImageJ update site",
                 "An ImageJ update site",
                 null);
+        registerEnumParameterType("graph-wrapper:iteration-mode",
+                GraphWrapperAlgorithm.IterationMode.class,
+                "Iteration mode",
+                "Determines how the wrapped graph is executed.");
 
 
         registerPrimitives();

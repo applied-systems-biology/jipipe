@@ -14,25 +14,31 @@
 package org.hkijena.jipipe.api.grouping;
 
 import com.google.common.eventbus.Subscribe;
+import gnu.trove.set.TIntSet;
+import gnu.trove.set.hash.TIntHashSet;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.JIPipeDependency;
+import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeGraphRunner;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.JIPipeValidityReport;
 import org.hkijena.jipipe.api.data.*;
-import org.hkijena.jipipe.api.nodes.JIPipeAlgorithm;
-import org.hkijena.jipipe.api.nodes.JIPipeGraph;
-import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
-import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
+import org.hkijena.jipipe.api.nodes.*;
+import org.hkijena.jipipe.api.parameters.JIPipeParameter;
+import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
+import org.hkijena.jipipe.api.parameters.JIPipeParameterVisibility;
+import org.hkijena.jipipe.extensions.parameters.generators.IntegerRange;
+import org.hkijena.jipipe.extensions.parameters.primitives.EnumItemInfo;
+import org.hkijena.jipipe.extensions.parameters.primitives.EnumParameterSettings;
+import org.hkijena.jipipe.utils.UIUtils;
 
-import java.util.Collections;
-import java.util.Map;
-import java.util.Set;
+import javax.swing.*;
+import java.util.*;
 
 /**
  * An algorithm that wraps another algorithm graph
  */
-public class GraphWrapperAlgorithm extends JIPipeAlgorithm {
+public class GraphWrapperAlgorithm extends JIPipeAlgorithm implements JIPipeDataBatchAlgorithm {
 
     private JIPipeGraph wrappedGraph;
     private GraphWrapperAlgorithmInput algorithmInput;
@@ -40,6 +46,8 @@ public class GraphWrapperAlgorithm extends JIPipeAlgorithm {
     private IOSlotWatcher ioSlotWatcher;
     private boolean preventUpdateSlots = false;
     private boolean slotConfigurationIsComplete;
+    private IterationMode iterationMode = IterationMode.PassThrough;
+    private JIPipeMergingAlgorithm.DataBatchGenerationSettings batchGenerationSettings = new JIPipeMergingAlgorithm.DataBatchGenerationSettings();
 
     /**
      * @param info         the info
@@ -57,6 +65,8 @@ public class GraphWrapperAlgorithm extends JIPipeAlgorithm {
      */
     public GraphWrapperAlgorithm(GraphWrapperAlgorithm other) {
         super(other);
+        this.iterationMode = other.iterationMode;
+        this.batchGenerationSettings = new JIPipeMergingAlgorithm.DataBatchGenerationSettings(other.batchGenerationSettings);
         setWrappedGraph(new JIPipeGraph(other.wrappedGraph));
     }
 
@@ -141,6 +151,63 @@ public class GraphWrapperAlgorithm extends JIPipeAlgorithm {
 
     @Override
     public void run(JIPipeProgressInfo progressInfo) {
+        if(iterationMode == IterationMode.PassThrough) {
+            runWithDataPassThrough(progressInfo);
+        }
+        else {
+            runPerBatch(progressInfo);
+        }
+    }
+
+    private void runPerBatch(JIPipeProgressInfo progressInfo) {
+        if(getEffectiveInputSlots().isEmpty()) {
+            runWithDataPassThrough(progressInfo);
+            return;
+        }
+        List<JIPipeMergingDataBatch> dataBatches = generateDataBatchesDryRun(getEffectiveInputSlots());
+        for (int i = 0; i < dataBatches.size(); i++) {
+            JIPipeProgressInfo batchProgress = progressInfo.resolveAndLog("Data batch", i, dataBatches.size());
+            JIPipeMergingDataBatch dataBatch = dataBatches.get(i);
+
+            // Iterate through own input slots and pass them to the equivalents in group input
+            for (JIPipeDataSlot inputSlot : getInputSlots()) {
+                JIPipeDataSlot groupInputSlot = getGroupInput().getInputSlot(inputSlot.getName());
+                for (Integer row : dataBatch.getInputRows(inputSlot)) {
+                    groupInputSlot.addData(inputSlot.getVirtualData(row), inputSlot.getAnnotations(row), JIPipeAnnotationMergeStrategy.OverwriteExisting);
+                }
+            }
+
+            // Run the graph
+            try {
+                for (JIPipeGraphNode value : wrappedGraph.getNodes().values()) {
+                    if (value instanceof JIPipeAlgorithm) {
+                        ((JIPipeAlgorithm) value).setThreadPool(getThreadPool());
+                    }
+                }
+                JIPipeGraphRunner runner = new JIPipeGraphRunner(wrappedGraph);
+                runner.setProgressInfo(batchProgress.resolve("Sub-graph"));
+                runner.setAlgorithmsWithExternalInput(Collections.singleton(getGroupInput()));
+                runner.run();
+            } finally {
+                for (JIPipeGraphNode value : wrappedGraph.getNodes().values()) {
+                    if (value instanceof JIPipeAlgorithm) {
+                        ((JIPipeAlgorithm) value).setThreadPool(null);
+                    }
+                }
+            }
+
+            // Copy into output
+            for (JIPipeDataSlot outputSlot : getOutputSlots()) {
+                JIPipeDataSlot groupOutputSlot = getGroupOutput().getOutputSlot(outputSlot.getName());
+                outputSlot.addData(groupOutputSlot, progressInfo);
+            }
+
+            // Clear all data in the wrapped graph
+            clearWrappedGraphData();
+        }
+    }
+
+    private void runWithDataPassThrough(JIPipeProgressInfo progressInfo) {
         // Iterate through own input slots and pass them to the equivalents in group input
         for (JIPipeDataSlot inputSlot : getInputSlots()) {
             JIPipeDataSlot groupInputSlot = getGroupInput().getInputSlot(inputSlot.getName());
@@ -218,6 +285,60 @@ public class GraphWrapperAlgorithm extends JIPipeAlgorithm {
         }
     }
 
+    @Override
+    public JIPipeParameterCollection getGenerationSettingsInterface() {
+        return batchGenerationSettings;
+    }
+
+    @Override
+    public List<JIPipeMergingDataBatch> generateDataBatchesDryRun(List<JIPipeDataSlot> slots) {
+        if(iterationMode == IterationMode.PassThrough) {
+            JIPipeMergingDataBatch dataBatch = new JIPipeMergingDataBatch(this);
+            for (JIPipeDataSlot inputSlot : getEffectiveInputSlots()) {
+                for (int row = 0; row < inputSlot.getRowCount(); row++) {
+                    dataBatch.addData(inputSlot, row);
+                }
+            }
+            return Collections.singletonList(dataBatch);
+        }
+        else {
+            JIPipeMergingDataBatchBuilder builder = new JIPipeMergingDataBatchBuilder();
+            builder.setNode(this);
+            builder.setApplyMerging(iterationMode == IterationMode.MergingDataBatch);
+            builder.setSlots(slots);
+            builder.setAnnotationMergeStrategy(batchGenerationSettings.getAnnotationMergeStrategy());
+            builder.setReferenceColumns(batchGenerationSettings.getDataSetMatching(),
+                    batchGenerationSettings.getCustomColumns());
+            List<JIPipeMergingDataBatch> dataBatches = builder.build();
+            dataBatches.sort(Comparator.naturalOrder());
+            boolean withLimit = batchGenerationSettings.getLimit().isEnabled();
+            IntegerRange limit = batchGenerationSettings.getLimit().getContent();
+            TIntSet allowedIndices = withLimit ? new TIntHashSet(limit.getIntegers()) : null;
+            if (withLimit) {
+                List<JIPipeMergingDataBatch> limitedBatches = new ArrayList<>();
+                for (int i = 0; i < dataBatches.size(); i++) {
+                    if (allowedIndices.contains(i)) {
+                        limitedBatches.add(dataBatches.get(i));
+                    }
+                }
+                dataBatches = limitedBatches;
+            }
+            return dataBatches;
+        }
+    }
+
+    public JIPipeMergingAlgorithm.DataBatchGenerationSettings getBatchGenerationSettings() {
+        return batchGenerationSettings;
+    }
+
+    public IterationMode getIterationMode() {
+        return iterationMode;
+    }
+
+    public void setIterationMode(IterationMode iterationMode) {
+        this.iterationMode = iterationMode;
+    }
+
     /**
      * Keeps track of changes in the graph wrapper's input and output slots
      */
@@ -235,6 +356,71 @@ public class GraphWrapperAlgorithm extends JIPipeAlgorithm {
         @Subscribe
         public void onIOSlotsChanged(JIPipeSlotConfiguration.SlotsChangedEvent event) {
             updateGroupSlots();
+        }
+    }
+
+    /**
+     * Determines how the data is iterated
+     */
+    @EnumParameterSettings(itemInfo = IterationModeEnumInfo.class)
+    public enum IterationMode {
+        PassThrough,
+        IteratingDataBatch,
+        MergingDataBatch;
+
+        @Override
+        public String toString() {
+            switch (this) {
+                case PassThrough:
+                    return "Pass data through";
+                case MergingDataBatch:
+                    return "Per merging data batch";
+                case IteratingDataBatch:
+                    return "Per iterating data batch";
+                default:
+                    throw new UnsupportedOperationException();
+            }
+        }
+    }
+
+    public static class IterationModeEnumInfo implements EnumItemInfo {
+
+        @Override
+        public Icon getIcon(Object value) {
+            switch ((IterationMode)value) {
+                case MergingDataBatch:
+                    return UIUtils.getIconFromResources("actions/rabbitvcs-merge.png");
+                case IteratingDataBatch:
+                    return UIUtils.getIconFromResources("actions/media-playlist-normal.png");
+                case PassThrough:
+                    return UIUtils.getIconFromResources("actions/draw-arrow-forward.png");
+                default:
+                    throw new UnsupportedOperationException();
+            }
+        }
+
+        @Override
+        public String getLabel(Object value) {
+            return value.toString();
+        }
+
+        @Override
+        public String getTooltip(Object value) {
+            switch ((IterationMode)value) {
+                case PassThrough:
+                    return "Passes data from the inputs through the I/O nodes of the wrapped graph. " +
+                            "The wrapped graph is then executed once.";
+                case IteratingDataBatch:
+                    return "Iterates through all data batches of the group node. " +
+                            "The wrapped graph is executed for each data batch. " +
+                            "This uses an iterating data batch (only one data row per slot per batch)";
+                case MergingDataBatch:
+                    return "Iterates through all data batches of the group node. " +
+                            "The wrapped graph is executed for each data batch. " +
+                            "This uses an merging data batch (multiple data rows per slot per batch)";
+                default:
+                    throw new UnsupportedOperationException();
+            }
         }
     }
 }

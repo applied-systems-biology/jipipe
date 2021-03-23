@@ -27,16 +27,19 @@ import org.hkijena.jipipe.api.compartments.algorithms.JIPipeCompartmentOutput;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.data.JIPipeMutableSlotConfiguration;
 import org.hkijena.jipipe.api.grouping.events.ParameterReferencesChangedEvent;
+import org.hkijena.jipipe.api.grouping.parameters.GraphNodeParameterReferenceAccessGroup;
 import org.hkijena.jipipe.api.grouping.parameters.GraphNodeParameterReferenceAccessGroupList;
 import org.hkijena.jipipe.api.grouping.parameters.GraphNodeParameters;
 import org.hkijena.jipipe.api.grouping.parameters.NodeGroupContents;
 import org.hkijena.jipipe.api.nodes.JIPipeGraph;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
+import org.hkijena.jipipe.api.nodes.JIPipeMergingAlgorithm;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.categories.MiscellaneousNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.*;
 import org.hkijena.jipipe.utils.StringUtils;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -191,15 +194,24 @@ public class NodeGroup extends GraphWrapperAlgorithm implements JIPipeCustomPara
 
     @Override
     public Map<String, JIPipeParameterAccess> getParameters() {
-        JIPipeParameterTree standardParameters = new JIPipeParameterTree(this,
-                JIPipeParameterTree.IGNORE_CUSTOM | JIPipeParameterTree.FORCE_REFLECTION);
-        return standardParameters.getParameters();
+//        JIPipeParameterTree standardParameters = new JIPipeParameterTree(this,
+//                JIPipeParameterTree.IGNORE_CUSTOM | JIPipeParameterTree.FORCE_REFLECTION);
+//        HashMap<String, JIPipeParameterAccess> map = new HashMap<>(standardParameters.getParameters());
+//        map.values().removeIf(access -> access.getSource() != this);
+//        return map;
+        return Collections.emptyMap();
+    }
+
+    @Override
+    public boolean getIncludeReflectionParameters() {
+        return true;
     }
 
     @Override
     public Map<String, JIPipeParameterCollection> getChildParameterCollections() {
         this.exportedParameters.setGraph(getWrappedGraph());
         Map<String, JIPipeParameterCollection> result = new HashMap<>();
+//        result.put("jipipe:data-batch-generation", getBatchGenerationSettings());
         result.put("exported", new GraphNodeParameterReferenceAccessGroupList(exportedParameters, getWrappedGraph().getParameterTree(), false));
         return result;
     }
@@ -207,5 +219,29 @@ public class NodeGroup extends GraphWrapperAlgorithm implements JIPipeCustomPara
     @Subscribe
     public void onParameterReferencesChanged(ParameterReferencesChangedEvent event) {
         getEventBus().post(new ParameterStructureChangedEvent(this));
+    }
+
+    @JIPipeDocumentation(name = "Data batch generation", description = "Only used if the graph iteration mode is not set to 'Pass data through'. " +
+            "This algorithm can have multiple inputs. This means that JIPipe has to match incoming data into batches via metadata annotations. " +
+            "The following settings allow you to control which columns are used as reference to organize data.")
+    @JIPipeParameter(value = "jipipe:data-batch-generation", visibility = JIPipeParameterVisibility.Visible, collapsed = true)
+    public JIPipeMergingAlgorithm.DataBatchGenerationSettings getBatchGenerationSettings() {
+        return super.getBatchGenerationSettings();
+    }
+
+    @JIPipeDocumentation(name = "Graph iteration mode", description = "Determines how the wrapped graph is iterated:" +
+            "<ul>" +
+            "<li>The data can be passed through. This means that the wrapped graph receives all data as-is and will be executed once.</li>" +
+            "<li>The wrapped graph can be executed per data batch. Here you can choose between an iterative data batch (one item per slot) " +
+            "or a merging data batch (multiple items per slot).</li>" +
+            "</ul>")
+    @JIPipeParameter("iteration-mode")
+    public IterationMode getIterationMode() {
+        return super.getIterationMode();
+    }
+
+    @JIPipeParameter("iteration-mode")
+    public void setIterationMode(IterationMode iterationMode) {
+       super.setIterationMode(iterationMode);
     }
 }
