@@ -572,7 +572,7 @@ public class JIPipeProjectWorkbench extends JPanel implements JIPipeWorkbench {
                 IJ.handleException(e);
             }
         }
-        Path indexFile = imageJDir.resolve("offline-manual").resolve("docs").resolve("index.html");
+        Path indexFile = imageJDir.resolve("jipipe").resolve("offline-manual").resolve("docs").resolve("index.html");
         DownloadOfflineManualRun run = new DownloadOfflineManualRun();
         if(!Files.exists(indexFile)) {
             if(JOptionPane.showConfirmDialog(this, "The manual needs to be downloaded, first." +

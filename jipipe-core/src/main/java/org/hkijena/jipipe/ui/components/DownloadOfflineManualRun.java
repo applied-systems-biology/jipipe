@@ -49,7 +49,7 @@ public class DownloadOfflineManualRun implements JIPipeRunnable {
                 IJ.handleException(e);
             }
         }
-        Path targetDirectory = imageJDir.resolve("offline-manual");
+        Path targetDirectory = imageJDir.resolve("jipipe").resolve("offline-manual");
         Path targetFile = targetDirectory.resolve("jipipe_offline_documentation.zip");
         if(!Files.isDirectory(targetDirectory)) {
             try {
