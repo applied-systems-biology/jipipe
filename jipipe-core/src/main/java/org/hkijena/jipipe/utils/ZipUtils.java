@@ -30,16 +30,27 @@ public class ZipUtils {
         ZipInputStream zis = new ZipInputStream(new FileInputStream(zipFile.toFile()));
         ZipEntry zipEntry = zis.getNextEntry();
         while (zipEntry != null) {
-            File newFile = newFile(targetDir.toFile(), zipEntry);
-            progressInfo.log(newFile.toString());
-            if (!Files.isDirectory(newFile.toPath().getParent()))
-                Files.createDirectories(newFile.toPath().getParent());
-            FileOutputStream fos = new FileOutputStream(newFile);
-            int len;
-            while ((len = zis.read(buffer)) > 0) {
-                fos.write(buffer, 0, len);
+            if(zipEntry.isDirectory()) {
+                File newDirectory = newFile(targetDir.toFile(), zipEntry);
+                progressInfo.log(newDirectory.toString());
+                if (!Files.isDirectory(newDirectory.toPath()))
+                    Files.createDirectories(newDirectory.toPath());
             }
-            fos.close();
+            else {
+                File newFile = newFile(targetDir.toFile(), zipEntry);
+                progressInfo.log(newFile.toString());
+                if (!Files.isDirectory(newFile.toPath().getParent()))
+                    Files.createDirectories(newFile.toPath().getParent());
+                if (Files.exists(newFile.toPath())) {
+                    Files.delete(newFile.toPath());
+                }
+                FileOutputStream fos = new FileOutputStream(newFile);
+                int len;
+                while ((len = zis.read(buffer)) > 0) {
+                    fos.write(buffer, 0, len);
+                }
+                fos.close();
+            }
             zipEntry = zis.getNextEntry();
         }
         zis.closeEntry();

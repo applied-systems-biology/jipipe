@@ -23,6 +23,7 @@ import java.nio.file.Path;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
+import java.util.function.Supplier;
 
 public class WebUtils {
     private static boolean isRedirected(Map<String, List<String>> header) {
@@ -39,9 +40,10 @@ public class WebUtils {
      * @param url             the URL
      * @param outputFile      the output file
      * @param bytesDownloaded progress on how many bytes were downloaded
+     * @param isCancelled
      * @throws IOException thrown by streaming
      */
-    public static void download(URL url, Path outputFile, Consumer<Integer> bytesDownloaded) throws IOException {
+    public static void download(URL url, Path outputFile, Consumer<Integer> bytesDownloaded, Supplier<Boolean> isCancelled) throws IOException {
         HttpURLConnection http = (HttpURLConnection) url.openConnection();
 
         // Handle redirection
@@ -60,6 +62,8 @@ public class WebUtils {
             int total = 0;
             try (OutputStream output = new FileOutputStream(outputFile.toFile())) {
                 while ((n = input.read(buffer)) != -1) {
+                    if(isCancelled.get())
+                        return;
                     total += n;
                     output.write(buffer, 0, n);
                     bytesDownloaded.accept(total);

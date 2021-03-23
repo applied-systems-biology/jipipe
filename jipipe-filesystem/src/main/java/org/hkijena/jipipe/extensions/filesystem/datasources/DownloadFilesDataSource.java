@@ -64,7 +64,7 @@ public class DownloadFilesDataSource extends JIPipeSimpleIteratingAlgorithm {
                             progressInfo.log(message);
                             lastMessage[0] = message;
                         }
-                    });
+                    }, () -> progressInfo.isCancelled().get());
                 } catch (IOException e) {
                     throw new UserFriendlyRuntimeException(e, "Error while downloading!", "Algorithm '" + getName() + "'", "There was an error downloading URL '" + url + "' to " + targetFile, "Please check if the URL is valid, an internet connection is available, and the target device has enough space.");
                 }

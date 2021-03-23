@@ -347,7 +347,7 @@ public class ImageViewerPanel extends JPanel {
             String format = fileFormatEditor.getSelectedItem() + "";
             String baseName = StringUtils.makeFilesystemCompatible(baseNameEditor.getText());
             ImageViewerStackExporterRun run = new ImageViewerStackExporterRun(this, targetPath, baseName, format);
-            JIPipeRunExecuterUI.runInDialog(run);
+            JIPipeRunExecuterUI.runInDialog(this, run);
         }
     }
 
@@ -394,7 +394,7 @@ public class ImageViewerPanel extends JPanel {
                     animationTimer.getDelay(),
                     (AVICompression) compressionEditor.getSelectedItem(),
                     compressionQualityEditor.getValue());
-            JIPipeRunExecuterUI.runInDialog(run);
+            JIPipeRunExecuterUI.runInDialog(this, run);
         }
     }
 

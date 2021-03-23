@@ -14,6 +14,8 @@
 package org.hkijena.jipipe.ui;
 
 import com.google.common.eventbus.Subscribe;
+import ij.IJ;
+import ij.Prefs;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.JIPipeJsonExtension;
 import org.hkijena.jipipe.api.JIPipeProject;
@@ -41,10 +43,7 @@ import org.hkijena.jipipe.ui.extensions.JIPipePluginManagerUIPanel;
 import org.hkijena.jipipe.ui.extensions.JIPipePluginValidityCheckerPanel;
 import org.hkijena.jipipe.ui.ijupdater.JIPipeImageJPluginManager;
 import org.hkijena.jipipe.ui.project.JIPipeProjectTabMetadata;
-import org.hkijena.jipipe.ui.running.JIPipeLogViewer;
-import org.hkijena.jipipe.ui.running.JIPipeRunSettingsUI;
-import org.hkijena.jipipe.ui.running.JIPipeRunnerQueueUI;
-import org.hkijena.jipipe.ui.running.RealTimeProjectRunner;
+import org.hkijena.jipipe.ui.running.*;
 import org.hkijena.jipipe.ui.settings.JIPipeApplicationSettingsUI;
 import org.hkijena.jipipe.ui.settings.JIPipeProjectSettingsUI;
 import org.hkijena.jipipe.utils.UIUtils;
@@ -56,7 +55,10 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.awt.event.WindowEvent;
+import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -515,6 +517,11 @@ public class JIPipeProjectWorkbench extends JPanel implements JIPipeWorkbench {
         JMenu helpMenu = new JMenu();
         helpMenu.setIcon(UIUtils.getIconFromResources("actions/help.png"));
 
+        JMenuItem offlineManual = new JMenuItem("Manual", UIUtils.getIconFromResources("actions/help.png"));
+        offlineManual.setToolTipText("Opens the offline manual in a browser. If the manual is not available, it will be downloaded.");
+        offlineManual.addActionListener(e -> openManual());
+        helpMenu.add(offlineManual);
+
         JMenuItem quickHelp = new JMenuItem("Getting started", UIUtils.getIconFromResources("actions/help-info.png"));
         quickHelp.addActionListener(e -> documentTabPane.selectSingletonTab(TAB_INTRODUCTION));
         helpMenu.add(quickHelp);
@@ -554,6 +561,44 @@ public class JIPipeProjectWorkbench extends JPanel implements JIPipeWorkbench {
         UIUtils.installMenuExtension(this, helpMenu, MenuTarget.ProjectHelpMenu, true);
 
         add(menu, BorderLayout.NORTH);
+    }
+
+    private void openManual() {
+        Path imageJDir = Paths.get(Prefs.getImageJDir());
+        if (!Files.isDirectory(imageJDir)) {
+            try {
+                Files.createDirectories(imageJDir);
+            } catch (IOException e) {
+                IJ.handleException(e);
+            }
+        }
+        Path indexFile = imageJDir.resolve("offline-manual").resolve("docs").resolve("index.html");
+        DownloadOfflineManualRun run = new DownloadOfflineManualRun();
+        if(!Files.exists(indexFile)) {
+            if(JOptionPane.showConfirmDialog(this, "The manual needs to be downloaded, first." +
+                    "\nDo you want to download it now?\n\n" +
+                    "This needs to be only done once.\n\n" +
+                    "URL: " + DownloadOfflineManualRun.DOWNLOAD_URL,
+                    "Open manual",
+                    JOptionPane.YES_NO_OPTION,
+                    JOptionPane.QUESTION_MESSAGE) == JOptionPane.NO_OPTION) {
+                return;
+            }
+            JIPipeRunExecuterUI.runInDialog(getWindow(), run);
+        }
+        if(Files.exists(indexFile)) {
+            try {
+                Desktop.getDesktop().open(indexFile.toFile());
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        else {
+            JOptionPane.showMessageDialog(this,
+                    "The manual does not exist!",
+                    "Open manual",
+                    JOptionPane.ERROR_MESSAGE);
+        }
     }
 
     private void openProjectFolder() {

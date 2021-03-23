@@ -39,7 +39,7 @@ public class JIPipeRunExecuterUI extends JPanel {
         JIPipeRunnerQueue.getInstance().getEventBus().register(this);
     }
 
-    public static void runInDialog(JIPipeRunnable run) {
+    public static void runInDialog(Component parent, JIPipeRunnable run) {
         JDialog dialog = new JDialog();
         dialog.setTitle(run.getTaskLabel());
         JIPipeRunExecuterUI ui = new JIPipeRunExecuterUI(run);
@@ -48,6 +48,7 @@ public class JIPipeRunExecuterUI extends JPanel {
         dialog.revalidate();
         dialog.repaint();
         dialog.setSize(640, 480);
+        dialog.setLocationRelativeTo(parent);
         dialog.setModal(true);
         JIPipeRunnerQueue.getInstance().getEventBus().register(new Object() {
             @Subscribe

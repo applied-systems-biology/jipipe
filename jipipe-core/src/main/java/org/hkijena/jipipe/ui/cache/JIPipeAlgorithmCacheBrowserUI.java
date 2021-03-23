@@ -214,7 +214,7 @@ public class JIPipeAlgorithmCacheBrowserUI extends JIPipeProjectWorkbenchPanel {
             }
             JIPipeCachedSlotToOutputExporterRun run = new JIPipeCachedSlotToOutputExporterRun(getWorkbench(), outputFolder,
                     new ArrayList<>(stateMap.get(exportedState).values()), true);
-            JIPipeRunExecuterUI.runInDialog(run);
+            JIPipeRunExecuterUI.runInDialog(getWorkbench().getWindow(), run);
         }
     }
 
@@ -292,7 +292,7 @@ public class JIPipeAlgorithmCacheBrowserUI extends JIPipeProjectWorkbenchPanel {
             }
         }
         JIPipeImportCachedSlotOutputRun run = new JIPipeImportCachedSlotOutputRun(getProjectWorkbench().getProject(), graphNode, inputFolder);
-        JIPipeRunExecuterUI.runInDialog(run);
+        JIPipeRunExecuterUI.runInDialog(getWorkbench().getWindow(), run);
     }
 
     public JToolBar getToolBar() {
