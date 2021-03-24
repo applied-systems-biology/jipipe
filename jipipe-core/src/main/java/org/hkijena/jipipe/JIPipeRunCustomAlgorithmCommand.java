@@ -15,7 +15,6 @@ package org.hkijena.jipipe;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import ij.IJ;
-import net.imagej.ImageJ;
 import org.hkijena.jipipe.api.JIPipeFixedThreadPool;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.JIPipeValidityReport;
@@ -42,13 +41,14 @@ import java.io.IOException;
 import java.util.Map;
 
 /**
- * Runs a JIPipe algorithm on a single data set.
+ * This {@link Command} allows to run a specified {@link JIPipeNodeInfo} from within ImageJ.
+ * Inherit from this class and specify the {@link JIPipeNodeInfo} in the constructor. Add a {@link Plugin}
+ * annotation to make the command discoverable from within ImageJ.
  */
-@Plugin(type = Command.class, menuPath = "Plugins>JIPipe>Run JIPipe algorithm", headless = true)
-public class JIPipeRunAlgorithmCommand extends DynamicCommand implements Initializable {
+public abstract class JIPipeRunCustomAlgorithmCommand extends DynamicCommand implements Initializable {
 
-    @Parameter(persist = false)
-    private String nodeId = "";
+    private final String nodeId;
+    private final String windowTitle;
 
     @Parameter(persist = false)
     private String parameters = "";
@@ -57,17 +57,17 @@ public class JIPipeRunAlgorithmCommand extends DynamicCommand implements Initial
     private int threads = 1;
 
     /**
-     * @param args ignored
+     * Creates a new instance
+     * @param nodeId ID of the node type that will be encapsulated within this command
+     * @param windowTitle the title of the dialog that is created if the user runs this command from the GUI
      */
-    public static void main(String[] args) {
-        final ImageJ ij = new ImageJ();
-        ij.ui().showUI();
-        ij.command().run(JIPipeRunAlgorithmCommand.class, true);
+    public JIPipeRunCustomAlgorithmCommand(String nodeId, String windowTitle) {
+        this.nodeId = nodeId;
+        this.windowTitle = windowTitle;
     }
 
     @Override
     public void initialize() {
-        resolveInput("nodeId");
         resolveInput("parameters");
         resolveInput("threads");
     }
@@ -105,8 +105,8 @@ public class JIPipeRunAlgorithmCommand extends DynamicCommand implements Initial
         if (StringUtils.isNullOrEmpty(nodeId) || StringUtils.isNullOrEmpty(parameters)) {
             UIUtils.loadLookAndFeelFromSettings();
             initializeRegistry(true);
-            RunSingleAlgorithmDialog dialog = new RunSingleAlgorithmDialog(getContext());
-            dialog.setTitle("Run JIPipe algorithm");
+            RunSingleAlgorithmDialog dialog = new RunSingleAlgorithmDialog(getContext(), JIPipe.getNodes().getInfoById(nodeId));
+            dialog.setTitle(windowTitle);
             dialog.setIconImage(UIUtils.getIcon128FromResources("jipipe.png").getImage());
             dialog.setModal(true);
             dialog.pack();
@@ -117,7 +117,6 @@ public class JIPipeRunAlgorithmCommand extends DynamicCommand implements Initial
                 cancel("User clicked 'Cancel' in setup dialog.");
                 return;
             } else {
-                nodeId = dialog.getAlgorithmId();
                 parameters = dialog.getAlgorithmParametersJson();
                 threads = dialog.getNumThreads();
                 algorithm = dialog.getAlgorithm();
@@ -132,7 +131,7 @@ public class JIPipeRunAlgorithmCommand extends DynamicCommand implements Initial
                 settings.fromJson(JsonUtils.getObjectMapper().readValue(parameters, JsonNode.class));
             } catch (IOException e) {
                 throw new UserFriendlyRuntimeException(e, "Unable to load parameters from JSON!",
-                        "Run JIPipe algorithm", "Either the data is not valid JSON, does not fit to the selected algorithm, or was corrupted.",
+                        windowTitle, "Either the data is not valid JSON, does not fit to the selected algorithm, or was corrupted.",
                         "Please check if the text parameter is valid JSON. You can use a JSON online validator to validate the format. " +
                                 "Also please check if the parameters really fit to the selected algorithm.");
             }
@@ -148,7 +147,7 @@ public class JIPipeRunAlgorithmCommand extends DynamicCommand implements Initial
                 return;
             }
         }
-        IJ.showStatus("Running JIPipe algorithm ...");
+        IJ.showStatus(windowTitle + " ...");
         IJ.showProgress(1, 3);
         settings.pushInput();
         IJ.showProgress(2, 3);

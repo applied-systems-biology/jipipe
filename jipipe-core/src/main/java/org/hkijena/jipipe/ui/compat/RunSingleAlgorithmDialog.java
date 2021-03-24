@@ -53,12 +53,11 @@ import java.util.stream.Collectors;
  * UI for {@link SingleImageJAlgorithmRun}
  */
 public class RunSingleAlgorithmDialog extends JDialog implements JIPipeWorkbench {
-    private Context context;
+    private final Context context;
     private boolean canceled = true;
     private SingleImageJAlgorithmRun runSettings;
     private JList<JIPipeNodeInfo> algorithmList;
     private SearchTextField searchField;
-    private JSplitPane splitPane;
     private FormPanel formPanel;
     private int numThreads = RuntimeSettings.getInstance().getDefaultRunThreads();
     private DocumentTabPane tabPane;
@@ -68,26 +67,49 @@ public class RunSingleAlgorithmDialog extends JDialog implements JIPipeWorkbench
      */
     public RunSingleAlgorithmDialog(Context context) {
         this.context = context;
-        initialize();
+        initialize(null);
     }
 
-    private void initialize() {
+    /**
+     * @param context SciJava context
+     * @param selectedNode the node that should be run. If not null, no selection list will be added
+     */
+    public RunSingleAlgorithmDialog(Context context, JIPipeNodeInfo selectedNode) {
+        this.context = context;
+        initialize(selectedNode);
+    }
+
+    /**
+     * @param context SciJava context
+     * @param selectedNode the node that should be run. If not null, no selection list will be added
+     */
+    public RunSingleAlgorithmDialog(Context context, Class<? extends JIPipeGraphNode> selectedNode) {
+        this.context = context;
+        initialize(JIPipe.getNodes().getNodeInfosFromClass(selectedNode).iterator().next());
+    }
+
+    private void initialize(JIPipeNodeInfo selectedNode) {
         JPanel contentPanel = new JPanel(new BorderLayout(8, 8));
 
         JPanel listPanel = new JPanel(new BorderLayout());
         formPanel = new FormPanel(null, FormPanel.WITH_SCROLLING);
 
-        splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, listPanel, formPanel);
-        splitPane.setDividerSize(3);
-        splitPane.setResizeWeight(0.33);
-        addComponentListener(new ComponentAdapter() {
-            @Override
-            public void componentResized(ComponentEvent e) {
-                super.componentResized(e);
-                splitPane.setDividerLocation(0.33);
-            }
-        });
-        contentPanel.add(splitPane, BorderLayout.CENTER);
+        if(selectedNode == null) {
+            JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, listPanel, formPanel);
+            splitPane.setDividerSize(3);
+            splitPane.setResizeWeight(0.33);
+            addComponentListener(new ComponentAdapter() {
+                @Override
+                public void componentResized(ComponentEvent e) {
+                    super.componentResized(e);
+                    splitPane.setDividerLocation(0.33);
+                }
+            });
+            contentPanel.add(splitPane, BorderLayout.CENTER);
+        }
+        else {
+            contentPanel.add(formPanel, BorderLayout.CENTER);
+        }
 
         initializeToolbar(listPanel);
         initializeList(listPanel);
@@ -101,7 +123,12 @@ public class RunSingleAlgorithmDialog extends JDialog implements JIPipeWorkbench
                 false);
         setContentPane(tabPane);
 
-        reloadAlgorithmList();
+        if(selectedNode != null) {
+            reloadAlgorithmList();
+        }
+        else {
+            selectNodeInfo(selectedNode);
+        }
     }
 
     private void initializeToolbar(JPanel contentPanel) {
