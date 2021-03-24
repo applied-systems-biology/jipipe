@@ -376,6 +376,30 @@ public class ImageJUtils {
 
     /**
      * Stack index (one-based)
+     * @param channel one-based channel
+     * @param slice one-based slice
+     * @param frame one-based frame
+     * @param imagePlus reference image
+     * @return one-based stack index
+     */
+    public static int getStackIndex(int channel, int slice, int frame, ImagePlus imagePlus) {
+        return getStackIndex(channel, slice, frame, imagePlus.getNChannels(), imagePlus.getNSlices(), imagePlus.getNFrames());
+    }
+
+    /**
+     * Stack index (zero-based)
+     * @param channel one-based channel
+     * @param slice one-based slice
+     * @param frame one-based frame
+     * @param imagePlus reference image
+     * @return one-based stack index
+     */
+    public static int getStackIndexZero(int channel, int slice, int frame, ImagePlus imagePlus) {
+        return getStackIndex(channel, slice, frame, imagePlus.getNChannels(), imagePlus.getNSlices(), imagePlus.getNFrames());
+    }
+
+    /**
+     * Stack index (one-based)
      *
      * @param channel   one-based channel
      * @param slice     one-based slice
@@ -386,13 +410,40 @@ public class ImageJUtils {
      * @return one-based stack index
      */
     public static int getStackIndex(int channel, int slice, int frame, int nChannels, int nSlices, int nFrames) {
-        if (channel < 1) channel = 1;
-        if (channel > nChannels) channel = nChannels;
-        if (slice < 1) slice = 1;
-        if (slice > nSlices) slice = nSlices;
-        if (frame < 1) frame = 1;
-        if (frame > nFrames) frame = nFrames;
+        if (channel < 1) {
+            throw new IndexOutOfBoundsException("Channel < 1");
+        }
+        if (channel > nChannels) {
+            throw new IndexOutOfBoundsException("Channel (" + channel + ")  > nChannels (" + nChannels + ")");
+        }
+        if (slice < 1) {
+            throw new IndexOutOfBoundsException("Slice < 1");
+        }
+        if (slice > nSlices) {
+            throw new IndexOutOfBoundsException("Slice (" + slice + ") > nSlices (" + nSlices + ")");
+        }
+        if (frame < 1) {
+            throw new IndexOutOfBoundsException("Frame < 1");
+        }
+        if (frame > nFrames) {
+            throw new IndexOutOfBoundsException("Frame (" + frame + ") > nFrames (" + nFrames + ")");
+        }
         return (frame - 1) * nChannels * nSlices + (slice - 1) * nChannels + channel;
+    }
+
+    /**
+     * Stack index (zero-based)
+     *
+     * @param channel   zero-based channel
+     * @param slice     zero-based slice
+     * @param frame     zero-based frame
+     * @param nChannels number of channels
+     * @param nSlices   number of slices
+     * @param nFrames   number of frames
+     * @return one-based stack index
+     */
+    public static int getStackIndexZero(int channel, int slice, int frame, int nChannels, int nSlices, int nFrames) {
+        return getStackIndex(channel + 1, slice + 1, frame + 1, nChannels, nSlices, nFrames);
     }
 
     /**
@@ -468,7 +519,7 @@ public class ImageJUtils {
      * Runs the function for each Z, C, and T slice.
      *
      * @param img          the image
-     * @param function     the function. The indices are one-based
+     * @param function     the function. The indices are ZERO-based
      * @param progressInfo the progress
      */
     public static void forEachIndexedZCTSlice(ImagePlus img, BiConsumer<ImageProcessor, ImageSliceIndex> function, JIPipeProgressInfo progressInfo) {
@@ -495,7 +546,7 @@ public class ImageJUtils {
      * The slice index channel is always set to -1
      *
      * @param img          the image
-     * @param function     the function
+     * @param function     the function. The indices are ZERO-based
      * @param progressInfo the progress
      */
     public static void forEachIndexedZTSlice(ImagePlus img, BiConsumer<Map<Integer, ImageProcessor>, ImageSliceIndex> function, JIPipeProgressInfo progressInfo) {

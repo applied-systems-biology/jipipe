@@ -13,6 +13,7 @@
 
 package org.hkijena.jipipe.extensions.imagejdatatypes;
 
+import ij.ImagePlus;
 import ome.xml.model.enums.DimensionOrder;
 import org.hkijena.jipipe.JIPipeJavaExtension;
 import org.hkijena.jipipe.api.data.JIPipeData;
@@ -91,6 +92,9 @@ import java.util.stream.Collectors;
 @Plugin(type = JIPipeJavaExtension.class)
 public class ImageJDataTypesExtension extends JIPipePrepackagedDefaultJavaExtension {
 
+    /**
+     * All image data types known to this library
+     */
     public static final List<Class<? extends JIPipeData>> IMAGE_TYPES = Arrays.asList(
             ImagePlusData.class, ImagePlus2DData.class, ImagePlus3DData.class, ImagePlus4DData.class, ImagePlus5DData.class,
             ImagePlusColorHSBData.class, ImagePlusColorRGBData.class, ImagePlusColorData.class, ImagePlusColorLABData.class,
@@ -104,6 +108,20 @@ public class ImageJDataTypesExtension extends JIPipePrepackagedDefaultJavaExtens
             ImagePlus4DGreyscaleData.class, ImagePlus4DGreyscale32FData.class, ImagePlus4DGreyscaleMaskData.class, ImagePlus4DGreyscale8UData.class, ImagePlus4DGreyscale8UData.class, ImagePlus4DGreyscale16UData.class,
             ImagePlus5DGreyscaleData.class, ImagePlus5DGreyscale32FData.class, ImagePlus5DGreyscaleMaskData.class, ImagePlus5DGreyscale8UData.class, ImagePlus5DGreyscale8UData.class, ImagePlus5DGreyscale16UData.class);
 
+    /**
+     * All dimension-less image data types
+     */
+    public static final List<Class<? extends JIPipeData>> IMAGE_TYPES_DIMENSIONLESS = Arrays.asList(
+            ImagePlusData.class,
+            ImagePlusColorHSBData.class, ImagePlusColorRGBData.class,
+            ImagePlusColorData.class, ImagePlusColorLABData.class,
+            ImagePlusGreyscaleData.class, ImagePlusGreyscale32FData.class,
+            ImagePlusGreyscaleMaskData.class, ImagePlusGreyscale8UData.class,
+            ImagePlusGreyscale8UData.class, ImagePlusGreyscale16UData.class);
+
+    /**
+     * All greyscale image data types
+     */
     public static final List<Class<? extends JIPipeData>> IMAGE_TYPES_GREYSCALE = Arrays.asList(
             ImagePlusGreyscaleData.class, ImagePlusGreyscale32FData.class, ImagePlusGreyscaleMaskData.class, ImagePlusGreyscale8UData.class, ImagePlusGreyscale8UData.class, ImagePlusGreyscale16UData.class,
             ImagePlus2DGreyscaleData.class, ImagePlus2DGreyscale32FData.class, ImagePlus2DGreyscaleMaskData.class, ImagePlus2DGreyscale8UData.class, ImagePlus2DGreyscale8UData.class, ImagePlus2DGreyscale16UData.class,

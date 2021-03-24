@@ -47,7 +47,7 @@ import static org.hkijena.jipipe.extensions.imagejalgorithms.ImageJAlgorithmsExt
 @JIPipeOrganization(menuPath = "Dimensions", nodeTypeCategory = ImagesNodeTypeCategory.class)
 @JIPipeInputSlot(value = ImagePlus2DData.class, slotName = "Input")
 @JIPipeOutputSlot(value = ImagePlus3DData.class, slotName = "Output")
-public class StackMergerAlgorithm extends JIPipeMergingAlgorithm {
+public class CreateStackAlgorithm extends JIPipeMergingAlgorithm {
 
     private String counterAnnotation = "Slice";
     private HyperstackDimension outputDimension = HyperstackDimension.Depth;
@@ -57,7 +57,7 @@ public class StackMergerAlgorithm extends JIPipeMergingAlgorithm {
      *
      * @param info the info
      */
-    public StackMergerAlgorithm(JIPipeNodeInfo info) {
+    public CreateStackAlgorithm(JIPipeNodeInfo info) {
         super(info, JIPipeDefaultMutableSlotConfiguration.builder().addInputSlot("Input", ImagePlus2DData.class)
                 .addOutputSlot("Output", ImagePlus3DData.class, "Input", TO_3D_CONVERSION)
                 .allowOutputSlotInheritance(true)
@@ -70,7 +70,7 @@ public class StackMergerAlgorithm extends JIPipeMergingAlgorithm {
      *
      * @param other the other
      */
-    public StackMergerAlgorithm(StackMergerAlgorithm other) {
+    public CreateStackAlgorithm(CreateStackAlgorithm other) {
         super(other);
         this.counterAnnotation = other.counterAnnotation;
         this.outputDimension = other.outputDimension;
