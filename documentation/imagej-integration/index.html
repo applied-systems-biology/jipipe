@@ -5,7 +5,7 @@
     
       <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-<meta name="revised" content="2021-03-19T17:24:50 CET">
+<meta name="revised" content="2021-03-24T16:11:20 CET">
 <title>ImageJ integration :: JIPipe for ImageJ</title>
 <link rel="shortcut icon" href="../../images/favicon.png" type="image/x-icon" />
 <link href="../../css/font-awesome.min.css" rel="stylesheet">
@@ -627,9 +627,9 @@ This issue is especially prevalent in ImageJ macro algorithm nodes.</p>
 </p></div>
 
 <p>To run the command via a macro, run:</p>
-<pre><code>run(&quot;Run JIPipe algorithm&quot;, &quot;algorithmId=&lt;Algorithm&gt;, algorithmParameters=&lt;Parameters&gt;&quot;)
+<pre><code>run(&quot;Run JIPipe algorithm&quot;, &quot;nodeId=&lt;Algorithm&gt;, parameters=&lt;Parameters&gt;&quot;)
 </code></pre><p>The algorithm ID can be looked up via the plugin manager.
-Algorithm parameters are provided as string in <a href="https://json.org/">JSON</a> format.
+Parameters are provided as string in <a href="https://json.org/">JSON</a> format.
 The JSON data should have following structure:</p>
 <ul>
 <li>(Optional) An object <code>parameters</code> that contains the algorithm parameters. They are equal to the parameters saved in an JIPipe project file. We recommend to use the <code>Copy command</code> button to obtain the parameters. If you leave out parameters, the default value is assumed.</li>
@@ -641,6 +641,10 @@ The JSON data should have following structure:</p>
 <div class="notices tip" ><p><p>Use the &ldquo;Copy command&rdquo; button in the &ldquo;Run JIPipe algorithm&rdquo; GUI command to quickly create a valid macro for your parameters.</p>
 </p></div>
 
+<p>If you are a developer of a JIPipe node (Java only) and want to provide your node as separate entry in the ImageJ menu,
+you can use our Java API to create custom SciJava commands that provide a similar UI to the single algorithm run.
+You just have to inherit from <a href="../../apidocs/org/hkijena/jipipe/JIPipeRunCustomAlgorithmCommand.html">JIPipeRunCustomAlgorithmCommand</a> and provide the
+constructor with the node ID. Then add the <a href="https://javadoc.scijava.org/SciJava/org/scijava/plugin/Plugin.html">Plugin</a> annotation just as with any SciJava command.</p>
 
 
     

@@ -140,6 +140,7 @@ org.hkijena.jipipe.extensions.plots.parameters
 org.hkijena.jipipe.extensions.plots.ui.resultanalysis
 org.hkijena.jipipe.extensions.plots.utils
 org.hkijena.jipipe.extensions.python
+org.hkijena.jipipe.extensions.python.algorithms
 org.hkijena.jipipe.extensions.r
 org.hkijena.jipipe.extensions.r.algorithms
 org.hkijena.jipipe.extensions.r.parameters
