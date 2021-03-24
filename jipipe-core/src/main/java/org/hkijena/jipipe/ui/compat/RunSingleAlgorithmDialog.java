@@ -353,7 +353,7 @@ public class RunSingleAlgorithmDialog extends JDialog implements JIPipeWorkbench
             return;
         }
         String json = getAlgorithmParametersJson();
-        String macro = String.format("run(\"Run JIPipe algorithm\", \"algorithmId=%s, threads=%d, algorithmParameters=%s\");", getAlgorithmId(), numThreads, MacroUtils.escapeString(json));
+        String macro = String.format("run(\"Run JIPipe algorithm\", \"nodeId=%s, threads=%d, parameters=%s\");", getAlgorithmId(), numThreads, MacroUtils.escapeString(json));
         StringSelection selection = new StringSelection(macro);
         Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
         clipboard.setContents(selection, selection);
