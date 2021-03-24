@@ -55,7 +55,7 @@ def load_image_file(data_slot: DataSlot, row: int = 0):
     """
     from skimage.io import imread
     file = get_image_file(data_slot, row)
-    print("Loading image from " + file)
+    print("Loading image from " + str(file))
     return imread(fname=file) if file is not None else None
 
 
