@@ -56,7 +56,9 @@ def load_image_file(data_slot: DataSlot, row: int = 0):
     from skimage.io import imread
     file = get_image_file(data_slot, row)
     print("Loading image from " + str(file))
-    return imread(fname=file) if file is not None else None
+
+    # Conversion to string here due to https://github.com/scikit-image/scikit-image/issues/4138
+    return imread(fname=str(file)) if file is not None else None
 
 
 def load_table_file(data_slot: DataSlot, row: int = 0):
