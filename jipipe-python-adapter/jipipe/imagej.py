@@ -95,19 +95,24 @@ def add_table(table, data_slot: DataSlot, annotations: dict = None):
     return row
 
 
-def add_image(image, data_slot: DataSlot, annotations: dict = None):
+def add_image(data, data_slot: DataSlot, annotations: dict = None, convert_64_to_32=True, imagej=True, **kwargs):
     """
     Adds a new image into a new row of the specified slot. The image will be saved as TIFF.
-    Requires Skimage.
-    :param image: an image. must be a numpy array
+    Requires tifffile. This method accepts all parameters utilized by tifffile.imsave
+    :param convert_64_to_32: If enabled, convert 64-bit float to 32-bit float. ImageJ does not support 64 bit
+    :param data: an image. must be a numpy array. Can be None. In this case, you must provide shape and dtype (like tifffile's method requires)
     :param data_slot: the data slot
     :param annotations: optional annotations (a dict of string keys and string values)
+    :param imagej: if the generated output should have the necessary metadata for ImageJ loading
     :return: index of the newly added row
     """
+    import numpy as np
+    if convert_64_to_32 and data.dtype is np.dtype("float64"):
+        data = np.float32(data)
     row = data_slot.add_row(annotations=annotations)
     row_storage_path = data_slot.get_row_storage_path(row)
     file_name = row_storage_path / Path("data.tif")
-    from skimage.io import imsave
+    from tifffile import imwrite
     print("Writing image to " + str(file_name))
-    imsave(fname=file_name, arr=image)
+    imwrite(file=str(file_name), data=data, imagej=imagej, **kwargs)
     return row
