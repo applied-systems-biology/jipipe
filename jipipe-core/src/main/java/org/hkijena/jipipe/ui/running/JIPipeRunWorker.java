@@ -15,6 +15,7 @@ package org.hkijena.jipipe.ui.running;
 
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.JIPipeRunnable;
 
@@ -49,6 +50,10 @@ public class JIPipeRunWorker extends SwingWorker<Exception, Object> {
         try {
             run.run();
         } catch (Exception e) {
+            run.getProgressInfo().log("An error was encountered");
+            run.getProgressInfo().log("------------------------");
+            run.getProgressInfo().log(e.toString());
+            run.getProgressInfo().log(ExceptionUtils.getStackTrace(e));
             e.printStackTrace();
             return e;
         }
@@ -87,6 +92,11 @@ public class JIPipeRunWorker extends SwingWorker<Exception, Object> {
     }
 
     private void postInterruptedEvent(Exception e) {
+        run.getProgressInfo().log("An error was encountered");
+        run.getProgressInfo().log("------------------------");
+        run.getProgressInfo().log(e.toString());
+        run.getProgressInfo().log(ExceptionUtils.getStackTrace(e));
+
         eventBus.post(new RunUIWorkerInterruptedEvent(this, e));
     }
 
