@@ -234,7 +234,7 @@ public class PythonUtils {
         LogOutputStream progressInfoLog = new LogOutputStream() {
             @Override
             protected void processLine(String s, int i) {
-               progressInfo.log(s);
+                progressInfo.log(s);
             }
         };
 
