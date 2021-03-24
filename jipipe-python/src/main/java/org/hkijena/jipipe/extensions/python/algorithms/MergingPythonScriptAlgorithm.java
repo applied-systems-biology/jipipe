@@ -55,6 +55,7 @@ public class MergingPythonScriptAlgorithm extends JIPipeMergingAlgorithm {
     private JIPipeDynamicParameterCollection scriptParameters = new JIPipeDynamicParameterCollection(true,
             PythonUtils.ALLOWED_PARAMETER_CLASSES);
     private JIPipeAnnotationMergeStrategy annotationMergeStrategy = JIPipeAnnotationMergeStrategy.Merge;
+    private boolean cleanUpAfterwards = true;
 
     /**
      * Creates a new instance
@@ -76,7 +77,20 @@ public class MergingPythonScriptAlgorithm extends JIPipeMergingAlgorithm {
         this.code = new PythonScript(other.code);
         this.scriptParameters = new JIPipeDynamicParameterCollection(other.scriptParameters);
         this.annotationMergeStrategy = other.annotationMergeStrategy;
+        this.cleanUpAfterwards = other.cleanUpAfterwards;
         registerSubParameter(scriptParameters);
+    }
+
+    @JIPipeDocumentation(name = "Clean up data after processing", description = "If enabled, data is deleted from temporary directories after " +
+            "the processing was finished. Disable this to make it possible to debug your scripts. The directories are accessible via the logs (Tools &gt; Logs).")
+    @JIPipeParameter("cleanup-afterwards")
+    public boolean isCleanUpAfterwards() {
+        return cleanUpAfterwards;
+    }
+
+    @JIPipeParameter("cleanup-afterwards")
+    public void setCleanUpAfterwards(boolean cleanUpAfterwards) {
+        this.cleanUpAfterwards = cleanUpAfterwards;
     }
 
     @JIPipeDocumentation(name = "Load example", description = "Loads example parameters that showcase how to use this algorithm.")
@@ -177,19 +191,21 @@ public class MergingPythonScriptAlgorithm extends JIPipeMergingAlgorithm {
         }
 
         // Clean up
-        progressInfo.log("Cleaning up ...");
-        for (Map.Entry<String, Path> entry : inputSlotPaths.entrySet()) {
-            try {
-                FileUtils.deleteDirectory(entry.getValue().toFile());
-            } catch (IOException e) {
-                e.printStackTrace();
+        if(cleanUpAfterwards) {
+            progressInfo.log("Cleaning up ...");
+            for (Map.Entry<String, Path> entry : inputSlotPaths.entrySet()) {
+                try {
+                    FileUtils.deleteDirectory(entry.getValue().toFile());
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
             }
-        }
-        for (Map.Entry<String, Path> entry : outputSlotPaths.entrySet()) {
-            try {
-                FileUtils.deleteDirectory(entry.getValue().toFile());
-            } catch (IOException e) {
-                e.printStackTrace();
+            for (Map.Entry<String, Path> entry : outputSlotPaths.entrySet()) {
+                try {
+                    FileUtils.deleteDirectory(entry.getValue().toFile());
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
             }
         }
     }
