@@ -13,7 +13,9 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.HyperstackDimension;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 
-@JIPipeDocumentation(name = "Combine stacks", description = "Combines the incoming stacks into one by adding the corresponding slices of the second stack to the first one.")
+@JIPipeDocumentation(name = "Combine stacks", description = "Combines the incoming stacks into one by adding the corresponding slices of the second stack to the first one. " +
+        "For example, this allows to combine two one-channel stacks with the same number of slices into one with two channels. " +
+        "This node has similar functionality to the 'Merge stacks into dimension' node.")
 @JIPipeOrganization(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Dimensions")
 @JIPipeInputSlot(value = ImagePlusData.class, slotName = "Target", autoCreate = true)
 @JIPipeInputSlot(value = ImagePlusData.class, slotName = "Source", autoCreate = true)
