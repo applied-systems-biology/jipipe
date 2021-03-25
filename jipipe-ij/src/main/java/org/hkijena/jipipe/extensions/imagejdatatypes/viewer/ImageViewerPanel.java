@@ -28,7 +28,6 @@ import org.hkijena.jipipe.extensions.settings.FileChooserSettings;
 import org.hkijena.jipipe.ui.components.FormPanel;
 import org.hkijena.jipipe.ui.components.PathEditor;
 import org.hkijena.jipipe.ui.running.JIPipeRunExecuterUI;
-import org.hkijena.jipipe.ui.theme.JIPipeUITheme;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 
@@ -48,7 +47,7 @@ public class ImageViewerPanel extends JPanel {
     private ImagePlus image;
     private ImageProcessor slice;
     private ImageStatistics statistics;
-    private ImageViewerPanelCanvas canvas = new ImageViewerPanelCanvas();
+    private ImageViewerPanelCanvas canvas;
     private JLabel stackSliderLabel = new JLabel("Slice (Z)");
     private JLabel channelSliderLabel = new JLabel("Channel (C)");
     private JLabel frameSliderLabel = new JLabel("Frame (T)");
@@ -74,19 +73,6 @@ public class ImageViewerPanel extends JPanel {
     public ImageViewerPanel() {
         initialize();
         updateZoomStatus();
-    }
-
-    public static void main(String[] args) {
-        JIPipeUITheme.ModernLight.install();
-        ImagePlus image = IJ.openImage("/data/Mitochondria/data/Mic13 SNAP Deconv.lif - WT_Hela_Mic13_SNAP_Series011_10_cmle_converted.tif");
-//        ImagePlus image = IJ.openImage("/home/rgerst/dots.png");
-        JFrame frame = new JFrame();
-        ImageViewerPanel panel = new ImageViewerPanel();
-        panel.setImage(image);
-        frame.setContentPane(panel);
-        frame.pack();
-        frame.setSize(1280, 1024);
-        frame.setVisible(true);
     }
 
     /**
@@ -119,6 +105,7 @@ public class ImageViewerPanel extends JPanel {
 
     private void initialize() {
         setLayout(new BorderLayout());
+        canvas = new ImageViewerPanelCanvas(this);
         scrollPane = new JScrollPane(canvas);
         canvas.setScrollPane(scrollPane);
         initializeToolbar();
@@ -496,7 +483,8 @@ public class ImageViewerPanel extends JPanel {
         exportMovieItem.setVisible(hasMultipleSlices);
     }
 
-    private void refreshFormPanel() {
+    public void refreshFormPanel() {
+        int scrollValue = formPanel.getScrollPane().getVerticalScrollBar().getValue();
         formPanel.clear();
         for (ImageViewerPanelPlugin plugin : plugins) {
             plugin.createPalettePanel(formPanel);
@@ -506,6 +494,9 @@ public class ImageViewerPanel extends JPanel {
             formPanel.addToForm(animationSpeed, new JLabel("Speed (ms)"), null);
         }
         formPanel.addVerticalGlue();
+        SwingUtilities.invokeLater(() -> {
+            formPanel.getScrollPane().getVerticalScrollBar().setValue(scrollValue);
+        });
     }
 
     public ImageSliceIndex getCurrentSlicePosition() {
