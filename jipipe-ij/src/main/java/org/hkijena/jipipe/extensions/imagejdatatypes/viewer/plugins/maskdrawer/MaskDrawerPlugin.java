@@ -39,8 +39,8 @@ public class MaskDrawerPlugin extends ImageViewerPanelPlugin {
     private MaskDrawerTool currentTool = new MouseMaskDrawerTool(this);
     private final Map<MaskColor, JToggleButton> colorSelectionButtons = new HashMap<>();
     private final Map<MaskDrawerTool, JToggleButton> toolSelectionButtons = new HashMap<>();
-    private final List<Point> referencePoints = new ArrayList<>();
     private ColorChooserButton highlightColorButton;
+    private ColorChooserButton maskColorButton;
     private Color highlightColor = new Color(255,255,0,128);
     private Color maskColor = new Color(255,0,0,128);
     private ButtonGroup toolButtonGroup = new ButtonGroup();
@@ -79,6 +79,17 @@ public class MaskDrawerPlugin extends ImageViewerPanelPlugin {
             @Subscribe
             public void onColorChosen(ColorChooserButton.ColorChosenEvent event) {
                 setHighlightColor(event.getColor());
+            }
+        });
+
+        // Create mask color selection
+        maskColorButton = new ColorChooserButton("Change mask color");
+        maskColorButton.setUpdateWithHexCode(true);
+        maskColorButton.setSelectedColor(maskColor);
+        maskColorButton.getEventBus().register(new Object() {
+            @Subscribe
+            public void onColorChosen(ColorChooserButton.ColorChosenEvent event) {
+                setMaskColor(event.getColor());
             }
         });
 
@@ -122,6 +133,7 @@ public class MaskDrawerPlugin extends ImageViewerPanelPlugin {
         if(currentMaskSlice == null || currentMaskSlicePreview == null)
             return;
         ImageJUtils.maskToBufferedImage(currentMaskSlice, currentMaskSlicePreview, maskColor, ColorUtils.WHITE_TRANSPARENT);
+        getViewerPanel().getCanvas().repaint();
     }
 
     private <T> void addSelectionButton(T value, JPanel target, Map<T, JToggleButton> targetMap, ButtonGroup targetGroup, String text, String toolTip, Icon icon, Supplier<T> getter, Consumer<T> setter) {
@@ -175,16 +187,10 @@ public class MaskDrawerPlugin extends ImageViewerPanelPlugin {
         formPanel.addGroupHeader("Draw mask", UIUtils.getIconFromResources("actions/draw-brush.png"));
         formPanel.addToForm(toolSelectionPanel, new JLabel("Tool"), null);
         currentTool.createPalettePanel(formPanel);
-        formPanel.addToForm(highlightColorButton, new JLabel("Highlight color"), null);
         formPanel.addToForm(colorSelectionPanel, new JLabel("Color"), null);
-    }
+        formPanel.addToForm(highlightColorButton, new JLabel("Highlight color"), null);
+        formPanel.addToForm(maskColorButton, new JLabel("Mask color"), null);
 
-    @Subscribe
-    public void onPixelHover(ImageViewerPanelCanvas.PixelHoverEvent event) {
-        if((event.getMouseEvent().getModifiersEx() & MouseEvent.BUTTON1_DOWN_MASK) == MouseEvent.BUTTON1_DOWN_MASK) {
-           currentTool.onMouseDrag();
-        }
-        getViewerPanel().getCanvas().repaint();
     }
 
     public ImagePlus getMask() {
@@ -193,11 +199,6 @@ public class MaskDrawerPlugin extends ImageViewerPanelPlugin {
 
     public ImageProcessor getCurrentMaskSlice() {
         return currentMaskSlice;
-    }
-
-    @Subscribe
-    public void onCanvasClick(ImageViewerPanelCanvas.MouseClickedEvent event) {
-        currentTool.onMouseClick(event);
     }
 
     @Override

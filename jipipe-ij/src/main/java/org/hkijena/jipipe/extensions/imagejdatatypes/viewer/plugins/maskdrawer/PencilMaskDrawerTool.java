@@ -1,5 +1,6 @@
 package org.hkijena.jipipe.extensions.imagejdatatypes.viewer.plugins.maskdrawer;
 
+import com.google.common.eventbus.Subscribe;
 import ij.IJ;
 import ij.ImagePlus;
 import ij.process.Blitter;
@@ -7,16 +8,18 @@ import ij.process.ByteProcessor;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.extensions.imagejdatatypes.viewer.ImageViewerPanelCanvas;
 import org.hkijena.jipipe.ui.components.FormPanel;
-import org.hkijena.jipipe.utils.ColorUtils;
-import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.utils.*;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.MouseEvent;
 import java.awt.geom.AffineTransform;
 import java.awt.image.AffineTransformOp;
 import java.awt.image.BufferedImage;
 import java.awt.image.BufferedImageOp;
 import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
 
 public class PencilMaskDrawerTool extends MaskDrawerTool {
 
@@ -25,9 +28,13 @@ public class PencilMaskDrawerTool extends MaskDrawerTool {
     private JSpinner pencilSizeXSpinner;
     private JSpinner pencilSizeYSpinner;
     private JComboBox<PencilShape> pencilShapeSelection;
+    private Point lastPencilPosition;
+    private boolean isDrawing;
+    private final Set<Point> interpolationPoints = new HashSet<>();
 
     public PencilMaskDrawerTool(MaskDrawerPlugin plugin) {
         super(plugin, "Pencil", "Allows to draw free-hand", UIUtils.getIconFromResources("actions/draw-brush.png"));
+        getViewerPanel().getCanvas().getEventBus().register(this);
         initialize();
     }
 
@@ -96,6 +103,7 @@ public class PencilMaskDrawerTool extends MaskDrawerTool {
         getViewerPanel().getCanvas().setDragWithLeftMouse(false);
         getViewerPanel().getCanvas().setStandardCursor(Cursor.getPredefinedCursor(Cursor.CROSSHAIR_CURSOR));
         recalculatePencil();
+        releasePencil();
     }
 
     @Override
@@ -103,14 +111,66 @@ public class PencilMaskDrawerTool extends MaskDrawerTool {
         getViewerPanel().getCanvas().setDragWithLeftMouse(true);
     }
 
-    @Override
-    public void onMouseDrag() {
-        drawPencil();
+    @Subscribe
+    public void onMouseMove(MouseMovedEvent event) {
+        if(!isActive())
+            return;
+        if(isDrawing) {
+            drawPencil();
+        }
+        getViewerPanel().getCanvas().repaint();
     }
 
-    @Override
-    public void onMouseClick(ImageViewerPanelCanvas.MouseClickedEvent event) {
-        drawPencil();
+    @Subscribe
+    public void onMouseClick(MouseClickedEvent event) {
+        if(!isActive())
+            return;
+        if(SwingUtilities.isLeftMouseButton(event)) {
+            releasePencil();
+            drawPencil();
+            releasePencil();
+        }
+    }
+
+    @Subscribe
+    public void onMouseDrag(MouseDraggedEvent event) {
+        if(!isActive())
+            return;
+        if((event.getModifiersEx() & MouseEvent.BUTTON1_DOWN_MASK) == MouseEvent.BUTTON1_DOWN_MASK) {
+            drawPencil();
+        }
+        else {
+            releasePencil();
+        }
+    }
+
+    @Subscribe
+    public void onMousePressed(MousePressedEvent event) {
+        if(!isActive())
+            return;
+        if(SwingUtilities.isLeftMouseButton(event)) {
+            isDrawing = true;
+            drawPencil();
+        }
+    }
+
+    @Subscribe
+    public void onMouseReleased(MouseReleasedEvent event) {
+        if(!isActive())
+            return;
+        releasePencil();
+    }
+
+    @Subscribe
+    public void onMouseExited(MouseExitedEvent event) {
+        if(!isActive())
+            return;
+        releasePencil();
+    }
+
+    private void releasePencil() {
+        isDrawing = false;
+        lastPencilPosition = null;
     }
 
     @Override
@@ -138,12 +198,45 @@ public class PencilMaskDrawerTool extends MaskDrawerTool {
     private void drawPencil() {
         // Copy the pencil into the mask buffer
         Point mousePosition = getViewerPanel().getCanvas().getMouseModelPixelCoordinate(false);
+        if(mousePosition == null) {
+            releasePencil();
+            return;
+        }
         final int pencilWidth = currentPencil.getWidth();
         final int pencilHeight = currentPencil.getHeight();
+        final int centerX = mousePosition.x - pencilWidth / 2;
+        final int centerY = mousePosition.y - pencilHeight / 2;
+        Point center = new Point(centerX, centerY);
+        int blitter = getMaskDrawerPlugin().getCurrentColor() == MaskDrawerPlugin.MaskColor.Foreground ? Blitter.ADD : Blitter.SUBTRACT;
+        if(lastPencilPosition != null) {
+            // We need to interpolate, so the stroke is connected
+            double distance = center.distance(lastPencilPosition);
+            if(distance > 1) {
+                double vecX = (centerX - lastPencilPosition.x) / distance;
+                double vecY = (centerY - lastPencilPosition.y) / distance;
+                double sx = lastPencilPosition.x;
+                double sy = lastPencilPosition.y;
+                interpolationPoints.clear();
+                while (distance > 1) {
+                    sx += vecX;
+                    sy += vecY;
+                    Point interpolationCenter = new Point((int)sx, (int)sy);
+                    if(!interpolationPoints.contains(interpolationCenter)) {
+                        getMaskDrawerPlugin().getCurrentMaskSlice().copyBits(currentPencil.getProcessor(),
+                                interpolationCenter.x,
+                                interpolationCenter.y,
+                                blitter);
+                        interpolationPoints.add(interpolationCenter);
+                    }
+                    distance -= 1;
+                }
+            }
+        }
         getMaskDrawerPlugin().getCurrentMaskSlice().copyBits(currentPencil.getProcessor(),
                 mousePosition.x - pencilWidth / 2,
                 mousePosition.y - pencilHeight / 2,
-                Blitter.OR);
+                blitter);
+        lastPencilPosition = center;
         getMaskDrawerPlugin().recalculateMaskPreview();
     }
 

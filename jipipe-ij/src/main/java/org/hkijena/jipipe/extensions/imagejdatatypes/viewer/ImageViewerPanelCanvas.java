@@ -15,6 +15,7 @@ package org.hkijena.jipipe.extensions.imagejdatatypes.viewer;
 
 import com.google.common.eventbus.EventBus;
 import org.hkijena.jipipe.extensions.imagejdatatypes.viewer.plugins.ImageViewerPanelPlugin;
+import org.hkijena.jipipe.utils.*;
 
 import javax.swing.*;
 import java.awt.*;
@@ -180,21 +181,56 @@ public class ImageViewerPanelCanvas extends JPanel implements MouseListener, Mou
             currentDragOffset = new Point(e.getPoint().x - contentX, e.getPoint().y - contentY);
             setCursor(Cursor.getPredefinedCursor(Cursor.MOVE_CURSOR));
         }
+        eventBus.post(new MousePressedEvent(e.getComponent(),
+                e.getID(),
+                e.getWhen(),
+                e.getModifiers(),
+                e.getX(),
+                e.getY(),
+                e.getClickCount(),
+                e.isPopupTrigger(),
+                e.getButton()));
     }
 
     @Override
     public void mouseReleased(MouseEvent e) {
         currentDragOffset = null;
         setCursor(standardCursor);
+        eventBus.post(new MouseReleasedEvent(e.getComponent(),
+                e.getID(),
+                e.getWhen(),
+                e.getModifiers(),
+                e.getX(),
+                e.getY(),
+                e.getClickCount(),
+                e.isPopupTrigger(),
+                e.getButton()));
     }
 
     @Override
     public void mouseEntered(MouseEvent e) {
-
+        eventBus.post(new MouseEnteredEvent(e.getComponent(),
+                e.getID(),
+                e.getWhen(),
+                e.getModifiers(),
+                e.getX(),
+                e.getY(),
+                e.getClickCount(),
+                e.isPopupTrigger(),
+                e.getButton()));
     }
 
     @Override
     public void mouseExited(MouseEvent e) {
+        eventBus.post(new MouseExitedEvent(e.getComponent(),
+                e.getID(),
+                e.getWhen(),
+                e.getModifiers(),
+                e.getX(),
+                e.getY(),
+                e.getClickCount(),
+                e.isPopupTrigger(),
+                e.getButton()));
     }
 
     @Override
@@ -212,6 +248,15 @@ public class ImageViewerPanelCanvas extends JPanel implements MouseListener, Mou
         else {
             eventBus.post(new PixelHoverEvent(getMouseModelPixelCoordinate(false), e));
         }
+        eventBus.post(new MouseDraggedEvent(e.getComponent(),
+                e.getID(),
+                e.getWhen(),
+                e.getModifiers(),
+                e.getX(),
+                e.getY(),
+                e.getClickCount(),
+                e.isPopupTrigger(),
+                e.getButton()));
     }
 
     private void fixNegativeOffsets() {
@@ -241,6 +286,15 @@ public class ImageViewerPanelCanvas extends JPanel implements MouseListener, Mou
     @Override
     public void mouseMoved(MouseEvent e) {
         eventBus.post(new PixelHoverEvent(getMouseModelPixelCoordinate(false), e));
+        eventBus.post(new MouseMovedEvent(e.getComponent(),
+                e.getID(),
+                e.getWhen(),
+                e.getModifiers(),
+                e.getX(),
+                e.getY(),
+                e.getClickCount(),
+                e.isPopupTrigger(),
+                e.getButton()));
     }
 
     public JScrollPane getScrollPane() {
@@ -393,20 +447,6 @@ public class ImageViewerPanelCanvas extends JPanel implements MouseListener, Mou
 
         public MouseEvent getMouseEvent() {
             return mouseEvent;
-        }
-    }
-
-    public static class MouseClickedEvent extends MouseEvent {
-        public MouseClickedEvent(Component source, int id, long when, int modifiers, int x, int y, int clickCount, boolean popupTrigger, int button) {
-            super(source, id, when, modifiers, x, y, clickCount, popupTrigger, button);
-        }
-
-        public MouseClickedEvent(Component source, int id, long when, int modifiers, int x, int y, int clickCount, boolean popupTrigger) {
-            super(source, id, when, modifiers, x, y, clickCount, popupTrigger);
-        }
-
-        public MouseClickedEvent(Component source, int id, long when, int modifiers, int x, int y, int xAbs, int yAbs, int clickCount, boolean popupTrigger, int button) {
-            super(source, id, when, modifiers, x, y, xAbs, yAbs, clickCount, popupTrigger, button);
         }
     }
 }
