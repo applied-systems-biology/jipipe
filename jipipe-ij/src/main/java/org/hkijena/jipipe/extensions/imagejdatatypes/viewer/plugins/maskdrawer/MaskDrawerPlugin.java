@@ -1,18 +1,28 @@
-package org.hkijena.jipipe.extensions.imagejdatatypes.viewer.plugins;
+package org.hkijena.jipipe.extensions.imagejdatatypes.viewer.plugins.maskdrawer;
 
 import com.google.common.eventbus.Subscribe;
 import ij.IJ;
 import ij.ImagePlus;
+import ij.process.ImageProcessor;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
+import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageSliceIndex;
 import org.hkijena.jipipe.extensions.imagejdatatypes.viewer.ImageViewerPanel;
 import org.hkijena.jipipe.extensions.imagejdatatypes.viewer.ImageViewerPanelCanvas;
+import org.hkijena.jipipe.extensions.imagejdatatypes.viewer.plugins.ImageViewerPanelPlugin;
+import org.hkijena.jipipe.ui.components.ColorChooserButton;
 import org.hkijena.jipipe.ui.components.ColorIcon;
 import org.hkijena.jipipe.ui.components.FormPanel;
 import org.hkijena.jipipe.ui.theme.JIPipeUITheme;
+import org.hkijena.jipipe.utils.ColorUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.MouseEvent;
+import java.awt.geom.AffineTransform;
+import java.awt.image.AffineTransformOp;
+import java.awt.image.BufferedImage;
+import java.awt.image.BufferedImageOp;
 import java.util.*;
 import java.util.List;
 import java.util.function.Consumer;
@@ -21,23 +31,57 @@ import java.util.function.Supplier;
 public class MaskDrawerPlugin extends ImageViewerPanelPlugin {
 
     private ImagePlus mask;
+    private ImageProcessor currentMaskSlice;
+    private BufferedImage currentMaskSlicePreview;
     private final JPanel colorSelectionPanel = new JPanel();
     private final JPanel toolSelectionPanel = new JPanel();
     private MaskColor currentColor = MaskColor.Foreground;
-    private Tool currentTool = Tool.Mouse;
+    private MaskDrawerTool currentTool = new MouseMaskDrawerTool(this);
     private final Map<MaskColor, JToggleButton> colorSelectionButtons = new HashMap<>();
-    private final Map<Tool, JToggleButton> toolSelectionButtons = new HashMap<>();
+    private final Map<MaskDrawerTool, JToggleButton> toolSelectionButtons = new HashMap<>();
     private final List<Point> referencePoints = new ArrayList<>();
-    private JSpinner stampSizeXSpinner;
-    private JSpinner stampSizeYSpinner;
+    private ColorChooserButton highlightColorButton;
+    private Color highlightColor = new Color(255,255,0,128);
+    private Color maskColor = new Color(255,0,0,128);
+    private ButtonGroup toolButtonGroup = new ButtonGroup();
 
     public MaskDrawerPlugin(ImageViewerPanel viewerPanel) {
         super(viewerPanel);
         initialize();
+
+        // Install tools
+        installTool(currentTool);
+        installTool(new PencilMaskDrawerTool(this));
+
         viewerPanel.getCanvas().getEventBus().register(this);
+        setCurrentTool(currentTool);
+    }
+
+    public void installTool(MaskDrawerTool tool) {
+        addSelectionButton(tool,
+                toolSelectionPanel,
+                toolSelectionButtons,
+                toolButtonGroup,
+                "",
+                "<html><strong>" + tool.getName() + "</strong><br/>" +
+                         tool.getDescription() + "</html>",
+                tool.getIcon(),
+                this::getCurrentTool,
+                this::setCurrentTool);
     }
 
     private void initialize() {
+        // Create highlight color selection
+        highlightColorButton = new ColorChooserButton("Change highlight color");
+        highlightColorButton.setUpdateWithHexCode(true);
+        highlightColorButton.setSelectedColor(highlightColor);
+        highlightColorButton.getEventBus().register(new Object() {
+            @Subscribe
+            public void onColorChosen(ColorChooserButton.ColorChosenEvent event) {
+                setHighlightColor(event.getColor());
+            }
+        });
+
         // Create Color selection
         colorSelectionPanel.setLayout(new BoxLayout(colorSelectionPanel, BoxLayout.X_AXIS));
         ButtonGroup colorButtonGroup = new ButtonGroup();
@@ -63,45 +107,21 @@ public class MaskDrawerPlugin extends ImageViewerPanelPlugin {
 
         // Create tool selection
         toolSelectionPanel.setLayout(new BoxLayout(toolSelectionPanel, BoxLayout.X_AXIS));
-        ButtonGroup toolButtonGroup = new ButtonGroup();
-
-        addSelectionButton(Tool.Mouse,
-                toolSelectionPanel,
-                toolSelectionButtons,
-                toolButtonGroup,
-                "",
-                "Switches to the selection tool.",
-                UIUtils.getIconFromResources("actions/followmouse.png"),
-                this::getCurrentTool,
-                this::setCurrentTool);
-        addSelectionButton(Tool.Rectangle,
-                toolSelectionPanel,
-                toolSelectionButtons,
-                toolButtonGroup,
-                "",
-                "Switches to the rectangle tool. Click the two opposite corners to create a rectangle.\n " +
-                        "Press Esc or right click to cancel drawing.",
-                UIUtils.getIconFromResources("actions/draw-rectangle.png"),
-                this::getCurrentTool,
-                this::setCurrentTool);
-        addSelectionButton(Tool.Stamp,
-                toolSelectionPanel,
-                toolSelectionButtons,
-                toolButtonGroup,
-                "",
-                "Switches to the stamp tool that allows to easily create simple geometric shapes of the same size.",
-                UIUtils.getIconFromResources("actions/stamp.png"),
-                this::getCurrentTool,
-                this::setCurrentTool);
-
-        initializeStampTool();
     }
 
-    private void initializeStampTool() {
-        SpinnerNumberModel stampSizeXModel = new SpinnerNumberModel(5,1,Integer.MAX_VALUE,1);
-        stampSizeXSpinner = new JSpinner(stampSizeXModel);
-        SpinnerNumberModel stampSizeYModel = new SpinnerNumberModel(5,1,Integer.MAX_VALUE,1);
-        stampSizeYSpinner = new JSpinner(stampSizeYModel);
+    public Color getHighlightColor() {
+        return highlightColor;
+    }
+
+    public void setHighlightColor(Color highlightColor) {
+        this.highlightColor = highlightColor;
+        currentTool.onHighlightColorChanged();
+    }
+
+    public void recalculateMaskPreview() {
+        if(currentMaskSlice == null || currentMaskSlicePreview == null)
+            return;
+        ImageJUtils.maskToBufferedImage(currentMaskSlice, currentMaskSlicePreview, maskColor, ColorUtils.WHITE_TRANSPARENT);
     }
 
     private <T> void addSelectionButton(T value, JPanel target, Map<T, JToggleButton> targetMap, ButtonGroup targetGroup, String text, String toolTip, Icon icon, Supplier<T> getter, Consumer<T> setter) {
@@ -128,8 +148,23 @@ public class MaskDrawerPlugin extends ImageViewerPanelPlugin {
                         getCurrentImage().getNSlices(),
                         getCurrentImage().getNFrames(),
                         8);
+                currentMaskSlicePreview = new BufferedImage(getCurrentImage().getWidth(),
+                        getCurrentImage().getHeight(),
+                        BufferedImage.TYPE_4BYTE_ABGR);
+                currentMaskSlice = mask.getProcessor();
             }
         }
+        currentTool.onImageChanged();
+    }
+
+    @Override
+    public void onSliceChanged() {
+        if(getCurrentImage() != null && mask != null) {
+            ImageSliceIndex index = getViewerPanel().getCurrentSlicePosition();
+            currentMaskSlice = ImageJUtils.getSlice(mask, index.zeroToOne());
+            getViewerPanel().getCanvas().repaint();
+        }
+        currentTool.onSliceChanged();
     }
 
     @Override
@@ -139,49 +174,40 @@ public class MaskDrawerPlugin extends ImageViewerPanelPlugin {
         }
         formPanel.addGroupHeader("Draw mask", UIUtils.getIconFromResources("actions/draw-brush.png"));
         formPanel.addToForm(toolSelectionPanel, new JLabel("Tool"), null);
-        if(currentTool == Tool.Stamp) {
-            formPanel.addToForm(stampSizeXSpinner, new JLabel("Stamp width"), null);
-            formPanel.addToForm(stampSizeYSpinner, new JLabel("Stamp height"), null);
-        }
+        currentTool.createPalettePanel(formPanel);
+        formPanel.addToForm(highlightColorButton, new JLabel("Highlight color"), null);
         formPanel.addToForm(colorSelectionPanel, new JLabel("Color"), null);
     }
 
     @Subscribe
     public void onPixelHover(ImageViewerPanelCanvas.PixelHoverEvent event) {
+        if((event.getMouseEvent().getModifiersEx() & MouseEvent.BUTTON1_DOWN_MASK) == MouseEvent.BUTTON1_DOWN_MASK) {
+           currentTool.onMouseDrag();
+        }
         getViewerPanel().getCanvas().repaint();
+    }
+
+    public ImagePlus getMask() {
+        return mask;
+    }
+
+    public ImageProcessor getCurrentMaskSlice() {
+        return currentMaskSlice;
     }
 
     @Subscribe
     public void onCanvasClick(ImageViewerPanelCanvas.MouseClickedEvent event) {
-        if(SwingUtilities.isLeftMouseButton(event)) {
-            switch (currentTool) {
-                case Rectangle: {
-
-                }
-            }
-        }
-        else if(SwingUtilities.isRightMouseButton(event)) {
-            resetCurrentTool(false);
-        }
-    }
-
-    public void resetCurrentTool(boolean fullReset) {
-        switch (currentTool) {
-            case Rectangle: {
-                referencePoints.clear();
-            }
-            break;
-        }
-        getViewerPanel().getCanvas().repaint();
+        currentTool.onMouseClick(event);
     }
 
     @Override
     public void postprocessDraw(Graphics2D graphics2D, int x, int y, int w, int h) {
-        Point mousePosition = getViewerPanel().getCanvas().getMousePosition();
-        if(mousePosition == null)
-            return;
-        graphics2D.setColor(Color.YELLOW);
-//        graphics2D.drawOval(mousePosition.x, mousePosition.y, 8, 8);
+        final double zoom = getViewerPanel().getCanvas().getZoom();
+        AffineTransform transform = new AffineTransform();
+        transform.scale(zoom, zoom);
+        BufferedImageOp op = new AffineTransformOp(transform, zoom < 1 ? AffineTransformOp.TYPE_BILINEAR : AffineTransformOp.TYPE_NEAREST_NEIGHBOR);
+        graphics2D.drawImage(currentMaskSlicePreview, op, x, y);
+        currentTool.postprocessDraw(graphics2D, x, y, w, h);
     }
 
     public static void main(String[] args) {
@@ -209,41 +235,34 @@ public class MaskDrawerPlugin extends ImageViewerPanelPlugin {
         }
     }
 
-    public Tool getCurrentTool() {
+    public MaskDrawerTool getCurrentTool() {
         return currentTool;
     }
 
-    public void setCurrentTool(Tool currentTool) {
-        if(this.currentTool == currentTool)
-            return;
+    public void setCurrentTool(MaskDrawerTool currentTool) {
+        if(this.currentTool != null) {
+            this.currentTool.deactivate();
+        }
         this.currentTool = currentTool;
         JToggleButton button = toolSelectionButtons.get(currentTool);
         if(!button.isSelected()) {
             button.doClick();
         }
-        getViewerPanel().getCanvas().setDragWithLeftMouse(currentTool == Tool.Mouse);
-        if(currentTool == Tool.Mouse) {
-            getViewerPanel().getCanvas().setStandardCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
-        }
-        else {
-            getViewerPanel().getCanvas().setStandardCursor(Cursor.getPredefinedCursor(Cursor.CROSSHAIR_CURSOR));
-        }
+        currentTool.activate();
         getViewerPanel().refreshFormPanel();
     }
 
-    public enum StampShape {
-        Rectangle,
-        Ellipse
+    public Color getMaskColor() {
+        return maskColor;
+    }
+
+    public void setMaskColor(Color maskColor) {
+        this.maskColor = maskColor;
+        recalculateMaskPreview();
     }
 
     public enum MaskColor {
         Foreground,
         Background
-    }
-
-    public enum Tool {
-        Mouse,
-        Rectangle,
-        Stamp
     }
 }

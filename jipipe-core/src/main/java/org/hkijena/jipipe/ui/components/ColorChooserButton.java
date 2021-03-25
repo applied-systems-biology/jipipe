@@ -14,6 +14,7 @@
 package org.hkijena.jipipe.ui.components;
 
 import com.google.common.eventbus.EventBus;
+import org.hkijena.jipipe.utils.ColorUtils;
 
 import javax.swing.*;
 import java.awt.*;
@@ -26,6 +27,7 @@ public class ColorChooserButton extends JButton implements ActionListener {
     private ColorIcon icon = new ColorIcon(16, 16);
     private Color selectedColor = Color.RED;
     private String selectColorPrompt = "Select color";
+    private boolean updateWithHexCode = false;
 
     public ColorChooserButton() {
         super();
@@ -65,6 +67,9 @@ public class ColorChooserButton extends JButton implements ActionListener {
             this.selectedColor = selectedColor;
             icon.setFillColor(selectedColor);
             repaint();
+            if(updateWithHexCode) {
+                setText(ColorUtils.colorToHexString(selectedColor));
+            }
             eventBus.post(new ColorChosenEvent(this, selectedColor));
         }
     }
@@ -79,6 +84,14 @@ public class ColorChooserButton extends JButton implements ActionListener {
 
     public void setSelectColorPrompt(String selectColorPrompt) {
         this.selectColorPrompt = selectColorPrompt;
+    }
+
+    public boolean isUpdateWithHexCode() {
+        return updateWithHexCode;
+    }
+
+    public void setUpdateWithHexCode(boolean updateWithHexCode) {
+        this.updateWithHexCode = updateWithHexCode;
     }
 
     public static class ColorChosenEvent {

@@ -210,7 +210,7 @@ public class ImageViewerPanelCanvas extends JPanel implements MouseListener, Mou
             repaint();
         }
         else {
-            eventBus.post(new PixelHoverEvent(getMouseModelPixelCoordinate(false)));
+            eventBus.post(new PixelHoverEvent(getMouseModelPixelCoordinate(false), e));
         }
     }
 
@@ -240,7 +240,7 @@ public class ImageViewerPanelCanvas extends JPanel implements MouseListener, Mou
 
     @Override
     public void mouseMoved(MouseEvent e) {
-        eventBus.post(new PixelHoverEvent(getMouseModelPixelCoordinate(false)));
+        eventBus.post(new PixelHoverEvent(getMouseModelPixelCoordinate(false), e));
     }
 
     public JScrollPane getScrollPane() {
@@ -380,13 +380,19 @@ public class ImageViewerPanelCanvas extends JPanel implements MouseListener, Mou
 
     public static class PixelHoverEvent {
         private final Point pixelCoordinate;
+        private final MouseEvent mouseEvent;
 
-        public PixelHoverEvent(Point pixelCoordinate) {
+        public PixelHoverEvent(Point pixelCoordinate, MouseEvent mouseEvent) {
             this.pixelCoordinate = pixelCoordinate;
+            this.mouseEvent = mouseEvent;
         }
 
         public Point getPixelCoordinate() {
             return pixelCoordinate;
+        }
+
+        public MouseEvent getMouseEvent() {
+            return mouseEvent;
         }
     }
 

@@ -499,6 +499,10 @@ public class ImageViewerPanel extends JPanel {
         });
     }
 
+    /**
+     * Returns the currently viewed slice position
+     * @return the slice position. Zero-based indices
+     */
     public ImageSliceIndex getCurrentSlicePosition() {
         return new ImageSliceIndex(stackSlider.getValue() - 1, channelSlider.getValue() - 1, frameSlider.getValue() - 1);
     }

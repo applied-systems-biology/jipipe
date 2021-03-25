@@ -37,6 +37,7 @@ import java.awt.*;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.PathIterator;
 import java.awt.image.BufferedImage;
+import java.awt.image.DataBufferByte;
 import java.util.List;
 import java.util.*;
 import java.util.function.BiConsumer;
@@ -396,6 +397,33 @@ public class ImageJUtils {
      */
     public static int getStackIndexZero(int channel, int slice, int frame, ImagePlus imagePlus) {
         return getStackIndex(channel, slice, frame, imagePlus.getNChannels(), imagePlus.getNSlices(), imagePlus.getNFrames());
+    }
+
+    /**
+     * Copies a mask into a {@link BufferedImage}
+     * @param mask the mask
+     * @param target the target image. Must be ABGR
+     * @param foreground color for pixels larger than zero
+     * @param background color for zero pixels
+     */
+    public static void maskToBufferedImage(ImageProcessor mask, BufferedImage target, Color foreground, Color background) {
+        byte[] sourcePixels = (byte[]) mask.getPixels();
+        byte[] targetPixels = ((DataBufferByte) target.getRaster().getDataBuffer()).getData();
+
+        for (int i = 0; i < sourcePixels.length; i++) {
+            if(Byte.toUnsignedInt(sourcePixels[i]) > 0) {
+                targetPixels[i * 4] = (byte)foreground.getAlpha(); // A
+                targetPixels[i * 4 + 1] = (byte)foreground.getBlue(); // B
+                targetPixels[i * 4 + 2] = (byte)foreground.getGreen(); // G
+                targetPixels[i * 4 + 3] = (byte)foreground.getRed(); // R
+            }
+            else {
+                targetPixels[i * 4] = (byte)background.getAlpha(); // A
+                targetPixels[i * 4 + 1] = (byte)background.getBlue(); // B
+                targetPixels[i * 4 + 2] = (byte)background.getGreen(); // G
+                targetPixels[i * 4 + 3] = (byte)background.getRed(); // R
+            }
+        }
     }
 
     /**
