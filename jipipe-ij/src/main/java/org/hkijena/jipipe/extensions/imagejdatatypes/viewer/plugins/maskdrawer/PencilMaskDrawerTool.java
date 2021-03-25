@@ -33,7 +33,10 @@ public class PencilMaskDrawerTool extends MaskDrawerTool {
     private final Set<Point> interpolationPoints = new HashSet<>();
 
     public PencilMaskDrawerTool(MaskDrawerPlugin plugin) {
-        super(plugin, "Pencil", "Allows to draw free-hand", UIUtils.getIconFromResources("actions/draw-brush.png"));
+        super(plugin,
+                "Pencil",
+                "Allows to draw free-hand",
+                UIUtils.getIconFromResources("actions/draw-brush.png"));
         getViewerPanel().getCanvas().getEventBus().register(this);
         initialize();
     }

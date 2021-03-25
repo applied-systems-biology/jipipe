@@ -11,7 +11,10 @@ import java.awt.*;
  */
 public class MouseMaskDrawerTool extends MaskDrawerTool {
     public MouseMaskDrawerTool(MaskDrawerPlugin plugin) {
-        super(plugin, "Panning", "Allows to drag the canvas with the left mouse", UIUtils.getIconFromResources("actions/hand.png"));
+        super(plugin,
+                "Panning",
+                "Allows to drag the canvas with the left mouse",
+                UIUtils.getIconFromResources("actions/hand.png"));
     }
 
     @Override
