@@ -81,7 +81,7 @@ public abstract class JIPipeGraphNode implements JIPipeValidatable, JIPipeParame
 
             for (JIPipeInputSlot slot : getClass().getAnnotationsByType(JIPipeInputSlot.class)) {
                 if (slot.autoCreate()) {
-                    builder.addInputSlot(slot.slotName(), slot.value());
+                    builder.addInputSlot(slot.slotName(), slot.value(), slot.optional());
                 }
             }
             for (JIPipeOutputSlot slot : getClass().getAnnotationsByType(JIPipeOutputSlot.class)) {
