@@ -1,6 +1,8 @@
 package org.hkijena.jipipe.extensions.imagejalgorithms.ij1.forms;
 
 import ij.ImagePlus;
+import ij.process.Blitter;
+import ij.process.ImageProcessor;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.JIPipeValidityReport;
 import org.hkijena.jipipe.api.data.JIPipeData;
@@ -8,6 +10,7 @@ import org.hkijena.jipipe.api.data.JIPipeDataSource;
 import org.hkijena.jipipe.api.nodes.JIPipeMergingDataBatch;
 import org.hkijena.jipipe.extensions.forms.datatypes.FormData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
+import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.extensions.imagejdatatypes.viewer.ImageViewerPanel;
 import org.hkijena.jipipe.extensions.imagejdatatypes.viewer.plugins.CalibrationPlugin;
 import org.hkijena.jipipe.extensions.imagejdatatypes.viewer.plugins.LUTManagerPlugin;
@@ -42,6 +45,32 @@ public class MaskDrawerFormData extends FormData {
                 new PixelInfoPlugin(imageViewerPanel),
                 new LUTManagerPlugin(imageViewerPanel),
                 maskDrawerPlugin));
+    }
+
+    @Override
+    public boolean isUsingCustomCopy() {
+        return true;
+    }
+
+    @Override
+    public void customCopy(FormData source, JIPipeValidityReport report) {
+        MaskDrawerFormData sourceData = (MaskDrawerFormData) source;
+        ImagePlus sourceMask = sourceData.maskDrawerPlugin.getMask();
+        ImagePlus targetMask = maskDrawerPlugin.getMask();
+
+        if(!ImageJUtils.imagesHaveSameSize(sourceMask, targetMask)) {
+            report.reportIsInvalid("Could not copy mask due to different sizes!",
+                    "The source mask is " + sourceMask + " and cannot be copied into the target " + targetMask,
+                    "Ensure that the masks have the same size",
+                    this);
+            return;
+        }
+
+        ImageJUtils.forEachIndexedZCTSlice(targetMask, (targetProcessor, index) -> {
+            ImageProcessor sourceProcessor = ImageJUtils.getSliceZero(sourceMask, index);
+            targetProcessor.copyBits(sourceProcessor, 0,0, Blitter.COPY);
+        }, new JIPipeProgressInfo());
+        maskDrawerPlugin.recalculateMaskPreview();
     }
 
     @Override

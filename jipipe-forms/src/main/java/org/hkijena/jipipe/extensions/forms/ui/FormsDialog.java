@@ -531,6 +531,9 @@ public class FormsDialog extends JFrame {
             return;
         }
 
+        boolean encounteredImmutable = false;
+        JIPipeValidityReport report = new JIPipeValidityReport();
+
         JIPipeDataSlot forms = dataBatchForms.get(selectedRow);
         JIPipeProgressInfo progressInfo = new JIPipeProgressInfo();
         for (int i = 0; i < dataBatchList.size(); i++) {
@@ -542,7 +545,18 @@ public class FormsDialog extends JFrame {
             // Just copy the form
             JIPipeDataSlot copy = new JIPipeDataSlot(forms.getInfo(), forms.getNode());
             for (int row = 0; row < forms.getRowCount(); row++) {
-                copy.addData(forms.getData(row, FormData.class, progressInfo).duplicate(),
+                FormData srcData = forms.getData(row, FormData.class, progressInfo);
+                FormData targetData = dataBatchForms.get(i).getData(row, FormData.class, progressInfo);
+                if(!targetData.isImmutable()) {
+                    if(targetData.isUsingCustomCopy())
+                        targetData.customCopy(srcData, report.forCategory("Item " + (i + 1)));
+                    else
+                        targetData = (FormData) srcData.duplicate();
+                }
+                else {
+                    encounteredImmutable = true;
+                }
+                copy.addData(targetData,
                         forms.getAnnotations(row),
                         JIPipeAnnotationMergeStrategy.OverwriteExisting,
                         progressInfo);
@@ -552,6 +566,14 @@ public class FormsDialog extends JFrame {
         }
         updateVisitedStatuses();
         updateBottomBarStats();
+
+        if(encounteredImmutable) {
+            JOptionPane.showMessageDialog(this, "Some settings could not be copied, as " +
+                    "they are marked immutable.", "Copy settings", JOptionPane.WARNING_MESSAGE );
+        }
+        if(!report.isValid()) {
+            UIUtils.openValidityReportDialog(this, report, true);
+        }
     }
 
     private void toggleBatchVisited() {

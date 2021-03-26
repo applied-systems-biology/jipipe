@@ -115,6 +115,34 @@ public abstract class FormData implements JIPipeData, JIPipeParameterCollection,
         JIPipeParameterCollection.deserializeParametersFromJson(this, node, new JIPipeValidityReport());
     }
 
+    /**
+     * Return true if this form data is replaceable via the "Apply to ..." function
+     * @return if the form data is immutable
+     */
+    public boolean isImmutable() {
+        return false;
+    }
+
+    /**
+     * Determines whether this form data uses a custom copy method for the "Apply to ..." function
+     * If false, duplicate() is used
+     * If true, customCopy(src) is used
+     * @return if custom copy is enabled
+     */
+    public boolean isUsingCustomCopy() {
+        return false;
+    }
+
+    /**
+     * A custom copy function that copies the contents from source into this form.
+     * Should never raise exceptions. Use {@link JIPipeValidityReport} to report issues.
+     * @param source the source data
+     * @param report the error report
+     */
+    public void customCopy(FormData source, JIPipeValidityReport report) {
+
+    }
+
     @JIPipeDocumentation(name = "Form element tab", description = "Form elements can be displayed in different tabs for ease of use. " +
             "Change following settings to determine where this element is placed.")
     @JIPipeParameter("form:tabs")
