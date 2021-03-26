@@ -39,9 +39,9 @@ public class EllipseMaskDrawerTool extends MaskDrawerTool {
 
     @Override
     public void createPalettePanel(FormPanel formPanel) {
-        formPanel.addWideToForm(startFromCenterToggle, null);
-        formPanel.addWideToForm(squareToggle, null);
-        formPanel.addWideToForm(fillToggle, null);
+        formPanel.addToForm(startFromCenterToggle, new JLabel(), null);
+        formPanel.addToForm(squareToggle, new JLabel(), null);
+        formPanel.addToForm(fillToggle, new JLabel(), null);
     }
 
     @Override

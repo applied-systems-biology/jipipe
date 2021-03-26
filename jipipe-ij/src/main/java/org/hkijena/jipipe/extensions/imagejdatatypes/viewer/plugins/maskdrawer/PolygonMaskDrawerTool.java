@@ -44,8 +44,8 @@ public class PolygonMaskDrawerTool extends MaskDrawerTool {
 
     @Override
     public void createPalettePanel(FormPanel formPanel) {
-        formPanel.addWideToForm(closeToggle, null);
-        formPanel.addWideToForm(fillToggle, null);
+        formPanel.addToForm(closeToggle, new JLabel(), null);
+        formPanel.addToForm(fillToggle, new JLabel(), null);
     }
 
     @Override
