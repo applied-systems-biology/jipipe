@@ -53,6 +53,8 @@ public class MaskDrawerPlugin extends ImageViewerPanelPlugin {
         installTool(currentTool);
         installTool(new PencilMaskDrawerTool(this));
         installTool(new FloodFillMaskDrawerTool(this));
+        installTool(new RectangleMaskDrawerTool(this));
+        installTool(new EllipseMaskDrawerTool(this));
 
         viewerPanel.getCanvas().getEventBus().register(this);
         setCurrentTool(currentTool);
@@ -264,7 +266,18 @@ public class MaskDrawerPlugin extends ImageViewerPanelPlugin {
     }
 
     public enum MaskColor {
-        Foreground,
-        Background
+        Foreground(255),
+        Background(0);
+
+        private final int value;
+
+        MaskColor(int value) {
+
+            this.value = value;
+        }
+
+        public int getValue() {
+            return value;
+        }
     }
 }
