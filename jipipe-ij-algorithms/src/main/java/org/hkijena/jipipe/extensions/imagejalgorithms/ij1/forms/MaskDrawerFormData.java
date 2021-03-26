@@ -66,9 +66,21 @@ public class MaskDrawerFormData extends FormData {
             return;
         }
 
+        ImageJUtils.copyBetweenImages(sourceMask, targetMask, new JIPipeProgressInfo());
+        maskDrawerPlugin.recalculateMaskPreview();
+    }
+
+    @Override
+    public boolean isUsingCustomReset() {
+        return true;
+    }
+
+    @Override
+    public void customReset() {
+        ImagePlus targetMask = maskDrawerPlugin.getMask();
         ImageJUtils.forEachIndexedZCTSlice(targetMask, (targetProcessor, index) -> {
-            ImageProcessor sourceProcessor = ImageJUtils.getSliceZero(sourceMask, index);
-            targetProcessor.copyBits(sourceProcessor, 0,0, Blitter.COPY);
+           targetProcessor.setValue(0);
+           targetProcessor.fillRect(0,0,targetProcessor.getWidth(), targetProcessor.getHeight());
         }, new JIPipeProgressInfo());
         maskDrawerPlugin.recalculateMaskPreview();
     }

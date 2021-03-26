@@ -429,6 +429,21 @@ public class ImageJUtils {
     }
 
     /**
+     * Copies all data from the source to the target image
+     * @param src the source
+     * @param target the target
+     */
+    public static void copyBetweenImages(ImagePlus src, ImagePlus target, JIPipeProgressInfo progressInfo) {
+        if(!ImageJUtils.imagesHaveSameSize(src, target) || src.getBitDepth() != target.getBitDepth()) {
+            throw new IllegalArgumentException("Source and target must have same size and bit depth!");
+        }
+        ImageJUtils.forEachIndexedZCTSlice(target, (targetProcessor, index) -> {
+            ImageProcessor sourceProcessor = ImageJUtils.getSliceZero(src, index);
+            targetProcessor.copyBits(sourceProcessor, 0,0, Blitter.COPY);
+        }, progressInfo);
+    }
+
+    /**
      * Copy a {@link BufferedImage}
      * @param bi the image
      * @return the copy

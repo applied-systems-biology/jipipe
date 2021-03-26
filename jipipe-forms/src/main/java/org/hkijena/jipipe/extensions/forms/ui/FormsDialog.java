@@ -492,17 +492,33 @@ public class FormsDialog extends JFrame {
     }
 
     private void resetAllBatches(boolean onlyUnvisited) {
-        JIPipeProgressInfo progressInfo = new JIPipeProgressInfo();
         for (int i = 0; i < dataBatchList.size(); ++i) {
             if (onlyUnvisited && dataBatchStatuses.get(i) != DataBatchStatus.Unvisited)
                 continue;
-            JIPipeDataSlot copy = createFormsInstanceFor(i, progressInfo);
-            dataBatchForms.set(i, copy);
-            dataBatchStatuses.set(i, DataBatchStatus.Unvisited);
+            resetDataBatch(i);
         }
         updateVisitedStatuses();
         updateBottomBarStats();
         dataBatchTableUI.getTable().repaint();
+    }
+
+    private void resetDataBatch(int i) {
+        JIPipeProgressInfo progressInfo = new JIPipeProgressInfo();
+        JIPipeDataSlot tmpCopy = createFormsInstanceFor(i, progressInfo);
+        JIPipeDataSlot copy = new JIPipeDataSlot(originalForms.getInfo(), originalForms.getNode());
+        for (int row = 0; row < tmpCopy.getRowCount(); row++) {
+            FormData src = tmpCopy.getData(row, FormData.class, progressInfo);
+            FormData target = dataBatchForms.get(i).getData(row, FormData.class, progressInfo);
+            if(target.isUsingCustomReset()) {
+                target.customReset();
+                copy.addData(target, tmpCopy.getAnnotations(row), JIPipeAnnotationMergeStrategy.OverwriteExisting, progressInfo);
+            }
+            else {
+                copy.addData(src, tmpCopy.getAnnotations(row), JIPipeAnnotationMergeStrategy.OverwriteExisting, progressInfo);
+            }
+        }
+        dataBatchForms.set(i, copy);
+        dataBatchStatuses.set(i, DataBatchStatus.Unvisited);
     }
 
     private void resetCurrentBatch() {
@@ -512,9 +528,7 @@ public class FormsDialog extends JFrame {
         } else {
             return;
         }
-        JIPipeDataSlot copy = createFormsInstanceFor(selectedRow, new JIPipeProgressInfo());
-        dataBatchForms.set(selectedRow, copy);
-        dataBatchStatuses.set(selectedRow, DataBatchStatus.Unvisited);
+        resetDataBatch(selectedRow);
         updateBottomBarStats();
         dataBatchTableUI.getTable().repaint();
         closeAllTabsAndRememberLast();

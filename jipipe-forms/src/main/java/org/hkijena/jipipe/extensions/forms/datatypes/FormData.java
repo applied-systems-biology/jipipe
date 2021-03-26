@@ -134,12 +134,29 @@ public abstract class FormData implements JIPipeData, JIPipeParameterCollection,
     }
 
     /**
+     * Determines whether this form data uses a custom reset method
+     * If false, a new copy of the original data is created
+     * If true, customReset() is called
+     * @return if custom reset is enabled
+     */
+    public boolean isUsingCustomReset() {
+        return false;
+    }
+
+    /**
      * A custom copy function that copies the contents from source into this form.
      * Should never raise exceptions. Use {@link JIPipeValidityReport} to report issues.
      * @param source the source data
      * @param report the error report
      */
     public void customCopy(FormData source, JIPipeValidityReport report) {
+
+    }
+
+    /**
+     * A custom reset method
+     */
+    public void customReset() {
 
     }
 
