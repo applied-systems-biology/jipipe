@@ -46,10 +46,7 @@ import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.features.MeijeringVess
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.fft.FFT2DForwardTransform;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.fft.FFT2DInverseTransform;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.fft.FFT2DSwapQuadrants;
-import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.generate.GenerateMissingFromMathExpression2D;
-import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.generate.GenerateMissingTablesAlgorithm;
-import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.generate.GenerateStructureElementAlgorithm;
-import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.generate.ImageFromMatrix2DAlgorithm;
+import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.generate.*;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.io.*;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.lut.LUTInverterAlgorithm;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.lut.RemoveLUTAlgorithm;
@@ -822,7 +819,8 @@ public class ImageJAlgorithmsExtension extends JIPipePrepackagedDefaultJavaExten
         registerNodeType("ij1-math-generate-vector-from-expression", GenerateVectorFromMathExpression.class, UIUtils.getIconURLFromResources("actions/insert-math-expression.png"));
         registerNodeType("ij-imgplus-from-matrix", ImageFromMatrix2DAlgorithm.class, UIUtils.getIconURLFromResources("actions/table.png"));
 
-        registerNodeType("ij1-math-generate-missing-from-expression", GenerateMissingFromMathExpression2D.class, UIUtils.getIconURLFromResources("actions/insert-math-expression.png"));
+        registerNodeType("ij1-math-generate-missing-from-expression", GenerateMissingImageFromMathExpression2D.class, UIUtils.getIconURLFromResources("actions/insert-math-expression.png"));
+        registerNodeType("ij1-math-generate-missing-zero-image", GenerateMissingZeroImage.class, UIUtils.getIconURLFromResources("actions/add.png"));
 
         registerEnumParameterType("ij1-math-math2d:transformation", ApplyMath2DAlgorithm.Transformation.class,
                 "Transformation", "Available transformations");

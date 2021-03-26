@@ -43,7 +43,7 @@ import org.hkijena.jipipe.utils.ImageJCalibrationMode;
 @JIPipeInputSlot(value = ImagePlusData.class, slotName = "Reference", autoCreate = true)
 @JIPipeInputSlot(value = ImagePlusData.class, slotName = "Image", autoCreate = true, optional = true)
 @JIPipeOutputSlot(value = ImagePlusData.class, slotName = "Image", autoCreate = true)
-public class GenerateMissingFromMathExpression2D extends JIPipeMissingDataGeneratorAlgorithm {
+public class GenerateMissingImageFromMathExpression2D extends JIPipeMissingDataGeneratorAlgorithm {
 
     private DefaultExpressionParameter function = new DefaultExpressionParameter("0");
     private OptionalIntegerParameter overwriteWidth = new OptionalIntegerParameter(false, 256);
@@ -59,7 +59,7 @@ public class GenerateMissingFromMathExpression2D extends JIPipeMissingDataGenera
      *
      * @param info the info
      */
-    public GenerateMissingFromMathExpression2D(JIPipeNodeInfo info) {
+    public GenerateMissingImageFromMathExpression2D(JIPipeNodeInfo info) {
         super(info);
     }
 
@@ -68,7 +68,7 @@ public class GenerateMissingFromMathExpression2D extends JIPipeMissingDataGenera
      *
      * @param other the other
      */
-    public GenerateMissingFromMathExpression2D(GenerateMissingFromMathExpression2D other) {
+    public GenerateMissingImageFromMathExpression2D(GenerateMissingImageFromMathExpression2D other) {
         super(other);
         this.function = new DefaultExpressionParameter(other.function);
         this.overwriteWidth = new OptionalIntegerParameter(other.overwriteWidth);
