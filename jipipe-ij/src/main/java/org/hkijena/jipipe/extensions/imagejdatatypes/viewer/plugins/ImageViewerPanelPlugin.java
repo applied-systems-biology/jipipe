@@ -7,6 +7,7 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.viewer.ImageViewerPanel;
 import org.hkijena.jipipe.ui.components.FormPanel;
 
 import java.awt.*;
+import java.awt.image.BufferedImage;
 
 public abstract class ImageViewerPanelPlugin {
     private final ImageViewerPanel viewerPanel;
@@ -84,6 +85,15 @@ public abstract class ImageViewerPanelPlugin {
      * @param h height of the drawn image
      */
     public void postprocessDraw(Graphics2D graphics2D, int x, int y, int w, int h) {
+
+    }
+
+    /**
+     * Called while exporting the image slice.
+     * Use this to export items handled by postprocessDraw
+     * @param image the image
+     */
+    public void postprocessDrawForExport(BufferedImage image) {
 
     }
 }

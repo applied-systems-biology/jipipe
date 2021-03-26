@@ -69,6 +69,8 @@ public class ImageViewerPanel extends JPanel {
     private JMenuItem exportMovieItem;
     private JToolBar toolBar = new JToolBar();
     private List<ImageViewerPanelPlugin> plugins = new ArrayList<>();
+    private JButton rotateLeftButton;
+    private JButton rotateRightButton;
 
     public ImageViewerPanel() {
         initialize();
@@ -110,6 +112,16 @@ public class ImageViewerPanel extends JPanel {
 
     public void setPlugins(List<ImageViewerPanelPlugin> plugins) {
         this.plugins = plugins;
+    }
+
+    public void setRotationEnabled(boolean enabled) {
+        rotateLeftButton.setVisible(enabled);
+        rotateRightButton.setVisible(enabled);
+        if(!enabled) {
+            rotation = 0;
+            refreshImageInfo();
+            refreshSlice();
+        }
     }
 
     private void initialize() {
@@ -236,12 +248,12 @@ public class ImageViewerPanel extends JPanel {
         toolBar.add(exportMenuButton);
         toolBar.addSeparator();
 
-        JButton rotateLeftButton = new JButton(UIUtils.getIconFromResources("actions/transform-rotate-left.png"));
+        rotateLeftButton = new JButton(UIUtils.getIconFromResources("actions/transform-rotate-left.png"));
         rotateLeftButton.setToolTipText("Rotate 90° to the left");
         rotateLeftButton.addActionListener(e -> rotateLeft());
         toolBar.add(rotateLeftButton);
 
-        JButton rotateRightButton = new JButton(UIUtils.getIconFromResources("actions/transform-rotate.png"));
+        rotateRightButton = new JButton(UIUtils.getIconFromResources("actions/transform-rotate.png"));
         rotateRightButton.setToolTipText("Rotate 90° to the right");
         rotateRightButton.addActionListener(e -> rotateRight());
         toolBar.add(rotateRightButton);

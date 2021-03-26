@@ -44,6 +44,7 @@ public class MaskDrawerPlugin extends ImageViewerPanelPlugin {
 
     public MaskDrawerPlugin(ImageViewerPanel viewerPanel) {
         super(viewerPanel);
+        viewerPanel.setRotationEnabled(false);
         initialize();
 
         // Install tools
