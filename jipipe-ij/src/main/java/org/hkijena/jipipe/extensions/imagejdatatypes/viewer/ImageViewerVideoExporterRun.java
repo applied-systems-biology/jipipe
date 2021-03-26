@@ -73,7 +73,11 @@ public class ImageViewerVideoExporterRun implements JIPipeRunnable {
                     return;
                 progressInfo.incrementProgress();
                 subProgress.log("z = " + z);
-                generatedStack.addSlice(new ColorProcessor(viewerPanel.generateSlice(z, referencePosition.getC(), referencePosition.getT(), true).getBufferedImage()));
+                generatedStack.addSlice(new ColorProcessor(viewerPanel.generateSlice(z,
+                        referencePosition.getC(),
+                        referencePosition.getT(),
+                        true,
+                        true).getBufferedImage()));
             }
         } else if (followedDimension == HyperstackDimension.Channel) {
             progressInfo.setMaxProgress(image.getNChannels());
@@ -83,7 +87,11 @@ public class ImageViewerVideoExporterRun implements JIPipeRunnable {
                     return;
                 progressInfo.incrementProgress();
                 subProgress.log("c = " + c);
-                generatedStack.addSlice(new ColorProcessor(viewerPanel.generateSlice(referencePosition.getZ(), c, referencePosition.getT(), true).getBufferedImage()));
+                generatedStack.addSlice(new ColorProcessor(viewerPanel.generateSlice(referencePosition.getZ(),
+                        c,
+                        referencePosition.getT(),
+                        true,
+                        true).getBufferedImage()));
             }
         } else if (followedDimension == HyperstackDimension.Frame) {
             progressInfo.setMaxProgress(image.getNFrames());
@@ -93,7 +101,11 @@ public class ImageViewerVideoExporterRun implements JIPipeRunnable {
                     return;
                 progressInfo.incrementProgress();
                 subProgress.log("t = " + t);
-                generatedStack.addSlice(new ColorProcessor(viewerPanel.generateSlice(referencePosition.getZ(), referencePosition.getC(), t, true).getBufferedImage()));
+                generatedStack.addSlice(new ColorProcessor(viewerPanel.generateSlice(referencePosition.getZ(),
+                        referencePosition.getC(),
+                        t,
+                        true,
+                        true).getBufferedImage()));
             }
         }
 

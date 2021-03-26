@@ -37,7 +37,9 @@ import java.awt.*;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.PathIterator;
 import java.awt.image.BufferedImage;
+import java.awt.image.ColorModel;
 import java.awt.image.DataBufferByte;
+import java.awt.image.WritableRaster;
 import java.util.List;
 import java.util.*;
 import java.util.function.BiConsumer;
@@ -424,6 +426,31 @@ public class ImageJUtils {
                 targetPixels[i * 4 + 3] = (byte)background.getRed(); // R
             }
         }
+    }
+
+    /**
+     * Copy a {@link BufferedImage}
+     * @param bi the image
+     * @return the copy
+     */
+    public static BufferedImage copyBufferedImage(BufferedImage bi) {
+        ColorModel cm = bi.getColorModel();
+        boolean isAlphaPremultiplied = cm.isAlphaPremultiplied();
+        WritableRaster raster = bi.copyData(null);
+        return new BufferedImage(cm, raster, isAlphaPremultiplied, null);
+    }
+
+    /**
+     * Copy a {@link BufferedImage}
+     * @param bi the image
+     * @return the copy
+     */
+    public static BufferedImage copyBufferedImageToARGB(BufferedImage bi) {
+        BufferedImage result = new BufferedImage(bi.getWidth(), bi.getHeight(), BufferedImage.TYPE_INT_ARGB);
+        Graphics2D graphics = result.createGraphics();
+        graphics.drawImage(bi, 0, 0, null);
+        graphics.dispose();
+        return result;
     }
 
     /**

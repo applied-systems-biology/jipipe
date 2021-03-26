@@ -72,7 +72,11 @@ public class ImageViewerStackExporterRun implements JIPipeRunnable {
                     String fileName = String.format("%sc%d_t%d_z%d.%s", StringUtils.isNullOrEmpty(baseName) ? "" : baseName + "_", c, t, z, formatName.toLowerCase());
                     progressInfo.incrementProgress();
                     progressInfo.log(fileName);
-                    BufferedImage bufferedImage = viewerPanel.generateSlice(z, c, t, true).getBufferedImage();
+                    BufferedImage bufferedImage = viewerPanel.generateSlice(z,
+                            c,
+                            t,
+                            true,
+                            true).getBufferedImage();
                     try {
                         ImageIO.write(bufferedImage, formatName, outputFolder.resolve(fileName).toFile());
                     } catch (IOException e) {

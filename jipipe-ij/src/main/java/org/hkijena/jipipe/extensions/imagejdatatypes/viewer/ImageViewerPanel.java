@@ -17,17 +17,20 @@ import ij.IJ;
 import ij.ImagePlus;
 import ij.gui.ImageWindow;
 import ij.measure.Calibration;
+import ij.process.ColorProcessor;
 import ij.process.ImageProcessor;
 import ij.process.ImageStatistics;
 import ij.util.Tools;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.AVICompression;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.HyperstackDimension;
+import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageSliceIndex;
 import org.hkijena.jipipe.extensions.imagejdatatypes.viewer.plugins.*;
 import org.hkijena.jipipe.extensions.settings.FileChooserSettings;
 import org.hkijena.jipipe.ui.components.FormPanel;
 import org.hkijena.jipipe.ui.components.PathEditor;
 import org.hkijena.jipipe.ui.running.JIPipeRunExecuterUI;
+import org.hkijena.jipipe.utils.CopyImageToClipboard;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 
@@ -36,6 +39,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
+import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -232,6 +236,10 @@ public class ImageViewerPanel extends JPanel {
         exportMenuButton.setToolTipText("Export currently displayed image");
         JPopupMenu exportMenu = new JPopupMenu();
 
+        JMenuItem copyCurrentSliceItem = new JMenuItem("Copy snapshot of current slice", UIUtils.getIconFromResources("actions/edit-copy.png"));
+        copyCurrentSliceItem.addActionListener(e -> copyCurrentSliceToClipboard());
+        exportMenu.add(copyCurrentSliceItem);
+
         JMenuItem exportCurrentSliceItem = new JMenuItem("Snapshot of current slice", UIUtils.getIconFromResources("actions/viewimage.png"));
         exportCurrentSliceItem.addActionListener(e -> exportCurrentSliceToPNG());
         exportMenu.add(exportCurrentSliceItem);
@@ -321,11 +329,28 @@ public class ImageViewerPanel extends JPanel {
             else if (UIUtils.EXTENSION_FILTER_JPEG.accept(targetFile.toFile()))
                 format = "JPEG";
             try {
-                ImageIO.write(getCanvas().getImage(), format, targetFile.toFile());
+                BufferedImage image = ImageJUtils.copyBufferedImage(getCanvas().getImage());
+                for (ImageViewerPanelPlugin plugin : getPlugins()) {
+                    plugin.postprocessDrawForExport(image, getCurrentSlicePosition());
+                }
+                ImageIO.write(image, format, targetFile.toFile());
             } catch (IOException e) {
                 IJ.handleException(e);
             }
         }
+    }
+
+    public void copyCurrentSliceToClipboard() {
+        if (getCanvas().getImage() == null) {
+            JOptionPane.showMessageDialog(this, "No image loaded.", "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+        BufferedImage image = ImageJUtils.copyBufferedImageToARGB(getCanvas().getImage());
+        for (ImageViewerPanelPlugin plugin : getPlugins()) {
+            plugin.postprocessDrawForExport(image, getCurrentSlicePosition());
+        }
+        CopyImageToClipboard copyImageToClipboard = new CopyImageToClipboard();
+        copyImageToClipboard.copyImage(image);
     }
 
     public void exportAllSlicesToPNG() {
@@ -616,7 +641,7 @@ public class ImageViewerPanel extends JPanel {
         }
     }
 
-    public ImageProcessor generateSlice(int z, int c, int t, boolean withRotation) {
+    public ImageProcessor generateSlice(int z, int c, int t, boolean withRotation, boolean withPostprocessing) {
         image.setPosition(c + 1, z + 1, t + 1);
         for (ImageViewerPanelPlugin plugin : plugins) {
             plugin.beforeDraw(z, c, t);
@@ -636,6 +661,13 @@ public class ImageViewerPanel extends JPanel {
             else
                 throw new UnsupportedOperationException("Unknown rotation: " + rotation);
         }
+        if(withPostprocessing) {
+            BufferedImage image = processor.getBufferedImage();
+            for (ImageViewerPanelPlugin plugin : getPlugins()) {
+                plugin.postprocessDrawForExport(image, new ImageSliceIndex(z, c, t));
+            }
+            processor = new ColorProcessor(image);
+        }
         return processor;
     }
 
@@ -644,7 +676,7 @@ public class ImageViewerPanel extends JPanel {
             ImageProcessor processor = generateSlice(stackSlider.getValue() - 1,
                     channelSlider.getValue() - 1,
                     frameSlider.getValue() - 1,
-                    true);
+                    true, false);
             if (processor == null) {
                 canvas.setImage(null);
                 return;

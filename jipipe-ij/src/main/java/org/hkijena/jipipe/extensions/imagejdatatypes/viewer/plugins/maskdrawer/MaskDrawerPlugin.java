@@ -213,6 +213,16 @@ public class MaskDrawerPlugin extends ImageViewerPanelPlugin {
         currentTool.postprocessDraw(graphics2D, x, y, w, h);
     }
 
+    @Override
+    public void postprocessDrawForExport(BufferedImage image, ImageSliceIndex sliceIndex) {
+        ImageProcessor selectedMaskSlice = ImageJUtils.getSliceZero(mask, sliceIndex);
+        BufferedImage renderedMask = new BufferedImage(image.getWidth(), image.getHeight(), BufferedImage.TYPE_4BYTE_ABGR);
+        ImageJUtils.maskToBufferedImage(selectedMaskSlice, renderedMask, maskColor, ColorUtils.WHITE_TRANSPARENT);
+        Graphics2D graphics = image.createGraphics();
+        graphics.drawImage(renderedMask, 0, 0, null);
+        graphics.dispose();
+    }
+
     public static void main(String[] args) {
 //        ImagePlus img = IJ.openImage("E:\\Projects\\JIPipe\\testdata\\ATTC_IµL_3rdReplicate-Experiment-5516\\in\\data.tif");
         ImagePlus img = IJ.openImage("E:\\Projects\\Mitochondria\\data_21.12.20\\1 Deconv.lif - 1_Series047_5_cmle_converted.tif");

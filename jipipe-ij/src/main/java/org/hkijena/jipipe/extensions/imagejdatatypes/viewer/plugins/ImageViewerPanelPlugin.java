@@ -92,8 +92,9 @@ public abstract class ImageViewerPanelPlugin {
      * Called while exporting the image slice.
      * Use this to export items handled by postprocessDraw
      * @param image the image
+     * @param sliceIndex the slice
      */
-    public void postprocessDrawForExport(BufferedImage image) {
+    public void postprocessDrawForExport(BufferedImage image, ImageSliceIndex sliceIndex) {
 
     }
 }
