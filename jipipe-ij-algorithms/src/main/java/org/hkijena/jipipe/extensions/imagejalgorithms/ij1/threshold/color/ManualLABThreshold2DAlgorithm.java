@@ -86,7 +86,7 @@ public class ManualLABThreshold2DAlgorithm extends JIPipeSimpleIteratingAlgorith
 
         ImageJUtils.forEachIndexedZCTSlice(img, (ip, index) -> {
 
-            ImageProcessor mask = ImageJUtils.getSlice(result, index);
+            ImageProcessor mask = ImageJUtils.getSliceZero(result, index);
             for (int y = 0; y < ip.getHeight(); y++) {
                 for (int x = 0; x < ip.getWidth(); x++) {
                     int c = ip.get(x, y);

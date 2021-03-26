@@ -45,7 +45,7 @@ public class BitwiseLogicalOperationAlgorithm extends JIPipeIteratingAlgorithm {
         }
         if(logicalOperation == LogicalOperation.LogicalAnd) {
             ImageJUtils.forEachIndexedZCTSlice(img, (ip1, index) -> {
-                ImageProcessor ip2 = ImageJUtils.getSlice(second, index);
+                ImageProcessor ip2 = ImageJUtils.getSliceZero(second, index);
                 byte[] pixels1 = (byte[]) ip1.getPixels();
                 byte[] pixels2 = (byte[]) ip2.getPixels();
                 for (int i = 0; i < pixels1.length; i++) {
@@ -55,7 +55,7 @@ public class BitwiseLogicalOperationAlgorithm extends JIPipeIteratingAlgorithm {
         }
         else if(logicalOperation == LogicalOperation.LogicalOr) {
             ImageJUtils.forEachIndexedZCTSlice(img, (ip1, index) -> {
-                ImageProcessor ip2 = ImageJUtils.getSlice(second, index);
+                ImageProcessor ip2 = ImageJUtils.getSliceZero(second, index);
                 byte[] pixels1 = (byte[]) ip1.getPixels();
                 byte[] pixels2 = (byte[]) ip2.getPixels();
                 for (int i = 0; i < pixels1.length; i++) {
@@ -65,7 +65,7 @@ public class BitwiseLogicalOperationAlgorithm extends JIPipeIteratingAlgorithm {
         }
         else if(logicalOperation == LogicalOperation.LogicalXor) {
             ImageJUtils.forEachIndexedZCTSlice(img, (ip1, index) -> {
-                ImageProcessor ip2 = ImageJUtils.getSlice(second, index);
+                ImageProcessor ip2 = ImageJUtils.getSliceZero(second, index);
                 byte[] pixels1 = (byte[]) ip1.getPixels();
                 byte[] pixels2 = (byte[]) ip2.getPixels();
                 for (int i = 0; i < pixels1.length; i++) {

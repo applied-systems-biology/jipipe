@@ -223,7 +223,7 @@ public class ImageJUtils {
      * @param index the index (zero-based)
      * @return the processor
      */
-    public static ImageProcessor getSlice(ImagePlus img, ImageSliceIndex index) {
+    public static ImageProcessor getSliceZero(ImagePlus img, ImageSliceIndex index) {
         if (img.isStack()) {
             return img.getStack().getProcessor(img.getStackIndex(index.getC() + 1, index.getZ() + 1, index.getT() + 1));
         } else {
@@ -239,7 +239,7 @@ public class ImageJUtils {
      * @param img the image
      * @return the processor
      */
-    public static ImageProcessor getSlice(ImagePlus img, int z, int c, int t) {
+    public static ImageProcessor getSliceZero(ImagePlus img, int z, int c, int t) {
         if (img.isStack()) {
             return img.getStack().getProcessor(img.getStackIndex(c + 1, z + 1, t + 1));
         } else {

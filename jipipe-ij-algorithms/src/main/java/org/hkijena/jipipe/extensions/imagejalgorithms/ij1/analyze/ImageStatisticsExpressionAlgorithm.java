@@ -15,9 +15,6 @@ package org.hkijena.jipipe.extensions.imagejalgorithms.ij1.analyze;
 
 import com.google.common.primitives.Floats;
 import com.google.common.primitives.Longs;
-import gnu.trove.list.array.TByteArrayList;
-import gnu.trove.list.array.TFloatArrayList;
-import gnu.trove.list.array.TShortArrayList;
 import ij.ImagePlus;
 import ij.process.*;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
@@ -39,21 +36,15 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePl
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageSliceIndex;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageStatistics5DExpressionParameterVariableSource;
-import org.hkijena.jipipe.extensions.imagejdatatypes.util.measure.ImageStatisticsSetParameter;
-import org.hkijena.jipipe.extensions.imagejdatatypes.util.measure.Measurement;
 import org.hkijena.jipipe.extensions.parameters.expressions.*;
-import org.hkijena.jipipe.extensions.parameters.primitives.OptionalStringParameter;
-import org.hkijena.jipipe.extensions.parameters.primitives.StringParameterSettings;
 import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
 import org.hkijena.jipipe.extensions.tables.parameters.collections.ExpressionTableColumnGeneratorProcessorParameterList;
 import org.hkijena.jipipe.extensions.tables.parameters.processors.ExpressionTableColumnGeneratorProcessor;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
-import org.hkijena.jipipe.utils.NaturalOrderComparator;
 import org.hkijena.jipipe.utils.ResourceUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -154,7 +145,7 @@ public class ImageStatisticsExpressionAlgorithm extends JIPipeIteratingAlgorithm
             // Fetch the pixel buffers
             for (ImageSliceIndex index : indices) {
                 JIPipeProgressInfo indexProgress = batchProgress.resolveAndLog("Slice " + index);
-                ImageProcessor ip = ImageJUtils.getSlice(img, index);
+                ImageProcessor ip = ImageJUtils.getSliceZero(img, index);
                 ImageProcessor mask = getMask(dataBatch, index, indexProgress);
                 ImageJUtils.getMaskedPixels_Slow(ip, mask, pixelsList);
             }

@@ -16,7 +16,6 @@ import org.hkijena.jipipe.extensions.imagejalgorithms.utils.SourceWrapMode;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscale32FData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.PixelCoordinate5DExpressionParameterVariableSource;
-import org.hkijena.jipipe.extensions.imagejdatatypes.viewer.plugins.CalibrationPlugin;
 import org.hkijena.jipipe.extensions.parameters.expressions.DefaultExpressionParameter;
 import org.hkijena.jipipe.extensions.parameters.expressions.ExpressionParameterSettings;
 import org.hkijena.jipipe.extensions.parameters.expressions.ExpressionParameters;
@@ -100,11 +99,11 @@ public class LocalImageCalculator2DExpression extends JIPipeIteratingAlgorithm {
             parameters.set("t", index.getT());
 
             for (Map.Entry<String, ImagePlus> entry : images.entrySet()) {
-                ImageProcessor slice = ImageJUtils.getSlice(entry.getValue(), index);
+                ImageProcessor slice = ImageJUtils.getSliceZero(entry.getValue(), index);
                 processorMap.put(entry.getKey(), slice);
             }
 
-            ImageProcessor resultProcessor = ImageJUtils.getSlice(result, index);
+            ImageProcessor resultProcessor = ImageJUtils.getSliceZero(result, index);
 
             for (int y = 0; y < height; y++) {
                 parameters.set("y", y);

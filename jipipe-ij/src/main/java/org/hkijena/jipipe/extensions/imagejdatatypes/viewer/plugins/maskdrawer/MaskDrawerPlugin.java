@@ -7,7 +7,6 @@ import ij.process.ImageProcessor;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageSliceIndex;
 import org.hkijena.jipipe.extensions.imagejdatatypes.viewer.ImageViewerPanel;
-import org.hkijena.jipipe.extensions.imagejdatatypes.viewer.ImageViewerPanelCanvas;
 import org.hkijena.jipipe.extensions.imagejdatatypes.viewer.plugins.ImageViewerPanelPlugin;
 import org.hkijena.jipipe.ui.components.ColorChooserButton;
 import org.hkijena.jipipe.ui.components.ColorIcon;
@@ -18,13 +17,11 @@ import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.MouseEvent;
 import java.awt.geom.AffineTransform;
 import java.awt.image.AffineTransformOp;
 import java.awt.image.BufferedImage;
 import java.awt.image.BufferedImageOp;
 import java.util.*;
-import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
@@ -177,8 +174,8 @@ public class MaskDrawerPlugin extends ImageViewerPanelPlugin {
     public void onSliceChanged() {
         if(getCurrentImage() != null && mask != null) {
             ImageSliceIndex index = getViewerPanel().getCurrentSlicePosition();
-            currentMaskSlice = ImageJUtils.getSlice(mask, index.zeroToOne());
-            getViewerPanel().getCanvas().repaint();
+            currentMaskSlice = ImageJUtils.getSliceZero(mask, index);
+            recalculateMaskPreview();
         }
         currentTool.onSliceChanged();
     }
@@ -216,7 +213,8 @@ public class MaskDrawerPlugin extends ImageViewerPanelPlugin {
     }
 
     public static void main(String[] args) {
-        ImagePlus img = IJ.openImage("E:\\Projects\\JIPipe\\testdata\\ATTC_IµL_3rdReplicate-Experiment-5516\\in\\data.tif");
+//        ImagePlus img = IJ.openImage("E:\\Projects\\JIPipe\\testdata\\ATTC_IµL_3rdReplicate-Experiment-5516\\in\\data.tif");
+        ImagePlus img = IJ.openImage("E:\\Projects\\Mitochondria\\data_21.12.20\\1 Deconv.lif - 1_Series047_5_cmle_converted.tif");
         JIPipeUITheme.ModernLight.install();
         JFrame frame = new JFrame();
         ImageViewerPanel panel = new ImageViewerPanel();

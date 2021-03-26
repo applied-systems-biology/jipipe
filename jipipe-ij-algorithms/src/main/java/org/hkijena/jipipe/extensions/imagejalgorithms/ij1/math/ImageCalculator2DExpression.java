@@ -89,11 +89,11 @@ public class ImageCalculator2DExpression extends JIPipeIteratingAlgorithm {
             parameters.set("t", index.getT());
 
             for (Map.Entry<String, ImagePlus> entry : images.entrySet()) {
-                ImageProcessor slice = ImageJUtils.getSlice(entry.getValue(), index);
+                ImageProcessor slice = ImageJUtils.getSliceZero(entry.getValue(), index);
                 processorMap.put(entry.getKey(), slice);
             }
 
-            ImageProcessor resultProcessor = ImageJUtils.getSlice(result, index);
+            ImageProcessor resultProcessor = ImageJUtils.getSliceZero(result, index);
 
             for (int y = 0; y < height; y++) {
                 parameters.set("y", y);

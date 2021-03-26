@@ -55,7 +55,7 @@ public class MergeImagesAlgorithm extends JIPipeIteratingAlgorithm {
 
         ImageJUtils.forEachIndexedZCTSlice(output, (ip, index) -> {
             ImageProcessor mask = getMask(dataBatch, index, progressInfo);
-            ImageProcessor srcProcessor = ImageJUtils.getSlice(src, index);
+            ImageProcessor srcProcessor = ImageJUtils.getSliceZero(src, index);
             for (int y = 0; y < ip.getHeight(); y++) {
                 for (int x = 0; x < ip.getWidth(); x++) {
                     if(mask.get(x, y) > 0) {
