@@ -23,6 +23,7 @@ import java.awt.image.BufferedImage;
 import java.awt.image.BufferedImageOp;
 import java.util.*;
 import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.function.Supplier;
 
 public class MaskDrawerPlugin extends ImageViewerPanelPlugin {
@@ -41,6 +42,7 @@ public class MaskDrawerPlugin extends ImageViewerPanelPlugin {
     private Color highlightColor = new Color(255,255,0,128);
     private Color maskColor = new Color(255,0,0,128);
     private ButtonGroup toolButtonGroup = new ButtonGroup();
+    private Function<ImagePlus, ImagePlus> maskGenerator;
 
     public MaskDrawerPlugin(ImageViewerPanel viewerPanel) {
         super(viewerPanel);
@@ -151,17 +153,40 @@ public class MaskDrawerPlugin extends ImageViewerPanelPlugin {
         targetMap.put(value, button);
     }
 
+    public void setMask(ImagePlus mask) {
+        this.mask = mask;
+        currentMaskSlice = mask.getProcessor();
+        updateCurrentMaskSlice();
+    }
+
+    private void updateCurrentMaskSlice() {
+        if(getCurrentImage() == null)
+            return;
+        if(mask == null)
+            return;
+        ImageSliceIndex index = getViewerPanel().getCurrentSlicePosition();
+        int z = Math.min(index.getZ(), mask.getNSlices() - 1);
+        int c = Math.min(index.getC(), mask.getNChannels() - 1);
+        int t = Math.min(index.getT(), mask.getNFrames() - 1);
+        currentMaskSlice = ImageJUtils.getSliceZero(mask, z, c, t);
+        recalculateMaskPreview();
+    }
+
     @Override
     public void onImageChanged() {
         if(getCurrentImage() != null) {
             if(mask == null || !ImageJUtils.imagesHaveSameSize(mask, getCurrentImage())) {
-                mask = IJ.createHyperStack("Mask",
-                        getCurrentImage().getWidth(),
-                        getCurrentImage().getHeight(),
-                        getCurrentImage().getNChannels(),
-                        getCurrentImage().getNSlices(),
-                        getCurrentImage().getNFrames(),
-                        8);
+                if(maskGenerator == null) {
+                    mask = IJ.createHyperStack("Mask",
+                            getCurrentImage().getWidth(),
+                            getCurrentImage().getHeight(),
+                            getCurrentImage().getNChannels(),
+                            getCurrentImage().getNSlices(),
+                            getCurrentImage().getNFrames(),
+                            8);
+                } else {
+                    mask = maskGenerator.apply(getCurrentImage());
+                }
                 currentMaskSlicePreview = new BufferedImage(getCurrentImage().getWidth(),
                         getCurrentImage().getHeight(),
                         BufferedImage.TYPE_4BYTE_ABGR);
@@ -173,11 +198,7 @@ public class MaskDrawerPlugin extends ImageViewerPanelPlugin {
 
     @Override
     public void onSliceChanged() {
-        if(getCurrentImage() != null && mask != null) {
-            ImageSliceIndex index = getViewerPanel().getCurrentSlicePosition();
-            currentMaskSlice = ImageJUtils.getSliceZero(mask, index);
-            recalculateMaskPreview();
-        }
+        updateCurrentMaskSlice();
         currentTool.onSliceChanged();
     }
 
@@ -229,8 +250,10 @@ public class MaskDrawerPlugin extends ImageViewerPanelPlugin {
         JIPipeUITheme.ModernLight.install();
         JFrame frame = new JFrame();
         ImageViewerPanel panel = new ImageViewerPanel();
-        panel.setPlugins(Collections.singletonList(new MaskDrawerPlugin(panel)));
+        MaskDrawerPlugin maskDrawerPlugin = new MaskDrawerPlugin(panel);
+        panel.setPlugins(Collections.singletonList(maskDrawerPlugin));
         panel.setImage(img);
+        maskDrawerPlugin.setMask(IJ.createImage("Mask", img.getWidth(), img.getHeight(), 1, 8));
         frame.setContentPane(panel);
         frame.pack();
         frame.setSize(1280, 1024);
@@ -273,6 +296,14 @@ public class MaskDrawerPlugin extends ImageViewerPanelPlugin {
     public void setMaskColor(Color maskColor) {
         this.maskColor = maskColor;
         recalculateMaskPreview();
+    }
+
+    public Function<ImagePlus, ImagePlus> getMaskGenerator() {
+        return maskGenerator;
+    }
+
+    public void setMaskGenerator(Function<ImagePlus, ImagePlus> maskGenerator) {
+        this.maskGenerator = maskGenerator;
     }
 
     public enum MaskColor {
