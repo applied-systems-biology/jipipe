@@ -20,7 +20,9 @@ import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.JIPipeValidityReport;
 import org.hkijena.jipipe.api.data.*;
-import org.hkijena.jipipe.api.nodes.*;
+import org.hkijena.jipipe.api.nodes.JIPipeMergingAlgorithm;
+import org.hkijena.jipipe.api.nodes.JIPipeMergingDataBatch;
+import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.categories.MiscellaneousNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeContextAction;
 import org.hkijena.jipipe.api.parameters.JIPipeDynamicParameterCollection;
@@ -128,7 +130,7 @@ public class MergingPythonScriptAlgorithm extends JIPipeMergingAlgorithm {
     public void reportValidity(JIPipeValidityReport report) {
         super.reportValidity(report);
         JythonUtils.checkScriptParametersValidity(scriptParameters, report.forCategory("Script parameters"));
-        if(!isPassThrough()) {
+        if (!isPassThrough()) {
             PythonExtensionSettings.checkPythonSettings(report.forCategory("Python"));
         }
     }
@@ -191,7 +193,7 @@ public class MergingPythonScriptAlgorithm extends JIPipeMergingAlgorithm {
         }
 
         // Clean up
-        if(cleanUpAfterwards) {
+        if (cleanUpAfterwards) {
             progressInfo.log("Cleaning up ...");
             for (Map.Entry<String, Path> entry : inputSlotPaths.entrySet()) {
                 try {

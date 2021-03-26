@@ -1,8 +1,6 @@
 package org.hkijena.jipipe.extensions.imagejalgorithms.ij1.forms;
 
 import ij.ImagePlus;
-import ij.process.Blitter;
-import ij.process.ImageProcessor;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.JIPipeValidityReport;
 import org.hkijena.jipipe.api.data.JIPipeData;
@@ -15,7 +13,6 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.viewer.ImageViewerPanel;
 import org.hkijena.jipipe.extensions.imagejdatatypes.viewer.plugins.CalibrationPlugin;
 import org.hkijena.jipipe.extensions.imagejdatatypes.viewer.plugins.LUTManagerPlugin;
 import org.hkijena.jipipe.extensions.imagejdatatypes.viewer.plugins.PixelInfoPlugin;
-import org.hkijena.jipipe.extensions.imagejdatatypes.viewer.plugins.ROIManagerPlugin;
 import org.hkijena.jipipe.extensions.imagejdatatypes.viewer.plugins.maskdrawer.MaskDrawerPlugin;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 
@@ -58,7 +55,7 @@ public class MaskDrawerFormData extends FormData {
         ImagePlus sourceMask = sourceData.maskDrawerPlugin.getMask();
         ImagePlus targetMask = maskDrawerPlugin.getMask();
 
-        if(!ImageJUtils.imagesHaveSameSize(sourceMask, targetMask)) {
+        if (!ImageJUtils.imagesHaveSameSize(sourceMask, targetMask)) {
             report.reportIsInvalid("Could not copy mask due to different sizes!",
                     "The source mask is " + sourceMask + " and cannot be copied into the target " + targetMask,
                     "Ensure that the masks have the same size",
@@ -79,8 +76,8 @@ public class MaskDrawerFormData extends FormData {
     public void customReset() {
         ImagePlus targetMask = maskDrawerPlugin.getMask();
         ImageJUtils.forEachIndexedZCTSlice(targetMask, (targetProcessor, index) -> {
-           targetProcessor.setValue(0);
-           targetProcessor.fillRect(0,0,targetProcessor.getWidth(), targetProcessor.getHeight());
+            targetProcessor.setValue(0);
+            targetProcessor.fillRect(0, 0, targetProcessor.getWidth(), targetProcessor.getHeight());
         }, new JIPipeProgressInfo());
         maskDrawerPlugin.recalculateMaskPreview();
     }

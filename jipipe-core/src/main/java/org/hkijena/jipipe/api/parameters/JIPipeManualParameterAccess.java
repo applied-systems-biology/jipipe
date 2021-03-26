@@ -48,6 +48,15 @@ public class JIPipeManualParameterAccess implements JIPipeParameterAccess {
 
     }
 
+    /**
+     * Creates a new builder
+     *
+     * @return the builder
+     */
+    public static Builder builder() {
+        return new Builder();
+    }
+
     @Override
     public String getKey() {
         return key;
@@ -71,9 +80,9 @@ public class JIPipeManualParameterAccess implements JIPipeParameterAccess {
     @Override
     public <T extends Annotation> T getAnnotationOfType(Class<T> klass) {
         Annotation result = annotations.getOrDefault(klass, null);
-        if(result == null && annotationSupplier != null)
+        if (result == null && annotationSupplier != null)
             result = annotationSupplier.apply(klass);
-        if(result != null)
+        if (result != null)
             return (T) result;
         else
             return null;
@@ -120,15 +129,6 @@ public class JIPipeManualParameterAccess implements JIPipeParameterAccess {
     @Override
     public int getUIOrder() {
         return uiOrder;
-    }
-
-    /**
-     * Creates a new builder
-     *
-     * @return the builder
-     */
-    public static Builder builder() {
-        return new Builder();
     }
 
     /**
@@ -249,6 +249,7 @@ public class JIPipeManualParameterAccess implements JIPipeParameterAccess {
 
         /**
          * Sets the unique key
+         *
          * @param key the key
          * @return this
          */

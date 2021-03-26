@@ -13,9 +13,9 @@
 
 package org.hkijena.jipipe.extensions.parameters.expressions.operators;
 
-import org.hkijena.jipipe.extensions.parameters.expressions.ExpressionParameters;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.extensions.parameters.expressions.ExpressionOperator;
+import org.hkijena.jipipe.extensions.parameters.expressions.ExpressionParameters;
 import org.hkijena.jipipe.extensions.parameters.expressions.ParameterInfo;
 
 import java.util.Iterator;

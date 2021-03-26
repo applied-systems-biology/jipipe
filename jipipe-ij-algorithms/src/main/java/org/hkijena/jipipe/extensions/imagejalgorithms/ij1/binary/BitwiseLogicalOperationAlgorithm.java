@@ -36,44 +36,41 @@ public class BitwiseLogicalOperationAlgorithm extends JIPipeIteratingAlgorithm {
     protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
         ImagePlus img = dataBatch.getInputData("Input 1", ImagePlusGreyscale8UData.class, progressInfo).getDuplicateImage();
         ImagePlus second = dataBatch.getInputData("Input 2", ImagePlusGreyscale8UData.class, progressInfo).getImage();
-        if(!ImageJUtils.imagesHaveSameSize(img, second)) {
+        if (!ImageJUtils.imagesHaveSameSize(img, second)) {
             throw new UserFriendlyRuntimeException("Input images do not have the same size!",
                     "Input images do not have the same size!",
                     getName(),
                     "All input images in the same batch should have the same width, height, number of slices, number of frames, and number of channes.",
                     "Please check the input images.");
         }
-        if(logicalOperation == LogicalOperation.LogicalAnd) {
+        if (logicalOperation == LogicalOperation.LogicalAnd) {
             ImageJUtils.forEachIndexedZCTSlice(img, (ip1, index) -> {
                 ImageProcessor ip2 = ImageJUtils.getSliceZero(second, index);
                 byte[] pixels1 = (byte[]) ip1.getPixels();
                 byte[] pixels2 = (byte[]) ip2.getPixels();
                 for (int i = 0; i < pixels1.length; i++) {
-                    pixels1[i] = (byte)((pixels1[i] & 0xff) & (pixels2[i] & 0xff));
+                    pixels1[i] = (byte) ((pixels1[i] & 0xff) & (pixels2[i] & 0xff));
                 }
             }, progressInfo);
-        }
-        else if(logicalOperation == LogicalOperation.LogicalOr) {
+        } else if (logicalOperation == LogicalOperation.LogicalOr) {
             ImageJUtils.forEachIndexedZCTSlice(img, (ip1, index) -> {
                 ImageProcessor ip2 = ImageJUtils.getSliceZero(second, index);
                 byte[] pixels1 = (byte[]) ip1.getPixels();
                 byte[] pixels2 = (byte[]) ip2.getPixels();
                 for (int i = 0; i < pixels1.length; i++) {
-                    pixels1[i] = (byte)((pixels1[i] & 0xff) | (pixels2[i] & 0xff));
+                    pixels1[i] = (byte) ((pixels1[i] & 0xff) | (pixels2[i] & 0xff));
                 }
             }, progressInfo);
-        }
-        else if(logicalOperation == LogicalOperation.LogicalXor) {
+        } else if (logicalOperation == LogicalOperation.LogicalXor) {
             ImageJUtils.forEachIndexedZCTSlice(img, (ip1, index) -> {
                 ImageProcessor ip2 = ImageJUtils.getSliceZero(second, index);
                 byte[] pixels1 = (byte[]) ip1.getPixels();
                 byte[] pixels2 = (byte[]) ip2.getPixels();
                 for (int i = 0; i < pixels1.length; i++) {
-                    pixels1[i] = (byte)((pixels1[i] & 0xff) ^ (pixels2[i] & 0xff));
+                    pixels1[i] = (byte) ((pixels1[i] & 0xff) ^ (pixels2[i] & 0xff));
                 }
             }, progressInfo);
-        }
-        else {
+        } else {
             throw new UnsupportedOperationException();
         }
         dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusGreyscaleData(img), progressInfo);

@@ -100,10 +100,9 @@ public class ColorRoiByStatisticsAlgorithm extends ImageRoiProcessorAlgorithm {
             // Obtain statistics
             roiStatisticsAlgorithm.clearSlotData();
             roiStatisticsAlgorithm.getInputSlot("ROI").addData(data, progressInfo);
-            if(entry.getKey() == null) {
+            if (entry.getKey() == null) {
                 roiStatisticsAlgorithm.setOverrideReferenceImage(false);
-            }
-            else {
+            } else {
                 roiStatisticsAlgorithm.setOverrideReferenceImage(true);
                 roiStatisticsAlgorithm.getInputSlot("Reference").addData(entry.getKey(), progressInfo);
             }

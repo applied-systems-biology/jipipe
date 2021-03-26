@@ -61,6 +61,7 @@ public class JIPipeDataSlot {
 
     /**
      * Creates a new input slot that contains only one data item
+     *
      * @param data the data
      * @return the slot
      */

@@ -14,7 +14,6 @@
 package org.hkijena.jipipe.extensions.parameters.expressions;
 
 import com.fathzer.soft.javaluator.Function;
-import org.hkijena.jipipe.extensions.parameters.expressions.ExpressionParameters;
 
 import java.util.List;
 

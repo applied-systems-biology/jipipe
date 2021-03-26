@@ -33,6 +33,15 @@ public class JsonData extends StringData {
         super(other);
     }
 
+    public static JsonData importFrom(Path path) {
+        Path file = PathUtils.findFileByExtensionIn(path, ".json");
+        try {
+            return new JsonData(new String(Files.readAllBytes(file), Charsets.UTF_8));
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     @Override
     public String getOutputExtension() {
         return ".json";
@@ -41,14 +50,5 @@ public class JsonData extends StringData {
     @Override
     public String getMimeType() {
         return "application-json";
-    }
-
-    public static JsonData importFrom(Path path) {
-        Path file = PathUtils.findFileByExtensionIn(path, ".json");
-        try {
-            return new JsonData(new String(Files.readAllBytes(file), Charsets.UTF_8));
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
     }
 }

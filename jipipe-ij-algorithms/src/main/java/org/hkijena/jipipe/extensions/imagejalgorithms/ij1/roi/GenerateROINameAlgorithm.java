@@ -6,21 +6,24 @@ import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeAnnotation;
-import org.hkijena.jipipe.api.data.JIPipeAnnotationMergeStrategy;
-import org.hkijena.jipipe.api.nodes.*;
+import org.hkijena.jipipe.api.nodes.JIPipeDataBatch;
+import org.hkijena.jipipe.api.nodes.JIPipeInputSlot;
+import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
+import org.hkijena.jipipe.api.nodes.JIPipeOutputSlot;
 import org.hkijena.jipipe.api.nodes.categories.RoiNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ROIListData;
-import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageSliceIndex;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.measure.ImageStatisticsSetParameter;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.measure.MeasurementColumn;
 import org.hkijena.jipipe.extensions.parameters.expressions.*;
 import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
 import org.hkijena.jipipe.utils.StringUtils;
 
-import java.util.*;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 
 @JIPipeDocumentation(name = "Set ROI name by expression", description = "Utilizes an expression to generate a ROI name for each individual ROI in the supplied ROI lists." +
         "The expression has access to annotations and statistics.")
@@ -51,7 +54,7 @@ public class GenerateROINameAlgorithm extends ImageRoiProcessorAlgorithm {
         ExpressionParameters parameters = new ExpressionParameters();
         ROIListData tmp = new ROIListData();
 
-        if(includeAnnotations) {
+        if (includeAnnotations) {
             for (JIPipeAnnotation value : dataBatch.getAnnotations().values()) {
                 parameters.set(value.getName(), value.getValue());
             }
@@ -117,7 +120,7 @@ public class GenerateROINameAlgorithm extends ImageRoiProcessorAlgorithm {
         this.measurements = measurements;
     }
 
-    public static class VariableSource implements ExpressionParameterVariableSource{
+    public static class VariableSource implements ExpressionParameterVariableSource {
 
         public static final Set<ExpressionParameterVariable> VARIABLES;
 

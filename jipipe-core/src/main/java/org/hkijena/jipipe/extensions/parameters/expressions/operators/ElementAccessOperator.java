@@ -36,21 +36,21 @@ public class ElementAccessOperator extends ExpressionOperator {
                 return ((Map<?, ?>) array).get(index);
             } else if (array instanceof List) {
                 int idx = index;
-                while(idx < 0) {
+                while (idx < 0) {
                     idx += ((List<?>) array).size();
                 }
                 return ((List<?>) array).get(idx);
             } else if (array instanceof Collection) {
                 ImmutableList<?> asList = ImmutableList.copyOf((Collection<?>) array);
                 int idx = index;
-                while(idx < 0) {
+                while (idx < 0) {
                     idx += asList.size();
                 }
                 return asList.get(idx);
             } else if (array instanceof String) {
                 String s = array.toString();
                 int idx = index;
-                while(idx < 0) {
+                while (idx < 0) {
                     idx += s.length();
                 }
                 return "" + s.charAt(index);
@@ -68,7 +68,7 @@ public class ElementAccessOperator extends ExpressionOperator {
                 List<?> targetList = (List<?>) array;
                 for (Object indexItem : (Collection<?>) indices) {
                     int index = ((Number) indexItem).intValue();
-                    while(index < 0) {
+                    while (index < 0) {
                         index += targetList.size();
                     }
                     result.add(targetList.get(index));
@@ -77,7 +77,7 @@ public class ElementAccessOperator extends ExpressionOperator {
                 List<?> targetList = ImmutableList.copyOf((Collection<?>) array);
                 for (Object indexItem : (Collection<?>) indices) {
                     int index = ((Number) indexItem).intValue();
-                    while(index < 0) {
+                    while (index < 0) {
                         index += targetList.size();
                     }
                     result.add(targetList.get(index));
@@ -86,7 +86,7 @@ public class ElementAccessOperator extends ExpressionOperator {
                 String s = array.toString();
                 for (Object indexItem : (Collection<?>) indices) {
                     int index = ((Number) indexItem).intValue();
-                    while(index < 0) {
+                    while (index < 0) {
                         index += s.length();
                     }
                     result.add("" + s.charAt(index));

@@ -1,9 +1,9 @@
 package org.hkijena.jipipe.extensions.parameters.expressions.functions;
 
-import org.hkijena.jipipe.extensions.parameters.expressions.ExpressionParameters;
 import com.google.common.collect.ImmutableList;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.extensions.parameters.expressions.ExpressionFunction;
+import org.hkijena.jipipe.extensions.parameters.expressions.ExpressionParameters;
 import org.hkijena.jipipe.extensions.parameters.expressions.ParameterInfo;
 
 import java.util.Collection;
@@ -31,7 +31,7 @@ public class GetLastItemFunction extends ExpressionFunction {
     @Override
     public Object evaluate(List<Object> parameters, ExpressionParameters variables) {
         Object target = parameters.get(0);
-        int n = parameters.size() > 1 ? ((Number)parameters.get(1)).intValue() : 0;
+        int n = parameters.size() > 1 ? ((Number) parameters.get(1)).intValue() : 0;
         if (target instanceof List) {
             List<?> list = (List<?>) target;
             return (list).get(list.size() - 1 - n);

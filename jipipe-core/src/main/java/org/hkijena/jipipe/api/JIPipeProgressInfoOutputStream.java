@@ -14,12 +14,12 @@ public class JIPipeProgressInfoOutputStream extends OutputStream {
 
     @Override
     public void write(int b) throws IOException {
-        if(b == '\r' || b == '\n') {
+        if (b == '\r' || b == '\n') {
             flush();
             return;
         }
-        if(b > 0) {
-            builder.append((char)b);
+        if (b > 0) {
+            builder.append((char) b);
         }
     }
 
@@ -29,7 +29,7 @@ public class JIPipeProgressInfoOutputStream extends OutputStream {
 
     @Override
     public void flush() throws IOException {
-        if(builder.length() > 0) {
+        if (builder.length() > 0) {
             progressInfo.log(builder.toString());
             builder.setLength(0);
         }

@@ -13,8 +13,6 @@
 
 package org.hkijena.jipipe.extensions.parameters.expressions;
 
-import org.hkijena.jipipe.extensions.parameters.expressions.ExpressionParameters;
-
 import java.util.Collection;
 import java.util.Map;
 

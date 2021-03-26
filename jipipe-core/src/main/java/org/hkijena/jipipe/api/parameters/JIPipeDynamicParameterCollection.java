@@ -24,8 +24,6 @@ import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeValidatable;
 import org.hkijena.jipipe.api.JIPipeValidityReport;
 import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
-import org.hkijena.jipipe.extensions.parameters.ranges.IntNumberRangeParameter;
-import org.hkijena.jipipe.extensions.parameters.ranges.NumberRangeParameterSettings;
 import org.hkijena.jipipe.utils.JsonDeserializable;
 import org.hkijena.jipipe.utils.JsonUtils;
 

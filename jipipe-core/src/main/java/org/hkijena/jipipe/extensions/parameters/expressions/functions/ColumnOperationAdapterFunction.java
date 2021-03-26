@@ -13,8 +13,8 @@
 
 package org.hkijena.jipipe.extensions.parameters.expressions.functions;
 
-import org.hkijena.jipipe.extensions.parameters.expressions.ExpressionParameters;
 import org.hkijena.jipipe.extensions.parameters.expressions.ExpressionFunction;
+import org.hkijena.jipipe.extensions.parameters.expressions.ExpressionParameters;
 import org.hkijena.jipipe.extensions.parameters.expressions.ParameterInfo;
 import org.hkijena.jipipe.extensions.tables.ColumnOperation;
 import org.hkijena.jipipe.extensions.tables.IntegratingColumnOperation;

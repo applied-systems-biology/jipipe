@@ -110,6 +110,7 @@ public class ImageSliceIndex {
 
     /**
      * Interprets this index as zero-based index and returns the appropriate stack index
+     *
      * @param imagePlus the reference image
      * @return the one-based stack index
      */
@@ -119,6 +120,7 @@ public class ImageSliceIndex {
 
     /**
      * Interprets this index as one-based index and returns the appropriate stack index
+     *
      * @param imagePlus the reference image
      * @return the one-based stack index
      */
@@ -128,8 +130,9 @@ public class ImageSliceIndex {
 
     /**
      * Interprets this index as zero-based index and returns the appropriate stack index
+     *
      * @param nChannels number of channels
-      * @param nSlices   number of slices
+     * @param nSlices   number of slices
      * @param nFrames   number of frames
      * @return the one-based stack index
      */
@@ -139,6 +142,7 @@ public class ImageSliceIndex {
 
     /**
      * Interprets this index as zero-based index and returns the appropriate stack index
+     *
      * @param nChannels number of channels
      * @param nSlices   number of slices
      * @param nFrames   number of frames

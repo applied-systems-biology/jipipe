@@ -13,7 +13,6 @@
 
 package org.hkijena.jipipe.extensions.imagejalgorithms.ij1.roi;
 
-import org.hkijena.jipipe.extensions.parameters.expressions.ExpressionParameters;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeOrganization;
@@ -31,6 +30,7 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.util.measure.ImageStatistic
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.measure.MeasurementExpressionParameterVariableSource;
 import org.hkijena.jipipe.extensions.parameters.expressions.DefaultExpressionParameter;
 import org.hkijena.jipipe.extensions.parameters.expressions.ExpressionParameterSettings;
+import org.hkijena.jipipe.extensions.parameters.expressions.ExpressionParameters;
 import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.utils.ResourceUtils;
@@ -97,10 +97,9 @@ public class FilterRoiByStatisticsAlgorithm extends ImageRoiProcessorAlgorithm {
             // Obtain statistics
             roiStatisticsAlgorithm.clearSlotData();
             roiStatisticsAlgorithm.getInputSlot("ROI").addData(entry.getValue(), progressInfo);
-            if(entry.getKey() == null) {
+            if (entry.getKey() == null) {
                 roiStatisticsAlgorithm.setOverrideReferenceImage(false);
-            }
-            else {
+            } else {
                 roiStatisticsAlgorithm.setOverrideReferenceImage(true);
                 roiStatisticsAlgorithm.getInputSlot("Reference").addData(entry.getKey(), progressInfo);
             }
@@ -122,7 +121,7 @@ public class FilterRoiByStatisticsAlgorithm extends ImageRoiProcessorAlgorithm {
             }
         }
 
-        if(!outputData.isEmpty() || outputEmptyLists) {
+        if (!outputData.isEmpty() || outputEmptyLists) {
             dataBatch.addOutputData(getFirstOutputSlot(), outputData, progressInfo);
         }
     }

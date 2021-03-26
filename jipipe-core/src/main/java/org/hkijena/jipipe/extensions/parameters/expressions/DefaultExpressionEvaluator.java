@@ -186,6 +186,35 @@ public class DefaultExpressionEvaluator extends ExpressionEvaluator {
         return string.replace("\\", "\\\\").replace("\"", "\\\"");
     }
 
+    /**
+     * Deep-copies an object.
+     * Supports handling {@link Collection} and {@link Map}
+     *
+     * @param object the object
+     * @return the copy
+     */
+    public static Object deepCopyObject(Object object) {
+        if (object == null)
+            return null;
+        if (object instanceof Collection) {
+            List<Object> result = new ArrayList<>();
+            Collection<?> collection = (Collection<?>) object;
+            for (Object item : collection) {
+                result.add(deepCopyObject(item));
+            }
+            return result;
+        } else if (object instanceof Map) {
+            Map<?, ?> map = (Map<?, ?>) object;
+            Map<Object, Object> result = new HashMap<>();
+            for (Map.Entry<?, ?> entry : map.entrySet()) {
+                result.put(deepCopyObject(entry.getKey()), deepCopyObject(entry.getValue()));
+            }
+            return result;
+        } else {
+            return object;
+        }
+    }
+
     public List<String> tokenize(String expression, boolean includeQuotesAsToken, boolean includeQuotesIntoToken) {
         StringBuilder buffer = new StringBuilder();
         boolean isQuoted = false;
@@ -390,35 +419,5 @@ public class DefaultExpressionEvaluator extends ExpressionEvaluator {
 
     public List<String> getKnownNonAlphanumericOperatorTokens() {
         return knownNonAlphanumericOperatorTokens;
-    }
-
-    /**
-     * Deep-copies an object.
-     * Supports handling {@link Collection} and {@link Map}
-     * @param object the object
-     * @return the copy
-     */
-    public static Object deepCopyObject(Object object) {
-        if(object == null)
-            return null;
-        if(object instanceof Collection) {
-            List<Object> result = new ArrayList<>();
-            Collection<?> collection = (Collection<?>) object;
-            for (Object item : collection) {
-                result.add(deepCopyObject(item));
-            }
-            return result;
-        }
-        else if(object instanceof Map) {
-            Map<?, ?> map = (Map<?, ?>) object;
-            Map<Object, Object> result = new HashMap<>();
-            for (Map.Entry<?, ?> entry : map.entrySet()) {
-                result.put(deepCopyObject(entry.getKey()), deepCopyObject(entry.getValue()));
-            }
-            return result;
-        }
-        else {
-            return object;
-        }
     }
 }

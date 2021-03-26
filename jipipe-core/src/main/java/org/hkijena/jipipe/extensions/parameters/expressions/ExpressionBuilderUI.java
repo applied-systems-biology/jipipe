@@ -270,7 +270,7 @@ public class ExpressionBuilderUI extends JPanel {
                     HtmlEscapers.htmlEscaper().escape(variable.getKey())), UIUtils.getIconFromResources("actions/insert-function.png"));
             groupHeader.setDescription(variable.getDescription());
 
-            if(!StringUtils.isNullOrEmpty(((ExpressionParameterVariable) value).getKey())) {
+            if (!StringUtils.isNullOrEmpty(((ExpressionParameterVariable) value).getKey())) {
                 JButton insertButton = new JButton("Insert", UIUtils.getIconFromResources("actions/insert-object.png"));
                 insertButton.addActionListener(e -> insertAtCaret(variable.getKey()));
                 inserterButtonPanel.add(Box.createHorizontalGlue());

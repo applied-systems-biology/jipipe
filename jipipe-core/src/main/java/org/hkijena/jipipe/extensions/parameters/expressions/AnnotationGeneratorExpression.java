@@ -13,7 +13,6 @@
 
 package org.hkijena.jipipe.extensions.parameters.expressions;
 
-import org.hkijena.jipipe.extensions.parameters.expressions.ExpressionParameters;
 import org.hkijena.jipipe.api.data.JIPipeAnnotation;
 
 import java.util.Collection;

@@ -384,6 +384,7 @@ public class JIPipeExportedDataTable implements TableModel {
 
         /**
          * Compatibility function to allow reading tables in an older format
+         *
          * @param annotations List of annotations
          */
         @JsonSetter("traits")

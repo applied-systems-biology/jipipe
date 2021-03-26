@@ -16,7 +16,9 @@ package org.hkijena.jipipe.extensions.imagejalgorithms.ij1.analyze;
 import com.google.common.primitives.Floats;
 import com.google.common.primitives.Longs;
 import ij.ImagePlus;
-import ij.process.*;
+import ij.process.FloatProcessor;
+import ij.process.ImageProcessor;
+import ij.process.ImageStatistics;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
@@ -36,7 +38,8 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePl
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageSliceIndex;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageStatistics5DExpressionParameterVariableSource;
-import org.hkijena.jipipe.extensions.parameters.expressions.*;
+import org.hkijena.jipipe.extensions.parameters.expressions.ExpressionParameterSettings;
+import org.hkijena.jipipe.extensions.parameters.expressions.ExpressionParameters;
 import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
 import org.hkijena.jipipe.extensions.tables.parameters.collections.ExpressionTableColumnGeneratorProcessorParameterList;
 import org.hkijena.jipipe.extensions.tables.parameters.processors.ExpressionTableColumnGeneratorProcessor;
@@ -71,7 +74,7 @@ public class ImageStatisticsExpressionAlgorithm extends JIPipeIteratingAlgorithm
      */
     public ImageStatisticsExpressionAlgorithm(JIPipeNodeInfo info) {
         super(info);
-        this.columns.setCustomInstanceGenerator(() -> new ExpressionTableColumnGeneratorProcessor("",""));
+        this.columns.setCustomInstanceGenerator(() -> new ExpressionTableColumnGeneratorProcessor("", ""));
         updateRoiSlot();
     }
 
@@ -87,7 +90,7 @@ public class ImageStatisticsExpressionAlgorithm extends JIPipeIteratingAlgorithm
         this.applyPerSlice = other.applyPerSlice;
         this.targetArea = other.targetArea;
         this.columns = new ExpressionTableColumnGeneratorProcessorParameterList(other.columns);
-        this.columns.setCustomInstanceGenerator(() -> new ExpressionTableColumnGeneratorProcessor("",""));
+        this.columns.setCustomInstanceGenerator(() -> new ExpressionTableColumnGeneratorProcessor("", ""));
         updateRoiSlot();
     }
 
@@ -100,7 +103,7 @@ public class ImageStatisticsExpressionAlgorithm extends JIPipeIteratingAlgorithm
         for (int z = 0; z < img.getNSlices(); z++) {
             for (int c = 0; c < img.getNChannels(); c++) {
                 for (int t = 0; t < img.getNFrames(); t++) {
-                    ImageSliceIndex index = new ImageSliceIndex(z,c,t);
+                    ImageSliceIndex index = new ImageSliceIndex(z, c, t);
                     allIndices.add(index);
                 }
             }
@@ -170,7 +173,7 @@ public class ImageStatisticsExpressionAlgorithm extends JIPipeIteratingAlgorithm
             parameters.set("pixels", pixelsList);
 
             resultsTableData.addRow();
-            for (ExpressionTableColumnGeneratorProcessor columnGenerator : columns){
+            for (ExpressionTableColumnGeneratorProcessor columnGenerator : columns) {
                 Object expressionResult = columnGenerator.getKey().evaluate(parameters);
                 resultsTableData.setLastValue(expressionResult, columnGenerator.getValue());
             }
@@ -251,7 +254,7 @@ public class ImageStatisticsExpressionAlgorithm extends JIPipeIteratingAlgorithm
     @JIPipeParameter("columns")
     public void setColumns(ExpressionTableColumnGeneratorProcessorParameterList columns) {
         this.columns = columns;
-        this.columns.setCustomInstanceGenerator(() -> new ExpressionTableColumnGeneratorProcessor("",""));
+        this.columns.setCustomInstanceGenerator(() -> new ExpressionTableColumnGeneratorProcessor("", ""));
     }
 
     public ImageProcessor getMask(JIPipeDataBatch dataBatch, ImageSliceIndex sliceIndex, JIPipeProgressInfo progressInfo) {

@@ -36,12 +36,11 @@ import org.hkijena.jipipe.utils.ImageJCalibrationMode;
 @JIPipeOutputSlot(value = ImagePlusGreyscaleData.class, slotName = "Output", autoCreate = true)
 public class ColorToGreyscaleExpression2D extends JIPipeSimpleIteratingAlgorithm {
 
-    private DefaultExpressionParameter expression = new DefaultExpressionParameter("(r + g + b) / 3");
-    private JIPipeDataInfoRef outputType = new JIPipeDataInfoRef(JIPipeDataInfo.getInstance(ImagePlusGreyscale32FData.class));
-
     private static ColorSpace COLOR_SPACE_RGB = new RGBColorSpace();
     private static ColorSpace COLOR_SPACE_HSB = new HSBColorSpace();
     private static ColorSpace COLOR_SPACE_LAB = new LABColorSpace();
+    private DefaultExpressionParameter expression = new DefaultExpressionParameter("(r + g + b) / 3");
+    private JIPipeDataInfoRef outputType = new JIPipeDataInfoRef(JIPipeDataInfo.getInstance(ImagePlusGreyscale32FData.class));
 
     public ColorToGreyscaleExpression2D(JIPipeNodeInfo info) {
         super(info);
@@ -79,13 +78,11 @@ public class ColorToGreyscaleExpression2D extends JIPipeSimpleIteratingAlgorithm
         ImagePlusColorData inputData = dataBatch.getInputData(getFirstInputSlot(), ImagePlusColorData.class, progressInfo);
         ImagePlus img = inputData.getImage();
         ImagePlus result;
-        if(ImagePlusGreyscale8UData.class.isAssignableFrom(outputType.getInfo().getDataClass())) {
+        if (ImagePlusGreyscale8UData.class.isAssignableFrom(outputType.getInfo().getDataClass())) {
             result = IJ.createHyperStack("Greyscale", img.getWidth(), img.getHeight(), img.getNChannels(), img.getNSlices(), img.getNFrames(), 8);
-        }
-        else if(ImagePlusGreyscale16UData.class.isAssignableFrom(outputType.getInfo().getDataClass())) {
+        } else if (ImagePlusGreyscale16UData.class.isAssignableFrom(outputType.getInfo().getDataClass())) {
             result = IJ.createHyperStack("Greyscale", img.getWidth(), img.getHeight(), img.getNChannels(), img.getNSlices(), img.getNFrames(), 16);
-        }
-        else {
+        } else {
             result = IJ.createHyperStack("Greyscale", img.getWidth(), img.getHeight(), img.getNChannels(), img.getNSlices(), img.getNFrames(), 32);
         }
 
@@ -113,15 +110,15 @@ public class ColorToGreyscaleExpression2D extends JIPipeSimpleIteratingAlgorithm
                     int as_hsb = COLOR_SPACE_HSB.convert(pixel, inputData.getColorSpace());
                     int as_lab = COLOR_SPACE_LAB.convert(pixel, inputData.getColorSpace());
 
-                    int r = (as_rgb&0xff0000)>>16;
-                    int g = ((as_rgb&0xff00)>>8);
-                    int b = (as_rgb&0xff);
-                    int H = (as_hsb&0xff0000)>>16;
-                    int S = ((as_hsb&0xff00)>>8);
-                    int B = (as_hsb&0xff);
-                    int lL = (as_lab&0xff0000)>>16;
-                    int la = ((as_lab&0xff00)>>8);
-                    int lb = (as_lab&0xff);
+                    int r = (as_rgb & 0xff0000) >> 16;
+                    int g = ((as_rgb & 0xff00) >> 8);
+                    int b = (as_rgb & 0xff);
+                    int H = (as_hsb & 0xff0000) >> 16;
+                    int S = ((as_hsb & 0xff00) >> 8);
+                    int B = (as_hsb & 0xff);
+                    int lL = (as_lab & 0xff0000) >> 16;
+                    int la = ((as_lab & 0xff00) >> 8);
+                    int lb = (as_lab & 0xff);
 
                     variableSet.set("r", r);
                     variableSet.set("g", g);
@@ -134,12 +131,12 @@ public class ColorToGreyscaleExpression2D extends JIPipeSimpleIteratingAlgorithm
                     variableSet.set("Lb", lb);
 
                     Object evaluationResult = expression.evaluate(variableSet);
-                    resultProcessor.setf(x,y, ((Number)evaluationResult).floatValue());
+                    resultProcessor.setf(x, y, ((Number) evaluationResult).floatValue());
                 }
             }
         }, progressInfo);
 
-        ImageJUtils.calibrate(result, ImageJCalibrationMode.AutomaticImageJ, 0,0);
+        ImageJUtils.calibrate(result, ImageJCalibrationMode.AutomaticImageJ, 0, 0);
         dataBatch.addOutputData(getFirstOutputSlot(), JIPipe.createData(outputType.getInfo().getDataClass(), result), progressInfo);
     }
 

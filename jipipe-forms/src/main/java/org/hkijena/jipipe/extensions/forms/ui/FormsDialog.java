@@ -509,11 +509,10 @@ public class FormsDialog extends JFrame {
         for (int row = 0; row < tmpCopy.getRowCount(); row++) {
             FormData src = tmpCopy.getData(row, FormData.class, progressInfo);
             FormData target = dataBatchForms.get(i).getData(row, FormData.class, progressInfo);
-            if(target.isUsingCustomReset()) {
+            if (target.isUsingCustomReset()) {
                 target.customReset();
                 copy.addData(target, tmpCopy.getAnnotations(row), JIPipeAnnotationMergeStrategy.OverwriteExisting, progressInfo);
-            }
-            else {
+            } else {
                 copy.addData(src, tmpCopy.getAnnotations(row), JIPipeAnnotationMergeStrategy.OverwriteExisting, progressInfo);
             }
         }
@@ -561,13 +560,12 @@ public class FormsDialog extends JFrame {
             for (int row = 0; row < forms.getRowCount(); row++) {
                 FormData srcData = forms.getData(row, FormData.class, progressInfo);
                 FormData targetData = dataBatchForms.get(i).getData(row, FormData.class, progressInfo);
-                if(!targetData.isImmutable()) {
-                    if(targetData.isUsingCustomCopy())
+                if (!targetData.isImmutable()) {
+                    if (targetData.isUsingCustomCopy())
                         targetData.customCopy(srcData, report.forCategory("Item " + (i + 1)));
                     else
                         targetData = (FormData) srcData.duplicate();
-                }
-                else {
+                } else {
                     encounteredImmutable = true;
                 }
                 copy.addData(targetData,
@@ -581,11 +579,11 @@ public class FormsDialog extends JFrame {
         updateVisitedStatuses();
         updateBottomBarStats();
 
-        if(encounteredImmutable) {
+        if (encounteredImmutable) {
             JOptionPane.showMessageDialog(this, "Some settings could not be copied, as " +
-                    "they are marked immutable.", "Copy settings", JOptionPane.WARNING_MESSAGE );
+                    "they are marked immutable.", "Copy settings", JOptionPane.WARNING_MESSAGE);
         }
-        if(!report.isValid()) {
+        if (!report.isValid()) {
             UIUtils.openValidityReportDialog(this, report, true);
         }
     }

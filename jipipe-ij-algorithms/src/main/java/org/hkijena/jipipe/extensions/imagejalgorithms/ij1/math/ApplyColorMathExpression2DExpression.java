@@ -32,12 +32,11 @@ import java.util.List;
 @JIPipeOutputSlot(value = ImagePlusColorData.class, slotName = "Output", autoCreate = true)
 public class ApplyColorMathExpression2DExpression extends JIPipeSimpleIteratingAlgorithm {
 
-    private DefaultExpressionParameter expression = new DefaultExpressionParameter("ARRAY(255 - r, g, b)");
-    private JIPipeDataInfoRef outputType = new JIPipeDataInfoRef(JIPipeDataInfo.getInstance(ImagePlusColorData.class));
-
     private static ColorSpace COLOR_SPACE_RGB = new RGBColorSpace();
     private static ColorSpace COLOR_SPACE_HSB = new HSBColorSpace();
     private static ColorSpace COLOR_SPACE_LAB = new LABColorSpace();
+    private DefaultExpressionParameter expression = new DefaultExpressionParameter("ARRAY(255 - r, g, b)");
+    private JIPipeDataInfoRef outputType = new JIPipeDataInfoRef(JIPipeDataInfo.getInstance(ImagePlusColorData.class));
 
     public ApplyColorMathExpression2DExpression(JIPipeNodeInfo info) {
         super(info);
@@ -95,15 +94,15 @@ public class ApplyColorMathExpression2DExpression extends JIPipeSimpleIteratingA
                     int as_hsb = COLOR_SPACE_HSB.convert(pixel, inputData.getColorSpace());
                     int as_lab = COLOR_SPACE_LAB.convert(pixel, inputData.getColorSpace());
 
-                    int r = (as_rgb&0xff0000)>>16;
-                    int g = ((as_rgb&0xff00)>>8);
-                    int b = (as_rgb&0xff);
-                    int H = (as_hsb&0xff0000)>>16;
-                    int S = ((as_hsb&0xff00)>>8);
-                    int B = (as_hsb&0xff);
-                    int lL = (as_lab&0xff0000)>>16;
-                    int la = ((as_lab&0xff00)>>8);
-                    int lb = (as_lab&0xff);
+                    int r = (as_rgb & 0xff0000) >> 16;
+                    int g = ((as_rgb & 0xff00) >> 8);
+                    int b = (as_rgb & 0xff);
+                    int H = (as_hsb & 0xff0000) >> 16;
+                    int S = ((as_hsb & 0xff00) >> 8);
+                    int B = (as_hsb & 0xff);
+                    int lL = (as_lab & 0xff0000) >> 16;
+                    int la = ((as_lab & 0xff00) >> 8);
+                    int lb = (as_lab & 0xff);
 
                     variableSet.set("r", r);
                     variableSet.set("g", g);
@@ -117,19 +116,18 @@ public class ApplyColorMathExpression2DExpression extends JIPipeSimpleIteratingA
 
                     Object result = expression.evaluate(variableSet);
                     int generatedPixel;
-                    if(result instanceof List) {
+                    if (result instanceof List) {
                         List<?> list = (List<?>) result;
-                        int c0 = Math.max(0, Math.min(255, ((Number)list.get(0)).intValue()));
-                        int c1 = Math.max(0, Math.min(255, ((Number)list.get(1)).intValue()));
-                        int c2 = Math.max(0, Math.min(255, ((Number)list.get(2)).intValue()));
+                        int c0 = Math.max(0, Math.min(255, ((Number) list.get(0)).intValue()));
+                        int c1 = Math.max(0, Math.min(255, ((Number) list.get(1)).intValue()));
+                        int c2 = Math.max(0, Math.min(255, ((Number) list.get(2)).intValue()));
                         generatedPixel = (c0 << 16) + (c1 << 8) + c2;
-                    }
-                    else {
+                    } else {
                         Number number = (Number) result;
                         generatedPixel = number.intValue();
                     }
 
-                    ip.set(x,y,generatedPixel);
+                    ip.set(x, y, generatedPixel);
                 }
             }
         }, progressInfo);

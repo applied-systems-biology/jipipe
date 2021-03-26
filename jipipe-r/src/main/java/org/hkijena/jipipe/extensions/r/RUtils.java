@@ -18,7 +18,6 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 public class RUtils {
@@ -138,7 +137,7 @@ public class RUtils {
             for (int row = 0; row < slot.getRowCount(); row++) {
                 stringBuilder.setLength(0);
                 for (JIPipeAnnotation annotation : slot.getAnnotations(row)) {
-                    if(stringBuilder.length() > 0)
+                    if (stringBuilder.length() > 0)
                         stringBuilder.append(", ");
                     stringBuilder.append("\"")
                             .append(MacroUtils.escapeString(annotation.getName()))

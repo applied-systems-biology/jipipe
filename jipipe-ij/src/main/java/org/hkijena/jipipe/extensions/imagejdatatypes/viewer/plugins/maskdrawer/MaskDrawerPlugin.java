@@ -5,7 +5,6 @@ import ij.IJ;
 import ij.ImagePlus;
 import ij.process.Blitter;
 import ij.process.ImageProcessor;
-import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.parameters.JIPipeDynamicParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeMutableParameterAccess;
@@ -24,7 +23,6 @@ import org.hkijena.jipipe.ui.theme.JIPipeUITheme;
 import org.hkijena.jipipe.utils.BusyCursor;
 import org.hkijena.jipipe.utils.ColorUtils;
 import org.hkijena.jipipe.utils.UIUtils;
-import org.scijava.Context;
 
 import javax.swing.*;
 import java.awt.*;
@@ -33,7 +31,10 @@ import java.awt.image.AffineTransformOp;
 import java.awt.image.BufferedImage;
 import java.awt.image.BufferedImageOp;
 import java.lang.annotation.Annotation;
-import java.util.*;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -41,19 +42,19 @@ import java.util.function.Supplier;
 
 public class MaskDrawerPlugin extends ImageViewerPanelPlugin {
 
+    private final JPanel colorSelectionPanel = new JPanel();
+    private final JPanel toolSelectionPanel = new JPanel();
+    private final Map<MaskColor, JToggleButton> colorSelectionButtons = new HashMap<>();
+    private final Map<MaskDrawerTool, JToggleButton> toolSelectionButtons = new HashMap<>();
     private ImagePlus mask;
     private ImageProcessor currentMaskSlice;
     private BufferedImage currentMaskSlicePreview;
-    private final JPanel colorSelectionPanel = new JPanel();
-    private final JPanel toolSelectionPanel = new JPanel();
     private MaskColor currentColor = MaskColor.Foreground;
     private MaskDrawerTool currentTool = new MouseMaskDrawerTool(this);
-    private final Map<MaskColor, JToggleButton> colorSelectionButtons = new HashMap<>();
-    private final Map<MaskDrawerTool, JToggleButton> toolSelectionButtons = new HashMap<>();
     private ColorChooserButton highlightColorButton;
     private ColorChooserButton maskColorButton;
-    private Color highlightColor = new Color(255,255,0,128);
-    private Color maskColor = new Color(255,0,0,128);
+    private Color highlightColor = new Color(255, 255, 0, 128);
+    private Color maskColor = new Color(255, 0, 0, 128);
     private ButtonGroup toolButtonGroup = new ButtonGroup();
     private Function<ImagePlus, ImagePlus> maskGenerator;
 
@@ -74,6 +75,22 @@ public class MaskDrawerPlugin extends ImageViewerPanelPlugin {
         setCurrentTool(currentTool);
     }
 
+    public static void main(String[] args) {
+//        ImagePlus img = IJ.openImage("E:\\Projects\\JIPipe\\testdata\\ATTC_IµL_3rdReplicate-Experiment-5516\\in\\data.tif");
+        ImagePlus img = IJ.openImage("E:\\Projects\\Mitochondria\\data_21.12.20\\1 Deconv.lif - 1_Series047_5_cmle_converted.tif");
+        JIPipeUITheme.ModernLight.install();
+        JFrame frame = new JFrame();
+        ImageViewerPanel panel = new ImageViewerPanel();
+        MaskDrawerPlugin maskDrawerPlugin = new MaskDrawerPlugin(panel);
+        panel.setPlugins(Collections.singletonList(maskDrawerPlugin));
+        panel.setImage(img);
+//        maskDrawerPlugin.setMask(IJ.createImage("Mask", img.getWidth(), img.getHeight(), 1, 8));
+        frame.setContentPane(panel);
+        frame.pack();
+        frame.setSize(1280, 1024);
+        frame.setVisible(true);
+    }
+
     public void installTool(MaskDrawerTool tool) {
         addSelectionButton(tool,
                 toolSelectionPanel,
@@ -81,7 +98,7 @@ public class MaskDrawerPlugin extends ImageViewerPanelPlugin {
                 toolButtonGroup,
                 "",
                 "<html><strong>" + tool.getName() + "</strong><br/>" +
-                         tool.getDescription() + "</html>",
+                        tool.getDescription() + "</html>",
                 tool.getIcon(),
                 this::getCurrentTool,
                 this::setCurrentTool);
@@ -120,7 +137,7 @@ public class MaskDrawerPlugin extends ImageViewerPanelPlugin {
                 colorButtonGroup,
                 "255",
                 "Sets the currently drawn color to foreground (255)",
-                new ColorIcon(16,16, Color.WHITE, Color.DARK_GRAY),
+                new ColorIcon(16, 16, Color.WHITE, Color.DARK_GRAY),
                 this::getCurrentColor,
                 this::setCurrentColor);
         addSelectionButton(MaskColor.Background,
@@ -129,7 +146,7 @@ public class MaskDrawerPlugin extends ImageViewerPanelPlugin {
                 colorButtonGroup,
                 "0",
                 "Sets the currently drawn color to background (0)",
-                new ColorIcon(16,16, Color.BLACK, Color.DARK_GRAY),
+                new ColorIcon(16, 16, Color.BLACK, Color.DARK_GRAY),
                 this::getCurrentColor,
                 this::setCurrentColor);
 
@@ -147,17 +164,17 @@ public class MaskDrawerPlugin extends ImageViewerPanelPlugin {
     }
 
     public void recalculateMaskPreview() {
-        if(currentMaskSlice == null || currentMaskSlicePreview == null)
+        if (currentMaskSlice == null || currentMaskSlicePreview == null)
             return;
         ImageJUtils.maskToBufferedImage(currentMaskSlice, currentMaskSlicePreview, maskColor, ColorUtils.WHITE_TRANSPARENT);
         getViewerPanel().getCanvas().repaint();
     }
 
     private <T> void addSelectionButton(T value, JPanel target, Map<T, JToggleButton> targetMap, ButtonGroup targetGroup, String text, String toolTip, Icon icon, Supplier<T> getter, Consumer<T> setter) {
-        JToggleButton button = new JToggleButton(text,icon, Objects.equals(getter.get(), value));
+        JToggleButton button = new JToggleButton(text, icon, Objects.equals(getter.get(), value));
         button.setToolTipText(toolTip);
         button.addActionListener(e -> {
-            if(button.isSelected()) {
+            if (button.isSelected()) {
                 setter.accept(value);
             }
         });
@@ -166,17 +183,10 @@ public class MaskDrawerPlugin extends ImageViewerPanelPlugin {
         targetMap.put(value, button);
     }
 
-    public void setMask(ImagePlus mask) {
-        this.mask = mask;
-        currentMaskSlice = mask.getProcessor();
-        getViewerPanel().refreshFormPanel();
-        updateCurrentMaskSlice();
-    }
-
     private void updateCurrentMaskSlice() {
-        if(getCurrentImage() == null)
+        if (getCurrentImage() == null)
             return;
-        if(mask == null)
+        if (mask == null)
             return;
         ImageSliceIndex index = getViewerPanel().getCurrentSlicePosition();
         int z = Math.min(index.getZ(), mask.getNSlices() - 1);
@@ -188,9 +198,9 @@ public class MaskDrawerPlugin extends ImageViewerPanelPlugin {
 
     @Override
     public void onImageChanged() {
-        if(getCurrentImage() != null) {
-            if(mask == null || !ImageJUtils.imagesHaveSameSize(mask, getCurrentImage())) {
-                if(maskGenerator == null) {
+        if (getCurrentImage() != null) {
+            if (mask == null || !ImageJUtils.imagesHaveSameSize(mask, getCurrentImage())) {
+                if (maskGenerator == null) {
                     mask = IJ.createHyperStack("Mask",
                             getCurrentImage().getWidth(),
                             getCurrentImage().getHeight(),
@@ -223,7 +233,7 @@ public class MaskDrawerPlugin extends ImageViewerPanelPlugin {
             return;
         }
         FormPanel.GroupHeaderPanel groupHeader = formPanel.addGroupHeader("Draw mask", UIUtils.getIconFromResources("actions/draw-brush.png"));
-        if(mask != null && mask.getStackSize() > 1) {
+        if (mask != null && mask.getStackSize() > 1) {
             JButton copySliceButton = new JButton("Copy slice to ...", UIUtils.getIconFromResources("actions/edit-copy.png"));
             copySliceButton.addActionListener(e -> copySlice());
             groupHeader.addColumn(copySliceButton);
@@ -240,93 +250,93 @@ public class MaskDrawerPlugin extends ImageViewerPanelPlugin {
         JIPipeDynamicParameterCollection parameterCollection = new JIPipeDynamicParameterCollection(false);
         parameterCollection.addParameter("z", IntNumberRangeParameter.class, "Target Z slices", "Determines to which Z slices the mask is copied to.",
                 new NumberRangeParameterSettings() {
-            @Override
-            public Class<? extends Annotation> annotationType() {
-                return NumberRangeParameterSettings.class;
-            }
+                    @Override
+                    public Class<? extends Annotation> annotationType() {
+                        return NumberRangeParameterSettings.class;
+                    }
 
-            @Override
-            public double min() {
-                return 0;
-            }
+                    @Override
+                    public double min() {
+                        return 0;
+                    }
 
-            @Override
-            public double max() {
-                return mask.getNSlices() - 1;
-            }
+                    @Override
+                    public double max() {
+                        return mask.getNSlices() - 1;
+                    }
 
-            @Override
-            public Class<? extends PaintGenerator> trackBackground() {
-                return DefaultTrackBackground.class;
-            }
+                    @Override
+                    public Class<? extends PaintGenerator> trackBackground() {
+                        return DefaultTrackBackground.class;
+                    }
 
-            @Override
-            public NumberRangeInvertedMode invertedMode() {
-                return NumberRangeInvertedMode.OutsideMinMax;
-            }
-        });
+                    @Override
+                    public NumberRangeInvertedMode invertedMode() {
+                        return NumberRangeInvertedMode.OutsideMinMax;
+                    }
+                });
         parameterCollection.addParameter("c", IntNumberRangeParameter.class, "Target C slices", "Determines to which channel slices the mask is copied to.",
                 new NumberRangeParameterSettings() {
-            @Override
-            public Class<? extends Annotation> annotationType() {
-                return NumberRangeParameterSettings.class;
-            }
+                    @Override
+                    public Class<? extends Annotation> annotationType() {
+                        return NumberRangeParameterSettings.class;
+                    }
 
-            @Override
-            public double min() {
-                return 0;
-            }
+                    @Override
+                    public double min() {
+                        return 0;
+                    }
 
-            @Override
-            public double max() {
-                return mask.getNChannels() - 1;
-            }
+                    @Override
+                    public double max() {
+                        return mask.getNChannels() - 1;
+                    }
 
-            @Override
-            public Class<? extends PaintGenerator> trackBackground() {
-                return DefaultTrackBackground.class;
-            }
+                    @Override
+                    public Class<? extends PaintGenerator> trackBackground() {
+                        return DefaultTrackBackground.class;
+                    }
 
-            @Override
-            public NumberRangeInvertedMode invertedMode() {
-                return NumberRangeInvertedMode.OutsideMinMax;
-            }
-        });
+                    @Override
+                    public NumberRangeInvertedMode invertedMode() {
+                        return NumberRangeInvertedMode.OutsideMinMax;
+                    }
+                });
         parameterCollection.addParameter("t", IntNumberRangeParameter.class, "Target T slices", "Determines to which frame slices the mask is copied to.",
                 new NumberRangeParameterSettings() {
-            @Override
-            public Class<? extends Annotation> annotationType() {
-                return NumberRangeParameterSettings.class;
-            }
+                    @Override
+                    public Class<? extends Annotation> annotationType() {
+                        return NumberRangeParameterSettings.class;
+                    }
 
-            @Override
-            public double min() {
-                return 0;
-            }
+                    @Override
+                    public double min() {
+                        return 0;
+                    }
 
-            @Override
-            public double max() {
-                return mask.getNFrames() - 1;
-            }
+                    @Override
+                    public double max() {
+                        return mask.getNFrames() - 1;
+                    }
 
-            @Override
-            public Class<? extends PaintGenerator> trackBackground() {
-                return DefaultTrackBackground.class;
-            }
+                    @Override
+                    public Class<? extends PaintGenerator> trackBackground() {
+                        return DefaultTrackBackground.class;
+                    }
 
-            @Override
-            public NumberRangeInvertedMode invertedMode() {
-                return NumberRangeInvertedMode.OutsideMinMax;
-            }
-        });
-        if(mask.getNSlices() == 1) {
-            ((JIPipeMutableParameterAccess)parameterCollection.get("z")).setVisibility(JIPipeParameterVisibility.Hidden);
+                    @Override
+                    public NumberRangeInvertedMode invertedMode() {
+                        return NumberRangeInvertedMode.OutsideMinMax;
+                    }
+                });
+        if (mask.getNSlices() == 1) {
+            ((JIPipeMutableParameterAccess) parameterCollection.get("z")).setVisibility(JIPipeParameterVisibility.Hidden);
         }
-        if(mask.getNChannels() == 1) {
-            ((JIPipeMutableParameterAccess)parameterCollection.get("c")).setVisibility(JIPipeParameterVisibility.Hidden);
+        if (mask.getNChannels() == 1) {
+            ((JIPipeMutableParameterAccess) parameterCollection.get("c")).setVisibility(JIPipeParameterVisibility.Hidden);
         }
-        if(mask.getNFrames() == 1) {
-            ((JIPipeMutableParameterAccess)parameterCollection.get("t")).setVisibility(JIPipeParameterVisibility.Hidden);
+        if (mask.getNFrames() == 1) {
+            ((JIPipeMutableParameterAccess) parameterCollection.get("t")).setVisibility(JIPipeParameterVisibility.Hidden);
         }
 
         ParameterPanel parameterPanel = new ParameterPanel(new JIPipeDummyWorkbench(),
@@ -365,11 +375,11 @@ public class MaskDrawerPlugin extends ImageViewerPanelPlugin {
         UIUtils.addEscapeListener(dialog);
 
         dialog.setContentPane(contentPanel);
-        dialog.setSize(640,480);
+        dialog.setSize(640, 480);
         dialog.setLocationRelativeTo(getViewerPanel());
         dialog.setVisible(true);
 
-        if(canceled.get())
+        if (canceled.get())
             return;
 
         IntNumberRangeParameter zRange = parameterCollection.get("z").get(IntNumberRangeParameter.class);
@@ -377,23 +387,30 @@ public class MaskDrawerPlugin extends ImageViewerPanelPlugin {
         IntNumberRangeParameter tRange = parameterCollection.get("t").get(IntNumberRangeParameter.class);
         ImageSliceIndex currentIndex = getViewerPanel().getCurrentSlicePosition();
 
-        try(BusyCursor cursor = new BusyCursor(getViewerPanel())) {
+        try (BusyCursor cursor = new BusyCursor(getViewerPanel())) {
             ImageJUtils.forEachIndexedZCTSlice(mask, (ip, index) -> {
-                if(index.equals(currentIndex))
+                if (index.equals(currentIndex))
                     return;
-                if(index.getZ() < zRange.getMin() || index.getZ() > zRange.getMax())
+                if (index.getZ() < zRange.getMin() || index.getZ() > zRange.getMax())
                     return;
-                if(index.getC() < cRange.getMin() || index.getC() > cRange.getMax())
+                if (index.getC() < cRange.getMin() || index.getC() > cRange.getMax())
                     return;
-                if(index.getT() < tRange.getMin() || index.getT() > tRange.getMax())
+                if (index.getT() < tRange.getMin() || index.getT() > tRange.getMax())
                     return;
-                ip.copyBits(getCurrentMaskSlice(), 0,0, Blitter.COPY);
+                ip.copyBits(getCurrentMaskSlice(), 0, 0, Blitter.COPY);
             }, new JIPipeProgressInfo());
         }
     }
 
     public ImagePlus getMask() {
         return mask;
+    }
+
+    public void setMask(ImagePlus mask) {
+        this.mask = mask;
+        currentMaskSlice = mask.getProcessor();
+        getViewerPanel().refreshFormPanel();
+        updateCurrentMaskSlice();
     }
 
     public ImageProcessor getCurrentMaskSlice() {
@@ -420,22 +437,6 @@ public class MaskDrawerPlugin extends ImageViewerPanelPlugin {
         graphics.dispose();
     }
 
-    public static void main(String[] args) {
-//        ImagePlus img = IJ.openImage("E:\\Projects\\JIPipe\\testdata\\ATTC_IµL_3rdReplicate-Experiment-5516\\in\\data.tif");
-        ImagePlus img = IJ.openImage("E:\\Projects\\Mitochondria\\data_21.12.20\\1 Deconv.lif - 1_Series047_5_cmle_converted.tif");
-        JIPipeUITheme.ModernLight.install();
-        JFrame frame = new JFrame();
-        ImageViewerPanel panel = new ImageViewerPanel();
-        MaskDrawerPlugin maskDrawerPlugin = new MaskDrawerPlugin(panel);
-        panel.setPlugins(Collections.singletonList(maskDrawerPlugin));
-        panel.setImage(img);
-//        maskDrawerPlugin.setMask(IJ.createImage("Mask", img.getWidth(), img.getHeight(), 1, 8));
-        frame.setContentPane(panel);
-        frame.pack();
-        frame.setSize(1280, 1024);
-        frame.setVisible(true);
-    }
-
     public MaskColor getCurrentColor() {
         return currentColor;
     }
@@ -443,7 +444,7 @@ public class MaskDrawerPlugin extends ImageViewerPanelPlugin {
     public void setCurrentColor(MaskColor currentColor) {
         this.currentColor = currentColor;
         JToggleButton button = colorSelectionButtons.get(currentColor);
-        if(!button.isSelected()) {
+        if (!button.isSelected()) {
             button.doClick();
         }
     }
@@ -453,12 +454,12 @@ public class MaskDrawerPlugin extends ImageViewerPanelPlugin {
     }
 
     public void setCurrentTool(MaskDrawerTool currentTool) {
-        if(this.currentTool != null) {
+        if (this.currentTool != null) {
             this.currentTool.deactivate();
         }
         this.currentTool = currentTool;
         JToggleButton button = toolSelectionButtons.get(currentTool);
-        if(!button.isSelected()) {
+        if (!button.isSelected()) {
             button.doClick();
         }
         currentTool.activate();

@@ -105,23 +105,23 @@ public class ImageViewerPanel extends JPanel {
         return plugins;
     }
 
+    public void setPlugins(List<ImageViewerPanelPlugin> plugins) {
+        this.plugins = plugins;
+    }
+
     public <T extends ImageViewerPanelPlugin> T findPlugin(Class<T> klass) {
         for (ImageViewerPanelPlugin plugin : plugins) {
-            if(klass.isAssignableFrom(plugin.getClass())) {
-                return (T)plugin;
+            if (klass.isAssignableFrom(plugin.getClass())) {
+                return (T) plugin;
             }
         }
         return null;
     }
 
-    public void setPlugins(List<ImageViewerPanelPlugin> plugins) {
-        this.plugins = plugins;
-    }
-
     public void setRotationEnabled(boolean enabled) {
         rotateLeftButton.setVisible(enabled);
         rotateRightButton.setVisible(enabled);
-        if(!enabled) {
+        if (!enabled) {
             rotation = 0;
             refreshImageInfo();
             refreshSlice();
@@ -547,6 +547,7 @@ public class ImageViewerPanel extends JPanel {
 
     /**
      * Returns the currently viewed slice position
+     *
      * @return the slice position. Zero-based indices
      */
     public ImageSliceIndex getCurrentSlicePosition() {
@@ -661,7 +662,7 @@ public class ImageViewerPanel extends JPanel {
             else
                 throw new UnsupportedOperationException("Unknown rotation: " + rotation);
         }
-        if(withPostprocessing) {
+        if (withPostprocessing) {
             BufferedImage image = processor.getBufferedImage();
             for (ImageViewerPanelPlugin plugin : getPlugins()) {
                 plugin.postprocessDrawForExport(image, new ImageSliceIndex(z, c, t));

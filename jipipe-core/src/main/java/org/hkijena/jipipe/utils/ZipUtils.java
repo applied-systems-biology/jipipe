@@ -30,13 +30,12 @@ public class ZipUtils {
         ZipInputStream zis = new ZipInputStream(new FileInputStream(zipFile.toFile()));
         ZipEntry zipEntry = zis.getNextEntry();
         while (zipEntry != null) {
-            if(zipEntry.isDirectory()) {
+            if (zipEntry.isDirectory()) {
                 File newDirectory = newFile(targetDir.toFile(), zipEntry);
                 progressInfo.log(newDirectory.toString());
                 if (!Files.isDirectory(newDirectory.toPath()))
                     Files.createDirectories(newDirectory.toPath());
-            }
-            else {
+            } else {
                 File newFile = newFile(targetDir.toFile(), zipEntry);
                 progressInfo.log(newFile.toString());
                 if (!Files.isDirectory(newFile.toPath().getParent()))

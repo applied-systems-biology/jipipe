@@ -5,7 +5,6 @@ import org.hkijena.jipipe.extensions.parameters.expressions.DefaultExpressionPar
 import org.hkijena.jipipe.extensions.parameters.expressions.ExpressionFunction;
 import org.hkijena.jipipe.extensions.parameters.expressions.ExpressionParameters;
 import org.hkijena.jipipe.extensions.parameters.expressions.ParameterInfo;
-import org.hkijena.jipipe.utils.StringUtils;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -35,10 +34,9 @@ public class RunFunctionFunction extends ExpressionFunction {
 
     @Override
     public ParameterInfo getParameterInfo(int index) {
-        if(index == 0) {
+        if (index == 0) {
             return new ParameterInfo("Function name", "A valid function name", String.class);
-        }
-        else {
+        } else {
             return new ParameterInfo("Sequence", "The sequence to be accumulated.", Collection.class);
         }
     }

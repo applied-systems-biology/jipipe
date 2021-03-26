@@ -62,7 +62,7 @@ public class WebUtils {
             int total = 0;
             try (OutputStream output = new FileOutputStream(outputFile.toFile())) {
                 while ((n = input.read(buffer)) != -1) {
-                    if(isCancelled.get())
+                    if (isCancelled.get())
                         return;
                     total += n;
                     output.write(buffer, 0, n);

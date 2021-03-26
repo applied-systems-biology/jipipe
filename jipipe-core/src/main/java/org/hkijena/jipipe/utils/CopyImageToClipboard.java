@@ -5,7 +5,7 @@ import java.awt.datatransfer.*;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 
-public class CopyImageToClipboard  implements ClipboardOwner {
+public class CopyImageToClipboard implements ClipboardOwner {
 
     public void copyImage(BufferedImage bi) {
         TransferableImage trans = new TransferableImage(bi);
@@ -21,30 +21,29 @@ public class CopyImageToClipboard  implements ClipboardOwner {
     private static class TransferableImage implements Transferable {
         Image i;
 
-        public TransferableImage( Image i ) {
+        public TransferableImage(Image i) {
             this.i = i;
         }
 
-        public Object getTransferData( DataFlavor flavor )
+        public Object getTransferData(DataFlavor flavor)
                 throws UnsupportedFlavorException, IOException {
-            if ( flavor.equals( DataFlavor.imageFlavor ) && i != null ) {
+            if (flavor.equals(DataFlavor.imageFlavor) && i != null) {
                 return i;
-            }
-            else {
-                throw new UnsupportedFlavorException( flavor );
+            } else {
+                throw new UnsupportedFlavorException(flavor);
             }
         }
 
         public DataFlavor[] getTransferDataFlavors() {
-            DataFlavor[] flavors = new DataFlavor[ 1 ];
-            flavors[ 0 ] = DataFlavor.imageFlavor;
+            DataFlavor[] flavors = new DataFlavor[1];
+            flavors[0] = DataFlavor.imageFlavor;
             return flavors;
         }
 
-        public boolean isDataFlavorSupported( DataFlavor flavor ) {
+        public boolean isDataFlavorSupported(DataFlavor flavor) {
             DataFlavor[] flavors = getTransferDataFlavors();
-            for ( int i = 0; i < flavors.length; i++ ) {
-                if ( flavor.equals( flavors[ i ] ) ) {
+            for (int i = 0; i < flavors.length; i++) {
+                if (flavor.equals(flavors[i])) {
                     return true;
                 }
             }

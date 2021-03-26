@@ -13,11 +13,11 @@
 
 package org.hkijena.jipipe.extensions.parameters.expressions.variables;
 
-import org.hkijena.jipipe.extensions.parameters.expressions.ExpressionParameters;
 import com.google.common.collect.ImmutableSet;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.extensions.parameters.expressions.ExpressionParameterVariable;
 import org.hkijena.jipipe.extensions.parameters.expressions.ExpressionParameterVariableSource;
+import org.hkijena.jipipe.extensions.parameters.expressions.ExpressionParameters;
 
 import java.nio.file.Path;
 import java.util.Set;

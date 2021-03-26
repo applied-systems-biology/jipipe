@@ -13,7 +13,6 @@
 
 package org.hkijena.jipipe.extensions.imagejalgorithms.ij1.roi;
 
-import org.hkijena.jipipe.extensions.parameters.expressions.ExpressionParameters;
 import com.google.common.collect.ImmutableList;
 import ij.ImagePlus;
 import ij.gui.Roi;
@@ -34,11 +33,7 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ROIListData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.measure.ImageStatisticsSetParameter;
-import org.hkijena.jipipe.extensions.imagejdatatypes.util.measure.MeasurementExpressionParameterVariableSource;
-import org.hkijena.jipipe.extensions.parameters.expressions.DefaultExpressionParameter;
-import org.hkijena.jipipe.extensions.parameters.expressions.ExpressionParameterSettings;
-import org.hkijena.jipipe.extensions.parameters.expressions.ExpressionParameterVariable;
-import org.hkijena.jipipe.extensions.parameters.expressions.ExpressionParameterVariableSource;
+import org.hkijena.jipipe.extensions.parameters.expressions.*;
 import org.hkijena.jipipe.extensions.parameters.primitives.OptionalAnnotationNameParameter;
 import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
 import org.hkijena.jipipe.utils.StringUtils;
@@ -194,7 +189,7 @@ public class SplitRoiConnectedComponentsAlgorithm extends ImageRoiProcessorAlgor
             }
         }
 
-        if(!StringUtils.isNullOrEmpty(graphPostprocessing.getExpression())) {
+        if (!StringUtils.isNullOrEmpty(graphPostprocessing.getExpression())) {
             ExpressionParameters postprocessingVariableSet = new ExpressionParameters();
             postprocessingVariableSet.set("KEEP", "KEEP");
             postprocessingVariableSet.set("ISOLATE", "ISOLATE");
@@ -207,21 +202,17 @@ public class SplitRoiConnectedComponentsAlgorithm extends ImageRoiProcessorAlgor
                 postprocessingVariableSet.set("name", StringUtils.nullToEmpty(roi.getName()));
                 postprocessingVariableSet.set("degree", graph.degreeOf(index));
                 Object result = graphPostprocessing.evaluate(postprocessingVariableSet);
-                if(result instanceof Boolean) {
-                    if(!(boolean) result) {
+                if (result instanceof Boolean) {
+                    if (!(boolean) result) {
                         graph.removeVertex(index);
                     }
-                }
-                else if("KEEP".equals(result)) {
+                } else if ("KEEP".equals(result)) {
                     // Do nothing
-                }
-                else if("ISOLATE".equals(result)) {
+                } else if ("ISOLATE".equals(result)) {
                     graph.removeAllEdges(graph.edgesOf(index));
-                }
-                else if("REMOVE".equals(result)) {
+                } else if ("REMOVE".equals(result)) {
                     graph.removeVertex(index);
-                }
-                else {
+                } else {
                     throw new UserFriendlyRuntimeException("Unsupported return value: " + result,
                             "Invalid return value for graph postprocessing!",
                             getName(),

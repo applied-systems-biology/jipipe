@@ -21,8 +21,6 @@ import org.reflections.scanners.ResourcesScanner;
 import org.reflections.util.ClasspathHelper;
 import org.reflections.util.ConfigurationBuilder;
 
-import javax.crypto.Mac;
-import javax.swing.*;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -32,7 +30,6 @@ import java.util.stream.Collectors;
 
 public class PythonUtils {
 
-    private static Path PYTHON_ADAPTER_PATH;
     public static Class<?>[] ALLOWED_PARAMETER_CLASSES = new Class[]{
             String.class,
             Byte.class,
@@ -47,6 +44,7 @@ public class PythonUtils {
             DoubleList.class,
             IntegerRange.class
     };
+    private static Path PYTHON_ADAPTER_PATH;
 
     private PythonUtils() {
 
@@ -133,10 +131,11 @@ public class PythonUtils {
 
     /**
      * Gets the current path of the Python adapter. Extracts the adapter if needed.
+     *
      * @return the path
      */
     public static Path getPythonAdapterPath() {
-        if(PYTHON_ADAPTER_PATH == null || !Files.isDirectory(PYTHON_ADAPTER_PATH)) {
+        if (PYTHON_ADAPTER_PATH == null || !Files.isDirectory(PYTHON_ADAPTER_PATH)) {
             Path tempDir = RuntimeSettings.generateTempDirectory("python-adapter");
             Reflections reflections = new Reflections(new ConfigurationBuilder()
                     .setUrls(ClasspathHelper.forPackage("org.hkijena.jipipe"))
@@ -152,7 +151,7 @@ public class PythonUtils {
             Set<String> toInstall = allResources.stream().filter(s -> s.startsWith(globalFolder)).collect(Collectors.toSet());
             for (String resource : toInstall) {
                 Path targetPath = tempDir.resolve(resource.substring(globalFolder.length() + 1));
-                if(!Files.isDirectory(targetPath.getParent())) {
+                if (!Files.isDirectory(targetPath.getParent())) {
                     try {
                         Files.createDirectories(targetPath.getParent());
                     } catch (IOException e) {
@@ -172,7 +171,7 @@ public class PythonUtils {
     }
 
     public static void installAdapterCodeIfNeeded(StringBuilder pythonCode) {
-        if(PythonExtensionSettings.getInstance().isProvidePythonAdapter()) {
+        if (PythonExtensionSettings.getInstance().isProvidePythonAdapter()) {
             Path adapterPath = getPythonAdapterPath();
             pythonCode.append("import sys\n");
             pythonCode.append("sys.path.append(\"").append(MacroUtils.escapeString(adapterPath.toAbsolutePath().toString())).append("\")\n");
@@ -219,14 +218,13 @@ public class PythonUtils {
         parameters.set("script_file", scriptFile.toString());
         parameters.set("python_executable", PythonExtensionSettings.getInstance().getPythonExecutable().toString());
         Object evaluationResult = PythonExtensionSettings.getInstance().getPythonArguments().evaluate(parameters);
-        for(Object item : (Collection<?>)evaluationResult) {
+        for (Object item : (Collection<?>) evaluationResult) {
             commandLine.addArgument(StringUtils.nullToEmpty(item));
         }
         progressInfo.log("Running Python: " + Arrays.stream(commandLine.toStrings()).map(s -> {
-            if(s.contains(" ")) {
+            if (s.contains(" ")) {
                 return "\"" + MacroUtils.escapeString(s) + "\"";
-            }
-            else {
+            } else {
                 return MacroUtils.escapeString(s);
             }
         }).collect(Collectors.joining(" ")));
@@ -248,7 +246,6 @@ public class PythonUtils {
             throw new RuntimeException(e);
         }
     }
-
 
 
 }

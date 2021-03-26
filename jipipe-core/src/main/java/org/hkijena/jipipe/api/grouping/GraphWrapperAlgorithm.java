@@ -18,15 +18,12 @@ import gnu.trove.set.TIntSet;
 import gnu.trove.set.hash.TIntHashSet;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.JIPipeDependency;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeGraphRunner;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.JIPipeValidityReport;
 import org.hkijena.jipipe.api.data.*;
 import org.hkijena.jipipe.api.nodes.*;
-import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
-import org.hkijena.jipipe.api.parameters.JIPipeParameterVisibility;
 import org.hkijena.jipipe.extensions.parameters.generators.IntegerRange;
 import org.hkijena.jipipe.extensions.parameters.primitives.EnumItemInfo;
 import org.hkijena.jipipe.extensions.parameters.primitives.EnumParameterSettings;
@@ -151,16 +148,15 @@ public class GraphWrapperAlgorithm extends JIPipeAlgorithm implements JIPipeData
 
     @Override
     public void run(JIPipeProgressInfo progressInfo) {
-        if(iterationMode == IterationMode.PassThrough) {
+        if (iterationMode == IterationMode.PassThrough) {
             runWithDataPassThrough(progressInfo);
-        }
-        else {
+        } else {
             runPerBatch(progressInfo);
         }
     }
 
     private void runPerBatch(JIPipeProgressInfo progressInfo) {
-        if(getEffectiveInputSlots().isEmpty()) {
+        if (getEffectiveInputSlots().isEmpty()) {
             runWithDataPassThrough(progressInfo);
             return;
         }
@@ -292,7 +288,7 @@ public class GraphWrapperAlgorithm extends JIPipeAlgorithm implements JIPipeData
 
     @Override
     public List<JIPipeMergingDataBatch> generateDataBatchesDryRun(List<JIPipeDataSlot> slots) {
-        if(iterationMode == IterationMode.PassThrough) {
+        if (iterationMode == IterationMode.PassThrough) {
             JIPipeMergingDataBatch dataBatch = new JIPipeMergingDataBatch(this);
             for (JIPipeDataSlot inputSlot : getEffectiveInputSlots()) {
                 for (int row = 0; row < inputSlot.getRowCount(); row++) {
@@ -300,8 +296,7 @@ public class GraphWrapperAlgorithm extends JIPipeAlgorithm implements JIPipeData
                 }
             }
             return Collections.singletonList(dataBatch);
-        }
-        else {
+        } else {
             JIPipeMergingDataBatchBuilder builder = new JIPipeMergingDataBatchBuilder();
             builder.setNode(this);
             builder.setApplyMerging(iterationMode == IterationMode.MergingDataBatch);
@@ -340,26 +335,6 @@ public class GraphWrapperAlgorithm extends JIPipeAlgorithm implements JIPipeData
     }
 
     /**
-     * Keeps track of changes in the graph wrapper's input and output slots
-     */
-    private class IOSlotWatcher {
-        public IOSlotWatcher() {
-            getGroupInput().getSlotConfiguration().getEventBus().register(this);
-            getGroupOutput().getSlotConfiguration().getEventBus().register(this);
-        }
-
-        /**
-         * Should be triggered the slot configuration was changed
-         *
-         * @param event The event
-         */
-        @Subscribe
-        public void onIOSlotsChanged(JIPipeSlotConfiguration.SlotsChangedEvent event) {
-            updateGroupSlots();
-        }
-    }
-
-    /**
      * Determines how the data is iterated
      */
     @EnumParameterSettings(itemInfo = IterationModeEnumInfo.class)
@@ -387,7 +362,7 @@ public class GraphWrapperAlgorithm extends JIPipeAlgorithm implements JIPipeData
 
         @Override
         public Icon getIcon(Object value) {
-            switch ((IterationMode)value) {
+            switch ((IterationMode) value) {
                 case MergingDataBatch:
                     return UIUtils.getIconFromResources("actions/rabbitvcs-merge.png");
                 case IteratingDataBatch:
@@ -406,7 +381,7 @@ public class GraphWrapperAlgorithm extends JIPipeAlgorithm implements JIPipeData
 
         @Override
         public String getTooltip(Object value) {
-            switch ((IterationMode)value) {
+            switch ((IterationMode) value) {
                 case PassThrough:
                     return "Passes data from the inputs through the I/O nodes of the wrapped graph. " +
                             "The wrapped graph is then executed once.";
@@ -421,6 +396,26 @@ public class GraphWrapperAlgorithm extends JIPipeAlgorithm implements JIPipeData
                 default:
                     throw new UnsupportedOperationException();
             }
+        }
+    }
+
+    /**
+     * Keeps track of changes in the graph wrapper's input and output slots
+     */
+    private class IOSlotWatcher {
+        public IOSlotWatcher() {
+            getGroupInput().getSlotConfiguration().getEventBus().register(this);
+            getGroupOutput().getSlotConfiguration().getEventBus().register(this);
+        }
+
+        /**
+         * Should be triggered the slot configuration was changed
+         *
+         * @param event The event
+         */
+        @Subscribe
+        public void onIOSlotsChanged(JIPipeSlotConfiguration.SlotsChangedEvent event) {
+            updateGroupSlots();
         }
     }
 }

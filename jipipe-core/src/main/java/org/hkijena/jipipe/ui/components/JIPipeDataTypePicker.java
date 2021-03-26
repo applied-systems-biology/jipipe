@@ -56,8 +56,8 @@ public class JIPipeDataTypePicker extends JPanel {
     /**
      * Shows a dialog to data types
      *
-     * @param parent          parent component
-     * @param mode            mode
+     * @param parent             parent component
+     * @param mode               mode
      * @param availableDataInfos list of available traits
      * @return picked data types
      */

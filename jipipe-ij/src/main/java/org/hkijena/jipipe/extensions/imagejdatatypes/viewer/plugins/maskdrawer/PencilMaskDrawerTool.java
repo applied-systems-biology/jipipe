@@ -6,7 +6,6 @@ import ij.ImagePlus;
 import ij.process.Blitter;
 import ij.process.ByteProcessor;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
-import org.hkijena.jipipe.extensions.imagejdatatypes.viewer.ImageViewerPanelCanvas;
 import org.hkijena.jipipe.ui.components.FormPanel;
 import org.hkijena.jipipe.utils.*;
 
@@ -23,6 +22,7 @@ import java.util.Set;
 
 public class PencilMaskDrawerTool extends MaskDrawerTool {
 
+    private final Set<Point> interpolationPoints = new HashSet<>();
     private ImagePlus currentPencil;
     private BufferedImage currentPencilGhost;
     private JSpinner pencilSizeXSpinner;
@@ -30,7 +30,6 @@ public class PencilMaskDrawerTool extends MaskDrawerTool {
     private JComboBox<PencilShape> pencilShapeSelection;
     private Point lastPencilPosition;
     private boolean isDrawing;
-    private final Set<Point> interpolationPoints = new HashSet<>();
 
     public PencilMaskDrawerTool(MaskDrawerPlugin plugin) {
         super(plugin,
@@ -116,9 +115,9 @@ public class PencilMaskDrawerTool extends MaskDrawerTool {
 
     @Subscribe
     public void onMouseMove(MouseMovedEvent event) {
-        if(!isActive())
+        if (!isActive())
             return;
-        if(isDrawing) {
+        if (isDrawing) {
             drawPencil();
         }
         getViewerPanel().getCanvas().repaint();
@@ -126,9 +125,9 @@ public class PencilMaskDrawerTool extends MaskDrawerTool {
 
     @Subscribe
     public void onMouseClick(MouseClickedEvent event) {
-        if(!isActive())
+        if (!isActive())
             return;
-        if(SwingUtilities.isLeftMouseButton(event)) {
+        if (SwingUtilities.isLeftMouseButton(event)) {
             releasePencil();
             drawPencil();
             releasePencil();
@@ -137,21 +136,20 @@ public class PencilMaskDrawerTool extends MaskDrawerTool {
 
     @Subscribe
     public void onMouseDrag(MouseDraggedEvent event) {
-        if(!isActive())
+        if (!isActive())
             return;
-        if((event.getModifiersEx() & MouseEvent.BUTTON1_DOWN_MASK) == MouseEvent.BUTTON1_DOWN_MASK) {
+        if ((event.getModifiersEx() & MouseEvent.BUTTON1_DOWN_MASK) == MouseEvent.BUTTON1_DOWN_MASK) {
             drawPencil();
-        }
-        else {
+        } else {
             releasePencil();
         }
     }
 
     @Subscribe
     public void onMousePressed(MousePressedEvent event) {
-        if(!isActive())
+        if (!isActive())
             return;
-        if(SwingUtilities.isLeftMouseButton(event)) {
+        if (SwingUtilities.isLeftMouseButton(event)) {
             isDrawing = true;
             drawPencil();
         }
@@ -159,14 +157,14 @@ public class PencilMaskDrawerTool extends MaskDrawerTool {
 
     @Subscribe
     public void onMouseReleased(MouseReleasedEvent event) {
-        if(!isActive())
+        if (!isActive())
             return;
         releasePencil();
     }
 
     @Subscribe
     public void onMouseExited(MouseExitedEvent event) {
-        if(!isActive())
+        if (!isActive())
             return;
         releasePencil();
     }
@@ -201,7 +199,7 @@ public class PencilMaskDrawerTool extends MaskDrawerTool {
     private void drawPencil() {
         // Copy the pencil into the mask buffer
         Point mousePosition = getViewerPanel().getCanvas().getMouseModelPixelCoordinate(false);
-        if(mousePosition == null) {
+        if (mousePosition == null) {
             releasePencil();
             return;
         }
@@ -211,10 +209,10 @@ public class PencilMaskDrawerTool extends MaskDrawerTool {
         final int centerY = mousePosition.y - pencilHeight / 2;
         Point center = new Point(centerX, centerY);
         int blitter = getMaskDrawerPlugin().getCurrentColor() == MaskDrawerPlugin.MaskColor.Foreground ? Blitter.ADD : Blitter.SUBTRACT;
-        if(lastPencilPosition != null) {
+        if (lastPencilPosition != null) {
             // We need to interpolate, so the stroke is connected
             double distance = center.distance(lastPencilPosition);
-            if(distance > 1) {
+            if (distance > 1) {
                 double vecX = (centerX - lastPencilPosition.x) / distance;
                 double vecY = (centerY - lastPencilPosition.y) / distance;
                 double sx = lastPencilPosition.x;
@@ -223,8 +221,8 @@ public class PencilMaskDrawerTool extends MaskDrawerTool {
                 while (distance > 1) {
                     sx += vecX;
                     sy += vecY;
-                    Point interpolationCenter = new Point((int)sx, (int)sy);
-                    if(!interpolationPoints.contains(interpolationCenter)) {
+                    Point interpolationCenter = new Point((int) sx, (int) sy);
+                    if (!interpolationPoints.contains(interpolationCenter)) {
                         getMaskDrawerPlugin().getCurrentMaskSlice().copyBits(currentPencil.getProcessor(),
                                 interpolationCenter.x,
                                 interpolationCenter.y,

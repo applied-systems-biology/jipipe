@@ -66,7 +66,7 @@ public class SplitByAnnotation extends JIPipeAlgorithm {
 
     @Override
     public void run(JIPipeProgressInfo progressInfo) {
-        if(isPassThrough()) {
+        if (isPassThrough()) {
             for (JIPipeDataSlot outputSlot : getOutputSlots()) {
                 outputSlot.addData(getFirstInputSlot(), progressInfo);
             }

@@ -244,8 +244,7 @@ public class ImageViewerPanelCanvas extends JPanel implements MouseListener, Mou
             fixNegativeOffsets();
             revalidate();
             repaint();
-        }
-        else {
+        } else {
             eventBus.post(new PixelHoverEvent(getMouseModelPixelCoordinate(false), e));
         }
         eventBus.post(new MouseDraggedEvent(e.getComponent(),

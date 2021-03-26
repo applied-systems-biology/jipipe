@@ -7,13 +7,10 @@ import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeAnnotation;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
-import org.hkijena.jipipe.api.data.JIPipeDataSlotInfo;
-import org.hkijena.jipipe.api.data.JIPipeSlotType;
 import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
-import org.hkijena.jipipe.extensions.forms.datatypes.FormData;
 import org.hkijena.jipipe.extensions.forms.ui.FormsDialog;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleMaskData;
@@ -57,7 +54,7 @@ public class DrawMaskAlgorithm extends JIPipeIteratingMissingDataGeneratorAlgori
         // Generate the output first
         super.runParameterSet(progressInfo, parameterAnnotations);
 
-        if(isPassThrough())
+        if (isPassThrough())
             return;
 
         // Get back the data batches
@@ -102,7 +99,7 @@ public class DrawMaskAlgorithm extends JIPipeIteratingMissingDataGeneratorAlgori
 
         // Make all non-generated outputs unique
         for (int row = 0; row < dataBatches.size(); row++) {
-            if(!dataBatches.get(row).isIncomplete()) {
+            if (!dataBatches.get(row).isIncomplete()) {
                 ImagePlusData imagePlusData = getFirstOutputSlot().getData(row, ImagePlusData.class, progressInfo);
                 imagePlusData.makeUnique();
             }
@@ -182,11 +179,11 @@ public class DrawMaskAlgorithm extends JIPipeIteratingMissingDataGeneratorAlgori
         int sizeC = referenceImage.getNChannels();
         int sizeZ = referenceImage.getNSlices();
         int sizeT = referenceImage.getNFrames();
-        if(overwriteSizeC.isEnabled())
+        if (overwriteSizeC.isEnabled())
             sizeC = overwriteSizeC.getContent();
-        if(overwriteSizeZ.isEnabled())
+        if (overwriteSizeZ.isEnabled())
             sizeZ = overwriteSizeZ.getContent();
-        if(overwriteSizeT.isEnabled())
+        if (overwriteSizeT.isEnabled())
             sizeT = overwriteSizeT.getContent();
         ImagePlus img = IJ.createHyperStack("Generated", width, height, sizeC, sizeZ, sizeT, 8);
         dataBatch.addOutputData(outputSlot, new ImagePlusData(img), progressInfo);

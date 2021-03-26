@@ -58,7 +58,8 @@ public abstract class JIPipeRunCustomAlgorithmCommand extends DynamicCommand imp
 
     /**
      * Creates a new instance
-     * @param nodeId ID of the node type that will be encapsulated within this command
+     *
+     * @param nodeId      ID of the node type that will be encapsulated within this command
      * @param windowTitle the title of the dialog that is created if the user runs this command from the GUI
      */
     public JIPipeRunCustomAlgorithmCommand(String nodeId, String windowTitle) {

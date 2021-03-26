@@ -426,7 +426,7 @@ public class JIPipe extends AbstractService implements JIPipeRegistry {
                 e.printStackTrace();
             }
             JIPipeDataInfo info = JIPipeDataInfo.getInstance(dataType);
-            if(info.getStorageDocumentation() == null) {
+            if (info.getStorageDocumentation() == null) {
                 logService.warn("Data type '" + dataType + "' has no storage documentation.");
                 issues.getErroneousDataTypes().add(dataType);
             }

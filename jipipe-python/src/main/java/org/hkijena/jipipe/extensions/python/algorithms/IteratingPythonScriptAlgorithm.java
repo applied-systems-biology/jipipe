@@ -37,15 +37,11 @@ import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.utils.JythonUtils;
 import org.hkijena.jipipe.utils.ResourceUtils;
 import org.hkijena.jipipe.utils.UIUtils;
-import org.python.core.Py;
-import org.python.core.PyDictionary;
-import org.python.util.PythonInterpreter;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -131,7 +127,7 @@ public class IteratingPythonScriptAlgorithm extends JIPipeIteratingAlgorithm {
     public void reportValidity(JIPipeValidityReport report) {
         super.reportValidity(report);
         JythonUtils.checkScriptParametersValidity(scriptParameters, report.forCategory("Script parameters"));
-        if(!isPassThrough()) {
+        if (!isPassThrough()) {
             PythonExtensionSettings.checkPythonSettings(report.forCategory("Python"));
         }
     }
@@ -194,7 +190,7 @@ public class IteratingPythonScriptAlgorithm extends JIPipeIteratingAlgorithm {
         }
 
         // Clean up
-        if(cleanUpAfterwards) {
+        if (cleanUpAfterwards) {
             progressInfo.log("Cleaning up ...");
             for (Map.Entry<String, Path> entry : inputSlotPaths.entrySet()) {
                 try {

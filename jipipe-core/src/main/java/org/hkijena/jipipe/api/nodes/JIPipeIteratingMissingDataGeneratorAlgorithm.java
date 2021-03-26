@@ -238,23 +238,21 @@ public abstract class JIPipeIteratingMissingDataGeneratorAlgorithm extends JIPip
     protected void runIteration(JIPipeMergingDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
         for (JIPipeDataSlot inputSlot : getEffectiveInputSlots()) {
             JIPipeDataSlot outputSlot = getCorrespondingOutputSlot(inputSlot);
-            if(outputSlot == null)
+            if (outputSlot == null)
                 continue;
             JIPipeProgressInfo slotProgress = progressInfo.resolveAndLog("Input slot '" + inputSlot.getName() + "'");
             Set<Integer> rows = dataBatch.getInputRows(inputSlot);
             if (rows.isEmpty()) {
                 slotProgress.log("No rows. Generating data.");
                 runGenerator(dataBatch, inputSlot, outputSlot, slotProgress);
-            }
-            else {
-                if(keepOriginalAnnotations) {
+            } else {
+                if (keepOriginalAnnotations) {
                     for (int row : rows) {
                         JIPipeVirtualData virtualData = inputSlot.getVirtualData(row);
                         List<JIPipeAnnotation> annotations = inputSlot.getAnnotations(row);
                         outputSlot.addData(virtualData, annotations, JIPipeAnnotationMergeStrategy.OverwriteExisting);
                     }
-                }
-                else {
+                } else {
                     for (int row : rows) {
                         JIPipeVirtualData virtualData = inputSlot.getVirtualData(row);
                         dataBatch.addOutputData(outputSlot, virtualData);
@@ -281,7 +279,7 @@ public abstract class JIPipeIteratingMissingDataGeneratorAlgorithm extends JIPip
      *
      * @param dataBatch    the data batch
      * @param inputSlot    the input slot that should be generated. Please note that it does not contain any data for this batch.
-     * @param outputSlot    the output slot where data should be put.
+     * @param outputSlot   the output slot where data should be put.
      * @param progressInfo the progress info
      */
     protected abstract void runGenerator(JIPipeMergingDataBatch dataBatch, JIPipeDataSlot inputSlot, JIPipeDataSlot outputSlot, JIPipeProgressInfo progressInfo);

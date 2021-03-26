@@ -66,26 +66,24 @@ public class PolygonMaskDrawerTool extends MaskDrawerTool {
 
     @Subscribe
     public void onMouseClick(MouseClickedEvent event) {
-        if(!isActive())
+        if (!isActive())
             return;
-        if(SwingUtilities.isLeftMouseButton(event)) {
+        if (SwingUtilities.isLeftMouseButton(event)) {
             Point point = getViewerPanel().getCanvas().getMouseModelPixelCoordinate(false);
-            if(point == null) {
+            if (point == null) {
                 cancelDrawing();
                 return;
             }
 
             referencePoints.add(point);
-            if(event.getClickCount() > 1) {
+            if (event.getClickCount() > 1) {
                 applyDrawing();
                 cancelDrawing();
             }
-        }
-        else if(SwingUtilities.isRightMouseButton(event)) {
-            if(event.getClickCount() > 1) {
+        } else if (SwingUtilities.isRightMouseButton(event)) {
+            if (event.getClickCount() > 1) {
                 cancelDrawing();
-            }
-            else {
+            } else {
                 if (!referencePoints.isEmpty()) {
                     // Remove last reference point
                     referencePoints.remove(referencePoints.size() - 1);
@@ -96,14 +94,14 @@ public class PolygonMaskDrawerTool extends MaskDrawerTool {
     }
 
     private void applyDrawing() {
-        if(referencePoints.isEmpty())
+        if (referencePoints.isEmpty())
             return;
 
         ImageProcessor processor = getMaskDrawerPlugin().getCurrentMaskSlice();
         processor.setValue(getMaskDrawerPlugin().getCurrentColor().getValue());
 
         int nPoints = referencePoints.size();
-        if(closeToggle.isSelected()) {
+        if (closeToggle.isSelected()) {
             ++nPoints;
         }
         int[] xCoordinates = new int[nPoints];
@@ -114,17 +112,16 @@ public class PolygonMaskDrawerTool extends MaskDrawerTool {
             yCoordinates[i] = referencePoints.get(i).y;
         }
 
-        if(closeToggle.isSelected()) {
+        if (closeToggle.isSelected()) {
             int i = nPoints - 1;
             xCoordinates[i] = referencePoints.get(0).x;
             yCoordinates[i] = referencePoints.get(0).y;
         }
 
         PolygonRoi roi = new PolygonRoi(xCoordinates, yCoordinates, nPoints, fillToggle.isSelected() ? Roi.POLYGON : Roi.POLYLINE);
-        if(fillToggle.isSelected()) {
+        if (fillToggle.isSelected()) {
             processor.fill(roi);
-        }
-        else {
+        } else {
             processor.draw(roi);
         }
         getMaskDrawerPlugin().recalculateMaskPreview();
@@ -132,7 +129,7 @@ public class PolygonMaskDrawerTool extends MaskDrawerTool {
 
     @Override
     public void postprocessDraw(Graphics2D graphics2D, int x, int y, int w, int h) {
-        if(referencePoints.isEmpty())
+        if (referencePoints.isEmpty())
             return;
         final double zoom = getViewerPanel().getCanvas().getZoom();
         Point point = getViewerPanel().getCanvas().getMouseModelPixelCoordinate(false);
@@ -147,7 +144,7 @@ public class PolygonMaskDrawerTool extends MaskDrawerTool {
             yCoordinates[i] = y + (int) (zoom * referencePoints.get(i).y);
         }
 
-        if(point != null) {
+        if (point != null) {
             xCoordinates[xCoordinates.length - 1] = (int) (x + zoom * point.x);
             yCoordinates[yCoordinates.length - 1] = (int) (y + zoom * point.y);
         }
@@ -155,21 +152,21 @@ public class PolygonMaskDrawerTool extends MaskDrawerTool {
         Polygon polygon = new Polygon(xCoordinates, yCoordinates, nPoints);
 
         graphics2D.draw(polygon);
-        if(fillToggle.isSelected()) {
+        if (fillToggle.isSelected()) {
             graphics2D.fill(polygon);
         }
     }
 
     @Subscribe
     public void onMouseMove(MouseMovedEvent event) {
-        if(!isActive())
+        if (!isActive())
             return;
         getViewerPanel().getCanvas().repaint();
     }
 
     @Subscribe
     public void onMouseExited(MouseExitedEvent event) {
-        if(!isActive())
+        if (!isActive())
             return;
         cancelDrawing();
     }

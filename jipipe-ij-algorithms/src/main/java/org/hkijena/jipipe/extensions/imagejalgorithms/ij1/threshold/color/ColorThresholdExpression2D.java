@@ -79,15 +79,15 @@ public class ColorThresholdExpression2D extends JIPipeSimpleIteratingAlgorithm {
                     int as_hsb = COLOR_SPACE_HSB.convert(pixel, inputData.getColorSpace());
                     int as_lab = COLOR_SPACE_LAB.convert(pixel, inputData.getColorSpace());
 
-                    int r = (as_rgb&0xff0000)>>16;
-                    int g = ((as_rgb&0xff00)>>8);
-                    int b = (as_rgb&0xff);
-                    int H = (as_hsb&0xff0000)>>16;
-                    int S = ((as_hsb&0xff00)>>8);
-                    int B = (as_hsb&0xff);
-                    int lL = (as_lab&0xff0000)>>16;
-                    int la = ((as_lab&0xff00)>>8);
-                    int lb = (as_lab&0xff);
+                    int r = (as_rgb & 0xff0000) >> 16;
+                    int g = ((as_rgb & 0xff00) >> 8);
+                    int b = (as_rgb & 0xff);
+                    int H = (as_hsb & 0xff0000) >> 16;
+                    int S = ((as_hsb & 0xff00) >> 8);
+                    int B = (as_hsb & 0xff);
+                    int lL = (as_lab & 0xff0000) >> 16;
+                    int la = ((as_lab & 0xff00) >> 8);
+                    int lb = (as_lab & 0xff);
 
                     variableSet.set("r", r);
                     variableSet.set("g", g);
@@ -100,15 +100,14 @@ public class ColorThresholdExpression2D extends JIPipeSimpleIteratingAlgorithm {
                     variableSet.set("Lb", lb);
 
                     Object evaluationResult = expression.evaluate(variableSet);
-                    if(evaluationResult instanceof Boolean) {
-                        if((boolean)evaluationResult) {
-                            resultProcessor.set(x,y,255);
+                    if (evaluationResult instanceof Boolean) {
+                        if ((boolean) evaluationResult) {
+                            resultProcessor.set(x, y, 255);
                         }
-                    }
-                    else {
-                        int number = ((Number)evaluationResult).intValue();
-                        if(number > 0) {
-                            resultProcessor.set(x,y,255);
+                    } else {
+                        int number = ((Number) evaluationResult).intValue();
+                        if (number > 0) {
+                            resultProcessor.set(x, y, 255);
                         }
                     }
                 }

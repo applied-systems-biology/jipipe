@@ -15,17 +15,17 @@ public enum RoiLabel {
     Centroid;
 
     public void draw(ImagePlus imp, ImageProcessor ip, Roi roi, int roiIndex, Rectangle r, Color foreground, Color background, Font font, boolean drawBackground) {
-        if(this == None)
+        if (this == None)
             return;
         String label = null;
-        if(this == Name) {
+        if (this == Name) {
             label = roi.getName();
         }
-        if(this == Centroid) {
+        if (this == Centroid) {
             Point centroid = ROIListData.getCentroid(roi);
             label = centroid.x + ", " + centroid.y;
         }
-        if(label == null) {
+        if (label == null) {
             label = "" + roiIndex;
         }
         DrawUtils.drawStringLabel(imp, ip, label, r, foreground, background, font, drawBackground);

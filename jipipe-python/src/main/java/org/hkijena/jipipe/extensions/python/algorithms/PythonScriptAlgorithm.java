@@ -20,8 +20,6 @@ import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.JIPipeValidityReport;
 import org.hkijena.jipipe.api.data.*;
-import org.hkijena.jipipe.api.nodes.JIPipeDataBatch;
-import org.hkijena.jipipe.api.nodes.JIPipeIteratingAlgorithm;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.JIPipeParameterSlotAlgorithm;
 import org.hkijena.jipipe.api.nodes.categories.MiscellaneousNodeTypeCategory;
@@ -129,7 +127,7 @@ public class PythonScriptAlgorithm extends JIPipeParameterSlotAlgorithm {
     public void reportValidity(JIPipeValidityReport report) {
         super.reportValidity(report);
         JythonUtils.checkScriptParametersValidity(scriptParameters, report.forCategory("Script parameters"));
-        if(!isPassThrough()) {
+        if (!isPassThrough()) {
             PythonExtensionSettings.checkPythonSettings(report.forCategory("Python"));
         }
     }
@@ -188,7 +186,7 @@ public class PythonScriptAlgorithm extends JIPipeParameterSlotAlgorithm {
         }
 
         // Clean up
-        if(cleanUpAfterwards) {
+        if (cleanUpAfterwards) {
             progressInfo.log("Cleaning up ...");
             for (Map.Entry<String, Path> entry : inputSlotPaths.entrySet()) {
                 try {

@@ -1,6 +1,5 @@
 package org.hkijena.jipipe.extensions.imagejalgorithms.ij1.roi;
 
-import org.hkijena.jipipe.extensions.parameters.expressions.ExpressionParameters;
 import ij.ImagePlus;
 import ij.gui.Roi;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
@@ -17,6 +16,7 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ROIListData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.measure.ImageStatisticsSetParameter;
 import org.hkijena.jipipe.extensions.parameters.expressions.DefaultExpressionParameter;
 import org.hkijena.jipipe.extensions.parameters.expressions.ExpressionParameterSettings;
+import org.hkijena.jipipe.extensions.parameters.expressions.ExpressionParameters;
 import org.hkijena.jipipe.extensions.parameters.util.LogicalOperation;
 import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
 import org.hkijena.jipipe.utils.StringUtils;

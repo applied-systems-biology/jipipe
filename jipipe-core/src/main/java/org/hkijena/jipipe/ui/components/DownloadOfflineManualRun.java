@@ -51,7 +51,7 @@ public class DownloadOfflineManualRun implements JIPipeRunnable {
         }
         Path targetDirectory = imageJDir.resolve("jipipe").resolve("offline-manual");
         Path targetFile = targetDirectory.resolve("jipipe_offline_documentation.zip");
-        if(!Files.isDirectory(targetDirectory)) {
+        if (!Files.isDirectory(targetDirectory)) {
             try {
                 Files.createDirectories(targetDirectory);
             } catch (IOException e) {

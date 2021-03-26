@@ -71,7 +71,7 @@ public class RunSingleAlgorithmDialog extends JDialog implements JIPipeWorkbench
     }
 
     /**
-     * @param context SciJava context
+     * @param context      SciJava context
      * @param selectedNode the node that should be run. If not null, no selection list will be added
      */
     public RunSingleAlgorithmDialog(Context context, JIPipeNodeInfo selectedNode) {
@@ -80,7 +80,7 @@ public class RunSingleAlgorithmDialog extends JDialog implements JIPipeWorkbench
     }
 
     /**
-     * @param context SciJava context
+     * @param context      SciJava context
      * @param selectedNode the node that should be run. If not null, no selection list will be added
      */
     public RunSingleAlgorithmDialog(Context context, Class<? extends JIPipeGraphNode> selectedNode) {
@@ -94,7 +94,7 @@ public class RunSingleAlgorithmDialog extends JDialog implements JIPipeWorkbench
         JPanel listPanel = new JPanel(new BorderLayout());
         formPanel = new FormPanel(null, FormPanel.WITH_SCROLLING);
 
-        if(selectedNode == null) {
+        if (selectedNode == null) {
             JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, listPanel, formPanel);
             splitPane.setDividerSize(3);
             splitPane.setResizeWeight(0.33);
@@ -106,8 +106,7 @@ public class RunSingleAlgorithmDialog extends JDialog implements JIPipeWorkbench
                 }
             });
             contentPanel.add(splitPane, BorderLayout.CENTER);
-        }
-        else {
+        } else {
             contentPanel.add(formPanel, BorderLayout.CENTER);
         }
 
@@ -123,10 +122,9 @@ public class RunSingleAlgorithmDialog extends JDialog implements JIPipeWorkbench
                 false);
         setContentPane(tabPane);
 
-        if(selectedNode != null) {
+        if (selectedNode != null) {
             reloadAlgorithmList();
-        }
-        else {
+        } else {
             selectNodeInfo(selectedNode);
         }
     }

@@ -94,7 +94,7 @@ public class IteratingRScriptAlgorithm extends JIPipeIteratingAlgorithm {
     @Override
     public void reportValidity(JIPipeValidityReport report) {
         super.reportValidity(report);
-        if(!isPassThrough()) {
+        if (!isPassThrough()) {
             RExtensionSettings.checkRSettings(report.forCategory("R"));
         }
     }
@@ -169,7 +169,7 @@ public class IteratingRScriptAlgorithm extends JIPipeIteratingAlgorithm {
         }
 
         // Clean up
-        if(cleanUpAfterwards) {
+        if (cleanUpAfterwards) {
             progressInfo.log("Cleaning up ...");
             for (Map.Entry<String, Path> entry : inputSlotPaths.entrySet()) {
                 try {

@@ -15,7 +15,6 @@ package org.hkijena.jipipe.extensions.parameters.expressions;
 
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonSetter;
-import org.hkijena.jipipe.extensions.parameters.expressions.ExpressionParameters;
 
 /**
  * A parameter that contains an expression.

@@ -8,7 +8,7 @@ import javax.swing.*;
 public class BitDepthEnumItemInfo implements EnumItemInfo {
     @Override
     public Icon getIcon(Object value) {
-        if(value instanceof BitDepth) {
+        if (value instanceof BitDepth) {
             switch ((BitDepth) value) {
                 case Grayscale32f:
                     return UIUtils.getIconFromResources("data-types/imgplus-greyscale-32f.png");

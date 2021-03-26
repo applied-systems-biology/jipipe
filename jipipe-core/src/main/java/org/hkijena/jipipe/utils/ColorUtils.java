@@ -21,8 +21,8 @@ public class ColorUtils {
     public static final Map<String, Color> COLOR_MAP;
     public static final String PARSE_COLOR_DESCRIPTION = "The color can be a common color name (e.g. 'red'), a hex color (e.g. '#ff00ff'), or an RGB color (e.g. '0,128,255').";
 
-    public static Color WHITE_TRANSPARENT = new Color(255,255,255,0);
-    public static Color BLACK_TRANSPARENT = new Color(0,0,0,0);
+    public static Color WHITE_TRANSPARENT = new Color(255, 255, 255, 0);
+    public static Color BLACK_TRANSPARENT = new Color(0, 0, 0, 0);
 
     static {
         COLOR_MAP = new HashMap<>();

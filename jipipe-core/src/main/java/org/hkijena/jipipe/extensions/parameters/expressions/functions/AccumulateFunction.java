@@ -1,7 +1,6 @@
 package org.hkijena.jipipe.extensions.parameters.expressions.functions;
 
 import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
 import org.hkijena.jipipe.extensions.parameters.expressions.DefaultExpressionParameter;
 import org.hkijena.jipipe.extensions.parameters.expressions.ExpressionFunction;
 import org.hkijena.jipipe.extensions.parameters.expressions.ExpressionParameters;
@@ -11,9 +10,6 @@ import org.hkijena.jipipe.utils.StringUtils;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.Map;
-
-import static org.hkijena.jipipe.extensions.parameters.expressions.functions.EvaluateFunction.parseVariableAssignment;
 
 @JIPipeDocumentation(name = "Accumulate", description = "Merges multiple array items via an accumulation function (Default: +)")
 public class AccumulateFunction extends ExpressionFunction {

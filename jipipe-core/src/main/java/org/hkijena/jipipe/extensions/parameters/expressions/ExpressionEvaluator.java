@@ -15,7 +15,6 @@ package org.hkijena.jipipe.extensions.parameters.expressions;
 
 import com.fathzer.soft.javaluator.AbstractEvaluator;
 import com.fathzer.soft.javaluator.Parameters;
-import org.hkijena.jipipe.extensions.parameters.expressions.ExpressionParameters;
 import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
 
 /**

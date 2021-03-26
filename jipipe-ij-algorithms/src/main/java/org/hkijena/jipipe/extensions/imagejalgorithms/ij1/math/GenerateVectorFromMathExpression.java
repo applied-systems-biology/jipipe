@@ -86,7 +86,7 @@ public class GenerateVectorFromMathExpression extends JIPipeSimpleIteratingAlgor
 
     @Override
     protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
-        ImagePlus img = IJ.createHyperStack("Generated", width, height,  sizeC, sizeZ, sizeT, 32);
+        ImagePlus img = IJ.createHyperStack("Generated", width, height, sizeC, sizeZ, sizeT, 32);
         ExpressionParameters variableSet = new ExpressionParameters();
         variableSet.set("width", width);
         variableSet.set("height", height);
@@ -94,7 +94,7 @@ public class GenerateVectorFromMathExpression extends JIPipeSimpleIteratingAlgor
         variableSet.set("num_c", sizeC);
         variableSet.set("num_t", sizeT);
 
-        if(componentDimension == HyperstackDimension.Channel) {
+        if (componentDimension == HyperstackDimension.Channel) {
             int iterationIndex = 0;
             int outputVectorSize = sizeC;
             List<ImageProcessor> resultProcessors = new ArrayList<>();
@@ -122,8 +122,7 @@ public class GenerateVectorFromMathExpression extends JIPipeSimpleIteratingAlgor
                     }
                 }
             }
-        }
-        else if(componentDimension == HyperstackDimension.Depth) {
+        } else if (componentDimension == HyperstackDimension.Depth) {
             int iterationIndex = 0;
             int outputVectorSize = sizeZ;
             List<ImageProcessor> resultProcessors = new ArrayList<>();
@@ -151,8 +150,7 @@ public class GenerateVectorFromMathExpression extends JIPipeSimpleIteratingAlgor
                     }
                 }
             }
-        }
-        else  if(componentDimension == HyperstackDimension.Frame) {
+        } else if (componentDimension == HyperstackDimension.Frame) {
             int iterationIndex = 0;
             int outputVectorSize = sizeC;
             List<ImageProcessor> resultProcessors = new ArrayList<>();
@@ -190,17 +188,16 @@ public class GenerateVectorFromMathExpression extends JIPipeSimpleIteratingAlgor
     private void generateAndWriteVectorResults(ExpressionParameters variableSet, List<ImageProcessor> resultProcessors, int y, int x) {
         Object expressionResult = function.evaluate(variableSet);
         int outputVectorSize = resultProcessors.size();
-        if(expressionResult instanceof List) {
+        if (expressionResult instanceof List) {
             List<?> collection = (List<?>) expressionResult;
             for (int i = 0; i < outputVectorSize; i++) {
-                resultProcessors.get(i).setf(x, y, ((Number)collection.get(i)).floatValue());
+                resultProcessors.get(i).setf(x, y, ((Number) collection.get(i)).floatValue());
             }
-        }
-        else {
-            if(outputVectorSize > 1)
+        } else {
+            if (outputVectorSize > 1)
                 throw new IndexOutOfBoundsException("Expression only generated a scalar, but expected array of size " + outputVectorSize);
             // Write result
-            resultProcessors.get(0).setf(x, y, ((Number)expressionResult).floatValue());
+            resultProcessors.get(0).setf(x, y, ((Number) expressionResult).floatValue());
         }
     }
 

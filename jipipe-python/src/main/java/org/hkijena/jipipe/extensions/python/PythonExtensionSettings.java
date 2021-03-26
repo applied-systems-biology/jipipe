@@ -18,7 +18,6 @@ import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeValidityReport;
 import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
-import org.hkijena.jipipe.api.parameters.JIPipeContextAction;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
@@ -26,9 +25,7 @@ import org.hkijena.jipipe.extensions.parameters.expressions.DefaultExpressionPar
 import org.hkijena.jipipe.extensions.parameters.expressions.ExpressionParameterVariable;
 import org.hkijena.jipipe.extensions.parameters.expressions.ExpressionParameterVariableSource;
 import org.hkijena.jipipe.extensions.parameters.primitives.FilePathParameterSettings;
-import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.components.PathEditor;
-import org.hkijena.jipipe.utils.ResourceUtils;
 import org.hkijena.jipipe.utils.StringUtils;
 
 import java.nio.file.Files;
@@ -58,7 +55,7 @@ public class PythonExtensionSettings implements JIPipeParameterCollection {
      * Checks if the Python settings are valid or throws an exception
      */
     public static void checkPythonSettings() {
-        if(!pythonSettingsAreValid()) {
+        if (!pythonSettingsAreValid()) {
             throw new UserFriendlyRuntimeException("The Python installation is invalid!\n" +
                     "Python=" + getInstance().getPythonExecutable(),
                     "Python is not configured!",
@@ -72,10 +69,11 @@ public class PythonExtensionSettings implements JIPipeParameterCollection {
 
     /**
      * Checks if the Python settings are valid or reports an invalid state
+     *
      * @param report the report
      */
     public static void checkPythonSettings(JIPipeValidityReport report) {
-        if(!pythonSettingsAreValid()) {
+        if (!pythonSettingsAreValid()) {
             report.reportIsInvalid("Python is not configured!",
                     "Project > Application settings > Extensions > Python integration",
                     "This node requires an installation of Python. You have to point JIPipe to a Python installation.",

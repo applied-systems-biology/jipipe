@@ -18,7 +18,7 @@ public class ParameterExplorerContextMenuAction implements NodeUIContextAction {
     @Override
     public void run(JIPipeGraphCanvasUI canvasUI, Set<JIPipeNodeUI> selection) {
         ParameterExplorerWindow window = new ParameterExplorerWindow(canvasUI.getWorkbench(), selection.iterator().next().getNode());
-        window.setSize(1024,768);
+        window.setSize(1024, 768);
         window.setLocationRelativeTo(canvasUI.getWorkbench().getWindow());
         window.setVisible(true);
     }

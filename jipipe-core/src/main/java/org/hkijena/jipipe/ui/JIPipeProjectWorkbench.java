@@ -574,11 +574,11 @@ public class JIPipeProjectWorkbench extends JPanel implements JIPipeWorkbench {
         }
         Path indexFile = imageJDir.resolve("jipipe").resolve("offline-manual").resolve("docs").resolve("index.html");
         DownloadOfflineManualRun run = new DownloadOfflineManualRun();
-        if(!Files.exists(indexFile)) {
-            if(JOptionPane.showConfirmDialog(this, "The manual needs to be downloaded, first." +
-                    "\nDo you want to download it now?\n\n" +
-                    "This needs to be only done once.\n\n" +
-                    "URL: " + DownloadOfflineManualRun.DOWNLOAD_URL,
+        if (!Files.exists(indexFile)) {
+            if (JOptionPane.showConfirmDialog(this, "The manual needs to be downloaded, first." +
+                            "\nDo you want to download it now?\n\n" +
+                            "This needs to be only done once.\n\n" +
+                            "URL: " + DownloadOfflineManualRun.DOWNLOAD_URL,
                     "Open manual",
                     JOptionPane.YES_NO_OPTION,
                     JOptionPane.QUESTION_MESSAGE) == JOptionPane.NO_OPTION) {
@@ -586,14 +586,13 @@ public class JIPipeProjectWorkbench extends JPanel implements JIPipeWorkbench {
             }
             JIPipeRunExecuterUI.runInDialog(getWindow(), run);
         }
-        if(Files.exists(indexFile)) {
+        if (Files.exists(indexFile)) {
             try {
                 Desktop.getDesktop().open(indexFile.toFile());
             } catch (IOException e) {
                 e.printStackTrace();
             }
-        }
-        else {
+        } else {
             JOptionPane.showMessageDialog(this,
                     "The manual does not exist!",
                     "Open manual",

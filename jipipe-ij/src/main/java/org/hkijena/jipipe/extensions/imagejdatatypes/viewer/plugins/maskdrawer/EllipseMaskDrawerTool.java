@@ -62,24 +62,22 @@ public class EllipseMaskDrawerTool extends MaskDrawerTool {
 
     @Subscribe
     public void onMouseClick(MouseClickedEvent event) {
-        if(!isActive())
+        if (!isActive())
             return;
-        if(SwingUtilities.isLeftMouseButton(event)) {
+        if (SwingUtilities.isLeftMouseButton(event)) {
             Point point = getViewerPanel().getCanvas().getMouseModelPixelCoordinate(false);
-            if(point == null) {
+            if (point == null) {
                 cancelDrawing();
                 return;
             }
 
-            if(referencePoint == null) {
+            if (referencePoint == null) {
                 referencePoint = point;
-            }
-            else {
+            } else {
                 applyDrawing(referencePoint, point);
                 cancelDrawing();
             }
-        }
-        else if(SwingUtilities.isRightMouseButton(event)) {
+        } else if (SwingUtilities.isRightMouseButton(event)) {
             cancelDrawing();
         }
     }
@@ -89,10 +87,9 @@ public class EllipseMaskDrawerTool extends MaskDrawerTool {
         processor.setValue(getMaskDrawerPlugin().getCurrentColor().getValue());
 
         Rectangle r = RectangleMaskDrawerTool.getDrawnArea(p0, p1, startFromCenterToggle.isSelected(), squareToggle.isSelected());
-        if(fillToggle.isSelected()) {
+        if (fillToggle.isSelected()) {
             processor.fillOval(r.x, r.y, r.width, r.height);
-        }
-        else {
+        } else {
             processor.drawOval(r.x, r.y, r.width, r.height);
         }
         getMaskDrawerPlugin().recalculateMaskPreview();
@@ -100,38 +97,37 @@ public class EllipseMaskDrawerTool extends MaskDrawerTool {
 
     @Override
     public void postprocessDraw(Graphics2D graphics2D, int x, int y, int w, int h) {
-        if(referencePoint == null)
+        if (referencePoint == null)
             return;
         Point p0 = referencePoint;
         Point p1 = getViewerPanel().getCanvas().getMouseModelPixelCoordinate(false);
-        if(p1 == null)
+        if (p1 == null)
             return;
         final double zoom = getViewerPanel().getCanvas().getZoom();
         graphics2D.setColor(getMaskDrawerPlugin().getHighlightColor());
 
         Rectangle r = RectangleMaskDrawerTool.getDrawnArea(p0, p1, startFromCenterToggle.isSelected(), squareToggle.isSelected());
-        r.x = (int)(zoom * r.x);
-        r.y = (int)(zoom * r.y);
-        r.width = (int)(zoom * r.width);
-        r.height = (int)(zoom * r.height);
-        if(fillToggle.isSelected()) {
+        r.x = (int) (zoom * r.x);
+        r.y = (int) (zoom * r.y);
+        r.width = (int) (zoom * r.width);
+        r.height = (int) (zoom * r.height);
+        if (fillToggle.isSelected()) {
             graphics2D.fillOval(x + r.x, y + r.y, r.width, r.height);
-        }
-        else {
+        } else {
             graphics2D.drawOval(x + r.x, y + r.y, r.width, r.height);
         }
     }
 
     @Subscribe
     public void onMouseMove(MouseMovedEvent event) {
-        if(!isActive())
+        if (!isActive())
             return;
         getViewerPanel().getCanvas().repaint();
     }
 
     @Subscribe
     public void onMouseExited(MouseExitedEvent event) {
-        if(!isActive())
+        if (!isActive())
             return;
         cancelDrawing();
     }

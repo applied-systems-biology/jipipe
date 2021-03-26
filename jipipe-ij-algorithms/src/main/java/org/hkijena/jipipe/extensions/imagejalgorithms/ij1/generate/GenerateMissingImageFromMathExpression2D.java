@@ -97,17 +97,17 @@ public class GenerateMissingImageFromMathExpression2D extends JIPipeMissingDataG
             int sizeZ = referenceImage.getNSlices();
             int sizeT = referenceImage.getNFrames();
             int bitDepth = referenceImage.getBitDepth();
-            if(overwriteWidth.isEnabled())
+            if (overwriteWidth.isEnabled())
                 width = overwriteWidth.getContent();
-            if(overwriteHeight.isEnabled())
+            if (overwriteHeight.isEnabled())
                 height = overwriteHeight.getContent();
-            if(overwriteSizeC.isEnabled())
+            if (overwriteSizeC.isEnabled())
                 sizeC = overwriteSizeC.getContent();
-            if(overwriteSizeZ.isEnabled())
+            if (overwriteSizeZ.isEnabled())
                 sizeZ = overwriteSizeZ.getContent();
-            if(overwriteSizeT.isEnabled())
+            if (overwriteSizeT.isEnabled())
                 sizeT = overwriteSizeT.getContent();
-            if(overwriteOutputBitDepth != OptionalBitDepth.None)
+            if (overwriteOutputBitDepth != OptionalBitDepth.None)
                 bitDepth = overwriteOutputBitDepth.getBitDepth();
 
             ImagePlus img = IJ.createHyperStack("Generated", width, height, sizeC, sizeZ, sizeT, bitDepth);
@@ -135,7 +135,7 @@ public class GenerateMissingImageFromMathExpression2D extends JIPipeMissingDataG
             ImageJUtils.calibrate(img, ImageJCalibrationMode.AutomaticImageJ, 0, 0);
 
             dataBatch.addOutputData(outputSlot, new ImagePlusData(img), progressInfo);
-            if(generateOnePerBatch)
+            if (generateOnePerBatch)
                 break;
         }
     }

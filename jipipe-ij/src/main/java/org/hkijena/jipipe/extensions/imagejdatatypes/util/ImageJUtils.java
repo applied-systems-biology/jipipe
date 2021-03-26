@@ -379,9 +379,10 @@ public class ImageJUtils {
 
     /**
      * Stack index (one-based)
-     * @param channel one-based channel
-     * @param slice one-based slice
-     * @param frame one-based frame
+     *
+     * @param channel   one-based channel
+     * @param slice     one-based slice
+     * @param frame     one-based frame
      * @param imagePlus reference image
      * @return one-based stack index
      */
@@ -391,9 +392,10 @@ public class ImageJUtils {
 
     /**
      * Stack index (zero-based)
-     * @param channel one-based channel
-     * @param slice one-based slice
-     * @param frame one-based frame
+     *
+     * @param channel   one-based channel
+     * @param slice     one-based slice
+     * @param frame     one-based frame
      * @param imagePlus reference image
      * @return one-based stack index
      */
@@ -403,8 +405,9 @@ public class ImageJUtils {
 
     /**
      * Copies a mask into a {@link BufferedImage}
-     * @param mask the mask
-     * @param target the target image. Must be ABGR
+     *
+     * @param mask       the mask
+     * @param target     the target image. Must be ABGR
      * @param foreground color for pixels larger than zero
      * @param background color for zero pixels
      */
@@ -413,38 +416,39 @@ public class ImageJUtils {
         byte[] targetPixels = ((DataBufferByte) target.getRaster().getDataBuffer()).getData();
 
         for (int i = 0; i < sourcePixels.length; i++) {
-            if(Byte.toUnsignedInt(sourcePixels[i]) > 0) {
-                targetPixels[i * 4] = (byte)foreground.getAlpha(); // A
-                targetPixels[i * 4 + 1] = (byte)foreground.getBlue(); // B
-                targetPixels[i * 4 + 2] = (byte)foreground.getGreen(); // G
-                targetPixels[i * 4 + 3] = (byte)foreground.getRed(); // R
-            }
-            else {
-                targetPixels[i * 4] = (byte)background.getAlpha(); // A
-                targetPixels[i * 4 + 1] = (byte)background.getBlue(); // B
-                targetPixels[i * 4 + 2] = (byte)background.getGreen(); // G
-                targetPixels[i * 4 + 3] = (byte)background.getRed(); // R
+            if (Byte.toUnsignedInt(sourcePixels[i]) > 0) {
+                targetPixels[i * 4] = (byte) foreground.getAlpha(); // A
+                targetPixels[i * 4 + 1] = (byte) foreground.getBlue(); // B
+                targetPixels[i * 4 + 2] = (byte) foreground.getGreen(); // G
+                targetPixels[i * 4 + 3] = (byte) foreground.getRed(); // R
+            } else {
+                targetPixels[i * 4] = (byte) background.getAlpha(); // A
+                targetPixels[i * 4 + 1] = (byte) background.getBlue(); // B
+                targetPixels[i * 4 + 2] = (byte) background.getGreen(); // G
+                targetPixels[i * 4 + 3] = (byte) background.getRed(); // R
             }
         }
     }
 
     /**
      * Copies all data from the source to the target image
-     * @param src the source
+     *
+     * @param src    the source
      * @param target the target
      */
     public static void copyBetweenImages(ImagePlus src, ImagePlus target, JIPipeProgressInfo progressInfo) {
-        if(!ImageJUtils.imagesHaveSameSize(src, target) || src.getBitDepth() != target.getBitDepth()) {
+        if (!ImageJUtils.imagesHaveSameSize(src, target) || src.getBitDepth() != target.getBitDepth()) {
             throw new IllegalArgumentException("Source and target must have same size and bit depth!");
         }
         ImageJUtils.forEachIndexedZCTSlice(target, (targetProcessor, index) -> {
             ImageProcessor sourceProcessor = ImageJUtils.getSliceZero(src, index);
-            targetProcessor.copyBits(sourceProcessor, 0,0, Blitter.COPY);
+            targetProcessor.copyBits(sourceProcessor, 0, 0, Blitter.COPY);
         }, progressInfo);
     }
 
     /**
      * Copy a {@link BufferedImage}
+     *
      * @param bi the image
      * @return the copy
      */
@@ -457,6 +461,7 @@ public class ImageJUtils {
 
     /**
      * Copy a {@link BufferedImage}
+     *
      * @param bi the image
      * @return the copy
      */

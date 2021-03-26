@@ -56,7 +56,7 @@ public abstract class ListParameter<T> extends ArrayList<T> implements JIPipeVal
      * @return the instance
      */
     public T addNewInstance() {
-        if(customInstanceGenerator != null) {
+        if (customInstanceGenerator != null) {
             T instance = customInstanceGenerator.get();
             add(instance);
             return instance;

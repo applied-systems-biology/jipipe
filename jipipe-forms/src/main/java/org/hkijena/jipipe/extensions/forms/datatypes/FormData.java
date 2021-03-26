@@ -117,6 +117,7 @@ public abstract class FormData implements JIPipeData, JIPipeParameterCollection,
 
     /**
      * Return true if this form data is replaceable via the "Apply to ..." function
+     *
      * @return if the form data is immutable
      */
     public boolean isImmutable() {
@@ -127,6 +128,7 @@ public abstract class FormData implements JIPipeData, JIPipeParameterCollection,
      * Determines whether this form data uses a custom copy method for the "Apply to ..." function
      * If false, duplicate() is used
      * If true, customCopy(src) is used
+     *
      * @return if custom copy is enabled
      */
     public boolean isUsingCustomCopy() {
@@ -137,6 +139,7 @@ public abstract class FormData implements JIPipeData, JIPipeParameterCollection,
      * Determines whether this form data uses a custom reset method
      * If false, a new copy of the original data is created
      * If true, customReset() is called
+     *
      * @return if custom reset is enabled
      */
     public boolean isUsingCustomReset() {
@@ -146,6 +149,7 @@ public abstract class FormData implements JIPipeData, JIPipeParameterCollection,
     /**
      * A custom copy function that copies the contents from source into this form.
      * Should never raise exceptions. Use {@link JIPipeValidityReport} to report issues.
+     *
      * @param source the source data
      * @param report the error report
      */

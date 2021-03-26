@@ -41,6 +41,7 @@ public abstract class ImageViewerPanelPlugin {
 
     /**
      * Called when the form panel should be recreated
+     *
      * @param formPanel the form panel
      */
     public void createPalettePanel(FormPanel formPanel) {
@@ -49,9 +50,10 @@ public abstract class ImageViewerPanelPlugin {
 
     /**
      * Draws the image in the processor
-     * @param z z position
-     * @param c c position
-     * @param t t position
+     *
+     * @param z         z position
+     * @param c         c position
+     * @param t         t position
      * @param processor the processor
      * @return the modified processor
      */
@@ -68,6 +70,7 @@ public abstract class ImageViewerPanelPlugin {
 
     /**
      * Called before draw is called
+     *
      * @param z z position
      * @param c c position
      * @param t t position
@@ -78,11 +81,12 @@ public abstract class ImageViewerPanelPlugin {
 
     /**
      * Called after the image has been drawn after the image has been drawn
+     *
      * @param graphics2D the graphics
-     * @param x x position of the drawn image
-     * @param y y position of the drawn image
-     * @param w width of the drawn image
-     * @param h height of the drawn image
+     * @param x          x position of the drawn image
+     * @param y          y position of the drawn image
+     * @param w          width of the drawn image
+     * @param h          height of the drawn image
      */
     public void postprocessDraw(Graphics2D graphics2D, int x, int y, int w, int h) {
 
@@ -91,7 +95,8 @@ public abstract class ImageViewerPanelPlugin {
     /**
      * Called while exporting the image slice.
      * Use this to export items handled by postprocessDraw
-     * @param image the image
+     *
+     * @param image      the image
      * @param sliceIndex the slice
      */
     public void postprocessDrawForExport(BufferedImage image, ImageSliceIndex sliceIndex) {

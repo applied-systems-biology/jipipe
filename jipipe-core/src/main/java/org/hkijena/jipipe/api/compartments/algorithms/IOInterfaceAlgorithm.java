@@ -51,14 +51,6 @@ public class IOInterfaceAlgorithm extends JIPipeAlgorithm {
         super(other);
     }
 
-    @Override
-    public void run(JIPipeProgressInfo progressInfo) {
-        for (JIPipeDataSlot inputSlot : getInputSlots()) {
-            JIPipeDataSlot outputSlot = getOutputSlot(inputSlot.getName());
-            outputSlot.addData(inputSlot, progressInfo);
-        }
-    }
-
     /**
      * Removes the interface and directly connects the inputs and outputs
      *
@@ -126,6 +118,14 @@ public class IOInterfaceAlgorithm extends JIPipeAlgorithm {
             for (JIPipeDataSlot target : entry.getValue()) {
                 graph.connect(source, target);
             }
+        }
+    }
+
+    @Override
+    public void run(JIPipeProgressInfo progressInfo) {
+        for (JIPipeDataSlot inputSlot : getInputSlots()) {
+            JIPipeDataSlot outputSlot = getOutputSlot(inputSlot.getName());
+            outputSlot.addData(inputSlot, progressInfo);
         }
     }
 }

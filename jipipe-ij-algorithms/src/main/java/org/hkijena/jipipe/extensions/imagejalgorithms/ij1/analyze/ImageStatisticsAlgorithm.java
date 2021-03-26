@@ -21,7 +21,9 @@ import ij.process.*;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
-import org.hkijena.jipipe.api.data.*;
+import org.hkijena.jipipe.api.data.JIPipeDataSlotInfo;
+import org.hkijena.jipipe.api.data.JIPipeMutableSlotConfiguration;
+import org.hkijena.jipipe.api.data.JIPipeSlotType;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
@@ -85,98 +87,6 @@ public class ImageStatisticsAlgorithm extends JIPipeIteratingAlgorithm {
         updateRoiSlot();
     }
 
-    @Override
-    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
-        ImagePlus img = dataBatch.getInputData("Image", ImagePlusGreyscaleData.class, progressInfo).getImage();
-
-        // Get all indices and group them
-        List<ImageSliceIndex> allIndices = new ArrayList<>();
-        for (int z = 0; z < img.getNSlices(); z++) {
-            for (int c = 0; c < img.getNChannels(); c++) {
-                for (int t = 0; t < img.getNFrames(); t++) {
-                    ImageSliceIndex index = new ImageSliceIndex(z,c,t);
-                    allIndices.add(index);
-                }
-            }
-        }
-
-        Map<ImageSliceIndex, List<ImageSliceIndex>> groupedIndices = allIndices.stream().collect(Collectors.groupingBy(index -> {
-            ImageSliceIndex copy = new ImageSliceIndex(index);
-            if (!applyPerChannel)
-                copy.setC(-1);
-            if (!applyPerFrame)
-                copy.setT(-1);
-            if (!applyPerSlice)
-                copy.setZ(-1);
-            return copy;
-        }));
-
-        TByteArrayList pixels8u = new TByteArrayList();
-        TShortArrayList pixels16u = new TShortArrayList();
-        TFloatArrayList pixels32f = new TFloatArrayList();
-
-        ResultsTableData resultsTableData = new ResultsTableData();
-
-        int currentIndexBatch = 0;
-        for (List<ImageSliceIndex> indices : groupedIndices.values()) {
-            JIPipeProgressInfo batchProgress = progressInfo.resolveAndLog("Batch", currentIndexBatch, groupedIndices.size());
-
-            // Ensure the capacity of the pixel buffers
-            int requestedCapacity = img.getWidth() * img.getHeight() * indices.size();
-
-            if(img.getBitDepth() == 8) {
-                pixels8u.clear();
-                pixels8u.ensureCapacity(requestedCapacity);
-            }
-            else if(img.getBitDepth() == 16) {
-                pixels16u.clear();
-                pixels16u.ensureCapacity(requestedCapacity);
-            }
-            else if(img.getBitDepth() == 32) {
-                pixels32f.clear();
-                pixels32f.ensureCapacity(requestedCapacity);
-            }
-
-            // Fetch the pixel buffers
-            for (ImageSliceIndex index : indices) {
-                JIPipeProgressInfo indexProgress = batchProgress.resolveAndLog("Slice " + index);
-                ImageProcessor ip = ImageJUtils.getSliceZero(img, index);
-                ImageProcessor mask = getMask(dataBatch, index, indexProgress);
-                if(img.getBitDepth() == 8) {
-                    ImageJUtils.getMaskedPixels_8U(ip, mask, pixels8u);
-                }
-                else if(img.getBitDepth() == 16) {
-                    ImageJUtils.getMaskedPixels_16U(ip, mask, pixels16u);
-                }
-                else if(img.getBitDepth() == 32) {
-                    ImageJUtils.getMaskedPixels_32F(ip, mask, pixels32f);
-                }
-            }
-
-            // Generate statistics
-            ImageStatistics statistics;
-            if(img.getBitDepth() == 8) {
-               statistics = (new ByteProcessor(pixels8u.size(), 1, pixels8u.toArray())).getStatistics();
-            }
-            else if(img.getBitDepth() == 16) {
-                statistics = (new ShortProcessor(pixels16u.size(), 1, pixels16u.toArray(), null)).getStatistics();
-            }
-            else if(img.getBitDepth() == 32) {
-                statistics = (new FloatProcessor(pixels32f.size(), 1, pixels32f.toArray())).getStatistics();
-            }
-            else {
-                throw new UnsupportedOperationException();
-            }
-
-            addStatisticsRow(resultsTableData, statistics, measurements, indices, requestedCapacity, img.getWidth(), img.getHeight());
-
-            ++currentIndexBatch;
-        }
-
-        dataBatch.addOutputData(getFirstOutputSlot(), resultsTableData, progressInfo);
-
-    }
-
     public static void addStatisticsRow(ResultsTableData resultsTableData, ImageStatistics statistics, ImageStatisticsSetParameter measurements, Collection<ImageSliceIndex> slices, int allPixels, int width, int height) {
         resultsTableData.addRow();
 
@@ -217,9 +127,9 @@ public class ImageStatisticsAlgorithm extends JIPipeIteratingAlgorithm {
                     resultsTableData.setLastValue(height, "Height");
                     break;
                 case ShapeDescriptors:
-                    resultsTableData.setLastValue(4.0*Math.PI*((width * height)/(perimeter*perimeter)), "Circ.");
+                    resultsTableData.setLastValue(4.0 * Math.PI * ((width * height) / (perimeter * perimeter)), "Circ.");
                     resultsTableData.setLastValue(major / minor, "AR");
-                    resultsTableData.setLastValue(4.0*(width * height)/(Math.PI*major*major), "Round");
+                    resultsTableData.setLastValue(4.0 * (width * height) / (Math.PI * major * major), "Round");
                     resultsTableData.setLastValue(1, "Solidity");
                     break;
                 case IntegratedDensity:
@@ -254,13 +164,98 @@ public class ImageStatisticsAlgorithm extends JIPipeIteratingAlgorithm {
                     resultsTableData.setLastValue(hyp, "Feret");
                     resultsTableData.setLastValue(0, "FeretX");
                     resultsTableData.setLastValue(0, "FeretY");
-                    resultsTableData.setLastValue( Math.toDegrees(Math.asin(height / hyp)), "FeretAngle");
+                    resultsTableData.setLastValue(Math.toDegrees(Math.asin(height / hyp)), "FeretAngle");
                     break;
                 case Perimeter:
                     resultsTableData.setLastValue(perimeter, "Perim.");
                     break;
             }
         }
+    }
+
+    @Override
+    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
+        ImagePlus img = dataBatch.getInputData("Image", ImagePlusGreyscaleData.class, progressInfo).getImage();
+
+        // Get all indices and group them
+        List<ImageSliceIndex> allIndices = new ArrayList<>();
+        for (int z = 0; z < img.getNSlices(); z++) {
+            for (int c = 0; c < img.getNChannels(); c++) {
+                for (int t = 0; t < img.getNFrames(); t++) {
+                    ImageSliceIndex index = new ImageSliceIndex(z, c, t);
+                    allIndices.add(index);
+                }
+            }
+        }
+
+        Map<ImageSliceIndex, List<ImageSliceIndex>> groupedIndices = allIndices.stream().collect(Collectors.groupingBy(index -> {
+            ImageSliceIndex copy = new ImageSliceIndex(index);
+            if (!applyPerChannel)
+                copy.setC(-1);
+            if (!applyPerFrame)
+                copy.setT(-1);
+            if (!applyPerSlice)
+                copy.setZ(-1);
+            return copy;
+        }));
+
+        TByteArrayList pixels8u = new TByteArrayList();
+        TShortArrayList pixels16u = new TShortArrayList();
+        TFloatArrayList pixels32f = new TFloatArrayList();
+
+        ResultsTableData resultsTableData = new ResultsTableData();
+
+        int currentIndexBatch = 0;
+        for (List<ImageSliceIndex> indices : groupedIndices.values()) {
+            JIPipeProgressInfo batchProgress = progressInfo.resolveAndLog("Batch", currentIndexBatch, groupedIndices.size());
+
+            // Ensure the capacity of the pixel buffers
+            int requestedCapacity = img.getWidth() * img.getHeight() * indices.size();
+
+            if (img.getBitDepth() == 8) {
+                pixels8u.clear();
+                pixels8u.ensureCapacity(requestedCapacity);
+            } else if (img.getBitDepth() == 16) {
+                pixels16u.clear();
+                pixels16u.ensureCapacity(requestedCapacity);
+            } else if (img.getBitDepth() == 32) {
+                pixels32f.clear();
+                pixels32f.ensureCapacity(requestedCapacity);
+            }
+
+            // Fetch the pixel buffers
+            for (ImageSliceIndex index : indices) {
+                JIPipeProgressInfo indexProgress = batchProgress.resolveAndLog("Slice " + index);
+                ImageProcessor ip = ImageJUtils.getSliceZero(img, index);
+                ImageProcessor mask = getMask(dataBatch, index, indexProgress);
+                if (img.getBitDepth() == 8) {
+                    ImageJUtils.getMaskedPixels_8U(ip, mask, pixels8u);
+                } else if (img.getBitDepth() == 16) {
+                    ImageJUtils.getMaskedPixels_16U(ip, mask, pixels16u);
+                } else if (img.getBitDepth() == 32) {
+                    ImageJUtils.getMaskedPixels_32F(ip, mask, pixels32f);
+                }
+            }
+
+            // Generate statistics
+            ImageStatistics statistics;
+            if (img.getBitDepth() == 8) {
+                statistics = (new ByteProcessor(pixels8u.size(), 1, pixels8u.toArray())).getStatistics();
+            } else if (img.getBitDepth() == 16) {
+                statistics = (new ShortProcessor(pixels16u.size(), 1, pixels16u.toArray(), null)).getStatistics();
+            } else if (img.getBitDepth() == 32) {
+                statistics = (new FloatProcessor(pixels32f.size(), 1, pixels32f.toArray())).getStatistics();
+            } else {
+                throw new UnsupportedOperationException();
+            }
+
+            addStatisticsRow(resultsTableData, statistics, measurements, indices, requestedCapacity, img.getWidth(), img.getHeight());
+
+            ++currentIndexBatch;
+        }
+
+        dataBatch.addOutputData(getFirstOutputSlot(), resultsTableData, progressInfo);
+
     }
 
     @JIPipeDocumentation(name = "Extracted measurements", description = "Please select which measurements should be extracted. " +

@@ -113,7 +113,7 @@ public class DataBatchAssistantUI extends JIPipeProjectWorkbenchPanel {
                         return;
                     }
                 }
-            } else if(!inputSlot.getInfo().isOptional()) {
+            } else if (!inputSlot.getInfo().isOptional()) {
                 currentCache.clear();
                 errorLabel.setText("Unconnected input slots");
                 return;

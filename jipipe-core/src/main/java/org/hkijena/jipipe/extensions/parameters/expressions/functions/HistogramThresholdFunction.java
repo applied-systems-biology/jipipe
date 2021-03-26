@@ -24,7 +24,7 @@ public abstract class HistogramThresholdFunction extends ExpressionFunction {
         for (Number number : numbers) {
             histogram[i] = number.intValue();
             ++i;
-            if(i >= 256)
+            if (i >= 256)
                 break;
         }
         return calculateThreshold(histogram);

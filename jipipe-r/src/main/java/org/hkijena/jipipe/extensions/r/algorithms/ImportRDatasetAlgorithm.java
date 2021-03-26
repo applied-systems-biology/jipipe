@@ -6,7 +6,6 @@ import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.JIPipeValidityReport;
-import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
 import org.hkijena.jipipe.api.nodes.JIPipeDataBatch;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.JIPipeOutputSlot;
@@ -45,7 +44,7 @@ public class ImportRDatasetAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     @Override
     public void reportValidity(JIPipeValidityReport report) {
         super.reportValidity(report);
-        if(!isPassThrough()) {
+        if (!isPassThrough()) {
             RExtensionSettings.checkRSettings(report);
         }
     }

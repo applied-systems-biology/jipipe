@@ -128,11 +128,11 @@ public class ParametersData implements JIPipeData {
             JsonNode node = jsonParser.readValueAsTree();
             ParametersData parametersData = new ParametersData();
             for (String key : ImmutableList.copyOf(node.fieldNames())) {
-                   JsonNode entryNode = node.get(key);
-                   String typeId = entryNode.get("type-id").asText();
-                   JIPipeParameterTypeInfo typeInfo = JIPipe.getParameterTypes().getInfoById(typeId);
-                   Object value = JsonUtils.getObjectMapper().readerFor(typeInfo.getFieldClass()).readValue(entryNode.get("value"));
-                   parametersData.parameterData.put(key, value);
+                JsonNode entryNode = node.get(key);
+                String typeId = entryNode.get("type-id").asText();
+                JIPipeParameterTypeInfo typeInfo = JIPipe.getParameterTypes().getInfoById(typeId);
+                Object value = JsonUtils.getObjectMapper().readerFor(typeInfo.getFieldClass()).readValue(entryNode.get("value"));
+                parametersData.parameterData.put(key, value);
             }
             return parametersData;
         }

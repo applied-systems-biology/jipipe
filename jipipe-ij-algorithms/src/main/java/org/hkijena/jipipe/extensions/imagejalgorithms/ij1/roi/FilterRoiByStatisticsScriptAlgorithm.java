@@ -122,10 +122,9 @@ public class FilterRoiByStatisticsScriptAlgorithm extends ImageRoiProcessorAlgor
             // Obtain statistics
             roiStatisticsAlgorithm.clearSlotData();
             roiStatisticsAlgorithm.getInputSlot("ROI").addData(entry.getValue(), progressInfo);
-            if(entry.getKey() == null) {
+            if (entry.getKey() == null) {
                 roiStatisticsAlgorithm.setOverrideReferenceImage(false);
-            }
-            else {
+            } else {
                 roiStatisticsAlgorithm.setOverrideReferenceImage(true);
                 roiStatisticsAlgorithm.getInputSlot("Reference").addData(entry.getKey(), progressInfo);
             }

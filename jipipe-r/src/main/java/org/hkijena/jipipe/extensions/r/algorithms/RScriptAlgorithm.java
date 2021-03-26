@@ -91,7 +91,7 @@ public class RScriptAlgorithm extends JIPipeParameterSlotAlgorithm {
     @Override
     public void reportValidity(JIPipeValidityReport report) {
         super.reportValidity(report);
-        if(!isPassThrough()) {
+        if (!isPassThrough()) {
             RExtensionSettings.checkRSettings(report.forCategory("R"));
         }
     }
@@ -160,7 +160,7 @@ public class RScriptAlgorithm extends JIPipeParameterSlotAlgorithm {
         }
 
         // Clean up
-        if(cleanUpAfterwards) {
+        if (cleanUpAfterwards) {
             progressInfo.log("Cleaning up ...");
             for (Map.Entry<String, Path> entry : inputSlotPaths.entrySet()) {
                 try {

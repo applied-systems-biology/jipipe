@@ -13,7 +13,6 @@
 
 package org.hkijena.jipipe.extensions.imagejalgorithms.ij1.math;
 
-import org.hkijena.jipipe.extensions.parameters.expressions.ExpressionParameters;
 import ij.ImagePlus;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeOrganization;
@@ -27,6 +26,7 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.util.GreyscalePixel5DExpres
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.extensions.parameters.expressions.DefaultExpressionParameter;
 import org.hkijena.jipipe.extensions.parameters.expressions.ExpressionParameterSettings;
+import org.hkijena.jipipe.extensions.parameters.expressions.ExpressionParameters;
 
 /**
  * Wrapper around {@link ij.process.ImageProcessor}

@@ -52,6 +52,23 @@ public class ParameterTableEditorWindow extends JFrame {
         reload();
     }
 
+    public static ParameterTableEditorWindow getInstance(JIPipeWorkbench workbench, Component parent, JIPipeParameterAccess parameterAccess, ParameterTable parameterTable) {
+        ParameterTableEditorWindow window = OPEN_WINDOWS.getOrDefault(parameterTable, null);
+        if (window == null) {
+            window = new ParameterTableEditorWindow(workbench, parameterAccess, parameterTable);
+            window.setSize(1024, 768);
+            window.setLocationRelativeTo(parent);
+            window.setTitle(parameterAccess.getName());
+            window.setVisible(true);
+            OPEN_WINDOWS.put(parameterTable, window);
+            return window;
+        } else {
+            window.toFront();
+            window.repaint();
+        }
+        return window;
+    }
+
     private void initialize() {
         setLayout(new BorderLayout());
 
@@ -469,22 +486,5 @@ public class ParameterTableEditorWindow extends JFrame {
 
     public JIPipeWorkbench getWorkbench() {
         return workbench;
-    }
-
-    public static ParameterTableEditorWindow getInstance(JIPipeWorkbench workbench, Component parent, JIPipeParameterAccess parameterAccess, ParameterTable parameterTable) {
-        ParameterTableEditorWindow window = OPEN_WINDOWS.getOrDefault(parameterTable, null);
-        if (window == null) {
-            window = new ParameterTableEditorWindow(workbench, parameterAccess, parameterTable);
-            window.setSize(1024, 768);
-            window.setLocationRelativeTo(parent);
-            window.setTitle(parameterAccess.getName());
-            window.setVisible(true);
-            OPEN_WINDOWS.put(parameterTable, window);
-            return window;
-        } else {
-            window.toFront();
-            window.repaint();
-        }
-        return window;
     }
 }

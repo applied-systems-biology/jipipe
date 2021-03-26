@@ -13,9 +13,6 @@
 
 package org.hkijena.jipipe.extensions.imagejalgorithms.ij1.math;
 
-import org.hkijena.jipipe.extensions.imagejdatatypes.util.*;
-import org.hkijena.jipipe.extensions.parameters.expressions.ExpressionParameters;
-import gnu.trove.list.array.TDoubleArrayList;
 import ij.IJ;
 import ij.ImagePlus;
 import ij.process.ImageProcessor;
@@ -28,11 +25,13 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscale32FData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleData;
+import org.hkijena.jipipe.extensions.imagejdatatypes.util.HyperstackDimension;
+import org.hkijena.jipipe.extensions.imagejdatatypes.util.VectorPixel5DExpressionParameterVariableSource;
 import org.hkijena.jipipe.extensions.parameters.expressions.DefaultExpressionParameter;
 import org.hkijena.jipipe.extensions.parameters.expressions.ExpressionParameterSettings;
+import org.hkijena.jipipe.extensions.parameters.expressions.ExpressionParameters;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
 /**
@@ -103,7 +102,7 @@ public class ApplyVectorMathExpression2DAlgorithm extends JIPipeSimpleIteratingA
                 default:
                     throw new UnsupportedOperationException();
             }
-            if(componentDimension == HyperstackDimension.Channel) {
+            if (componentDimension == HyperstackDimension.Channel) {
                 int iterationIndex = 0;
                 List<Double> vector = new ArrayList<>();
                 List<ImageProcessor> resultProcessors = new ArrayList<>();
@@ -114,7 +113,7 @@ public class ApplyVectorMathExpression2DAlgorithm extends JIPipeSimpleIteratingA
                         // Get result processor
                         resultProcessors.clear();
                         for (int i = 0; i < outputVectorSize; i++) {
-                            resultProcessors.add( result.getStack().getProcessor(result.getStackIndex(i + 1, z + 1, t + 1)));
+                            resultProcessors.add(result.getStack().getProcessor(result.getStackIndex(i + 1, z + 1, t + 1)));
                         }
 
                         variableSet.set("z", z);
@@ -143,8 +142,7 @@ public class ApplyVectorMathExpression2DAlgorithm extends JIPipeSimpleIteratingA
                         }
                     }
                 }
-            }
-            else if (componentDimension == HyperstackDimension.Depth) {
+            } else if (componentDimension == HyperstackDimension.Depth) {
                 int iterationIndex = 0;
                 List<Double> vector = new ArrayList<>();
                 List<ImageProcessor> resultProcessors = new ArrayList<>();
@@ -156,7 +154,7 @@ public class ApplyVectorMathExpression2DAlgorithm extends JIPipeSimpleIteratingA
                         // Get result processor
                         resultProcessors.clear();
                         for (int i = 0; i < outputVectorSize; i++) {
-                            resultProcessors.add( result.getStack().getProcessor(result.getStackIndex(c + 1, i + 1, t + 1)));
+                            resultProcessors.add(result.getStack().getProcessor(result.getStackIndex(c + 1, i + 1, t + 1)));
                         }
 
                         variableSet.set("z", 0);
@@ -184,8 +182,7 @@ public class ApplyVectorMathExpression2DAlgorithm extends JIPipeSimpleIteratingA
                         }
                     }
                 }
-            }
-            else if(componentDimension == HyperstackDimension.Frame) {
+            } else if (componentDimension == HyperstackDimension.Frame) {
                 int iterationIndex = 0;
                 List<Double> vector = new ArrayList<>();
                 List<ImageProcessor> resultProcessors = new ArrayList<>();
@@ -197,7 +194,7 @@ public class ApplyVectorMathExpression2DAlgorithm extends JIPipeSimpleIteratingA
                         // Get result processor
                         resultProcessors.clear();
                         for (int i = 0; i < outputVectorSize; i++) {
-                            resultProcessors.add( result.getStack().getProcessor(result.getStackIndex(c + 1, z + 1, i + 1)));
+                            resultProcessors.add(result.getStack().getProcessor(result.getStackIndex(c + 1, z + 1, i + 1)));
                         }
 
                         variableSet.set("z", z);
@@ -233,17 +230,16 @@ public class ApplyVectorMathExpression2DAlgorithm extends JIPipeSimpleIteratingA
 
     private void generateAndWriteVectorResults(ExpressionParameters variableSet, List<ImageProcessor> resultProcessors, int y, int x) {
         Object expressionResult = transformation.evaluate(variableSet);
-        if(expressionResult instanceof List) {
+        if (expressionResult instanceof List) {
             List<?> collection = (List<?>) expressionResult;
             for (int i = 0; i < outputVectorSize; i++) {
-                resultProcessors.get(i).setf(x, y, ((Number)collection.get(i)).floatValue());
+                resultProcessors.get(i).setf(x, y, ((Number) collection.get(i)).floatValue());
             }
-        }
-        else {
-            if(outputVectorSize > 1)
+        } else {
+            if (outputVectorSize > 1)
                 throw new IndexOutOfBoundsException("Expression only generated a scalar, but expected array of size " + outputVectorSize);
             // Write result
-            resultProcessors.get(0).setf(x, y, ((Number)expressionResult).floatValue());
+            resultProcessors.get(0).setf(x, y, ((Number) expressionResult).floatValue());
         }
     }
 

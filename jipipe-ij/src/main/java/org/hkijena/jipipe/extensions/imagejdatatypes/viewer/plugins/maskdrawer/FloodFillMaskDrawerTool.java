@@ -36,30 +36,29 @@ public class FloodFillMaskDrawerTool extends MaskDrawerTool {
 
     @Subscribe
     public void onMouseClick(MouseClickedEvent event) {
-        if(!isActive())
+        if (!isActive())
             return;
-        if(SwingUtilities.isLeftMouseButton(event)) {
+        if (SwingUtilities.isLeftMouseButton(event)) {
             Point point = getViewerPanel().getCanvas().getMouseModelPixelCoordinate(true);
-            if(point == null) {
+            if (point == null) {
                 return;
             }
 
             ImageProcessor processor = getMaskDrawerPlugin().getCurrentMaskSlice();
-            if(getMaskDrawerPlugin().getCurrentColor() == MaskDrawerPlugin.MaskColor.Foreground) {
-                if(processor.get(point.x, point.y) > 0)
+            if (getMaskDrawerPlugin().getCurrentColor() == MaskDrawerPlugin.MaskColor.Foreground) {
+                if (processor.get(point.x, point.y) > 0)
                     return;
                 FloodFiller filler = new FloodFiller(processor);
-                try(BusyCursor cursor = new BusyCursor(getViewerPanel())) {
+                try (BusyCursor cursor = new BusyCursor(getViewerPanel())) {
                     processor.setValue(255);
                     filler.fill(point.x, point.y);
                 }
-            }
-            else {
-                if(processor.get(point.x, point.y) == 0)
+            } else {
+                if (processor.get(point.x, point.y) == 0)
                     return;
                 processor.invert();
                 FloodFiller filler = new FloodFiller(processor);
-                try(BusyCursor cursor = new BusyCursor(getViewerPanel())) {
+                try (BusyCursor cursor = new BusyCursor(getViewerPanel())) {
                     processor.setValue(255);
                     filler.fill(point.x, point.y);
                 }

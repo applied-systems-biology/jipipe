@@ -527,7 +527,7 @@ public class ROIListData extends ArrayList<Roi> implements JIPipeData {
      * @param drawOutline       whether to draw an outline
      * @param drawFilledOutline whether to fill the area
      * @param lineThickness     line thickness for drawing
-     * @param sliceIndex zero-based slice index
+     * @param sliceIndex        zero-based slice index
      * @return the image
      */
     public ImagePlus getMaskForSlice(int width, int height, boolean drawOutline, boolean drawFilledOutline, int lineThickness, ImageSliceIndex sliceIndex) {
@@ -635,7 +635,7 @@ public class ROIListData extends ArrayList<Roi> implements JIPipeData {
      * @param drawFilledOutline whether to fill the area
      * @param lineThickness     line thickness for drawing
      * @param result            the target image
-     * @param sliceIndex zero-based slice index
+     * @param sliceIndex        zero-based slice index
      */
     public void drawMaskForSliceIndex(boolean drawOutline, boolean drawFilledOutline, int lineThickness, ImagePlus result, ImageSliceIndex sliceIndex) {
         ImageProcessor processor = result.getProcessor();

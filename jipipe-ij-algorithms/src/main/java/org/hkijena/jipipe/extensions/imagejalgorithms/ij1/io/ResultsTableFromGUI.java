@@ -13,7 +13,6 @@
 
 package org.hkijena.jipipe.extensions.imagejalgorithms.ij1.io;
 
-import org.hkijena.jipipe.extensions.parameters.expressions.ExpressionParameters;
 import ij.WindowManager;
 import ij.measure.ResultsTable;
 import ij.text.TextWindow;
@@ -28,6 +27,7 @@ import org.hkijena.jipipe.api.nodes.categories.DataSourceNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.parameters.expressions.DefaultExpressionParameter;
+import org.hkijena.jipipe.extensions.parameters.expressions.ExpressionParameters;
 import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
 
 import java.awt.*;

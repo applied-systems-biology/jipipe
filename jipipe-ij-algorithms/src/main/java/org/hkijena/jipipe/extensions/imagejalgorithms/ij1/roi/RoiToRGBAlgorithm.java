@@ -16,7 +16,6 @@ package org.hkijena.jipipe.extensions.imagejalgorithms.ij1.roi;
 import ij.IJ;
 import ij.ImagePlus;
 import ij.gui.Roi;
-import ij.plugin.filter.Filler;
 import ij.process.ImageProcessor;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeOrganization;
@@ -174,19 +173,19 @@ public class RoiToRGBAlgorithm extends JIPipeIteratingAlgorithm {
                     }
 
                     // Apply opacity
-                    if(originalProcessor != null) {
+                    if (originalProcessor != null) {
                         int[] originalBytes = (int[]) originalProcessor.getPixels();
                         int[] bytes = (int[]) processor.getPixels();
                         for (int i = 0; i < bytes.length; i++) {
-                            int rs = (originalBytes[i]&0xff0000)>>16;
-                            int gs = (originalBytes[i]&0xff00)>>8;
-                            int bs = originalBytes[i]&0xff;
-                            int rt = (bytes[i]&0xff0000)>>16;
-                            int gt = (bytes[i]&0xff00)>>8;
-                            int bt = bytes[i]&0xff;
-                            int r = Math.min(255,Math.max((int)(rs + opacity * (rt - rs)), 0));
-                            int g = Math.min(255,Math.max((int)(gs + opacity * (gt - gs)), 0));
-                            int b = Math.min(255,Math.max((int)(bs + opacity * (bt - bs)), 0));
+                            int rs = (originalBytes[i] & 0xff0000) >> 16;
+                            int gs = (originalBytes[i] & 0xff00) >> 8;
+                            int bs = originalBytes[i] & 0xff;
+                            int rt = (bytes[i] & 0xff0000) >> 16;
+                            int gt = (bytes[i] & 0xff00) >> 8;
+                            int bt = bytes[i] & 0xff;
+                            int r = Math.min(255, Math.max((int) (rs + opacity * (rt - rs)), 0));
+                            int g = Math.min(255, Math.max((int) (gs + opacity * (gt - gs)), 0));
+                            int b = Math.min(255, Math.max((int) (bs + opacity * (bt - bs)), 0));
                             int rgb = b + (g << 8) + (r << 16);
                             bytes[i] = rgb;
                         }
@@ -206,7 +205,7 @@ public class RoiToRGBAlgorithm extends JIPipeIteratingAlgorithm {
 
     @JIPipeParameter("opacity")
     public boolean setOpacity(double opacity) {
-        if(opacity < 0 || opacity > 1)
+        if (opacity < 0 || opacity > 1)
             return false;
         this.opacity = opacity;
         return true;
@@ -275,7 +274,7 @@ public class RoiToRGBAlgorithm extends JIPipeIteratingAlgorithm {
 
     @JIPipeParameter("label-size")
     public boolean setLabelSize(int labelSize) {
-        if(labelSize < 1)
+        if (labelSize < 1)
             return false;
         this.labelSize = labelSize;
         return true;

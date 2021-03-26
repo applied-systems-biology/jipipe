@@ -23,14 +23,8 @@ import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.DataSourceNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
-import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.OptionalBitDepth;
-import org.hkijena.jipipe.extensions.imagejdatatypes.util.PixelCoordinate5DExpressionParameterVariableSource;
-import org.hkijena.jipipe.extensions.parameters.expressions.DefaultExpressionParameter;
-import org.hkijena.jipipe.extensions.parameters.expressions.ExpressionParameterSettings;
-import org.hkijena.jipipe.extensions.parameters.expressions.ExpressionParameters;
 import org.hkijena.jipipe.extensions.parameters.primitives.OptionalIntegerParameter;
-import org.hkijena.jipipe.utils.ImageJCalibrationMode;
 
 /**
  * Wrapper around {@link ij.process.ImageProcessor}
@@ -93,23 +87,23 @@ public class GenerateMissingZeroImage extends JIPipeMissingDataGeneratorAlgorith
             int sizeZ = referenceImage.getNSlices();
             int sizeT = referenceImage.getNFrames();
             int bitDepth = referenceImage.getBitDepth();
-            if(overwriteWidth.isEnabled())
+            if (overwriteWidth.isEnabled())
                 width = overwriteWidth.getContent();
-            if(overwriteHeight.isEnabled())
+            if (overwriteHeight.isEnabled())
                 height = overwriteHeight.getContent();
-            if(overwriteSizeC.isEnabled())
+            if (overwriteSizeC.isEnabled())
                 sizeC = overwriteSizeC.getContent();
-            if(overwriteSizeZ.isEnabled())
+            if (overwriteSizeZ.isEnabled())
                 sizeZ = overwriteSizeZ.getContent();
-            if(overwriteSizeT.isEnabled())
+            if (overwriteSizeT.isEnabled())
                 sizeT = overwriteSizeT.getContent();
-            if(overwriteOutputBitDepth != OptionalBitDepth.None)
+            if (overwriteOutputBitDepth != OptionalBitDepth.None)
                 bitDepth = overwriteOutputBitDepth.getBitDepth();
 
             ImagePlus img = IJ.createHyperStack("Generated", width, height, sizeC, sizeZ, sizeT, bitDepth);
 
             dataBatch.addOutputData(outputSlot, new ImagePlusData(img), progressInfo);
-            if(generateOnePerBatch)
+            if (generateOnePerBatch)
                 break;
         }
     }

@@ -64,7 +64,7 @@ public class RExtensionSettings implements JIPipeParameterCollection {
      * Checks if the R settings are valid or throws an exception
      */
     public static void checkRSettings() {
-        if(!RSettingsAreValid()) {
+        if (!RSettingsAreValid()) {
             throw new UserFriendlyRuntimeException("The R installation is invalid!\n" +
                     "R=" + RExtensionSettings.getInstance().getRExecutable() + "\n" +
                     "RScript=" + RExtensionSettings.getInstance().getRScriptExecutable(),
@@ -78,10 +78,11 @@ public class RExtensionSettings implements JIPipeParameterCollection {
 
     /**
      * Checks if the R settings are valid or reports an invalid state
+     *
      * @param report the report
      */
     public static void checkRSettings(JIPipeValidityReport report) {
-        if(!RSettingsAreValid()) {
+        if (!RSettingsAreValid()) {
             report.reportIsInvalid("R is not configured!",
                     "Project > Application settings > Extensions > R  integration",
                     "This node requires an installation of R. Either R is not installed or JIPipe cannot find R.",
@@ -139,7 +140,6 @@ public class RExtensionSettings implements JIPipeParameterCollection {
                 initialWaitTime,
                 RProcessStartUpOptions.create());
     }
-
 
 
     @Override

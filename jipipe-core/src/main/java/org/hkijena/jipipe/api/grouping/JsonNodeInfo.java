@@ -149,7 +149,7 @@ public class JsonNodeInfo implements JIPipeNodeInfo, JIPipeValidatable, JIPipePa
     @StringParameterSettings(multiline = true)
     @JsonGetter("description")
     public HTMLText getDescription() {
-        if(description == null)
+        if (description == null)
             description = new HTMLText();
         return description;
     }

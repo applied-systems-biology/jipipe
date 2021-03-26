@@ -27,7 +27,6 @@ import org.hkijena.jipipe.api.compartments.algorithms.JIPipeCompartmentOutput;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.data.JIPipeMutableSlotConfiguration;
 import org.hkijena.jipipe.api.grouping.events.ParameterReferencesChangedEvent;
-import org.hkijena.jipipe.api.grouping.parameters.GraphNodeParameterReferenceAccessGroup;
 import org.hkijena.jipipe.api.grouping.parameters.GraphNodeParameterReferenceAccessGroupList;
 import org.hkijena.jipipe.api.grouping.parameters.GraphNodeParameters;
 import org.hkijena.jipipe.api.grouping.parameters.NodeGroupContents;
@@ -242,6 +241,6 @@ public class NodeGroup extends GraphWrapperAlgorithm implements JIPipeCustomPara
 
     @JIPipeParameter("iteration-mode")
     public void setIterationMode(IterationMode iterationMode) {
-       super.setIterationMode(iterationMode);
+        super.setIterationMode(iterationMode);
     }
 }

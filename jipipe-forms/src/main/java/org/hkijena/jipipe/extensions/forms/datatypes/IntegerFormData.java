@@ -1,6 +1,5 @@
 package org.hkijena.jipipe.extensions.forms.datatypes;
 
-import org.hkijena.jipipe.extensions.parameters.expressions.ExpressionParameters;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeDefaultDocumentation;
@@ -13,10 +12,7 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
 import org.hkijena.jipipe.api.parameters.JIPipeReflectionParameterAccess;
 import org.hkijena.jipipe.extensions.forms.utils.SingleAnnotationIOSettings;
-import org.hkijena.jipipe.extensions.parameters.expressions.DefaultExpressionParameter;
-import org.hkijena.jipipe.extensions.parameters.expressions.ExpressionParameterSettings;
-import org.hkijena.jipipe.extensions.parameters.expressions.NumberQueryExpressionVariableSource;
-import org.hkijena.jipipe.extensions.parameters.expressions.StringQueryExpression;
+import org.hkijena.jipipe.extensions.parameters.expressions.*;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 
 import java.awt.*;

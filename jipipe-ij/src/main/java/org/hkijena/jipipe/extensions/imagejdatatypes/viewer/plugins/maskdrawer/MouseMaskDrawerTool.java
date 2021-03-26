@@ -15,7 +15,6 @@ import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
 import java.awt.*;
-import java.net.URL;
 import java.nio.file.Path;
 
 /**
@@ -86,7 +85,7 @@ public class MouseMaskDrawerTool extends MaskDrawerTool {
     }
 
     private void applyInvert() {
-        try(BusyCursor cursor = new BusyCursor(getViewerPanel())) {
+        try (BusyCursor cursor = new BusyCursor(getViewerPanel())) {
             ByteProcessor processor = (ByteProcessor) getMaskDrawerPlugin().getCurrentMaskSlice();
             processor.invert();
             getMaskDrawerPlugin().recalculateMaskPreview();
@@ -94,7 +93,7 @@ public class MouseMaskDrawerTool extends MaskDrawerTool {
     }
 
     private void applyOpen() {
-        try(BusyCursor cursor = new BusyCursor(getViewerPanel())) {
+        try (BusyCursor cursor = new BusyCursor(getViewerPanel())) {
             ByteProcessor processor = (ByteProcessor) getMaskDrawerPlugin().getCurrentMaskSlice();
             // Dilate and erode are switched for some reason
             processor.dilate(); // Erode
@@ -104,7 +103,7 @@ public class MouseMaskDrawerTool extends MaskDrawerTool {
     }
 
     private void applyClose() {
-        try(BusyCursor cursor = new BusyCursor(getViewerPanel())) {
+        try (BusyCursor cursor = new BusyCursor(getViewerPanel())) {
             ByteProcessor processor = (ByteProcessor) getMaskDrawerPlugin().getCurrentMaskSlice();
             // Dilate and erode are switched for some reason
             processor.erode(); // Dilate
@@ -114,7 +113,7 @@ public class MouseMaskDrawerTool extends MaskDrawerTool {
     }
 
     private void applyDilate() {
-        try(BusyCursor cursor = new BusyCursor(getViewerPanel())) {
+        try (BusyCursor cursor = new BusyCursor(getViewerPanel())) {
             ByteProcessor processor = (ByteProcessor) getMaskDrawerPlugin().getCurrentMaskSlice();
             processor.erode(); // Dilate and erode are switched for some reason
             getMaskDrawerPlugin().recalculateMaskPreview();
@@ -122,7 +121,7 @@ public class MouseMaskDrawerTool extends MaskDrawerTool {
     }
 
     private void applyErode() {
-        try(BusyCursor cursor = new BusyCursor(getViewerPanel())) {
+        try (BusyCursor cursor = new BusyCursor(getViewerPanel())) {
             ByteProcessor processor = (ByteProcessor) getMaskDrawerPlugin().getCurrentMaskSlice();
             processor.erode(); // Dilate and erode are switched for some reason
             getMaskDrawerPlugin().recalculateMaskPreview();
@@ -134,18 +133,18 @@ public class MouseMaskDrawerTool extends MaskDrawerTool {
                 FileChooserSettings.KEY_DATA,
                 "Import mask",
                 UIUtils.EXTENSION_FILTER_TIFF);
-        if(selectedFile != null) {
-            try(BusyCursor cursor = new BusyCursor(getViewerPanel())) {
+        if (selectedFile != null) {
+            try (BusyCursor cursor = new BusyCursor(getViewerPanel())) {
                 ImagePlus image = IJ.openImage(selectedFile.toString());
                 ImageProcessor processor = getMaskDrawerPlugin().getCurrentMaskSlice();
-                if(image.getWidth() != processor.getWidth() || image.getHeight() != processor.getHeight()) {
+                if (image.getWidth() != processor.getWidth() || image.getHeight() != processor.getHeight()) {
                     JOptionPane.showMessageDialog(getViewerPanel(),
-                            "The imported mask must have a size of " + processor.getWidth() + "x" +  processor.getHeight(),
+                            "The imported mask must have a size of " + processor.getWidth() + "x" + processor.getHeight(),
                             "Import mask",
                             JOptionPane.ERROR_MESSAGE);
                     return;
                 }
-                if(image.getBitDepth() != 8) {
+                if (image.getBitDepth() != 8) {
                     ImageConverter ic = new ImageConverter(image);
                     ic.convertToGray8();
                 }
@@ -161,8 +160,8 @@ public class MouseMaskDrawerTool extends MaskDrawerTool {
                 FileChooserSettings.KEY_DATA,
                 "Export mask",
                 UIUtils.EXTENSION_FILTER_TIFF);
-        if(selectedFile != null) {
-            try(BusyCursor cursor = new BusyCursor(getViewerPanel())) {
+        if (selectedFile != null) {
+            try (BusyCursor cursor = new BusyCursor(getViewerPanel())) {
                 ImagePlus image = new ImagePlus("Mask", getMaskDrawerPlugin().getCurrentMaskSlice());
                 IJ.saveAsTiff(image, selectedFile.toString());
             }
@@ -178,7 +177,7 @@ public class MouseMaskDrawerTool extends MaskDrawerTool {
     }
 
     private void applyWatershed() {
-        try(BusyCursor cursor = new BusyCursor(getViewerPanel())) {
+        try (BusyCursor cursor = new BusyCursor(getViewerPanel())) {
             EDM edm = new EDM();
             edm.toWatershed(getMaskDrawerPlugin().getCurrentMaskSlice());
             getMaskDrawerPlugin().recalculateMaskPreview();

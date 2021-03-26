@@ -33,11 +33,11 @@ public class ImageCalculator2DExpression extends JIPipeIteratingAlgorithm {
 
     public ImageCalculator2DExpression(JIPipeNodeInfo info) {
         super(info, JIPipeDefaultMutableSlotConfiguration.builder()
-        .addInputSlot("I1", ImagePlusGreyscale32FData.class)
-        .addInputSlot("I2", ImagePlusGreyscale32FData.class)
-        .addOutputSlot("Output", ImagePlusGreyscale32FData.class, null)
-        .sealOutput()
-        .build());
+                .addInputSlot("I1", ImagePlusGreyscale32FData.class)
+                .addInputSlot("I2", ImagePlusGreyscale32FData.class)
+                .addOutputSlot("Output", ImagePlusGreyscale32FData.class, null)
+                .sealOutput()
+                .build());
     }
 
     public ImageCalculator2DExpression(ImageCalculator2DExpression other) {
@@ -52,7 +52,7 @@ public class ImageCalculator2DExpression extends JIPipeIteratingAlgorithm {
             images.put(slot.getName(), dataBatch.getInputData(slot, ImagePlusGreyscale32FData.class, progressInfo).getImage());
         }
 
-        if(images.isEmpty())
+        if (images.isEmpty())
             return;
 
         ImagePlus referenceImage = images.values().iterator().next();
@@ -63,14 +63,14 @@ public class ImageCalculator2DExpression extends JIPipeIteratingAlgorithm {
         int nC = referenceImage.getNChannels();
         int nT = referenceImage.getNFrames();
         for (ImagePlus image : images.values()) {
-               if(image.getWidth() != width || image.getHeight() != height ||
-               image.getNFrames() != nT || image.getNChannels() != nC ||image.getNSlices() != nZ) {
-                   throw new UserFriendlyRuntimeException("Input images do not have the same size!",
-                           "Input images do not have the same size!",
-                           getName(),
-                           "All input images in the same batch should have the same width, height, number of slices, number of frames, and number of channes.",
-                           "Please check the input images.");
-               }
+            if (image.getWidth() != width || image.getHeight() != height ||
+                    image.getNFrames() != nT || image.getNChannels() != nC || image.getNSlices() != nZ) {
+                throw new UserFriendlyRuntimeException("Input images do not have the same size!",
+                        "Input images do not have the same size!",
+                        getName(),
+                        "All input images in the same batch should have the same width, height, number of slices, number of frames, and number of channes.",
+                        "Please check the input images.");
+            }
         }
 
         ExpressionParameters parameters = new ExpressionParameters();
@@ -104,7 +104,7 @@ public class ImageCalculator2DExpression extends JIPipeIteratingAlgorithm {
                     }
 
                     Number pixelResult = (Number) expression.evaluate(parameters);
-                    resultProcessor.setf(x,y,pixelResult.floatValue());
+                    resultProcessor.setf(x, y, pixelResult.floatValue());
                 }
             }
         }, progressInfo);

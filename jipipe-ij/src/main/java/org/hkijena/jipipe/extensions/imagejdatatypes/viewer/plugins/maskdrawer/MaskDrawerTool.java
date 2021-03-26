@@ -1,10 +1,8 @@
 package org.hkijena.jipipe.extensions.imagejdatatypes.viewer.plugins.maskdrawer;
 
-import org.hkijena.jipipe.extensions.imagejdatatypes.viewer.ImageViewerPanelCanvas;
 import org.hkijena.jipipe.extensions.imagejdatatypes.viewer.plugins.ImageViewerPanelPlugin;
 
 import javax.swing.*;
-import java.awt.event.MouseEvent;
 
 /**
  * Super class for any tool that can be used in {@link MaskDrawerPlugin}

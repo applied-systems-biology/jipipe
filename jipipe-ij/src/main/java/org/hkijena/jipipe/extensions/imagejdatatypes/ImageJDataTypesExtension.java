@@ -13,7 +13,6 @@
 
 package org.hkijena.jipipe.extensions.imagejdatatypes;
 
-import ij.ImagePlus;
 import ome.xml.model.enums.DimensionOrder;
 import org.hkijena.jipipe.JIPipeJavaExtension;
 import org.hkijena.jipipe.api.data.JIPipeData;

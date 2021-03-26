@@ -67,7 +67,7 @@ public class ColorChooserButton extends JButton implements ActionListener {
             this.selectedColor = selectedColor;
             icon.setFillColor(selectedColor);
             repaint();
-            if(updateWithHexCode) {
+            if (updateWithHexCode) {
                 setText(ColorUtils.colorToHexString(selectedColor));
             }
             eventBus.post(new ColorChosenEvent(this, selectedColor));
