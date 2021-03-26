@@ -20,6 +20,12 @@ public class OptionalDataInfoRefParameter extends OptionalParameter<JIPipeDataIn
         super(JIPipeDataInfoRef.class);
     }
 
+    public OptionalDataInfoRefParameter(boolean enabled, JIPipeDataInfoRef value) {
+        super(JIPipeDataInfoRef.class);
+        setContent(value);
+        setEnabled(enabled);
+    }
+
     public OptionalDataInfoRefParameter(OptionalDataInfoRefParameter other) {
         super(other);
         this.setContent(new JIPipeDataInfoRef(other.getContent()));

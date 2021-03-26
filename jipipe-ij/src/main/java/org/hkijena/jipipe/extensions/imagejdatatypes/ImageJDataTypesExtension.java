@@ -68,6 +68,8 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.display.OpenInImageJDataDis
 import org.hkijena.jipipe.extensions.imagejdatatypes.parameters.OMEColorMode;
 import org.hkijena.jipipe.extensions.imagejdatatypes.parameters.OMETIFFCompression;
 import org.hkijena.jipipe.extensions.imagejdatatypes.resultanalysis.*;
+import org.hkijena.jipipe.extensions.imagejdatatypes.util.BitDepth;
+import org.hkijena.jipipe.extensions.imagejdatatypes.util.OptionalBitDepth;
 import org.hkijena.jipipe.extensions.parameters.primitives.HTMLText;
 import org.hkijena.jipipe.extensions.parameters.primitives.StringList;
 import org.hkijena.jipipe.extensions.tables.ResultsTableDataPreview;
@@ -235,6 +237,14 @@ public class ImageJDataTypesExtension extends JIPipePrepackagedDefaultJavaExtens
                 OMETIFFCompression.class,
                 "OME TIFF Compression",
                 "Available compression algorithms");
+        registerEnumParameterType("ij-bit-depth",
+                BitDepth.class,
+                "Bit depth",
+                "Image bit depth");
+        registerEnumParameterType("optional-ij-bit-depth",
+                OptionalBitDepth.class,
+                "Optional Bit depth",
+                "Image bit depth");
 
         // Register data types
         registerDatatype("imagej-ome",

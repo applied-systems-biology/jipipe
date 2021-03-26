@@ -299,6 +299,17 @@ public class JIPipeMergingDataBatch implements Comparable<JIPipeMergingDataBatch
      * Writes output data into the provided slot
      * Please note that annotations should be set up till this point
      *
+     * @param slotName     Slot name
+     * @param data         Added data
+     */
+    public void addOutputData(String slotName, JIPipeVirtualData data) {
+        addOutputData(node.getOutputSlot(slotName), data);
+    }
+
+    /**
+     * Writes output data into the provided slot
+     * Please note that annotations should be set up till this point
+     *
      * @param slotName              Slot name
      * @param data                  Added data
      * @param additionalAnnotations Annotations that are added additionally to the global ones
@@ -306,6 +317,18 @@ public class JIPipeMergingDataBatch implements Comparable<JIPipeMergingDataBatch
      */
     public void addOutputData(String slotName, JIPipeData data, List<JIPipeAnnotation> additionalAnnotations, JIPipeProgressInfo progressInfo) {
         addOutputData(node.getOutputSlot(slotName), data, additionalAnnotations, JIPipeAnnotationMergeStrategy.Merge, progressInfo);
+    }
+
+    /**
+     * Writes output data into the provided slot
+     * Please note that annotations should be set up till this point
+     *
+     * @param slotName              Slot name
+     * @param data                  Added data
+     * @param additionalAnnotations Annotations that are added additionally to the global ones
+     */
+    public void addOutputData(String slotName, JIPipeVirtualData data, List<JIPipeAnnotation> additionalAnnotations) {
+        addOutputData(node.getOutputSlot(slotName), data, additionalAnnotations, JIPipeAnnotationMergeStrategy.Merge);
     }
 
     /**
@@ -328,6 +351,21 @@ public class JIPipeMergingDataBatch implements Comparable<JIPipeMergingDataBatch
      * Writes output data into the provided slot
      * Please note that annotations that are added to all annotations should be set up till this point
      *
+     * @param slot         Slot instance
+     * @param data         Added data
+     */
+    public void addOutputData(JIPipeDataSlot slot, JIPipeVirtualData data) {
+        if (slot.getNode() != node)
+            throw new IllegalArgumentException("The provided slot does not belong to the data interface algorithm!");
+        if (!slot.isOutput())
+            throw new IllegalArgumentException("Slot is not an output slot!");
+        slot.addData(data, new ArrayList<>(annotations.values()), JIPipeAnnotationMergeStrategy.Merge);
+    }
+
+    /**
+     * Writes output data into the provided slot
+     * Please note that annotations that are added to all annotations should be set up till this point
+     *
      * @param slot                  Slot instance
      * @param data                  Added data
      * @param additionalAnnotations Annotations that are added additionally to the global ones
@@ -342,6 +380,25 @@ public class JIPipeMergingDataBatch implements Comparable<JIPipeMergingDataBatch
         List<JIPipeAnnotation> finalAnnotations = new ArrayList<>(annotations.values());
         finalAnnotations.addAll(additionalAnnotations);
         slot.addData(data, finalAnnotations, mergeStrategy, progressInfo);
+    }
+
+    /**
+     * Writes output data into the provided slot
+     * Please note that annotations that are added to all annotations should be set up till this point
+     *
+     * @param slot                  Slot instance
+     * @param data                  Added data
+     * @param additionalAnnotations Annotations that are added additionally to the global ones
+     * @param mergeStrategy         how annotations should be merged
+     */
+    public void addOutputData(JIPipeDataSlot slot, JIPipeVirtualData data, List<JIPipeAnnotation> additionalAnnotations, JIPipeAnnotationMergeStrategy mergeStrategy) {
+        if (slot.getNode() != node)
+            throw new IllegalArgumentException("The provided slot does not belong to the data interface algorithm!");
+        if (!slot.isOutput())
+            throw new IllegalArgumentException("Slot is not an output slot!");
+        List<JIPipeAnnotation> finalAnnotations = new ArrayList<>(annotations.values());
+        finalAnnotations.addAll(additionalAnnotations);
+        slot.addData(data, finalAnnotations, mergeStrategy);
     }
 
     /**

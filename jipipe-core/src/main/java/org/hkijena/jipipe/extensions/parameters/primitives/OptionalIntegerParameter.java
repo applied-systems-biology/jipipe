@@ -27,6 +27,12 @@ public class OptionalIntegerParameter extends OptionalParameter<Integer> {
         super(Integer.class);
     }
 
+    public OptionalIntegerParameter(boolean enabled, int value) {
+        super(Integer.class);
+        setContent(value);
+        setEnabled(enabled);
+    }
+
     /**
      * Creates a copy
      *
