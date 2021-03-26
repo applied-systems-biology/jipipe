@@ -51,7 +51,7 @@ public class ImagePlusData implements JIPipeData, ColoredImagePlusData {
      */
     public static final int DIMENSIONALITY = -1;
 
-    private final ImagePlus image;
+    private ImagePlus image;
     private ColorSpace colorSpace = new RGBColorSpace();
 
     /**
@@ -163,6 +163,14 @@ public class ImagePlusData implements JIPipeData, ColoredImagePlusData {
         ImagePlus imp = image.duplicate();
         imp.setTitle(getImage().getTitle());
         return imp;
+    }
+
+    /**
+     * Makes the stored image unique by duplicating it.
+     * This is an in-place operation
+     */
+    public void makeUnique() {
+        image = getDuplicateImage();
     }
 
     @Override

@@ -92,6 +92,11 @@
             </dependency>
             <dependency>
                 <groupId>org.hkijena</groupId>
+                <artifactId>jipipe-forms</artifactId>
+                <version>2021.3</version>
+            </dependency>
+            <dependency>
+                <groupId>org.hkijena</groupId>
                 <artifactId>jipipe-ij</artifactId>
                 <version>2021.3</version>
             </dependency>
@@ -160,6 +165,10 @@
         <dependency>
             <groupId>org.hkijena</groupId>
             <artifactId>jipipe-strings</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.hkijena</groupId>
+            <artifactId>jipipe-forms</artifactId>
         </dependency>
          <dependency>
             <groupId>org.hkijena</groupId>

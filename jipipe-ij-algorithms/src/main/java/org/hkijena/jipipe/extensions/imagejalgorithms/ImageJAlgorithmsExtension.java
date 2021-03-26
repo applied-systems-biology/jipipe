@@ -46,6 +46,7 @@ import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.features.MeijeringVess
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.fft.FFT2DForwardTransform;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.fft.FFT2DInverseTransform;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.fft.FFT2DSwapQuadrants;
+import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.forms.DrawMaskAlgorithm;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.generate.*;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.io.*;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.lut.LUTInverterAlgorithm;
@@ -500,6 +501,7 @@ public class ImageJAlgorithmsExtension extends JIPipePrepackagedDefaultJavaExten
         registerROIAlgorithms();
         registerLUTAlgorithms();
         registerOpticalFlowAlgorithms();
+        registerFormAlgorithms();
 
         registerNodeType("ij1-generate-missing-results-table", GenerateMissingTablesAlgorithm.class, UIUtils.getIconURLFromResources("actions/image-auto-adjust.png"));
         registerNodeType("ij1-generate-filter-kernel", GenerateStructureElementAlgorithm.class, UIUtils.getIconURLFromResources("actions/morphology.png"));
@@ -513,6 +515,10 @@ public class ImageJAlgorithmsExtension extends JIPipePrepackagedDefaultJavaExten
         registerGlobalParameters();
 
 //        registerIJ2Algorithms();
+    }
+
+    private void registerFormAlgorithms() {
+        registerNodeType("ij-form-draw-mask", DrawMaskAlgorithm.class, UIUtils.getIconURLFromResources("actions/draw-brush.png"));
     }
 
     private void registerOpticalFlowAlgorithms() {

@@ -59,6 +59,20 @@ public class JIPipeDataSlot {
         this.acceptedDataType = info.getDataClass();
     }
 
+    /**
+     * Creates a new input slot that contains only one data item
+     * @param data the data
+     * @return the slot
+     */
+    public static JIPipeDataSlot createSingletonSlot(JIPipeData data, JIPipeGraphNode node) {
+        JIPipeDataSlot slot = new JIPipeDataSlot(new JIPipeDataSlotInfo(data.getClass(),
+                JIPipeSlotType.Input,
+                "Data",
+                null), node);
+        slot.addData(data, new JIPipeProgressInfo());
+        return slot;
+    }
+
     public List<String> getAnnotationColumns() {
         return Collections.unmodifiableList(annotationColumns);
     }
