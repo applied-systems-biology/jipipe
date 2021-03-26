@@ -55,6 +55,7 @@ public class MaskDrawerPlugin extends ImageViewerPanelPlugin {
         installTool(new FloodFillMaskDrawerTool(this));
         installTool(new RectangleMaskDrawerTool(this));
         installTool(new EllipseMaskDrawerTool(this));
+        installTool(new PolygonMaskDrawerTool(this));
 
         viewerPanel.getCanvas().getEventBus().register(this);
         setCurrentTool(currentTool);
