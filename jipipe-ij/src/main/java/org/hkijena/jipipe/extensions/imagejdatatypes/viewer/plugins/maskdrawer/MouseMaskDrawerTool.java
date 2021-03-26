@@ -54,6 +54,11 @@ public class MouseMaskDrawerTool extends MaskDrawerTool {
                 UIUtils.getIconFromResources("actions/document-import.png"),
                 this::importMask);
         addAlgorithmButton(formPanel,
+                "Invert mask",
+                "Inverts the current mask",
+                UIUtils.getIconFromResources("actions/invertimage.png"),
+                this::applyInvert);
+        addAlgorithmButton(formPanel,
                 "Apply watershed",
                 "Applies distance transform watershed",
                 UIUtils.getIconFromResources("actions/insert-math-expression.png"),
@@ -78,6 +83,14 @@ public class MouseMaskDrawerTool extends MaskDrawerTool {
                 "Applies a morphological close operation (3x3 mask)",
                 UIUtils.getIconFromResources("actions/morphology.png"),
                 this::applyClose);
+    }
+
+    private void applyInvert() {
+        try(BusyCursor cursor = new BusyCursor(getViewerPanel())) {
+            ByteProcessor processor = (ByteProcessor) getMaskDrawerPlugin().getCurrentMaskSlice();
+            processor.invert();
+            getMaskDrawerPlugin().recalculateMaskPreview();
+        }
     }
 
     private void applyOpen() {
