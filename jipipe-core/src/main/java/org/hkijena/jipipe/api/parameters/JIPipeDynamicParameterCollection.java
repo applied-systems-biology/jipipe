@@ -24,10 +24,13 @@ import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeValidatable;
 import org.hkijena.jipipe.api.JIPipeValidityReport;
 import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
+import org.hkijena.jipipe.extensions.parameters.ranges.IntNumberRangeParameter;
+import org.hkijena.jipipe.extensions.parameters.ranges.NumberRangeParameterSettings;
 import org.hkijena.jipipe.utils.JsonDeserializable;
 import org.hkijena.jipipe.utils.JsonUtils;
 
 import java.io.IOException;
+import java.lang.annotation.Annotation;
 import java.util.*;
 import java.util.function.Function;
 
@@ -337,6 +340,25 @@ public class JIPipeDynamicParameterCollection implements JIPipeCustomParameterCo
 
     public void setInstanceGenerator(Function<UserParameterDefinition, JIPipeMutableParameterAccess> instanceGenerator) {
         this.instanceGenerator = instanceGenerator;
+    }
+
+    public JIPipeMutableParameterAccess addParameter(String key, Class<?> fieldClass, String name, String description, Annotation... annotations) {
+        JIPipeMutableParameterAccess parameterAccess;
+        if (instanceGenerator != null) {
+            parameterAccess = instanceGenerator.apply(new UserParameterDefinition(this, key, fieldClass));
+        } else {
+            parameterAccess = new JIPipeMutableParameterAccess(this, key, fieldClass);
+            parameterAccess.setName(key);
+        }
+        parameterAccess.setName(name);
+        parameterAccess.setDescription(description);
+        Map<Class<? extends Annotation>, Annotation> annotationMap = new HashMap<>();
+        for (Annotation annotation : annotations) {
+            annotationMap.put(annotation.annotationType(), annotation);
+        }
+        parameterAccess.setAnnotationMap(annotationMap);
+
+        return addParameter(parameterAccess);
     }
 
 

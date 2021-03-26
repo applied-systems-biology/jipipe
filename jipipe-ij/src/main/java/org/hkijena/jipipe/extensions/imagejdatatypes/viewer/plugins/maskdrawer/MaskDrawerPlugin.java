@@ -3,17 +3,28 @@ package org.hkijena.jipipe.extensions.imagejdatatypes.viewer.plugins.maskdrawer;
 import com.google.common.eventbus.Subscribe;
 import ij.IJ;
 import ij.ImagePlus;
+import ij.process.Blitter;
 import ij.process.ImageProcessor;
+import org.hkijena.jipipe.JIPipe;
+import org.hkijena.jipipe.api.JIPipeProgressInfo;
+import org.hkijena.jipipe.api.parameters.JIPipeDynamicParameterCollection;
+import org.hkijena.jipipe.api.parameters.JIPipeMutableParameterAccess;
+import org.hkijena.jipipe.api.parameters.JIPipeParameterVisibility;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageSliceIndex;
 import org.hkijena.jipipe.extensions.imagejdatatypes.viewer.ImageViewerPanel;
 import org.hkijena.jipipe.extensions.imagejdatatypes.viewer.plugins.ImageViewerPanelPlugin;
+import org.hkijena.jipipe.extensions.parameters.ranges.*;
+import org.hkijena.jipipe.ui.JIPipeDummyWorkbench;
 import org.hkijena.jipipe.ui.components.ColorChooserButton;
 import org.hkijena.jipipe.ui.components.ColorIcon;
 import org.hkijena.jipipe.ui.components.FormPanel;
+import org.hkijena.jipipe.ui.parameters.ParameterPanel;
 import org.hkijena.jipipe.ui.theme.JIPipeUITheme;
+import org.hkijena.jipipe.utils.BusyCursor;
 import org.hkijena.jipipe.utils.ColorUtils;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.scijava.Context;
 
 import javax.swing.*;
 import java.awt.*;
@@ -21,7 +32,9 @@ import java.awt.geom.AffineTransform;
 import java.awt.image.AffineTransformOp;
 import java.awt.image.BufferedImage;
 import java.awt.image.BufferedImageOp;
+import java.lang.annotation.Annotation;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
@@ -156,6 +169,7 @@ public class MaskDrawerPlugin extends ImageViewerPanelPlugin {
     public void setMask(ImagePlus mask) {
         this.mask = mask;
         currentMaskSlice = mask.getProcessor();
+        getViewerPanel().refreshFormPanel();
         updateCurrentMaskSlice();
     }
 
@@ -191,6 +205,7 @@ public class MaskDrawerPlugin extends ImageViewerPanelPlugin {
                         getCurrentImage().getHeight(),
                         BufferedImage.TYPE_4BYTE_ABGR);
                 currentMaskSlice = mask.getProcessor();
+                setMask(mask);
             }
         }
         currentTool.onImageChanged();
@@ -207,13 +222,174 @@ public class MaskDrawerPlugin extends ImageViewerPanelPlugin {
         if (getCurrentImage() == null) {
             return;
         }
-        formPanel.addGroupHeader("Draw mask", UIUtils.getIconFromResources("actions/draw-brush.png"));
+        FormPanel.GroupHeaderPanel groupHeader = formPanel.addGroupHeader("Draw mask", UIUtils.getIconFromResources("actions/draw-brush.png"));
+        if(mask != null && mask.getStackSize() > 1) {
+            JButton copySliceButton = new JButton("Copy slice to ...", UIUtils.getIconFromResources("actions/edit-copy.png"));
+            copySliceButton.addActionListener(e -> copySlice());
+            groupHeader.addColumn(copySliceButton);
+        }
         formPanel.addToForm(toolSelectionPanel, new JLabel("Tool"), null);
         currentTool.createPalettePanel(formPanel);
         formPanel.addToForm(colorSelectionPanel, new JLabel("Color"), null);
         formPanel.addToForm(highlightColorButton, new JLabel("Highlight color"), null);
         formPanel.addToForm(maskColorButton, new JLabel("Mask color"), null);
 
+    }
+
+    private void copySlice() {
+        JIPipeDynamicParameterCollection parameterCollection = new JIPipeDynamicParameterCollection(false);
+        parameterCollection.addParameter("z", IntNumberRangeParameter.class, "Target Z slices", "Determines to which Z slices the mask is copied to.",
+                new NumberRangeParameterSettings() {
+            @Override
+            public Class<? extends Annotation> annotationType() {
+                return NumberRangeParameterSettings.class;
+            }
+
+            @Override
+            public double min() {
+                return 0;
+            }
+
+            @Override
+            public double max() {
+                return mask.getNSlices() - 1;
+            }
+
+            @Override
+            public Class<? extends PaintGenerator> trackBackground() {
+                return DefaultTrackBackground.class;
+            }
+
+            @Override
+            public NumberRangeInvertedMode invertedMode() {
+                return NumberRangeInvertedMode.OutsideMinMax;
+            }
+        });
+        parameterCollection.addParameter("c", IntNumberRangeParameter.class, "Target C slices", "Determines to which channel slices the mask is copied to.",
+                new NumberRangeParameterSettings() {
+            @Override
+            public Class<? extends Annotation> annotationType() {
+                return NumberRangeParameterSettings.class;
+            }
+
+            @Override
+            public double min() {
+                return 0;
+            }
+
+            @Override
+            public double max() {
+                return mask.getNChannels() - 1;
+            }
+
+            @Override
+            public Class<? extends PaintGenerator> trackBackground() {
+                return DefaultTrackBackground.class;
+            }
+
+            @Override
+            public NumberRangeInvertedMode invertedMode() {
+                return NumberRangeInvertedMode.OutsideMinMax;
+            }
+        });
+        parameterCollection.addParameter("t", IntNumberRangeParameter.class, "Target T slices", "Determines to which frame slices the mask is copied to.",
+                new NumberRangeParameterSettings() {
+            @Override
+            public Class<? extends Annotation> annotationType() {
+                return NumberRangeParameterSettings.class;
+            }
+
+            @Override
+            public double min() {
+                return 0;
+            }
+
+            @Override
+            public double max() {
+                return mask.getNFrames() - 1;
+            }
+
+            @Override
+            public Class<? extends PaintGenerator> trackBackground() {
+                return DefaultTrackBackground.class;
+            }
+
+            @Override
+            public NumberRangeInvertedMode invertedMode() {
+                return NumberRangeInvertedMode.OutsideMinMax;
+            }
+        });
+        if(mask.getNSlices() == 1) {
+            ((JIPipeMutableParameterAccess)parameterCollection.get("z")).setVisibility(JIPipeParameterVisibility.Hidden);
+        }
+        if(mask.getNChannels() == 1) {
+            ((JIPipeMutableParameterAccess)parameterCollection.get("c")).setVisibility(JIPipeParameterVisibility.Hidden);
+        }
+        if(mask.getNFrames() == 1) {
+            ((JIPipeMutableParameterAccess)parameterCollection.get("t")).setVisibility(JIPipeParameterVisibility.Hidden);
+        }
+
+        ParameterPanel parameterPanel = new ParameterPanel(new JIPipeDummyWorkbench(),
+                parameterCollection,
+                null,
+                FormPanel.WITH_DOCUMENTATION | FormPanel.WITH_SCROLLING);
+
+        AtomicBoolean canceled = new AtomicBoolean(true);
+
+        JDialog dialog = new JDialog(SwingUtilities.getWindowAncestor(getViewerPanel()),
+                "Copy current slice");
+        dialog.setModal(true);
+        JPanel contentPanel = new JPanel(new BorderLayout());
+        contentPanel.add(parameterPanel, BorderLayout.CENTER);
+
+        JPanel buttonPanel = new JPanel();
+        buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.X_AXIS));
+        buttonPanel.add(Box.createHorizontalGlue());
+
+        JButton cancelButton = new JButton("Cancel", UIUtils.getIconFromResources("actions/cancel.png"));
+        cancelButton.addActionListener(e -> {
+            canceled.set(true);
+            dialog.setVisible(false);
+        });
+        buttonPanel.add(cancelButton);
+
+        JButton confirmButton = new JButton("OK", UIUtils.getIconFromResources("actions/button_ok.png"));
+        confirmButton.addActionListener(e -> {
+            canceled.set(false);
+            dialog.setVisible(false);
+        });
+        buttonPanel.add(confirmButton);
+
+        contentPanel.add(buttonPanel, BorderLayout.SOUTH);
+
+        UIUtils.addEscapeListener(dialog);
+
+        dialog.setContentPane(contentPanel);
+        dialog.setSize(640,480);
+        dialog.setLocationRelativeTo(getViewerPanel());
+        dialog.setVisible(true);
+
+        if(canceled.get())
+            return;
+
+        IntNumberRangeParameter zRange = parameterCollection.get("z").get(IntNumberRangeParameter.class);
+        IntNumberRangeParameter cRange = parameterCollection.get("c").get(IntNumberRangeParameter.class);
+        IntNumberRangeParameter tRange = parameterCollection.get("t").get(IntNumberRangeParameter.class);
+        ImageSliceIndex currentIndex = getViewerPanel().getCurrentSlicePosition();
+
+        try(BusyCursor cursor = new BusyCursor(getViewerPanel())) {
+            ImageJUtils.forEachIndexedZCTSlice(mask, (ip, index) -> {
+                if(index.equals(currentIndex))
+                    return;
+                if(index.getZ() < zRange.getMin() || index.getZ() > zRange.getMax())
+                    return;
+                if(index.getC() < cRange.getMin() || index.getC() > cRange.getMax())
+                    return;
+                if(index.getT() < tRange.getMin() || index.getT() > tRange.getMax())
+                    return;
+                ip.copyBits(getCurrentMaskSlice(), 0,0, Blitter.COPY);
+            }, new JIPipeProgressInfo());
+        }
     }
 
     public ImagePlus getMask() {
@@ -253,7 +429,7 @@ public class MaskDrawerPlugin extends ImageViewerPanelPlugin {
         MaskDrawerPlugin maskDrawerPlugin = new MaskDrawerPlugin(panel);
         panel.setPlugins(Collections.singletonList(maskDrawerPlugin));
         panel.setImage(img);
-        maskDrawerPlugin.setMask(IJ.createImage("Mask", img.getWidth(), img.getHeight(), 1, 8));
+//        maskDrawerPlugin.setMask(IJ.createImage("Mask", img.getWidth(), img.getHeight(), 1, 8));
         frame.setContentPane(panel);
         frame.pack();
         frame.setSize(1280, 1024);
@@ -313,7 +489,6 @@ public class MaskDrawerPlugin extends ImageViewerPanelPlugin {
         private final int value;
 
         MaskColor(int value) {
-
             this.value = value;
         }
 
