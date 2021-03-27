@@ -125,7 +125,7 @@ public class ImageViewerLUTEditor extends JPanel implements ThumbListener {
         slider = new JXMultiThumbSlider<>();
         slider.getModel().addThumb(0, Color.BLACK);
         slider.getModel().addThumb(1, Color.WHITE);
-        slider.setTrackRenderer(new GradientTrackRenderer());
+        slider.setTrackRenderer(new CustomGradientTrackRenderer());
         slider.setThumbRenderer(new GradientThumbRenderer());
         slider.setPreferredSize(new Dimension(100, 35));
         slider.addMultiThumbListener(this);
