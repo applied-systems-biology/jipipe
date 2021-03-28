@@ -19,6 +19,7 @@ import org.hkijena.jipipe.ui.JIPipeDummyWorkbench;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 
 import javax.swing.*;
+import java.awt.*;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.util.ArrayList;
@@ -138,6 +139,7 @@ public class DrawMaskAlgorithm extends JIPipeIteratingMissingDataGeneratorAlgori
                             }
                         }
                     });
+                    SwingUtilities.invokeLater(() -> dialog.setExtendedState(Frame.MAXIMIZED_BOTH));
                 } catch (Throwable e) {
                     uiResult[0] = e;
                     windowOpened.set(false);

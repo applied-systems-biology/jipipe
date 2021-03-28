@@ -37,9 +37,9 @@ public class FormsDialog extends JFrame {
     private DocumentTabPane tabPane = new DocumentTabPane();
     private String lastTab = "";
     private List<DataBatchStatus> dataBatchStatuses = new ArrayList<>();
-    private JLabel unvisitedLabel = new JLabel(new ColorIcon(16, 16, DataBatchStatusTableCellRenderer.COLOR_UNVISITED));
-    private JLabel visitedLabel = new JLabel(new ColorIcon(16, 16, new Color(0xb3ef8e)));
-    private JLabel invalidLabel = new JLabel(new ColorIcon(16, 16, DataBatchStatusTableCellRenderer.COLOR_INVALID));
+    private JLabel unvisitedLabel = new JLabel(new ColorIcon(16, 16, DataBatchStatusTableCellRenderer.getColorUnvisited()));
+    private JLabel visitedLabel = new JLabel(new ColorIcon(16, 16, DataBatchStatusTableCellRenderer.getColorVisited()));
+    private JLabel invalidLabel = new JLabel(new ColorIcon(16, 16, DataBatchStatusTableCellRenderer.getColorInvalid()));
     private JToggleButton visitedButton = new JToggleButton("Reviewed", UIUtils.getIconFromResources("actions/eye.png"));
     private MarkdownDocument documentation;
 
