@@ -64,6 +64,7 @@ public class UtilitiesExtension extends JIPipePrepackagedDefaultJavaExtension {
         registerNodeType("jipipe-output-import-slot-folder", ImportJIPipeSlotFolderAlgorithm.class, UIUtils.getIconURLFromResources("actions/document-import.png"));
         registerNodeType("select-data-table-rows", SelectDataTableRowsAlgorithm.class, UIUtils.getIconURLFromResources("actions/filter.png"));
         registerNodeType("run-expression", RunExpressionAlgorithm.class, UIUtils.getIconURLFromResources("actions/insert-math-expression.png"));
+        registerNodeType("generate-placeholder-for-missing-data", UsePlaceholderForMissingDataAlgorithm.class, UIUtils.getIconURLFromResources("icons/glob.png"));
 
         // Comment node
         JIPipeJavaNodeInfo commentNodeInfo = new JIPipeJavaNodeInfo("jipipe:comment", JIPipeCommentNode.class);
