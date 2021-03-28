@@ -16,7 +16,7 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 @JIPipeInputSlot(value = JIPipeData.class, slotName = "Reference", autoCreate = true)
 @JIPipeInputSlot(value = JIPipeData.class, slotName = "Data", autoCreate = true, optional = true)
 @JIPipeInputSlot(value = JIPipeData.class, slotName = "Placeholder", autoCreate = true)
-@JIPipeOutputSlot(value = JIPipeData.class, slotName = "Data", inheritedSlot = "Data", autoCreate = true)
+@JIPipeOutputSlot(value = JIPipeData.class, slotName = "Data", inheritedSlot = "Placeholder", autoCreate = true)
 public class UsePlaceholderForMissingDataAlgorithm extends JIPipeMissingDataGeneratorAlgorithm {
 
     private JIPipeAnnotationMergeStrategy placeholderAnnotationMergeStrategy = JIPipeAnnotationMergeStrategy.Merge;
@@ -32,6 +32,8 @@ public class UsePlaceholderForMissingDataAlgorithm extends JIPipeMissingDataGene
 
     @Override
     protected void runGenerator(JIPipeMergingDataBatch dataBatch, JIPipeDataSlot inputSlot, JIPipeDataSlot outputSlot, JIPipeProgressInfo progressInfo) {
+        if(dataBatch.getInputRows("Reference").isEmpty())
+            return;
         JIPipeDataSlot placeholderSlot = getInputSlot("Placeholder");
         for (int row = 0; row < placeholderSlot.getRowCount(); row++) {
             dataBatch.addOutputData(outputSlot, placeholderSlot.getVirtualData(row), placeholderSlot.getAnnotations(row), placeholderAnnotationMergeStrategy);
