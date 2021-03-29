@@ -20,7 +20,7 @@ import java.awt.*;
 import java.nio.file.Path;
 import java.util.Collections;
 
-@JIPipeDocumentation(name = "Integer input form", description = "A form element that allows the user to input an integer number")
+@JIPipeDocumentation(name = "Boolean input form", description = "A form element that allows the user to input a boolean (true/false) value")
 public class BooleanFormData extends ParameterFormData {
 
     private boolean value = true;
