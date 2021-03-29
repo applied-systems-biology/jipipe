@@ -827,6 +827,7 @@ public class ImageJAlgorithmsExtension extends JIPipePrepackagedDefaultJavaExten
 
         registerNodeType("ij1-math-generate-missing-from-expression", GenerateMissingImageFromMathExpression2D.class, UIUtils.getIconURLFromResources("actions/insert-math-expression.png"));
         registerNodeType("ij1-math-generate-missing-zero-image", GenerateMissingZeroImage.class, UIUtils.getIconURLFromResources("actions/add.png"));
+        registerNodeType("ij1-generate-zero-image", GenerateZeroImage.class, UIUtils.getIconURLFromResources("data-types/imgplus.png"));
 
         registerEnumParameterType("ij1-math-math2d:transformation", ApplyMath2DAlgorithm.Transformation.class,
                 "Transformation", "Available transformations");
