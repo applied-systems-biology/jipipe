@@ -314,6 +314,8 @@ public class StandardParametersExtension extends JIPipePrepackagedDefaultJavaExt
         registerExpressionFunction(new StringEndsWithPredicateFunction());
         registerExpressionFunction(new StringToLowerCaseFunction());
         registerExpressionFunction(new StringToUpperCaseFunction());
+        registerExpressionFunction(new StringSliceFunction());
+        registerExpressionFunction(new StringSliceBeforeFunction());
     }
 
     private void registerScriptParameters() {
