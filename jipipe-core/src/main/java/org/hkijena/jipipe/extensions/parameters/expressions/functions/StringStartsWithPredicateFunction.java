@@ -20,11 +20,11 @@ import org.hkijena.jipipe.extensions.parameters.expressions.ParameterInfo;
 
 import java.util.List;
 
-@JIPipeDocumentation(name = "String contains", description = "Tests if a string contains a pattern.")
-public class ContainsStringPredicateFunction extends ExpressionFunction {
+@JIPipeDocumentation(name = "String starts with", description = "Tests if a string starts with a pattern.")
+public class StringStartsWithPredicateFunction extends ExpressionFunction {
 
-    public ContainsStringPredicateFunction() {
-        super("STRING_CONTAINS", 2);
+    public StringStartsWithPredicateFunction() {
+        super("STRING_STARTS_WITH", 2);
     }
 
     @Override
@@ -43,7 +43,7 @@ public class ContainsStringPredicateFunction extends ExpressionFunction {
     public Object evaluate(List<Object> parameters, ExpressionParameters variables) {
         String text = "" + parameters.get(0);
         String pattern = "" + parameters.get(1);
-        return text.contains(pattern);
+        return text.startsWith(pattern);
     }
 
     @Override

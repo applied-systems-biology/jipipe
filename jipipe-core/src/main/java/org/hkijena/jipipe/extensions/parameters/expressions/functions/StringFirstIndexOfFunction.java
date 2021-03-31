@@ -20,11 +20,12 @@ import org.hkijena.jipipe.extensions.parameters.expressions.ParameterInfo;
 
 import java.util.List;
 
-@JIPipeDocumentation(name = "String contains", description = "Tests if a string contains a pattern.")
-public class ContainsStringPredicateFunction extends ExpressionFunction {
+@JIPipeDocumentation(name = "First index of substring", description = "Finds the first index of a substring in the string. " +
+        "Returns -1 if the substring is not contained in the string.")
+public class StringFirstIndexOfFunction extends ExpressionFunction {
 
-    public ContainsStringPredicateFunction() {
-        super("STRING_CONTAINS", 2);
+    public StringFirstIndexOfFunction() {
+        super("STRING_FIRST_INDEX_OF", 2);
     }
 
     @Override
@@ -43,7 +44,7 @@ public class ContainsStringPredicateFunction extends ExpressionFunction {
     public Object evaluate(List<Object> parameters, ExpressionParameters variables) {
         String text = "" + parameters.get(0);
         String pattern = "" + parameters.get(1);
-        return text.contains(pattern);
+        return text.indexOf(pattern);
     }
 
     @Override

@@ -308,6 +308,12 @@ public class StandardParametersExtension extends JIPipePrepackagedDefaultJavaExt
         registerExpressionFunction(new AccumulateFunction());
         registerExpressionFunction(new RunFunctionFunction());
         registerExpressionFunction(new PercentileFunction());
+        registerExpressionFunction(new StringFirstIndexOfFunction());
+        registerExpressionFunction(new StringLastIndexOfFunction());
+        registerExpressionFunction(new StringStartsWithPredicateFunction());
+        registerExpressionFunction(new StringEndsWithPredicateFunction());
+        registerExpressionFunction(new StringToLowerCaseFunction());
+        registerExpressionFunction(new StringToUpperCaseFunction());
     }
 
     private void registerScriptParameters() {
