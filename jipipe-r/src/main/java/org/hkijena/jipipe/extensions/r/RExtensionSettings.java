@@ -42,18 +42,19 @@ public class RExtensionSettings implements JIPipeParameterCollection {
     private OptionalPathParameter RScriptExecutable = new OptionalPathParameter();
 
     public RExtensionSettings() {
-        if (!StringUtils.isNullOrEmpty(Globals.R_current)) {
-            try {
-                RExecutable.setContent(Paths.get(Globals.R_current));
-            } catch (Exception e) {
-            }
-        }
-        if (!StringUtils.isNullOrEmpty(Globals.Rscript_current)) {
-            try {
-                RScriptExecutable.setContent(Paths.get(Globals.Rscript_current));
-            } catch (Exception e) {
-            }
-        }
+        // Triggers some error if R is not present
+//        if (!StringUtils.isNullOrEmpty(Globals.R_current)) {
+//            try {
+//                RExecutable.setContent(Paths.get(Globals.R_current));
+//            } catch (Exception e) {
+//            }
+//        }
+//        if (!StringUtils.isNullOrEmpty(Globals.Rscript_current)) {
+//            try {
+//                RScriptExecutable.setContent(Paths.get(Globals.Rscript_current));
+//            } catch (Exception e) {
+//            }
+//        }
     }
 
     public static RExtensionSettings getInstance() {
