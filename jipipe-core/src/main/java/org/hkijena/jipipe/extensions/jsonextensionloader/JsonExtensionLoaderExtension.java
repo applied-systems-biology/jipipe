@@ -100,7 +100,7 @@ public class JsonExtensionLoaderExtension extends JIPipePrepackagedDefaultJavaEx
 
     @Override
     public String getDependencyVersion() {
-        return "2021.3";
+        return "2021.4";
     }
 
     /**

@@ -64,7 +64,7 @@ public class PlotsExtension extends JIPipePrepackagedDefaultJavaExtension {
 
     @Override
     public String getDependencyVersion() {
-        return "2021.3";
+        return "2021.4";
     }
 
     @Override

@@ -69,6 +69,6 @@ public class MultiParameterAlgorithmsExtension extends JIPipePrepackagedDefaultJ
 
     @Override
     public String getDependencyVersion() {
-        return "2021.3";
+        return "2021.4";
     }
 }

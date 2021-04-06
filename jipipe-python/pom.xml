@@ -5,11 +5,11 @@
     <parent>
         <artifactId>pom-jipipe</artifactId>
         <groupId>org.hkijena</groupId>
-        <version>2021.3</version>
+        <version>2021.4</version>
     </parent>
 
     <artifactId>jipipe-python</artifactId>
-    <version>2021.3</version>
+    <version>2021.4</version>
 
     <name>jipipe-python</name>
     <description>JIPipe Python Integration</description>
@@ -78,7 +78,7 @@
             <dependency>
                 <groupId>org.hkijena</groupId>
                 <artifactId>jipipe-core</artifactId>
-                <version>2021.3</version>
+                <version>2021.4</version>
             </dependency>
             <dependency>
                 <groupId>org.python</groupId>
