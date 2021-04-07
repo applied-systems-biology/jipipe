@@ -39,6 +39,7 @@ import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.convolve.ConvolveByIma
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.convolve.ConvolveByParameter2DAlgorithm;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.datasources.ImageStackFromFolder;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.dimensions.*;
+import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.edge.CannyEdgeDetectorAlgorithm;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.edge.LaplacianEdgeDetectorAlgorithm;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.edge.SobelEdgeDetectorAlgorithm;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.features.FrangiVesselnessFeatures;
@@ -865,12 +866,13 @@ public class ImageJAlgorithmsExtension extends JIPipePrepackagedDefaultJavaExten
     }
 
     private void registerEdgeAlgorithms() {
-        registerNodeType("ij1-edge-sobel", SobelEdgeDetectorAlgorithm.class);
-        registerNodeType("ij1-edge-laplacian", LaplacianEdgeDetectorAlgorithm.class);
+        registerNodeType("ij1-edge-sobel", SobelEdgeDetectorAlgorithm.class, UIUtils.getIconURLFromResources("actions/path-offset-dynamic.png"));
+        registerNodeType("ij1-edge-laplacian", LaplacianEdgeDetectorAlgorithm.class, UIUtils.getIconURLFromResources("actions/path-offset-dynamic.png"));
         registerEnumParameterType("ij1-edge-laplacian:mode",
                 LaplacianEdgeDetectorAlgorithm.Mode.class,
                 "Laplacian type",
                 "The type of laplacian");
+        registerNodeType("ij1-edge-canny", CannyEdgeDetectorAlgorithm.class, UIUtils.getIconURLFromResources("actions/path-offset-dynamic.png"));
     }
 
     private void registerColorAlgorithms() {
