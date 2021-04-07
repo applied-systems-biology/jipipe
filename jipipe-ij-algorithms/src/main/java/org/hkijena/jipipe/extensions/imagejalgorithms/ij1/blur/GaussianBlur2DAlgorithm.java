@@ -86,6 +86,7 @@ public class GaussianBlur2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     @Override
     public void reportValidity(JIPipeValidityReport report) {
+        super.reportValidity(report);
         report.forCategory("Sigma (X)").checkIfWithin(this, sigmaX, 0, Double.POSITIVE_INFINITY, false, true);
     }
 
