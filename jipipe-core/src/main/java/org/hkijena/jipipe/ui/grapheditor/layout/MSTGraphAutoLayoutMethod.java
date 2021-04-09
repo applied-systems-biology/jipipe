@@ -177,7 +177,7 @@ public class MSTGraphAutoLayoutMethod implements GraphAutoLayoutMethod {
             int finalTrack = track;
             for (Node node : graph.vertexSet().stream().filter(node -> node.track == finalTrack).collect(Collectors.toList())) {
                 int x = maxCumulativeDepthWidth - cumulativeDepthWidths.get(node.depth);
-                node.getUi().moveToNextGridPoint(new Point(x, y), true, true);
+                node.getUi().moveToClosestGridPoint(new Point(x, y), true, true);
             }
             y += trackHeights.get(track) + viewMode.getGridHeight();
         }
@@ -201,7 +201,7 @@ public class MSTGraphAutoLayoutMethod implements GraphAutoLayoutMethod {
             for (Node node : graph.vertexSet().stream().filter(node -> node.track == finalTrack).collect(Collectors.toList())) {
                 int y = (maxDepth - node.depth) * 4 * viewMode.getGridHeight() + viewMode.getGridHeight();
                 y = (int) (Math.round(y * zoom));
-                node.getUi().moveToNextGridPoint(new Point(x, y), true, true);
+                node.getUi().moveToClosestGridPoint(new Point(x, y), true, true);
             }
             x += trackWidths.get(track) + viewMode.getGridWidth() * 4;
         }

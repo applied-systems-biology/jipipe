@@ -268,6 +268,8 @@ public abstract class JIPipeGraphEditorUI extends JIPipeWorkbenchPanel implement
             JIPipeNodeInfo info = (JIPipeNodeInfo) event.getValue();
             JIPipeGraphNode node = info.newInstance();
             getCanvasUI().getGraphHistory().addSnapshotBefore(new AddNodeGraphHistorySnapshot(algorithmGraph, Collections.singleton(node)));
+            canvasUI.getScheduledSelection().clear();
+            canvasUI.getScheduledSelection().add(node);
             algorithmGraph.insertNode(node, getCompartment());
             navigator.setSelectedItem(null);
         }

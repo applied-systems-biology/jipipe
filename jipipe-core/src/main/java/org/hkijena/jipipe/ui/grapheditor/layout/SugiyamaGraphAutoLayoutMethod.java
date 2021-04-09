@@ -159,7 +159,7 @@ public class SugiyamaGraphAutoLayoutMethod implements GraphAutoLayoutMethod {
                 }
                 int x = canvasUI.getViewMode().getGridWidth() * 4;
                 for (JIPipeNodeUI ui : freeFloating) {
-                    ui.moveToNextGridPoint(new Point(x, minY), true, true);
+                    ui.moveToClosestGridPoint(new Point(x, minY), true, true);
                     x += ui.getWidth() + canvasUI.getViewMode().getGridWidth() * 2;
                 }
             } else {
@@ -171,7 +171,7 @@ public class SugiyamaGraphAutoLayoutMethod implements GraphAutoLayoutMethod {
                 }
                 int y = canvasUI.getViewMode().getGridHeight();
                 for (JIPipeNodeUI ui : freeFloating) {
-                    ui.moveToNextGridPoint(new Point(minX, y), true, true);
+                    ui.moveToClosestGridPoint(new Point(minX, y), true, true);
                     y += ui.getHeight() + canvasUI.getViewMode().getGridHeight();
                 }
             }
@@ -227,7 +227,7 @@ public class SugiyamaGraphAutoLayoutMethod implements GraphAutoLayoutMethod {
                 SugiyamaVertex vertex = columnMap.getOrDefault(row, null);
                 if (vertex != null && !vertex.virtual) {
                     JIPipeNodeUI ui = vertex.algorithmUI;
-                    ui.moveToNextGridPoint(new Point(x, y), true, true);
+                    ui.moveToClosestGridPoint(new Point(x, y), true, true);
                 }
                 y += rowHeights.getOrDefault(row, 0);
             }
@@ -284,7 +284,7 @@ public class SugiyamaGraphAutoLayoutMethod implements GraphAutoLayoutMethod {
                 SugiyamaVertex vertex = columnMap.getOrDefault(row, null);
                 if (vertex != null && !vertex.virtual) {
                     JIPipeNodeUI ui = vertex.algorithmUI;
-                    ui.moveToNextGridPoint(new Point(x, y), true, true);
+                    ui.moveToClosestGridPoint(new Point(x, y), true, true);
                 }
                 y += rowHeights.getOrDefault(row, 0);
             }

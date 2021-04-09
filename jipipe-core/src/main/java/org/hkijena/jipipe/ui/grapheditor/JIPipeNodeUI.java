@@ -304,7 +304,7 @@ public abstract class JIPipeNodeUI extends JIPipeWorkbenchPanel {
      * @param save     store the location in the node
      * @return if setting the location was successful
      */
-    public boolean moveToNextGridPoint(Point location, boolean force, boolean save) {
+    public boolean moveToClosestGridPoint(Point location, boolean force, boolean save) {
         Point gridPoint = graphUI.getViewMode().realLocationToGrid(location, graphUI.getZoom());
         return moveToGridLocation(gridPoint, force, save);
     }

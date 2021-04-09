@@ -142,6 +142,8 @@ public class JIPipeGraphCompartmentUI extends JIPipeGraphEditorUI {
                 addItem.addActionListener(e -> {
                     JIPipeGraphNode node = info.newInstance();
                     graphEditorUI.getCanvasUI().getGraphHistory().addSnapshotBefore(new AddNodeGraphHistorySnapshot(algorithmGraph, Collections.singleton(node)));
+                    graphEditorUI.getCanvasUI().getScheduledSelection().clear();
+                    graphEditorUI.getCanvasUI().getScheduledSelection().add(node);
                     algorithmGraph.insertNode(node, graphEditorUI.getCompartment());
                 });
                 addedAlgorithms.add(info);

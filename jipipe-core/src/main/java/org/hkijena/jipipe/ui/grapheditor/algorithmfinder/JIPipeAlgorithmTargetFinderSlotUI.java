@@ -132,6 +132,8 @@ public class JIPipeAlgorithmTargetFinderSlotUI extends JPanel {
                 new AddNodeGraphHistorySnapshot(graph, Collections.singleton(inputSlot.getNode())),
                 new EdgeConnectGraphHistorySnapshot(graph, outputSlot, inputSlot)
         )));
+        canvasUI.getScheduledSelection().clear();
+        canvasUI.getScheduledSelection().add(inputSlot.getNode());
         graph.insertNode(inputSlot.getNode(), compartment);
         graph.connect(outputSlot, inputSlot);
         eventBus.post(new AlgorithmFinderSuccessEvent(outputSlot, inputSlot));

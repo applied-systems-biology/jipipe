@@ -40,6 +40,7 @@ public class GraphEditorUISettings implements JIPipeParameterCollection {
     private boolean drawOutsideEdges = true;
     private boolean notifyInvalidDragAndDrop = true;
     private boolean colorSelectedNodeEdges = true;
+    private boolean autoLayoutMovesOtherNodes = false;
 
     public static GraphEditorUISettings getInstance() {
         return JIPipe.getSettings().getSettings(ID, GraphEditorUISettings.class);
@@ -165,5 +166,17 @@ public class GraphEditorUISettings implements JIPipeParameterCollection {
     @JIPipeParameter("color-selected-node-edges")
     public void setColorSelectedNodeEdges(boolean colorSelectedNodeEdges) {
         this.colorSelectedNodeEdges = colorSelectedNodeEdges;
+    }
+
+    @JIPipeDocumentation(name = "Auto layout moves other nodes", description = "If enabled, the auto layout function will move other nodes to make " +
+            "space for newly inserted nodes.")
+    @JIPipeParameter("auto-layout-moves-other-nodes")
+    public boolean isAutoLayoutMovesOtherNodes() {
+        return autoLayoutMovesOtherNodes;
+    }
+
+    @JIPipeParameter("auto-layout-moves-other-nodes")
+    public void setAutoLayoutMovesOtherNodes(boolean autoLayoutMovesOtherNodes) {
+        this.autoLayoutMovesOtherNodes = autoLayoutMovesOtherNodes;
     }
 }

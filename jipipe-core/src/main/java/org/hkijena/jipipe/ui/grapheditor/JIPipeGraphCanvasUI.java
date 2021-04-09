@@ -92,6 +92,7 @@ public class JIPipeGraphCanvasUI extends JIPipeWorkbenchPanel implements MouseMo
     private double zoom = 1.0;
     private JScrollPane scrollPane;
     private NodeHotKeyStorage nodeHotKeyStorage;
+    private Set<JIPipeGraphNode> scheduledSelection = new HashSet<>();
 
     /**
      * Used to store the minimum dimensions of the canvas to reduce user disruption
@@ -278,6 +279,15 @@ public class JIPipeGraphCanvasUI extends JIPipeWorkbenchPanel implements MouseMo
         if (newlyPlacedAlgorithms > 0) {
             getEventBus().post(new GraphCanvasUpdatedEvent(this));
         }
+        if(scheduledSelection != null && !scheduledSelection.isEmpty()) {
+            clearSelection();
+            for (JIPipeGraphNode node : scheduledSelection) {
+                JIPipeNodeUI selected = nodeUIs.getOrDefault(node, null);
+                if(selected != null) {
+                    addToSelection(selected);
+                }
+            }
+        }
     }
 
     /**
@@ -357,13 +367,15 @@ public class JIPipeGraphCanvasUI extends JIPipeWorkbenchPanel implements MouseMo
         getEventBus().post(event);
     }
 
-    public void autoPlaceCloseToCursor(JIPipeNodeUI ui) {
-        int minX = 0;
-        int minY = 0;
-        if (graphEditCursor != null) {
-            minX = graphEditCursor.x;
-            minY = graphEditCursor.y;
-        }
+    /**
+     * Moves the node close to a real location
+     * @param ui the node
+     * @param location a real location
+     */
+    public void autoPlaceCloseToLocation(JIPipeNodeUI ui, Point location) {
+
+        int minX = location.x;
+        int minY = location.y;
 
         Set<Rectangle> otherShapes = new HashSet<>();
         for (JIPipeNodeUI otherUi : nodeUIs.values()) {
@@ -372,6 +384,7 @@ public class JIPipeGraphCanvasUI extends JIPipeWorkbenchPanel implements MouseMo
             }
         }
 
+        Rectangle viewRectangle = getVisibleRect();
         Rectangle currentShape = new Rectangle(minX, minY, ui.getWidth(), ui.getHeight());
 
         boolean found;
@@ -390,11 +403,50 @@ public class JIPipeGraphCanvasUI extends JIPipeWorkbenchPanel implements MouseMo
                     currentShape.x += viewMode.getGridWidth();
                 }
             }
+            /*
+             * Check if we are still within the visible rectangle.
+             * Prevent nodes going to somewhere else
+             */
+            if(viewRectangle != null && !viewRectangle.intersects(currentShape)) {
+                currentShape.x = minX;
+                currentShape.y = minY;
+                break;
+            }
+            /*
+             * Check if we are too far away
+             * The user expects the new node to be close to the cursor
+             */
+            double relativeDistanceToOriginalPoint;
+            if (viewMode == JIPipeGraphViewMode.Vertical) {
+                relativeDistanceToOriginalPoint = Math.abs(1.0 * minX - currentShape.x) / currentShape.width;
+            }
+            else {
+                relativeDistanceToOriginalPoint = Math.abs(1.0 * minY - currentShape.y) / currentShape.height;
+            }
+            if(relativeDistanceToOriginalPoint > 2) {
+                currentShape.x = minX;
+                currentShape.y = minY;
+                break;
+            }
         }
         while (!found);
 
-        ui.moveToNextGridPoint(new Point(currentShape.x, currentShape.y), true, true);
+        ui.moveToClosestGridPoint(new Point(currentShape.x, currentShape.y), true, true);
+    }
 
+    public void autoPlaceCloseToCursor(JIPipeNodeUI ui) {
+        int minX = 0;
+        int minY = 0;
+        if (graphEditCursor != null) {
+            minX = graphEditCursor.x;
+            minY = graphEditCursor.y;
+        }
+        else if(getVisibleRect() != null) {
+            Rectangle rect = getVisibleRect();
+            minX = rect.x;
+            minY = rect.y;
+        }
+        autoPlaceCloseToLocation(ui, new Point(minX, minY));
     }
 
     public Set<JIPipeNodeUI> getNodesAfter(int x, int y) {
@@ -430,50 +482,62 @@ public class JIPipeGraphCanvasUI extends JIPipeWorkbenchPanel implements MouseMo
             int targetY = sourceAlgorithmUI.getY() + sourceSlotInternalY - targetSlotInternalY;
 
             Point targetPoint = new Point(minX, targetY);
-            if (!targetAlgorithmUI.moveToNextGridPoint(targetPoint, false, true)) {
-                if (nodesAfter.isEmpty())
-                    return;
-                // Move all other algorithms
-                int minDistance = Integer.MAX_VALUE;
-                for (JIPipeNodeUI ui : nodesAfter) {
-                    if (ui == targetAlgorithmUI || ui == sourceAlgorithmUI)
-                        continue;
-                    minDistance = Math.min(minDistance, ui.getX() - sourceAlgorithmUI.getRightX());
-                }
-                int translateX = (int) Math.round(targetAlgorithmUI.getWidth() + viewMode.getGridWidth() * zoom * 4 - minDistance);
-                for (JIPipeNodeUI ui : nodesAfter) {
-                    if (ui == targetAlgorithmUI || ui == sourceAlgorithmUI)
-                        continue;
-                    ui.moveToNextGridPoint(new Point(ui.getX() + translateX, ui.getY()), true, true);
-                }
-                if (!targetAlgorithmUI.moveToNextGridPoint(targetPoint, false, true)) {
-                    autoPlaceCloseToCursor(targetAlgorithmUI);
+
+            if(GraphEditorUISettings.getInstance().isAutoLayoutMovesOtherNodes()) {
+                if (!targetAlgorithmUI.moveToClosestGridPoint(targetPoint, false, true)) {
+                    if (nodesAfter.isEmpty())
+                        return;
+                    // Move all other algorithms
+                    int minDistance = Integer.MAX_VALUE;
+                    for (JIPipeNodeUI ui : nodesAfter) {
+                        if (ui == targetAlgorithmUI || ui == sourceAlgorithmUI)
+                            continue;
+                        minDistance = Math.min(minDistance, ui.getX() - sourceAlgorithmUI.getRightX());
+                    }
+                    int translateX = (int) Math.round(targetAlgorithmUI.getWidth() + viewMode.getGridWidth() * zoom * 4 - minDistance);
+                    for (JIPipeNodeUI ui : nodesAfter) {
+                        if (ui == targetAlgorithmUI || ui == sourceAlgorithmUI)
+                            continue;
+                        ui.moveToClosestGridPoint(new Point(ui.getX() + translateX, ui.getY()), true, true);
+                    }
+                    if (!targetAlgorithmUI.moveToClosestGridPoint(targetPoint, false, true)) {
+                        autoPlaceCloseToCursor(targetAlgorithmUI);
+                    }
                 }
             }
+            else {
+                autoPlaceCloseToLocation(targetAlgorithmUI, targetPoint);
+            }
+
         } else {
             int x = sourceAlgorithmUI.getSlotLocation(source).center.x + sourceAlgorithmUI.getX();
             x -= targetAlgorithmUI.getSlotLocation(target).center.x;
             int y = (int) Math.round(sourceAlgorithmUI.getBottomY() + viewMode.getGridHeight() * zoom);
             Point targetPoint = new Point(x, y);
-            if (!targetAlgorithmUI.moveToNextGridPoint(targetPoint, false, true)) {
-                if (nodesAfter.isEmpty())
-                    return;
-                // Move all other algorithms
-                int minDistance = Integer.MAX_VALUE;
-                for (JIPipeNodeUI ui : nodesAfter) {
-                    if (ui == targetAlgorithmUI || ui == sourceAlgorithmUI)
-                        continue;
-                    minDistance = Math.min(minDistance, ui.getY() - sourceAlgorithmUI.getBottomY());
+            if(GraphEditorUISettings.getInstance().isAutoLayoutMovesOtherNodes()) {
+                if (!targetAlgorithmUI.moveToClosestGridPoint(targetPoint, false, true)) {
+                    if (nodesAfter.isEmpty())
+                        return;
+                    // Move all other algorithms
+                    int minDistance = Integer.MAX_VALUE;
+                    for (JIPipeNodeUI ui : nodesAfter) {
+                        if (ui == targetAlgorithmUI || ui == sourceAlgorithmUI)
+                            continue;
+                        minDistance = Math.min(minDistance, ui.getY() - sourceAlgorithmUI.getBottomY());
+                    }
+                    int translateY = (int) Math.round(targetAlgorithmUI.getHeight() + viewMode.getGridHeight() * zoom * 2 - minDistance);
+                    for (JIPipeNodeUI ui : nodesAfter) {
+                        if (ui == targetAlgorithmUI || ui == sourceAlgorithmUI)
+                            continue;
+                        ui.moveToClosestGridPoint(new Point(ui.getX(), ui.getY() + translateY), true, true);
+                    }
+                    if (!targetAlgorithmUI.moveToClosestGridPoint(targetPoint, false, true)) {
+                        autoPlaceCloseToCursor(targetAlgorithmUI);
+                    }
                 }
-                int translateY = (int) Math.round(targetAlgorithmUI.getHeight() + viewMode.getGridHeight() * zoom * 2 - minDistance);
-                for (JIPipeNodeUI ui : nodesAfter) {
-                    if (ui == targetAlgorithmUI || ui == sourceAlgorithmUI)
-                        continue;
-                    ui.moveToNextGridPoint(new Point(ui.getX(), ui.getY() + translateY), true, true);
-                }
-                if (!targetAlgorithmUI.moveToNextGridPoint(targetPoint, false, true)) {
-                    autoPlaceCloseToCursor(targetAlgorithmUI);
-                }
+            }
+            else {
+                autoPlaceCloseToLocation(targetAlgorithmUI, targetPoint);
             }
         }
     }
@@ -494,7 +558,7 @@ public class JIPipeGraphCanvasUI extends JIPipeWorkbenchPanel implements MouseMo
                     if (currentTimeMillis - lastTimeExpandedNegative > 100) {
                         for (JIPipeNodeUI value : nodeUIs.values()) {
                             if (value != currentlyDragged) {
-                                value.moveToNextGridPoint(new Point(value.getX() + ex, value.getY() + ey), false, true);
+                                value.moveToClosestGridPoint(new Point(value.getX() + ex, value.getY() + ey), false, true);
                             }
                         }
                         lastTimeExpandedNegative = currentTimeMillis;
@@ -512,7 +576,7 @@ public class JIPipeGraphCanvasUI extends JIPipeWorkbenchPanel implements MouseMo
                     }
                 }
 
-                currentlyDragged.moveToNextGridPoint(new Point(x, y), true, true);
+                currentlyDragged.moveToClosestGridPoint(new Point(x, y), true, true);
             }
             repaint();
             if (getParent() != null)
@@ -542,7 +606,7 @@ public class JIPipeGraphCanvasUI extends JIPipeWorkbenchPanel implements MouseMo
         int ey = nextGridPoint.y;
         for (JIPipeNodeUI value : nodeUIs.values()) {
             if (!currentlyDraggedOffsets.containsKey(value)) {
-                value.moveToNextGridPoint(new Point(value.getX() + ex, value.getY() + ey), false, true);
+                value.moveToClosestGridPoint(new Point(value.getX() + ex, value.getY() + ey), false, true);
             }
         }
         if (graphEditCursor != null) {
@@ -1495,7 +1559,7 @@ public class JIPipeGraphCanvasUI extends JIPipeWorkbenchPanel implements MouseMo
             minY = Math.min(ui.getY(), minY);
         }
         for (JIPipeNodeUI ui : nodeUIs.values()) {
-            ui.moveToNextGridPoint(new Point(ui.getX() - minX + viewMode.getGridWidth(),
+            ui.moveToClosestGridPoint(new Point(ui.getX() - minX + viewMode.getGridWidth(),
                     ui.getY() - minY + viewMode.getGridHeight()), true, true);
         }
         setGraphEditCursor(viewMode.gridToRealLocation(new Point(1, 1), zoom));
@@ -1661,6 +1725,14 @@ public class JIPipeGraphCanvasUI extends JIPipeWorkbenchPanel implements MouseMo
 
     public NodeHotKeyStorage getNodeHotKeyStorage() {
         return nodeHotKeyStorage;
+    }
+
+    public Set<JIPipeGraphNode> getScheduledSelection() {
+        return scheduledSelection;
+    }
+
+    public void setScheduledSelection(Set<JIPipeGraphNode> scheduledSelection) {
+        this.scheduledSelection = scheduledSelection;
     }
 
     /**
