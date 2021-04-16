@@ -35,6 +35,7 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
  */
 @JIPipeDocumentation(name = "Morphological operation 2D", description = "Applies a morphological operation to greyscale images. " +
         "Following operations are included: Erosion, Dilation, Opening, Closing, White Top Hat, Black Top Hat, Gradient, Laplacian, Internal Gradient, and External Gradient. " +
+        "More information (including examples) can be found at https://imagej.net/MorphoLibJ.html\n" +
         "If a multi-channel image is provided, the operation is applied to each channel. " +
         "If higher-dimensional data is provided, the filter is applied to each 2D slice.")
 @JIPipeOrganization(menuPath = "Morphology", nodeTypeCategory = ImagesNodeTypeCategory.class)
@@ -102,7 +103,19 @@ public class Morphology2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         report.forCategory("Radius").checkIfWithin(this, radius, 0, Double.POSITIVE_INFINITY, false, true);
     }
 
-    @JIPipeDocumentation(name = "Operation", description = "The morphological operation")
+    @JIPipeDocumentation(name = "Operation", description = "The morphological operation. Following operations are supported: " +
+            "<ul>" +
+            "<li><b>Erosion: </b>A local minimum filter</li>" +
+            "<li><b>Dilation: </b>A local maximum filter</li>" +
+            "<li><b>Opening: </b>Erosion, followed by dilation</li>" +
+            "<li><b>Closing: </b>Dilation, followed by erosion</li>" +
+            "<li><b>White Top Hat: </b>Image - Opening</li>" +
+            "<li><b>Black Top Hat (Black Hat): </b>Closing - Image</li>" +
+            "<li><b>Gradient: </b>Dilation - Erosion</li>" +
+            "<li><b>Laplacian: </b>(Dilation + Erosion) / 2 - Image</li>" +
+            "<li><b>Internal gradient: </b>Image - Erosion</li>" +
+            "<li><b>External gradient: </b>Dilation - Image</li>" +
+            "</ul>")
     @JIPipeParameter("operation")
     public Morphology.Operation getOperation() {
         return operation;
