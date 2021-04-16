@@ -224,7 +224,8 @@ public class FindParticles2D extends JIPipeSimpleIteratingAlgorithm {
     }
 
     @JIPipeParameter(value = "min-particle-size", uiOrder = -20)
-    @JIPipeDocumentation(name = "Min particle size")
+    @JIPipeDocumentation(name = "Min particle size", description = "The minimum particle size in the specified unit of the input image. " +
+            "If no unit is available, the unit is 'pixels'. If an object is not within the size range, it is removed from the results.")
     public double getMinParticleSize() {
         return minParticleSize;
     }
@@ -236,7 +237,8 @@ public class FindParticles2D extends JIPipeSimpleIteratingAlgorithm {
     }
 
     @JIPipeParameter(value = "max-particle-size", uiOrder = -19)
-    @JIPipeDocumentation(name = "Max particle size")
+    @JIPipeDocumentation(name = "Max particle size", description = "The maximum particle size in the specified unit of the input image. " +
+            "If no unit is available, the unit is 'pixels'. If an object is not within the size range, it is removed from the results.")
     public double getMaxParticleSize() {
         return maxParticleSize;
     }
@@ -248,7 +250,8 @@ public class FindParticles2D extends JIPipeSimpleIteratingAlgorithm {
     }
 
     @JIPipeParameter(value = "min-particle-circularity", uiOrder = -18)
-    @JIPipeDocumentation(name = "Min particle circularity")
+    @JIPipeDocumentation(name = "Min particle circularity", description = "The minimum circularity (circularity = 4pi(area/perimeter^2)). " +
+            "The value range is from 0-1. If an object is not within the circularity range, it is removed from the results.")
     public double getMinParticleCircularity() {
         return minParticleCircularity;
     }
@@ -267,7 +270,8 @@ public class FindParticles2D extends JIPipeSimpleIteratingAlgorithm {
     }
 
     @JIPipeParameter(value = "max-particle-circularity", uiOrder = -17)
-    @JIPipeDocumentation(name = "Max particle circularity")
+    @JIPipeDocumentation(name = "Max particle circularity", description = "The maximum circularity (circularity = 4pi(area/perimeter^2)). " +
+            "The value range is from 0-1. If an object is not within the circularity range, it is removed from the results.")
     public double getMaxParticleCircularity() {
         return maxParticleCircularity;
     }
@@ -286,7 +290,7 @@ public class FindParticles2D extends JIPipeSimpleIteratingAlgorithm {
     }
 
     @JIPipeParameter("exclude-edges")
-    @JIPipeDocumentation(name = "Exclude edges")
+    @JIPipeDocumentation(name = "Exclude edges", description = "If enabled, objects that are connected to the image edges are removed.")
     public boolean isExcludeEdges() {
         return excludeEdges;
     }
