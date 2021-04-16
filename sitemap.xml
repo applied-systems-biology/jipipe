@@ -91,6 +91,10 @@
   </url>
   
   <url>
+    <loc>https://www.jipipe.org/tutorials/jipipe-for-imagej-users/</loc>
+  </url>
+  
+  <url>
     <loc>https://www.jipipe.org/documentation/graph-editor/</loc>
   </url>
   
@@ -104,6 +108,22 @@
   
   <url>
     <loc>https://www.jipipe.org/documentation/standard-library/macro-node/</loc>
+  </url>
+  
+  <url>
+    <loc>https://www.jipipe.org/tutorials/guide-user-interface/</loc>
+  </url>
+  
+  <url>
+    <loc>https://www.jipipe.org/tutorials/guide-data-caches/</loc>
+  </url>
+  
+  <url>
+    <loc>https://www.jipipe.org/tutorials/guide-graph-editor/</loc>
+  </url>
+  
+  <url>
+    <loc>https://www.jipipe.org/tutorials/guide-batch-processing/</loc>
   </url>
   
   <url>

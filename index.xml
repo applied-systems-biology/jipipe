@@ -218,12 +218,21 @@ Image data types Various ImageJ algorithms only work on data with a specific col
     </item>
     
     <item>
+      <title>JIPipe for ImageJ users (Video)</title>
+      <link>https://www.jipipe.org/tutorials/jipipe-for-imagej-users/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://www.jipipe.org/tutorials/jipipe-for-imagej-users/</guid>
+      <description></description>
+    </item>
+    
+    <item>
       <title>Pipeline editor</title>
       <link>https://www.jipipe.org/documentation/graph-editor/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
       <guid>https://www.jipipe.org/documentation/graph-editor/</guid>
-      <description>The graph editor (pipeline editor) allows you to edit the processing steps of a graph compartment. Its user interface is separated into three sections:
+      <description>This guide is also available as video tutorial.The graph editor (pipeline editor) allows you to edit the processing steps of a graph compartment. Its user interface is separated into three sections:
  The analysis graph contains the processing steps (also referred as algorithms) The settings panel shows the properties of the currently selected algorithms The toolbar allows you to add more algorithms into the graph, navigate to existing algorithms, change some behavior settings of the graph editor, and create screenshots  Analysis graph The analysis graph contains algorithms that are represented by rectangles.</description>
     </item>
     
@@ -245,6 +254,42 @@ Image data types Various ImageJ algorithms only work on data with a specific col
       <description>The macro node allows to run existing ImageJ macros or execute algorithms that are not directly available as JIPipe nodes. You will find it in Images &amp;gt; ImageJ Macro.
 Inputs and outputs By default, the node has no inputs and outputs. Use to the + button to add them. For example, if you want to process one image and output the processed result, create one input and one output.
 By default, there are four data types that can be used as input and output:</description>
+    </item>
+    
+    <item>
+      <title>User interface (Video)</title>
+      <link>https://www.jipipe.org/tutorials/guide-user-interface/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://www.jipipe.org/tutorials/guide-user-interface/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Data caches (Video)</title>
+      <link>https://www.jipipe.org/tutorials/guide-data-caches/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://www.jipipe.org/tutorials/guide-data-caches/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Graph editor user interface (Video)</title>
+      <link>https://www.jipipe.org/tutorials/guide-graph-editor/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://www.jipipe.org/tutorials/guide-graph-editor/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>How to do batch processing (Video)</title>
+      <link>https://www.jipipe.org/tutorials/guide-batch-processing/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://www.jipipe.org/tutorials/guide-batch-processing/</guid>
+      <description></description>
     </item>
     
     <item>

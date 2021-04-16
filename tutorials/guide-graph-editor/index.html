@@ -6,7 +6,7 @@
       <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
 <meta name="revised" content="2021-04-16T08:59:35 CEST">
-<title>ImageJ integration :: JIPipe for ImageJ</title>
+<title>Graph editor user interface (Video) :: JIPipe for ImageJ</title>
 <link rel="shortcut icon" href="../../images/favicon.png" type="image/x-icon" />
 <link href="../../css/font-awesome.min.css" rel="stylesheet">
 <link href="../../css/nucleus.css" rel="stylesheet">
@@ -24,7 +24,7 @@
 
     
   </head>
-  <body data-url="/documentation/imagej-integration/">
+  <body data-url="/tutorials/guide-graph-editor/">
     
       <header>
   <div class="logo">
@@ -76,10 +76,11 @@
       <a href="../../examples/">Examples</a><i class="fa fa-circle-thin read-icon"></i>
       </div>
     </li>
-    <li data-nav-id="https://www.jipipe.org/tutorials/" class="dd-item haschildren
+    <li data-nav-id="https://www.jipipe.org/tutorials/" class="dd-item parent haschildren
         ">
       <div>
-      <a href="../../tutorials/">Tutorials</a><i class="fa fa-angle-right fa-lg category-icon"></i><i class="fa fa-circle-thin read-icon"></i>
+      <a href="../../tutorials/">Tutorials</a>
+            <i class="fa fa-angle-down fa-lg category-icon"></i><i class="fa fa-circle-thin read-icon"></i>
       </div>
         <ul>
       <li data-nav-id="https://www.jipipe.org/tutorials/analysis/" class="dd-item">
@@ -124,7 +125,7 @@
           </a><i class="fa fa-circle-thin read-icon"></i>
         </div>
     </li>
-      <li data-nav-id="https://www.jipipe.org/tutorials/guide-graph-editor/" class="dd-item">
+      <li data-nav-id="https://www.jipipe.org/tutorials/guide-graph-editor/" class="dd-item active">
         <div>
           <a href="../../tutorials/guide-graph-editor/">
             Graph editor user interface (Video)
@@ -183,11 +184,10 @@
     </li>
         </ul>
     </li>
-    <li data-nav-id="https://www.jipipe.org/documentation/" class="dd-item parent haschildren
+    <li data-nav-id="https://www.jipipe.org/documentation/" class="dd-item haschildren
         ">
       <div>
-      <a href="../../documentation/">Documentation</a>
-            <i class="fa fa-angle-down fa-lg category-icon"></i><i class="fa fa-circle-thin read-icon"></i>
+      <a href="../../documentation/">Documentation</a><i class="fa fa-angle-right fa-lg category-icon"></i><i class="fa fa-circle-thin read-icon"></i>
       </div>
         <ul>
       <li data-nav-id="https://www.jipipe.org/documentation/batch-pipelines/" class="dd-item">
@@ -239,7 +239,7 @@
           </a><i class="fa fa-circle-thin read-icon"></i>
         </div>
     </li>
-      <li data-nav-id="https://www.jipipe.org/documentation/imagej-integration/" class="dd-item active">
+      <li data-nav-id="https://www.jipipe.org/documentation/imagej-integration/" class="dd-item">
         <div>
           <a href="../../documentation/imagej-integration/">
             ImageJ integration
@@ -557,27 +557,20 @@
     <option value="/examples/" >
    Examples</option>
     <option value="/tutorials/" >
-   Tutorials</option>
+   Tutorials</option> 
+      <option value="/tutorials/analysis/" >- Image analysis pipeline</option>
+      <option value="/tutorials/analysis_video/" >- Image analysis pipeline (Video)</option>
+      <option value="/tutorials/extension/" >- Creating an extension</option>
+      <option value="/tutorials/jipipe-for-imagej-users/" >- JIPipe for ImageJ users (Video)</option>
+      <option value="/tutorials/guide-user-interface/" >- User interface (Video)</option>
+      <option value="/tutorials/guide-data-caches/" >- Data caches (Video)</option>
+      <option value="/tutorials/guide-graph-editor/"  selected>- Graph editor user interface (Video)</option>
+      <option value="/tutorials/guide-batch-processing/" >- How to do batch processing (Video)</option>
+  
     <option value="/faq/" >
    Frequently asked questions</option>
     <option value="/documentation/" >
-   Documentation</option> 
-      <option value="/documentation/batch-pipelines/" >- Batch pipelines</option>
-      <option value="/documentation/graph-editor/" >- Pipeline editor</option>
-      <option value="/documentation/expressions/" >- Expression parameters</option>
-      <option value="/documentation/graph-compartment/" >- Graph compartments</option>
-      <option value="/documentation/result-analysis/" >- Running a pipeline</option>
-      <option value="/documentation/quick-run/" >- Running a single node</option>
-      <option value="/documentation/cache/" >- Data caching</option>
-      <option value="/documentation/imagej-integration/"  selected>- ImageJ integration</option>
-      <option value="/documentation/plugins/" >- Managing plugins</option>
-    <option value="/documentation/standard-library/" >
-  - 
-   Standard library</option>
-    <option value="/documentation/create-json-extensions/" >
-  - 
-   Extension builder</option>
-  
+   Documentation</option>
     <option value="/documentation-java-api/" >
    Java API documentation</option>
     <option value="/documentation-json-api/" >
@@ -606,88 +599,19 @@
       </div>
     
 
-    <h1>ImageJ integration</h1>
+    <h1>Graph editor user interface (Video)</h1>
     
     
     
-    <h1 id="imagej-to-jipipe">ImageJ to JIPipe</h1>
-<p>JIPipe integrates commonly used data types and popular algorithms from ImageJ.
-If an algorithm is not available for JIPipe, you can still run them via the <a href="../../documentation/standard-library/macro-node/">Macro node</a>.
-There is also a Python script node available that behaves similar to the macro node.</p>
-<h1 id="jipipe-to-imagej">JIPipe to ImageJ</h1>
-<p>JIPipe algorithms and pipelines can be executed from within an ImageJ environment.
-There are two ways JIPipe integrates back into ImageJ:</p>
-<ol>
-<li>You can run a pipeline project from a macro/command</li>
-<li>You can run JIPipe algorithms from a macro/command if the slot data types are supported by ImageJ</li>
-</ol>
-<h2 id="running-a-pipeline">Running a pipeline</h2>
-<p>You can run an JIPipe pipeline via the command <code>Plugins &gt; JIPipe &gt; Run JIPipe project</code>. It will ask you
-the project file and the output directory.</p>
-<p>To run the command via a macro, run:</p>
-<pre><code>run(&quot;Run JIPipe project&quot;, &quot;projectFile=&lt;Project&gt;, outputDirectory=&lt;Directory&gt;, threads=&lt;Threads&gt;&quot;)
-</code></pre>
-<div class="notices info" ><p><p>There can be issues using the macro recorder depending on which ImageJ algorithms are used.
-This issue is especially prevalent in ImageJ macro algorithm nodes.</p>
-</p></div>
-
-<p>You can also run JIPipe in headless-mode just like any ImageJ2 algorithm:</p>
-<div class="highlight"><pre style="color:#272822;background-color:#fafafa;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">./ImageJ-linux64 --headless --ij2 --run <span style="color:#d88200">&#34;Run JIPipe project&#34;</span> <span style="color:#d88200">&#39;projectFile=&#34;&lt;Project&gt;&#34;, outputDirectory=&#34;&lt;Directory&gt;&#34;, threads=&lt;Threads&gt;&#39;</span>
-</code></pre></div>
-<div class="notices info" ><p><p>While JIPipe works in Headless-mode, some ImageJ algorithms don&rsquo;t. You will get an error message if an algorithm requires a graphical environment.</p>
-</p></div>
-
-<h2 id="running-a-single-algorithm">Running a single algorithm</h2>
-<p>JIPipe algorithms can be run from ImageJ macros/commands if the slot data types are compatible with ImageJ.
-By default, this includes any image data type, result tables, and regions of interest (via ROIManager).
-If you run the command <code>Plugins &gt; JIPipe &gt; Run JIPipe algorithm</code>, a dialog with all available algorithms,
-parameters, and more information is shown.</p>
-<p>A difference to the parameter panel of an algorithm within the graph editor UI is that you have to select the
-input image.</p>
-<p><img src="../../img/documentation/run-single-algorithm.png" alt="Single algorithm setup dialog"></p>
-<p>Output data is created according to the <em>slot name</em>. For example if the output slot name is <code>Output</code>,
-the created image window will also be named <code>Output</code>.</p>
-
-<div class="notices info" ><p><p>Just as in a graph, images are converted automatically to the data type specified by the algorithm.</p>
-</p></div>
-
-
-<div class="notices warning" ><p><p>There may be issues if multiple ROI or result table outputs are generated.
-JIPipe will merge multiple ROI List data items into one Results Table.</p>
-</p></div>
-
-
-<div class="notices info" ><p><p>There can be issues using the macro recorder depending on which ImageJ algorithm is executed.
-This issue is especially prevalent in ImageJ macro algorithm nodes.</p>
-</p></div>
-
-<p>To run the command via a macro, run:</p>
-<pre><code>run(&quot;Run JIPipe algorithm&quot;, &quot;nodeId=&lt;Algorithm&gt;, parameters=&lt;Parameters&gt;&quot;)
-</code></pre><p>The algorithm ID can be looked up via the plugin manager.
-Parameters are provided as string in <a href="https://json.org/">JSON</a> format.
-The JSON data should have following structure:</p>
-<ul>
-<li>(Optional) An object <code>parameters</code> that contains the algorithm parameters. They are equal to the parameters saved in an JIPipe project file. We recommend to use the <code>Copy command</code> button to obtain the parameters. If you leave out parameters, the default value is assumed.</li>
-<li>(Optional) An object <code>add-input</code> that contains additional input <a href="https://www.jipipe.org/documentation-json-api/slot-definition/">slot definitions</a>. The entry keys are the slot names.</li>
-<li>(Optional) An object <code>add-output</code> that contains additional output <a href="https://www.jipipe.org/documentation-json-api/slot-definition/">slot definitions</a>. The entry keys are the slot names.</li>
-<li>(Optional) An object <code>input</code>. Entry keys correspond to the slot name. The entry value is a string that corresponds to the Window name that contains the data. Only required for image data types, as JIPipe accesses the global ROI manager and global result table.</li>
-</ul>
-
-<div class="notices tip" ><p><p>Use the &ldquo;Copy command&rdquo; button in the &ldquo;Run JIPipe algorithm&rdquo; GUI command to quickly create a valid macro for your parameters.</p>
-</p></div>
-
-<p>If you are a developer of a JIPipe node (Java only) and want to provide your node as separate entry in the ImageJ menu,
-you can use our Java API to create custom SciJava commands that provide a similar UI to the single algorithm run.
-You just have to inherit from <a href="../../apidocs/org/hkijena/jipipe/JIPipeRunCustomAlgorithmCommand.html">JIPipeRunCustomAlgorithmCommand</a> and provide the
-constructor with the node ID. Then add the <a href="https://javadoc.scijava.org/SciJava/org/scijava/plugin/Plugin.html">Plugin</a> annotation just as with any SciJava command.</p>
+    <iframe width="100%" height="80%" src="https://www.youtube-nocookie.com/embed/e8JyO1yTjcg" frameborder="0" allow="autoplay; encrypted-media; picture-in-picture" allowfullscreen></iframe>
 
 
     
     
         <div class="chevrons">
     <div id="navigation">
-<a class="nav nav-prev" href="../../documentation/cache/" title="Data caching"> <i class="fa fa-chevron-left"></i><label>Data caching</label></a>
-    <a class="nav nav-next" href="../../documentation/plugins/" title="Managing plugins" style="margin-right: 0px;"><label>Managing plugins</label><i class="fa fa-chevron-right"></i></a></div>
+<a class="nav nav-prev" href="../../tutorials/guide-data-caches/" title="Data caches (Video)"> <i class="fa fa-chevron-left"></i><label>Data caches (Video)</label></a>
+    <a class="nav nav-next" href="../../tutorials/guide-batch-processing/" title="How to do batch processing (Video)" style="margin-right: 0px;"><label>How to do batch processing (Video)</label><i class="fa fa-chevron-right"></i></a></div>
   </div>
 
   </section>
