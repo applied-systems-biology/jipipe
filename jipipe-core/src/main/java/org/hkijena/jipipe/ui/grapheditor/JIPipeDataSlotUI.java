@@ -568,6 +568,8 @@ public abstract class JIPipeDataSlotUI extends JIPipeWorkbenchPanel {
         String newLabel = JOptionPane.showInputDialog(this,
                 "Please enter a new label for the slot.\nLeave the text empty to remove an existing label.",
                 slot.getInfo().getCustomName());
+        if(newLabel == null)
+            return;
         getGraphUI().getGraphHistory().addSnapshotBefore(new SlotConfigurationHistorySnapshot(slot.getNode(), "Relabel slot '" + slot.getDisplayName() + "'"));
         slot.getInfo().setCustomName(newLabel);
     }
