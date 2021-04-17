@@ -381,7 +381,7 @@ public class JIPipeDefaultMutableSlotConfiguration implements JIPipeMutableSlotC
                 }
             }
             if (!outputSlotsSealed) {
-                Set<String> toRemove = inputSlots.keySet().stream().filter(s -> !definedSlots.contains(s)).collect(Collectors.toSet());
+                Set<String> toRemove = outputSlots.keySet().stream().filter(s -> !definedSlots.contains(s)).collect(Collectors.toSet());
                 for (String s : toRemove) {
                     removeOutputSlot(s, false);
                 }
