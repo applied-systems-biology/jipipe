@@ -42,7 +42,6 @@ public class GraphWrapperAlgorithm extends JIPipeAlgorithm implements JIPipeData
     private GraphWrapperAlgorithmOutput algorithmOutput;
     private IOSlotWatcher ioSlotWatcher;
     private boolean preventUpdateSlots = false;
-    private boolean slotConfigurationIsComplete;
     private IterationMode iterationMode = IterationMode.PassThrough;
     private JIPipeMergingAlgorithm.DataBatchGenerationSettings batchGenerationSettings = new JIPipeMergingAlgorithm.DataBatchGenerationSettings();
 
@@ -82,15 +81,11 @@ public class GraphWrapperAlgorithm extends JIPipeAlgorithm implements JIPipeData
         slotConfiguration.setAllowInheritedOutputSlots(false);
         slotConfiguration.clearInputSlots(false);
         slotConfiguration.clearOutputSlots(false);
-        slotConfigurationIsComplete = true;
         for (Map.Entry<String, JIPipeDataSlotInfo> entry : inputSlotConfiguration.getInputSlots().entrySet()) {
             slotConfiguration.addSlot(entry.getKey(), entry.getValue(), false);
         }
         for (Map.Entry<String, JIPipeDataSlotInfo> entry : outputSlotConfiguration.getOutputSlots().entrySet()) {
-            if (!slotConfiguration.getInputSlots().containsKey(entry.getKey()))
-                slotConfiguration.addSlot(entry.getKey(), entry.getValue(), false);
-            else
-                slotConfigurationIsComplete = false;
+            slotConfiguration.addSlot(entry.getKey(), entry.getValue(), false);
         }
     }
 
@@ -249,12 +244,6 @@ public class GraphWrapperAlgorithm extends JIPipeAlgorithm implements JIPipeData
     public void reportValidity(JIPipeValidityReport report) {
         super.reportValidity(report);
         report.forCategory("Wrapped graph").report(wrappedGraph);
-        if (!slotConfigurationIsComplete) {
-            report.forCategory("Slots").reportIsInvalid("Could not create some output slots!",
-                    "Some output slots are missing, as they have names that are already present in the set of input slots.",
-                    "Check all outside-facing slots have unique names.",
-                    this);
-        }
     }
 
     @Override
