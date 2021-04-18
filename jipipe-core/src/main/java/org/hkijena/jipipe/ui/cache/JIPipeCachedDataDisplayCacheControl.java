@@ -1,6 +1,7 @@
 package org.hkijena.jipipe.ui.cache;
 
 import com.google.common.eventbus.Subscribe;
+import org.hkijena.jipipe.api.JIPipeProject;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.testbench.JIPipeTestBench;
 import org.hkijena.jipipe.api.testbench.JIPipeTestBenchSettings;
@@ -10,19 +11,23 @@ import org.hkijena.jipipe.ui.running.*;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
+import java.awt.*;
 
 /**
  * Interface that allows users to control refresh to cache and update thew current item within directly within the viewed data
  */
-public class JIPipeCachedDataDisplayCacheControl extends JIPipeProjectWorkbenchPanel {
+public class JIPipeCachedDataDisplayCacheControl {
 
+    private final JIPipeProjectWorkbench workbench;
+    private final JToolBar toolBar;
     private final JIPipeGraphNode algorithm;
     private JToggleButton cacheAwareToggle;
     private JButton updateCacheButton;
-    private JIPipeRunQueuePanelUI runnerQueue;
+    private JIPipeRunnerQueueUI runnerQueue;
 
-    public JIPipeCachedDataDisplayCacheControl(JIPipeProjectWorkbench workbench, JIPipeGraphNode algorithm) {
-        super(workbench);
+    public JIPipeCachedDataDisplayCacheControl(JIPipeProjectWorkbench workbench, JToolBar toolBar, JIPipeGraphNode algorithm) {
+        this.workbench = workbench;
+        this.toolBar = toolBar;
         this.algorithm = algorithm;
         initialize();
         JIPipeRunnerQueue.getInstance().getEventBus().register(this);
@@ -47,19 +52,20 @@ public class JIPipeCachedDataDisplayCacheControl extends JIPipeProjectWorkbenchP
     private void updateRunnerQueueStatus() {
         if (JIPipeRunnerQueue.getInstance().isEmpty()) {
             updateCacheButton.setVisible(true);
+            cacheAwareToggle.setVisible(true);
             runnerQueue.setVisible(false);
-            revalidate();
-            repaint();
         } else {
             updateCacheButton.setVisible(false);
+            cacheAwareToggle.setVisible(false);
             runnerQueue.setVisible(true);
-            revalidate();
-            repaint();
+            SwingUtilities.invokeLater(() -> {
+                toolBar.revalidate();
+                toolBar.repaint();
+            });
         }
     }
 
     private void initialize() {
-        setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
         cacheAwareToggle = new JToggleButton("Refresh to cache", UIUtils.getIconFromResources("actions/view-refresh.png"));
         cacheAwareToggle.setSelected(true);
 
@@ -78,11 +84,7 @@ public class JIPipeCachedDataDisplayCacheControl extends JIPipeProjectWorkbenchP
         cacheIntermediateResultsItem.addActionListener(e -> runCacheIntermediateResults());
         menu.add(cacheIntermediateResultsItem);
 
-        runnerQueue = new JIPipeRunQueuePanelUI();
-        add(runnerQueue);
-
-        add(updateCacheButton);
-        add(cacheAwareToggle);
+        runnerQueue = new JIPipeRunnerQueueUI();
     }
 
     public void installRefreshOnActivate(Runnable refreshFunction) {
@@ -108,6 +110,10 @@ public class JIPipeCachedDataDisplayCacheControl extends JIPipeProjectWorkbenchP
         JIPipeRunnerQueue.getInstance().enqueue(testBench);
     }
 
+    private JIPipeProject getProject() {
+        return workbench.getProject();
+    }
+
     private void runUpdateCache() {
         JIPipeTestBenchSettings settings = new JIPipeTestBenchSettings();
         settings.setLoadFromCache(true);
@@ -120,5 +126,11 @@ public class JIPipeCachedDataDisplayCacheControl extends JIPipeProjectWorkbenchP
 
     public JIPipeGraphNode getAlgorithm() {
         return algorithm;
+    }
+
+    public void install() {
+        toolBar.add(runnerQueue, 0);
+        toolBar.add(cacheAwareToggle, 0);
+        toolBar.add(updateCacheButton, 0);
     }
 }

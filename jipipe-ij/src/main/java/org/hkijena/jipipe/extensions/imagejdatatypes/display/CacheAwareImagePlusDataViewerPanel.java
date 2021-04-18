@@ -63,7 +63,7 @@ public class CacheAwareImagePlusDataViewerPanel extends ImageViewerPanel {
         this.dataSource = dataSource;
         this.algorithm = (JIPipeAlgorithm) project.getGraph().getEquivalentAlgorithm(dataSource.getSlot().getNode());
         this.slotName = dataSource.getSlot().getName();
-        this.cacheAwareToggle = new JIPipeCachedDataDisplayCacheControl((JIPipeProjectWorkbench) workbench, algorithm);
+        this.cacheAwareToggle = new JIPipeCachedDataDisplayCacheControl((JIPipeProjectWorkbench) workbench, getToolBar(), algorithm);
         initialize();
         loadImageFromDataSource();
 
@@ -83,11 +83,13 @@ public class CacheAwareImagePlusDataViewerPanel extends ImageViewerPanel {
     }
 
     private void initialize() {
+
         cacheAwareToggle.installRefreshOnActivate(this::reloadFromCurrentCache);
         errorPanel = new JLabel(String.format("No data available in node '%s', slot '%s', row %d", algorithm.getName(), slotName, dataSource.getRow()),
                 UIUtils.getIconFromResources("emblems/no-data.png"), JLabel.LEFT);
         getToolBar().add(Box.createHorizontalStrut(8), 0);
-        getToolBar().add(cacheAwareToggle, 0);
+        cacheAwareToggle.install();
+//        getToolBar().add(cacheAwareToggle, 0);
     }
 
     private void loadImageFromDataSource() {

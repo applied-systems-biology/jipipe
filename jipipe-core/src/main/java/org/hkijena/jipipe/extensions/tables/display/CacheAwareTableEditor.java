@@ -54,7 +54,7 @@ public class CacheAwareTableEditor extends JIPipeTableEditor {
         this.dataSource = dataSource;
         this.algorithm = (JIPipeAlgorithm) project.getGraph().getEquivalentAlgorithm(dataSource.getSlot().getNode());
         this.slotName = dataSource.getSlot().getName();
-        this.cacheAwareToggle = new JIPipeCachedDataDisplayCacheControl((JIPipeProjectWorkbench) workbench, algorithm);
+        this.cacheAwareToggle = new JIPipeCachedDataDisplayCacheControl((JIPipeProjectWorkbench) workbench, getToolBar(), algorithm);
         initialize();
         loadDataFromDataSource();
 
@@ -85,7 +85,7 @@ public class CacheAwareTableEditor extends JIPipeTableEditor {
 
         getToolBar().add(Box.createHorizontalStrut(8), 0);
         getToolBar().add(errorPanel, 0);
-        getToolBar().add(cacheAwareToggle, 0);
+        cacheAwareToggle.install();
     }
 
     private void loadDataFromDataSource() {

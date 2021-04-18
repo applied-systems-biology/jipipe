@@ -20,18 +20,15 @@ import org.hkijena.jipipe.api.JIPipeProjectCache;
 import org.hkijena.jipipe.api.JIPipeProjectCacheQuery;
 import org.hkijena.jipipe.api.data.JIPipeCacheSlotDataSource;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
-import org.hkijena.jipipe.api.data.JIPipeMergedDataSlotTable;
 import org.hkijena.jipipe.api.data.JIPipeVirtualData;
 import org.hkijena.jipipe.api.nodes.JIPipeAlgorithm;
 import org.hkijena.jipipe.extensions.plots.datatypes.PlotData;
 import org.hkijena.jipipe.extensions.settings.GeneralUISettings;
-import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.cache.JIPipeCachedDataDisplayCacheControl;
 import org.hkijena.jipipe.ui.components.AlwaysOnTopToggle;
 import org.hkijena.jipipe.ui.plotbuilder.JIPipePlotBuilderUI;
-import org.hkijena.jipipe.ui.tableanalyzer.JIPipeTableEditor;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
@@ -57,7 +54,7 @@ public class CacheAwarePlotEditor extends JIPipePlotBuilderUI {
         this.dataSource = dataSource;
         this.algorithm = (JIPipeAlgorithm) project.getGraph().getEquivalentAlgorithm(dataSource.getSlot().getNode());
         this.slotName = dataSource.getSlot().getName();
-        this.cacheAwareToggle = new JIPipeCachedDataDisplayCacheControl((JIPipeProjectWorkbench) workbench, algorithm);
+        this.cacheAwareToggle = new JIPipeCachedDataDisplayCacheControl((JIPipeProjectWorkbench) workbench, getToolBar(), algorithm);
         initialize();
         loadDataFromDataSource();
 
@@ -88,7 +85,7 @@ public class CacheAwarePlotEditor extends JIPipePlotBuilderUI {
 
         getToolBar().add(Box.createHorizontalStrut(8), 0);
         getToolBar().add(errorPanel, 0);
-        getToolBar().add(cacheAwareToggle, 0);
+        cacheAwareToggle.install();
     }
 
     private void loadDataFromDataSource() {
