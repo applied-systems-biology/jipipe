@@ -27,16 +27,15 @@ import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.JIPipeValidatable;
 import org.hkijena.jipipe.api.JIPipeValidityReport;
-import org.hkijena.jipipe.api.data.JIPipeData;
-import org.hkijena.jipipe.api.data.JIPipeDataInfo;
-import org.hkijena.jipipe.api.data.JIPipeDataSource;
-import org.hkijena.jipipe.api.data.JIPipeDataStorageDocumentation;
+import org.hkijena.jipipe.api.data.*;
 import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
+import org.hkijena.jipipe.extensions.plots.CacheAwarePlotEditor;
 import org.hkijena.jipipe.extensions.plots.utils.ColorMap;
 import org.hkijena.jipipe.extensions.plots.utils.ColorMapSupplier;
 import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
+import org.hkijena.jipipe.extensions.tables.display.CacheAwareTableEditor;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.components.DocumentTabPane;
 import org.hkijena.jipipe.ui.plotbuilder.JIPipePlotBuilderUI;
@@ -165,11 +164,15 @@ public abstract class PlotData implements JIPipeData, JIPipeParameterCollection,
 
     @Override
     public void display(String displayName, JIPipeWorkbench workbench, JIPipeDataSource source) {
-        JIPipePlotBuilderUI plotBuilderUI = new JIPipePlotBuilderUI(workbench);
-        plotBuilderUI.importExistingPlot((PlotData) duplicate());
-        workbench.getDocumentTabPane().addTab(displayName, UIUtils.getIconFromResources("data-types/data-type-plot.png"),
-                plotBuilderUI, DocumentTabPane.CloseMode.withAskOnCloseButton, true);
-        workbench.getDocumentTabPane().switchToLastTab();
+        if (source instanceof JIPipeCacheSlotDataSource) {
+            CacheAwarePlotEditor.show(workbench, (JIPipeCacheSlotDataSource) source, displayName);
+        } else {
+            JIPipePlotBuilderUI plotBuilderUI = new JIPipePlotBuilderUI(workbench);
+            plotBuilderUI.importExistingPlot((PlotData) duplicate());
+            workbench.getDocumentTabPane().addTab(displayName, UIUtils.getIconFromResources("data-types/data-type-plot.png"),
+                    plotBuilderUI, DocumentTabPane.CloseMode.withAskOnCloseButton, true);
+            workbench.getDocumentTabPane().switchToLastTab();
+        }
     }
 
     @Override

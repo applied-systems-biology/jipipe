@@ -79,6 +79,10 @@ public class JIPipePlotBuilderUI extends JIPipeWorkbenchPanel implements JIPipeP
         this.eventBus.register(this);
     }
 
+    public JToolBar getToolBar() {
+        return plotReader.getToolBar();
+    }
+
     private void initialize() {
         setLayout(new BorderLayout());
 
