@@ -63,7 +63,6 @@ public class JIPipeProjectMetadata extends JIPipeMetadata {
         return permissions;
     }
 
-    @JIPipeParameter("permissions")
     @JsonSetter("permissions")
     public void setPermissions(JIPipeProjectPermissions permissions) {
         this.permissions = permissions;
