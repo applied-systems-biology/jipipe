@@ -41,7 +41,7 @@ public class GraphCompartmentPasteNodeUIContextAction implements NodeUIContextAc
 
     @Override
     public void run(JIPipeGraphCanvasUI canvasUI, Set<JIPipeNodeUI> selection) {
-        if(!JIPipeProjectWorkbench.canAddOrDelete(canvasUI, canvasUI.getWorkbench()))
+        if(!JIPipeProjectWorkbench.canAddOrDelete(canvasUI.getWorkbench()))
             return;
         try {
             String json = getStringFromClipboard();

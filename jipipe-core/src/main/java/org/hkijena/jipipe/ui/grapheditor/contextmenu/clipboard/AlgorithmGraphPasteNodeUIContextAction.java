@@ -36,7 +36,7 @@ import java.util.Set;
 
 public class AlgorithmGraphPasteNodeUIContextAction implements NodeUIContextAction {
     public static void pasteNodes(JIPipeGraphCanvasUI canvasUI, String json) throws com.fasterxml.jackson.core.JsonProcessingException {
-        if(!JIPipeProjectWorkbench.canAddOrDelete(canvasUI, canvasUI.getWorkbench()))
+        if(!JIPipeProjectWorkbench.canAddOrDelete(canvasUI.getWorkbench()))
             return;
         JIPipeGraph graph = JsonUtils.getObjectMapper().readValue(json, JIPipeGraph.class);
         if (graph.getNodes().isEmpty()) {

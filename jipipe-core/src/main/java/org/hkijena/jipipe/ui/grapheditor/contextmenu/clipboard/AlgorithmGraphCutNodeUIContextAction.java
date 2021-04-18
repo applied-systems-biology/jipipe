@@ -31,7 +31,7 @@ public class AlgorithmGraphCutNodeUIContextAction extends AlgorithmGraphCopyNode
     @Override
     public void run(JIPipeGraphCanvasUI canvasUI, Set<JIPipeNodeUI> selection) {
         super.run(canvasUI, selection);
-        if(!JIPipeProjectWorkbench.canAddOrDelete(canvasUI, canvasUI.getWorkbench()))
+        if(!JIPipeProjectWorkbench.canAddOrDelete(canvasUI.getWorkbench()))
             return;
         Set<JIPipeGraphNode> nodes = selection.stream().map(JIPipeNodeUI::getNode).collect(Collectors.toSet());
         canvasUI.getGraphHistory().addSnapshotBefore(new CutNodeGraphHistorySnapshot(canvasUI.getGraph(), nodes));
