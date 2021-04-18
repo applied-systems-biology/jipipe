@@ -51,6 +51,7 @@ public class NodeGroup extends GraphWrapperAlgorithm implements JIPipeCustomPara
 
     private NodeGroupContents contents;
     private GraphNodeParameters exportedParameters = new GraphNodeParameters();
+    private boolean showLimitedParameters = false;
 
     /**
      * Creates a new instance
@@ -72,6 +73,7 @@ public class NodeGroup extends GraphWrapperAlgorithm implements JIPipeCustomPara
         super(other);
         this.exportedParameters = new GraphNodeParameters(other.exportedParameters);
         this.exportedParameters.getEventBus().register(this);
+        this.showLimitedParameters = other.showLimitedParameters;
         initializeContents();
     }
 
@@ -189,6 +191,37 @@ public class NodeGroup extends GraphWrapperAlgorithm implements JIPipeCustomPara
 
         // Only check if the graph creates a valid group output
         getWrappedGraph().reportValidity(report.forCategory("Wrapped graph"), getGroupOutput(), Sets.newHashSet(getGroupInput()));
+    }
+
+    @JIPipeDocumentation(name = "Show limited parameter set", description = "If enabled, only the exported parameters, name, and description are shown as parameters. " +
+            "The data batch generation will also be hidden. This can be useful for educational pipelines.")
+    @JIPipeParameter("show-limited-parameters")
+    public boolean isShowLimitedParameters() {
+        return showLimitedParameters;
+    }
+
+    @JIPipeParameter("show-limited-parameters")
+    public void setShowLimitedParameters(boolean showLimitedParameters) {
+        this.showLimitedParameters = showLimitedParameters;
+        getEventBus().post(new ParameterStructureChangedEvent(this));
+    }
+
+    @Override
+    public JIPipeParameterVisibility getOverriddenUIParameterVisibility(JIPipeParameterAccess access, JIPipeParameterVisibility currentVisibility) {
+        if(showLimitedParameters) {
+            if(access.getSource() == this) {
+                String key = access.getKey();
+                if("show-limited-parameters".equals(key) || "jipipe:node:name".equals(key) || "jipipe:node:description".equals(key)) {
+                    return currentVisibility;
+                }
+                else {
+                    return JIPipeParameterVisibility.Hidden;
+                }
+            }
+            if(access.getSource() == getBatchGenerationSettings())
+                return JIPipeParameterVisibility.Hidden;
+        }
+        return super.getOverriddenUIParameterVisibility(access, currentVisibility);
     }
 
     @Override

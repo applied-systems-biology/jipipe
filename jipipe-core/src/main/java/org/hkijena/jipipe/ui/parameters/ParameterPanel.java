@@ -170,21 +170,44 @@ public class ParameterPanel extends FormPanel implements Contextual {
         clear();
 
         // Create list of filtered-out nodes
-        Set<JIPipeParameterCollection> hidden = new HashSet<>();
+        Set<JIPipeParameterCollection> hiddenCollections = new HashSet<>();
+        Set<JIPipeParameterAccess> hiddenAccesses = new HashSet<>();
+
         for (JIPipeParameterCollection source : traversed.getRegisteredSources()) {
             JIPipeParameterTree.Node sourceNode = traversed.getSourceNode(source);
+
+            // UI exclusion annotation
             for (String subParameterId : sourceNode.getUiExcludedSubParameters()) {
                 JIPipeParameterTree.Node subParameterNode = sourceNode.getChildren().getOrDefault(subParameterId, null);
                 if (subParameterNode != null) {
-                    hidden.add(subParameterNode.getCollection());
+                    hiddenCollections.add(subParameterNode.getCollection());
                 }
+            }
+
+            // Visibility check
+            int parameterCount = sourceNode.getParameters().size();
+            JIPipeParameterVisibility sourceVisibility = sourceNode.getVisibility();
+            for (JIPipeParameterAccess parameterAccess : sourceNode.getParameters().values()) {
+                JIPipeParameterVisibility visibility = parameterAccess.getVisibility();
+
+                visibility = parameterAccess.getSource().getOverriddenUIParameterVisibility(parameterAccess, visibility);
+                visibility = displayedParameters.getOverriddenUIParameterVisibility(parameterAccess, visibility);
+
+                if (!visibility.isVisibleIn(sourceVisibility)) {
+                    hiddenAccesses.add(parameterAccess);
+                    --parameterCount;
+                }
+            }
+
+            if(parameterCount <= 0) {
+                hiddenCollections.add(source);
             }
         }
 
         // Generate form
         Map<JIPipeParameterCollection, List<JIPipeParameterAccess>> groupedBySource = traversed.getGroupedBySource();
-        if (groupedBySource.containsKey(this.displayedParameters) && !hidden.contains(displayedParameters)) {
-            addToForm(traversed, this.displayedParameters, groupedBySource.get(this.displayedParameters));
+        if (groupedBySource.containsKey(this.displayedParameters) && !hiddenCollections.contains(displayedParameters)) {
+            addToForm(traversed, this.displayedParameters, groupedBySource.get(this.displayedParameters), hiddenAccesses);
         }
 
         for (JIPipeParameterCollection collection : groupedBySource.keySet().stream().sorted(
@@ -193,9 +216,9 @@ public class ParameterPanel extends FormPanel implements Contextual {
                 .collect(Collectors.toList())) {
             if (collection == this.displayedParameters)
                 continue;
-            if (hidden.contains(collection))
+            if (hiddenCollections.contains(collection))
                 continue;
-            addToForm(traversed, collection, groupedBySource.get(collection));
+            addToForm(traversed, collection, groupedBySource.get(collection), hiddenAccesses);
         }
         addVerticalGlue();
 
@@ -204,7 +227,7 @@ public class ParameterPanel extends FormPanel implements Contextual {
         }
     }
 
-    private void addToForm(JIPipeParameterTree traversed, JIPipeParameterCollection parameterHolder, List<JIPipeParameterAccess> parameterAccesses) {
+    private void addToForm(JIPipeParameterTree traversed, JIPipeParameterCollection parameterHolder, List<JIPipeParameterAccess> parameterAccesses, Set<JIPipeParameterAccess> hiddenAccesses) {
         boolean isModifiable = parameterHolder instanceof JIPipeDynamicParameterCollection && ((JIPipeDynamicParameterCollection) parameterHolder).isAllowUserModification();
 
         if (!isModifiable && parameterAccesses.isEmpty())
@@ -265,11 +288,9 @@ public class ParameterPanel extends FormPanel implements Contextual {
         List<JIPipeParameterEditorUI> uiList = new ArrayList<>();
         List<Component> uiComponents = new ArrayList<>();
 
-        JIPipeParameterVisibility sourceVisibility = traversed.getSourceVisibility(parameterHolder);
         for (JIPipeParameterAccess parameterAccess : parameterAccesses) {
-            JIPipeParameterVisibility visibility = parameterAccess.getVisibility();
-            if (!visibility.isVisibleIn(sourceVisibility))
-                continue;
+            if(hiddenAccesses.contains(parameterAccess))
+               continue;
             if (withSearchBar && !searchField.test(parameterAccess.getName() + " " + parameterAccess.getDescription()))
                 continue;
             if (allowCollapse && !StringUtils.isNullOrEmpty(searchField.getText())) {
