@@ -23,6 +23,8 @@ import org.hkijena.jipipe.api.JIPipeValidityReport;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeAlgorithm;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
+import org.hkijena.jipipe.api.testbench.JIPipeTestBench;
+import org.hkijena.jipipe.api.testbench.JIPipeTestBenchSettings;
 import org.hkijena.jipipe.extensions.settings.FileChooserSettings;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbenchPanel;
@@ -154,6 +156,17 @@ public class JIPipeAlgorithmCacheBrowserUI extends JIPipeProjectWorkbenchPanel {
     private void initializeToolbar() {
         toolBar.setFloatable(false);
 
+        JButton updateCacheButton = new JButton("Update cache", UIUtils.getIconFromResources("actions/database.png"));
+        updateCacheButton.addActionListener(e -> updateCache(false));
+        toolBar.add(updateCacheButton);
+
+        JButton cacheIntermediateResultsButton = new JButton(UIUtils.getIconFromResources("actions/cache-intermediate-results.png"));
+        cacheIntermediateResultsButton.setToolTipText("Cache intermediate results");
+        cacheIntermediateResultsButton.addActionListener(e -> updateCache(true));
+        toolBar.add(cacheIntermediateResultsButton);
+
+        toolBar.add(Box.createHorizontalStrut(8));
+
         JButton clearOutdatedButton = new JButton("Clear outdated", UIUtils.getIconFromResources("actions/clear-brush.png"));
         clearOutdatedButton.addActionListener(e -> getProject().getCache().autoClean(false, true));
         toolBar.add(clearOutdatedButton);
@@ -175,6 +188,16 @@ public class JIPipeAlgorithmCacheBrowserUI extends JIPipeProjectWorkbenchPanel {
         toolBar.add(exportButton);
 
         add(toolBar, BorderLayout.NORTH);
+    }
+
+    private void updateCache(boolean storeIntermediateResults) {
+        JIPipeTestBenchSettings settings = new JIPipeTestBenchSettings();
+        settings.setLoadFromCache(true);
+        settings.setStoreIntermediateResults(storeIntermediateResults);
+        settings.setSaveToDisk(false);
+        settings.setStoreToCache(true);
+        JIPipeTestBench testBench = new JIPipeTestBench(getProject(), graphNode, settings);
+        JIPipeRunnerQueue.getInstance().enqueue(testBench);
     }
 
     private void exportCache() {
