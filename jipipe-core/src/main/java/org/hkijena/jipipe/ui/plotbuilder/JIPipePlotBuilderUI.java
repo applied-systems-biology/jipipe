@@ -103,7 +103,7 @@ public class JIPipePlotBuilderUI extends JIPipeWorkbenchPanel implements JIPipeP
                 DocumentTabPane.CloseMode.withoutCloseButton);
 
         // Create plot reader
-        plotReader = new PlotReader();
+        plotReader = new PlotReader(this);
 
         splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, plotReader, tabbedPane);
         splitPane.setDividerSize(3);
