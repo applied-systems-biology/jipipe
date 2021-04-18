@@ -16,11 +16,13 @@ package org.hkijena.jipipe.extensions.filesystem.algorithms;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
+import org.hkijena.jipipe.api.data.JIPipeAnnotation;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.FileSystemNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.filesystem.dataypes.FileData;
 import org.hkijena.jipipe.extensions.filesystem.dataypes.FolderData;
+import org.hkijena.jipipe.extensions.parameters.expressions.ExpressionParameters;
 import org.hkijena.jipipe.extensions.parameters.expressions.PathQueryExpression;
 import org.hkijena.jipipe.extensions.parameters.primitives.StringParameterSettings;
 import org.hkijena.jipipe.utils.ResourceUtils;
@@ -75,6 +77,13 @@ public class ListSubfolders extends JIPipeSimpleIteratingAlgorithm {
 
     @Override
     protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
+
+        // Expression parameters from annotations
+        ExpressionParameters expressionParameters = new ExpressionParameters();
+        for (JIPipeAnnotation annotation : dataBatch.getAnnotations().values()) {
+            expressionParameters.set(annotation.getName(), annotation.getValue());
+        }
+
         FolderData inputFolder = dataBatch.getInputData(getFirstInputSlot(), FolderData.class, progressInfo);
         Path inputPath = inputFolder.toPath();
         if (!StringUtils.isNullOrEmpty(subFolder)) {
@@ -92,7 +101,7 @@ public class ListSubfolders extends JIPipeSimpleIteratingAlgorithm {
             } else
                 stream = Files.list(inputPath).filter(Files::isDirectory);
             for (Path file : stream.collect(Collectors.toList())) {
-                if (filters.test(file)) {
+                if (filters.test(file, expressionParameters)) {
                     dataBatch.addOutputData(getFirstOutputSlot(), new FileData(file), progressInfo);
                 }
             }
@@ -102,7 +111,8 @@ public class ListSubfolders extends JIPipeSimpleIteratingAlgorithm {
     }
 
     @JIPipeDocumentation(name = "Filters", description = "You can optionally filter the result folders. " +
-            "The filters are connected via a logical OR operation. An empty list disables filtering")
+            "The filters are connected via a logical OR operation. An empty list disables filtering. " +
+            "Annotations are available as variables.")
     @JIPipeParameter("filters")
     public PathQueryExpression getFilters() {
         return filters;

@@ -16,12 +16,14 @@ package org.hkijena.jipipe.extensions.filesystem.algorithms;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
+import org.hkijena.jipipe.api.data.JIPipeAnnotation;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.FileSystemNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeContextAction;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.filesystem.dataypes.PathData;
+import org.hkijena.jipipe.extensions.parameters.expressions.ExpressionParameters;
 import org.hkijena.jipipe.extensions.parameters.expressions.PathQueryExpression;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.utils.ResourceUtils;
@@ -73,12 +75,18 @@ public class FilterPaths extends JIPipeSimpleIteratingAlgorithm {
 
     @Override
     protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
+        // Expression parameters from annotations
+        ExpressionParameters expressionParameters = new ExpressionParameters();
+        for (JIPipeAnnotation annotation : dataBatch.getAnnotations().values()) {
+            expressionParameters.set(annotation.getName(), annotation.getValue());
+        }
+
         PathData inputData = dataBatch.getInputData(getFirstInputSlot(), PathData.class, progressInfo);
         JIPipeDataSlot firstOutputSlot = getFirstOutputSlot();
         Path inputPath = inputData.toPath();
         if (!canOutput(inputPath))
             return;
-        if (filters.test(inputPath)) {
+        if (filters.test(inputPath, expressionParameters)) {
             dataBatch.addOutputData(firstOutputSlot, inputData, progressInfo);
         }
     }
@@ -95,7 +103,8 @@ public class FilterPaths extends JIPipeSimpleIteratingAlgorithm {
 
     @JIPipeParameter("filters")
     @JIPipeDocumentation(name = "Filters", description = "Filter expression that is used to filter the paths. Click [X] to see all available variables. " +
-            "An example for an expression would be '\".tif\" IN name', which would test if there is '.tif' inside the file name.")
+            "An example for an expression would be '\".tif\" IN name', which would test if there is '.tif' inside the file name. " +
+            "Annotations are available as variables.")
     public PathQueryExpression getFilters() {
         return filters;
     }

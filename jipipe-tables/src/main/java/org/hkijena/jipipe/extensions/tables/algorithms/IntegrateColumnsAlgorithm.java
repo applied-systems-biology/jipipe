@@ -22,6 +22,7 @@ import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.TableNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.registries.JIPipeExpressionRegistry;
+import org.hkijena.jipipe.extensions.parameters.expressions.ExpressionParameters;
 import org.hkijena.jipipe.extensions.tables.ColumnOperation;
 import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
 import org.hkijena.jipipe.extensions.tables.datatypes.TableColumn;
@@ -70,7 +71,7 @@ public class IntegrateColumnsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         ResultsTableData input = dataBatch.getInputData(getFirstInputSlot(), ResultsTableData.class, progressInfo);
         Map<String, TableColumn> resultColumns = new HashMap<>();
         for (IntegratingTableColumnProcessorParameter processor : processorParameters) {
-            String sourceColumn = processor.getInput().queryFirst(input.getColumnNames());
+            String sourceColumn = processor.getInput().queryFirst(input.getColumnNames(), new ExpressionParameters());
             if (sourceColumn == null) {
                 throw new UserFriendlyRuntimeException(new NullPointerException(),
                         "Unable to find column matching " + processor.getInput(),

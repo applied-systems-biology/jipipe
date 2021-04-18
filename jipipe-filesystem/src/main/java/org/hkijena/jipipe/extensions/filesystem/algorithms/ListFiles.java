@@ -16,12 +16,14 @@ package org.hkijena.jipipe.extensions.filesystem.algorithms;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
+import org.hkijena.jipipe.api.data.JIPipeAnnotation;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.FileSystemNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeContextAction;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.filesystem.dataypes.FileData;
 import org.hkijena.jipipe.extensions.filesystem.dataypes.FolderData;
+import org.hkijena.jipipe.extensions.parameters.expressions.ExpressionParameters;
 import org.hkijena.jipipe.extensions.parameters.expressions.PathQueryExpression;
 import org.hkijena.jipipe.extensions.parameters.primitives.StringParameterSettings;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
@@ -78,6 +80,12 @@ public class ListFiles extends JIPipeSimpleIteratingAlgorithm {
 
     @Override
     protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
+        // Expression parameters from annotations
+        ExpressionParameters expressionParameters = new ExpressionParameters();
+        for (JIPipeAnnotation annotation : dataBatch.getAnnotations().values()) {
+            expressionParameters.set(annotation.getName(), annotation.getValue());
+        }
+
         FolderData inputFolder = dataBatch.getInputData(getFirstInputSlot(), FolderData.class, progressInfo);
         Path inputPath = inputFolder.toPath();
         if (!StringUtils.isNullOrEmpty(subFolder)) {
@@ -95,7 +103,7 @@ public class ListFiles extends JIPipeSimpleIteratingAlgorithm {
             } else
                 stream = Files.list(inputPath).filter(Files::isRegularFile);
             for (Path file : stream.collect(Collectors.toList())) {
-                if (filters.test(file)) {
+                if (filters.test(file, expressionParameters)) {
                     dataBatch.addOutputData(getFirstOutputSlot(), new FileData(file), progressInfo);
                 }
             }
@@ -106,7 +114,8 @@ public class ListFiles extends JIPipeSimpleIteratingAlgorithm {
 
     @JIPipeDocumentation(name = "Filters", description = "Filter expression that allows to filter the files. " +
             "Click the [X] button to see all available variables. " +
-            "An example for an expression would be '\".tif\" IN name', which would test if there is '.tif' inside the file name.")
+            "An example for an expression would be '\".tif\" IN name', which would test if there is '.tif' inside the file name. " +
+            "Annotations are available as variables.")
     @JIPipeParameter("filters")
     public PathQueryExpression getFilters() {
         return filters;

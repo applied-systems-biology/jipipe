@@ -17,8 +17,10 @@ import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.JIPipeValidityReport;
+import org.hkijena.jipipe.api.data.JIPipeAnnotation;
 import org.hkijena.jipipe.api.data.JIPipeAnnotationMergeStrategy;
 import org.hkijena.jipipe.api.data.JIPipeData;
+import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.AnnotationsNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeContextAction;
@@ -29,29 +31,31 @@ import org.hkijena.jipipe.extensions.parameters.pairs.PairParameterSettings;
 import org.hkijena.jipipe.extensions.parameters.primitives.StringParameterSettings;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.utils.ResourceUtils;
+import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
 /**
  * Algorithm that annotates all data with the same annotation
  */
-@JIPipeDocumentation(name = "Set annotations", description = "Sets the specified annotations to the specified values")
+@JIPipeDocumentation(name = "Set single annotation", description = "Sets a single annotation")
 @JIPipeOrganization(nodeTypeCategory = AnnotationsNodeTypeCategory.class, menuPath = "Modify")
 @JIPipeInputSlot(value = JIPipeData.class, slotName = "Input", autoCreate = true)
 @JIPipeOutputSlot(value = JIPipeData.class, slotName = "Output", inheritedSlot = "Input", autoCreate = true)
-public class AnnotateByExpression extends JIPipeSimpleIteratingAlgorithm {
+public class SetSingleAnnotation extends JIPipeSimpleIteratingAlgorithm {
 
-    private NamedAnnotationGeneratorExpression.List annotations = new NamedAnnotationGeneratorExpression.List();
+    private StringQueryExpression annotationValue = new StringQueryExpression();
+    private StringQueryExpression annotationName = new StringQueryExpression();
     private JIPipeAnnotationMergeStrategy annotationMergeStrategy = JIPipeAnnotationMergeStrategy.OverwriteExisting;
 
     /**
      * @param info the info
      */
-    public AnnotateByExpression(JIPipeNodeInfo info) {
+    public SetSingleAnnotation(JIPipeNodeInfo info) {
         super(info);
-        annotations.addNewInstance();
     }
 
     /**
@@ -59,65 +63,55 @@ public class AnnotateByExpression extends JIPipeSimpleIteratingAlgorithm {
      *
      * @param other the original
      */
-    public AnnotateByExpression(AnnotateByExpression other) {
+    public SetSingleAnnotation(SetSingleAnnotation other) {
         super(other);
-        this.annotations = new NamedAnnotationGeneratorExpression.List(other.annotations);
         this.annotationMergeStrategy = other.annotationMergeStrategy;
-    }
-
-    @Override
-    public void reportValidity(JIPipeValidityReport report) {
-        for (int i = 0; i < annotations.size(); i++) {
-            report.forCategory("Annotations").forCategory("Item #" + (i + 1)).forCategory("Name").checkNonEmpty(annotations.get(i).getValue(), this);
-        }
+        this.annotationName = new StringQueryExpression(other.annotationName);
+        this.annotationValue = new StringQueryExpression(other.annotationValue);
     }
 
     @Override
     protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
-        for (NamedAnnotationGeneratorExpression expression : annotations) {
-            dataBatch.addGlobalAnnotation(expression.generateAnnotation(dataBatch.getAnnotations().values(), dataBatch.getInputData(getFirstInputSlot(),
-                    JIPipeData.class,
-                    progressInfo).toString()),
-                    annotationMergeStrategy);
+        ExpressionParameters variableSet = new ExpressionParameters();
+        for (JIPipeAnnotation annotation : dataBatch.getAnnotations().values()) {
+            variableSet.set(annotation.getName(), annotation.getValue());
         }
+        variableSet.set("data_string", getFirstInputSlot().getVirtualData(dataBatch.getInputSlotRows().get(getFirstInputSlot())).getStringRepresentation());
+        String name = StringUtils.nullToEmpty(annotationName.generate(variableSet));
+        String value = StringUtils.nullToEmpty(annotationValue.generate(variableSet));
+        if(StringUtils.isNullOrEmpty(name)) {
+            throw new UserFriendlyRuntimeException("Generated annotation name is empty!",
+                    "Generated annotation name is empty!",
+                    getName(),
+                    "You wanted to set the name of an annotation, but the expression generated an empty name. This is not allowed.",
+                    "Check if the expression is correct.");
+        }
+        dataBatch.addGlobalAnnotation(new JIPipeAnnotation(name, value), annotationMergeStrategy);
         dataBatch.addOutputData(getFirstOutputSlot(), dataBatch.getInputData(getFirstInputSlot(), JIPipeData.class, progressInfo), progressInfo);
     }
 
-    @JIPipeDocumentation(name = "Annotations", description = "Allows you to set the annotation to add/modify. " + AnnotationGeneratorExpression.DOCUMENTATION_DESCRIPTION)
-    @JIPipeParameter("generated-annotation")
-    @PairParameterSettings(keyLabel = "Value", valueLabel = "Name", singleRow = false)
-    @StringParameterSettings(monospace = true)
+    @JIPipeDocumentation(name = "Annotation value", description = "The value of the generated annotation. " + StringQueryExpression.DOCUMENTATION_DESCRIPTION)
+    @JIPipeParameter("annotation-value")
     @ExpressionParameterSettings(variableSource = VariableSource.class)
-    public NamedAnnotationGeneratorExpression.List getAnnotations() {
-        return annotations;
+    public StringQueryExpression getAnnotationValue() {
+        return annotationValue;
     }
 
-    @JIPipeParameter("generated-annotation")
-    public void setAnnotations(NamedAnnotationGeneratorExpression.List annotations) {
-        this.annotations = annotations;
+    @JIPipeParameter("annotation-value")
+    public void setAnnotationValue(StringQueryExpression annotationValue) {
+        this.annotationValue = annotationValue;
     }
 
-    @JIPipeDocumentation(name = "Merge same annotation values", description = "Determines which strategy is applied if an annotation already exists.")
-    @JIPipeParameter("annotation-merge-strategy")
-    public JIPipeAnnotationMergeStrategy getAnnotationMergeStrategy() {
-        return annotationMergeStrategy;
+    @JIPipeDocumentation(name = "Annotation name", description = "The name of the generated annotation. " + StringQueryExpression.DOCUMENTATION_DESCRIPTION)
+    @JIPipeParameter("annotation-name")
+    @ExpressionParameterSettings(variableSource = VariableSource.class)
+    public StringQueryExpression getAnnotationName() {
+        return annotationName;
     }
 
-    @JIPipeParameter("annotation-merge-strategy")
-    public void setAnnotationMergeStrategy(JIPipeAnnotationMergeStrategy annotationMergeStrategy) {
-        this.annotationMergeStrategy = annotationMergeStrategy;
-    }
-
-    @JIPipeDocumentation(name = "Load example", description = "Loads example parameters that showcase how to use this algorithm.")
-    @JIPipeContextAction(iconURL = ResourceUtils.RESOURCE_BASE_PATH + "/icons/actions/graduation-cap.png")
-    public void setToExample(JIPipeWorkbench parent) {
-        if (UIUtils.confirmResetParameters(parent, "Load example")) {
-            annotations.clear();
-            NamedAnnotationGeneratorExpression expression = annotations.addNewInstance();
-            expression.setKey(new AnnotationGeneratorExpression("\"My value\""));
-            expression.setValue("My annotation");
-            getEventBus().post(new ParameterChangedEvent(this, "generated-annotation"));
-        }
+    @JIPipeParameter("annotation-name")
+    public void setAnnotationName(StringQueryExpression annotationName) {
+        this.annotationName = annotationName;
     }
 
     public static class VariableSource implements ExpressionParameterVariableSource {

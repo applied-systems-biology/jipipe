@@ -21,6 +21,7 @@ import org.hkijena.jipipe.api.data.JIPipeAnnotationMergeStrategy;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.TableNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
+import org.hkijena.jipipe.extensions.parameters.expressions.ExpressionParameters;
 import org.hkijena.jipipe.extensions.parameters.expressions.StringQueryExpression;
 import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
 
@@ -65,7 +66,7 @@ public class SplitTableByColumnsAlgorithm extends JIPipeSimpleIteratingAlgorithm
     @Override
     protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
         ResultsTableData input = dataBatch.getInputData(getFirstInputSlot(), ResultsTableData.class, progressInfo);
-        List<String> interestingColumns = columns.queryAll(input.getColumnNames());
+        List<String> interestingColumns = columns.queryAll(input.getColumnNames(), new ExpressionParameters());
         if (interestingColumns.isEmpty()) {
             dataBatch.addOutputData(getFirstOutputSlot(), input.duplicate(), progressInfo);
         } else {

@@ -8,6 +8,7 @@ import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.JIPipeRegistryIssues;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.*;
+import org.hkijena.jipipe.extensions.parameters.expressions.ExpressionParameters;
 import org.hkijena.jipipe.extensions.parameters.expressions.StringQueryExpression;
 import org.hkijena.jipipe.extensions.settings.ExtensionSettings;
 import org.hkijena.jipipe.extensions.strings.StringData;
@@ -153,7 +154,7 @@ public class JIPipeMergingDataBatchBuilder {
         for (JIPipeDataSlot slot : slots.values()) {
             result.addAll(slot.getAnnotationColumns());
         }
-        return new HashSet<>(expression.queryAll(result));
+        return new HashSet<>(expression.queryAll(result, new ExpressionParameters()));
     }
 
     public Set<String> getInputAnnotationColumnIntersection(String prefix) {

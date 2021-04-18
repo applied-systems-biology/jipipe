@@ -25,6 +25,7 @@ import org.hkijena.jipipe.api.nodes.JIPipeOutputSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeParameterSlotAlgorithm;
 import org.hkijena.jipipe.api.nodes.categories.AnnotationsNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
+import org.hkijena.jipipe.extensions.parameters.expressions.ExpressionParameters;
 import org.hkijena.jipipe.extensions.parameters.expressions.StringQueryExpression;
 
 import java.util.List;
@@ -54,7 +55,7 @@ public class RemoveArrayAnnotationsAlgorithm extends JIPipeParameterSlotAlgorith
     @Override
     public void runParameterSet(JIPipeProgressInfo progressInfo, List<JIPipeAnnotation> parameterAnnotations) {
         if (removeColumn) {
-            Set<String> toRemove = annotationNameFilter.queryAll(getFirstInputSlot().getAnnotationColumns()).stream().filter(columnName -> {
+            Set<String> toRemove = annotationNameFilter.queryAll(getFirstInputSlot().getAnnotationColumns(), new ExpressionParameters()).stream().filter(columnName -> {
                 for (int row = 0; row < getFirstInputSlot().getRowCount(); row++) {
                     JIPipeAnnotation existing = getFirstInputSlot().getAnnotationOr(row, columnName, null);
                     if (existing != null && existing.isArray())

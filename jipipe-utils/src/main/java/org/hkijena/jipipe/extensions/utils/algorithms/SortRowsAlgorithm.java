@@ -12,6 +12,7 @@ import org.hkijena.jipipe.api.nodes.JIPipeOutputSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeParameterSlotAlgorithm;
 import org.hkijena.jipipe.api.nodes.categories.MiscellaneousNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
+import org.hkijena.jipipe.extensions.parameters.expressions.ExpressionParameters;
 import org.hkijena.jipipe.extensions.parameters.expressions.StringQueryExpression;
 import org.hkijena.jipipe.extensions.parameters.pairs.StringQueryExpressionAndSortOrderPairParameter;
 import org.hkijena.jipipe.extensions.parameters.util.SortOrder;
@@ -45,7 +46,7 @@ public class SortRowsAlgorithm extends JIPipeParameterSlotAlgorithm {
 
         // Find the order
         for (StringQueryExpressionAndSortOrderPairParameter entry : sortOrderList) {
-            String matched = entry.getKey().queryFirst(unMatchedAnnotationNames);
+            String matched = entry.getKey().queryFirst(unMatchedAnnotationNames, new ExpressionParameters());
             if (matched != null) {
                 unMatchedAnnotationNames.remove(matched);
                 annotationOrder.add(matched);
