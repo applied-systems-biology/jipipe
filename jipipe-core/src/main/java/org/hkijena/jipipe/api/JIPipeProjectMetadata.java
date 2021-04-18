@@ -24,8 +24,7 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 public class JIPipeProjectMetadata extends JIPipeMetadata {
     private JIPipeImageJUpdateSiteDependency.List updateSiteDependencies = new JIPipeImageJUpdateSiteDependency.List();
     private String templateDescription = "";
-    private boolean preventAddingDeletingNodes = false;
-    private boolean preventModifyingSlots = false;
+    private JIPipeProjectPermissions permissions = new JIPipeProjectPermissions();
 
     @JIPipeDocumentation(name = "ImageJ update site dependencies", description = "ImageJ update sites that should be enabled for the project to work. Use this if you rely on " +
             "third-party methods that are not referenced in a JIPipe extension (e.g. within a script or macro node). " +
@@ -56,26 +55,17 @@ public class JIPipeProjectMetadata extends JIPipeMetadata {
         this.templateDescription = templateDescription;
     }
 
-    @JIPipeDocumentation(name = "Prevent adding/deleting nodes", description = "If enabled, users cannot add or delete nodes or compartments. Use this for teaching environments.")
-    @JIPipeParameter("prevent-adding-deleting-nodes")
-    public boolean isPreventAddingDeletingNodes() {
-        return preventAddingDeletingNodes;
+    @JIPipeParameter("permissions")
+    @JIPipeDocumentation(name = "Permissions", description = "Here you can set various permissions that affect what parts of " +
+            "each project users can change.")
+    @JsonGetter("permissions")
+    public JIPipeProjectPermissions getPermissions() {
+        return permissions;
     }
 
-    @JIPipeParameter("prevent-adding-deleting-nodes")
-    public void setPreventAddingDeletingNodes(boolean preventAddingDeletingNodes) {
-        this.preventAddingDeletingNodes = preventAddingDeletingNodes;
-    }
-
-    @JIPipeDocumentation(name = "Prevent modifying slots", description = "If enabled, users cannot modify slots (add, delete, edit). " +
-            "They can still re-label them. Use this for teaching environments.")
-    @JIPipeParameter("prevent-modifying-slots")
-    public boolean isPreventModifyingSlots() {
-        return preventModifyingSlots;
-    }
-
-    @JIPipeParameter("prevent-modifying-slots")
-    public void setPreventModifyingSlots(boolean preventModifyingSlots) {
-        this.preventModifyingSlots = preventModifyingSlots;
+    @JIPipeParameter("permissions")
+    @JsonSetter("permissions")
+    public void setPermissions(JIPipeProjectPermissions permissions) {
+        this.permissions = permissions;
     }
 }

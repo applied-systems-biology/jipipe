@@ -110,7 +110,7 @@ public class JIPipeAlgorithmSourceFinderUI extends JPanel {
     private void initializeAvailableContents() {
         boolean canCreateNewNodes = true;
         if(canvasUI.getWorkbench() instanceof JIPipeProjectWorkbench) {
-            canCreateNewNodes = !((JIPipeProjectWorkbench) canvasUI.getWorkbench()).getProject().getMetadata().isPreventAddingDeletingNodes();
+            canCreateNewNodes = !((JIPipeProjectWorkbench) canvasUI.getWorkbench()).getProject().getMetadata().getPermissions().isPreventAddingDeletingNodes();
         }
         for (JIPipeGraphNode node : canvasUI.getGraph().getNodes().values()) {
             if (node.isVisibleIn(canvasUI.getCompartment())) {

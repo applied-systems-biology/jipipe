@@ -30,6 +30,7 @@ import org.hkijena.jipipe.extensions.parameters.primitives.EnumParameterSettings
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
+import java.nio.file.Path;
 import java.util.*;
 
 /**
@@ -308,6 +309,16 @@ public class GraphWrapperAlgorithm extends JIPipeAlgorithm implements JIPipeData
                 dataBatches = limitedBatches;
             }
             return dataBatches;
+        }
+    }
+
+    @Override
+    public void setWorkDirectory(Path workDirectory) {
+        super.setWorkDirectory(workDirectory);
+        if(wrappedGraph != null) {
+            for (JIPipeGraphNode node : wrappedGraph.getNodes().values()) {
+                node.setWorkDirectory(workDirectory);
+            }
         }
     }
 

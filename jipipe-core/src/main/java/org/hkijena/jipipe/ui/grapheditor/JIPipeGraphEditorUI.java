@@ -762,7 +762,7 @@ public abstract class JIPipeGraphEditorUI extends JIPipeWorkbenchPanel implement
     public void updateNavigation() {
         boolean canCreateNewNodes = true;
         if(getWorkbench() instanceof JIPipeProjectWorkbench) {
-            canCreateNewNodes = !((JIPipeProjectWorkbench) getWorkbench()).getProject().getMetadata().isPreventAddingDeletingNodes();
+            canCreateNewNodes = !((JIPipeProjectWorkbench) getWorkbench()).getProject().getMetadata().getPermissions().isPreventAddingDeletingNodes();
         }
         DefaultComboBoxModel<Object> model = new DefaultComboBoxModel<>();
         model.removeAllElements();
