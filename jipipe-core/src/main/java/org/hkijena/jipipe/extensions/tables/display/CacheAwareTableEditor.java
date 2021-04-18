@@ -117,12 +117,10 @@ public class CacheAwareTableEditor extends JIPipeTableEditor {
         JIPipeDataSlot slot = currentCache.getOrDefault(slotName, null);
         errorPanel.setVisible(false);
         if (slot != null && slot.getRowCount() > dataSource.getRow()) {
-            setTableModel(new ResultsTableData());
             dataSource = new JIPipeCacheSlotDataSource(slot, dataSource.getRow());
             loadDataFromDataSource();
         } else {
             errorPanel.setVisible(true);
-            setTableModel(new ResultsTableData());
             lastVirtualData = null;
         }
     }
