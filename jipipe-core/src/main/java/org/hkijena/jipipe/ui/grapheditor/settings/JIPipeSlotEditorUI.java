@@ -21,6 +21,7 @@ import org.hkijena.jipipe.api.history.SlotConfigurationHistorySnapshot;
 import org.hkijena.jipipe.api.nodes.JIPipeGraph;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
+import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
 import org.hkijena.jipipe.ui.components.AddAlgorithmSlotPanel;
 import org.hkijena.jipipe.ui.components.EditAlgorithmSlotPanel;
 import org.hkijena.jipipe.ui.components.MarkdownDocument;
@@ -90,6 +91,8 @@ public class JIPipeSlotEditorUI extends JPanel {
         if (canModifyInputSlots()) {
             JButton addInputButton = new JButton("Add input", UIUtils.getIconFromResources("actions/database.png"));
             addInputButton.addActionListener(e -> {
+                if(!JIPipeProjectWorkbench.canModifySlots(editorUI.getWorkbench()))
+                    return;
                 AddAlgorithmSlotPanel.showDialog(this, editorUI.getCanvasUI().getGraphHistory(), algorithm, JIPipeSlotType.Input);
             });
             toolBar.add(addInputButton);
@@ -98,6 +101,8 @@ public class JIPipeSlotEditorUI extends JPanel {
         if (canModifyOutputSlots()) {
             JButton addOutputButton = new JButton("Add output", UIUtils.getIconFromResources("actions/database.png"));
             addOutputButton.addActionListener(e -> {
+                if(!JIPipeProjectWorkbench.canModifySlots(editorUI.getWorkbench()))
+                    return;
                 AddAlgorithmSlotPanel.showDialog(this, editorUI.getCanvasUI().getGraphHistory(), algorithm, JIPipeSlotType.Output);
             });
             toolBar.add(addOutputButton);
@@ -139,6 +144,8 @@ public class JIPipeSlotEditorUI extends JPanel {
     }
 
     private void editSlot() {
+        if(!JIPipeProjectWorkbench.canModifySlots(editorUI.getWorkbench()))
+            return;
         JIPipeDataSlot slot = getSelectedSlot();
         if (!slot.getInfo().isUserModifiable()) {
             JOptionPane.showMessageDialog(this, "This slot cannot be edited.", "Edit slot", JOptionPane.ERROR_MESSAGE);

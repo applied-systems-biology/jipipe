@@ -24,6 +24,7 @@ import org.hkijena.jipipe.api.history.CompoundGraphHistorySnapshot;
 import org.hkijena.jipipe.api.history.EdgeConnectGraphHistorySnapshot;
 import org.hkijena.jipipe.api.history.SlotConfigurationHistorySnapshot;
 import org.hkijena.jipipe.api.nodes.JIPipeGraph;
+import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
 import org.hkijena.jipipe.ui.grapheditor.JIPipeGraphCanvasUI;
 import org.hkijena.jipipe.utils.UIUtils;
 
@@ -117,6 +118,8 @@ public class JIPipeAlgorithmSourceFinderSlotUI extends JPanel {
     }
 
     private void deleteSlot() {
+        if(!JIPipeProjectWorkbench.canModifySlots(canvasUI.getWorkbench()))
+            return;
         JIPipeDefaultMutableSlotConfiguration slotConfiguration = (JIPipeDefaultMutableSlotConfiguration) outputSlot.getNode().getSlotConfiguration();
         canvasUI.getGraphHistory().addSnapshotBefore(new SlotConfigurationHistorySnapshot(outputSlot.getNode(),
                 "Remove slot '" + outputSlot.getDisplayName() + "'"));

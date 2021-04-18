@@ -149,19 +149,19 @@ public class JIPipeGraphCompartmentDragAndDropBehavior implements JIPipeGraphDra
         }
 
         if (hasFiles && hasDirectories) {
-            if(!JIPipeProjectWorkbench.canAddOrDelete(canvas.getWorkbench()))
+            if(!JIPipeProjectWorkbench.canAddOrDeleteNodes(canvas.getWorkbench()))
                 return;
             PathListDataSource dataSource = JIPipe.createNode("import-path-list", PathListDataSource.class);
             dataSource.setPaths(new PathList(files.stream().map(File::toPath).collect(Collectors.toList())));
             graph.insertNode(dataSource, compartment);
         } else if (hasFiles) {
-            if(!JIPipeProjectWorkbench.canAddOrDelete(canvas.getWorkbench()))
+            if(!JIPipeProjectWorkbench.canAddOrDeleteNodes(canvas.getWorkbench()))
                 return;
             FileListDataSource dataSource = JIPipe.createNode("import-file-list", FileListDataSource.class);
             dataSource.setFiles(new PathList(files.stream().map(File::toPath).collect(Collectors.toList())));
             graph.insertNode(dataSource, compartment);
         } else if (hasDirectories) {
-            if(!JIPipeProjectWorkbench.canAddOrDelete(canvas.getWorkbench()))
+            if(!JIPipeProjectWorkbench.canAddOrDeleteNodes(canvas.getWorkbench()))
                 return;
             FolderListDataSource dataSource = JIPipe.createNode("import-folder-list", FolderListDataSource.class);
             dataSource.setFolderPaths(new PathList(files.stream().map(File::toPath).collect(Collectors.toList())));

@@ -21,6 +21,7 @@ import org.hkijena.jipipe.api.nodes.JIPipeAlgorithm;
 import org.hkijena.jipipe.api.nodes.JIPipeGraph;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
+import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.JIPipeWorkbenchPanel;
 import org.hkijena.jipipe.ui.components.AddAlgorithmSlotPanel;
@@ -92,7 +93,11 @@ public abstract class JIPipeNodeUI extends JIPipeWorkbenchPanel {
     protected JButton createAddSlotButton(JIPipeSlotType slotType) {
         JButton addSlotButton = new JButton(new ZoomIcon(UIUtils.getIconFromResources("actions/list-add.png"), graphUI));
         UIUtils.makeFlat(addSlotButton, Color.GRAY, 0, 0, 0, 0);
-        addSlotButton.addActionListener(e -> AddAlgorithmSlotPanel.showDialog(this, graphUI.getGraphHistory(), node, slotType));
+        addSlotButton.addActionListener(e -> {
+            if(!JIPipeProjectWorkbench.canModifySlots(getWorkbench()))
+                return;
+            AddAlgorithmSlotPanel.showDialog(this, graphUI.getGraphHistory(), node, slotType);
+        });
 
         return addSlotButton;
     }

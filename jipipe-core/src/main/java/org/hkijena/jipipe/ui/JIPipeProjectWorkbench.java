@@ -749,12 +749,24 @@ public class JIPipeProjectWorkbench extends JPanel implements JIPipeWorkbench {
         return context;
     }
 
-    public static boolean canAddOrDelete(JIPipeWorkbench workbench) {
+    public static boolean canAddOrDeleteNodes(JIPipeWorkbench workbench) {
         if(workbench instanceof JIPipeProjectWorkbench) {
             JIPipeProject project = ((JIPipeProjectWorkbench) workbench).getProject();
             if(project.getMetadata().isPreventAddingDeletingNodes()) {
                 JOptionPane.showMessageDialog(workbench.getWindow(), "Deleting nodes & compartments is disabled for this project. " +
                         "\n\nIf this is not intentional, change this setting in Project > Project settings > Prevent adding/deleting nodes");
+                return false;
+            }
+        }
+        return true;
+    }
+
+    public static boolean canModifySlots(JIPipeWorkbench workbench) {
+        if(workbench instanceof JIPipeProjectWorkbench) {
+            JIPipeProject project = ((JIPipeProjectWorkbench) workbench).getProject();
+            if(project.getMetadata().isPreventModifyingSlots()) {
+                JOptionPane.showMessageDialog(workbench.getWindow(), "Modifying slots is disabled for this project. " +
+                        "\n\nIf this is not intentional, change this setting in Project > Project settings > Prevent modifying slots");
                 return false;
             }
         }

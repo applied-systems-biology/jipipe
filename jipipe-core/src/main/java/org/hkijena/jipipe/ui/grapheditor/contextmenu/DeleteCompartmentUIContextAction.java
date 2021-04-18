@@ -37,7 +37,7 @@ public class DeleteCompartmentUIContextAction implements NodeUIContextAction {
 
     @Override
     public void run(JIPipeGraphCanvasUI canvasUI, Set<JIPipeNodeUI> selection) {
-        if(!JIPipeProjectWorkbench.canAddOrDelete(canvasUI.getWorkbench()))
+        if(!JIPipeProjectWorkbench.canAddOrDeleteNodes(canvasUI.getWorkbench()))
            return;
         if (!GraphEditorUISettings.getInstance().isAskOnDeleteCompartment() || JOptionPane.showConfirmDialog(canvasUI.getWorkbench().getWindow(),
                 "Do you really want to remove the following compartments: " +

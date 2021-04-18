@@ -266,7 +266,7 @@ public abstract class JIPipeGraphEditorUI extends JIPipeWorkbenchPanel implement
             selectOnly((JIPipeNodeUI) event.getValue());
             navigator.setSelectedItem(null);
         } else if (event.getValue() instanceof JIPipeNodeInfo) {
-            if(!JIPipeProjectWorkbench.canAddOrDelete(getWorkbench()))
+            if(!JIPipeProjectWorkbench.canAddOrDeleteNodes(getWorkbench()))
                 return;
             JIPipeNodeInfo info = (JIPipeNodeInfo) event.getValue();
             JIPipeGraphNode node = info.newInstance();

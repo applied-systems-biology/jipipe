@@ -22,6 +22,7 @@ import org.hkijena.jipipe.api.data.JIPipeSlotType;
 import org.hkijena.jipipe.api.nodes.JIPipeGraph;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
+import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
 import org.hkijena.jipipe.ui.components.AddAlgorithmSlotPanel;
 import org.hkijena.jipipe.ui.grapheditor.JIPipeGraphCanvasUI;
 import org.hkijena.jipipe.utils.StringUtils;
@@ -235,7 +236,11 @@ public class JIPipeAlgorithmTargetFinderAlgorithmUI extends JPanel {
     private JButton createAddSlotButton(JIPipeSlotType slotType) {
         JButton button = new JButton(UIUtils.getIconFromResources("actions/list-add.png"));
         UIUtils.makeFlat(button);
-        button.addActionListener(e -> AddAlgorithmSlotPanel.showDialog(this, canvasUI.getGraphHistory(), algorithm, slotType));
+        button.addActionListener(e -> {
+            if(!JIPipeProjectWorkbench.canModifySlots(canvasUI.getWorkbench()))
+                return;
+            AddAlgorithmSlotPanel.showDialog(this, canvasUI.getGraphHistory(), algorithm, slotType);
+        });
         return button;
     }
 

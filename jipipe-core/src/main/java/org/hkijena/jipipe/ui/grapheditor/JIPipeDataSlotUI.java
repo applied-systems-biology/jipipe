@@ -22,6 +22,7 @@ import org.hkijena.jipipe.api.history.*;
 import org.hkijena.jipipe.api.nodes.JIPipeGraph;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphEdge;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
+import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.JIPipeWorkbenchPanel;
 import org.hkijena.jipipe.ui.components.EditAlgorithmSlotPanel;
@@ -561,6 +562,8 @@ public abstract class JIPipeDataSlotUI extends JIPipeWorkbenchPanel {
     }
 
     private void editSlot() {
+        if(!JIPipeProjectWorkbench.canModifySlots(getWorkbench()))
+            return;
         EditAlgorithmSlotPanel.showDialog(this, getGraphUI().getGraphHistory(), slot);
     }
 
@@ -575,6 +578,8 @@ public abstract class JIPipeDataSlotUI extends JIPipeWorkbenchPanel {
     }
 
     private void deleteSlot() {
+        if(!JIPipeProjectWorkbench.canModifySlots(getWorkbench()))
+            return;
         JIPipeMutableSlotConfiguration slotConfiguration = (JIPipeMutableSlotConfiguration) slot.getNode().getSlotConfiguration();
         getGraphUI().getGraphHistory().addSnapshotBefore(new SlotConfigurationHistorySnapshot(slot.getNode(), "Remove slot '" + slot.getDisplayName() + "'"));
         if (slot.isInput())
