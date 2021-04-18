@@ -16,6 +16,7 @@ package org.hkijena.jipipe.ui.grapheditor.contextmenu;
 import org.hkijena.jipipe.api.history.RemoveNodeGraphHistorySnapshot;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.extensions.settings.GraphEditorUISettings;
+import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
 import org.hkijena.jipipe.ui.grapheditor.JIPipeGraphCanvasUI;
 import org.hkijena.jipipe.ui.grapheditor.JIPipeNodeUI;
 import org.hkijena.jipipe.utils.UIUtils;
@@ -39,6 +40,8 @@ public class DeleteNodeUIContextAction implements NodeUIContextAction {
 
     @Override
     public void run(JIPipeGraphCanvasUI canvasUI, Set<JIPipeNodeUI> selection) {
+        if(!JIPipeProjectWorkbench.canAddOrDelete(canvasUI, canvasUI.getWorkbench()))
+            return;
         if (!GraphEditorUISettings.getInstance().isAskOnDeleteNode() || JOptionPane.showConfirmDialog(canvasUI.getWorkbench().getWindow(),
                 "Do you really want to remove the selected nodes?", "Delete algorithms",
                 JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {

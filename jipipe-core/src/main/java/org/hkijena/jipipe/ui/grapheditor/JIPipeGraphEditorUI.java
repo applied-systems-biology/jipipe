@@ -23,6 +23,7 @@ import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.extensions.settings.FileChooserSettings;
 import org.hkijena.jipipe.extensions.settings.GraphEditorUISettings;
+import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.JIPipeWorkbenchPanel;
 import org.hkijena.jipipe.ui.components.ColorIcon;
@@ -265,6 +266,8 @@ public abstract class JIPipeGraphEditorUI extends JIPipeWorkbenchPanel implement
             selectOnly((JIPipeNodeUI) event.getValue());
             navigator.setSelectedItem(null);
         } else if (event.getValue() instanceof JIPipeNodeInfo) {
+            if(!JIPipeProjectWorkbench.canAddOrDelete(this, getWorkbench()))
+                return;
             JIPipeNodeInfo info = (JIPipeNodeInfo) event.getValue();
             JIPipeGraphNode node = info.newInstance();
             getCanvasUI().getGraphHistory().addSnapshotBefore(new AddNodeGraphHistorySnapshot(algorithmGraph, Collections.singleton(node)));
@@ -757,14 +760,20 @@ public abstract class JIPipeGraphEditorUI extends JIPipeWorkbenchPanel implement
      * Updates the navigation list
      */
     public void updateNavigation() {
+        boolean canCreateNewNodes = true;
+        if(getWorkbench() instanceof JIPipeProjectWorkbench) {
+            canCreateNewNodes = !((JIPipeProjectWorkbench) getWorkbench()).getProject().getMetadata().isPreventAddingDeletingNodes();
+        }
         DefaultComboBoxModel<Object> model = new DefaultComboBoxModel<>();
         model.removeAllElements();
         for (JIPipeNodeUI ui : canvasUI.getNodeUIs().values().stream().sorted(Comparator.comparing(ui -> ui.getNode().getName())).collect(Collectors.toList())) {
             model.addElement(ui);
         }
-        for (JIPipeNodeInfo info : addableAlgorithms.stream()
-                .sorted(Comparator.comparing(JIPipeNodeInfo::getName)).collect(Collectors.toList())) {
-            model.addElement(info);
+        if(canCreateNewNodes) {
+            for (JIPipeNodeInfo info : addableAlgorithms.stream()
+                    .sorted(Comparator.comparing(JIPipeNodeInfo::getName)).collect(Collectors.toList())) {
+                model.addElement(info);
+            }
         }
         navigator.setModel(model);
     }

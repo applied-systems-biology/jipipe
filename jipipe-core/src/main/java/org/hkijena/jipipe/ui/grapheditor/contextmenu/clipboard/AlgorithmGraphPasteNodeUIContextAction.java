@@ -18,6 +18,7 @@ import org.hkijena.jipipe.api.compartments.algorithms.JIPipeCompartmentOutput;
 import org.hkijena.jipipe.api.history.PasteNodeGraphHistorySnapshot;
 import org.hkijena.jipipe.api.nodes.JIPipeGraph;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
+import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
 import org.hkijena.jipipe.ui.grapheditor.JIPipeGraphCanvasUI;
 import org.hkijena.jipipe.ui.grapheditor.JIPipeNodeUI;
 import org.hkijena.jipipe.ui.grapheditor.contextmenu.NodeUIContextAction;
@@ -35,6 +36,8 @@ import java.util.Set;
 
 public class AlgorithmGraphPasteNodeUIContextAction implements NodeUIContextAction {
     public static void pasteNodes(JIPipeGraphCanvasUI canvasUI, String json) throws com.fasterxml.jackson.core.JsonProcessingException {
+        if(!JIPipeProjectWorkbench.canAddOrDelete(canvasUI, canvasUI.getWorkbench()))
+            return;
         JIPipeGraph graph = JsonUtils.getObjectMapper().readValue(json, JIPipeGraph.class);
         if (graph.getNodes().isEmpty()) {
             throw new NullPointerException("Empty graph pasted.");

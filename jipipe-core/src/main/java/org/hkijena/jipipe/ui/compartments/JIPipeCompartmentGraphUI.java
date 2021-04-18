@@ -194,6 +194,8 @@ public class JIPipeCompartmentGraphUI extends JIPipeGraphEditorUI {
     }
 
     private void addComment() {
+        if(!JIPipeProjectWorkbench.canAddOrDelete(getWorkbench().getWindow(), getWorkbench()))
+            return;
         JIPipeCommentNode node = JIPipe.createNode(JIPipeCommentNode.class);
         AddNodeGraphHistorySnapshot snapshot = new AddNodeGraphHistorySnapshot(getAlgorithmGraph(), Collections.singleton(node));
         getCanvasUI().getGraphHistory().addSnapshotBefore(snapshot);
@@ -201,6 +203,8 @@ public class JIPipeCompartmentGraphUI extends JIPipeGraphEditorUI {
     }
 
     private void importCompartment() {
+        if(!JIPipeProjectWorkbench.canAddOrDelete(getWorkbench().getWindow(), getWorkbench()))
+            return;
         Path selectedPath = FileChooserSettings.openFile(this,
                 FileChooserSettings.KEY_PROJECT,
                 "Open JIPipe graph compartment (*.jipc)",
@@ -231,6 +235,8 @@ public class JIPipeCompartmentGraphUI extends JIPipeGraphEditorUI {
     }
 
     private void addCompartment() {
+        if(!JIPipeProjectWorkbench.canAddOrDelete(getWorkbench().getWindow(), getWorkbench()))
+            return;
         String compartmentName = UIUtils.getUniqueStringByDialog(this, "Please enter the name of the compartment",
                 "Compartment", s -> getProject().getCompartments().containsKey(s));
         if (compartmentName != null && !compartmentName.trim().isEmpty()) {

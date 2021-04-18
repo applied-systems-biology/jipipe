@@ -748,4 +748,16 @@ public class JIPipeProjectWorkbench extends JPanel implements JIPipeWorkbench {
     public Context getContext() {
         return context;
     }
+
+    public static boolean canAddOrDelete(Component parent, JIPipeWorkbench workbench) {
+        if(workbench instanceof JIPipeProjectWorkbench) {
+            JIPipeProject project = ((JIPipeProjectWorkbench) workbench).getProject();
+            if(project.getMetadata().isPreventAddingDeletingNodes()) {
+                JOptionPane.showMessageDialog(parent, "Deleting nodes & compartments is disabled for this project. " +
+                        "\n\nIf this is not intentional, change this setting in Project > Project settings > Prevent adding/deleting nodes");
+                return false;
+            }
+        }
+        return true;
+    }
 }

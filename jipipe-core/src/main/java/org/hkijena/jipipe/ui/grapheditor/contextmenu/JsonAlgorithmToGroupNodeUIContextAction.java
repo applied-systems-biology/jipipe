@@ -16,6 +16,7 @@ package org.hkijena.jipipe.ui.grapheditor.contextmenu;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.grouping.JsonAlgorithm;
 import org.hkijena.jipipe.api.history.GraphChangedHistorySnapshot;
+import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
 import org.hkijena.jipipe.ui.grapheditor.JIPipeGraphCanvasUI;
 import org.hkijena.jipipe.ui.grapheditor.JIPipeNodeUI;
 import org.hkijena.jipipe.utils.UIUtils;
@@ -31,6 +32,8 @@ public class JsonAlgorithmToGroupNodeUIContextAction implements NodeUIContextAct
 
     @Override
     public void run(JIPipeGraphCanvasUI canvasUI, Set<JIPipeNodeUI> selection) {
+        if(!JIPipeProjectWorkbench.canAddOrDelete(canvasUI, canvasUI.getWorkbench()))
+            return;
         canvasUI.getGraphHistory().addSnapshotBefore(new GraphChangedHistorySnapshot(canvasUI.getGraph(), "Convert to group"));
         for (JIPipeNodeUI ui : selection) {
             if (ui.getNode() instanceof JsonAlgorithm) {

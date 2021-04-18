@@ -15,6 +15,7 @@ package org.hkijena.jipipe.ui.grapheditor.contextmenu.clipboard;
 
 import org.hkijena.jipipe.api.history.CutNodeGraphHistorySnapshot;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
+import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
 import org.hkijena.jipipe.ui.grapheditor.JIPipeGraphCanvasUI;
 import org.hkijena.jipipe.ui.grapheditor.JIPipeNodeUI;
 import org.hkijena.jipipe.utils.UIUtils;
@@ -30,6 +31,8 @@ public class AlgorithmGraphCutNodeUIContextAction extends AlgorithmGraphCopyNode
     @Override
     public void run(JIPipeGraphCanvasUI canvasUI, Set<JIPipeNodeUI> selection) {
         super.run(canvasUI, selection);
+        if(!JIPipeProjectWorkbench.canAddOrDelete(canvasUI, canvasUI.getWorkbench()))
+            return;
         Set<JIPipeGraphNode> nodes = selection.stream().map(JIPipeNodeUI::getNode).collect(Collectors.toSet());
         canvasUI.getGraphHistory().addSnapshotBefore(new CutNodeGraphHistorySnapshot(canvasUI.getGraph(), nodes));
         canvasUI.getGraph().removeNodes(nodes, true);

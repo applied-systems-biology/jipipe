@@ -23,6 +23,7 @@ import org.hkijena.jipipe.api.nodes.JIPipeGraph;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.nodes.JIPipeInputSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
+import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
 import org.hkijena.jipipe.ui.components.ColorIcon;
 import org.hkijena.jipipe.ui.components.FormPanel;
 import org.hkijena.jipipe.ui.components.SearchTextField;
@@ -104,16 +105,21 @@ public class JIPipeAlgorithmTargetFinderUI extends JPanel {
     }
 
     private void initializeAvailableContents() {
+        boolean canCreateNewNodes = true;
+        if(canvasUI.getWorkbench() instanceof JIPipeProjectWorkbench) {
+            canCreateNewNodes = !((JIPipeProjectWorkbench) canvasUI.getWorkbench()).getProject().getMetadata().isPreventAddingDeletingNodes();
+        }
         for (JIPipeGraphNode node : canvasUI.getGraph().getNodes().values()) {
             if (node.isVisibleIn(canvasUI.getCompartment())) {
                 availableContents.add(node);
             }
         }
-        for (JIPipeNodeInfo info : JIPipe.getNodes().getRegisteredNodeInfos().values()) {
-            if (!info.isHidden())
-                availableContents.add(info);
+        if(canCreateNewNodes) {
+            for (JIPipeNodeInfo info : JIPipe.getNodes().getRegisteredNodeInfos().values()) {
+                if (!info.isHidden())
+                    availableContents.add(info);
+            }
         }
-
     }
 
     private void initialize() {

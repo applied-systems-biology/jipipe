@@ -20,6 +20,7 @@ import org.hkijena.jipipe.extensions.filesystem.datasources.FolderListDataSource
 import org.hkijena.jipipe.extensions.filesystem.datasources.PathListDataSource;
 import org.hkijena.jipipe.extensions.parameters.primitives.PathList;
 import org.hkijena.jipipe.extensions.settings.GraphEditorUISettings;
+import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
 import org.hkijena.jipipe.ui.grapheditor.contextmenu.clipboard.AlgorithmGraphPasteNodeUIContextAction;
 
 import javax.swing.*;
@@ -148,14 +149,20 @@ public class JIPipeGraphCompartmentDragAndDropBehavior implements JIPipeGraphDra
         }
 
         if (hasFiles && hasDirectories) {
+            if(!JIPipeProjectWorkbench.canAddOrDelete(canvas, canvas.getWorkbench()))
+                return;
             PathListDataSource dataSource = JIPipe.createNode("import-path-list", PathListDataSource.class);
             dataSource.setPaths(new PathList(files.stream().map(File::toPath).collect(Collectors.toList())));
             graph.insertNode(dataSource, compartment);
         } else if (hasFiles) {
+            if(!JIPipeProjectWorkbench.canAddOrDelete(canvas, canvas.getWorkbench()))
+                return;
             FileListDataSource dataSource = JIPipe.createNode("import-file-list", FileListDataSource.class);
             dataSource.setFiles(new PathList(files.stream().map(File::toPath).collect(Collectors.toList())));
             graph.insertNode(dataSource, compartment);
         } else if (hasDirectories) {
+            if(!JIPipeProjectWorkbench.canAddOrDelete(canvas, canvas.getWorkbench()))
+                return;
             FolderListDataSource dataSource = JIPipe.createNode("import-folder-list", FolderListDataSource.class);
             dataSource.setFolderPaths(new PathList(files.stream().map(File::toPath).collect(Collectors.toList())));
             graph.insertNode(dataSource, compartment);

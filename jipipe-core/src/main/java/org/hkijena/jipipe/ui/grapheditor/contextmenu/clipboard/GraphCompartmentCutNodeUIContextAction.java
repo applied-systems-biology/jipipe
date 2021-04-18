@@ -31,6 +31,8 @@ public class GraphCompartmentCutNodeUIContextAction extends GraphCompartmentCopy
     @Override
     public void run(JIPipeGraphCanvasUI canvasUI, Set<JIPipeNodeUI> selection) {
         super.run(canvasUI, selection);
+        if(!JIPipeProjectWorkbench.canAddOrDelete(canvasUI, canvasUI.getWorkbench()))
+            return;
         JIPipeProject project = ((JIPipeProjectWorkbench) canvasUI.getWorkbench()).getProject();
         for (JIPipeNodeUI ui : selection) {
             JIPipeProjectCompartment compartment = (JIPipeProjectCompartment) ui.getNode();

@@ -24,6 +24,7 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 public class JIPipeProjectMetadata extends JIPipeMetadata {
     private JIPipeImageJUpdateSiteDependency.List updateSiteDependencies = new JIPipeImageJUpdateSiteDependency.List();
     private String templateDescription = "";
+    private boolean preventAddingDeletingNodes = false;
 
     @JIPipeDocumentation(name = "ImageJ update site dependencies", description = "ImageJ update sites that should be enabled for the project to work. Use this if you rely on " +
             "third-party methods that are not referenced in a JIPipe extension (e.g. within a script or macro node). " +
@@ -52,5 +53,16 @@ public class JIPipeProjectMetadata extends JIPipeMetadata {
     @JsonSetter("template-description")
     public void setTemplateDescription(String templateDescription) {
         this.templateDescription = templateDescription;
+    }
+
+    @JIPipeDocumentation(name = "Prevent adding/deleting nodes", description = "If enabled, users cannot add or delete nodes or compartments. Use this for teaching environments.")
+    @JIPipeParameter("prevent-adding-deleting-nodes")
+    public boolean isPreventAddingDeletingNodes() {
+        return preventAddingDeletingNodes;
+    }
+
+    @JIPipeParameter("prevent-adding-deleting-nodes")
+    public void setPreventAddingDeletingNodes(boolean preventAddingDeletingNodes) {
+        this.preventAddingDeletingNodes = preventAddingDeletingNodes;
     }
 }

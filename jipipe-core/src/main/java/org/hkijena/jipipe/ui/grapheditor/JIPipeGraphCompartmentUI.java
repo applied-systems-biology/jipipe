@@ -140,6 +140,8 @@ public class JIPipeGraphCompartmentUI extends JIPipeGraphEditorUI {
                 JMenuItem addItem = new JMenuItem(info.getName(), JIPipe.getNodes().getIconFor(info));
                 addItem.setToolTipText(TooltipUtils.getAlgorithmTooltip(info));
                 addItem.addActionListener(e -> {
+                    if(!JIPipeProjectWorkbench.canAddOrDelete(graphEditorUI, graphEditorUI.getWorkbench()))
+                        return;
                     JIPipeGraphNode node = info.newInstance();
                     graphEditorUI.getCanvasUI().getGraphHistory().addSnapshotBefore(new AddNodeGraphHistorySnapshot(algorithmGraph, Collections.singleton(node)));
                     graphEditorUI.getCanvasUI().getScheduledSelection().clear();
@@ -182,6 +184,8 @@ public class JIPipeGraphCompartmentUI extends JIPipeGraphEditorUI {
                     JMenuItem addItem = new JMenuItem(info.getName(), JIPipe.getNodes().getIconFor(info));
                     addItem.setToolTipText(TooltipUtils.getAlgorithmTooltip(info));
                     addItem.addActionListener(e -> {
+                        if(!JIPipeProjectWorkbench.canAddOrDelete(graphEditorUI, graphEditorUI.getWorkbench()))
+                            return;
                         JIPipeGraphNode node = info.newInstance();
                         graphEditorUI.getCanvasUI().getGraphHistory().addSnapshotBefore(new AddNodeGraphHistorySnapshot(algorithmGraph, Collections.singleton(node)));
                         algorithmGraph.insertNode(node, graphEditorUI.getCompartment());
