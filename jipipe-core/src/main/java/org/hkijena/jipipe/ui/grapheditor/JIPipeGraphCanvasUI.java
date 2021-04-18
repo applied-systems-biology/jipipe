@@ -392,8 +392,8 @@ public class JIPipeGraphCanvasUI extends JIPipeWorkbenchPanel implements MouseMo
             int vHeight = scrollPane.getVerticalScrollBar().getVisibleAmount();
             viewRectangle = new Rectangle(hValue, vValue, hWidth, vHeight);
 
-            viewRectangle.width -= 3 * viewMode.getGridWidth();
-            viewRectangle.height -= 3 * viewMode.getGridHeight();
+            viewRectangle.width -= viewMode.getGridWidth() / 4;
+            viewRectangle.height -= viewMode.getGridHeight() / 4;
         }
 
 //        System.out.println("Loc: " + location);
@@ -401,9 +401,9 @@ public class JIPipeGraphCanvasUI extends JIPipeWorkbenchPanel implements MouseMo
         Rectangle currentShape = new Rectangle(minX, minY, ui.getWidth(), ui.getHeight());
 
         if(viewRectangle != null && !viewRectangle.contains(location)) {
-            minX = viewMode.getGridWidth();
-            minY = viewMode.getGridHeight();
-//            System.out.println("Outside container");
+            minX = viewRectangle.x + viewMode.getGridWidth();
+            minY = viewRectangle.y + viewMode.getGridHeight();
+            System.out.println("Outside container");
         }
 
         boolean found;
