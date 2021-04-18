@@ -28,6 +28,7 @@ import gnu.trove.set.TIntSet;
 import gnu.trove.set.hash.TIntHashSet;
 import ij.macro.Variable;
 import ij.measure.ResultsTable;
+import org.apache.commons.lang3.math.NumberUtils;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeCacheSlotDataSource;
@@ -231,7 +232,7 @@ public class ResultsTableData implements JIPipeData, TableModel {
             String colName = getColumnName(col);
             List<Object> copy = new ArrayList<>();
 
-            if (isNumeric(col)) {
+            if (isNumericColumn(col)) {
                 for (int row = 0; row < getRowCount(); row++) {
                     copy.add(getValueAsDouble(row, col));
                 }
@@ -280,7 +281,7 @@ public class ResultsTableData implements JIPipeData, TableModel {
         for (Map.Entry<Integer, List<Index>> entry : byColumn.entrySet()) {
             int col = entry.getKey();
             TableColumn buffer;
-            boolean numeric = isNumeric(col);
+            boolean numeric = isNumericColumn(col);
             if (numeric) {
                 double[] data = new double[entry.getValue().size()];
                 for (int i = 0; i < entry.getValue().size(); i++) {
@@ -375,7 +376,7 @@ public class ResultsTableData implements JIPipeData, TableModel {
             Map<String, Integer> targetColumnIndices = new HashMap<>();
             // Create category columns first
             for (String category : categories) {
-                targetColumnIndices.put(category, result.addColumn(category, isNumeric(getColumnIndex(category))));
+                targetColumnIndices.put(category, result.addColumn(category, isNumericColumn(getColumnIndex(category))));
             }
             Map<Map<String, Object>, List<Integer>> equivalentRows = getEquivalentRows(categories);
             int row = 0;
@@ -394,7 +395,7 @@ public class ResultsTableData implements JIPipeData, TableModel {
                     if (col == -1) {
                         col = result.addColumn(operation.getTargetColumnName(), !outputColumn.isNumeric());
                     }
-                    if (result.isNumeric(col)) {
+                    if (result.isNumericColumn(col)) {
                         result.setValueAt(outputColumn.getRowAsDouble(0), row, col);
                     } else {
                         result.setValueAt(outputColumn.getRowAsString(0), row, col);
@@ -453,7 +454,7 @@ public class ResultsTableData implements JIPipeData, TableModel {
      * @return the column
      */
     public TableColumn getColumnCopy(int index) {
-        if (isNumeric(index)) {
+        if (isNumericColumn(index)) {
             return new DoubleArrayTableColumn(getColumnReference(index).getDataAsDouble(getRowCount()), getColumnName(index));
         } else {
             return new StringArrayTableColumn(getColumnReference(index).getDataAsString(getRowCount()), getColumnName(index));
@@ -499,7 +500,7 @@ public class ResultsTableData implements JIPipeData, TableModel {
     public void duplicateColumn(int column, String newColumn) {
         if (containsColumn(newColumn))
             throw new IllegalArgumentException("Column '" + newColumn + "' already exists!");
-        int newColumnIndex = addColumn(newColumn, !isNumeric(column));
+        int newColumnIndex = addColumn(newColumn, !isNumericColumn(column));
         for (int row = 0; row < getRowCount(); row++) {
             setValueAt(getValueAt(row, column), row, newColumnIndex);
         }
@@ -582,7 +583,7 @@ public class ResultsTableData implements JIPipeData, TableModel {
         for (int row = 0; row < table.size(); ++row) {
             destination.incrementCounter();
             for (int col = 0; col < getColumnCount(); col++) {
-                if (isNumeric(col)) {
+                if (isNumericColumn(col)) {
                     destination.setValue(columnMap.get(col), row + startRow, getValueAsDouble(row, col));
                 } else {
                     destination.setValue(columnMap.get(col), row + startRow, getValueAsString(row, col));
@@ -648,15 +649,19 @@ public class ResultsTableData implements JIPipeData, TableModel {
      * @param columnIndex the column
      * @return if the column is numeric (type {@link Double}). Otherwise it is a {@link String}
      */
-    public boolean isNumeric(int columnIndex) {
+    public boolean isNumericColumn(int columnIndex) {
         return getColumnClass(columnIndex) == Double.class;
+    }
+
+    public boolean isNumericColumn(String columnName) {
+        return isNumericColumn(getColumnIndex(columnName));
     }
 
     @Override
     public Object getValueAt(int rowIndex, int columnIndex) {
         if (columnIndex >= getColumnCount() || rowIndex >= getRowCount())
             return null;
-        if (isNumeric(columnIndex)) {
+        if (isNumericColumn(columnIndex)) {
             return table.getValueAsDouble(columnIndex, rowIndex);
         } else {
             return table.getStringValue(columnIndex, rowIndex);
@@ -694,14 +699,21 @@ public class ResultsTableData implements JIPipeData, TableModel {
     }
 
     /**
-     * Returns a table value as double
+     * Returns a table value as double. Attempts conversion via a Double parser if the value is a string
      *
      * @param rowIndex    the row
      * @param columnIndex the column
-     * @return the table value
+     * @return the table value. NaN if it is not a double or convertible into one
      */
     public double getValueAsDouble(int rowIndex, int columnIndex) {
-        return table.getValueAsDouble(columnIndex, rowIndex);
+        double value = table.getValueAsDouble(columnIndex, rowIndex);
+        if(Double.isNaN(value)) {
+            String string = getValueAsString(rowIndex, columnIndex);
+            if(NumberUtils.isCreatable(string)) {
+                return NumberUtils.createDouble(string);
+            }
+        }
+        return value;
     }
 
     /**
@@ -793,7 +805,7 @@ public class ResultsTableData implements JIPipeData, TableModel {
     public void addRows(ResultsTableData other) {
         Map<String, Boolean> inputColumnsNumeric = new HashMap<>();
         for (int col = 0; col < other.getColumnCount(); col++) {
-            inputColumnsNumeric.put(other.getColumnName(col), other.isNumeric(col));
+            inputColumnsNumeric.put(other.getColumnName(col), other.isNumericColumn(col));
         }
 
         // For some reason ImageJ can create tables with missing columns
@@ -865,7 +877,7 @@ public class ResultsTableData implements JIPipeData, TableModel {
             }
             target.addRow();
             for (int col = 0; col < getColumnCount(); col++) {
-                if (isNumeric(col)) {
+                if (isNumericColumn(col)) {
                     target.getTable().setValue(getColumnName(col), row, table.getValueAsDouble(col, row));
                 } else {
                     target.getTable().setValue(getColumnName(col), row, table.getStringValue(col, row));
@@ -963,7 +975,7 @@ public class ResultsTableData implements JIPipeData, TableModel {
      * @param column column index
      */
     public void convertToStringColumn(int column) {
-        if (!isNumeric(column))
+        if (!isNumericColumn(column))
             return;
         String[] values = new String[getRowCount()];
         for (int row = 0; row < getRowCount(); row++) {
@@ -985,7 +997,7 @@ public class ResultsTableData implements JIPipeData, TableModel {
      * @param column column index
      */
     public void convertToNumericColumn(int column) {
-        if (isNumeric(column))
+        if (isNumericColumn(column))
             return;
         double[] values = new double[getRowCount()];
         for (int row = 0; row < getRowCount(); row++) {
@@ -1021,7 +1033,7 @@ public class ResultsTableData implements JIPipeData, TableModel {
         table.incrementCounter();
         int row = getRowCount() - 1;
         for (int col = 0; col < getColumnCount(); col++) {
-            if (isNumeric(col))
+            if (isNumericColumn(col))
                 setValueAt(0.0, row, col);
             else
                 setValueAt("", row, col);
@@ -1056,7 +1068,7 @@ public class ResultsTableData implements JIPipeData, TableModel {
     public void setColumn(String columnName, TableColumn column) {
         int columnIndex = getColumnIndex(columnName);
         if (columnIndex != -1) {
-            if (column.isNumeric() != isNumeric(columnIndex)) {
+            if (column.isNumeric() != isNumericColumn(columnIndex)) {
                 removeColumnAt(columnIndex);
                 columnIndex = -1;
             }
@@ -1086,7 +1098,7 @@ public class ResultsTableData implements JIPipeData, TableModel {
     public void setColumn(String columnName, TableColumn column, boolean numeric) {
         int columnIndex = getColumnIndex(columnName);
         if (columnIndex != -1) {
-            if (numeric != isNumeric(columnIndex)) {
+            if (numeric != isNumericColumn(columnIndex)) {
                 removeColumnAt(columnIndex);
                 columnIndex = -1;
             }
@@ -1117,7 +1129,7 @@ public class ResultsTableData implements JIPipeData, TableModel {
             if (row == removedRow)
                 continue;
             for (int col = 0; col < getColumnCount(); col++) {
-                if (isNumeric(col))
+                if (isNumericColumn(col))
                     newData.setValue(col, targetRow, getValueAsDouble(row, col));
                 else
                     newData.setValue(col, targetRow, getValueAsString(row, col));
@@ -1138,7 +1150,7 @@ public class ResultsTableData implements JIPipeData, TableModel {
             if (removedRows.contains(row))
                 continue;
             for (int col = 0; col < getColumnCount(); col++) {
-                if (isNumeric(col))
+                if (isNumericColumn(col))
                     newData.setValue(col, targetRow, getValueAsDouble(row, col));
                 else
                     newData.setValue(col, targetRow, getValueAsString(row, col));
@@ -1151,7 +1163,7 @@ public class ResultsTableData implements JIPipeData, TableModel {
     public ResultsTableData getRows(Collection<Integer> rows) {
         ResultsTableData result = new ResultsTableData();
         for (int col = 0; col < getColumnCount(); col++) {
-            result.addColumn(getColumnName(col), !isNumeric(col));
+            result.addColumn(getColumnName(col), !isNumericColumn(col));
         }
         int targetRow = 0;
         for (Integer row : rows) {
@@ -1166,6 +1178,14 @@ public class ResultsTableData implements JIPipeData, TableModel {
 
     public ResultsTableData getRow(int row) {
         return getRows(Collections.singleton(row));
+    }
+
+    public boolean isStringColumn(String columnName) {
+        return !isNumericColumn(getColumnIndex(columnName));
+    }
+
+    public boolean isStringColumn(int col) {
+        return !isNumericColumn(col);
     }
 
     /**
@@ -1243,7 +1263,7 @@ public class ResultsTableData implements JIPipeData, TableModel {
             for (int col = 0; col < resultsTableData.getColumnCount(); col++) {
                 SerializedColumn column = new SerializedColumn();
                 column.setName(resultsTableData.getColumnName(col));
-                column.setNumeric(resultsTableData.isNumeric(col));
+                column.setNumeric(resultsTableData.isNumericColumn(col));
                 columns.add(column);
             }
             for (int row = 0; row < resultsTableData.getRowCount(); row++) {

@@ -53,7 +53,7 @@ public class OMEROUtils {
     public static TableData tableToOMERO(ResultsTableData resultsTableData) {
         TableDataColumn[] columns = new TableDataColumn[resultsTableData.getColumnCount()];
         for (int col = 0; col < resultsTableData.getColumnCount(); col++) {
-            if (resultsTableData.isNumeric(col))
+            if (resultsTableData.isNumericColumn(col))
                 columns[col] = new TableDataColumn(resultsTableData.getColumnName(col), col, Double.class);
             else
                 columns[col] = new TableDataColumn(resultsTableData.getColumnName(col), col, String.class);
@@ -61,7 +61,7 @@ public class OMEROUtils {
         Object[][] data = new Object[columns.length][resultsTableData.getRowCount()];
         for (int col = 0; col < columns.length; col++) {
             for (int row = 0; row < resultsTableData.getRowCount(); row++) {
-                if (resultsTableData.isNumeric(col))
+                if (resultsTableData.isNumericColumn(col))
                     data[col][row] = resultsTableData.getValueAsDouble(row, col);
                 else
                     data[col][row] = resultsTableData.getValueAsString(row, col);

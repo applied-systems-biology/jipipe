@@ -92,7 +92,7 @@ public class SortTableAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         StringQueryExpression expression = pair.getKey();
         for (String columnName : input.getColumnNames()) {
             if (expression.test(columnName)) {
-                boolean isNumeric = input.isNumeric(input.getColumnIndex(columnName));
+                boolean isNumeric = input.isNumericColumn(input.getColumnIndex(columnName));
                 Comparator<Integer> chain = (r1, r2) -> {
                     if (isNumeric) {
                         double v1 = input.getValueAsDouble(r1, columnName);

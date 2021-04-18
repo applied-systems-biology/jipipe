@@ -760,7 +760,7 @@ public class JIPipeTableEditor extends JIPipeWorkbenchPanel {
         @Override
         public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
 
-            if (!tableEditor.tableModel.isNumeric(column)) {
+            if (!tableEditor.tableModel.isNumericColumn(column)) {
                 setText("<html><i><span style=\"color:gray;\">\"</span>" + value + "<span style=\"color:gray;\">\"</span></i></html>");
             } else {
                 setText("" + value);

@@ -79,7 +79,7 @@ public class TableColumnReference implements TableColumn {
 
     @Override
     public boolean isNumeric() {
-        return source.isNumeric(sourceColumn);
+        return source.isNumericColumn(sourceColumn);
     }
 
     @Override
