@@ -384,8 +384,27 @@ public class JIPipeGraphCanvasUI extends JIPipeWorkbenchPanel implements MouseMo
             }
         }
 
-        Rectangle viewRectangle = getVisibleRect();
+        Rectangle viewRectangle = null;
+        if(scrollPane != null) {
+            int hValue = scrollPane.getHorizontalScrollBar().getValue();
+            int vValue = scrollPane.getVerticalScrollBar().getValue();
+            int hWidth = scrollPane.getHorizontalScrollBar().getVisibleAmount();
+            int vHeight = scrollPane.getVerticalScrollBar().getVisibleAmount();
+            viewRectangle = new Rectangle(hValue, vValue, hWidth, vHeight);
+
+            viewRectangle.width -= 3 * viewMode.getGridWidth();
+            viewRectangle.height -= 3 * viewMode.getGridHeight();
+        }
+
+//        System.out.println("Loc: " + location);
+//        System.out.println("View: " + viewRectangle);
         Rectangle currentShape = new Rectangle(minX, minY, ui.getWidth(), ui.getHeight());
+
+        if(viewRectangle != null && !viewRectangle.contains(location)) {
+            minX = viewMode.getGridWidth();
+            minY = viewMode.getGridHeight();
+//            System.out.println("Outside container");
+        }
 
         boolean found;
         do {
@@ -431,15 +450,17 @@ public class JIPipeGraphCanvasUI extends JIPipeWorkbenchPanel implements MouseMo
         }
         while (!found);
 
+//        System.out.println(currentShape);
         ui.moveToClosestGridPoint(new Point(currentShape.x, currentShape.y), true, true);
     }
 
     public void autoPlaceCloseToCursor(JIPipeNodeUI ui) {
+//        System.out.println("GE: " + getGraphEditorCursor());
         int minX = 0;
         int minY = 0;
-        if (graphEditCursor != null) {
-            minX = graphEditCursor.x;
-            minY = graphEditCursor.y;
+        if (getGraphEditorCursor() != null) {
+            minX = getGraphEditorCursor().x;
+            minY = getGraphEditorCursor().y;
         }
         else if(getVisibleRect() != null) {
             Rectangle rect = getVisibleRect();
@@ -680,6 +701,14 @@ public class JIPipeGraphCanvasUI extends JIPipeWorkbenchPanel implements MouseMo
             }
             openContextMenu(new Point(mouseEvent.getX(), mouseEvent.getY()));
         }
+
+//        {
+//            int hValue = scrollPane.getHorizontalScrollBar().getValue();
+//            int vValue = scrollPane.getVerticalScrollBar().getValue();
+//            int hWidth = scrollPane.getHorizontalScrollBar().getVisibleAmount();
+//            int vHeight = scrollPane.getVerticalScrollBar().getVisibleAmount();
+//            System.out.println(new Rectangle(hValue, vValue, hWidth, vHeight));
+//        }
     }
 
     /**
@@ -1630,7 +1659,7 @@ public class JIPipeGraphCanvasUI extends JIPipeWorkbenchPanel implements MouseMo
         currentHighlightedForDisconnectSourceSlots = sourceSlots;
     }
 
-    public void setGraphEditCursor(Point graphEditCursor) {
+    public synchronized void setGraphEditCursor(Point graphEditCursor) {
         this.graphEditCursor = graphEditCursor;
     }
 

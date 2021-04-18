@@ -559,9 +559,9 @@ public abstract class JIPipeGraphEditorUI extends JIPipeWorkbenchPanel implement
      */
     @Subscribe
     public void onAlgorithmEvent(JIPipeNodeUI.AlgorithmEvent event) {
-        if (event.getUi() != null) {
-            scrollToAlgorithm(event.getUi());
-        }
+//        if (event.getUi() != null) {
+//            scrollToAlgorithm(event.getUi());
+//        }
     }
 
     /**

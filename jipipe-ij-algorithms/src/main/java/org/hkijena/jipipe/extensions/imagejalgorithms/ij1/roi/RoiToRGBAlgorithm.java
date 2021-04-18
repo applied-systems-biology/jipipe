@@ -97,6 +97,16 @@ public class RoiToRGBAlgorithm extends JIPipeIteratingAlgorithm {
     }
 
     @Override
+    protected boolean canPassThrough() {
+        return true;
+    }
+
+    @Override
+    protected void runPassThrough(JIPipeProgressInfo progressInfo) {
+        getFirstOutputSlot().addData(getInputSlot("Image"), progressInfo);
+    }
+
+    @Override
     protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
         ROIListData inputData = (ROIListData) dataBatch.getInputData("ROI", ROIListData.class, progressInfo).duplicate();
         ImagePlus reference = dataBatch.getInputData("Image", ImagePlusData.class, progressInfo).getImage();
