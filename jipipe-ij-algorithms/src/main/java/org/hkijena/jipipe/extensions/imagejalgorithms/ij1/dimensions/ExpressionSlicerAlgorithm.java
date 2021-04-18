@@ -137,6 +137,7 @@ public class ExpressionSlicerAlgorithm extends JIPipeSimpleIteratingAlgorithm {
             }
 
             ImagePlus resultImage = new ImagePlus("Slice", stack);
+            resultImage.setDimensions(numC, numZ, numT);
             dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusData(resultImage), annotations, JIPipeAnnotationMergeStrategy.Merge, progressInfo);
         }
     }

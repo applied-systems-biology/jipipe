@@ -8,7 +8,12 @@ import java.io.IOException;
 public class CopyImageToClipboard implements ClipboardOwner {
 
     public void copyImage(BufferedImage bi) {
-        TransferableImage trans = new TransferableImage(bi);
+
+        // We must convert to RGB, otherwise Java runs into issues due to some internal JPEG conversion
+        BufferedImage newRGB = new BufferedImage(bi.getWidth(), bi.getHeight(), BufferedImage.TYPE_INT_RGB);
+        newRGB.createGraphics().drawImage(bi, 0, 0, bi.getWidth(), bi.getHeight(), null);
+
+        TransferableImage trans = new TransferableImage(newRGB);
         Clipboard c = Toolkit.getDefaultToolkit().getSystemClipboard();
         c.setContents(trans, this);
     }
