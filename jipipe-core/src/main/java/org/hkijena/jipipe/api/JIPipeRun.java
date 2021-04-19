@@ -16,6 +16,7 @@ package org.hkijena.jipipe.api;
 import com.google.common.base.Charsets;
 import ij.IJ;
 import org.apache.commons.lang3.exception.ExceptionUtils;
+import org.hkijena.jipipe.api.compartments.algorithms.JIPipeProjectCompartment;
 import org.hkijena.jipipe.api.data.JIPipeDataInfo;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
@@ -356,6 +357,8 @@ public class JIPipeRun implements JIPipeRunnable {
         }
 
         if (!dataLoadedFromCache) {
+            JIPipeProjectCompartment nodeCompartment = getProject().getCompartments().get(node.getCompartment());
+            String nodeCompartmentName = nodeCompartment != null ? nodeCompartment.getName() : "<Subgraph>";
             try {
                 if (node instanceof JIPipeAlgorithm) {
                     ((JIPipeAlgorithm) node).setThreadPool(threadPool);
@@ -365,14 +368,14 @@ public class JIPipeRun implements JIPipeRunnable {
                 throw new UserFriendlyRuntimeException("Algorithm " + node + " does not work in a headless environment!",
                         e,
                         "An error occurred during processing",
-                        "On running the algorithm '" + node.getName() + "', within compartment '" + getProject().getCompartments().get(node.getCompartment()).getName() + "'",
+                        "On running the algorithm '" + node.getName() + "', within compartment '" + nodeCompartmentName + "'",
                         "The algorithm raised an error, as it is not compatible with a headless environment.",
                         "Please contact the plugin developers about this issue. If this happens in an ImageJ method, please contact the ImageJ developers.");
             } catch (Exception e) {
                 throw new UserFriendlyRuntimeException("Algorithm " + node + " raised an exception!",
                         e,
                         "An error occurred during processing",
-                        "On running the algorithm '" + node.getName() + "', within compartment '" + getProject().getCompartments().get(node.getCompartment()).getName() + "'",
+                        "On running the algorithm '" + node.getName() + "', within compartment '" + nodeCompartmentName + "'",
                         "Please refer to the other error messages.",
                         "Please follow the instructions for the other error messages.");
             } finally {
