@@ -19,6 +19,7 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.util.HyperstackDimension;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.extensions.parameters.primitives.FilePathParameterSettings;
 import org.hkijena.jipipe.extensions.parameters.primitives.OptionalPathParameter;
+import org.hkijena.jipipe.extensions.settings.DataExporterSettings;
 import org.hkijena.jipipe.ui.components.PathEditor;
 
 import java.nio.file.Path;
@@ -51,6 +52,7 @@ public class ExportImageToWebAlgorithm extends JIPipeIteratingAlgorithm {
 
     public ExportImageToWebAlgorithm(JIPipeNodeInfo info) {
         super(info);
+        this.exporter = new JIPipeDataByMetadataExporter(DataExporterSettings.getInstance());
     }
 
     public ExportImageToWebAlgorithm(ExportImageToWebAlgorithm other) {

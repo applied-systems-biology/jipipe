@@ -21,10 +21,11 @@ import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
+import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageSliceIndex;
 
 @JIPipeDocumentation(name = "Remove LUT", description = "Removes LUT information from the input image.")
-@JIPipeOrganization(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Miscellaneous")
+@JIPipeOrganization(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "LUT")
 @JIPipeInputSlot(value = ImagePlusData.class, slotName = "Input", autoCreate = true)
 @JIPipeOutputSlot(value = ImagePlusData.class, slotName = "Output", inheritedSlot = "Input", autoCreate = true)
 public class RemoveLUTAlgorithm extends JIPipeSimpleIteratingAlgorithm {
@@ -47,20 +48,7 @@ public class RemoveLUTAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         if (duplicateImage)
             data = (ImagePlusData) data.duplicate();
         ImagePlus image = data.getImage();
-        if (applyToAllPlanes && image.isStack()) {
-            ImageSliceIndex original = new ImageSliceIndex(image.getZ(), image.getC(), image.getT());
-            for (int z = 0; z < image.getNSlices(); z++) {
-                for (int c = 0; c < image.getNChannels(); c++) {
-                    for (int t = 0; t < image.getNFrames(); t++) {
-                        image.setPosition(c, z, t);
-                        image.getProcessor().setLut(null);
-                    }
-                }
-            }
-            image.setPosition(original.getC(), original.getZ(), original.getT());
-        } else {
-            image.getProcessor().setLut(null);
-        }
+        ImageJUtils.removeLUT(image, applyToAllPlanes);
         dataBatch.addOutputData(getFirstOutputSlot(), data, progressInfo);
     }
 

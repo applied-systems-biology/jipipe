@@ -31,6 +31,7 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.filesystem.dataypes.FileData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.OMEImageData;
+import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.extensions.parameters.primitives.OptionalAnnotationNameParameter;
 import org.hkijena.jipipe.extensions.parameters.references.JIPipeDataInfoRef;
 import org.hkijena.jipipe.extensions.settings.VirtualDataSettings;
@@ -150,7 +151,7 @@ public class ImagePlusFromFile extends JIPipeSimpleIteratingAlgorithm {
             } else {
                 // Make a copy
                 try {
-                    Files.copy(fileData.toPath(), targetPath.resolve("imag.tif"), StandardCopyOption.REPLACE_EXISTING);
+                    Files.copy(fileData.toPath(), targetPath.resolve("image.tif"), StandardCopyOption.REPLACE_EXISTING);
                 } catch (IOException e) {
                     throw new RuntimeException(e);
                 }
@@ -161,7 +162,7 @@ public class ImagePlusFromFile extends JIPipeSimpleIteratingAlgorithm {
             ImagePlusData outputData;
             ImagePlus image = readImageFrom(fileData.toPath(), progressInfo);
             if (removeLut) {
-                image.getProcessor().setLut(null);
+                ImageJUtils.removeLUT(image, true);
             }
             outputData = (ImagePlusData) JIPipe.createData(generatedImageType.getInfo().getDataClass(), image);
             List<JIPipeAnnotation> annotations = new ArrayList<>();

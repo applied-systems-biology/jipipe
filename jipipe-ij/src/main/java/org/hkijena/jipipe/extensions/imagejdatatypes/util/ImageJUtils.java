@@ -1124,6 +1124,23 @@ public class ImageJUtils {
         }
     }
 
+    public static void removeLUT(ImagePlus image, boolean applyToAllPlanes) {
+        if (applyToAllPlanes && image.isStack()) {
+            ImageSliceIndex original = new ImageSliceIndex(image.getZ(), image.getC(), image.getT());
+            for (int z = 0; z < image.getNSlices(); z++) {
+                for (int c = 0; c < image.getNChannels(); c++) {
+                    for (int t = 0; t < image.getNFrames(); t++) {
+                        image.setPosition(c, z, t);
+                        image.getProcessor().setLut(null);
+                    }
+                }
+            }
+            image.setPosition(original.getC(), original.getZ(), original.getT());
+        } else {
+            image.getProcessor().setLut(null);
+        }
+    }
+
     public static class GradientStop implements Comparable<GradientStop> {
         private final Color color;
         private final float fraction;
