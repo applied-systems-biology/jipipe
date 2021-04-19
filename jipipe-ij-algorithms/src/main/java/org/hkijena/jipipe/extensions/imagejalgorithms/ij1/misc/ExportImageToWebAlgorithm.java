@@ -81,33 +81,38 @@ public class ExportImageToWebAlgorithm extends JIPipeIteratingAlgorithm {
 
         ImagePlus image = dataBatch.getInputData(getFirstInputSlot(), ImagePlusData.class, progressInfo).getImage();
         String baseName = exporter.generateMetadataString(getFirstInputSlot(), dataBatch.getInputSlotRows().get(getFirstInputSlot()), existingMetadata);
+        Path outputFile;
         switch (fileFormat) {
             case JPEG: {
-                Path outputFile = outputPath.resolve(baseName + ".jpg");
+                outputFile = outputPath.resolve(baseName + ".jpg");
                 IJ.saveAs(image, "jpeg", outputFile.toString());
             }
             break;
             case PNG: {
-                Path outputFile = outputPath.resolve(baseName + ".png");
+                outputFile = outputPath.resolve(baseName + ".png");
                 IJ.saveAs(image, "png", outputFile.toString());
             }
             break;
             case TIFF: {
-                Path outputFile = outputPath.resolve(baseName + ".tif");
+                outputFile = outputPath.resolve(baseName + ".tif");
                 IJ.saveAs(image, "tiff", outputFile.toString());
             }
             break;
             case BMP: {
-                Path outputFile = outputPath.resolve(baseName + ".bmp");
+                outputFile = outputPath.resolve(baseName + ".bmp");
                 IJ.saveAs(image, "bmp", outputFile.toString());
             }
             break;
             case AVI: {
-                Path outputFile = outputPath.resolve(baseName + ".avi");
+                outputFile = outputPath.resolve(baseName + ".avi");
                 ImageJUtils.writeImageToMovie(image, movieAnimatedDimension, movieFrameTime, outputFile, aviCompression, jpegQuality, progressInfo);
             }
             break;
+            default:
+                throw new UnsupportedOperationException();
         }
+
+        dataBatch.addOutputData(getFirstOutputSlot(), new FileData(outputFile), progressInfo);
     }
 
     @JIPipeDocumentation(name = "Output directory", description = "Can be a relative or absolute directory. All collected files will be put into this directory. " +
@@ -135,7 +140,7 @@ public class ExportImageToWebAlgorithm extends JIPipeIteratingAlgorithm {
             "<li>AVI: 2D or 3D images only</li>" +
             "<li>TIFF: All images supported</li>" +
             "</ul>")
-    @JIPipeParameter("file-format")
+    @JIPipeParameter(value = "file-format", uiOrder = -20)
     public FileFormat getFileFormat() {
         return fileFormat;
     }
