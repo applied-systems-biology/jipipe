@@ -14,6 +14,7 @@ import org.hkijena.jipipe.api.nodes.categories.RoiNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ROIListData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.measure.ImageStatisticsSetParameter;
+import org.hkijena.jipipe.extensions.parameters.collections.OutputSlotMapParameterCollection;
 import org.hkijena.jipipe.extensions.parameters.expressions.DefaultExpressionParameter;
 import org.hkijena.jipipe.extensions.parameters.expressions.ExpressionParameterSettings;
 import org.hkijena.jipipe.extensions.parameters.expressions.ExpressionParameters;
@@ -35,9 +36,12 @@ public class FilterROIByOverlapAlgorithm extends JIPipeIteratingAlgorithm {
     private LogicalOperation logicalOperation = LogicalOperation.LogicalAnd;
     private DefaultExpressionParameter overlapFilter = new DefaultExpressionParameter();
     private ImageStatisticsSetParameter overlapFilterMeasurements = new ImageStatisticsSetParameter();
+    private OutputSlotMapParameterCollection deactivatedOutputs;
 
     public FilterROIByOverlapAlgorithm(JIPipeNodeInfo info) {
         super(info, generateSlotConfiguration());
+        this.deactivatedOutputs = new OutputSlotMapParameterCollection(Boolean.class, this, () -> false, true);
+        this.deactivatedOutputs.getEventBus().register(this);
     }
 
     public FilterROIByOverlapAlgorithm(FilterROIByOverlapAlgorithm other) {
@@ -47,6 +51,9 @@ public class FilterROIByOverlapAlgorithm extends JIPipeIteratingAlgorithm {
         this.outputOverlaps = other.outputOverlaps;
         this.overlapFilter = new DefaultExpressionParameter(other.overlapFilter);
         this.overlapFilterMeasurements = new ImageStatisticsSetParameter(other.overlapFilterMeasurements);
+        this.deactivatedOutputs = new OutputSlotMapParameterCollection(Boolean.class, this, () -> false, true);
+        other.deactivatedOutputs.copyTo(this.deactivatedOutputs);
+        this.deactivatedOutputs.getEventBus().register(this);
     }
 
     private static JIPipeSlotConfiguration generateSlotConfiguration() {
@@ -65,77 +72,81 @@ public class FilterROIByOverlapAlgorithm extends JIPipeIteratingAlgorithm {
         for (JIPipeDataSlot slot : getNonParameterInputSlots()) {
             ROIListData data = dataBatch.getInputData(slot, ROIListData.class, progressInfo);
             originalRoiMap.put(slot.getName(), data);
+
+            Boolean deactivated = deactivatedOutputs.getParameter(slot.getName()).get(Boolean.class);
+            if (deactivated) {
+                progressInfo.log("Output will be skipped: " + slot.getName());
+                continue;
+            }
             roiMap.put(slot.getName(), (ROIListData) data.duplicate());
         }
         ImagePlus referenceImage = ROIListData.createDummyImageFor(originalRoiMap.values());
 
-        if (roiMap.size() > 1) {
-            boolean withFiltering = !StringUtils.isNullOrEmpty(overlapFilter.getExpression());
-            ExpressionParameters variableSet = new ExpressionParameters();
-            ROIListData temp = new ROIListData();
-            for (Map.Entry<String, ROIListData> entry : roiMap.entrySet()) {
-                JIPipeProgressInfo subProgress = progressInfo.resolveAndLog("Testing overlaps for input '" + entry.getKey() + "'");
-                ROIListData here = entry.getValue();
-                List<ROIListData> others = new ArrayList<>();
-                for (Map.Entry<String, ROIListData> entry2 : originalRoiMap.entrySet()) {
-                    if (entry.getKey().equals(entry2.getKey()))
-                        continue;
-                    others.add(entry2.getValue());
-                }
-                for (int i = 0; i < here.size(); i++) {
-                    subProgress.resolveAndLog("ROI", i, here.size());
-                    Roi roi = here.get(i);
-                    List<Roi> overlaps = new ArrayList<>();
-                    List<Boolean> overlapSuccesses = new ArrayList<>();
-                    for (ROIListData other : others) {
-                        Roi overlap = null;
-                        for (Roi roi2 : other) {
-                            overlap = calculateOverlap(temp, roi, roi2);
-                            if (overlap != null) {
-                                if (withFiltering) {
-                                    putMeasurementsIntoVariable(roi, roi2, variableSet, overlap, referenceImage, temp);
-                                    if (overlapFilter.test(variableSet))
-                                        break;
-                                    else
-                                        overlap = null;
-                                } else {
-                                    break;
-                                }
-                            }
-                        }
-                        if (overlap != null) {
-                            overlaps.add(overlap);
-                            overlapSuccesses.add(true);
-                        } else {
-                            overlapSuccesses.add(false);
-                        }
-                    }
-                    boolean success = logicalOperation.apply(overlapSuccesses);
-                    if (invert)
-                        success = !success;
-                    if (success) {
-                        if (outputOverlaps) {
-                            temp.clear();
-                            temp.addAll(overlaps);
-                            switch (logicalOperation) {
-                                case LogicalOr:
-                                    temp.logicalOr();
-                                    break;
-                                case LogicalXor:
-                                    temp.logicalXor();
-                                    break;
-                                case LogicalAnd:
-                                    temp.logicalAnd();
-                                    break;
-                            }
-                            here.set(i, temp.get(0));
-                        }
-                    } else {
-                        here.set(i, null);
-                    }
-                }
-                here.removeIf(Objects::isNull);
+        boolean withFiltering = !StringUtils.isNullOrEmpty(overlapFilter.getExpression());
+        ExpressionParameters variableSet = new ExpressionParameters();
+        ROIListData temp = new ROIListData();
+        for (Map.Entry<String, ROIListData> entry : roiMap.entrySet()) {
+            JIPipeProgressInfo subProgress = progressInfo.resolveAndLog("Testing overlaps for input '" + entry.getKey() + "'");
+            ROIListData here = entry.getValue();
+            List<ROIListData> others = new ArrayList<>();
+            for (Map.Entry<String, ROIListData> entry2 : originalRoiMap.entrySet()) {
+                if (entry.getKey().equals(entry2.getKey()))
+                    continue;
+                others.add(entry2.getValue());
             }
+            for (int i = 0; i < here.size(); i++) {
+                subProgress.resolveAndLog("ROI", i, here.size());
+                Roi roi = here.get(i);
+                List<Roi> overlaps = new ArrayList<>();
+                List<Boolean> overlapSuccesses = new ArrayList<>();
+                for (ROIListData other : others) {
+                    Roi overlap = null;
+                    for (Roi roi2 : other) {
+                        overlap = calculateOverlap(temp, roi, roi2);
+                        if (overlap != null) {
+                            if (withFiltering) {
+                                putMeasurementsIntoVariable(roi, roi2, variableSet, overlap, referenceImage, temp);
+                                if (overlapFilter.test(variableSet))
+                                    break;
+                                else
+                                    overlap = null;
+                            } else {
+                                break;
+                            }
+                        }
+                    }
+                    if (overlap != null) {
+                        overlaps.add(overlap);
+                        overlapSuccesses.add(true);
+                    } else {
+                        overlapSuccesses.add(false);
+                    }
+                }
+                boolean success = logicalOperation.apply(overlapSuccesses);
+                if (invert)
+                    success = !success;
+                if (success) {
+                    if (outputOverlaps) {
+                        temp.clear();
+                        temp.addAll(overlaps);
+                        switch (logicalOperation) {
+                            case LogicalOr:
+                                temp.logicalOr();
+                                break;
+                            case LogicalXor:
+                                temp.logicalXor();
+                                break;
+                            case LogicalAnd:
+                                temp.logicalAnd();
+                                break;
+                        }
+                        here.set(i, temp.get(0));
+                    }
+                } else {
+                    here.set(i, null);
+                }
+            }
+            here.removeIf(Objects::isNull);
         }
 
         // Save outputs
@@ -192,6 +203,13 @@ public class FilterROIByOverlapAlgorithm extends JIPipeIteratingAlgorithm {
             return roi;
         }
         return null;
+    }
+
+    @JIPipeDocumentation(name = "Deactivated outputs", description = "Here you can disable the ROI overlapping for the " +
+            "specified output slots. This will increase the performance.")
+    @JIPipeParameter("deactivated-outputs")
+    public OutputSlotMapParameterCollection getDeactivatedOutputs() {
+        return deactivatedOutputs;
     }
 
     @JIPipeDocumentation(name = "Invert", description = "If enabled, ROIs are output if there is no overlap to other ROI sets.")
