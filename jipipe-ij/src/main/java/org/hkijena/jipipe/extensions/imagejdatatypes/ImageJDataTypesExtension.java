@@ -67,6 +67,7 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.display.OpenInImageJDataDis
 import org.hkijena.jipipe.extensions.imagejdatatypes.parameters.OMEColorMode;
 import org.hkijena.jipipe.extensions.imagejdatatypes.parameters.OMETIFFCompression;
 import org.hkijena.jipipe.extensions.imagejdatatypes.resultanalysis.*;
+import org.hkijena.jipipe.extensions.imagejdatatypes.util.AVICompression;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.BitDepth;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.OptionalBitDepth;
 import org.hkijena.jipipe.extensions.parameters.primitives.HTMLText;
@@ -244,6 +245,10 @@ public class ImageJDataTypesExtension extends JIPipePrepackagedDefaultJavaExtens
                 OptionalBitDepth.class,
                 "Optional Bit depth",
                 "Image bit depth");
+        registerEnumParameterType("avi-compression",
+                AVICompression.class,
+                "AVI compression",
+                "Determines how AVI movies are compressed");
 
         // Register data types
         registerDatatype("imagej-ome",

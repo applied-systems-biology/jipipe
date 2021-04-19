@@ -26,6 +26,7 @@ import ij.ImageStack;
 import ij.WindowManager;
 import ij.gui.PolygonRoi;
 import ij.plugin.PlugIn;
+import ij.plugin.filter.AVI_Writer;
 import ij.process.*;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.extensions.imagejdatatypes.color.ColorSpace;
@@ -40,6 +41,8 @@ import java.awt.image.BufferedImage;
 import java.awt.image.ColorModel;
 import java.awt.image.DataBufferByte;
 import java.awt.image.WritableRaster;
+import java.io.IOException;
+import java.nio.file.Path;
 import java.util.List;
 import java.util.*;
 import java.util.function.BiConsumer;
@@ -1069,6 +1072,55 @@ public class ImageJUtils {
             if (mask == null || Byte.toUnsignedInt(maskBytes[i]) > 0) {
                 target.add(imageBytes[i]);
             }
+        }
+    }
+
+    public static void writeImageToMovie(ImagePlus image, HyperstackDimension followedDimension, int timePerFrame, Path outputFile, AVICompression compression, int jpegQuality, JIPipeProgressInfo progressInfo) {
+        ImageStack generatedStack = new ImageStack(image.getWidth(), image.getHeight());
+
+        if (followedDimension == HyperstackDimension.Depth) {
+            progressInfo.setMaxProgress(image.getNSlices());
+            JIPipeProgressInfo subProgress = progressInfo.resolve("Generating RGB stack");
+            for (int z = 0; z < image.getNSlices(); z++) {
+                if (progressInfo.isCancelled().get())
+                    return;
+                progressInfo.incrementProgress();
+                subProgress.log("z = " + z);
+                ImageProcessor ip = ImageJUtils.getSliceZero(image, z, 0, 0);
+                generatedStack.addSlice(new ColorProcessor(ip.getBufferedImage()));
+            }
+        } else if (followedDimension == HyperstackDimension.Channel) {
+            progressInfo.setMaxProgress(image.getNChannels());
+            JIPipeProgressInfo subProgress = progressInfo.resolve("Generating RGB stack");
+            for (int c = 0; c < image.getNChannels(); c++) {
+                if (progressInfo.isCancelled().get())
+                    return;
+                progressInfo.incrementProgress();
+                subProgress.log("c = " + c);
+                ImageProcessor ip = ImageJUtils.getSliceZero(image, 0, c, 0);
+                generatedStack.addSlice(new ColorProcessor(ip.getBufferedImage()));
+            }
+        } else if (followedDimension == HyperstackDimension.Frame) {
+            progressInfo.setMaxProgress(image.getNFrames());
+            JIPipeProgressInfo subProgress = progressInfo.resolve("Generating RGB stack");
+            for (int t = 0; t < image.getNFrames(); t++) {
+                if (progressInfo.isCancelled().get())
+                    return;
+                progressInfo.incrementProgress();
+                subProgress.log("t = " + t);
+                ImageProcessor ip = ImageJUtils.getSliceZero(image, 0, 0, t);
+                generatedStack.addSlice(new ColorProcessor(ip.getBufferedImage()));
+            }
+        }
+
+        ImagePlus combined = new ImagePlus("video", generatedStack);
+        combined.getCalibration().fps = 1.0 / timePerFrame * 1000;
+        progressInfo.log("Writing AVI with " + Math.round(combined.getCalibration().fps) + "FPS");
+        AVI_Writer writer = new AVI_Writer();
+        try {
+            writer.writeImage(combined, outputFile.toString(), compression.getNativeValue(), jpegQuality);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
     }
 

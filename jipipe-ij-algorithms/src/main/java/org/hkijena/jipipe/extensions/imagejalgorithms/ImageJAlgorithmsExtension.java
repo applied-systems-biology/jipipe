@@ -54,6 +54,7 @@ import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.lut.RemoveLUTAlgorithm
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.lut.SetLUTFromColorAlgorithm;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.math.*;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.misc.DataToPreviewAlgorithm;
+import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.misc.ExportImageToWebAlgorithm;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.morphology.*;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.noise.AddNoise2DAlgorithm;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.noise.AddSaltAndPepperNoise2DAlgorithm;
@@ -503,6 +504,9 @@ public class ImageJAlgorithmsExtension extends JIPipePrepackagedDefaultJavaExten
         registerLUTAlgorithms();
         registerOpticalFlowAlgorithms();
         registerFormAlgorithms();
+
+        registerEnumParameterType("ij1-export-image-to-web:file-format", ExportImageToWebAlgorithm.FileFormat.class, "File format", "Exported file format.");
+        registerNodeType("iji-export-image-to-web", ExportImageToWebAlgorithm.class, UIUtils.getIconURLFromResources("actions/document-export.png"));
 
         registerNodeType("ij1-generate-missing-results-table", GenerateMissingTablesAlgorithm.class, UIUtils.getIconURLFromResources("actions/image-auto-adjust.png"));
         registerNodeType("ij1-generate-filter-kernel", GenerateStructureElementAlgorithm.class, UIUtils.getIconURLFromResources("actions/morphology.png"));
