@@ -24,6 +24,7 @@ import org.hkijena.jipipe.extensions.parameters.expressions.operators.*;
 
 import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.stream.Collectors;
 
 /**
  * Describes basic properties of a {@link ExpressionParameter}
@@ -315,9 +316,20 @@ public class DefaultExpressionEvaluator extends ExpressionEvaluator {
 
     @Override
     public Object evaluate(String expression, Object evaluationContext) {
-        if (expression.trim().isEmpty())
-            return true;
-        return super.evaluate(expression, evaluationContext);
+        ExpressionParameters expressionParameters = (ExpressionParameters) evaluationContext;
+        try {
+            if (expression.trim().isEmpty())
+                return true;
+            return super.evaluate(expression, evaluationContext);
+        }
+        catch (Exception e) {
+            throw new UserFriendlyRuntimeException(e,
+                    "Error while evaluating expression",
+                    "Expression: " + expression,
+                    "The expression could not be evaluated. Available variables are " + expressionParameters.entrySet().stream()
+                            .map(kv -> kv.getKey()+ "=" + kv.getValue()).collect(Collectors.joining(" ")),
+                    "Please check if the expression is correct.");
+        }
     }
 
     @Override
