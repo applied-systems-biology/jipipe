@@ -87,7 +87,9 @@ public class JIPipeRun implements JIPipeRunnable {
 
     private void initializeInternalStoragePaths() {
         for (JIPipeGraphNode algorithm : algorithmGraph.getGraphNodes()) {
-            algorithm.setInternalStoragePath(Paths.get(StringUtils.jsonify(algorithm.getCompartment())).resolve(StringUtils.jsonify(algorithmGraph.getIdOf(algorithm))));
+            JIPipeProjectCompartment compartment = project.getCompartments().get(algorithm.getCompartmentUUIDInGraph());
+            algorithm.setInternalStoragePath(Paths.get(StringUtils.jsonify(compartment.getAliasIdInGraph()))
+                    .resolve(StringUtils.jsonify(algorithmGraph.getAliasIdOf(algorithm))));
         }
     }
 
@@ -153,7 +155,7 @@ public class JIPipeRun implements JIPipeRunnable {
         if (canFlush) {
             if (configuration.isStoreToCache() && !configuration.getDisableStoreToCacheNodes().contains(outputSlot.getNode())) {
                 JIPipeGraphNode runAlgorithm = outputSlot.getNode();
-                JIPipeGraphNode projectAlgorithm = cacheQuery.getNode(runAlgorithm.getIdInGraph());
+                JIPipeGraphNode projectAlgorithm = cacheQuery.getNode(runAlgorithm.getUUIDInGraph());
                 JIPipeProjectCacheState stateId = cacheQuery.getCachedId(projectAlgorithm);
                 project.getCache().store(projectAlgorithm, stateId, outputSlot, progressInfo);
             }
@@ -357,7 +359,7 @@ public class JIPipeRun implements JIPipeRunnable {
         }
 
         if (!dataLoadedFromCache) {
-            JIPipeProjectCompartment nodeCompartment = getProject().getCompartments().get(node.getCompartment());
+            JIPipeProjectCompartment nodeCompartment = getProject().getCompartments().get(node.getCompartmentUUIDInGraph());
             String nodeCompartmentName = nodeCompartment != null ? nodeCompartment.getName() : "<Subgraph>";
             try {
                 if (node instanceof JIPipeAlgorithm) {
@@ -398,7 +400,7 @@ public class JIPipeRun implements JIPipeRunnable {
     private boolean tryLoadFromCache(JIPipeGraphNode algorithm, JIPipeProgressInfo progressInfo) {
         if (!configuration.isLoadFromCache())
             return false;
-        JIPipeGraphNode projectAlgorithm = cacheQuery.getNode(algorithm.getIdInGraph());
+        JIPipeGraphNode projectAlgorithm = cacheQuery.getNode(algorithm.getUUIDInGraph());
         JIPipeProjectCacheState stateId = cacheQuery.getCachedId(projectAlgorithm);
         Map<String, JIPipeDataSlot> cachedData = project.getCache().extract(projectAlgorithm, stateId);
         if (!cachedData.isEmpty()) {

@@ -73,7 +73,7 @@ public class JsonAlgorithm extends GraphWrapperAlgorithm implements JIPipeCustom
         }
 
         graph.removeNode(algorithm, false);
-        graph.insertNode(group, algorithm.getCompartment());
+        graph.insertNode(group, algorithm.getCompartmentUUIDInGraph());
 
         for (Map.Entry<JIPipeDataSlot, JIPipeDataSlot> edge : edges) {
             if (edge.getKey().getNode() == algorithm) {

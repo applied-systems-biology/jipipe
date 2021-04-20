@@ -976,6 +976,16 @@ public abstract class JIPipeGraphNode implements JIPipeValidatable, JIPipeParame
         return StringUtils.nullToEmpty(getCompartmentUUIDInGraph());
     }
 
+    /**
+     * Returns the alias ID of this node.
+     * It is unique within the same graph, but should not be used to identify it due to dependency on the node's name.
+     * Use the UUID instead.
+     * @return the alias ID
+     */
+    public String getAliasIdInGraph() {
+        return graph.getAliasIdOf(this);
+    }
+
 
     /**
      * Serializes an {@link JIPipeGraphNode} instance

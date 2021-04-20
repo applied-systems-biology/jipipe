@@ -267,8 +267,10 @@ public class JIPipeAlgorithmCacheBrowserUI extends JIPipeProjectWorkbenchPanel {
                     String currentStateId = ((JIPipeAlgorithm) graphNode).getStateId();
                     ObjectNode stateIdJson = JsonUtils.getObjectMapper().readerFor(ObjectNode.class).readValue(stateId);
                     ObjectNode currentStateIdJson = JsonUtils.getObjectMapper().readerFor(ObjectNode.class).readValue(currentStateId);
-                    stateIdJson.remove("jipipe:node-id");
-                    currentStateIdJson.remove("jipipe:node-id");
+                    stateIdJson.remove("jipipe:node-alias-id");
+                    stateIdJson.remove("jipipe:node-uuid");
+                    currentStateIdJson.remove("jipipe:node-alias-id");
+                    currentStateIdJson.remove("jipipe:node-uuid");
                     if (!Objects.equals(stateIdJson, currentStateIdJson)) {
                         if (JOptionPane.showConfirmDialog(this,
                                 "The cache folder was created for a different parameter set.\n\nContinue anyways?",

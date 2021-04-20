@@ -47,7 +47,7 @@ public class JIPipeAlgorithmTargetFinderUI extends JPanel {
     private final JIPipeDataSlot outputSlot;
     private final JIPipeGraphNode algorithm;
     private final JIPipeGraph graph;
-    private final String compartment;
+    private final UUID compartment;
     private final JIPipeAlgorithmTargetRanking ranking;
     private final EventBus eventBus = new EventBus();
     private final List<Object> availableContents = new ArrayList<>();
@@ -264,7 +264,7 @@ public class JIPipeAlgorithmTargetFinderUI extends JPanel {
      *
      * @return Compartment ID
      */
-    public String getCompartment() {
+    public UUID getCompartment() {
         return compartment;
     }
 }

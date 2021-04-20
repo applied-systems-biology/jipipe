@@ -23,13 +23,14 @@ import org.jgrapht.graph.DefaultEdge;
 import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.UUID;
 
 /**
  * A query that allows to access a {@link JIPipeProjectCache}. This query caches the node cache states, so they are not always recalculated (which is expensive!)
  */
 public class JIPipeProjectCacheQuery {
     private final JIPipeProject project;
-    private BiMap<String, JIPipeGraphNode> nodes = HashBiMap.create();
+    private BiMap<UUID, JIPipeGraphNode> nodes = HashBiMap.create();
     private BiMap<JIPipeGraphNode, JIPipeProjectCacheState> cachedStates = HashBiMap.create();
     private DefaultDirectedGraph<JIPipeProjectCacheState, DefaultEdge> stateGraph = new DefaultDirectedGraph<>(DefaultEdge.class);
 
@@ -44,8 +45,8 @@ public class JIPipeProjectCacheQuery {
     public void rebuild() {
         // Fetch nodes and make a copy. Required because users might invalidate (delete) the nodes
         this.nodes.clear();
-        for (Map.Entry<String, JIPipeGraphNode> entry : project.getGraph().getNodes().entrySet()) {
-            this.nodes.put(entry.getKey(), entry.getValue());
+        for (UUID uuid : project.getGraph().getGraphNodeUUIDs()) {
+            this.nodes.put(uuid, project.getGraph().getNodeByUUID(uuid));
         }
 
         // Create the state graph
@@ -68,7 +69,7 @@ public class JIPipeProjectCacheQuery {
         }
     }
 
-    public JIPipeGraphNode getNode(String id) {
+    public JIPipeGraphNode getNode(UUID id) {
         return nodes.get(id);
     }
 
@@ -76,7 +77,7 @@ public class JIPipeProjectCacheQuery {
         return project;
     }
 
-    public BiMap<String, JIPipeGraphNode> getNodes() {
+    public BiMap<UUID, JIPipeGraphNode> getNodes() {
         return nodes;
     }
 

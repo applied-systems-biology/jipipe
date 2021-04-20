@@ -29,10 +29,8 @@ import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.io.IOException;
 import java.nio.file.Files;
-import java.util.ArrayList;
-import java.util.LinkedHashSet;
+import java.util.*;
 import java.util.List;
-import java.util.Set;
 
 /**
  * UI around an {@link JIPipeRun} result
@@ -124,9 +122,10 @@ public class JIPipeResultUI extends JIPipeProjectWorkbenchPanel {
     }
 
     private List<JIPipeDataSlot> listDataSlotsOfCompartment(JIPipeProjectCompartment compartment) {
+        UUID projectCompartmentUUID = compartment.getProjectCompartmentUUID();
         List<JIPipeDataSlot> result = new ArrayList<>();
         for (JIPipeGraphNode algorithm : run.getGraph().getGraphNodes()) {
-            if (algorithm.getCompartment().equals(compartment.getProjectCompartmentId())) {
+            if (Objects.equals(algorithm.getCompartmentUUIDInGraph(), projectCompartmentUUID)) {
                 for (JIPipeDataSlot outputSlot : algorithm.getOutputSlots()) {
                     if (Files.exists(outputSlot.getStoragePath().resolve("data-table.json"))) {
                         result.add(outputSlot);

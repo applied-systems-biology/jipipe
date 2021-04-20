@@ -53,7 +53,6 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static org.hkijena.jipipe.api.nodes.JIPipeGraph.COMPARTMENT_DEFAULT;
 
 /**
  * Graph editor UI for a project compartment graph
@@ -65,7 +64,7 @@ public class JIPipeCompartmentGraphUI extends JIPipeGraphEditorUI {
      * @param workbenchUI The workbench UI
      */
     public JIPipeCompartmentGraphUI(JIPipeProjectWorkbench workbenchUI) {
-        super(workbenchUI, workbenchUI.getProject().getCompartmentGraph(), COMPARTMENT_DEFAULT);
+        super(workbenchUI, workbenchUI.getProject().getCompartmentGraph(), null);
         initializeDefaultPanel();
         setPropertyPanel(defaultPanel);
 
@@ -199,7 +198,7 @@ public class JIPipeCompartmentGraphUI extends JIPipeGraphEditorUI {
         JIPipeCommentNode node = JIPipe.createNode(JIPipeCommentNode.class);
         AddNodeGraphHistorySnapshot snapshot = new AddNodeGraphHistorySnapshot(getAlgorithmGraph(), Collections.singleton(node));
         getCanvasUI().getGraphHistory().addSnapshotBefore(snapshot);
-        getAlgorithmGraph().insertNode(node, COMPARTMENT_DEFAULT);
+        getAlgorithmGraph().insertNode(node);
     }
 
     private void importCompartment() {

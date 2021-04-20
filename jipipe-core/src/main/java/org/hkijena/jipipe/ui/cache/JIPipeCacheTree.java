@@ -55,7 +55,7 @@ public class JIPipeCacheTree extends JIPipeProjectWorkbenchPanel {
     public void refreshTree() {
         int scrollPosition = treeScollPane.getVerticalScrollBar().getValue();
 
-        Map<String, Map<JIPipeGraphNode, Map<JIPipeProjectCacheState, List<JIPipeDataSlot>>>> byCompartmentId = new HashMap<>();
+        Map<UUID, Map<JIPipeGraphNode, Map<JIPipeProjectCacheState, List<JIPipeDataSlot>>>> byCompartmentId = new HashMap<>();
         for (JIPipeGraphNode node : getProject().getGraph().getGraphNodes()) {
             Map<JIPipeProjectCacheState, Map<String, JIPipeDataSlot>> stateMap = getProject().getCache().extract((JIPipeAlgorithm) node);
             if (stateMap == null)
@@ -65,7 +65,7 @@ public class JIPipeCacheTree extends JIPipeProjectWorkbenchPanel {
                 Map<String, JIPipeDataSlot> slots = stateMap.getOrDefault(stateEntry.getKey(), null);
                 if (slots == null)
                     continue;
-                String compartmentId = node.getCompartment();
+                UUID compartmentId = node.getCompartmentUUIDInGraph();
                 Map<JIPipeGraphNode, Map<JIPipeProjectCacheState, List<JIPipeDataSlot>>> algorithmMap = byCompartmentId.getOrDefault(compartmentId, null);
                 if (algorithmMap == null) {
                     algorithmMap = new HashMap<>();
@@ -86,13 +86,13 @@ public class JIPipeCacheTree extends JIPipeProjectWorkbenchPanel {
 
         DefaultMutableTreeNode root = new DefaultMutableTreeNode(null);
 
-        Set<String> coveredCompartments = new HashSet<>();
+        Set<UUID> coveredCompartments = new HashSet<>();
         for (JIPipeProjectCompartment compartment : getProject().getCompartmentGraph().traverse()
                 .stream().map(a -> (JIPipeProjectCompartment) a).collect(Collectors.toList())) {
-            createCompartmentNode(root, byCompartmentId.getOrDefault(compartment.getProjectCompartmentId(), Collections.emptyMap()), compartment.getName());
-            coveredCompartments.add(compartment.getProjectCompartmentId());
+            createCompartmentNode(root, byCompartmentId.getOrDefault(compartment.getProjectCompartmentUUID(), Collections.emptyMap()), compartment.getProjectCompartmentUUID());
+            coveredCompartments.add(compartment.getProjectCompartmentUUID());
         }
-        for (Map.Entry<String, Map<JIPipeGraphNode, Map<JIPipeProjectCacheState, List<JIPipeDataSlot>>>> entry : byCompartmentId.entrySet()) {
+        for (Map.Entry<UUID, Map<JIPipeGraphNode, Map<JIPipeProjectCacheState, List<JIPipeDataSlot>>>> entry : byCompartmentId.entrySet()) {
             if (!coveredCompartments.contains(entry.getKey())) {
                 createCompartmentNode(root, byCompartmentId.getOrDefault(entry.getKey(), Collections.emptyMap()), entry.getKey());
             }
@@ -133,10 +133,13 @@ public class JIPipeCacheTree extends JIPipeProjectWorkbenchPanel {
         }
     }
 
-    private void createCompartmentNode(DefaultMutableTreeNode root, Map<JIPipeGraphNode, Map<JIPipeProjectCacheState, List<JIPipeDataSlot>>> algorithms, String compartmentName) {
-        DefaultMutableTreeNode compartmentNode = new DefaultMutableTreeNode(compartmentName);
+    private void createCompartmentNode(DefaultMutableTreeNode root, Map<JIPipeGraphNode, Map<JIPipeProjectCacheState, List<JIPipeDataSlot>>> algorithms, UUID compartmentUUID) {
+        JIPipeProjectCompartment projectCompartment = getProject().getCompartments().getOrDefault(compartmentUUID, null);
+        if(projectCompartment == null)
+            return;
+        DefaultMutableTreeNode compartmentNode = new DefaultMutableTreeNode(projectCompartment.getName());
 
-        boolean compartmentMatches = searchTextField.test(compartmentName);
+        boolean compartmentMatches = searchTextField.test(projectCompartment.getName());
         boolean compartmentHasMatchingChild = false;
 
         for (Map.Entry<JIPipeGraphNode, Map<JIPipeProjectCacheState, List<JIPipeDataSlot>>> algorithmEntry : algorithms.entrySet()) {

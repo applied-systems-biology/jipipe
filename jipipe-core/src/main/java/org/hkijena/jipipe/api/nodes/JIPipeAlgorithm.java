@@ -28,6 +28,7 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterVisibility;
 import org.hkijena.jipipe.utils.JsonUtils;
+import org.hkijena.jipipe.utils.StringUtils;
 
 import java.io.IOException;
 import java.io.StringWriter;
@@ -234,8 +235,10 @@ public abstract class JIPipeAlgorithm extends JIPipeGraphNode {
 //            }
             jsonGenerator.writeStartObject();
             jsonGenerator.writeStringField("jipipe:node-info-id", algorithm.getInfo().getId());
-            if (algorithm.getGraph() != null)
-                jsonGenerator.writeStringField("jipipe:node-id", algorithm.getIdInGraph());
+            if (algorithm.getGraph() != null) {
+                jsonGenerator.writeStringField("jipipe:node-uuid", StringUtils.nullToEmpty(algorithm.getUUIDInGraph()));
+                jsonGenerator.writeStringField("jipipe:node-alias-id", algorithm.getAliasIdInGraph());
+            }
 //            jsonGenerator.writeObjectField("jipipe:cache-state:source-nodes", sources);
             JIPipeParameterCollection.serializeParametersToJson(algorithm, jsonGenerator, this::serializeParameter);
             jsonGenerator.writeEndObject();
