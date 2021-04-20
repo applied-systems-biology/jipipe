@@ -512,7 +512,7 @@ public class JIPipeProject implements JIPipeValidatable {
 
         // Checking for error
         JIPipeValidityReport checkNodesReport = report.forCategory("Check nodes");
-        for (JIPipeGraphNode graphNode : graph.getGraphNodes()) {
+        for (JIPipeGraphNode graphNode : ImmutableList.copyOf(graph.getGraphNodes())) {
             UUID compartmentUUIDInGraph = graphNode.getCompartmentUUIDInGraph();
             if (compartmentUUIDInGraph == null || !compartments.containsKey(compartmentUUIDInGraph)) {
                 checkNodesReport.reportIsInvalid("Node has no compartment!",
