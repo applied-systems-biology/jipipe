@@ -122,7 +122,6 @@ public class TooltipUtils {
             builder.append("## Developer information\n\n");
             builder.append("<table>");
             builder.append("<tr><td><strong>Node type ID</strong></td><td><code>").append(HtmlEscapers.htmlEscaper().escape(info.getId())).append("</code></td></tr>");
-            builder.append("<tr><td><strong>Node ID</strong></td><td><code>").append(HtmlEscapers.htmlEscaper().escape(info.getId())).append("</code></td></tr>");
             for (String dependencyCitation : info.getAdditionalCitations()) {
                 builder.append("<tr><td><strong>Node additional citation</strong></td><td>").append(HtmlEscapers.htmlEscaper().escape(dependencyCitation)).append("</td></tr>");
             }
