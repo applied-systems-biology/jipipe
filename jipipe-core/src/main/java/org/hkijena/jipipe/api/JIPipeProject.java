@@ -386,7 +386,7 @@ public class JIPipeProject implements JIPipeValidatable {
     /**
      * Re-assigns graph node Ids based on their name
      */
-    public void cleanupGraph() {
+    public void rebuildAliasIds() {
         try {
             isCleaningUp = true;
             compartmentGraph.rebuildAliasIds();
@@ -502,13 +502,10 @@ public class JIPipeProject implements JIPipeValidatable {
         }
 
         // Reading compartments might break some connections. This will restore them
-        graph.fromJson(jsonNode.get("graph"), report);
+        graph.edgesFromJson(jsonNode.get("graph"), report);
 
         // Update node visibilities
         updateCompartmentVisibility();
-
-        // Apply some clean-up
-        cleanupGraph();
 
         // Checking for error
         JIPipeValidityReport checkNodesReport = report.forCategory("Check nodes");

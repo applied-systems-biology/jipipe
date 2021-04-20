@@ -41,7 +41,7 @@ public class JIPipeRun implements JIPipeRunnable {
     private final JIPipeProject project;
     private final JIPipeProjectCacheQuery cacheQuery;
     private final JIPipeRunSettings configuration;
-    JIPipeGraph algorithmGraph;
+    JIPipeGraph copiedGraph;
     private JIPipeProgressInfo progressInfo = new JIPipeProgressInfo();
     private JIPipeFixedThreadPool threadPool;
 
@@ -51,13 +51,13 @@ public class JIPipeRun implements JIPipeRunnable {
      */
     public JIPipeRun(JIPipeProject project, JIPipeRunSettings configuration) {
         // First clean up the graph
-        project.cleanupGraph();
+        project.rebuildAliasIds();
         this.project = project;
         this.cacheQuery = new JIPipeProjectCacheQuery(project);
         this.configuration = configuration;
-        this.algorithmGraph = new JIPipeGraph(project.getGraph());
-        this.algorithmGraph.setAttachments(project.getGraph().getAttachments());
-        this.algorithmGraph.attach(this);
+        this.copiedGraph = new JIPipeGraph(project.getGraph());
+        this.copiedGraph.setAttachments(project.getGraph().getAttachments());
+        this.copiedGraph.attach(this);
         initializeRelativeDirectories();
         initializeInternalStoragePaths();
     }
@@ -80,16 +80,16 @@ public class JIPipeRun implements JIPipeRunnable {
     }
 
     private void initializeRelativeDirectories() {
-        for (JIPipeGraphNode algorithm : algorithmGraph.getGraphNodes()) {
+        for (JIPipeGraphNode algorithm : copiedGraph.getGraphNodes()) {
             algorithm.setWorkDirectory(null);
         }
     }
 
     private void initializeInternalStoragePaths() {
-        for (JIPipeGraphNode algorithm : algorithmGraph.getGraphNodes()) {
+        for (JIPipeGraphNode algorithm : copiedGraph.getGraphNodes()) {
             JIPipeProjectCompartment compartment = project.getCompartments().get(algorithm.getCompartmentUUIDInGraph());
             algorithm.setInternalStoragePath(Paths.get(StringUtils.jsonify(compartment.getAliasIdInGraph()))
-                    .resolve(StringUtils.jsonify(algorithmGraph.getAliasIdOf(algorithm))));
+                    .resolve(StringUtils.jsonify(copiedGraph.getAliasIdOf(algorithm))));
         }
     }
 
@@ -123,7 +123,7 @@ public class JIPipeRun implements JIPipeRunnable {
             }
 
             // Apply output path to the data slots
-            for (JIPipeDataSlot slot : algorithmGraph.getSlotNodes()) {
+            for (JIPipeDataSlot slot : copiedGraph.getSlotNodes()) {
                 if (slot.isOutput()) {
                     slot.setStoragePath(configuration.getOutputPath().resolve(slot.getNode().getInternalStoragePath().resolve(slot.getName())));
                     try {
@@ -147,7 +147,7 @@ public class JIPipeRun implements JIPipeRunnable {
         for (int j = currentIndex + 1; j < traversedSlots.size(); ++j) {
             JIPipeDataSlot futureSlot = traversedSlots.get(j);
             boolean isDeactivated = (futureSlot.getNode() instanceof JIPipeAlgorithm) && (!((JIPipeAlgorithm) futureSlot.getNode()).isEnabled());
-            if (!isDeactivated && futureSlot.isInput() && algorithmGraph.getSourceSlots(futureSlot).contains(outputSlot)) {
+            if (!isDeactivated && futureSlot.isInput() && copiedGraph.getSourceSlots(futureSlot).contains(outputSlot)) {
                 canFlush = false;
                 break;
             }
@@ -200,7 +200,7 @@ public class JIPipeRun implements JIPipeRunnable {
         }
 
         // Clear all slots
-        for (JIPipeGraphNode node : algorithmGraph.getGraphNodes()) {
+        for (JIPipeGraphNode node : copiedGraph.getGraphNodes()) {
             node.clearSlotData();
         }
 
@@ -229,20 +229,20 @@ public class JIPipeRun implements JIPipeRunnable {
     }
 
     private void runAnalysis(JIPipeProgressInfo progressInfo) {
-        Set<JIPipeGraphNode> unExecutableAlgorithms = algorithmGraph.getDeactivatedAlgorithms(!configuration.isIgnoreDeactivatedInputs());
+        Set<JIPipeGraphNode> unExecutableAlgorithms = copiedGraph.getDeactivatedAlgorithms(!configuration.isIgnoreDeactivatedInputs());
         Set<JIPipeGraphNode> executedAlgorithms = new HashSet<>();
         Set<JIPipeDataSlot> flushedSlots = new HashSet<>();
-        List<JIPipeDataSlot> traversedSlots = algorithmGraph.traverseSlots();
+        List<JIPipeDataSlot> traversedSlots = copiedGraph.traverseSlots();
 
         List<JIPipeGraphNode> preprocessorNodes = new ArrayList<>();
         List<JIPipeGraphNode> postprocessorNodes = new ArrayList<>();
-        for (JIPipeGraphNode node : algorithmGraph.getGraphNodes()) {
+        for (JIPipeGraphNode node : copiedGraph.getGraphNodes()) {
             if (!unExecutableAlgorithms.contains(node) && node.getInputSlots().isEmpty() &&
                     node instanceof JIPipeAlgorithm && ((JIPipeAlgorithm) node).isPreprocessor()) {
                 preprocessorNodes.add(node);
             } else if (!unExecutableAlgorithms.contains(node) &&
                     node instanceof JIPipeAlgorithm && ((JIPipeAlgorithm) node).isPreprocessor()) {
-                if (node.getOpenInputSlots().stream().allMatch(nd -> algorithmGraph.getTargetSlots(nd).isEmpty())) {
+                if (node.getOpenInputSlots().stream().allMatch(nd -> copiedGraph.getTargetSlots(nd).isEmpty())) {
                     postprocessorNodes.add(node);
                 }
             }
@@ -280,12 +280,12 @@ public class JIPipeRun implements JIPipeRunnable {
 
             if (slot.isInput()) {
                 // Copy data from source
-                for (JIPipeDataSlot sourceSlot : algorithmGraph.getSourceSlots(slot)) {
+                for (JIPipeDataSlot sourceSlot : copiedGraph.getSourceSlots(slot)) {
                     slot.addData(sourceSlot, subProgress);
                 }
 
                 // Check if we can flush the output that sourced the input
-                for (JIPipeDataSlot sourceSlot : algorithmGraph.getSourceSlots(slot)) {
+                for (JIPipeDataSlot sourceSlot : copiedGraph.getSourceSlots(slot)) {
                     tryFlushOutputSlot(traversedSlots, executedAlgorithms, index, sourceSlot, flushedSlots, subProgress);
                 }
             } else if (slot.isOutput()) {
@@ -314,7 +314,7 @@ public class JIPipeRun implements JIPipeRunnable {
         // There might be some algorithms missing (ones that do not have an output)
         // Will also run any postprocessor
         List<JIPipeGraphNode> additionalAlgorithms = new ArrayList<>();
-        for (JIPipeGraphNode node : algorithmGraph.getGraphNodes()) {
+        for (JIPipeGraphNode node : copiedGraph.getGraphNodes()) {
             if (progressInfo.isCancelled().get())
                 break;
             if (!executedAlgorithms.contains(node) && !unExecutableAlgorithms.contains(node)) {
@@ -337,7 +337,7 @@ public class JIPipeRun implements JIPipeRunnable {
         if (flushedSlots.contains(inputSlot))
             return;
         Set<JIPipeGraphNode> sourceAlgorithms = new HashSet<>();
-        for (JIPipeDataSlot sourceSlot : algorithmGraph.getSourceSlots(inputSlot)) {
+        for (JIPipeDataSlot sourceSlot : copiedGraph.getSourceSlots(inputSlot)) {
             sourceAlgorithms.add(sourceSlot.getNode());
         }
         sourceAlgorithms.removeAll(executedAlgorithms);
@@ -426,7 +426,7 @@ public class JIPipeRun implements JIPipeRunnable {
      * @return The graph used within this run. A copy of the project graph.
      */
     public JIPipeGraph getGraph() {
-        return algorithmGraph;
+        return copiedGraph;
     }
 
     /**

@@ -91,6 +91,8 @@ public class JIPipeGraph implements JIPipeValidatable {
             JIPipeGraphNode algorithm = kv.getValue().getInfo().duplicate(kv.getValue());
             nodeUUIDs.put(kv.getKey(), algorithm);
             nodeAliasIds.put(kv.getKey(), other.getAliasIdOf(kv.getValue()));
+            nodeCompartmentUUIDs.put(kv.getKey(), other.getCompartmentUUIDOf(kv.getValue()));
+            nodeVisibleCompartmentUUIDs.put(kv.getKey(), new HashSet<>(other.getVisibleCompartmentUUIDsOf(kv.getValue())));
             algorithm.setGraph(this);
             algorithm.getEventBus().register(this);
         }
@@ -806,52 +808,34 @@ public class JIPipeGraph implements JIPipeValidatable {
         if (!jsonNode.has("nodes"))
             return;
 
-        Map<UUID, JIPipeGraphNode> loadedNodeUUIDs = new HashMap<>();
-
-        for (Map.Entry<String, JsonNode> entry : ImmutableList.copyOf(jsonNode.get("nodes").fields())) {
-
-            JsonNode currentNodeJson = entry.getValue();
-
-            UUID nodeUUID;
-            try {
-                nodeUUID = UUID.fromString(entry.getKey());
-            }
-            catch (IllegalArgumentException e) {
-                // Assign new UUID and store it in the legacy assignments
-                nodeUUID = UUID.randomUUID();
-            }
-
-            if (!nodeUUIDs.containsKey(nodeUUID)) {
-                String id = currentNodeJson.get("jipipe:node-info-id").asText();
-                if (!JIPipe.getNodes().hasNodeInfoWithId(id)) {
-                    System.err.println("Unable to find node with ID '" + id + "'. Skipping.");
-                    issues.forCategory("Nodes").forCategory(id).reportIsInvalid("Unable to find node type '" + id + "'!",
-                            "The JSON data requested to load a node of type '" + id + "', but it is not known to JIPipe.",
-                            "Please check if all extensions are are correctly loaded.",
-                            jsonNode);
-                    continue;
-                }
-
-                String compartmentString = currentNodeJson.get("jipipe:graph-compartment").asText();
-                UUID compartmentUUID;
-                try {
-                    compartmentUUID = UUID.fromString(compartmentString);
-                }
-                catch (IllegalArgumentException e) {
-                    // Set to default compartment and store into legacy compartment
-                    compartmentUUID = null;
-                    if(!"DEFAULT".equals(compartmentString))
-                        nodeLegacyCompartmentIDs.put(nodeUUID, compartmentString);
-                }
-
-                JIPipeNodeInfo info = JIPipe.getNodes().getInfoById(id);
-                JIPipeGraphNode algorithm = info.newInstance();
-                algorithm.fromJson(currentNodeJson, issues.forCategory("Nodes").forCategory(id));
-                insertNode(nodeUUID, algorithm, compartmentUUID);
-            }
-        }
+        // Load nodes
+        nodesFromJson(jsonNode, issues);
 
         // Load edges
+        edgesFromJson(jsonNode, issues);
+
+        // Deserialize additional metadata
+        JsonNode additionalMetadataNode = jsonNode.path("additional-metadata");
+        for (Map.Entry<String, JsonNode> metadataEntry : ImmutableList.copyOf(additionalMetadataNode.fields())) {
+            try {
+                Class<?> metadataClass = JsonUtils.getObjectMapper().readerFor(Class.class).readValue(metadataEntry.getValue().get("jipipe:type"));
+                if (JIPipeParameterCollection.class.isAssignableFrom(metadataClass)) {
+                    JIPipeParameterCollection metadata = (JIPipeParameterCollection) ReflectionUtils.newInstance(metadataClass);
+                    JIPipeParameterCollection.deserializeParametersFromJson(metadata, metadataEntry.getValue(), issues.forCategory("Metadata"));
+                    additionalMetadata.put(metadataEntry.getKey(), metadata);
+                } else {
+                    Object data = JsonUtils.getObjectMapper().readerFor(metadataClass).readValue(metadataEntry.getValue().get("data"));
+                    if (data != null) {
+                        additionalMetadata.put(metadataEntry.getKey(), data);
+                    }
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    public void edgesFromJson(JsonNode jsonNode, JIPipeValidityReport issues) {
         for (JsonNode edgeNode : ImmutableList.copyOf(jsonNode.get("edges").elements())) {
             String sourceAlgorithmName = edgeNode.get("source-node").asText();
             String targetAlgorithmName = edgeNode.get("target-node").asText();
@@ -923,24 +907,60 @@ public class JIPipeGraph implements JIPipeValidatable {
                 }
             }
         }
+    }
 
-        // Deserialize additional metadata
-        JsonNode additionalMetadataNode = jsonNode.path("additional-metadata");
-        for (Map.Entry<String, JsonNode> metadataEntry : ImmutableList.copyOf(additionalMetadataNode.fields())) {
+    public void nodesFromJson(JsonNode jsonNode, JIPipeValidityReport issues) {
+        for (Map.Entry<String, JsonNode> entry : ImmutableList.copyOf(jsonNode.get("nodes").fields())) {
+            JsonNode currentNodeJson = entry.getValue();
+
+            UUID nodeUUID;
+            String aliasId = null;
             try {
-                Class<?> metadataClass = JsonUtils.getObjectMapper().readerFor(Class.class).readValue(metadataEntry.getValue().get("jipipe:type"));
-                if (JIPipeParameterCollection.class.isAssignableFrom(metadataClass)) {
-                    JIPipeParameterCollection metadata = (JIPipeParameterCollection) ReflectionUtils.newInstance(metadataClass);
-                    JIPipeParameterCollection.deserializeParametersFromJson(metadata, metadataEntry.getValue(), issues.forCategory("Metadata"));
-                    additionalMetadata.put(metadataEntry.getKey(), metadata);
-                } else {
-                    Object data = JsonUtils.getObjectMapper().readerFor(metadataClass).readValue(metadataEntry.getValue().get("data"));
-                    if (data != null) {
-                        additionalMetadata.put(metadataEntry.getKey(), data);
-                    }
+                nodeUUID = UUID.fromString(entry.getKey());
+            }
+            catch (IllegalArgumentException e) {
+                // Assign new UUID and store it in the legacy assignments
+                nodeUUID = UUID.randomUUID();
+                aliasId = entry.getKey();
+            }
+
+            if (!nodeUUIDs.containsKey(nodeUUID)) {
+                String id = currentNodeJson.get("jipipe:node-info-id").asText();
+                if (!JIPipe.getNodes().hasNodeInfoWithId(id)) {
+                    System.err.println("Unable to find node type with ID '" + id + "'. Skipping.");
+                    issues.forCategory("Nodes").forCategory(id).reportIsInvalid("Unable to find node type '" + id + "'!",
+                            "The JSON data requested to load a node of type '" + id + "', but it is not known to JIPipe.",
+                            "Please check if all extensions are are correctly loaded.",
+                            jsonNode);
+                    continue;
                 }
-            } catch (Exception e) {
-                e.printStackTrace();
+
+                String compartmentString = currentNodeJson.get("jipipe:graph-compartment").asText();
+                UUID compartmentUUID;
+                try {
+                    compartmentUUID = UUID.fromString(compartmentString);
+                }
+                catch (IllegalArgumentException e) {
+                    // Set to default compartment and store into legacy compartment
+                    compartmentUUID = null;
+                    if(!"DEFAULT".equals(compartmentString))
+                        nodeLegacyCompartmentIDs.put(nodeUUID, compartmentString);
+                }
+
+                JsonNode aliasIdNode = currentNodeJson.path("jipipe:alias-id");
+                if(!aliasIdNode.isMissingNode()) {
+                    aliasId = aliasIdNode.asText();
+                }
+
+                JIPipeNodeInfo info = JIPipe.getNodes().getInfoById(id);
+                JIPipeGraphNode algorithm = info.newInstance();
+                algorithm.fromJson(currentNodeJson, issues.forCategory("Nodes").forCategory(id));
+                insertNode(nodeUUID, algorithm, compartmentUUID);
+                if(aliasId != null) {
+                    nodeAliasIds.remove(nodeUUID);
+                    System.out.println(nodeUUID + " <-> " + aliasId);
+                    nodeAliasIds.put(nodeUUID, aliasId);
+                }
             }
         }
     }
