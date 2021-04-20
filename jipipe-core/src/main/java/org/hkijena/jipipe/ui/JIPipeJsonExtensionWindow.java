@@ -21,9 +21,12 @@ import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.JIPipeDependency;
 import org.hkijena.jipipe.JIPipeJsonExtension;
 import org.hkijena.jipipe.JIPipeRegistryIssues;
+import org.hkijena.jipipe.api.JIPipeMetadata;
 import org.hkijena.jipipe.api.JIPipeProject;
+import org.hkijena.jipipe.api.JIPipeValidityReport;
 import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
 import org.hkijena.jipipe.extensions.jsonextensionloader.JsonExtensionLoaderExtension;
+import org.hkijena.jipipe.extensions.parameters.primitives.HTMLText;
 import org.hkijena.jipipe.extensions.settings.ExtensionSettings;
 import org.hkijena.jipipe.extensions.settings.FileChooserSettings;
 import org.hkijena.jipipe.extensions.settings.GeneralUISettings;
@@ -42,6 +45,7 @@ import java.awt.*;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
@@ -303,6 +307,54 @@ public class JIPipeJsonExtensionWindow extends JFrame {
             JsonNode jsonData = JsonUtils.getObjectMapper().readValue(path.toFile(), JsonNode.class);
             Set<JIPipeDependency> dependencySet = JIPipeProject.loadDependenciesFromJson(jsonData);
             Set<JIPipeDependency> missingDependencies = JIPipeDependency.findUnsatisfiedDependencies(dependencySet);
+
+            // Check project version as well
+            int projectFormat = 0;
+            JsonNode projectFormatNode = jsonData.path("jipipe:project-format-version");
+            if(!projectFormatNode.isMissingNode()) {
+                try {
+                    projectFormat = projectFormatNode.asInt();
+                }
+                catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+            if(projectFormat > JIPipeProject.CURRENT_PROJECT_FORMAT_VERSION) {
+                int finalProjectFormat = projectFormat;
+                missingDependencies.add(new JIPipeDependency() {
+                    @Override
+                    public JIPipeMetadata getMetadata() {
+                        return new JIPipeMetadata() {
+                            {
+                                setTitle("Newer JIPipe version");
+                                setDescription(new HTMLText("You might require a newer JIPipe version to load this"));
+                                setWebsite("https://www.jipipe.org/");
+                            }
+                        };
+                    }
+
+                    @Override
+                    public String getDependencyId() {
+                        return "org.hkijena.jipipe";
+                    }
+
+                    @Override
+                    public String getDependencyVersion() {
+                        return "Project format " + finalProjectFormat;
+                    }
+
+                    @Override
+                    public Path getDependencyLocation() {
+                        return Paths.get("");
+                    }
+
+                    @Override
+                    public void reportValidity(JIPipeValidityReport report) {
+
+                    }
+                });
+            }
+
             if (!missingDependencies.isEmpty()) {
                 if (!UnsatisfiedDependenciesDialog.showDialog(getProjectUI(), path, missingDependencies, Collections.emptySet()))
                     return;
