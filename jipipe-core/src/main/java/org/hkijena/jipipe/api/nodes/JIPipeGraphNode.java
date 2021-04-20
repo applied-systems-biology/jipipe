@@ -440,6 +440,8 @@ public abstract class JIPipeGraphNode implements JIPipeValidatable, JIPipeParame
      */
     public void toJson(JsonGenerator jsonGenerator) throws IOException, JsonProcessingException {
         jsonGenerator.writeStartObject();
+        jsonGenerator.writeStringField("jipipe:graph-compartment", StringUtils.nullToEmpty(getCompartmentUUIDInGraph()));
+        jsonGenerator.writeStringField("jipipe:alias-id", StringUtils.nullToEmpty(getAliasIdInGraph()));
         jsonGenerator.writeObjectField("jipipe:slot-configuration", slotConfiguration);
         jsonGenerator.writeFieldName("jipipe:ui-grid-location");
         jsonGenerator.writeStartObject();
@@ -674,7 +676,12 @@ public abstract class JIPipeGraphNode implements JIPipeValidatable, JIPipeParame
      * @return The UUID within getGraph()
      */
     public UUID getCompartmentUUIDInGraph() {
-        return graph.getCompartmentUUIDOf(this);
+        if(graph != null) {
+            return graph.getCompartmentUUIDOf(this);
+        }
+        else {
+            return null;
+        }
     }
 
     /**
@@ -992,10 +999,15 @@ public abstract class JIPipeGraphNode implements JIPipeValidatable, JIPipeParame
      * Returns the alias ID of this node.
      * It is unique within the same graph, but should not be used to identify it due to dependency on the node's name.
      * Use the UUID instead.
-     * @return the alias ID
+     * @return the alias ID. Null if there is no graph.
      */
     public String getAliasIdInGraph() {
-        return graph.getAliasIdOf(this);
+        if(graph != null) {
+            return graph.getAliasIdOf(this);
+        }
+        else {
+            return null;
+        }
     }
 
     /**

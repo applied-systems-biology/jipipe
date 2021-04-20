@@ -30,7 +30,7 @@ public class AddNodeGraphHistorySnapshot implements JIPipeAlgorithmGraphHistoryS
     public AddNodeGraphHistorySnapshot(JIPipeGraph graph, Set<JIPipeGraphNode> nodes) {
         this.graph = graph;
         for (JIPipeGraphNode node : nodes) {
-           nodes.add(node);
+           this.nodes.add(node);
            compartments.add(node.getCompartmentUUIDInGraph());
         }
     }

@@ -76,7 +76,7 @@ public class NodeHotKeyStorage {
     }
 
     public String getNodeForHotkey(Hotkey hotkey, UUID compartment) {
-        Map<Hotkey, String> hotkeyMap = hotkeys.getOrDefault(compartment, null);
+        Map<Hotkey, String> hotkeyMap = hotkeys.getOrDefault(StringUtils.nullToEmpty(compartment), null);
         if (hotkeyMap == null)
             return null;
         return hotkeyMap.getOrDefault(hotkey, null);

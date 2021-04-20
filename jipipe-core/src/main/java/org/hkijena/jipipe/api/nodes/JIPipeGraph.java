@@ -58,8 +58,8 @@ public class JIPipeGraph implements JIPipeValidatable {
 
     private DefaultDirectedGraph<JIPipeDataSlot, JIPipeGraphEdge> graph = new DefaultDirectedGraph<>(JIPipeGraphEdge.class);
     private BiMap<UUID, String> nodeAliasIds = HashBiMap.create();
-    private Map<UUID, UUID> nodeCompartmentUUIDs = HashBiMap.create();
-    private Map<UUID, Set<UUID>> nodeVisibleCompartmentUUIDs = HashBiMap.create();
+    private Map<UUID, UUID> nodeCompartmentUUIDs = new HashMap<>();
+    private Map<UUID, Set<UUID>> nodeVisibleCompartmentUUIDs = new HashMap<>();
     private Map<UUID, String> nodeLegacyCompartmentIDs = new HashMap<>();
     private BiMap<UUID, JIPipeGraphNode> nodeUUIDs = HashBiMap.create();
     private List<JIPipeDataSlot> traversedSlots;
@@ -193,6 +193,8 @@ public class JIPipeGraph implements JIPipeValidatable {
      * @return the node or null if it could not be found
      */
     public JIPipeGraphNode findNode(String uuidOrAlias) {
+        if(StringUtils.isNullOrEmpty(uuidOrAlias))
+            return null;
         try {
             return nodeUUIDs.getOrDefault(UUID.fromString(uuidOrAlias), null);
         }
@@ -365,7 +367,7 @@ public class JIPipeGraph implements JIPipeValidatable {
      * @param compartmentUUID the compartment
      */
     public void setCompartment(UUID nodeUUID, UUID compartmentUUID) {
-        if(!nodeCompartmentUUIDs.containsKey(nodeUUID)) {
+        if(!nodeUUIDs.containsKey(nodeUUID)) {
             throw new IllegalArgumentException("Graph does not contain a node with UUID " + nodeUUID);
         }
         nodeCompartmentUUIDs.put(nodeUUID, compartmentUUID);
@@ -797,16 +799,18 @@ public class JIPipeGraph implements JIPipeValidatable {
     /**
      * Loads this graph from JSON
      *
-     * @param node   JSON data
+     * @param jsonNode   JSON data
      * @param issues issues reported during deserializing
      */
-    public void fromJson(JsonNode node, JIPipeValidityReport issues) {
-        if (!node.has("nodes"))
+    public void fromJson(JsonNode jsonNode, JIPipeValidityReport issues) {
+        if (!jsonNode.has("nodes"))
             return;
 
         Map<UUID, JIPipeGraphNode> loadedNodeUUIDs = new HashMap<>();
 
-        for (Map.Entry<String, JsonNode> entry : ImmutableList.copyOf(node.get("nodes").fields())) {
+        for (Map.Entry<String, JsonNode> entry : ImmutableList.copyOf(jsonNode.get("nodes").fields())) {
+
+            JsonNode currentNodeJson = entry.getValue();
 
             UUID nodeUUID;
             try {
@@ -818,17 +822,17 @@ public class JIPipeGraph implements JIPipeValidatable {
             }
 
             if (!nodeUUIDs.containsKey(nodeUUID)) {
-                String id = entry.getValue().get("jipipe:node-info-id").asText();
+                String id = currentNodeJson.get("jipipe:node-info-id").asText();
                 if (!JIPipe.getNodes().hasNodeInfoWithId(id)) {
                     System.err.println("Unable to find node with ID '" + id + "'. Skipping.");
                     issues.forCategory("Nodes").forCategory(id).reportIsInvalid("Unable to find node type '" + id + "'!",
                             "The JSON data requested to load a node of type '" + id + "', but it is not known to JIPipe.",
                             "Please check if all extensions are are correctly loaded.",
-                            node);
+                            jsonNode);
                     continue;
                 }
 
-                String compartmentString = node.get("jipipe:graph-compartment").asText();
+                String compartmentString = currentNodeJson.get("jipipe:graph-compartment").asText();
                 UUID compartmentUUID;
                 try {
                     compartmentUUID = UUID.fromString(compartmentString);
@@ -842,13 +846,13 @@ public class JIPipeGraph implements JIPipeValidatable {
 
                 JIPipeNodeInfo info = JIPipe.getNodes().getInfoById(id);
                 JIPipeGraphNode algorithm = info.newInstance();
-                algorithm.fromJson(entry.getValue(), issues.forCategory("Nodes").forCategory(id));
+                algorithm.fromJson(currentNodeJson, issues.forCategory("Nodes").forCategory(id));
                 insertNode(nodeUUID, algorithm, compartmentUUID);
             }
         }
 
         // Load edges
-        for (JsonNode edgeNode : ImmutableList.copyOf(node.get("edges").elements())) {
+        for (JsonNode edgeNode : ImmutableList.copyOf(jsonNode.get("edges").elements())) {
             String sourceAlgorithmName = edgeNode.get("source-node").asText();
             String targetAlgorithmName = edgeNode.get("target-node").asText();
             JIPipeGraphNode sourceAlgorithm = findNode(sourceAlgorithmName);
@@ -858,7 +862,7 @@ public class JIPipeGraph implements JIPipeValidatable {
                         "The JSON data requested to create an edge between the nodes '" + sourceAlgorithmName + "' and '" + targetAlgorithmName + "', but the source does not exist. " +
                                 "This might have been caused by a previous error.",
                         "Please check if all extensions are are correctly loaded.",
-                        node);
+                        jsonNode);
                 System.err.println("Unable to find node with ID '" + sourceAlgorithmName + "'. Skipping this instruction.");
                 continue;
             }
@@ -867,7 +871,7 @@ public class JIPipeGraph implements JIPipeValidatable {
                         "The JSON data requested to create an edge between the nodes '" + sourceAlgorithmName + "' and '" + targetAlgorithmName + "', but the source does not exist. " +
                                 "This might have been caused by a previous error.",
                         "Please check if all extensions are are correctly loaded.",
-                        node);
+                        jsonNode);
                 System.err.println("Unable to find node with ID '" + targetAlgorithmName + "'. Skipping this instruction.");
                 continue;
             }
@@ -880,7 +884,7 @@ public class JIPipeGraph implements JIPipeValidatable {
                         "The JSON data requested to create an edge between the nodes '" + sourceAlgorithmName + "' and '" + targetAlgorithmName + "', but the source slot does not exist. " +
                                 "This might have been caused by a previous error.",
                         "Please check if all extensions are are correctly loaded.",
-                        node);
+                        jsonNode);
                 System.err.println("Unable to find data slot '" + sourceSlotName + "' in algorithm '" + sourceAlgorithmName + "'. Skipping this instruction.");
                 continue;
             }
@@ -889,7 +893,7 @@ public class JIPipeGraph implements JIPipeValidatable {
                         "The JSON data requested to create an edge between the nodes '" + sourceAlgorithmName + "' and '" + targetAlgorithmName + "', but the target slot does not exist. " +
                                 "This might have been caused by a previous error.",
                         "Please check if all extensions are are correctly loaded.",
-                        node);
+                        jsonNode);
                 System.err.println("Unable to find data slot '" + targetSlotName + "' in algorithm '" + targetAlgorithmName + "'. Skipping this instruction.");
                 continue;
             }
@@ -913,7 +917,7 @@ public class JIPipeGraph implements JIPipeValidatable {
                     issues.forCategory("Metadata").reportIsInvalid("Unable to deserialize graph metadata!",
                             "The JSON data contains some metadata, but it could not be recovered.",
                             "Metadata does not contain critical information. You can ignore this message.",
-                            node);
+                            jsonNode);
                     System.err.println("Cannot deserialize edge metadata!");
                     e.printStackTrace();
                 }
@@ -921,7 +925,7 @@ public class JIPipeGraph implements JIPipeValidatable {
         }
 
         // Deserialize additional metadata
-        JsonNode additionalMetadataNode = node.path("additional-metadata");
+        JsonNode additionalMetadataNode = jsonNode.path("additional-metadata");
         for (Map.Entry<String, JsonNode> metadataEntry : ImmutableList.copyOf(additionalMetadataNode.fields())) {
             try {
                 Class<?> metadataClass = JsonUtils.getObjectMapper().readerFor(Class.class).readValue(metadataEntry.getValue().get("jipipe:type"));

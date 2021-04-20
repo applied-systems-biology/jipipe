@@ -45,7 +45,7 @@ public class JIPipeCompartmentUI extends JIPipeProjectWorkbenchPanel {
         setLayout(new BorderLayout());
         initializeToolbar();
 
-        graphUI = new JIPipeGraphCompartmentUI(getProjectWorkbench(), compartment.getProject().getGraph(), compartment.getCompartmentUUIDInGraph());
+        graphUI = new JIPipeGraphCompartmentUI(getProjectWorkbench(), compartment.getProject().getGraph(), compartment.getProjectCompartmentUUID());
         add(graphUI, BorderLayout.CENTER);
     }
 

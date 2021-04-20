@@ -56,6 +56,13 @@ import java.util.stream.Collectors;
 @JsonSerialize(using = JIPipeProject.Serializer.class)
 @JsonDeserialize(using = JIPipeProject.Deserializer.class)
 public class JIPipeProject implements JIPipeValidatable {
+
+    /**
+     * The current version of the project format.
+     * This is here for any future addition.
+     */
+    public static final int CURRENT_PROJECT_FORMAT_VERSION = 1;
+
     private final EventBus eventBus = new EventBus();
 
     private JIPipeGraph graph = new JIPipeGraph();
@@ -407,6 +414,7 @@ public class JIPipeProject implements JIPipeValidatable {
 //        cleanupGraph();
         generator.writeStartObject();
         generator.writeStringField("jipipe:project-type", "project");
+        generator.writeNumberField("jipipe:project-format-version", CURRENT_PROJECT_FORMAT_VERSION);
         generator.writeObjectField("metadata", metadata);
         generator.writeObjectField("dependencies", getDependencies().stream().map(JIPipeMutableDependency::new).collect(Collectors.toList()));
         if (!getAdditionalMetadata().isEmpty()) {
