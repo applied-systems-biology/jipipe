@@ -31,7 +31,7 @@ import java.util.UUID;
  * Its node functionality is structural.
  */
 @JIPipeDocumentation(name = "Graph compartment", description = "A compartment in the analysis graph")
-@JIPipeInputSlot(value = JIPipeCompartmentOutputData.class, slotName = "Input", autoCreate = true)
+@JIPipeInputSlot(value = JIPipeCompartmentOutputData.class, slotName = "Input", autoCreate = true, optional = true)
 @JIPipeOutputSlot(value = JIPipeCompartmentOutputData.class, slotName = "Output", autoCreate = true)
 public class JIPipeProjectCompartment extends JIPipeGraphNode {
 
