@@ -24,13 +24,15 @@ import java.util.*;
 public class RemoveNodeGraphHistorySnapshot implements JIPipeAlgorithmGraphHistorySnapshot {
 
     private final JIPipeGraph graph;
-    private final BiMap<String, JIPipeGraphNode> nodes = HashBiMap.create();
+    private final BiMap<UUID, JIPipeGraphNode> nodes = HashBiMap.create();
+    private final Map<UUID, UUID> nodeCompartments = new HashMap<>();
     private final List<Map.Entry<JIPipeDataSlot, JIPipeDataSlot>> connections = new ArrayList<>();
 
     public RemoveNodeGraphHistorySnapshot(JIPipeGraph graph, Set<JIPipeGraphNode> nodes) {
         this.graph = graph;
         for (JIPipeGraphNode node : nodes) {
-            this.nodes.put(node.getIdInGraph(), node);
+            this.nodes.put(node.getUUIDInGraph(), node);
+            this.nodeCompartments.put(node.getUUIDInGraph(), node.getUUIDInGraph());
             for (JIPipeDataSlot target : node.getInputSlots()) {
                 Set<JIPipeDataSlot> sources = graph.getSourceSlots(target);
                 for (JIPipeDataSlot source : sources) {
@@ -59,16 +61,24 @@ public class RemoveNodeGraphHistorySnapshot implements JIPipeAlgorithmGraphHisto
 
     @Override
     public void undo() {
-        for (Map.Entry<String, JIPipeGraphNode> entry : nodes.entrySet()) {
-            graph.insertNode(entry.getKey(), entry.getValue(), entry.getValue().getCompartment());
+        for (Map.Entry<UUID, JIPipeGraphNode> entry : nodes.entrySet()) {
+            graph.insertNode(entry.getKey(), entry.getValue(), nodeCompartments.get(entry.getKey()));
         }
         for (Map.Entry<JIPipeDataSlot, JIPipeDataSlot> connection : connections) {
             graph.connect(connection.getKey(), connection.getValue());
         }
     }
 
-    public BiMap<String, JIPipeGraphNode> getNodes() {
+    public BiMap<UUID, JIPipeGraphNode> getNodes() {
         return nodes;
+    }
+
+    public Map<UUID, UUID> getNodeCompartments() {
+        return nodeCompartments;
+    }
+
+    public List<Map.Entry<JIPipeDataSlot, JIPipeDataSlot>> getConnections() {
+        return connections;
     }
 
     public JIPipeGraph getGraph() {

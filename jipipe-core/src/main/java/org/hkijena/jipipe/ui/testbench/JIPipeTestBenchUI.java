@@ -81,7 +81,7 @@ public class JIPipeTestBenchUI extends JIPipeProjectWorkbenchPanel {
         JToolBar toolBar = new JToolBar();
         toolBar.setFloatable(false);
 
-        String compartmentName = getProject().getCompartments().get(testBench.getProjectAlgorithm().getCompartment()).getName();
+        String compartmentName = testBench.getProjectAlgorithm().getCompartmentDisplayName();
         JLabel compartmentInfo = new JLabel(compartmentName, UIUtils.getIconFromResources("data-types/graph-compartment.png"), JLabel.LEFT);
         toolBar.add(compartmentInfo);
 

@@ -32,6 +32,7 @@ import java.awt.dnd.DropTargetDropEvent;
 import java.awt.dnd.DropTargetEvent;
 import java.io.File;
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 /**
@@ -138,7 +139,7 @@ public class JIPipeGraphCompartmentDragAndDropBehavior implements JIPipeGraphDra
      * @param files the files
      */
     private void processDrop(List<File> files) {
-        String compartment = canvas.getCompartment();
+        UUID compartment = canvas.getCompartment();
         JIPipeGraph graph = canvas.getGraph();
 
         boolean hasFiles = false;

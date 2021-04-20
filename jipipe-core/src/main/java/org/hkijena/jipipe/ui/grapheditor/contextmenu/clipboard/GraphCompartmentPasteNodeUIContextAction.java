@@ -54,7 +54,7 @@ public class GraphCompartmentPasteNodeUIContextAction implements NodeUIContextAc
                     throw new NullPointerException("Empty compartment list pasted.");
                 }
                 for (JIPipeExportedCompartment compartment : compartments) {
-                    String newId = StringUtils.makeUniqueString(compartment.getSuggestedName(), " ", project.getCompartments().keySet());
+                    String newId = compartment.getSuggestedName();
                     JIPipeProjectCompartment compartmentNode = compartment.addTo(project, newId);
                     JIPipeNodeUI ui = canvasUI.getNodeUIs().getOrDefault(compartmentNode, null);
                     if (ui != null) {

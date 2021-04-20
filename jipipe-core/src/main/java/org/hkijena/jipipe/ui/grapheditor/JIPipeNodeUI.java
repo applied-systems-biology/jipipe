@@ -27,6 +27,7 @@ import org.hkijena.jipipe.ui.JIPipeWorkbenchPanel;
 import org.hkijena.jipipe.ui.components.AddAlgorithmSlotPanel;
 import org.hkijena.jipipe.ui.components.ZoomIcon;
 import org.hkijena.jipipe.utils.PointRange;
+import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
@@ -241,7 +242,7 @@ public abstract class JIPipeNodeUI extends JIPipeWorkbenchPanel {
      * @return either the location was not set or no stored location is available
      */
     public boolean moveToStoredGridLocation(boolean force) {
-        Point point = node.getLocationWithin(graphUI.getCompartment(), graphUI.getViewMode().name());
+        Point point = node.getLocationWithin(StringUtils.nullToEmpty(graphUI.getCompartment()), graphUI.getViewMode().name());
         if (point != null) {
             return moveToGridLocation(point, force, false);
         } else {

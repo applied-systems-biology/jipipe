@@ -68,8 +68,8 @@ public abstract class JIPipeResultDataSlotRowUI extends JIPipeProjectWorkbenchPa
      *
      * @return the compartment name of the algorithm that generated the data
      */
-    public String getAlgorithmCompartment() {
-        return getProjectWorkbench().getProject().getCompartments().get(slot.getNode().getCompartment()).getName();
+    public String getAlgorithmCompartmentName() {
+        return getProjectWorkbench().getProject().getCompartments().get(slot.getNode().getCompartmentUUIDInGraph()).getName();
     }
 
     /**
@@ -87,7 +87,7 @@ public abstract class JIPipeResultDataSlotRowUI extends JIPipeProjectWorkbenchPa
      * @return a name that identifies this row
      */
     public String getDisplayName() {
-        return getAlgorithmCompartment() + "/" + getAlgorithmName() + "/" + getSlot().getName() + "/" + getRow().getIndex();
+        return getAlgorithmCompartmentName() + "/" + getAlgorithmName() + "/" + getSlot().getName() + "/" + getRow().getIndex();
     }
 
     /**

@@ -23,10 +23,8 @@ import org.hkijena.jipipe.utils.StringUtils;
 
 import javax.swing.*;
 import java.awt.*;
-import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.*;
 import java.util.List;
-import java.util.Map;
 
 /**
  * Metadata that allows the restoration of tabs
@@ -53,7 +51,7 @@ public class JIPipeProjectTabMetadata {
             } else if (component instanceof JIPipeCompartmentUI) {
                 JIPipeCompartmentUI graphCompartmentUI = (JIPipeCompartmentUI) component;
                 if (graphCompartmentUI.getCompartment().getGraph() != null) {
-                    id = "graph-compartment:" + graphCompartmentUI.getCompartment().getProjectCompartmentId();
+                    id = "graph-compartment:" + graphCompartmentUI.getCompartment().getProjectCompartmentUUID();
                 }
             }
 
@@ -77,12 +75,17 @@ public class JIPipeProjectTabMetadata {
                 tabIds.put(id, tab);
             } else if (id.startsWith("graph-compartment:")) {
                 String compartmentId = id.substring("graph-compartment:".length());
-                JIPipeProjectCompartment compartment = workbench.getProject().getCompartments().getOrDefault(compartmentId, null);
-                if (compartment != null) {
-                    DocumentTabPane.DocumentTab tab = workbench.openCompartmentGraph(compartment, false);
-                    if (tab != null) {
-                        tabIds.put(id, tab);
+                try {
+                    JIPipeProjectCompartment compartment = workbench.getProject()
+                            .getCompartments().getOrDefault(UUID.fromString(compartmentId), null);
+                    if (compartment != null) {
+                        DocumentTabPane.DocumentTab tab = workbench.openCompartmentGraph(compartment, false);
+                        if (tab != null) {
+                            tabIds.put(id, tab);
+                        }
                     }
+                }
+                catch (IllegalArgumentException e) {
                 }
             }
         }

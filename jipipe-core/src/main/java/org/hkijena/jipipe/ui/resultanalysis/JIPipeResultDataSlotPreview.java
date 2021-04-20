@@ -59,7 +59,7 @@ public abstract class JIPipeResultDataSlotPreview extends JIPipeProjectWorkbench
      * @return The algorithm compartment
      */
     public static String getAlgorithmCompartment(JIPipeProjectWorkbench workbenchUI, JIPipeDataSlot slot) {
-        return workbenchUI.getProject().getCompartments().get(slot.getNode().getCompartment()).getName();
+        return workbenchUI.getProject().getCompartments().get(slot.getNode().getCompartmentUUIDInGraph()).getName();
     }
 
     /**

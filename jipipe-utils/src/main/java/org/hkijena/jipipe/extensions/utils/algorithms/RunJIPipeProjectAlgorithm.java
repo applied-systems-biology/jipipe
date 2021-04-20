@@ -97,7 +97,7 @@ public class RunJIPipeProjectAlgorithm extends JIPipeSimpleIteratingAlgorithm {
                 } else if (entry.getKey().contains("/")) {
                     String nodeId = entry.getKey().substring(0, entry.getKey().indexOf("/"));
                     String key = entry.getKey().substring(entry.getKey().indexOf("/") + 1);
-                    JIPipeGraphNode node = project.getGraph().getNodes().getOrDefault(nodeId, null);
+                    JIPipeGraphNode node = project.getGraph().findNode(nodeId);
                     if (node == null)
                         continue;
                     JIPipeParameterTree nodeTree = new JIPipeParameterTree(node);

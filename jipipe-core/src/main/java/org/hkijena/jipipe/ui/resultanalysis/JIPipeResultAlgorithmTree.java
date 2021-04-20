@@ -28,6 +28,8 @@ import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreePath;
 import java.awt.*;
 import java.nio.file.Files;
+import java.util.Objects;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 /**
@@ -59,9 +61,10 @@ public class JIPipeResultAlgorithmTree extends JIPipeProjectWorkbenchPanel {
             DefaultMutableTreeNode compartmentNode = new DefaultMutableTreeNode(compartment);
             boolean compartmentMatches = searchTextField.test(compartment.getName());
             boolean compartmentHasMatchedChildren = false;
+            UUID projectCompartmentUUID = compartment.getProjectCompartmentUUID();
 
             for (JIPipeGraphNode algorithm : run.getGraph().traverse()) {
-                if (algorithm.getCompartment().equals(compartment.getProjectCompartmentId())) {
+                if (Objects.equals(algorithm.getCompartmentUUIDInGraph(), projectCompartmentUUID)) {
                     DefaultMutableTreeNode algorithmNode = new DefaultMutableTreeNode(algorithm);
 
                     boolean algorithmMatches = compartmentMatches || searchTextField.test(algorithm.getName());

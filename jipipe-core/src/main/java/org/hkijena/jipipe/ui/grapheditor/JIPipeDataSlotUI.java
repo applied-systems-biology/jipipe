@@ -50,7 +50,7 @@ import java.util.stream.Collectors;
 public abstract class JIPipeDataSlotUI extends JIPipeWorkbenchPanel {
     protected JPopupMenu assignButtonMenu;
     private JIPipeNodeUI nodeUI;
-    private String compartment;
+    private UUID compartment;
     private JIPipeDataSlot slot;
 
     /**
@@ -61,7 +61,7 @@ public abstract class JIPipeDataSlotUI extends JIPipeWorkbenchPanel {
      * @param compartment The compartment ID
      * @param slot        The slot instance
      */
-    public JIPipeDataSlotUI(JIPipeWorkbench workbench, JIPipeNodeUI nodeUI, String compartment, JIPipeDataSlot slot) {
+    public JIPipeDataSlotUI(JIPipeWorkbench workbench, JIPipeNodeUI nodeUI, UUID compartment, JIPipeDataSlot slot) {
         super(workbench);
         this.nodeUI = nodeUI;
         this.compartment = compartment;
@@ -744,7 +744,7 @@ public abstract class JIPipeDataSlotUI extends JIPipeWorkbenchPanel {
     /**
      * @return The compartment
      */
-    public String getCompartment() {
+    public UUID getCompartment() {
         return compartment;
     }
 

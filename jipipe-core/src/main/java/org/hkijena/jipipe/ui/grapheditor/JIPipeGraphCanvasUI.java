@@ -140,7 +140,7 @@ public class JIPipeGraphCanvasUI extends JIPipeWorkbenchPanel implements MouseMo
                 if (keyStroke.getModifiers() == 0) {
                     NodeHotKeyStorage.Hotkey hotkey = NodeHotKeyStorage.Hotkey.fromKeyCode(keyStroke.getKeyCode());
                     if (hotkey != NodeHotKeyStorage.Hotkey.None) {
-                        String nodeId = nodeHotKeyStorage.getNodeForHotkey(hotkey, StringUtils.nullToEmpty(getCompartment()));
+                        String nodeId = nodeHotKeyStorage.getNodeForHotkey(hotkey, getCompartment());
                         JIPipeGraphNode node = graph.findNode(nodeId);
                         if (node != null) {
                             JIPipeNodeUI nodeUI = nodeUIs.getOrDefault(node, null);

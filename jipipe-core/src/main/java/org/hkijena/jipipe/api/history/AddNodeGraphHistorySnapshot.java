@@ -16,16 +16,23 @@ package org.hkijena.jipipe.api.history;
 import org.hkijena.jipipe.api.nodes.JIPipeGraph;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
+import java.util.UUID;
 
 public class AddNodeGraphHistorySnapshot implements JIPipeAlgorithmGraphHistorySnapshot {
 
     private final JIPipeGraph graph;
-    private final Set<JIPipeGraphNode> nodes;
+    private final List<JIPipeGraphNode> nodes = new ArrayList<>();
+    private final List<UUID> compartments = new ArrayList<>();
 
     public AddNodeGraphHistorySnapshot(JIPipeGraph graph, Set<JIPipeGraphNode> nodes) {
         this.graph = graph;
-        this.nodes = nodes;
+        for (JIPipeGraphNode node : nodes) {
+           nodes.add(node);
+           compartments.add(node.getCompartmentUUIDInGraph());
+        }
     }
 
     @Override
@@ -42,14 +49,17 @@ public class AddNodeGraphHistorySnapshot implements JIPipeAlgorithmGraphHistoryS
 
     @Override
     public void redo() {
-        for (JIPipeGraphNode node : nodes) {
-            graph.insertNode(node, node.getCompartment());
+        for (int i = 0; i < nodes.size(); i++) {
+            graph.insertNode(nodes.get(i), compartments.get(i));
         }
-
     }
 
-    public Set<JIPipeGraphNode> getNodes() {
+    public List<JIPipeGraphNode> getNodes() {
         return nodes;
+    }
+
+    public List<UUID> getCompartments() {
+        return compartments;
     }
 
     public JIPipeGraph getGraph() {

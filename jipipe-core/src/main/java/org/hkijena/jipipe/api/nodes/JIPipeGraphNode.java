@@ -947,7 +947,11 @@ public abstract class JIPipeGraphNode implements JIPipeValidatable, JIPipeParame
         return graph.getVisibleCompartmentUUIDsOf(this).contains(compartmentUUIDInGraph);
     }
 
-    public String getDisplayName() {
+    /**
+     * Returns a display name for the compartment
+     * @return the display name for the compartment
+     */
+    public String getCompartmentDisplayName() {
         String compartment = "";
         if(graph != null) {
             UUID compartmentUUID = getCompartmentUUIDInGraph();
@@ -963,7 +967,15 @@ public abstract class JIPipeGraphNode implements JIPipeValidatable, JIPipeParame
                     compartment = compartmentUUID.toString();
             }
         }
+        return compartment;
+    }
 
+    /**
+     * Returns a name that provides human-readable information about the name and compartment
+     * @return the display name
+     */
+    public String getDisplayName() {
+        String compartment = getCompartmentDisplayName();
         return getName() + (!StringUtils.isNullOrEmpty(compartment) ? "in compartment '" + compartment + "'" : "");
     }
 
@@ -984,6 +996,16 @@ public abstract class JIPipeGraphNode implements JIPipeValidatable, JIPipeParame
      */
     public String getAliasIdInGraph() {
         return graph.getAliasIdOf(this);
+    }
+
+    /**
+     * Gets the project compartment instance of this node.
+     * Returns null if there is no project.
+     * @return the compartment
+     */
+    public JIPipeProjectCompartment getProjectCompartment() {
+        JIPipeProject project = graph.getAttachment(JIPipeProject.class);
+        return project.getCompartments().getOrDefault(getCompartmentUUIDInGraph(), null);
     }
 
 

@@ -31,6 +31,8 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.font.FontRenderContext;
 import java.awt.font.TextLayout;
+import java.util.Objects;
+import java.util.UUID;
 
 /**
  * Slot UI with horizontal direction
@@ -44,13 +46,12 @@ public class JIPipeHorizontalDataSlotUI extends JIPipeDataSlotUI {
 
     /**
      * Creates a new UI
-     *
-     * @param workbench   the workbench
+     *  @param workbench   the workbench
      * @param algorithmUI The parent algorithm UI
      * @param compartment The compartment ID
      * @param slot        The slot instance
      */
-    public JIPipeHorizontalDataSlotUI(JIPipeWorkbench workbench, JIPipeNodeUI algorithmUI, String compartment, JIPipeDataSlot slot) {
+    public JIPipeHorizontalDataSlotUI(JIPipeWorkbench workbench, JIPipeNodeUI algorithmUI, UUID compartment, JIPipeDataSlot slot) {
         super(workbench, algorithmUI, compartment, slot);
         initialize();
         reloadButtonStatus();
@@ -104,7 +105,7 @@ public class JIPipeHorizontalDataSlotUI extends JIPipeDataSlotUI {
         this.assignButtonMenu = UIUtils.addReloadablePopupMenuToComponent(assignButton, new JPopupMenu(), this::reloadPopupMenu);
 
         if (getSlot().getNode() instanceof JIPipeCompartmentOutput) {
-            if (getSlot().getNode().getCompartment().equals(getCompartment())) {
+            if (Objects.equals(getSlot().getNode().getCompartmentUUIDInGraph(), getCompartment())) {
                 if (getSlot().isOutput()) {
                     assignButton.setEnabled(false);
                 }

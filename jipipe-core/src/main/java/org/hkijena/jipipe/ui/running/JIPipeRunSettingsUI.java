@@ -145,9 +145,10 @@ public class JIPipeRunSettingsUI extends JIPipeProjectWorkbenchPanel {
 
             DefaultTableModel model = new DefaultTableModel();
             model.setColumnIdentifiers(new Object[]{"Compartment", "Algorithm name"});
-            for (JIPipeGraphNode algorithm : algorithmsWithMissingInput.stream().sorted(Comparator.comparing(JIPipeGraphNode::getCompartment)).collect(Collectors.toList())) {
+            for (JIPipeGraphNode algorithm : algorithmsWithMissingInput.stream().sorted(Comparator.comparing(JIPipeGraphNode::getCompartmentDisplayName))
+                    .collect(Collectors.toList())) {
                 model.addRow(new Object[]{
-                        StringUtils.createIconTextHTMLTable(getProjectWorkbench().getProject().getCompartments().get(algorithm.getCompartment()).getName(),
+                        StringUtils.createIconTextHTMLTable(algorithm.getCompartmentDisplayName(),
                                 ResourceUtils.getPluginResource("icons/data-types/graph-compartment.png")),
                         algorithm.getName()
                 });
@@ -170,7 +171,8 @@ public class JIPipeRunSettingsUI extends JIPipeProjectWorkbenchPanel {
         }
         if (!heavyIntermediateOutputs.isEmpty()) {
             formPanel.removeLastRow();
-            FormPanel.GroupHeaderPanel headerPanel = formPanel.addGroupHeader("Large intermediate results", UIUtils.getIconFromResources("emblems/warning.png"));
+            FormPanel.GroupHeaderPanel headerPanel = formPanel.addGroupHeader("Large intermediate results",
+                    UIUtils.getIconFromResources("emblems/warning.png"));
             headerPanel.getDescriptionArea().setVisible(true);
             headerPanel.getDescriptionArea().setText("There are algorithms that look like that they only generate intermediate results, but generate potentially large amounts of data that would all be saved to the hard drive. " +
                     "You can deselect these outputs in the following list to disable saving outputs for them. They will still be executed, but their results will not be saved to the hard drive.");
@@ -188,7 +190,8 @@ public class JIPipeRunSettingsUI extends JIPipeProjectWorkbenchPanel {
                             JIPipeGraphNode runAlgorithm = run.getGraph().getEquivalentAlgorithm(node);
                             runAlgorithm.getOutputSlot(outputSlot.getName()).getInfo().setSaveOutputs(checkBox.isSelected());
                         });
-                        JLabel compartmentLabel = new JLabel(getProject().getCompartments().get(node.getCompartment()).getName(), UIUtils.getIconFromResources("data-types/graph-compartment.png"), JLabel.LEFT);
+                        JLabel compartmentLabel = new JLabel(node.getCompartmentDisplayName(),
+                                UIUtils.getIconFromResources("data-types/graph-compartment.png"), JLabel.LEFT);
                         contentPanel.add(new JLabel(JIPipe.getNodes().getIconFor(node.getInfo())), new GridBagConstraints() {
                             {
                                 gridx = 0;

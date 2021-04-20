@@ -4,11 +4,13 @@ import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonSetter;
 import com.google.common.collect.ImmutableList;
 import org.hkijena.jipipe.api.nodes.JIPipeGraph;
+import org.hkijena.jipipe.utils.StringUtils;
 
 import java.awt.event.KeyEvent;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
+import java.util.UUID;
 
 /**
  * JSON-serializable class that stores node hotkeys
@@ -44,19 +46,19 @@ public class NodeHotKeyStorage {
         }
     }
 
-    public void setHotkey(String compartment, String nodeId, Hotkey hotkey) {
-        Map<Hotkey, String> compartmentMap = hotkeys.getOrDefault(compartment, null);
+    public void setHotkey(UUID compartment, UUID nodeId, Hotkey hotkey) {
+        Map<Hotkey, String> compartmentMap = hotkeys.getOrDefault(StringUtils.nullToEmpty(compartment), null);
         if (compartmentMap == null) {
             compartmentMap = new HashMap<>();
-            hotkeys.put(compartment, compartmentMap);
+            hotkeys.put(StringUtils.nullToEmpty(compartment), compartmentMap);
         }
         for (Map.Entry<Hotkey, String> entry : ImmutableList.copyOf(compartmentMap.entrySet())) {
-            if (nodeId.equals(entry.getValue())) {
+            if (nodeId.toString().equals(entry.getValue())) {
                 compartmentMap.remove(entry.getKey());
             }
         }
         if (hotkey != Hotkey.None) {
-            compartmentMap.put(hotkey, nodeId);
+            compartmentMap.put(hotkey, nodeId.toString());
         }
     }
 
@@ -73,7 +75,7 @@ public class NodeHotKeyStorage {
         this.hotkeys = copy;
     }
 
-    public String getNodeForHotkey(Hotkey hotkey, String compartment) {
+    public String getNodeForHotkey(Hotkey hotkey, UUID compartment) {
         Map<Hotkey, String> hotkeyMap = hotkeys.getOrDefault(compartment, null);
         if (hotkeyMap == null)
             return null;
@@ -90,12 +92,12 @@ public class NodeHotKeyStorage {
         this.hotkeys = hotkeys;
     }
 
-    public Hotkey getHotkeyFor(String compartment, String id) {
-        Map<Hotkey, String> hotkeyMap = hotkeys.getOrDefault(compartment, null);
+    public Hotkey getHotkeyFor(UUID compartment, UUID id) {
+        Map<Hotkey, String> hotkeyMap = hotkeys.getOrDefault(StringUtils.nullToEmpty(compartment), null);
         if (hotkeyMap == null)
             return Hotkey.None;
         for (Map.Entry<Hotkey, String> entry : hotkeyMap.entrySet()) {
-            if (Objects.equals(entry.getValue(), id))
+            if (Objects.equals(entry.getValue(), id.toString()))
                 return entry.getKey();
         }
         return Hotkey.None;

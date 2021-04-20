@@ -32,6 +32,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.UUID;
 
 /**
  * UI for one slot in the algorithm finder
@@ -41,7 +42,7 @@ public class JIPipeAlgorithmSourceFinderSlotUI extends JPanel {
     private final JIPipeGraphCanvasUI canvasUI;
     private final JIPipeDataSlot outputSlot;
     private final JIPipeGraph graph;
-    private final String compartment;
+    private final UUID compartment;
     private final JIPipeDataSlot inputSlot;
     private final boolean isExistingInstance;
     private final EventBus eventBus = new EventBus();
@@ -162,7 +163,7 @@ public class JIPipeAlgorithmSourceFinderSlotUI extends JPanel {
      *
      * @return Compartment ID
      */
-    public String getCompartment() {
+    public UUID getCompartment() {
         return compartment;
     }
 }

@@ -29,6 +29,7 @@ import javax.swing.*;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import java.util.UUID;
 
 public class ExportCompartmentToNodeUIContextAction implements NodeUIContextAction {
     @Override
@@ -41,11 +42,11 @@ public class ExportCompartmentToNodeUIContextAction implements NodeUIContextActi
         JIPipeProjectCompartment compartment = (JIPipeProjectCompartment) selection.iterator().next().getNode();
         JIPipeProjectWorkbench projectWorkbench = (JIPipeProjectWorkbench) canvasUI.getWorkbench();
         JIPipeProject project = projectWorkbench.getProject();
-        final String compartmentId = compartment.getProjectCompartmentId();
+        final UUID compartmentId = compartment.getProjectCompartmentUUID();
         JIPipeValidityReport report = new JIPipeValidityReport();
-        for (Map.Entry<String, JIPipeGraphNode> entry : project.getGraph().getNodes().entrySet()) {
-            if (Objects.equals(entry.getValue().getCompartment(), compartmentId)) {
-                report.forCategory(entry.getKey()).report(entry.getValue());
+        for (JIPipeGraphNode node : project.getGraph().getGraphNodes()) {
+            if (Objects.equals(node.getCompartmentUUIDInGraph(), compartmentId)) {
+                report.forCategory(node.getDisplayName()).report(node);
             }
         }
         if (!report.isValid()) {

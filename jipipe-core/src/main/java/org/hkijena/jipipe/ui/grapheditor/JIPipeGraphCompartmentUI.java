@@ -73,7 +73,7 @@ public class JIPipeGraphCompartmentUI extends JIPipeGraphEditorUI {
      * @param algorithmGraph The graph
      * @param compartment    The compartment
      */
-    public JIPipeGraphCompartmentUI(JIPipeWorkbench workbenchUI, JIPipeGraph algorithmGraph, String compartment) {
+    public JIPipeGraphCompartmentUI(JIPipeWorkbench workbenchUI, JIPipeGraph algorithmGraph, UUID compartment) {
         super(workbenchUI, algorithmGraph, compartment);
         initializeDefaultPanel();
         setPropertyPanel(defaultPanel);
@@ -246,11 +246,11 @@ public class JIPipeGraphCompartmentUI extends JIPipeGraphEditorUI {
 //    }
 
     @Override
-    public String getCompartment() {
+    public UUID getCompartment() {
         if (compartmentInstance == null) {
             return super.getCompartment();
         } else {
-            return compartmentInstance.getProjectCompartmentId();
+            return compartmentInstance.getProjectCompartmentUUID();
         }
     }
 

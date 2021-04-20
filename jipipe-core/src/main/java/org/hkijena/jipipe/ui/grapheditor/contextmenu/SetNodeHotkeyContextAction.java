@@ -11,6 +11,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.util.Set;
+import java.util.UUID;
 
 public class SetNodeHotkeyContextAction implements NodeUIContextAction {
     @Override
@@ -34,7 +35,7 @@ public class SetNodeHotkeyContextAction implements NodeUIContextAction {
                 KeyEvent.VK_NUMPAD4,
                 KeyEvent.VK_NUMPAD5, KeyEvent.VK_NUMPAD6, KeyEvent.VK_NUMPAD7,
                 KeyEvent.VK_NUMPAD8, KeyEvent.VK_NUMPAD9, KeyEvent.VK_NUMPAD0};
-        String compartment = canvasUI.getCompartment();
+        UUID compartment = canvasUI.getCompartment();
         JIPipeGraphNode node = selection.iterator().next().getNode();
         NodeHotKeyStorage hotKeyStorage = NodeHotKeyStorage.getInstance(canvasUI.getGraph());
         for (int i = 0; i < 10; i++) {
@@ -44,7 +45,7 @@ public class SetNodeHotkeyContextAction implements NodeUIContextAction {
             dialPanel.add(button);
 
             String currentNodeId = hotKeyStorage.getNodeForHotkey(NodeHotKeyStorage.Hotkey.fromIndex(number), compartment);
-            JIPipeGraphNode currentNode = canvasUI.getGraph().getNodes().getOrDefault(currentNodeId, null);
+            JIPipeGraphNode currentNode = canvasUI.getGraph().findNode(currentNodeId);
             if (node == currentNode) {
                 button.setSelected(true);
                 button.setToolTipText(TooltipUtils.getAlgorithmTooltip(currentNode, true));
@@ -64,9 +65,9 @@ public class SetNodeHotkeyContextAction implements NodeUIContextAction {
 
             button.addActionListener(e -> {
                 if (button.isSelected()) {
-                    hotKeyStorage.setHotkey(compartment, node.getIdInGraph(), NodeHotKeyStorage.Hotkey.fromIndex(number));
+                    hotKeyStorage.setHotkey(compartment, node.getUUIDInGraph(), NodeHotKeyStorage.Hotkey.fromIndex(number));
                 } else {
-                    hotKeyStorage.setHotkey(compartment, node.getIdInGraph(), NodeHotKeyStorage.Hotkey.None);
+                    hotKeyStorage.setHotkey(compartment, node.getUUIDInGraph(), NodeHotKeyStorage.Hotkey.None);
                 }
                 dialog.dispose();
             });

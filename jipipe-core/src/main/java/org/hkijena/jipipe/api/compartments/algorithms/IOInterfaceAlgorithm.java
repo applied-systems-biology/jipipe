@@ -88,7 +88,7 @@ public class IOInterfaceAlgorithm extends JIPipeAlgorithm {
      */
     public static void replaceCompartmentOutput(JIPipeCompartmentOutput compartmentOutput) {
         JIPipeGraph graph = compartmentOutput.getGraph();
-        String id = compartmentOutput.getIdInGraph();
+        UUID uuid = compartmentOutput.getUUIDInGraph();
         IOInterfaceAlgorithm ioInterfaceAlgorithm = JIPipe.createNode("io-interface", IOInterfaceAlgorithm.class);
         ioInterfaceAlgorithm.setCustomName(compartmentOutput.getName());
         ioInterfaceAlgorithm.setCustomDescription(compartmentOutput.getCustomDescription());
@@ -106,7 +106,7 @@ public class IOInterfaceAlgorithm extends JIPipeAlgorithm {
             outputTargetMap.put(outputSlot.getName(), graph.getTargetSlots(outputSlot));
         }
         graph.removeNode(compartmentOutput, false);
-        graph.insertNode(id, ioInterfaceAlgorithm, compartmentOutput.getCompartment());
+        graph.insertNode(uuid, ioInterfaceAlgorithm, compartmentOutput.getCompartmentUUIDInGraph());
         for (Map.Entry<String, Collection<JIPipeDataSlot>> entry : inputSourceMap.asMap().entrySet()) {
             JIPipeDataSlot target = ioInterfaceAlgorithm.getInputSlot(entry.getKey());
             for (JIPipeDataSlot source : entry.getValue()) {

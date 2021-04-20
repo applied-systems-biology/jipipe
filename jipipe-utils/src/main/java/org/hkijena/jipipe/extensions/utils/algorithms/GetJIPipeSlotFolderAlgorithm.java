@@ -33,6 +33,7 @@ import org.hkijena.jipipe.utils.UIUtils;
 import javax.swing.*;
 import javax.swing.tree.DefaultMutableTreeNode;
 import java.nio.file.Path;
+import java.util.UUID;
 
 @JIPipeDocumentation(name = "Get JIPipe slot folder", description = "Extracts a slot output folder from a JIPipe output. Use the 'Set output slot' button to select the correct parameters.")
 @JIPipeInputSlot(value = JIPipeOutputData.class, slotName = "JIPipe output", autoCreate = true)
@@ -70,7 +71,7 @@ public class GetJIPipeSlotFolderAlgorithm extends JIPipeSimpleIteratingAlgorithm
         report.forCategory("Compartment ID").checkNonEmpty(compartmentId, this);
     }
 
-    @JIPipeDocumentation(name = "Node ID", description = "The unique identifier of the node that contains the output. You can either use the 'Set output slot' button to auto-configure this value or look up the node ID in the help of the node. " +
+    @JIPipeDocumentation(name = "Node alias ID", description = "The unique identifier of the node that contains the output. You can either use the 'Set output slot' button to auto-configure this value or look up the node ID in the help of the node. " +
             "Please note that this is not the node type ID.")
     @JIPipeParameter(value = "node-id", uiOrder = -100)
     @StringParameterSettings(monospace = true, icon = ResourceUtils.RESOURCE_BASE_PATH + "/icons/data-types/node.png")
@@ -96,7 +97,7 @@ public class GetJIPipeSlotFolderAlgorithm extends JIPipeSimpleIteratingAlgorithm
         this.slotName = slotName;
     }
 
-    @JIPipeDocumentation(name = "Compartment ID", description = "The ID of the compartment, where the data is located. " +
+    @JIPipeDocumentation(name = "Compartment alias ID", description = "The ID of the compartment, where the data is located. " +
             "You can use the 'Set output slot' button to auto-configure or just type in the name of the output slot.")
     @JIPipeParameter("compartment-id")
     @StringParameterSettings(monospace = true, icon = ResourceUtils.RESOURCE_BASE_PATH + "/icons/data-types/graph-compartment.png")
@@ -132,9 +133,10 @@ public class GetJIPipeSlotFolderAlgorithm extends JIPipeSimpleIteratingAlgorithm
                         DefaultMutableTreeNode node = (DefaultMutableTreeNode) component;
                         if (node.getUserObject() instanceof JIPipeDataSlot) {
                             JIPipeDataSlot slot = (JIPipeDataSlot) node.getUserObject();
-                            JIPipeParameterCollection.setParameter(this, "node-id", slot.getNode().getIdInGraph());
+                            JIPipeParameterCollection.setParameter(this, "node-id", slot.getNode().getAliasIdInGraph());
                             JIPipeParameterCollection.setParameter(this, "slot-name", slot.getName());
-                            JIPipeParameterCollection.setParameter(this, "compartment-id", slot.getNode().getCompartment());
+                            JIPipeParameterCollection.setParameter(this, "compartment-id",
+                                    slot.getNode().getProjectCompartment().getAliasIdInGraph());
                         } else {
                             JOptionPane.showMessageDialog(workbench.getWindow(), "Please select a slot", "Error", JOptionPane.ERROR_MESSAGE);
                         }

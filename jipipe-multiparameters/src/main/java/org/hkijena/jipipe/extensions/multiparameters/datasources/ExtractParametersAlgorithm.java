@@ -25,7 +25,8 @@ import java.util.*;
 @JIPipeOrganization(nodeTypeCategory = DataSourceNodeTypeCategory.class)
 public class ExtractParametersAlgorithm extends JIPipeAlgorithm {
 
-    private OptionalAnnotationNameParameter nodeIdAnnotation = new OptionalAnnotationNameParameter("Node ID", true);
+    private OptionalAnnotationNameParameter nodeUUIDAnnotation = new OptionalAnnotationNameParameter("Node UUID", true);
+    private OptionalAnnotationNameParameter nodeAliasIDAnnotation = new OptionalAnnotationNameParameter("Node alias ID", true);
     private OptionalAnnotationNameParameter nodeNameAnnotation = new OptionalAnnotationNameParameter("Node name", true);
     private StringQueryExpression parameterKeyFilter = new StringQueryExpression();
 
@@ -35,7 +36,8 @@ public class ExtractParametersAlgorithm extends JIPipeAlgorithm {
 
     public ExtractParametersAlgorithm(ExtractParametersAlgorithm other) {
         super(other);
-        this.nodeIdAnnotation = new OptionalAnnotationNameParameter(other.nodeIdAnnotation);
+        this.nodeUUIDAnnotation = new OptionalAnnotationNameParameter(other.nodeUUIDAnnotation);
+        this.nodeAliasIDAnnotation = new OptionalAnnotationNameParameter(other.nodeAliasIDAnnotation);
         this.nodeNameAnnotation = new OptionalAnnotationNameParameter(other.nodeNameAnnotation);
         this.parameterKeyFilter = new StringQueryExpression(other.parameterKeyFilter);
     }
@@ -45,15 +47,26 @@ public class ExtractParametersAlgorithm extends JIPipeAlgorithm {
         return true;
     }
 
-    @JIPipeDocumentation(name = "Annotate with node ID", description = "If enabled, the output parameters are annotated with the unique node ID")
-    @JIPipeParameter("node-id-annotation")
-    public OptionalAnnotationNameParameter getNodeIdAnnotation() {
-        return nodeIdAnnotation;
+    @JIPipeDocumentation(name = "Annotate with node UUID", description = "If enabled, the output parameters are annotated with the unique node ID")
+    @JIPipeParameter("node-uuid-annotation")
+    public OptionalAnnotationNameParameter getNodeUUIDAnnotation() {
+        return nodeUUIDAnnotation;
     }
 
-    @JIPipeParameter("node-id-annotation")
-    public void setNodeIdAnnotation(OptionalAnnotationNameParameter nodeIdAnnotation) {
-        this.nodeIdAnnotation = nodeIdAnnotation;
+    @JIPipeParameter("node-uuid-annotation")
+    public void setNodeUUIDAnnotation(OptionalAnnotationNameParameter nodeUUIDAnnotation) {
+        this.nodeUUIDAnnotation = nodeUUIDAnnotation;
+    }
+
+    @JIPipeDocumentation(name = "Annotate with node alias ID", description = "If enabled, the output parameters are annotated with the unique node ID (human-readable)")
+    @JIPipeParameter("node-alias-id-annotation")
+    public OptionalAnnotationNameParameter getNodeAliasIDAnnotation() {
+        return nodeAliasIDAnnotation;
+    }
+
+    @JIPipeParameter("node-alias-id-annotation")
+    public void setNodeAliasIDAnnotation(OptionalAnnotationNameParameter nodeAliasIDAnnotation) {
+        this.nodeAliasIDAnnotation = nodeAliasIDAnnotation;
     }
 
     @JIPipeDocumentation(name = "Annotate with node name", description = "If enabled, the output parameters are annotated with the node name")
@@ -103,7 +116,8 @@ public class ExtractParametersAlgorithm extends JIPipeAlgorithm {
             }
 
             List<JIPipeAnnotation> annotationList = new ArrayList<>();
-            nodeIdAnnotation.addAnnotationIfEnabled(annotationList, node.getIdInGraph());
+            nodeUUIDAnnotation.addAnnotationIfEnabled(annotationList, node.getUUIDInGraph().toString());
+            nodeAliasIDAnnotation.addAnnotationIfEnabled(annotationList, node.getAliasIdInGraph());
             nodeNameAnnotation.addAnnotationIfEnabled(annotationList, node.getName());
             getFirstOutputSlot().addData(parametersData, annotationList, JIPipeAnnotationMergeStrategy.OverwriteExisting, progressInfo);
         }

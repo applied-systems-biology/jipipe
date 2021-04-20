@@ -22,6 +22,7 @@ import javax.swing.table.TableModel;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 /**
  * Merges multiple {@link JIPipeExportedDataTable}
@@ -46,8 +47,8 @@ public class JIPipeMergedExportedDataTable implements TableModel {
             if (!annotationColumns.contains(annotationColumn))
                 annotationColumns.add(annotationColumn);
         }
-        String compartmentName = dataSlot.getNode().getCompartment();
-        JIPipeProjectCompartment compartment = project.getCompartments().get(compartmentName);
+        UUID compartmentUUID = dataSlot.getNode().getCompartmentUUIDInGraph();
+        JIPipeProjectCompartment compartment = project.getCompartments().get(compartmentUUID);
         JIPipeGraphNode algorithm = dataSlot.getNode();
 
         for (JIPipeExportedDataTable.Row row : table.getRowList()) {

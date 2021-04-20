@@ -130,7 +130,7 @@ public class JIPipeResultCopyFilesByMetadataExporterRun extends JIPipeWorkbenchP
             JIPipeDataSlot slot = slots.get(i);
             Path targetPath = outputPath;
             if (splitBySlot) {
-                targetPath = outputPath.resolve(StringUtils.makeUniqueString(slot.getNode().getIdInGraph() + "-" + slot.getName(), " ", existingSlots));
+                targetPath = outputPath.resolve(StringUtils.makeUniqueString(slot.getNode().getAliasIdInGraph() + "-" + slot.getName(), " ", existingSlots));
                 existingFiles.clear();
             }
             existingMetadata.clear();

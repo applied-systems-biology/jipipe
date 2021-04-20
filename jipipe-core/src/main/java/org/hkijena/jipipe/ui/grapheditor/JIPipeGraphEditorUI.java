@@ -81,7 +81,7 @@ public abstract class JIPipeGraphEditorUI extends JIPipeWorkbenchPanel implement
      * @param algorithmGraph the algorithm graph
      * @param compartment    the graph compartment to display. Set to null to display all compartments
      */
-    public JIPipeGraphEditorUI(JIPipeWorkbench workbenchUI, JIPipeGraph algorithmGraph, String compartment) {
+    public JIPipeGraphEditorUI(JIPipeWorkbench workbenchUI, JIPipeGraph algorithmGraph, UUID compartment) {
         super(workbenchUI);
         this.algorithmGraph = algorithmGraph;
         this.canvasUI = new JIPipeGraphCanvasUI(getWorkbench(), algorithmGraph, compartment);
@@ -739,7 +739,7 @@ public abstract class JIPipeGraphEditorUI extends JIPipeWorkbenchPanel implement
     /**
      * @return The displayed graph compartment
      */
-    public String getCompartment() {
+    public UUID getCompartment() {
         return canvasUI.getCompartment();
     }
 

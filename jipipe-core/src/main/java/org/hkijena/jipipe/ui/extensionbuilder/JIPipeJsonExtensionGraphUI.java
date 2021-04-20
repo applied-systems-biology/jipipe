@@ -29,6 +29,7 @@ import java.awt.*;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.util.Arrays;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 /**
@@ -40,12 +41,11 @@ public class JIPipeJsonExtensionGraphUI extends JIPipeGraphEditorUI {
 
     /**
      * Creates a new instance
-     *
-     * @param workbenchUI    The workbench UI
+     *  @param workbenchUI    The workbench UI
      * @param algorithmGraph The algorithm graph
      * @param compartment    The compartment
      */
-    public JIPipeJsonExtensionGraphUI(JIPipeJsonExtensionWorkbench workbenchUI, JIPipeGraph algorithmGraph, String compartment) {
+    public JIPipeJsonExtensionGraphUI(JIPipeJsonExtensionWorkbench workbenchUI, JIPipeGraph algorithmGraph, UUID compartment) {
         super(workbenchUI, algorithmGraph, compartment);
         initializeDefaultPanel();
         setPropertyPanel(defaultPanel);

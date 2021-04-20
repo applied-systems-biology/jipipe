@@ -27,6 +27,7 @@ import org.hkijena.jipipe.ui.components.MarkdownDocument;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Utilities that generate tooltips or other text from JIPipe data data structures
@@ -44,12 +45,13 @@ public class TooltipUtils {
      * @return tooltip
      */
     public static String getProjectCompartmentTooltip(JIPipeProjectCompartment compartment, JIPipeGraph projectGraph) {
+        Set<JIPipeGraphNode> algorithmsWithCompartment = projectGraph.getAlgorithmsWithCompartment(compartment.getProjectCompartmentUUID());
         StringBuilder builder = new StringBuilder();
         builder.append("<html>");
         builder.append("<u><strong>").append(compartment.getName()).append("</strong></u><br/>");
-        builder.append("Contains ").append(projectGraph.getAlgorithmsWithCompartment(compartment.getProjectCompartmentId()).size()).append(" algorithms<br/>");
+        builder.append("Contains ").append(algorithmsWithCompartment.size()).append(" algorithms<br/>");
         builder.append("<table>");
-        for (JIPipeGraphNode algorithm : projectGraph.getAlgorithmsWithCompartment(compartment.getProjectCompartmentId())) {
+        for (JIPipeGraphNode algorithm : algorithmsWithCompartment) {
             builder.append("<tr>");
             builder.append("<td>").append("<img src=\"")
                     .append(JIPipe.getNodes().getIconURLFor(algorithm.getInfo()))
@@ -189,8 +191,9 @@ public class TooltipUtils {
             builder.append("<table>");
             builder.append("<tr><td><strong>Node type ID</strong></td><td><code>").append(HtmlEscapers.htmlEscaper().escape(info.getId())).append("</code></td></tr>");
             if (node.getGraph() != null) {
-                builder.append("<tr><td><strong>Node ID</strong></td><td><code>").append(HtmlEscapers.htmlEscaper().escape(node.getIdInGraph())).append("</code></td></tr>");
-                builder.append("<tr><td><strong>Compartment ID</strong></td><td><code>").append(HtmlEscapers.htmlEscaper().escape(node.getCompartment())).append("</code></td></tr>");
+                builder.append("<tr><td><strong>Node UUID</strong></td><td><code>").append(HtmlEscapers.htmlEscaper().escape(node.getUUIDInGraph().toString())).append("</code></td></tr>");
+                builder.append("<tr><td><strong>Node alias ID</strong></td><td><code>").append(HtmlEscapers.htmlEscaper().escape(node.getAliasIdInGraph())).append("</code></td></tr>");
+                builder.append("<tr><td><strong>Compartment UUID</strong></td><td><code>").append(HtmlEscapers.htmlEscaper().escape(node.getCompartmentUUIDInGraphAsString())).append("</code></td></tr>");
             }
             for (String dependencyCitation : info.getAdditionalCitations()) {
                 builder.append("<tr><td><strong>Node additional citation</strong></td><td>").append(HtmlEscapers.htmlEscaper().escape(dependencyCitation)).append("</td></tr>");
