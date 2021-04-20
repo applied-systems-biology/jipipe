@@ -956,9 +956,9 @@ public class JIPipeGraph implements JIPipeValidatable {
                 JIPipeGraphNode algorithm = info.newInstance();
                 algorithm.fromJson(currentNodeJson, issues.forCategory("Nodes").forCategory(id));
                 insertNode(nodeUUID, algorithm, compartmentUUID);
+//                System.out.println("Insert: " + algorithm + " alias " + aliasId + " in compartment " + compartmentUUID);
                 if(aliasId != null) {
                     nodeAliasIds.remove(nodeUUID);
-                    System.out.println(nodeUUID + " <-> " + aliasId);
                     nodeAliasIds.put(nodeUUID, aliasId);
                 }
             }
