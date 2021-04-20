@@ -37,10 +37,7 @@ import org.hkijena.jipipe.ui.grapheditor.actions.OpenContextMenuAction;
 import org.hkijena.jipipe.ui.grapheditor.contextmenu.NodeUIContextAction;
 import org.hkijena.jipipe.ui.grapheditor.layout.MSTGraphAutoLayoutMethod;
 import org.hkijena.jipipe.ui.grapheditor.layout.SugiyamaGraphAutoLayoutMethod;
-import org.hkijena.jipipe.utils.PointRange;
-import org.hkijena.jipipe.utils.ScreenImage;
-import org.hkijena.jipipe.utils.ScreenImageSVG;
-import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.utils.*;
 import org.jfree.graphics2d.svg.SVGGraphics2D;
 
 import javax.swing.FocusManager;
@@ -74,7 +71,7 @@ public class JIPipeGraphCanvasUI extends JIPipeWorkbenchPanel implements MouseMo
     private final EventBus eventBus = new EventBus();
     private final JIPipeGraphHistory graphHistory = new JIPipeGraphHistory();
     private final GraphEditorUISettings settings;
-    private String compartment;
+    private UUID compartment;
     private boolean layoutHelperEnabled;
     private JIPipeGraphViewMode viewMode;
     private JIPipeGraphDragAndDropBehavior dragAndDropBehavior;
@@ -106,7 +103,7 @@ public class JIPipeGraphCanvasUI extends JIPipeWorkbenchPanel implements MouseMo
      * @param graph       The algorithm graph
      * @param compartment The compartment to show
      */
-    public JIPipeGraphCanvasUI(JIPipeWorkbench workbench, JIPipeGraph graph, String compartment) {
+    public JIPipeGraphCanvasUI(JIPipeWorkbench workbench, JIPipeGraph graph, UUID compartment) {
         super(workbench);
         setLayout(null);
         this.graph = graph;
@@ -118,23 +115,6 @@ public class JIPipeGraphCanvasUI extends JIPipeWorkbenchPanel implements MouseMo
         addNewNodes();
         graph.getEventBus().register(this);
         initializeHotkeys();
-
-        // If there is a project, listen to compartment renames
-        if (workbench instanceof JIPipeProjectWorkbench) {
-            JIPipeProject project = ((JIPipeProjectWorkbench) workbench).getProject();
-            JIPipeProjectCompartment compartmentInstance = project.getCompartments().get(compartment);
-            if (compartmentInstance != null) {
-                project.getEventBus().register(new Object() {
-                    @Subscribe
-                    public void onCompartmentRenamed(JIPipeProject.CompartmentRenamedEvent event) {
-                        if (event.getCompartment() == compartmentInstance && !Objects.equals(compartment, event.getCompartment().getProjectCompartmentId())) {
-                            JIPipeGraphCanvasUI.this.compartment = event.getCompartment().getProjectCompartmentId();
-                            JIPipeGraphCanvasUI.this.fullRedraw();
-                        }
-                    }
-                });
-            }
-        }
     }
 
     private void initializeHotkeys() {
@@ -160,8 +140,8 @@ public class JIPipeGraphCanvasUI extends JIPipeWorkbenchPanel implements MouseMo
                 if (keyStroke.getModifiers() == 0) {
                     NodeHotKeyStorage.Hotkey hotkey = NodeHotKeyStorage.Hotkey.fromKeyCode(keyStroke.getKeyCode());
                     if (hotkey != NodeHotKeyStorage.Hotkey.None) {
-                        String nodeId = nodeHotKeyStorage.getNodeForHotkey(hotkey, getCompartment());
-                        JIPipeGraphNode node = graph.getNodes().get(nodeId);
+                        String nodeId = nodeHotKeyStorage.getNodeForHotkey(hotkey, StringUtils.nullToEmpty(getCompartment()));
+                        JIPipeGraphNode node = graph.findNode(nodeId);
                         if (node != null) {
                             JIPipeNodeUI nodeUI = nodeUIs.getOrDefault(node, null);
                             if (nodeUI != null) {
@@ -1267,7 +1247,8 @@ public class JIPipeGraphCanvasUI extends JIPipeWorkbenchPanel implements MouseMo
 
     private void paintOutsideEdges(Graphics2D g, boolean onlySelected) {
         for (JIPipeNodeUI ui : nodeUIs.values()) {
-            if (!ui.getNode().getVisibleCompartments().isEmpty()) {
+            Set<UUID> visibleCompartments = graph.getVisibleCompartmentUUIDsOf(ui.getNode());
+            if (!visibleCompartments.isEmpty()) {
                 if (onlySelected) {
                     if (!selection.contains(ui))
                         continue;
@@ -1278,7 +1259,7 @@ public class JIPipeGraphCanvasUI extends JIPipeWorkbenchPanel implements MouseMo
                 Point sourcePoint = new Point();
                 Point targetPoint = new Point();
                 if (viewMode == JIPipeGraphViewMode.Horizontal) {
-                    if (getCompartment() == null || getCompartment().equals(ui.getNode().getCompartment())) {
+                    if (getCompartment() == null || getCompartment().equals(ui.getNode().getCompartmentUUIDInGraph())) {
                         sourcePoint.x = ui.getX() + ui.getWidth();
                         sourcePoint.y = ui.getY() + viewMode.getGridHeight() / 2;
                         targetPoint.x = getWidth();
@@ -1290,7 +1271,7 @@ public class JIPipeGraphCanvasUI extends JIPipeWorkbenchPanel implements MouseMo
                         targetPoint.y = sourcePoint.y;
                     }
                 } else {
-                    if (getCompartment() == null || getCompartment().equals(ui.getNode().getCompartment())) {
+                    if (getCompartment() == null || getCompartment().equals(ui.getNode().getCompartmentUUIDInGraph())) {
                         sourcePoint.x = ui.getX() + ui.getWidth() / 2;
                         sourcePoint.y = ui.getY() + ui.getHeight();
                         targetPoint.x = sourcePoint.x;
@@ -1456,7 +1437,7 @@ public class JIPipeGraphCanvasUI extends JIPipeWorkbenchPanel implements MouseMo
     /**
      * @return The displayed compartment
      */
-    public String getCompartment() {
+    public UUID getCompartment() {
         return compartment;
     }
 

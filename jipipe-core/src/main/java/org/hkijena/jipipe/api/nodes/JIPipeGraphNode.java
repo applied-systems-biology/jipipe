@@ -27,6 +27,7 @@ import com.google.common.eventbus.Subscribe;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.JIPipeDependency;
 import org.hkijena.jipipe.api.*;
+import org.hkijena.jipipe.api.compartments.algorithms.JIPipeProjectCompartment;
 import org.hkijena.jipipe.api.data.*;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
@@ -63,8 +64,6 @@ public abstract class JIPipeGraphNode implements JIPipeValidatable, JIPipeParame
     private Path storagePath;
     private String customName;
     private HTMLText customDescription;
-    private String compartment;
-    private Set<String> visibleCompartments = new HashSet<>();
     private JIPipeGraph graph;
     private Path workDirectory;
 
@@ -122,8 +121,6 @@ public abstract class JIPipeGraphNode implements JIPipeValidatable, JIPipeParame
         for (Map.Entry<String, Map<String, Point>> entry : other.locations.entrySet()) {
             locations.put(entry.getKey(), new HashMap<>(entry.getValue()));
         }
-        this.compartment = other.compartment;
-        this.visibleCompartments = new HashSet<>(other.visibleCompartments);
         this.customName = other.customName;
         this.customDescription = other.customDescription;
         updateGraphNodeSlots();
@@ -424,6 +421,17 @@ public abstract class JIPipeGraphNode implements JIPipeValidatable, JIPipeParame
     }
 
     /**
+     * Sets the UI location of this algorithm within the specified compartment
+     *
+     * @param compartment The compartment ID
+     * @param location    The UI location. Can be null to reset the location
+     * @param visualMode  Used to differentiate between different visual modes
+     */
+    public void setLocationWithin(UUID compartment, Point location, String visualMode) {
+        setLocationWithin(StringUtils.nullToEmpty(compartment), location, visualMode);
+    }
+
+    /**
      * Saves this algorithm to JSON.
      * Override this method to apply your own modifications
      *
@@ -453,7 +461,6 @@ public abstract class JIPipeGraphNode implements JIPipeValidatable, JIPipeParame
         }
         jsonGenerator.writeEndObject();
         jsonGenerator.writeStringField("jipipe:node-info-id", getInfo().getId());
-        jsonGenerator.writeStringField("jipipe:graph-compartment", getCompartment());
 
         JIPipeParameterCollection.serializeParametersToJson(this, jsonGenerator);
 
@@ -467,10 +474,6 @@ public abstract class JIPipeGraphNode implements JIPipeValidatable, JIPipeParame
      * @param issues issues during deserializing
      */
     public void fromJson(JsonNode node, JIPipeValidityReport issues) {
-
-        // Load compartment
-        compartment = node.get("jipipe:graph-compartment").asText();
-
         if (node.has("jipipe:slot-configuration"))
             slotConfiguration.fromJson(node.get("jipipe:slot-configuration"));
         if (node.has("jipipe:ui-grid-location")) {
@@ -549,54 +552,6 @@ public abstract class JIPipeGraphNode implements JIPipeValidatable, JIPipeParame
      */
     public void setInfo(JIPipeNodeInfo info) {
         this.info = info;
-    }
-
-    /**
-     * Returns the compartment the algorithm is located within
-     *
-     * @return Compartment ID
-     */
-    public String getCompartment() {
-        return compartment;
-    }
-
-    /**
-     * Sets the compartment the algorithm is location in
-     *
-     * @param compartment Compartment ID
-     */
-    public void setCompartment(String compartment) {
-        this.compartment = compartment;
-    }
-
-    /**
-     * Returns true if this algorithm is visible in the specified container compartment
-     *
-     * @param containerCompartment The compartment ID the container displays
-     * @return If this algorithm should be visible
-     */
-    public boolean isVisibleIn(String containerCompartment) {
-        return StringUtils.isNullOrEmpty(compartment) || StringUtils.isNullOrEmpty(containerCompartment) ||
-                containerCompartment.equals(compartment) || visibleCompartments.contains(containerCompartment);
-    }
-
-    /**
-     * Returns the list of additional compartments this algorithm is visible in.
-     * This list is writable.
-     *
-     * @return Writeable list of project compartment IDs
-     */
-    public Set<String> getVisibleCompartments() {
-        return visibleCompartments;
-    }
-
-    /**
-     * Sets the list of additional compartments this algorithm is visible in.
-     *
-     * @param visibleCompartments List of compartment Ids
-     */
-    public void setVisibleCompartments(Set<String> visibleCompartments) {
-        this.visibleCompartments = visibleCompartments;
     }
 
     /**
@@ -705,12 +660,21 @@ public abstract class JIPipeGraphNode implements JIPipeValidatable, JIPipeParame
     }
 
     /**
-     * Returns the ID within the current graph. Requires that getGraph() is not null.
+     * Returns the UUID within the current graph. Requires that getGraph() is not null.
      *
-     * @return The ID within getGraph()
+     * @return The UUID within getGraph()
      */
-    public String getIdInGraph() {
-        return graph.getIdOf(this);
+    public UUID getUUIDInGraph() {
+        return graph.getUUIDOf(this);
+    }
+
+    /**
+     * Returns the compartment UUID within the current graph. Requires that getGraph() is not null.
+     *
+     * @return The UUID within getGraph()
+     */
+    public UUID getCompartmentUUIDInGraph() {
+        return graph.getCompartmentUUIDOf(this);
     }
 
     /**
@@ -975,6 +939,43 @@ public abstract class JIPipeGraphNode implements JIPipeValidatable, JIPipeParame
                 slot.applyVirtualState(progressInfo);
         }
     }
+
+    public boolean isVisibleIn(UUID compartmentUUIDInGraph) {
+        UUID currentCompartmentUUID = getCompartmentUUIDInGraph();
+        if(Objects.equals(compartmentUUIDInGraph, currentCompartmentUUID))
+            return true;
+        return graph.getVisibleCompartmentUUIDsOf(this).contains(compartmentUUIDInGraph);
+    }
+
+    public String getDisplayName() {
+        String compartment = "";
+        if(graph != null) {
+            UUID compartmentUUID = getCompartmentUUIDInGraph();
+            if(compartmentUUID != null) {
+                JIPipeProject project = graph.getProject();
+                if(project != null) {
+                    JIPipeProjectCompartment projectCompartment = project.getCompartments().getOrDefault(compartmentUUID, null);
+                    if(projectCompartment != null) {
+                        compartment = projectCompartment.getName();
+                    }
+                }
+                if(compartment == null)
+                    compartment = compartmentUUID.toString();
+            }
+        }
+
+        return getName() + (!StringUtils.isNullOrEmpty(compartment) ? "in compartment '" + compartment + "'" : "");
+    }
+
+    /**
+     * Returns the compartment UUID in the graph as string.
+     * If the UUID is null, an empty string is returned.
+     * @return UUID as string or an empty string of the compartment is null;
+     */
+    public String getCompartmentUUIDInGraphAsString() {
+        return StringUtils.nullToEmpty(getCompartmentUUIDInGraph());
+    }
+
 
     /**
      * Serializes an {@link JIPipeGraphNode} instance

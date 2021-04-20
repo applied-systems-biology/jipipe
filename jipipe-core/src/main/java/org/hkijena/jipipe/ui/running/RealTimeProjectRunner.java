@@ -69,7 +69,7 @@ public class RealTimeProjectRunner extends JIPipeProjectWorkbenchPanel {
     }
 
     private void refreshEventRegistrations() {
-        for (JIPipeGraphNode node : getProject().getGraph().getNodes().values()) {
+        for (JIPipeGraphNode node : getProject().getGraph().getGraphNodes()) {
             node.getEventBus().register(this);
         }
     }

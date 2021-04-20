@@ -60,7 +60,7 @@ public class JIPipeProjectInfoParameters implements JIPipeParameterCollection, J
         Map<String, JIPipeParameterCollection> result = new HashMap<>();
         if (project != null) {
             this.exportedParameters.setGraph(project.getGraph());
-            result.put("exported", new GraphNodeParameterReferenceAccessGroupList(exportedParameters, getProject().getGraph().getParameterTree(), false));
+            result.put("exported", new GraphNodeParameterReferenceAccessGroupList(exportedParameters, getProject().getGraph().getParameterTree(false), false));
         }
         return result;
     }

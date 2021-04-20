@@ -24,6 +24,8 @@ import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.JIPipeOutputSlot;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 
+import java.util.UUID;
+
 /**
  * A project compartment.
  * Its node functionality is structural.
@@ -57,8 +59,8 @@ public class JIPipeProjectCompartment extends JIPipeGraphNode {
     /**
      * @return The compartment ID
      */
-    public String getProjectCompartmentId() {
-        return getIdInGraph();
+    public UUID getProjectCompartmentUUID() {
+        return getUUIDInGraph();
     }
 
     /**

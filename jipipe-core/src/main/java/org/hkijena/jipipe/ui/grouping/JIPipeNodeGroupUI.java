@@ -88,7 +88,7 @@ public class JIPipeNodeGroupUI extends JIPipeWorkbenchPanel {
 
     private void initialize() {
         setLayout(new BorderLayout());
-        graphUI = new JIPipeGraphCompartmentUI(getWorkbench(), nodeGroup.getWrappedGraph(), JIPipeGraph.COMPARTMENT_DEFAULT);
+        graphUI = new JIPipeGraphCompartmentUI(getWorkbench(), nodeGroup.getWrappedGraph(), null);
         add(graphUI, BorderLayout.CENTER);
     }
 

@@ -109,7 +109,7 @@ public class JIPipeAlgorithmTargetFinderUI extends JPanel {
         if(canvasUI.getWorkbench() instanceof JIPipeProjectWorkbench) {
             canCreateNewNodes = !((JIPipeProjectWorkbench) canvasUI.getWorkbench()).getProject().getMetadata().getPermissions().isPreventAddingDeletingNodes();
         }
-        for (JIPipeGraphNode node : canvasUI.getGraph().getNodes().values()) {
+        for (JIPipeGraphNode node : canvasUI.getGraph().getGraphNodes()) {
             if (node.isVisibleIn(canvasUI.getCompartment())) {
                 availableContents.add(node);
             }
@@ -181,7 +181,7 @@ public class JIPipeAlgorithmTargetFinderUI extends JPanel {
         Set<JIPipeGraphNode> knownTargetAlgorithms = graph.getTargetSlots(outputSlot).stream().map(JIPipeDataSlot::getNode).collect(Collectors.toSet());
 
         // Add algorithms that allow adding slots of given type
-        for (JIPipeGraphNode algorithm : graph.getNodes().values()) {
+        for (JIPipeGraphNode algorithm : graph.getGraphNodes()) {
             if (algorithm.getSlotConfiguration() instanceof JIPipeMutableSlotConfiguration) {
                 JIPipeMutableSlotConfiguration configuration = (JIPipeMutableSlotConfiguration) algorithm.getSlotConfiguration();
                 if (configuration.canCreateCompatibleInputSlot(outputSlot.getAcceptedDataType())) {

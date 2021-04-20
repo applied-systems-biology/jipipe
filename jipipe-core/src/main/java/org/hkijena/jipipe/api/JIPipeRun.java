@@ -80,13 +80,13 @@ public class JIPipeRun implements JIPipeRunnable {
     }
 
     private void initializeRelativeDirectories() {
-        for (JIPipeGraphNode algorithm : algorithmGraph.getNodes().values()) {
+        for (JIPipeGraphNode algorithm : algorithmGraph.getGraphNodes()) {
             algorithm.setWorkDirectory(null);
         }
     }
 
     private void initializeInternalStoragePaths() {
-        for (JIPipeGraphNode algorithm : algorithmGraph.getNodes().values()) {
+        for (JIPipeGraphNode algorithm : algorithmGraph.getGraphNodes()) {
             algorithm.setInternalStoragePath(Paths.get(StringUtils.jsonify(algorithm.getCompartment())).resolve(StringUtils.jsonify(algorithmGraph.getIdOf(algorithm))));
         }
     }
@@ -198,7 +198,7 @@ public class JIPipeRun implements JIPipeRunnable {
         }
 
         // Clear all slots
-        for (JIPipeGraphNode node : algorithmGraph.getNodes().values()) {
+        for (JIPipeGraphNode node : algorithmGraph.getGraphNodes()) {
             node.clearSlotData();
         }
 
@@ -234,7 +234,7 @@ public class JIPipeRun implements JIPipeRunnable {
 
         List<JIPipeGraphNode> preprocessorNodes = new ArrayList<>();
         List<JIPipeGraphNode> postprocessorNodes = new ArrayList<>();
-        for (JIPipeGraphNode node : algorithmGraph.getNodes().values()) {
+        for (JIPipeGraphNode node : algorithmGraph.getGraphNodes()) {
             if (!unExecutableAlgorithms.contains(node) && node.getInputSlots().isEmpty() &&
                     node instanceof JIPipeAlgorithm && ((JIPipeAlgorithm) node).isPreprocessor()) {
                 preprocessorNodes.add(node);
@@ -312,7 +312,7 @@ public class JIPipeRun implements JIPipeRunnable {
         // There might be some algorithms missing (ones that do not have an output)
         // Will also run any postprocessor
         List<JIPipeGraphNode> additionalAlgorithms = new ArrayList<>();
-        for (JIPipeGraphNode node : algorithmGraph.getNodes().values()) {
+        for (JIPipeGraphNode node : algorithmGraph.getGraphNodes()) {
             if (progressInfo.isCancelled().get())
                 break;
             if (!executedAlgorithms.contains(node) && !unExecutableAlgorithms.contains(node)) {

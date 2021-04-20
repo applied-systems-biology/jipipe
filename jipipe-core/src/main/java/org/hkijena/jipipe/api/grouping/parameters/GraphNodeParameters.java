@@ -146,7 +146,7 @@ public class GraphNodeParameters implements JIPipeValidatable {
     @Override
     public void reportValidity(JIPipeValidityReport report) {
         if (graph != null) {
-            JIPipeParameterTree tree = graph.getParameterTree();
+            JIPipeParameterTree tree = graph.getParameterTree(false);
             for (GraphNodeParameterReferenceGroup parameterReferenceGroup : parameterReferenceGroups) {
                 JIPipeValidityReport group = report.forCategory(parameterReferenceGroup.getName());
                 for (GraphNodeParameterReference reference : parameterReferenceGroup.getContent()) {

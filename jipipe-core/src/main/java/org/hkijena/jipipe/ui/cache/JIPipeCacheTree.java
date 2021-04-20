@@ -56,7 +56,7 @@ public class JIPipeCacheTree extends JIPipeProjectWorkbenchPanel {
         int scrollPosition = treeScollPane.getVerticalScrollBar().getValue();
 
         Map<String, Map<JIPipeGraphNode, Map<JIPipeProjectCacheState, List<JIPipeDataSlot>>>> byCompartmentId = new HashMap<>();
-        for (JIPipeGraphNode node : getProject().getGraph().getNodes().values()) {
+        for (JIPipeGraphNode node : getProject().getGraph().getGraphNodes()) {
             Map<JIPipeProjectCacheState, Map<String, JIPipeDataSlot>> stateMap = getProject().getCache().extract((JIPipeAlgorithm) node);
             if (stateMap == null)
                 continue;

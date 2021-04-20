@@ -29,22 +29,19 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 public class AlgorithmGraphPasteNodeUIContextAction implements NodeUIContextAction {
     public static void pasteNodes(JIPipeGraphCanvasUI canvasUI, String json) throws com.fasterxml.jackson.core.JsonProcessingException {
         if(!JIPipeProjectWorkbench.canAddOrDeleteNodes(canvasUI.getWorkbench()))
             return;
         JIPipeGraph graph = JsonUtils.getObjectMapper().readValue(json, JIPipeGraph.class);
-        if (graph.getNodes().isEmpty()) {
+        if (graph.isEmpty()) {
             throw new NullPointerException("Empty graph pasted.");
         }
 
         // Replace project compartment with IOInterface
-        for (JIPipeGraphNode node : graph.getNodes().values()) {
+        for (JIPipeGraphNode node : graph.getGraphNodes()) {
             if (node instanceof JIPipeCompartmentOutput) {
                 node.setInfo(JIPipe.getNodes().getInfoById("io-interface"));
             }
@@ -54,8 +51,9 @@ public class AlgorithmGraphPasteNodeUIContextAction implements NodeUIContextActi
         int minX = Integer.MAX_VALUE;
         int minY = Integer.MAX_VALUE;
         Map<JIPipeGraphNode, Point> originalLocations = new HashMap<>();
-        for (JIPipeGraphNode algorithm : graph.getNodes().values()) {
-            Point point = algorithm.getLocationWithin(algorithm.getCompartment(), canvasUI.getViewMode().name());
+        for (JIPipeGraphNode algorithm : graph.getGraphNodes()) {
+            String compartmentUUIDInGraphAsString = algorithm.getCompartmentUUIDInGraphAsString();
+            Point point = algorithm.getLocationWithin(compartmentUUIDInGraphAsString, canvasUI.getViewMode().name());
             if (point != null) {
                 originalLocations.put(algorithm, point);
                 minX = Math.min(minX, point.x);
@@ -68,14 +66,14 @@ public class AlgorithmGraphPasteNodeUIContextAction implements NodeUIContextActi
             minY = 0;
 
         // Change the compartment
-        String compartment = canvasUI.getCompartment();
-        for (JIPipeGraphNode algorithm : graph.getNodes().values()) {
-            algorithm.setCompartment(compartment);
+        UUID compartment = canvasUI.getCompartment();
+        for (JIPipeGraphNode node : graph.getGraphNodes()) {
+            graph.setCompartment(node.getUUIDInGraph(), compartment);
         }
 
         // Update the location relative to the mouse
         Point cursor = canvasUI.getGraphEditorCursor();
-        for (JIPipeGraphNode algorithm : graph.getNodes().values()) {
+        for (JIPipeGraphNode algorithm : graph.getGraphNodes()) {
             Point original = originalLocations.getOrDefault(algorithm, null);
             if (original != null) {
                 original.x = (int) (original.x - minX + (cursor.x / canvasUI.getZoom()) / canvasUI.getViewMode().getGridWidth());
@@ -86,7 +84,7 @@ public class AlgorithmGraphPasteNodeUIContextAction implements NodeUIContextActi
 
         // Add to graph
         canvasUI.getGraphHistory().addSnapshotBefore(new PasteNodeGraphHistorySnapshot(canvasUI.getGraph(),
-                new HashSet<>(graph.getNodes().values())));
+                new HashSet<>(graph.getGraphNodes())));
         canvasUI.getGraph().mergeWith(graph);
     }
 

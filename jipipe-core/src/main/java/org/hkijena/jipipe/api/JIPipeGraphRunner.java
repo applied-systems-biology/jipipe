@@ -53,7 +53,7 @@ public class JIPipeGraphRunner implements JIPipeRunnable {
 
         List<JIPipeGraphNode> preprocessorNodes = new ArrayList<>();
         List<JIPipeGraphNode> postprocessorNodes = new ArrayList<>();
-        for (JIPipeGraphNode node : algorithmGraph.getNodes().values()) {
+        for (JIPipeGraphNode node : algorithmGraph.getGraphNodes()) {
             if (!unExecutableAlgorithms.contains(node) && node.getInputSlots().isEmpty() &&
                     node instanceof JIPipeAlgorithm && ((JIPipeAlgorithm) node).isPreprocessor()) {
                 preprocessorNodes.add(node);
@@ -116,7 +116,7 @@ public class JIPipeGraphRunner implements JIPipeRunnable {
         // There might be some algorithms missing (ones that do not have an output)
         // Will also run any postprocessor
         List<JIPipeGraphNode> additionalAlgorithms = new ArrayList<>();
-        for (JIPipeGraphNode node : algorithmGraph.getNodes().values()) {
+        for (JIPipeGraphNode node : algorithmGraph.getGraphNodes()) {
             if (progressInfo.isCancelled().get())
                 break;
             if (!executedAlgorithms.contains(node) && !unExecutableAlgorithms.contains(node)) {

@@ -113,7 +113,7 @@ public class JsonAlgorithm extends GraphWrapperAlgorithm implements JIPipeCustom
         this.exportedParameters.setGraph(getWrappedGraph());
         Map<String, JIPipeParameterCollection> result = new HashMap<>();
 //        result.put("jipipe:data-batch-generation", getBatchGenerationSettings());
-        result.put("exported", new GraphNodeParameterReferenceAccessGroupList(exportedParameters, getWrappedGraph().getParameterTree(), true));
+        result.put("exported", new GraphNodeParameterReferenceAccessGroupList(exportedParameters, getWrappedGraph().getParameterTree(false), true));
         return result;
     }
 

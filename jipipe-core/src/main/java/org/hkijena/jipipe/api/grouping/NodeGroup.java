@@ -94,12 +94,12 @@ public class NodeGroup extends GraphWrapperAlgorithm implements JIPipeCustomPara
 //        }
 
         // Clear locations
-        for (JIPipeGraphNode node : graph.getNodes().values()) {
+        for (JIPipeGraphNode node : graph.getGraphNodes()) {
             node.clearLocations();
         }
 
         // Replace all JIPipeCompartmentOutput by IOInterfaceAlgorithm
-        for (JIPipeGraphNode node : ImmutableList.copyOf(graph.getNodes().values())) {
+        for (JIPipeGraphNode node : ImmutableList.copyOf(graph.getGraphNodes())) {
             if (node instanceof JIPipeCompartmentOutput) {
                 IOInterfaceAlgorithm.replaceCompartmentOutput((JIPipeCompartmentOutput) node);
             }
@@ -244,7 +244,7 @@ public class NodeGroup extends GraphWrapperAlgorithm implements JIPipeCustomPara
         this.exportedParameters.setGraph(getWrappedGraph());
         Map<String, JIPipeParameterCollection> result = new HashMap<>();
 //        result.put("jipipe:data-batch-generation", getBatchGenerationSettings());
-        result.put("exported", new GraphNodeParameterReferenceAccessGroupList(exportedParameters, getWrappedGraph().getParameterTree(), false));
+        result.put("exported", new GraphNodeParameterReferenceAccessGroupList(exportedParameters, getWrappedGraph().getParameterTree(false), false));
         return result;
     }
 

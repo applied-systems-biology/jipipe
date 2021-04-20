@@ -65,7 +65,7 @@ public class JIPipeTestBench implements JIPipeRunnable, JIPipeValidatable {
 
         testBenchRun = new JIPipeRun(project, configuration);
         testBenchRun.setProgressInfo(progressInfo);
-        benchedAlgorithm = testBenchRun.getGraph().getNodes().get(projectAlgorithm.getIdInGraph());
+        benchedAlgorithm = testBenchRun.getGraph().getEquivalentAlgorithm(projectAlgorithm);
         ((JIPipeAlgorithm) benchedAlgorithm).setEnabled(true);
 
         // Disable all algorithms that are not dependencies of the benched algorithm
@@ -74,7 +74,7 @@ public class JIPipeTestBench implements JIPipeRunnable, JIPipeValidatable {
         Set<JIPipeGraphNode> predecessorAlgorithms = findPredecessorsWithoutCache();
         if (!settings.isExcludeSelected())
             predecessorAlgorithms.add(benchedAlgorithm);
-        for (JIPipeGraphNode node : testBenchRun.getGraph().getNodes().values()) {
+        for (JIPipeGraphNode node : testBenchRun.getGraph().getGraphNodes()) {
             if (!predecessorAlgorithms.contains(node)) {
                 if (node instanceof JIPipeAlgorithm) {
                     ((JIPipeAlgorithm) node).setEnabled(false);
@@ -84,7 +84,7 @@ public class JIPipeTestBench implements JIPipeRunnable, JIPipeValidatable {
 
         // Disable storing intermediate results
         if (!settings.isStoreIntermediateResults()) {
-            HashSet<JIPipeGraphNode> disabled = new HashSet<>(testBenchRun.getGraph().getNodes().values());
+            HashSet<JIPipeGraphNode> disabled = new HashSet<>(testBenchRun.getGraph().getGraphNodes());
             disabled.remove(benchedAlgorithm);
             configuration.setDisableSaveToDiskNodes(disabled);
             configuration.setDisableStoreToCacheNodes(disabled);
@@ -149,7 +149,7 @@ public class JIPipeTestBench implements JIPipeRunnable, JIPipeValidatable {
         }
 
         // Clear all data
-        for (JIPipeGraphNode node : testBenchRun.getGraph().getNodes().values()) {
+        for (JIPipeGraphNode node : testBenchRun.getGraph().getGraphNodes()) {
             for (JIPipeDataSlot inputSlot : node.getInputSlots()) {
                 inputSlot.clearData();
             }

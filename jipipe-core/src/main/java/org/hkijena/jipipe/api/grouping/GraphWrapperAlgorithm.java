@@ -105,7 +105,7 @@ public class GraphWrapperAlgorithm extends JIPipeAlgorithm implements JIPipeData
      */
     public GraphWrapperAlgorithmInput getGroupInput() {
         if (algorithmInput == null) {
-            for (JIPipeGraphNode node : wrappedGraph.getNodes().values()) {
+            for (JIPipeGraphNode node : wrappedGraph.getGraphNodes()) {
                 if (node instanceof GraphWrapperAlgorithmInput) {
                     algorithmInput = (GraphWrapperAlgorithmInput) node;
                     break;
@@ -115,7 +115,7 @@ public class GraphWrapperAlgorithm extends JIPipeAlgorithm implements JIPipeData
         if (algorithmInput == null) {
             // Create if it doesn't exist
             algorithmInput = JIPipe.createNode("graph-wrapper:input", GraphWrapperAlgorithmInput.class);
-            wrappedGraph.insertNode(algorithmInput, JIPipeGraph.COMPARTMENT_DEFAULT);
+            wrappedGraph.insertNode(algorithmInput);
         }
         return algorithmInput;
     }
@@ -127,7 +127,7 @@ public class GraphWrapperAlgorithm extends JIPipeAlgorithm implements JIPipeData
      */
     public GraphWrapperAlgorithmOutput getGroupOutput() {
         if (algorithmOutput == null) {
-            for (JIPipeGraphNode node : wrappedGraph.getNodes().values()) {
+            for (JIPipeGraphNode node : wrappedGraph.getGraphNodes()) {
                 if (node instanceof GraphWrapperAlgorithmOutput) {
                     algorithmOutput = (GraphWrapperAlgorithmOutput) node;
                     break;
@@ -137,7 +137,7 @@ public class GraphWrapperAlgorithm extends JIPipeAlgorithm implements JIPipeData
         if (algorithmOutput == null) {
             // Create if it doesn't exist
             algorithmOutput = JIPipe.createNode("graph-wrapper:output", GraphWrapperAlgorithmOutput.class);
-            wrappedGraph.insertNode(algorithmOutput, JIPipeGraph.COMPARTMENT_DEFAULT);
+            wrappedGraph.insertNode(algorithmOutput);
         }
         return algorithmOutput;
     }
@@ -171,7 +171,7 @@ public class GraphWrapperAlgorithm extends JIPipeAlgorithm implements JIPipeData
 
             // Run the graph
             try {
-                for (JIPipeGraphNode value : wrappedGraph.getNodes().values()) {
+                for (JIPipeGraphNode value : wrappedGraph.getGraphNodes()) {
                     if (value instanceof JIPipeAlgorithm) {
                         ((JIPipeAlgorithm) value).setThreadPool(getThreadPool());
                     }
@@ -181,7 +181,7 @@ public class GraphWrapperAlgorithm extends JIPipeAlgorithm implements JIPipeData
                 runner.setAlgorithmsWithExternalInput(Collections.singleton(getGroupInput()));
                 runner.run();
             } finally {
-                for (JIPipeGraphNode value : wrappedGraph.getNodes().values()) {
+                for (JIPipeGraphNode value : wrappedGraph.getGraphNodes()) {
                     if (value instanceof JIPipeAlgorithm) {
                         ((JIPipeAlgorithm) value).setThreadPool(null);
                     }
@@ -208,7 +208,7 @@ public class GraphWrapperAlgorithm extends JIPipeAlgorithm implements JIPipeData
 
         // Run the graph
         try {
-            for (JIPipeGraphNode value : wrappedGraph.getNodes().values()) {
+            for (JIPipeGraphNode value : wrappedGraph.getGraphNodes()) {
                 if (value instanceof JIPipeAlgorithm) {
                     ((JIPipeAlgorithm) value).setThreadPool(getThreadPool());
                 }
@@ -218,7 +218,7 @@ public class GraphWrapperAlgorithm extends JIPipeAlgorithm implements JIPipeData
             runner.setAlgorithmsWithExternalInput(Collections.singleton(getGroupInput()));
             runner.run();
         } finally {
-            for (JIPipeGraphNode value : wrappedGraph.getNodes().values()) {
+            for (JIPipeGraphNode value : wrappedGraph.getGraphNodes()) {
                 if (value instanceof JIPipeAlgorithm) {
                     ((JIPipeAlgorithm) value).setThreadPool(null);
                 }
@@ -260,8 +260,8 @@ public class GraphWrapperAlgorithm extends JIPipeAlgorithm implements JIPipeData
 
     public void setWrappedGraph(JIPipeGraph wrappedGraph) {
         if (this.wrappedGraph != wrappedGraph) {
-            for (JIPipeGraphNode value : wrappedGraph.getNodes().values()) {
-                value.setCompartment(JIPipeGraph.COMPARTMENT_DEFAULT);
+            for (JIPipeGraphNode value : wrappedGraph.getGraphNodes()) {
+                wrappedGraph.setCompartment(value.getUUIDInGraph(), null);
             }
             this.wrappedGraph = wrappedGraph;
             this.algorithmInput = null;
@@ -316,7 +316,7 @@ public class GraphWrapperAlgorithm extends JIPipeAlgorithm implements JIPipeData
     public void setWorkDirectory(Path workDirectory) {
         super.setWorkDirectory(workDirectory);
         if(wrappedGraph != null) {
-            for (JIPipeGraphNode node : wrappedGraph.getNodes().values()) {
+            for (JIPipeGraphNode node : wrappedGraph.getGraphNodes()) {
                 node.setWorkDirectory(workDirectory);
             }
         }

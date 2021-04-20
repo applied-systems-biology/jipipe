@@ -79,7 +79,7 @@ public class MoveNodesGraphHistorySnapshot implements JIPipeAlgorithmGraphHistor
 
     private Map<JIPipeGraphNode, Map<String, Map<String, Point>>> extractLocation() {
         Map<JIPipeGraphNode, Map<String, Map<String, Point>>> result = new HashMap<>();
-        for (JIPipeGraphNode node : graph.getNodes().values()) {
+        for (JIPipeGraphNode node : graph.getGraphNodes()) {
             Map<String, Map<String, Point>> locationMap = new HashMap<>();
             for (Map.Entry<String, Map<String, Point>> entry : node.getLocations().entrySet()) {
                 Map<String, Point> modeMap = new HashMap<>();

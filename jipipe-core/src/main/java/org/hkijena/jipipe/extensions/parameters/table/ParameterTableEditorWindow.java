@@ -327,7 +327,7 @@ public class ParameterTableEditorWindow extends JFrame {
     private void importColumnFromAlgorithm() {
         if (getWorkbench() instanceof JIPipeProjectWorkbench) {
             JIPipeGraph graph = ((JIPipeProjectWorkbench) getWorkbench()).getProject().getGraph();
-            JIPipeParameterTree globalTree = graph.getParameterTree();
+            JIPipeParameterTree globalTree = graph.getParameterTree(false);
 
             List<Object> importedParameters = ParameterTreeUI.showPickerDialog(getWorkbench().getWindow(), globalTree, "Import parameter");
             for (Object importedParameter : importedParameters) {

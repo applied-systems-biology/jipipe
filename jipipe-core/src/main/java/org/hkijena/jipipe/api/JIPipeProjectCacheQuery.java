@@ -50,7 +50,7 @@ public class JIPipeProjectCacheQuery {
 
         // Create the state graph
         stateGraph = new DefaultDirectedGraph<>(DefaultEdge.class);
-        for (JIPipeGraphNode node : project.getGraph().getNodes().values()) {
+        for (JIPipeGraphNode node : project.getGraph().getGraphNodes()) {
             JIPipeProjectCacheState state = new JIPipeProjectCacheState(node, new HashSet<>(), LocalDateTime.now());
             stateGraph.addVertex(state);
             cachedStates.put(node, state);

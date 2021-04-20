@@ -40,13 +40,10 @@ import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.extensions.parameters.primitives.HTMLText;
 import org.hkijena.jipipe.ui.components.MarkdownDocument;
-import org.hkijena.jipipe.ui.grapheditor.NodeHotKeyStorage;
 import org.hkijena.jipipe.ui.settings.JIPipeProjectInfoParameters;
 import org.hkijena.jipipe.utils.JsonUtils;
 import org.hkijena.jipipe.utils.ReflectionUtils;
-import org.hkijena.jipipe.utils.StringUtils;
 
-import java.awt.*;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.*;
@@ -63,7 +60,7 @@ public class JIPipeProject implements JIPipeValidatable {
 
     private JIPipeGraph graph = new JIPipeGraph();
     private JIPipeGraph compartmentGraph = new JIPipeGraph();
-    private BiMap<String, JIPipeProjectCompartment> compartments = HashBiMap.create();
+    private BiMap<UUID, JIPipeProjectCompartment> compartments = HashBiMap.create();
     private JIPipeProjectMetadata metadata = new JIPipeProjectMetadata();
     private Map<String, Object> additionalMetadata = new HashMap<>();
     private Path workDirectory;
@@ -174,7 +171,7 @@ public class JIPipeProject implements JIPipeValidatable {
     /**
      * @return The current project compartments
      */
-    public BiMap<String, JIPipeProjectCompartment> getCompartments() {
+    public BiMap<UUID, JIPipeProjectCompartment> getCompartments() {
         return ImmutableBiMap.copyOf(compartments);
     }
 
@@ -188,7 +185,7 @@ public class JIPipeProject implements JIPipeValidatable {
         JIPipeProjectCompartment compartment = JIPipe.createNode("jipipe:project-compartment", JIPipeProjectCompartment.class);
         compartment.setProject(this);
         compartment.setCustomName(name);
-        compartmentGraph.insertNode(compartment, JIPipeGraph.COMPARTMENT_DEFAULT);
+        compartmentGraph.insertNode(compartment);
         return compartment;
     }
 
@@ -200,7 +197,7 @@ public class JIPipeProject implements JIPipeValidatable {
      */
     public JIPipeProjectCompartment addCompartment(JIPipeProjectCompartment compartment) {
         compartment.setProject(this);
-        compartmentGraph.insertNode(compartment, JIPipeGraph.COMPARTMENT_DEFAULT);
+        compartmentGraph.insertNode(compartment);
         return compartment;
     }
 
@@ -218,45 +215,48 @@ public class JIPipeProject implements JIPipeValidatable {
     private void initializeCompartment(JIPipeProjectCompartment compartment) {
         compartment.setProject(this);
         JIPipeCompartmentOutput compartmentOutput = null;
-        for (JIPipeGraphNode algorithm : graph.getNodes().values()) {
-            if (algorithm instanceof JIPipeCompartmentOutput && algorithm.getCompartment().equals(compartment.getProjectCompartmentId())) {
-                compartmentOutput = (JIPipeCompartmentOutput) algorithm;
+        UUID compartmentUUID = compartment.getProjectCompartmentUUID();
+        for (JIPipeGraphNode node : graph.getGraphNodes()) {
+            if (node instanceof JIPipeCompartmentOutput && Objects.equals(compartmentUUID, graph.getCompartmentUUIDOf(node))) {
+                compartmentOutput = (JIPipeCompartmentOutput) node;
             }
         }
         if (compartmentOutput == null) {
             compartmentOutput = JIPipe.createNode("jipipe:compartment-output", JIPipeCompartmentOutput.class);
             compartmentOutput.setCustomName(compartment.getName() + " output");
-            compartmentOutput.setCompartment(compartment.getProjectCompartmentId());
-            graph.insertNode(compartmentOutput, compartment.getProjectCompartmentId());
+            graph.insertNode(compartmentOutput, compartmentUUID);
         }
 
         compartment.setOutputNode(compartmentOutput);
     }
 
     private void updateCompartmentVisibility() {
-
         boolean changed = false;
 
-        Map<JIPipeProjectCompartment, Set<String>> oldVisibleCompartments = new HashMap<>();
+        Map<JIPipeProjectCompartment, Set<UUID>> oldVisibleCompartments = new HashMap<>();
         for (JIPipeProjectCompartment compartment : compartments.values()) {
-            oldVisibleCompartments.put(compartment, new HashSet<>(compartment.getVisibleCompartments()));
-            compartment.getOutputNode().getVisibleCompartments().clear();
+            JIPipeCompartmentOutput outputNode = compartment.getOutputNode();
+            Set<UUID> visibleCompartmentUUIDs = graph.getVisibleCompartmentUUIDsOf(outputNode);
+            oldVisibleCompartments.put(compartment, new HashSet<>(visibleCompartmentUUIDs));
+            visibleCompartmentUUIDs.clear();
         }
 
-        for (JIPipeGraphNode targetNode : compartmentGraph.getNodes().values()) {
+        for (JIPipeGraphNode targetNode : compartmentGraph.getGraphNodes()) {
             if (targetNode instanceof JIPipeProjectCompartment) {
                 JIPipeProjectCompartment target = (JIPipeProjectCompartment) targetNode;
                 for (JIPipeDataSlot sourceSlot : compartmentGraph.getSourceSlots(target.getFirstInputSlot())) {
                     if (sourceSlot.getNode() instanceof JIPipeProjectCompartment) {
                         JIPipeProjectCompartment source = (JIPipeProjectCompartment) sourceSlot.getNode();
-                        source.getOutputNode().getVisibleCompartments().add(target.getProjectCompartmentId());
+                        Set<UUID> visibleCompartmentUUIDs = graph.getVisibleCompartmentUUIDsOf(source.getOutputNode());
+                        visibleCompartmentUUIDs.add(target.getProjectCompartmentUUID());
                     }
                 }
             }
         }
 
         for (JIPipeProjectCompartment compartment : compartments.values()) {
-            if (!Objects.equals(compartment.getOutputNode().getVisibleCompartments(), oldVisibleCompartments.get(compartment))) {
+            Set<UUID> visibleCompartmentUUIDs = graph.getVisibleCompartmentUUIDsOf(compartment.getOutputNode());
+            if (!Objects.equals(visibleCompartmentUUIDs, oldVisibleCompartments.get(compartment))) {
                 changed = true;
                 break;
             }
@@ -267,7 +267,7 @@ public class JIPipeProject implements JIPipeValidatable {
             if (graph.getGraph().containsEdge(edge)) {
                 JIPipeDataSlot source = graph.getGraph().getEdgeSource(edge);
                 JIPipeDataSlot target = graph.getGraph().getEdgeTarget(edge);
-                if (!source.getNode().isVisibleIn(target.getNode().getCompartment())) {
+                if (!source.getNode().isVisibleIn(target.getNode().getCompartmentUUIDInGraph())) {
                     graph.disconnect(source, target, false);
                     changed = true;
                 }
@@ -288,11 +288,11 @@ public class JIPipeProject implements JIPipeValidatable {
         if (isCleaningUp)
             return;
         if (event.getGraph() == compartmentGraph) {
-            for (JIPipeGraphNode algorithm : compartmentGraph.getNodes().values()) {
+            for (JIPipeGraphNode algorithm : compartmentGraph.getGraphNodes()) {
                 if (algorithm instanceof JIPipeProjectCompartment) {
                     JIPipeProjectCompartment compartment = (JIPipeProjectCompartment) algorithm;
                     if (!compartment.isInitialized()) {
-                        compartments.put(compartment.getProjectCompartmentId(), compartment);
+                        compartments.put(compartment.getProjectCompartmentUUID(), compartment);
                         initializeCompartment(compartment);
                     }
                 }
@@ -329,9 +329,9 @@ public class JIPipeProject implements JIPipeValidatable {
      * @param compartment The compartment
      */
     public void removeCompartment(JIPipeProjectCompartment compartment) {
-        String compartmentId = compartment.getProjectCompartmentId();
+        UUID compartmentId = compartment.getProjectCompartmentUUID();
         graph.removeCompartment(compartmentId);
-        compartments.remove(compartment.getProjectCompartmentId());
+        compartments.remove(compartmentId);
         updateCompartmentVisibility();
         compartmentGraph.removeNode(compartment, false);
         eventBus.post(new CompartmentRemovedEvent(compartment, compartmentId));
@@ -361,7 +361,7 @@ public class JIPipeProject implements JIPipeValidatable {
      */
     public void setWorkDirectory(Path workDirectory) {
         this.workDirectory = workDirectory;
-        for (JIPipeGraphNode algorithm : graph.getNodes().values()) {
+        for (JIPipeGraphNode algorithm : graph.getGraphNodes()) {
             algorithm.setWorkDirectory(workDirectory);
         }
         eventBus.post(new WorkDirectoryChangedEvent(workDirectory));
@@ -382,44 +382,8 @@ public class JIPipeProject implements JIPipeValidatable {
     public void cleanupGraph() {
         try {
             isCleaningUp = true;
-            Map<String, String> compartmentRenames = compartmentGraph.cleanupIds();
-            Map<String, Set<JIPipeGraphNode>> compartmentNodes = new HashMap<>();
-            for (Map.Entry<String, String> entry : compartmentRenames.entrySet()) {
-                if (compartmentGraph.getNodes().get(entry.getValue()) instanceof JIPipeProjectCompartment) {
-                    Set<JIPipeGraphNode> nodes = graph.getNodes().values().stream().filter(node -> Objects.equals(node.getCompartment(), entry.getKey())).collect(Collectors.toSet());
-                    compartmentNodes.put(entry.getKey(), nodes);
-                    eventBus.post(new CompartmentRenamedEvent((JIPipeProjectCompartment) compartmentGraph.getNodes().get(entry.getValue())));
-                }
-            }
-            for (Map.Entry<String, Set<JIPipeGraphNode>> entry : compartmentNodes.entrySet()) {
-                String newCompartment = compartmentRenames.get(entry.getKey());
-                for (JIPipeGraphNode node : entry.getValue()) {
-
-                    // Rename own compartment
-                    node.setCompartment(newCompartment);
-                }
-            }
-
-            // Rename compartments in node hot key storage
-            NodeHotKeyStorage.getInstance(compartmentGraph).renameNodeIds(compartmentRenames);
-            NodeHotKeyStorage.getInstance(graph).renameCompartments(compartmentRenames);
-
-            for (JIPipeGraphNode node : graph.getNodes().values()) {
-                // Rename visible compartments
-                node.setVisibleCompartments(node.getVisibleCompartments().stream().map(compartmentRenames::get).collect(Collectors.toSet()));
-
-                // Rename locations
-                ImmutableList<Map.Entry<String, Map<String, Point>>> locationEntries = ImmutableList.copyOf(node.getLocations().entrySet());
-                node.getLocations().clear();
-                for (Map.Entry<String, Map<String, Point>> entry : locationEntries) {
-                    String newId = compartmentRenames.get(entry.getKey());
-                    node.getLocations().put(newId, entry.getValue());
-                }
-            }
-
-            Map<String, String> nodeIdRenames = graph.cleanupIds();
-            NodeHotKeyStorage.getInstance(graph).renameNodeIds(nodeIdRenames);
-            cache.autoClean(true, true);
+            compartmentGraph.rebuildAliasIds();
+            graph.rebuildAliasIds();
         } finally {
             isCleaningUp = false;
         }
@@ -473,15 +437,15 @@ public class JIPipeProject implements JIPipeValidatable {
     /**
      * Loads the project from JSON
      *
-     * @param node the node
+     * @param jsonNode the node
      */
-    public void fromJson(JsonNode node, JIPipeValidityReport report) throws IOException {
-        if (node.has("metadata")) {
-            metadata = JsonUtils.getObjectMapper().readerFor(JIPipeProjectMetadata.class).readValue(node.get("metadata"));
+    public void fromJson(JsonNode jsonNode, JIPipeValidityReport report) throws IOException {
+        if (jsonNode.has("metadata")) {
+            metadata = JsonUtils.getObjectMapper().readerFor(JIPipeProjectMetadata.class).readValue(jsonNode.get("metadata"));
         }
 
         // Deserialize additional metadata
-        JsonNode additionalMetadataNode = node.path("additional-metadata");
+        JsonNode additionalMetadataNode = jsonNode.path("additional-metadata");
         for (Map.Entry<String, JsonNode> metadataEntry : ImmutableList.copyOf(additionalMetadataNode.fields())) {
             try {
                 Class<?> metadataClass = JsonUtils.getObjectMapper().readerFor(Class.class).readValue(metadataEntry.getValue().get("jipipe:type"));
@@ -501,21 +465,36 @@ public class JIPipeProject implements JIPipeValidatable {
         }
 
         // We must first load the graph, as we can infer compartments later
-        graph.fromJson(node.get("graph"), new JIPipeValidityReport());
+        graph.fromJson(jsonNode.get("graph"), new JIPipeValidityReport());
 
         // read compartments
-        compartmentGraph.fromJson(node.get("compartments").get("compartment-graph"), new JIPipeValidityReport());
-        for (JIPipeGraphNode algorithm : compartmentGraph.getNodes().values()) {
-            if (algorithm instanceof JIPipeProjectCompartment) {
-                JIPipeProjectCompartment compartment = (JIPipeProjectCompartment) algorithm;
+        compartmentGraph.fromJson(jsonNode.get("compartments").get("compartment-graph"), new JIPipeValidityReport());
+
+        // Fix legacy nodes
+        for (Map.Entry<UUID, String> entry : graph.getNodeLegacyCompartmentIDs().entrySet()) {
+            JIPipeGraphNode compartmentNode = compartmentGraph.findNode(entry.getValue());
+            if(compartmentNode != null) {
+                System.out.println("Fix legacy compartment '" + entry.getValue() + "' --> " + compartmentNode.getUUIDInGraph());
+                graph.setCompartment(entry.getKey(), compartmentNode.getUUIDInGraph());
+            }
+            else {
+                // Ghost node -> delete
+                graph.removeNode(graph.getNodeByUUID(entry.getKey()), false);
+            }
+        }
+
+        // Initialize compartments
+        for (JIPipeGraphNode node : compartmentGraph.getGraphNodes()) {
+            if (node instanceof JIPipeProjectCompartment) {
+                JIPipeProjectCompartment compartment = (JIPipeProjectCompartment) node;
                 compartment.setProject(this);
-                compartments.put(compartment.getProjectCompartmentId(), compartment);
+                compartments.put(compartment.getProjectCompartmentUUID(), compartment);
                 initializeCompartment(compartment);
             }
         }
 
         // Reading compartments might break some connections. This will restore them
-        graph.fromJson(node.get("graph"), report);
+        graph.fromJson(jsonNode.get("graph"), report);
 
         // Update node visibilities
         updateCompartmentVisibility();
@@ -525,19 +504,19 @@ public class JIPipeProject implements JIPipeValidatable {
 
         // Checking for error
         JIPipeValidityReport checkNodesReport = report.forCategory("Check nodes");
-        for (JIPipeGraphNode graphNode : graph.getNodes().values()) {
-            String compartment = graphNode.getCompartment();
-            if (StringUtils.isNullOrEmpty(compartment)) {
+        for (JIPipeGraphNode graphNode : graph.getGraphNodes()) {
+            UUID compartmentUUIDInGraph = graphNode.getCompartmentUUIDInGraph();
+            if (compartmentUUIDInGraph == null || !compartments.containsKey(compartmentUUIDInGraph)) {
                 checkNodesReport.reportIsInvalid("Node has no compartment!",
-                        "The node '" + graphNode.getIdInGraph() + "' has no compartment assigned!",
+                        "The node '" + graphNode.getDisplayName() + "' has no compartment assigned!",
                         "This was repaired automatically by deleting the node. Please inform the JIPipe developers about this issue.",
                         graphNode);
                 graph.removeNode(graphNode, false);
             } else {
-                JIPipeGraphNode compartmentNode = compartmentGraph.getNodes().getOrDefault(compartment, null);
+                JIPipeGraphNode compartmentNode = compartmentGraph.getNodeByUUID(compartmentUUIDInGraph);
                 if (compartmentNode == null) {
                     checkNodesReport.reportIsInvalid("Node has invalid compartment!",
-                            "The node '" + graphNode.getIdInGraph() + "' is assigned to compartment '" + compartment + "', but it does not exist!",
+                            "The node '" + graphNode.getDisplayName() + "' is assigned to compartment '" + compartmentUUIDInGraph + "', but it does not exist!",
                             "This was repaired automatically by deleting the node. Please inform the JIPipe developers about this issue.",
                             graphNode);
                     graph.removeNode(graphNode, false);
@@ -564,7 +543,7 @@ public class JIPipeProject implements JIPipeValidatable {
     public Set<JIPipeGraphNode> getIntermediateAlgorithms() {
         Set<JIPipeGraphNode> result = new HashSet<>();
         outer:
-        for (JIPipeGraphNode node : graph.getNodes().values()) {
+        for (JIPipeGraphNode node : graph.getGraphNodes()) {
             for (JIPipeDataSlot outputSlot : node.getOutputSlots()) {
                 if (graph.getTargetSlots(outputSlot).isEmpty()) {
                     continue outer;
@@ -583,7 +562,7 @@ public class JIPipeProject implements JIPipeValidatable {
      */
     public Set<JIPipeDataSlot> getHeavyIntermediateAlgorithmOutputSlots() {
         Set<JIPipeDataSlot> result = new HashSet<>();
-        for (JIPipeGraphNode node : graph.getNodes().values()) {
+        for (JIPipeGraphNode node : graph.getGraphNodes()) {
             for (JIPipeDataSlot outputSlot : node.getOutputSlots()) {
                 boolean heavy = JIPipeData.isHeavy(outputSlot.getAcceptedDataType());
                 if (heavy && !graph.getTargetSlots(outputSlot).isEmpty()) {
@@ -658,42 +637,24 @@ public class JIPipeProject implements JIPipeValidatable {
      * Triggered when a sample is removed from an {@link JIPipeProject}
      */
     public static class CompartmentRemovedEvent {
-        private final String compartmentId;
+        private final UUID compartmentUUID;
         private JIPipeProjectCompartment compartment;
 
         /**
          * @param compartment   the compartment
-         * @param compartmentId the compartment id
+         * @param compartmentUUID the compartment id
          */
-        public CompartmentRemovedEvent(JIPipeProjectCompartment compartment, String compartmentId) {
+        public CompartmentRemovedEvent(JIPipeProjectCompartment compartment, UUID compartmentUUID) {
             this.compartment = compartment;
-            this.compartmentId = compartmentId;
+            this.compartmentUUID = compartmentUUID;
         }
 
         public JIPipeProjectCompartment getCompartment() {
             return compartment;
         }
 
-        public String getCompartmentId() {
-            return compartmentId;
-        }
-    }
-
-    /**
-     * Triggered when a sample in an {@link JIPipeProject} is renamed
-     */
-    public static class CompartmentRenamedEvent {
-        private JIPipeProjectCompartment compartment;
-
-        /**
-         * @param compartment the compartment
-         */
-        public CompartmentRenamedEvent(JIPipeProjectCompartment compartment) {
-            this.compartment = compartment;
-        }
-
-        public JIPipeProjectCompartment getCompartment() {
-            return compartment;
+        public UUID getCompartmentUUID() {
+            return compartmentUUID;
         }
     }
 

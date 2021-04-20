@@ -23,7 +23,7 @@ public class NodeToolBoxTransferHandler extends TransferHandler {
         if (c instanceof JList) {
             JIPipeGraph graph = new JIPipeGraph();
             for (JIPipeNodeInfo info : ((JList<JIPipeNodeInfo>) c).getSelectedValuesList()) {
-                graph.insertNode(info.newInstance(), JIPipeGraph.COMPARTMENT_DEFAULT);
+                graph.insertNode(info.newInstance());
             }
             String json = JsonUtils.toJsonString(graph);
             return new Transferable() {

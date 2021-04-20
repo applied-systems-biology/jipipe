@@ -49,7 +49,7 @@ public class JIPipeJsonExporter extends JIPipeGraphEditorUI {
      * @param group       the node group that will be converted into an algorithm
      */
     public JIPipeJsonExporter(JIPipeProjectWorkbench workbenchUI, NodeGroup group) {
-        super(workbenchUI, group.getWrappedGraph(), JIPipeGraph.COMPARTMENT_DEFAULT);
+        super(workbenchUI, group.getWrappedGraph(), null);
         nodeInfo = new JsonNodeInfo(group);
         nodeInfo.setName(group.getName());
         nodeInfo.setDescription(group.getCustomDescription());

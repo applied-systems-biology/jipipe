@@ -88,7 +88,7 @@ public class GraphNodeParametersUI extends JIPipeWorkbenchPanel {
 
     private void autoAddAlgorithm() {
         JIPipeGraphNode algorithm = PickNodeDialog.showDialog(this,
-                parameters.getGraph().getNodes().values(),
+                parameters.getGraph().getGraphNodes(),
                 null, "Add parameters of algorithm");
         if (algorithm != null) {
             List<GraphNodeParameterReferenceGroup> groupList = new ArrayList<>();
@@ -123,7 +123,7 @@ public class GraphNodeParametersUI extends JIPipeWorkbenchPanel {
     }
 
     private void refreshContent() {
-        tree = getParameters().getGraph().getParameterTree();
+        tree = getParameters().getGraph().getParameterTree(false);
         int scrollValue = 0;
         if (content.getScrollPane() != null) {
             scrollValue = content.getScrollPane().getVerticalScrollBar().getValue();

@@ -293,7 +293,7 @@ public class JsonNodeInfo implements JIPipeNodeInfo, JIPipeValidatable, JIPipePa
      */
     public GraphWrapperAlgorithmInput getGroupInput() {
         if (algorithmInput == null) {
-            for (JIPipeGraphNode node : graph.getNodes().values()) {
+            for (JIPipeGraphNode node : graph.getGraphNodes()) {
                 if (node instanceof GraphWrapperAlgorithmInput) {
                     algorithmInput = (GraphWrapperAlgorithmInput) node;
                     break;
@@ -303,7 +303,7 @@ public class JsonNodeInfo implements JIPipeNodeInfo, JIPipeValidatable, JIPipePa
         if (algorithmInput == null) {
             // Create if it doesn't exist
             algorithmInput = JIPipe.createNode("graph-wrapper:input", GraphWrapperAlgorithmInput.class);
-            graph.insertNode(algorithmInput, JIPipeGraph.COMPARTMENT_DEFAULT);
+            graph.insertNode(algorithmInput);
         }
         return algorithmInput;
     }
@@ -315,7 +315,7 @@ public class JsonNodeInfo implements JIPipeNodeInfo, JIPipeValidatable, JIPipePa
      */
     public GraphWrapperAlgorithmOutput getGroupOutput() {
         if (algorithmOutput == null) {
-            for (JIPipeGraphNode node : graph.getNodes().values()) {
+            for (JIPipeGraphNode node : graph.getGraphNodes()) {
                 if (node instanceof GraphWrapperAlgorithmOutput) {
                     algorithmOutput = (GraphWrapperAlgorithmOutput) node;
                     break;
@@ -325,7 +325,7 @@ public class JsonNodeInfo implements JIPipeNodeInfo, JIPipeValidatable, JIPipePa
         if (algorithmOutput == null) {
             // Create if it doesn't exist
             algorithmOutput = JIPipe.createNode("graph-wrapper:output", GraphWrapperAlgorithmOutput.class);
-            graph.insertNode(algorithmOutput, JIPipeGraph.COMPARTMENT_DEFAULT);
+            graph.insertNode(algorithmOutput);
         }
         return algorithmOutput;
     }
@@ -339,7 +339,7 @@ public class JsonNodeInfo implements JIPipeNodeInfo, JIPipeValidatable, JIPipePa
         Map<String, JIPipeParameterAccess> parameterAccessMap = new HashMap<>();
         for (JIPipeGraphNode algorithm : graph.traverse()) {
             for (Map.Entry<String, JIPipeParameterAccess> entry : JIPipeParameterTree.getParameters(algorithm).entrySet()) {
-                String newId = algorithm.getIdInGraph() + "/" + entry.getKey();
+                String newId = algorithm.getUUIDInGraph() + "/" + entry.getKey();
                 parameterAccessMap.put(newId, entry.getValue());
             }
         }
