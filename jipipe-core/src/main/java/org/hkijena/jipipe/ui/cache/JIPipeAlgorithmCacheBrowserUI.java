@@ -28,6 +28,9 @@ import org.hkijena.jipipe.api.testbench.JIPipeTestBenchSettings;
 import org.hkijena.jipipe.extensions.settings.FileChooserSettings;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbenchPanel;
+import org.hkijena.jipipe.ui.grapheditor.JIPipeGraphCanvasUI;
+import org.hkijena.jipipe.ui.grapheditor.JIPipeNodeUI;
+import org.hkijena.jipipe.ui.grapheditor.actions.UpdateCacheAction;
 import org.hkijena.jipipe.ui.running.JIPipeRunExecuterUI;
 import org.hkijena.jipipe.ui.running.JIPipeRunnerQueue;
 import org.hkijena.jipipe.ui.running.RunUIWorkerFinishedEvent;
@@ -54,14 +57,17 @@ public class JIPipeAlgorithmCacheBrowserUI extends JIPipeProjectWorkbenchPanel {
     private final JToolBar toolBar = new JToolBar();
     private JSplitPane splitPane;
     private JIPipeAlgorithmCacheTree tree;
+    private JIPipeGraphCanvasUI graphCanvasUI;
 
     /**
      * @param workbenchUI the workbench
      * @param graphNode   the node
+     * @param graphCanvasUI can be null
      */
-    public JIPipeAlgorithmCacheBrowserUI(JIPipeProjectWorkbench workbenchUI, JIPipeGraphNode graphNode) {
+    public JIPipeAlgorithmCacheBrowserUI(JIPipeProjectWorkbench workbenchUI, JIPipeGraphNode graphNode, JIPipeGraphCanvasUI graphCanvasUI) {
         super(workbenchUI);
         this.graphNode = graphNode;
+        this.graphCanvasUI = graphCanvasUI;
         initialize();
         showCurrentlySelectedNode();
 
@@ -191,6 +197,14 @@ public class JIPipeAlgorithmCacheBrowserUI extends JIPipeProjectWorkbenchPanel {
     }
 
     private void updateCache(boolean storeIntermediateResults) {
+        if(graphCanvasUI != null) {
+            JIPipeNodeUI ui = graphCanvasUI.getNodeUIs().getOrDefault(graphNode, null);
+            if(ui != null) {
+                ui.getEventBus().post(new JIPipeGraphCanvasUI.NodeUIActionRequestedEvent(ui, new UpdateCacheAction(false)));
+                return;
+            }
+        }
+
         JIPipeTestBenchSettings settings = new JIPipeTestBenchSettings();
         settings.setLoadFromCache(true);
         settings.setStoreIntermediateResults(storeIntermediateResults);

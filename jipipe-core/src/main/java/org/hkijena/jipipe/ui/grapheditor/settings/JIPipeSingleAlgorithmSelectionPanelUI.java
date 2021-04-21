@@ -148,7 +148,9 @@ public class JIPipeSingleAlgorithmSelectionPanelUI extends JIPipeProjectWorkbenc
         }
         if (cacheBrowserTabContent != null && tabbedPane.getCurrentContent() == cacheBrowserTabContent) {
             if (cacheBrowserTabContent.getComponentCount() == 0) {
-                JIPipeAlgorithmCacheBrowserUI browserUI = new JIPipeAlgorithmCacheBrowserUI(getProjectWorkbench(), algorithm);
+                JIPipeAlgorithmCacheBrowserUI browserUI = new JIPipeAlgorithmCacheBrowserUI(getProjectWorkbench(),
+                        algorithm,
+                        graphEditorUI.getCanvasUI());
                 cacheBrowserTabContent.add(browserUI, BorderLayout.CENTER);
             }
         }
@@ -156,7 +158,12 @@ public class JIPipeSingleAlgorithmSelectionPanelUI extends JIPipeProjectWorkbenc
             if (batchAssistantTabContent != null && tabbedPane.getCurrentContent() == batchAssistantTabContent) {
                 if (batchAssistantTabContent.getComponentCount() == 0) {
                     DataBatchAssistantUI browserUI = new DataBatchAssistantUI(getProjectWorkbench(), algorithm,
-                            () -> runTestBench(false, false, true, false, true, true));
+                            () -> runTestBench(false,
+                                    false,
+                                    true,
+                                    false,
+                                    true,
+                                    true));
                     batchAssistantTabContent.add(browserUI, BorderLayout.CENTER);
                 }
             }

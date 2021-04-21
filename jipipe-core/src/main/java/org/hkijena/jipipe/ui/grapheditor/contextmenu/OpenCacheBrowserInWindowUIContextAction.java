@@ -37,7 +37,8 @@ public class OpenCacheBrowserInWindowUIContextAction implements NodeUIContextAct
     @Override
     public void run(JIPipeGraphCanvasUI canvasUI, Set<JIPipeNodeUI> selection) {
         for (JIPipeNodeUI ui : selection) {
-            JIPipeAlgorithmCacheBrowserUI browserUI = new JIPipeAlgorithmCacheBrowserUI((JIPipeProjectWorkbench) ui.getWorkbench(), ui.getNode());
+            JIPipeAlgorithmCacheBrowserUI browserUI =
+                    new JIPipeAlgorithmCacheBrowserUI((JIPipeProjectWorkbench) ui.getWorkbench(), ui.getNode(), canvasUI);
             JFrame frame = new JFrame("Cache browser: " + ui.getNode().getName());
             frame.setAlwaysOnTop(GeneralUISettings.getInstance().isOpenUtilityWindowsAlwaysOnTop());
             frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);

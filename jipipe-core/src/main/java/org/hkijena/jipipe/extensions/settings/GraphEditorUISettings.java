@@ -41,6 +41,8 @@ public class GraphEditorUISettings implements JIPipeParameterCollection {
     private boolean notifyInvalidDragAndDrop = true;
     private boolean colorSelectedNodeEdges = true;
     private boolean autoLayoutMovesOtherNodes = false;
+    private boolean showRunNodeButton = true;
+    private boolean showSettingsNodeButton = false;
 
     public static GraphEditorUISettings getInstance() {
         return JIPipe.getSettings().getSettings(ID, GraphEditorUISettings.class);
@@ -178,5 +180,28 @@ public class GraphEditorUISettings implements JIPipeParameterCollection {
     @JIPipeParameter("auto-layout-moves-other-nodes")
     public void setAutoLayoutMovesOtherNodes(boolean autoLayoutMovesOtherNodes) {
         this.autoLayoutMovesOtherNodes = autoLayoutMovesOtherNodes;
+    }
+
+    @JIPipeDocumentation(name = "Show 'Run' button in node", description = "If enabled, a green 'run' button is shown in each node.")
+    @JIPipeParameter("show-run-node-button")
+    public boolean isShowRunNodeButton() {
+        return showRunNodeButton;
+    }
+
+    @JIPipeParameter("show-run-node-button")
+    public void setShowRunNodeButton(boolean showRunNodeButton) {
+        this.showRunNodeButton = showRunNodeButton;
+    }
+
+    @JIPipeDocumentation(name = "Show 'Context menu' button in nodes", description = "If enabled, a wrench button is shown in each node that " +
+            "opens the context menu. This might be useful for accessibility.")
+    @JIPipeParameter("show-open-context-menu-button")
+    public boolean isShowSettingsNodeButton() {
+        return showSettingsNodeButton;
+    }
+
+    @JIPipeParameter("show-open-context-menu-button")
+    public void setShowSettingsNodeButton(boolean showSettingsNodeButton) {
+        this.showSettingsNodeButton = showSettingsNodeButton;
     }
 }
