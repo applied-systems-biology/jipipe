@@ -170,7 +170,7 @@ public class JIPipeVerticalNodeUI extends JIPipeNodeUI {
 
     @Override
     public void updateHotkeyInfo() {
-        NodeHotKeyStorage.Hotkey hotkey = getGraphUI().getNodeHotKeyStorage().getHotkeyFor(getGraphUI().getCompartment(), getNode().getIdInGraph());
+        NodeHotKeyStorage.Hotkey hotkey = getGraphUI().getNodeHotKeyStorage().getHotkeyFor(getGraphUI().getCompartment(), getNode().getUUIDInGraph());
         openSettingsButton.setVisible(hotkey != NodeHotKeyStorage.Hotkey.None || getGraphUI().getSettings().isShowSettingsNodeButton());
         switch (hotkey) {
             case None:
