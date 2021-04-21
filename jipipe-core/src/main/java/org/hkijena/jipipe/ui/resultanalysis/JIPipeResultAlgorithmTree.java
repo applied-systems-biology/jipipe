@@ -55,7 +55,8 @@ public class JIPipeResultAlgorithmTree extends JIPipeProjectWorkbenchPanel {
 
         DefaultMutableTreeNode root = new DefaultMutableTreeNode(null);
         for (JIPipeProjectCompartment compartment : run.getProject().getCompartmentGraph().traverse()
-                .stream().map(a -> (JIPipeProjectCompartment) a).collect(Collectors.toList())) {
+                .stream().filter(a -> a instanceof JIPipeProjectCompartment)
+                .map(a -> (JIPipeProjectCompartment) a).collect(Collectors.toList())) {
             DefaultMutableTreeNode compartmentNode = new DefaultMutableTreeNode(compartment);
             boolean compartmentMatches = searchTextField.test(compartment.getName());
             boolean compartmentHasMatchedChildren = false;
