@@ -43,7 +43,9 @@ import org.hkijena.jipipe.ui.components.MarkdownDocument;
 import org.hkijena.jipipe.ui.settings.JIPipeProjectInfoParameters;
 import org.hkijena.jipipe.utils.JsonUtils;
 import org.hkijena.jipipe.utils.ReflectionUtils;
+import org.hkijena.jipipe.utils.StringUtils;
 
+import java.awt.*;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.*;
@@ -487,12 +489,29 @@ public class JIPipeProject implements JIPipeValidatable {
             // Fix legacy nodes
             for (Map.Entry<UUID, String> entry : graph.getNodeLegacyCompartmentIDs().entrySet()) {
                 JIPipeGraphNode compartmentNode = compartmentGraph.findNode(entry.getValue());
+                JIPipeGraphNode node = graph.getNodeByUUID(entry.getKey());
                 if (compartmentNode != null) {
                     System.out.println("Fix legacy compartment '" + entry.getValue() + "' --> " + compartmentNode.getUUIDInGraph());
                     graph.setCompartment(entry.getKey(), compartmentNode.getUUIDInGraph());
                 } else {
                     // Ghost node -> delete
-                    graph.removeNode(graph.getNodeByUUID(entry.getKey()), false);
+                    graph.removeNode(node, false);
+                    continue;
+                }
+
+                // Fix legacy node location information
+                for (Map.Entry<String, Map<String, Point>> locationEntry : ImmutableList.copyOf(node.getLocations().entrySet())) {
+                    Map<String, Point> location = locationEntry.getValue();
+                    String compartmentUUIDString;
+                    if("DEFAULT".equals(locationEntry.getKey())) {
+                        compartmentUUIDString = "";
+                    }
+                    else {
+                        compartmentUUIDString = StringUtils.nullToEmpty(compartmentGraph.findNodeUUID(locationEntry.getKey()));
+                    }
+                    node.getLocations().remove(locationEntry.getKey());
+                    node.getLocations().put(compartmentUUIDString, location);
+                    System.out.println("Move location within " + locationEntry.getKey() + " to " + compartmentUUIDString);
                 }
             }
 

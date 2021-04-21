@@ -381,10 +381,18 @@ public abstract class JIPipeGraphNode implements JIPipeValidatable, JIPipeParame
         }
     }
 
+    /**
+     * Gets the location map (writable) as map from compartment UUID to visual mode to location
+     * @return map from compartment UUID to visual mode to location
+     */
     public Map<String, Map<String, Point>> getLocations() {
         return locations;
     }
 
+    /**
+     * Sets the location map.
+     * @param locations map from compartment UUID to visual mode to location
+     */
     public void setLocations(Map<String, Map<String, Point>> locations) {
         this.locations = locations;
     }

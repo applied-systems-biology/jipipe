@@ -189,6 +189,27 @@ public class JIPipeGraph implements JIPipeValidatable {
     }
 
     /**
+     * Finds a node UUID by its UUID (as string) or alias ID.
+     * Prefers UUID.
+     * @param uuidOrAlias the UUID string or alias ID
+     * @return the node or null if it could not be found
+     */
+    public UUID findNodeUUID(String uuidOrAlias) {
+        if(StringUtils.isNullOrEmpty(uuidOrAlias))
+            return null;
+        try {
+            JIPipeGraphNode node = nodeUUIDs.getOrDefault(UUID.fromString(uuidOrAlias), null);
+            if(node != null)
+                return node.getUUIDInGraph();
+            else
+                return null;
+        }
+        catch (IllegalArgumentException e) {
+            return nodeAliasIds.inverse().getOrDefault(uuidOrAlias, null);
+        }
+    }
+
+    /**
      * Finds a node by its UUID (as string) or alias ID.
      * Prefers UUID.
      * @param uuidOrAlias the UUID string or alias ID
@@ -953,13 +974,19 @@ public class JIPipeGraph implements JIPipeValidatable {
                 }
 
                 JIPipeNodeInfo info = JIPipe.getNodes().getInfoById(id);
-                JIPipeGraphNode algorithm = info.newInstance();
-                algorithm.fromJson(currentNodeJson, issues.forCategory("Nodes").forCategory(id));
-                insertNode(nodeUUID, algorithm, compartmentUUID);
+                JIPipeGraphNode node = info.newInstance();
+                node.fromJson(currentNodeJson, issues.forCategory("Nodes").forCategory(id));
+                insertNode(nodeUUID, node, compartmentUUID);
 //                System.out.println("Insert: " + algorithm + " alias " + aliasId + " in compartment " + compartmentUUID);
                 if(aliasId != null) {
                     nodeAliasIds.remove(nodeUUID);
                     nodeAliasIds.put(nodeUUID, aliasId);
+                }
+
+                // Move DEFAULT location to empty string (UUID-based)
+                if(node.getLocations().containsKey("DEFAULT")) {
+                    node.getLocations().put("", node.getLocations().get("DEFAULT"));
+                    node.getLocations().remove("DEFAULT");
                 }
             }
         }
@@ -1481,6 +1508,7 @@ public class JIPipeGraph implements JIPipeValidatable {
     public boolean isEmpty() {
         return nodeUUIDs.isEmpty();
     }
+
 
     /**
      * Serializes an {@link JIPipeGraph}
