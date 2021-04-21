@@ -15,6 +15,7 @@ package org.hkijena.jipipe.ui.grapheditor;
 
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
+import org.hkijena.jipipe.api.JIPipeGraphType;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.data.JIPipeSlotType;
 import org.hkijena.jipipe.api.nodes.JIPipeAlgorithm;
@@ -26,6 +27,7 @@ import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.JIPipeWorkbenchPanel;
 import org.hkijena.jipipe.ui.components.AddAlgorithmSlotPanel;
 import org.hkijena.jipipe.ui.components.ZoomIcon;
+import org.hkijena.jipipe.ui.grapheditor.contextmenu.*;
 import org.hkijena.jipipe.utils.PointRange;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
@@ -49,6 +51,14 @@ public abstract class JIPipeNodeUI extends JIPipeWorkbenchPanel {
 
     private LinearGradientPaint disabledPaint;
     private LinearGradientPaint passThroughPaint;
+
+    public static final NodeUIContextAction[] RUN_NODE_CONTEXT_MENU_ENTRIES = new NodeUIContextAction[] {
+            new UpdateCacheNodeUIContextAction(),
+            new UpdateCacheShowIntermediateNodeUIContextAction(),
+            NodeUIContextAction.SEPARATOR,
+            new RunAndShowResultsNodeUIContextAction(),
+            new RunAndShowIntermediateResultsNodeUIContextAction()
+    };
 
     /**
      * Creates a new UI
@@ -76,6 +86,14 @@ public abstract class JIPipeNodeUI extends JIPipeWorkbenchPanel {
         this.passThroughPaint = new LinearGradientPaint(
                 (float) 0, (float) 0, (float) (8), (float) (8),
                 new float[]{0, 0.5f, 0.5001f, 1}, new Color[]{desaturatedFillColor, desaturatedFillColor, fillColor, fillColor}, MultipleGradientPaint.CycleMethod.REPEAT);
+    }
+
+    public boolean isNodeRunnable() {
+        if (!node.getInfo().isRunnable())
+            return false;
+        if (!(node instanceof JIPipeAlgorithm))
+            return false;
+        return node.getGraph().getAttachment(JIPipeGraphType.class) == JIPipeGraphType.Project;
     }
 
     /**

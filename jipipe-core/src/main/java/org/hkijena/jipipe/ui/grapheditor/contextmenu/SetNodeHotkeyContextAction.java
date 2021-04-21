@@ -21,7 +21,7 @@ public class SetNodeHotkeyContextAction implements NodeUIContextAction {
 
     @Override
     public void run(JIPipeGraphCanvasUI canvasUI, Set<JIPipeNodeUI> selection) {
-        JDialog dialog = new JDialog(SwingUtilities.getWindowAncestor(canvasUI), "Set quick access hotkey");
+        JDialog dialog = new JDialog(canvasUI.getWorkbench().getWindow(), "Set quick access hotkey");
         dialog.setModal(true);
 
         JPanel contentPanel = new JPanel(new BorderLayout());
@@ -76,7 +76,7 @@ public class SetNodeHotkeyContextAction implements NodeUIContextAction {
         contentPanel.add(dialPanel, BorderLayout.CENTER);
         dialog.setContentPane(contentPanel);
         dialog.setSize(400, 100);
-        dialog.setLocationRelativeTo(null);
+        dialog.setLocationRelativeTo(canvasUI.getWorkbench().getWindow());
         UIUtils.addEscapeListener(dialog);
         dialog.setVisible(true);
 

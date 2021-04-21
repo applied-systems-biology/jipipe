@@ -23,6 +23,17 @@ public class ZoomFlatIconButton extends JButton {
         updateSize();
     }
 
+    public ZoomFlatIconButton(ImageIcon icon, ZoomViewPort viewPort, int originalSize, int originalBorderSize) {
+        super(new ZoomIcon(icon, viewPort));
+        this.originalSize = originalSize;
+        this.originalBorderSize = originalBorderSize;
+        this.viewPort = viewPort;
+        setBackground(UIManager.getColor("TextArea.background"));
+        setOpaque(false);
+        viewPort.getEventBus().register(this);
+        updateSize();
+    }
+
     public void updateSize() {
         int size = Math.max(1, (int) Math.round(viewPort.getZoom() * originalSize));
         int borderSize = Math.max(1, (int) Math.round(viewPort.getZoom() * originalBorderSize));

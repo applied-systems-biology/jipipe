@@ -50,7 +50,8 @@ public class RunAndShowIntermediateResultsNodeUIContextAction implements NodeUIC
 
     @Override
     public String getDescription() {
-        return "Runs the pipeline up until this algorithm and shows the results (including intermediate results).";
+        return "Runs the pipeline up until this algorithm and shows the results (including intermediate results). " +
+                "The results will be stored on the hard drive.";
     }
 
     @Override

@@ -117,6 +117,10 @@ public class JIPipeGraphCanvasUI extends JIPipeWorkbenchPanel implements MouseMo
         initializeHotkeys();
     }
 
+    public GraphEditorUISettings getSettings() {
+        return settings;
+    }
+
     private void initializeHotkeys() {
         KeyboardFocusManager focusManager = KeyboardFocusManager.getCurrentKeyboardFocusManager();
         focusManager.addKeyEventDispatcher(e -> {

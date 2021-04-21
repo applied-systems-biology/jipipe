@@ -52,7 +52,8 @@ public class RunAndShowResultsNodeUIContextAction implements NodeUIContextAction
 
     @Override
     public String getDescription() {
-        return "Runs the pipeline up until this algorithm and shows the results.";
+        return "Runs the pipeline up until this algorithm and shows the results. " +
+                "The results will be stored on the hard drive.";
     }
 
     @Override

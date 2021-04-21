@@ -27,6 +27,7 @@ import org.hkijena.jipipe.ui.components.ZoomFlatIconButton;
 import org.hkijena.jipipe.ui.components.ZoomIcon;
 import org.hkijena.jipipe.ui.components.ZoomLabel;
 import org.hkijena.jipipe.ui.grapheditor.actions.OpenContextMenuAction;
+import org.hkijena.jipipe.ui.grapheditor.contextmenu.NodeUIContextAction;
 import org.hkijena.jipipe.utils.PointRange;
 import org.hkijena.jipipe.utils.UIUtils;
 
@@ -36,6 +37,7 @@ import java.awt.font.FontRenderContext;
 import java.awt.font.TextLayout;
 import java.util.List;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * An algorithm UI for horizontal display
@@ -55,7 +57,7 @@ public class JIPipeHorizontalNodeUI extends JIPipeNodeUI {
     /**
      * Creates a new UI
      *
-     * @param workbench
+     * @param workbench the workbench
      * @param graphUI   The graph UI that contains this UI
      * @param algorithm The algorithm
      */
@@ -80,33 +82,70 @@ public class JIPipeHorizontalNodeUI extends JIPipeNodeUI {
 
         nameLabel = new ZoomLabel(getNode().getName(), null, getGraphUI());
         nameLabel.setIcon(new ZoomIcon(JIPipe.getNodes().getIconFor(getNode().getInfo()), getGraphUI()));
+
         openSettingsButton = new ZoomFlatIconButton(UIUtils.getIconFromResources("actions/wrench.png"), getGraphUI());
         openSettingsButton.setBorder(null);
-        openSettingsButton.addActionListener(e -> getEventBus().post(new JIPipeGraphCanvasUI.NodeUIActionRequestedEvent(this, new OpenContextMenuAction())));
+        openSettingsButton.addActionListener(e -> {
+            getGraphUI().selectOnly(this);
+            getEventBus().post(new JIPipeGraphCanvasUI.NodeUIActionRequestedEvent(this, new OpenContextMenuAction()));
+        });
 
+        JButton runButton = new ZoomFlatIconButton(UIUtils.getIconFromResources("actions/run-play.png"), getGraphUI());
+        runButton.setBorder(null);
+        JPopupMenu runContextMenu = UIUtils.addPopupMenuToComponent(runButton);
+        for (NodeUIContextAction entry : RUN_NODE_CONTEXT_MENU_ENTRIES) {
+            if(entry == null)
+                runContextMenu.addSeparator();
+            else {
+                JMenuItem item = new JMenuItem(entry.getName(), entry.getIcon());
+                item.setToolTipText(entry.getDescription());
+                item.setAccelerator(entry.getKeyboardShortcut());
+                item.addActionListener(e -> {
+                    if(entry.matches(Collections.singleton(this))) {
+                        entry.run(getGraphUI(), Collections.singleton(this));
+                    }
+                    else {
+                        JOptionPane.showMessageDialog(getWorkbench().getWindow(),
+                                "Could not run this operation",
+                                entry.getName(),
+                                JOptionPane.ERROR_MESSAGE);
+                    }
+                });
+                runContextMenu.add(item);
+            }
+        }
+
+        final AtomicInteger row = new AtomicInteger(0);
         add(inputSlotPanel, new GridBagConstraints() {
             {
-                gridx = 0;
+                gridx = row.getAndIncrement();
                 fill = GridBagConstraints.VERTICAL;
                 weighty = 1;
             }
         });
-        addHorizontalGlue(1);
+        addHorizontalGlue(row.getAndIncrement());
+        if(getGraphUI().getSettings().isShowRunNodeButton() && isNodeRunnable()) {
+            add(runButton, new GridBagConstraints() {
+                {
+                    gridx = row.getAndIncrement();
+                }
+            });
+        }
         add(openSettingsButton, new GridBagConstraints() {
             {
-                gridx = 2;
-                insets = new Insets(0, 0, 0, 4);
+                gridx = row.getAndIncrement();
             }
         });
         add(nameLabel, new GridBagConstraints() {
             {
-                gridx = 3;
+                gridx = row.getAndIncrement();
+                insets = new Insets(0,4,0,0);
             }
         });
-        addHorizontalGlue(4);
+        addHorizontalGlue(row.getAndIncrement());
         add(outputSlotPanel, new GridBagConstraints() {
             {
-                gridx = 5;
+                gridx = row.getAndIncrement();
                 fill = GridBagConstraints.VERTICAL;
                 weighty = 1;
             }
@@ -115,7 +154,9 @@ public class JIPipeHorizontalNodeUI extends JIPipeNodeUI {
 
     @Override
     public void updateHotkeyInfo() {
-        switch (getGraphUI().getNodeHotKeyStorage().getHotkeyFor(getGraphUI().getCompartment(), getNode().getUUIDInGraph())) {
+        NodeHotKeyStorage.Hotkey hotkey = getGraphUI().getNodeHotKeyStorage().getHotkeyFor(getGraphUI().getCompartment(), getNode().getIdInGraph());
+        openSettingsButton.setVisible(hotkey != NodeHotKeyStorage.Hotkey.None || getGraphUI().getSettings().isShowSettingsNodeButton());
+        switch (hotkey) {
             case None:
                 openSettingsButton.setIcon(UIUtils.getIconFromResources("actions/wrench.png"));
                 break;
