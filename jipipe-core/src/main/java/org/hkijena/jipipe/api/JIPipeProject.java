@@ -491,7 +491,7 @@ public class JIPipeProject implements JIPipeValidatable {
                 JIPipeGraphNode compartmentNode = compartmentGraph.findNode(entry.getValue());
                 JIPipeGraphNode node = graph.getNodeByUUID(entry.getKey());
                 if (compartmentNode != null) {
-                    System.out.println("Fix legacy compartment '" + entry.getValue() + "' --> " + compartmentNode.getUUIDInGraph());
+                    JIPipe.getInstance().getLogService().info("[Project format conversion] Fix legacy compartment '" + entry.getValue() + "' --> " + compartmentNode.getUUIDInGraph());
                     graph.setCompartment(entry.getKey(), compartmentNode.getUUIDInGraph());
                 } else {
                     // Ghost node -> delete
@@ -511,7 +511,7 @@ public class JIPipeProject implements JIPipeValidatable {
                     }
                     node.getLocations().remove(locationEntry.getKey());
                     node.getLocations().put(compartmentUUIDString, location);
-                    System.out.println("Move location within " + locationEntry.getKey() + " to " + compartmentUUIDString);
+                    JIPipe.getInstance().getLogService().info("[Project format conversion] Move location within " + locationEntry.getKey() + " to " + compartmentUUIDString);
                 }
             }
 
