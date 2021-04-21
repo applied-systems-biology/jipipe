@@ -18,6 +18,8 @@ import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.utils.StringUtils;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 
@@ -89,7 +91,13 @@ public class JIPipeProjectCacheState implements Comparable<JIPipeProjectCacheSta
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         JIPipeProjectCacheState state = (JIPipeProjectCacheState) o;
-        return node.equals(state.node) && stateId.equals(state.stateId) && predecessorStates.equals(state.predecessorStates);
+
+        // Our state maps are generally mutable, so we need to recreate hashsets
+        if(node.equals(state.node) && stateId.equals(state.stateId)) {
+            // Check predecessor step
+            return new HashSet<>(predecessorStates).equals(new HashSet<>(state.predecessorStates));
+        }
+        return false;
     }
 
     public Set<JIPipeProjectCacheState> getPredecessorStates() {
