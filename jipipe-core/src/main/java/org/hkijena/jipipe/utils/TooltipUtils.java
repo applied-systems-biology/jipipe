@@ -45,7 +45,7 @@ public class TooltipUtils {
      * @return tooltip
      */
     public static String getProjectCompartmentTooltip(JIPipeProjectCompartment compartment, JIPipeGraph projectGraph) {
-        Set<JIPipeGraphNode> algorithmsWithCompartment = projectGraph.getAlgorithmsWithCompartment(compartment.getProjectCompartmentUUID());
+        Set<JIPipeGraphNode> algorithmsWithCompartment = projectGraph.getNodesWithinCompartment(compartment.getProjectCompartmentUUID());
         StringBuilder builder = new StringBuilder();
         builder.append("<html>");
         builder.append("<u><strong>").append(compartment.getName()).append("</strong></u><br/>");

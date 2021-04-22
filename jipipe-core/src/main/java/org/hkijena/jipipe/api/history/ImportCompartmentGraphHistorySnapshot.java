@@ -16,14 +16,18 @@ package org.hkijena.jipipe.api.history;
 import org.hkijena.jipipe.api.JIPipeProject;
 import org.hkijena.jipipe.api.compartments.algorithms.JIPipeProjectCompartment;
 
+import java.util.UUID;
+
 public class ImportCompartmentGraphHistorySnapshot implements JIPipeAlgorithmGraphHistorySnapshot {
 
     private final JIPipeProject project;
     private JIPipeProjectCompartment compartmentInstance;
+    private UUID uuid;
 
     public ImportCompartmentGraphHistorySnapshot(JIPipeProject project, JIPipeProjectCompartment compartmentInstance) {
         this.project = project;
         this.compartmentInstance = compartmentInstance;
+        this.uuid = compartmentInstance.getProjectCompartmentUUID();
     }
 
     @Override
@@ -38,7 +42,7 @@ public class ImportCompartmentGraphHistorySnapshot implements JIPipeAlgorithmGra
 
     @Override
     public void redo() {
-        compartmentInstance = project.addCompartment(compartmentInstance);
+        compartmentInstance = project.addCompartment(compartmentInstance, uuid);
     }
 
     public JIPipeProjectCompartment getCompartmentInstance() {
@@ -51,5 +55,13 @@ public class ImportCompartmentGraphHistorySnapshot implements JIPipeAlgorithmGra
 
     public JIPipeProject getProject() {
         return project;
+    }
+
+    public UUID getUuid() {
+        return uuid;
+    }
+
+    public void setUuid(UUID uuid) {
+        this.uuid = uuid;
     }
 }

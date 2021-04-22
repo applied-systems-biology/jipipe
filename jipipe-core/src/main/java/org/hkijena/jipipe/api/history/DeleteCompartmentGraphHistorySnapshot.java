@@ -16,15 +16,19 @@ package org.hkijena.jipipe.api.history;
 import org.hkijena.jipipe.api.JIPipeProject;
 import org.hkijena.jipipe.api.compartments.algorithms.JIPipeProjectCompartment;
 
+import java.util.UUID;
+
 public class DeleteCompartmentGraphHistorySnapshot extends GraphChangedHistorySnapshot {
 
     private final JIPipeProject project;
     private JIPipeProjectCompartment compartmentInstance;
+    private UUID uuid;
 
     public DeleteCompartmentGraphHistorySnapshot(JIPipeProject project, JIPipeProjectCompartment compartmentInstance) {
         super(project.getGraph(), "");
         this.project = project;
         this.compartmentInstance = compartmentInstance;
+        this.uuid = compartmentInstance.getProjectCompartmentUUID();
     }
 
     @Override
@@ -40,7 +44,8 @@ public class DeleteCompartmentGraphHistorySnapshot extends GraphChangedHistorySn
 
     @Override
     public void undo() {
-        compartmentInstance = project.addCompartment(compartmentInstance);
+        compartmentInstance = project.addCompartment(compartmentInstance, uuid);
+        project.fixCompartmentOutputs();
         super.undo();
     }
 
@@ -50,6 +55,14 @@ public class DeleteCompartmentGraphHistorySnapshot extends GraphChangedHistorySn
 
     public void setCompartmentInstance(JIPipeProjectCompartment compartmentInstance) {
         this.compartmentInstance = compartmentInstance;
+    }
+
+    public UUID getUuid() {
+        return uuid;
+    }
+
+    public void setUuid(UUID uuid) {
+        this.uuid = uuid;
     }
 
     public JIPipeProject getProject() {

@@ -1416,7 +1416,7 @@ public class JIPipeGraph implements JIPipeValidatable {
      * @param compartmentId The compartment ID
      * @return Algorithms that have the specified compartment ID. Empty set if the compartment does not exist.
      */
-    public Set<JIPipeGraphNode> getAlgorithmsWithCompartment(UUID compartmentId) {
+    public Set<JIPipeGraphNode> getNodesWithinCompartment(UUID compartmentId) {
         Set<JIPipeGraphNode> result = new HashSet<>();
         for (Map.Entry<UUID, UUID> entry : nodeCompartmentUUIDs.entrySet()) {
             if(Objects.equals(entry.getValue(), compartmentId))

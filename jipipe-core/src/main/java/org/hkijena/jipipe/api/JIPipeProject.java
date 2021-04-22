@@ -203,11 +203,12 @@ public class JIPipeProject implements JIPipeValidatable {
      * Adds an existing compartment instance
      *
      * @param compartment Compartment
+     * @param uuid
      * @return The compartment
      */
-    public JIPipeProjectCompartment addCompartment(JIPipeProjectCompartment compartment) {
+    public JIPipeProjectCompartment addCompartment(JIPipeProjectCompartment compartment, UUID uuid) {
         compartment.setProject(this);
-        compartmentGraph.insertNode(compartment);
+        compartmentGraph.insertNode(uuid == null ? UUID.randomUUID() : uuid, compartment, null);
         return compartment;
     }
 
@@ -622,6 +623,38 @@ public class JIPipeProject implements JIPipeValidatable {
         }
         result.setProject(this);
         return result;
+    }
+
+    /**
+     * Repairs restored compartment outputs
+     */
+    public void fixCompartmentOutputs() {
+        for (JIPipeGraphNode node : compartmentGraph.getGraphNodes()) {
+            if(node instanceof JIPipeProjectCompartment) {
+                JIPipeProjectCompartment compartment = (JIPipeProjectCompartment) node;
+                UUID projectCompartmentUUID = compartment.getProjectCompartmentUUID();
+                JIPipeCompartmentOutput existingOutputNode = compartment.getOutputNode();
+                if(!graph.containsNode(existingOutputNode)) {
+                    // Find a new output node
+                    boolean found = false;
+                    for (JIPipeGraphNode graphNode : graph.getGraphNodes()) {
+                        if(graphNode instanceof JIPipeCompartmentOutput && Objects.equals(graphNode.getCompartmentUUIDInGraph(), projectCompartmentUUID)) {
+                            compartment.setOutputNode((JIPipeCompartmentOutput) graphNode);
+                            found = true;
+                            break;
+                        }
+                    }
+
+                    // Create a new one
+                    if(!found) {
+                        JIPipeCompartmentOutput compartmentOutput = JIPipe.createNode("jipipe:compartment-output", JIPipeCompartmentOutput.class);
+                        compartmentOutput.setCustomName(compartment.getName() + " output");
+                        graph.insertNode(compartmentOutput, compartment.getProjectCompartmentUUID());
+                        compartment.setOutputNode(compartmentOutput);
+                    }
+                }
+            }
+        }
     }
 
     /**

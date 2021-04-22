@@ -387,7 +387,6 @@ public class JIPipeGraphCanvasUI extends JIPipeWorkbenchPanel implements MouseMo
         if(viewRectangle != null && !viewRectangle.contains(location)) {
             minX = viewRectangle.x + viewMode.getGridWidth();
             minY = viewRectangle.y + viewMode.getGridHeight();
-            System.out.println("Outside container");
         }
 
         boolean found;

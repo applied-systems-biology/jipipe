@@ -26,7 +26,6 @@ import org.hkijena.jipipe.ui.grapheditor.JIPipeNodeUI;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
-import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
@@ -54,7 +53,7 @@ public class ExportCompartmentToNodeUIContextAction implements NodeUIContextActi
             return;
         }
 
-        JIPipeGraph extractedGraph = project.getGraph().extract(project.getGraph().getAlgorithmsWithCompartment(compartmentId), true);
+        JIPipeGraph extractedGraph = project.getGraph().extract(project.getGraph().getNodesWithinCompartment(compartmentId), true);
         NodeGroup nodeGroup = new NodeGroup(extractedGraph, true);
         JIPipeJsonExporter.createExporter(projectWorkbench, nodeGroup, compartment.getName(), compartment.getCustomDescription());
     }
