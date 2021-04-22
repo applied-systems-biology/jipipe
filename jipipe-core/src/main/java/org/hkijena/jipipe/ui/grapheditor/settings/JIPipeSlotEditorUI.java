@@ -295,7 +295,9 @@ public class JIPipeSlotEditorUI extends JPanel {
      */
     @Subscribe
     public void onAlgorithmSlotsChanged(JIPipeGraph.NodeSlotsChangedEvent event) {
-        reloadList();
+        if(isDisplayable()) {
+            reloadList();
+        }
     }
 
     /**
