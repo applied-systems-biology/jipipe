@@ -119,8 +119,8 @@ public class JIPipeExportedCompartment {
                 projectOutputNode.getSlotConfiguration().setTo(algorithm.getSlotConfiguration());
             } else {
                 JIPipeGraphNode copy = algorithm.getInfo().duplicate(algorithm);
-                UUID uuid = project.getGraph().insertNode(copy, compartmentUUID);
-                copies.put(uuid, copy);
+                project.getGraph().insertNode(copy, compartmentUUID);
+                copies.put(algorithm.getUUIDInGraph(), copy);
             }
         }
         for (Map.Entry<JIPipeDataSlot, JIPipeDataSlot> edge : graph.getSlotEdges()) {
