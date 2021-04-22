@@ -15,11 +15,15 @@ package org.hkijena.jipipe.api.grouping.parameters;
 
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonSetter;
+import org.hkijena.jipipe.JIPipe;
+import org.hkijena.jipipe.api.nodes.JIPipeGraph;
+import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
 import org.hkijena.jipipe.utils.StringUtils;
 
 import java.util.Objects;
+import java.util.UUID;
 
 /**
  * References a parameter in a graph
@@ -124,7 +128,35 @@ public class GraphNodeParameterReference {
      * @return the parameter access or null if it does not exist
      */
     public JIPipeParameterAccess resolve(JIPipeParameterTree tree) {
-        return tree.getParameters().getOrDefault(path, null);
+        JIPipeParameterAccess result = tree.getParameters().getOrDefault(path, null);
+
+        // There might be a legacy parameter access
+        if(result == null) {
+            int i = path.indexOf('/');
+            if(i == -1)
+                return null;
+            String uuidOrAlias = path.substring(0, i);
+            String subPath = path.substring(i + 1);
+            UUID uuid = null;
+            for (JIPipeParameterAccess access : tree.getParameters().values()) {
+                if(access.getSource() instanceof JIPipeGraphNode) {
+                    JIPipeGraph graph = ((JIPipeGraphNode) access.getSource()).getGraph();
+                    uuid = graph.findNodeUUID(uuidOrAlias);
+                    if(uuid != null)
+                        break;
+                }
+            }
+
+            if(uuid != null) {
+                JIPipe.getInstance().getLogService().info("[Project format conversion] Updating parameter reference " + path + " to " + uuid + "/" + subPath);
+                path = uuid + "/" + subPath;
+                return tree.getParameters().getOrDefault(path, null);
+            }
+            return null;
+        }
+        else {
+            return  result;
+        }
     }
 
     @JsonGetter("custom-name")
