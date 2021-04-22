@@ -1455,6 +1455,7 @@ public class JIPipeGraph implements JIPipeValidatable {
         this.nodeCompartmentUUIDs.putAll(other.nodeCompartmentUUIDs);
         this.nodeAliasIds.putAll(other.nodeAliasIds);
         for (JIPipeGraphNode node : this.nodeUUIDs.values()) {
+            node.setGraph(this);
             node.getEventBus().register(this);
         }
         this.graph = other.graph;
