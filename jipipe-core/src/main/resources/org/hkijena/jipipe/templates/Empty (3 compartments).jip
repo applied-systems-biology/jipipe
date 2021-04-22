@@ -1,18 +1,24 @@
 {
   "jipipe:project-type" : "project",
+  "jipipe:project-format-version" : 1,
   "metadata" : {
     "name" : "Empty (3 compartments)",
-    "template-description": "Project that contains three compartments (Preprocessing, Analysis, Postprocessing)",
     "description" : "<html><body><h1>JIPipe pipeline projects</h1><p>JIPipe organizes pipelines in projects that can be saved and loaded from disk. Each pipeline is organized into <b>Compartments</b> that separate the whole graph into functional units. You can find an overview of all compartments\nin the <i>Compartments</i> tab. You can re-open the tab by selecting <i>Compartment > Edit compartments</i> if you closed the tab.<br/><br/>By double-clicking a compartment in the overview, JIPipe will open an editor where you can modify the sub-pipeline\nthat is associated to the compartment. If you just want to run a project, you can find the `Run` button at the top-right\ncorner.\n\nPipeline developers might have organized a set of most common pipeline parameters. You can find them in <i>Project > Project overview</i>\nalongside additional information like the authors, citations, and website.\n\nThis template contains one graph node called 'Analysis'</body></html>",
     "authors" : [ ],
     "website" : "",
     "license" : "",
-    "citation" : ""
+    "citation" : "",
+    "update-site-dependencies" : [ ],
+    "template-description" : "Project that contains three compartments (Preprocessing, Analysis, Postprocessing)",
+    "permissions" : {
+      "prevent-adding-deleting-nodes" : false,
+      "prevent-modifying-slots" : false
+    }
   },
   "dependencies" : [ {
     "metadata" : {
       "name" : "Compartment management",
-      "description" : "Data types required for graph compartment management",
+      "description" : "<html><head></head><body>Data types required for graph compartment management</body></html>",
       "authors" : [ {
         "first-name" : "Zoltán",
         "last-name" : "Cseresnyés",
@@ -27,7 +33,9 @@
       "citation" : ""
     },
     "id" : "org.hkijena.jipipe:compartments",
-    "version" : "1.0.0"
+    "version" : "2021.4",
+    "ij:update-site-dependencies" : [ ],
+    "ij:update-site-providers" : [ ]
   } ],
   "additional-metadata" : {
     "pipeline-parameters" : {
@@ -45,127 +53,226 @@
     "org.hkijena.jipipe.ui:project-tabs" : {
       "jipipe:type" : "org.hkijena.jipipe.ui.project.JIPipeProjectTabMetadata",
       "data" : {
-        "open-tabs" : [ "singleton:COMPARTMENT_EDITOR", "graph-compartment:preprocessing", "graph-compartment:analysis", "graph-compartment:postprocessing" ],
+        "open-tabs" : [ "singleton:COMPARTMENT_EDITOR" ],
         "selected-tab" : "singleton:COMPARTMENT_EDITOR"
       }
     }
   },
   "graph" : {
     "nodes" : {
-      "preprocessing-preprocessing-output" : {
+      "cea66015-2724-4118-a023-9b2ae7b34283" : {
+        "jipipe:graph-compartment" : "1b413a1d-0363-487d-b632-a67384f2494e",
+        "jipipe:alias-id" : "preprocessing-preprocessing-output",
         "jipipe:slot-configuration" : {
           "input" : { },
           "output" : { }
         },
-        "jipipe:node-ui-location" : { },
+        "jipipe:ui-grid-location" : { },
         "jipipe:node-info-id" : "jipipe:compartment-output",
-        "jipipe:graph-compartment" : "preprocessing",
-        "jipipe:algorithm:save-outputs" : true,
         "jipipe:algorithm:enabled" : true,
         "jipipe:algorithm:pass-through" : false,
         "jipipe:node:name" : "Preprocessing output",
-        "jipipe:node:description" : null
+        "jipipe:node:description" : "<html><head></head><body></body></html>"
       },
-      "analysis-analysis-output" : {
+      "d5aca941-6192-4109-993b-f5e3c7bd135b" : {
+        "jipipe:graph-compartment" : "5692ac9d-fced-450c-8b3a-9ae8ea022fcc",
+        "jipipe:alias-id" : "analysis-analysis-output",
         "jipipe:slot-configuration" : {
           "input" : { },
           "output" : { }
         },
-        "jipipe:node-ui-location" : { },
+        "jipipe:ui-grid-location" : { },
         "jipipe:node-info-id" : "jipipe:compartment-output",
-        "jipipe:graph-compartment" : "analysis",
-        "jipipe:algorithm:save-outputs" : true,
         "jipipe:algorithm:enabled" : true,
         "jipipe:algorithm:pass-through" : false,
         "jipipe:node:name" : "Analysis output",
-        "jipipe:node:description" : null
+        "jipipe:node:description" : "<html><head></head><body></body></html>"
       },
-      "postprocessing-postprocessing-output" : {
+      "3c34968d-d9ee-4443-b70d-8901393a8036" : {
+        "jipipe:graph-compartment" : "58582f8c-f272-4486-8e92-429f54519e83",
+        "jipipe:alias-id" : "postprocessing-postprocessing-output",
         "jipipe:slot-configuration" : {
           "input" : { },
           "output" : { }
         },
-        "jipipe:node-ui-location" : { },
+        "jipipe:ui-grid-location" : { },
         "jipipe:node-info-id" : "jipipe:compartment-output",
-        "jipipe:graph-compartment" : "postprocessing",
-        "jipipe:algorithm:save-outputs" : true,
         "jipipe:algorithm:enabled" : true,
         "jipipe:algorithm:pass-through" : false,
         "jipipe:node:name" : "Postprocessing output",
-        "jipipe:node:description" : null
+        "jipipe:node:description" : "<html><head></head><body></body></html>"
       }
     },
-    "edges" : [ ]
+    "edges" : [ ],
+    "additional-metadata" : {
+      "node-hotkeys" : {
+        "jipipe:type" : "org.hkijena.jipipe.ui.grapheditor.NodeHotKeyStorage",
+        "data" : {
+          "hotkeys" : { }
+        }
+      }
+    }
   },
   "compartments" : {
     "compartment-graph" : {
       "nodes" : {
-        "preprocessing" : {
+        "1b413a1d-0363-487d-b632-a67384f2494e" : {
+          "jipipe:graph-compartment" : "",
+          "jipipe:alias-id" : "preprocessing",
           "jipipe:slot-configuration" : {
-            "input" : { }
+            "input" : {
+              "Input" : {
+                "slot-data-type" : "jipipe:compartment-output",
+                "slot-type" : "Input",
+                "inherited-slot" : null,
+                "name" : "Input",
+                "custom-name" : null,
+                "is-virtual" : false,
+                "save-outputs" : true,
+                "is-optional" : true,
+                "inheritance-conversions" : { }
+              }
+            },
+            "output" : {
+              "Output" : {
+                "slot-data-type" : "jipipe:compartment-output",
+                "slot-type" : "Output",
+                "inherited-slot" : "",
+                "name" : "Output",
+                "custom-name" : null,
+                "is-virtual" : false,
+                "save-outputs" : true,
+                "is-optional" : false,
+                "inheritance-conversions" : { }
+              }
+            }
           },
-          "jipipe:node-ui-location" : { },
+          "jipipe:ui-grid-location" : {
+            "" : {
+              "Vertical" : {
+                "x" : 1,
+                "y" : 1
+              }
+            }
+          },
           "jipipe:node-info-id" : "jipipe:project-compartment",
-          "jipipe:graph-compartment" : "DEFAULT",
           "jipipe:node:name" : "Preprocessing",
-          "jipipe:node:description" : null
+          "jipipe:node:description" : "<html><head></head><body></body></html>"
         },
-        "analysis" : {
+        "5692ac9d-fced-450c-8b3a-9ae8ea022fcc" : {
+          "jipipe:graph-compartment" : "",
+          "jipipe:alias-id" : "analysis",
           "jipipe:slot-configuration" : {
             "input" : {
-              "Preprocessing" : {
+              "Input" : {
                 "slot-data-type" : "jipipe:compartment-output",
                 "slot-type" : "Input",
                 "inherited-slot" : null,
-                "name" : "Preprocessing",
+                "name" : "Input",
                 "custom-name" : null,
+                "is-virtual" : false,
+                "save-outputs" : true,
+                "is-optional" : true,
+                "inheritance-conversions" : { }
+              }
+            },
+            "output" : {
+              "Output" : {
+                "slot-data-type" : "jipipe:compartment-output",
+                "slot-type" : "Output",
+                "inherited-slot" : "",
+                "name" : "Output",
+                "custom-name" : null,
+                "is-virtual" : false,
+                "save-outputs" : true,
+                "is-optional" : false,
                 "inheritance-conversions" : { }
               }
             }
           },
-          "jipipe:node-ui-location" : { },
+          "jipipe:ui-grid-location" : {
+            "" : {
+              "Vertical" : {
+                "x" : 1,
+                "y" : 5
+              }
+            }
+          },
           "jipipe:node-info-id" : "jipipe:project-compartment",
-          "jipipe:graph-compartment" : "DEFAULT",
           "jipipe:node:name" : "Analysis",
-          "jipipe:node:description" : null
+          "jipipe:node:description" : "<html><head></head><body></body></html>"
         },
-        "postprocessing" : {
+        "58582f8c-f272-4486-8e92-429f54519e83" : {
+          "jipipe:graph-compartment" : "",
+          "jipipe:alias-id" : "postprocessing",
           "jipipe:slot-configuration" : {
             "input" : {
-              "Analysis" : {
+              "Input" : {
                 "slot-data-type" : "jipipe:compartment-output",
                 "slot-type" : "Input",
                 "inherited-slot" : null,
-                "name" : "Analysis",
+                "name" : "Input",
                 "custom-name" : null,
+                "is-virtual" : false,
+                "save-outputs" : true,
+                "is-optional" : true,
+                "inheritance-conversions" : { }
+              }
+            },
+            "output" : {
+              "Output" : {
+                "slot-data-type" : "jipipe:compartment-output",
+                "slot-type" : "Output",
+                "inherited-slot" : "",
+                "name" : "Output",
+                "custom-name" : null,
+                "is-virtual" : false,
+                "save-outputs" : true,
+                "is-optional" : false,
                 "inheritance-conversions" : { }
               }
             }
           },
-          "jipipe:node-ui-location" : { },
+          "jipipe:ui-grid-location" : {
+            "" : {
+              "Vertical" : {
+                "x" : 1,
+                "y" : 9
+              }
+            }
+          },
           "jipipe:node-info-id" : "jipipe:project-compartment",
-          "jipipe:graph-compartment" : "DEFAULT",
           "jipipe:node:name" : "Postprocessing",
-          "jipipe:node:description" : null
+          "jipipe:node:description" : "<html><head></head><body></body></html>"
         }
       },
       "edges" : [ {
-        "source-node" : "analysis",
-        "target-node" : "postprocessing",
+        "source-node" : "1b413a1d-0363-487d-b632-a67384f2494e",
+        "target-node" : "5692ac9d-fced-450c-8b3a-9ae8ea022fcc",
         "source-slot" : "Output",
         "target-slot" : "Input",
         "metadata" : {
-          "ui-hidden" : false
+          "ui-hidden" : false,
+          "ui-shape" : "Elbow"
         }
       }, {
-        "source-node" : "preprocessing",
-        "target-node" : "analysis",
+        "source-node" : "5692ac9d-fced-450c-8b3a-9ae8ea022fcc",
+        "target-node" : "58582f8c-f272-4486-8e92-429f54519e83",
         "source-slot" : "Output",
         "target-slot" : "Input",
         "metadata" : {
-          "ui-hidden" : false
+          "ui-hidden" : false,
+          "ui-shape" : "Elbow"
         }
-      } ]
+      } ],
+      "additional-metadata" : {
+        "node-hotkeys" : {
+          "jipipe:type" : "org.hkijena.jipipe.ui.grapheditor.NodeHotKeyStorage",
+          "data" : {
+            "hotkeys" : { }
+          }
+        }
+      }
     }
   }
 }

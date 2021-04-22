@@ -1,18 +1,24 @@
 {
   "jipipe:project-type" : "project",
+  "jipipe:project-format-version" : 1,
   "metadata" : {
     "name" : "Empty (1 compartment)",
-    "template-description": "Project that contains one compartment",
     "description" : "<html><body><h1>JIPipe pipeline projects</h1><p>JIPipe organizes pipelines in projects that can be saved and loaded from disk. Each pipeline is organized into <b>Compartments</b> that separate the whole graph into functional units. You can find an overview of all compartments\nin the <i>Compartments</i> tab. You can re-open the tab by selecting <i>Compartment > Edit compartments</i> if you closed the tab.<br/><br/>By double-clicking a compartment in the overview, JIPipe will open an editor where you can modify the sub-pipeline\nthat is associated to the compartment. If you just want to run a project, you can find the `Run` button at the top-right\ncorner.\n\nPipeline developers might have organized a set of most common pipeline parameters. You can find them in <i>Project > Project overview</i>\nalongside additional information like the authors, citations, and website.\n\nThis template contains one graph node called 'Analysis'</body></html>",
     "authors" : [ ],
     "website" : "",
     "license" : "",
-    "citation" : ""
+    "citation" : "",
+    "update-site-dependencies" : [ ],
+    "template-description" : "Project that contains one compartment",
+    "permissions" : {
+      "prevent-adding-deleting-nodes" : false,
+      "prevent-modifying-slots" : false
+    }
   },
   "dependencies" : [ {
     "metadata" : {
       "name" : "Compartment management",
-      "description" : "Data types required for graph compartment management",
+      "description" : "<html><head></head><body>Data types required for graph compartment management</body></html>",
       "authors" : [ {
         "first-name" : "Zoltán",
         "last-name" : "Cseresnyés",
@@ -27,7 +33,9 @@
       "citation" : ""
     },
     "id" : "org.hkijena.jipipe:compartments",
-    "version" : "1.0.0"
+    "version" : "2021.4",
+    "ij:update-site-dependencies" : [ ],
+    "ij:update-site-providers" : [ ]
   } ],
   "additional-metadata" : {
     "pipeline-parameters" : {
@@ -45,45 +53,94 @@
     "org.hkijena.jipipe.ui:project-tabs" : {
       "jipipe:type" : "org.hkijena.jipipe.ui.project.JIPipeProjectTabMetadata",
       "data" : {
-        "open-tabs" : [ "singleton:COMPARTMENT_EDITOR", "graph-compartment:analysis" ],
-        "selected-tab" : "singleton:COMPARTMENT_EDITOR"
+        "open-tabs" : [ "singleton:INTRODUCTION", "singleton:COMPARTMENT_EDITOR" ],
+        "selected-tab" : "singleton:INTRODUCTION"
       }
     }
   },
   "graph" : {
     "nodes" : {
-      "analysis-analysis-output" : {
+      "35ba3543-193a-4047-b794-285b0c03fa2d" : {
+        "jipipe:graph-compartment" : "fb3bfe3a-c9c1-4ec4-908b-3f1b7380a851",
+        "jipipe:alias-id" : "analysis-analysis-output",
         "jipipe:slot-configuration" : {
           "input" : { },
           "output" : { }
         },
-        "jipipe:node-ui-location" : { },
+        "jipipe:ui-grid-location" : { },
         "jipipe:node-info-id" : "jipipe:compartment-output",
-        "jipipe:graph-compartment" : "analysis",
-        "jipipe:algorithm:save-outputs" : true,
         "jipipe:algorithm:enabled" : true,
         "jipipe:algorithm:pass-through" : false,
         "jipipe:node:name" : "Analysis output",
-        "jipipe:node:description" : null
+        "jipipe:node:description" : "<html><head></head><body></body></html>"
       }
     },
-    "edges" : [ ]
+    "edges" : [ ],
+    "additional-metadata" : {
+      "node-hotkeys" : {
+        "jipipe:type" : "org.hkijena.jipipe.ui.grapheditor.NodeHotKeyStorage",
+        "data" : {
+          "hotkeys" : { }
+        }
+      }
+    }
   },
   "compartments" : {
     "compartment-graph" : {
       "nodes" : {
-        "analysis" : {
+        "fb3bfe3a-c9c1-4ec4-908b-3f1b7380a851" : {
+          "jipipe:graph-compartment" : "",
+          "jipipe:alias-id" : "analysis",
           "jipipe:slot-configuration" : {
-            "input" : { }
+            "input" : {
+              "Input" : {
+                "slot-data-type" : "jipipe:compartment-output",
+                "slot-type" : "Input",
+                "inherited-slot" : null,
+                "name" : "Input",
+                "custom-name" : null,
+                "is-virtual" : false,
+                "save-outputs" : true,
+                "is-optional" : true,
+                "inheritance-conversions" : { }
+              }
+            },
+            "output" : {
+              "Output" : {
+                "slot-data-type" : "jipipe:compartment-output",
+                "slot-type" : "Output",
+                "inherited-slot" : "",
+                "name" : "Output",
+                "custom-name" : null,
+                "is-virtual" : false,
+                "save-outputs" : true,
+                "is-optional" : false,
+                "inheritance-conversions" : { }
+              }
+            }
           },
-          "jipipe:node-ui-location" : { },
+          "jipipe:ui-grid-location" : {
+            "" : {
+              "Vertical" : {
+                "x" : 1,
+                "y" : 1
+              }
+            }
+          },
           "jipipe:node-info-id" : "jipipe:project-compartment",
-          "jipipe:graph-compartment" : "DEFAULT",
           "jipipe:node:name" : "Analysis",
-          "jipipe:node:description" : null
+          "jipipe:node:description" : "<html><head></head><body></body></html>"
         }
       },
-      "edges" : [ ]
+      "edges" : [ ],
+      "additional-metadata" : {
+        "node-hotkeys" : {
+          "jipipe:type" : "org.hkijena.jipipe.ui.grapheditor.NodeHotKeyStorage",
+          "data" : {
+            "hotkeys" : { }
+          }
+        }
+      }
     }
   }
 }
