@@ -884,6 +884,12 @@ public class JIPipeGraphCanvasUI extends JIPipeWorkbenchPanel implements MouseMo
         }
 
         if (sourceNode != null && targetNode != null && layoutHelperEnabled) {
+
+            // Disabled for comment nodes
+            if(sourceNode.getNode() instanceof JIPipeCommentNode ||targetNode.getNode() instanceof JIPipeCommentNode) {
+                return;
+            }
+
             Point cursorBackup = graphEditCursor;
             try {
                 if (viewMode == JIPipeGraphViewMode.Horizontal)
