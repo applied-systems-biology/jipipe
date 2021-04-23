@@ -57,7 +57,9 @@ public class JIPipeCacheTree extends JIPipeProjectWorkbenchPanel {
 
         Map<UUID, Map<JIPipeGraphNode, Map<JIPipeProjectCacheState, List<JIPipeDataSlot>>>> byCompartmentId = new HashMap<>();
         for (JIPipeGraphNode node : getProject().getGraph().getGraphNodes()) {
-            Map<JIPipeProjectCacheState, Map<String, JIPipeDataSlot>> stateMap = getProject().getCache().extract((JIPipeAlgorithm) node);
+            if(!(node instanceof JIPipeAlgorithm))
+                continue;
+            Map<JIPipeProjectCacheState, Map<String, JIPipeDataSlot>> stateMap = getProject().getCache().extract(node);
             if (stateMap == null)
                 continue;
 
@@ -88,7 +90,7 @@ public class JIPipeCacheTree extends JIPipeProjectWorkbenchPanel {
 
         Set<UUID> coveredCompartments = new HashSet<>();
         for (JIPipeProjectCompartment compartment : getProject().getCompartmentGraph().traverse()
-                .stream().map(a -> (JIPipeProjectCompartment) a).collect(Collectors.toList())) {
+                .stream().filter(a -> a instanceof JIPipeProjectCompartment).map(a -> (JIPipeProjectCompartment) a).collect(Collectors.toList())) {
             createCompartmentNode(root, byCompartmentId.getOrDefault(compartment.getProjectCompartmentUUID(), Collections.emptyMap()), compartment.getProjectCompartmentUUID());
             coveredCompartments.add(compartment.getProjectCompartmentUUID());
         }
