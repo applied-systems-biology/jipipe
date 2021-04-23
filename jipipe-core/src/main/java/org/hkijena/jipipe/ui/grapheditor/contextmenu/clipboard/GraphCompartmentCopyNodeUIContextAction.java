@@ -35,7 +35,7 @@ import java.util.Set;
 public class GraphCompartmentCopyNodeUIContextAction implements NodeUIContextAction {
     @Override
     public boolean matches(Set<JIPipeNodeUI> selection) {
-        return !selection.isEmpty();
+        return !selection.isEmpty() && selection.stream().allMatch(s -> s.getNode() instanceof JIPipeProjectCompartment);
     }
 
     @Override
