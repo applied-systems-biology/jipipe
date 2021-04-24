@@ -43,6 +43,19 @@ public class GraphEditorUISettings implements JIPipeParameterCollection {
     private boolean autoLayoutMovesOtherNodes = false;
     private boolean showRunNodeButton = true;
     private boolean showSettingsNodeButton = false;
+    private boolean accurateMiniMap = false;
+
+    @JIPipeDocumentation(name = "Accurate minimap", description = "If enabled, the minimap shows a screenshot of the whole graph. " +
+            "Please note that this is slower than the standard overview map. To apply this setting, you must re-open the graph or reload the project.")
+    @JIPipeParameter("accurate-mini-map")
+    public boolean isAccurateMiniMap() {
+        return accurateMiniMap;
+    }
+
+    @JIPipeParameter("accurate-mini-map")
+    public void setAccurateMiniMap(boolean accurateMiniMap) {
+        this.accurateMiniMap = accurateMiniMap;
+    }
 
     public static GraphEditorUISettings getInstance() {
         return JIPipe.getSettings().getSettings(ID, GraphEditorUISettings.class);

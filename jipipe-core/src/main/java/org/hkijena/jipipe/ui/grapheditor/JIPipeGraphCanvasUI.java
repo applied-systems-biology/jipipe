@@ -17,8 +17,6 @@ import com.google.common.collect.*;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 import org.hkijena.jipipe.JIPipe;
-import org.hkijena.jipipe.api.JIPipeProject;
-import org.hkijena.jipipe.api.compartments.algorithms.JIPipeProjectCompartment;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.history.JIPipeGraphHistory;
 import org.hkijena.jipipe.api.history.MoveNodesGraphHistorySnapshot;
@@ -28,7 +26,6 @@ import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.registries.JIPipeDatatypeRegistry;
 import org.hkijena.jipipe.extensions.core.nodes.JIPipeCommentNode;
 import org.hkijena.jipipe.extensions.settings.GraphEditorUISettings;
-import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.JIPipeWorkbenchPanel;
 import org.hkijena.jipipe.ui.components.ZoomViewPort;
@@ -56,6 +53,7 @@ import java.util.stream.Collectors;
 public class JIPipeGraphCanvasUI extends JIPipeWorkbenchPanel implements MouseMotionListener, MouseListener, MouseWheelListener, ZoomViewPort {
 
     public static final Stroke STROKE_UNIT = new BasicStroke(1);
+    public static final Stroke STROKE_UNIT_COMMENT = new BasicStroke(1, BasicStroke.CAP_ROUND, BasicStroke.JOIN_BEVEL, 0, new float[]{1}, 0);
     public static final Stroke STROKE_DEFAULT = new BasicStroke(2);
     public static final Stroke STROKE_HIGHLIGHT = new BasicStroke(8);
     public static final Stroke STROKE_SELECTION = new BasicStroke(3, BasicStroke.CAP_ROUND, BasicStroke.JOIN_BEVEL, 0, new float[]{9}, 0);
@@ -926,6 +924,44 @@ public class JIPipeGraphCanvasUI extends JIPipeWorkbenchPanel implements MouseMo
         return eventBus;
     }
 
+    /**
+     * Draws a minimap of this canvas.
+     * @param graphics2D the graphics
+     * @param scale the scale
+     * @param viewX move the locations by this value
+     * @param viewY move the locations by this value
+     */
+    public void paintMiniMap(Graphics2D graphics2D, double scale, int viewX, int viewY) {
+
+        paintMinimapEdges(graphics2D, scale, viewX, viewY);
+
+        for (JIPipeNodeUI nodeUI : nodeUIs.values()) {
+            int x = (int) (nodeUI.getX() * scale) + viewX;
+            int y = (int) (nodeUI.getY() * scale) + viewY;
+            int width = (int) (nodeUI.getWidth() * scale);
+            int height = (int) (nodeUI.getHeight() * scale);
+
+            graphics2D.setColor(nodeUI.getFillColor());
+            graphics2D.fillRect(x, y, width, height);
+            graphics2D.setColor(nodeUI.getBorderColor());
+            graphics2D.drawRect(x, y, width, height);
+        }
+    }
+
+    private void paintMinimapEdges(Graphics2D graphics2D, double scale, int viewX, int viewY) {
+        graphics2D.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+        graphics2D.setColor(Color.LIGHT_GRAY);
+        paintEdges(graphics2D,
+                STROKE_UNIT,
+                STROKE_UNIT_COMMENT,
+                false,
+                false,
+                false,
+                scale,
+                viewX,
+                viewY);
+    }
+
     @Override
     protected void paintComponent(Graphics graphics) {
         super.paintComponent(graphics);
@@ -936,14 +972,14 @@ public class JIPipeGraphCanvasUI extends JIPipeWorkbenchPanel implements MouseMo
         g.setStroke(STROKE_DEFAULT);
         graphics.setColor(Color.LIGHT_GRAY);
         if (getCompartment() != null && settings.isDrawOutsideEdges())
-            paintOutsideEdges(g, false);
-        paintEdges(g, STROKE_DEFAULT, STROKE_COMMENT, false, false, false);
+            paintOutsideEdges(g, false, 1, 0, 0);
+        paintEdges(g, STROKE_DEFAULT, STROKE_COMMENT, false, false, false, 1, 0, 0);
 
         g.setStroke(STROKE_HIGHLIGHT);
         if (getCompartment() != null && settings.isDrawOutsideEdges())
-            paintOutsideEdges(g, true);
+            paintOutsideEdges(g, true, 1, 0, 0);
         if (!selection.isEmpty())
-            paintEdges(g, STROKE_HIGHLIGHT, STROKE_COMMENT_HIGHLIGHT, true, true, settings.isColorSelectedNodeEdges());
+            paintEdges(g, STROKE_HIGHLIGHT, STROKE_COMMENT_HIGHLIGHT, true, true, settings.isColorSelectedNodeEdges(), 1, 0, 0);
 
         // Draw selections
         g.setStroke(STROKE_SELECTION);
@@ -1001,9 +1037,9 @@ public class JIPipeGraphCanvasUI extends JIPipeWorkbenchPanel implements MouseMo
 
                 // Draw arrow
                 if (currentConnectionDragSource.getSlot().isOutput())
-                    drawEdge(g, sourcePoint.center, currentConnectionDragSource.getNodeUI().getBounds(), targetPoint.center, JIPipeGraphEdge.Shape.Elbow);
+                    drawEdge(g, sourcePoint.center, currentConnectionDragSource.getNodeUI().getBounds(), targetPoint.center, JIPipeGraphEdge.Shape.Elbow, 0, 0);
                 else
-                    drawEdge(g, targetPoint.center, currentConnectionDragSource.getNodeUI().getBounds(), sourcePoint.center, JIPipeGraphEdge.Shape.Elbow);
+                    drawEdge(g, targetPoint.center, currentConnectionDragSource.getNodeUI().getBounds(), sourcePoint.center, JIPipeGraphEdge.Shape.Elbow, 0, 0);
             }
         }
 
@@ -1030,7 +1066,7 @@ public class JIPipeGraphCanvasUI extends JIPipeWorkbenchPanel implements MouseMo
                         PointRange.tighten(sourcePoint, targetPoint);
 
                         // Draw arrow
-                        drawEdge(g, sourcePoint.center, sourceUI.getBounds(), targetPoint.center, JIPipeGraphEdge.Shape.Elbow);
+                        drawEdge(g, sourcePoint.center, sourceUI.getBounds(), targetPoint.center, JIPipeGraphEdge.Shape.Elbow, 0, 0);
                     }
                 }
             } else if (currentHighlightedForDisconnect.getSlot().isOutput()) {
@@ -1052,7 +1088,7 @@ public class JIPipeGraphCanvasUI extends JIPipeWorkbenchPanel implements MouseMo
                         PointRange.tighten(sourcePoint, targetPoint);
 
                         // Draw arrow
-                        drawEdge(g, sourcePoint.center, sourceUI.getBounds(), targetPoint.center, JIPipeGraphEdge.Shape.Elbow);
+                        drawEdge(g, sourcePoint.center, sourceUI.getBounds(), targetPoint.center, JIPipeGraphEdge.Shape.Elbow, 0, 0);
                     }
                 }
             }
@@ -1088,7 +1124,7 @@ public class JIPipeGraphCanvasUI extends JIPipeWorkbenchPanel implements MouseMo
         }
     }
 
-    private void paintEdges(Graphics2D g, Stroke stroke, Stroke strokeComment, boolean onlySelected, boolean withHidden, boolean multicolor) {
+    private void paintEdges(Graphics2D g, Stroke stroke, Stroke strokeComment, boolean onlySelected, boolean withHidden, boolean multicolor, double scale, int viewX, int viewY) {
         int multiColorMax = 1;
         Set<Map.Entry<JIPipeDataSlot, JIPipeDataSlot>> slotEdges = graph.getSlotEdges();
         if (multicolor) {
@@ -1135,9 +1171,9 @@ public class JIPipeGraphCanvasUI extends JIPipeWorkbenchPanel implements MouseMo
                 }
             }
             if (source.getNode() instanceof JIPipeCommentNode || target.getNode() instanceof JIPipeCommentNode) {
-                paintSlotEdge(g, strokeComment, source, target, sourceUI, targetUI, edge.getUiShape(), multicolor, multiColorIndex, multiColorMax);
+                paintSlotEdge(g, strokeComment, source, target, sourceUI, targetUI, edge.getUiShape(), multicolor, multiColorIndex, multiColorMax, scale, viewX, viewY);
             } else {
-                paintSlotEdge(g, stroke, source, target, sourceUI, targetUI, edge.getUiShape(), multicolor, multiColorIndex, multiColorMax);
+                paintSlotEdge(g, stroke, source, target, sourceUI, targetUI, edge.getUiShape(), multicolor, multiColorIndex, multiColorMax, scale, viewX, viewY);
             }
 
             ++multiColorIndex;
@@ -1231,7 +1267,10 @@ public class JIPipeGraphCanvasUI extends JIPipeWorkbenchPanel implements MouseMo
                                JIPipeGraphEdge.Shape uiShape,
                                boolean multicolor,
                                int multiColorIndex,
-                               int multiColorMax) {
+                               int multiColorMax,
+                               double scale,
+                               int viewX,
+                               int viewY) {
 
         if (sourceUI == null || targetUI == null)
             return;
@@ -1251,10 +1290,16 @@ public class JIPipeGraphCanvasUI extends JIPipeWorkbenchPanel implements MouseMo
         PointRange.tighten(sourcePoint, targetPoint);
 
         // Draw arrow
-        drawEdge(g, sourcePoint.center, sourceUI.getBounds(), targetPoint.center, uiShape);
+        if(scale != 1) {
+            sourcePoint.center.x = (int) (sourcePoint.center.x * scale);
+            sourcePoint.center.y = (int) (sourcePoint.center.y * scale);
+            targetPoint.center.x = (int) (targetPoint.center.x * scale);
+            targetPoint.center.y = (int) (targetPoint.center.y * scale);
+        }
+        drawEdge(g, sourcePoint.center, sourceUI.getBounds(), targetPoint.center, uiShape, viewX, viewY);
     }
 
-    private void paintOutsideEdges(Graphics2D g, boolean onlySelected) {
+    private void paintOutsideEdges(Graphics2D g, boolean onlySelected, double scale, int viewX, int viewY) {
         for (JIPipeNodeUI ui : nodeUIs.values()) {
             Set<UUID> visibleCompartments = graph.getVisibleCompartmentUUIDsOf(ui.getNode());
             if (!visibleCompartments.isEmpty()) {
@@ -1292,7 +1337,13 @@ public class JIPipeGraphCanvasUI extends JIPipeWorkbenchPanel implements MouseMo
                         targetPoint.y = 0;
                     }
                 }
-                drawOutsideEdge(g, sourcePoint, targetPoint);
+                if(scale != 1) {
+                    sourcePoint.x = (int) (sourcePoint.x * scale);
+                    sourcePoint.y = (int) (sourcePoint.y * scale);
+                    targetPoint.x = (int) (targetPoint.x * scale);
+                    targetPoint.y = (int) (targetPoint.y * scale);
+                }
+                drawOutsideEdge(g, sourcePoint, targetPoint, viewX, viewY);
             }
         }
     }
@@ -1314,35 +1365,36 @@ public class JIPipeGraphCanvasUI extends JIPipeWorkbenchPanel implements MouseMo
         return null;
     }
 
-    private void drawOutsideEdge(Graphics2D g, Point sourcePoint, Point targetPoint) {
+    private void drawOutsideEdge(Graphics2D g, Point sourcePoint, Point targetPoint, int viewX, int viewY) {
         if (viewMode == JIPipeGraphViewMode.Horizontal) {
-            g.drawLine(sourcePoint.x, sourcePoint.y, targetPoint.x, sourcePoint.y);
+            g.drawLine(sourcePoint.x + viewX, sourcePoint.y + viewY, targetPoint.x + viewX, sourcePoint.y + viewY);
         } else {
-            g.drawLine(sourcePoint.x, sourcePoint.y, sourcePoint.x, targetPoint.y);
+            g.drawLine(sourcePoint.x + viewX, sourcePoint.y + viewY, sourcePoint.x + viewX, targetPoint.y + viewY);
         }
     }
 
     /**
      * Draws an edge between source point and the target point
-     *
      * @param g            the graphics
      * @param sourcePoint  the source point
      * @param sourceBounds bounds of the source
      * @param targetPoint  the target point
      * @param shape        the line shape
+     * @param viewX the view x
+     * @param viewY the view y
      */
-    private void drawEdge(Graphics2D g, Point sourcePoint, Rectangle sourceBounds, Point targetPoint, JIPipeGraphEdge.Shape shape) {
+    private void drawEdge(Graphics2D g, Point sourcePoint, Rectangle sourceBounds, Point targetPoint, JIPipeGraphEdge.Shape shape, int viewX, int viewY) {
         switch (shape) {
             case Elbow:
-                drawElbowEdge(g, sourcePoint, sourceBounds, targetPoint);
+                drawElbowEdge(g, sourcePoint, sourceBounds, targetPoint, viewX, viewY);
                 break;
             case Line:
-                g.drawLine(sourcePoint.x, sourcePoint.y, targetPoint.x, targetPoint.y);
+                g.drawLine(sourcePoint.x + viewX, sourcePoint.y + viewY, targetPoint.x + viewX, targetPoint.y + viewY);
                 break;
         }
     }
 
-    private void drawElbowEdge(Graphics2D g, Point sourcePoint, Rectangle sourceBounds, Point targetPoint) {
+    private void drawElbowEdge(Graphics2D g, Point sourcePoint, Rectangle sourceBounds, Point targetPoint, int viewX, int viewY) {
         int buffer;
         int sourceA;
         int targetA;
@@ -1378,7 +1430,7 @@ public class JIPipeGraphCanvasUI extends JIPipeWorkbenchPanel implements MouseMo
         if (sourceA > targetA) {
             // Add some space in major direction
             a1 += buffer;
-            drawElbowEdge_(g, a0, b0, a1, b1);
+            drawElbowEdge_(g, a0, b0, a1, b1, viewX, viewY);
             a0 = a1;
             b0 = b1;
 
@@ -1388,20 +1440,20 @@ public class JIPipeGraphCanvasUI extends JIPipeWorkbenchPanel implements MouseMo
             } else {
                 b1 = componentEndB + buffer;
             }
-            drawElbowEdge_(g, a0, b0, a1, b1);
+            drawElbowEdge_(g, a0, b0, a1, b1, viewX, viewY);
             a0 = a1;
             b0 = b1;
 
             // Go to target height
             a1 = Math.max(0, targetA - buffer);
-            drawElbowEdge_(g, a0, b0, a1, b1);
+            drawElbowEdge_(g, a0, b0, a1, b1, viewX, viewY);
             a0 = a1;
             b0 = b1;
         } else if (sourceB != targetB) {
             // Add some space in major direction
             int dA = targetA - sourceA;
             a1 = Math.min(sourceA + buffer, sourceA + dA / 2);
-            drawElbowEdge_(g, a0, b0, a1, b1);
+            drawElbowEdge_(g, a0, b0, a1, b1, viewX, viewY);
             a0 = a1;
             b0 = b1;
         }
@@ -1409,21 +1461,21 @@ public class JIPipeGraphCanvasUI extends JIPipeWorkbenchPanel implements MouseMo
         // Target point X is shifted
         if (b1 != targetB) {
             b1 = targetB;
-            drawElbowEdge_(g, a0, b0, a1, b1);
+            drawElbowEdge_(g, a0, b0, a1, b1, viewX, viewY);
             a0 = a1;
             b0 = b1;
         }
 
         // Go to end point
         a1 = targetA;
-        drawElbowEdge_(g, a0, b0, a1, b1);
+        drawElbowEdge_(g, a0, b0, a1, b1, viewX, viewY);
     }
 
-    private void drawElbowEdge_(Graphics2D g, int a0, int b0, int a1, int b1) {
+    private void drawElbowEdge_(Graphics2D g, int a0, int b0, int a1, int b1, int viewX, int viewY) {
         if (viewMode == JIPipeGraphViewMode.Horizontal) {
-            g.drawLine(a0, b0, a1, b1);
+            g.drawLine(a0 + viewX, b0 + viewY, a1 + viewX, b1 + viewY);
         } else {
-            g.drawLine(b0, a0, b1, a1);
+            g.drawLine(b0 + viewX, a0 + viewY, b1 + viewX, a1 + viewY);
         }
     }
 
