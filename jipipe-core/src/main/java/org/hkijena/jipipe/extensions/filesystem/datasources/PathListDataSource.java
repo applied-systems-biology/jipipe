@@ -28,6 +28,7 @@ import org.hkijena.jipipe.extensions.filesystem.dataypes.PathData;
 import org.hkijena.jipipe.extensions.parameters.primitives.FilePathParameterSettings;
 import org.hkijena.jipipe.extensions.parameters.primitives.PathList;
 import org.hkijena.jipipe.ui.components.PathEditor;
+import org.hkijena.jipipe.utils.PathUtils;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -89,6 +90,7 @@ public class PathListDataSource extends JIPipeAlgorithm {
     @JIPipeParameter("paths")
     public void setPaths(PathList paths) {
         this.paths = paths;
+        PathUtils.normalizeList(paths);
         FilesystemExtensionSettings settings = FilesystemExtensionSettings.getInstance();
         if (settings != null && settings.isAutoLabelOutputWithFileName()) {
             String name = paths.size() == 1 ? paths.get(0).getFileName().toString() : "";
@@ -166,8 +168,5 @@ public class PathListDataSource extends JIPipeAlgorithm {
             }
         }
         currentWorkingDirectory = workDirectory;
-        if (modified) {
-
-        }
     }
 }

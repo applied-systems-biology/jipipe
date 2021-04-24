@@ -27,6 +27,7 @@ import org.hkijena.jipipe.extensions.filesystem.FilesystemExtensionSettings;
 import org.hkijena.jipipe.extensions.filesystem.dataypes.FolderData;
 import org.hkijena.jipipe.extensions.parameters.primitives.FilePathParameterSettings;
 import org.hkijena.jipipe.ui.components.PathEditor;
+import org.hkijena.jipipe.utils.PathUtils;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -87,7 +88,7 @@ public class FolderDataSource extends JIPipeAlgorithm {
      */
     @JIPipeParameter("folder-path")
     public void setFolderPath(Path folderPath) {
-        this.folderPath = folderPath;
+        this.folderPath = PathUtils.normalize(folderPath);
         FilesystemExtensionSettings settings = FilesystemExtensionSettings.getInstance();
         if (settings != null && settings.isAutoLabelOutputWithFileName()) {
             String name = folderPath != null ? folderPath.getFileName().toString() : "";

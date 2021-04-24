@@ -13,9 +13,13 @@
 
 package org.hkijena.jipipe.utils;
 
+import org.apache.commons.lang3.SystemUtils;
+import org.hkijena.jipipe.extensions.parameters.primitives.PathList;
+
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -56,6 +60,38 @@ public class PathUtils {
             return Files.list(folder).filter(p -> Files.isRegularFile(p) && Arrays.stream(extensions).anyMatch(e -> p.toString().endsWith(e))).collect(Collectors.toList());
         } catch (IOException e) {
             return new ArrayList<>();
+        }
+    }
+
+    /**
+     * Converts UNIX paths to Windows and Windows paths to UNIX
+     * @param paths the paths. This list must be modifiable
+     */
+    public static void normalizeList(List<Path> paths) {
+        for (int i = 0; i < paths.size(); i++) {
+            try {
+                if (SystemUtils.IS_OS_WINDOWS) {
+                    paths.set(i, Paths.get(StringUtils.nullToEmpty(paths.get(i)).replace('/', '\\')));
+                } else {
+                    paths.set(i, Paths.get(StringUtils.nullToEmpty(paths.get(i)).replace('\\', '/')));
+                }
+            }
+            catch (Exception e) {
+                paths.set(i, Paths.get(""));
+            }
+        }
+    }
+
+    public static Path normalize(Path path) {
+        try {
+            if (SystemUtils.IS_OS_WINDOWS) {
+                return Paths.get(StringUtils.nullToEmpty(path).replace('/', '\\'));
+            } else {
+                return Paths.get(StringUtils.nullToEmpty(path).replace('\\', '/'));
+            }
+        }
+        catch (Exception e) {
+            return Paths.get("");
         }
     }
 }

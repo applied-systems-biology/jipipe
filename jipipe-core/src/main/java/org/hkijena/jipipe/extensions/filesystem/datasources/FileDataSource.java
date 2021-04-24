@@ -27,6 +27,7 @@ import org.hkijena.jipipe.extensions.filesystem.FilesystemExtensionSettings;
 import org.hkijena.jipipe.extensions.filesystem.dataypes.FileData;
 import org.hkijena.jipipe.extensions.parameters.primitives.FilePathParameterSettings;
 import org.hkijena.jipipe.ui.components.PathEditor;
+import org.hkijena.jipipe.utils.PathUtils;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -87,7 +88,7 @@ public class FileDataSource extends JIPipeAlgorithm {
      */
     @JIPipeParameter("file-name")
     public void setFileName(Path fileName) {
-        this.fileName = fileName;
+        this.fileName = PathUtils.normalize(fileName);
         FilesystemExtensionSettings settings = FilesystemExtensionSettings.getInstance();
         if (settings != null && settings.isAutoLabelOutputWithFileName()) {
             String name = fileName != null ? fileName.getFileName().toString() : "";
