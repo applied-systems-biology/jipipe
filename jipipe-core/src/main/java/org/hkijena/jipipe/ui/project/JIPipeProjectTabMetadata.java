@@ -76,8 +76,7 @@ public class JIPipeProjectTabMetadata {
             } else if (id.startsWith("graph-compartment:")) {
                 String compartmentId = id.substring("graph-compartment:".length());
                 try {
-                    JIPipeProjectCompartment compartment = workbench.getProject()
-                            .getCompartments().getOrDefault(UUID.fromString(compartmentId), null);
+                    JIPipeProjectCompartment compartment = workbench.getProject().findCompartment(compartmentId);
                     if (compartment != null) {
                         DocumentTabPane.DocumentTab tab = workbench.openCompartmentGraph(compartment, false);
                         if (tab != null) {

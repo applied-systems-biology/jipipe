@@ -91,6 +91,19 @@ public class JIPipeProject implements JIPipeValidatable {
     }
 
     /**
+     * Finds a compartment by UUID or alias
+     * @param uuidOrAlias UUID or alias
+     * @return the compartment or null if it could not be found
+     */
+    public JIPipeProjectCompartment findCompartment(String uuidOrAlias) {
+        JIPipeGraphNode node = compartmentGraph.findNode(uuidOrAlias);
+        if(node instanceof JIPipeProjectCompartment)
+            return (JIPipeProjectCompartment) node;
+        else
+            return null;
+    }
+
+    /**
      * Loads a project from a file
      *
      * @param fileName JSON file
