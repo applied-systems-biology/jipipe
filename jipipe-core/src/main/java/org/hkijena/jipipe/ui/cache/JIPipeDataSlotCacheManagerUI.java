@@ -42,7 +42,6 @@ public class JIPipeDataSlotCacheManagerUI extends JIPipeProjectWorkbenchPanel {
 
     private final JIPipeDataSlot dataSlot;
     private final JIPipeGraphCanvasUI graphUI;
-    private JButton annotationButton;
     private JButton cacheButton;
     private JPopupMenu contextMenu;
 
@@ -66,11 +65,8 @@ public class JIPipeDataSlotCacheManagerUI extends JIPipeProjectWorkbenchPanel {
 
         contextMenu = new JPopupMenu();
 
-        annotationButton = new ZoomFlatIconButton(UIUtils.getIconFromResources("data-types/annotation-table.png"), graphUI);
-        UIUtils.addReloadablePopupMenuToComponent(annotationButton, contextMenu, this::reloadContextMenu);
-        add(annotationButton);
-
         cacheButton = new ZoomFlatIconButton(UIUtils.getIconFromResources("actions/database.png"), graphUI);
+        cacheButton.setToolTipText("This slot has cached data");
         UIUtils.addReloadablePopupMenuToComponent(cacheButton, contextMenu, this::reloadContextMenu);
         add(cacheButton);
     }
@@ -163,61 +159,15 @@ public class JIPipeDataSlotCacheManagerUI extends JIPipeProjectWorkbenchPanel {
         JIPipeProjectCache cache = getProject().getCache();
         Map<JIPipeProjectCacheState, Map<String, JIPipeDataSlot>> stateMap = cache.extract(getDataSlot().getNode());
         int dataRows = 0;
-        Set<String> annotationTypes = new HashSet<>();
         if (stateMap != null) {
             for (Map<String, JIPipeDataSlot> slotMap : stateMap.values()) {
                 JIPipeDataSlot equivalentSlot = slotMap.getOrDefault(getDataSlot().getName(), null);
                 if (equivalentSlot != null) {
                     dataRows += equivalentSlot.getRowCount();
-                    annotationTypes.addAll(equivalentSlot.getAnnotationColumns());
                 }
             }
         }
 
-        if (dataRows > 0) {
-            cacheButton.setVisible(true);
-            generateCacheButtonTooltip(dataRows, stateMap);
-        } else {
-            cacheButton.setVisible(false);
-        }
-        if (dataRows > 0 && !annotationTypes.isEmpty()) {
-            annotationButton.setVisible(true);
-            generateAnnotationButtonTooltip(annotationTypes);
-        } else {
-            annotationButton.setVisible(false);
-        }
-    }
-
-    private void generateAnnotationButtonTooltip(Set<String> annotationTypes) {
-        StringBuilder builder = new StringBuilder();
-        builder.append("<html>");
-        builder.append("This output data is annotated in at least one snapshot.<br/><br/>");
-        builder.append("<table>");
-        for (String info : annotationTypes.stream().sorted().collect(Collectors.toList())) {
-            builder.append("<tr><td><img src=\"").append(UIUtils.getIconFromResources("data-types/annotation.png")).append("\"/><td><strong>");
-            builder.append(HtmlEscapers.htmlEscaper().escape(info)).append("</strong></td></tr>");
-        }
-        builder.append("<table>");
-        builder.append("</html>");
-        annotationButton.setToolTipText(builder.toString());
-    }
-
-    private void generateCacheButtonTooltip(int dataRows, Map<JIPipeProjectCacheState, Map<String, JIPipeDataSlot>> stateMap) {
-        StringBuilder builder = new StringBuilder();
-        builder.append("<html>");
-        builder.append("The cache currently contains ").append(dataRows).append(" data rows that are spread across ").append(stateMap.keySet().size()).append(" snapshots.<br/><br/>");
-        builder.append("<table>");
-        for (JIPipeProjectCacheState state : stateMap.keySet().stream().sorted(Comparator.reverseOrder()).collect(Collectors.toList())) {
-            Map<String, JIPipeDataSlot> slotMap = stateMap.get(state);
-            JIPipeDataSlot cacheSlot = slotMap.getOrDefault(getDataSlot().getName(), null);
-            if (cacheSlot != null) {
-                builder.append("<tr><td><strong>Snapshot @ ").append(state.renderGenerationTime()).append("</strong></td>");
-                builder.append("<td>").append(cacheSlot.getRowCount()).append(" data rows</td>");
-                builder.append("</tr>");
-            }
-        }
-        builder.append("<table>");
-        builder.append("</html>");
-        cacheButton.setToolTipText(builder.toString());
+        cacheButton.setVisible(dataRows > 0);
     }
 }
