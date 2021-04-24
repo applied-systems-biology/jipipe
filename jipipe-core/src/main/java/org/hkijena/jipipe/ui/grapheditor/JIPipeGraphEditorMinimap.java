@@ -1,6 +1,7 @@
 package org.hkijena.jipipe.ui.grapheditor;
 
 import com.google.common.eventbus.Subscribe;
+import org.hkijena.jipipe.extensions.settings.GeneralUISettings;
 import org.hkijena.jipipe.ui.JIPipeWorkbenchPanel;
 import org.hkijena.jipipe.ui.theme.ModernMetalTheme;
 import org.hkijena.jipipe.utils.ScreenImage;
@@ -33,6 +34,7 @@ public class JIPipeGraphEditorMinimap extends JIPipeWorkbenchPanel implements Mo
     private int scrollX;
     private int scrollY;
     private final boolean accurate;
+    private Color minimapBackground;
 
 
     /**
@@ -42,6 +44,10 @@ public class JIPipeGraphEditorMinimap extends JIPipeWorkbenchPanel implements Mo
         super(graphEditorUI.getWorkbench());
         this.graphEditorUI = graphEditorUI;
         this.accurate = graphEditorUI.getCanvasUI().getSettings().isAccurateMiniMap();
+        if(GeneralUISettings.getInstance().getTheme().isDark())
+            minimapBackground = Color.BLACK;
+        else
+            minimapBackground = Color.WHITE;
         setOpaque(false);
         refreshGraphImage();
 
@@ -176,6 +182,8 @@ public class JIPipeGraphEditorMinimap extends JIPipeWorkbenchPanel implements Mo
 
             Graphics2D graphics2D = (Graphics2D) g;
 
+            graphics2D.setColor(minimapBackground);
+            graphics2D.fillRect(viewX,viewY,viewWidth, viewHeight);
             graphEditorUI.getCanvasUI().paintMiniMap(graphics2D, scaleFactor, viewX, viewY);
 
             // Draw current scroll position
