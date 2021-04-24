@@ -34,7 +34,10 @@ public class SelectAndMoveNodeHereNodeUIContextAction implements NodeUIContextAc
     @Override
     public void run(JIPipeGraphCanvasUI canvasUI, Set<JIPipeNodeUI> selection) {
         JIPipeGraphNode preSelected = selection.isEmpty() ? null : selection.iterator().next().getNode();
-        JIPipeGraphNode algorithm = PickNodeDialog.showDialog(canvasUI, canvasUI.getNodeUIs().keySet(), preSelected, "Move node");
+        JIPipeGraphNode algorithm = PickNodeDialog.showDialog(canvasUI.getWorkbench().getWindow(),
+                canvasUI.getNodeUIs().keySet(),
+                preSelected,
+                "Move node");
         if (algorithm != null) {
             JIPipeNodeUI ui = canvasUI.getNodeUIs().getOrDefault(algorithm, null);
             if (ui != null) {

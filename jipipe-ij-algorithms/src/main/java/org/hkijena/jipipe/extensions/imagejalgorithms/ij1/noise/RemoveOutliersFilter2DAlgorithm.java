@@ -141,6 +141,19 @@ public class RemoveOutliersFilter2DAlgorithm extends JIPipeSimpleIteratingAlgori
      */
     public enum Mode {
         RemoveSmallerThanMedian,
-        RemoveLargerThanMedian
+        RemoveLargerThanMedian;
+
+
+        @Override
+        public String toString() {
+            switch (this) {
+                case RemoveLargerThanMedian:
+                    return "Remove smaller than median";
+                case RemoveSmallerThanMedian:
+                    return "Remove larger than median";
+                default:
+                    throw new UnsupportedOperationException();
+            }
+        }
     }
 }
