@@ -832,8 +832,8 @@ public class JIPipeGraphCanvasUI extends JIPipeWorkbenchPanel implements MouseMo
         int height = 0;
         for (int i = 0; i < getComponentCount(); ++i) {
             Component component = getComponent(i);
-            width = Math.max(width, component.getX() + 2 * component.getWidth());
-            height = Math.max(height, component.getY() + 2 * component.getHeight());
+            width = Math.max(width, component.getX() + component.getWidth() + 2 * viewMode.getGridWidth());
+            height = Math.max(height, component.getY() + component.getHeight() + 2 * viewMode.getGridHeight());
         }
         if (minDimensions != null) {
             width = Math.max(minDimensions.width, width);
