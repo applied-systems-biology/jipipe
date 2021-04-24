@@ -141,6 +141,8 @@ public class GraphNodeParameterReference {
             for (JIPipeParameterAccess access : tree.getParameters().values()) {
                 if(access.getSource() instanceof JIPipeGraphNode) {
                     JIPipeGraph graph = ((JIPipeGraphNode) access.getSource()).getGraph();
+                    if(graph == null)
+                        break;
                     uuid = graph.findNodeUUID(uuidOrAlias);
                     if(uuid != null)
                         break;
