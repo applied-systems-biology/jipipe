@@ -317,7 +317,32 @@ public class JIPipeGraph implements JIPipeValidatable {
     }
 
     /**
+     * Returns additional metadata or null if it does not exist
+     * @param klass returned metadata class
+     * @param key metadata key
+     * @param <T> returned metadata class
+     * @return the object or null
+     */
+    public <T> T getAdditionalMetadata(Class<T> klass, String key) {
+        Object result = additionalMetadata.getOrDefault(key, null);
+        if (result != null)
+            return (T) result;
+        else
+            return null;
+    }
+
+    /**
+     * Attaches additional metadata (persistent)
+     * @param key the key
+     * @param object JSON-serializable object
+     */
+    public void attachAdditionalMetadata(String key, Object object) {
+        additionalMetadata.put(key, object);
+    }
+
+    /**
      * Attaches an object as the specified type
+     * Warning: Attachments are not serialized
      *
      * @param klass      the type the attachment is attached as
      * @param attachment the attachment
@@ -330,7 +355,8 @@ public class JIPipeGraph implements JIPipeValidatable {
     }
 
     /**
-     * Attaches the object with its class as key
+     * Attaches the object with its class as key.
+     * Warning: Attachments are not serialized
      *
      * @param attachment the attachment
      */
@@ -340,6 +366,7 @@ public class JIPipeGraph implements JIPipeValidatable {
 
     /**
      * Removes an attachment
+     * Warning: Attachments are not serialized
      *
      * @param klass the class
      */
@@ -1293,6 +1320,11 @@ public class JIPipeGraph implements JIPipeValidatable {
         return attachments;
     }
 
+    /**
+     * Sets the attachments map
+     * Warning: Attachments are not serialized
+     * @param attachments attachments
+     */
     public void setAttachments(Map<Class<?>, Object> attachments) {
         this.attachments = attachments;
     }

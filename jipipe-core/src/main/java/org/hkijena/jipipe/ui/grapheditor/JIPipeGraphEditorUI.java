@@ -440,7 +440,7 @@ public abstract class JIPipeGraphEditorUI extends JIPipeWorkbenchPanel implement
         viewModeHorizontalItem.setSelected(canvasUI.getViewMode() == JIPipeGraphViewMode.Horizontal);
         viewModeHorizontalItem.addActionListener(e -> {
             canvasUI.setViewMode(JIPipeGraphViewMode.Horizontal);
-            canvasUI.getGraph().attach(JIPipeGraphViewMode.class, JIPipeGraphViewMode.Horizontal);
+            canvasUI.getGraph().attachAdditionalMetadata("jipipe:graph:view-mode", JIPipeGraphViewMode.Horizontal);
             updateViewModeMenuIcon(viewModeButton);
         });
         viewModeGroup.add(viewModeHorizontalItem);
@@ -450,7 +450,7 @@ public abstract class JIPipeGraphEditorUI extends JIPipeWorkbenchPanel implement
         viewModeVerticalItem.setSelected(canvasUI.getViewMode() == JIPipeGraphViewMode.Vertical);
         viewModeVerticalItem.addActionListener(e -> {
             canvasUI.setViewMode(JIPipeGraphViewMode.Vertical);
-            canvasUI.getGraph().attach(JIPipeGraphViewMode.class, JIPipeGraphViewMode.Vertical);
+            canvasUI.getGraph().attachAdditionalMetadata("jipipe:graph:view-mode", JIPipeGraphViewMode.Vertical);
             updateViewModeMenuIcon(viewModeButton);
         });
         viewModeGroup.add(viewModeVerticalItem);
@@ -460,7 +460,7 @@ public abstract class JIPipeGraphEditorUI extends JIPipeWorkbenchPanel implement
         viewModeVerticalCompactItem.setSelected(canvasUI.getViewMode() == JIPipeGraphViewMode.VerticalCompact);
         viewModeVerticalCompactItem.addActionListener(e -> {
             canvasUI.setViewMode(JIPipeGraphViewMode.VerticalCompact);
-            canvasUI.getGraph().attach(JIPipeGraphViewMode.class, JIPipeGraphViewMode.VerticalCompact);
+            canvasUI.getGraph().attachAdditionalMetadata("jipipe:graph:view-mode", JIPipeGraphViewMode.VerticalCompact);
             updateViewModeMenuIcon(viewModeButton);
         });
         viewModeGroup.add(viewModeVerticalCompactItem);

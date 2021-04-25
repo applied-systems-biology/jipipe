@@ -108,14 +108,14 @@ public class JIPipeGraphCanvasUI extends JIPipeWorkbenchPanel implements MouseMo
         this.nodeHotKeyStorage = NodeHotKeyStorage.getInstance(graph);
         this.compartment = compartment;
         this.settings = GraphEditorUISettings.getInstance();
-        Object restoredViewMode = graph.getAttachments().getOrDefault(JIPipeGraphViewMode.class, null);
-        if(restoredViewMode instanceof JIPipeGraphViewMode) {
-            this.viewMode = (JIPipeGraphViewMode) restoredViewMode;
+        JIPipeGraphViewMode restoredViewMode = graph.getAdditionalMetadata(JIPipeGraphViewMode.class, "jipipe:graph:view-mode");
+        if(restoredViewMode != null) {
+            this.viewMode = restoredViewMode;
         }
         else {
             this.viewMode = settings.getDefaultViewMode();
         }
-        graph.attach(JIPipeGraphViewMode.class, this.viewMode);
+        graph.attachAdditionalMetadata("jipipe:graph:view-mode", this.viewMode);
         initialize();
         addNewNodes();
         graph.getEventBus().register(this);
