@@ -101,6 +101,7 @@ public class JIPipeHorizontalDataSlotUI extends JIPipeDataSlotUI {
 
         this.assignButton = new JButton();
         UIUtils.makeFlat(assignButton, UIUtils.getBorderColorFor(getSlot().getNode().getInfo()), 0, 0, 0, 0);
+        assignButton.setBorder(BorderFactory.createEmptyBorder(3,3,3,3));
         new JIPipeConnectionDragAndDropBehavior(this, assignButton);
         this.assignButtonMenu = UIUtils.addReloadablePopupMenuToComponent(assignButton, new JPopupMenu(), this::reloadPopupMenu);
 
@@ -186,7 +187,7 @@ public class JIPipeHorizontalDataSlotUI extends JIPipeDataSlotUI {
         FontRenderContext frc = new FontRenderContext(null, false, false);
         TextLayout layout = new TextLayout(getDisplayedName(), getFont(), frc);
         double w = layout.getBounds().getWidth();
-        int labelWidth = (int) Math.ceil(w * 1.0 / JIPipeGraphViewMode.Horizontal.getGridWidth())
+        int labelWidth = (int) Math.ceil(w / JIPipeGraphViewMode.Horizontal.getGridWidth())
                 * JIPipeGraphViewMode.Horizontal.getGridWidth();
         int width = labelWidth + 75;
         Point inGrid = JIPipeGraphViewMode.Vertical.realLocationToGrid(new Point(width, JIPipeGraphViewMode.Vertical.getGridHeight()), 1.0);

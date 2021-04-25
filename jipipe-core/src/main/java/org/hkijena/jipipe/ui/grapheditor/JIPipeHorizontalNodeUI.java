@@ -233,19 +233,19 @@ public class JIPipeHorizontalNodeUI extends JIPipeNodeUI {
                 if (ui.getSlot().isInput()) {
                     maxInputSlotWidth = Math.max(maxInputSlotWidth, realSize.width);
                 } else if (ui.getSlot().isOutput()) {
-                    maxOutputSlotWidth = Math.max(maxOutputSlotWidth, realSize.height);
+                    maxOutputSlotWidth = Math.max(maxOutputSlotWidth, realSize.width);
                 }
             }
             if (addInputSlotButton != null) {
-                maxInputSlotWidth = Math.max(maxInputSlotWidth, JIPipeGraphViewMode.Horizontal.gridToRealSize(new Dimension(4, 1), getGraphUI().getZoom()).width);
+                maxInputSlotWidth = Math.max(maxInputSlotWidth, JIPipeGraphViewMode.Horizontal.gridToRealSize(new Dimension(4, 1), 1.0).width);
             }
             if (addOutputSlotButton != null) {
-                maxOutputSlotWidth = Math.max(maxOutputSlotWidth, JIPipeGraphViewMode.Horizontal.gridToRealSize(new Dimension(4, 1), getGraphUI().getZoom()).width);
+                maxOutputSlotWidth = Math.max(maxOutputSlotWidth, JIPipeGraphViewMode.Horizontal.gridToRealSize(new Dimension(4, 1), 1.0).width);
             }
 
             width += maxInputSlotWidth + maxOutputSlotWidth;
         }
-        width += 150;
+        width += 32;
         int height = Math.max(JIPipeGraphViewMode.Horizontal.getGridHeight(),
                 JIPipeGraphViewMode.Horizontal.getGridHeight() * getDisplayedRows());
         Point inGrid = JIPipeGraphViewMode.Horizontal.realLocationToGrid(new Point((int) width, height), 1.0);
@@ -265,6 +265,13 @@ public class JIPipeHorizontalNodeUI extends JIPipeNodeUI {
                 weightx = 1;
             }
         });
+    }
+
+    @Override
+    protected void paintComponent(Graphics g) {
+        super.paintComponent(g);
+        g.setColor(getBorderColor());
+        g.drawRect(0,0, getWidth() - 1, getHeight() - 1);
     }
 
     @Override
