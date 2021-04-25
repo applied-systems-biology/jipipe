@@ -324,31 +324,7 @@ public abstract class JIPipeGraphEditorUI extends JIPipeWorkbenchPanel implement
 
         menuBar.add(new JSeparator(JSeparator.VERTICAL));
 
-        ButtonGroup viewModeGroup = new ButtonGroup();
-
-        JToggleButton viewModeHorizontalButton = new JToggleButton(UIUtils.getIconFromResources("actions/view-mode-horizontal.png"));
-        viewModeHorizontalButton.setToolTipText("Display nodes horizontally");
-        UIUtils.makeFlat25x25(viewModeHorizontalButton);
-        viewModeHorizontalButton.setSelected(canvasUI.getViewMode() == JIPipeGraphViewMode.Horizontal);
-        viewModeHorizontalButton.addActionListener(e -> {
-            canvasUI.setViewMode(JIPipeGraphViewMode.Horizontal);
-            canvasUI.getGraph().attach(JIPipeGraphViewMode.class, JIPipeGraphViewMode.Horizontal);
-        });
-        viewModeGroup.add(viewModeHorizontalButton);
-        menuBar.add(viewModeHorizontalButton);
-
-        JToggleButton viewModeVerticalButton = new JToggleButton(UIUtils.getIconFromResources("actions/view-mode-vertical.png"));
-        viewModeVerticalButton.setToolTipText("Display nodes vertically");
-        UIUtils.makeFlat25x25(viewModeVerticalButton);
-        viewModeVerticalButton.setSelected(canvasUI.getViewMode() == JIPipeGraphViewMode.Vertical);
-        viewModeVerticalButton.addActionListener(e -> {
-            canvasUI.setViewMode(JIPipeGraphViewMode.Vertical);
-            canvasUI.getGraph().attach(JIPipeGraphViewMode.class, JIPipeGraphViewMode.Vertical);
-        });
-        viewModeGroup.add(viewModeVerticalButton);
-        menuBar.add(viewModeVerticalButton);
-
-        menuBar.add(new JSeparator(JSeparator.VERTICAL));
+        initializeViewModeMenu(menuBar);
 
         JButton autoLayoutButton = new JButton(UIUtils.getIconFromResources("actions/distribute-unclump.png"));
         autoLayoutButton.setToolTipText("<html>Auto-layout all nodes<br><i>Ctrl-Shift-L</i></html>");
@@ -453,6 +429,48 @@ public abstract class JIPipeGraphEditorUI extends JIPipeWorkbenchPanel implement
         zoomInButton.setToolTipText("<html>Zoom in<br><i>Ctrl-NumPad +</i></html>");
         zoomInButton.addActionListener(e -> canvasUI.zoomIn());
         menuBar.add(zoomInButton);
+    }
+
+    private void initializeViewModeMenu(JMenuBar menuBar) {
+        ButtonGroup viewModeGroup = new ButtonGroup();
+        JButton viewModeButton = new JButton();
+        JPopupMenu viewModeMenu = UIUtils.addPopupMenuToComponent(viewModeButton);
+
+        JMenuItem viewModeHorizontalItem = new JCheckBoxMenuItem("Display nodes horizontally");
+        viewModeHorizontalItem.setSelected(canvasUI.getViewMode() == JIPipeGraphViewMode.Horizontal);
+        viewModeHorizontalItem.addActionListener(e -> {
+            canvasUI.setViewMode(JIPipeGraphViewMode.Horizontal);
+            canvasUI.getGraph().attach(JIPipeGraphViewMode.class, JIPipeGraphViewMode.Horizontal);
+            updateViewModeMenuIcon(viewModeButton);
+        });
+        viewModeGroup.add(viewModeHorizontalItem);
+        viewModeMenu.add(viewModeHorizontalItem);
+
+        JMenuItem viewModeVerticalItem = new JCheckBoxMenuItem("Display nodes vertically");
+        viewModeVerticalItem.setSelected(canvasUI.getViewMode() == JIPipeGraphViewMode.Vertical);
+        viewModeVerticalItem.addActionListener(e -> {
+            canvasUI.setViewMode(JIPipeGraphViewMode.Vertical);
+            canvasUI.getGraph().attach(JIPipeGraphViewMode.class, JIPipeGraphViewMode.Vertical);
+        });
+        viewModeGroup.add(viewModeVerticalItem);
+        viewModeMenu.add(viewModeVerticalItem);
+        updateViewModeMenuIcon(viewModeButton);
+
+        UIUtils.makeFlat25x25(viewModeButton);
+        menuBar.add(viewModeButton);
+    }
+
+    private void updateViewModeMenuIcon(JButton viewModeButton) {
+        switch (canvasUI.getViewMode()) {
+            case Horizontal:
+                viewModeButton.setIcon(UIUtils.getIconFromResources("actions/view-mode-horizontal.png"));
+                viewModeButton.setToolTipText("Nodes are displayed horizontally. Click to change.");
+                break;
+            case Vertical:
+                viewModeButton.setIcon(UIUtils.getIconFromResources("actions/view-mode-vertical.png"));
+                viewModeButton.setToolTipText("Nodes are displayed vertically. Click to change.");
+                break;
+        }
     }
 
     private void redo() {
