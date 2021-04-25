@@ -454,6 +454,16 @@ public abstract class JIPipeGraphEditorUI extends JIPipeWorkbenchPanel implement
         });
         viewModeGroup.add(viewModeVerticalItem);
         viewModeMenu.add(viewModeVerticalItem);
+
+        JMenuItem viewModeVerticalCompactItem = new JCheckBoxMenuItem("Display nodes vertically (compact)");
+        viewModeVerticalCompactItem.setSelected(canvasUI.getViewMode() == JIPipeGraphViewMode.VerticalCompact);
+        viewModeVerticalCompactItem.addActionListener(e -> {
+            canvasUI.setViewMode(JIPipeGraphViewMode.VerticalCompact);
+            canvasUI.getGraph().attach(JIPipeGraphViewMode.class, JIPipeGraphViewMode.VerticalCompact);
+        });
+        viewModeGroup.add(viewModeVerticalCompactItem);
+        viewModeMenu.add(viewModeVerticalCompactItem);
+
         updateViewModeMenuIcon(viewModeButton);
 
         UIUtils.makeFlat25x25(viewModeButton);
@@ -469,6 +479,10 @@ public abstract class JIPipeGraphEditorUI extends JIPipeWorkbenchPanel implement
             case Vertical:
                 viewModeButton.setIcon(UIUtils.getIconFromResources("actions/view-mode-vertical.png"));
                 viewModeButton.setToolTipText("Nodes are displayed vertically. Click to change.");
+                break;
+            case VerticalCompact:
+                viewModeButton.setIcon(UIUtils.getIconFromResources("actions/view-mode-vertical-compact.png"));
+                viewModeButton.setToolTipText("Nodes are displayed vertically (compact). Click to change.");
                 break;
         }
     }

@@ -56,8 +56,8 @@ public class MSTGraphAutoLayoutMethod implements GraphAutoLayoutMethod {
 //            e.printStackTrace();
 //        }
 
-        if (canvasUI.getViewMode() == JIPipeGraphViewMode.Vertical) {
-            autoLayoutVertical(graph, canvasUI.getZoom());
+        if (canvasUI.getViewMode() == JIPipeGraphViewMode.Vertical || canvasUI.getViewMode() == JIPipeGraphViewMode.VerticalCompact) {
+            autoLayoutVertical(graph, canvasUI.getZoom(), canvasUI.getViewMode());
         } else {
             autoLayoutHorizontal(graph, canvasUI.getZoom());
         }
@@ -183,12 +183,11 @@ public class MSTGraphAutoLayoutMethod implements GraphAutoLayoutMethod {
         }
     }
 
-    private void autoLayoutVertical(DefaultDirectedGraph<Node, Edge> graph, double zoom) {
+    private void autoLayoutVertical(DefaultDirectedGraph<Node, Edge> graph, double zoom, JIPipeGraphViewMode viewMode) {
         Map<Integer, Integer> trackWidths = new HashMap<>();
         int minTrack = Integer.MAX_VALUE;
         int maxTrack = Integer.MIN_VALUE;
         int maxDepth = 0;
-        JIPipeGraphViewMode viewMode = JIPipeGraphViewMode.Vertical;
         for (Node node : graph.vertexSet()) {
             minTrack = Math.min(minTrack, node.track);
             maxTrack = Math.max(maxTrack, node.track);

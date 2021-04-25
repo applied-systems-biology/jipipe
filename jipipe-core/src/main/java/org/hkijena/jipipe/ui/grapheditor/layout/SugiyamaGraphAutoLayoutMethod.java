@@ -145,6 +145,9 @@ public class SugiyamaGraphAutoLayoutMethod implements GraphAutoLayoutMethod {
             case Vertical:
                 rearrangeSugiyamaVertical(canvasUI, sugiyamaGraph, maxLayer, maxIndex);
                 break;
+            case VerticalCompact:
+                rearrangeSugiyamaVertical(canvasUI, sugiyamaGraph, maxLayer, maxIndex);
+                break;
         }
 
         // Add free-floating algorithms back into the graph

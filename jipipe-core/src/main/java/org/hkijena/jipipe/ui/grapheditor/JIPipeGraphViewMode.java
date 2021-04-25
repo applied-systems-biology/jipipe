@@ -7,7 +7,8 @@ import java.awt.*;
  */
 public enum JIPipeGraphViewMode {
     Horizontal(25, 50),
-    Vertical(25, 50);
+    Vertical(25, 50),
+    VerticalCompact(25, 25);
     private final int gridWidth;
     private final int gridHeight;
 

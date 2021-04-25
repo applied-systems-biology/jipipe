@@ -236,7 +236,10 @@ public class JIPipeGraphCanvasUI extends JIPipeWorkbenchPanel implements MouseMo
                     ui = new JIPipeHorizontalNodeUI(getWorkbench(), this, algorithm);
                     break;
                 case Vertical:
-                    ui = new JIPipeVerticalNodeUI(getWorkbench(), this, algorithm);
+                    ui = new JIPipeVerticalNodeUI(getWorkbench(), this, algorithm, false);
+                    break;
+                case VerticalCompact:
+                    ui = new JIPipeVerticalNodeUI(getWorkbench(), this, algorithm, true);
                     break;
                 default:
                     throw new IllegalArgumentException("Unknown view mode!");
@@ -957,8 +960,8 @@ public class JIPipeGraphCanvasUI extends JIPipeWorkbenchPanel implements MouseMo
             int iconSize = Math.min(16, Math.min(width, height)) - 3;
             if(iconSize > 4) {
                 graphics2D.drawImage(icon.getImage(),
-                        x + (width / 2) - (iconSize / 2),
-                        y + (height / 2) - (iconSize / 2),
+                        x + (int)Math.round((width / 2.0) - (iconSize / 2.0)),
+                        y + (int)Math.round((height / 2.0) - (iconSize / 2.0)),
                         iconSize,
                         iconSize,
                         null);

@@ -38,6 +38,7 @@ import java.util.UUID;
  * Slot UI with horizontal direction
  */
 public class JIPipeVerticalDataSlotUI extends JIPipeDataSlotUI {
+    private final boolean compact;
     private JButton assignButton;
     private JLabel nameLabel;
     private JLabel noSaveLabel;
@@ -46,13 +47,15 @@ public class JIPipeVerticalDataSlotUI extends JIPipeDataSlotUI {
 
     /**
      * Creates a new UI
-     *  @param workbench   the workbench
+     * @param workbench   the workbench
      * @param algorithmUI The parent algorithm UI
      * @param compartment The compartment ID
      * @param slot        The slot instance
+     * @param compact if the UI should be compact
      */
-    public JIPipeVerticalDataSlotUI(JIPipeWorkbench workbench, JIPipeNodeUI algorithmUI, UUID compartment, JIPipeDataSlot slot) {
+    public JIPipeVerticalDataSlotUI(JIPipeWorkbench workbench, JIPipeNodeUI algorithmUI, UUID compartment, JIPipeDataSlot slot, boolean compact) {
         super(workbench, algorithmUI, compartment, slot);
+        this.compact = compact;
         initialize();
         reloadButtonStatus();
     }
@@ -120,6 +123,11 @@ public class JIPipeVerticalDataSlotUI extends JIPipeDataSlotUI {
         centerPanel.setLayout(new BoxLayout(centerPanel, BoxLayout.X_AXIS));
         centerPanel.setOpaque(false);
 
+        if(compact) {
+            assignButton.setBorder(BorderFactory.createEmptyBorder(3,3,3,3));
+            centerPanel.add(assignButton);
+        }
+
         nameLabel = new ZoomLabel("", null, getGraphUI());
         reloadName();
         nameLabel.setToolTipText(TooltipUtils.getSlotInstanceTooltip(getSlot()));
@@ -149,10 +157,12 @@ public class JIPipeVerticalDataSlotUI extends JIPipeDataSlotUI {
         }
 
         add(centerPanel, BorderLayout.CENTER);
-        if (getSlot().isInput())
-            add(assignButton, BorderLayout.NORTH);
-        else
-            add(assignButton, BorderLayout.SOUTH);
+        if(!compact) {
+            if (getSlot().isInput())
+                add(assignButton, BorderLayout.NORTH);
+            else
+                add(assignButton, BorderLayout.SOUTH);
+        }
     }
 
     @Override
@@ -177,5 +187,9 @@ public class JIPipeVerticalDataSlotUI extends JIPipeDataSlotUI {
         int width = labelWidth + 75;
         Point inGrid = JIPipeGraphViewMode.Vertical.realLocationToGrid(new Point(width, JIPipeGraphViewMode.Vertical.getGridHeight()), 1.0);
         return new Dimension(inGrid.x, inGrid.y);
+    }
+
+    public boolean isCompact() {
+        return compact;
     }
 }
