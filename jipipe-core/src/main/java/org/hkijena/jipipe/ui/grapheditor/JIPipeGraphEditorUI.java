@@ -451,6 +451,7 @@ public abstract class JIPipeGraphEditorUI extends JIPipeWorkbenchPanel implement
         viewModeVerticalItem.addActionListener(e -> {
             canvasUI.setViewMode(JIPipeGraphViewMode.Vertical);
             canvasUI.getGraph().attach(JIPipeGraphViewMode.class, JIPipeGraphViewMode.Vertical);
+            updateViewModeMenuIcon(viewModeButton);
         });
         viewModeGroup.add(viewModeVerticalItem);
         viewModeMenu.add(viewModeVerticalItem);
@@ -460,6 +461,7 @@ public abstract class JIPipeGraphEditorUI extends JIPipeWorkbenchPanel implement
         viewModeVerticalCompactItem.addActionListener(e -> {
             canvasUI.setViewMode(JIPipeGraphViewMode.VerticalCompact);
             canvasUI.getGraph().attach(JIPipeGraphViewMode.class, JIPipeGraphViewMode.VerticalCompact);
+            updateViewModeMenuIcon(viewModeButton);
         });
         viewModeGroup.add(viewModeVerticalCompactItem);
         viewModeMenu.add(viewModeVerticalCompactItem);
