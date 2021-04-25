@@ -326,19 +326,25 @@ public abstract class JIPipeGraphEditorUI extends JIPipeWorkbenchPanel implement
 
         ButtonGroup viewModeGroup = new ButtonGroup();
 
-        JToggleButton viewModeHorizontalButton = new JToggleButton(UIUtils.getIconFromResources("actions/align-horizontal-left.png"));
+        JToggleButton viewModeHorizontalButton = new JToggleButton(UIUtils.getIconFromResources("actions/view-mode-horizontal.png"));
         viewModeHorizontalButton.setToolTipText("Display nodes horizontally");
         UIUtils.makeFlat25x25(viewModeHorizontalButton);
         viewModeHorizontalButton.setSelected(canvasUI.getViewMode() == JIPipeGraphViewMode.Horizontal);
-        viewModeHorizontalButton.addActionListener(e -> canvasUI.setViewMode(JIPipeGraphViewMode.Horizontal));
+        viewModeHorizontalButton.addActionListener(e -> {
+            canvasUI.setViewMode(JIPipeGraphViewMode.Horizontal);
+            canvasUI.getGraph().attach(JIPipeGraphViewMode.class, JIPipeGraphViewMode.Horizontal);
+        });
         viewModeGroup.add(viewModeHorizontalButton);
         menuBar.add(viewModeHorizontalButton);
 
-        JToggleButton viewModeVerticalButton = new JToggleButton(UIUtils.getIconFromResources("actions/align-vertical-top.png"));
+        JToggleButton viewModeVerticalButton = new JToggleButton(UIUtils.getIconFromResources("actions/view-mode-vertical.png"));
         viewModeVerticalButton.setToolTipText("Display nodes vertically");
         UIUtils.makeFlat25x25(viewModeVerticalButton);
         viewModeVerticalButton.setSelected(canvasUI.getViewMode() == JIPipeGraphViewMode.Vertical);
-        viewModeVerticalButton.addActionListener(e -> canvasUI.setViewMode(JIPipeGraphViewMode.Vertical));
+        viewModeVerticalButton.addActionListener(e -> {
+            canvasUI.setViewMode(JIPipeGraphViewMode.Vertical);
+            canvasUI.getGraph().attach(JIPipeGraphViewMode.class, JIPipeGraphViewMode.Vertical);
+        });
         viewModeGroup.add(viewModeVerticalButton);
         menuBar.add(viewModeVerticalButton);
 
