@@ -261,6 +261,14 @@ public abstract class JIPipeNodeUI extends JIPipeWorkbenchPanel {
      */
     public boolean moveToStoredGridLocation(boolean force) {
         Point point = node.getLocationWithin(StringUtils.nullToEmpty(graphUI.getCompartment()), graphUI.getViewMode().name());
+        if(point == null && graphUI.getViewMode() == JIPipeGraphViewMode.VerticalCompact) {
+            // Try to get the point from vertical layout
+            point = node.getLocationWithin(StringUtils.nullToEmpty(graphUI.getCompartment()), JIPipeGraphViewMode.Vertical.name());
+        }
+        if(point == null && graphUI.getViewMode() == JIPipeGraphViewMode.Vertical) {
+            // Try to get the point from vertical compact layout
+            point = node.getLocationWithin(StringUtils.nullToEmpty(graphUI.getCompartment()), JIPipeGraphViewMode.VerticalCompact.name());
+        }
         if (point != null) {
             return moveToGridLocation(point, force, false);
         } else {
