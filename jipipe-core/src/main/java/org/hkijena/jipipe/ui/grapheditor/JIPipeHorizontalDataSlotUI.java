@@ -103,7 +103,6 @@ public class JIPipeHorizontalDataSlotUI extends JIPipeDataSlotUI {
         this.assignButton = new JButton();
         UIUtils.makeFlat(assignButton, UIUtils.getBorderColorFor(getSlot().getNode().getInfo()), 0, 0, 0, 0);
         assignButton.setBorder(BorderFactory.createEmptyBorder(3, 3, 3, 3));
-        new JIPipeConnectionDragAndDropBehavior(this, assignButton);
         this.assignButtonMenu = UIUtils.addReloadablePopupMenuToComponent(assignButton, new JPopupMenu(), this::reloadPopupMenu);
 
         if (getSlot().getNode() instanceof JIPipeCompartmentOutput) {
@@ -169,6 +168,8 @@ public class JIPipeHorizontalDataSlotUI extends JIPipeDataSlotUI {
         }
 
         add(centerPanel, BorderLayout.CENTER);
+
+        new JIPipeConnectionDragAndDropBehavior(this, assignButton, nameLabel);
     }
 
     @Override

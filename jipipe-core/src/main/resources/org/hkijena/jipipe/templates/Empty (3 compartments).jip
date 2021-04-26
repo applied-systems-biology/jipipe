@@ -53,7 +53,7 @@
     "org.hkijena.jipipe.ui:project-tabs" : {
       "jipipe:type" : "org.hkijena.jipipe.ui.project.JIPipeProjectTabMetadata",
       "data" : {
-        "open-tabs" : [ "singleton:COMPARTMENT_EDITOR" ],
+        "open-tabs" : [ "singleton:COMPARTMENT_EDITOR", "graph-compartment:1b413a1d-0363-487d-b632-a67384f2494e", "graph-compartment:5692ac9d-fced-450c-8b3a-9ae8ea022fcc", "graph-compartment:58582f8c-f272-4486-8e92-429f54519e83" ],
         "selected-tab" : "singleton:COMPARTMENT_EDITOR"
       }
     }
@@ -67,7 +67,20 @@
           "input" : { },
           "output" : { }
         },
-        "jipipe:ui-grid-location" : { },
+        "jipipe:ui-grid-location" : {
+          "1b413a1d-0363-487d-b632-a67384f2494e" : {
+            "Vertical" : {
+              "x" : 1,
+              "y" : 1
+            }
+          },
+          "5692ac9d-fced-450c-8b3a-9ae8ea022fcc" : {
+            "Vertical" : {
+              "x" : 1,
+              "y" : 1
+            }
+          }
+        },
         "jipipe:node-info-id" : "jipipe:compartment-output",
         "jipipe:algorithm:enabled" : true,
         "jipipe:algorithm:pass-through" : false,
@@ -81,7 +94,20 @@
           "input" : { },
           "output" : { }
         },
-        "jipipe:ui-grid-location" : { },
+        "jipipe:ui-grid-location" : {
+          "58582f8c-f272-4486-8e92-429f54519e83" : {
+            "Vertical" : {
+              "x" : 1,
+              "y" : 1
+            }
+          },
+          "5692ac9d-fced-450c-8b3a-9ae8ea022fcc" : {
+            "Vertical" : {
+              "x" : 14,
+              "y" : 1
+            }
+          }
+        },
         "jipipe:node-info-id" : "jipipe:compartment-output",
         "jipipe:algorithm:enabled" : true,
         "jipipe:algorithm:pass-through" : false,
@@ -95,7 +121,14 @@
           "input" : { },
           "output" : { }
         },
-        "jipipe:ui-grid-location" : { },
+        "jipipe:ui-grid-location" : {
+          "58582f8c-f272-4486-8e92-429f54519e83" : {
+            "Vertical" : {
+              "x" : 13,
+              "y" : 1
+            }
+          }
+        },
         "jipipe:node-info-id" : "jipipe:compartment-output",
         "jipipe:algorithm:enabled" : true,
         "jipipe:algorithm:pass-through" : false,
@@ -110,6 +143,10 @@
         "data" : {
           "hotkeys" : { }
         }
+      },
+      "jipipe:graph:view-mode" : {
+        "jipipe:type" : "org.hkijena.jipipe.ui.grapheditor.JIPipeGraphViewMode",
+        "data" : "Vertical"
       }
     }
   },
@@ -247,8 +284,8 @@
         }
       },
       "edges" : [ {
-        "source-node" : "1b413a1d-0363-487d-b632-a67384f2494e",
-        "target-node" : "5692ac9d-fced-450c-8b3a-9ae8ea022fcc",
+        "source-node" : "5692ac9d-fced-450c-8b3a-9ae8ea022fcc",
+        "target-node" : "58582f8c-f272-4486-8e92-429f54519e83",
         "source-slot" : "Output",
         "target-slot" : "Input",
         "metadata" : {
@@ -256,8 +293,8 @@
           "ui-shape" : "Elbow"
         }
       }, {
-        "source-node" : "5692ac9d-fced-450c-8b3a-9ae8ea022fcc",
-        "target-node" : "58582f8c-f272-4486-8e92-429f54519e83",
+        "source-node" : "1b413a1d-0363-487d-b632-a67384f2494e",
+        "target-node" : "5692ac9d-fced-450c-8b3a-9ae8ea022fcc",
         "source-slot" : "Output",
         "target-slot" : "Input",
         "metadata" : {
@@ -271,6 +308,10 @@
           "data" : {
             "hotkeys" : { }
           }
+        },
+        "jipipe:graph:view-mode" : {
+          "jipipe:type" : "org.hkijena.jipipe.ui.grapheditor.JIPipeGraphViewMode",
+          "data" : "Vertical"
         }
       }
     }

@@ -53,8 +53,8 @@
     "org.hkijena.jipipe.ui:project-tabs" : {
       "jipipe:type" : "org.hkijena.jipipe.ui.project.JIPipeProjectTabMetadata",
       "data" : {
-        "open-tabs" : [ "singleton:INTRODUCTION", "singleton:COMPARTMENT_EDITOR" ],
-        "selected-tab" : "singleton:INTRODUCTION"
+        "open-tabs" : [ "singleton:COMPARTMENT_EDITOR", "graph-compartment:fb3bfe3a-c9c1-4ec4-908b-3f1b7380a851" ],
+        "selected-tab" : "singleton:COMPARTMENT_EDITOR"
       }
     }
   },
@@ -67,7 +67,14 @@
           "input" : { },
           "output" : { }
         },
-        "jipipe:ui-grid-location" : { },
+        "jipipe:ui-grid-location" : {
+          "fb3bfe3a-c9c1-4ec4-908b-3f1b7380a851" : {
+            "Vertical" : {
+              "x" : 1,
+              "y" : 1
+            }
+          }
+        },
         "jipipe:node-info-id" : "jipipe:compartment-output",
         "jipipe:algorithm:enabled" : true,
         "jipipe:algorithm:pass-through" : false,
@@ -82,6 +89,10 @@
         "data" : {
           "hotkeys" : { }
         }
+      },
+      "jipipe:graph:view-mode" : {
+        "jipipe:type" : "org.hkijena.jipipe.ui.grapheditor.JIPipeGraphViewMode",
+        "data" : "Vertical"
       }
     }
   },
@@ -139,6 +150,10 @@
           "data" : {
             "hotkeys" : { }
           }
+        },
+        "jipipe:graph:view-mode" : {
+          "jipipe:type" : "org.hkijena.jipipe.ui.grapheditor.JIPipeGraphViewMode",
+          "data" : "Vertical"
         }
       }
     }
