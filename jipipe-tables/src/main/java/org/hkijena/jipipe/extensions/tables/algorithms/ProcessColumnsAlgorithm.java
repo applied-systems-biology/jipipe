@@ -21,31 +21,30 @@ import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.TableNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
-import org.hkijena.jipipe.api.registries.JIPipeExpressionRegistry;
+import org.hkijena.jipipe.extensions.parameters.expressions.ExpressionParameterSettings;
 import org.hkijena.jipipe.extensions.parameters.expressions.ExpressionParameters;
-import org.hkijena.jipipe.extensions.tables.ColumnOperation;
+import org.hkijena.jipipe.extensions.parameters.expressions.TableColumnValuesExpressionParameterVariableSource;
+import org.hkijena.jipipe.extensions.tables.datatypes.DoubleArrayTableColumn;
 import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
+import org.hkijena.jipipe.extensions.tables.datatypes.StringArrayTableColumn;
 import org.hkijena.jipipe.extensions.tables.datatypes.TableColumn;
-import org.hkijena.jipipe.extensions.tables.parameters.collections.ConvertingTableColumnProcessorParameterList;
-import org.hkijena.jipipe.extensions.tables.parameters.processors.ConvertingTableColumnProcessorParameter;
+import org.hkijena.jipipe.extensions.tables.parameters.collections.ExpressionTableColumnProcessorParameterList;
+import org.hkijena.jipipe.extensions.tables.parameters.processors.ExpressionTableColumnProcessorParameter;
 import org.hkijena.jipipe.utils.StringUtils;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Algorithm that integrates columns
  */
-@JIPipeDocumentation(name = "Apply function to columns", description = "Applies a converting function to all column values. " +
+@JIPipeDocumentation(name = "Apply expression to columns", description = "Applies an expression function to all column values. " +
         "The result of the operation is stored in the same or a new column.")
 @JIPipeOrganization(nodeTypeCategory = TableNodeTypeCategory.class)
 @JIPipeInputSlot(value = ResultsTableData.class, slotName = "Input", autoCreate = true)
 @JIPipeOutputSlot(value = ResultsTableData.class, slotName = "Output", autoCreate = true)
-public class ConvertColumnsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
+public class ProcessColumnsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
-    private ConvertingTableColumnProcessorParameterList processorParameters = new ConvertingTableColumnProcessorParameterList();
+    private ExpressionTableColumnProcessorParameterList processorParameters = new ExpressionTableColumnProcessorParameterList();
     private boolean append = true;
 
     /**
@@ -53,7 +52,7 @@ public class ConvertColumnsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
      *
      * @param info algorithm info
      */
-    public ConvertColumnsAlgorithm(JIPipeNodeInfo info) {
+    public ProcessColumnsAlgorithm(JIPipeNodeInfo info) {
         super(info);
         processorParameters.addNewInstance();
     }
@@ -63,9 +62,9 @@ public class ConvertColumnsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
      *
      * @param other the original
      */
-    public ConvertColumnsAlgorithm(ConvertColumnsAlgorithm other) {
+    public ProcessColumnsAlgorithm(ProcessColumnsAlgorithm other) {
         super(other);
-        this.processorParameters = new ConvertingTableColumnProcessorParameterList(other.processorParameters);
+        this.processorParameters = new ExpressionTableColumnProcessorParameterList(other.processorParameters);
         this.append = other.append;
     }
 
@@ -73,7 +72,8 @@ public class ConvertColumnsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
         ResultsTableData input = dataBatch.getInputData(getFirstInputSlot(), ResultsTableData.class, progressInfo);
         Map<String, TableColumn> resultColumns = new HashMap<>();
-        for (ConvertingTableColumnProcessorParameter processor : processorParameters) {
+        ExpressionParameters expressionParameters = new ExpressionParameters();
+        for (ExpressionTableColumnProcessorParameter processor : processorParameters) {
             String sourceColumn = processor.getInput().queryFirst(input.getColumnNames(), new ExpressionParameters());
             if (sourceColumn == null) {
                 throw new UserFriendlyRuntimeException(new NullPointerException(),
@@ -82,9 +82,44 @@ public class ConvertColumnsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
                         "The column filter '" + processor.getInput() + "' tried to find a matching column in " + String.join(", ", input.getColumnNames()) + ". None of the columns matched.",
                         "Please check if the filter is correct.");
             }
-            TableColumn sourceColumnData = input.getColumnReference(input.getColumnIndex(sourceColumn));
-            ColumnOperation columnOperation = ((JIPipeExpressionRegistry.ColumnOperationEntry) processor.getParameter().getValue()).getOperation();
-            TableColumn resultColumn = columnOperation.apply(sourceColumnData);
+            int columnIndex = input.getColumnIndex(sourceColumn);
+            List<Object> values = new ArrayList<>();
+            for (int i = 0; i < input.getRowCount(); i++) {
+                values.add(input.getValueAt(i, columnIndex));
+            }
+            expressionParameters.set("column", columnIndex);
+            expressionParameters.set("column_name", sourceColumn);
+            expressionParameters.set("num_rows", input.getRowCount());
+            expressionParameters.set("num_cols", input.getColumnCount());
+            expressionParameters.set("values", values);
+            Object result = processor.getParameter().evaluate(expressionParameters);
+            TableColumn resultColumn;
+            if(result instanceof Number) {
+                resultColumn = new DoubleArrayTableColumn(new double[] { ((Number) result).doubleValue() }, processor.getOutput());
+            }
+            else if(result instanceof Collection) {
+                if(((Collection<?>) result).stream().allMatch(v -> v instanceof Number)) {
+                    double[] data = new double[((Collection<?>) result).size()];
+                    int i = 0;
+                    for (Object o : (Collection<?>) result) {
+                        data[i] = ((Number)o).doubleValue();
+                     ++i;
+                    }
+                    resultColumn = new DoubleArrayTableColumn(data, processor.getOutput());
+                }
+                else {
+                    String[] data = new String[((Collection<?>) result).size()];
+                    int i = 0;
+                    for (Object o : (Collection<?>) result) {
+                        data[i] = StringUtils.nullToEmpty(o);
+                        ++i;
+                    }
+                    resultColumn = new StringArrayTableColumn(data, processor.getOutput());
+                }
+            }
+            else {
+                resultColumn = new StringArrayTableColumn(new String[] { StringUtils.nullToEmpty(result) }, processor.getOutput());
+            }
             resultColumns.put(processor.getOutput(), resultColumn);
         }
         if (append) {
@@ -104,7 +139,7 @@ public class ConvertColumnsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     public void reportValidity(JIPipeValidityReport report) {
         report.forCategory("Processors").report(processorParameters);
         Set<String> columnNames = new HashSet<>();
-        for (ConvertingTableColumnProcessorParameter parameter : processorParameters) {
+        for (ExpressionTableColumnProcessorParameter parameter : processorParameters) {
             if (columnNames.contains(parameter.getOutput())) {
                 report.forCategory("Processors").reportIsInvalid("Duplicate output column: " + parameter.getOutput(),
                         "There should not be multiple output columns with the same name.",
@@ -125,12 +160,13 @@ public class ConvertColumnsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     @JIPipeDocumentation(name = "Processors", description = "Defines which columns are processed")
     @JIPipeParameter("processors")
-    public ConvertingTableColumnProcessorParameterList getProcessorParameters() {
+    @ExpressionParameterSettings(variableSource = TableColumnValuesExpressionParameterVariableSource.class)
+    public ExpressionTableColumnProcessorParameterList getProcessorParameters() {
         return processorParameters;
     }
 
     @JIPipeParameter("processors")
-    public void setProcessorParameters(ConvertingTableColumnProcessorParameterList processorParameters) {
+    public void setProcessorParameters(ExpressionTableColumnProcessorParameterList processorParameters) {
         this.processorParameters = processorParameters;
     }
 

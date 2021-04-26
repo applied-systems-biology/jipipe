@@ -27,10 +27,7 @@ import org.hkijena.jipipe.extensions.tables.parameters.ResultsTableDataParameter
 import org.hkijena.jipipe.extensions.tables.parameters.collections.*;
 import org.hkijena.jipipe.extensions.tables.parameters.enums.TableColumnGeneratorParameter;
 import org.hkijena.jipipe.extensions.tables.parameters.enums.TableColumnGeneratorParameterEditorUI;
-import org.hkijena.jipipe.extensions.tables.parameters.processors.ConvertingTableColumnProcessorParameter;
-import org.hkijena.jipipe.extensions.tables.parameters.processors.ExpressionTableColumnGeneratorProcessor;
-import org.hkijena.jipipe.extensions.tables.parameters.processors.IntegratingTableColumnProcessorParameter;
-import org.hkijena.jipipe.extensions.tables.parameters.processors.TableColumnGeneratorProcessor;
+import org.hkijena.jipipe.extensions.tables.parameters.processors.*;
 import org.hkijena.jipipe.utils.ResourceUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.scijava.plugin.Plugin;
@@ -152,6 +149,7 @@ public class TablesExtension extends JIPipePrepackagedDefaultJavaExtension {
         registerNodeType("table-annotate-by-merged-columns", ColumnsToAnnotationsAlgorithm.class, UIUtils.getIconURLFromResources("data-types/results-table.png"));
         registerNodeType("table-column-to-string", ColumnToStringAlgorithm.class, UIUtils.getIconURLFromResources("actions/insert-math-expression.png"));
         registerNodeType("table-column-to-numeric", ColumnToNumericAlgorithm.class, UIUtils.getIconURLFromResources("actions/insert-math-expression.png"));
+        registerNodeType("table-process-columns", ProcessColumnsAlgorithm.class, UIUtils.getIconURLFromResources("actions/insert-math-expression.png"));
         registerNodeType("table-melt", MeltTableAlgorithm.class, UIUtils.getIconURLFromResources("actions/insert-math-expression.png"));
     }
 
@@ -198,6 +196,14 @@ public class TablesExtension extends JIPipePrepackagedDefaultJavaExtension {
                 p -> new ConvertingTableColumnProcessorParameter((ConvertingTableColumnProcessorParameter) p),
                 "Column integration processor",
                 "Defines a processor that apply a function to each cell",
+                null);
+        registerParameterType("expression-table-column-processor",
+                ExpressionTableColumnProcessorParameter.class,
+                ExpressionTableColumnProcessorParameterList.class,
+                ExpressionTableColumnProcessorParameter::new,
+                p -> new ExpressionTableColumnProcessorParameter((ExpressionTableColumnProcessorParameter) p),
+                "Column expression processor",
+                "Defines a processor that apply an expression function to each cell",
                 null);
         registerParameterType("converting-table-column-processor-list",
                 ConvertingTableColumnProcessorParameterList.class,
