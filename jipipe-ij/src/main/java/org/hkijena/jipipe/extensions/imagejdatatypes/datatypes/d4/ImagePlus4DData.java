@@ -50,6 +50,20 @@ public class ImagePlus4DData extends ImagePlusData {
         checkDimensions(image);
     }
 
+    private void checkDimensions(ImagePlus image) {
+        if (getImage().getNDimensions() > 4) {
+            throw new UserFriendlyRuntimeException(new IllegalArgumentException("Trying to fit higher-dimensional data into " + DIMENSIONALITY + "D data!"),
+                    "Trying to fit higher-dimensional data into " + DIMENSIONALITY + "D data!",
+                    "ImageJ integration internals",
+                    image.getNDimensions() + "D data was supplied, but it was requested that it should fit into " + DIMENSIONALITY + "D data. " +
+                            "This is not trivial. This can be caused by selecting the wrong data slot type or applying a conversion" +
+                            " from N-dimensional data into data with a defined dimensionality.",
+                    "Try to check if the data slots have the correct data types. You can also check the input of the offending algorithm via " +
+                            "the quick run to see if they fit the assumptions. If you cannot find the reason behind this error," +
+                            " try to contact the JIPipe or plugin developers.");
+        }
+    }
+
     /**
      * Converts an {@link ImagePlus} to the color space of this data.
      * If this function encounters a 3-channel 3D image, it will assume that it is an RGB image and convert it
@@ -75,19 +89,5 @@ public class ImagePlus4DData extends ImagePlusData {
      */
     public static ImagePlusData convertFrom(ImagePlusData data) {
         return new ImagePlus4DData(data.getImage(), data.getColorSpace());
-    }
-
-    private void checkDimensions(ImagePlus image) {
-        if (getImage().getNDimensions() > 4) {
-            throw new UserFriendlyRuntimeException(new IllegalArgumentException("Trying to fit higher-dimensional data into " + DIMENSIONALITY + "D data!"),
-                    "Trying to fit higher-dimensional data into " + DIMENSIONALITY + "D data!",
-                    "ImageJ integration internals",
-                    image.getNDimensions() + "D data was supplied, but it was requested that it should fit into " + DIMENSIONALITY + "D data. " +
-                            "This is not trivial. This can be caused by selecting the wrong data slot type or applying a conversion" +
-                            " from N-dimensional data into data with a defined dimensionality.",
-                    "Try to check if the data slots have the correct data types. You can also check the input of the offending algorithm via " +
-                            "the quick run to see if they fit the assumptions. If you cannot find the reason behind this error," +
-                            " try to contact the JIPipe or plugin developers.");
-        }
     }
 }

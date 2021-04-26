@@ -11,20 +11,16 @@ import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.filesystem.dataypes.FileData;
-import org.hkijena.jipipe.extensions.filesystem.dataypes.FolderData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
-import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d2.ImagePlus2DData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.AVICompression;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.HyperstackDimension;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.extensions.parameters.primitives.FilePathParameterSettings;
-import org.hkijena.jipipe.extensions.parameters.primitives.OptionalPathParameter;
 import org.hkijena.jipipe.extensions.settings.DataExporterSettings;
 import org.hkijena.jipipe.ui.components.PathEditor;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -41,6 +37,7 @@ import java.util.Set;
 @JIPipeOrganization(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Export")
 public class ExportImageToWebAlgorithm extends JIPipeIteratingAlgorithm {
 
+    private final Set<String> existingMetadata = new HashSet<>();
     private JIPipeDataByMetadataExporter exporter = new JIPipeDataByMetadataExporter();
     private Path outputDirectory = Paths.get("exported-data");
     private FileFormat fileFormat = FileFormat.PNG;
@@ -48,7 +45,6 @@ public class ExportImageToWebAlgorithm extends JIPipeIteratingAlgorithm {
     private HyperstackDimension movieAnimatedDimension = HyperstackDimension.Frame;
     private AVICompression aviCompression = AVICompression.PNG;
     private int jpegQuality = 100;
-    private final Set<String> existingMetadata = new HashSet<>();
 
     public ExportImageToWebAlgorithm(JIPipeNodeInfo info) {
         super(info);
@@ -194,7 +190,7 @@ public class ExportImageToWebAlgorithm extends JIPipeIteratingAlgorithm {
 
     @JIPipeParameter("jpeg-quality")
     public boolean setJpegQuality(int jpegQuality) {
-        if(jpegQuality < 0 || jpegQuality > 100)
+        if (jpegQuality < 0 || jpegQuality > 100)
             return false;
         this.jpegQuality = jpegQuality;
         return true;

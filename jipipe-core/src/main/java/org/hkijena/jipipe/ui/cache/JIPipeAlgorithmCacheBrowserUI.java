@@ -60,8 +60,8 @@ public class JIPipeAlgorithmCacheBrowserUI extends JIPipeProjectWorkbenchPanel {
     private JIPipeGraphCanvasUI graphCanvasUI;
 
     /**
-     * @param workbenchUI the workbench
-     * @param graphNode   the node
+     * @param workbenchUI   the workbench
+     * @param graphNode     the node
      * @param graphCanvasUI can be null
      */
     public JIPipeAlgorithmCacheBrowserUI(JIPipeProjectWorkbench workbenchUI, JIPipeGraphNode graphNode, JIPipeGraphCanvasUI graphCanvasUI) {
@@ -197,9 +197,9 @@ public class JIPipeAlgorithmCacheBrowserUI extends JIPipeProjectWorkbenchPanel {
     }
 
     private void updateCache(boolean storeIntermediateResults) {
-        if(graphCanvasUI != null) {
+        if (graphCanvasUI != null) {
             JIPipeNodeUI ui = graphCanvasUI.getNodeUIs().getOrDefault(graphNode, null);
-            if(ui != null) {
+            if (ui != null) {
                 ui.getEventBus().post(new JIPipeGraphCanvasUI.NodeUIActionRequestedEvent(ui, new UpdateCacheAction(false)));
                 return;
             }

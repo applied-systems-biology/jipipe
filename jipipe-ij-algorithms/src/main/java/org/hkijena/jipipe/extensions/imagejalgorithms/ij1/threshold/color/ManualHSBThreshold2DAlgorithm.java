@@ -33,9 +33,9 @@ import java.util.List;
 @JIPipeOutputSlot(value = ImagePlusGreyscaleMaskData.class, slotName = "Output", autoCreate = true)
 public class ManualHSBThreshold2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
-    private IntNumberRangeParameter hueThreshold = new IntNumberRangeParameter(0,256);
-    private IntNumberRangeParameter brightnessThreshold = new IntNumberRangeParameter(0,256);
-    private IntNumberRangeParameter saturationThreshold = new IntNumberRangeParameter(0,256);
+    private IntNumberRangeParameter hueThreshold = new IntNumberRangeParameter(0, 256);
+    private IntNumberRangeParameter brightnessThreshold = new IntNumberRangeParameter(0, 256);
+    private IntNumberRangeParameter saturationThreshold = new IntNumberRangeParameter(0, 256);
     private OptionalAnnotationNameParameter minHueThresholdAnnotation = new OptionalAnnotationNameParameter("Min Threshold H", true);
     private OptionalAnnotationNameParameter maxHueThresholdAnnotation = new OptionalAnnotationNameParameter("Max Threshold H", true);
     private OptionalAnnotationNameParameter minBrightnessThresholdAnnotation = new OptionalAnnotationNameParameter("Min Threshold B", true);
@@ -65,7 +65,7 @@ public class ManualHSBThreshold2DAlgorithm extends JIPipeSimpleIteratingAlgorith
 
     @Override
     protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
-        if(!(dataBatch.getInputData(getFirstInputSlot(), ImagePlusData.class, progressInfo) instanceof ColoredImagePlusData)) {
+        if (!(dataBatch.getInputData(getFirstInputSlot(), ImagePlusData.class, progressInfo) instanceof ColoredImagePlusData)) {
             progressInfo.log("Info: Received an image without color space information! Its channels will be interpreted as HSB.");
         }
         ImagePlus img = dataBatch.getInputData(getFirstInputSlot(), ImagePlusColorHSBData.class, progressInfo).getImage();
@@ -90,12 +90,12 @@ public class ManualHSBThreshold2DAlgorithm extends JIPipeSimpleIteratingAlgorith
             for (int y = 0; y < ip.getHeight(); y++) {
                 for (int x = 0; x < ip.getWidth(); x++) {
                     int c = ip.get(x, y);
-                    int H = (c&0xff0000)>>16;
-                    int S = (c&0xff00)>>8;
-                    int B = c&0xff;
+                    int H = (c & 0xff0000) >> 16;
+                    int S = (c & 0xff00) >> 8;
+                    int B = c & 0xff;
 
-                    if(H < maxH && H >= minH && S < maxS && S >= minS && B < maxB && B >= minB) {
-                        mask.set(x,y, 255);
+                    if (H < maxH && H >= minH && S < maxS && S >= minS && B < maxB && B >= minB) {
+                        mask.set(x, y, 255);
                     }
                 }
             }

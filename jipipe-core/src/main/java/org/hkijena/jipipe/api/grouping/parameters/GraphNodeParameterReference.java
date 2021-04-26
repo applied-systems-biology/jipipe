@@ -131,33 +131,32 @@ public class GraphNodeParameterReference {
         JIPipeParameterAccess result = tree.getParameters().getOrDefault(path, null);
 
         // There might be a legacy parameter access
-        if(result == null) {
+        if (result == null) {
             int i = path.indexOf('/');
-            if(i == -1)
+            if (i == -1)
                 return null;
             String uuidOrAlias = path.substring(0, i);
             String subPath = path.substring(i + 1);
             UUID uuid = null;
             for (JIPipeParameterAccess access : tree.getParameters().values()) {
-                if(access.getSource() instanceof JIPipeGraphNode) {
+                if (access.getSource() instanceof JIPipeGraphNode) {
                     JIPipeGraph graph = ((JIPipeGraphNode) access.getSource()).getGraph();
-                    if(graph == null)
+                    if (graph == null)
                         break;
                     uuid = graph.findNodeUUID(uuidOrAlias);
-                    if(uuid != null)
+                    if (uuid != null)
                         break;
                 }
             }
 
-            if(uuid != null) {
+            if (uuid != null) {
                 JIPipe.getInstance().getLogService().info("[Project format conversion] Updating parameter reference " + path + " to " + uuid + "/" + subPath);
                 path = uuid + "/" + subPath;
                 return tree.getParameters().getOrDefault(path, null);
             }
             return null;
-        }
-        else {
-            return  result;
+        } else {
+            return result;
         }
     }
 

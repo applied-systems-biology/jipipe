@@ -52,6 +52,38 @@ public abstract class JIPipeResultDataSlotPreview extends JIPipeProjectWorkbench
     }
 
     /**
+     * This function is called from outside to render the preview.
+     * Please not that it is called everytime the cell is rendered, meaning that you should prevent reloading the data all the time.
+     */
+    public abstract void renderPreview();
+
+    /**
+     * @return the table where the data is rendered in
+     */
+    public JTable getTable() {
+        return table;
+    }
+
+    public JIPipeDataSlot getSlot() {
+        return slot;
+    }
+
+    public JIPipeExportedDataTable.Row getRow() {
+        return row;
+    }
+
+    /**
+     * Rebuilds the table to show the updated preview
+     */
+    public void refreshTable() {
+        if (getTable() != null) {
+            if (getTable() instanceof JXTable)
+                ((JXTable) getTable()).packAll();
+            getTable().repaint();
+        }
+    }
+
+    /**
      * Returns the compartment name of the algorithm that generated the data
      *
      * @param workbenchUI The workbench
@@ -93,37 +125,5 @@ public abstract class JIPipeResultDataSlotPreview extends JIPipeProjectWorkbench
      */
     public static Path getRowStorageFolder(JIPipeDataSlot slot, JIPipeExportedDataTable.Row row) {
         return slot.getStoragePath().resolve("" + row.getIndex());
-    }
-
-    /**
-     * This function is called from outside to render the preview.
-     * Please not that it is called everytime the cell is rendered, meaning that you should prevent reloading the data all the time.
-     */
-    public abstract void renderPreview();
-
-    /**
-     * @return the table where the data is rendered in
-     */
-    public JTable getTable() {
-        return table;
-    }
-
-    public JIPipeDataSlot getSlot() {
-        return slot;
-    }
-
-    public JIPipeExportedDataTable.Row getRow() {
-        return row;
-    }
-
-    /**
-     * Rebuilds the table to show the updated preview
-     */
-    public void refreshTable() {
-        if (getTable() != null) {
-            if (getTable() instanceof JXTable)
-                ((JXTable) getTable()).packAll();
-            getTable().repaint();
-        }
     }
 }

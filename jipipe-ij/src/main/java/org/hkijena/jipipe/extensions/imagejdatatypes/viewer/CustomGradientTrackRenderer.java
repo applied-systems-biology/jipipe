@@ -16,7 +16,7 @@ public class CustomGradientTrackRenderer extends GradientTrackRenderer {
     protected void paintComponent(Graphics gfx) {
         int thumb_width = 12;
         int track_width = slider.getWidth() - thumb_width;
-        if(track_width > 0) {
+        if (track_width > 0) {
             super.paintComponent(gfx);
         }
     }

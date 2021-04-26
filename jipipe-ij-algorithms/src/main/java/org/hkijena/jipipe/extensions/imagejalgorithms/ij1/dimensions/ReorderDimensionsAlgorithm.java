@@ -9,12 +9,8 @@ import org.hkijena.jipipe.api.JIPipeValidityReport;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
-import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.HyperstackDimensionPairParameter;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.HyperstackDimension;
-
-import java.util.HashSet;
-import java.util.Set;
 
 /**
  * Algorithm that reorders Hyperstack dimensions
@@ -108,7 +104,7 @@ public class ReorderDimensionsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     @Override
     public void reportValidity(JIPipeValidityReport report) {
         super.reportValidity(report);
-        if(Sets.newHashSet(targetC, targetT, targetZ).size() != 3) {
+        if (Sets.newHashSet(targetC, targetT, targetZ).size() != 3) {
             report.forCategory("Dimensions").reportIsInvalid("Duplicate target dimensions!",
                     "You cannot have duplicate target dimensions.",
                     "Check that all targe dimensions are only used once.",

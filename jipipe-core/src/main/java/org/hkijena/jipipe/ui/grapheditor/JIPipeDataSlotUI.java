@@ -562,7 +562,7 @@ public abstract class JIPipeDataSlotUI extends JIPipeWorkbenchPanel {
     }
 
     private void editSlot() {
-        if(!JIPipeProjectWorkbench.canModifySlots(getWorkbench()))
+        if (!JIPipeProjectWorkbench.canModifySlots(getWorkbench()))
             return;
         EditAlgorithmSlotPanel.showDialog(this, getGraphUI().getGraphHistory(), slot);
     }
@@ -571,14 +571,14 @@ public abstract class JIPipeDataSlotUI extends JIPipeWorkbenchPanel {
         String newLabel = JOptionPane.showInputDialog(this,
                 "Please enter a new label for the slot.\nLeave the text empty to remove an existing label.",
                 slot.getInfo().getCustomName());
-        if(newLabel == null)
+        if (newLabel == null)
             return;
         getGraphUI().getGraphHistory().addSnapshotBefore(new SlotConfigurationHistorySnapshot(slot.getNode(), "Relabel slot '" + slot.getDisplayName() + "'"));
         slot.getInfo().setCustomName(newLabel);
     }
 
     private void deleteSlot() {
-        if(!JIPipeProjectWorkbench.canModifySlots(getWorkbench()))
+        if (!JIPipeProjectWorkbench.canModifySlots(getWorkbench()))
             return;
         JIPipeMutableSlotConfiguration slotConfiguration = (JIPipeMutableSlotConfiguration) slot.getNode().getSlotConfiguration();
         getGraphUI().getGraphHistory().addSnapshotBefore(new SlotConfigurationHistorySnapshot(slot.getNode(), "Remove slot '" + slot.getDisplayName() + "'"));

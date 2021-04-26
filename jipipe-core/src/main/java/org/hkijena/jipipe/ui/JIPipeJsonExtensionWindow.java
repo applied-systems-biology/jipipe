@@ -83,6 +83,238 @@ public class JIPipeJsonExtensionWindow extends JFrame {
             setTitle("New project");
     }
 
+    @Override
+    public void dispose() {
+        OPEN_WINDOWS.remove(this);
+        WINDOWS_EVENTS.post(new WindowClosedEvent(this));
+        super.dispose();
+    }
+
+    private void initialize() {
+        getContentPane().setLayout(new BorderLayout(8, 8));
+        setDefaultCloseOperation(DISPOSE_ON_CLOSE);
+        super.setTitle("JIPipe extension builder");
+        setIconImage(UIUtils.getIcon128FromResources("jipipe.png").getImage());
+        UIUtils.setToAskOnClose(this, "Do you really want to close this JIPipe extension builder?", "Close window");
+        if (GeneralUISettings.getInstance().isMaximizeWindows()) {
+            SwingUtilities.invokeLater(() -> setExtendedState(getExtendedState() | MAXIMIZED_BOTH));
+        }
+    }
+
+    @Override
+    public void setTitle(String title) {
+        super.setTitle("JIPipe extension builder - " + title);
+    }
+
+    /**
+     * Loads a project into the window and replaces the current project
+     *
+     * @param project          The project
+     * @param showIntroduction show intro
+     */
+    public void loadProject(JIPipeJsonExtension project, boolean showIntroduction) {
+        this.project = project;
+        this.projectUI = new JIPipeJsonExtensionWorkbench(this, context, project, showIntroduction);
+        setContentPane(projectUI);
+    }
+
+    /**
+     * Creates a new project and asks the user if it should be opened in this or a new window
+     *
+     * @param showIntroduction show intro
+     */
+    public void newProject(boolean showIntroduction) {
+        JIPipeJsonExtension project = new JIPipeJsonExtension();
+        JIPipeJsonExtensionWindow window = openProjectInThisOrNewWindow("New extension", project, showIntroduction);
+        if (window == null)
+            return;
+        window.projectSavePath = null;
+        window.setTitle("New extension");
+        window.getProjectUI().sendStatusBarText("Created new extension");
+    }
+
+    /**
+     * Opens a project from a file
+     * Asks the user if it should be opened in this or a new window
+     *
+     * @param path JSON file path
+     */
+    public void openProject(Path path) {
+        try {
+            JsonNode jsonData = JsonUtils.getObjectMapper().readValue(path.toFile(), JsonNode.class);
+            Set<JIPipeDependency> dependencySet = JIPipeProject.loadDependenciesFromJson(jsonData);
+            Set<JIPipeDependency> missingDependencies = JIPipeDependency.findUnsatisfiedDependencies(dependencySet);
+
+            // Check project version as well
+            int projectFormat = 0;
+            JsonNode projectFormatNode = jsonData.path("jipipe:project-format-version");
+            if (!projectFormatNode.isMissingNode()) {
+                try {
+                    projectFormat = projectFormatNode.asInt();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+            if (projectFormat > JIPipeProject.CURRENT_PROJECT_FORMAT_VERSION) {
+                int finalProjectFormat = projectFormat;
+                missingDependencies.add(new JIPipeDependency() {
+                    @Override
+                    public JIPipeMetadata getMetadata() {
+                        return new JIPipeMetadata() {
+                            {
+                                setTitle("Newer JIPipe version");
+                                setDescription(new HTMLText("You might require a newer JIPipe version to load this"));
+                                setWebsite("https://www.jipipe.org/");
+                            }
+                        };
+                    }
+
+                    @Override
+                    public String getDependencyId() {
+                        return "org.hkijena.jipipe";
+                    }
+
+                    @Override
+                    public String getDependencyVersion() {
+                        return "Project format " + finalProjectFormat;
+                    }
+
+                    @Override
+                    public Path getDependencyLocation() {
+                        return Paths.get("");
+                    }
+
+                    @Override
+                    public void reportValidity(JIPipeValidityReport report) {
+
+                    }
+                });
+            }
+
+            if (!missingDependencies.isEmpty()) {
+                if (!UnsatisfiedDependenciesDialog.showDialog(getProjectUI(), path, missingDependencies, Collections.emptySet()))
+                    return;
+            }
+
+            JIPipeJsonExtension project = JIPipeJsonExtension.loadProject(jsonData);
+            JIPipeJsonExtensionWindow window = openProjectInThisOrNewWindow("Open project", project, false);
+            if (window == null)
+                return;
+            window.projectSavePath = path;
+            window.getProjectUI().sendStatusBarText("Opened JIPipe JSON extension from " + window.projectSavePath);
+            window.setTitle(window.projectSavePath.toString());
+            ProjectsSettings.getInstance().addRecentJsonExtension(path);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    /**
+     * Displays a file chooser where the user can open a project.
+     * Asks the user if it should be opened in this or a new window.
+     */
+    public void openProject() {
+        Path file = FileChooserSettings.openFile(this, FileChooserSettings.KEY_PROJECT, "Open JIPipe JSON extension (*.jipe)", UIUtils.EXTENSION_FILTER_JIPE);
+        if (file != null) {
+            openProject(file);
+        }
+    }
+
+    /**
+     * Saves the project
+     *
+     * @param avoidDialog If true, the project is silently written if a save path was set
+     */
+    public void saveProjectAs(boolean avoidDialog) {
+        Path savePath = null;
+        if (avoidDialog && projectSavePath != null)
+            savePath = projectSavePath;
+        if (savePath == null) {
+            savePath = FileChooserSettings.saveFile(this, FileChooserSettings.KEY_PROJECT, "Save JIPipe JSON extension (*.jipe)", UIUtils.EXTENSION_FILTER_JIPE);
+            if (savePath == null)
+                return;
+        }
+
+        try {
+
+            Path tempFile = Files.createTempFile(savePath.getParent(), savePath.getFileName().toString(), ".part");
+            getProject().saveProject(tempFile);
+
+            // Check if the saved project can be loaded
+            JIPipeJsonExtension.loadProject(tempFile);
+
+            // Overwrite the target file
+            if (Files.exists(savePath))
+                Files.delete(savePath);
+            Files.copy(tempFile, savePath);
+
+            // Everything OK, now set the title
+            getProject().saveProject(savePath);
+            setTitle(savePath.toString());
+            projectSavePath = savePath;
+            projectUI.sendStatusBarText("Saved JIPipe JSON extension to " + savePath);
+            ProjectsSettings.getInstance().addRecentJsonExtension(savePath);
+
+            // Remove tmp file
+            Files.delete(tempFile);
+
+        } catch (IOException e) {
+            UIUtils.openErrorDialog(this, new UserFriendlyRuntimeException(e,
+                    "Error during saving!",
+                    "While saving the project into '" + savePath + "'. Any existing file was not changed or overwritten.",
+                    "The issue cannot be determined. Please contact the JIPipe authors.",
+                    "Please check if you have write access to the temporary directory and the target directory. " +
+                            "If this is the case, please contact the JIPipe authors."));
+        }
+    }
+
+    /**
+     * Asks the user if a project should be opened in this or a new window
+     *
+     * @param messageTitle     How the project was loaded
+     * @param project          The project
+     * @param showIntroduction show intro
+     * @return The window that hosts the porject UI
+     */
+    private JIPipeJsonExtensionWindow openProjectInThisOrNewWindow(String messageTitle, JIPipeJsonExtension project, boolean showIntroduction) {
+        switch (UIUtils.askOpenInCurrentWindow(this, messageTitle)) {
+            case JOptionPane.YES_OPTION:
+                loadProject(project, showIntroduction);
+                return this;
+            case JOptionPane.NO_OPTION:
+                return newWindow(context, project, showIntroduction);
+        }
+        return null;
+    }
+
+    /**
+     * @return The command that issued the GUI
+     */
+    public Context getContext() {
+        return context;
+    }
+
+    /**
+     * @return The project
+     */
+    public JIPipeJsonExtension getProject() {
+        return project;
+    }
+
+    /**
+     * @return The current UI
+     */
+    public JIPipeJsonExtensionWorkbench getProjectUI() {
+        return projectUI;
+    }
+
+    /**
+     * @return The path where the project was loaded from or saved last
+     */
+    public Path getProjectSavePath() {
+        return projectSavePath;
+    }
+
     /**
      * Opens a new window
      *
@@ -244,238 +476,5 @@ public class JIPipeJsonExtensionWindow extends JFrame {
      */
     public static EventBus getWindowsEvents() {
         return WINDOWS_EVENTS;
-    }
-
-    @Override
-    public void dispose() {
-        OPEN_WINDOWS.remove(this);
-        WINDOWS_EVENTS.post(new WindowClosedEvent(this));
-        super.dispose();
-    }
-
-    private void initialize() {
-        getContentPane().setLayout(new BorderLayout(8, 8));
-        setDefaultCloseOperation(DISPOSE_ON_CLOSE);
-        super.setTitle("JIPipe extension builder");
-        setIconImage(UIUtils.getIcon128FromResources("jipipe.png").getImage());
-        UIUtils.setToAskOnClose(this, "Do you really want to close this JIPipe extension builder?", "Close window");
-        if (GeneralUISettings.getInstance().isMaximizeWindows()) {
-            SwingUtilities.invokeLater(() -> setExtendedState(getExtendedState() | MAXIMIZED_BOTH));
-        }
-    }
-
-    @Override
-    public void setTitle(String title) {
-        super.setTitle("JIPipe extension builder - " + title);
-    }
-
-    /**
-     * Loads a project into the window and replaces the current project
-     *
-     * @param project          The project
-     * @param showIntroduction show intro
-     */
-    public void loadProject(JIPipeJsonExtension project, boolean showIntroduction) {
-        this.project = project;
-        this.projectUI = new JIPipeJsonExtensionWorkbench(this, context, project, showIntroduction);
-        setContentPane(projectUI);
-    }
-
-    /**
-     * Creates a new project and asks the user if it should be opened in this or a new window
-     *
-     * @param showIntroduction show intro
-     */
-    public void newProject(boolean showIntroduction) {
-        JIPipeJsonExtension project = new JIPipeJsonExtension();
-        JIPipeJsonExtensionWindow window = openProjectInThisOrNewWindow("New extension", project, showIntroduction);
-        if (window == null)
-            return;
-        window.projectSavePath = null;
-        window.setTitle("New extension");
-        window.getProjectUI().sendStatusBarText("Created new extension");
-    }
-
-    /**
-     * Opens a project from a file
-     * Asks the user if it should be opened in this or a new window
-     *
-     * @param path JSON file path
-     */
-    public void openProject(Path path) {
-        try {
-            JsonNode jsonData = JsonUtils.getObjectMapper().readValue(path.toFile(), JsonNode.class);
-            Set<JIPipeDependency> dependencySet = JIPipeProject.loadDependenciesFromJson(jsonData);
-            Set<JIPipeDependency> missingDependencies = JIPipeDependency.findUnsatisfiedDependencies(dependencySet);
-
-            // Check project version as well
-            int projectFormat = 0;
-            JsonNode projectFormatNode = jsonData.path("jipipe:project-format-version");
-            if(!projectFormatNode.isMissingNode()) {
-                try {
-                    projectFormat = projectFormatNode.asInt();
-                }
-                catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
-            if(projectFormat > JIPipeProject.CURRENT_PROJECT_FORMAT_VERSION) {
-                int finalProjectFormat = projectFormat;
-                missingDependencies.add(new JIPipeDependency() {
-                    @Override
-                    public JIPipeMetadata getMetadata() {
-                        return new JIPipeMetadata() {
-                            {
-                                setTitle("Newer JIPipe version");
-                                setDescription(new HTMLText("You might require a newer JIPipe version to load this"));
-                                setWebsite("https://www.jipipe.org/");
-                            }
-                        };
-                    }
-
-                    @Override
-                    public String getDependencyId() {
-                        return "org.hkijena.jipipe";
-                    }
-
-                    @Override
-                    public String getDependencyVersion() {
-                        return "Project format " + finalProjectFormat;
-                    }
-
-                    @Override
-                    public Path getDependencyLocation() {
-                        return Paths.get("");
-                    }
-
-                    @Override
-                    public void reportValidity(JIPipeValidityReport report) {
-
-                    }
-                });
-            }
-
-            if (!missingDependencies.isEmpty()) {
-                if (!UnsatisfiedDependenciesDialog.showDialog(getProjectUI(), path, missingDependencies, Collections.emptySet()))
-                    return;
-            }
-
-            JIPipeJsonExtension project = JIPipeJsonExtension.loadProject(jsonData);
-            JIPipeJsonExtensionWindow window = openProjectInThisOrNewWindow("Open project", project, false);
-            if (window == null)
-                return;
-            window.projectSavePath = path;
-            window.getProjectUI().sendStatusBarText("Opened JIPipe JSON extension from " + window.projectSavePath);
-            window.setTitle(window.projectSavePath.toString());
-            ProjectsSettings.getInstance().addRecentJsonExtension(path);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    /**
-     * Displays a file chooser where the user can open a project.
-     * Asks the user if it should be opened in this or a new window.
-     */
-    public void openProject() {
-        Path file = FileChooserSettings.openFile(this, FileChooserSettings.KEY_PROJECT, "Open JIPipe JSON extension (*.jipe)", UIUtils.EXTENSION_FILTER_JIPE);
-        if (file != null) {
-            openProject(file);
-        }
-    }
-
-    /**
-     * Saves the project
-     *
-     * @param avoidDialog If true, the project is silently written if a save path was set
-     */
-    public void saveProjectAs(boolean avoidDialog) {
-        Path savePath = null;
-        if (avoidDialog && projectSavePath != null)
-            savePath = projectSavePath;
-        if (savePath == null) {
-            savePath = FileChooserSettings.saveFile(this, FileChooserSettings.KEY_PROJECT, "Save JIPipe JSON extension (*.jipe)", UIUtils.EXTENSION_FILTER_JIPE);
-            if (savePath == null)
-                return;
-        }
-
-        try {
-
-            Path tempFile = Files.createTempFile(savePath.getParent(), savePath.getFileName().toString(), ".part");
-            getProject().saveProject(tempFile);
-
-            // Check if the saved project can be loaded
-            JIPipeJsonExtension.loadProject(tempFile);
-
-            // Overwrite the target file
-            if (Files.exists(savePath))
-                Files.delete(savePath);
-            Files.copy(tempFile, savePath);
-
-            // Everything OK, now set the title
-            getProject().saveProject(savePath);
-            setTitle(savePath.toString());
-            projectSavePath = savePath;
-            projectUI.sendStatusBarText("Saved JIPipe JSON extension to " + savePath);
-            ProjectsSettings.getInstance().addRecentJsonExtension(savePath);
-
-            // Remove tmp file
-            Files.delete(tempFile);
-
-        } catch (IOException e) {
-            UIUtils.openErrorDialog(this, new UserFriendlyRuntimeException(e,
-                    "Error during saving!",
-                    "While saving the project into '" + savePath + "'. Any existing file was not changed or overwritten.",
-                    "The issue cannot be determined. Please contact the JIPipe authors.",
-                    "Please check if you have write access to the temporary directory and the target directory. " +
-                            "If this is the case, please contact the JIPipe authors."));
-        }
-    }
-
-    /**
-     * Asks the user if a project should be opened in this or a new window
-     *
-     * @param messageTitle     How the project was loaded
-     * @param project          The project
-     * @param showIntroduction show intro
-     * @return The window that hosts the porject UI
-     */
-    private JIPipeJsonExtensionWindow openProjectInThisOrNewWindow(String messageTitle, JIPipeJsonExtension project, boolean showIntroduction) {
-        switch (UIUtils.askOpenInCurrentWindow(this, messageTitle)) {
-            case JOptionPane.YES_OPTION:
-                loadProject(project, showIntroduction);
-                return this;
-            case JOptionPane.NO_OPTION:
-                return newWindow(context, project, showIntroduction);
-        }
-        return null;
-    }
-
-    /**
-     * @return The command that issued the GUI
-     */
-    public Context getContext() {
-        return context;
-    }
-
-    /**
-     * @return The project
-     */
-    public JIPipeJsonExtension getProject() {
-        return project;
-    }
-
-    /**
-     * @return The current UI
-     */
-    public JIPipeJsonExtensionWorkbench getProjectUI() {
-        return projectUI;
-    }
-
-    /**
-     * @return The path where the project was loaded from or saved last
-     */
-    public Path getProjectSavePath() {
-        return projectSavePath;
     }
 }

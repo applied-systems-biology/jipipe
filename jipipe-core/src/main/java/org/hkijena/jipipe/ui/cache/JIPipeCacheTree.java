@@ -57,7 +57,7 @@ public class JIPipeCacheTree extends JIPipeProjectWorkbenchPanel {
 
         Map<UUID, Map<JIPipeGraphNode, Map<JIPipeProjectCacheState, List<JIPipeDataSlot>>>> byCompartmentId = new HashMap<>();
         for (JIPipeGraphNode node : getProject().getGraph().getGraphNodes()) {
-            if(!(node instanceof JIPipeAlgorithm))
+            if (!(node instanceof JIPipeAlgorithm))
                 continue;
             Map<JIPipeProjectCacheState, Map<String, JIPipeDataSlot>> stateMap = getProject().getCache().extract(node);
             if (stateMap == null)
@@ -137,7 +137,7 @@ public class JIPipeCacheTree extends JIPipeProjectWorkbenchPanel {
 
     private void createCompartmentNode(DefaultMutableTreeNode root, Map<JIPipeGraphNode, Map<JIPipeProjectCacheState, List<JIPipeDataSlot>>> algorithms, UUID compartmentUUID) {
         JIPipeProjectCompartment projectCompartment = getProject().getCompartments().getOrDefault(compartmentUUID, null);
-        if(projectCompartment == null)
+        if (projectCompartment == null)
             return;
         DefaultMutableTreeNode compartmentNode = new DefaultMutableTreeNode(projectCompartment.getName());
 

@@ -17,12 +17,10 @@ import ij.ImagePlus;
 import ij.ImageStack;
 import ij.plugin.filter.AVI_Writer;
 import ij.process.ColorProcessor;
-import ij.process.ImageProcessor;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.JIPipeRunnable;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.AVICompression;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.HyperstackDimension;
-import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageSliceIndex;
 
 import java.io.IOException;

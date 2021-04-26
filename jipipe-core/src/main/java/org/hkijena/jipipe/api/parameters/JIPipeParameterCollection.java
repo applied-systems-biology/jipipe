@@ -32,6 +32,25 @@ import java.util.stream.Collectors;
  */
 public interface JIPipeParameterCollection {
     /**
+     * Allows to override the visibility of a parameter. This is queried by the UI only.
+     * The UI will generate the query for the source and displayed parameter collection (in a chain)
+     *
+     * @param access            the parameter access
+     * @param currentVisibility the current visibility. May be different from the access' visibility if it is a chained call
+     * @return the visibility
+     */
+    default JIPipeParameterVisibility getOverriddenUIParameterVisibility(JIPipeParameterAccess access, JIPipeParameterVisibility currentVisibility) {
+        return currentVisibility;
+    }
+
+    /**
+     * Gets the event bus that posts events about the parameters
+     *
+     * @return The event bus triggering {@link ParameterChangedEvent} and {@link ParameterStructureChangedEvent}
+     */
+    EventBus getEventBus();
+
+    /**
      * Deserializes parameters from JSON
      *
      * @param target the target object that contains the parameters
@@ -126,17 +145,6 @@ public interface JIPipeParameterCollection {
     }
 
     /**
-     * Allows to override the visibility of a parameter. This is queried by the UI only.
-     * The UI will generate the query for the source and displayed parameter collection (in a chain)
-     * @param access the parameter access
-     * @param currentVisibility the current visibility. May be different from the access' visibility if it is a chained call
-     * @return the visibility
-     */
-    default JIPipeParameterVisibility getOverriddenUIParameterVisibility(JIPipeParameterAccess access, JIPipeParameterVisibility currentVisibility) {
-        return currentVisibility;
-    }
-
-    /**
      * Serializes parameters to JSON using a generator
      *
      * @param target        the serialized parameter collection
@@ -204,13 +212,6 @@ public interface JIPipeParameterCollection {
         JIPipeParameterTree tree = new JIPipeParameterTree(collection);
         return tree.getParameters().get(key).get(klass);
     }
-
-    /**
-     * Gets the event bus that posts events about the parameters
-     *
-     * @return The event bus triggering {@link ParameterChangedEvent} and {@link ParameterStructureChangedEvent}
-     */
-    EventBus getEventBus();
 
     /**
      * Triggered when a parameter holder's parameters are changed

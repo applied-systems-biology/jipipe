@@ -31,48 +31,6 @@ public class RectangleMaskDrawerTool extends MaskDrawerTool {
         initialize();
     }
 
-    public static Rectangle getDrawnArea(Point p0, Point p1, boolean startFromCenter, boolean square) {
-        if (startFromCenter) {
-            int rw = 2 * Math.abs(p0.x - p1.x);
-            int rh = 2 * Math.abs(p0.y - p1.y);
-            int rx = p0.x - rw / 2;
-            int ry = p0.y - rh / 2;
-            if (square) {
-                if (rw < rh) {
-                    int d = rh - rw;
-                    rh = rw;
-                    ry += d / 2;
-                } else if (rh < rw) {
-                    int d = rw - rh;
-                    rw = rh;
-                    rx += d / 2;
-                }
-            }
-            return new Rectangle(rx, ry, rw, rh);
-        } else {
-            int rx = Math.min(p0.x, p1.x);
-            int ry = Math.min(p0.y, p1.y);
-            int rw = Math.abs(p0.x - p1.x);
-            int rh = Math.abs(p0.y - p1.y);
-            if (square) {
-                if (rw < rh) {
-                    int d = rh - rw;
-                    rh = rw;
-                    if (p0.y > p1.y) {
-                        ry += d;
-                    }
-                } else if (rh < rw) {
-                    int d = rw - rh;
-                    rw = rh;
-                    if (p0.x > p1.x) {
-                        rx += d;
-                    }
-                }
-            }
-            return new Rectangle(rx, ry, rw, rh);
-        }
-    }
-
     private void initialize() {
         startFromCenterToggle = new JCheckBox("Start from center", false);
         squareToggle = new JCheckBox("Draw square", false);
@@ -172,5 +130,47 @@ public class RectangleMaskDrawerTool extends MaskDrawerTool {
         if (!isActive())
             return;
         cancelDrawing();
+    }
+
+    public static Rectangle getDrawnArea(Point p0, Point p1, boolean startFromCenter, boolean square) {
+        if (startFromCenter) {
+            int rw = 2 * Math.abs(p0.x - p1.x);
+            int rh = 2 * Math.abs(p0.y - p1.y);
+            int rx = p0.x - rw / 2;
+            int ry = p0.y - rh / 2;
+            if (square) {
+                if (rw < rh) {
+                    int d = rh - rw;
+                    rh = rw;
+                    ry += d / 2;
+                } else if (rh < rw) {
+                    int d = rw - rh;
+                    rw = rh;
+                    rx += d / 2;
+                }
+            }
+            return new Rectangle(rx, ry, rw, rh);
+        } else {
+            int rx = Math.min(p0.x, p1.x);
+            int ry = Math.min(p0.y, p1.y);
+            int rw = Math.abs(p0.x - p1.x);
+            int rh = Math.abs(p0.y - p1.y);
+            if (square) {
+                if (rw < rh) {
+                    int d = rh - rw;
+                    rh = rw;
+                    if (p0.y > p1.y) {
+                        ry += d;
+                    }
+                } else if (rh < rw) {
+                    int d = rw - rh;
+                    rw = rh;
+                    if (p0.x > p1.x) {
+                        rx += d;
+                    }
+                }
+            }
+            return new Rectangle(rx, ry, rw, rh);
+        }
     }
 }

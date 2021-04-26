@@ -47,11 +47,12 @@ public class JIPipeVerticalDataSlotUI extends JIPipeDataSlotUI {
 
     /**
      * Creates a new UI
+     *
      * @param workbench   the workbench
      * @param algorithmUI The parent algorithm UI
      * @param compartment The compartment ID
      * @param slot        The slot instance
-     * @param compact if the UI should be compact
+     * @param compact     if the UI should be compact
      */
     public JIPipeVerticalDataSlotUI(JIPipeWorkbench workbench, JIPipeNodeUI algorithmUI, UUID compartment, JIPipeDataSlot slot, boolean compact) {
         super(workbench, algorithmUI, compartment, slot);
@@ -123,8 +124,8 @@ public class JIPipeVerticalDataSlotUI extends JIPipeDataSlotUI {
         centerPanel.setLayout(new BoxLayout(centerPanel, BoxLayout.X_AXIS));
         centerPanel.setOpaque(false);
 
-        if(compact) {
-            assignButton.setBorder(BorderFactory.createEmptyBorder(3,3,3,3));
+        if (compact) {
+            assignButton.setBorder(BorderFactory.createEmptyBorder(3, 3, 3, 3));
             centerPanel.add(assignButton);
         }
 
@@ -157,7 +158,7 @@ public class JIPipeVerticalDataSlotUI extends JIPipeDataSlotUI {
         }
 
         add(centerPanel, BorderLayout.CENTER);
-        if(!compact) {
+        if (!compact) {
             if (getSlot().isInput())
                 add(assignButton, BorderLayout.NORTH);
             else

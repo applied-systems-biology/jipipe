@@ -18,9 +18,9 @@ import org.hkijena.jipipe.extensions.multiparameters.datatypes.ParametersData;
 public class MergeParametersAlgorithm extends JIPipeIteratingAlgorithm {
     public MergeParametersAlgorithm(JIPipeNodeInfo info) {
         super(info, JIPipeDefaultMutableSlotConfiguration.builder()
-        .addFromAnnotations(MergeParametersAlgorithm.class)
-        .sealOutput()
-        .build());
+                .addFromAnnotations(MergeParametersAlgorithm.class)
+                .sealOutput()
+                .build());
     }
 
     public MergeParametersAlgorithm(MergeParametersAlgorithm other) {

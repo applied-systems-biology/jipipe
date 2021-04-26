@@ -61,6 +61,118 @@ public class FileChooserSettings implements JIPipeParameterCollection {
     private Path lastDataDirectory;
     private boolean addFileExtension = true;
 
+    @Override
+    public EventBus getEventBus() {
+        return eventBus;
+    }
+
+    @JIPipeDocumentation(name = "Use native file chooser", description = "If enabled, JIPipe will use the system-specific file chooser instead of the one provided by Java. " +
+            "If you have any issues, disable this setting. Please note that there is no native dialog available for all selectable path types. " +
+            "In such cases, JIPipe will fall back to the Java file dialogs.")
+    @JIPipeParameter("use-native-chooser")
+    public boolean isUseNativeChooser() {
+        return useNativeChooser;
+    }
+
+    @JIPipeParameter("use-native-chooser")
+    public void setUseNativeChooser(boolean useNativeChooser) {
+        this.useNativeChooser = useNativeChooser;
+    }
+
+    /**
+     * Gets the last directory by key
+     *
+     * @param key the key
+     * @return the last path or Paths.get() (home directory)
+     */
+    public Path getLastDirectoryBy(String key) {
+        if (KEY_PROJECT.equals(key))
+            return getLastProjectsDirectory();
+        else if (KEY_DATA.equals(key))
+            return getLastDataDirectory();
+        else
+            return getLastParametersDirectory();
+    }
+
+    /**
+     * Sets the last directory according to the key
+     *
+     * @param key           the key
+     * @param lastDirectory directory or file
+     */
+    public void setLastDirectoryBy(String key, Path lastDirectory) {
+        if (Files.isRegularFile(lastDirectory))
+            lastDirectory = lastDirectory.getParent();
+        if (KEY_PROJECT.equals(key))
+            setLastProjectsDirectory(lastDirectory);
+        else if (KEY_DATA.equals(key))
+            setLastDataDirectory(lastDirectory);
+        else
+            setLastParametersDirectory(lastDirectory);
+    }
+
+    @JIPipeDocumentation(name = "Last projects directory", description = "The file chooser will open in this folder when opening a project.")
+    @JIPipeParameter("last-projects-directory")
+    public Path getLastProjectsDirectory() {
+        if (lastProjectsDirectory == null)
+            lastProjectsDirectory = Paths.get("").toAbsolutePath();
+        return lastProjectsDirectory;
+    }
+
+    @JIPipeParameter("last-projects-directory")
+    public void setLastProjectsDirectory(Path lastProjectsDirectory) {
+        if (!Files.isDirectory(lastProjectsDirectory)) {
+            lastProjectsDirectory = lastProjectsDirectory.getParent();
+        }
+        this.lastProjectsDirectory = lastProjectsDirectory;
+
+    }
+
+    @JIPipeDocumentation(name = "Last directory", description = "The file chooser will open in this folder when changing a parameter.")
+    @JIPipeParameter("last-parameters-directory")
+    public Path getLastParametersDirectory() {
+        if (lastParametersDirectory == null)
+            lastParametersDirectory = Paths.get("").toAbsolutePath();
+        return lastParametersDirectory;
+    }
+
+    @JIPipeParameter("last-parameters-directory")
+    public void setLastParametersDirectory(Path lastParametersDirectory) {
+        if (!Files.isDirectory(lastParametersDirectory)) {
+            lastParametersDirectory = lastParametersDirectory.getParent();
+        }
+        this.lastParametersDirectory = lastParametersDirectory;
+
+    }
+
+    @JIPipeDocumentation(name = "Last data directory", description = "The file chooser will open in this folder when asking for data.")
+    @JIPipeParameter("last-data-directory")
+    public Path getLastDataDirectory() {
+        if (lastDataDirectory == null)
+            lastDataDirectory = Paths.get("").toAbsolutePath();
+        return lastDataDirectory;
+    }
+
+    @JIPipeParameter("last-data-directory")
+    public void setLastDataDirectory(Path lastDataDirectory) {
+        if (!Files.isDirectory(lastDataDirectory)) {
+            lastDataDirectory = lastDataDirectory.getParent();
+        }
+        this.lastDataDirectory = lastDataDirectory;
+
+    }
+
+    @JIPipeDocumentation(name = "Automatically add file extensions", description = "If enabled, appropriate file extensions are automatically added (e.g. .json for projects) on saving a file if they are not present.")
+    @JIPipeParameter("add-file-extension")
+    public boolean isAddFileExtension() {
+        return addFileExtension;
+    }
+
+    @JIPipeParameter("add-file-extension")
+    public void setAddFileExtension(boolean addFileExtension) {
+        this.addFileExtension = addFileExtension;
+    }
+
     private static FileDialog createFileDialog(Component parent, String title, int mode) {
         Window windowAncestor = SwingUtilities.getWindowAncestor(parent);
         if (windowAncestor instanceof Frame) {
@@ -471,118 +583,6 @@ public class FileChooserSettings implements JIPipeParameterCollection {
 
     public static FileChooserSettings getInstance() {
         return JIPipe.getSettings().getSettings(ID, FileChooserSettings.class);
-    }
-
-    @Override
-    public EventBus getEventBus() {
-        return eventBus;
-    }
-
-    @JIPipeDocumentation(name = "Use native file chooser", description = "If enabled, JIPipe will use the system-specific file chooser instead of the one provided by Java. " +
-            "If you have any issues, disable this setting. Please note that there is no native dialog available for all selectable path types. " +
-            "In such cases, JIPipe will fall back to the Java file dialogs.")
-    @JIPipeParameter("use-native-chooser")
-    public boolean isUseNativeChooser() {
-        return useNativeChooser;
-    }
-
-    @JIPipeParameter("use-native-chooser")
-    public void setUseNativeChooser(boolean useNativeChooser) {
-        this.useNativeChooser = useNativeChooser;
-    }
-
-    /**
-     * Gets the last directory by key
-     *
-     * @param key the key
-     * @return the last path or Paths.get() (home directory)
-     */
-    public Path getLastDirectoryBy(String key) {
-        if (KEY_PROJECT.equals(key))
-            return getLastProjectsDirectory();
-        else if (KEY_DATA.equals(key))
-            return getLastDataDirectory();
-        else
-            return getLastParametersDirectory();
-    }
-
-    /**
-     * Sets the last directory according to the key
-     *
-     * @param key           the key
-     * @param lastDirectory directory or file
-     */
-    public void setLastDirectoryBy(String key, Path lastDirectory) {
-        if (Files.isRegularFile(lastDirectory))
-            lastDirectory = lastDirectory.getParent();
-        if (KEY_PROJECT.equals(key))
-            setLastProjectsDirectory(lastDirectory);
-        else if (KEY_DATA.equals(key))
-            setLastDataDirectory(lastDirectory);
-        else
-            setLastParametersDirectory(lastDirectory);
-    }
-
-    @JIPipeDocumentation(name = "Last projects directory", description = "The file chooser will open in this folder when opening a project.")
-    @JIPipeParameter("last-projects-directory")
-    public Path getLastProjectsDirectory() {
-        if (lastProjectsDirectory == null)
-            lastProjectsDirectory = Paths.get("").toAbsolutePath();
-        return lastProjectsDirectory;
-    }
-
-    @JIPipeParameter("last-projects-directory")
-    public void setLastProjectsDirectory(Path lastProjectsDirectory) {
-        if (!Files.isDirectory(lastProjectsDirectory)) {
-            lastProjectsDirectory = lastProjectsDirectory.getParent();
-        }
-        this.lastProjectsDirectory = lastProjectsDirectory;
-
-    }
-
-    @JIPipeDocumentation(name = "Last directory", description = "The file chooser will open in this folder when changing a parameter.")
-    @JIPipeParameter("last-parameters-directory")
-    public Path getLastParametersDirectory() {
-        if (lastParametersDirectory == null)
-            lastParametersDirectory = Paths.get("").toAbsolutePath();
-        return lastParametersDirectory;
-    }
-
-    @JIPipeParameter("last-parameters-directory")
-    public void setLastParametersDirectory(Path lastParametersDirectory) {
-        if (!Files.isDirectory(lastParametersDirectory)) {
-            lastParametersDirectory = lastParametersDirectory.getParent();
-        }
-        this.lastParametersDirectory = lastParametersDirectory;
-
-    }
-
-    @JIPipeDocumentation(name = "Last data directory", description = "The file chooser will open in this folder when asking for data.")
-    @JIPipeParameter("last-data-directory")
-    public Path getLastDataDirectory() {
-        if (lastDataDirectory == null)
-            lastDataDirectory = Paths.get("").toAbsolutePath();
-        return lastDataDirectory;
-    }
-
-    @JIPipeParameter("last-data-directory")
-    public void setLastDataDirectory(Path lastDataDirectory) {
-        if (!Files.isDirectory(lastDataDirectory)) {
-            lastDataDirectory = lastDataDirectory.getParent();
-        }
-        this.lastDataDirectory = lastDataDirectory;
-
-    }
-
-    @JIPipeDocumentation(name = "Automatically add file extensions", description = "If enabled, appropriate file extensions are automatically added (e.g. .json for projects) on saving a file if they are not present.")
-    @JIPipeParameter("add-file-extension")
-    public boolean isAddFileExtension() {
-        return addFileExtension;
-    }
-
-    @JIPipeParameter("add-file-extension")
-    public void setAddFileExtension(boolean addFileExtension) {
-        this.addFileExtension = addFileExtension;
     }
 
 }

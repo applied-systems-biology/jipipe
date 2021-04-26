@@ -47,10 +47,6 @@ public class PathFormData extends ParameterFormData {
         annotationIOSettings.getEventBus().register(this);
     }
 
-    public static PathFormData importFrom(Path rowStorage) {
-        return FormData.importFrom(rowStorage, PathFormData.class);
-    }
-
     @JIPipeDocumentation(name = "Initial value", description = "The initial string value")
     @JIPipeParameter("initial-value")
     @FilePathParameterSettings(pathMode = PathEditor.PathMode.FilesAndDirectories, ioMode = PathEditor.IOMode.Open)
@@ -186,5 +182,9 @@ public class PathFormData extends ParameterFormData {
             annotationIOSettings.getAnnotationMergeStrategy().mergeInto(dataBatch.getAnnotations(),
                     Collections.singletonList(annotationIOSettings.getOutputAnnotation().createAnnotation(StringUtils.nullToEmpty(value))));
         }
+    }
+
+    public static PathFormData importFrom(Path rowStorage) {
+        return FormData.importFrom(rowStorage, PathFormData.class);
     }
 }

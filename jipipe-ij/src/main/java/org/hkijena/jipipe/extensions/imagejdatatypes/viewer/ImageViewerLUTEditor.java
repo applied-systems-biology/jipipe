@@ -21,7 +21,6 @@ import org.hkijena.jipipe.ui.components.ColorIcon;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.jdesktop.swingx.JXMultiThumbSlider;
 import org.jdesktop.swingx.color.GradientThumbRenderer;
-import org.jdesktop.swingx.color.GradientTrackRenderer;
 import org.jdesktop.swingx.multislider.Thumb;
 import org.jdesktop.swingx.multislider.ThumbListener;
 

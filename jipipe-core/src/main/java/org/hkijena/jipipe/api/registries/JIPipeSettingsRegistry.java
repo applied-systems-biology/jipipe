@@ -51,38 +51,6 @@ public class JIPipeSettingsRegistry implements JIPipeParameterCollection, JIPipe
     private boolean isLoading = false;
 
     /**
-     * Gets the raw property files Json node
-     *
-     * @return the node. Never null.
-     */
-    public static JsonNode getRawNode() {
-        Path propertyFile = getPropertyFile();
-        if (Files.exists(propertyFile)) {
-            try {
-                return JsonUtils.getObjectMapper().readTree(propertyFile.toFile());
-            } catch (IOException e) {
-                return MissingNode.getInstance();
-            }
-        }
-        return MissingNode.getInstance();
-    }
-
-    /**
-     * @return The location of the file where the settings are stored
-     */
-    public static Path getPropertyFile() {
-        Path imageJDir = Paths.get(Prefs.getImageJDir());
-        if (!Files.isDirectory(imageJDir)) {
-            try {
-                Files.createDirectories(imageJDir);
-            } catch (IOException e) {
-                IJ.handleException(e);
-            }
-        }
-        return imageJDir.resolve("jipipe.properties.json");
-    }
-
-    /**
      * Registers a new settings sheet
      *
      * @param id                  unique ID of the sheet
@@ -214,6 +182,38 @@ public class JIPipeSettingsRegistry implements JIPipeParameterCollection, JIPipe
      */
     public void reload() {
         load(getPropertyFile());
+    }
+
+    /**
+     * Gets the raw property files Json node
+     *
+     * @return the node. Never null.
+     */
+    public static JsonNode getRawNode() {
+        Path propertyFile = getPropertyFile();
+        if (Files.exists(propertyFile)) {
+            try {
+                return JsonUtils.getObjectMapper().readTree(propertyFile.toFile());
+            } catch (IOException e) {
+                return MissingNode.getInstance();
+            }
+        }
+        return MissingNode.getInstance();
+    }
+
+    /**
+     * @return The location of the file where the settings are stored
+     */
+    public static Path getPropertyFile() {
+        Path imageJDir = Paths.get(Prefs.getImageJDir());
+        if (!Files.isDirectory(imageJDir)) {
+            try {
+                Files.createDirectories(imageJDir);
+            } catch (IOException e) {
+                IJ.handleException(e);
+            }
+        }
+        return imageJDir.resolve("jipipe.properties.json");
     }
 
     /**

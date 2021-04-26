@@ -1,6 +1,5 @@
 package org.hkijena.jipipe.extensions.imagejalgorithms.ij1.dimensions;
 
-import ij.IJ;
 import ij.ImagePlus;
 import ij.ImageStack;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
@@ -17,7 +16,6 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.HyperstackDimension;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.extensions.parameters.collections.OutputSlotMapParameterCollection;
-import org.hkijena.jipipe.extensions.parameters.generators.IntegerRange;
 import org.hkijena.jipipe.extensions.parameters.generators.OptionalIntegerRange;
 import org.hkijena.jipipe.extensions.parameters.primitives.OptionalAnnotationNameParameter;
 
@@ -38,10 +36,10 @@ public class HyperstackSplitterAlgorithm extends JIPipeSimpleIteratingAlgorithm 
 
     public HyperstackSplitterAlgorithm(JIPipeNodeInfo info) {
         super(info, JIPipeDefaultMutableSlotConfiguration.builder()
-        .addInputSlot("Input", ImagePlusData.class)
-        .addOutputSlot("Output", ImagePlusData.class, "Input")
-        .sealInput()
-        .build());
+                .addInputSlot("Input", ImagePlusData.class)
+                .addOutputSlot("Output", ImagePlusData.class, "Input")
+                .sealInput()
+                .build());
         this.outputIndices = new OutputSlotMapParameterCollection(OptionalIntegerRange.class, this, OptionalIntegerRange::new, false);
         outputIndices.updateSlots();
         registerSubParameter(outputIndices);
@@ -60,13 +58,13 @@ public class HyperstackSplitterAlgorithm extends JIPipeSimpleIteratingAlgorithm 
     @Override
     protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
         ImagePlus img = dataBatch.getInputData(getFirstInputSlot(), ImagePlusData.class, progressInfo).getImage();
-        if(targetDimension == HyperstackDimension.Channel) {
+        if (targetDimension == HyperstackDimension.Channel) {
             for (int c = 0; c < img.getNChannels(); c++) {
                 JIPipeProgressInfo stackProgressInfo = progressInfo.resolveAndLog("Output channel", c, img.getNChannels());
                 ImageStack stack = new ImageStack(img.getWidth(), img.getHeight(), img.getNFrames() * img.getNSlices());
                 int finalC = c;
                 ImageJUtils.forEachIndexedZCTSlice(img, (ip, index) -> {
-                    if(index.getC() != finalC)
+                    if (index.getC() != finalC)
                         return;
                     int stackIndex = ImageJUtils.getStackIndex(1, index.getZ() + 1, index.getT() + 1, 1, img.getNSlices(), img.getNFrames());
                     stack.setProcessor(ip, stackIndex);
@@ -79,22 +77,21 @@ public class HyperstackSplitterAlgorithm extends JIPipeSimpleIteratingAlgorithm 
 
                 for (JIPipeDataSlot outputSlot : getOutputSlots()) {
                     OptionalIntegerRange range = outputIndices.get(outputSlot.getName()).get(OptionalIntegerRange.class);
-                    if(range.isEnabled()) {
-                        if(!range.getContent().getIntegers().contains(c)) {
+                    if (range.isEnabled()) {
+                        if (!range.getContent().getIntegers().contains(c)) {
                             continue;
                         }
                     }
                     dataBatch.addOutputData(outputSlot, new ImagePlusData(stackOutput), annotationList, annotationMergeStrategy, stackProgressInfo);
                 }
             }
-        }
-        else if(targetDimension == HyperstackDimension.Depth) {
+        } else if (targetDimension == HyperstackDimension.Depth) {
             for (int z = 0; z < img.getNSlices(); z++) {
                 JIPipeProgressInfo stackProgressInfo = progressInfo.resolveAndLog("Output slice", z, img.getNSlices());
                 ImageStack stack = new ImageStack(img.getWidth(), img.getHeight(), img.getNFrames() * img.getNChannels());
                 int finalZ = z;
                 ImageJUtils.forEachIndexedZCTSlice(img, (ip, index) -> {
-                    if(index.getZ() != finalZ)
+                    if (index.getZ() != finalZ)
                         return;
                     int stackIndex = ImageJUtils.getStackIndex(1 + index.getC(), 1, index.getT() + 1, img.getNChannels(), 1, img.getNFrames());
                     stack.setProcessor(ip, stackIndex);
@@ -107,22 +104,21 @@ public class HyperstackSplitterAlgorithm extends JIPipeSimpleIteratingAlgorithm 
 
                 for (JIPipeDataSlot outputSlot : getOutputSlots()) {
                     OptionalIntegerRange range = outputIndices.get(outputSlot.getName()).get(OptionalIntegerRange.class);
-                    if(range.isEnabled()) {
-                        if(!range.getContent().getIntegers().contains(z)) {
+                    if (range.isEnabled()) {
+                        if (!range.getContent().getIntegers().contains(z)) {
                             continue;
                         }
                     }
                     dataBatch.addOutputData(outputSlot, new ImagePlusData(stackOutput), annotationList, annotationMergeStrategy, stackProgressInfo);
                 }
             }
-        }
-        else if(targetDimension == HyperstackDimension.Frame) {
+        } else if (targetDimension == HyperstackDimension.Frame) {
             for (int t = 0; t < img.getNFrames(); t++) {
                 JIPipeProgressInfo stackProgressInfo = progressInfo.resolveAndLog("Output slice", t, img.getNFrames());
                 ImageStack stack = new ImageStack(img.getWidth(), img.getHeight(), img.getNSlices() * img.getNChannels());
                 int finalT = t;
                 ImageJUtils.forEachIndexedZCTSlice(img, (ip, index) -> {
-                    if(index.getT() != finalT)
+                    if (index.getT() != finalT)
                         return;
                     int stackIndex = ImageJUtils.getStackIndex(1 + index.getC(), 1 + index.getZ(), 1, img.getNChannels(), img.getNSlices(), 1);
                     stack.setProcessor(ip, stackIndex);
@@ -135,8 +131,8 @@ public class HyperstackSplitterAlgorithm extends JIPipeSimpleIteratingAlgorithm 
 
                 for (JIPipeDataSlot outputSlot : getOutputSlots()) {
                     OptionalIntegerRange range = outputIndices.get(outputSlot.getName()).get(OptionalIntegerRange.class);
-                    if(range.isEnabled()) {
-                        if(!range.getContent().getIntegers().contains(t)) {
+                    if (range.isEnabled()) {
+                        if (!range.getContent().getIntegers().contains(t)) {
                             continue;
                         }
                     }
@@ -147,7 +143,7 @@ public class HyperstackSplitterAlgorithm extends JIPipeSimpleIteratingAlgorithm 
 
     }
 
-    @JIPipeDocumentation(name = "Split into output slots",description = "Following settings allow you to determine which generated data is put in which output slot. " +
+    @JIPipeDocumentation(name = "Split into output slots", description = "Following settings allow you to determine which generated data is put in which output slot. " +
             "Enable the range parameter and set the range of indices (zero being the first). Example: 0-10;15-21")
     @JIPipeParameter("output-indices")
     public OutputSlotMapParameterCollection getOutputIndices() {

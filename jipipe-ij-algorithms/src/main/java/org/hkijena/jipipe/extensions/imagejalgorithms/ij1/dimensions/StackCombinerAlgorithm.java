@@ -55,14 +55,14 @@ public class StackCombinerAlgorithm extends JIPipeIteratingAlgorithm {
     }
 
     private void combineFrames(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo, ImagePlus src, ImagePlus target) {
-        if(src.getNChannels() != target.getNChannels()) {
+        if (src.getNChannels() != target.getNChannels()) {
             throw new UserFriendlyRuntimeException("Source and target do not have the same number of channels",
                     "Cannot combine stacks with different number of channels!",
                     getName(),
                     "You tried to combine two image stacks by depth, but they have a different number of channels.",
                     "Choose another target dimension or check the input.");
         }
-        if(src.getNSlices() != target.getNSlices()) {
+        if (src.getNSlices() != target.getNSlices()) {
             throw new UserFriendlyRuntimeException("Source and target do not have the same number of Z slices",
                     "Cannot combine stacks with different number of channels!",
                     getName(),
@@ -70,7 +70,7 @@ public class StackCombinerAlgorithm extends JIPipeIteratingAlgorithm {
                     "Choose another target dimension or check the input.");
         }
         int nChannels = target.getNChannels();
-        int nFrames = target.getNFrames()+ src.getNFrames();
+        int nFrames = target.getNFrames() + src.getNFrames();
         int nSlices = target.getNSlices();
         ImageStack stack = new ImageStack(target.getWidth(), target.getHeight(), src.getStackSize() + target.getStackSize());
         copyOriginalImage(progressInfo, target, nChannels, nFrames, nSlices, stack);
@@ -89,14 +89,14 @@ public class StackCombinerAlgorithm extends JIPipeIteratingAlgorithm {
     }
 
     private void combineDepth(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo, ImagePlus src, ImagePlus target) {
-        if(src.getNChannels() != target.getNChannels()) {
+        if (src.getNChannels() != target.getNChannels()) {
             throw new UserFriendlyRuntimeException("Source and target do not have the same number of channels",
                     "Cannot combine stacks with different number of channels!",
                     getName(),
                     "You tried to combine two image stacks by depth, but they have a different number of channels.",
                     "Choose another target dimension or check the input.");
         }
-        if(src.getNFrames() != target.getNFrames()) {
+        if (src.getNFrames() != target.getNFrames()) {
             throw new UserFriendlyRuntimeException("Source and target do not have the same number of frames",
                     "Cannot combine stacks with different number of frames!",
                     getName(),
@@ -123,14 +123,14 @@ public class StackCombinerAlgorithm extends JIPipeIteratingAlgorithm {
     }
 
     private void combineChannel(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo, ImagePlus src, ImagePlus target) {
-        if(src.getNSlices() != target.getNSlices()) {
+        if (src.getNSlices() != target.getNSlices()) {
             throw new UserFriendlyRuntimeException("Source and target do not have the same number of Z slices",
                     "Cannot combine stacks with different number of channels!",
                     getName(),
                     "You tried to combine two image stacks by channel, but they have a different number of Z slices.",
                     "Choose another target dimension or check the input.");
         }
-        if(src.getNFrames() != target.getNFrames()) {
+        if (src.getNFrames() != target.getNFrames()) {
             throw new UserFriendlyRuntimeException("Source and target do not have the same number of frames",
                     "Cannot combine stacks with different number of frames!",
                     getName(),

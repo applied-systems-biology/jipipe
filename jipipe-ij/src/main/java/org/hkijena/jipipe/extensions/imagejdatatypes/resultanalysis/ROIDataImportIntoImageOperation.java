@@ -24,39 +24,6 @@ import java.nio.file.Path;
 
 public class ROIDataImportIntoImageOperation implements JIPipeDataImportOperation {
 
-    /**
-     * Imports and displays a ROI on the current image
-     *
-     * @param roiFile the file
-     */
-    public static void importROI(Path roiFile) {
-        ROIListData rois = new ROIListData(ROIListData.loadRoiListFromFile(roiFile));
-        ImagePlus imp = WindowManager.getCurrentImage();
-        if (imp == null) {
-            imp = rois.toMask(new Margin(), false, true, 1);
-            imp.show();
-        }
-        RoiManager roiManager = null;
-        if (roiManager == null) {
-            if (Macro.getOptions() != null && Interpreter.isBatchMode())
-                roiManager = Interpreter.getBatchModeRoiManager();
-            if (roiManager == null) {
-                Frame frame = WindowManager.getFrame("ROI Manager");
-                if (frame == null)
-                    IJ.run("ROI Manager...");
-                frame = WindowManager.getFrame("ROI Manager");
-                if (frame == null || !(frame instanceof RoiManager)) {
-                    return;
-                }
-                roiManager = (RoiManager) frame;
-            }
-        }
-        for (Roi roi : rois) {
-            roiManager.add(imp, roi, -1);
-        }
-        roiManager.runCommand("show all with labels");
-    }
-
     private Path findROIFile(Path rowStorageFolder) {
         if (rowStorageFolder != null && Files.isDirectory(rowStorageFolder)) {
             Path zipFile = PathUtils.findFileByExtensionIn(rowStorageFolder, ".zip");
@@ -118,5 +85,38 @@ public class ROIDataImportIntoImageOperation implements JIPipeDataImportOperatio
     @Override
     public Icon getIcon() {
         return UIUtils.getIconFromResources("apps/imagej.png");
+    }
+
+    /**
+     * Imports and displays a ROI on the current image
+     *
+     * @param roiFile the file
+     */
+    public static void importROI(Path roiFile) {
+        ROIListData rois = new ROIListData(ROIListData.loadRoiListFromFile(roiFile));
+        ImagePlus imp = WindowManager.getCurrentImage();
+        if (imp == null) {
+            imp = rois.toMask(new Margin(), false, true, 1);
+            imp.show();
+        }
+        RoiManager roiManager = null;
+        if (roiManager == null) {
+            if (Macro.getOptions() != null && Interpreter.isBatchMode())
+                roiManager = Interpreter.getBatchModeRoiManager();
+            if (roiManager == null) {
+                Frame frame = WindowManager.getFrame("ROI Manager");
+                if (frame == null)
+                    IJ.run("ROI Manager...");
+                frame = WindowManager.getFrame("ROI Manager");
+                if (frame == null || !(frame instanceof RoiManager)) {
+                    return;
+                }
+                roiManager = (RoiManager) frame;
+            }
+        }
+        for (Roi roi : rois) {
+            roiManager.add(imp, roi, -1);
+        }
+        roiManager.runCommand("show all with labels");
     }
 }

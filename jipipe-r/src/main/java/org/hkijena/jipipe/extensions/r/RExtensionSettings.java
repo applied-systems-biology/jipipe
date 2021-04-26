@@ -57,6 +57,35 @@ public class RExtensionSettings implements JIPipeParameterCollection {
 //        }
     }
 
+    @Override
+    public EventBus getEventBus() {
+        return eventBus;
+    }
+
+    @JIPipeDocumentation(name = "Override R executable", description = "Allows to override the R executable. Must point to R.exe (Windows) or equivalent on other systems.")
+    @JIPipeParameter("r-executable")
+    @FilePathParameterSettings(pathMode = PathEditor.PathMode.FilesOnly, ioMode = PathEditor.IOMode.Open)
+    public OptionalPathParameter getRExecutable() {
+        return RExecutable;
+    }
+
+    @JIPipeParameter("r-executable")
+    public void setRExecutable(OptionalPathParameter RExecutable) {
+        this.RExecutable = RExecutable;
+    }
+
+    @JIPipeDocumentation(name = "Override RScript executable", description = "Allows to override the RScript executable. Must point to RScript.exe (Windows) or equivalent on other systems.")
+    @JIPipeParameter("rscript-executable")
+    @FilePathParameterSettings(pathMode = PathEditor.PathMode.FilesOnly, ioMode = PathEditor.IOMode.Open)
+    public OptionalPathParameter getRScriptExecutable() {
+        return RScriptExecutable;
+    }
+
+    @JIPipeParameter("rscript-executable")
+    public void setRScriptExecutable(OptionalPathParameter RScriptExecutable) {
+        this.RScriptExecutable = RScriptExecutable;
+    }
+
     public static RExtensionSettings getInstance() {
         return JIPipe.getSettings().getSettings(ID, RExtensionSettings.class);
     }
@@ -140,35 +169,5 @@ public class RExtensionSettings implements JIPipeParameterCollection {
                 maxWaitTime,
                 initialWaitTime,
                 RProcessStartUpOptions.create());
-    }
-
-
-    @Override
-    public EventBus getEventBus() {
-        return eventBus;
-    }
-
-    @JIPipeDocumentation(name = "Override R executable", description = "Allows to override the R executable. Must point to R.exe (Windows) or equivalent on other systems.")
-    @JIPipeParameter("r-executable")
-    @FilePathParameterSettings(pathMode = PathEditor.PathMode.FilesOnly, ioMode = PathEditor.IOMode.Open)
-    public OptionalPathParameter getRExecutable() {
-        return RExecutable;
-    }
-
-    @JIPipeParameter("r-executable")
-    public void setRExecutable(OptionalPathParameter RExecutable) {
-        this.RExecutable = RExecutable;
-    }
-
-    @JIPipeDocumentation(name = "Override RScript executable", description = "Allows to override the RScript executable. Must point to RScript.exe (Windows) or equivalent on other systems.")
-    @JIPipeParameter("rscript-executable")
-    @FilePathParameterSettings(pathMode = PathEditor.PathMode.FilesOnly, ioMode = PathEditor.IOMode.Open)
-    public OptionalPathParameter getRScriptExecutable() {
-        return RScriptExecutable;
-    }
-
-    @JIPipeParameter("rscript-executable")
-    public void setRScriptExecutable(OptionalPathParameter RScriptExecutable) {
-        this.RScriptExecutable = RScriptExecutable;
     }
 }

@@ -46,12 +46,6 @@ public class DoubleArrayTableColumn implements MutableTableColumn {
         this.label = label;
     }
 
-    public static DoubleArrayTableColumn importFrom(Path storagePath) {
-        ResultsTableData resultsTableData = ResultsTableData.importFrom(storagePath);
-        TableColumn source = resultsTableData.getColumnReference(0);
-        return new DoubleArrayTableColumn(source.getDataAsDouble(source.getRows()), source.getLabel());
-    }
-
     @Override
     public String[] getDataAsString(int rows) {
         double[] arr = getDataAsDouble(rows);
@@ -116,5 +110,11 @@ public class DoubleArrayTableColumn implements MutableTableColumn {
     public void display(String displayName, JIPipeWorkbench workbench, JIPipeDataSource source) {
         ResultsTableData data = new ResultsTableData(Collections.singleton(this));
         data.display(displayName, workbench, source);
+    }
+
+    public static DoubleArrayTableColumn importFrom(Path storagePath) {
+        ResultsTableData resultsTableData = ResultsTableData.importFrom(storagePath);
+        TableColumn source = resultsTableData.getColumnReference(0);
+        return new DoubleArrayTableColumn(source.getDataAsDouble(source.getRows()), source.getLabel());
     }
 }

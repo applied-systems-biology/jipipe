@@ -46,7 +46,8 @@ public class JIPipeHorizontalDataSlotUI extends JIPipeDataSlotUI {
 
     /**
      * Creates a new UI
-     *  @param workbench   the workbench
+     *
+     * @param workbench   the workbench
      * @param algorithmUI The parent algorithm UI
      * @param compartment The compartment ID
      * @param slot        The slot instance
@@ -101,7 +102,7 @@ public class JIPipeHorizontalDataSlotUI extends JIPipeDataSlotUI {
 
         this.assignButton = new JButton();
         UIUtils.makeFlat(assignButton, UIUtils.getBorderColorFor(getSlot().getNode().getInfo()), 0, 0, 0, 0);
-        assignButton.setBorder(BorderFactory.createEmptyBorder(3,3,3,3));
+        assignButton.setBorder(BorderFactory.createEmptyBorder(3, 3, 3, 3));
         new JIPipeConnectionDragAndDropBehavior(this, assignButton);
         this.assignButtonMenu = UIUtils.addReloadablePopupMenuToComponent(assignButton, new JPopupMenu(), this::reloadPopupMenu);
 

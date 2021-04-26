@@ -39,15 +39,6 @@ public class OMEROProjectReferenceData implements JIPipeData {
         this.projectId = projectId;
     }
 
-    public static OMEROProjectReferenceData importFrom(Path storageFilePath) {
-        Path targetFile = PathUtils.findFileByExtensionIn(storageFilePath, ".json");
-        try {
-            return JsonUtils.getObjectMapper().readerFor(OMEROProjectReferenceData.class).readValue(targetFile.toFile());
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
     @JsonGetter("project-id")
     public long getProjectId() {
         return projectId;
@@ -81,5 +72,14 @@ public class OMEROProjectReferenceData implements JIPipeData {
     @Override
     public String toString() {
         return "OMERO Project ID=" + projectId;
+    }
+
+    public static OMEROProjectReferenceData importFrom(Path storageFilePath) {
+        Path targetFile = PathUtils.findFileByExtensionIn(storageFilePath, ".json");
+        try {
+            return JsonUtils.getObjectMapper().readerFor(OMEROProjectReferenceData.class).readValue(targetFile.toFile());
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 }

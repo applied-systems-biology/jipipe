@@ -33,7 +33,6 @@ import org.hkijena.jipipe.utils.UIUtils;
 import javax.swing.*;
 import javax.swing.tree.DefaultMutableTreeNode;
 import java.nio.file.Path;
-import java.util.UUID;
 
 @JIPipeDocumentation(name = "Get JIPipe slot folder", description = "Extracts a slot output folder from a JIPipe output. Use the 'Set output slot' button to select the correct parameters.")
 @JIPipeInputSlot(value = JIPipeOutputData.class, slotName = "JIPipe output", autoCreate = true)

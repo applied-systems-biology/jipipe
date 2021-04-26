@@ -17,7 +17,10 @@ import com.google.common.primitives.Longs;
 import gnu.trove.list.array.TFloatArrayList;
 import ij.IJ;
 import ij.ImagePlus;
-import ij.process.*;
+import ij.process.ByteProcessor;
+import ij.process.FloatProcessor;
+import ij.process.ImageProcessor;
+import ij.process.ImageStatistics;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
@@ -259,7 +262,7 @@ public class CustomAutoThreshold2D32FAlgorithm extends JIPipeIteratingAlgorithm 
         float[] imageBytes = (float[]) ip.getPixels();
         byte[] maskBytes = mask != null ? (byte[]) mask.getPixels() : null;
         for (int i = 0; i < imageBytes.length; i++) {
-            if(mask == null || Byte.toUnsignedInt(maskBytes[i]) > 0) {
+            if (mask == null || Byte.toUnsignedInt(maskBytes[i]) > 0) {
                 target.add(imageBytes[i]);
             }
         }
@@ -279,7 +282,7 @@ public class CustomAutoThreshold2D32FAlgorithm extends JIPipeIteratingAlgorithm 
         parameters.set("stat_raw_int_den", statistics.pixelCount * statistics.umean);
         parameters.set("stat_skewness", statistics.skewness);
         parameters.set("stat_area_fraction", statistics.areaFraction);
-        if(accessPixels) {
+        if (accessPixels) {
             List<Float> pixelList = new ArrayList<>();
             for (int i = 0; i < pixels.size(); i++) {
                 pixelList.add(pixels.get(i));
@@ -294,7 +297,7 @@ public class CustomAutoThreshold2D32FAlgorithm extends JIPipeIteratingAlgorithm 
         float[] src = (float[]) source.getPixels();
         byte[] dst = (byte[]) target.getPixels();
         for (int i = 0; i < src.length; i++) {
-            dst[i] = src[i] > threshold ? (byte)255 : 0;
+            dst[i] = src[i] > threshold ? (byte) 255 : 0;
         }
     }
 

@@ -237,7 +237,7 @@ public class JIPipeAlgorithmTargetFinderAlgorithmUI extends JPanel {
         JButton button = new JButton(UIUtils.getIconFromResources("actions/list-add.png"));
         UIUtils.makeFlat(button);
         button.addActionListener(e -> {
-            if(!JIPipeProjectWorkbench.canModifySlots(canvasUI.getWorkbench()))
+            if (!JIPipeProjectWorkbench.canModifySlots(canvasUI.getWorkbench()))
                 return;
             AddAlgorithmSlotPanel.showDialog(this, canvasUI.getGraphHistory(), algorithm, slotType);
         });

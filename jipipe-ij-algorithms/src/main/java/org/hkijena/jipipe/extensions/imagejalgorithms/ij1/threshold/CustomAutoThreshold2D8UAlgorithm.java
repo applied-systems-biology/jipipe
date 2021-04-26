@@ -238,7 +238,7 @@ public class CustomAutoThreshold2D8UAlgorithm extends JIPipeIteratingAlgorithm {
         parameters.set("stat_raw_int_den", statistics.pixelCount * statistics.umean);
         parameters.set("stat_skewness", statistics.skewness);
         parameters.set("stat_area_fraction", statistics.areaFraction);
-        if(accessPixels) {
+        if (accessPixels) {
             List<Integer> pixelList = new ArrayList<>();
             for (int i = 0; i < pixels.size(); i++) {
                 pixelList.add(Byte.toUnsignedInt(pixels.get(i)));

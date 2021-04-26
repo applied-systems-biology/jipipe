@@ -70,19 +70,18 @@ public class MeltTableAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
         Set<String> valueColumnNames = new HashSet<>();
         for (String columnName : input.getColumnNames()) {
-           if(valueColumns.test(columnName))
-               valueColumnNames.add(columnName);
-           else
-               output.addColumn(columnName, input.isStringColumn(columnName));
+            if (valueColumns.test(columnName))
+                valueColumnNames.add(columnName);
+            else
+                output.addColumn(columnName, input.isStringColumn(columnName));
         }
 
         // Create output category value column
         String uniqueOutputCategoryColumn;
-        if(outputCategoryColumnName.isEnabled()) {
+        if (outputCategoryColumnName.isEnabled()) {
             uniqueOutputCategoryColumn = StringUtils.makeUniqueString(outputCategoryColumnName.getContent(), ".", output.getColumnNames());
             output.addColumn(uniqueOutputCategoryColumn, true);
-        }
-        else {
+        } else {
             uniqueOutputCategoryColumn = null;
         }
 
@@ -105,7 +104,7 @@ public class MeltTableAlgorithm extends JIPipeSimpleIteratingAlgorithm {
                         uniqueOutputValueColumn);
 
                 // Write column
-                if(uniqueOutputCategoryColumn != null) {
+                if (uniqueOutputCategoryColumn != null) {
                     output.setValueAt(columnName,
                             targetRow,
                             uniqueOutputCategoryColumn);
@@ -113,7 +112,7 @@ public class MeltTableAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
                 // Copy category data
                 for (String categoryColumnName : input.getColumnNames()) {
-                    if(!valueColumnNames.contains(categoryColumnName)) {
+                    if (!valueColumnNames.contains(categoryColumnName)) {
                         output.setValueAt(input.getValueAt(row, input.getColumnIndex(categoryColumnName)),
                                 targetRow, categoryColumnName);
                     }
@@ -128,7 +127,7 @@ public class MeltTableAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     public void reportValidity(JIPipeValidityReport report) {
         super.reportValidity(report);
         report.forCategory("Output value column name").checkNonEmpty(outputValueColumnName, this);
-        if(outputCategoryColumnName.isEnabled()) {
+        if (outputCategoryColumnName.isEnabled()) {
             report.forCategory("Output category column name").checkNonEmpty(outputCategoryColumnName.getContent(), this);
         }
     }

@@ -21,6 +21,7 @@ public class JIPipeGraphEditorMinimap extends JIPipeWorkbenchPanel implements Mo
 
     private static final Color AREA_FILL_COLOR = new Color(0x3365a4e3, true);
     private final JIPipeGraphEditorUI graphEditorUI;
+    private final boolean accurate;
     private BufferedImage graphImage;
     private double scaleFactor;
     private int viewBaseWidth;
@@ -33,7 +34,6 @@ public class JIPipeGraphEditorMinimap extends JIPipeWorkbenchPanel implements Mo
     private int scrollHeight;
     private int scrollX;
     private int scrollY;
-    private final boolean accurate;
     private Color minimapBackground;
 
 
@@ -44,7 +44,7 @@ public class JIPipeGraphEditorMinimap extends JIPipeWorkbenchPanel implements Mo
         super(graphEditorUI.getWorkbench());
         this.graphEditorUI = graphEditorUI;
         this.accurate = graphEditorUI.getCanvasUI().getSettings().isAccurateMiniMap();
-        if(GeneralUISettings.getInstance().getTheme().isDark())
+        if (GeneralUISettings.getInstance().getTheme().isDark())
             minimapBackground = Color.BLACK;
         else
             minimapBackground = Color.WHITE;
@@ -104,7 +104,7 @@ public class JIPipeGraphEditorMinimap extends JIPipeWorkbenchPanel implements Mo
     }
 
     private void refreshGraphImage() {
-        if(accurate) {
+        if (accurate) {
             if (graphEditorUI.getCanvasUI().getWidth() > 0 && graphEditorUI.getCanvasUI().getHeight() > 0) {
                 try {
                     graphImage = ScreenImage.createImage(graphEditorUI.getCanvasUI());
@@ -124,15 +124,14 @@ public class JIPipeGraphEditorMinimap extends JIPipeWorkbenchPanel implements Mo
         if (graphImage != null) {
             graphImageWidth = graphImage.getWidth();
             graphImageHeight = graphImage.getHeight();
-        }
-        else {
-           graphImageWidth = graphEditorUI.getCanvasUI().getWidth();
-           graphImageHeight = graphEditorUI.getCanvasUI().getHeight();
+        } else {
+            graphImageWidth = graphEditorUI.getCanvasUI().getWidth();
+            graphImageHeight = graphEditorUI.getCanvasUI().getHeight();
         }
 
-        if(graphImageWidth <= 0)
+        if (graphImageWidth <= 0)
             graphImageWidth = getWidth();
-        if(graphImageHeight <= 0)
+        if (graphImageHeight <= 0)
             graphImageHeight = getHeight();
 
         viewBaseWidth = getWidth();
@@ -154,7 +153,7 @@ public class JIPipeGraphEditorMinimap extends JIPipeWorkbenchPanel implements Mo
     public void paint(Graphics g) {
         g.setColor(UIManager.getColor("Panel.background"));
         g.fillRect(0, 0, getWidth(), getHeight());
-        if(accurate) {
+        if (accurate) {
             if (graphImage != null) {
                 if (viewBaseWidth != getWidth() || viewBaseHeight != getHeight()) {
                     refreshView();
@@ -174,8 +173,7 @@ public class JIPipeGraphEditorMinimap extends JIPipeWorkbenchPanel implements Mo
                 ((Graphics2D) g).setStroke(new BasicStroke(2));
                 g.drawRect(viewX + scrollX, viewY + scrollY, scrollWidth, scrollHeight);
             }
-        }
-        else {
+        } else {
             if (viewBaseWidth != getWidth() || viewBaseHeight != getHeight()) {
                 refreshView();
             }
@@ -183,7 +181,7 @@ public class JIPipeGraphEditorMinimap extends JIPipeWorkbenchPanel implements Mo
             Graphics2D graphics2D = (Graphics2D) g;
 
             graphics2D.setColor(minimapBackground);
-            graphics2D.fillRect(viewX,viewY,viewWidth, viewHeight);
+            graphics2D.fillRect(viewX, viewY, viewWidth, viewHeight);
             graphEditorUI.getCanvasUI().paintMiniMap(graphics2D, scaleFactor, viewX, viewY);
 
             // Draw current scroll position

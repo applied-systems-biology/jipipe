@@ -17,9 +17,7 @@ import org.hkijena.jipipe.ui.grapheditor.JIPipeGraphCanvasUI;
 import org.hkijena.jipipe.ui.grapheditor.JIPipeNodeUI;
 
 import javax.swing.*;
-import java.awt.*;
 import java.util.Set;
-import java.util.function.Supplier;
 
 /**
  * An action that is applied one or multiple algorithms

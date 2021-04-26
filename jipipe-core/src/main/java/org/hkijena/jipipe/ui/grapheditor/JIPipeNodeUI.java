@@ -41,24 +41,21 @@ import java.util.Map;
  */
 public abstract class JIPipeNodeUI extends JIPipeWorkbenchPanel {
 
-    private JIPipeGraphCanvasUI graphUI;
-    private JIPipeGraphNode node;
-    private JIPipeGraphViewMode viewMode;
-    private EventBus eventBus = new EventBus();
-
-    private Color fillColor;
-    private Color borderColor;
-
-    private LinearGradientPaint disabledPaint;
-    private LinearGradientPaint passThroughPaint;
-
-    public static final NodeUIContextAction[] RUN_NODE_CONTEXT_MENU_ENTRIES = new NodeUIContextAction[] {
+    public static final NodeUIContextAction[] RUN_NODE_CONTEXT_MENU_ENTRIES = new NodeUIContextAction[]{
             new UpdateCacheNodeUIContextAction(),
             new UpdateCacheShowIntermediateNodeUIContextAction(),
             NodeUIContextAction.SEPARATOR,
             new RunAndShowResultsNodeUIContextAction(),
             new RunAndShowIntermediateResultsNodeUIContextAction()
     };
+    private JIPipeGraphCanvasUI graphUI;
+    private JIPipeGraphNode node;
+    private JIPipeGraphViewMode viewMode;
+    private EventBus eventBus = new EventBus();
+    private Color fillColor;
+    private Color borderColor;
+    private LinearGradientPaint disabledPaint;
+    private LinearGradientPaint passThroughPaint;
 
     /**
      * Creates a new UI
@@ -113,7 +110,7 @@ public abstract class JIPipeNodeUI extends JIPipeWorkbenchPanel {
         JButton addSlotButton = new JButton(new ZoomIcon(UIUtils.getIconFromResources("actions/list-add.png"), graphUI));
         UIUtils.makeFlat(addSlotButton, Color.GRAY, 0, 0, 0, 0);
         addSlotButton.addActionListener(e -> {
-            if(!JIPipeProjectWorkbench.canModifySlots(getWorkbench()))
+            if (!JIPipeProjectWorkbench.canModifySlots(getWorkbench()))
                 return;
             AddAlgorithmSlotPanel.showDialog(this, graphUI.getGraphHistory(), node, slotType);
         });
@@ -261,11 +258,11 @@ public abstract class JIPipeNodeUI extends JIPipeWorkbenchPanel {
      */
     public boolean moveToStoredGridLocation(boolean force) {
         Point point = node.getLocationWithin(StringUtils.nullToEmpty(graphUI.getCompartment()), graphUI.getViewMode().name());
-        if(point == null && graphUI.getViewMode() == JIPipeGraphViewMode.VerticalCompact) {
+        if (point == null && graphUI.getViewMode() == JIPipeGraphViewMode.VerticalCompact) {
             // Try to get the point from vertical layout
             point = node.getLocationWithin(StringUtils.nullToEmpty(graphUI.getCompartment()), JIPipeGraphViewMode.Vertical.name());
         }
-        if(point == null && graphUI.getViewMode() == JIPipeGraphViewMode.Vertical) {
+        if (point == null && graphUI.getViewMode() == JIPipeGraphViewMode.Vertical) {
             // Try to get the point from vertical compact layout
             point = node.getLocationWithin(StringUtils.nullToEmpty(graphUI.getCompartment()), JIPipeGraphViewMode.VerticalCompact.name());
         }

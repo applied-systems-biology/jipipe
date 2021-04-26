@@ -14,7 +14,8 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.color.HSBColorSpace;
 import org.hkijena.jipipe.extensions.imagejdatatypes.color.LABColorSpace;
 import org.hkijena.jipipe.extensions.imagejdatatypes.color.RGBColorSpace;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.color.ImagePlusColorData;
-import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.*;
+import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleData;
+import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleMaskData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ColorPixel5DExpressionParameterVariableSource;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.extensions.parameters.expressions.DefaultExpressionParameter;
@@ -28,11 +29,10 @@ import org.hkijena.jipipe.extensions.parameters.expressions.ExpressionParameters
 @JIPipeOutputSlot(value = ImagePlusGreyscaleMaskData.class, slotName = "Output", autoCreate = true)
 public class ColorThresholdExpression2D extends JIPipeSimpleIteratingAlgorithm {
 
-    private DefaultExpressionParameter expression = new DefaultExpressionParameter("B > 50");
-
     private static ColorSpace COLOR_SPACE_RGB = new RGBColorSpace();
     private static ColorSpace COLOR_SPACE_HSB = new HSBColorSpace();
     private static ColorSpace COLOR_SPACE_LAB = new LABColorSpace();
+    private DefaultExpressionParameter expression = new DefaultExpressionParameter("B > 50");
 
     public ColorThresholdExpression2D(JIPipeNodeInfo info) {
         super(info);

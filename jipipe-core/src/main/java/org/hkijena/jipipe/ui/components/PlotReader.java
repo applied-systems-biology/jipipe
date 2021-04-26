@@ -41,6 +41,7 @@ public class PlotReader extends JPanel {
 
     /**
      * Creates a new instance
+     *
      * @param plotBuilderUI the plot builder associated to this reader
      */
     public PlotReader(JIPipePlotBuilderUI plotBuilderUI) {
@@ -116,10 +117,9 @@ public class PlotReader extends JPanel {
 
     private void exportPlotToClipboard(boolean currentSize) {
         Dimension size;
-        if(currentSize) {
+        if (currentSize) {
             size = getSize();
-        }
-        else {
+        } else {
             size = new Dimension(plotBuilderUI.getCurrentPlot().getExportWidth(), plotBuilderUI.getCurrentPlot().getExportHeight());
         }
         JFreeChart chart = chartPanel.getChart();
@@ -145,13 +145,12 @@ public class PlotReader extends JPanel {
         }
         Path path = FileChooserSettings.saveFile(this, FileChooserSettings.KEY_DATA, "Export plot as " + fileFormat, filter);
         Dimension size;
-        if(currentSize) {
+        if (currentSize) {
             size = getSize();
-        }
-        else {
+        } else {
             size = new Dimension(plotBuilderUI.getCurrentPlot().getExportWidth(), plotBuilderUI.getCurrentPlot().getExportHeight());
         }
-        if(path != null) {
+        if (path != null) {
             JFreeChart chart = chartPanel.getChart();
             switch (fileFormat) {
                 case PNG:

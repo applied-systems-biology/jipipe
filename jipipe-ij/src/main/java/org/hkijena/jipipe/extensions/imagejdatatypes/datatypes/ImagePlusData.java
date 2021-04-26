@@ -86,52 +86,6 @@ public class ImagePlusData implements JIPipeData, ColoredImagePlusData {
         this.colorSpace = colorSpace;
     }
 
-    public static ImagePlus importImagePlusFrom(Path storageFilePath) {
-        Path targetFile = PathUtils.findFileByExtensionIn(storageFilePath, ".tif", ".tiff", ".png", ".jpg", ".jpeg", ".bmp");
-        if (targetFile == null) {
-            throw new UserFriendlyNullPointerException("Could not find a compatible image file in '" + storageFilePath + "'!",
-                    "Unable to find file in location '" + storageFilePath + "'",
-                    "ImagePlusData loading",
-                    "JIPipe needs to load the image from a folder, but it could not find any matching file.",
-                    "Please contact the JIPipe developers about this issue.");
-        }
-        String fileName = targetFile.toString().toLowerCase();
-        if ((fileName.endsWith(".tiff") || fileName.endsWith(".tif")) && ImageJDataTypesSettings.getInstance().isUseBioFormats()) {
-            OMEImageData omeImageData = OMEImageData.importFrom(storageFilePath);
-            return omeImageData.getImage();
-        } else {
-            return IJ.openImage(targetFile.toString());
-        }
-    }
-
-    public static ImagePlusData importFrom(Path storageFilePath) {
-        return new ImagePlusData(importImagePlusFrom(storageFilePath));
-    }
-
-    /**
-     * Gets the dimensionality of {@link ImagePlusData}
-     *
-     * @param klass the class
-     * @return the dimensionality
-     */
-    public static int getDimensionalityOf(Class<? extends ImagePlusData> klass) {
-        try {
-            return klass.getDeclaredField("DIMENSIONALITY").getInt(null);
-        } catch (IllegalAccessException | NoSuchFieldException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    /**
-     * Converts the incoming image data into the current format.
-     *
-     * @param data the data
-     * @return the converted data
-     */
-    public static ImagePlusData convertFrom(ImagePlusData data) {
-        return new ImagePlusData(data.getImage(), data.getColorSpace());
-    }
-
     public ImagePlus getImage() {
         return image;
     }
@@ -204,6 +158,52 @@ public class ImagePlusData implements JIPipeData, ColoredImagePlusData {
     @Override
     public ColorSpace getColorSpace() {
         return colorSpace;
+    }
+
+    public static ImagePlus importImagePlusFrom(Path storageFilePath) {
+        Path targetFile = PathUtils.findFileByExtensionIn(storageFilePath, ".tif", ".tiff", ".png", ".jpg", ".jpeg", ".bmp");
+        if (targetFile == null) {
+            throw new UserFriendlyNullPointerException("Could not find a compatible image file in '" + storageFilePath + "'!",
+                    "Unable to find file in location '" + storageFilePath + "'",
+                    "ImagePlusData loading",
+                    "JIPipe needs to load the image from a folder, but it could not find any matching file.",
+                    "Please contact the JIPipe developers about this issue.");
+        }
+        String fileName = targetFile.toString().toLowerCase();
+        if ((fileName.endsWith(".tiff") || fileName.endsWith(".tif")) && ImageJDataTypesSettings.getInstance().isUseBioFormats()) {
+            OMEImageData omeImageData = OMEImageData.importFrom(storageFilePath);
+            return omeImageData.getImage();
+        } else {
+            return IJ.openImage(targetFile.toString());
+        }
+    }
+
+    public static ImagePlusData importFrom(Path storageFilePath) {
+        return new ImagePlusData(importImagePlusFrom(storageFilePath));
+    }
+
+    /**
+     * Gets the dimensionality of {@link ImagePlusData}
+     *
+     * @param klass the class
+     * @return the dimensionality
+     */
+    public static int getDimensionalityOf(Class<? extends ImagePlusData> klass) {
+        try {
+            return klass.getDeclaredField("DIMENSIONALITY").getInt(null);
+        } catch (IllegalAccessException | NoSuchFieldException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    /**
+     * Converts the incoming image data into the current format.
+     *
+     * @param data the data
+     * @return the converted data
+     */
+    public static ImagePlusData convertFrom(ImagePlusData data) {
+        return new ImagePlusData(data.getImage(), data.getColorSpace());
     }
 
 }

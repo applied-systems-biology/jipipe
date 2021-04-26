@@ -85,7 +85,7 @@ public class PMCCBlockFlowAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     @JIPipeParameter("block-radius")
     public boolean setBlockRadius(int blockRadius) {
-        if(blockRadius <= 0)
+        if (blockRadius <= 0)
             return false;
         this.blockRadius = blockRadius;
         return true;
@@ -99,7 +99,7 @@ public class PMCCBlockFlowAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     @JIPipeParameter("max-distance")
     public boolean setMaxDistance(int maxDistance) {
-        if(maxDistance <= 0 || maxDistance >= 127)
+        if (maxDistance <= 0 || maxDistance >= 127)
             return false;
         this.maxDistance = maxDistance;
         return true;
@@ -122,60 +122,58 @@ public class PMCCBlockFlowAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         ImagePlus imp = dataBatch.getInputData(getFirstInputSlot(), ImagePlus3DGreyscale32FData.class, progressInfo).getImage();
         ImageStack seq = imp.getStack();
         int outputSize = 2 * seq.getSize() - 2;
-        if(addLastIdentityField)
+        if (addLastIdentityField)
             outputSize += 2;
-        ImageStack seqFlowVectors = new ImageStack( imp.getWidth(), imp.getHeight(), outputSize );
+        ImageStack seqFlowVectors = new ImageStack(imp.getWidth(), imp.getHeight(), outputSize);
 
         FloatProcessor ip1;
-        FloatProcessor ip2 = ( FloatProcessor )seq.getProcessor( 1 ).convertToFloat();
+        FloatProcessor ip2 = (FloatProcessor) seq.getProcessor(1).convertToFloat();
 
         CompositeImage impFlowVectors = null;
 
-        for ( int i = 1; i < seq.getSize(); ++i )
-        {
+        for (int i = 1; i < seq.getSize(); ++i) {
             progressInfo.resolveAndLog("Slice", i, seq.getSize());
             ip1 = ip2;
-            ip2 = ( FloatProcessor )seq.getProcessor( i + 1 ).convertToFloat();
+            ip2 = (FloatProcessor) seq.getProcessor(i + 1).convertToFloat();
 
-            final FloatProcessor seqFlowVectorRSlice = new FloatProcessor( imp.getWidth(), imp.getHeight() );
-            final FloatProcessor seqFlowVectorPhiSlice = new FloatProcessor( imp.getWidth(), imp.getHeight() );
+            final FloatProcessor seqFlowVectorRSlice = new FloatProcessor(imp.getWidth(), imp.getHeight());
+            final FloatProcessor seqFlowVectorPhiSlice = new FloatProcessor(imp.getWidth(), imp.getHeight());
 
-            opticFlow( ip1, ip2, seqFlowVectorRSlice, seqFlowVectorPhiSlice );
+            opticFlow(ip1, ip2, seqFlowVectorRSlice, seqFlowVectorPhiSlice);
 
-            seqFlowVectors.setPixels( seqFlowVectorRSlice.getPixels(), 2 * i - 1 );
-            seqFlowVectors.setSliceLabel( "r " + i, 2 * i - 1 );
-            seqFlowVectors.setPixels( seqFlowVectorPhiSlice.getPixels(), 2 * i );
-            seqFlowVectors.setSliceLabel( "phi " + i, 2 * i );
+            seqFlowVectors.setPixels(seqFlowVectorRSlice.getPixels(), 2 * i - 1);
+            seqFlowVectors.setSliceLabel("r " + i, 2 * i - 1);
+            seqFlowVectors.setPixels(seqFlowVectorPhiSlice.getPixels(), 2 * i);
+            seqFlowVectors.setSliceLabel("phi " + i, 2 * i);
 
-            if ( i == 1 )
-            {
-                final ImagePlus notYetComposite = new ImagePlus( imp.getTitle() + " flow vectors", seqFlowVectors );
-                notYetComposite.setOpenAsHyperStack( true );
-                notYetComposite.setCalibration( imp.getCalibration() );
-                notYetComposite.setDimensions( 2, 1, seq.getSize() - 1 );
+            if (i == 1) {
+                final ImagePlus notYetComposite = new ImagePlus(imp.getTitle() + " flow vectors", seqFlowVectors);
+                notYetComposite.setOpenAsHyperStack(true);
+                notYetComposite.setCalibration(imp.getCalibration());
+                notYetComposite.setDimensions(2, 1, seq.getSize() - 1);
 
-                impFlowVectors = new CompositeImage( notYetComposite, CompositeImage.GRAYSCALE );
-                impFlowVectors.setOpenAsHyperStack( true );
-                impFlowVectors.setDimensions( 2, 1, seq.getSize() - 1 );
+                impFlowVectors = new CompositeImage(notYetComposite, CompositeImage.GRAYSCALE);
+                impFlowVectors.setOpenAsHyperStack(true);
+                impFlowVectors.setDimensions(2, 1, seq.getSize() - 1);
 
-                if(outputPolarCoordinates) {
+                if (outputPolarCoordinates) {
                     impFlowVectors.setPosition(1, 1, 1);
                     impFlowVectors.setDisplayRange(0, 1);
                     impFlowVectors.setPosition(2, 1, 1);
                     impFlowVectors.setDisplayRange(-Math.PI, Math.PI);
                 }
             }
-            impFlowVectors.setPosition( 1, 1, i );
-            imp.setSlice( i + 1 );
+            impFlowVectors.setPosition(1, 1, i);
+            imp.setSlice(i + 1);
         }
 
-        if(addLastIdentityField) {
+        if (addLastIdentityField) {
             seqFlowVectors.setPixels(new float[imp.getWidth() * imp.getHeight()], 2 * seq.getSize());
             seqFlowVectors.setPixels(new float[imp.getWidth() * imp.getHeight()], 2 * seq.getSize() - 1);
-            impFlowVectors.setDimensions( 2, 1, seq.getSize() );
+            impFlowVectors.setDimensions(2, 1, seq.getSize());
         }
 
-        if(!outputPolarCoordinates) {
+        if (!outputPolarCoordinates) {
             ImageJUtils.calibrate(impFlowVectors, ImageJCalibrationMode.AutomaticImageJ, 0, 0);
         }
 
@@ -186,82 +184,75 @@ public class PMCCBlockFlowAlgorithm extends JIPipeSimpleIteratingAlgorithm {
             final FloatProcessor ip1,
             final FloatProcessor ip2,
             final FloatProcessor r,
-            final FloatProcessor phi)
-    {
-        final BlockPMCC bc = new BlockPMCC( ip1.getWidth(), ip1.getHeight(), ip1, ip2 );
+            final FloatProcessor phi) {
+        final BlockPMCC bc = new BlockPMCC(ip1.getWidth(), ip1.getHeight(), ip1, ip2);
         //final BlockPMCC bc = new BlockPMCC( ip1, ip2 );
 
         final FloatProcessor ipR = bc.getTargetProcessor();
-        final ColorProcessor ipX = new ColorProcessor( ipR.getWidth(), ipR.getHeight() );
-        final ColorProcessor ipY = new ColorProcessor( ipR.getWidth(), ipR.getHeight() );
+        final ColorProcessor ipX = new ColorProcessor(ipR.getWidth(), ipR.getHeight());
+        final ColorProcessor ipY = new ColorProcessor(ipR.getWidth(), ipR.getHeight());
 
         /* init */
         {
-            final float[] ipRMaxPixels = ( float[] )r.getPixels();
+            final float[] ipRMaxPixels = (float[]) r.getPixels();
             Arrays.fill(ipRMaxPixels, -1);
         }
 
-        for ( int yo = -maxDistance; yo <= maxDistance; ++yo )
-        {
-            for ( int xo = -maxDistance; xo <= maxDistance; ++xo )
-            {
+        for (int yo = -maxDistance; yo <= maxDistance; ++yo) {
+            for (int xo = -maxDistance; xo <= maxDistance; ++xo) {
                 // continue if radius is larger than maxDistance
-                if ( yo * yo + xo * xo > maxDistance * maxDistance ) continue;
+                if (yo * yo + xo * xo > maxDistance * maxDistance) continue;
 
-                bc.setOffset( xo, yo );
-                bc.rSignedSquare( blockRadius );
+                bc.setOffset(xo, yo);
+                bc.rSignedSquare(blockRadius);
 
 //				stack.addSlice( xo + " " + yo, ipR.duplicate() );
 
-                final float[] ipRPixels = ( float[] )ipR.getPixels();
-                final float[] ipRMaxPixels = ( float[] )r.getPixels();
-                final int[] ipXPixels = ( int[] )ipX.getPixels();
-                final int[] ipYPixels = ( int[] )ipY.getPixels();
+                final float[] ipRPixels = (float[]) ipR.getPixels();
+                final float[] ipRMaxPixels = (float[]) r.getPixels();
+                final int[] ipXPixels = (int[]) ipX.getPixels();
+                final int[] ipYPixels = (int[]) ipY.getPixels();
 
                 // update the translation fields
                 final int h = ipR.getHeight() - maxDistance;
                 final int width = ipR.getWidth();
                 final int w = width - maxDistance;
-                for ( int y = maxDistance; y < h; ++y )
-                {
+                for (int y = maxDistance; y < h; ++y) {
                     final int row = y * width;
                     final int rowR;
-                    if ( yo < 0 )
+                    if (yo < 0)
                         rowR = row;
                     else
-                        rowR = ( y - yo ) * width;
-                    for ( int x = maxDistance; x < w; ++x )
-                    {
+                        rowR = (y - yo) * width;
+                    for (int x = maxDistance; x < w; ++x) {
                         final int i = row + x;
                         final int iR;
-                        if ( xo < 0 )
+                        if (xo < 0)
                             iR = rowR + x;
                         else
-                            iR = rowR + ( x - xo );
+                            iR = rowR + (x - xo);
 
-                        final float ipRPixel = ipRPixels[ iR ];
-                        final float ipRMaxPixel = ipRMaxPixels[ i ];
+                        final float ipRPixel = ipRPixels[iR];
+                        final float ipRMaxPixel = ipRMaxPixels[i];
 
-                        if ( ipRPixel > ipRMaxPixel )
-                        {
-                            ipRMaxPixels[ i ] = ipRPixel;
-                            ipXPixels[ i ] = xo;
-                            ipYPixels[ i ] = yo;
+                        if (ipRPixel > ipRMaxPixel) {
+                            ipRMaxPixels[i] = ipRPixel;
+                            ipXPixels[i] = xo;
+                            ipYPixels[i] = yo;
                         }
                     }
                 }
             }
         }
 
-        if(outputPolarCoordinates) {
+        if (outputPolarCoordinates) {
             algebraicToPolar(
                     (int[]) ipX.getPixels(),
                     (int[]) ipY.getPixels(),
                     (float[]) r.getPixels(),
                     (float[]) phi.getPixels(),
                     relativeDistances ? maxDistance : 1.0);
-        }
-        else {
+        } else {
             algebraicToCartesian(
                     (int[]) ipX.getPixels(),
                     (int[]) ipY.getPixels(),
@@ -276,19 +267,17 @@ public class PMCCBlockFlowAlgorithm extends JIPipeSimpleIteratingAlgorithm {
             final int[] ipYPixels,
             final float[] ipRPixels,
             final float[] ipPhiPixels,
-            final double max )
-    {
+            final double max) {
         final int n = ipXPixels.length;
-        for ( int i = 0; i < n; ++i )
-        {
-            final double x = ipXPixels[ i ] / max;
-            final double y = ipYPixels[ i ] / max;
+        for (int i = 0; i < n; ++i) {
+            final double x = ipXPixels[i] / max;
+            final double y = ipYPixels[i] / max;
 
-            final double r = Math.sqrt( x * x + y * y );
-            final double phi = Math.atan2( x / r, y / r );
+            final double r = Math.sqrt(x * x + y * y);
+            final double phi = Math.atan2(x / r, y / r);
 
-            ipRPixels[ i ] = ( float )r;
-            ipPhiPixels[ i ] = ( float )phi;
+            ipRPixels[i] = (float) r;
+            ipPhiPixels[i] = (float) phi;
         }
     }
 
@@ -297,16 +286,14 @@ public class PMCCBlockFlowAlgorithm extends JIPipeSimpleIteratingAlgorithm {
             final int[] ipYPixels,
             final float[] ipCXPixels,
             final float[] ipCYhiPixels,
-            final double max )
-    {
+            final double max) {
         final int n = ipXPixels.length;
-        for ( int i = 0; i < n; ++i )
-        {
-            final double x = ipXPixels[ i ] / max;
-            final double y = ipYPixels[ i ] / max;
+        for (int i = 0; i < n; ++i) {
+            final double x = ipXPixels[i] / max;
+            final double y = ipYPixels[i] / max;
 
-            ipCXPixels[i] = (float)x;
-            ipCYhiPixels[i] = (float)y;
+            ipCXPixels[i] = (float) x;
+            ipCYhiPixels[i] = (float) y;
         }
     }
 

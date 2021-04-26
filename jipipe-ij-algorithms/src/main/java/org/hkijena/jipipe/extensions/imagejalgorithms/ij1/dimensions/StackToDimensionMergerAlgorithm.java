@@ -35,7 +35,6 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePl
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.HyperstackDimension;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
-import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageSliceIndex;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.utils.ResourceUtils;
 import org.hkijena.jipipe.utils.UIUtils;
@@ -90,11 +89,11 @@ public class StackToDimensionMergerAlgorithm extends JIPipeIteratingAlgorithm {
 
     @Override
     protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
-        if(getEffectiveInputSlotCount() == 0)
+        if (getEffectiveInputSlotCount() == 0)
             return;
         // We need to identify a proper type, so the bit depths are equal
         Class<? extends JIPipeData> targetType = getFirstInputSlot().getAcceptedDataType();
-        if(targetType == ImagePlusData.class) {
+        if (targetType == ImagePlusData.class) {
             // Identify a proper type
             ImagePlus image = dataBatch.getInputData(getFirstInputSlot(), ImagePlusData.class, progressInfo).getImage();
             switch (image.getBitDepth()) {
@@ -117,13 +116,13 @@ public class StackToDimensionMergerAlgorithm extends JIPipeIteratingAlgorithm {
             ImagePlus img = ((ImagePlusData) dataBatch.getInputData(slot, targetType, progressInfo)).getImage();
             inputImages.add(img);
         }
-        if(inputImages.isEmpty())
+        if (inputImages.isEmpty())
             return;
-        if(inputImages.size() == 1) {
+        if (inputImages.size() == 1) {
             dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusData(inputImages.get(0)), progressInfo);
             return;
         }
-        if(!ImageJUtils.imagesHaveSameSize(inputImages)) {
+        if (!ImageJUtils.imagesHaveSameSize(inputImages)) {
             throw new UserFriendlyRuntimeException("Images do not have the same size!",
                     "Images do not have the same size!",
                     getName(),
@@ -136,15 +135,15 @@ public class StackToDimensionMergerAlgorithm extends JIPipeIteratingAlgorithm {
         final int numC = inputImages.get(0).getNChannels();
         final int numT = inputImages.get(0).getNFrames();
 
-        if(createdDimension == HyperstackDimension.Depth) {
-            if(numZ > 1) {
+        if (createdDimension == HyperstackDimension.Depth) {
+            if (numZ > 1) {
                 throw new UserFriendlyRuntimeException("Images must have no Z dimension!",
                         "Z dimension already exists!",
                         getName(),
                         "To create a new Z dimension based on the incoming stacks, they cannot already have a Z dimension.",
                         "Remove the Z dimension or check if your input is correct.");
             }
-            ImageStack stack = new ImageStack(width,height, inputImages.size() * numC * numT);
+            ImageStack stack = new ImageStack(width, height, inputImages.size() * numC * numT);
             for (int i = 0; i < inputImages.size(); i++) {
                 JIPipeProgressInfo slotProgress = progressInfo.resolveAndLog("Slot", i, inputImages.size());
                 final int z = i;
@@ -156,16 +155,15 @@ public class StackToDimensionMergerAlgorithm extends JIPipeIteratingAlgorithm {
             ImagePlus result = new ImagePlus(createdDimension.toString(), stack);
             result.setDimensions(numC, inputImages.size(), numT);
             dataBatch.addOutputData(getFirstOutputSlot(), JIPipe.createData(targetType, result), progressInfo);
-        }
-        else if(createdDimension == HyperstackDimension.Channel) {
-            if(numC > 1) {
+        } else if (createdDimension == HyperstackDimension.Channel) {
+            if (numC > 1) {
                 throw new UserFriendlyRuntimeException("Images must have no channel dimension!",
                         "Channel dimension already exists!",
                         getName(),
                         "To create a new channel dimension based on the incoming stacks, they cannot already have a channel dimension.",
                         "Remove the channel dimension or check if your input is correct.");
             }
-            ImageStack stack = new ImageStack(width,height, inputImages.size() * numZ * numT);
+            ImageStack stack = new ImageStack(width, height, inputImages.size() * numZ * numT);
             for (int i = 0; i < inputImages.size(); i++) {
                 JIPipeProgressInfo slotProgress = progressInfo.resolveAndLog("Slot", i, inputImages.size());
                 final int c = i;
@@ -179,16 +177,15 @@ public class StackToDimensionMergerAlgorithm extends JIPipeIteratingAlgorithm {
             ImagePlus result = new ImagePlus(createdDimension.toString(), stack);
             result.setDimensions(inputImages.size(), numZ, numT);
             dataBatch.addOutputData(getFirstOutputSlot(), JIPipe.createData(targetType, result), progressInfo);
-        }
-        else if(createdDimension == HyperstackDimension.Frame) {
-            if(numT > 1) {
+        } else if (createdDimension == HyperstackDimension.Frame) {
+            if (numT > 1) {
                 throw new UserFriendlyRuntimeException("Images must have no time dimension!",
                         "Time dimension already exists!",
                         getName(),
                         "To create a new channel dimension based on the incoming stacks, they cannot already have a time dimension.",
                         "Remove the time dimension or check if your input is correct.");
             }
-            ImageStack stack = new ImageStack(width,height, inputImages.size() * numZ * numC);
+            ImageStack stack = new ImageStack(width, height, inputImages.size() * numZ * numC);
             for (int i = 0; i < inputImages.size(); i++) {
                 JIPipeProgressInfo slotProgress = progressInfo.resolveAndLog("Slot", i, inputImages.size());
                 final int t = i;

@@ -19,7 +19,10 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.*;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import com.google.common.collect.*;
+import com.google.common.collect.BiMap;
+import com.google.common.collect.HashBiMap;
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableSet;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 import org.hkijena.jipipe.JIPipe;
@@ -116,13 +119,14 @@ public class JIPipeGraph implements JIPipeValidatable {
     /**
      * Gets the alias ID of a node
      * A unique alias ID is generated if none is assigned yet
+     *
      * @param node the node
      * @return the alias ID or null if the node is not contained within this graph.
      */
     public String getAliasIdOf(JIPipeGraphNode node) {
         UUID uuid = getUUIDOf(node);
         String aliasId = nodeAliasIds.getOrDefault(uuid, null);
-        if(aliasId == null) {
+        if (aliasId == null) {
             aliasId = StringUtils.makeUniqueString(StringUtils.jsonify(node.getName()), "-", nodeAliasIds.values());
             nodeAliasIds.put(uuid, aliasId);
         }
@@ -131,6 +135,7 @@ public class JIPipeGraph implements JIPipeValidatable {
 
     /**
      * Gets the UUID of a node
+     *
      * @param node the node
      * @return the UUID or null if the node is not contained within this graph.
      */
@@ -140,6 +145,7 @@ public class JIPipeGraph implements JIPipeValidatable {
 
     /**
      * Gets a node by its UUID
+     *
      * @param uuid the UUID
      * @return the node assigned to this UUID
      */
@@ -149,6 +155,7 @@ public class JIPipeGraph implements JIPipeValidatable {
 
     /**
      * Changes the UUID of the node
+     *
      * @param node the node
      * @param uuid the uuid
      */
@@ -166,6 +173,7 @@ public class JIPipeGraph implements JIPipeValidatable {
 
     /**
      * Gets the UUID of the compartment
+     *
      * @param node the node
      * @return the UUID of the compartment
      */
@@ -175,13 +183,14 @@ public class JIPipeGraph implements JIPipeValidatable {
 
     /**
      * Gets the compartment UUIDs where the node is also visible inside
+     *
      * @param node the node
      * @return set of compartment UUIDs (writeable)
      */
     public Set<UUID> getVisibleCompartmentUUIDsOf(JIPipeGraphNode node) {
         UUID uuid = getUUIDOf(node);
         Set<UUID> result = nodeVisibleCompartmentUUIDs.getOrDefault(uuid, null);
-        if(result == null) {
+        if (result == null) {
             result = new HashSet<>();
             nodeVisibleCompartmentUUIDs.put(uuid, result);
         }
@@ -191,20 +200,20 @@ public class JIPipeGraph implements JIPipeValidatable {
     /**
      * Finds a node UUID by its UUID (as string) or alias ID.
      * Prefers UUID.
+     *
      * @param uuidOrAlias the UUID string or alias ID
      * @return the node or null if it could not be found
      */
     public UUID findNodeUUID(String uuidOrAlias) {
-        if(StringUtils.isNullOrEmpty(uuidOrAlias))
+        if (StringUtils.isNullOrEmpty(uuidOrAlias))
             return null;
         try {
             JIPipeGraphNode node = nodeUUIDs.getOrDefault(UUID.fromString(uuidOrAlias), null);
-            if(node != null)
+            if (node != null)
                 return node.getUUIDInGraph();
             else
                 return null;
-        }
-        catch (IllegalArgumentException e) {
+        } catch (IllegalArgumentException e) {
             return nodeAliasIds.inverse().getOrDefault(uuidOrAlias, null);
         }
     }
@@ -212,21 +221,20 @@ public class JIPipeGraph implements JIPipeValidatable {
     /**
      * Finds a node by its UUID (as string) or alias ID.
      * Prefers UUID.
+     *
      * @param uuidOrAlias the UUID string or alias ID
      * @return the node or null if it could not be found
      */
     public JIPipeGraphNode findNode(String uuidOrAlias) {
-        if(StringUtils.isNullOrEmpty(uuidOrAlias))
+        if (StringUtils.isNullOrEmpty(uuidOrAlias))
             return null;
         try {
             return nodeUUIDs.getOrDefault(UUID.fromString(uuidOrAlias), null);
-        }
-        catch (IllegalArgumentException e) {
+        } catch (IllegalArgumentException e) {
             UUID uuid = nodeAliasIds.inverse().getOrDefault(uuidOrAlias, null);
-            if(uuid != null) {
+            if (uuid != null) {
                 return getNodeByUUID(uuid);
-            }
-            else {
+            } else {
                 return null;
             }
         }
@@ -243,8 +251,8 @@ public class JIPipeGraph implements JIPipeValidatable {
     /**
      * Inserts an algorithm into the graph
      *
-     * @param uuid         The unique ID
-     * @param node   The node
+     * @param uuid        The unique ID
+     * @param node        The node
      * @param compartment The compartment where the algorithm will be placed. Can be null.
      * @return the ID of the inserted node
      */
@@ -283,7 +291,7 @@ public class JIPipeGraph implements JIPipeValidatable {
      * Inserts a node into the graph.
      * Its compartment is null.
      *
-     * @param node   The node
+     * @param node The node
      * @return the ID of the inserted node
      */
     public UUID insertNode(JIPipeGraphNode node) {
@@ -293,7 +301,7 @@ public class JIPipeGraph implements JIPipeValidatable {
     /**
      * Inserts a node into the graph.
      *
-     * @param node   The node
+     * @param node        The node
      * @param compartment The compartment where the algorithm will be placed
      * @return the ID of the inserted node
      */
@@ -318,9 +326,10 @@ public class JIPipeGraph implements JIPipeValidatable {
 
     /**
      * Returns additional metadata or null if it does not exist
+     *
      * @param klass returned metadata class
-     * @param key metadata key
-     * @param <T> returned metadata class
+     * @param key   metadata key
+     * @param <T>   returned metadata class
      * @return the object or null
      */
     public <T> T getAdditionalMetadata(Class<T> klass, String key) {
@@ -333,7 +342,8 @@ public class JIPipeGraph implements JIPipeValidatable {
 
     /**
      * Attaches additional metadata (persistent)
-     * @param key the key
+     *
+     * @param key    the key
      * @param object JSON-serializable object
      */
     public void attachAdditionalMetadata(String key, Object object) {
@@ -413,11 +423,12 @@ public class JIPipeGraph implements JIPipeValidatable {
 
     /**
      * Sets the compartment of a node
-     * @param nodeUUID the node
+     *
+     * @param nodeUUID        the node
      * @param compartmentUUID the compartment
      */
     public void setCompartment(UUID nodeUUID, UUID compartmentUUID) {
-        if(!nodeUUIDs.containsKey(nodeUUID)) {
+        if (!nodeUUIDs.containsKey(nodeUUID)) {
             throw new IllegalArgumentException("Graph does not contain a node with UUID " + nodeUUID);
         }
         nodeCompartmentUUIDs.put(nodeUUID, compartmentUUID);
@@ -432,7 +443,7 @@ public class JIPipeGraph implements JIPipeValidatable {
     public void removeCompartment(UUID compartmentUUID) {
         Set<UUID> toRemove = new HashSet<>();
         for (Map.Entry<UUID, UUID> entry : nodeCompartmentUUIDs.entrySet()) {
-            if(Objects.equals(entry.getValue(), compartmentUUID)) {
+            if (Objects.equals(entry.getValue(), compartmentUUID)) {
                 toRemove.add(entry.getKey());
             }
         }
@@ -446,7 +457,7 @@ public class JIPipeGraph implements JIPipeValidatable {
      * The algorithm should exist within the graph.
      *
      * @param node The node to be removed
-     * @param user      if a user triggered the operation. If true, will not remove internal nodes
+     * @param user if a user triggered the operation. If true, will not remove internal nodes
      */
     public void removeNode(JIPipeGraphNode node, boolean user) {
         if (user && !node.getCategory().userCanDelete())
@@ -546,14 +557,14 @@ public class JIPipeGraph implements JIPipeValidatable {
     /**
      * Extracts all parameters as tree.
      *
-     * @return the tree
      * @param useAliasIds if enabled, paths will use alias Ids instead of UUIDs
+     * @return the tree
      */
     public JIPipeParameterTree getParameterTree(boolean useAliasIds) {
         JIPipeParameterTree tree = new JIPipeParameterTree();
         for (Map.Entry<UUID, JIPipeGraphNode> entry : nodeUUIDs.entrySet()) {
             String id;
-            if(useAliasIds)
+            if (useAliasIds)
                 id = getAliasIdOf(entry.getValue());
             else
                 id = entry.getKey().toString();
@@ -804,6 +815,7 @@ public class JIPipeGraph implements JIPipeValidatable {
     /**
      * Returns the set of node UUIDs.
      * This is an immutable set. Not safe for modification.
+     *
      * @return the UUIDs
      */
     public Set<UUID> getGraphNodeUUIDs() {
@@ -813,6 +825,7 @@ public class JIPipeGraph implements JIPipeValidatable {
     /**
      * Returns the set of node instances.
      * This is an immutable set. Not safe for modification.
+     *
      * @return the node instances
      */
     public Set<JIPipeGraphNode> getGraphNodes() {
@@ -849,8 +862,8 @@ public class JIPipeGraph implements JIPipeValidatable {
     /**
      * Loads this graph from JSON
      *
-     * @param jsonNode   JSON data
-     * @param issues issues reported during deserializing
+     * @param jsonNode JSON data
+     * @param issues   issues reported during deserializing
      */
     public void fromJson(JsonNode jsonNode, JIPipeValidityReport issues) {
         if (!jsonNode.has("nodes"))
@@ -965,8 +978,7 @@ public class JIPipeGraph implements JIPipeValidatable {
             String aliasId = null;
             try {
                 nodeUUID = UUID.fromString(entry.getKey());
-            }
-            catch (IllegalArgumentException e) {
+            } catch (IllegalArgumentException e) {
                 // Assign new UUID and store it in the legacy assignments
                 nodeUUID = UUID.randomUUID();
                 aliasId = entry.getKey();
@@ -987,16 +999,15 @@ public class JIPipeGraph implements JIPipeValidatable {
                 UUID compartmentUUID;
                 try {
                     compartmentUUID = UUID.fromString(compartmentString);
-                }
-                catch (IllegalArgumentException e) {
+                } catch (IllegalArgumentException e) {
                     // Set to default compartment and store into legacy compartment
                     compartmentUUID = null;
-                    if(!"DEFAULT".equals(compartmentString))
+                    if (!"DEFAULT".equals(compartmentString))
                         nodeLegacyCompartmentIDs.put(nodeUUID, compartmentString);
                 }
 
                 JsonNode aliasIdNode = currentNodeJson.path("jipipe:alias-id");
-                if(!aliasIdNode.isMissingNode()) {
+                if (!aliasIdNode.isMissingNode()) {
                     aliasId = aliasIdNode.asText();
                 }
 
@@ -1005,13 +1016,13 @@ public class JIPipeGraph implements JIPipeValidatable {
                 node.fromJson(currentNodeJson, issues.forCategory("Nodes").forCategory(id));
                 insertNode(nodeUUID, node, compartmentUUID);
 //                System.out.println("Insert: " + algorithm + " alias " + aliasId + " in compartment " + compartmentUUID);
-                if(aliasId != null) {
+                if (aliasId != null) {
                     nodeAliasIds.remove(nodeUUID);
                     nodeAliasIds.put(nodeUUID, aliasId);
                 }
 
                 // Move DEFAULT location to empty string (UUID-based)
-                if(node.getLocations().containsKey("DEFAULT")) {
+                if (node.getLocations().containsKey("DEFAULT")) {
                     node.getLocations().put("", node.getLocations().get("DEFAULT"));
                     node.getLocations().remove("DEFAULT");
                 }
@@ -1259,6 +1270,7 @@ public class JIPipeGraph implements JIPipeValidatable {
     /**
      * Gets the {@link JIPipeProject} if this is a project or project compartment graph.
      * Otherwise will return null
+     *
      * @return the project or null if no project was attached to this graph
      */
     public JIPipeProject getProject() {
@@ -1267,20 +1279,21 @@ public class JIPipeGraph implements JIPipeValidatable {
 
     /**
      * Returns a human-readable name of the compartment.
+     *
      * @param node the node
      * @return the compartment name, human-readable
      */
     public String getCompartmentDisplayNameOf(JIPipeGraphNode node) {
         UUID compartmentUUID = getCompartmentUUIDOf(node);
-        if(compartmentUUID == null)
+        if (compartmentUUID == null)
             return "[No compartment]";
         else {
             JIPipeProject project = getProject();
-            if(project != null) {
+            if (project != null) {
                 JIPipeGraphType graphType = getAttachment(JIPipeGraphType.class);
-                if(graphType == JIPipeGraphType.Project) {
+                if (graphType == JIPipeGraphType.Project) {
                     JIPipeProjectCompartment projectCompartment = project.getCompartments().getOrDefault(compartmentUUID, null);
-                    if(projectCompartment != null)
+                    if (projectCompartment != null)
                         return projectCompartment.getName();
                 }
             }
@@ -1323,6 +1336,7 @@ public class JIPipeGraph implements JIPipeValidatable {
     /**
      * Sets the attachments map
      * Warning: Attachments are not serialized
+     *
      * @param attachments attachments
      */
     public void setAttachments(Map<Class<?>, Object> attachments) {
@@ -1451,7 +1465,7 @@ public class JIPipeGraph implements JIPipeValidatable {
     public Set<JIPipeGraphNode> getNodesWithinCompartment(UUID compartmentId) {
         Set<JIPipeGraphNode> result = new HashSet<>();
         for (Map.Entry<UUID, UUID> entry : nodeCompartmentUUIDs.entrySet()) {
-            if(Objects.equals(entry.getValue(), compartmentId))
+            if (Objects.equals(entry.getValue(), compartmentId))
                 result.add(getNodeByUUID(entry.getKey()));
         }
         return result;
@@ -1527,10 +1541,10 @@ public class JIPipeGraph implements JIPipeValidatable {
             JIPipeGraphNode node = entry.getValue();
             String aliasId = nodeAliasIds.getOrDefault(uuid, null);
             String jsonifiedName = StringUtils.jsonify(node.getName());
-            if(aliasId != null && !aliasId.startsWith(jsonifiedName)) {
+            if (aliasId != null && !aliasId.startsWith(jsonifiedName)) {
                 aliasId = null;
             }
-            if(aliasId == null) {
+            if (aliasId == null) {
                 // None assigned or name changed -> Create one
                 aliasId = StringUtils.makeUniqueString(jsonifiedName, "-", nodeAliasIds.values());
                 nodeAliasIds.put(uuid, aliasId);

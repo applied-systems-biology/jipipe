@@ -16,7 +16,6 @@ package org.hkijena.jipipe.extensions.ijmultitemplatematching;
 import ij.ImagePlus;
 import ij.gui.Roi;
 import ij.gui.ShapeRoi;
-import ij.plugin.frame.RoiManager;
 import ij.process.ColorProcessor;
 import ij.process.ImageProcessor;
 import org.hkijena.jipipe.JIPipe;
@@ -106,10 +105,6 @@ public class MultiTemplateMatchingAlgorithm extends JIPipeMergingAlgorithm {
         this.assembleTemplatesBackground = new OptionalColorParameter(other.assembleTemplatesBackground);
         this.setRestrictToROI(other.restrictToROI);
         this.withNonMaximaSuppression = other.withNonMaximaSuppression;
-    }
-
-    private static String loadScriptFromResources() {
-        return ResourceUtils.getPluginResourceAsString("extensions/ijmultitemplatematching/template-matching-script.py");
     }
 
     @Override
@@ -481,5 +476,9 @@ public class MultiTemplateMatchingAlgorithm extends JIPipeMergingAlgorithm {
     @JIPipeParameter("assemble-templates-output")
     public void setAssembleTemplatesOutput(OptionalDataInfoRefParameter assembleTemplatesOutput) {
         this.assembleTemplatesOutput = assembleTemplatesOutput;
+    }
+
+    private static String loadScriptFromResources() {
+        return ResourceUtils.getPluginResourceAsString("extensions/ijmultitemplatematching/template-matching-script.py");
     }
 }

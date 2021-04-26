@@ -5,7 +5,6 @@ import org.hkijena.jipipe.extensions.parameters.expressions.ExpressionFunction;
 import org.hkijena.jipipe.extensions.parameters.expressions.ExpressionParameters;
 import org.hkijena.jipipe.extensions.parameters.expressions.ParameterInfo;
 
-import java.util.Arrays;
 import java.util.List;
 
 @JIPipeDocumentation(name = "Slice string", description = "Gets a substring. " +
@@ -39,8 +38,8 @@ public class StringSliceFunction extends ExpressionFunction {
     @Override
     public Object evaluate(List<Object> parameters, ExpressionParameters variables) {
         String text = "" + parameters.get(0);
-        int start = ((Number)parameters.get(1)).intValue();
-        int end = parameters.size() >= 3 ? ((Number)parameters.get(2)).intValue() : text.length();
+        int start = ((Number) parameters.get(1)).intValue();
+        int end = parameters.size() >= 3 ? ((Number) parameters.get(2)).intValue() : text.length();
 
         return text.substring(start, end);
     }

@@ -208,17 +208,16 @@ public class NodeGroup extends GraphWrapperAlgorithm implements JIPipeCustomPara
 
     @Override
     public JIPipeParameterVisibility getOverriddenUIParameterVisibility(JIPipeParameterAccess access, JIPipeParameterVisibility currentVisibility) {
-        if(showLimitedParameters) {
-            if(access.getSource() == this) {
+        if (showLimitedParameters) {
+            if (access.getSource() == this) {
                 String key = access.getKey();
-                if("show-limited-parameters".equals(key) || "jipipe:node:name".equals(key) || "jipipe:node:description".equals(key)) {
+                if ("show-limited-parameters".equals(key) || "jipipe:node:name".equals(key) || "jipipe:node:description".equals(key)) {
                     return currentVisibility;
-                }
-                else {
+                } else {
                     return JIPipeParameterVisibility.Hidden;
                 }
             }
-            if(access.getSource() == getBatchGenerationSettings())
+            if (access.getSource() == getBatchGenerationSettings())
                 return JIPipeParameterVisibility.Hidden;
         }
         return super.getOverriddenUIParameterVisibility(access, currentVisibility);

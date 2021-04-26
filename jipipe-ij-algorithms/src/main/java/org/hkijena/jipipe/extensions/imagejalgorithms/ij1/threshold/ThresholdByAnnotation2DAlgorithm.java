@@ -22,21 +22,16 @@ import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeAnnotation;
-import org.hkijena.jipipe.api.data.JIPipeAnnotationMergeStrategy;
 import org.hkijena.jipipe.api.data.JIPipeDefaultMutableSlotConfiguration;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
-import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscale16UData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscale32FData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleMaskData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.extensions.parameters.primitives.OptionalAnnotationNameParameter;
-
-import java.util.ArrayList;
-import java.util.List;
 
 import static org.hkijena.jipipe.extensions.imagejalgorithms.ImageJAlgorithmsExtension.ADD_MASK_QUALIFIER;
 
@@ -97,15 +92,15 @@ public class ThresholdByAnnotation2DAlgorithm extends JIPipeSimpleIteratingAlgor
         float minThreshold = Float.NEGATIVE_INFINITY;
         float maxThreshold = Float.POSITIVE_INFINITY;
 
-        if(minThresholdAnnotation.isEnabled()) {
+        if (minThresholdAnnotation.isEnabled()) {
             JIPipeAnnotation annotation = dataBatch.getAnnotationOfType(minThresholdAnnotation.getContent());
-            if(annotation != null) {
+            if (annotation != null) {
                 minThreshold = NumberUtils.createFloat(annotation.getValue().replace(',', '.'));
             }
         }
-        if(maxThresholdAnnotation.isEnabled()) {
+        if (maxThresholdAnnotation.isEnabled()) {
             JIPipeAnnotation annotation = dataBatch.getAnnotationOfType(maxThresholdAnnotation.getContent());
-            if(annotation != null) {
+            if (annotation != null) {
                 maxThreshold = NumberUtils.createFloat(annotation.getValue().replace(',', '.'));
             }
         }

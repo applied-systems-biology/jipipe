@@ -52,10 +52,6 @@ public class LineStatisticalCategoryPlotData extends StatisticalCategoryPlotData
         this.lineThickness = other.lineThickness;
     }
 
-    public static LineStatisticalCategoryPlotData importFrom(Path storagePath) {
-        return PlotData.importFrom(storagePath, LineStatisticalCategoryPlotData.class);
-    }
-
     @Override
     public JFreeChart getChart() {
         JFreeChart chart = ChartFactory.createLineChart(getTitle(), getCategoryAxisLabel(), getValueAxisLabel(), createDataSet());
@@ -84,5 +80,9 @@ public class LineStatisticalCategoryPlotData extends StatisticalCategoryPlotData
     @JIPipeParameter("line-thickness")
     public void setLineThickness(int lineThickness) {
         this.lineThickness = lineThickness;
+    }
+
+    public static LineStatisticalCategoryPlotData importFrom(Path storagePath) {
+        return PlotData.importFrom(storagePath, LineStatisticalCategoryPlotData.class);
     }
 }

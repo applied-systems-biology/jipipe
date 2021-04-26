@@ -750,9 +750,9 @@ public class JIPipeProjectWorkbench extends JPanel implements JIPipeWorkbench {
     }
 
     public static boolean canAddOrDeleteNodes(JIPipeWorkbench workbench) {
-        if(workbench instanceof JIPipeProjectWorkbench) {
+        if (workbench instanceof JIPipeProjectWorkbench) {
             JIPipeProject project = ((JIPipeProjectWorkbench) workbench).getProject();
-            if(project.getMetadata().getPermissions().isPreventAddingDeletingNodes()) {
+            if (project.getMetadata().getPermissions().isPreventAddingDeletingNodes()) {
                 JOptionPane.showMessageDialog(workbench.getWindow(), "Deleting nodes & compartments is disabled for this project. " +
                         "\n\nIf this is not intentional, change this setting in Project > Project settings > Prevent adding/deleting nodes");
                 return false;
@@ -762,9 +762,9 @@ public class JIPipeProjectWorkbench extends JPanel implements JIPipeWorkbench {
     }
 
     public static boolean canModifySlots(JIPipeWorkbench workbench) {
-        if(workbench instanceof JIPipeProjectWorkbench) {
+        if (workbench instanceof JIPipeProjectWorkbench) {
             JIPipeProject project = ((JIPipeProjectWorkbench) workbench).getProject();
-            if(project.getMetadata().getPermissions().isPreventModifyingSlots()) {
+            if (project.getMetadata().getPermissions().isPreventModifyingSlots()) {
                 JOptionPane.showMessageDialog(workbench.getWindow(), "Modifying slots is disabled for this project. " +
                         "\n\nIf this is not intentional, change this setting in Project > Project settings > Prevent modifying slots");
                 return false;

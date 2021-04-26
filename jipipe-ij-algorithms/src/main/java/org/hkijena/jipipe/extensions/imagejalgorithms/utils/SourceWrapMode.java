@@ -15,22 +15,22 @@ public enum SourceWrapMode {
     }
 
     public int getPixel(ImageProcessor processor, int x, int y) {
-       switch (this) {
-           case Skip:
-           case Zero:
-               return isValidPosition(processor, x, y) ? processor.get(x, y) : 0;
-           case Replicate:
-               return processor.get(WrapMode.Replicate.wrap(x, 0, processor.getWidth()),
-                       WrapMode.Replicate.wrap(y, 0, processor.getHeight()));
-           case Mirror:
-               return processor.get(WrapMode.Mirror.wrap(x, 0, processor.getWidth()),
-                       WrapMode.Mirror.wrap(y, 0, processor.getHeight()));
-           case Wrap:
-               return processor.get(WrapMode.Wrap.wrap(x, 0, processor.getWidth()),
-                       WrapMode.Wrap.wrap(y, 0, processor.getHeight()));
-           default:
-               throw new UnsupportedOperationException();
-       }
+        switch (this) {
+            case Skip:
+            case Zero:
+                return isValidPosition(processor, x, y) ? processor.get(x, y) : 0;
+            case Replicate:
+                return processor.get(WrapMode.Replicate.wrap(x, 0, processor.getWidth()),
+                        WrapMode.Replicate.wrap(y, 0, processor.getHeight()));
+            case Mirror:
+                return processor.get(WrapMode.Mirror.wrap(x, 0, processor.getWidth()),
+                        WrapMode.Mirror.wrap(y, 0, processor.getHeight()));
+            case Wrap:
+                return processor.get(WrapMode.Wrap.wrap(x, 0, processor.getWidth()),
+                        WrapMode.Wrap.wrap(y, 0, processor.getHeight()));
+            default:
+                throw new UnsupportedOperationException();
+        }
     }
 
     public float getPixelFloat(ImageProcessor processor, int x, int y) {

@@ -11,7 +11,9 @@ import org.hkijena.jipipe.api.data.JIPipeAnnotationMergeStrategy;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
-import org.hkijena.jipipe.extensions.imagejalgorithms.utils.*;
+import org.hkijena.jipipe.extensions.imagejalgorithms.utils.RGBBlueTrackBackground;
+import org.hkijena.jipipe.extensions.imagejalgorithms.utils.RGBGreenTrackBackground;
+import org.hkijena.jipipe.extensions.imagejalgorithms.utils.RGBRedTrackBackground;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.color.ColoredImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.color.ImagePlusColorRGBData;
@@ -31,9 +33,9 @@ import java.util.List;
 @JIPipeOutputSlot(value = ImagePlusGreyscaleMaskData.class, slotName = "Output", autoCreate = true)
 public class ManualRGBThreshold2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
-    private IntNumberRangeParameter redThreshold = new IntNumberRangeParameter(0,256);
-    private IntNumberRangeParameter blueThreshold = new IntNumberRangeParameter(0,256);
-    private IntNumberRangeParameter greenThreshold = new IntNumberRangeParameter(0,256);
+    private IntNumberRangeParameter redThreshold = new IntNumberRangeParameter(0, 256);
+    private IntNumberRangeParameter blueThreshold = new IntNumberRangeParameter(0, 256);
+    private IntNumberRangeParameter greenThreshold = new IntNumberRangeParameter(0, 256);
     private OptionalAnnotationNameParameter minRedThresholdAnnotation = new OptionalAnnotationNameParameter("Min Threshold R", true);
     private OptionalAnnotationNameParameter maxRedThresholdAnnotation = new OptionalAnnotationNameParameter("Max Threshold R", true);
     private OptionalAnnotationNameParameter minGreenThresholdAnnotation = new OptionalAnnotationNameParameter("Min Threshold G", true);
@@ -63,7 +65,7 @@ public class ManualRGBThreshold2DAlgorithm extends JIPipeSimpleIteratingAlgorith
 
     @Override
     protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
-        if(!(dataBatch.getInputData(getFirstInputSlot(), ImagePlusData.class, progressInfo) instanceof ColoredImagePlusData)) {
+        if (!(dataBatch.getInputData(getFirstInputSlot(), ImagePlusData.class, progressInfo) instanceof ColoredImagePlusData)) {
             progressInfo.log("Info: Received an image without color space information! Its channels will be interpreted as RGB.");
         }
         ImagePlus img = dataBatch.getInputData(getFirstInputSlot(), ImagePlusColorRGBData.class, progressInfo).getImage();
@@ -88,12 +90,12 @@ public class ManualRGBThreshold2DAlgorithm extends JIPipeSimpleIteratingAlgorith
             for (int y = 0; y < ip.getHeight(); y++) {
                 for (int x = 0; x < ip.getWidth(); x++) {
                     int c = ip.get(x, y);
-                    int r = (c&0xff0000)>>16;
-                    int g = (c&0xff00)>>8;
-                    int b = c&0xff;
+                    int r = (c & 0xff0000) >> 16;
+                    int g = (c & 0xff00) >> 8;
+                    int b = c & 0xff;
 
-                    if(r < maxR && r >= minR && g < maxG && g >= minG && b < maxB && b >= minB) {
-                        mask.set(x,y, 255);
+                    if (r < maxR && r >= minR && g < maxG && g >= minG && b < maxB && b >= minB) {
+                        mask.set(x, y, 255);
                     }
                 }
             }

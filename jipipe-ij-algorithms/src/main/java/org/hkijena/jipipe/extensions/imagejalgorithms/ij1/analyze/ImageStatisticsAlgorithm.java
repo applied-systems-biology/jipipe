@@ -87,92 +87,6 @@ public class ImageStatisticsAlgorithm extends JIPipeIteratingAlgorithm {
         updateRoiSlot();
     }
 
-    public static void addStatisticsRow(ResultsTableData resultsTableData, ImageStatistics statistics, ImageStatisticsSetParameter measurements, Collection<ImageSliceIndex> slices, int allPixels, int width, int height) {
-        resultsTableData.addRow();
-
-        final double perimeter = 2 * width + 2 * height;
-        final double major = Math.max(width / 2.0, height / 2.0);
-        final double minor = Math.min(width / 2.0, height / 2.0);
-        final double area = statistics.area;
-
-        for (Measurement measurement : measurements.getValues()) {
-            switch (measurement) {
-                case StackPosition:
-                    resultsTableData.setLastValue(slices.stream().map(s -> s.getC() + "").sorted(NaturalOrderComparator.INSTANCE).collect(Collectors.joining(", ")), "Ch");
-                    resultsTableData.setLastValue(slices.stream().map(s -> s.getZ() + "").sorted(NaturalOrderComparator.INSTANCE).collect(Collectors.joining(", ")), "Slice");
-                    resultsTableData.setLastValue(slices.stream().map(s -> s.getT() + "").sorted(NaturalOrderComparator.INSTANCE).collect(Collectors.joining(", ")), "Frame");
-                    break;
-                case Area:
-                    resultsTableData.setLastValue(area, "Area");
-                    break;
-                case PixelValueMinMax:
-                    resultsTableData.setLastValue(statistics.min, "Min");
-                    resultsTableData.setLastValue(statistics.max, "Max");
-                    break;
-                case PixelValueStandardDeviation:
-                    resultsTableData.setLastValue(statistics.stdDev, "StdDev");
-                    break;
-                case Centroid:
-                    resultsTableData.setLastValue(width / 2, "X");
-                    resultsTableData.setLastValue(height / 2, "Y");
-                    break;
-                case CenterOfMass:
-                    resultsTableData.setLastValue(width / 2, "XM");
-                    resultsTableData.setLastValue(height / 2, "YM");
-                    break;
-                case BoundingRectangle:
-                    resultsTableData.setLastValue(0, "BX");
-                    resultsTableData.setLastValue(0, "BY");
-                    resultsTableData.setLastValue(width, "Width");
-                    resultsTableData.setLastValue(height, "Height");
-                    break;
-                case ShapeDescriptors:
-                    resultsTableData.setLastValue(4.0 * Math.PI * ((width * height) / (perimeter * perimeter)), "Circ.");
-                    resultsTableData.setLastValue(major / minor, "AR");
-                    resultsTableData.setLastValue(4.0 * (width * height) / (Math.PI * major * major), "Round");
-                    resultsTableData.setLastValue(1, "Solidity");
-                    break;
-                case IntegratedDensity:
-                    resultsTableData.setLastValue(area * statistics.mean, "IntDen");
-                    resultsTableData.setLastValue(statistics.pixelCount * statistics.umean, "RawIntDen");
-                    break;
-                case PixelValueSkewness:
-                    resultsTableData.setLastValue(statistics.skewness, "Skew");
-                    break;
-                case AreaFraction:
-                    resultsTableData.setLastValue(area / allPixels, "%Area");
-                    break;
-                case PixelValueMean:
-                    resultsTableData.setLastValue(statistics.mean, "Mean");
-                    break;
-                case PixelValueModal:
-                    resultsTableData.setLastValue(statistics.dmode, "Mode");
-                    break;
-                case PixelValueMedian:
-                    resultsTableData.setLastValue(statistics.median, "Median");
-                    break;
-                case PixelValueKurtosis:
-                    resultsTableData.setLastValue(statistics.kurtosis, "Kurt");
-                    break;
-                case FitEllipse:
-                    resultsTableData.setLastValue(major, "Major");
-                    resultsTableData.setLastValue(minor, "Minor");
-                    resultsTableData.setLastValue(0, "Angle");
-                    break;
-                case FeretDiameter:
-                    double hyp = Math.sqrt(width * width + height * height);
-                    resultsTableData.setLastValue(hyp, "Feret");
-                    resultsTableData.setLastValue(0, "FeretX");
-                    resultsTableData.setLastValue(0, "FeretY");
-                    resultsTableData.setLastValue(Math.toDegrees(Math.asin(height / hyp)), "FeretAngle");
-                    break;
-                case Perimeter:
-                    resultsTableData.setLastValue(perimeter, "Perim.");
-                    break;
-            }
-        }
-    }
-
     @Override
     protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
         ImagePlus img = dataBatch.getInputData("Image", ImagePlusGreyscaleData.class, progressInfo).getImage();
@@ -389,6 +303,92 @@ public class ImageStatisticsAlgorithm extends JIPipeIteratingAlgorithm {
             }
             if (!slotConfiguration.getInputSlots().containsKey("Mask")) {
                 slotConfiguration.addSlot("Mask", new JIPipeDataSlotInfo(ImagePlusGreyscaleMaskData.class, JIPipeSlotType.Input, "Mask"), false);
+            }
+        }
+    }
+
+    public static void addStatisticsRow(ResultsTableData resultsTableData, ImageStatistics statistics, ImageStatisticsSetParameter measurements, Collection<ImageSliceIndex> slices, int allPixels, int width, int height) {
+        resultsTableData.addRow();
+
+        final double perimeter = 2 * width + 2 * height;
+        final double major = Math.max(width / 2.0, height / 2.0);
+        final double minor = Math.min(width / 2.0, height / 2.0);
+        final double area = statistics.area;
+
+        for (Measurement measurement : measurements.getValues()) {
+            switch (measurement) {
+                case StackPosition:
+                    resultsTableData.setLastValue(slices.stream().map(s -> s.getC() + "").sorted(NaturalOrderComparator.INSTANCE).collect(Collectors.joining(", ")), "Ch");
+                    resultsTableData.setLastValue(slices.stream().map(s -> s.getZ() + "").sorted(NaturalOrderComparator.INSTANCE).collect(Collectors.joining(", ")), "Slice");
+                    resultsTableData.setLastValue(slices.stream().map(s -> s.getT() + "").sorted(NaturalOrderComparator.INSTANCE).collect(Collectors.joining(", ")), "Frame");
+                    break;
+                case Area:
+                    resultsTableData.setLastValue(area, "Area");
+                    break;
+                case PixelValueMinMax:
+                    resultsTableData.setLastValue(statistics.min, "Min");
+                    resultsTableData.setLastValue(statistics.max, "Max");
+                    break;
+                case PixelValueStandardDeviation:
+                    resultsTableData.setLastValue(statistics.stdDev, "StdDev");
+                    break;
+                case Centroid:
+                    resultsTableData.setLastValue(width / 2, "X");
+                    resultsTableData.setLastValue(height / 2, "Y");
+                    break;
+                case CenterOfMass:
+                    resultsTableData.setLastValue(width / 2, "XM");
+                    resultsTableData.setLastValue(height / 2, "YM");
+                    break;
+                case BoundingRectangle:
+                    resultsTableData.setLastValue(0, "BX");
+                    resultsTableData.setLastValue(0, "BY");
+                    resultsTableData.setLastValue(width, "Width");
+                    resultsTableData.setLastValue(height, "Height");
+                    break;
+                case ShapeDescriptors:
+                    resultsTableData.setLastValue(4.0 * Math.PI * ((width * height) / (perimeter * perimeter)), "Circ.");
+                    resultsTableData.setLastValue(major / minor, "AR");
+                    resultsTableData.setLastValue(4.0 * (width * height) / (Math.PI * major * major), "Round");
+                    resultsTableData.setLastValue(1, "Solidity");
+                    break;
+                case IntegratedDensity:
+                    resultsTableData.setLastValue(area * statistics.mean, "IntDen");
+                    resultsTableData.setLastValue(statistics.pixelCount * statistics.umean, "RawIntDen");
+                    break;
+                case PixelValueSkewness:
+                    resultsTableData.setLastValue(statistics.skewness, "Skew");
+                    break;
+                case AreaFraction:
+                    resultsTableData.setLastValue(area / allPixels, "%Area");
+                    break;
+                case PixelValueMean:
+                    resultsTableData.setLastValue(statistics.mean, "Mean");
+                    break;
+                case PixelValueModal:
+                    resultsTableData.setLastValue(statistics.dmode, "Mode");
+                    break;
+                case PixelValueMedian:
+                    resultsTableData.setLastValue(statistics.median, "Median");
+                    break;
+                case PixelValueKurtosis:
+                    resultsTableData.setLastValue(statistics.kurtosis, "Kurt");
+                    break;
+                case FitEllipse:
+                    resultsTableData.setLastValue(major, "Major");
+                    resultsTableData.setLastValue(minor, "Minor");
+                    resultsTableData.setLastValue(0, "Angle");
+                    break;
+                case FeretDiameter:
+                    double hyp = Math.sqrt(width * width + height * height);
+                    resultsTableData.setLastValue(hyp, "Feret");
+                    resultsTableData.setLastValue(0, "FeretX");
+                    resultsTableData.setLastValue(0, "FeretY");
+                    resultsTableData.setLastValue(Math.toDegrees(Math.asin(height / hyp)), "FeretAngle");
+                    break;
+                case Perimeter:
+                    resultsTableData.setLastValue(perimeter, "Perim.");
+                    break;
             }
         }
     }

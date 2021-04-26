@@ -91,7 +91,7 @@ public class JIPipeSlotEditorUI extends JPanel {
         if (canModifyInputSlots()) {
             JButton addInputButton = new JButton("Add input", UIUtils.getIconFromResources("actions/database.png"));
             addInputButton.addActionListener(e -> {
-                if(!JIPipeProjectWorkbench.canModifySlots(editorUI.getWorkbench()))
+                if (!JIPipeProjectWorkbench.canModifySlots(editorUI.getWorkbench()))
                     return;
                 AddAlgorithmSlotPanel.showDialog(this, editorUI.getCanvasUI().getGraphHistory(), algorithm, JIPipeSlotType.Input);
             });
@@ -101,7 +101,7 @@ public class JIPipeSlotEditorUI extends JPanel {
         if (canModifyOutputSlots()) {
             JButton addOutputButton = new JButton("Add output", UIUtils.getIconFromResources("actions/database.png"));
             addOutputButton.addActionListener(e -> {
-                if(!JIPipeProjectWorkbench.canModifySlots(editorUI.getWorkbench()))
+                if (!JIPipeProjectWorkbench.canModifySlots(editorUI.getWorkbench()))
                     return;
                 AddAlgorithmSlotPanel.showDialog(this, editorUI.getCanvasUI().getGraphHistory(), algorithm, JIPipeSlotType.Output);
             });
@@ -144,7 +144,7 @@ public class JIPipeSlotEditorUI extends JPanel {
     }
 
     private void editSlot() {
-        if(!JIPipeProjectWorkbench.canModifySlots(editorUI.getWorkbench()))
+        if (!JIPipeProjectWorkbench.canModifySlots(editorUI.getWorkbench()))
             return;
         JIPipeDataSlot slot = getSelectedSlot();
         if (!slot.getInfo().isUserModifiable()) {
@@ -295,7 +295,7 @@ public class JIPipeSlotEditorUI extends JPanel {
      */
     @Subscribe
     public void onAlgorithmSlotsChanged(JIPipeGraph.NodeSlotsChangedEvent event) {
-        if(isDisplayable()) {
+        if (isDisplayable()) {
             reloadList();
         }
     }

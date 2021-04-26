@@ -239,8 +239,8 @@ public class CustomAutoThreshold2D16UAlgorithm extends JIPipeIteratingAlgorithm 
 
             // Get target processor and threshold
             ByteProcessor targetProcessor = (ByteProcessor) (outputImage.isStack() ?
-                                    outputImage.getStack().getProcessor(outputImage.getStackIndex(index.getC() + 1, index.getZ() + 1, index.getT() + 1))
-                                    : outputImage.getProcessor());
+                    outputImage.getStack().getProcessor(outputImage.getStackIndex(index.getC() + 1, index.getZ() + 1, index.getT() + 1))
+                    : outputImage.getProcessor());
             applyThreshold((ShortProcessor) ip, targetProcessor, threshold);
 
             thresholds.add(threshold);
@@ -263,7 +263,7 @@ public class CustomAutoThreshold2D16UAlgorithm extends JIPipeIteratingAlgorithm 
         short[] imageBytes = (short[]) ip.getPixels();
         byte[] maskBytes = mask != null ? (byte[]) mask.getPixels() : null;
         for (int i = 0; i < imageBytes.length; i++) {
-            if(mask == null || Byte.toUnsignedInt(maskBytes[i]) > 0) {
+            if (mask == null || Byte.toUnsignedInt(maskBytes[i]) > 0) {
                 target.add(imageBytes[i]);
             }
         }
@@ -283,7 +283,7 @@ public class CustomAutoThreshold2D16UAlgorithm extends JIPipeIteratingAlgorithm 
         parameters.set("stat_raw_int_den", statistics.pixelCount * statistics.umean);
         parameters.set("stat_skewness", statistics.skewness);
         parameters.set("stat_area_fraction", statistics.areaFraction);
-        if(accessPixels) {
+        if (accessPixels) {
             List<Integer> pixelList = new ArrayList<>();
             for (int i = 0; i < pixels.size(); i++) {
                 pixelList.add(Short.toUnsignedInt(pixels.get(i)));
@@ -298,7 +298,7 @@ public class CustomAutoThreshold2D16UAlgorithm extends JIPipeIteratingAlgorithm 
         short[] src = (short[]) source.getPixels();
         byte[] dst = (byte[]) target.getPixels();
         for (int i = 0; i < src.length; i++) {
-            dst[i] = src[i] > threshold ? (byte)255 : 0;
+            dst[i] = src[i] > threshold ? (byte) 255 : 0;
         }
     }
 

@@ -62,23 +62,6 @@ public class JIPipeRun implements JIPipeRunnable {
         initializeInternalStoragePaths();
     }
 
-    /**
-     * Loads a JIPipeRun from a folder
-     *
-     * @param folder Folder containing the run
-     * @return The loaded run
-     * @throws IOException Triggered by {@link com.fasterxml.jackson.databind.ObjectMapper}
-     */
-    public static JIPipeRun loadFromFolder(Path folder, JIPipeValidityReport report) throws IOException {
-        Path parameterFile = folder.resolve("project.jip");
-        JIPipeProject project = JIPipeProject.loadProject(parameterFile, report);
-        JIPipeRunSettings configuration = new JIPipeRunSettings();
-        configuration.setOutputPath(folder);
-        JIPipeRun run = new JIPipeRun(project, configuration);
-        run.prepare();
-        return run;
-    }
-
     private void initializeRelativeDirectories() {
         for (JIPipeGraphNode algorithm : copiedGraph.getGraphNodes()) {
             algorithm.setWorkDirectory(null);
@@ -449,5 +432,22 @@ public class JIPipeRun implements JIPipeRunnable {
     @Override
     public String getTaskLabel() {
         return "Run";
+    }
+
+    /**
+     * Loads a JIPipeRun from a folder
+     *
+     * @param folder Folder containing the run
+     * @return The loaded run
+     * @throws IOException Triggered by {@link com.fasterxml.jackson.databind.ObjectMapper}
+     */
+    public static JIPipeRun loadFromFolder(Path folder, JIPipeValidityReport report) throws IOException {
+        Path parameterFile = folder.resolve("project.jip");
+        JIPipeProject project = JIPipeProject.loadProject(parameterFile, report);
+        JIPipeRunSettings configuration = new JIPipeRunSettings();
+        configuration.setOutputPath(folder);
+        JIPipeRun run = new JIPipeRun(project, configuration);
+        run.prepare();
+        return run;
     }
 }

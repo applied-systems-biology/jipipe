@@ -34,7 +34,7 @@ import java.util.Arrays;
  * This is the JIPipe version of the ImageJ plugin https://imagej.nih.gov/ij/plugins/canny/Canny_Edge_Detector.java
  *
  * <p>This is a plugin version of Tom Gibara's implementation of the Canny edge detection algorithm in Java, available at: </p>
- *     http://www.tomgibara.com/computer-vision/canny-edge-detector
+ * http://www.tomgibara.com/computer-vision/canny-edge-detector
  *
  * <p><em>This software has been released into the public domain.
  * <strong>Please read the notes in this source file for additional information.
@@ -49,7 +49,6 @@ import java.util.Arrays;
  * consult an explanation of the algorithm.</p>
  *
  * @author Tom Gibara
- *
  */
 
 @JIPipeDocumentation(name = "Canny edge detector 2D", description = "Applies a Canny edge detector. " +
@@ -187,7 +186,7 @@ public class CannyEdgeDetectorAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         if (normalizeContrast) normalizeContrast(data, picsize);
         computeGradients(gaussianKernelRadius, gaussianKernelWidth, xGradient, yGradient, xConv, yConv, data, magnitude, width, height);
         int low = (int) Math.round(lowThreshold * MAGNITUDE_SCALE);
-        int high = (int) Math.round( highThreshold * MAGNITUDE_SCALE);
+        int high = (int) Math.round(highThreshold * MAGNITUDE_SCALE);
         performHysteresis(low, high, data, magnitude, width, height);
         thresholdEdges(data, picsize);
 
@@ -235,7 +234,7 @@ public class CannyEdgeDetectorAlgorithm extends JIPipeSimpleIteratingAlgorithm {
                 float sumY = sumX;
                 int xOffset = 1;
                 int yOffset = width;
-                for(; xOffset < kwidth ;) {
+                for (; xOffset < kwidth; ) {
                     sumY += kernel[xOffset] * (data[index - yOffset] + data[index + yOffset]);
                     sumX += kernel[xOffset] * (data[index - xOffset] + data[index + xOffset]);
                     yOffset += width;
@@ -390,7 +389,7 @@ public class CannyEdgeDetectorAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         int x0 = x1 == 0 ? x1 : x1 - 1;
         int x2 = x1 == width - 1 ? x1 : x1 + 1;
         int y0 = y1 == 0 ? y1 : y1 - 1;
-        int y2 = y1 == height -1 ? y1 : y1 + 1;
+        int y2 = y1 == height - 1 ? y1 : y1 + 1;
 
         data[i1] = magnitude[i1];
         for (int x = x0; x <= x2; x++) {
@@ -421,7 +420,7 @@ public class CannyEdgeDetectorAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     private void readLuminance(ImagePlus sourceImage, int[] data) {
         ImageProcessor ip = sourceImage.getProcessor();
         ip = ip.convertToByte(true);
-        for (int i=0; i<ip.getPixelCount(); i++)
+        for (int i = 0; i < ip.getPixelCount(); i++)
             data[i] = ip.get(i);
     }
 
@@ -435,8 +434,8 @@ public class CannyEdgeDetectorAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         int j = 0;
         for (int i = 0; i < histogram.length; i++) {
             sum += histogram[i];
-            int target = sum*255/picsize;
-            for (int k = j+1; k <=target; k++) {
+            int target = sum * 255 / picsize;
+            for (int k = j + 1; k <= target; k++) {
                 remap[k] = i;
             }
             j = target;

@@ -32,7 +32,7 @@ public class JsonAlgorithmToGroupNodeUIContextAction implements NodeUIContextAct
 
     @Override
     public void run(JIPipeGraphCanvasUI canvasUI, Set<JIPipeNodeUI> selection) {
-        if(!JIPipeProjectWorkbench.canAddOrDeleteNodes(canvasUI.getWorkbench()))
+        if (!JIPipeProjectWorkbench.canAddOrDeleteNodes(canvasUI.getWorkbench()))
             return;
         canvasUI.getGraphHistory().addSnapshotBefore(new GraphChangedHistorySnapshot(canvasUI.getGraph(), "Convert to group"));
         for (JIPipeNodeUI ui : selection) {

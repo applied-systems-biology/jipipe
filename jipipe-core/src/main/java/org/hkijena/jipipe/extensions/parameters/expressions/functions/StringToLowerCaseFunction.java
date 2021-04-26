@@ -5,7 +5,6 @@ import org.hkijena.jipipe.extensions.parameters.expressions.ExpressionFunction;
 import org.hkijena.jipipe.extensions.parameters.expressions.ExpressionParameters;
 import org.hkijena.jipipe.extensions.parameters.expressions.ParameterInfo;
 
-import java.util.Arrays;
 import java.util.List;
 
 @JIPipeDocumentation(name = "String to lowercase", description = "Converts a string to a lowercase string")

@@ -128,7 +128,7 @@ public class Warp2DAlgorithm extends JIPipeIteratingAlgorithm {
                 img.getBitDepth());
 
         boolean globalVectorField = vectorField.getStackSize() == 2;
-        if(!globalVectorField) {
+        if (!globalVectorField) {
             int vectorChannels;
             switch (vectorDimension) {
                 case Channel:
@@ -143,7 +143,7 @@ public class Warp2DAlgorithm extends JIPipeIteratingAlgorithm {
                 default:
                     throw new UnsupportedOperationException();
             }
-            if(vectorChannels != 2) {
+            if (vectorChannels != 2) {
                 throw new UserFriendlyRuntimeException("Vector field has wrong number of slices!",
                         "Invalid vector field!",
                         getName(),
@@ -155,7 +155,7 @@ public class Warp2DAlgorithm extends JIPipeIteratingAlgorithm {
         ImageJUtils.forEachIndexedZCTSlice(img, (inputProcessor, index) -> {
             // Get the result processor
             ImageProcessor resultProcessor;
-            if(result.isStack())
+            if (result.isStack())
                 resultProcessor = result.getStack().getProcessor(result.getStackIndex(index.getC() + 1, index.getZ() + 1, index.getT() + 1));
             else
                 resultProcessor = result.getProcessor();
@@ -164,11 +164,10 @@ public class Warp2DAlgorithm extends JIPipeIteratingAlgorithm {
             ImageProcessor vecX;
             ImageProcessor vecY;
 
-            if(globalVectorField) {
+            if (globalVectorField) {
                 vecX = vectorField.getStack().getProcessor(1);
                 vecY = vectorField.getStack().getProcessor(2);
-            }
-            else {
+            } else {
                 switch (vectorDimension) {
                     case Channel:
                         vecX = vectorField.getStack().getProcessor(vectorField.getStackIndex(1, index.getZ() + 1, index.getT() + 1));
@@ -197,26 +196,24 @@ public class Warp2DAlgorithm extends JIPipeIteratingAlgorithm {
                     int tx;
                     int ty;
 
-                    if(polarCoordinates) {
-                        tx = (int)(dx * Math.cos(dy));
-                        ty = (int)(dy * Math.sin(dy));
-                        if(!absoluteCoordinates) {
+                    if (polarCoordinates) {
+                        tx = (int) (dx * Math.cos(dy));
+                        ty = (int) (dy * Math.sin(dy));
+                        if (!absoluteCoordinates) {
                             tx += x;
                             ty += y;
                         }
-                    }
-                    else {
-                        if(absoluteCoordinates) {
-                            tx = (int)dx;
-                            ty = (int)dy;
-                        }
-                        else {
+                    } else {
+                        if (absoluteCoordinates) {
+                            tx = (int) dx;
+                            ty = (int) dy;
+                        } else {
                             tx = (int) (x + dx);
-                            ty = (int)(y + dy);
+                            ty = (int) (y + dy);
                         }
                     }
 
-                    if(invertTransform) {
+                    if (invertTransform) {
                         int _sx = sx;
                         int _sy = sy;
                         sx = tx;
@@ -225,27 +222,26 @@ public class Warp2DAlgorithm extends JIPipeIteratingAlgorithm {
                         ty = _sy;
                     }
 
-                    if(multiplier == 0.0) {
+                    if (multiplier == 0.0) {
                         tx = sx;
                         ty = sy;
-                    }
-                    else if(multiplier != 1.0) {
-                        tx = (int)(sx + multiplier * (tx - sx));
-                        ty = (int)(sy + multiplier * (ty - sy));
+                    } else if (multiplier != 1.0) {
+                        tx = (int) (sx + multiplier * (tx - sx));
+                        ty = (int) (sy + multiplier * (ty - sy));
                     }
 
-                    sx = wrapMode.wrap(sx, 0,inputProcessor.getWidth());
-                    sy = wrapMode.wrap(sy, 0,inputProcessor.getHeight());
-                    tx = wrapMode.wrap(tx, 0,resultProcessor.getWidth());
-                    ty = wrapMode.wrap(ty, 0,resultProcessor.getHeight());
+                    sx = wrapMode.wrap(sx, 0, inputProcessor.getWidth());
+                    sy = wrapMode.wrap(sy, 0, inputProcessor.getHeight());
+                    tx = wrapMode.wrap(tx, 0, resultProcessor.getWidth());
+                    ty = wrapMode.wrap(ty, 0, resultProcessor.getHeight());
 
-                    if(sx < 0 || sx >= inputProcessor.getWidth())
+                    if (sx < 0 || sx >= inputProcessor.getWidth())
                         continue;
-                    if(sy < 0 || sy >= inputProcessor.getHeight())
+                    if (sy < 0 || sy >= inputProcessor.getHeight())
                         continue;
-                    if(tx < 0 || tx >= resultProcessor.getWidth())
+                    if (tx < 0 || tx >= resultProcessor.getWidth())
                         continue;
-                    if(ty < 0 || ty >= resultProcessor.getHeight())
+                    if (ty < 0 || ty >= resultProcessor.getHeight())
                         continue;
 
                     // Copy pixel

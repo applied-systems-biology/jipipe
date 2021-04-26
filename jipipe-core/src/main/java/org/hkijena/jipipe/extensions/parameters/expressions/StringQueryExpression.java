@@ -44,13 +44,14 @@ public class StringQueryExpression extends DefaultExpressionParameter implements
 
     /**
      * Attempts to run the expression. If this fails, the expression itself is returned.
+     *
      * @param expressionParameters expression parameters
      * @return expression result or the expression itself
      */
     public String generate(ExpressionParameters expressionParameters) {
         try {
             Object evaluationResult = evaluate(expressionParameters);
-           return StringUtils.nullToEmpty(evaluationResult);
+            return StringUtils.nullToEmpty(evaluationResult);
         } catch (Exception e) {
         }
         return getExpression();
@@ -59,7 +60,7 @@ public class StringQueryExpression extends DefaultExpressionParameter implements
     /**
      * Queries a string out of the list
      *
-     * @param strings existing annotations for the data
+     * @param strings              existing annotations for the data
      * @param expressionParameters expression parameters
      * @return the annotation that matches the query or null if none matches
      */
@@ -90,7 +91,7 @@ public class StringQueryExpression extends DefaultExpressionParameter implements
     /**
      * Generates an annotation value
      *
-     * @param strings existing annotations for the data
+     * @param strings              existing annotations for the data
      * @param expressionParameters expression parameters
      * @return the annotation that matches the query or null if none matches
      */

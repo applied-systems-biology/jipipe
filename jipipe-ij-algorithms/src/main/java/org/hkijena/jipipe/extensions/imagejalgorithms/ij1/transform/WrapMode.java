@@ -13,7 +13,7 @@ public enum WrapMode {
                 return value;
             case Wrap:
                 value -= min;
-                while(value < 0) {
+                while (value < 0) {
                     value += width;
                 }
                 return min + (value % width);
@@ -21,9 +21,9 @@ public enum WrapMode {
                 return Math.max(min, Math.min(max, value));
             case Mirror:
                 if (value < min)
-                    return  2 * min - value;
-                else if(value > max)
-                    return  2 * max - value;
+                    return 2 * min - value;
+                else if (value > max)
+                    return 2 * max - value;
                 else
                     return value;
             default:

@@ -37,10 +37,6 @@ public class StringFormData extends ParameterFormData {
         annotationIOSettings.getEventBus().register(this);
     }
 
-    public static StringFormData importFrom(Path rowStorage) {
-        return FormData.importFrom(rowStorage, StringFormData.class);
-    }
-
     @JIPipeDocumentation(name = "Initial value", description = "The initial string value")
     @JIPipeParameter("initial-value")
     public String getValue() {
@@ -117,5 +113,9 @@ public class StringFormData extends ParameterFormData {
             annotationIOSettings.getAnnotationMergeStrategy().mergeInto(dataBatch.getAnnotations(),
                     Collections.singletonList(annotationIOSettings.getOutputAnnotation().createAnnotation(value)));
         }
+    }
+
+    public static StringFormData importFrom(Path rowStorage) {
+        return FormData.importFrom(rowStorage, StringFormData.class);
     }
 }

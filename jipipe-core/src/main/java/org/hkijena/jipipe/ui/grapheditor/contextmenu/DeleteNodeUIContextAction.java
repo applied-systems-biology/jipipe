@@ -40,7 +40,7 @@ public class DeleteNodeUIContextAction implements NodeUIContextAction {
 
     @Override
     public void run(JIPipeGraphCanvasUI canvasUI, Set<JIPipeNodeUI> selection) {
-        if(!JIPipeProjectWorkbench.canAddOrDeleteNodes(canvasUI.getWorkbench()))
+        if (!JIPipeProjectWorkbench.canAddOrDeleteNodes(canvasUI.getWorkbench()))
             return;
         if (!GraphEditorUISettings.getInstance().isAskOnDeleteNode() || JOptionPane.showConfirmDialog(canvasUI.getWorkbench().getWindow(),
                 "Do you really want to remove the selected nodes?", "Delete algorithms",

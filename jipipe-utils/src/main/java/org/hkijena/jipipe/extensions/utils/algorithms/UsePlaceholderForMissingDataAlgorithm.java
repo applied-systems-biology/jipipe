@@ -32,7 +32,7 @@ public class UsePlaceholderForMissingDataAlgorithm extends JIPipeMissingDataGene
 
     @Override
     protected void runGenerator(JIPipeMergingDataBatch dataBatch, JIPipeDataSlot inputSlot, JIPipeDataSlot outputSlot, JIPipeProgressInfo progressInfo) {
-        if(dataBatch.getInputRows("Reference").isEmpty())
+        if (dataBatch.getInputRows("Reference").isEmpty())
             return;
         JIPipeDataSlot placeholderSlot = getInputSlot("Placeholder");
         for (int row = 0; row < placeholderSlot.getRowCount(); row++) {

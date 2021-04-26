@@ -315,7 +315,7 @@ public class GraphWrapperAlgorithm extends JIPipeAlgorithm implements JIPipeData
     @Override
     public void setWorkDirectory(Path workDirectory) {
         super.setWorkDirectory(workDirectory);
-        if(wrappedGraph != null) {
+        if (wrappedGraph != null) {
             for (JIPipeGraphNode node : wrappedGraph.getGraphNodes()) {
                 node.setWorkDirectory(workDirectory);
             }

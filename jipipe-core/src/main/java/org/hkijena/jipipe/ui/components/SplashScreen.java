@@ -47,19 +47,6 @@ public class SplashScreen extends JWindow implements LogListener, Contextual {
         initialize();
     }
 
-    public static void main(String[] args) {
-        getInstance().showSplash(null);
-    }
-
-    public static SplashScreen getInstance() {
-        synchronized (instanceLock) {
-            if (instance == null) {
-                instance = new SplashScreen();
-            }
-        }
-        return instance;
-    }
-
     private void initialize() {
         setSize(640, 480);
         setContentPane(new ContentPanel());
@@ -165,6 +152,19 @@ public class SplashScreen extends JWindow implements LogListener, Contextual {
     @Override
     public void setContext(Context context) {
         this.context = context;
+    }
+
+    public static void main(String[] args) {
+        getInstance().showSplash(null);
+    }
+
+    public static SplashScreen getInstance() {
+        synchronized (instanceLock) {
+            if (instance == null) {
+                instance = new SplashScreen();
+            }
+        }
+        return instance;
     }
 
     private static class ContentPanel extends JPanel {

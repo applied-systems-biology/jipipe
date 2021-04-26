@@ -26,37 +26,6 @@ import java.util.stream.Collectors;
 public interface JIPipeNodeInfo {
 
     /**
-     * Gets the registered algorithms, grouped by their menu paths
-     *
-     * @param infos The infos to group
-     * @return Map from menu path to algorithms with this menu path
-     */
-    static Map<String, Set<JIPipeNodeInfo>> groupByMenuPaths(Set<JIPipeNodeInfo> infos) {
-        Map<String, Set<JIPipeNodeInfo>> result = new HashMap<>();
-        for (JIPipeNodeInfo info : infos) {
-            String menuPath = StringUtils.getCleanedMenuPath(info.getMenuPath());
-            Set<JIPipeNodeInfo> group = result.getOrDefault(menuPath, null);
-            if (group == null) {
-                group = new HashSet<>();
-                result.put(menuPath, group);
-            }
-            group.add(info);
-        }
-
-        return result;
-    }
-
-    /**
-     * Gets a sorted list of algorithms
-     *
-     * @param entries the algorithms to sort
-     * @return sorted list
-     */
-    static List<JIPipeNodeInfo> getSortedList(Set<JIPipeNodeInfo> entries) {
-        return entries.stream().sorted(Comparator.comparing(JIPipeNodeInfo::getName)).collect(Collectors.toList());
-    }
-
-    /**
      * Generates an Id for this info
      *
      * @return The ID
@@ -160,5 +129,36 @@ public interface JIPipeNodeInfo {
      */
     default boolean isRunnable() {
         return true;
+    }
+
+    /**
+     * Gets the registered algorithms, grouped by their menu paths
+     *
+     * @param infos The infos to group
+     * @return Map from menu path to algorithms with this menu path
+     */
+    static Map<String, Set<JIPipeNodeInfo>> groupByMenuPaths(Set<JIPipeNodeInfo> infos) {
+        Map<String, Set<JIPipeNodeInfo>> result = new HashMap<>();
+        for (JIPipeNodeInfo info : infos) {
+            String menuPath = StringUtils.getCleanedMenuPath(info.getMenuPath());
+            Set<JIPipeNodeInfo> group = result.getOrDefault(menuPath, null);
+            if (group == null) {
+                group = new HashSet<>();
+                result.put(menuPath, group);
+            }
+            group.add(info);
+        }
+
+        return result;
+    }
+
+    /**
+     * Gets a sorted list of algorithms
+     *
+     * @param entries the algorithms to sort
+     * @return sorted list
+     */
+    static List<JIPipeNodeInfo> getSortedList(Set<JIPipeNodeInfo> entries) {
+        return entries.stream().sorted(Comparator.comparing(JIPipeNodeInfo::getName)).collect(Collectors.toList());
     }
 }

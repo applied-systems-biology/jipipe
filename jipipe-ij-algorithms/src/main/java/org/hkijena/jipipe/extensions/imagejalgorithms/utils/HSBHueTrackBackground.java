@@ -18,6 +18,6 @@ public class HSBHueTrackBackground implements PaintGenerator {
 
     @Override
     public Paint generate(int x, int y, int width, int height) {
-        return new LinearGradientPaint(x,y,x+width,y, FRACTIONS, COLORS);
+        return new LinearGradientPaint(x, y, x + width, y, FRACTIONS, COLORS);
     }
 }

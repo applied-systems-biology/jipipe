@@ -66,10 +66,10 @@ public class UnMeltTableAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
         Set<String> valueColumnNames = new HashSet<>();
         for (String columnName : input.getColumnNames()) {
-           if(valueColumns.test(columnName))
-               valueColumnNames.add(columnName);
-           else
-               output.addColumn(columnName, input.isStringColumn(columnName));
+            if (valueColumns.test(columnName))
+                valueColumnNames.add(columnName);
+            else
+                output.addColumn(columnName, input.isStringColumn(columnName));
         }
 
         // Create the output value column
@@ -89,7 +89,7 @@ public class UnMeltTableAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
                 // Copy category data
                 for (String categoryColumnName : input.getColumnNames()) {
-                    if(!valueColumnNames.contains(categoryColumnName)) {
+                    if (!valueColumnNames.contains(categoryColumnName)) {
                         output.setValueAt(input.getValueAt(row, input.getColumnIndex(categoryColumnName)),
                                 targetRow, categoryColumnName);
                     }

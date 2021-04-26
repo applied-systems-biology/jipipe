@@ -37,14 +37,6 @@ public class ImageViewerWindow extends JFrame implements WindowListener {
         initialize();
     }
 
-    public static Set<ImageViewerWindow> getOpenWindows() {
-        return ImmutableSet.copyOf(OPEN_WINDOWS);
-    }
-
-    public static ImageViewerWindow getActiveWindow() {
-        return ACTIVE_WINDOW;
-    }
-
     private void initialize() {
         setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
         setIconImage(UIUtils.getIcon128FromResources("jipipe.png").getImage());
@@ -95,5 +87,13 @@ public class ImageViewerWindow extends JFrame implements WindowListener {
     @Override
     public void windowDeactivated(WindowEvent e) {
 
+    }
+
+    public static Set<ImageViewerWindow> getOpenWindows() {
+        return ImmutableSet.copyOf(OPEN_WINDOWS);
+    }
+
+    public static ImageViewerWindow getActiveWindow() {
+        return ACTIVE_WINDOW;
     }
 }

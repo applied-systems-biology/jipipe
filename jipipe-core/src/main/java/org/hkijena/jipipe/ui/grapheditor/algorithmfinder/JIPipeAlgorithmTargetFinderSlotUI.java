@@ -123,7 +123,7 @@ public class JIPipeAlgorithmTargetFinderSlotUI extends JPanel {
     }
 
     private void deleteSlot() {
-        if(!JIPipeProjectWorkbench.canModifySlots(canvasUI.getWorkbench()))
+        if (!JIPipeProjectWorkbench.canModifySlots(canvasUI.getWorkbench()))
             return;
         JIPipeDefaultMutableSlotConfiguration slotConfiguration = (JIPipeDefaultMutableSlotConfiguration) inputSlot.getNode().getSlotConfiguration();
         canvasUI.getGraphHistory().addSnapshotBefore(new SlotConfigurationHistorySnapshot(inputSlot.getNode(),

@@ -34,7 +34,10 @@ import org.hkijena.jipipe.ui.grapheditor.actions.OpenContextMenuAction;
 import org.hkijena.jipipe.ui.grapheditor.contextmenu.NodeUIContextAction;
 import org.hkijena.jipipe.ui.grapheditor.layout.MSTGraphAutoLayoutMethod;
 import org.hkijena.jipipe.ui.grapheditor.layout.SugiyamaGraphAutoLayoutMethod;
-import org.hkijena.jipipe.utils.*;
+import org.hkijena.jipipe.utils.PointRange;
+import org.hkijena.jipipe.utils.ScreenImage;
+import org.hkijena.jipipe.utils.ScreenImageSVG;
+import org.hkijena.jipipe.utils.UIUtils;
 import org.jfree.graphics2d.svg.SVGGraphics2D;
 
 import javax.swing.FocusManager;
@@ -109,10 +112,9 @@ public class JIPipeGraphCanvasUI extends JIPipeWorkbenchPanel implements MouseMo
         this.compartment = compartment;
         this.settings = GraphEditorUISettings.getInstance();
         JIPipeGraphViewMode restoredViewMode = graph.getAdditionalMetadata(JIPipeGraphViewMode.class, "jipipe:graph:view-mode");
-        if(restoredViewMode != null) {
+        if (restoredViewMode != null) {
             this.viewMode = restoredViewMode;
-        }
-        else {
+        } else {
             this.viewMode = settings.getDefaultViewMode();
         }
         graph.attachAdditionalMetadata("jipipe:graph:view-mode", this.viewMode);
@@ -271,11 +273,11 @@ public class JIPipeGraphCanvasUI extends JIPipeWorkbenchPanel implements MouseMo
         if (newlyPlacedAlgorithms > 0) {
             getEventBus().post(new GraphCanvasUpdatedEvent(this));
         }
-        if(scheduledSelection != null && !scheduledSelection.isEmpty()) {
+        if (scheduledSelection != null && !scheduledSelection.isEmpty()) {
             clearSelection();
             for (JIPipeGraphNode node : scheduledSelection) {
                 JIPipeNodeUI selected = nodeUIs.getOrDefault(node, null);
-                if(selected != null) {
+                if (selected != null) {
                     addToSelection(selected);
                 }
             }
@@ -361,7 +363,8 @@ public class JIPipeGraphCanvasUI extends JIPipeWorkbenchPanel implements MouseMo
 
     /**
      * Moves the node close to a real location
-     * @param ui the node
+     *
+     * @param ui       the node
      * @param location a real location
      */
     public void autoPlaceCloseToLocation(JIPipeNodeUI ui, Point location) {
@@ -377,7 +380,7 @@ public class JIPipeGraphCanvasUI extends JIPipeWorkbenchPanel implements MouseMo
         }
 
         Rectangle viewRectangle = null;
-        if(scrollPane != null) {
+        if (scrollPane != null) {
             int hValue = scrollPane.getHorizontalScrollBar().getValue();
             int vValue = scrollPane.getVerticalScrollBar().getValue();
             int hWidth = scrollPane.getHorizontalScrollBar().getVisibleAmount();
@@ -392,7 +395,7 @@ public class JIPipeGraphCanvasUI extends JIPipeWorkbenchPanel implements MouseMo
 //        System.out.println("View: " + viewRectangle);
         Rectangle currentShape = new Rectangle(minX, minY, ui.getWidth(), ui.getHeight());
 
-        if(viewRectangle != null && !viewRectangle.contains(location)) {
+        if (viewRectangle != null && !viewRectangle.contains(location)) {
             minX = viewRectangle.x + viewMode.getGridWidth();
             minY = viewRectangle.y + viewMode.getGridHeight();
         }
@@ -417,7 +420,7 @@ public class JIPipeGraphCanvasUI extends JIPipeWorkbenchPanel implements MouseMo
              * Check if we are still within the visible rectangle.
              * Prevent nodes going to somewhere else
              */
-            if(viewRectangle != null && !viewRectangle.intersects(currentShape)) {
+            if (viewRectangle != null && !viewRectangle.intersects(currentShape)) {
                 currentShape.x = minX;
                 currentShape.y = minY;
                 break;
@@ -429,11 +432,10 @@ public class JIPipeGraphCanvasUI extends JIPipeWorkbenchPanel implements MouseMo
             double relativeDistanceToOriginalPoint;
             if (viewMode == JIPipeGraphViewMode.Vertical) {
                 relativeDistanceToOriginalPoint = Math.abs(1.0 * minX - currentShape.x) / currentShape.width;
-            }
-            else {
+            } else {
                 relativeDistanceToOriginalPoint = Math.abs(1.0 * minY - currentShape.y) / currentShape.height;
             }
-            if(relativeDistanceToOriginalPoint > 2) {
+            if (relativeDistanceToOriginalPoint > 2) {
                 currentShape.x = minX;
                 currentShape.y = minY;
                 break;
@@ -452,8 +454,7 @@ public class JIPipeGraphCanvasUI extends JIPipeWorkbenchPanel implements MouseMo
         if (getGraphEditorCursor() != null) {
             minX = getGraphEditorCursor().x;
             minY = getGraphEditorCursor().y;
-        }
-        else if(getVisibleRect() != null) {
+        } else if (getVisibleRect() != null) {
             Rectangle rect = getVisibleRect();
             minX = rect.x;
             minY = rect.y;
@@ -495,7 +496,7 @@ public class JIPipeGraphCanvasUI extends JIPipeWorkbenchPanel implements MouseMo
 
             Point targetPoint = new Point(minX, targetY);
 
-            if(GraphEditorUISettings.getInstance().isAutoLayoutMovesOtherNodes()) {
+            if (GraphEditorUISettings.getInstance().isAutoLayoutMovesOtherNodes()) {
                 if (!targetAlgorithmUI.moveToClosestGridPoint(targetPoint, false, true)) {
                     if (nodesAfter.isEmpty())
                         return;
@@ -516,8 +517,7 @@ public class JIPipeGraphCanvasUI extends JIPipeWorkbenchPanel implements MouseMo
                         autoPlaceCloseToCursor(targetAlgorithmUI);
                     }
                 }
-            }
-            else {
+            } else {
                 autoPlaceCloseToLocation(targetAlgorithmUI, targetPoint);
             }
 
@@ -526,7 +526,7 @@ public class JIPipeGraphCanvasUI extends JIPipeWorkbenchPanel implements MouseMo
             x -= targetAlgorithmUI.getSlotLocation(target).center.x;
             int y = (int) Math.round(sourceAlgorithmUI.getBottomY() + viewMode.getGridHeight() * zoom);
             Point targetPoint = new Point(x, y);
-            if(GraphEditorUISettings.getInstance().isAutoLayoutMovesOtherNodes()) {
+            if (GraphEditorUISettings.getInstance().isAutoLayoutMovesOtherNodes()) {
                 if (!targetAlgorithmUI.moveToClosestGridPoint(targetPoint, false, true)) {
                     if (nodesAfter.isEmpty())
                         return;
@@ -547,8 +547,7 @@ public class JIPipeGraphCanvasUI extends JIPipeWorkbenchPanel implements MouseMo
                         autoPlaceCloseToCursor(targetAlgorithmUI);
                     }
                 }
-            }
-            else {
+            } else {
                 autoPlaceCloseToLocation(targetAlgorithmUI, targetPoint);
             }
         }
@@ -894,7 +893,7 @@ public class JIPipeGraphCanvasUI extends JIPipeWorkbenchPanel implements MouseMo
         if (sourceNode != null && targetNode != null && layoutHelperEnabled) {
 
             // Disabled for comment nodes
-            if(sourceNode.getNode() instanceof JIPipeCommentNode ||targetNode.getNode() instanceof JIPipeCommentNode) {
+            if (sourceNode.getNode() instanceof JIPipeCommentNode || targetNode.getNode() instanceof JIPipeCommentNode) {
                 return;
             }
 
@@ -936,10 +935,11 @@ public class JIPipeGraphCanvasUI extends JIPipeWorkbenchPanel implements MouseMo
 
     /**
      * Draws a minimap of this canvas.
+     *
      * @param graphics2D the graphics
-     * @param scale the scale
-     * @param viewX move the locations by this value
-     * @param viewY move the locations by this value
+     * @param scale      the scale
+     * @param viewX      move the locations by this value
+     * @param viewY      move the locations by this value
      */
     public void paintMiniMap(Graphics2D graphics2D, double scale, int viewX, int viewY) {
 
@@ -958,10 +958,10 @@ public class JIPipeGraphCanvasUI extends JIPipeWorkbenchPanel implements MouseMo
 
             ImageIcon icon = JIPipe.getInstance().getNodeRegistry().getIconFor(nodeUI.getNode().getInfo());
             int iconSize = Math.min(16, Math.min(width, height)) - 3;
-            if(iconSize > 4) {
+            if (iconSize > 4) {
                 graphics2D.drawImage(icon.getImage(),
-                        x + (int)Math.round((width / 2.0) - (iconSize / 2.0)),
-                        y + (int)Math.round((height / 2.0) - (iconSize / 2.0)),
+                        x + (int) Math.round((width / 2.0) - (iconSize / 2.0)),
+                        y + (int) Math.round((height / 2.0) - (iconSize / 2.0)),
                         iconSize,
                         iconSize,
                         null);
@@ -1353,7 +1353,7 @@ public class JIPipeGraphCanvasUI extends JIPipeWorkbenchPanel implements MouseMo
                         targetPoint.y = 0;
                     }
                 }
-                if(scale != 1) {
+                if (scale != 1) {
                     sourcePoint.x = (int) (sourcePoint.x * scale);
                     sourcePoint.y = (int) (sourcePoint.y * scale);
                     targetPoint.x = (int) (targetPoint.x * scale);
@@ -1391,14 +1391,15 @@ public class JIPipeGraphCanvasUI extends JIPipeWorkbenchPanel implements MouseMo
 
     /**
      * Draws an edge between source point and the target point
+     *
      * @param g            the graphics
      * @param sourcePoint  the source point
      * @param sourceBounds bounds of the source
      * @param targetPoint  the target point
      * @param shape        the line shape
-     * @param scale the scale
-     * @param viewX the view x
-     * @param viewY the view y
+     * @param scale        the scale
+     * @param viewX        the view x
+     * @param viewY        the view y
      */
     private void drawEdge(Graphics2D g, Point sourcePoint, Rectangle sourceBounds, Point targetPoint, JIPipeGraphEdge.Shape shape, double scale, int viewX, int viewY) {
         switch (shape) {
@@ -1408,7 +1409,7 @@ public class JIPipeGraphCanvasUI extends JIPipeWorkbenchPanel implements MouseMo
             case Line:
                 g.drawLine((int) (scale * sourcePoint.x) + viewX,
                         (int) (scale * sourcePoint.y) + viewY,
-                        (int) (scale * targetPoint.x)  + viewX,
+                        (int) (scale * targetPoint.x) + viewX,
                         (int) (scale * targetPoint.y) + viewY);
                 break;
         }
@@ -1493,9 +1494,9 @@ public class JIPipeGraphCanvasUI extends JIPipeWorkbenchPanel implements MouseMo
 
     private void drawElbowEdge_(Graphics2D g, int a0, int b0, int a1, int b1, double scale, int viewX, int viewY) {
         if (viewMode == JIPipeGraphViewMode.Horizontal) {
-            g.drawLine((int)(a0 * scale) + viewX, (int)(b0 * scale) + viewY, (int)(a1 * scale) + viewX, (int)(b1 * scale) + viewY);
+            g.drawLine((int) (a0 * scale) + viewX, (int) (b0 * scale) + viewY, (int) (a1 * scale) + viewX, (int) (b1 * scale) + viewY);
         } else {
-            g.drawLine((int)(b0 * scale) + viewX, (int)(a0 * scale) + viewY, (int)(b1 * scale) + viewX, (int)(a1 * scale) + viewY);
+            g.drawLine((int) (b0 * scale) + viewX, (int) (a0 * scale) + viewY, (int) (b1 * scale) + viewX, (int) (a1 * scale) + viewY);
         }
     }
 

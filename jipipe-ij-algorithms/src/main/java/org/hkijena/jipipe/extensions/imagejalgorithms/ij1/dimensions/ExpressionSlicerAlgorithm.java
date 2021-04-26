@@ -77,13 +77,13 @@ public class ExpressionSlicerAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         parameters.set("size_c", img.getNChannels());
         parameters.set("size_t", img.getNFrames());
         for (int z = 0; z < img.getNSlices(); z++) {
-            if(!iteratePerZ && z != 0)
+            if (!iteratePerZ && z != 0)
                 continue;
             for (int c = 0; c < img.getNChannels(); c++) {
-                if(!iteratePerC && c != 0)
+                if (!iteratePerC && c != 0)
                     continue;
                 for (int t = 0; t < img.getNFrames(); t++) {
-                    if(!iteratePerT && t != 0)
+                    if (!iteratePerT && t != 0)
                         continue;
                     parameters.set("z", z);
                     parameters.set("c", c);
@@ -99,7 +99,7 @@ public class ExpressionSlicerAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         }
 
         // Remove duplicates
-        if(removeDuplicates) {
+        if (removeDuplicates) {
             imageSliceIndicesList = imageSliceIndicesList.stream().distinct().collect(Collectors.toList());
         }
 
@@ -112,7 +112,7 @@ public class ExpressionSlicerAlgorithm extends JIPipeSimpleIteratingAlgorithm {
             int numC = indices.getC().size();
             int numT = indices.getT().size();
 
-            if(numZ * numC * numT == 0) {
+            if (numZ * numC * numT == 0) {
                 sliceInfo.log("Skipping (|Z|*|C|*|T| == 0)");
                 continue;
             }
@@ -143,7 +143,7 @@ public class ExpressionSlicerAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     }
 
     private int wrapNumber(int x, int w) {
-        while(x < 0) {
+        while (x < 0) {
             x += w;
         }
         return x % w;
@@ -151,7 +151,7 @@ public class ExpressionSlicerAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     private void extractZ(ExpressionParameters parameters, ImageSliceIndices indices) {
         Object result = expressionZ.evaluate(parameters);
-        if(result instanceof Number)
+        if (result instanceof Number)
             indices.getZ().add(((Number) result).intValue());
         else {
             for (Object item : (Collection<?>) result) {
@@ -162,7 +162,7 @@ public class ExpressionSlicerAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     private void extractC(ExpressionParameters parameters, ImageSliceIndices indices) {
         Object result = expressionC.evaluate(parameters);
-        if(result instanceof Number)
+        if (result instanceof Number)
             indices.getC().add(((Number) result).intValue());
         else {
             for (Object item : (Collection<?>) result) {
@@ -173,7 +173,7 @@ public class ExpressionSlicerAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     private void extractT(ExpressionParameters parameters, ImageSliceIndices indices) {
         Object result = expressionT.evaluate(parameters);
-        if(result instanceof Number)
+        if (result instanceof Number)
             indices.getT().add(((Number) result).intValue());
         else {
             for (Object item : (Collection<?>) result) {
@@ -304,7 +304,7 @@ public class ExpressionSlicerAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         if (UIUtils.confirmResetParameters(parent, "Load example")) {
             Object result = JOptionPane.showInputDialog(parent.getWindow(), "Please select the example:",
                     "Load example", JOptionPane.PLAIN_MESSAGE, null, Examples.values(), Examples.SplitSlices);
-            if(result instanceof Examples) {
+            if (result instanceof Examples) {
                 ((Examples) result).apply(this);
             }
         }

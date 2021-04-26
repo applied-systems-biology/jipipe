@@ -81,26 +81,6 @@ public class ImageViewerPanel extends JPanel {
         updateZoomStatus();
     }
 
-    /**
-     * Opens the image in a new frame
-     *
-     * @param image the image
-     * @param title the title
-     * @return the panel
-     */
-    public static ImageViewerPanel showImage(ImagePlus image, String title) {
-        ImageViewerPanel dataDisplay = new ImageViewerPanel();
-        dataDisplay.setPlugins(Arrays.asList(new CalibrationPlugin(dataDisplay),
-                new PixelInfoPlugin(dataDisplay),
-                new LUTManagerPlugin(dataDisplay),
-                new ROIManagerPlugin(dataDisplay)));
-        dataDisplay.setImage(image);
-        ImageViewerWindow window = new ImageViewerWindow(dataDisplay);
-        window.setTitle(title);
-        window.setVisible(true);
-        return dataDisplay;
-    }
-
     public List<ImageViewerPanelPlugin> getPlugins() {
         return plugins;
     }
@@ -708,6 +688,26 @@ public class ImageViewerPanel extends JPanel {
 
     public ImageStatistics getStatistics() {
         return statistics;
+    }
+
+    /**
+     * Opens the image in a new frame
+     *
+     * @param image the image
+     * @param title the title
+     * @return the panel
+     */
+    public static ImageViewerPanel showImage(ImagePlus image, String title) {
+        ImageViewerPanel dataDisplay = new ImageViewerPanel();
+        dataDisplay.setPlugins(Arrays.asList(new CalibrationPlugin(dataDisplay),
+                new PixelInfoPlugin(dataDisplay),
+                new LUTManagerPlugin(dataDisplay),
+                new ROIManagerPlugin(dataDisplay)));
+        dataDisplay.setImage(image);
+        ImageViewerWindow window = new ImageViewerWindow(dataDisplay);
+        window.setTitle(title);
+        window.setVisible(true);
+        return dataDisplay;
     }
 
 }

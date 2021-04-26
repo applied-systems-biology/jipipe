@@ -56,15 +56,6 @@ public class FilterROIByOverlapAlgorithm extends JIPipeIteratingAlgorithm {
         this.deactivatedOutputs.getEventBus().register(this);
     }
 
-    private static JIPipeSlotConfiguration generateSlotConfiguration() {
-        JIPipeIOSlotConfiguration configuration = new JIPipeIOSlotConfiguration();
-        configuration.setAllowedInputSlotTypes(Collections.singleton(ROIListData.class));
-        configuration.setAllowedOutputSlotTypes(Collections.singleton(ROIListData.class));
-        configuration.addSlot("ROI 1", new JIPipeDataSlotInfo(ROIListData.class, JIPipeSlotType.Input, null), true);
-        configuration.addSlot("ROI 2", new JIPipeDataSlotInfo(ROIListData.class, JIPipeSlotType.Input, null), true);
-        return configuration;
-    }
-
     @Override
     protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
         Map<String, ROIListData> roiMap = new HashMap<>();
@@ -270,6 +261,15 @@ public class FilterROIByOverlapAlgorithm extends JIPipeIteratingAlgorithm {
     @JIPipeParameter("overlap-filter-measurements")
     public void setOverlapFilterMeasurements(ImageStatisticsSetParameter overlapFilterMeasurements) {
         this.overlapFilterMeasurements = overlapFilterMeasurements;
+    }
+
+    private static JIPipeSlotConfiguration generateSlotConfiguration() {
+        JIPipeIOSlotConfiguration configuration = new JIPipeIOSlotConfiguration();
+        configuration.setAllowedInputSlotTypes(Collections.singleton(ROIListData.class));
+        configuration.setAllowedOutputSlotTypes(Collections.singleton(ROIListData.class));
+        configuration.addSlot("ROI 1", new JIPipeDataSlotInfo(ROIListData.class, JIPipeSlotType.Input, null), true);
+        configuration.addSlot("ROI 2", new JIPipeDataSlotInfo(ROIListData.class, JIPipeSlotType.Input, null), true);
+        return configuration;
     }
 
 }

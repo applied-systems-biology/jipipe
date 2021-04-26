@@ -72,25 +72,6 @@ public class AddDynamicParameterPanel extends JPanel {
         }
     }
 
-    /**
-     * Shows a dialog for adding slots
-     *
-     * @param parent parent component
-     */
-    public static void showDialog(Component parent, JIPipeDynamicParameterCollection parameterCollection) {
-        JDialog dialog = new JDialog();
-        AddDynamicParameterPanel panel = new AddDynamicParameterPanel(parameterCollection);
-        panel.setDialog(dialog);
-        dialog.setContentPane(panel);
-        dialog.setTitle("Add parameter");
-        dialog.setModal(true);
-        dialog.pack();
-        dialog.setSize(new Dimension(400, 300));
-        dialog.setLocationRelativeTo(parent);
-        UIUtils.addEscapeListener(dialog);
-        dialog.setVisible(true);
-    }
-
     private void setInitialName() {
         keyEditor.setText(StringUtils.makeUniqueString("Parameter", " ", parameterCollection.getParameters().keySet()));
     }
@@ -263,5 +244,24 @@ public class AddDynamicParameterPanel extends JPanel {
 
     public void setDialog(JDialog dialog) {
         this.dialog = dialog;
+    }
+
+    /**
+     * Shows a dialog for adding slots
+     *
+     * @param parent parent component
+     */
+    public static void showDialog(Component parent, JIPipeDynamicParameterCollection parameterCollection) {
+        JDialog dialog = new JDialog();
+        AddDynamicParameterPanel panel = new AddDynamicParameterPanel(parameterCollection);
+        panel.setDialog(dialog);
+        dialog.setContentPane(panel);
+        dialog.setTitle("Add parameter");
+        dialog.setModal(true);
+        dialog.pack();
+        dialog.setSize(new Dimension(400, 300));
+        dialog.setLocationRelativeTo(parent);
+        UIUtils.addEscapeListener(dialog);
+        dialog.setVisible(true);
     }
 }

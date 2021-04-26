@@ -15,14 +15,9 @@ package org.hkijena.jipipe.extensions.imagejalgorithms.ij1.features;
 
 import ij.ImagePlus;
 import ij.plugin.filter.Convolver;
-import ij.plugin.filter.GaussianBlur;
-import ij.process.ByteProcessor;
-import ij.process.ColorProcessor;
-import ij.process.ImageProcessor;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
-import org.hkijena.jipipe.api.JIPipeValidityReport;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
@@ -62,38 +57,38 @@ public class LaplacianOfGaussian2DAlgorithm extends JIPipeSimpleIteratingAlgorit
         ImagePlusData inputData = dataBatch.getInputData(getFirstInputSlot(), ImagePlusGreyscale32FData.class, progressInfo);
         ImagePlus img = inputData.getDuplicateImage();
         int sz = 2 * radius + 1;
-        float[] kernel2=computeKernel2D();
+        float[] kernel2 = computeKernel2D();
         ImageJUtils.forEachSlice(img, ip -> {
-            Convolver con=new Convolver();
+            Convolver con = new Convolver();
             con.convolveFloat(ip, kernel2, sz, sz);
-            double sigma2=(sz-1)/6.0;
-            sigma2*=sigma2;
+            double sigma2 = (sz - 1) / 6.0;
+            sigma2 *= sigma2;
             ip.multiply(sigma2);
         }, progressInfo);
         dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusData(img), progressInfo);
     }
 
     private float[] computeKernel2D() {
-        int sz=2*radius+1;
-        final double sigma2=2*((double)radius/3.0+1/6.0)*((double)radius/3.0 +1/6.0);
-        float[] kernel=new float[sz*sz];
-        final double PIs=4/Math.sqrt(Math.PI*sigma2)/sigma2/sigma2;
-        float sum=0;
-        for (int u=-radius; u<=radius; u++) {
-            for (int w=-radius; w<=radius; w++) {
-                final double x2=u*u+w*w;
-                final int idx=u+radius + sz*(w+radius);
-                kernel[idx]=(float)((x2 -sigma2)*Math.exp(-x2/sigma2)*PIs);
+        int sz = 2 * radius + 1;
+        final double sigma2 = 2 * ((double) radius / 3.0 + 1 / 6.0) * ((double) radius / 3.0 + 1 / 6.0);
+        float[] kernel = new float[sz * sz];
+        final double PIs = 4 / Math.sqrt(Math.PI * sigma2) / sigma2 / sigma2;
+        float sum = 0;
+        for (int u = -radius; u <= radius; u++) {
+            for (int w = -radius; w <= radius; w++) {
+                final double x2 = u * u + w * w;
+                final int idx = u + radius + sz * (w + radius);
+                kernel[idx] = (float) ((x2 - sigma2) * Math.exp(-x2 / sigma2) * PIs);
                 ///System.out.print(kernel[c] +" ");
-                sum+=kernel[idx];
+                sum += kernel[idx];
 
             }
         }
-        sum=Math.abs(sum);
-        if (sum<1e-5) sum=1;
-        if (sum!=1) {
-            for (int i=0; i<kernel.length; i++) {
-                kernel[i]/=sum;
+        sum = Math.abs(sum);
+        if (sum < 1e-5) sum = 1;
+        if (sum != 1) {
+            for (int i = 0; i < kernel.length; i++) {
+                kernel[i] /= sum;
                 //System.out.print(kernel[i] +" ");
             }
         }

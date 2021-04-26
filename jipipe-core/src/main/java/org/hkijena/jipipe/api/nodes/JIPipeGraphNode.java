@@ -127,22 +127,6 @@ public abstract class JIPipeGraphNode implements JIPipeValidatable, JIPipeParame
         slotConfiguration.getEventBus().register(this);
     }
 
-    public static <T extends JIPipeGraphNode> T fromJsonNode(JsonNode node, JIPipeValidityReport issues) {
-        String id = node.get("jipipe:node-info-id").asText();
-        if (!JIPipe.getNodes().hasNodeInfoWithId(id)) {
-            System.err.println("Unable to find node type with ID '" + id + "'. Skipping.");
-            issues.forCategory("Nodes").forCategory(id).reportIsInvalid("Unable to find node type '" + id + "'!",
-                    "The JSON data requested to load a node of type '" + id + "', but it is not known to JIPipe.",
-                    "Please check if all extensions are are correctly loaded.",
-                    node);
-            return null;
-        }
-        JIPipeNodeInfo info = JIPipe.getNodes().getInfoById(id);
-        JIPipeGraphNode algorithm = info.newInstance();
-        algorithm.fromJson(node, issues.forCategory("Nodes").forCategory(id));
-        return (T) algorithm;
-    }
-
     /**
      * Synchronizes the slots with the slot definition
      */
@@ -383,6 +367,7 @@ public abstract class JIPipeGraphNode implements JIPipeValidatable, JIPipeParame
 
     /**
      * Gets the location map (writable) as map from compartment UUID to visual mode to location
+     *
      * @return map from compartment UUID to visual mode to location
      */
     public Map<String, Map<String, Point>> getLocations() {
@@ -391,6 +376,7 @@ public abstract class JIPipeGraphNode implements JIPipeValidatable, JIPipeParame
 
     /**
      * Sets the location map.
+     *
      * @param locations map from compartment UUID to visual mode to location
      */
     public void setLocations(Map<String, Map<String, Point>> locations) {
@@ -684,10 +670,9 @@ public abstract class JIPipeGraphNode implements JIPipeValidatable, JIPipeParame
      * @return The UUID within getGraph()
      */
     public UUID getCompartmentUUIDInGraph() {
-        if(graph != null) {
+        if (graph != null) {
             return graph.getCompartmentUUIDOf(this);
-        }
-        else {
+        } else {
             return null;
         }
     }
@@ -957,28 +942,29 @@ public abstract class JIPipeGraphNode implements JIPipeValidatable, JIPipeParame
 
     public boolean isVisibleIn(UUID compartmentUUIDInGraph) {
         UUID currentCompartmentUUID = getCompartmentUUIDInGraph();
-        if(Objects.equals(compartmentUUIDInGraph, currentCompartmentUUID))
+        if (Objects.equals(compartmentUUIDInGraph, currentCompartmentUUID))
             return true;
         return graph.getVisibleCompartmentUUIDsOf(this).contains(compartmentUUIDInGraph);
     }
 
     /**
      * Returns a display name for the compartment
+     *
      * @return the display name for the compartment
      */
     public String getCompartmentDisplayName() {
         String compartment = "";
-        if(graph != null) {
+        if (graph != null) {
             UUID compartmentUUID = getCompartmentUUIDInGraph();
-            if(compartmentUUID != null) {
+            if (compartmentUUID != null) {
                 JIPipeProject project = graph.getProject();
-                if(project != null) {
+                if (project != null) {
                     JIPipeProjectCompartment projectCompartment = project.getCompartments().getOrDefault(compartmentUUID, null);
-                    if(projectCompartment != null) {
+                    if (projectCompartment != null) {
                         compartment = projectCompartment.getName();
                     }
                 }
-                if(compartment == null)
+                if (compartment == null)
                     compartment = compartmentUUID.toString();
             }
         }
@@ -987,6 +973,7 @@ public abstract class JIPipeGraphNode implements JIPipeValidatable, JIPipeParame
 
     /**
      * Returns a name that provides human-readable information about the name and compartment
+     *
      * @return the display name
      */
     public String getDisplayName() {
@@ -997,6 +984,7 @@ public abstract class JIPipeGraphNode implements JIPipeValidatable, JIPipeParame
     /**
      * Returns the compartment UUID in the graph as string.
      * If the UUID is null, an empty string is returned.
+     *
      * @return UUID as string or an empty string of the compartment is null;
      */
     public String getCompartmentUUIDInGraphAsString() {
@@ -1007,13 +995,13 @@ public abstract class JIPipeGraphNode implements JIPipeValidatable, JIPipeParame
      * Returns the alias ID of this node.
      * It is unique within the same graph, but should not be used to identify it due to dependency on the node's name.
      * Use the UUID instead.
+     *
      * @return the alias ID. Null if there is no graph.
      */
     public String getAliasIdInGraph() {
-        if(graph != null) {
+        if (graph != null) {
             return graph.getAliasIdOf(this);
-        }
-        else {
+        } else {
             return null;
         }
     }
@@ -1021,6 +1009,7 @@ public abstract class JIPipeGraphNode implements JIPipeValidatable, JIPipeParame
     /**
      * Gets the project compartment instance of this node.
      * Returns null if there is no project.
+     *
      * @return the compartment
      */
     public JIPipeProjectCompartment getProjectCompartment() {
@@ -1028,6 +1017,21 @@ public abstract class JIPipeGraphNode implements JIPipeValidatable, JIPipeParame
         return project.getCompartments().getOrDefault(getCompartmentUUIDInGraph(), null);
     }
 
+    public static <T extends JIPipeGraphNode> T fromJsonNode(JsonNode node, JIPipeValidityReport issues) {
+        String id = node.get("jipipe:node-info-id").asText();
+        if (!JIPipe.getNodes().hasNodeInfoWithId(id)) {
+            System.err.println("Unable to find node type with ID '" + id + "'. Skipping.");
+            issues.forCategory("Nodes").forCategory(id).reportIsInvalid("Unable to find node type '" + id + "'!",
+                    "The JSON data requested to load a node of type '" + id + "', but it is not known to JIPipe.",
+                    "Please check if all extensions are are correctly loaded.",
+                    node);
+            return null;
+        }
+        JIPipeNodeInfo info = JIPipe.getNodes().getInfoById(id);
+        JIPipeGraphNode algorithm = info.newInstance();
+        algorithm.fromJson(node, issues.forCategory("Nodes").forCategory(id));
+        return (T) algorithm;
+    }
 
     /**
      * Serializes an {@link JIPipeGraphNode} instance

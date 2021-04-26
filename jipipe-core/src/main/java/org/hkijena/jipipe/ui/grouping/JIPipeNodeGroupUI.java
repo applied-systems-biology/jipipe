@@ -14,7 +14,6 @@
 package org.hkijena.jipipe.ui.grouping;
 
 import org.hkijena.jipipe.api.grouping.NodeGroup;
-import org.hkijena.jipipe.api.nodes.JIPipeGraph;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.JIPipeWorkbenchPanel;
 import org.hkijena.jipipe.ui.compartments.JIPipeCompartmentUI;
@@ -45,6 +44,19 @@ public class JIPipeNodeGroupUI extends JIPipeWorkbenchPanel {
         super(workbenchUI);
         this.nodeGroup = nodeGroup;
         initialize();
+    }
+
+    private void initialize() {
+        setLayout(new BorderLayout());
+        graphUI = new JIPipeGraphCompartmentUI(getWorkbench(), nodeGroup.getWrappedGraph(), null);
+        add(graphUI, BorderLayout.CENTER);
+    }
+
+    /**
+     * @return The displayed compartment
+     */
+    public NodeGroup getNodeGroup() {
+        return nodeGroup;
     }
 
     /**
@@ -84,18 +96,5 @@ public class JIPipeNodeGroupUI extends JIPipeWorkbenchPanel {
             }
         }
         return result;
-    }
-
-    private void initialize() {
-        setLayout(new BorderLayout());
-        graphUI = new JIPipeGraphCompartmentUI(getWorkbench(), nodeGroup.getWrappedGraph(), null);
-        add(graphUI, BorderLayout.CENTER);
-    }
-
-    /**
-     * @return The displayed compartment
-     */
-    public NodeGroup getNodeGroup() {
-        return nodeGroup;
     }
 }

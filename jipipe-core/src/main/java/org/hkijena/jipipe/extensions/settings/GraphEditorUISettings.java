@@ -57,10 +57,6 @@ public class GraphEditorUISettings implements JIPipeParameterCollection {
         this.accurateMiniMap = accurateMiniMap;
     }
 
-    public static GraphEditorUISettings getInstance() {
-        return JIPipe.getSettings().getSettings(ID, GraphEditorUISettings.class);
-    }
-
     @Override
     public EventBus getEventBus() {
         return eventBus;
@@ -216,5 +212,9 @@ public class GraphEditorUISettings implements JIPipeParameterCollection {
     @JIPipeParameter("show-open-context-menu-button")
     public void setShowSettingsNodeButton(boolean showSettingsNodeButton) {
         this.showSettingsNodeButton = showSettingsNodeButton;
+    }
+
+    public static GraphEditorUISettings getInstance() {
+        return JIPipe.getSettings().getSettings(ID, GraphEditorUISettings.class);
     }
 }

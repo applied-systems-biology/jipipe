@@ -15,21 +15,16 @@ package org.hkijena.jipipe.extensions.imagejalgorithms.ij1.edge;
 
 import ij.ImagePlus;
 import ij.plugin.filter.Convolver;
-import ij.process.FloatProcessor;
 import ij.process.ImageProcessor;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
-import org.hkijena.jipipe.api.data.JIPipeDefaultMutableSlotConfiguration;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
-import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d2.greyscale.ImagePlus2DGreyscale32FData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscale32FData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
-
-import static org.hkijena.jipipe.extensions.imagejalgorithms.ImageJAlgorithmsExtension.REMOVE_MASK_QUALIFIER;
 
 /**
  * Wrapper around {@link ImageProcessor}
@@ -47,25 +42,25 @@ public class LaplacianEdgeDetectorAlgorithm extends JIPipeSimpleIteratingAlgorit
     public static final float[] KERNEL_8_INV;
 
     static {
-        KERNEL_4_INV = new float[] {
-            0,-1,0,
-            -1,4,-1,
-            0,-1,0
+        KERNEL_4_INV = new float[]{
+                0, -1, 0,
+                -1, 4, -1,
+                0, -1, 0
         };
-        KERNEL_4 = new float[] {
-                0,1,0,
-                1,-4,1,
-                0,1,0
+        KERNEL_4 = new float[]{
+                0, 1, 0,
+                1, -4, 1,
+                0, 1, 0
         };
-        KERNEL_8_INV = new float[] {
-                -1,-1,-1,
-                -1,8,-1,
-                -1,-1,-1
+        KERNEL_8_INV = new float[]{
+                -1, -1, -1,
+                -1, 8, -1,
+                -1, -1, -1
         };
-        KERNEL_8 = new float[] {
-                1,1,1,
-                1,-8,1,
-                1,1,1
+        KERNEL_8 = new float[]{
+                1, 1, 1,
+                1, -8, 1,
+                1, 1, 1
         };
     }
 
@@ -117,7 +112,7 @@ public class LaplacianEdgeDetectorAlgorithm extends JIPipeSimpleIteratingAlgorit
 
         ImageJUtils.forEachSlice(img, imp -> {
             convolver.convolve(imp, kernel, 3, 3);
-            if(removeNegativeValues) {
+            if (removeNegativeValues) {
                 float[] pixels = (float[]) imp.getPixels();
                 for (int i = 0; i < pixels.length; i++) {
                     pixels[i] = Math.max(0, pixels[i]);

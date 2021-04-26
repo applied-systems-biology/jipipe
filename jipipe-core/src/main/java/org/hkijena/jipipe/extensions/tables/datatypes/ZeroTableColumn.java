@@ -28,10 +28,6 @@ import java.nio.file.Path;
 @JIPipeDocumentation(name = "Zero table column", description = "A table column that generates zeros for each row.")
 @JIPipeDataStorageDocumentation("This is a structural data type. The storage folder is empty.")
 public class ZeroTableColumn implements TableColumn {
-    public static ZeroTableColumn importFrom(Path storagePath) {
-        return new ZeroTableColumn();
-    }
-
     @Override
     public String getLabel() {
         return "Generate: Zeros";
@@ -89,5 +85,9 @@ public class ZeroTableColumn implements TableColumn {
     @Override
     public void display(String displayName, JIPipeWorkbench workbench, JIPipeDataSource source) {
 
+    }
+
+    public static ZeroTableColumn importFrom(Path storagePath) {
+        return new ZeroTableColumn();
     }
 }

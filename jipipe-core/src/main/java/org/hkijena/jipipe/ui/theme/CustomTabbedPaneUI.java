@@ -40,10 +40,6 @@ public class CustomTabbedPaneUI extends BasicTabbedPaneUI {
     // Selected border color for ocean.
     private Color oceanSelectedBorderColor;
 
-    public static ComponentUI createUI(JComponent x) {
-        return new javax.swing.plaf.metal.MetalTabbedPaneUI();
-    }
-
     protected LayoutManager createLayoutManager() {
         if (tabPane.getTabLayoutPolicy() == JTabbedPane.SCROLL_TAB_LAYOUT) {
             return super.createLayoutManager();
@@ -1153,6 +1149,10 @@ public class CustomTabbedPaneUI extends BasicTabbedPaneUI {
      */
     int getRolloverTabIndex() {
         return getRolloverTab();
+    }
+
+    public static ComponentUI createUI(JComponent x) {
+        return new javax.swing.plaf.metal.MetalTabbedPaneUI();
     }
 
     /**

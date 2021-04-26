@@ -33,9 +33,9 @@ import java.util.List;
 @JIPipeOutputSlot(value = ImagePlusGreyscaleMaskData.class, slotName = "Output", autoCreate = true)
 public class ManualLABThreshold2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
-    private IntNumberRangeParameter lightnessThreshold = new IntNumberRangeParameter(0,256);
-    private IntNumberRangeParameter greenRedThreshold = new IntNumberRangeParameter(0,256);
-    private IntNumberRangeParameter blueYellowThreshold = new IntNumberRangeParameter(0,256);
+    private IntNumberRangeParameter lightnessThreshold = new IntNumberRangeParameter(0, 256);
+    private IntNumberRangeParameter greenRedThreshold = new IntNumberRangeParameter(0, 256);
+    private IntNumberRangeParameter blueYellowThreshold = new IntNumberRangeParameter(0, 256);
     private OptionalAnnotationNameParameter minLightnessThresholdAnnotation = new OptionalAnnotationNameParameter("Min Threshold L", true);
     private OptionalAnnotationNameParameter maxLightnessThresholdAnnotation = new OptionalAnnotationNameParameter("Max Threshold L", true);
     private OptionalAnnotationNameParameter minGreenRedThresholdAnnotation = new OptionalAnnotationNameParameter("Min Threshold a", true);
@@ -65,7 +65,7 @@ public class ManualLABThreshold2DAlgorithm extends JIPipeSimpleIteratingAlgorith
 
     @Override
     protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
-        if(!(dataBatch.getInputData(getFirstInputSlot(), ImagePlusData.class, progressInfo) instanceof ColoredImagePlusData)) {
+        if (!(dataBatch.getInputData(getFirstInputSlot(), ImagePlusData.class, progressInfo) instanceof ColoredImagePlusData)) {
             progressInfo.log("Info: Received an image without color space information! Its channels will be interpreted as LAB.");
         }
         ImagePlus img = dataBatch.getInputData(getFirstInputSlot(), ImagePlusColorLABData.class, progressInfo).getImage();
@@ -90,12 +90,12 @@ public class ManualLABThreshold2DAlgorithm extends JIPipeSimpleIteratingAlgorith
             for (int y = 0; y < ip.getHeight(); y++) {
                 for (int x = 0; x < ip.getWidth(); x++) {
                     int c = ip.get(x, y);
-                    int l = (c&0xff0000)>>16;
-                    int a = (c&0xff00)>>8;
-                    int b = c&0xff;
+                    int l = (c & 0xff0000) >> 16;
+                    int a = (c & 0xff00) >> 8;
+                    int b = c & 0xff;
 
-                    if(l < maxL && l >= minL && a < maxA && a >= minA && b < maxB && b >= minB) {
-                        mask.set(x,y, 255);
+                    if (l < maxL && l >= minL && a < maxA && a >= minA && b < maxB && b >= minB) {
+                        mask.set(x, y, 255);
                     }
                 }
             }

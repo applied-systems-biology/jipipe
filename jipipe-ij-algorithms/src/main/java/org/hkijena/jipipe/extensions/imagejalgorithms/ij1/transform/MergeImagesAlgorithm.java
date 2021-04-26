@@ -45,7 +45,7 @@ public class MergeImagesAlgorithm extends JIPipeIteratingAlgorithm {
         ImagePlus output = targetImageData.getDuplicateImage();
         ImagePlus src = dataBatch.getInputData("Source", targetImageData.getClass(), progressInfo).getImage();
 
-        if(src.getWidth() != output.getWidth() || src.getHeight() != output.getHeight() || src.getStackSize() != output.getStackSize()) {
+        if (src.getWidth() != output.getWidth() || src.getHeight() != output.getHeight() || src.getStackSize() != output.getStackSize()) {
             throw new UserFriendlyRuntimeException("Images have different sizes!",
                     "Source and target images have different sizes!",
                     getName(),
@@ -58,7 +58,7 @@ public class MergeImagesAlgorithm extends JIPipeIteratingAlgorithm {
             ImageProcessor srcProcessor = ImageJUtils.getSliceZero(src, index);
             for (int y = 0; y < ip.getHeight(); y++) {
                 for (int x = 0; x < ip.getWidth(); x++) {
-                    if(mask.get(x, y) > 0) {
+                    if (mask.get(x, y) > 0) {
                         ip.set(x, y, srcProcessor.get(x, y));
                     }
                 }

@@ -41,7 +41,8 @@ public class JIPipeJsonExtensionGraphUI extends JIPipeGraphEditorUI {
 
     /**
      * Creates a new instance
-     *  @param workbenchUI    The workbench UI
+     *
+     * @param workbenchUI    The workbench UI
      * @param algorithmGraph The algorithm graph
      * @param compartment    The compartment
      */

@@ -43,13 +43,6 @@ public class JsonExtensionLoaderExtension extends JIPipePrepackagedDefaultJavaEx
 
     private Set<JsonExtensionRegistrationTask> registrationTasks = new HashSet<>();
 
-    public static Path getPluginDirectory() {
-        String path = Menus.getPlugInsPath();
-        if (path == null)
-            return Paths.get("plugins");
-        return Paths.get(path);
-    }
-
     @Override
     public StringList getDependencyCitations() {
         return new StringList();
@@ -200,5 +193,12 @@ public class JsonExtensionLoaderExtension extends JIPipePrepackagedDefaultJavaEx
     @Subscribe
     public void onExtensionRegistered(JIPipe.ExtensionRegisteredEvent event) {
         updateRegistrationTasks();
+    }
+
+    public static Path getPluginDirectory() {
+        String path = Menus.getPlugInsPath();
+        if (path == null)
+            return Paths.get("plugins");
+        return Paths.get(path);
     }
 }

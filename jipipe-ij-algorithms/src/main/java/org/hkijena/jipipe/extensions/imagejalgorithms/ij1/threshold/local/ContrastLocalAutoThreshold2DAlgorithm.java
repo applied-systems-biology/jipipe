@@ -72,6 +72,47 @@ public class ContrastLocalAutoThreshold2DAlgorithm extends JIPipeSimpleIterating
         this.radius = other.radius;
     }
 
+    @JIPipeDocumentation(name = "Radius", description = "The radius of the circular local window.")
+    @JIPipeParameter("radius")
+    public int getRadius() {
+        return radius;
+    }
+
+    @JIPipeParameter("radius")
+    public boolean setRadius(int radius) {
+        if (radius <= 0)
+            return false;
+        this.radius = radius;
+        return true;
+    }
+
+    @Override
+    public boolean supportsParallelization() {
+        return true;
+    }
+
+    @Override
+    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
+        ImagePlusData inputData = dataBatch.getInputData(getFirstInputSlot(), ImagePlusGreyscale8UData.class, progressInfo);
+        ImagePlus img = inputData.getDuplicateImage();
+        if (!darkBackground) {
+            img.getProcessor().invert();
+        }
+        Contrast(img, radius, true);
+        dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusGreyscaleMaskData(img), progressInfo);
+    }
+
+    @JIPipeDocumentation(name = "Dark background", description = "If the background color is dark. Disable this if your image has a bright background.")
+    @JIPipeParameter("dark-background")
+    public boolean isDarkBackground() {
+        return darkBackground;
+    }
+
+    @JIPipeParameter("dark-background")
+    public void setDarkBackground(boolean darkBackground) {
+        this.darkBackground = darkBackground;
+    }
+
     public static void Contrast(ImagePlus imp, int radius, boolean doIwhite) {
         // G. Landini, 2013
         // Based on a simple contrast toggle. This procedure does not have user-provided parameters other than the kernel radius
@@ -119,46 +160,5 @@ public class ContrastLocalAutoThreshold2DAlgorithm extends JIPipeSimpleIterating
         ImageProcessor imageProcessor = iPlus.getProcessor();
         imageProcessor.copyBits(iProcessor, 0, 0, Blitter.COPY);
         return iPlus;
-    }
-
-    @JIPipeDocumentation(name = "Radius", description = "The radius of the circular local window.")
-    @JIPipeParameter("radius")
-    public int getRadius() {
-        return radius;
-    }
-
-    @JIPipeParameter("radius")
-    public boolean setRadius(int radius) {
-        if (radius <= 0)
-            return false;
-        this.radius = radius;
-        return true;
-    }
-
-    @Override
-    public boolean supportsParallelization() {
-        return true;
-    }
-
-    @Override
-    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
-        ImagePlusData inputData = dataBatch.getInputData(getFirstInputSlot(), ImagePlusGreyscale8UData.class, progressInfo);
-        ImagePlus img = inputData.getDuplicateImage();
-        if (!darkBackground) {
-            img.getProcessor().invert();
-        }
-        Contrast(img, radius, true);
-        dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusGreyscaleMaskData(img), progressInfo);
-    }
-
-    @JIPipeDocumentation(name = "Dark background", description = "If the background color is dark. Disable this if your image has a bright background.")
-    @JIPipeParameter("dark-background")
-    public boolean isDarkBackground() {
-        return darkBackground;
-    }
-
-    @JIPipeParameter("dark-background")
-    public void setDarkBackground(boolean darkBackground) {
-        this.darkBackground = darkBackground;
     }
 }

@@ -47,6 +47,57 @@ public class PythonExtensionSettings implements JIPipeParameterCollection {
     public PythonExtensionSettings() {
     }
 
+    @Override
+    public EventBus getEventBus() {
+        return eventBus;
+    }
+
+    @JIPipeDocumentation(name = "Python executable", description = "Points at the Python executable." +
+            "<ul>" +
+            "<li>If you use standard Python, point it to python.exe</li>" +
+            "<li>If you use Conda, point it to Scripts/conda.exe</li>" +
+            "<li>If you use virtualenv, point it to venv/Scripts/python.exe</li>" +
+            "</ul>")
+    @JIPipeParameter("python-executable")
+    @FilePathParameterSettings(pathMode = PathEditor.PathMode.FilesOnly, ioMode = PathEditor.IOMode.Open)
+    public Path getPythonExecutable() {
+        return pythonExecutable;
+    }
+
+    @JIPipeParameter("python-executable")
+    public void setPythonExecutable(Path pythonExecutable) {
+        this.pythonExecutable = pythonExecutable;
+    }
+
+    @JIPipeDocumentation(name = "Provide Python adapter", description = "If enabled, JIPipe will provide any Python node with the JIPipe Python Adapter modules. " +
+            "You may want to disable this if you installed a JIPipe adapter into your Python library.")
+    @JIPipeParameter("provide-python-adapter")
+    public boolean isProvidePythonAdapter() {
+        return providePythonAdapter;
+    }
+
+    @JIPipeParameter("provide-python-adapter")
+    public void setProvidePythonAdapter(boolean providePythonAdapter) {
+        this.providePythonAdapter = providePythonAdapter;
+    }
+
+    @JIPipeDocumentation(name = "Python arguments", description = "Expression that determines the Python arguments. Must return an array of strings." +
+            "<ul>" +
+            "<li>If you use standard Python, set it to <code>ARRAY(script_file)</code></li>" +
+            "<li>If you use Conda, set it to <code>ARRAY(\"run\", \"-n\", \"base\", \"python\", script_file)</code>. " +
+            "You can replace 'base' with any other Conda environment you currently have installed.</li>" +
+            "<li>If you use virtualenv, set it to <code>ARRAY(script_file)</code></li>" +
+            "</ul>")
+    @JIPipeParameter("python-arguments")
+    public DefaultExpressionParameter getPythonArguments() {
+        return pythonArguments;
+    }
+
+    @JIPipeParameter("python-arguments")
+    public void setPythonArguments(DefaultExpressionParameter pythonArguments) {
+        this.pythonArguments = pythonArguments;
+    }
+
     public static PythonExtensionSettings getInstance() {
         return JIPipe.getSettings().getSettings(ID, PythonExtensionSettings.class);
     }
@@ -66,6 +117,12 @@ public class PythonExtensionSettings implements JIPipeParameterCollection {
                             "set the Python executable. virtualenv is supported (you can find the exe in the environment bin folder).");
         }
     }
+
+//    @JIPipeDocumentation(name = "Use Conda", description = "Select a Conda environment.")
+//    @JIPipeContextAction(iconURL = ResourceUtils.RESOURCE_BASE_PATH + "/icons/apps/python.png")
+//    public void setToConda(JIPipeWorkbench parent) {
+//        // Insert code here
+//    }
 
     /**
      * Checks if the Python settings are valid or reports an invalid state
@@ -101,63 +158,6 @@ public class PythonExtensionSettings implements JIPipeParameterCollection {
             invalid = true;
         }
         return !invalid;
-    }
-
-    @Override
-    public EventBus getEventBus() {
-        return eventBus;
-    }
-
-    @JIPipeDocumentation(name = "Python executable", description = "Points at the Python executable." +
-            "<ul>" +
-            "<li>If you use standard Python, point it to python.exe</li>" +
-            "<li>If you use Conda, point it to Scripts/conda.exe</li>" +
-            "<li>If you use virtualenv, point it to venv/Scripts/python.exe</li>" +
-            "</ul>")
-    @JIPipeParameter("python-executable")
-    @FilePathParameterSettings(pathMode = PathEditor.PathMode.FilesOnly, ioMode = PathEditor.IOMode.Open)
-    public Path getPythonExecutable() {
-        return pythonExecutable;
-    }
-
-    @JIPipeParameter("python-executable")
-    public void setPythonExecutable(Path pythonExecutable) {
-        this.pythonExecutable = pythonExecutable;
-    }
-
-    @JIPipeDocumentation(name = "Provide Python adapter", description = "If enabled, JIPipe will provide any Python node with the JIPipe Python Adapter modules. " +
-            "You may want to disable this if you installed a JIPipe adapter into your Python library.")
-    @JIPipeParameter("provide-python-adapter")
-    public boolean isProvidePythonAdapter() {
-        return providePythonAdapter;
-    }
-
-    @JIPipeParameter("provide-python-adapter")
-    public void setProvidePythonAdapter(boolean providePythonAdapter) {
-        this.providePythonAdapter = providePythonAdapter;
-    }
-
-//    @JIPipeDocumentation(name = "Use Conda", description = "Select a Conda environment.")
-//    @JIPipeContextAction(iconURL = ResourceUtils.RESOURCE_BASE_PATH + "/icons/apps/python.png")
-//    public void setToConda(JIPipeWorkbench parent) {
-//        // Insert code here
-//    }
-
-    @JIPipeDocumentation(name = "Python arguments", description = "Expression that determines the Python arguments. Must return an array of strings." +
-            "<ul>" +
-            "<li>If you use standard Python, set it to <code>ARRAY(script_file)</code></li>" +
-            "<li>If you use Conda, set it to <code>ARRAY(\"run\", \"-n\", \"base\", \"python\", script_file)</code>. " +
-            "You can replace 'base' with any other Conda environment you currently have installed.</li>" +
-            "<li>If you use virtualenv, set it to <code>ARRAY(script_file)</code></li>" +
-            "</ul>")
-    @JIPipeParameter("python-arguments")
-    public DefaultExpressionParameter getPythonArguments() {
-        return pythonArguments;
-    }
-
-    @JIPipeParameter("python-arguments")
-    public void setPythonArguments(DefaultExpressionParameter pythonArguments) {
-        this.pythonArguments = pythonArguments;
     }
 
     public static class PythonArgumentsVariableSource implements ExpressionParameterVariableSource {

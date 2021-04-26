@@ -23,8 +23,10 @@ import org.hkijena.jipipe.utils.StringUtils;
 
 import javax.swing.*;
 import java.awt.*;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Metadata that allows the restoration of tabs
@@ -83,8 +85,7 @@ public class JIPipeProjectTabMetadata {
                             tabIds.put(id, tab);
                         }
                     }
-                }
-                catch (IllegalArgumentException e) {
+                } catch (IllegalArgumentException e) {
                 }
             }
         }

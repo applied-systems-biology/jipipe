@@ -14,7 +14,6 @@
 package org.hkijena.jipipe.ui.cache;
 
 import com.google.common.eventbus.Subscribe;
-import com.google.common.html.HtmlEscapers;
 import org.hkijena.jipipe.api.JIPipeProjectCache;
 import org.hkijena.jipipe.api.JIPipeProjectCacheQuery;
 import org.hkijena.jipipe.api.JIPipeProjectCacheState;
@@ -30,9 +29,7 @@ import org.hkijena.jipipe.utils.UIUtils;
 import javax.swing.*;
 import java.time.format.DateTimeFormatter;
 import java.util.Comparator;
-import java.util.HashSet;
 import java.util.Map;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 /**

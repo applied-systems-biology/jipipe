@@ -14,7 +14,6 @@
 package org.hkijena.jipipe.utils;
 
 import org.apache.commons.lang3.SystemUtils;
-import org.hkijena.jipipe.extensions.parameters.primitives.PathList;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -65,6 +64,7 @@ public class PathUtils {
 
     /**
      * Converts UNIX paths to Windows and Windows paths to UNIX
+     *
      * @param paths the paths. This list must be modifiable
      */
     public static void normalizeList(List<Path> paths) {
@@ -75,8 +75,7 @@ public class PathUtils {
                 } else {
                     paths.set(i, Paths.get(StringUtils.nullToEmpty(paths.get(i)).replace('\\', '/')));
                 }
-            }
-            catch (Exception e) {
+            } catch (Exception e) {
                 paths.set(i, Paths.get(""));
             }
         }
@@ -89,8 +88,7 @@ public class PathUtils {
             } else {
                 return Paths.get(StringUtils.nullToEmpty(path).replace('\\', '/'));
             }
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             return Paths.get("");
         }
     }

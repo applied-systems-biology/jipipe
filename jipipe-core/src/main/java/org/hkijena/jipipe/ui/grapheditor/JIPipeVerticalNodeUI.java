@@ -59,10 +59,11 @@ public class JIPipeVerticalNodeUI extends JIPipeNodeUI {
 
     /**
      * Creates a new UI
-     *  @param workbench the workbench
+     *
+     * @param workbench the workbench
      * @param graphUI   The graph UI that contains this UI
      * @param algorithm The algorithm
-     * @param compact if the vertical view should be compact
+     * @param compact   if the vertical view should be compact
      */
     public JIPipeVerticalNodeUI(JIPipeWorkbench workbench, JIPipeGraphCanvasUI graphUI, JIPipeGraphNode algorithm, boolean compact) {
         super(workbench, graphUI, algorithm, JIPipeGraphViewMode.Vertical);
@@ -103,17 +104,16 @@ public class JIPipeVerticalNodeUI extends JIPipeNodeUI {
         runButton.setBorder(null);
         JPopupMenu runContextMenu = UIUtils.addPopupMenuToComponent(runButton);
         for (NodeUIContextAction entry : RUN_NODE_CONTEXT_MENU_ENTRIES) {
-            if(entry == null)
+            if (entry == null)
                 runContextMenu.addSeparator();
             else {
                 JMenuItem item = new JMenuItem(entry.getName(), entry.getIcon());
                 item.setToolTipText(entry.getDescription());
                 item.setAccelerator(entry.getKeyboardShortcut());
                 item.addActionListener(e -> {
-                    if(entry.matches(Collections.singleton(this))) {
+                    if (entry.matches(Collections.singleton(this))) {
                         entry.run(getGraphUI(), Collections.singleton(this));
-                    }
-                    else {
+                    } else {
                         JOptionPane.showMessageDialog(getWorkbench().getWindow(),
                                 "Could not run this operation",
                                 entry.getName(),
@@ -134,7 +134,7 @@ public class JIPipeVerticalNodeUI extends JIPipeNodeUI {
             }
         });
         addVerticalGlue(1);
-        if(getGraphUI().getSettings().isShowRunNodeButton() && isNodeRunnable()) {
+        if (getGraphUI().getSettings().isShowRunNodeButton() && isNodeRunnable()) {
             add(runButton, new GridBagConstraints() {
                 {
                     gridx = row.getAndIncrement();
@@ -155,7 +155,7 @@ public class JIPipeVerticalNodeUI extends JIPipeNodeUI {
                 gridy = 2;
                 gridx = row.getAndIncrement();
                 fill = GridBagConstraints.HORIZONTAL;
-                insets = new Insets(0,4,0,0);
+                insets = new Insets(0, 4, 0, 0);
                 weightx = 1;
             }
         });
@@ -215,7 +215,7 @@ public class JIPipeVerticalNodeUI extends JIPipeNodeUI {
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
         g.setColor(getBorderColor());
-        g.drawRect(0,0, getWidth() - 1, getHeight() - 1);
+        g.drawRect(0, 0, getWidth() - 1, getHeight() - 1);
     }
 
     @Override
@@ -437,7 +437,7 @@ public class JIPipeVerticalNodeUI extends JIPipeNodeUI {
         Dimension realSize = new Dimension((int) Math.round(gridSize.width * viewMode.getGridWidth() * getGraphUI().getZoom()),
                 (int) Math.round(gridSize.height * viewMode.getGridHeight() * getGraphUI().getZoom()));
         Dimension slotSize = viewMode.gridToRealSize(new Dimension(1, 1), getGraphUI().getZoom());
-        if(compact) {
+        if (compact) {
             slotSize.height = 24;
         }
         slotSize.width = realSize.width;
