@@ -47,8 +47,8 @@ public class ImagePlusFFT5DData extends ImagePlusFFT2DData {
         }
     }
 
-    public static ImagePlusData importFrom(Path storageFolder) {
-        return new ImagePlusFFT5DData(ImagePlusData.importImagePlusFrom(storageFolder));
+    public static ImagePlusFFT5DData importFrom(Path storageFolder) {
+        return new ImagePlusFFT5DData(ImagePlusFFTData.importFrom(storageFolder).getImage());
     }
 
     /**

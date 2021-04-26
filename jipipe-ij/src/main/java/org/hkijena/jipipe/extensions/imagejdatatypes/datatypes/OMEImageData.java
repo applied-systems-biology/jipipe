@@ -53,6 +53,7 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.parameters.OMEExporterSetti
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ROIHandler;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.utils.PathUtils;
+import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
 import java.awt.*;
@@ -167,6 +168,11 @@ public class OMEImageData implements JIPipeData {
                     "JIPipe needs to load the image from a folder, but it could not find any matching file.",
                     "Please contact the JIPipe developers about this issue.");
         }
+        return simpleOMEImport(targetFile);
+    }
+
+    @NotNull
+    public static OMEImageData simpleOMEImport(Path targetFile) {
         try {
             ImporterOptions importerOptions = new ImporterOptions();
             importerOptions.setId(targetFile.toString());

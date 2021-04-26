@@ -27,7 +27,7 @@ import java.nio.file.Path;
 @JIPipeDocumentation(name = "2D FFT Image")
 @JIPipeOrganization(menuPath = "Images\nFFT")
 @JIPipeHeavyData
-public class ImagePlusFFT2DData extends ImagePlusData {
+public class ImagePlusFFT2DData extends ImagePlusFFTData {
 
     /**
      * The dimensionality of this data
@@ -47,8 +47,8 @@ public class ImagePlusFFT2DData extends ImagePlusData {
         }
     }
 
-    public static ImagePlusData importFrom(Path storageFolder) {
-        return new ImagePlusFFT2DData(ImagePlusData.importImagePlusFrom(storageFolder));
+    public static ImagePlusFFT2DData importFrom(Path storageFolder) {
+        return new ImagePlusFFT2DData(ImagePlusFFTData.importFrom(storageFolder).getImage());
     }
 
     /**
