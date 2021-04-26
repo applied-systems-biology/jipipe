@@ -111,7 +111,20 @@ public class ApplyMath2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusData(img), progressInfo);
     }
 
-    @JIPipeDocumentation(name = "Function", description = "The function that is applied to each pixel.")
+    @JIPipeDocumentation(name = "Function", description = "The function that is applied to each pixel. " +
+            "<ul>" +
+            "<li>Set: Set all pixel values to the provided one</li>" +
+            "<li>Add: Add the provided value to all pixel values</li>" +
+            "<li>Subtract: Subtract the provided value from all pixel values</li>" +
+            "<li>Multiply: Multiply all pixel values with the provided value</li>" +
+            "<li>Divide: Divide all pixel values by the provided value</li>" +
+            "<li>Gamma: Perform gamma correction (value is gamma)</li>" +
+            "<li>Minimum: Pixel values less than the provided value are set to the value</li>" +
+            "<li>Maximum: Pixel values larger than the provided value are set to the value</li>" +
+            "<li>Logical OR: Apply binary OR operation on pixels with value (value is converted to integer)</li>" +
+            "<li>Logical AND: Apply binary AND operation on pixels with value (value is converted to integer)</li>" +
+            "<li>Logical XOR: Apply binary XOR operation on pixels with value (value is converted to integer)</li>" +
+            "</ul>")
     @JIPipeParameter("transformation-function")
     public Transformation getTransformation() {
         return transformation;
