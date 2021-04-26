@@ -26,7 +26,9 @@ import javax.swing.*;
 import java.awt.*;
 import java.nio.file.Path;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * Editor for {@link PathList}
@@ -81,8 +83,45 @@ public class PathListParameterEditorUI extends JIPipeParameterEditorUI {
         toolBar.add(addButton);
 
         JButton removeButton = new JButton(UIUtils.getIconFromResources("actions/delete.png"));
+        removeButton.setToolTipText("Remove selected elements");
         removeButton.addActionListener(e -> removeSelectedEntries());
         toolBar.add(removeButton);
+
+        JButton menuButton = new JButton(UIUtils.getIconFromResources("actions/open-menu.png"));
+        menuButton.setToolTipText("Show additional options");
+        JPopupMenu menu = UIUtils.addPopupMenuToComponent(menuButton);
+        toolBar.add(menuButton);
+
+        JMenuItem clearItem = new JMenuItem("Clear", UIUtils.getIconFromResources("actions/clear-brush.png"));
+        clearItem.setToolTipText("Removes all items");
+        clearItem.addActionListener(e -> clearList());
+        menu.add(clearItem);
+
+        JMenuItem sortItem = new JMenuItem("Sort", UIUtils.getIconFromResources("actions/view-sort.png"));
+        sortItem.setToolTipText("Sorts the items");
+        sortItem.addActionListener(e -> sortList());
+        menu.add(sortItem);
+    }
+
+    private void sortList() {
+        Object order = JOptionPane.showInputDialog(this, "Please select the sort order", "Sort items",
+                JOptionPane.PLAIN_MESSAGE, null, new Object[]{"Ascending", "Descending"}, "Ascending");
+        if(Objects.equals("Ascending", order)) {
+            PathList parameter = getParameter(PathList.class);
+            parameter.sort(Comparator.naturalOrder());
+            setParameter(parameter, true);
+        }
+        else if(Objects.equals("Descending", order)) {
+            PathList parameter = getParameter(PathList.class);
+            parameter.sort(Comparator.reverseOrder());
+            setParameter(parameter, true);
+        }
+    }
+
+    private void clearList() {
+        PathList parameter = getParameter(PathList.class);
+        parameter.clear();
+        setParameter(parameter, true);
     }
 
     private void removeSelectedEntries() {

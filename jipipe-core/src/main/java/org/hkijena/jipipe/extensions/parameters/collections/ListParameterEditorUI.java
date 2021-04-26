@@ -15,6 +15,7 @@ package org.hkijena.jipipe.extensions.parameters.collections;
 
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
+import org.hkijena.jipipe.extensions.parameters.primitives.PathList;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.components.FormPanel;
 import org.hkijena.jipipe.ui.parameters.JIPipeParameterEditorUI;
@@ -58,12 +59,29 @@ public class ListParameterEditorUI extends JIPipeParameterEditorUI {
         JButton addButton = new JButton("Add", UIUtils.getIconFromResources("actions/list-add.png"));
         addButton.addActionListener(e -> addNewEntry());
         toolBar.add(addButton);
+
+        JButton menuButton = new JButton(UIUtils.getIconFromResources("actions/open-menu.png"));
+        menuButton.setToolTipText("Show additional options");
+        JPopupMenu menu = UIUtils.addPopupMenuToComponent(menuButton);
+        toolBar.add(menuButton);
+
+        JMenuItem clearItem = new JMenuItem("Clear", UIUtils.getIconFromResources("actions/clear-brush.png"));
+        clearItem.setToolTipText("Removes all items");
+        clearItem.addActionListener(e -> clearList());
+        menu.add(clearItem);
+
         add(toolBar, BorderLayout.NORTH);
 
         formPanel = new FormPanel(null, FormPanel.NONE);
         add(formPanel, BorderLayout.CENTER);
         add(emptyLabel, BorderLayout.SOUTH);
         emptyLabel.setBorder(BorderFactory.createEmptyBorder(8, 8, 8, 8));
+    }
+
+    private void clearList() {
+        ListParameter<?> parameter = getParameter(ListParameter.class);
+        parameter.clear();
+        setParameter(parameter, true);
     }
 
     private void addNewEntry() {
@@ -82,19 +100,66 @@ public class ListParameterEditorUI extends JIPipeParameterEditorUI {
         ListParameter<?> parameter = getParameter(ListParameter.class);
         for (int i = 0; i < parameter.size(); ++i) {
             Object entry = parameter.get(i);
+
+            JPanel buttonPanel = new JPanel();
+            buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.Y_AXIS));
+
+            JButton moveUpButton = new JButton(UIUtils.getIconFromResources("actions/draw-triangle3.png"));
+            moveUpButton.setToolTipText("Move entry up");
+            UIUtils.makeBorderlessWithoutMargin(moveUpButton);
+            moveUpButton.addActionListener(e -> moveEntryUp(entry));
+            buttonPanel.add(moveUpButton);
+
             JButton removeButton = new JButton(UIUtils.getIconFromResources("actions/close-tab.png"));
             removeButton.setToolTipText("Remove entry");
             UIUtils.makeBorderlessWithoutMargin(removeButton);
             removeButton.addActionListener(e -> removeEntry(entry));
+            buttonPanel.add(removeButton);
+
+            JButton moveDownButton = new JButton(UIUtils.getIconFromResources("actions/draw-triangle4.png"));
+            moveDownButton.setToolTipText("Move entry down");
+            UIUtils.makeBorderlessWithoutMargin(moveDownButton);
+            moveDownButton.addActionListener(e -> moveEntryDown(entry));
+            buttonPanel.add(moveDownButton);
 
             ListParameterItemParameterAccess<?> access = new ListParameterItemParameterAccess(getParameterAccess(),
                     parameter,
                     parameter.getContentClass(),
                     i);
             JIPipeParameterEditorUI ui = JIPipe.getParameterTypes().createEditorFor(getWorkbench(), access);
-            formPanel.addToForm(ui, removeButton, null);
+            formPanel.addToForm(ui, buttonPanel, null);
         }
         emptyLabel.setVisible(parameter.isEmpty());
+    }
+
+    private void moveEntryDown(Object entry) {
+        ListParameter<Object> parameter = getParameter(ListParameter.class);
+        int i = parameter.indexOf(entry);
+        if(i >= 0) {
+            int j = (i + 1) % parameter.size();
+            Object next = parameter.get(j);
+            parameter.set(j, entry);
+            parameter.set(i, next);
+            setParameter(parameter, true);
+        }
+    }
+
+    private void moveEntryUp(Object entry) {
+        ListParameter<Object> parameter = getParameter(ListParameter.class);
+        int i = parameter.indexOf(entry);
+        if(i >= 0) {
+            if(i == 0) {
+                Object previous = parameter.get(parameter.size() - 1);
+                parameter.set(parameter.size() - 1, entry);
+                parameter.set(i, previous);
+            }
+            else {
+                Object previous = parameter.get(i - 1);
+                parameter.set(i - 1, entry);
+                parameter.set(i, previous);
+            }
+            setParameter(parameter, true);
+        }
     }
 
     private void removeEntry(Object entry) {
