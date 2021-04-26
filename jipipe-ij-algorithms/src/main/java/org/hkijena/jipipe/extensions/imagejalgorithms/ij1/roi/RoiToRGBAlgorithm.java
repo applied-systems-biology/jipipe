@@ -147,6 +147,10 @@ public class RoiToRGBAlgorithm extends JIPipeIteratingAlgorithm {
                     ImageProcessor originalProcessor = opacity != 1.0 ? result.getStack().getProcessor(stackIndex).duplicate() : null;
                     ImageProcessor processor = result.getStack().getProcessor(stackIndex);
                     for (Roi roi : inputData) {
+
+                        if(progressInfo.isCancelled().get())
+                            return;
+
                         int rz = roi.getZPosition();
                         int rc = roi.getCPosition();
                         int rt = roi.getTPosition();
