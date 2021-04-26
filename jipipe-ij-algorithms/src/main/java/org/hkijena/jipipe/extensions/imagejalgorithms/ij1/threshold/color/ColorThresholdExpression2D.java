@@ -24,7 +24,7 @@ import org.hkijena.jipipe.extensions.parameters.expressions.ExpressionParameters
 
 @JIPipeDocumentation(name = "Custom color auto threshold", description = "Applies a mathematical operation to each pixel to convert the color " +
         "into a greyscale value.")
-@JIPipeOrganization(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Color")
+@JIPipeOrganization(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Threshold\nColor")
 @JIPipeInputSlot(value = ImagePlusColorData.class, slotName = "Input", autoCreate = true)
 @JIPipeOutputSlot(value = ImagePlusGreyscaleMaskData.class, slotName = "Output", autoCreate = true)
 public class ColorThresholdExpression2D extends JIPipeSimpleIteratingAlgorithm {

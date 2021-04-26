@@ -10,7 +10,7 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.color.ImagePlusColorHSBData;
 
 @JIPipeDocumentation(name = "Convert to HSB colors", description = "Converts an image into an HSB image or re-interprets existing image channels as HSB.")
-@JIPipeOrganization(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Color\nConvert")
+@JIPipeOrganization(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Colors\nConvert")
 @JIPipeInputSlot(value = ImagePlusData.class, slotName = "Input")
 @JIPipeOutputSlot(value = ImagePlusColorHSBData.class, slotName = "Output")
 public class ToHSBColorSpaceConverterAlgorithm extends ColorSpaceConverterAlgorithm {
