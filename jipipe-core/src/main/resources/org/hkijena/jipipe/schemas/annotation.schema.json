@@ -1,0 +1,25 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema",
+  "$id": "https://www.jipipe.org/schemas/annotation.schema.json",
+  "type": "object",
+  "title": "Annotation",
+  "description": "An annotation",
+  "required": [
+    "name",
+    "value"
+  ],
+  "properties": {
+    "name": {
+      "$id": "#/properties/name",
+      "type": "string",
+      "title": "Annotation name",
+      "description": "Name of the annotation"
+    },
+    "value": {
+      "$id": "#/properties/value",
+      "type": "string",
+      "title": "Annotation value",
+      "description": "Value of the annotation"
+    }
+  }
+}

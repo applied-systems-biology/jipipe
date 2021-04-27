@@ -9,11 +9,24 @@
     "edges"
   ],
   "properties": {
+    "additional-metadata": {
+      "$id": "#/properties/additional-metadata",
+      "type": "object",
+      "title": "Additional metadata",
+      "description": "Dict of additional metadata",
+      "default": {},
+      "examples": [
+        {}
+      ],
+      "additionalProperties": {
+        "$ref": "https://www.jipipe.org/schemas/additional-metadata.schema.json"
+      }
+    },
     "nodes": {
       "$id": "#/properties/nodes",
       "type": "object",
       "title": "Nodes",
-      "description": "The nodes. Keys are the unique algorithm instance IDs.",
+      "description": "The nodes. Keys are the UUIDs.",
       "default": {},
       "examples": [
         {}
@@ -26,7 +39,7 @@
       "$id": "#/properties/edges",
       "type": "array",
       "title": "Edges",
-      "description": "The edges. IDs in the edge definition must be consistent to the IDs in the 'nodes' entry",
+      "description": "The edges. IDs in the edge definition must be consistent to the UUIDs in the 'nodes' entry",
       "default": [],
       "examples": [
         []

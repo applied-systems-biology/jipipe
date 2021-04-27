@@ -1,0 +1,39 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema",
+  "$id": "https://www.jipipe.org/schemas/data-table-row.schema.json",
+  "type": "object",
+  "title": "Data table row",
+  "description": "Defines a data table row",
+  "required": [
+    "index",
+    "annotations",
+    "true-data-type"
+  ],
+  "properties": {
+    "id": {
+      "$id": "#/properties/index",
+      "type": "number",
+      "title": "Row index",
+      "description": "Row index within the data table",
+      "default": 0,
+      "examples": [
+        0
+      ]
+    },
+    "annotations": {
+      "$id": "#/properties/annotations",
+      "type": "array",
+      "title": "Annotation list",
+      "description": "Annotations attached to the data row",
+      "items": {
+        "$ref": "https://www.jipipe.org/schemas/annotation.schema.json"
+      }
+    },
+    "true-data-type": {
+      "$id": "#/properties/true-data-type",
+      "type": "string",
+      "title": "Data type",
+      "description": "The true (not the slot) data type ID behind the row"
+    }
+  }
+}
