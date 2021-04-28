@@ -5,11 +5,7 @@
     <link>https://www.jipipe.org/documentation-java-api/data-type/</link>
     <description>Recent content in Creating a data type on JIPipe for ImageJ</description>
     <generator>Hugo -- gohugo.io</generator>
-    <language>en-us</language>
-    
-	<atom:link href="https://www.jipipe.org/documentation-java-api/data-type/index.xml" rel="self" type="application/rss+xml" />
-    
-    
+    <language>en-us</language><atom:link href="https://www.jipipe.org/documentation-java-api/data-type/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>Result view</title>
       <link>https://www.jipipe.org/documentation-java-api/data-type/result-ui/</link>

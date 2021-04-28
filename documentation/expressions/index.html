@@ -5,7 +5,7 @@
     
       <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-<meta name="revised" content="2021-04-16T08:59:35 CEST">
+<meta name="revised" content="2021-04-28T11:57:31 CEST">
 <title>Expression parameters :: JIPipe for ImageJ</title>
 <link rel="shortcut icon" href="../../images/favicon.png" type="image/x-icon" />
 <link href="../../css/font-awesome.min.css" rel="stylesheet">
@@ -24,7 +24,7 @@
 
     
   </head>
-  <body data-url="/documentation/expressions/">
+  <body data-url="../../documentation/expressions/">
     
       <header>
   <div class="logo">
@@ -463,7 +463,7 @@
       <li data-nav-id="https://www.jipipe.org/documentation-json-api/graph-node/" class="dd-item">
         <div>
           <a href="../../documentation-json-api/graph-node/">
-            Algorithm node
+            Graph node
           </a><i class="fa fa-circle-thin read-icon"></i>
         </div>
     </li>
@@ -530,6 +530,56 @@
           </a><i class="fa fa-circle-thin read-icon"></i>
         </div>
     </li>
+      <li data-nav-id="https://www.jipipe.org/documentation-json-api/data-table/" class="dd-item">
+        <div>
+          <a href="../../documentation-json-api/data-table/">
+            Data table
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
+      <li data-nav-id="https://www.jipipe.org/documentation-json-api/data-table-row/" class="dd-item">
+        <div>
+          <a href="../../documentation-json-api/data-table-row/">
+            Data table row
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
+      <li data-nav-id="https://www.jipipe.org/documentation-json-api/annotation/" class="dd-item">
+        <div>
+          <a href="../../documentation-json-api/annotation/">
+            Annotation
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
+        </ul>
+    </li>
+    <li data-nav-id="https://www.jipipe.org/documentation-data-api/" class="dd-item haschildren
+        ">
+      <div>
+      <a href="../../documentation-data-api/">Data API documentation</a><i class="fa fa-angle-right fa-lg category-icon"></i><i class="fa fa-circle-thin read-icon"></i>
+      </div>
+        <ul>
+      <li data-nav-id="https://www.jipipe.org/documentation-data-api/data-table/" class="dd-item">
+        <div>
+          <a href="../../documentation-data-api/data-table/">
+            Data table
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
+      <li data-nav-id="https://www.jipipe.org/documentation-data-api/row-folder/" class="dd-item">
+        <div>
+          <a href="../../documentation-data-api/row-folder/">
+            Row folder
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
+      <li data-nav-id="https://www.jipipe.org/documentation-data-api/pipeline-output/" class="dd-item">
+        <div>
+          <a href="../../documentation-data-api/pipeline-output/">
+            Pipeline output
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
         </ul>
     </li>
     <li data-nav-id="https://www.jipipe.org/citation/" class="dd-item
@@ -582,6 +632,8 @@
    Java API documentation</option>
     <option value="/documentation-json-api/" >
    JSON API documentation</option>
+    <option value="/documentation-data-api/" >
+   Data API documentation</option>
     <option value="/citation/" >
    Citation</option>
 
@@ -628,11 +680,10 @@ It allows you for example to first calculate a numeric metric and use it for fil
 <p>The user interface of the expression parameter allows you to type the expression via a text field. You can also create new lines if you have longer expressions. They will be all merged automatically.
 If you are unfamiliar with the expression language, you can click the <img class="inline-image" src="../../img/icons/insert-math-expression.png"/> button to open a tool that lists all available functions and operators. This tool will help you to build expressions and check the syntax.</p>
 <p><img src="../../img/documentation/expression-builder.png" alt="Expression builder"></p>
-
-<div class="notices tip" ><p><p>To get familiar with expression, use JIPipe&rsquo;s integrated calculator tool (Tools &gt; Development &gt; Calculator).
-You can play around with any expression you like without breaking something.</p>
+<div class="notices tip" ><p>
+To get familiar with expression, use JIPipe's integrated calculator tool (Tools > Development > Calculator).
+You can play around with any expression you like without breaking something.
 </p></div>
-
 <h2 id="variables">Variables</h2>
 <p>Variables are set externally by the node and can contain various useful values.
 For example, filter nodes will put numbers into the variables. Image generator nodes
@@ -641,10 +692,9 @@ might put the pixel coordinates into them.</p>
 Here the node supplies the variables <code>x</code> and <code>y</code> and expects a number back. You can input a formula that will be
 automatically applied to ally <code>x</code> and <code>y</code> values:</p>
 <pre><code>(x + y) + x/y + 1
-</code></pre>
-<div class="notices info" ><p><p>The expression builder shows a list of all variables. This list might be incomplete if variables are generated during the runtime (e.g., extracted from a table).</p>
+</code></pre><div class="notices info" ><p>
+The expression builder shows a list of all variables. This list might be incomplete if variables are generated during the runtime (e.g., extracted from a table).
 </p></div>
-
 <h2 id="operators">Operators</h2>
 <p>The expressions understand a wide range of common operators for numeric, string, and boolean data:</p>
 <ul>
@@ -702,7 +752,7 @@ Textual operators require spaces to be separated. For example you cannot write <
 <tr>
 <td>Logical OR</td>
 <td>Returns TRUE if one of the operands is TRUE</td>
-<td><code>x OR y</code> or <code>x | y</code></td>
+<td><code>x OR y</code> or `x</td>
 </tr>
 <tr>
 <td>Logical XOR</td>

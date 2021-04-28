@@ -5,11 +5,7 @@
     <link>https://www.jipipe.org/documentation/standard-library/python/</link>
     <description>Recent content in Python integration on JIPipe for ImageJ</description>
     <generator>Hugo -- gohugo.io</generator>
-    <language>en-us</language>
-    
-	<atom:link href="https://www.jipipe.org/documentation/standard-library/python/index.xml" rel="self" type="application/rss+xml" />
-    
-    
+    <language>en-us</language><atom:link href="https://www.jipipe.org/documentation/standard-library/python/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>Python API</title>
       <link>https://www.jipipe.org/documentation/standard-library/python/api/</link>

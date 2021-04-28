@@ -5,11 +5,7 @@
     <link>https://www.jipipe.org/faq/</link>
     <description>Recent content in Frequently asked questions on JIPipe for ImageJ</description>
     <generator>Hugo -- gohugo.io</generator>
-    <language>en-us</language>
-    
-	<atom:link href="https://www.jipipe.org/faq/index.xml" rel="self" type="application/rss+xml" />
-    
-    
+    <language>en-us</language><atom:link href="https://www.jipipe.org/faq/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>General questions</title>
       <link>https://www.jipipe.org/faq/general/</link>
@@ -28,8 +24,8 @@ Does JIPipe have a backup function? Yes. By default, JIPipe creates a backup eve
       
       <guid>https://www.jipipe.org/faq/user-interface/</guid>
       <description>Does JIPipe have a dark mode? Yes, you can enable it in Project &amp;gt; Application settings &amp;gt; UI &amp;gt; General &amp;gt; Theme. Set the theme to Modern dark and restart JIPipe/ImageJ.
-How can I make long connections without zooming out? Click the arrow button at the input/output slot. It lists all compatible sources/targets ordered by distance.
-Why is the user interface suddenly messed up on Windows? This is a known issue with the open/save dialogs that are used on Windows.</description>
+The nodes are so large. Can they be more compact? Yes, there are multiple view modes available, including a horizontal and compact vertical mode. See here for more info.
+How can I make long connections without zooming out? Click the arrow button at the input/output slot.</description>
     </item>
     
     <item>

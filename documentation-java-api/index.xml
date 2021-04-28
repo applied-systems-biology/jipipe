@@ -5,11 +5,7 @@
     <link>https://www.jipipe.org/documentation-java-api/</link>
     <description>Recent content in Java API documentation on JIPipe for ImageJ</description>
     <generator>Hugo -- gohugo.io</generator>
-    <language>en-us</language>
-    
-	<atom:link href="https://www.jipipe.org/documentation-java-api/index.xml" rel="self" type="application/rss+xml" />
-    
-    
+    <language>en-us</language><atom:link href="https://www.jipipe.org/documentation-java-api/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>JavaDocs</title>
       <link>https://www.jipipe.org/documentation-java-api/javadocs/</link>
@@ -37,7 +33,7 @@ Project root└── pom.xml└── src└── main├── java└�
       <guid>https://www.jipipe.org/documentation-java-api/usage-in-java/</guid>
       <description>The JIPipe API allows you to run algorithms, graphs, and projects in a pure Java environment without the need for a GUI or through ImageJ1 or ImageJ2 scripts.
 Prerequisites To use the JIPipe API JIPipe must be initialized first. This requires an ImageJ instance or any other way to load SciJava plugins. The following example shows how to initialize JIPipe.
-public static void main(String[] args) {// Extract necessary SciJava variables // An alternative is to create a @Plugin and execute this plugin via ImageJ final ImageJ ij = new ImageJ();Context context = ij.</description>
+public static void main(String[] args) { // Extract necessary SciJava variables  // An alternative is to create a @Plugin and execute this plugin via ImageJ  final ImageJ ij = new ImageJ(); Context context = ij.</description>
     </item>
     
   </channel>

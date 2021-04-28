@@ -54,6 +54,7 @@ org.hkijena.jipipe.extensions.imagejalgorithms.ij1.dimensions
 org.hkijena.jipipe.extensions.imagejalgorithms.ij1.edge
 org.hkijena.jipipe.extensions.imagejalgorithms.ij1.features
 org.hkijena.jipipe.extensions.imagejalgorithms.ij1.fft
+org.hkijena.jipipe.extensions.imagejalgorithms.ij1.forms
 org.hkijena.jipipe.extensions.imagejalgorithms.ij1.generate
 org.hkijena.jipipe.extensions.imagejalgorithms.ij1.io
 org.hkijena.jipipe.extensions.imagejalgorithms.ij1.lut
@@ -99,6 +100,7 @@ org.hkijena.jipipe.extensions.imagejdatatypes.util
 org.hkijena.jipipe.extensions.imagejdatatypes.util.measure
 org.hkijena.jipipe.extensions.imagejdatatypes.viewer
 org.hkijena.jipipe.extensions.imagejdatatypes.viewer.plugins
+org.hkijena.jipipe.extensions.imagejdatatypes.viewer.plugins.maskdrawer
 org.hkijena.jipipe.extensions.jsonextensionloader
 org.hkijena.jipipe.extensions.multiparameters
 org.hkijena.jipipe.extensions.multiparameters.algorithms

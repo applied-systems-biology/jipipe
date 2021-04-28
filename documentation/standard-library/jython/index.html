@@ -5,7 +5,7 @@
     
       <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-<meta name="revised" content="2021-04-16T08:59:35 CEST">
+<meta name="revised" content="2021-04-28T11:57:31 CEST">
 <title>Jython integration :: JIPipe for ImageJ</title>
 <link rel="shortcut icon" href="../../../images/favicon.png" type="image/x-icon" />
 <link href="../../../css/font-awesome.min.css" rel="stylesheet">
@@ -24,7 +24,7 @@
 
     
   </head>
-  <body data-url="/documentation/standard-library/jython/">
+  <body data-url="../../../documentation/standard-library/jython/">
     
       <header>
   <div class="logo">
@@ -464,7 +464,7 @@
       <li data-nav-id="https://www.jipipe.org/documentation-json-api/graph-node/" class="dd-item">
         <div>
           <a href="../../../documentation-json-api/graph-node/">
-            Algorithm node
+            Graph node
           </a><i class="fa fa-circle-thin read-icon"></i>
         </div>
     </li>
@@ -528,6 +528,56 @@
         <div>
           <a href="../../../documentation-json-api/slot-definition/">
             Slot definition
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
+      <li data-nav-id="https://www.jipipe.org/documentation-json-api/data-table/" class="dd-item">
+        <div>
+          <a href="../../../documentation-json-api/data-table/">
+            Data table
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
+      <li data-nav-id="https://www.jipipe.org/documentation-json-api/data-table-row/" class="dd-item">
+        <div>
+          <a href="../../../documentation-json-api/data-table-row/">
+            Data table row
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
+      <li data-nav-id="https://www.jipipe.org/documentation-json-api/annotation/" class="dd-item">
+        <div>
+          <a href="../../../documentation-json-api/annotation/">
+            Annotation
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
+        </ul>
+    </li>
+    <li data-nav-id="https://www.jipipe.org/documentation-data-api/" class="dd-item haschildren
+        ">
+      <div>
+      <a href="../../../documentation-data-api/">Data API documentation</a><i class="fa fa-angle-right fa-lg category-icon"></i><i class="fa fa-circle-thin read-icon"></i>
+      </div>
+        <ul>
+      <li data-nav-id="https://www.jipipe.org/documentation-data-api/data-table/" class="dd-item">
+        <div>
+          <a href="../../../documentation-data-api/data-table/">
+            Data table
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
+      <li data-nav-id="https://www.jipipe.org/documentation-data-api/row-folder/" class="dd-item">
+        <div>
+          <a href="../../../documentation-data-api/row-folder/">
+            Row folder
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
+      <li data-nav-id="https://www.jipipe.org/documentation-data-api/pipeline-output/" class="dd-item">
+        <div>
+          <a href="../../../documentation-data-api/pipeline-output/">
+            Pipeline output
           </a><i class="fa fa-circle-thin read-icon"></i>
         </div>
     </li>
@@ -595,6 +645,8 @@
    Java API documentation</option>
     <option value="/documentation-json-api/" >
    JSON API documentation</option>
+    <option value="/documentation-data-api/" >
+   Data API documentation</option>
     <option value="/citation/" >
    Citation</option>
 
@@ -626,16 +678,14 @@
     <p>The standard library contains nodes that allow to run Python scripts using
 the <a href="https://www.jython.org/">Jython</a> library. Python scripts have access to all
 JIPipe and ImageJ APIs that are available at runtime.</p>
-<p>
-<div class="notices info" ><p><p>Due to restrictions in the Jython library, Python libraries that are built
-on a native backend (such as Numpy) will not work.</p>
+<div class="notices info" ><p>
+Due to restrictions in the Jython library, Python libraries that are built
+on a native backend (such as Numpy) will not work.
 </p></div>
-
-
-<div class="notices info" ><p><p>As JIPipe builds on the functionality provided by ImageJ. Please refer to the ImageJ documentation to find information on
-how to expand Jython with additional libraries.</p>
+<div class="notices info" ><p>
+As JIPipe builds on the functionality provided by ImageJ. Please refer to the ImageJ documentation to find information on
+how to expand Jython with additional libraries.
 </p></div>
-</p>
 <p>You can find the nodes in the <code>Miscellaneous</code> menu. You can find algorithms equivalent
 to each of the Java standard algorithms:</p>
 <table>

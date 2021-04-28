@@ -1,0 +1,24 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema",
+  "$id": "https://www.jipipe.org/schemas/additional-metadata.schema.json",
+  "type": "object",
+  "title": "Additional metadata entry",
+  "description": "Additional metadata in a graph",
+  "required": [
+    "jipipe:type",
+    "data"
+  ],
+  "properties": {
+    "jipipe:type": {
+      "$id": "#/properties/jipipe:type",
+      "type": "string",
+      "title": "Java class",
+      "description": "The Java class that stores the data (full name)"
+    },
+    "data": {
+      "$id": "#/properties/data",
+      "title": "Serialized data",
+      "description": "JSON-serialized data"
+    }
+  }
+}

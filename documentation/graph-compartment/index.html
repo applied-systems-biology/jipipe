@@ -5,7 +5,7 @@
     
       <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-<meta name="revised" content="2021-04-16T08:59:35 CEST">
+<meta name="revised" content="2021-04-28T11:57:31 CEST">
 <title>Graph compartments :: JIPipe for ImageJ</title>
 <link rel="shortcut icon" href="../../images/favicon.png" type="image/x-icon" />
 <link href="../../css/font-awesome.min.css" rel="stylesheet">
@@ -24,7 +24,7 @@
 
     
   </head>
-  <body data-url="/documentation/graph-compartment/">
+  <body data-url="../../documentation/graph-compartment/">
     
       <header>
   <div class="logo">
@@ -463,7 +463,7 @@
       <li data-nav-id="https://www.jipipe.org/documentation-json-api/graph-node/" class="dd-item">
         <div>
           <a href="../../documentation-json-api/graph-node/">
-            Algorithm node
+            Graph node
           </a><i class="fa fa-circle-thin read-icon"></i>
         </div>
     </li>
@@ -530,6 +530,56 @@
           </a><i class="fa fa-circle-thin read-icon"></i>
         </div>
     </li>
+      <li data-nav-id="https://www.jipipe.org/documentation-json-api/data-table/" class="dd-item">
+        <div>
+          <a href="../../documentation-json-api/data-table/">
+            Data table
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
+      <li data-nav-id="https://www.jipipe.org/documentation-json-api/data-table-row/" class="dd-item">
+        <div>
+          <a href="../../documentation-json-api/data-table-row/">
+            Data table row
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
+      <li data-nav-id="https://www.jipipe.org/documentation-json-api/annotation/" class="dd-item">
+        <div>
+          <a href="../../documentation-json-api/annotation/">
+            Annotation
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
+        </ul>
+    </li>
+    <li data-nav-id="https://www.jipipe.org/documentation-data-api/" class="dd-item haschildren
+        ">
+      <div>
+      <a href="../../documentation-data-api/">Data API documentation</a><i class="fa fa-angle-right fa-lg category-icon"></i><i class="fa fa-circle-thin read-icon"></i>
+      </div>
+        <ul>
+      <li data-nav-id="https://www.jipipe.org/documentation-data-api/data-table/" class="dd-item">
+        <div>
+          <a href="../../documentation-data-api/data-table/">
+            Data table
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
+      <li data-nav-id="https://www.jipipe.org/documentation-data-api/row-folder/" class="dd-item">
+        <div>
+          <a href="../../documentation-data-api/row-folder/">
+            Row folder
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
+      <li data-nav-id="https://www.jipipe.org/documentation-data-api/pipeline-output/" class="dd-item">
+        <div>
+          <a href="../../documentation-data-api/pipeline-output/">
+            Pipeline output
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
         </ul>
     </li>
     <li data-nav-id="https://www.jipipe.org/citation/" class="dd-item
@@ -582,6 +632,8 @@
    Java API documentation</option>
     <option value="/documentation-json-api/" >
    JSON API documentation</option>
+    <option value="/documentation-data-api/" >
+   Data API documentation</option>
     <option value="/citation/" >
    Citation</option>
 
@@ -619,21 +671,18 @@ to other compartments. Other nodes on the other hand are not visible to other co
 only communicate with each other via the <em>compartment output node</em>. JIPipe also only
 allows you to edit a specific compartment, instead of the whole graph.
 By default, JIPipe creates three compartments: Preprocessing, Analysis, and Postprocessing.</p>
-
-<div class="notices info" ><p><p>By default a compartment&rsquo;s output node is not visible in any other compartment.
+<div class="notices info" ><p>
+By default a compartment's output node is not visible in any other compartment.
 The have to be connected in a similar manner on how algorithms are connected.
-To do this, use the compartment editor that is described in the following section.</p>
+To do this, use the compartment editor that is described in the following section.
 </p></div>
-
-
-<div class="notices tip" ><p><p>You can ignore the compartment feature if you want. You can delete the default compartments without any
-issue. Just leave one graph compartment and edit the remaining one.</p>
+<div class="notices tip" ><p>
+You can ignore the compartment feature if you want. You can delete the default compartments without any
+issue. Just leave one graph compartment and edit the remaining one.
 </p></div>
-
-
-<div class="notices tip" ><p><p>Compartments behave similar to algorithms. This means you can create a directed acyclic graph of compartments.</p>
+<div class="notices tip" ><p>
+Compartments behave similar to algorithms. This means you can create a directed acyclic graph of compartments.
 </p></div>
-
 <h1 id="creating-and-connecting-compartments">Creating and connecting compartments</h1>
 <p>JIPipe comes with an editor that allows to control the graph compartments.
 This editor is similar to the <a href="https://www.jipipe.org/documentation/graph-editor/">pipeline editor</a> and allows
@@ -643,10 +692,9 @@ similar to how algorithms are connected.</p>
 <p><img src="../../img/documentation/graph-compartment-editor-ui.png" alt="Graph compartment editor"></p>
 <p>You can one or multiple compartments in the editor. Click the <span class="fa fa-pencil"  style="font-size:medium" aria-hidden="true"></span> <strong>Edit</strong> button to
 open the compartment in the <a href="https://www.jipipe.org/documentation/graph-editor/">pipeline editor</a>.</p>
-
-<div class="notices tip" ><p><p>You can also double-click a compartment node to open the editor.</p>
+<div class="notices tip" ><p>
+You can also double-click a compartment node to open the editor.
 </p></div>
-
 
 
     

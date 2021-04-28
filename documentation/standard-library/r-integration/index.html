@@ -5,7 +5,7 @@
     
       <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-<meta name="revised" content="2021-04-16T08:59:35 CEST">
+<meta name="revised" content="2021-04-28T11:57:31 CEST">
 <title>R integration :: JIPipe for ImageJ</title>
 <link rel="shortcut icon" href="../../../images/favicon.png" type="image/x-icon" />
 <link href="../../../css/font-awesome.min.css" rel="stylesheet">
@@ -24,7 +24,7 @@
 
     
   </head>
-  <body data-url="/documentation/standard-library/r-integration/">
+  <body data-url="../../../documentation/standard-library/r-integration/">
     
       <header>
   <div class="logo">
@@ -464,7 +464,7 @@
       <li data-nav-id="https://www.jipipe.org/documentation-json-api/graph-node/" class="dd-item">
         <div>
           <a href="../../../documentation-json-api/graph-node/">
-            Algorithm node
+            Graph node
           </a><i class="fa fa-circle-thin read-icon"></i>
         </div>
     </li>
@@ -528,6 +528,56 @@
         <div>
           <a href="../../../documentation-json-api/slot-definition/">
             Slot definition
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
+      <li data-nav-id="https://www.jipipe.org/documentation-json-api/data-table/" class="dd-item">
+        <div>
+          <a href="../../../documentation-json-api/data-table/">
+            Data table
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
+      <li data-nav-id="https://www.jipipe.org/documentation-json-api/data-table-row/" class="dd-item">
+        <div>
+          <a href="../../../documentation-json-api/data-table-row/">
+            Data table row
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
+      <li data-nav-id="https://www.jipipe.org/documentation-json-api/annotation/" class="dd-item">
+        <div>
+          <a href="../../../documentation-json-api/annotation/">
+            Annotation
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
+        </ul>
+    </li>
+    <li data-nav-id="https://www.jipipe.org/documentation-data-api/" class="dd-item haschildren
+        ">
+      <div>
+      <a href="../../../documentation-data-api/">Data API documentation</a><i class="fa fa-angle-right fa-lg category-icon"></i><i class="fa fa-circle-thin read-icon"></i>
+      </div>
+        <ul>
+      <li data-nav-id="https://www.jipipe.org/documentation-data-api/data-table/" class="dd-item">
+        <div>
+          <a href="../../../documentation-data-api/data-table/">
+            Data table
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
+      <li data-nav-id="https://www.jipipe.org/documentation-data-api/row-folder/" class="dd-item">
+        <div>
+          <a href="../../../documentation-data-api/row-folder/">
+            Row folder
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
+      <li data-nav-id="https://www.jipipe.org/documentation-data-api/pipeline-output/" class="dd-item">
+        <div>
+          <a href="../../../documentation-data-api/pipeline-output/">
+            Pipeline output
           </a><i class="fa fa-circle-thin read-icon"></i>
         </div>
     </li>
@@ -595,6 +645,8 @@
    Java API documentation</option>
     <option value="/documentation-json-api/" >
    JSON API documentation</option>
+    <option value="/documentation-data-api/" >
+   Data API documentation</option>
     <option value="/citation/" >
    Citation</option>
 
@@ -626,10 +678,9 @@
     <p>The standard library contains nodes that allow to run R scripts using
 the <a href="https://github.com/jbytecode/rcaller">RCaller</a> library that allows to run any existing R installation.
 This means that you will need to install a distribution of <a href="https://www.r-project.org/">R</a>.</p>
-
-<div class="notices info" ><p><p>You will need to install R (<a href="https://www.r-project.org/">https://www.r-project.org/</a>) and setup JIPipe to find this installation.</p>
+<div class="notices info" ><p>
+You will need to install R (https://www.r-project.org/) and setup JIPipe to find this installation.
 </p></div>
-
 <h1 id="setting-up-r">Setting up R</h1>
 <p>If not already done, please install <a href="https://www.r-project.org/">R</a>. Then open JIPipe and
 navigate to <code>Project &gt; Application settings &gt; Extensions &gt; R integration</code>.</p>
@@ -696,7 +747,7 @@ Currently, the nodes are designed for following data types:</p>
 The <code>row</code> parameter indicates which item of the current data batch should be returned. Please note that <code>row</code> can only be zero if you are using R script (iterating).</p>
 <p>If you have multiple rows, you can find their count in <code>JIPipe.InputSlotRowCounts</code></p>
 <div class="highlight"><pre style="color:#272822;background-color:#fafafa;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-R" data-lang="R"><span style="color:#75af00">for</span><span style="color:#111">(</span> <span style="color:#111">i</span> <span style="color:#111">in</span> <span style="color:#ae81ff">1</span><span style="color:#f92672">:</span><span style="color:#111">JIPipe.InputSlotRowCounts</span><span style="color:#f92672">$</span><span style="color:#111">Tables</span><span style="color:#111">)</span> <span style="color:#111">{</span>
-  <span style="color:#75715e"># Note that the row has zero-based indices</span>
+  <span style="color:#75715e"># Note that the row has zero-based indices</span>
   <span style="color:#111">table</span> <span style="color:#f92672">&lt;-</span> <span style="color:#75af00">JIPipe.GetInputAsDataFrame</span><span style="color:#111">(</span><span style="color:#111">slot</span><span style="color:#f92672">=</span><span style="color:#d88200">&#34;Tables&#34;</span><span style="color:#111">,</span> <span style="color:#111">row</span><span style="color:#f92672">=</span><span style="color:#111">i</span><span style="color:#ae81ff">-1</span><span style="color:#111">)</span>
 <span style="color:#111">}</span>
 </code></pre></div><h2 id="writing-result-tables">Writing result tables</h2>
@@ -710,21 +761,20 @@ Please note, that you can add <em>multiple</em> outputs.</p>
 <p>As R does not have a dedicated data type for images, the JIPipe API will only provide means to generate a valid output file name.
 For this, two methods <code>JIPipe.AddOutputPNGImagePath(data, slot, annotations=list())</code> and <code>JIPipe.AddOutputTIFFImagePath(data, slot, annotations=list())</code>
 are available that produce a path for PNG or TIFF files respectively.</p>
-
-<div class="notices info" ><p><p>We recommend to use the &lsquo;Image (RGB)&rsquo; or any other RGB output type. This is due to the R behavior of generating images with indexed colors that are detected as greyscale images by JIPipe.</p>
+<div class="notices info" ><p>
+We recommend to use the 'Image (RGB)' or any other RGB output type. This is due to the R behavior of generating images with indexed colors that are detected as greyscale images by JIPipe.
 </p></div>
-
 <div class="highlight"><pre style="color:#272822;background-color:#fafafa;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-R" data-lang="R"><span style="color:#75af00">library</span><span style="color:#111">(</span><span style="color:#111">datasets</span><span style="color:#111">)</span>
 
-<span style="color:#75715e"># Generate the output file name</span>
+<span style="color:#75715e"># Generate the output file name</span>
 <span style="color:#111">png.file.name</span> <span style="color:#f92672">&lt;-</span> <span style="color:#75af00">JIPipe.AddOutputPNGImagePath</span><span style="color:#111">(</span><span style="color:#111">slot</span><span style="color:#f92672">=</span><span style="color:#d88200">&#34;Plot&#34;</span><span style="color:#111">)</span>
 
-<span style="color:#75715e"># Use standard R functions. Write into this file.</span>
+<span style="color:#75715e"># Use standard R functions. Write into this file.</span>
 <span style="color:#75af00">png</span><span style="color:#111">(</span><span style="color:#111">png.file.name</span><span style="color:#111">,</span> <span style="color:#111">width</span> <span style="color:#f92672">=</span> <span style="color:#ae81ff">800</span><span style="color:#111">,</span> <span style="color:#111">height</span> <span style="color:#f92672">=</span> <span style="color:#ae81ff">600</span><span style="color:#111">)</span>
 <span style="color:#75af00">plot</span><span style="color:#111">(</span><span style="color:#111">iris</span><span style="color:#f92672">$</span><span style="color:#111">Petal.Length</span><span style="color:#111">,</span> <span style="color:#111">iris</span><span style="color:#f92672">$</span><span style="color:#111">Petal.Width</span><span style="color:#111">,</span> <span style="color:#111">pch</span><span style="color:#f92672">=</span><span style="color:#ae81ff">21</span><span style="color:#111">,</span> <span style="color:#111">bg</span><span style="color:#f92672">=</span><span style="color:#75af00">c</span><span style="color:#111">(</span><span style="color:#d88200">&#34;red&#34;</span><span style="color:#111">,</span><span style="color:#d88200">&#34;green3&#34;</span><span style="color:#111">,</span><span style="color:#d88200">&#34;blue&#34;</span><span style="color:#111">)</span><span style="color:#75af00">[unclass</span><span style="color:#111">(</span><span style="color:#111">iris</span><span style="color:#f92672">$</span><span style="color:#111">Species</span><span style="color:#111">)</span><span style="color:#111">]</span><span style="color:#111">,</span> <span style="color:#111">main</span><span style="color:#f92672">=</span><span style="color:#d88200">&#34;Edgar Anderson&#39;s Iris Data&#34;</span><span style="color:#111">)</span>
 <span style="color:#75af00">dev.off</span><span style="color:#111">()</span>
 
-<span style="color:#75715e"># JIPipe will automatically load the data</span>
+<span style="color:#75715e"># JIPipe will automatically load the data</span>
 </code></pre></div><h2 id="reading-and-writing-other-data-types">Reading and writing other data types</h2>
 <p>Currently, only reading and writing of tables, as well as writing of image data is supported via convience functions.
 The node supports all other JIPipe data types, although import and export must be written via custom functions.</p>
@@ -732,10 +782,9 @@ The node supports all other JIPipe data types, although import and export must b
 Use <code>JIPipe.GetInputFolder(slot, row=0)</code> get obtain the path to this folder.</p>
 <p>Outputs are also expected to be provided in standardized JIPipe format. Use <code>JIPipe.AddOutputFolder(slot, annotations=list())</code>
 to obtain a valid path to such a folder and register the output.</p>
-
-<div class="notices info" ><p><p>Each JIPipe data type provides information about the structure of the data folder. You can find it in [?] &gt; Data type compendium.</p>
+<div class="notices info" ><p>
+Each JIPipe data type provides information about the structure of the data folder. You can find it in [?] > Data type compendium.
 </p></div>
-
 <h1 id="script-parameters">Script parameters</h1>
 <p>Each node provides means to define R variables inside the JIPipe environment via custom parameters. Each parameter value is passed as variable into R - the name of the variable
 being determined by the unique ID of the parameter.</p>

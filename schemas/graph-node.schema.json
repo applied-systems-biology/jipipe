@@ -1,6 +1,6 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema",
-  "$id": "https://applied-systems-biology.github.io/jipipe/schemas/graph-node.schema.json",
+  "$id": "https://www.jipipe.org/schemas/graph-node.schema.json",
   "type": "object",
   "title": "Algorithm node",
   "description": "Node in a graph",
@@ -22,7 +22,7 @@
         {}
       ],
       "additionalProperties": {
-        "$ref": "https://applied-systems-biology.github.io/jipipe/schemas/slot-definition.schema.json"
+        "$ref": "https://www.jipipe.org/schemas/slot-definition.schema.json"
       }
     },
     "jipipe:node-ui-location": {
@@ -35,13 +35,13 @@
         {}
       ],
       "additionalProperties": {
-        "$ref": "https://applied-systems-biology.github.io/jipipe/schemas/point.schema.json"
+        "$ref": "https://www.jipipe.org/schemas/point.schema.json"
       }
     },
     "jipipe:node-info-id": {
       "$id": "#/properties/jipipe:node-info-id",
       "type": "string",
-      "title": "Algorithm ID",
+      "title": "Node type ID",
       "description": "Algorithm type ID",
       "default": "",
       "examples": [
@@ -52,17 +52,28 @@
       "$id": "#/properties/jipipe:graph-compartment",
       "type": "string",
       "title": "Graph compartment",
-      "description": "Compartment ID. Only important for the UI.",
-      "default": "DEFAULT",
+      "description": "Compartment UUID. Only relevant in project graphs. Empty indicates no compartment assignment.",
+      "default": "",
       "examples": [
-        "default-preprocessing"
+        "fb3bfe3a-c9c1-4ec4-908b-3f1b7380a851",
+        ""
+      ]
+    },
+    "jipipe:alias-id": {
+      "$id": "#/properties/jipipe:alias-id",
+      "type": "string",
+      "title": "Alias ID",
+      "description": "Human-readable ID. Unique within the same graph. Can be changed by the software.",
+      "default": "",
+      "examples": [
+        "auto-threshold-2d"
       ]
     },
     "name": {
       "$id": "#/properties/name",
       "type": "string",
       "title": "Name",
-      "description": "A custom name for this algorithm. Only important for the UI. If null or empty, the UI will default to the algorithm type name.",
+      "description": "A custom name for this node. Only important for the UI. If null or empty, the UI will default to the node type name.",
       "default": "",
       "examples": [
         "Import 2D image (greyscale)"

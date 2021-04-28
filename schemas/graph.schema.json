@@ -1,6 +1,6 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema",
-  "$id": "https://applied-systems-biology.github.io/jipipe/schemas/graph.schema.json",
+  "$id": "https://www.jipipe.org/schemas/graph.schema.json",
   "type": "object",
   "title": "Graph",
   "description": "A graph",
@@ -9,30 +9,43 @@
     "edges"
   ],
   "properties": {
-    "nodes": {
-      "$id": "#/properties/nodes",
+    "additional-metadata": {
+      "$id": "#/properties/additional-metadata",
       "type": "object",
-      "title": "Nodes",
-      "description": "The nodes. Keys are the unique algorithm instance IDs.",
+      "title": "Additional metadata",
+      "description": "Dict of additional metadata",
       "default": {},
       "examples": [
         {}
       ],
       "additionalProperties": {
-        "$ref": "https://applied-systems-biology.github.io/jipipe/schemas/graph-node.schema.json"
+        "$ref": "https://www.jipipe.org/schemas/additional-metadata.schema.json"
+      }
+    },
+    "nodes": {
+      "$id": "#/properties/nodes",
+      "type": "object",
+      "title": "Nodes",
+      "description": "The nodes. Keys are the UUIDs.",
+      "default": {},
+      "examples": [
+        {}
+      ],
+      "additionalProperties": {
+        "$ref": "https://www.jipipe.org/schemas/graph-node.schema.json"
       }
     },
     "edges": {
       "$id": "#/properties/edges",
       "type": "array",
       "title": "Edges",
-      "description": "The edges. IDs in the edge definition must be consistent to the IDs in the 'nodes' entry",
+      "description": "The edges. IDs in the edge definition must be consistent to the UUIDs in the 'nodes' entry",
       "default": [],
       "examples": [
         []
       ],
       "items": {
-        "$ref": "https://applied-systems-biology.github.io/jipipe/schemas/graph-edge.schema.json"
+        "$ref": "https://www.jipipe.org/schemas/graph-edge.schema.json"
       }
     }
   }

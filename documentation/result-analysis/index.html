@@ -5,7 +5,7 @@
     
       <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-<meta name="revised" content="2021-04-16T08:59:35 CEST">
+<meta name="revised" content="2021-04-28T11:57:31 CEST">
 <title>Running a pipeline :: JIPipe for ImageJ</title>
 <link rel="shortcut icon" href="../../images/favicon.png" type="image/x-icon" />
 <link href="../../css/font-awesome.min.css" rel="stylesheet">
@@ -24,7 +24,7 @@
 
     
   </head>
-  <body data-url="/documentation/result-analysis/">
+  <body data-url="../../documentation/result-analysis/">
     
       <header>
   <div class="logo">
@@ -463,7 +463,7 @@
       <li data-nav-id="https://www.jipipe.org/documentation-json-api/graph-node/" class="dd-item">
         <div>
           <a href="../../documentation-json-api/graph-node/">
-            Algorithm node
+            Graph node
           </a><i class="fa fa-circle-thin read-icon"></i>
         </div>
     </li>
@@ -530,6 +530,56 @@
           </a><i class="fa fa-circle-thin read-icon"></i>
         </div>
     </li>
+      <li data-nav-id="https://www.jipipe.org/documentation-json-api/data-table/" class="dd-item">
+        <div>
+          <a href="../../documentation-json-api/data-table/">
+            Data table
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
+      <li data-nav-id="https://www.jipipe.org/documentation-json-api/data-table-row/" class="dd-item">
+        <div>
+          <a href="../../documentation-json-api/data-table-row/">
+            Data table row
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
+      <li data-nav-id="https://www.jipipe.org/documentation-json-api/annotation/" class="dd-item">
+        <div>
+          <a href="../../documentation-json-api/annotation/">
+            Annotation
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
+        </ul>
+    </li>
+    <li data-nav-id="https://www.jipipe.org/documentation-data-api/" class="dd-item haschildren
+        ">
+      <div>
+      <a href="../../documentation-data-api/">Data API documentation</a><i class="fa fa-angle-right fa-lg category-icon"></i><i class="fa fa-circle-thin read-icon"></i>
+      </div>
+        <ul>
+      <li data-nav-id="https://www.jipipe.org/documentation-data-api/data-table/" class="dd-item">
+        <div>
+          <a href="../../documentation-data-api/data-table/">
+            Data table
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
+      <li data-nav-id="https://www.jipipe.org/documentation-data-api/row-folder/" class="dd-item">
+        <div>
+          <a href="../../documentation-data-api/row-folder/">
+            Row folder
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
+      <li data-nav-id="https://www.jipipe.org/documentation-data-api/pipeline-output/" class="dd-item">
+        <div>
+          <a href="../../documentation-data-api/pipeline-output/">
+            Pipeline output
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
         </ul>
     </li>
     <li data-nav-id="https://www.jipipe.org/citation/" class="dd-item
@@ -582,6 +632,8 @@
    Java API documentation</option>
     <option value="/documentation-json-api/" >
    JSON API documentation</option>
+    <option value="/documentation-data-api/" >
+   Data API documentation</option>
     <option value="/citation/" >
    Citation</option>
 
@@ -618,16 +670,14 @@ by clicking the <img class="inline-image" src="../../img/icons/random.png" /> bu
 <p>After confirming the settings by clicking <span class="fa fa-cog"  style="font-size:medium" aria-hidden="true"></span> <strong>Run now</strong>,
 JIPipe will start processing the pipeline.</p>
 <p><img src="../../img/documentation/run-ui.png" alt="Run settings UI"></p>
-
-<div class="notices tip" ><p><p>You can have as many runs as you want. Runs will not execute in parallel, but be scheduled to wait
-until the current run finishes.</p>
+<div class="notices tip" ><p>
+You can have as many runs as you want. Runs will not execute in parallel, but be scheduled to wait
+until the current run finishes.
 </p></div>
-
-
-<div class="notices tip" ><p><p>The JIPipe output folder is automatically organized in a standardized way, so JIPipe can open a result folder.
-You find the &ldquo;Open analysis output &hellip;&rdquo;  button in the &ldquo;Project&rdquo; menu.</p>
+<div class="notices tip" ><p>
+The JIPipe output folder is automatically organized in a standardized way, so JIPipe can open a result folder.
+You find the "Open analysis output ..."  button in the "Project" menu.
 </p></div>
-
 <h1 id="result-analysis">Result analysis</h1>
 <p>After all results are generated, the result analysis UI will be automatically opened.
 It allows you to navigate through the results, and import them back into ImageJ (if supported by the generated data type).</p>
@@ -649,10 +699,9 @@ The table has following columns:</p>
 <h2 id="importing-results-back-into-jipipeimagej">Importing results back into JIPipe/ImageJ/&hellip;</h2>
 <p>On selecting one or multiple rows, additional UI elements are displayed below the table. They contain various actions that can be applied to the output data, such
 as opening the results directory, importing the data back into ImageJ or JIPipe, or any other operation.</p>
-
-<div class="notices tip" ><p><p>Double-click a row to execute the default action, which is the one most commonly used.</p>
+<div class="notices tip" ><p>
+Double-click a row to execute the default action, which is the one most commonly used.
 </p></div>
-
 <!-- <p><video src="../../img/documentation/result-analysis-navigation.webm" controls loop/></p> -->
 <h2 id="using-third-party-software-for-further-analysis">Using third-party software for further analysis</h2>
 <p>JIPipe stores outputs in a standardized format that can be easily read with third-party software.
@@ -667,24 +716,20 @@ to not save the output slot.</p>
 including the data type and annotations. The metadata is also usually available as <code>data-table.csv</code> file that can be
 read more easily. The folder contains sub-folders with numeric names that correspond to the table rows. The contents of
 each of these folders is determined by the standardized storage format of the data type (<code>true-data-type</code> in the data table).</p>
-
-<div class="notices tip" ><p><p>You can open existing project folders in JIPipe. Just go to Project &gt; Open analysis output and select the folder that
-contains the project.jip file.</p>
+<div class="notices tip" ><p>
+You can open existing project folders in JIPipe. Just go to Project > Open analysis output and select the folder that
+contains the project.jip file.
 </p></div>
-
-
-<div class="notices info" ><p><p>We recommend to always copy the whole project folder. This will ensure the highest reproducibility.</p>
+<div class="notices info" ><p>
+We recommend to always copy the whole project folder. This will ensure the highest reproducibility.
 </p></div>
-
-
-<div class="notices info" ><p><p>Slot output folders are used beyond result analysis for importing/exporting cache states and to communicate
-with external applications like Python or R. Only the JSON file carries the metadata.</p>
+<div class="notices info" ><p>
+Slot output folders are used beyond result analysis for importing/exporting cache states and to communicate
+with external applications like Python or R. Only the JSON file carries the metadata.
 </p></div>
-
-
-<div class="notices info" ><p><p>A description of the contents of a table row folder can be viewed in the data type compendium (help menu).</p>
+<div class="notices info" ><p>
+A description of the contents of a table row folder can be viewed in the data type compendium (help menu).
 </p></div>
-
 <p><img src="../../img/documentation/output-format.png" width="20%" /></p>
 
 

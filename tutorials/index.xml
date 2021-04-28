@@ -5,11 +5,7 @@
     <link>https://www.jipipe.org/tutorials/</link>
     <description>Recent content in Tutorials on JIPipe for ImageJ</description>
     <generator>Hugo -- gohugo.io</generator>
-    <language>en-us</language>
-    
-	<atom:link href="https://www.jipipe.org/tutorials/index.xml" rel="self" type="application/rss+xml" />
-    
-    
+    <language>en-us</language><atom:link href="https://www.jipipe.org/tutorials/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>Image analysis pipeline</title>
       <link>https://www.jipipe.org/tutorials/analysis/</link>

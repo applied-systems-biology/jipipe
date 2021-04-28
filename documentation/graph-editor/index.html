@@ -5,7 +5,7 @@
     
       <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-<meta name="revised" content="2021-04-16T08:59:35 CEST">
+<meta name="revised" content="2021-04-28T11:57:31 CEST">
 <title>Pipeline editor :: JIPipe for ImageJ</title>
 <link rel="shortcut icon" href="../../images/favicon.png" type="image/x-icon" />
 <link href="../../css/font-awesome.min.css" rel="stylesheet">
@@ -24,7 +24,7 @@
 
     
   </head>
-  <body data-url="/documentation/graph-editor/">
+  <body data-url="../../documentation/graph-editor/">
     
       <header>
   <div class="logo">
@@ -463,7 +463,7 @@
       <li data-nav-id="https://www.jipipe.org/documentation-json-api/graph-node/" class="dd-item">
         <div>
           <a href="../../documentation-json-api/graph-node/">
-            Algorithm node
+            Graph node
           </a><i class="fa fa-circle-thin read-icon"></i>
         </div>
     </li>
@@ -530,6 +530,56 @@
           </a><i class="fa fa-circle-thin read-icon"></i>
         </div>
     </li>
+      <li data-nav-id="https://www.jipipe.org/documentation-json-api/data-table/" class="dd-item">
+        <div>
+          <a href="../../documentation-json-api/data-table/">
+            Data table
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
+      <li data-nav-id="https://www.jipipe.org/documentation-json-api/data-table-row/" class="dd-item">
+        <div>
+          <a href="../../documentation-json-api/data-table-row/">
+            Data table row
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
+      <li data-nav-id="https://www.jipipe.org/documentation-json-api/annotation/" class="dd-item">
+        <div>
+          <a href="../../documentation-json-api/annotation/">
+            Annotation
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
+        </ul>
+    </li>
+    <li data-nav-id="https://www.jipipe.org/documentation-data-api/" class="dd-item haschildren
+        ">
+      <div>
+      <a href="../../documentation-data-api/">Data API documentation</a><i class="fa fa-angle-right fa-lg category-icon"></i><i class="fa fa-circle-thin read-icon"></i>
+      </div>
+        <ul>
+      <li data-nav-id="https://www.jipipe.org/documentation-data-api/data-table/" class="dd-item">
+        <div>
+          <a href="../../documentation-data-api/data-table/">
+            Data table
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
+      <li data-nav-id="https://www.jipipe.org/documentation-data-api/row-folder/" class="dd-item">
+        <div>
+          <a href="../../documentation-data-api/row-folder/">
+            Row folder
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
+      <li data-nav-id="https://www.jipipe.org/documentation-data-api/pipeline-output/" class="dd-item">
+        <div>
+          <a href="../../documentation-data-api/pipeline-output/">
+            Pipeline output
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
         </ul>
     </li>
     <li data-nav-id="https://www.jipipe.org/citation/" class="dd-item
@@ -582,6 +632,8 @@
    Java API documentation</option>
     <option value="/documentation-json-api/" >
    JSON API documentation</option>
+    <option value="/documentation-data-api/" >
+   Data API documentation</option>
     <option value="/citation/" >
    Citation</option>
 
@@ -626,10 +678,9 @@ Its user interface is separated into three sections:</p>
 <h1 id="analysis-graph">Analysis graph</h1>
 <p>The analysis graph contains <em>algorithms</em> that are represented by rectangles. The algorithm graph area will automatically grow depending on where you place the algorithms.
 Scroll bars will appear if the graph area is larger than the available screen size.</p>
-
-<div class="notices tip" ><p><p>An alternative to using the scroll bars is to hold the middle mouse button while dragging the your mouse.</p>
+<div class="notices tip" ><p>
+An alternative to using the scroll bars is to hold the middle mouse button while dragging the your mouse.
 </p></div>
-
 <p>Algorithms read data from their <strong>input slots</strong> and output the results into the <strong>output slots</strong>.
 There are some algorithms that do not have input slots - they produce output based on their current <em>parameters</em>. The algorithm user interface has three sections:</p>
 <ol>
@@ -637,10 +688,9 @@ There are some algorithms that do not have input slots - they produce output bas
 <li><strong>The drag area</strong> allows you to move the algorithm around. Move your <span class="fa fa-mouse-pointer"  style="font-size:medium" aria-hidden="true"></span> mouse pointer over the area and drag your mouse while holding the 🖱 left mouse button. On clicking the <span class="fa fa-wrench"  style="font-size:medium" aria-hidden="true"></span> button, a menu will open that contains some algorithm options. Alternatively you can right-click the drag area to open this menu.</li>
 <li><strong>Output slots</strong> are located on the bottom and allow you to connect your output data to the input of another algorithm.</li>
 </ol>
-
-<div class="notices info" ><p><p>Any output data is always saved automatically by JIPipe. After generating the final output data, there is no need to connect it to any input.</p>
+<div class="notices info" ><p>
+Any output data is always saved automatically by JIPipe. After generating the final output data, there is no need to connect it to any input.
 </p></div>
-
 <p><img src="../../img/documentation/graph-algorithm.png" alt="User interface overview"></p>
 <h2 id="slot-connections">Slot connections</h2>
 <p>You can connect two slots by clicking the <span class="fa fa-chevron-up"  style="font-size:medium" aria-hidden="true"></span> or <span class="fa fa-chevron-down"  style="font-size:medium" aria-hidden="true"></span> button of a slot
@@ -654,10 +704,9 @@ the data types of the source and target.</p>
 <li>A <span style="color: blue;"><strong>blue</strong></span> line indicates that the types dont match exactly, but can be converted by JIPipe</li>
 <li>A <span style="color: red;"><strong>red</strong></span> line indicates that the types are incompatible. You will probably get an error message during the calculation.</li>
 </ul>
-
-<div class="notices tip" ><p><p>Hover with your mouse over a slot&rsquo;s name to show information about its data type.</p>
+<div class="notices tip" ><p>
+Hover with your mouse over a slot's name to show information about its data type.
 </p></div>
-
 <h2 id="slot-options">Slot options</h2>
 <p>The slot context menu opened by <span class="fa fa-chevron-up"  style="font-size:medium" aria-hidden="true"></span> or <span class="fa fa-chevron-down"  style="font-size:medium" aria-hidden="true"></span> contain
 additional entries to managing connections.</p>
@@ -685,13 +734,37 @@ There are usually four categories:</p>
 </ul>
 <h2 id="additional-tools">Additional tools</h2>
 <ul>
-<li><img class="inline-image" src="../../img/icons/view-horizontal.png" /> and <img class="inline-image" src="../../img/icons/view-vertical.png"/> allow you to switch between horizontal and vertial view modes. This does not change the pipeline, but just how it is displayed in the editor. By default, a vertical view is enabled. If you prefer that data flows from left to right, choose the horizontal view mode.</li>
+<li><img class="inline-image" src="../../img/icons/view-horizontal.png" /> / <img class="inline-image" src="../../img/icons/view-vertical.png"/> allows you to switch between different view modes. This does not change the pipeline, but just how it is displayed in the editor. By default, a vertical view is enabled. If you prefer that data flows from left to right, choose the horizontal view mode.</li>
 <li><img class="inline-image" src="../../img/icons/auto-layout-all.png" /> automatically aligns all nodes in the algorithm graph according to the algorithm by Sugiyama <em>et. al</em></li>
 <li><img class="inline-image" src="../../img/icons/cursor-arrow.png" /> allows you to change how dragging the middle mouse button changes the current view.</li>
 <li><img class="inline-image" src="../../img/icons/auto-layout-connections.png" /> is enabled by default and makes it that nodes are automatically aligned on creating connections. This feature does not reorganize the whole graph, but only places the target algorithm to a location that better represents the data flow.</li>
 <li><img class="inline-image" src="../../img/icons/view-restore.png" /> crops the graph area to the area taken by the algorithm nodes. Use this tool to find your nodes after scrolling too far away.</li>
 <li><img class="inline-image" src="../../img/icons/filetype-image.png" /> creates a screenshot of the whole graph compartment that is currently being displayed.</li>
 </ul>
+<h1 id="view-modes">View modes</h1>
+<p>The graph can be displayed in different view modes. There are currently three modes integrated:</p>
+<ul>
+<li>Vertical: Nodes are displayed in a way that inputs are at the top and outputs are at the bottom. This is the default mode.</li>
+<li>Vertical (compact): Just like the vertical mode, but the size of each node is reduced.</li>
+<li>Horizontal: Nodes are displayed, so inputs are the the left and outputs are at the right</li>
+</ul>
+<p>Nodes arrangements are saved for each view mode separately. Graphs will remember the current view mode.</p>
+<div class="notices tip" ><p>
+You can change the default view mode via Project > Application settings > Graph Editor > Default view mode
+</p></div>
+<p>Here you will find a preview of all view modes with the same graph. The screenshots all have the same size.</p>
+<table>
+  <tr>
+    <td>Vertical</td>
+    <td>Vertical (compact)</td>
+    <td>Horizontal</td>
+  </tr>
+  <tr>
+    <td><img src="../../img/documentation/graph-view-mode-vertical.png?width=100%" /></td>
+    <td><img src="../../img/documentation/graph-view-mode-vertical-compact.png?width=100%" /></td>
+    <td><img src="../../img/documentation/graph-view-mode-horizontal.png?width=100%" /></td>
+  </tr>
+</table>
 
 
     

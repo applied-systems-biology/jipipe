@@ -5,19 +5,15 @@
     <link>https://www.jipipe.org/documentation-json-api/</link>
     <description>Recent content in JSON API documentation on JIPipe for ImageJ</description>
     <generator>Hugo -- gohugo.io</generator>
-    <language>en-us</language>
-    
-	<atom:link href="https://www.jipipe.org/documentation-json-api/index.xml" rel="self" type="application/rss+xml" />
-    
-    
+    <language>en-us</language><atom:link href="https://www.jipipe.org/documentation-json-api/index.xml" rel="self" type="application/rss+xml" />
     <item>
-      <title>Algorithm node</title>
+      <title>Graph node</title>
       <link>https://www.jipipe.org/documentation-json-api/graph-node/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
       <guid>https://www.jipipe.org/documentation-json-api/graph-node/</guid>
       <description>This document describes the properties of the JSON API object. You also can access the document in JSON Schema format: algorithm-node.schema.json
-Node in a graphjipipe:slot-configuration:object[object Object]User-defined slots. Might be ignored depending on the algorithm. The keys are the slot names.See slot-definitionjipipe:algorithm-ui-location:object[object Object]Locations of this node within the UI.</description>
+Node in a graphjipipe:slot-configuration:object[object Object]User-defined slots. Might be ignored depending on the algorithm. The keys are the slot names.See slot-definitionjipipe:node-ui-location:object[object Object]Locations of this node within the UI.</description>
     </item>
     
     <item>
@@ -27,7 +23,7 @@
       
       <guid>https://www.jipipe.org/documentation-json-api/algorithm/</guid>
       <description>This document describes the properties of the JSON API object. You also can access the document in JSON Schema format: algorithm.schema.json
-Defines a new node typeid:stringUnique algorithm IDmetadata:See metadataGeneral algorithm metadatacategory:stringorg.hkijena.jipipe:miscellaneousThe categoryexported-parameters:object[object Object]List of parameters that will be exported to users of the nodegraph:See graphThis graph is executed when the algorithm is runmenu-path:stringOptional menu path within the category menujipipe:project-type:string, x ∈ {graph-wrapper-algorithm(default)}Identifies the JSON as algorithmExample {&amp;#34;id&amp;#34; : &amp;#34;folder-list-tif&amp;#34;,&amp;#34;metadata&amp;#34; : {&amp;#34;name&amp;#34; : &amp;#34;List TIFF files&amp;#34;,&amp;#34;description&amp;#34; : &amp;#34;Lists all TIFF files in a folder&amp;#34;,&amp;#34;authors&amp;#34; : &amp;#34;Ruman Gerst&amp;#34;,&amp;#34;website&amp;#34; : &amp;#34;&amp;#34;,&amp;#34;license&amp;#34; : &amp;#34;BSD-2&amp;#34;,&amp;#34;citation&amp;#34; : &amp;#34;&amp;#34;},&amp;#34;category&amp;#34; : &amp;#34;Converter&amp;#34;,&amp;#34;parameter-visibilities&amp;#34; : {&amp;#34;visible-keys&amp;#34; : [ ]},&amp;#34;graph&amp;#34; : {&amp;#34;nodes&amp;#34; : {&amp;#34;default-preprocessing-filter-files&amp;#34; : {&amp;#34;jipipe:slot-configuration&amp;#34; : {&amp;#34;Files&amp;#34; : {&amp;#34;slot-data-type&amp;#34; : &amp;#34;file&amp;#34;,&amp;#34;slot-type&amp;#34; : &amp;#34;Input&amp;#34;,&amp;#34;inherited-slot&amp;#34; : null,&amp;#34;name&amp;#34; : &amp;#34;Files&amp;#34;,&amp;#34;custom-name&amp;#34; : null,&amp;#34;inheritance-conversions&amp;#34; : { }},&amp;#34;Filtered files&amp;#34; : {&amp;#34;slot-data-type&amp;#34; : &amp;#34;file&amp;#34;,&amp;#34;slot-type&amp;#34; : &amp;#34;Output&amp;#34;,&amp;#34;inherited-slot&amp;#34; : null,&amp;#34;name&amp;#34; : &amp;#34;Filtered files&amp;#34;,&amp;#34;custom-name&amp;#34; : null,&amp;#34;inheritance-conversions&amp;#34; : { }}},&amp;#34;jipipe:algorithm-ui-location&amp;#34; : {&amp;#34;{Vertical}&amp;#34; : {&amp;#34;x&amp;#34; : 25,&amp;#34;y&amp;#34; : 250}},&amp;#34;jipipe:algorithm-type&amp;#34; : &amp;#34;file-filter&amp;#34;,&amp;#34;jipipe:algorithm-compartment&amp;#34; : &amp;#34;DEFAULT&amp;#34;,&amp;#34;name&amp;#34; : &amp;#34;Filter *.</description>
+Defines a new node typeid:stringUnique algorithm IDmetadata:See metadataGeneral algorithm metadatacategory:stringorg.hkijena.jipipe:miscellaneousThe categoryexported-parameters:object[object Object]List of parameters that will be exported to users of the nodegraph:See graphThis graph is executed when the algorithm is runmenu-path:stringOptional menu path within the category menujipipe:project-type:string, x ∈ {graph-wrapper-algorithm(default)}Identifies the JSON as algorithmExample { &amp;#34;id&amp;#34; : &amp;#34;folder-list-tif&amp;#34;, &amp;#34;metadata&amp;#34; : { &amp;#34;name&amp;#34; : &amp;#34;List TIFF files&amp;#34;, &amp;#34;description&amp;#34; : &amp;#34;Lists all TIFF files in a folder&amp;#34;, &amp;#34;authors&amp;#34; : &amp;#34;Ruman Gerst&amp;#34;, &amp;#34;website&amp;#34; : &amp;#34;&amp;#34;, &amp;#34;license&amp;#34; : &amp;#34;BSD-2&amp;#34;, &amp;#34;citation&amp;#34; : &amp;#34;&amp;#34; }, &amp;#34;category&amp;#34; : &amp;#34;Converter&amp;#34;, &amp;#34;parameter-visibilities&amp;#34; : { &amp;#34;visible-keys&amp;#34; : [ ] }, &amp;#34;graph&amp;#34; : { &amp;#34;nodes&amp;#34; : { &amp;#34;default-preprocessing-filter-files&amp;#34; : { &amp;#34;jipipe:slot-configuration&amp;#34; : { &amp;#34;Files&amp;#34; : { &amp;#34;slot-data-type&amp;#34; : &amp;#34;file&amp;#34;, &amp;#34;slot-type&amp;#34; : &amp;#34;Input&amp;#34;, &amp;#34;inherited-slot&amp;#34; : null, &amp;#34;name&amp;#34; : &amp;#34;Files&amp;#34;, &amp;#34;custom-name&amp;#34; : null, &amp;#34;inheritance-conversions&amp;#34; : { } }, &amp;#34;Filtered files&amp;#34; : { &amp;#34;slot-data-type&amp;#34; : &amp;#34;file&amp;#34;, &amp;#34;slot-type&amp;#34; : &amp;#34;Output&amp;#34;, &amp;#34;inherited-slot&amp;#34; : null, &amp;#34;name&amp;#34; : &amp;#34;Filtered files&amp;#34;, &amp;#34;custom-name&amp;#34; : null, &amp;#34;inheritance-conversions&amp;#34; : { } } }, &amp;#34;jipipe:algorithm-ui-location&amp;#34; : { &amp;#34;{Vertical}&amp;#34; : { &amp;#34;x&amp;#34; : 25, &amp;#34;y&amp;#34; : 250 } }, &amp;#34;jipipe:algorithm-type&amp;#34; : &amp;#34;file-filter&amp;#34;, &amp;#34;jipipe:algorithm-compartment&amp;#34; : &amp;#34;DEFAULT&amp;#34;, &amp;#34;name&amp;#34; : &amp;#34;Filter *.</description>
     </item>
     
     <item>
@@ -37,7 +33,7 @@
       
       <guid>https://www.jipipe.org/documentation-json-api/dependency/</guid>
       <description>This document describes the properties of the JSON API object. You also can access the document in JSON Schema format: dependency.schema.json
-Project or extension dependency. Refers to a JIPipe extension.metadata:See metadataid:stringUnique ID of this dependency should have format.:version:stringVersion of this dependencyExample {&amp;#34;metadata&amp;#34; : {&amp;#34;name&amp;#34; : &amp;#34;Filesystem types and algorithms&amp;#34;,&amp;#34;description&amp;#34; : &amp;#34;Data types and algorithms for interacting with files and folders&amp;#34;,&amp;#34;authors&amp;#34; : &amp;#34;Zoltán Cseresnyés, Ruman Gerst&amp;#34;,&amp;#34;website&amp;#34; : &amp;#34;https://applied-systems-biology.</description>
+Project or extension dependency. Refers to a JIPipe extension.metadata:See metadataid:stringUnique ID of this dependency should have format.:version:stringVersion of this dependencyExample { &amp;#34;metadata&amp;#34; : { &amp;#34;name&amp;#34; : &amp;#34;Filesystem types and algorithms&amp;#34;, &amp;#34;description&amp;#34; : &amp;#34;Data types and algorithms for interacting with files and folders&amp;#34;, &amp;#34;authors&amp;#34; : &amp;#34;Zoltán Cseresnyés, Ruman Gerst&amp;#34;, &amp;#34;website&amp;#34; : &amp;#34;https://jipipe.</description>
     </item>
     
     <item>
@@ -47,7 +43,7 @@
       
       <guid>https://www.jipipe.org/documentation-json-api/graph-edge/</guid>
       <description>This document describes the properties of the JSON API object. You also can access the document in JSON Schema format: graph-edge.schema.json
-Edge in a graphsource-node:stringAlgorithm ID of the edge sourcetarget-node:stringAlgorithm ID of the edge targetsource-slot:stringSlot name within the edge source algorithmtarget-slot:stringSlot name within the edge target algorithmExample {&amp;#34;source-node&amp;#34; : &amp;#34;default-preprocessing-list-files&amp;#34;,&amp;#34;target-node&amp;#34; : &amp;#34;default-preprocessing-filter-files&amp;#34;,&amp;#34;source-slot&amp;#34; : &amp;#34;Files&amp;#34;,&amp;#34;target-slot&amp;#34; : &amp;#34;Files&amp;#34;}</description>
+Edge in a graphsource-node:stringAlgorithm ID of the edge sourcetarget-node:stringAlgorithm ID of the edge targetsource-slot:stringSlot name within the edge source algorithmtarget-slot:stringSlot name within the edge target algorithmExample { &amp;#34;source-node&amp;#34; : &amp;#34;default-preprocessing-list-files&amp;#34;, &amp;#34;target-node&amp;#34; : &amp;#34;default-preprocessing-filter-files&amp;#34;, &amp;#34;source-slot&amp;#34; : &amp;#34;Files&amp;#34;, &amp;#34;target-slot&amp;#34; : &amp;#34;Files&amp;#34; } </description>
     </item>
     
     <item>
@@ -57,7 +53,7 @@
       
       <guid>https://www.jipipe.org/documentation-json-api/graph/</guid>
       <description>This document describes the properties of the JSON API object. You also can access the document in JSON Schema format: graph.schema.json
-A graphnodes:object[object Object]The nodes. Keys are the unique algorithm instance IDs.See graph-nodeedges:object[]The edges. IDs in the edge definition must be consistent to the IDs in the &#39;nodes&#39; entrySee graph-edgeExample {&amp;#34;nodes&amp;#34; : {&amp;#34;default-preprocessing-filter-files&amp;#34; : {&amp;#34;jipipe:slot-configuration&amp;#34; : {&amp;#34;Files&amp;#34; : {&amp;#34;slot-data-type&amp;#34; : &amp;#34;file&amp;#34;,&amp;#34;slot-type&amp;#34; : &amp;#34;Input&amp;#34;,&amp;#34;inherited-slot&amp;#34; : null,&amp;#34;name&amp;#34; : &amp;#34;Files&amp;#34;,&amp;#34;custom-name&amp;#34; : null,&amp;#34;inheritance-conversions&amp;#34; : { }},&amp;#34;Filtered files&amp;#34; : {&amp;#34;slot-data-type&amp;#34; : &amp;#34;file&amp;#34;,&amp;#34;slot-type&amp;#34; : &amp;#34;Output&amp;#34;,&amp;#34;inherited-slot&amp;#34; : null,&amp;#34;name&amp;#34; : &amp;#34;Filtered files&amp;#34;,&amp;#34;custom-name&amp;#34; : null,&amp;#34;inheritance-conversions&amp;#34; : { }}},&amp;#34;jipipe:algorithm-ui-location&amp;#34; : {&amp;#34;{Vertical}&amp;#34; : {&amp;#34;x&amp;#34; : 25,&amp;#34;y&amp;#34; : 250}},&amp;#34;jipipe:algorithm-type&amp;#34; : &amp;#34;file-filter&amp;#34;,&amp;#34;jipipe:algorithm-compartment&amp;#34; : &amp;#34;DEFAULT&amp;#34;,&amp;#34;name&amp;#34; : &amp;#34;Filter *.</description>
+A graphadditional-metadata:object[object Object]Dict of additional metadataSee additional-metadatanodes:object[object Object]The nodes. Keys are the UUIDs.See graph-nodeedges:object[]The edges.</description>
     </item>
     
     <item>
@@ -67,7 +63,7 @@
       
       <guid>https://www.jipipe.org/documentation-json-api/json-extension/</guid>
       <description>This document describes the properties of the JSON API object. You also can access the document in JSON Schema format: json-extension.schema.json
-An extension that can be put into the ImageJ plugin folderid:stringUnique ID of this extension. Should have format.:version:stringVersion of this extensionmetadata:See metadataGeneral metadata about the extensionalgorithms:object[]List of added algorithmsSee algorithmExample {&amp;#34;id&amp;#34; : &amp;#34;org.</description>
+An extension that can be put into the ImageJ plugin folderid:stringUnique ID of this extension. Should have format.:version:stringVersion of this extensionmetadata:See metadataGeneral metadata about the extensionalgorithms:object[]List of added algorithmsSee algorithmExample { &amp;#34;id&amp;#34; : &amp;#34;org.</description>
     </item>
     
     <item>
@@ -77,7 +73,7 @@
       
       <guid>https://www.jipipe.org/documentation-json-api/metadata/</guid>
       <description>This document describes the properties of the JSON API object. You also can access the document in JSON Schema format: metadata.schema.json
-Commonly used metadata type in JIPipe.name:stringA namedescription:stringA descriptionauthors:stringComma-separated list of authorswebsite:stringWebsite of the projectlicense:stringName of the licensecitation:stringCitation for the publicationExample {&amp;#34;name&amp;#34; : &amp;#34;Image property annotations&amp;#34;,&amp;#34;description&amp;#34; : &amp;#34;Commonly used annotations for describing image properties&amp;#34;,&amp;#34;authors&amp;#34; : &amp;#34;Zoltán Cseresnyés, Ruman Gerst&amp;#34;,&amp;#34;website&amp;#34; : &amp;#34;https://applied-systems-biology.</description>
+Commonly used metadata type in JIPipe.name:stringA namedescription:stringA descriptionauthors:stringComma-separated list of authorswebsite:stringWebsite of the projectlicense:stringName of the licensecitation:stringCitation for the publicationExample { &amp;#34;name&amp;#34; : &amp;#34;Image property annotations&amp;#34;, &amp;#34;description&amp;#34; : &amp;#34;Commonly used annotations for describing image properties&amp;#34;, &amp;#34;authors&amp;#34; : &amp;#34;Zoltán Cseresnyés, Ruman Gerst&amp;#34;, &amp;#34;website&amp;#34; : &amp;#34;https://jipipe.</description>
     </item>
     
     <item>
@@ -87,7 +83,7 @@
       
       <guid>https://www.jipipe.org/documentation-json-api/point/</guid>
       <description>This document describes the properties of the JSON API object. You also can access the document in JSON Schema format: point.schema.json
-A pointx:integerX coordinatey:integerY coordinateExample {&amp;#34;x&amp;#34; : 2900,&amp;#34;y&amp;#34; : 100}</description>
+A pointx:integerX coordinatey:integerY coordinateExample { &amp;#34;x&amp;#34; : 2900, &amp;#34;y&amp;#34; : 100 } </description>
     </item>
     
     <item>
@@ -97,7 +93,7 @@
       
       <guid>https://www.jipipe.org/documentation-json-api/project/</guid>
       <description>This document describes the properties of the JSON API object. You also can access the document in JSON Schema format: project.schema.json
-An analysis projectjipipe:project-type:string, x ∈ {project(default)}Used to identify this JSON as JIPipe projectmetadata:See metadata[object Object]General information about the projectdependencies:object[]Dependencies of this projectSee dependencygraph:See graph[object Object]Contains the pipeline nodescompartments:object[object Object]For organization of compartmentscompartment-graph:See graph[object Object]Structural graph of compartmentsExample {&amp;#34;jipipe:project-type&amp;#34; : &amp;#34;project&amp;#34;,&amp;#34;metadata&amp;#34; : {&amp;#34;name&amp;#34; : &amp;#34;Empty (3 compartments)&amp;#34;,&amp;#34;description&amp;#34; : &amp;#34;This template contains three compartments &amp;#39;Preprocessing&amp;#39;, &amp;#39;Analysis&amp;#39;, and &amp;#39;Postprocessing&amp;#39; that are connected to each other.</description>
+An analysis projectjipipe:project-type:string, x ∈ {project(default)}Used to identify this JSON as JIPipe projectmetadata:See metadata[object Object]General information about the projectdependencies:object[]Dependencies of this projectSee dependencygraph:See graph[object Object]Contains the pipeline nodescompartments:object[object Object]For organization of compartmentscompartment-graph:See graph[object Object]Structural graph of compartmentsExample { &amp;#34;jipipe:project-type&amp;#34; : &amp;#34;project&amp;#34;, &amp;#34;metadata&amp;#34; : { &amp;#34;name&amp;#34; : &amp;#34;Empty (3 compartments)&amp;#34;, &amp;#34;description&amp;#34; : &amp;#34;This template contains three compartments &amp;#39;Preprocessing&amp;#39;, &amp;#39;Analysis&amp;#39;, and &amp;#39;Postprocessing&amp;#39; that are connected to each other.</description>
     </item>
     
     <item>
@@ -108,6 +104,36 @@
       <guid>https://www.jipipe.org/documentation-json-api/slot-definition/</guid>
       <description>This document describes the properties of the JSON API object. You also can access the document in JSON Schema format: slot-definition.schema.json
 Defines a data slotslot-data-type:stringThe data type ID of the data stored in this slotslot-type:string, x ∈ {Input,Output}Determines if the slot is an input or an outputinherited-slot:objectOnly valid for output slot.</description>
+    </item>
+    
+    <item>
+      <title>Data table</title>
+      <link>https://www.jipipe.org/documentation-json-api/data-table/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://www.jipipe.org/documentation-json-api/data-table/</guid>
+      <description>This document describes the properties of the JSON API object. You also can access the document in JSON Schema format: data-table.schema.json
+Defines a data tablenode-id:stringThe node type ID that generated the data. Optional.slot:stringThe slot name that generated the data. Optional.rows:object[]The data row itemsSee data-table-rowdata-type:stringThe data type ID behind the rowExample { &amp;#34;node-id&amp;#34; : &amp;#34;ij1-fft-forward2d&amp;#34;, &amp;#34;slot&amp;#34; : &amp;#34;Output&amp;#34;, &amp;#34;internal-path&amp;#34; : &amp;#34;/fastdata/projects/JIPipe/Output&amp;#34;, &amp;#34;rows&amp;#34; : [ { &amp;#34;index&amp;#34; : 0, &amp;#34;annotations&amp;#34; : [ ], &amp;#34;true-data-type&amp;#34; : &amp;#34;imagej-imgplus-fft-2d&amp;#34; } ], &amp;#34;data-type&amp;#34; : &amp;#34;imagej-imgplus-fft-2d&amp;#34; } </description>
+    </item>
+    
+    <item>
+      <title>Data table row</title>
+      <link>https://www.jipipe.org/documentation-json-api/data-table-row/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://www.jipipe.org/documentation-json-api/data-table-row/</guid>
+      <description>This document describes the properties of the JSON API object. You also can access the document in JSON Schema format: data-table-row.schema.json
+Defines a data table rowid:numberRow index within the data tableannotations:object[]Annotations attached to the data rowSee annotationtrue-data-type:stringThe true (not the slot) data type ID behind the rowExample { &amp;#34;index&amp;#34; : 0, &amp;#34;annotations&amp;#34; : [ ], &amp;#34;true-data-type&amp;#34; : &amp;#34;imagej-imgplus-fft-2d&amp;#34; } </description>
+    </item>
+    
+    <item>
+      <title>Annotation</title>
+      <link>https://www.jipipe.org/documentation-json-api/annotation/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://www.jipipe.org/documentation-json-api/annotation/</guid>
+      <description>This document describes the properties of the JSON API object. You also can access the document in JSON Schema format: annotation.schema.json
+An annotationname:stringName of the annotationvalue:stringValue of the annotationExample { &amp;#34;name&amp;#34; : &amp;#34;#Dataset&amp;#34;, &amp;#34;value&amp;#34;: &amp;#34;Experiment 1&amp;#34; } </description>
     </item>
     
   </channel>

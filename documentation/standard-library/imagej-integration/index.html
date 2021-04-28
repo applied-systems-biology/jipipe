@@ -5,7 +5,7 @@
     
       <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-<meta name="revised" content="2021-04-16T08:59:35 CEST">
+<meta name="revised" content="2021-04-28T11:57:31 CEST">
 <title>ImageJ integration :: JIPipe for ImageJ</title>
 <link rel="shortcut icon" href="../../../images/favicon.png" type="image/x-icon" />
 <link href="../../../css/font-awesome.min.css" rel="stylesheet">
@@ -24,7 +24,7 @@
 
     
   </head>
-  <body data-url="/documentation/standard-library/imagej-integration/">
+  <body data-url="../../../documentation/standard-library/imagej-integration/">
     
       <header>
   <div class="logo">
@@ -464,7 +464,7 @@
       <li data-nav-id="https://www.jipipe.org/documentation-json-api/graph-node/" class="dd-item">
         <div>
           <a href="../../../documentation-json-api/graph-node/">
-            Algorithm node
+            Graph node
           </a><i class="fa fa-circle-thin read-icon"></i>
         </div>
     </li>
@@ -528,6 +528,56 @@
         <div>
           <a href="../../../documentation-json-api/slot-definition/">
             Slot definition
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
+      <li data-nav-id="https://www.jipipe.org/documentation-json-api/data-table/" class="dd-item">
+        <div>
+          <a href="../../../documentation-json-api/data-table/">
+            Data table
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
+      <li data-nav-id="https://www.jipipe.org/documentation-json-api/data-table-row/" class="dd-item">
+        <div>
+          <a href="../../../documentation-json-api/data-table-row/">
+            Data table row
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
+      <li data-nav-id="https://www.jipipe.org/documentation-json-api/annotation/" class="dd-item">
+        <div>
+          <a href="../../../documentation-json-api/annotation/">
+            Annotation
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
+        </ul>
+    </li>
+    <li data-nav-id="https://www.jipipe.org/documentation-data-api/" class="dd-item haschildren
+        ">
+      <div>
+      <a href="../../../documentation-data-api/">Data API documentation</a><i class="fa fa-angle-right fa-lg category-icon"></i><i class="fa fa-circle-thin read-icon"></i>
+      </div>
+        <ul>
+      <li data-nav-id="https://www.jipipe.org/documentation-data-api/data-table/" class="dd-item">
+        <div>
+          <a href="../../../documentation-data-api/data-table/">
+            Data table
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
+      <li data-nav-id="https://www.jipipe.org/documentation-data-api/row-folder/" class="dd-item">
+        <div>
+          <a href="../../../documentation-data-api/row-folder/">
+            Row folder
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
+      <li data-nav-id="https://www.jipipe.org/documentation-data-api/pipeline-output/" class="dd-item">
+        <div>
+          <a href="../../../documentation-data-api/pipeline-output/">
+            Pipeline output
           </a><i class="fa fa-circle-thin read-icon"></i>
         </div>
     </li>
@@ -595,6 +645,8 @@
    Java API documentation</option>
     <option value="/documentation-json-api/" >
    JSON API documentation</option>
+    <option value="/documentation-data-api/" >
+   Data API documentation</option>
     <option value="/citation/" >
    Citation</option>
 
@@ -650,12 +702,18 @@ ImgPlusGreyscale8U --> ImgPlusGreyscaleMask["8-bit mask (nD)"]
 ImgPlusGreyscale --> ImgPlusGreyscale16U["16-bit greyscale image (nD)"]
 ImgPlusGreyscale --> ImgPlusGreyscale32F["32-bit float greyscale image (nD)"]
 ImgPlus["Image (nD)"] --> ImgPlusColor["Color image (nD)"]
-ImgPlusColor --> ImgPlusColor8U["8-bit color image (nD)"]
 ImgPlusColor --> ImgPlusColorRGB["RGB color image (nD)"]
+ImgPlusColor --> ImgPlusColorHSB["HSB color image (nD)"]
+ImgPlusColor --> ImgPlusColorLAB["LAB color image (nD)"]
 </div>
 <p>The graph above shows the structure for non-dimensional (nD) images.
 This structure is repeated for 2D, 3D, &hellip; 5D images.</p>
-<p>Color space conversions are automatically applied (e.g. from RGB to greyscale).
+<h2 id="color-spaces">Color spaces</h2>
+<p>The standard library comes with support for different color spaces and supports automated
+conversion between them.</p>
+<p>Each image stores the color space (allowing for example to remember the color space
+of a HSB image stored inside a generic image).
+Color space conversions are automatically applied (e.g. from RGB to greyscale).
 While trivial for specific color types (like RGB color), JIPipe falls back to following
 color spaces for generic colors (e.g. greyscale image):</p>
 <table>
@@ -667,25 +725,26 @@ color spaces for generic colors (e.g. greyscale image):</p>
 </thead>
 <tbody>
 <tr>
-<td>Greyscale</td>
+<td>All greyscale images</td>
 <td>32-bit float greyscale</td>
 </tr>
 <tr>
-<td>Color</td>
+<td>All colored images</td>
 <td>RGB color</td>
 </tr>
 </tbody>
 </table>
+<p>Please note that if the color space information is lost, RGB is used as fallback.
+Color conversion nodes in <code>Images &gt; Colors &gt; Convert</code></p>
 <h1 id="frequency-space-image-data-types">Frequency space image data types</h1>
 <p>The JIPipe standard library contains color types that are intended to hold frequency-space (FFT) data.
 While the standard library only provides methods to handle 2D FFT, there are 3D, &hellip;, 5D data types
 available for future extensions.</p>
-
-<div class="notices warning" ><p><p>We rely on the mechanisms provided by ImageJ. For example, the ImageJ FFT generates a 8-bit greyscale power spectrum image and
+<div class="notices warning" ><p>
+We rely on the mechanisms provided by ImageJ. For example, the ImageJ FFT generates a 8-bit greyscale power spectrum image and
 attaches data to the image instance. JIPipe has no special methods to load and save the FFT data, aside from the image data itself.
-We recommend to generate FFT data within the pipeline to generate the correct data.</p>
+We recommend to generate FFT data within the pipeline to generate the correct data.
 </p></div>
-
 <h1 id="imagej-algorithms">ImageJ algorithms</h1>
 <p>The standard library provides a selection of common ImageJ algorithms as JIPipe algorithm nodes.
 Those algorithms wrap around the respective ImageJ methods and have the same feature set, aside

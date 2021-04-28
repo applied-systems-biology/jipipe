@@ -5,7 +5,7 @@
     
       <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-<meta name="revised" content="2021-04-16T08:59:35 CEST">
+<meta name="revised" content="2021-04-28T11:57:31 CEST">
 <title>Filesystem algorithms :: JIPipe for ImageJ</title>
 <link rel="shortcut icon" href="../../../images/favicon.png" type="image/x-icon" />
 <link href="../../../css/font-awesome.min.css" rel="stylesheet">
@@ -24,7 +24,7 @@
 
     
   </head>
-  <body data-url="/documentation/standard-library/filesystem/">
+  <body data-url="../../../documentation/standard-library/filesystem/">
     
       <header>
   <div class="logo">
@@ -464,7 +464,7 @@
       <li data-nav-id="https://www.jipipe.org/documentation-json-api/graph-node/" class="dd-item">
         <div>
           <a href="../../../documentation-json-api/graph-node/">
-            Algorithm node
+            Graph node
           </a><i class="fa fa-circle-thin read-icon"></i>
         </div>
     </li>
@@ -528,6 +528,56 @@
         <div>
           <a href="../../../documentation-json-api/slot-definition/">
             Slot definition
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
+      <li data-nav-id="https://www.jipipe.org/documentation-json-api/data-table/" class="dd-item">
+        <div>
+          <a href="../../../documentation-json-api/data-table/">
+            Data table
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
+      <li data-nav-id="https://www.jipipe.org/documentation-json-api/data-table-row/" class="dd-item">
+        <div>
+          <a href="../../../documentation-json-api/data-table-row/">
+            Data table row
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
+      <li data-nav-id="https://www.jipipe.org/documentation-json-api/annotation/" class="dd-item">
+        <div>
+          <a href="../../../documentation-json-api/annotation/">
+            Annotation
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
+        </ul>
+    </li>
+    <li data-nav-id="https://www.jipipe.org/documentation-data-api/" class="dd-item haschildren
+        ">
+      <div>
+      <a href="../../../documentation-data-api/">Data API documentation</a><i class="fa fa-angle-right fa-lg category-icon"></i><i class="fa fa-circle-thin read-icon"></i>
+      </div>
+        <ul>
+      <li data-nav-id="https://www.jipipe.org/documentation-data-api/data-table/" class="dd-item">
+        <div>
+          <a href="../../../documentation-data-api/data-table/">
+            Data table
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
+      <li data-nav-id="https://www.jipipe.org/documentation-data-api/row-folder/" class="dd-item">
+        <div>
+          <a href="../../../documentation-data-api/row-folder/">
+            Row folder
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
+      <li data-nav-id="https://www.jipipe.org/documentation-data-api/pipeline-output/" class="dd-item">
+        <div>
+          <a href="../../../documentation-data-api/pipeline-output/">
+            Pipeline output
           </a><i class="fa fa-circle-thin read-icon"></i>
         </div>
     </li>
@@ -595,6 +645,8 @@
    Java API documentation</option>
     <option value="/documentation-json-api/" >
    JSON API documentation</option>
+    <option value="/documentation-data-api/" >
+   Data API documentation</option>
     <option value="/citation/" >
    Citation</option>
 
@@ -632,14 +684,12 @@ The common use case is to extract the list of input files for the following algo
 <li>A <img class="inline-image" src="../../../img/icons/path.png" /> <strong>Path</strong> contains a path to a file or folder</li>
 </ul>
 <p>In the <code>Add data</code> menu you can define one file/folder or a list of files/folders.</p>
-
-<div class="notices tip" ><p><p>We recommend to create a list of files/folders. This makes it easier to scale your workflow up.</p>
+<div class="notices tip" ><p>
+We recommend to create a list of files/folders. This makes it easier to scale your workflow up.
 </p></div>
-
-
-<div class="notices tip" ><p><p>Drag any set of files or folders into the graph editor to create corresponding file/folder data source algorithms.</p>
+<div class="notices tip" ><p>
+Drag any set of files or folders into the graph editor to create corresponding file/folder data source algorithms.
 </p></div>
-
 <h1 id="filefolder-manipulation-algorithms">File/folder manipulation algorithms</h1>
 <p>The standard library comes with various algorithms that apply common operations to
 input filesystem data. This includes listing the files in a folder,

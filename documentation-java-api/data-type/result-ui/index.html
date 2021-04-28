@@ -5,7 +5,7 @@
     
       <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-<meta name="revised" content="2021-04-16T08:59:35 CEST">
+<meta name="revised" content="2021-04-28T11:57:31 CEST">
 <title>Result view :: JIPipe for ImageJ</title>
 <link rel="shortcut icon" href="../../../images/favicon.png" type="image/x-icon" />
 <link href="../../../css/font-awesome.min.css" rel="stylesheet">
@@ -24,7 +24,7 @@
 
     
   </head>
-  <body data-url="/documentation-java-api/data-type/result-ui/">
+  <body data-url="../../../documentation-java-api/data-type/result-ui/">
     
       <header>
   <div class="logo">
@@ -183,11 +183,10 @@
     </li>
         </ul>
     </li>
-    <li data-nav-id="https://www.jipipe.org/documentation/" class="dd-item parent haschildren
+    <li data-nav-id="https://www.jipipe.org/documentation/" class="dd-item haschildren
         ">
       <div>
-      <a href="../../../documentation/">Documentation</a>
-            <i class="fa fa-angle-down fa-lg category-icon"></i><i class="fa fa-circle-thin read-icon"></i>
+      <a href="../../../documentation/">Documentation</a><i class="fa fa-angle-right fa-lg category-icon"></i><i class="fa fa-circle-thin read-icon"></i>
       </div>
         <ul>
       <li data-nav-id="https://www.jipipe.org/documentation/batch-pipelines/" class="dd-item">
@@ -465,7 +464,7 @@
       <li data-nav-id="https://www.jipipe.org/documentation-json-api/graph-node/" class="dd-item">
         <div>
           <a href="../../../documentation-json-api/graph-node/">
-            Algorithm node
+            Graph node
           </a><i class="fa fa-circle-thin read-icon"></i>
         </div>
     </li>
@@ -532,6 +531,56 @@
           </a><i class="fa fa-circle-thin read-icon"></i>
         </div>
     </li>
+      <li data-nav-id="https://www.jipipe.org/documentation-json-api/data-table/" class="dd-item">
+        <div>
+          <a href="../../../documentation-json-api/data-table/">
+            Data table
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
+      <li data-nav-id="https://www.jipipe.org/documentation-json-api/data-table-row/" class="dd-item">
+        <div>
+          <a href="../../../documentation-json-api/data-table-row/">
+            Data table row
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
+      <li data-nav-id="https://www.jipipe.org/documentation-json-api/annotation/" class="dd-item">
+        <div>
+          <a href="../../../documentation-json-api/annotation/">
+            Annotation
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
+        </ul>
+    </li>
+    <li data-nav-id="https://www.jipipe.org/documentation-data-api/" class="dd-item haschildren
+        ">
+      <div>
+      <a href="../../../documentation-data-api/">Data API documentation</a><i class="fa fa-angle-right fa-lg category-icon"></i><i class="fa fa-circle-thin read-icon"></i>
+      </div>
+        <ul>
+      <li data-nav-id="https://www.jipipe.org/documentation-data-api/data-table/" class="dd-item">
+        <div>
+          <a href="../../../documentation-data-api/data-table/">
+            Data table
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
+      <li data-nav-id="https://www.jipipe.org/documentation-data-api/row-folder/" class="dd-item">
+        <div>
+          <a href="../../../documentation-data-api/row-folder/">
+            Row folder
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
+      <li data-nav-id="https://www.jipipe.org/documentation-data-api/pipeline-output/" class="dd-item">
+        <div>
+          <a href="../../../documentation-data-api/pipeline-output/">
+            Pipeline output
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
         </ul>
     </li>
     <li data-nav-id="https://www.jipipe.org/citation/" class="dd-item
@@ -563,23 +612,7 @@
     <option value="/faq/" >
    Frequently asked questions</option>
     <option value="/documentation/" >
-   Documentation</option> 
-      <option value="/documentation/batch-pipelines/" >- Batch pipelines</option>
-      <option value="/documentation/graph-editor/" >- Pipeline editor</option>
-      <option value="/documentation/expressions/" >- Expression parameters</option>
-      <option value="/documentation/graph-compartment/" >- Graph compartments</option>
-      <option value="/documentation/result-analysis/" >- Running a pipeline</option>
-      <option value="/documentation/quick-run/" >- Running a single node</option>
-      <option value="/documentation/cache/" >- Data caching</option>
-      <option value="/documentation/imagej-integration/" >- ImageJ integration</option>
-      <option value="/documentation/plugins/" >- Managing plugins</option>
-    <option value="/documentation/standard-library/" >
-  - 
-   Standard library</option>
-    <option value="/documentation/create-json-extensions/" >
-  - 
-   Extension builder</option>
-  
+   Documentation</option>
     <option value="/documentation-java-api/" >
    Java API documentation</option> 
       <option value="/documentation-java-api/javadocs/" >- JavaDocs</option>
@@ -600,6 +633,8 @@
   
     <option value="/documentation-json-api/" >
    JSON API documentation</option>
+    <option value="/documentation-data-api/" >
+   Data API documentation</option>
     <option value="/citation/" >
    Citation</option>
 
@@ -692,10 +727,9 @@ The corresponding interfaces are <a href="../../../apidocs/org/hkijena/jipipe/ap
     <span style="color:#f92672">}</span>
 <span style="color:#f92672">}</span>
 </code></pre></div><p>The operations must be registered in <a href="../../../apidocs/org/hkijena/jipipe/JIPipeJavaExtension.html">JIPipeJavaExtension</a> either via the data type ID or when registering a new data type.</p>
-
-<div class="notices warning" ><p><p>Currently you have to register all your operations per data type. It its not enough to register them for the base class only.</p>
+<div class="notices warning" ><p>
+Currently you have to register all your operations per data type. It its not enough to register them for the base class only.
 </p></div>
-
 <div class="highlight"><pre style="color:#272822;background-color:#fafafa;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#75af00">@Plugin</span><span style="color:#f92672">(</span><span style="color:#111">type</span> <span style="color:#f92672">=</span> <span style="color:#111">JIPipeJavaExtension</span><span style="color:#f92672">.</span><span style="color:#75af00">class</span><span style="color:#f92672">)</span>
 <span style="color:#00a8c8">public</span> <span style="color:#00a8c8">class</span> <span style="color:#75af00">MyExtension</span> <span style="color:#00a8c8">extends</span> <span style="color:#111">JIPipeDefaultJavaExtension</span> <span style="color:#f92672">{</span>
 
@@ -713,10 +747,9 @@ The corresponding interfaces are <a href="../../../apidocs/org/hkijena/jipipe/ap
     <span style="color:#f92672">}</span>
 
 <span style="color:#f92672">}</span>
-</code></pre></div>
-<div class="notices tip" ><p><p>You can register an operation for all data types by leaving the data type ID empty.</p>
+</code></pre></div><div class="notices tip" ><p>
+You can register an operation for all data types by leaving the data type ID empty.
 </p></div>
-
 <h1 id="using-a-custom-interface">Using a custom interface</h1>
 <p>This UI can be replaced with a custom one that is designed to handle this specific data type.</p>
 <p>Such UIs inherit from <a href="../../../apidocs/org/hkijena/jipipe/ui/resultanalysis/JIPipeResultDataSlotRowUI.html">JIPipeResultDataSlotRowUI</a>, which is a panel that has access to</p>
