@@ -26,10 +26,7 @@ import org.hkijena.jipipe.api.nodes.JIPipeAlgorithm;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.viewer.ImageViewerPanel;
 import org.hkijena.jipipe.extensions.imagejdatatypes.viewer.ImageViewerWindow;
-import org.hkijena.jipipe.extensions.imagejdatatypes.viewer.plugins.CalibrationPlugin;
-import org.hkijena.jipipe.extensions.imagejdatatypes.viewer.plugins.LUTManagerPlugin;
-import org.hkijena.jipipe.extensions.imagejdatatypes.viewer.plugins.PixelInfoPlugin;
-import org.hkijena.jipipe.extensions.imagejdatatypes.viewer.plugins.ROIManagerPlugin;
+import org.hkijena.jipipe.extensions.imagejdatatypes.viewer.plugins.*;
 import org.hkijena.jipipe.extensions.settings.GeneralUISettings;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
@@ -57,7 +54,8 @@ public class CacheAwareImagePlusDataViewerPanel extends ImageViewerPanel {
         setPlugins(Arrays.asList(new CalibrationPlugin(this),
                 new PixelInfoPlugin(this),
                 new LUTManagerPlugin(this),
-                new ROIManagerPlugin(this)));
+                new ROIManagerPlugin(this),
+                new AnimationSpeedPlugin(this)));
         this.project = ((JIPipeProjectWorkbench) workbench).getProject();
         this.workbench = workbench;
         this.dataSource = dataSource;

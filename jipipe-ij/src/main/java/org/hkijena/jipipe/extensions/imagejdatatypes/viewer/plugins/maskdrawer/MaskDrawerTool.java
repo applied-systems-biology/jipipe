@@ -45,6 +45,16 @@ public abstract class MaskDrawerTool extends ImageViewerPanelPlugin {
 
     public abstract void deactivate();
 
+    @Override
+    public String getCategory() {
+        return null;
+    }
+
+    @Override
+    public Icon getCategoryIcon() {
+        return null;
+    }
+
     /**
      * Triggered when the highlight color was changed
      */

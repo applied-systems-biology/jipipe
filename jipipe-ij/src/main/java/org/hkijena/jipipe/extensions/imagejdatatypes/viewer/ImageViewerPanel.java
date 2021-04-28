@@ -29,6 +29,7 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageSliceIndex;
 import org.hkijena.jipipe.extensions.imagejdatatypes.viewer.plugins.*;
 import org.hkijena.jipipe.extensions.settings.FileChooserSettings;
 import org.hkijena.jipipe.extensions.settings.ImageViewerUISettings;
+import org.hkijena.jipipe.ui.components.DocumentTabPane;
 import org.hkijena.jipipe.ui.components.FormPanel;
 import org.hkijena.jipipe.ui.components.PathEditor;
 import org.hkijena.jipipe.ui.running.JIPipeRunExecuterUI;
@@ -38,14 +39,14 @@ import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
+import javax.swing.Timer;
 import java.awt.*;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.*;
 import java.util.List;
 
 public class ImageViewerPanel extends JPanel {
@@ -67,8 +68,7 @@ public class ImageViewerPanel extends JPanel {
     private long lastTimeZoomed;
     private JLabel imageInfoLabel = new JLabel();
     private JScrollPane scrollPane;
-    private FormPanel formPanel = new FormPanel(null, FormPanel.WITH_SCROLLING);
-    private JSpinner animationSpeed = new JSpinner(new SpinnerNumberModel(250, 5, 10000, 1));
+    private JSpinner animationSpeedControl = new JSpinner(new SpinnerNumberModel(250, 5, 10000, 1));
     private Timer animationTimer = new Timer(250, e -> animateNextSlice());
     private int rotation = 0;
     private JMenuItem exportAllSlicesItem;
@@ -80,6 +80,8 @@ public class ImageViewerPanel extends JPanel {
     private final ImageViewerUISettings settings;
     private JToggleButton enableSideBarButton = new JToggleButton();
     private Component currentContentPanel;
+    private DocumentTabPane tabPane = new DocumentTabPane();
+    private Map<String, FormPanel> formPanels = new HashMap<>();
 
     public ImageViewerPanel() {
         if(JIPipe.getInstance() != null) {
@@ -123,7 +125,7 @@ public class ImageViewerPanel extends JPanel {
 
         // Load default animation speed
         if(settings != null) {
-            animationSpeed.getModel().setValue(settings.getDefaultAnimationSpeed());
+            animationSpeedControl.getModel().setValue(settings.getDefaultAnimationSpeed());
         }
 
         setLayout(new BorderLayout());
@@ -158,8 +160,8 @@ public class ImageViewerPanel extends JPanel {
 
     private void initializeAnimationControls() {
         animationTimer.setRepeats(true);
-        animationSpeed.addChangeListener(e -> {
-            int delay = ((SpinnerNumberModel) animationSpeed.getModel()).getNumber().intValue();
+        animationSpeedControl.addChangeListener(e -> {
+            int delay = ((SpinnerNumberModel) animationSpeedControl.getModel()).getNumber().intValue();
             if(settings != null) {
                 settings.setDefaultAnimationSpeed(delay);
             }
@@ -329,7 +331,7 @@ public class ImageViewerPanel extends JPanel {
         if(enableSideBarButton.isSelected()) {
             JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT,
                     scrollPane,
-                    formPanel);
+                    tabPane);
             splitPane.setDividerSize(3);
             splitPane.setResizeWeight(0.66);
             addComponentListener(new ComponentAdapter() {
@@ -564,19 +566,35 @@ public class ImageViewerPanel extends JPanel {
     }
 
     public void refreshFormPanel() {
-        int scrollValue = formPanel.getScrollPane().getVerticalScrollBar().getValue();
-        formPanel.clear();
+        Map<String, Integer> scrollValues = new HashMap<>();
+        for (Map.Entry<String, FormPanel> entry : formPanels.entrySet()) {
+            scrollValues.put(entry.getKey(), entry.getValue().getScrollPane().getVerticalScrollBar().getValue());
+            entry.getValue().clear();
+        }
         for (ImageViewerPanelPlugin plugin : plugins) {
+            FormPanel formPanel = formPanels.getOrDefault(plugin.getCategory(), null);
+            if(formPanel == null) {
+                formPanel = new FormPanel(null, FormPanel.WITH_SCROLLING);
+                formPanels.put(plugin.getCategory(), formPanel);
+                tabPane.addSingletonTab(plugin.getCategory(),
+                        plugin.getCategory(),
+                        plugin.getCategoryIcon(),
+                        formPanel,
+                        DocumentTabPane.CloseMode.withoutCloseButton,
+                        false);
+            }
             plugin.createPalettePanel(formPanel);
         }
-        if (image != null && (image.getNChannels() > 1 || image.getNSlices() > 1 || image.getNFrames() > 1)) {
-            formPanel.addGroupHeader("Animation", UIUtils.getIconFromResources("actions/filmgrain.png"));
-            formPanel.addToForm(animationSpeed, new JLabel("Speed (ms)"), null);
+        for (Map.Entry<String, FormPanel> entry : formPanels.entrySet()) {
+            entry.getValue().addVerticalGlue();
+            SwingUtilities.invokeLater(() -> {
+                entry.getValue().getScrollPane().getVerticalScrollBar().setValue(scrollValues.getOrDefault(entry.getKey(), 0));
+            });
         }
-        formPanel.addVerticalGlue();
-        SwingUtilities.invokeLater(() -> {
-            formPanel.getScrollPane().getVerticalScrollBar().setValue(scrollValue);
-        });
+    }
+
+    public JSpinner getAnimationSpeedControl() {
+        return animationSpeedControl;
     }
 
     /**
@@ -756,7 +774,8 @@ public class ImageViewerPanel extends JPanel {
         dataDisplay.setPlugins(Arrays.asList(new CalibrationPlugin(dataDisplay),
                 new PixelInfoPlugin(dataDisplay),
                 new LUTManagerPlugin(dataDisplay),
-                new ROIManagerPlugin(dataDisplay)));
+                new ROIManagerPlugin(dataDisplay),
+                new AnimationSpeedPlugin(dataDisplay)));
         dataDisplay.setImage(image);
         ImageViewerWindow window = new ImageViewerWindow(dataDisplay);
         window.setTitle(title);

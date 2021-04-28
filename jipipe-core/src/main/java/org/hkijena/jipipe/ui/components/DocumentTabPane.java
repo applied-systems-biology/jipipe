@@ -19,6 +19,7 @@ import com.google.common.collect.ImmutableBiMap;
 import com.google.common.collect.ImmutableList;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.extensions.settings.GeneralUISettings;
@@ -86,7 +87,7 @@ public class DocumentTabPane extends JPanel {
                 }
             }
         });
-        if (GeneralUISettings.getInstance().getTheme().isModern()) {
+        if (JIPipe.getInstance() != null && GeneralUISettings.getInstance().getTheme().isModern()) {
             tabbedPane.setUI(new CustomTabbedPaneUI());
         }
         add(tabbedPane, BorderLayout.CENTER);

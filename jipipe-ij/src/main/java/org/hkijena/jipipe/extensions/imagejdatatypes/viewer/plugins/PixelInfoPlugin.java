@@ -11,7 +11,7 @@ import org.hkijena.jipipe.utils.UIUtils;
 import javax.swing.*;
 import java.awt.*;
 
-public class PixelInfoPlugin extends ImageViewerPanelPlugin {
+public class PixelInfoPlugin extends GeneralImageViewerPanelPlugin {
 
     private final JLabel pixelInfoLabel = new JLabel(UIUtils.getIconFromResources("actions/tool-pointer.png"), JLabel.LEFT);
 

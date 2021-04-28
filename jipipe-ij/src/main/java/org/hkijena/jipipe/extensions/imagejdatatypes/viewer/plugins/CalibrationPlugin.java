@@ -10,7 +10,7 @@ import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
 
-public class CalibrationPlugin extends ImageViewerPanelPlugin {
+public class CalibrationPlugin extends GeneralImageViewerPanelPlugin {
 
     private ImageViewerPanelDisplayRangeControl displayRangeCalibrationControl;
     private JComboBox<ImageJCalibrationMode> calibrationModes;

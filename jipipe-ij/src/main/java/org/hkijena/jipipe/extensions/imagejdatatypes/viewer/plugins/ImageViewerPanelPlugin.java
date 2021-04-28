@@ -6,6 +6,7 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageSliceIndex;
 import org.hkijena.jipipe.extensions.imagejdatatypes.viewer.ImageViewerPanel;
 import org.hkijena.jipipe.ui.components.FormPanel;
 
+import javax.swing.*;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 
@@ -102,4 +103,16 @@ public abstract class ImageViewerPanelPlugin {
     public void postprocessDrawForExport(BufferedImage image, ImageSliceIndex sliceIndex) {
 
     }
+
+    /**
+     * The tool panel category where this tool is shown
+     * @return the category
+     */
+    public abstract String getCategory();
+
+    /**
+     * The icon for the category if a new one must be created
+     * @return the icon
+     */
+    public abstract Icon getCategoryIcon();
 }

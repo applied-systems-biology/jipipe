@@ -220,6 +220,16 @@ public class ROIManagerPlugin extends ImageViewerPanelPlugin {
         updateROIJList();
     }
 
+    @Override
+    public String getCategory() {
+        return "ROI";
+    }
+
+    @Override
+    public Icon getCategoryIcon() {
+        return UIUtils.getIconFromResources("actions/roi.png");
+    }
+
     private void reloadEditRoiMenu(JPopupMenu menu) {
         List<Roi> selectedRois = roiJList.getSelectedValuesList();
         menu.removeAll();

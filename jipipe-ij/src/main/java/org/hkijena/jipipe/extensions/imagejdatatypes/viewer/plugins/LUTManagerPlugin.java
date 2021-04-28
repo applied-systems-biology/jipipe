@@ -16,7 +16,7 @@ import javax.swing.event.DocumentEvent;
 import java.util.ArrayList;
 import java.util.List;
 
-public class LUTManagerPlugin extends ImageViewerPanelPlugin {
+public class LUTManagerPlugin extends GeneralImageViewerPanelPlugin {
 
     private List<ImageViewerLUTEditor> lutEditors = new ArrayList<>();
 

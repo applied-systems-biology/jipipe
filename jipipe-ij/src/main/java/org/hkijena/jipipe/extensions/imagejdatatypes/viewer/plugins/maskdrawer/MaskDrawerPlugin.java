@@ -421,6 +421,16 @@ public class MaskDrawerPlugin extends ImageViewerPanelPlugin {
         graphics.dispose();
     }
 
+    @Override
+    public String getCategory() {
+        return "Draw mask";
+    }
+
+    @Override
+    public Icon getCategoryIcon() {
+        return UIUtils.getIconFromResources("actions/draw-brush.png");
+    }
+
     public MaskColor getCurrentColor() {
         return currentColor;
     }
