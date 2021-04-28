@@ -23,6 +23,7 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.awt.geom.AffineTransform;
+import java.awt.geom.Point2D;
 import java.awt.image.AffineTransformOp;
 import java.awt.image.BufferedImage;
 import java.awt.image.BufferedImageOp;
@@ -146,18 +147,19 @@ public class ImageViewerPanelCanvas extends JPanel implements MouseListener, Mou
 
     public void setZoom(double zoom) {
         zoom = Math.max(zoom, 10e-4);
-        double oldZoom = this.zoom;
         Point mousePosition = getMousePosition();
-        if (mousePosition != null) {
-            int correctedMouseX = (int) ((mousePosition.x / oldZoom) * zoom);
-            int correctedMouseY = (int) ((mousePosition.y / oldZoom) * zoom);
-            int dx = correctedMouseX - mousePosition.x;
-            int dy = correctedMouseY - mousePosition.y;
-            contentX -= dx;
-            contentY -= dy;
-            fixNegativeOffsets();
+        Point2D.Double currentPixel = null;
+        if(mousePosition != null) {
+            currentPixel = screenToImageSubPixelCoordinate(mousePosition, false);
         }
         this.zoom = zoom;
+        if(currentPixel != null) {
+            Point2D.Double newPixelLocation = imageSubPixelCoordinateToScreen(currentPixel);
+            double dx = newPixelLocation.x - mousePosition.x;
+            double dy = newPixelLocation.y - mousePosition.y;
+            contentX -= (int)dx;
+            contentY -= (int)dy;
+        }
         revalidate();
         repaint();
     }
@@ -351,6 +353,82 @@ public class ImageViewerPanelCanvas extends JPanel implements MouseListener, Mou
     }
 
     /**
+     * Finds the screen coordinate for a pixel coordinate
+     * @param subPixelCoordinate the pixel coordinate
+     * @return the screen coordinate
+     */
+    public Point2D.Double imageSubPixelCoordinateToScreen(Point2D.Double subPixelCoordinate) {
+        double x = subPixelCoordinate.x;
+        double y = subPixelCoordinate.y;
+        double zx = x * zoom;
+        double zy = y * zoom;
+        return new Point2D.Double(zx + contentX, zy + contentY);
+    }
+
+    /**
+     * Converts screen coordinates into image pixel coordinates
+     * @param screenCoordinate the screen coordinates
+     * @param checkBounds If true, check for bounds (if false, negative and larger than the image coordinates will be returned)
+     * @return the pixel coordinates. Null if the checkBounds is true and the coordinate is outside the image coordinates
+     */
+    public Point2D.Double screenToImageSubPixelCoordinate(Point screenCoordinate, boolean checkBounds) {
+        int x = screenCoordinate.x;
+        int y = screenCoordinate.y;
+        x -= contentX;
+        y -= contentY;
+        if (checkBounds && (x < 0 || y < 0))
+            return null;
+        int sw = (int) (zoom * image.getWidth());
+        int sh = (int) (zoom * image.getHeight());
+        if (checkBounds && (x >= sw || y >= sh))
+            return null;
+        double rx;
+        double ry;
+        if (checkBounds) {
+            rx = Math.max(0, Math.min(1, 1.0 * x / sw));
+            ry = Math.max(0, Math.min(1, 1.0 * y / sh));
+        } else {
+            rx = 1.0 * x / sw;
+            ry = 1.0 * y / sh;
+        }
+        double mx = (rx * image.getWidth());
+        double my = (ry * image.getHeight());
+        return new Point2D.Double(mx, my);
+    }
+
+
+    /**
+     * Converts screen coordinates into image pixel coordinates
+     * @param screenCoordinate the screen coordinates
+     * @param checkBounds If true, check for bounds (if false, negative and larger than the image coordinates will be returned)
+     * @return the pixel coordinates. Null if the checkBounds is true and the coordinate is outside the image coordinates
+     */
+    public Point screenToImageCoordinate(Point screenCoordinate, boolean checkBounds) {
+        int x = screenCoordinate.x;
+        int y = screenCoordinate.y;
+        x -= contentX;
+        y -= contentY;
+        if (checkBounds && (x < 0 || y < 0))
+            return null;
+        int sw = (int) (zoom * image.getWidth());
+        int sh = (int) (zoom * image.getHeight());
+        if (checkBounds && (x >= sw || y >= sh))
+            return null;
+        double rx;
+        double ry;
+        if (checkBounds) {
+            rx = Math.max(0, Math.min(1, 1.0 * x / sw));
+            ry = Math.max(0, Math.min(1, 1.0 * y / sh));
+        } else {
+            rx = 1.0 * x / sw;
+            ry = 1.0 * y / sh;
+        }
+        int mx = (int) (rx * image.getWidth());
+        int my = (int) (ry * image.getHeight());
+        return new Point(mx, my);
+    }
+
+    /**
      * Gets the pixel coordinates inside the shown image under the mouse.
      *
      * @param checkBounds If true, check for bounds (if false, negative and larger than the image coordinates will be returned)
@@ -361,28 +439,7 @@ public class ImageViewerPanelCanvas extends JPanel implements MouseListener, Mou
             return null;
         Point mousePosition = getMousePosition();
         if (mousePosition != null) {
-            int x = mousePosition.x;
-            int y = mousePosition.y;
-            x -= contentX;
-            y -= contentY;
-            if (checkBounds && (x < 0 || y < 0))
-                return null;
-            int sw = (int) (zoom * image.getWidth());
-            int sh = (int) (zoom * image.getHeight());
-            if (checkBounds && (x >= sw || y >= sh))
-                return null;
-            double rx;
-            double ry;
-            if (checkBounds) {
-                rx = Math.max(0, Math.min(1, 1.0 * x / sw));
-                ry = Math.max(0, Math.min(1, 1.0 * y / sh));
-            } else {
-                rx = 1.0 * x / sw;
-                ry = 1.0 * y / sh;
-            }
-            int mx = (int) (rx * image.getWidth());
-            int my = (int) (ry * image.getHeight());
-            return new Point(mx, my);
+           return screenToImageCoordinate(mousePosition, checkBounds);
         }
         return null;
     }
