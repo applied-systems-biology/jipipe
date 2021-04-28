@@ -21,12 +21,14 @@ import ij.process.ColorProcessor;
 import ij.process.ImageProcessor;
 import ij.process.ImageStatistics;
 import ij.util.Tools;
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.AVICompression;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.HyperstackDimension;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageSliceIndex;
 import org.hkijena.jipipe.extensions.imagejdatatypes.viewer.plugins.*;
 import org.hkijena.jipipe.extensions.settings.FileChooserSettings;
+import org.hkijena.jipipe.extensions.settings.ImageViewerUISettings;
 import org.hkijena.jipipe.ui.components.FormPanel;
 import org.hkijena.jipipe.ui.components.PathEditor;
 import org.hkijena.jipipe.ui.running.JIPipeRunExecuterUI;
@@ -75,8 +77,17 @@ public class ImageViewerPanel extends JPanel {
     private List<ImageViewerPanelPlugin> plugins = new ArrayList<>();
     private JButton rotateLeftButton;
     private JButton rotateRightButton;
+    private final ImageViewerUISettings settings;
+    private JToggleButton enableSideBarButton = new JToggleButton();
+    private Component currentContentPanel;
 
     public ImageViewerPanel() {
+        if(JIPipe.getInstance() != null) {
+            settings = ImageViewerUISettings.getInstance();
+        }
+        else {
+            settings = null;
+        }
         initialize();
         updateZoomStatus();
     }
@@ -109,6 +120,12 @@ public class ImageViewerPanel extends JPanel {
     }
 
     private void initialize() {
+
+        // Load default animation speed
+        if(settings != null) {
+            animationSpeed.getModel().setValue(settings.getDefaultAnimationSpeed());
+        }
+
         setLayout(new BorderLayout());
         canvas = new ImageViewerPanelCanvas(this);
         scrollPane = new JScrollPane(canvas);
@@ -127,20 +144,6 @@ public class ImageViewerPanel extends JPanel {
         });
         canvas.getEventBus().register(this);
 
-        JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT,
-                scrollPane,
-                formPanel);
-        splitPane.setDividerSize(3);
-        splitPane.setResizeWeight(0.66);
-        addComponentListener(new ComponentAdapter() {
-            @Override
-            public void componentResized(ComponentEvent e) {
-                super.componentResized(e);
-                splitPane.setDividerLocation(0.66);
-            }
-        });
-        add(splitPane, BorderLayout.CENTER);
-
         bottomPanel = new FormPanel(null, FormPanel.NONE);
         add(bottomPanel, BorderLayout.SOUTH);
 
@@ -150,13 +153,18 @@ public class ImageViewerPanel extends JPanel {
         frameSlider.addAdjustmentListener(e -> refreshSlice());
 
         initializeAnimationControls();
+        updateSideBar();
     }
 
     private void initializeAnimationControls() {
         animationTimer.setRepeats(true);
         animationSpeed.addChangeListener(e -> {
+            int delay = ((SpinnerNumberModel) animationSpeed.getModel()).getNumber().intValue();
+            if(settings != null) {
+                settings.setDefaultAnimationSpeed(delay);
+            }
             stopAnimations();
-            animationTimer.setDelay(((SpinnerNumberModel) animationSpeed.getModel()).getNumber().intValue());
+            animationTimer.setDelay(delay);
         });
         animationFrameToggle.addActionListener(e -> {
             if (animationFrameToggle.isSelected()) {
@@ -293,7 +301,53 @@ public class ImageViewerPanel extends JPanel {
         zoomInButton.addActionListener(e -> increaseZoom());
         toolBar.add(zoomInButton);
 
+        toolBar.addSeparator();
+
+        enableSideBarButton.setIcon(UIUtils.getIconFromResources("actions/sidebar.png"));
+        enableSideBarButton.setToolTipText("Show side bar with additional tools");
+        if(settings != null) {
+            enableSideBarButton.setSelected(settings.isShowSideBar());
+        }
+        else {
+            enableSideBarButton.setSelected(true);
+        }
+        enableSideBarButton.addActionListener(e -> {
+            if(settings != null) {
+                settings.setShowSideBar(enableSideBarButton.isSelected());
+            }
+            updateSideBar();
+        });
+        toolBar.add(enableSideBarButton);
+
         add(toolBar, BorderLayout.NORTH);
+    }
+
+    private void updateSideBar() {
+        if(currentContentPanel != null) {
+            remove(currentContentPanel);
+        }
+        if(enableSideBarButton.isSelected()) {
+            JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT,
+                    scrollPane,
+                    formPanel);
+            splitPane.setDividerSize(3);
+            splitPane.setResizeWeight(0.66);
+            addComponentListener(new ComponentAdapter() {
+                @Override
+                public void componentResized(ComponentEvent e) {
+                    super.componentResized(e);
+                    splitPane.setDividerLocation(0.66);
+                }
+            });
+            add(splitPane, BorderLayout.CENTER);
+            currentContentPanel = splitPane;
+        }
+        else {
+            add(scrollPane, BorderLayout.CENTER);
+            currentContentPanel = scrollPane;
+        }
+        revalidate();
+        repaint();
     }
 
     public void exportCurrentSliceToPNG() {
