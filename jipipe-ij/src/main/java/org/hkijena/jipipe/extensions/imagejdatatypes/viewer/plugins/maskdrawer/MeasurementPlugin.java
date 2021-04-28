@@ -171,7 +171,9 @@ public class MeasurementPlugin extends ImageViewerPanelPlugin implements JIPipeP
     @JIPipeParameter("statistics")
     public void setStatistics(ImageStatisticsSetParameter statistics) {
         this.statistics = statistics;
-        measureCurrentMask();
+        if(autoMeasureToggle.isSelected()) {
+            measureCurrentMask();
+        }
     }
 
     @Override
