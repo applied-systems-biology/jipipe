@@ -1,5 +1,6 @@
 package org.hkijena.jipipe.extensions.imagejdatatypes.viewer.plugins.maskdrawer;
 
+import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 import ij.IJ;
 import ij.ImagePlus;
@@ -42,6 +43,7 @@ import java.util.function.Supplier;
 
 public class MaskDrawerPlugin extends ImageViewerPanelPlugin {
 
+    public static final Stroke STROKE_GUIDE_LINE = new BasicStroke(1, BasicStroke.CAP_ROUND, BasicStroke.JOIN_BEVEL, 0, new float[]{1}, 0);
     private final JPanel colorSelectionPanel = new JPanel();
     private final JPanel toolSelectionPanel = new JPanel();
     private final Map<MaskColor, JToggleButton> colorSelectionButtons = new HashMap<>();
@@ -55,6 +57,7 @@ public class MaskDrawerPlugin extends ImageViewerPanelPlugin {
     private ColorChooserButton maskColorButton;
     private Color highlightColor = new Color(255, 255, 0, 128);
     private Color maskColor = new Color(255, 0, 0, 128);
+    private JCheckBox showGuidesToggle = new JCheckBox("Show guide lines", true);
     private ButtonGroup toolButtonGroup = new ButtonGroup();
     private Function<ImagePlus, ImagePlus> maskGenerator;
 
@@ -224,6 +227,7 @@ public class MaskDrawerPlugin extends ImageViewerPanelPlugin {
         }
         formPanel.addToForm(toolSelectionPanel, new JLabel("Tool"), null);
         currentTool.createPalettePanel(formPanel);
+        formPanel.addToForm(showGuidesToggle, null);
         formPanel.addToForm(colorSelectionPanel, new JLabel("Color"), null);
         formPanel.addToForm(highlightColorButton, new JLabel("Highlight color"), null);
         formPanel.addToForm(maskColorButton, new JLabel("Mask color"), null);
@@ -409,6 +413,17 @@ public class MaskDrawerPlugin extends ImageViewerPanelPlugin {
         BufferedImageOp op = new AffineTransformOp(transform, zoom < 1 ? AffineTransformOp.TYPE_BILINEAR : AffineTransformOp.TYPE_NEAREST_NEIGHBOR);
         graphics2D.drawImage(currentMaskSlicePreview, op, x, y);
         currentTool.postprocessDraw(graphics2D, x, y, w, h);
+        if(showGuidesToggle.isSelected() && currentTool.showGuides()) {
+            graphics2D.setStroke(STROKE_GUIDE_LINE);
+            graphics2D.setColor(getHighlightColor());
+            Point mousePosition = getViewerPanel().getCanvas().getMouseModelPixelCoordinate(false);
+            if(mousePosition != null) {
+                int displayedX = (int) (x + zoom * mousePosition.x);
+                int displayedY = (int) (y + zoom * mousePosition.y);
+                graphics2D.drawLine(x, displayedY, x + w, displayedY);
+                graphics2D.drawLine(displayedX, y, displayedX, y + h);
+            }
+        }
     }
 
     @Override
@@ -505,6 +520,18 @@ public class MaskDrawerPlugin extends ImageViewerPanelPlugin {
 
         public int getValue() {
             return value;
+        }
+    }
+
+    public static class MaskChangedEvent {
+        private final MaskDrawerPlugin plugin;
+
+        public MaskChangedEvent(MaskDrawerPlugin plugin) {
+            this.plugin = plugin;
+        }
+
+        public MaskDrawerPlugin getPlugin() {
+            return plugin;
         }
     }
 }

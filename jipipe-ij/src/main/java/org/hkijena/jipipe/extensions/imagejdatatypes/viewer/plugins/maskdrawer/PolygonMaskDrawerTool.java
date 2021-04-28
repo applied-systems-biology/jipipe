@@ -24,6 +24,7 @@ public class PolygonMaskDrawerTool extends MaskDrawerTool {
     private List<Point> referencePoints = new ArrayList<>();
     private JCheckBox closeToggle;
     private JCheckBox fillToggle;
+    private final JTextArea infoArea = UIUtils.makeReadonlyBorderlessTextArea("");
 
     public PolygonMaskDrawerTool(MaskDrawerPlugin plugin) {
         super(plugin,
@@ -35,6 +36,7 @@ public class PolygonMaskDrawerTool extends MaskDrawerTool {
                 UIUtils.getIconFromResources("actions/draw-polyline.png"));
         getViewerPanel().getCanvas().getEventBus().register(this);
         initialize();
+        updateInfo();
     }
 
     private void initialize() {
@@ -46,6 +48,7 @@ public class PolygonMaskDrawerTool extends MaskDrawerTool {
     public void createPalettePanel(FormPanel formPanel) {
         formPanel.addToForm(closeToggle, new JLabel(), null);
         formPanel.addToForm(fillToggle, new JLabel(), null);
+        formPanel.addToForm(infoArea, new JLabel(), null);
     }
 
     @Override
@@ -62,6 +65,31 @@ public class PolygonMaskDrawerTool extends MaskDrawerTool {
     private void cancelDrawing() {
         referencePoints.clear();
         getViewerPanel().getCanvas().repaint();
+        updateInfo();
+    }
+
+    private void updateInfo() {
+        if(referencePoints.isEmpty()) {
+            infoArea.setText("Length: -\n" +
+                    "Length (+ mouse): -");
+        }
+        else {
+            double length = 0;
+            for (int i = 1; i < referencePoints.size(); i++) {
+                Point p0 = referencePoints.get(i - 1);
+                Point p1 = referencePoints.get(i);
+                length += p0.distance(p1);
+            }
+            double lengthPlusMouse = 0;
+            Point mouse = getViewerPanel().getCanvas().getMouseModelPixelCoordinate(false);
+            if(mouse != null) {
+                lengthPlusMouse = length + referencePoints.get(referencePoints.size() - 1).distance(mouse);
+            }
+            infoArea.setText(String.format("Length: %f px\n" +
+                    "Length (+ mouse): %f px",
+                    length,
+                    lengthPlusMouse));
+        }
     }
 
     @Subscribe
@@ -76,6 +104,7 @@ public class PolygonMaskDrawerTool extends MaskDrawerTool {
             }
 
             referencePoints.add(point);
+            updateInfo();
             if (event.getClickCount() > 1) {
                 applyDrawing();
                 cancelDrawing();
@@ -88,6 +117,7 @@ public class PolygonMaskDrawerTool extends MaskDrawerTool {
                     // Remove last reference point
                     referencePoints.remove(referencePoints.size() - 1);
                     getViewerPanel().getCanvas().repaint();
+                    updateInfo();
                 }
             }
         }
@@ -125,6 +155,7 @@ public class PolygonMaskDrawerTool extends MaskDrawerTool {
             processor.draw(roi);
         }
         getMaskDrawerPlugin().recalculateMaskPreview();
+        postMaskChangedEvent();
     }
 
     @Override
@@ -162,6 +193,7 @@ public class PolygonMaskDrawerTool extends MaskDrawerTool {
         if (!isActive())
             return;
         getViewerPanel().getCanvas().repaint();
+        updateInfo();
     }
 
     @Subscribe

@@ -34,6 +34,11 @@ public class FloodFillMaskDrawerTool extends MaskDrawerTool {
 
     }
 
+    @Override
+    public boolean showGuides() {
+        return false;
+    }
+
     @Subscribe
     public void onMouseClick(MouseClickedEvent event) {
         if (!isActive())
@@ -65,6 +70,7 @@ public class FloodFillMaskDrawerTool extends MaskDrawerTool {
                 processor.invert();
             }
             getMaskDrawerPlugin().recalculateMaskPreview();
+            postMaskChangedEvent();
         }
     }
 }

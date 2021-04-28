@@ -21,6 +21,7 @@ public class RectangleMaskDrawerTool extends MaskDrawerTool {
     private JCheckBox startFromCenterToggle;
     private JCheckBox squareToggle;
     private JCheckBox fillToggle;
+    private final JTextArea infoArea = UIUtils.makeReadonlyBorderlessTextArea("");
 
     public RectangleMaskDrawerTool(MaskDrawerPlugin plugin) {
         super(plugin,
@@ -29,6 +30,7 @@ public class RectangleMaskDrawerTool extends MaskDrawerTool {
                 UIUtils.getIconFromResources("actions/draw-rectangle.png"));
         getViewerPanel().getCanvas().getEventBus().register(this);
         initialize();
+        updateInfo();
     }
 
     private void initialize() {
@@ -42,6 +44,7 @@ public class RectangleMaskDrawerTool extends MaskDrawerTool {
         formPanel.addToForm(startFromCenterToggle, new JLabel(), null);
         formPanel.addToForm(squareToggle, new JLabel(), null);
         formPanel.addToForm(fillToggle, new JLabel(), null);
+        formPanel.addToForm(infoArea, new JLabel(), null);
     }
 
     @Override
@@ -58,6 +61,7 @@ public class RectangleMaskDrawerTool extends MaskDrawerTool {
     private void cancelDrawing() {
         referencePoint = null;
         getViewerPanel().getCanvas().repaint();
+        updateInfo();
     }
 
     @Subscribe
@@ -73,6 +77,7 @@ public class RectangleMaskDrawerTool extends MaskDrawerTool {
 
             if (referencePoint == null) {
                 referencePoint = point;
+                updateInfo();
             } else {
                 applyDrawing(referencePoint, point);
                 cancelDrawing();
@@ -93,6 +98,7 @@ public class RectangleMaskDrawerTool extends MaskDrawerTool {
             processor.drawRect(r.x, r.y, r.width, r.height);
         }
         getMaskDrawerPlugin().recalculateMaskPreview();
+        postMaskChangedEvent();
     }
 
     @Override
@@ -123,6 +129,7 @@ public class RectangleMaskDrawerTool extends MaskDrawerTool {
         if (!isActive())
             return;
         getViewerPanel().getCanvas().repaint();
+        updateInfo();
     }
 
     @Subscribe
@@ -130,6 +137,43 @@ public class RectangleMaskDrawerTool extends MaskDrawerTool {
         if (!isActive())
             return;
         cancelDrawing();
+    }
+
+    private void updateInfo() {
+        if(referencePoint != null) {
+            Point p0 = referencePoint;
+            Point p1 = getViewerPanel().getCanvas().getMouseModelPixelCoordinate(false);
+            Rectangle r = RectangleMaskDrawerTool.getDrawnArea(p0, p1, startFromCenterToggle.isSelected(), squareToggle.isSelected());
+            if (p1 == null) {
+                infoArea.setText(String.format("P1: %d, %d\n" +
+                        "P2: -\n" +
+                        "Width: -\n" +
+                        "Height: -\n" +
+                        "Area: -\n" +
+                        "Circumference: -", p0.x, p0.y));
+                return;
+            }
+            infoArea.setText(String.format("P1: %d, %d\n" +
+                            "P2: %d, %d\n" +
+                            "Width: %d px\n" +
+                            "Height: %d px\n" +
+                            "Area: %d px²\n" +
+                            "Circumference: %d px",
+                    p0.x, p0.y,
+                    p1.x, p1.y,
+                    (int)r.getWidth(),
+                    (int)r.getHeight(),
+                    (int)(r.getWidth() * r.getHeight()),
+                    (int)(2 * r.getWidth() + 2 * r.getHeight())));
+        }
+        else {
+            infoArea.setText("P1: -\n" +
+                    "P2: -\n" +
+                    "Width: -\n" +
+                    "Height: -\n" +
+                    "Area: -\n" +
+                    "Circumference: -");
+        }
     }
 
     public static Rectangle getDrawnArea(Point p0, Point p1, boolean startFromCenter, boolean square) {

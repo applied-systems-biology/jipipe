@@ -45,6 +45,10 @@ public abstract class MaskDrawerTool extends ImageViewerPanelPlugin {
 
     public abstract void deactivate();
 
+    public boolean showGuides() {
+        return true;
+    }
+
     @Override
     public String getCategory() {
         return null;
@@ -53,6 +57,13 @@ public abstract class MaskDrawerTool extends ImageViewerPanelPlugin {
     @Override
     public Icon getCategoryIcon() {
         return null;
+    }
+
+    /**
+     * Posts a mask changed event to the viewer' canvas event bus
+     */
+    public void postMaskChangedEvent() {
+        getViewerPanel().getCanvas().getEventBus().post(new MaskDrawerPlugin.MaskChangedEvent(getMaskDrawerPlugin()));
     }
 
     /**

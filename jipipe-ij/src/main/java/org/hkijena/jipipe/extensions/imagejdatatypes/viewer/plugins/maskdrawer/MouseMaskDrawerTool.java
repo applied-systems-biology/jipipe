@@ -89,6 +89,7 @@ public class MouseMaskDrawerTool extends MaskDrawerTool {
             ByteProcessor processor = (ByteProcessor) getMaskDrawerPlugin().getCurrentMaskSlice();
             processor.invert();
             getMaskDrawerPlugin().recalculateMaskPreview();
+            postMaskChangedEvent();
         }
     }
 
@@ -99,6 +100,7 @@ public class MouseMaskDrawerTool extends MaskDrawerTool {
             processor.dilate(); // Erode
             processor.erode(); // Dilate
             getMaskDrawerPlugin().recalculateMaskPreview();
+            postMaskChangedEvent();
         }
     }
 
@@ -109,6 +111,7 @@ public class MouseMaskDrawerTool extends MaskDrawerTool {
             processor.erode(); // Dilate
             processor.dilate(); // Erode
             getMaskDrawerPlugin().recalculateMaskPreview();
+            postMaskChangedEvent();
         }
     }
 
@@ -117,6 +120,7 @@ public class MouseMaskDrawerTool extends MaskDrawerTool {
             ByteProcessor processor = (ByteProcessor) getMaskDrawerPlugin().getCurrentMaskSlice();
             processor.erode(); // Dilate and erode are switched for some reason
             getMaskDrawerPlugin().recalculateMaskPreview();
+            postMaskChangedEvent();
         }
     }
 
@@ -125,6 +129,7 @@ public class MouseMaskDrawerTool extends MaskDrawerTool {
             ByteProcessor processor = (ByteProcessor) getMaskDrawerPlugin().getCurrentMaskSlice();
             processor.erode(); // Dilate and erode are switched for some reason
             getMaskDrawerPlugin().recalculateMaskPreview();
+            postMaskChangedEvent();
         }
     }
 
@@ -151,8 +156,14 @@ public class MouseMaskDrawerTool extends MaskDrawerTool {
                 processor.setRoi((Roi) null);
                 processor.copyBits(image.getProcessor(), 0, 0, Blitter.COPY);
                 getMaskDrawerPlugin().recalculateMaskPreview();
+                postMaskChangedEvent();
             }
         }
+    }
+
+    @Override
+    public boolean showGuides() {
+        return false;
     }
 
     private void exportMask() {
@@ -181,6 +192,7 @@ public class MouseMaskDrawerTool extends MaskDrawerTool {
             EDM edm = new EDM();
             edm.toWatershed(getMaskDrawerPlugin().getCurrentMaskSlice());
             getMaskDrawerPlugin().recalculateMaskPreview();
+            postMaskChangedEvent();
         }
     }
 }

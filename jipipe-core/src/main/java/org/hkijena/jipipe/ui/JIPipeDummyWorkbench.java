@@ -38,7 +38,10 @@ public class JIPipeDummyWorkbench implements JIPipeWorkbench {
 
     @Override
     public Context getContext() {
-        return JIPipe.getInstance().getContext();
+        if(JIPipe.getInstance() != null)
+            return JIPipe.getInstance().getContext();
+        else
+            return new Context();
     }
 
     @Override

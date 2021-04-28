@@ -27,6 +27,8 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.util.HyperstackDimension;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageSliceIndex;
 import org.hkijena.jipipe.extensions.imagejdatatypes.viewer.plugins.*;
+import org.hkijena.jipipe.extensions.imagejdatatypes.viewer.plugins.maskdrawer.MeasurementDrawerPlugin;
+import org.hkijena.jipipe.extensions.imagejdatatypes.viewer.plugins.maskdrawer.MeasurementPlugin;
 import org.hkijena.jipipe.extensions.settings.FileChooserSettings;
 import org.hkijena.jipipe.extensions.settings.ImageViewerUISettings;
 import org.hkijena.jipipe.ui.components.DocumentTabPane;
@@ -771,11 +773,15 @@ public class ImageViewerPanel extends JPanel {
      */
     public static ImageViewerPanel showImage(ImagePlus image, String title) {
         ImageViewerPanel dataDisplay = new ImageViewerPanel();
-        dataDisplay.setPlugins(Arrays.asList(new CalibrationPlugin(dataDisplay),
-                new PixelInfoPlugin(dataDisplay),
-                new LUTManagerPlugin(dataDisplay),
-                new ROIManagerPlugin(dataDisplay),
-                new AnimationSpeedPlugin(dataDisplay)));
+        List<ImageViewerPanelPlugin> pluginList = new ArrayList<>();
+        pluginList.add(new CalibrationPlugin(dataDisplay));
+        pluginList.add(new PixelInfoPlugin(dataDisplay));
+        pluginList.add(new LUTManagerPlugin(dataDisplay));
+        pluginList.add(new ROIManagerPlugin(dataDisplay));
+        pluginList.add(new AnimationSpeedPlugin(dataDisplay));
+        pluginList.add(new MeasurementDrawerPlugin(dataDisplay));
+        pluginList.add(new MeasurementPlugin(dataDisplay));
+        dataDisplay.setPlugins(pluginList);
         dataDisplay.setImage(image);
         ImageViewerWindow window = new ImageViewerWindow(dataDisplay);
         window.setTitle(title);

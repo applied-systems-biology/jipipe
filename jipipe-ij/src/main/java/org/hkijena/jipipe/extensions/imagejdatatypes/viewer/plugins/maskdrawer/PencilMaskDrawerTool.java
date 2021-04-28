@@ -172,6 +172,7 @@ public class PencilMaskDrawerTool extends MaskDrawerTool {
     private void releasePencil() {
         isDrawing = false;
         lastPencilPosition = null;
+        postMaskChangedEvent();
     }
 
     @Override
