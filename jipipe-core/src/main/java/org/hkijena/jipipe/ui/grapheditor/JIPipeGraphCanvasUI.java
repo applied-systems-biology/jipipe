@@ -884,7 +884,7 @@ public class JIPipeGraphCanvasUI extends JIPipeWorkbenchPanel implements MouseMo
             if (sourceNode != null && targetNode != null && targetNode.getX() >= sourceNode.getRightX() + viewMode.getGridWidth()) {
                 return;
             }
-        } else if (viewMode == JIPipeGraphViewMode.Vertical) {
+        } else if (viewMode == JIPipeGraphViewMode.Vertical || viewMode == JIPipeGraphViewMode.VerticalCompact) {
             if (sourceNode != null && targetNode != null && targetNode.getY() >= sourceNode.getBottomY() + viewMode.getGridHeight()) {
                 return;
             }
