@@ -53,6 +53,7 @@ import java.nio.file.Path;
 import java.util.List;
 import java.util.*;
 import java.util.function.Predicate;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 /**
@@ -463,6 +464,26 @@ public class UIUtils {
             @Override
             public void windowClosing(WindowEvent windowEvent) {
                 if (JOptionPane.showConfirmDialog(windowEvent.getComponent(), message, title,
+                        JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE) == JOptionPane.YES_OPTION) {
+                    windowEvent.getWindow().dispose();
+                }
+            }
+        });
+    }
+
+    /**
+     * Installs an event to the window that asks the user before the window is closes
+     *
+     * @param window  the window
+     * @param message the close message
+     * @param title   the close message title
+     */
+    public static void setToAskOnClose(JFrame window, Supplier<String> message, String title) {
+        window.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
+        window.addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent windowEvent) {
+                if (JOptionPane.showConfirmDialog(windowEvent.getComponent(), message.get(), title,
                         JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE) == JOptionPane.YES_OPTION) {
                     windowEvent.getWindow().dispose();
                 }

@@ -81,7 +81,14 @@ public class JIPipeProjectWindow extends JFrame {
         getContentPane().setLayout(new BorderLayout(8, 8));
         updateTitle();
         setIconImage(UIUtils.getIcon128FromResources("jipipe.png").getImage());
-        UIUtils.setToAskOnClose(this, "Do you really want to close JIPipe?", "Close window");
+        UIUtils.setToAskOnClose(this, () -> {
+            if(projectUI != null && projectUI.isProjectModified()) {
+                return "Do you really want to close JIPipe?\nThere are some unsaved changes.";
+            }
+            else {
+                return "Do you really want to close JIPipe?";
+            }
+        }, "Close window");
         if (GeneralUISettings.getInstance().isMaximizeWindows()) {
             SwingUtilities.invokeLater(() -> setExtendedState(getExtendedState() | MAXIMIZED_BOTH));
         }
