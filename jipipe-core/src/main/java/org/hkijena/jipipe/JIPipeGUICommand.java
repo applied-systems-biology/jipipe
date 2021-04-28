@@ -99,7 +99,6 @@ public class JIPipeGUICommand implements Command {
                     JIPipeProjectWindow.getDefaultTemplateProject(),
                     true,
                     true);
-            window.setTitle("New project");
         });
     }
 

@@ -246,6 +246,7 @@ public abstract class JIPipeNodeUI extends JIPipeWorkbenchPanel {
         setLocation(location);
         if (save) {
             node.setLocationWithin(graphUI.getCompartment(), gridLocation, graphUI.getViewMode().name());
+            getGraphUI().getWorkbench().setProjectModified(true);
         }
         return true;
     }

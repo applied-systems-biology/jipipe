@@ -1650,10 +1650,12 @@ public class JIPipeGraphCanvasUI extends JIPipeWorkbenchPanel implements MouseMo
             minX = Math.min(ui.getX(), minX);
             minY = Math.min(ui.getY(), minY);
         }
+        boolean oldModified = getWorkbench().isProjectModified();
         for (JIPipeNodeUI ui : nodeUIs.values()) {
             ui.moveToClosestGridPoint(new Point(ui.getX() - minX + viewMode.getGridWidth(),
                     ui.getY() - minY + viewMode.getGridHeight()), true, true);
         }
+        getWorkbench().setProjectModified(oldModified);
         setGraphEditCursor(viewMode.gridToRealLocation(new Point(1, 1), zoom));
         minDimensions = null;
         if (getParent() != null)

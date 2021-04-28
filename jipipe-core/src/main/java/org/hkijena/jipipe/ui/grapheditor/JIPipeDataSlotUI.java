@@ -575,6 +575,7 @@ public abstract class JIPipeDataSlotUI extends JIPipeWorkbenchPanel {
             return;
         getGraphUI().getGraphHistory().addSnapshotBefore(new SlotConfigurationHistorySnapshot(slot.getNode(), "Relabel slot '" + slot.getDisplayName() + "'"));
         slot.getInfo().setCustomName(newLabel);
+        getGraphUI().getWorkbench().setProjectModified(true);
     }
 
     private void deleteSlot() {

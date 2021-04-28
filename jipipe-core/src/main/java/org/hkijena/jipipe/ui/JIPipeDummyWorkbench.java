@@ -27,6 +27,16 @@ public class JIPipeDummyWorkbench implements JIPipeWorkbench {
     }
 
     @Override
+    public boolean isProjectModified() {
+        return false;
+    }
+
+    @Override
+    public void setProjectModified(boolean modified) {
+
+    }
+
+    @Override
     public Context getContext() {
         return JIPipe.getInstance().getContext();
     }

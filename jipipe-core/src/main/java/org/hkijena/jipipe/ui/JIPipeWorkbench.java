@@ -40,6 +40,17 @@ public interface JIPipeWorkbench {
     void sendStatusBarText(String text);
 
     /**
+     * Returns if the project is modified
+     */
+    boolean isProjectModified();
+
+    /**
+     * Sets the modification state of the project
+     * @param modified if the project is modified
+     */
+    void setProjectModified(boolean modified);
+
+    /**
      * @return SciJava context
      */
     Context getContext();

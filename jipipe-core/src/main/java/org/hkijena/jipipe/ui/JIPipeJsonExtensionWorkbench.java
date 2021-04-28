@@ -48,6 +48,7 @@ public class JIPipeJsonExtensionWorkbench extends JPanel implements JIPipeWorkbe
     public DocumentTabPane documentTabPane;
     private JLabel statusText;
     private ReloadableValidityChecker validityCheckerPanel;
+    private boolean projectModified;
 
     /**
      * @param window           The parent window
@@ -303,5 +304,15 @@ public class JIPipeJsonExtensionWorkbench extends JPanel implements JIPipeWorkbe
         for (DocumentTabPane.DocumentTab documentTab : toRemove) {
             getDocumentTabPane().forceCloseTab(documentTab);
         }
+    }
+
+    @Override
+    public boolean isProjectModified() {
+        return projectModified;
+    }
+
+    @Override
+    public void setProjectModified(boolean projectModified) {
+        this.projectModified = projectModified;
     }
 }

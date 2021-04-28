@@ -79,7 +79,7 @@ public class JIPipeProjectWindow extends JFrame {
     private void initialize() {
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         getContentPane().setLayout(new BorderLayout(8, 8));
-        super.setTitle("JIPipe");
+        updateTitle();
         setIconImage(UIUtils.getIcon128FromResources("jipipe.png").getImage());
         UIUtils.setToAskOnClose(this, "Do you really want to close JIPipe?", "Close window");
         if (GeneralUISettings.getInstance().isMaximizeWindows()) {
@@ -92,11 +92,6 @@ public class JIPipeProjectWindow extends JFrame {
         OPEN_WINDOWS.remove(this);
         WINDOWS_EVENTS.post(new WindowClosedEvent(this));
         super.dispose();
-    }
-
-    @Override
-    public void setTitle(String title) {
-        super.setTitle("JIPipe - " + title);
     }
 
     /**
@@ -122,7 +117,7 @@ public class JIPipeProjectWindow extends JFrame {
         if (window == null)
             return;
         window.projectSavePath = null;
-        window.setTitle("New project");
+        window.updateTitle();
         window.getProjectUI().sendStatusBarText("Created new project");
     }
 
@@ -140,11 +135,27 @@ public class JIPipeProjectWindow extends JFrame {
                 if (window == null)
                     return;
                 window.projectSavePath = null;
-                window.setTitle("New project");
+                window.updateTitle();
                 window.getProjectUI().sendStatusBarText("Created new project");
             } catch (IOException e) {
                 e.printStackTrace();
             }
+        }
+    }
+
+    /**
+     * Updates the title based on the current state
+     */
+    public void updateTitle() {
+        if(projectUI == null) {
+            setTitle("JIPipe");
+            return;
+        }
+        if(projectSavePath == null) {
+            setTitle("JIPipe - New project" + (projectUI.isProjectModified() ? "*" : ""));
+        }
+        else {
+            setTitle("JIPipe - " + projectSavePath + (projectUI.isProjectModified() ? "*" : ""));
         }
     }
 
@@ -191,7 +202,7 @@ public class JIPipeProjectWindow extends JFrame {
                     return;
                 window.projectSavePath = path;
                 window.getProjectUI().sendStatusBarText("Opened project from " + window.projectSavePath);
-                window.setTitle(window.projectSavePath.toString());
+                window.updateTitle();
                 ProjectsSettings.getInstance().addRecentProject(path);
             } catch (IOException e) {
                 throw new RuntimeException(e);
@@ -218,7 +229,7 @@ public class JIPipeProjectWindow extends JFrame {
                     return;
                 window.projectSavePath = path.resolve("project.jip");
                 window.getProjectUI().sendStatusBarText("Opened project from " + window.projectSavePath);
-                window.setTitle(window.projectSavePath.toString());
+                window.updateTitle();
 
                 // Create a new tab
                 window.getProjectUI().getDocumentTabPane().addTab("Run",
@@ -287,8 +298,9 @@ public class JIPipeProjectWindow extends JFrame {
             Files.copy(tempFile, savePath);
 
             // Everything OK, now set the title
-            setTitle(savePath.toString());
             projectSavePath = savePath;
+            updateTitle();
+            projectUI.setProjectModified(false);
             projectUI.sendStatusBarText("Saved project to " + savePath);
             ProjectsSettings.getInstance().addRecentProject(savePath);
 

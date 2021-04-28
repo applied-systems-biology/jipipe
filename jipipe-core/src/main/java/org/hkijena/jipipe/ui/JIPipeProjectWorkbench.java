@@ -88,7 +88,7 @@ public class JIPipeProjectWorkbench extends JPanel implements JIPipeWorkbench {
     private JIPipePluginValidityCheckerPanel pluginValidityCheckerPanel;
     private RealTimeProjectRunner realTimeProjectRunner;
     private VirtualDataControl virtualDataControl;
-
+    private boolean projectModified;
 
     /**
      * @param window           Parent window
@@ -117,6 +117,20 @@ public class JIPipeProjectWorkbench extends JPanel implements JIPipeWorkbench {
         if (!isNewProject && RuntimeSettings.getInstance().isRealTimeRunEnabled()) {
             SwingUtilities.invokeLater(() -> realTimeProjectRunner.scheduleRun());
         }
+
+        // Register modification state watchers
+        project.getGraph().getEventBus().register(new Object() {
+            @Subscribe
+            public void onGraphChanged(JIPipeGraph.GraphChangedEvent event) {
+                setProjectModified(true);
+            }
+        });
+        project.getCompartmentGraph().getEventBus().register(new Object() {
+            @Subscribe
+            public void onGraphChanged(JIPipeGraph.GraphChangedEvent event) {
+                setProjectModified(true);
+            }
+        });
     }
 
     public void restoreStandardTabs(boolean showIntroduction, boolean isNewProject) {
@@ -747,6 +761,19 @@ public class JIPipeProjectWorkbench extends JPanel implements JIPipeWorkbench {
     @Override
     public Context getContext() {
         return context;
+    }
+
+    @Override
+    public boolean isProjectModified() {
+        return projectModified;
+    }
+
+    @Override
+    public void setProjectModified(boolean projectModified) {
+        if(this.projectModified != projectModified) {
+            this.projectModified = projectModified;
+            window.updateTitle();
+        }
     }
 
     public static boolean canAddOrDeleteNodes(JIPipeWorkbench workbench) {
