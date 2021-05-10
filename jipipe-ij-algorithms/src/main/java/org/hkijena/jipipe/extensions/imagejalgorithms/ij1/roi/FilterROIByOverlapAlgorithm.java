@@ -22,7 +22,9 @@ import org.hkijena.jipipe.extensions.parameters.util.LogicalOperation;
 import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
 import org.hkijena.jipipe.utils.StringUtils;
 
+import java.awt.*;
 import java.util.*;
+import java.util.List;
 
 @JIPipeDocumentation(name = "Filter ROI by overlap", description = "Filters the ROI lists by testing for mutual overlap. The nodes filters the ROI of all input slots and puts filtered ROI into their " +
         "corresponding output. If you have more than one input, overlaps are connected according to the logical operation. If only one input is present, no filtering is applied.")
@@ -37,6 +39,7 @@ public class FilterROIByOverlapAlgorithm extends JIPipeIteratingAlgorithm {
     private DefaultExpressionParameter overlapFilter = new DefaultExpressionParameter();
     private ImageStatisticsSetParameter overlapFilterMeasurements = new ImageStatisticsSetParameter();
     private OutputSlotMapParameterCollection deactivatedOutputs;
+    private boolean fastMode = false;
 
     public FilterROIByOverlapAlgorithm(JIPipeNodeInfo info) {
         super(info, generateSlotConfiguration());
@@ -51,6 +54,7 @@ public class FilterROIByOverlapAlgorithm extends JIPipeIteratingAlgorithm {
         this.outputOverlaps = other.outputOverlaps;
         this.overlapFilter = new DefaultExpressionParameter(other.overlapFilter);
         this.overlapFilterMeasurements = new ImageStatisticsSetParameter(other.overlapFilterMeasurements);
+        this.fastMode = other.fastMode;
         this.deactivatedOutputs = new OutputSlotMapParameterCollection(Boolean.class, this, () -> false, true);
         other.deactivatedOutputs.copyTo(this.deactivatedOutputs);
         this.deactivatedOutputs.getEventBus().register(this);
@@ -86,7 +90,8 @@ public class FilterROIByOverlapAlgorithm extends JIPipeIteratingAlgorithm {
                 others.add(entry2.getValue());
             }
             for (int i = 0; i < here.size(); i++) {
-                subProgress.resolveAndLog("ROI", i, here.size());
+                if(i % 100 == 0)
+                    subProgress.resolveAndLog("ROI", i, here.size());
                 Roi roi = here.get(i);
                 List<Roi> overlaps = new ArrayList<>();
                 List<Boolean> overlapSuccesses = new ArrayList<>();
@@ -183,7 +188,18 @@ public class FilterROIByOverlapAlgorithm extends JIPipeIteratingAlgorithm {
     }
 
     private Roi calculateOverlap(ROIListData temp, Roi roi1, Roi roi2) {
+        if(fastMode) {
+            Rectangle intersection = roi1.getBounds().intersection(roi2.getBounds());
+            if(intersection.isEmpty())
+                return null;
+            else
+                return new Roi(intersection);
+        }
+
         temp.clear();
+        // BB check for optimization
+        if(!roi1.getBounds().intersects(roi2.getBounds()))
+            return null;
         temp.add(roi1);
         temp.add(roi2);
         temp.logicalAnd();
@@ -261,6 +277,19 @@ public class FilterROIByOverlapAlgorithm extends JIPipeIteratingAlgorithm {
     @JIPipeParameter("overlap-filter-measurements")
     public void setOverlapFilterMeasurements(ImageStatisticsSetParameter overlapFilterMeasurements) {
         this.overlapFilterMeasurements = overlapFilterMeasurements;
+    }
+
+    @JIPipeDocumentation(name = "Fast mode", description = "If enabled, only the bounding box is used to calculate overlaps. " +
+            "This includes overlaps generated with 'Output overlapping regions'. This is faster than the logical AND operation " +
+            "applied by default, but will lead to problems if the ROI are close to each other or very non-box-like.")
+    @JIPipeParameter("fast-mode")
+    public boolean isFastMode() {
+        return fastMode;
+    }
+
+    @JIPipeParameter("fast-mode")
+    public void setFastMode(boolean fastMode) {
+        this.fastMode = fastMode;
     }
 
     private static JIPipeSlotConfiguration generateSlotConfiguration() {

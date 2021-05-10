@@ -957,8 +957,9 @@ public class ResultsTableData implements JIPipeData, TableModel {
 
     /**
      * Adds a new row
+     * @return the newly created row id
      */
-    public void addRow() {
+    public int addRow() {
         table.incrementCounter();
         int row = getRowCount() - 1;
         for (int col = 0; col < getColumnCount(); col++) {
@@ -967,6 +968,7 @@ public class ResultsTableData implements JIPipeData, TableModel {
             else
                 setValueAt("", row, col);
         }
+        return getRowCount() - 1;
     }
 
     /**
