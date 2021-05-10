@@ -20,7 +20,7 @@ import java.util.Objects;
 
 public class DownloadOfflineManualRun implements JIPipeRunnable {
 
-    public static final String DOWNLOAD_URL = "https://github.com/applied-systems-biology/jipipe/releases/download/2021.4/jipipe_offline_documentation.zip";
+    public static final String DOWNLOAD_URL = "https://github.com/applied-systems-biology/jipipe/releases/download/2021.5/jipipe_offline_documentation.zip";
     private JIPipeProgressInfo progressInfo = new JIPipeProgressInfo();
 
     @Override

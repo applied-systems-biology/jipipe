@@ -83,6 +83,6 @@ public class UtilitiesExtension extends JIPipePrepackagedDefaultJavaExtension {
 
     @Override
     public String getDependencyVersion() {
-        return "2021.4";
+        return "2021.5";
     }
 }
