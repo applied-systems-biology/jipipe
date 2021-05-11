@@ -54,20 +54,7 @@ public class DownloadFilesDataSource extends JIPipeSimpleIteratingAlgorithm {
                 String[] components = s.split("/");
                 String fileName = components[components.length - 1];
                 Path targetFile = RuntimeSettings.generateTempDirectory("Download").resolve(fileName);
-                DecimalFormat df = new DecimalFormat("#.##");
-                df.setRoundingMode(RoundingMode.CEILING);
-                try {
-                    String[] lastMessage = new String[]{""};
-                    WebUtils.download(url, targetFile, total -> {
-                        String message = "Downloaded " + df.format(total / 1024.0 / 1024.0) + " MB";
-                        if (!Objects.equals(message, lastMessage[0])) {
-                            progressInfo.log(message);
-                            lastMessage[0] = message;
-                        }
-                    }, () -> progressInfo.isCancelled().get());
-                } catch (IOException e) {
-                    throw new UserFriendlyRuntimeException(e, "Error while downloading!", "Algorithm '" + getName() + "'", "There was an error downloading URL '" + url + "' to " + targetFile, "Please check if the URL is valid, an internet connection is available, and the target device has enough space.");
-                }
+                WebUtils.download(url, targetFile, getDisplayName(), progressInfo);
 
                 dataBatch.addOutputData(getFirstOutputSlot(), new FileData(targetFile), progressInfo);
             } catch (MalformedURLException e) {

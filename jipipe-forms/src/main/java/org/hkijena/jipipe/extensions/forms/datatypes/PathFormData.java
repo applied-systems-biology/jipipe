@@ -12,6 +12,7 @@ import org.hkijena.jipipe.extensions.forms.utils.SingleAnnotationIOSettings;
 import org.hkijena.jipipe.extensions.parameters.expressions.StringQueryExpression;
 import org.hkijena.jipipe.extensions.parameters.primitives.FilePathParameterSettings;
 import org.hkijena.jipipe.extensions.parameters.primitives.StringList;
+import org.hkijena.jipipe.extensions.settings.FileChooserSettings;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.components.PathEditor;
 import org.hkijena.jipipe.utils.StringUtils;
@@ -138,6 +139,11 @@ public class PathFormData extends ParameterFormData {
                     @Override
                     public String[] extensions() {
                         return extensions.toArray(new String[0]);
+                    }
+
+                    @Override
+                    public String key() {
+                        return FileChooserSettings.KEY_PARAMETER;
                     }
                 })
                 .build();

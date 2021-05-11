@@ -18,7 +18,7 @@ public abstract class PythonEnvironmentInstaller implements JIPipeRunnable {
      * @param workbench the workbench
      * @param parameterAccess the parameter access that will receive the generated environment
      */
-    protected PythonEnvironmentInstaller(JIPipeWorkbench workbench, JIPipeParameterAccess parameterAccess) {
+    public PythonEnvironmentInstaller(JIPipeWorkbench workbench, JIPipeParameterAccess parameterAccess) {
         this.workbench = workbench;
         this.parameterAccess = parameterAccess;
     }

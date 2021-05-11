@@ -224,6 +224,7 @@
     <orderEntry type="library" name="Maven: net.sf.trove4j:trove4j:3.0.3" level="project" />
     <orderEntry type="library" name="Maven: com.github.vatbub:mslinks:1.0.5" level="project" />
     <orderEntry type="library" name="Maven: com.fathzer:javaluator:3.0.3" level="project" />
+    <orderEntry type="library" name="Maven: org.apache.commons:commons-exec:1.3" level="project" />
     <orderEntry type="module" module-name="jipipe-tables" />
     <orderEntry type="module" module-name="jipipe-annotation" />
     <orderEntry type="module" module-name="jipipe-strings" />

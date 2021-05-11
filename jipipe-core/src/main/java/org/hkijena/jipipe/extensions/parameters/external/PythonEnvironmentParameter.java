@@ -11,11 +11,11 @@ import org.hkijena.jipipe.extensions.parameters.expressions.DefaultExpressionPar
 import org.hkijena.jipipe.extensions.parameters.expressions.ExpressionParameterSettings;
 import org.hkijena.jipipe.extensions.parameters.expressions.ExpressionParameterVariable;
 import org.hkijena.jipipe.extensions.parameters.expressions.ExpressionParameterVariableSource;
-import org.hkijena.jipipe.extensions.parameters.external.installers.SelectCondaEnvPythonInstaller;
-import org.hkijena.jipipe.extensions.parameters.external.installers.SelectSystemPythonInstaller;
-import org.hkijena.jipipe.extensions.parameters.external.installers.SelectVirtualEnvPythonInstaller;
+import org.hkijena.jipipe.extensions.python.installers.MinicondaEnvPythonInstaller;
+import org.hkijena.jipipe.extensions.python.installers.SelectCondaEnvPythonInstaller;
+import org.hkijena.jipipe.extensions.python.installers.SelectSystemPythonInstaller;
+import org.hkijena.jipipe.extensions.python.installers.SelectVirtualEnvPythonInstaller;
 import org.hkijena.jipipe.extensions.parameters.pairs.PairParameterSettings;
-import org.hkijena.jipipe.extensions.parameters.pairs.StringAndStringPairParameter;
 import org.hkijena.jipipe.extensions.parameters.pairs.StringQueryExpressionAndStringPairParameter;
 
 import java.nio.file.Path;
@@ -27,7 +27,10 @@ import java.util.Set;
 /**
  * Parameter that describes a Python environment
  */
-@PythonEnvironmentSettings(installers = {SelectSystemPythonInstaller.class, SelectVirtualEnvPythonInstaller.class, SelectCondaEnvPythonInstaller.class})
+@PythonEnvironmentSettings(installers = {SelectSystemPythonInstaller.class,
+        SelectVirtualEnvPythonInstaller.class,
+        SelectCondaEnvPythonInstaller.class,
+        MinicondaEnvPythonInstaller.class})
 public class PythonEnvironmentParameter implements JIPipeParameterCollection {
     private final EventBus eventBus = new EventBus();
     private PythonEnvironmentType type = PythonEnvironmentType.System;

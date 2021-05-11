@@ -1,7 +1,6 @@
-package org.hkijena.jipipe.extensions.parameters.external.installers;
+package org.hkijena.jipipe.extensions.python.installers;
 
 import com.google.common.eventbus.EventBus;
-import org.apache.commons.lang3.SystemUtils;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
@@ -12,7 +11,6 @@ import org.hkijena.jipipe.extensions.parameters.expressions.DefaultExpressionPar
 import org.hkijena.jipipe.extensions.parameters.external.PythonEnvironmentInstaller;
 import org.hkijena.jipipe.extensions.parameters.external.PythonEnvironmentParameter;
 import org.hkijena.jipipe.extensions.parameters.external.PythonEnvironmentType;
-import org.hkijena.jipipe.extensions.parameters.pairs.StringQueryExpressionAndStringPairParameter;
 import org.hkijena.jipipe.extensions.parameters.primitives.FilePathParameterSettings;
 import org.hkijena.jipipe.extensions.parameters.primitives.OptionalPathParameter;
 import org.hkijena.jipipe.extensions.parameters.primitives.StringParameterSettings;
@@ -92,30 +90,34 @@ public class SelectCondaEnvPythonInstaller extends PythonEnvironmentInstaller {
         if(userCancelled.get())
             return;
 
-        generatedEnvironment = new PythonEnvironmentParameter();
+        generatedEnvironment = createCondaEnvironment(configuration);
+        if(getParameterAccess() != null) {
+            getParameterAccess().set(generatedEnvironment);
+        }
+    }
+
+    public static PythonEnvironmentParameter createCondaEnvironment(Configuration configuration) {
+        PythonEnvironmentParameter generatedEnvironment = new PythonEnvironmentParameter();
         generatedEnvironment.setType(PythonEnvironmentType.Conda);
         generatedEnvironment.setExecutablePath(configuration.condaExecutable);
         if(configuration.overrideEnvironment.isEnabled()) {
             generatedEnvironment.setArguments(new DefaultExpressionParameter(
-                    String.format("ARRAY(\"run\", \"-p\", \"%s\", \"python\", script_file)",
+                    String.format("ARRAY(\"run\", \"--no-capture-output\", \"-p\", \"%s\", \"python\", \"-u\", script_file)",
                             DefaultExpressionEvaluator.escapeString(configuration.overrideEnvironment.getContent().toString()))));
         }
         else {
             generatedEnvironment.setArguments(new DefaultExpressionParameter(
-                    String.format("ARRAY(\"run\", \"-n\", \"%s\", \"python\", script_file)",
+                    String.format("ARRAY(\"run\", \"--no-capture-output\", \"-n\", \"%s\", \"python\", \"-u\", script_file)",
                             DefaultExpressionEvaluator.escapeString(configuration.environmentName))));
         }
-
-        if(getParameterAccess() != null) {
-            getParameterAccess().set(generatedEnvironment);
-        }
+        return generatedEnvironment;
     }
 
     public static class Configuration implements JIPipeParameterCollection {
         private final EventBus eventBus = new EventBus();
         private Path condaExecutable = Paths.get("");
         private String environmentName = "base";
-        private OptionalPathParameter overrideEnvironment;
+        private OptionalPathParameter overrideEnvironment = new OptionalPathParameter();
 
         @Override
         public EventBus getEventBus() {
