@@ -27,6 +27,12 @@ public class StringAndStringPairParameter extends PairParameter<String, String> 
         super(String.class, String.class);
     }
 
+    public StringAndStringPairParameter(String key, String value) {
+        super(String.class, String.class);
+        this.setKey(key);
+        this.setValue(value);
+    }
+
     /**
      * Creates a copy
      *

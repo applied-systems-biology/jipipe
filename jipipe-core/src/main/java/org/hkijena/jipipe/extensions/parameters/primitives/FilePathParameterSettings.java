@@ -13,6 +13,7 @@
 
 package org.hkijena.jipipe.extensions.parameters.primitives;
 
+import org.hkijena.jipipe.extensions.settings.FileChooserSettings;
 import org.hkijena.jipipe.ui.components.PathEditor;
 
 import java.lang.annotation.ElementType;
@@ -40,4 +41,9 @@ public @interface FilePathParameterSettings {
      * @return File extensions that should be preferred. Only the extension (without period)
      */
     String[] extensions() default {};
+
+    /**
+     * @return The key for the starting location
+     */
+    String key() default FileChooserSettings.KEY_PARAMETER;
 }

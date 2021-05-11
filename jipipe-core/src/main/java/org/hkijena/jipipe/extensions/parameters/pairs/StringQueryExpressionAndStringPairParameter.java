@@ -29,6 +29,12 @@ public class StringQueryExpressionAndStringPairParameter extends PairParameter<S
         super(StringQueryExpression.class, String.class);
     }
 
+    public StringQueryExpressionAndStringPairParameter(String expression, String key) {
+        super(StringQueryExpression.class, String.class);
+        setKey(new StringQueryExpression(expression));
+        setValue(key);
+    }
+
     /**
      * Creates a copy
      *

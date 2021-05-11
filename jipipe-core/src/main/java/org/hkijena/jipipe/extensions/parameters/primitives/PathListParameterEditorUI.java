@@ -139,7 +139,12 @@ public class PathListParameterEditorUI extends JIPipeParameterEditorUI {
 
     private void addEntry() {
         PathList parameter = getParameter(PathList.class);
-        List<Path> paths = FileChooserSettings.selectMulti(this, FileChooserSettings.KEY_PARAMETER, "Add path", ioMode, pathMode);
+        String key = FileChooserSettings.KEY_PARAMETER;
+        FilePathParameterSettings annotation = getParameterAccess().getAnnotationOfType(FilePathParameterSettings.class);
+        if(annotation != null) {
+            key = annotation.key();
+        }
+        List<Path> paths = FileChooserSettings.selectMulti(this, key, "Add path", ioMode, pathMode);
         parameter.addAll(paths);
         setParameter(parameter, true);
     }

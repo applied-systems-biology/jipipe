@@ -24,6 +24,7 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.extensions.parameters.expressions.DefaultExpressionParameter;
 import org.hkijena.jipipe.extensions.parameters.expressions.ExpressionParameterVariable;
 import org.hkijena.jipipe.extensions.parameters.expressions.ExpressionParameterVariableSource;
+import org.hkijena.jipipe.extensions.parameters.external.PythonEnvironmentParameter;
 import org.hkijena.jipipe.extensions.parameters.primitives.FilePathParameterSettings;
 import org.hkijena.jipipe.ui.components.PathEditor;
 import org.hkijena.jipipe.utils.StringUtils;
@@ -39,9 +40,7 @@ public class PythonExtensionSettings implements JIPipeParameterCollection {
     public static String ID = "org.hkijena.jipipe:python";
 
     private final EventBus eventBus = new EventBus();
-
-    private Path pythonExecutable;
-    private DefaultExpressionParameter pythonArguments = new DefaultExpressionParameter("script_file");
+    private PythonEnvironmentParameter pythonEnvironment = new PythonEnvironmentParameter();
     private boolean providePythonAdapter = true;
 
     public PythonExtensionSettings() {
@@ -52,21 +51,16 @@ public class PythonExtensionSettings implements JIPipeParameterCollection {
         return eventBus;
     }
 
-    @JIPipeDocumentation(name = "Python executable", description = "Points at the Python executable." +
-            "<ul>" +
-            "<li>If you use standard Python, point it to python.exe</li>" +
-            "<li>If you use Conda, point it to Scripts/conda.exe</li>" +
-            "<li>If you use virtualenv, point it to venv/Scripts/python.exe</li>" +
-            "</ul>")
-    @JIPipeParameter("python-executable")
-    @FilePathParameterSettings(pathMode = PathEditor.PathMode.FilesOnly, ioMode = PathEditor.IOMode.Open)
-    public Path getPythonExecutable() {
-        return pythonExecutable;
+    @JIPipeDocumentation(name = "Python environment", description = "The Python environment that is utilized by the Python nodes. " +
+            "Click the 'Select' button to select an existing environment or install a new Python.")
+    @JIPipeParameter("python-environment")
+    public PythonEnvironmentParameter getPythonEnvironment() {
+        return pythonEnvironment;
     }
 
-    @JIPipeParameter("python-executable")
-    public void setPythonExecutable(Path pythonExecutable) {
-        this.pythonExecutable = pythonExecutable;
+    @JIPipeParameter("python-environment")
+    public void setPythonEnvironment(PythonEnvironmentParameter pythonEnvironment) {
+        this.pythonEnvironment = pythonEnvironment;
     }
 
     @JIPipeDocumentation(name = "Provide Python adapter", description = "If enabled, JIPipe will provide any Python node with the JIPipe Python Adapter modules. " +
@@ -81,23 +75,6 @@ public class PythonExtensionSettings implements JIPipeParameterCollection {
         this.providePythonAdapter = providePythonAdapter;
     }
 
-    @JIPipeDocumentation(name = "Python arguments", description = "Expression that determines the Python arguments. Must return an array of strings." +
-            "<ul>" +
-            "<li>If you use standard Python, set it to <code>ARRAY(script_file)</code></li>" +
-            "<li>If you use Conda, set it to <code>ARRAY(\"run\", \"-n\", \"base\", \"python\", script_file)</code>. " +
-            "You can replace 'base' with any other Conda environment you currently have installed.</li>" +
-            "<li>If you use virtualenv, set it to <code>ARRAY(script_file)</code></li>" +
-            "</ul>")
-    @JIPipeParameter("python-arguments")
-    public DefaultExpressionParameter getPythonArguments() {
-        return pythonArguments;
-    }
-
-    @JIPipeParameter("python-arguments")
-    public void setPythonArguments(DefaultExpressionParameter pythonArguments) {
-        this.pythonArguments = pythonArguments;
-    }
-
     public static PythonExtensionSettings getInstance() {
         return JIPipe.getSettings().getSettings(ID, PythonExtensionSettings.class);
     }
@@ -108,7 +85,7 @@ public class PythonExtensionSettings implements JIPipeParameterCollection {
     public static void checkPythonSettings() {
         if (!pythonSettingsAreValid()) {
             throw new UserFriendlyRuntimeException("The Python installation is invalid!\n" +
-                    "Python=" + getInstance().getPythonExecutable(),
+                    "Python=" + getInstance().getPythonEnvironment(),
                     "Python is not configured!",
                     "Project > Application settings > Extensions > Python integration",
                     "This node requires an installation of Python. You have to point JIPipe to a Python installation.",
@@ -117,12 +94,6 @@ public class PythonExtensionSettings implements JIPipeParameterCollection {
                             "set the Python executable. virtualenv is supported (you can find the exe in the environment bin folder).");
         }
     }
-
-//    @JIPipeDocumentation(name = "Use Conda", description = "Select a Conda environment.")
-//    @JIPipeContextAction(iconURL = ResourceUtils.RESOURCE_BASE_PATH + "/icons/apps/python.png")
-//    public void setToConda(JIPipeWorkbench parent) {
-//        // Insert code here
-//    }
 
     /**
      * Checks if the Python settings are valid or reports an invalid state
@@ -149,8 +120,8 @@ public class PythonExtensionSettings implements JIPipeParameterCollection {
         String executable = null;
         if (JIPipe.getInstance() != null) {
             PythonExtensionSettings instance = getInstance();
-            if (instance.pythonExecutable != null) {
-                executable = instance.pythonExecutable.toString();
+            if (instance.pythonEnvironment.getExecutablePath() != null) {
+                executable = instance.pythonEnvironment.getExecutablePath().toString();
             }
         }
         boolean invalid = false;
@@ -158,16 +129,5 @@ public class PythonExtensionSettings implements JIPipeParameterCollection {
             invalid = true;
         }
         return !invalid;
-    }
-
-    public static class PythonArgumentsVariableSource implements ExpressionParameterVariableSource {
-
-        @Override
-        public Set<ExpressionParameterVariable> getVariables(JIPipeParameterAccess parameterAccess) {
-            Set<ExpressionParameterVariable> result = new HashSet<>();
-            result.add(new ExpressionParameterVariable("Python executable", "The Python executable", "python_executable"));
-            result.add(new ExpressionParameterVariable("Script file", "The Python script file to be executed", "script_file"));
-            return result;
-        }
     }
 }

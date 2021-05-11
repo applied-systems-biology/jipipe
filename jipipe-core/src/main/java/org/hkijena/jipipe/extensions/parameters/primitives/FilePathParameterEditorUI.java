@@ -13,7 +13,9 @@
 
 package org.hkijena.jipipe.extensions.parameters.primitives;
 
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
+import org.hkijena.jipipe.extensions.settings.FileChooserSettings;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.components.PathEditor;
 import org.hkijena.jipipe.ui.parameters.JIPipeParameterEditorUI;
@@ -56,6 +58,9 @@ public class FilePathParameterEditorUI extends JIPipeParameterEditorUI {
             pathEditor.setIoMode(settings.ioMode());
             pathEditor.setPathMode(settings.pathMode());
             pathEditor.setExtensionFilters(settings.extensions());
+            if(JIPipe.isInstantiated()) {
+                pathEditor.setDirectoryKey(settings.key());
+            }
         }
 
         pathEditor.setPath(getParameterAccess().get(Path.class));

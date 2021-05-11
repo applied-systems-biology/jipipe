@@ -40,6 +40,7 @@ public class PathEditor extends JPanel {
     private Set<ActionListener> listeners = new HashSet<>();
     private JButton generateRandomButton;
     private List<FileNameExtensionFilter> extensionFilters = new ArrayList<>();
+    private String directoryKey = FileChooserSettings.KEY_PARAMETER;
 
     /**
      * Creates a new file selection that opens a file
@@ -121,7 +122,7 @@ public class PathEditor extends JPanel {
      */
     public void choosePath() {
         Path selected = FileChooserSettings.selectSingle(this,
-                FileChooserSettings.KEY_PARAMETER,
+                directoryKey,
                 "Change current value",
                 ioMode,
                 pathMode,
@@ -231,6 +232,14 @@ public class PathEditor extends JPanel {
             else
                 extensionFilters.add(new FileNameExtensionFilter(extension.toUpperCase() + " file (*." + extension + ")", extension));
         }
+    }
+
+    public String getDirectoryKey() {
+        return directoryKey;
+    }
+
+    public void setDirectoryKey(String directoryKey) {
+        this.directoryKey = directoryKey;
     }
 
     /**

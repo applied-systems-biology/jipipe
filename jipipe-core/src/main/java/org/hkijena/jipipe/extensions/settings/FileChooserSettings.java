@@ -30,6 +30,7 @@ import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 /**
@@ -42,23 +43,29 @@ public class FileChooserSettings implements JIPipeParameterCollection {
     /**
      * Path key for project locations
      */
-    public static String KEY_PROJECT = "Projects";
+    public static final String KEY_PROJECT = "Projects";
 
     /**
      * Path key for data
      */
-    public static String KEY_DATA = "Data";
+    public static final String KEY_DATA = "Data";
 
     /**
      * Path key for any parameter
      */
-    public static String KEY_PARAMETER = "Parameters";
+    public static final String KEY_PARAMETER = "Parameters";
+
+    /**
+     * Path key for some external/utility file
+     */
+    public static final String KEY_EXTERNAL = "External";
 
     private EventBus eventBus = new EventBus();
     private boolean useNativeChooser = false;
     private Path lastProjectsDirectory;
     private Path lastParametersDirectory;
     private Path lastDataDirectory;
+    private Path lastExternalDirectory;
     private boolean addFileExtension = true;
 
     @Override
@@ -90,6 +97,8 @@ public class FileChooserSettings implements JIPipeParameterCollection {
             return getLastProjectsDirectory();
         else if (KEY_DATA.equals(key))
             return getLastDataDirectory();
+        else if (KEY_EXTERNAL.equals(key))
+            return getLastExternalDirectory();
         else
             return getLastParametersDirectory();
     }
@@ -107,8 +116,23 @@ public class FileChooserSettings implements JIPipeParameterCollection {
             setLastProjectsDirectory(lastDirectory);
         else if (KEY_DATA.equals(key))
             setLastDataDirectory(lastDirectory);
+        else if (KEY_EXTERNAL.equals(key))
+            setLastExternalDirectory(lastDirectory);
         else
             setLastParametersDirectory(lastDirectory);
+    }
+
+    @JIPipeDocumentation(name = "Last external directory", description = "The file chooser will open in this folder when selecting external utilities.")
+    @JIPipeParameter("last-external-directory")
+    public Path getLastExternalDirectory() {
+        if(lastExternalDirectory == null)
+            lastExternalDirectory = Paths.get("").toAbsolutePath();
+        return lastExternalDirectory;
+    }
+
+    @JIPipeParameter("last-external-directory")
+    public void setLastExternalDirectory(Path lastExternalDirectory) {
+        this.lastExternalDirectory = lastExternalDirectory;
     }
 
     @JIPipeDocumentation(name = "Last projects directory", description = "The file chooser will open in this folder when opening a project.")

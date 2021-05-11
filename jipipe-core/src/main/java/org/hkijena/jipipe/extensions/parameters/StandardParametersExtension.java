@@ -34,6 +34,9 @@ import org.hkijena.jipipe.extensions.parameters.editors.JIPipeNodeInfoRefParamet
 import org.hkijena.jipipe.extensions.parameters.editors.JIPipeParameterCollectionVisibilitiesParameterEditorUI;
 import org.hkijena.jipipe.extensions.parameters.expressions.*;
 import org.hkijena.jipipe.extensions.parameters.expressions.functions.*;
+import org.hkijena.jipipe.extensions.parameters.external.PythonEnvironmentParameter;
+import org.hkijena.jipipe.extensions.parameters.external.PythonEnvironmentParameterEditorUI;
+import org.hkijena.jipipe.extensions.parameters.external.PythonEnvironmentType;
 import org.hkijena.jipipe.extensions.parameters.functions.FunctionParameter;
 import org.hkijena.jipipe.extensions.parameters.functions.FunctionParameterEditorUI;
 import org.hkijena.jipipe.extensions.parameters.functions.StringPatternExtractionFunction;
@@ -140,9 +143,26 @@ public class StandardParametersExtension extends JIPipePrepackagedDefaultJavaExt
         registerScriptParameters();
         registerExpressionParameters();
         registerRangeParameters();
+        registerExternalParameters();
 
         registerMenuExtension(ParameterTesterMenuExtension.class);
         registerMenuExtension(ExpressionTesterMenuExtension.class);
+    }
+
+    private void registerExternalParameters() {
+        registerParameterEditor(PythonEnvironmentParameter.class, PythonEnvironmentParameterEditorUI.class);
+        registerParameterType("python-environment",
+                PythonEnvironmentParameter.class,
+                null,
+                null,
+                null,
+                "Python environment",
+                "Describes a Python environment",
+                null);
+        registerEnumParameterType("python-environment-type",
+                PythonEnvironmentType.class,
+                "Python environment type",
+                "A Python environment type");
     }
 
     private void registerRangeParameters() {

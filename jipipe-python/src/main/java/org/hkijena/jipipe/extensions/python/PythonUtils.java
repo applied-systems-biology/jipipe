@@ -9,7 +9,9 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
 import org.hkijena.jipipe.extensions.parameters.expressions.ExpressionParameters;
+import org.hkijena.jipipe.extensions.parameters.external.PythonEnvironmentParameter;
 import org.hkijena.jipipe.extensions.parameters.generators.IntegerRange;
+import org.hkijena.jipipe.extensions.parameters.pairs.StringQueryExpressionAndStringPairParameter;
 import org.hkijena.jipipe.extensions.parameters.primitives.DoubleList;
 import org.hkijena.jipipe.extensions.parameters.primitives.IntegerList;
 import org.hkijena.jipipe.extensions.parameters.primitives.StringList;
@@ -211,13 +213,28 @@ public class PythonUtils {
     }
 
     public static void runPython(Path scriptFile, JIPipeProgressInfo progressInfo) {
-        Path pythonExecutable = PythonExtensionSettings.getInstance().getPythonExecutable();
+        PythonEnvironmentParameter environment = PythonExtensionSettings.getInstance().getPythonEnvironment();
+        Path pythonExecutable = environment.getExecutablePath();
         CommandLine commandLine = new CommandLine(pythonExecutable.toFile());
+
+        Map<String, String> environmentVariables = new HashMap<>();
+        ExpressionParameters existingEnvironmentVariables = new ExpressionParameters();
+        for (Map.Entry<String, String> entry : System.getenv().entrySet()) {
+            existingEnvironmentVariables.put(entry.getKey(), entry.getValue());
+            environmentVariables.put(entry.getKey(), entry.getValue());
+        }
+        for (StringQueryExpressionAndStringPairParameter environmentVariable : environment.getEnvironmentVariables()) {
+            String value = StringUtils.nullToEmpty(environmentVariable.getKey().evaluate(existingEnvironmentVariables));
+            environmentVariables.put(environmentVariable.getValue(), value);
+        }
+        for (Map.Entry<String, String> entry : environmentVariables.entrySet()) {
+            progressInfo.log("Setting environment variable " + entry.getKey() + "=" + entry.getValue());
+        }
 
         ExpressionParameters parameters = new ExpressionParameters();
         parameters.set("script_file", scriptFile.toString());
-        parameters.set("python_executable", PythonExtensionSettings.getInstance().getPythonExecutable().toString());
-        Object evaluationResult = PythonExtensionSettings.getInstance().getPythonArguments().evaluate(parameters);
+        parameters.set("python_executable", environment.getExecutablePath().toString());
+        Object evaluationResult = environment.getArguments().evaluate(parameters);
         for (Object item : (Collection<?>) evaluationResult) {
             commandLine.addArgument(StringUtils.nullToEmpty(item));
         }
@@ -241,7 +258,7 @@ public class PythonUtils {
         executor.setStreamHandler(new PumpStreamHandler(progressInfoLog, progressInfoLog));
 
         try {
-            executor.execute(commandLine);
+            executor.execute(commandLine, environmentVariables);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

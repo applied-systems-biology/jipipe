@@ -21,10 +21,7 @@ import org.hkijena.jipipe.api.parameters.*;
 import org.hkijena.jipipe.extensions.settings.GeneralUISettings;
 import org.hkijena.jipipe.extensions.settings.GraphEditorUISettings;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
-import org.hkijena.jipipe.ui.components.AddDynamicParameterPanel;
-import org.hkijena.jipipe.ui.components.FormPanel;
-import org.hkijena.jipipe.ui.components.MarkdownDocument;
-import org.hkijena.jipipe.ui.components.SearchTextField;
+import org.hkijena.jipipe.ui.components.*;
 import org.hkijena.jipipe.utils.ResourceUtils;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
@@ -33,8 +30,11 @@ import org.scijava.Contextual;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.util.List;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 
 /**
@@ -307,6 +307,55 @@ public class ParameterPanel extends FormPanel implements Contextual {
             showCollapse(uiComponents, collapseButton.isSelected());
             collapseButton.addActionListener(e -> showCollapse(uiComponents, collapseButton.isSelected()));
         }
+    }
+
+    /**
+     * Shows a parameter collection inside a modal dialog
+     * @param workbench parent component
+     * @param parameterCollection the parameter collection
+     * @param flags flags for the editor
+     * @return if the user clicked "OK"
+     */
+    public static boolean showDialog(JIPipeWorkbench workbench, JIPipeParameterCollection parameterCollection, MarkdownDocument defaultDocumentation, String title, int flags) {
+        JDialog dialog = new JDialog(workbench.getWindow());
+        ParameterPanel parameterPanel = new ParameterPanel(workbench, parameterCollection, defaultDocumentation, flags);
+
+        JPanel panel = new JPanel(new BorderLayout(8,8));
+        panel.setBorder(BorderFactory.createEmptyBorder(4,4,4,4));
+        panel.add(parameterPanel, BorderLayout.CENTER);
+
+        JPanel buttonPanel = new JPanel();
+        buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.X_AXIS));
+        buttonPanel.add(Box.createHorizontalGlue());
+
+        AtomicBoolean clickedOK = new AtomicBoolean(false);
+
+        JButton cancelButton = new JButton("Cancel", UIUtils.getIconFromResources("actions/cancel.png"));
+        cancelButton.addActionListener(e -> {
+            clickedOK.set(false);
+            dialog.setVisible(false);
+        });
+        buttonPanel.add(cancelButton);
+
+        JButton confirmButton = new JButton("OK", UIUtils.getIconFromResources("actions/checkmark.png"));
+        confirmButton.addActionListener(e -> {
+            clickedOK.set(true);
+            dialog.setVisible(false);
+        });
+        buttonPanel.add(confirmButton);
+
+        panel.add(buttonPanel, BorderLayout.SOUTH);
+
+        dialog.setContentPane(panel);
+        dialog.setTitle(title);
+        dialog.setModal(true);
+        dialog.pack();
+        dialog.setSize(new Dimension(800, 600));
+        dialog.setLocationRelativeTo(workbench.getWindow());
+        UIUtils.addEscapeListener(dialog);
+        dialog.setVisible(true);
+
+        return clickedOK.get();
     }
 
     private void showCollapse(List<Component> uiComponents, boolean selected) {
