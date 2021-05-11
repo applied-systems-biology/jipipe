@@ -5,7 +5,7 @@
     
       <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-<meta name="revised" content="2021-04-28T11:57:31 CEST">
+<meta name="revised" content="2021-05-11T13:22:58 CEST">
 <title>Creating a data type :: JIPipe for ImageJ</title>
 <link rel="shortcut icon" href="../../images/favicon.png" type="image/x-icon" />
 <link href="../../css/font-awesome.min.css" rel="stylesheet">
@@ -560,27 +560,6 @@
       <a href="../../documentation-data-api/">Data API documentation</a><i class="fa fa-angle-right fa-lg category-icon"></i><i class="fa fa-circle-thin read-icon"></i>
       </div>
         <ul>
-      <li data-nav-id="https://www.jipipe.org/documentation-data-api/data-table/" class="dd-item">
-        <div>
-          <a href="../../documentation-data-api/data-table/">
-            Data table
-          </a><i class="fa fa-circle-thin read-icon"></i>
-        </div>
-    </li>
-      <li data-nav-id="https://www.jipipe.org/documentation-data-api/row-folder/" class="dd-item">
-        <div>
-          <a href="../../documentation-data-api/row-folder/">
-            Row folder
-          </a><i class="fa fa-circle-thin read-icon"></i>
-        </div>
-    </li>
-      <li data-nav-id="https://www.jipipe.org/documentation-data-api/pipeline-output/" class="dd-item">
-        <div>
-          <a href="../../documentation-data-api/pipeline-output/">
-            Pipeline output
-          </a><i class="fa fa-circle-thin read-icon"></i>
-        </div>
-    </li>
         </ul>
     </li>
     <li data-nav-id="https://www.jipipe.org/citation/" class="dd-item
@@ -759,12 +738,14 @@ In such cases <strong>all file or folder names</strong> within the storage path 
         <span style="color:#00a8c8">return</span> <span style="color:#111">fromJson</span><span style="color:#f92672">(</span><span style="color:#111">targetFile</span><span style="color:#f92672">);</span>
     <span style="color:#f92672">}</span>
 <span style="color:#f92672">}</span>
-</code></pre></div><div class="notices tip" ><p>
-You can use JIPipe's JsonUtils class to get access to a Jackson JSON ObjectMapper.
+</code></pre></div>
+<div class="notices tip" ><p><p>You can use JIPipe&rsquo;s JsonUtils class to get access to a Jackson JSON ObjectMapper.</p>
 </p></div>
-<div class="notices info" ><p>
-Do not forget to override toString(), as the string representation will be displayed in the cache browser.
+
+
+<div class="notices info" ><p><p>Do not forget to override toString(), as the string representation will be displayed in the cache browser.</p>
 </p></div>
+
 <p>To register the data type and provide it with an id, and icon, use <a href="../../apidocs/org/hkijena/jipipe/JIPipeJavaExtension.html">JIPipeJavaExtension</a>:</p>
 <div class="highlight"><pre style="color:#272822;background-color:#fafafa;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#75af00">@Plugin</span><span style="color:#f92672">(</span><span style="color:#111">type</span> <span style="color:#f92672">=</span> <span style="color:#111">JIPipeJavaExtension</span><span style="color:#f92672">.</span><span style="color:#75af00">class</span><span style="color:#f92672">)</span>
 <span style="color:#00a8c8">public</span> <span style="color:#00a8c8">class</span> <span style="color:#75af00">MyExtension</span> <span style="color:#00a8c8">extends</span> <span style="color:#111">JIPipeDefaultJavaExtension</span> <span style="color:#f92672">{</span>

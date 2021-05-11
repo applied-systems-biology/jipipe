@@ -5,7 +5,7 @@
     
       <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-<meta name="revised" content="2021-04-28T11:57:31 CEST">
+<meta name="revised" content="2021-05-11T13:22:58 CEST">
 <title>Customizing slots :: JIPipe for ImageJ</title>
 <link rel="shortcut icon" href="../../../images/favicon.png" type="image/x-icon" />
 <link href="../../../css/font-awesome.min.css" rel="stylesheet">
@@ -685,18 +685,21 @@ to automatically configure the slots.</p>
     <span style="color:#f92672">.</span><span style="color:#75af00">restrictOutputTo</span><span style="color:#f92672">(</span><span style="color:#111">ImagePlusData</span><span style="color:#f92672">.</span><span style="color:#75af00">class</span><span style="color:#f92672">)</span>
     <span style="color:#f92672">.</span><span style="color:#75af00">build</span><span style="color:#f92672">());</span>
 <span style="color:#f92672">}</span>
-</code></pre></div><div class="notices info" ><p>
-The slots of JIPipeMutableSlotConfiguration are by default unsealed - meaning that
-users can add more slots. Use the seal() functions to prevent this.
+</code></pre></div>
+<div class="notices info" ><p><p>The slots of JIPipeMutableSlotConfiguration are by default unsealed - meaning that
+users can add more slots. Use the seal() functions to prevent this.</p>
 </p></div>
-<div class="notices warning" ><p>
-Do not create static slot configurations. Each algorithm should have its own instance.
-Use a private static function if you want to work outside the capabilities of the builder.
+
+
+<div class="notices warning" ><p><p>Do not create static slot configurations. Each algorithm should have its own instance.
+Use a private static function if you want to work outside the capabilities of the builder.</p>
 </p></div>
-<div class="notices warning" ><p>
-You should keep the @AlgorithmInputSlot and @AlgorithmOutputSlot annotations.
-They are required for the algorithm finder and generating tooltips.
+
+
+<div class="notices warning" ><p><p>You should keep the @AlgorithmInputSlot and @AlgorithmOutputSlot annotations.
+They are required for the algorithm finder and generating tooltips.</p>
 </p></div>
+
 
 
     

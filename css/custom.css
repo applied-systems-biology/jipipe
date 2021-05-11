@@ -10,22 +10,9 @@
   margin: 0!important;
 }
 
-.video-container {
-    position: relative;
-    padding-bottom: 56.25%;
-    padding-top: 30px;
-    height: 0;
-    overflow: hidden;
-}
-
-.video-container iframe,
-.video-container object,
-.video-container embed {
-    position: absolute;
-    top: 0;
-    left: 0;
+.iframe-video {
     width: 100%;
-    height: 100%;
+    height: calc((100vw - 20vw - 40px) / (16/9));
 }
 
 .features-container {
@@ -418,6 +405,12 @@ New landing page
   opacity: 1;
 }
 
+.landing-features .slick-slide iframe {
+  width: 100%;
+  margin: 3rem auto;
+  height: 54%;
+}
+
 .landing-page-credits {
   margin-top: 30rem;
   display: flex;
@@ -442,11 +435,13 @@ New landing page
 
 .landing-page-try ol {
   font-size: 2rem;
+  font-size: 2vw;
   list-style: none;
 }
 
 .landing-page-try ol li {
   margin-top: 1rem;
+  margin-top: 3vh;
   counter-increment: landing-page-try;
 }
 

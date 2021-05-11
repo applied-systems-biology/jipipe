@@ -14,7 +14,7 @@
       <guid>https://www.jipipe.org/documentation/batch-pipelines/</guid>
       <description>JIPipe was designed to always process data in batches, meaning that algorithms always work on multiple data sets at once. This greatly reduces the required work to upscale a processing pipeline from one or few to a large amount of data sets.
 We will use this pipeline as example:
-mermaid.initialize({startOnLoad:true}); graph LR;A[File] -- B[Load image]B -- C[Apply gaussian] In the pipeline, a file is provided as input. Then the file is loaded as image.</description>
+mermaid.initialize({startOnLoad:true});graph LR;A[File] -- B[Load image]B -- C[Apply gaussian] In the pipeline, a file is provided as input. Then the file is loaded as image.</description>
     </item>
     
     <item>
@@ -54,7 +54,7 @@ The difference between compartments and simple node groups is that compartments 
       <guid>https://www.jipipe.org/documentation/result-analysis/</guid>
       <description>JIPipe stores its results in a user-defined output folder. After clicking  Run (located at the top right corner of a project window) JIPipe will query the output folder from you. You can also generate a random folder that will be located on your operating system&amp;rsquo;s temporary directory by clicking the button.
 After confirming the settings by clicking  Run now, JIPipe will start processing the pipeline.
-You can have as many runs as you want.</description>
+You can have as many runs as you want.</description>
     </item>
     
     <item>

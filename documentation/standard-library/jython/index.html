@@ -5,7 +5,7 @@
     
       <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-<meta name="revised" content="2021-04-28T11:57:31 CEST">
+<meta name="revised" content="2021-05-11T13:22:58 CEST">
 <title>Jython integration :: JIPipe for ImageJ</title>
 <link rel="shortcut icon" href="../../../images/favicon.png" type="image/x-icon" />
 <link href="../../../css/font-awesome.min.css" rel="stylesheet">
@@ -678,14 +678,16 @@
     <p>The standard library contains nodes that allow to run Python scripts using
 the <a href="https://www.jython.org/">Jython</a> library. Python scripts have access to all
 JIPipe and ImageJ APIs that are available at runtime.</p>
-<div class="notices info" ><p>
-Due to restrictions in the Jython library, Python libraries that are built
-on a native backend (such as Numpy) will not work.
+<p>
+<div class="notices info" ><p><p>Due to restrictions in the Jython library, Python libraries that are built
+on a native backend (such as Numpy) will not work.</p>
 </p></div>
-<div class="notices info" ><p>
-As JIPipe builds on the functionality provided by ImageJ. Please refer to the ImageJ documentation to find information on
-how to expand Jython with additional libraries.
+
+
+<div class="notices info" ><p><p>As JIPipe builds on the functionality provided by ImageJ. Please refer to the ImageJ documentation to find information on
+how to expand Jython with additional libraries.</p>
 </p></div>
+</p>
 <p>You can find the nodes in the <code>Miscellaneous</code> menu. You can find algorithms equivalent
 to each of the Java standard algorithms:</p>
 <table>

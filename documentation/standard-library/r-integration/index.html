@@ -5,7 +5,7 @@
     
       <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-<meta name="revised" content="2021-04-28T11:57:31 CEST">
+<meta name="revised" content="2021-05-11T13:22:58 CEST">
 <title>R integration :: JIPipe for ImageJ</title>
 <link rel="shortcut icon" href="../../../images/favicon.png" type="image/x-icon" />
 <link href="../../../css/font-awesome.min.css" rel="stylesheet">
@@ -678,9 +678,10 @@
     <p>The standard library contains nodes that allow to run R scripts using
 the <a href="https://github.com/jbytecode/rcaller">RCaller</a> library that allows to run any existing R installation.
 This means that you will need to install a distribution of <a href="https://www.r-project.org/">R</a>.</p>
-<div class="notices info" ><p>
-You will need to install R (https://www.r-project.org/) and setup JIPipe to find this installation.
+
+<div class="notices info" ><p><p>You will need to install R (<a href="https://www.r-project.org/">https://www.r-project.org/</a>) and setup JIPipe to find this installation.</p>
 </p></div>
+
 <h1 id="setting-up-r">Setting up R</h1>
 <p>If not already done, please install <a href="https://www.r-project.org/">R</a>. Then open JIPipe and
 navigate to <code>Project &gt; Application settings &gt; Extensions &gt; R integration</code>.</p>
@@ -761,9 +762,10 @@ Please note, that you can add <em>multiple</em> outputs.</p>
 <p>As R does not have a dedicated data type for images, the JIPipe API will only provide means to generate a valid output file name.
 For this, two methods <code>JIPipe.AddOutputPNGImagePath(data, slot, annotations=list())</code> and <code>JIPipe.AddOutputTIFFImagePath(data, slot, annotations=list())</code>
 are available that produce a path for PNG or TIFF files respectively.</p>
-<div class="notices info" ><p>
-We recommend to use the 'Image (RGB)' or any other RGB output type. This is due to the R behavior of generating images with indexed colors that are detected as greyscale images by JIPipe.
+
+<div class="notices info" ><p><p>We recommend to use the &lsquo;Image (RGB)&rsquo; or any other RGB output type. This is due to the R behavior of generating images with indexed colors that are detected as greyscale images by JIPipe.</p>
 </p></div>
+
 <div class="highlight"><pre style="color:#272822;background-color:#fafafa;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-R" data-lang="R"><span style="color:#75af00">library</span><span style="color:#111">(</span><span style="color:#111">datasets</span><span style="color:#111">)</span>
 
 <span style="color:#75715e"># Generate the output file name</span>
@@ -782,9 +784,10 @@ The node supports all other JIPipe data types, although import and export must b
 Use <code>JIPipe.GetInputFolder(slot, row=0)</code> get obtain the path to this folder.</p>
 <p>Outputs are also expected to be provided in standardized JIPipe format. Use <code>JIPipe.AddOutputFolder(slot, annotations=list())</code>
 to obtain a valid path to such a folder and register the output.</p>
-<div class="notices info" ><p>
-Each JIPipe data type provides information about the structure of the data folder. You can find it in [?] > Data type compendium.
+
+<div class="notices info" ><p><p>Each JIPipe data type provides information about the structure of the data folder. You can find it in [?] &gt; Data type compendium.</p>
 </p></div>
+
 <h1 id="script-parameters">Script parameters</h1>
 <p>Each node provides means to define R variables inside the JIPipe environment via custom parameters. Each parameter value is passed as variable into R - the name of the variable
 being determined by the unique ID of the parameter.</p>

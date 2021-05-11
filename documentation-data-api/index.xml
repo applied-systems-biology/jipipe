@@ -36,7 +36,7 @@ The exact structure of a row folder depends on the data type and is documented i
       <guid>https://www.jipipe.org/documentation-data-api/pipeline-output/</guid>
       <description>A pipeline output folder is generated on running a pipeline using the Run function or via other means of running the pipeline and saving the results to the hard drive.
 The generated folder follows a hierarchical structure that is based on the location of data within graph compartments, nodes, and slots. It also contains a copy of the project that generated the data in a file project.jip.
-mermaid.initialize({startOnLoad:true}); graph LR; Root[&#34;</description>
+mermaid.initialize({startOnLoad:true});graph LR;Root[&#34;</description>
     </item>
     
   </channel>

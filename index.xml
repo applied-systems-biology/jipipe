@@ -75,7 +75,7 @@ Can I save data by their metadata? Yes, use the node Miscellaneous &amp;gt; Expo
       <guid>https://www.jipipe.org/documentation/batch-pipelines/</guid>
       <description>JIPipe was designed to always process data in batches, meaning that algorithms always work on multiple data sets at once. This greatly reduces the required work to upscale a processing pipeline from one or few to a large amount of data sets.
 We will use this pipeline as example:
-mermaid.initialize({startOnLoad:true}); graph LR;A[File] -- B[Load image]B -- C[Apply gaussian] In the pipeline, a file is provided as input. Then the file is loaded as image.</description>
+mermaid.initialize({startOnLoad:true});graph LR;A[File] -- B[Load image]B -- C[Apply gaussian] In the pipeline, a file is provided as input. Then the file is loaded as image.</description>
     </item>
     
     <item>
@@ -168,7 +168,8 @@ An user interface is shown when a user select a row in the results table. There 
       
       <guid>https://www.jipipe.org/documentation-java-api/algorithm/merging-algorithms/</guid>
       <description>You might need to develop an algorithm that does not simply iterate through its input(s), but organize it into groups to be merged. JIPipe comes with JIPipeMergingAlgorithm that uses the annotation attached during processing to find data rows that belong to the same data set. The implementation creates JIPipeMergingDataBatch instances that represent multiple data rows merged into one group.
-Please access data via the data interface. The only difference to JIPipeAlgorithm is that you need to override a different function called runIteration.</description>
+Please access data via the data interface.
+The only difference to JIPipeAlgorithm is that you need to override a different function called runIteration.</description>
     </item>
     
     <item>
@@ -357,7 +358,7 @@ The difference between compartments and simple node groups is that compartments 
       <guid>https://www.jipipe.org/documentation/standard-library/multi-parameter/</guid>
       <description>Most algorithms allow handling of multiple parameters via an additional slot that can be optionally enabled. You can find the setting in an algorithm&amp;rsquo;s settings as Multiple parameters. On selecting the item, a new slot will appear that consumes parameter data.
 To define parameters, use the algorithms found in Add data &amp;gt; Parameters. There are currently two data source algorithms available:
- Define parameter defines a single set of parameters Define multiple parameters lets you define a table of parameters  Use Process  Merge  Merge slots to merge multiple parameter sets.</description>
+ Define parameter defines a single set of parameters Define multiple parameters lets you define a table of parameters  Use Process &amp;gt; Merge &amp;gt; Merge slots to merge multiple parameter sets.</description>
     </item>
     
     <item>
@@ -380,7 +381,7 @@ Please make sure to send an event when the parameter is set, so the UI can updat
       <guid>https://www.jipipe.org/documentation-data-api/pipeline-output/</guid>
       <description>A pipeline output folder is generated on running a pipeline using the Run function or via other means of running the pipeline and saving the results to the hard drive.
 The generated folder follows a hierarchical structure that is based on the location of data within graph compartments, nodes, and slots. It also contains a copy of the project that generated the data in a file project.jip.
-mermaid.initialize({startOnLoad:true}); graph LR; Root[&#34;</description>
+mermaid.initialize({startOnLoad:true});graph LR;Root[&#34;</description>
     </item>
     
     <item>
@@ -422,7 +423,7 @@ How algorithms are registered Algorithm instances are created by an JIPipeNodeIn
       <guid>https://www.jipipe.org/documentation/result-analysis/</guid>
       <description>JIPipe stores its results in a user-defined output folder. After clicking  Run (located at the top right corner of a project window) JIPipe will query the output folder from you. You can also generate a random folder that will be located on your operating system&amp;rsquo;s temporary directory by clicking the button.
 After confirming the settings by clicking  Run now, JIPipe will start processing the pipeline.
-You can have as many runs as you want.</description>
+You can have as many runs as you want.</description>
     </item>
     
     <item>
@@ -525,7 +526,8 @@ Creating plots Plots can be created via the Analyze &amp;gt; Plot &amp;gt; Plot 
       
       <guid>https://www.jipipe.org/documentation/standard-library/jython/</guid>
       <description>The standard library contains nodes that allow to run Python scripts using the Jython library. Python scripts have access to all JIPipe and ImageJ APIs that are available at runtime.
-Due to restrictions in the Jython library, Python libraries that are builton a native backend (such as Numpy) will not work. As JIPipe builds on the functionality provided by ImageJ. Please refer to the ImageJ documentation to find information onhow to expand Jython with additional libraries.</description>
+Due to restrictions in the Jython library, Python libraries that are built on a native backend (such as Numpy) will not work.
+As JIPipe builds on the functionality provided by ImageJ. Please refer to the ImageJ documentation to find information on how to expand Jython with additional libraries.</description>
     </item>
     
     <item>
@@ -566,7 +568,8 @@ public static void main(String[] args) { // Extract necessary SciJava variables 
       
       <guid>https://www.jipipe.org/documentation/standard-library/r-integration/</guid>
       <description>The standard library contains nodes that allow to run R scripts using the RCaller library that allows to run any existing R installation. This means that you will need to install a distribution of R.
-You will need to install R (https://www.r-project.org/) and setup JIPipe to find this installation. Setting up R If not already done, please install R. Then open JIPipe and navigate to Project &amp;gt; Application settings &amp;gt; Extensions &amp;gt; R integration.</description>
+You will need to install R (https://www.r-project.org/) and setup JIPipe to find this installation.
+Setting up R If not already done, please install R. Then open JIPipe and navigate to Project &amp;gt; Application settings &amp;gt; Extensions &amp;gt; R integration.</description>
     </item>
     
     <item>
