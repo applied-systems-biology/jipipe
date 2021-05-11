@@ -62,7 +62,8 @@ public class MinicondaEnvPythonInstaller extends PythonEnvironmentInstaller {
         synchronized (lock) {
             SwingUtilities.invokeLater(() -> {
                 boolean result = ParameterPanel.showDialog(getWorkbench(), configuration, new MarkdownDocument("# Install Miniconda\n\n" +
-                                "Please review the settings on the left-hand side. Click OK to install Miniconda."), "Download & install Miniconda",
+                                "Please review the settings on the left-hand side. Click OK to install Miniconda.\n\n" +
+                                "You have to agree to the following license: https://docs.conda.io/en/latest/license.html"), "Download & install Miniconda",
                         ParameterPanel.NO_GROUP_HEADERS | ParameterPanel.WITH_SEARCH_BAR | ParameterPanel.WITH_DOCUMENTATION | ParameterPanel.WITH_SCROLLING);
                 userCancelled.set(!result);
                 windowOpened.set(false);
@@ -121,12 +122,14 @@ public class MinicondaEnvPythonInstaller extends PythonEnvironmentInstaller {
             }
         };
 
+        progressInfo.log("Installation path: " + configuration.installationPath.toAbsolutePath());
+        progressInfo.log("Please note that you agreed to the Conda license: https://docs.conda.io/en/latest/license.html");
         CommandLine commandLine = new CommandLine(installerPath.toFile());
         commandLine.addArgument("/InstallationType=JustMe");
         commandLine.addArgument("/AddToPath=0");
         commandLine.addArgument("/RegisterPython=0");
         commandLine.addArgument("/S");
-        commandLine.addArgument("/D=" + configuration.installationPath);
+        commandLine.addArgument("/D=" + configuration.installationPath.toAbsolutePath());
 
         DefaultExecutor executor = new DefaultExecutor();
         executor.setWatchdog(new ExecuteWatchdog(ExecuteWatchdog.INFINITE_TIMEOUT));
@@ -194,7 +197,7 @@ public class MinicondaEnvPythonInstaller extends PythonEnvironmentInstaller {
         private OptionalPathParameter customInstallerPath = new OptionalPathParameter();
 
         public Configuration() {
-            installationPath = Paths.get(Prefs.getImageJDir()).resolve("miniconda");
+            installationPath = Paths.get("miniconda");
         }
 
         @Override
