@@ -1,6 +1,7 @@
 package org.hkijena.jipipe.extensions.python.installers;
 
 import com.google.common.eventbus.EventBus;
+import ij.IJ;
 import ij.Prefs;
 import org.apache.commons.exec.*;
 import org.apache.commons.lang3.SystemUtils;
@@ -17,14 +18,17 @@ import org.hkijena.jipipe.extensions.settings.RuntimeSettings;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.components.MarkdownDocument;
 import org.hkijena.jipipe.ui.parameters.ParameterPanel;
+import org.hkijena.jipipe.utils.PathUtils;
 import org.hkijena.jipipe.utils.WebUtils;
 
 import javax.swing.*;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.attribute.PosixFilePermissions;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 @JIPipeDocumentation(name = "Install Miniconda 3", description = "Installs Miniconda 3")
@@ -96,6 +100,9 @@ public class MinicondaEnvPythonInstaller extends PythonEnvironmentInstaller {
         if(SystemUtils.IS_OS_WINDOWS) {
             installMinicondaWindows(installerPath, progressInfo.resolveAndLog("Installing"));
         }
+        else {
+            installMinicondaLinuxMac(installerPath, progressInfo.resolveAndLog("Installing"));
+        }
 
         // Generate result
         SelectCondaEnvPythonInstaller.Configuration condaConfig = new SelectCondaEnvPythonInstaller.Configuration();
@@ -109,6 +116,39 @@ public class MinicondaEnvPythonInstaller extends PythonEnvironmentInstaller {
         generatedEnvironment = SelectCondaEnvPythonInstaller.createCondaEnvironment(condaConfig);
         if(getParameterAccess() != null) {
             getParameterAccess().set(generatedEnvironment);
+        }
+    }
+
+    private void installMinicondaLinuxMac(Path installerPath, JIPipeProgressInfo progressInfo) {
+        try {
+            Files.setPosixFilePermissions(installerPath, PosixFilePermissions.fromString("rwxrwxr-x"));
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
+        LogOutputStream progressInfoLog = new LogOutputStream() {
+            @Override
+            protected void processLine(String s, int i) {
+                progressInfo.log(s);
+            }
+        };
+
+        progressInfo.log("Installation path: " + configuration.installationPath.toAbsolutePath());
+        progressInfo.log("Please note that you agreed to the Conda license: https://docs.conda.io/en/latest/license.html");
+        CommandLine commandLine = new CommandLine(installerPath.toFile());
+        commandLine.addArgument("-b");
+        commandLine.addArgument("-f");
+        commandLine.addArgument("-p");
+        commandLine.addArgument(configuration.installationPath.toAbsolutePath().toString());
+
+        DefaultExecutor executor = new DefaultExecutor();
+        executor.setWatchdog(new ExecuteWatchdog(ExecuteWatchdog.INFINITE_TIMEOUT));
+        executor.setStreamHandler(new PumpStreamHandler(progressInfoLog, progressInfoLog));
+
+        try {
+            executor.execute(commandLine);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
     }
 
