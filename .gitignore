@@ -15,4 +15,6 @@ target
 /dist/zip/*.zip
 /dist/jipipe-windows-installer/JIPipe-2021.5-Setup.exe
 /miniconda/
+/cellpose-cpu/
+/cellpose-gpu/
 /r/

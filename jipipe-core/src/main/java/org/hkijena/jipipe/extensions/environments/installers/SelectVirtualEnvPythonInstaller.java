@@ -118,7 +118,7 @@ public class SelectVirtualEnvPythonInstaller extends ExternalEnvironmentInstalle
 
         generatedEnvironment.setArguments(new DefaultExpressionParameter("ARRAY(\"-u\", script_file)"));
         if(getParameterAccess() != null) {
-            getParameterAccess().set(generatedEnvironment);
+            SwingUtilities.invokeLater(() -> getParameterAccess().set(generatedEnvironment));
         }
     }
 

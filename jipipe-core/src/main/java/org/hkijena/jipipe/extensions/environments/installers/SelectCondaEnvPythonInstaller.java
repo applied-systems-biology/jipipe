@@ -92,7 +92,7 @@ public class SelectCondaEnvPythonInstaller extends ExternalEnvironmentInstaller 
 
         generatedEnvironment = createCondaEnvironment(configuration);
         if(getParameterAccess() != null) {
-            getParameterAccess().set(generatedEnvironment);
+            SwingUtilities.invokeLater(() -> getParameterAccess().set(generatedEnvironment));
         }
     }
 
@@ -124,8 +124,7 @@ public class SelectCondaEnvPythonInstaller extends ExternalEnvironmentInstaller 
             return eventBus;
         }
 
-        @JIPipeDocumentation(name = "Conda executable", description = "The conda executable. Located in the Miniconda/Anaconda folder. On Windows it is located " +
-                "inside the Scripts directory.")
+        @JIPipeDocumentation(name = "Conda executable", description = "The conda executable. Located in the Miniconda/Anaconda folder. On Windows it is inside the Scripts directory.")
         @FilePathParameterSettings(ioMode = PathEditor.IOMode.Open, pathMode = PathEditor.PathMode.FilesOnly, key = FileChooserSettings.KEY_EXTERNAL)
         @JIPipeParameter("conda-executable")
         public Path getCondaExecutable() {

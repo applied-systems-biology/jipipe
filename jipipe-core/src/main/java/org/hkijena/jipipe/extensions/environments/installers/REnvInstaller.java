@@ -121,7 +121,7 @@ public class REnvInstaller extends ExternalEnvironmentInstaller {
         generatedEnvironment.setRExecutablePath(configuration.installationPath.resolve("bin").resolve("R.exe"));
         generatedEnvironment.setRScriptExecutablePath(configuration.installationPath.resolve("bin").resolve("Rscript.exe"));
         if(getParameterAccess() != null) {
-            getParameterAccess().set(generatedEnvironment);
+            SwingUtilities.invokeLater(() -> getParameterAccess().set(generatedEnvironment));
         }
     }
 

@@ -92,7 +92,7 @@ public class SelectSystemPythonInstaller extends ExternalEnvironmentInstaller {
         generatedEnvironment.setArguments(new DefaultExpressionParameter("ARRAY(\"-u\", script_file)"));
         generatedEnvironment.setExecutablePath(configuration.pythonExecutable);
         if(getParameterAccess() != null) {
-            getParameterAccess().set(generatedEnvironment);
+            SwingUtilities.invokeLater(() -> getParameterAccess().set(generatedEnvironment));
         }
     }
 

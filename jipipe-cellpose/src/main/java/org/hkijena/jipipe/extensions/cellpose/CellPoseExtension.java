@@ -55,5 +55,7 @@ public class CellPoseExtension extends JIPipePrepackagedDefaultJavaExtension {
                 "Extensions",
                 UIUtils.getIconFromResources("actions/plugins.png"),
                 new CellPoseSettings());
+        registerPythonEnvironmentInstaller(CellPoseEnvInstaller.class);
+        registerPythonEnvironmentInstaller(CellPoseGPUEnvInstaller.class);
     }
 }

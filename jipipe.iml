@@ -11,6 +11,7 @@
       <excludeFolder url="file://$MODULE_DIR$/dist/zip/package" />
       <excludeFolder url="file://$MODULE_DIR$/miniconda" />
       <excludeFolder url="file://$MODULE_DIR$/r" />
+      <excludeFolder url="file://$MODULE_DIR$/cellpose-cpu" />
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />

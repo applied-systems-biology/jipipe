@@ -16,6 +16,7 @@ import org.hkijena.jipipe.extensions.settings.RuntimeSettings;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.components.MarkdownDocument;
 import org.hkijena.jipipe.ui.parameters.ParameterPanel;
+import org.hkijena.jipipe.utils.MacroUtils;
 import org.hkijena.jipipe.utils.WebUtils;
 
 import javax.swing.*;
@@ -26,7 +27,11 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.attribute.PosixFilePermissions;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.stream.Collectors;
 
 @JIPipeDocumentation(name = "Install Miniconda 3", description = "Installs Miniconda 3")
 public class MinicondaEnvPythonInstaller extends ExternalEnvironmentInstaller {
@@ -55,6 +60,164 @@ public class MinicondaEnvPythonInstaller extends ExternalEnvironmentInstaller {
 
     @Override
     public void run() {
+        progressInfo.setProgress(0, 5);
+
+        // Config phase
+        if (!configure()) return;
+        if(progressInfo.isCancelled().get())
+            return;
+        progressInfo.incrementProgress();
+
+        // Download phase
+        progressInfo.log("Acquire setup ...");
+        Path installerPath = download();
+        if(progressInfo.isCancelled().get())
+            return;
+        progressInfo.incrementProgress();
+
+        // Install phase
+        progressInfo.log("Install ...");
+        install(installerPath);
+        if(progressInfo.isCancelled().get())
+            return;
+        progressInfo.incrementProgress();
+
+        // Postprocess phase
+        progressInfo.log("Postprocess install ...");
+        postprocessInstall();
+        if(progressInfo.isCancelled().get())
+            return;
+        progressInfo.incrementProgress();
+
+        // Generate phase
+        progressInfo.log("Generating config ...");
+        SelectCondaEnvPythonInstaller.Configuration condaConfig = generateCondaConfig();
+        if(progressInfo.isCancelled().get())
+            return;
+        progressInfo.incrementProgress();
+
+        generatedEnvironment = SelectCondaEnvPythonInstaller.createCondaEnvironment(condaConfig);
+        if(getParameterAccess() != null) {
+            SwingUtilities.invokeLater(() -> getParameterAccess().set(generatedEnvironment));
+        }
+    }
+
+    /**
+     * Runs the conda executable (for postprocessing)
+     * @param args arguments
+     */
+    public void runConda(String... args) {
+        CommandLine commandLine = new CommandLine(getCondaExecutableInInstallationPath().toFile());
+        for (String arg : args) {
+            commandLine.addArgument(arg);
+        }
+
+        // We must add Library/bin to Path. Otherwise, there SSL won't work
+        Map<String, String> environmentVariables = new HashMap<>();
+        for (Map.Entry<String, String> entry : System.getenv().entrySet()) {
+            environmentVariables.put(entry.getKey(), entry.getValue());
+        }
+        if(SystemUtils.IS_OS_WINDOWS) {
+            environmentVariables.put("Path", getConfiguration().getInstallationPath().resolve("Library").resolve("bin").toAbsolutePath() + ";" +
+                    environmentVariables.getOrDefault("Path", ""));
+        }
+
+        // Setup logging
+        getProgressInfo().log("Running " + Arrays.stream(commandLine.toStrings()).map(s -> {
+            if (s.contains(" ")) {
+                return "\"" + MacroUtils.escapeString(s) + "\"";
+            } else {
+                return MacroUtils.escapeString(s);
+            }
+        }).collect(Collectors.joining(" ")));
+
+        LogOutputStream progressInfoLog = new LogOutputStream() {
+            @Override
+            protected void processLine(String s, int i) {
+                getProgressInfo().log(s);
+            }
+        };
+
+        DefaultExecutor executor = new DefaultExecutor();
+        executor.setWatchdog(new ExecuteWatchdog(ExecuteWatchdog.INFINITE_TIMEOUT));
+        executor.setStreamHandler(new PumpStreamHandler(progressInfoLog, progressInfoLog));
+
+        // Set working directory, so conda can see its DLLs
+        executor.setWorkingDirectory(getCondaExecutableInInstallationPath().toAbsolutePath().getParent().toFile());
+
+        try {
+            executor.execute(commandLine, environmentVariables);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    /**
+     * Applies postprocessing for the installation
+     */
+    protected void postprocessInstall() {
+    }
+
+    /**
+     * Returns the path to the conda executable within the configured installation directory
+     * @return the conda path
+     */
+    public Path getCondaExecutableInInstallationPath() {
+        if(SystemUtils.IS_OS_WINDOWS) {
+           return configuration.getInstallationPath().resolve("Scripts").resolve("conda.exe");
+        }
+        else {
+           return configuration.getInstallationPath().resolve("bin").resolve("conda");
+        }
+    }
+
+    /**
+     * Generates the configuration for the conda environment
+     * @return the config
+     */
+    protected SelectCondaEnvPythonInstaller.Configuration generateCondaConfig() {
+        SelectCondaEnvPythonInstaller.Configuration condaConfig = new SelectCondaEnvPythonInstaller.Configuration();
+        if(SystemUtils.IS_OS_WINDOWS) {
+            condaConfig.setCondaExecutable(configuration.getInstallationPath().resolve("Scripts").resolve("conda.exe"));
+        }
+        else {
+            condaConfig.setCondaExecutable(configuration.getInstallationPath().resolve("bin").resolve("conda"));
+        }
+        condaConfig.setEnvironmentName("base");
+        return condaConfig;
+    }
+
+    /**
+     * Installs Miniconda
+     * @param installerPath the setup
+     */
+    protected void install(Path installerPath) {
+        if(SystemUtils.IS_OS_WINDOWS) {
+            installMinicondaWindows(installerPath, progressInfo.resolveAndLog("Install Conda"));
+        }
+        else {
+            installMinicondaLinuxMac(installerPath, progressInfo.resolveAndLog("Install Conda"));
+        }
+    }
+
+    /**
+     * Downloads the installer
+     * @return the installer path
+     */
+    protected Path download() {
+        Path installerPath;
+        if(configuration.getCustomInstallerPath().isEnabled())
+            installerPath = configuration.getCustomInstallerPath().getContent();
+        else
+            installerPath = downloadMiniconda(progressInfo.resolveAndLog("Download Miniconda"));
+        return installerPath;
+    }
+
+    /**
+     * UI configuration
+     * @return false if the operation was cancelled
+     */
+    protected boolean configure() {
         AtomicBoolean windowOpened = new AtomicBoolean(true);
         AtomicBoolean userCancelled = new AtomicBoolean(true);
         Object lock = new Object();
@@ -81,39 +244,7 @@ public class MinicondaEnvPythonInstaller extends ExternalEnvironmentInstaller {
             }
         }
 
-        if(userCancelled.get())
-            return;
-
-        progressInfo.setProgress(1, 2);
-        Path installerPath;
-        if(configuration.getCustomInstallerPath().isEnabled())
-            installerPath = configuration.getCustomInstallerPath().getContent();
-        else
-            installerPath = downloadMiniconda(progressInfo.resolveAndLog("Download Miniconda"));
-        if(progressInfo.isCancelled().get())
-            return;
-
-        progressInfo.incrementProgress();
-        if(SystemUtils.IS_OS_WINDOWS) {
-            installMinicondaWindows(installerPath, progressInfo.resolveAndLog("Install Conda"));
-        }
-        else {
-            installMinicondaLinuxMac(installerPath, progressInfo.resolveAndLog("Install Conda"));
-        }
-
-        // Generate result
-        SelectCondaEnvPythonInstaller.Configuration condaConfig = new SelectCondaEnvPythonInstaller.Configuration();
-        if(SystemUtils.IS_OS_WINDOWS) {
-            condaConfig.setCondaExecutable(configuration.getInstallationPath().resolve("Scripts").resolve("conda.exe"));
-        }
-        else {
-            condaConfig.setCondaExecutable(configuration.getInstallationPath().resolve("bin").resolve("conda"));
-        }
-        condaConfig.setEnvironmentName("base");
-        generatedEnvironment = SelectCondaEnvPythonInstaller.createCondaEnvironment(condaConfig);
-        if(getParameterAccess() != null) {
-            getParameterAccess().set(generatedEnvironment);
-        }
+        return !userCancelled.get();
     }
 
     private void installMinicondaLinuxMac(Path installerPath, JIPipeProgressInfo progressInfo) {
