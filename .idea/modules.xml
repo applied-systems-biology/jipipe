@@ -5,6 +5,7 @@
       <module fileurl="file://$PROJECT_DIR$/ij-updater-cli/ij-updater-cli.iml" filepath="$PROJECT_DIR$/ij-updater-cli/ij-updater-cli.iml" />
       <module fileurl="file://$PROJECT_DIR$/jipipe.iml" filepath="$PROJECT_DIR$/jipipe.iml" />
       <module fileurl="file://$PROJECT_DIR$/jipipe-annotation/jipipe-annotation.iml" filepath="$PROJECT_DIR$/jipipe-annotation/jipipe-annotation.iml" />
+      <module fileurl="file://$PROJECT_DIR$/jipipe-cellpose/jipipe-cellpose.iml" filepath="$PROJECT_DIR$/jipipe-cellpose/jipipe-cellpose.iml" />
       <module fileurl="file://$PROJECT_DIR$/jipipe-clij/jipipe-clij.iml" filepath="$PROJECT_DIR$/jipipe-clij/jipipe-clij.iml" />
       <module fileurl="file://$PROJECT_DIR$/jipipe-core/jipipe-core.iml" filepath="$PROJECT_DIR$/jipipe-core/jipipe-core.iml" />
       <module fileurl="file://$PROJECT_DIR$/jipipe-filesystem/jipipe-filesystem.iml" filepath="$PROJECT_DIR$/jipipe-filesystem/jipipe-filesystem.iml" />

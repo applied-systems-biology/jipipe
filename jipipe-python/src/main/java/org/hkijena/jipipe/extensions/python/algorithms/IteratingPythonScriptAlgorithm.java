@@ -31,7 +31,6 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameterPersistence;
 import org.hkijena.jipipe.extensions.parameters.scripts.PythonScript;
 import org.hkijena.jipipe.extensions.python.PythonExtensionSettings;
 import org.hkijena.jipipe.extensions.python.PythonUtils;
-import org.hkijena.jipipe.extensions.settings.RuntimeSettings;
 import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.utils.JythonUtils;
@@ -39,10 +38,7 @@ import org.hkijena.jipipe.utils.ResourceUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -146,66 +142,26 @@ public class IteratingPythonScriptAlgorithm extends JIPipeIteratingAlgorithm {
         PythonUtils.annotationsToPython(code, dataBatch.getAnnotations().values());
 
         // Install input slots
-        Map<String, Path> inputSlotPaths = new HashMap<>();
-        for (JIPipeDataSlot slot : getEffectiveInputSlots()) {
-            Path tempPath = RuntimeSettings.generateTempDirectory("py-input");
-            progressInfo.log("Input slot '" + slot.getName() + "' is stored in " + tempPath);
-            JIPipeDataSlot dummy = dataBatch.toDummySlot(slot.getInfo(), this, slot);
-            dummy.save(tempPath, null, progressInfo);
-            inputSlotPaths.put(slot.getName(), tempPath);
-        }
-        PythonUtils.inputSlotsToPython(code, inputSlotPaths);
+        Map<String, Path> inputSlotPaths = PythonUtils.installInputSlots(code, dataBatch, this, getEffectiveInputSlots(), progressInfo);
 
         // Install output slots
-        Map<String, Path> outputSlotPaths = new HashMap<>();
-        for (JIPipeDataSlot slot : getOutputSlots()) {
-            Path tempPath = RuntimeSettings.generateTempDirectory("py-output");
-            progressInfo.log("Output slot '" + slot.getName() + "' is stored in " + tempPath);
-            outputSlotPaths.put(slot.getName(), tempPath);
-        }
-        PythonUtils.outputSlotsToPython(code, getOutputSlots(), outputSlotPaths);
+        Map<String, Path> outputSlotPaths = PythonUtils.installOutputSlots(code, getOutputSlots(), progressInfo);
+
+        // Add main code
         code.append("\n").append(this.code.getCode()).append("\n");
+
+        // Add postprocessor code
         PythonUtils.addPostprocessorCode(code, getOutputSlots());
 
-        String finalCode = code.toString();
-        progressInfo.log(finalCode);
-        Path codeFilePath = RuntimeSettings.generateTempFile("py", ".py");
-        try {
-            Files.write(codeFilePath, finalCode.getBytes(StandardCharsets.UTF_8));
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        // Run Python
+        PythonUtils.runPython(code.toString(), progressInfo);
 
-        PythonUtils.runPython(codeFilePath, progressInfo);
-
-        for (JIPipeDataSlot outputSlot : getOutputSlots()) {
-            Path storagePath = outputSlotPaths.get(outputSlot.getName());
-            JIPipeExportedDataTable table = JIPipeExportedDataTable.loadFromJson(outputSlotPaths.get(outputSlot.getName()).resolve("data-table.json"));
-            for (int row = 0; row < table.getRowCount(); row++) {
-                JIPipeDataInfo dataInfo = table.getDataTypeOf(row);
-                Path rowStoragePath = table.getRowStoragePath(storagePath, row);
-                JIPipeData data = JIPipe.importData(rowStoragePath, dataInfo.getDataClass());
-                dataBatch.addOutputData(outputSlot, data, table.getRowList().get(row).getAnnotations(), annotationMergeStrategy, progressInfo);
-            }
-        }
+        // Extract outputs
+        PythonUtils.extractOutputs(dataBatch, outputSlotPaths, getOutputSlots(), annotationMergeStrategy, progressInfo);
 
         // Clean up
         if (cleanUpAfterwards) {
-            progressInfo.log("Cleaning up ...");
-            for (Map.Entry<String, Path> entry : inputSlotPaths.entrySet()) {
-                try {
-                    FileUtils.deleteDirectory(entry.getValue().toFile());
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-            for (Map.Entry<String, Path> entry : outputSlotPaths.entrySet()) {
-                try {
-                    FileUtils.deleteDirectory(entry.getValue().toFile());
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
+            PythonUtils.cleanup(inputSlotPaths, outputSlotPaths, progressInfo);
         }
     }
 

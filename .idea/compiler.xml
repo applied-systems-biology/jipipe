@@ -26,12 +26,14 @@
         <module name="jipipe-multiparameters" />
         <module name="jipipe-plots" />
         <module name="ij-updater-cli" />
+        <module name="jipipe-cellpose" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
       <module name="ij-updater-cli" target="1.8" />
       <module name="jipipe" target="1.8" />
       <module name="jipipe-annotation" target="1.8" />
+      <module name="jipipe-cellpose" target="1.8" />
       <module name="jipipe-clij" target="1.8" />
       <module name="jipipe-core" target="1.8" />
       <module name="jipipe-debug" target="1.8" />

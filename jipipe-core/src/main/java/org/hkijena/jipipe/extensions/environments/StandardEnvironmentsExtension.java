@@ -45,6 +45,13 @@ public class StandardEnvironmentsExtension extends JIPipePrepackagedDefaultJavaE
                 "Python environment",
                 "Describes a Python environment",
                 ExternalEnvironmentParameterEditorUI.class);
+        registerParameterType("optional-python-environment",
+                OptionalPythonEnvironment.class,
+                null,
+                null,
+                "Optional Python environment",
+                "An optional Python environment",
+                null);
         registerEnumParameterType("python-environment-type",
                 PythonEnvironmentType.class,
                 "Python environment type",
@@ -57,6 +64,13 @@ public class StandardEnvironmentsExtension extends JIPipePrepackagedDefaultJavaE
                 "R environment",
                 "Describes an R environment",
                 ExternalEnvironmentParameterEditorUI.class);
+        registerParameterType("optional-r-environment",
+                OptionalREnvironment.class,
+                null,
+                null,
+                "Optional R environment",
+                "An optional R environment",
+                null);
 
         // Register installers
         registerPythonEnvironmentInstaller(MinicondaEnvPythonInstaller.class);

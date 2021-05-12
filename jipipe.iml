@@ -5,6 +5,12 @@
     <output-test url="file://$MODULE_DIR$/target/test-classes" />
     <content url="file://$MODULE_DIR$">
       <excludeFolder url="file://$MODULE_DIR$/target" />
+      <excludeFolder url="file://$MODULE_DIR$/.idea/codeStyles" />
+      <excludeFolder url="file://$MODULE_DIR$/.idea/inspectionProfiles" />
+      <excludeFolder url="file://$MODULE_DIR$/dist/zip/dependencies" />
+      <excludeFolder url="file://$MODULE_DIR$/dist/zip/package" />
+      <excludeFolder url="file://$MODULE_DIR$/miniconda" />
+      <excludeFolder url="file://$MODULE_DIR$/r" />
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
