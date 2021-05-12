@@ -52,7 +52,6 @@ if [[ ! -e $PWD/Fiji.app ]]; then
   download_url "https://maven.scijava.org/service/local/repositories/central/content/com/openhtmltopdf/openhtmltopdf-pdfbox/1.0.4/openhtmltopdf-pdfbox-1.0.4.jar"
   download_url "https://maven.scijava.org/service/local/repositories/central/content/org/jgrapht/jgrapht-core/1.4.0/jgrapht-core-1.4.0.jar"
   download_url "https://maven.scijava.org/service/local/repositories/central/content/com/fathzer/javaluator/3.0.3/javaluator-3.0.3.jar"
-  download_url "https://maven.scijava.org/service/local/repositories/central/content/com/github/jbytecode/RCaller/3.0/RCaller-3.0.jar"
   download_url "https://maven.scijava.org/service/local/repositories/central/content/org/apache/commons/commons-exec/1.3/commons-exec-1.3.jar"
   download_url "https://github.com/ome/omero-insight/releases/download/v5.5.14/omero_ij-5.5.14-all.jar"
   popd

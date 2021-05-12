@@ -30,7 +30,7 @@ import java.util.Set;
 public class PythonEnvironment implements ExternalEnvironment {
     private final EventBus eventBus = new EventBus();
     private PythonEnvironmentType type = PythonEnvironmentType.System;
-    private DefaultExpressionParameter arguments = new DefaultExpressionParameter();
+    private DefaultExpressionParameter arguments = new DefaultExpressionParameter("ARRAY(script_file)");
     private Path executablePath = Paths.get("");
     private StringQueryExpressionAndStringPairParameter.List environmentVariables = new StringQueryExpressionAndStringPairParameter.List();
 
@@ -46,7 +46,7 @@ public class PythonEnvironment implements ExternalEnvironment {
 
     public PythonEnvironment(PythonEnvironment other) {
         this.type = other.type;
-        this.arguments = other.arguments;
+        this.arguments = new DefaultExpressionParameter(other.arguments);
         this.executablePath = other.executablePath;
         this.environmentVariables = new StringQueryExpressionAndStringPairParameter.List(other.environmentVariables);
     }

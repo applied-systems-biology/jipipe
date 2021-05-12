@@ -1,23 +1,29 @@
 package org.hkijena.jipipe.extensions.r;
 
-import com.github.rcaller.rstuff.RCode;
+import org.apache.commons.exec.*;
+import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeAnnotation;
 import org.hkijena.jipipe.api.data.JIPipeDataInfo;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
+import org.hkijena.jipipe.extensions.environments.REnvironment;
+import org.hkijena.jipipe.extensions.expressions.ExpressionParameters;
 import org.hkijena.jipipe.extensions.parameters.generators.IntegerRange;
+import org.hkijena.jipipe.extensions.parameters.pairs.StringQueryExpressionAndStringPairParameter;
 import org.hkijena.jipipe.extensions.parameters.primitives.DoubleList;
 import org.hkijena.jipipe.extensions.parameters.primitives.IntegerList;
 import org.hkijena.jipipe.extensions.parameters.primitives.StringList;
+import org.hkijena.jipipe.extensions.settings.RuntimeSettings;
 import org.hkijena.jipipe.utils.MacroUtils;
+import org.hkijena.jipipe.utils.StringUtils;
 
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class RUtils {
@@ -42,10 +48,10 @@ public class RUtils {
      * @param code        the code
      * @param annotations the annotations
      */
-    public static void annotationsToR(RCode code, Collection<JIPipeAnnotation> annotations) {
-        code.addRCode("JIPipe.Annotations <- list()");
+    public static void annotationsToR(StringBuilder code, Collection<JIPipeAnnotation> annotations) {
+        code.append("JIPipe.Annotations <- list()\n");
         for (JIPipeAnnotation annotation : annotations) {
-            code.addRCode(String.format("Annotations$\"%s\" <- \"%s\"", MacroUtils.escapeString(annotation.getName()),
+            code.append(String.format("Annotations$\"%s\" <- \"%s\"\n", MacroUtils.escapeString(annotation.getName()),
                     MacroUtils.escapeString(annotation.getValue())));
         }
     }
@@ -57,9 +63,9 @@ public class RUtils {
      * @param code                the code
      * @param parameterCollection the parameters
      */
-    public static void parametersToR(RCode code, JIPipeParameterCollection parameterCollection) {
+    public static void parametersToR(StringBuilder code, JIPipeParameterCollection parameterCollection) {
         JIPipeParameterTree tree = new JIPipeParameterTree(parameterCollection);
-        code.addRCode("JIPipe.Variables <- list()");
+        code.append("JIPipe.Variables <- list()\n");
         for (Map.Entry<String, JIPipeParameterAccess> entry : tree.getParameters().entrySet()) {
             String value = null;
 
@@ -108,31 +114,30 @@ public class RUtils {
 
             if (value != null) {
                 if (MacroUtils.isValidVariableName(entry.getKey())) {
-                    code.addRCode(entry.getKey() + " <- " + value);
+                    code.append(entry.getKey()).append(" <- ").append(value).append("\n");
                 }
-                code.addRCode("JIPipe.Variables$\"" + entry.getKey() + "\" <- " + value);
+                code.append("JIPipe.Variables$\"").append(entry.getKey()).append("\" <- ").append(value).append("\n");
             }
         }
     }
 
-    public static void inputSlotsToR(RCode code, Map<String, Path> inputSlotPaths, List<JIPipeDataSlot> inputSlots) {
+    public static void inputSlotsToR(StringBuilder code, Map<String, Path> inputSlotPaths, List<JIPipeDataSlot> inputSlots) {
 
         Map<String, JIPipeDataSlot> inputSlotMap = new HashMap<>();
         for (JIPipeDataSlot outputSlot : inputSlots) {
             inputSlotMap.put(outputSlot.getName(), outputSlot);
         }
 
-        code.addRCode("JIPipe.InputSlotFolders <- list()");
-        code.addRCode("JIPipe.InputSlotRowCounts <- list()");
-        code.addRCode("JIPipe.InputSlotRowAnnotations <- list()");
+        code.append("JIPipe.InputSlotFolders <- list()\n");
+        code.append("JIPipe.InputSlotRowCounts <- list()\n");
+        code.append("JIPipe.InputSlotRowAnnotations <- list()\n");
         for (Map.Entry<String, Path> entry : inputSlotPaths.entrySet()) {
             JIPipeDataSlot slot = inputSlotMap.get(entry.getKey());
             String escapedKey = MacroUtils.escapeString(entry.getKey());
-            code.addRCode("JIPipe.InputSlotFolders$\"" + escapedKey + "\" <- \""
-                    + MacroUtils.escapeString(entry.getValue() + "") + "\"");
-            code.addRCode("JIPipe.InputSlotRowCounts$\"" + escapedKey + "\" <- "
-                    + slot.getRowCount());
-            code.addRCode("JIPipe.InputSlotRowAnnotations$\"" + escapedKey + "\" <- list()");
+            code.append("JIPipe.InputSlotFolders$\"").append(escapedKey).append("\" <- \"")
+                    .append(MacroUtils.escapeString(entry.getValue() + "")).append("\"\n");
+            code.append("JIPipe.InputSlotRowCounts$\"").append(escapedKey).append("\" <- ").append(slot.getRowCount()).append("\n");
+            code.append("JIPipe.InputSlotRowAnnotations$\"").append(escapedKey).append("\" <- list()\n");
             StringBuilder stringBuilder = new StringBuilder();
             for (int row = 0; row < slot.getRowCount(); row++) {
                 stringBuilder.setLength(0);
@@ -145,36 +150,37 @@ public class RUtils {
                             .append(MacroUtils.escapeString(annotation.getValue()))
                             .append("\"");
                 }
-                code.addRCode("JIPipe.InputSlotRowAnnotations$\"" + escapedKey + "\"[[" + row + 1 + "]] <- list(" + stringBuilder.toString() + ")");
+                code.append("JIPipe.InputSlotRowAnnotations$\"").append(escapedKey).append("\"[[")
+                        .append(row).append(1).append("]] <- list(").append(stringBuilder).append(")\n");
             }
         }
 
         // The getter function
-        code.addRCode("JIPipe.GetInputFolder <- function(slot, row=0) { " +
+        code.append("JIPipe.GetInputFolder <- function(slot, row=0) { " +
                 "return(file.path(JIPipe.InputSlotFolders[[slot]], row)) " +
-                "}");
+                "}\n");
     }
 
-    public static void outputSlotsToR(RCode code, List<JIPipeDataSlot> outputSlots, Map<String, Path> outputSlotPaths) {
+    public static void outputSlotsToR(StringBuilder code, List<JIPipeDataSlot> outputSlots, Map<String, Path> outputSlotPaths) {
 
         Map<String, JIPipeDataSlot> outputSlotMap = new HashMap<>();
         for (JIPipeDataSlot outputSlot : outputSlots) {
             outputSlotMap.put(outputSlot.getName(), outputSlot);
         }
 
-        code.addRCode("JIPipe.OutputSlotFolders <- list()");
-        code.addRCode("JIPipe.OutputSlots.Table <- list()");
+        code.append("JIPipe.OutputSlotFolders <- list()\n");
+        code.append("JIPipe.OutputSlots.Table <- list()\n");
         for (Map.Entry<String, Path> entry : outputSlotPaths.entrySet()) {
-            code.addRCode("JIPipe.OutputSlotFolders$\"" + MacroUtils.escapeString(entry.getKey()) + "\" <- \""
-                    + MacroUtils.escapeString(entry.getValue() + "") + "\"");
-            code.addRCode("JIPipe.OutputSlots.Table$\"" + MacroUtils.escapeString(entry.getKey()) + "\" <- " +
-                    "list(rows=list(), " +
-                    "slot=\"" + MacroUtils.escapeString(entry.getKey()) + "\", " +
-                    "\"data-type\"=\"" + MacroUtils.escapeString(JIPipeDataInfo.getInstance(outputSlotMap.get(entry.getKey()).getAcceptedDataType()).getId()) + "\")");
+            code.append("JIPipe.OutputSlotFolders$\"").append(MacroUtils.escapeString(entry.getKey())).append("\" <- \"")
+                    .append(MacroUtils.escapeString(entry.getValue() + "")).append("\"\n");
+            code.append("JIPipe.OutputSlots.Table$\"").append(MacroUtils.escapeString(entry.getKey())).append("\" <- ")
+                    .append("list(rows=list(), ").append("slot=\"").append(MacroUtils.escapeString(entry.getKey()))
+                    .append("\", ").append("\"data-type\"=\"")
+                    .append(MacroUtils.escapeString(JIPipeDataInfo.getInstance(outputSlotMap.get(entry.getKey()).getAcceptedDataType()).getId())).append("\")\n");
         }
 
         // The getter function
-        code.addRCode("JIPipe.AddOutputFolder <- function(slot, annotations=list()) { " +
+        code.append("JIPipe.AddOutputFolder <- function(slot, annotations=list()) { " +
                 "count <- length(JIPipe.OutputSlots.Table[[slot]][[\"rows\"]]);" +
                 "result <- file.path(JIPipe.OutputSlotFolders[[slot]], count); " +
                 "dir.create(result); " +
@@ -183,38 +189,100 @@ public class RUtils {
                 "annotations=annotations, " +
                 "\"true-data-type\"=data.type); " +
                 "return(result);" +
-                "}");
+                "}\n");
     }
 
-    public static void installInputLoaderCode(RCode code) {
-        code.addRCode("JIPipe.GetInputAsDataFrame <- function(slot, row=0) { " +
+    public static void installInputLoaderCode(StringBuilder code) {
+        code.append("JIPipe.GetInputAsDataFrame <- function(slot, row=0) { " +
                 "folder <- JIPipe.GetInputFolder(slot, row=row);" +
                 "file.name <- list.files(folder, pattern=glob2rx(\"*.csv\"))[1];" +
                 "return(read.csv(file.path(folder, file.name))); " +
-                "}");
+                "}\n");
     }
 
-    public static void installOutputGeneratorCode(RCode code) {
-        code.addRCode("JIPipe.AddOutputDataFrame <- function(data, slot, annotations=list()) { " +
+    public static void installOutputGeneratorCode(StringBuilder code) {
+        code.append("JIPipe.AddOutputDataFrame <- function(data, slot, annotations=list()) { " +
                 "folder <- JIPipe.AddOutputFolder(slot, annotations=annotations);" +
                 "write.csv(data, file=file.path(folder, \"data.csv\"));" +
-                "}");
-        code.addRCode("JIPipe.AddOutputPNGImagePath <- function(data, slot, annotations=list()) { " +
+                "}\n");
+        code.append("JIPipe.AddOutputPNGImagePath <- function(data, slot, annotations=list()) { " +
                 "folder <- JIPipe.AddOutputFolder(slot, annotations=annotations);" +
                 "return(file.path(folder, \"data.png\"));" +
-                "}");
-        code.addRCode("JIPipe.AddOutputTIFFImagePath <- function(data, slot, annotations=list()) { " +
+                "}\n");
+        code.append("JIPipe.AddOutputTIFFImagePath <- function(data, slot, annotations=list()) { " +
                 "folder <- JIPipe.AddOutputFolder(slot, annotations=annotations);" +
                 "return(file.path(folder, \"data.tif\"));" +
-                "}");
+                "}\n");
     }
 
-    public static void installPostprocessorCode(RCode code) {
-        code.addRCode("if(!require(rjson)) { install.packages(\"rjson\"); library(rjson); }");
-        code.addRCode("for(slot in names(JIPipe.OutputSlots.Table)) { " +
+    public static void installPostprocessorCode(StringBuilder code) {
+        code.append("if(!require(rjson)) { install.packages(\"rjson\"); library(rjson); }\n");
+        code.append("for(slot in names(JIPipe.OutputSlots.Table)) { " +
                 "folder <- JIPipe.OutputSlotFolders[[slot]]; " +
                 "data <- JIPipe.OutputSlots.Table[[slot]];" +
                 "writeLines(toJSON(data, indent=4), con=file.path(folder, \"data-table.json\"));" +
-                "}");
+                "}\n");
+    }
+
+    public static void runR(String script, JIPipeProgressInfo progressInfo) {
+        Path codeFilePath = RuntimeSettings.generateTempFile("R", ".R");
+        try {
+            Files.write(codeFilePath, script.getBytes(StandardCharsets.UTF_8));
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        runR(codeFilePath, progressInfo);
+    }
+
+    public static void runR(Path scriptFile, JIPipeProgressInfo progressInfo) {
+        REnvironment environment = RExtensionSettings.getInstance().getEnvironment();
+        Path rExecutable = environment.getRScriptExecutablePath();
+        CommandLine commandLine = new CommandLine(rExecutable.toFile());
+
+        Map<String, String> environmentVariables = new HashMap<>();
+        ExpressionParameters existingEnvironmentVariables = new ExpressionParameters();
+        for (Map.Entry<String, String> entry : System.getenv().entrySet()) {
+            existingEnvironmentVariables.put(entry.getKey(), entry.getValue());
+            environmentVariables.put(entry.getKey(), entry.getValue());
+        }
+        for (StringQueryExpressionAndStringPairParameter environmentVariable : environment.getEnvironmentVariables()) {
+            String value = StringUtils.nullToEmpty(environmentVariable.getKey().evaluate(existingEnvironmentVariables));
+            environmentVariables.put(environmentVariable.getValue(), value);
+        }
+        for (Map.Entry<String, String> entry : environmentVariables.entrySet()) {
+            progressInfo.log("Setting environment variable " + entry.getKey() + "=" + entry.getValue());
+        }
+
+        ExpressionParameters parameters = new ExpressionParameters();
+        parameters.set("script_file", scriptFile.toString());
+        parameters.set("r_executable", rExecutable.toString());
+        Object evaluationResult = environment.getArguments().evaluate(parameters);
+        for (Object item : (Collection<?>) evaluationResult) {
+            commandLine.addArgument(StringUtils.nullToEmpty(item));
+        }
+        progressInfo.log("Running R: " + Arrays.stream(commandLine.toStrings()).map(s -> {
+            if (s.contains(" ")) {
+                return "\"" + MacroUtils.escapeString(s) + "\"";
+            } else {
+                return MacroUtils.escapeString(s);
+            }
+        }).collect(Collectors.joining(" ")));
+
+        LogOutputStream progressInfoLog = new LogOutputStream() {
+            @Override
+            protected void processLine(String s, int i) {
+                progressInfo.log(s);
+            }
+        };
+
+        DefaultExecutor executor = new DefaultExecutor();
+        executor.setWatchdog(new ExecuteWatchdog(ExecuteWatchdog.INFINITE_TIMEOUT));
+        executor.setStreamHandler(new PumpStreamHandler(progressInfoLog, progressInfoLog));
+
+        try {
+            executor.execute(commandLine, environmentVariables);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 }

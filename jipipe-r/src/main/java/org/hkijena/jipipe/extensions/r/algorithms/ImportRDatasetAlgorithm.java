@@ -1,7 +1,5 @@
 package org.hkijena.jipipe.extensions.r.algorithms;
 
-import com.github.rcaller.rstuff.RCaller;
-import com.github.rcaller.rstuff.RCode;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
@@ -15,6 +13,7 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.parameters.primitives.EnumItemInfo;
 import org.hkijena.jipipe.extensions.parameters.primitives.EnumParameterSettings;
 import org.hkijena.jipipe.extensions.r.RExtensionSettings;
+import org.hkijena.jipipe.extensions.r.RUtils;
 import org.hkijena.jipipe.extensions.settings.RuntimeSettings;
 import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
 import org.hkijena.jipipe.utils.MacroUtils;
@@ -30,7 +29,6 @@ import java.nio.file.Path;
 public class ImportRDatasetAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     private Dataset dataset = Dataset.iris;
-    private RCaller rCaller;
 
     public ImportRDatasetAlgorithm(JIPipeNodeInfo info) {
         super(info);
@@ -50,26 +48,11 @@ public class ImportRDatasetAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     }
 
     @Override
-    public void run(JIPipeProgressInfo progressInfo) {
-        try {
-            if (!isPassThrough()) {
-                RExtensionSettings.checkRSettings();
-                rCaller = RCaller.create(RExtensionSettings.createRCallerOptions());
-            }
-            super.run(progressInfo);
-        } finally {
-            rCaller = null;
-        }
-    }
-
-    @Override
     protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
         Path tempFile = RuntimeSettings.generateTempFile("jipipe-r", ".csv");
-        RCode code = RCode.create();
-        rCaller.setRCode(code);
-        code.addRCode("library(datasets)");
-        code.addRCode("write.csv(" + dataset.variableName + ", file=\"" + MacroUtils.escapeString(tempFile.toAbsolutePath().toString()) + "\")");
-        rCaller.runOnly();
+        String code = "library(datasets)\n" +
+                "write.csv(" + dataset.variableName + ", file=\"" + MacroUtils.escapeString(tempFile.toAbsolutePath().toString()) + "\")\n";
+        RUtils.runR(code, progressInfo);
         try {
             ResultsTableData resultsTableData = ResultsTableData.fromCSV(tempFile);
             dataBatch.addOutputData(getFirstOutputSlot(), resultsTableData, progressInfo);

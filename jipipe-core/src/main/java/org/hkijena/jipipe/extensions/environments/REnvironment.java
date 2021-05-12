@@ -7,6 +7,13 @@ import org.apache.commons.lang3.SystemUtils;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeValidityReport;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
+import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
+import org.hkijena.jipipe.extensions.expressions.DefaultExpressionParameter;
+import org.hkijena.jipipe.extensions.expressions.ExpressionParameterSettings;
+import org.hkijena.jipipe.extensions.expressions.ExpressionParameterVariable;
+import org.hkijena.jipipe.extensions.expressions.ExpressionParameterVariableSource;
+import org.hkijena.jipipe.extensions.parameters.pairs.PairParameterSettings;
+import org.hkijena.jipipe.extensions.parameters.pairs.StringQueryExpressionAndStringPairParameter;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 
@@ -14,11 +21,15 @@ import javax.swing.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.HashSet;
+import java.util.Set;
 
 public class REnvironment implements ExternalEnvironment {
     private final EventBus eventBus = new EventBus();
     private Path RExecutablePath = Paths.get("");
     private Path RScriptExecutablePath = Paths.get("");
+    private DefaultExpressionParameter arguments = new DefaultExpressionParameter("ARRAY(script_file)");
+    private StringQueryExpressionAndStringPairParameter.List environmentVariables = new StringQueryExpressionAndStringPairParameter.List();
 
     public REnvironment() {
         if(SystemUtils.IS_OS_LINUX) {
@@ -30,6 +41,8 @@ public class REnvironment implements ExternalEnvironment {
     public REnvironment(REnvironment other) {
         this.RExecutablePath = other.RExecutablePath;
         this.RScriptExecutablePath = other.RScriptExecutablePath;
+        this.arguments = new DefaultExpressionParameter(other.arguments);
+        this.environmentVariables = new StringQueryExpressionAndStringPairParameter.List(other.environmentVariables);
     }
 
     @Override
@@ -83,6 +96,36 @@ public class REnvironment implements ExternalEnvironment {
         this.RScriptExecutablePath = RScriptExecutablePath;
     }
 
+    @JIPipeDocumentation(name ="Arguments", description = "Arguments passed to the Python/Conda executable (depending on the environment type). " +
+            "This expression must return an array. You have two variables 'script_file' and 'r_executable'. 'script_file' is always " +
+            "replaced by the Python script that is currently executed.")
+    @JIPipeParameter("arguments")
+    @ExpressionParameterSettings(variableSource = RArgumentsVariableSource.class)
+    @JsonGetter("arguments")
+    public DefaultExpressionParameter getArguments() {
+        return arguments;
+    }
+
+    @JsonSetter("arguments")
+    @JIPipeParameter("arguments")
+    public void setArguments(DefaultExpressionParameter arguments) {
+        this.arguments = arguments;
+    }
+
+    @JIPipeDocumentation(name = "Environment variables", description = "These variables are provided to the R executable. Existing environment " +
+            "variables are available as variables")
+    @JIPipeParameter("environment-variables")
+    @PairParameterSettings(keyLabel = "Value", valueLabel = "Key")
+    @ExpressionParameterSettings(variableSource = PythonEnvironment.PythonEnvironmentVariablesSource.class)
+    public StringQueryExpressionAndStringPairParameter.List getEnvironmentVariables() {
+        return environmentVariables;
+    }
+
+    @JIPipeParameter("environment-variables")
+    public void setEnvironmentVariables(StringQueryExpressionAndStringPairParameter.List environmentVariables) {
+        this.environmentVariables = environmentVariables;
+    }
+
     @Override
     public Icon getIcon() {
         return UIUtils.getIconFromResources("apps/rlogo_icon.png");
@@ -96,5 +139,15 @@ public class REnvironment implements ExternalEnvironment {
     @Override
     public String getInfo() {
         return StringUtils.orElse(RExecutablePath, "<Not set>");
+    }
+
+    public static class RArgumentsVariableSource implements ExpressionParameterVariableSource {
+        @Override
+        public Set<ExpressionParameterVariable> getVariables(JIPipeParameterAccess parameterAccess) {
+            Set<ExpressionParameterVariable> result = new HashSet<>();
+            result.add(new ExpressionParameterVariable("R executable", "The R executable", "r_executable"));
+            result.add(new ExpressionParameterVariable("Script file", "The R script file to be executed", "script_file"));
+            return result;
+        }
     }
 }

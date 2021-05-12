@@ -24,7 +24,6 @@ public class RExtension extends JIPipePrepackagedDefaultJavaExtension {
     public StringList getDependencyCitations() {
         StringList strings = new StringList();
         strings.add("R Core Team (2017). R: A language and environment for statistical computing. R Foundation for Statistical Computing, Vienna, Austria. URL https://www.R-project.org/.");
-        strings.add("Satman, M. H. (2014). RCaller: A software library for calling R from Java. Journal of Advances in Mathematics and Computer Science, 2188-2196. https://doi.org/10.9734/BJMCS/2014/10902");
         return strings;
     }
 

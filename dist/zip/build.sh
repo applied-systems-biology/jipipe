@@ -38,7 +38,6 @@ if [ ! -e "./dependencies" ]; then
   wget "https://maven.scijava.org/service/local/repositories/central/content/com/openhtmltopdf/openhtmltopdf-pdfbox/1.0.4/openhtmltopdf-pdfbox-1.0.4.jar"
   wget "https://maven.scijava.org/service/local/repositories/central/content/org/jgrapht/jgrapht-core/1.4.0/jgrapht-core-1.4.0.jar"
   wget "https://maven.scijava.org/service/local/repositories/central/content/com/fathzer/javaluator/3.0.3/javaluator-3.0.3.jar"
-  wget "https://maven.scijava.org/service/local/repositories/central/content/com/github/jbytecode/RCaller/3.0/RCaller-3.0.jar"
   wget "https://maven.scijava.org/service/local/repositories/central/content/org/apache/commons/commons-exec/1.3/commons-exec-1.3.jar"
   wget "https://github.com/ome/omero-insight/releases/download/v5.5.14/omero_ij-5.5.14-all.jar"
   wget -O "LICENSE_OMERO.txt" https://github.com/ome/omero-insight/blob/master/LICENSE.txt
@@ -52,7 +51,6 @@ if [ ! -e "./dependencies" ]; then
   wget -O "LICENSE_Flexmark.txt" https://raw.githubusercontent.com/vsch/flexmark-java/master/LICENSE.txt
   wget -O "LICENSE_Reflections.txt" https://raw.githubusercontent.com/ronmamo/reflections/master/COPYING.txt
   wget -O "LICENSE_mslinks.txt" https://raw.githubusercontent.com/DmitriiShamrikov/mslinks/master/LICENSE
-  wget -O "LICENSE_RCaller.txt" https://raw.githubusercontent.com/jbytecode/rcaller/master/LICENSE
   popd
 fi
 

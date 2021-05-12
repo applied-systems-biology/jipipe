@@ -1,7 +1,5 @@
 package org.hkijena.jipipe.extensions.r.algorithms;
 
-import com.github.rcaller.rstuff.RCaller;
-import com.github.rcaller.rstuff.RCode;
 import org.apache.commons.io.FileUtils;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
@@ -63,7 +61,6 @@ import java.util.Map;
 public class MergingRScriptAlgorithm extends JIPipeMergingAlgorithm {
 
     private RScriptParameter script = new RScriptParameter();
-    private RCaller rCaller;
     private JIPipeAnnotationMergeStrategy annotationMergeStrategy = JIPipeAnnotationMergeStrategy.Merge;
     private JIPipeDynamicParameterCollection variables = new JIPipeDynamicParameterCollection(RUtils.ALLOWED_PARAMETER_CLASSES);
     private boolean cleanUpAfterwards = true;
@@ -103,25 +100,8 @@ public class MergingRScriptAlgorithm extends JIPipeMergingAlgorithm {
     }
 
     @Override
-    public void run(JIPipeProgressInfo progressInfo) {
-        try {
-            if (!isPassThrough()) {
-                RExtensionSettings.checkRSettings();
-                rCaller = RCaller.create(RExtensionSettings.createRCallerOptions());
-            }
-            super.run(progressInfo);
-        } finally {
-            rCaller = null;
-        }
-    }
-
-    @Override
     protected void runIteration(JIPipeMergingDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
-        RCode code = RCode.create();
-        code.getCode().setLength(0);
-
-        // RCaller provides its own methods for serialization, but
-        // we don't need them (not compatible to data types)
+        StringBuilder code = new StringBuilder();
 
         // Add user variables
         RUtils.parametersToR(code, variables);
@@ -152,12 +132,13 @@ public class MergingRScriptAlgorithm extends JIPipeMergingAlgorithm {
         RUtils.outputSlotsToR(code, getOutputSlots(), outputSlotPaths);
         RUtils.installOutputGeneratorCode(code);
 
-        code.addRCode(script.getCode());
-        rCaller.setRCode(code);
+        code.append("\n").append(script.getCode()).append("\n");
         RUtils.installPostprocessorCode(code);
 
-        progressInfo.log(code.getCode().toString());
-        rCaller.runOnly();
+        progressInfo.log(code.toString());
+
+        // Export as script and run it
+        RUtils.runR(code.toString(), progressInfo);
 
         for (JIPipeDataSlot outputSlot : getOutputSlots()) {
             Path storagePath = outputSlotPaths.get(outputSlot.getName());

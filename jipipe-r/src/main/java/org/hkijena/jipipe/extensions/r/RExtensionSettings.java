@@ -13,9 +13,6 @@
 
 package org.hkijena.jipipe.extensions.r;
 
-import com.github.rcaller.rstuff.FailurePolicy;
-import com.github.rcaller.rstuff.RCallerOptions;
-import com.github.rcaller.rstuff.RProcessStartUpOptions;
 import com.google.common.eventbus.EventBus;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
@@ -100,20 +97,5 @@ public class RExtensionSettings implements JIPipeParameterCollection {
             return report.isValid();
         }
         return false;
-    }
-
-    public static RCallerOptions createRCallerOptions() {
-        if (JIPipe.getInstance() == null) {
-            return null;
-        }
-        FailurePolicy failurePolicy = FailurePolicy.RETRY_5;
-        long maxWaitTime = Long.MAX_VALUE;
-        long initialWaitTime = 100;
-        return RCallerOptions.create(RExtensionSettings.getInstance().getEnvironment().getRExecutablePath().toAbsolutePath().toString(),
-                RExtensionSettings.getInstance().getEnvironment().getRScriptExecutablePath().toAbsolutePath().toString(),
-                failurePolicy,
-                maxWaitTime,
-                initialWaitTime,
-                RProcessStartUpOptions.create());
     }
 }
