@@ -13,8 +13,6 @@
 
 package org.hkijena.jipipe.extensions.python.algorithms;
 
-import org.apache.commons.io.FileUtils;
-import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
@@ -28,6 +26,7 @@ import org.hkijena.jipipe.api.parameters.JIPipeContextAction;
 import org.hkijena.jipipe.api.parameters.JIPipeDynamicParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterPersistence;
+import org.hkijena.jipipe.extensions.environments.OptionalPythonEnvironment;
 import org.hkijena.jipipe.extensions.parameters.scripts.PythonScript;
 import org.hkijena.jipipe.extensions.python.PythonExtensionSettings;
 import org.hkijena.jipipe.extensions.python.PythonUtils;
@@ -37,7 +36,6 @@ import org.hkijena.jipipe.utils.JythonUtils;
 import org.hkijena.jipipe.utils.ResourceUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 
-import java.io.IOException;
 import java.nio.file.Path;
 import java.util.Map;
 
@@ -54,6 +52,7 @@ public class IteratingPythonScriptAlgorithm extends JIPipeIteratingAlgorithm {
             PythonUtils.ALLOWED_PARAMETER_CLASSES);
     private JIPipeAnnotationMergeStrategy annotationMergeStrategy = JIPipeAnnotationMergeStrategy.Merge;
     private boolean cleanUpAfterwards = true;
+    private OptionalPythonEnvironment overrideEnvironment = new OptionalPythonEnvironment();
 
     /**
      * Creates a new instance
@@ -76,6 +75,7 @@ public class IteratingPythonScriptAlgorithm extends JIPipeIteratingAlgorithm {
         this.scriptParameters = new JIPipeDynamicParameterCollection(other.scriptParameters);
         this.annotationMergeStrategy = other.annotationMergeStrategy;
         this.cleanUpAfterwards = other.cleanUpAfterwards;
+        this.overrideEnvironment = new OptionalPythonEnvironment(other.overrideEnvironment);
         registerSubParameter(scriptParameters);
     }
 
@@ -119,12 +119,28 @@ public class IteratingPythonScriptAlgorithm extends JIPipeIteratingAlgorithm {
         }
     }
 
+    @JIPipeDocumentation(name = "Override Python environment", description = "If enabled, a different Python environment is used for this Node.")
+    @JIPipeParameter("override-environment")
+    public OptionalPythonEnvironment getOverrideEnvironment() {
+        return overrideEnvironment;
+    }
+
+    @JIPipeParameter("override-environment")
+    public void setOverrideEnvironment(OptionalPythonEnvironment overrideEnvironment) {
+        this.overrideEnvironment = overrideEnvironment;
+    }
+
     @Override
     public void reportValidity(JIPipeValidityReport report) {
         super.reportValidity(report);
         JythonUtils.checkScriptParametersValidity(scriptParameters, report.forCategory("Script parameters"));
         if (!isPassThrough()) {
-            PythonExtensionSettings.checkPythonSettings(report.forCategory("Python"));
+            if(overrideEnvironment.isEnabled()) {
+                report.forCategory("Override Python environment").report(overrideEnvironment.getContent());
+            }
+            else {
+                PythonExtensionSettings.checkPythonSettings(report.forCategory("Python"));
+            }
         }
     }
 
@@ -154,7 +170,9 @@ public class IteratingPythonScriptAlgorithm extends JIPipeIteratingAlgorithm {
         PythonUtils.addPostprocessorCode(code, getOutputSlots());
 
         // Run Python
-        PythonUtils.runPython(code.toString(), progressInfo);
+        PythonUtils.runPython(code.toString(),
+                getOverrideEnvironment().isEnabled() ? getOverrideEnvironment().getContent() : PythonExtensionSettings.getInstance().getPythonEnvironment(),
+                progressInfo);
 
         // Extract outputs
         PythonUtils.extractOutputs(dataBatch, outputSlotPaths, getOutputSlots(), annotationMergeStrategy, progressInfo);

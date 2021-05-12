@@ -2,6 +2,7 @@ package org.hkijena.jipipe.extensions.python;
 
 import org.apache.commons.exec.*;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang.WordUtils;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.*;
@@ -254,7 +255,7 @@ public class PythonUtils {
         return inputSlotPaths;
     }
 
-    public static void runPython(String code, JIPipeProgressInfo progressInfo) {
+    public static void runPython(String code, PythonEnvironment environment, JIPipeProgressInfo progressInfo) {
         progressInfo.log(code);
         Path codeFilePath = RuntimeSettings.generateTempFile("py", ".py");
         try {
@@ -262,7 +263,7 @@ public class PythonUtils {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-        runPython(codeFilePath, progressInfo);
+        runPython(codeFilePath, environment, progressInfo);
     }
 
     public static void extractOutputs(JIPipeDataBatch dataBatch, Map<String, Path> outputSlotPaths, List<JIPipeDataSlot> outputSlots, JIPipeAnnotationMergeStrategy annotationMergeStrategy, JIPipeProgressInfo progressInfo) {
@@ -316,16 +317,15 @@ public class PythonUtils {
         LogOutputStream progressInfoLog = new LogOutputStream() {
             @Override
             protected void processLine(String s, int i) {
-            for (String s1 : s.split("\\r")) {
-                progressInfo.log(s1);
-            }
+                for (String s1 : s.split("\\r")) {
+                    progressInfo.log(WordUtils.wrap(s1, 120));
+                }
             }
         };
         executor.setStreamHandler(new PumpStreamHandler(progressInfoLog, progressInfoLog));
     }
 
-    public static void runPython(Path scriptFile, JIPipeProgressInfo progressInfo) {
-        PythonEnvironment environment = PythonExtensionSettings.getInstance().getPythonEnvironment();
+    public static void runPython(Path scriptFile, PythonEnvironment environment, JIPipeProgressInfo progressInfo) {
         Path pythonExecutable = environment.getExecutablePath();
         CommandLine commandLine = new CommandLine(pythonExecutable.toFile());
 

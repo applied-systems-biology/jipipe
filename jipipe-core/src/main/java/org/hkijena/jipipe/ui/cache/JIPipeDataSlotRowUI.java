@@ -79,9 +79,10 @@ public class JIPipeDataSlotRowUI extends JIPipeWorkbenchPanel {
             add(mainActionButton);
 
             if (displayOperations.size() > 1) {
-                JButton menuButton = new JButton("...");
+                JButton menuButton = new JButton("Open with ...");
                 menuButton.setMaximumSize(new Dimension(1, (int) mainActionButton.getPreferredSize().getHeight()));
-                menuButton.setToolTipText("More actions ...");
+                menuButton.setToolTipText("Shows more actions to display the data. On selecting an entry, " +
+                        "it becomes the default action.");
                 JPopupMenu menu = UIUtils.addPopupMenuToComponent(menuButton);
                 for (JIPipeDataDisplayOperation otherSlotAction : displayOperations) {
                     if (otherSlotAction == mainOperation)

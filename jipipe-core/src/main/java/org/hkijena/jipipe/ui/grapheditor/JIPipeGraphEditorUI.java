@@ -810,9 +810,10 @@ public abstract class JIPipeGraphEditorUI extends JIPipeWorkbenchPanel implement
 
         if (overhang.getComponentCount() > 0) {
             toolBar.add(Box.createHorizontalStrut(4));
-            JButton button = new JButton("...");
+            JButton button = new JButton("Open with ...");
             UIUtils.makeFlat25x25(button);
-            button.setToolTipText("More actions ...");
+            button.setToolTipText("Shows more actions to display the data. On selecting an entry, " +
+                    "it becomes the default action.");
             UIUtils.addPopupMenuToComponent(button, overhang);
             toolBar.add(button);
         }

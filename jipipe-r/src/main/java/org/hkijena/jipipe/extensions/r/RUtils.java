@@ -224,18 +224,17 @@ public class RUtils {
                 "}\n");
     }
 
-    public static void runR(String script, JIPipeProgressInfo progressInfo) {
+    public static void runR(String script, REnvironment environment, JIPipeProgressInfo progressInfo) {
         Path codeFilePath = RuntimeSettings.generateTempFile("R", ".R");
         try {
             Files.write(codeFilePath, script.getBytes(StandardCharsets.UTF_8));
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-        runR(codeFilePath, progressInfo);
+        runR(codeFilePath, environment, progressInfo);
     }
 
-    public static void runR(Path scriptFile, JIPipeProgressInfo progressInfo) {
-        REnvironment environment = RExtensionSettings.getInstance().getEnvironment();
+    public static void runR(Path scriptFile, REnvironment environment, JIPipeProgressInfo progressInfo) {
         Path rExecutable = environment.getRScriptExecutablePath();
         CommandLine commandLine = new CommandLine(rExecutable.toFile());
 

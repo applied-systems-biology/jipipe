@@ -13,6 +13,7 @@ import org.hkijena.jipipe.api.parameters.JIPipeContextAction;
 import org.hkijena.jipipe.api.parameters.JIPipeDynamicParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
+import org.hkijena.jipipe.extensions.environments.OptionalREnvironment;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.color.ImagePlusColorRGBData;
 import org.hkijena.jipipe.extensions.r.RExtensionSettings;
 import org.hkijena.jipipe.extensions.r.RUtils;
@@ -64,6 +65,7 @@ public class MergingRScriptAlgorithm extends JIPipeMergingAlgorithm {
     private JIPipeAnnotationMergeStrategy annotationMergeStrategy = JIPipeAnnotationMergeStrategy.Merge;
     private JIPipeDynamicParameterCollection variables = new JIPipeDynamicParameterCollection(RUtils.ALLOWED_PARAMETER_CLASSES);
     private boolean cleanUpAfterwards = true;
+    private OptionalREnvironment overrideEnvironment = new OptionalREnvironment();
 
     public MergingRScriptAlgorithm(JIPipeNodeInfo info) {
         super(info, JIPipeDefaultMutableSlotConfiguration.builder().build());
@@ -76,6 +78,7 @@ public class MergingRScriptAlgorithm extends JIPipeMergingAlgorithm {
         this.annotationMergeStrategy = other.annotationMergeStrategy;
         this.variables = new JIPipeDynamicParameterCollection(other.variables);
         this.cleanUpAfterwards = other.cleanUpAfterwards;
+        this.overrideEnvironment = new OptionalREnvironment(other.overrideEnvironment);
         registerSubParameter(variables);
     }
 
@@ -95,8 +98,24 @@ public class MergingRScriptAlgorithm extends JIPipeMergingAlgorithm {
     public void reportValidity(JIPipeValidityReport report) {
         super.reportValidity(report);
         if (!isPassThrough()) {
-            RExtensionSettings.checkRSettings(report.forCategory("R"));
+            if(overrideEnvironment.isEnabled()) {
+                report.forCategory("Override R environment").report(overrideEnvironment.getContent());
+            }
+            else {
+                RExtensionSettings.checkRSettings(report.forCategory("R"));
+            }
         }
+    }
+
+    @JIPipeDocumentation(name = "Override R environment", description = "If enabled, a different R environment is used for this Node.")
+    @JIPipeParameter("override-environment")
+    public OptionalREnvironment getOverrideEnvironment() {
+        return overrideEnvironment;
+    }
+
+    @JIPipeParameter("override-environment")
+    public void setOverrideEnvironment(OptionalREnvironment overrideEnvironment) {
+        this.overrideEnvironment = overrideEnvironment;
     }
 
     @Override
@@ -138,7 +157,9 @@ public class MergingRScriptAlgorithm extends JIPipeMergingAlgorithm {
         progressInfo.log(code.toString());
 
         // Export as script and run it
-        RUtils.runR(code.toString(), progressInfo);
+        RUtils.runR(code.toString(),
+                overrideEnvironment.isEnabled() ? overrideEnvironment.getContent() : RExtensionSettings.getInstance().getEnvironment(),
+                progressInfo);
 
         for (JIPipeDataSlot outputSlot : getOutputSlots()) {
             Path storagePath = outputSlotPaths.get(outputSlot.getName());

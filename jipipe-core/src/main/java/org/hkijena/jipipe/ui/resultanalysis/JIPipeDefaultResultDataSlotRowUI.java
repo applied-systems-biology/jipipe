@@ -65,9 +65,10 @@ public class JIPipeDefaultResultDataSlotRowUI extends JIPipeResultDataSlotRowUI 
             add(mainActionButton);
 
             if (importOperations.size() > 1) {
-                JButton menuButton = new JButton("...");
+                JButton menuButton = new JButton("Open with ...");
                 menuButton.setMaximumSize(new Dimension(1, (int) mainActionButton.getPreferredSize().getHeight()));
-                menuButton.setToolTipText("More actions ...");
+                menuButton.setToolTipText("Shows more actions to display the data. On selecting an entry, " +
+                        "it becomes the default action.");
                 JPopupMenu menu = UIUtils.addPopupMenuToComponent(menuButton);
                 for (JIPipeDataImportOperation otherSlotAction : importOperations) {
                     if (otherSlotAction == mainOperation)
