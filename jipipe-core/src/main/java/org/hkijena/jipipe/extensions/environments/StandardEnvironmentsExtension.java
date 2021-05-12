@@ -73,7 +73,6 @@ public class StandardEnvironmentsExtension extends JIPipePrepackagedDefaultJavaE
                 null);
 
         // Register installers
-        registerPythonEnvironmentInstaller(MinicondaEnvPythonInstaller.class);
         registerPythonEnvironmentInstaller(SelectCondaEnvPythonInstaller.class);
         registerPythonEnvironmentInstaller(SelectSystemPythonInstaller.class);
         registerPythonEnvironmentInstaller(SelectVirtualEnvPythonInstaller.class);

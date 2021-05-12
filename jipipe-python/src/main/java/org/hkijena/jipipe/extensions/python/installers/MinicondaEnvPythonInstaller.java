@@ -1,4 +1,4 @@
-package org.hkijena.jipipe.extensions.environments.installers;
+package org.hkijena.jipipe.extensions.python.installers;
 
 import com.google.common.eventbus.EventBus;
 import org.apache.commons.exec.*;
@@ -10,8 +10,10 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.extensions.environments.ExternalEnvironmentInstaller;
 import org.hkijena.jipipe.extensions.environments.PythonEnvironment;
+import org.hkijena.jipipe.extensions.environments.installers.SelectCondaEnvPythonInstaller;
 import org.hkijena.jipipe.extensions.parameters.primitives.OptionalPathParameter;
 import org.hkijena.jipipe.extensions.parameters.primitives.StringParameterSettings;
+import org.hkijena.jipipe.extensions.python.PythonUtils;
 import org.hkijena.jipipe.extensions.settings.RuntimeSettings;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.components.MarkdownDocument;
@@ -98,7 +100,10 @@ public class MinicondaEnvPythonInstaller extends ExternalEnvironmentInstaller {
 
         generatedEnvironment = SelectCondaEnvPythonInstaller.createCondaEnvironment(condaConfig);
         if(getParameterAccess() != null) {
-            SwingUtilities.invokeLater(() -> getParameterAccess().set(generatedEnvironment));
+            SwingUtilities.invokeLater(() -> {
+                getParameterAccess().set(generatedEnvironment);
+
+            });
         }
     }
 
@@ -122,25 +127,9 @@ public class MinicondaEnvPythonInstaller extends ExternalEnvironmentInstaller {
                     environmentVariables.getOrDefault("Path", ""));
         }
 
-        // Setup logging
-        getProgressInfo().log("Running " + Arrays.stream(commandLine.toStrings()).map(s -> {
-            if (s.contains(" ")) {
-                return "\"" + MacroUtils.escapeString(s) + "\"";
-            } else {
-                return MacroUtils.escapeString(s);
-            }
-        }).collect(Collectors.joining(" ")));
-
-        LogOutputStream progressInfoLog = new LogOutputStream() {
-            @Override
-            protected void processLine(String s, int i) {
-                getProgressInfo().log(s);
-            }
-        };
-
         DefaultExecutor executor = new DefaultExecutor();
         executor.setWatchdog(new ExecuteWatchdog(ExecuteWatchdog.INFINITE_TIMEOUT));
-        executor.setStreamHandler(new PumpStreamHandler(progressInfoLog, progressInfoLog));
+        PythonUtils.setupLogger(commandLine, executor, progressInfo);
 
         // Set working directory, so conda can see its DLLs
         executor.setWorkingDirectory(getCondaExecutableInInstallationPath().toAbsolutePath().getParent().toFile());

@@ -1,27 +1,18 @@
 package org.hkijena.jipipe.extensions.cellpose;
 
-import org.apache.commons.exec.*;
-import org.apache.commons.lang3.SystemUtils;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
-import org.hkijena.jipipe.extensions.environments.PythonEnvironment;
-import org.hkijena.jipipe.extensions.environments.installers.MinicondaEnvPythonInstaller;
+import org.hkijena.jipipe.extensions.python.installers.MinicondaEnvPythonInstaller;
 import org.hkijena.jipipe.extensions.environments.installers.SelectCondaEnvPythonInstaller;
-import org.hkijena.jipipe.extensions.expressions.ExpressionParameters;
 import org.hkijena.jipipe.extensions.settings.RuntimeSettings;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
-import org.hkijena.jipipe.utils.MacroUtils;
 import org.hkijena.jipipe.utils.WebUtils;
 
-import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.stream.Collectors;
 
 @JIPipeDocumentation(name = "Download & install Cellpose (CPU)", description = "Creates a new Python environment with Cellpose installed.")
 public class CellPoseEnvInstaller extends MinicondaEnvPythonInstaller {
@@ -31,6 +22,7 @@ public class CellPoseEnvInstaller extends MinicondaEnvPythonInstaller {
      */
     public CellPoseEnvInstaller(JIPipeWorkbench workbench, JIPipeParameterAccess parameterAccess) {
         super(workbench, parameterAccess);
+        setConfiguration(new Configuration());
         getConfiguration().setInstallationPath(Paths.get("cellpose-cpu"));
     }
 
@@ -45,17 +37,15 @@ public class CellPoseEnvInstaller extends MinicondaEnvPythonInstaller {
         Path environmentDefinitionPath = downloadEnvironment();
 
         // Apply the environment
-        runConda("env", "create", "-f", environmentDefinitionPath.toAbsolutePath().toString());
+        runConda("env", "update", "--file", environmentDefinitionPath.toAbsolutePath().toString());
 
         // Upgrade cellpose (pip)
-        runConda("run", "--no-capture-output", "-n", "cellpose", "pip", "install", "cellpose", "--upgrade");
-    }
+        runConda("run", "--no-capture-output", "pip", "install", "cellpose", "--upgrade");
 
-    @Override
-    protected SelectCondaEnvPythonInstaller.Configuration generateCondaConfig() {
-        SelectCondaEnvPythonInstaller.Configuration configuration = super.generateCondaConfig();
-        configuration.setEnvironmentName("cellpose");
-        return configuration;
+        // Download models
+        if(((Configuration)getConfiguration()).isDownloadModels()) {
+            runConda("run", "--no-capture-output", "python", "-u", "-c", "from cellpose import models");
+        }
     }
 
     private Path downloadEnvironment() {
@@ -69,5 +59,21 @@ public class CellPoseEnvInstaller extends MinicondaEnvPythonInstaller {
             throw new RuntimeException(e);
         }
         return path;
+    }
+
+    public static class Configuration extends MinicondaEnvPythonInstaller.Configuration {
+        private boolean downloadModels = true;
+
+        @JIPipeDocumentation(name = "Download models", description = "If enabled, models will also be downloaded. " +
+                "Otherwise, Cellpose might download the models during its first run.")
+        @JIPipeParameter("download-models")
+        public boolean isDownloadModels() {
+            return downloadModels;
+        }
+
+        @JIPipeParameter("download-models")
+        public void setDownloadModels(boolean downloadModels) {
+            this.downloadModels = downloadModels;
+        }
     }
 }

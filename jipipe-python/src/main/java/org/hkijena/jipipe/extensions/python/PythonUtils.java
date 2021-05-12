@@ -304,6 +304,26 @@ public class PythonUtils {
         }
     }
 
+    public static void setupLogger(CommandLine commandLine, DefaultExecutor executor, JIPipeProgressInfo progressInfo) {
+        progressInfo.log("Running " + Arrays.stream(commandLine.toStrings()).map(s -> {
+            if (s.contains(" ")) {
+                return "\"" + MacroUtils.escapeString(s) + "\"";
+            } else {
+                return MacroUtils.escapeString(s);
+            }
+        }).collect(Collectors.joining(" ")));
+
+        LogOutputStream progressInfoLog = new LogOutputStream() {
+            @Override
+            protected void processLine(String s, int i) {
+            for (String s1 : s.split("\\r")) {
+                progressInfo.log(s1);
+            }
+            }
+        };
+        executor.setStreamHandler(new PumpStreamHandler(progressInfoLog, progressInfoLog));
+    }
+
     public static void runPython(Path scriptFile, JIPipeProgressInfo progressInfo) {
         PythonEnvironment environment = PythonExtensionSettings.getInstance().getPythonEnvironment();
         Path pythonExecutable = environment.getExecutablePath();
@@ -330,24 +350,10 @@ public class PythonUtils {
         for (Object item : (Collection<?>) evaluationResult) {
             commandLine.addArgument(StringUtils.nullToEmpty(item));
         }
-        progressInfo.log("Running Python: " + Arrays.stream(commandLine.toStrings()).map(s -> {
-            if (s.contains(" ")) {
-                return "\"" + MacroUtils.escapeString(s) + "\"";
-            } else {
-                return MacroUtils.escapeString(s);
-            }
-        }).collect(Collectors.joining(" ")));
-
-        LogOutputStream progressInfoLog = new LogOutputStream() {
-            @Override
-            protected void processLine(String s, int i) {
-                progressInfo.log(s);
-            }
-        };
 
         DefaultExecutor executor = new DefaultExecutor();
         executor.setWatchdog(new ExecuteWatchdog(ExecuteWatchdog.INFINITE_TIMEOUT));
-        executor.setStreamHandler(new PumpStreamHandler(progressInfoLog, progressInfoLog));
+        setupLogger(commandLine, executor, progressInfo);
 
         try {
             executor.execute(commandLine, environmentVariables);

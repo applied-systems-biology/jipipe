@@ -2,14 +2,6 @@ package org.hkijena.jipipe.extensions.expressions;
 
 import org.hkijena.jipipe.JIPipeJavaExtension;
 import org.hkijena.jipipe.extensions.JIPipePrepackagedDefaultJavaExtension;
-import org.hkijena.jipipe.extensions.environments.ExternalEnvironment;
-import org.hkijena.jipipe.extensions.environments.ExternalEnvironmentParameterEditorUI;
-import org.hkijena.jipipe.extensions.environments.PythonEnvironment;
-import org.hkijena.jipipe.extensions.environments.PythonEnvironmentType;
-import org.hkijena.jipipe.extensions.environments.installers.MinicondaEnvPythonInstaller;
-import org.hkijena.jipipe.extensions.environments.installers.SelectCondaEnvPythonInstaller;
-import org.hkijena.jipipe.extensions.environments.installers.SelectSystemPythonInstaller;
-import org.hkijena.jipipe.extensions.environments.installers.SelectVirtualEnvPythonInstaller;
 import org.hkijena.jipipe.extensions.expressions.functions.*;
 import org.hkijena.jipipe.extensions.parameters.primitives.HTMLText;
 import org.hkijena.jipipe.extensions.parameters.primitives.StringList;

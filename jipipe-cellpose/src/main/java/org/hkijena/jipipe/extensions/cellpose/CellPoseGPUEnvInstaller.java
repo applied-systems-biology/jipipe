@@ -3,7 +3,6 @@ package org.hkijena.jipipe.extensions.cellpose;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
-import org.hkijena.jipipe.extensions.environments.installers.MinicondaEnvPythonInstaller;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 
 import java.nio.file.Paths;
@@ -26,21 +25,19 @@ public class CellPoseGPUEnvInstaller extends CellPoseEnvInstaller {
         super.postprocessInstall();
 
         // Uninstall torch
-        runConda("run", "--no-capture-output", "-n", "cellpose", "pip", "uninstall", "--yes", "torch");
+        runConda("run", "--no-capture-output", "pip", "uninstall", "--yes", "torch");
 
         // Install CUDA + pytorch
         getProgressInfo().log("Starting with GPU library installation. This will take a long time.");
         runConda("install",
                 "--yes",
-                "-n",
-                "cellpose",
                 "pytorch",
                 "cudatoolkit=" + ((Configuration)getConfiguration()).getCudaToolkitVersion(),
                 "-c",
                 "pytorch");
     }
 
-    public static class Configuration extends MinicondaEnvPythonInstaller.Configuration {
+    public static class Configuration extends CellPoseEnvInstaller.Configuration {
         private String cudaToolkitVersion = "10.2";
 
         @JIPipeDocumentation(name = "CUDA Toolkit version", description = "The version of the CUDA toolkit that should be " +
