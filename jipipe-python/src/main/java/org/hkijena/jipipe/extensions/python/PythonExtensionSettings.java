@@ -19,28 +19,19 @@ import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeValidityReport;
 import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
-import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
-import org.hkijena.jipipe.extensions.parameters.expressions.DefaultExpressionParameter;
-import org.hkijena.jipipe.extensions.parameters.expressions.ExpressionParameterVariable;
-import org.hkijena.jipipe.extensions.parameters.expressions.ExpressionParameterVariableSource;
-import org.hkijena.jipipe.extensions.parameters.external.PythonEnvironmentParameter;
-import org.hkijena.jipipe.extensions.parameters.primitives.FilePathParameterSettings;
-import org.hkijena.jipipe.ui.components.PathEditor;
+import org.hkijena.jipipe.extensions.environments.PythonEnvironment;
 import org.hkijena.jipipe.utils.StringUtils;
 
 import java.nio.file.Files;
-import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.HashSet;
-import java.util.Set;
 
 public class PythonExtensionSettings implements JIPipeParameterCollection {
 
     public static String ID = "org.hkijena.jipipe:python";
 
     private final EventBus eventBus = new EventBus();
-    private PythonEnvironmentParameter pythonEnvironment = new PythonEnvironmentParameter();
+    private PythonEnvironment pythonEnvironment = new PythonEnvironment();
     private boolean providePythonAdapter = true;
 
     public PythonExtensionSettings() {
@@ -54,12 +45,12 @@ public class PythonExtensionSettings implements JIPipeParameterCollection {
     @JIPipeDocumentation(name = "Python environment", description = "The Python environment that is utilized by the Python nodes. " +
             "Click the 'Select' button to select an existing environment or install a new Python.")
     @JIPipeParameter("python-environment")
-    public PythonEnvironmentParameter getPythonEnvironment() {
+    public PythonEnvironment getPythonEnvironment() {
         return pythonEnvironment;
     }
 
     @JIPipeParameter("python-environment")
-    public void setPythonEnvironment(PythonEnvironmentParameter pythonEnvironment) {
+    public void setPythonEnvironment(PythonEnvironment pythonEnvironment) {
         this.pythonEnvironment = pythonEnvironment;
     }
 
@@ -117,17 +108,12 @@ public class PythonExtensionSettings implements JIPipeParameterCollection {
      * @return if the settings are correct
      */
     public static boolean pythonSettingsAreValid() {
-        String executable = null;
         if (JIPipe.getInstance() != null) {
             PythonExtensionSettings instance = getInstance();
-            if (instance.pythonEnvironment.getExecutablePath() != null) {
-                executable = instance.pythonEnvironment.getExecutablePath().toString();
-            }
+            JIPipeValidityReport report = new JIPipeValidityReport();
+            instance.getPythonEnvironment().reportValidity(report);
+            return report.isValid();
         }
-        boolean invalid = false;
-        if (StringUtils.isNullOrEmpty(executable) || !Files.exists(Paths.get(executable))) {
-            invalid = true;
-        }
-        return !invalid;
+        return false;
     }
 }

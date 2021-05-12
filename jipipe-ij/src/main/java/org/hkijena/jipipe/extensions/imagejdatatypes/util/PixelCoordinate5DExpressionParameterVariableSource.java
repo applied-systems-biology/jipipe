@@ -1,8 +1,8 @@
 package org.hkijena.jipipe.extensions.imagejdatatypes.util;
 
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
-import org.hkijena.jipipe.extensions.parameters.expressions.ExpressionParameterVariable;
-import org.hkijena.jipipe.extensions.parameters.expressions.ExpressionParameterVariableSource;
+import org.hkijena.jipipe.extensions.expressions.ExpressionParameterVariable;
+import org.hkijena.jipipe.extensions.expressions.ExpressionParameterVariableSource;
 
 import java.util.HashSet;
 import java.util.Set;

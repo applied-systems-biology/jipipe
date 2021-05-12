@@ -23,7 +23,7 @@ import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.categories.AnnotationsNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.parameters.collections.OutputSlotMapParameterCollection;
-import org.hkijena.jipipe.extensions.parameters.expressions.AnnotationGeneratorExpression;
+import org.hkijena.jipipe.extensions.expressions.AnnotationGeneratorExpression;
 
 import java.util.List;
 import java.util.stream.Collectors;

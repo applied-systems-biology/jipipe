@@ -16,7 +16,6 @@ package org.hkijena.jipipe.extensions.r;
 import com.github.rcaller.rstuff.FailurePolicy;
 import com.github.rcaller.rstuff.RCallerOptions;
 import com.github.rcaller.rstuff.RProcessStartUpOptions;
-import com.github.rcaller.util.Globals;
 import com.google.common.eventbus.EventBus;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
@@ -24,13 +23,7 @@ import org.hkijena.jipipe.api.JIPipeValidityReport;
 import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
-import org.hkijena.jipipe.extensions.parameters.primitives.FilePathParameterSettings;
-import org.hkijena.jipipe.extensions.parameters.primitives.OptionalPathParameter;
-import org.hkijena.jipipe.ui.components.PathEditor;
-import org.hkijena.jipipe.utils.StringUtils;
-
-import java.nio.file.Files;
-import java.nio.file.Paths;
+import org.hkijena.jipipe.extensions.environments.REnvironment;
 
 public class RExtensionSettings implements JIPipeParameterCollection {
 
@@ -38,23 +31,9 @@ public class RExtensionSettings implements JIPipeParameterCollection {
 
     private final EventBus eventBus = new EventBus();
 
-    private OptionalPathParameter RExecutable = new OptionalPathParameter();
-    private OptionalPathParameter RScriptExecutable = new OptionalPathParameter();
+    private REnvironment environment = new REnvironment();
 
     public RExtensionSettings() {
-        // Triggers some error if R is not present
-//        if (!StringUtils.isNullOrEmpty(Globals.R_current)) {
-//            try {
-//                RExecutable.setContent(Paths.get(Globals.R_current));
-//            } catch (Exception e) {
-//            }
-//        }
-//        if (!StringUtils.isNullOrEmpty(Globals.Rscript_current)) {
-//            try {
-//                RScriptExecutable.setContent(Paths.get(Globals.Rscript_current));
-//            } catch (Exception e) {
-//            }
-//        }
     }
 
     @Override
@@ -62,28 +41,15 @@ public class RExtensionSettings implements JIPipeParameterCollection {
         return eventBus;
     }
 
-    @JIPipeDocumentation(name = "Override R executable", description = "Allows to override the R executable. Must point to R.exe (Windows) or equivalent on other systems.")
-    @JIPipeParameter("r-executable")
-    @FilePathParameterSettings(pathMode = PathEditor.PathMode.FilesOnly, ioMode = PathEditor.IOMode.Open)
-    public OptionalPathParameter getRExecutable() {
-        return RExecutable;
+    @JIPipeDocumentation(name = "R environment", description = "Describes the R environment to use.")
+    @JIPipeParameter("r-environment")
+    public REnvironment getEnvironment() {
+        return environment;
     }
 
-    @JIPipeParameter("r-executable")
-    public void setRExecutable(OptionalPathParameter RExecutable) {
-        this.RExecutable = RExecutable;
-    }
-
-    @JIPipeDocumentation(name = "Override RScript executable", description = "Allows to override the RScript executable. Must point to RScript.exe (Windows) or equivalent on other systems.")
-    @JIPipeParameter("rscript-executable")
-    @FilePathParameterSettings(pathMode = PathEditor.PathMode.FilesOnly, ioMode = PathEditor.IOMode.Open)
-    public OptionalPathParameter getRScriptExecutable() {
-        return RScriptExecutable;
-    }
-
-    @JIPipeParameter("rscript-executable")
-    public void setRScriptExecutable(OptionalPathParameter RScriptExecutable) {
-        this.RScriptExecutable = RScriptExecutable;
+    @JIPipeParameter("r-environment")
+    public void setEnvironment(REnvironment environment) {
+        this.environment = environment;
     }
 
     public static RExtensionSettings getInstance() {
@@ -96,8 +62,8 @@ public class RExtensionSettings implements JIPipeParameterCollection {
     public static void checkRSettings() {
         if (!RSettingsAreValid()) {
             throw new UserFriendlyRuntimeException("The R installation is invalid!\n" +
-                    "R=" + RExtensionSettings.getInstance().getRExecutable() + "\n" +
-                    "RScript=" + RExtensionSettings.getInstance().getRScriptExecutable(),
+                    "R=" + RExtensionSettings.getInstance().getEnvironment().getRExecutablePath() + "\n" +
+                    "RScript=" + RExtensionSettings.getInstance().getEnvironment().getRScriptExecutablePath(),
                     "R is not configured!",
                     "Project > Application settings > Extensions > R  integration",
                     "This node requires an installation of R. Either R is not installed or JIPipe cannot find R.",
@@ -127,44 +93,24 @@ public class RExtensionSettings implements JIPipeParameterCollection {
      * @return if the settings are correct
      */
     public static boolean RSettingsAreValid() {
-        String executable = Globals.R_current;
-        String scriptExecutable = Globals.Rscript_current;
         if (JIPipe.getInstance() != null) {
             RExtensionSettings instance = getInstance();
-            if (instance.RExecutable.isEnabled()) {
-                executable = instance.RExecutable.getContent().toString();
-            }
-            if (instance.RScriptExecutable.isEnabled()) {
-                scriptExecutable = instance.RScriptExecutable.getContent().toString();
-            }
+            JIPipeValidityReport report = new JIPipeValidityReport();
+            instance.getEnvironment().reportValidity(report);
+            return report.isValid();
         }
-        boolean invalid = false;
-        if (StringUtils.isNullOrEmpty(executable) || !Files.exists(Paths.get(executable))) {
-            invalid = true;
-        }
-        if (StringUtils.isNullOrEmpty(scriptExecutable) || !Files.exists(Paths.get(scriptExecutable))) {
-            invalid = true;
-        }
-        return !invalid;
+        return false;
     }
 
     public static RCallerOptions createRCallerOptions() {
-        String executable = Globals.R_current;
-        String scriptExecutable = Globals.Rscript_current;
+        if (JIPipe.getInstance() == null) {
+            return null;
+        }
         FailurePolicy failurePolicy = FailurePolicy.RETRY_5;
         long maxWaitTime = Long.MAX_VALUE;
         long initialWaitTime = 100;
-        if (JIPipe.getInstance() != null) {
-            RExtensionSettings instance = getInstance();
-            if (instance.RExecutable.isEnabled()) {
-                executable = instance.RExecutable.getContent().toString();
-            }
-            if (instance.RScriptExecutable.isEnabled()) {
-                scriptExecutable = instance.RScriptExecutable.getContent().toString();
-            }
-        }
-        return RCallerOptions.create(scriptExecutable,
-                executable,
+        return RCallerOptions.create(RExtensionSettings.getInstance().getEnvironment().getRExecutablePath().toAbsolutePath().toString(),
+                RExtensionSettings.getInstance().getEnvironment().getRScriptExecutablePath().toAbsolutePath().toString(),
                 failurePolicy,
                 maxWaitTime,
                 initialWaitTime,

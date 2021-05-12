@@ -12,7 +12,7 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
 import org.hkijena.jipipe.api.parameters.JIPipeReflectionParameterAccess;
 import org.hkijena.jipipe.extensions.forms.utils.SingleAnnotationIOSettings;
-import org.hkijena.jipipe.extensions.parameters.expressions.*;
+import org.hkijena.jipipe.extensions.expressions.*;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 
 import java.awt.*;

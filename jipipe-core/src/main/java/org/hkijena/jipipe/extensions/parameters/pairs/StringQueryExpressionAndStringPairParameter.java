@@ -14,7 +14,7 @@
 package org.hkijena.jipipe.extensions.parameters.pairs;
 
 import org.hkijena.jipipe.extensions.parameters.collections.ListParameter;
-import org.hkijena.jipipe.extensions.parameters.expressions.StringQueryExpression;
+import org.hkijena.jipipe.extensions.expressions.StringQueryExpression;
 
 /**
  * A parameter that renames a matching string into another string

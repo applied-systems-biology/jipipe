@@ -13,7 +13,7 @@
 
 package org.hkijena.jipipe.extensions.tables.parameters.processors;
 
-import org.hkijena.jipipe.extensions.parameters.expressions.DefaultExpressionParameter;
+import org.hkijena.jipipe.extensions.expressions.DefaultExpressionParameter;
 import org.hkijena.jipipe.extensions.parameters.pairs.PairParameter;
 import org.hkijena.jipipe.extensions.parameters.pairs.PairParameterSettings;
 

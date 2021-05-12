@@ -83,6 +83,7 @@ public class JIPipe extends AbstractService implements JIPipeRegistry {
     private JIPipeParameterTypeRegistry parameterTypeRegistry = new JIPipeParameterTypeRegistry();
     private JIPipeSettingsRegistry settingsRegistry = new JIPipeSettingsRegistry();
     private JIPipeExpressionRegistry tableOperationRegistry = new JIPipeExpressionRegistry();
+    private JIPipeUtilityRegistry utilityRegistry = new JIPipeUtilityRegistry();
     private FilesCollection imageJPlugins = null;
     private boolean initializing = false;
 
@@ -744,6 +745,11 @@ public class JIPipe extends AbstractService implements JIPipeRegistry {
             throw new UserFriendlyRuntimeException(e, "Cannot create data instance!", "Undefined", "There is an error in the code that provides the annotation type.",
                     "Please contact the author of the plugin that provides the annotation type " + klass);
         }
+    }
+
+    @Override
+    public JIPipeUtilityRegistry getUtilityRegistry() {
+        return utilityRegistry;
     }
 
     /**

@@ -13,10 +13,9 @@
 
 package org.hkijena.jipipe.extensions.tables.parameters.processors;
 
-import org.hkijena.jipipe.extensions.parameters.expressions.DefaultExpressionParameter;
-import org.hkijena.jipipe.extensions.parameters.expressions.StringQueryExpression;
+import org.hkijena.jipipe.extensions.expressions.DefaultExpressionParameter;
+import org.hkijena.jipipe.extensions.expressions.StringQueryExpression;
 import org.hkijena.jipipe.extensions.parameters.functions.FunctionParameter;
-import org.hkijena.jipipe.extensions.tables.parameters.enums.TableColumnConversionParameter;
 
 /**
  * A parameter that models processing an input column via an conversion function

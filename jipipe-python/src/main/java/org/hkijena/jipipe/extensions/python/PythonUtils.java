@@ -8,8 +8,8 @@ import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
-import org.hkijena.jipipe.extensions.parameters.expressions.ExpressionParameters;
-import org.hkijena.jipipe.extensions.parameters.external.PythonEnvironmentParameter;
+import org.hkijena.jipipe.extensions.expressions.ExpressionParameters;
+import org.hkijena.jipipe.extensions.environments.PythonEnvironment;
 import org.hkijena.jipipe.extensions.parameters.generators.IntegerRange;
 import org.hkijena.jipipe.extensions.parameters.pairs.StringQueryExpressionAndStringPairParameter;
 import org.hkijena.jipipe.extensions.parameters.primitives.DoubleList;
@@ -213,7 +213,7 @@ public class PythonUtils {
     }
 
     public static void runPython(Path scriptFile, JIPipeProgressInfo progressInfo) {
-        PythonEnvironmentParameter environment = PythonExtensionSettings.getInstance().getPythonEnvironment();
+        PythonEnvironment environment = PythonExtensionSettings.getInstance().getPythonEnvironment();
         Path pythonExecutable = environment.getExecutablePath();
         CommandLine commandLine = new CommandLine(pythonExecutable.toFile());
 

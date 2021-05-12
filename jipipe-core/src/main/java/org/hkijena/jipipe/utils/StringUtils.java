@@ -146,8 +146,13 @@ public class StringUtils {
      * @param string the string
      * @return if the string is null or empty
      */
-    public static boolean isNullOrEmpty(String string) {
-        return string == null || string.isEmpty();
+    public static boolean isNullOrEmpty(Object string) {
+        if(string instanceof String)
+            return ((String) string).isEmpty();
+        else if(string != null)
+            return ("" + string).isEmpty();
+        else
+            return true;
     }
 
     /**
@@ -157,8 +162,8 @@ public class StringUtils {
      * @param ifNullOrEmpty returned if string is null or empty
      * @return string or ifNullOrEmpty depending on if string is null or empty
      */
-    public static String orElse(String string, String ifNullOrEmpty) {
-        return isNullOrEmpty(string) ? ifNullOrEmpty : string;
+    public static String orElse(Object string, String ifNullOrEmpty) {
+        return isNullOrEmpty(string) ? ifNullOrEmpty : "" + string;
     }
 
     /**

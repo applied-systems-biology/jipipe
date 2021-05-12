@@ -29,9 +29,12 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameterTypeInfo;
 import org.hkijena.jipipe.api.registries.JIPipeJavaNodeRegistrationTask;
 import org.hkijena.jipipe.api.registries.JIPipeNodeRegistrationTask;
 import org.hkijena.jipipe.api.registries.JIPipeParameterTypeRegistry;
+import org.hkijena.jipipe.extensions.environments.REnvironment;
 import org.hkijena.jipipe.extensions.parameters.collections.ListParameter;
-import org.hkijena.jipipe.extensions.parameters.expressions.ExpressionFunction;
-import org.hkijena.jipipe.extensions.parameters.expressions.functions.ColumnOperationAdapterFunction;
+import org.hkijena.jipipe.extensions.environments.PythonEnvironment;
+import org.hkijena.jipipe.extensions.environments.ExternalEnvironmentInstaller;
+import org.hkijena.jipipe.extensions.expressions.ExpressionFunction;
+import org.hkijena.jipipe.extensions.expressions.functions.ColumnOperationAdapterFunction;
 import org.hkijena.jipipe.extensions.parameters.primitives.EnumParameterTypeInfo;
 import org.hkijena.jipipe.extensions.parameters.primitives.HTMLText;
 import org.hkijena.jipipe.extensions.parameters.primitives.StringList;
@@ -496,6 +499,33 @@ public abstract class JIPipeDefaultJavaExtension extends AbstractService impleme
      */
     public void registerSettingsSheet(String id, String name, Icon icon, String category, Icon categoryIcon, JIPipeParameterCollection parameterCollection) {
         registry.getSettingsRegistry().register(id, name, icon, category, categoryIcon, parameterCollection);
+    }
+
+    /**
+     * Registers an arbitrary utility associated to a category class.
+     * There can be multiple utilities per category
+     * The exact type of utility class depends on the utility implementation
+     * @param categoryClass the category class
+     * @param utilityClass the utility class
+     */
+    public void registerUtility(Class<?> categoryClass, Class<?> utilityClass) {
+        registry.getUtilityRegistry().register(categoryClass, utilityClass);
+    }
+
+    /**
+     * Register a Python environment installer
+     * @param installerClass the installer
+     */
+    public void registerPythonEnvironmentInstaller(Class<? extends ExternalEnvironmentInstaller> installerClass) {
+        registerUtility(PythonEnvironment.class, installerClass);
+    }
+
+    /**
+     * Register a R environment installer
+     * @param installerClass the installer
+     */
+    public void registerREnvironmentInstaller(Class<? extends ExternalEnvironmentInstaller> installerClass) {
+        registerUtility(REnvironment.class, installerClass);
     }
 
     @Override

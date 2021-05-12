@@ -181,7 +181,7 @@ public class JIPipeValidityReport {
      * @param value  the value
      * @param source the source that triggers the check. passed to details
      */
-    public void checkNonEmpty(String value, Object source) {
+    public void checkNonEmpty(Object value, Object source) {
         if (StringUtils.isNullOrEmpty(value)) {
             reportIsInvalid("No value provided!", "Dependent methods require that a value is set.", "Please provide a valid value.",
                     source);

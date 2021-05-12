@@ -61,7 +61,7 @@ public class WebUtils {
             }
 
             long contentLength = http.getContentLengthLong();
-            long lastMessageTotal = 0;
+            long lastMessageTime = System.currentTimeMillis();
 
             // Download the file
             try (InputStream input = http.getInputStream()) {
@@ -74,7 +74,9 @@ public class WebUtils {
                             return;
                         total += n;
                         output.write(buffer, 0, n);
-                        if((total - lastMessageTotal) >= 1024 * 1024) {
+                        long currentMessageTime = System.currentTimeMillis();
+                        if(currentMessageTime - lastMessageTime > 1000) {
+                            lastMessageTime = currentMessageTime;
                             String message;
                             if(contentLength <= 0) {
                                 message = "Downloaded " + df.format(total / 1024.0 / 1024.0) + " MB";

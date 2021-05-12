@@ -13,8 +13,8 @@
 
 package org.hkijena.jipipe.api.registries;
 
-import org.hkijena.jipipe.extensions.parameters.expressions.DefaultExpressionEvaluator;
-import org.hkijena.jipipe.extensions.parameters.expressions.ExpressionFunction;
+import org.hkijena.jipipe.extensions.expressions.DefaultExpressionEvaluator;
+import org.hkijena.jipipe.extensions.expressions.ExpressionFunction;
 import org.hkijena.jipipe.extensions.tables.ColumnOperation;
 
 import java.util.Collections;
