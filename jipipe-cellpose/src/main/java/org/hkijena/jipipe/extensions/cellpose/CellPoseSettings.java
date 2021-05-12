@@ -3,6 +3,7 @@ package org.hkijena.jipipe.extensions.cellpose;
 import com.google.common.eventbus.EventBus;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.JIPipeValidityReport;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.extensions.environments.OptionalPythonEnvironment;
@@ -49,6 +50,37 @@ public class CellPoseSettings implements JIPipeParameterCollection {
         }
         else {
             return PythonExtensionSettings.getInstance().getPythonEnvironment();
+        }
+    }
+
+    /**
+     * Checks the Python settings
+     *
+     * @return if the settings are correct
+     */
+    public static boolean pythonSettingsAreValid() {
+        if (JIPipe.getInstance() != null) {
+            CellPoseSettings instance = getInstance();
+            JIPipeValidityReport report = new JIPipeValidityReport();
+            instance.getPythonEnvironment().reportValidity(report);
+            return report.isValid();
+        }
+        return false;
+    }
+
+    /**
+     * Checks if the Python settings are valid or reports an invalid state
+     *
+     * @param report the report
+     */
+    public static void checkPythonSettings(JIPipeValidityReport report) {
+        if (!pythonSettingsAreValid()) {
+            report.reportIsInvalid("Python is not configured!",
+                    "Project > Application settings > Extensions > Cellpose",
+                    "This node requires an installation of Python. You have to point JIPipe to a Python installation.",
+                    "Please install Python from https://www.python.org/, or from https://www.anaconda.com/ or https://docs.conda.io/en/latest/miniconda.html. " +
+                            "If Python is installed, go to Project > Application settings > Extensions > Cellpose and " +
+                            "set the Python executable. virtualenv is supported (you can find the exe in the environment bin folder).");
         }
     }
 }

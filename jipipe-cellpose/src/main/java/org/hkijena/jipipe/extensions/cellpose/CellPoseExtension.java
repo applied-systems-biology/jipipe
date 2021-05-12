@@ -4,6 +4,7 @@ import org.fife.ui.rsyntaxtextarea.AbstractTokenMakerFactory;
 import org.fife.ui.rsyntaxtextarea.TokenMakerFactory;
 import org.hkijena.jipipe.JIPipeJavaExtension;
 import org.hkijena.jipipe.extensions.JIPipePrepackagedDefaultJavaExtension;
+import org.hkijena.jipipe.extensions.cellpose.algorithms.CellPoseAlgorithm;
 import org.hkijena.jipipe.extensions.parameters.primitives.HTMLText;
 import org.hkijena.jipipe.extensions.parameters.primitives.StringList;
 import org.hkijena.jipipe.utils.UIUtils;
@@ -57,5 +58,9 @@ public class CellPoseExtension extends JIPipePrepackagedDefaultJavaExtension {
                 new CellPoseSettings());
         registerPythonEnvironmentInstaller(CellPoseEnvInstaller.class);
         registerPythonEnvironmentInstaller(CellPoseGPUEnvInstaller.class);
+
+        registerEnumParameterType("cellpose-model", CellPoseModel.class, "Cellpose model", "A Cellpose model");
+
+        registerNodeType("cellpose", CellPoseAlgorithm.class, UIUtils.getIconURLFromResources("apps/cellpose.png"));
     }
 }

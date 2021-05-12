@@ -37,6 +37,12 @@ public class OptionalDoubleParameter extends OptionalParameter<Double> {
         this.setContent(other.getContent());
     }
 
+    public OptionalDoubleParameter(double value, boolean enabled) {
+        super(Double.class);
+        setContent(value);
+        setEnabled(enabled);
+    }
+
     @Override
     public Double setNewInstance() {
         setContent(0.0);
