@@ -8,10 +8,7 @@ import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.cellpose.CellPoseModel;
-import org.hkijena.jipipe.extensions.cellpose.parameters.EnhancementParameters;
-import org.hkijena.jipipe.extensions.cellpose.parameters.ModelParameters;
-import org.hkijena.jipipe.extensions.cellpose.parameters.PerformanceParameters;
-import org.hkijena.jipipe.extensions.cellpose.parameters.ThresholdParameters;
+import org.hkijena.jipipe.extensions.cellpose.parameters.*;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ROIListData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d2.greyscale.ImagePlus2DGreyscale32FData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d3.color.ImagePlus3DColorHSBData;
@@ -46,11 +43,7 @@ public class CellPoseAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     private PerformanceParameters performanceParameters = new PerformanceParameters();
     private EnhancementParameters enhancementParameters = new EnhancementParameters();
     private ThresholdParameters thresholdParameters = new ThresholdParameters();
-    private boolean outputLabels = false;
-    private boolean outputFlows = false;
-    private boolean outputProbabilities = false;
-    private boolean outputStyles = false;
-    private boolean outputROI = true;
+    private OutputParameters outputParameters = new OutputParameters();
     private OptionalDoubleParameter diameter = new OptionalDoubleParameter(30.0, true);
     private OptionalAnnotationNameParameter diameterAnnotation = new OptionalAnnotationNameParameter("Diameter", true);
 
@@ -62,6 +55,7 @@ public class CellPoseAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         registerSubParameter(performanceParameters);
         registerSubParameter(enhancementParameters);
         registerSubParameter(thresholdParameters);
+        registerSubParameter(outputParameters);
     }
 
     public CellPoseAlgorithm(CellPoseAlgorithm other) {
@@ -72,16 +66,20 @@ public class CellPoseAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         this.performanceParameters = new PerformanceParameters(other.performanceParameters);
         this.enhancementParameters = new EnhancementParameters(other.enhancementParameters);
         this.thresholdParameters = new ThresholdParameters(other.thresholdParameters);
-        this.outputLabels = other.outputLabels;
-        this.outputFlows = other.outputFlows;
-        this.outputProbabilities = other.outputProbabilities;
-        this.outputStyles = other.outputStyles;
-        this.outputROI = other.outputROI;
         updateOutputSlots();
         registerSubParameter(modelParameters);
         registerSubParameter(performanceParameters);
         registerSubParameter(enhancementParameters);
         registerSubParameter(thresholdParameters);
+        registerSubParameter(outputParameters);
+    }
+
+    @Override
+    public void onParameterChanged(ParameterChangedEvent event) {
+        super.onParameterChanged(event);
+        if(event.getSource() == outputParameters) {
+            updateOutputSlots();
+        }
     }
 
     @Override
@@ -113,66 +111,6 @@ public class CellPoseAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         this.diameter = diameter;
     }
 
-    @JIPipeDocumentation(name = "Output labels", description = "Output an image that contains a unique greyscale value for each detected object.")
-    @JIPipeParameter("output-labels")
-    public boolean isOutputLabels() {
-        return outputLabels;
-    }
-
-    @JIPipeParameter("output-labels")
-    public void setOutputLabels(boolean outputLabels) {
-        this.outputLabels = outputLabels;
-        updateOutputSlots();
-    }
-
-    @JIPipeDocumentation(name = "Output flows", description = "Output an HSB image that indicates the flow of each pixel.")
-    @JIPipeParameter("output-flows")
-    public boolean isOutputFlows() {
-        return outputFlows;
-    }
-
-    @JIPipeParameter("output-flows")
-    public void setOutputFlows(boolean outputFlows) {
-        this.outputFlows = outputFlows;
-        updateOutputSlots();
-    }
-
-    @JIPipeDocumentation(name = "Output probabilities", description = "Output a greyscale image indicating the probability of each pixel being an object.")
-    @JIPipeParameter("output-probabilities")
-    public boolean isOutputProbabilities() {
-        return outputProbabilities;
-    }
-
-    @JIPipeParameter("output-probabilities")
-    public void setOutputProbabilities(boolean outputProbabilities) {
-        this.outputProbabilities = outputProbabilities;
-        updateOutputSlots();
-    }
-
-    @JIPipeDocumentation(name = "Output styles",description = "Output a 1D vector that summarizes the image.")
-    @JIPipeParameter("output-styles")
-    public boolean isOutputStyles() {
-        return outputStyles;
-    }
-
-    @JIPipeParameter("output-styles")
-    public void setOutputStyles(boolean outputStyles) {
-        this.outputStyles = outputStyles;
-        updateOutputSlots();
-    }
-
-    @JIPipeDocumentation(name = "Output ROI", description = "Output a ROI list containing all detected objects")
-    @JIPipeParameter("output-roi")
-    public boolean isOutputROI() {
-        return outputROI;
-    }
-
-    @JIPipeParameter("output-roi")
-    public void setOutputROI(boolean outputROI) {
-        this.outputROI = outputROI;
-        updateOutputSlots();
-    }
-
     @JIPipeDocumentation(name = "Model", description = "The following settings are related to the model.")
     @JIPipeParameter("model-parameters")
     public ModelParameters getModelParameters() {
@@ -180,7 +118,7 @@ public class CellPoseAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     }
 
     @JIPipeDocumentation(name = "Performance", description = "The following settings are related to the performance of the operation (e.g., tiling).")
-    @JIPipeParameter("performance-parameters")
+    @JIPipeParameter(value = "performance-parameters", collapsed = true)
     public PerformanceParameters getPerformanceParameters() {
         return performanceParameters;
     }
@@ -191,15 +129,21 @@ public class CellPoseAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         return enhancementParameters;
     }
 
-    @JIPipeDocumentation(name = "Thresholds", description = "Parameters that control which objects are selected")
-    @JIPipeParameter("enhancement-parameters")
+    @JIPipeDocumentation(name = "Thresholds", description = "Parameters that control which objects are selected.")
+    @JIPipeParameter("threshold-parameters")
     public ThresholdParameters getThresholdParameters() {
         return thresholdParameters;
     }
 
+    @JIPipeDocumentation(name = "Outputs", description = "The following settings allow you to select which outputs are generated.")
+    @JIPipeParameter(value = "output-parameters", collapsed = true)
+    public OutputParameters getOutputParameters() {
+        return outputParameters;
+    }
+
     private void updateOutputSlots() {
         JIPipeDefaultMutableSlotConfiguration slotConfiguration = (JIPipeDefaultMutableSlotConfiguration) getSlotConfiguration();
-        if(outputLabels) {
+        if(outputParameters.isOutputLabels()) {
             if(!getOutputSlotMap().containsKey("Labels")) {
                 slotConfiguration.addOutputSlot("Labels", ImagePlus3DGreyscaleData.class, null, false);
             }
@@ -209,7 +153,7 @@ public class CellPoseAlgorithm extends JIPipeSimpleIteratingAlgorithm {
                 slotConfiguration.removeOutputSlot("Labels", false);
             }
         }
-        if(outputFlows) {
+        if(outputParameters.isOutputFlows()) {
             if(!getOutputSlotMap().containsKey("Flows")) {
                 slotConfiguration.addOutputSlot("Flows", ImagePlus3DColorHSBData.class, null, false);
             }
@@ -219,7 +163,7 @@ public class CellPoseAlgorithm extends JIPipeSimpleIteratingAlgorithm {
                 slotConfiguration.removeOutputSlot("Flows", false);
             }
         }
-        if(outputProbabilities) {
+        if(outputParameters.isOutputProbabilities()) {
             if(!getOutputSlotMap().containsKey("Probabilities")) {
                 slotConfiguration.addOutputSlot("Probabilities", ImagePlus3DGreyscale32FData.class, null, false);
             }
@@ -229,7 +173,7 @@ public class CellPoseAlgorithm extends JIPipeSimpleIteratingAlgorithm {
                 slotConfiguration.removeOutputSlot("Probabilities", false);
             }
         }
-        if(outputStyles) {
+        if(outputParameters.isOutputStyles()) {
             if(!getOutputSlotMap().containsKey("Styles")) {
                 slotConfiguration.addOutputSlot("Styles", ImagePlus3DGreyscale32FData.class, null, false);
             }
@@ -239,7 +183,7 @@ public class CellPoseAlgorithm extends JIPipeSimpleIteratingAlgorithm {
                 slotConfiguration.removeOutputSlot("Styles", false);
             }
         }
-        if(outputROI) {
+        if(outputParameters.isOutputROI()) {
             if(!getOutputSlotMap().containsKey("ROI")) {
                 slotConfiguration.addOutputSlot("ROI", ROIListData.class, null, false);
             }

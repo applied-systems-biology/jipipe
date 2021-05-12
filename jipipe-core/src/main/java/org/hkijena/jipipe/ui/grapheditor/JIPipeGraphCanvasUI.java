@@ -274,6 +274,8 @@ public class JIPipeGraphCanvasUI extends JIPipeWorkbenchPanel implements MouseMo
             getEventBus().post(new GraphCanvasUpdatedEvent(this));
         }
         if (scheduledSelection != null && !scheduledSelection.isEmpty()) {
+            if(scheduledSelection.equals(getSelectedNodes()))
+                return;
             clearSelection();
             for (JIPipeGraphNode node : scheduledSelection) {
                 JIPipeNodeUI selected = nodeUIs.getOrDefault(node, null);
