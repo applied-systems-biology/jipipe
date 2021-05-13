@@ -9,10 +9,14 @@ import org.hkijena.jipipe.extensions.settings.RuntimeSettings;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.utils.WebUtils;
 
+import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
 
 @JIPipeDocumentation(name = "Download & install Cellpose (CPU)", description = "Creates a new Python environment with Cellpose installed.")
 public class CellPoseEnvInstaller extends MinicondaEnvPythonInstaller {
@@ -44,7 +48,7 @@ public class CellPoseEnvInstaller extends MinicondaEnvPythonInstaller {
 
         // Download models
         if(((Configuration)getConfiguration()).isDownloadModels()) {
-            runConda("run", "--no-capture-output", "python", "-u", "-c", "from cellpose import models");
+            runConda("run", "--no-capture-output", "python", "-u", "-c", "from cellpose import models; models.download_model_weights()");
         }
     }
 
@@ -56,6 +60,14 @@ public class CellPoseEnvInstaller extends MinicondaEnvPythonInstaller {
                     "Download environment",
                     getProgressInfo().resolveAndLog("Download environment.yml from MouseLand/cellpose"));
         } catch (MalformedURLException e) {
+            throw new RuntimeException(e);
+        }
+        getProgressInfo().log("Renaming 'cellpose' to 'base' due to bug in conda run and conda env");
+        try {
+            String contents = new String(Files.readAllBytes(path), StandardCharsets.UTF_8);
+            contents = contents.replace("name: cellpose", "name: base");
+            Files.write(path, contents.getBytes(StandardCharsets.UTF_8), StandardOpenOption.WRITE);
+        } catch (IOException e) {
             throw new RuntimeException(e);
         }
         return path;
