@@ -362,6 +362,65 @@ public class PythonUtils {
         }
     }
 
+    /**
+     * Escapes a string to be used within Python code
+     * Will not add quotes around the string
+     *
+     * @param value unescaped string
+     * @return escaped string
+     */
+    public static String escapeString(String value) {
+        return value.replace("\\", "\\\\").replace("\"", "\\\"");
+    }
+
+    /**
+     * Converts the object into valid Python code
+     * @param object the object
+     * @return Python code
+     */
+    public static String objectToPython(Object object) {
+        if(object instanceof String) {
+            return "\"" + escapeString(object.toString()) +"\"";
+        }
+        else if(object instanceof Boolean) {
+            return (((Boolean)object) ? "True" : "False");
+        }
+        else if(object == null) {
+            return "None";
+        }
+        else if(object instanceof Collection) {
+            return listToPythonArray((Collection<Object>) object, true);
+        }
+        else if(object instanceof Map) {
+            return mapToPythonDict((Map<String, Object>) object, true);
+        }
+        else {
+            return "" + object;
+        }
+    }
+    
+    /**
+     * Converts a collection into a Python array
+     * @param items the items
+     * @param withSurroundingBrackets if enabled, surrounding brackets are added
+     * @return Python code
+     */
+    public static String listToPythonArray(Collection<Object> items, boolean withSurroundingBrackets) {
+        return (withSurroundingBrackets ? "[" : "") + items.stream().map(PythonUtils::objectToPython).collect(Collectors.joining(", "))
+                + (withSurroundingBrackets ? "]" : "");
+    }
+
+    /**
+     * Converts a dictionary into a Python dict
+     * @param parameters the parameters
+     * @param withSurroundingBraces if enabled, dict braces are added
+     * @return Python code
+     */
+    public static String mapToPythonDict(Map<String, Object> parameters, boolean withSurroundingBraces) {
+        return (withSurroundingBraces ? "{" : "") + parameters.entrySet().stream().map(entry ->
+                entry.getKey() + "=" + objectToPython(entry.getValue())).collect(Collectors.joining(", ")) + (withSurroundingBraces ? "}" : "");
+    }
+
     public static void cleanup(Map<String, Path> inputSlotPaths, Map<String, Path> outputSlotPaths, JIPipeProgressInfo progressInfo) {
         progressInfo.log("Cleaning up ...");
         for (Map.Entry<String, Path> entry : inputSlotPaths.entrySet()) {
@@ -389,5 +448,26 @@ public class PythonUtils {
         }
         PythonUtils.outputSlotsToPython(code, outputSlots, outputSlotPaths);
         return  outputSlotPaths;
+    }
+
+    public static RawPythonCode rawPythonCode(String code) {
+        return new RawPythonCode(code);
+    }
+
+    public static class RawPythonCode {
+        private final String code;
+
+        public RawPythonCode(String code) {
+            this.code = code;
+        }
+
+        public String getCode() {
+            return code;
+        }
+
+        @Override
+        public String toString() {
+           return code;
+        }
     }
 }

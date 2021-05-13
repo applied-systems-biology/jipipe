@@ -12,7 +12,6 @@ import org.hkijena.jipipe.api.data.JIPipeDefaultMutableSlotConfiguration;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
-import org.hkijena.jipipe.extensions.cellpose.CellPoseModel;
 import org.hkijena.jipipe.extensions.cellpose.CellPoseSettings;
 import org.hkijena.jipipe.extensions.cellpose.CellPoseUtils;
 import org.hkijena.jipipe.extensions.cellpose.parameters.*;
@@ -20,22 +19,18 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ROIListData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d2.greyscale.ImagePlus2DGreyscale32FData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d3.color.ImagePlus3DColorHSBData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d3.greyscale.ImagePlus3DGreyscale32FData;
-import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d3.greyscale.ImagePlus3DGreyscale8UData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d3.greyscale.ImagePlus3DGreyscaleData;
-import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d3.greyscale.ImagePlus3DGreyscaleMaskData;
 import org.hkijena.jipipe.extensions.parameters.primitives.OptionalAnnotationNameParameter;
 import org.hkijena.jipipe.extensions.parameters.primitives.OptionalDoubleParameter;
 import org.hkijena.jipipe.extensions.python.PythonUtils;
 import org.hkijena.jipipe.extensions.settings.RuntimeSettings;
-import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
 import org.hkijena.jipipe.utils.MacroUtils;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 @JIPipeDocumentation(name = "Cellpose", description = "Runs Cellpose on the input image. If the input image is 3D, " +
         "Cellpose will be executed in 3D mode. Following outputs can be generated: " +
@@ -117,10 +112,13 @@ public class CellPoseAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         StringBuilder code = new StringBuilder();
         code.append("from cellpose import models\n");
         code.append("from cellpose import utils, io\n");
-        code.append(String.format("model = models.Cellpose(model_type=\"%s\", gpu=%s)\n",
-                getModelParameters().getModel().getId(),
-                getModelParameters().isEnableGPU() ? "True" : "False"
-                ));
+
+        Map<String, Object> modelParameterMap = new HashMap<>();
+        modelParameterMap.put("model_type", getModelParameters().getModel().getId());
+        modelParameterMap.put("net_avg", getEnhancementParameters().isNetAverage());
+        modelParameterMap.put("gpu", getModelParameters().isEnableGPU());
+
+        code.append(String.format("model = models.Cellpose(%s)\n", PythonUtils.mapToPythonDict(modelParameterMap, false)));
         code.append("input_file = \"").append(MacroUtils.escapeString(inputImagePath.toString())).append("\"\n");
         code.append("img = io.imread(input_file)\n");
 
@@ -129,11 +127,30 @@ public class CellPoseAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         code.append("    def __init__(self):\n");
         code.append("        pass\n\n");
         code.append("    def setValue(self, num):\n");
-        code.append("        print(\"-- Cellpose progress \" + str(num) + \"%\")\n\n");
+        code.append("        print(\"-- Cellpose progress \" + str(num) + \"%\", flush=True)\n\n");
 
-        code.append(String.format("masks, flows, styles, diams = model.eval(img, progress=ProgressAdapter(), diameter=%s, channels=[[0, 0]], do_3D=%s)\n",
-                getDiameter().isEnabled() ? "" + getDiameter().getContent() : "None",
-                img.getNDimensions() > 2 ? "True" : "False"
+        Map<String, Object> evalParameterMap = new HashMap<>();
+        evalParameterMap.put("x", PythonUtils.rawPythonCode("img"));
+        evalParameterMap.put("diameter", getDiameter().isEnabled() ? getDiameter().getContent() : null);
+        evalParameterMap.put("channels", PythonUtils.rawPythonCode("[[0, 0]]"));
+        evalParameterMap.put("do_3D", img.getNDimensions() > 2);
+        evalParameterMap.put("normalize", getEnhancementParameters().isNormalize());
+        evalParameterMap.put("anisotropy", getEnhancementParameters().getAnisotropy().isEnabled() ?
+                getEnhancementParameters().getAnisotropy().getContent() : null);
+        evalParameterMap.put("net_avg", getEnhancementParameters().isNetAverage());
+        evalParameterMap.put("augment", getEnhancementParameters().isAugment());
+        evalParameterMap.put("tile", getPerformanceParameters().isTile());
+        evalParameterMap.put("tile_overlap", getPerformanceParameters().getTileOverlap());
+        evalParameterMap.put("resample", getPerformanceParameters().isResample());
+        evalParameterMap.put("interp", getEnhancementParameters().isInterpolate());
+        evalParameterMap.put("flow_threshold", getThresholdParameters().getFlowThreshold());
+        evalParameterMap.put("cellprob_threshold", getThresholdParameters().getCellProbabilityThreshold());
+        evalParameterMap.put("min_size", getThresholdParameters().getMinSize());
+        evalParameterMap.put("stitch_threshold", getThresholdParameters().getStitchThreshold());
+        evalParameterMap.put("progress", PythonUtils.rawPythonCode("ProgressAdapter()"));
+
+        code.append(String.format("masks, flows, styles, diams = model.eval(%s)\n",
+                PythonUtils.mapToPythonDict(evalParameterMap, false)
                 ));
 
         // Generate ROI output
