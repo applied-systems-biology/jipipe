@@ -18,6 +18,7 @@ public class OptionalPythonEnvironment extends OptionalParameter<PythonEnvironme
 
     public OptionalPythonEnvironment(OptionalPythonEnvironment other) {
         super(PythonEnvironment.class);
+        setEnabled(other.isEnabled());
         setContent(new PythonEnvironment(other.getContent()));
     }
 }

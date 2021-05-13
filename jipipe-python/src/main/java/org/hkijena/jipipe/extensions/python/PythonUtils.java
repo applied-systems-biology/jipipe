@@ -351,7 +351,6 @@ public class PythonUtils {
         }
 
         DefaultExecutor executor = new DefaultExecutor();
-        executor.setProcessDestroyer(new ShutdownHookProcessDestroyer());
         executor.setWatchdog(new ExecuteWatchdog(ExecuteWatchdog.INFINITE_TIMEOUT));
         setupLogger(commandLine, executor, progressInfo);
 

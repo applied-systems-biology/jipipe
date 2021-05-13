@@ -18,6 +18,7 @@ public class OptionalREnvironment extends OptionalParameter<REnvironment> {
     
     public OptionalREnvironment(OptionalREnvironment other) {
         super(REnvironment.class);
+        setEnabled(other.isEnabled());
         setContent(new REnvironment(other.getContent()));
     }
 }
