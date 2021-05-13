@@ -384,6 +384,9 @@ public class PythonUtils {
         if(object instanceof String) {
             return "\"" + escapeString(object.toString()) +"\"";
         }
+        if(object instanceof Path) {
+            return "\"" + escapeString(object.toString()) +"\"";
+        }
         else if(object instanceof Boolean) {
             return (((Boolean)object) ? "True" : "False");
         }

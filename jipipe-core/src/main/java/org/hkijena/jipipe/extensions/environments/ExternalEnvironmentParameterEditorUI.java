@@ -1,5 +1,6 @@
 package org.hkijena.jipipe.extensions.environments;
 
+import com.google.common.eventbus.Subscribe;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeRunnable;
@@ -10,6 +11,8 @@ import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.parameters.JIPipeParameterEditorUI;
 import org.hkijena.jipipe.ui.parameters.ParameterPanel;
 import org.hkijena.jipipe.ui.running.JIPipeRunExecuterUI;
+import org.hkijena.jipipe.ui.running.JIPipeRunnerQueue;
+import org.hkijena.jipipe.ui.running.RunUIWorkerFinishedEvent;
 import org.hkijena.jipipe.utils.ReflectionUtils;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
@@ -37,6 +40,7 @@ public class ExternalEnvironmentParameterEditorUI extends JIPipeParameterEditorU
         super(workbench, parameterAccess);
         initialize();
         reload();
+        JIPipeRunnerQueue.getInstance().getEventBus().register(this);
     }
 
     private void initialize() {
@@ -86,6 +90,20 @@ public class ExternalEnvironmentParameterEditorUI extends JIPipeParameterEditorU
                 ParameterPanel.NO_GROUP_HEADERS | ParameterPanel.WITH_SEARCH_BAR | ParameterPanel.WITH_SCROLLING | ParameterPanel.WITH_DOCUMENTATION);
         if(result) {
             setParameter(parameter, true);
+        }
+    }
+
+    /**
+     * Workaround for bug #458 due to modal windows
+     */
+    @Subscribe
+    public void onInstallationFinished(RunUIWorkerFinishedEvent event) {
+        if(!isDisplayable()) {
+            JIPipeRunnerQueue.getInstance().getEventBus().unregister(this);
+            return;
+        }
+        if(event.getWorker().getRun() instanceof ExternalEnvironmentInstaller) {
+            reload();
         }
     }
 

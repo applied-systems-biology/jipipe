@@ -18,6 +18,7 @@ import org.hkijena.jipipe.extensions.cellpose.parameters.*;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ROIListData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d2.greyscale.ImagePlus2DGreyscale32FData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d3.color.ImagePlus3DColorHSBData;
+import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d3.color.ImagePlus3DColorRGBData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d3.greyscale.ImagePlus3DGreyscale32FData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d3.greyscale.ImagePlus3DGreyscaleData;
 import org.hkijena.jipipe.extensions.parameters.primitives.OptionalAnnotationNameParameter;
@@ -37,14 +38,14 @@ import java.util.*;
         "<ul>" +
         "<li><b>Labels:</b> A grayscale image where each connected component is assigned a unique value. " +
         "Please note that ImageJ will run into issues if too many objects are present and the labels are saved in int32. ImageJ would load them as float32.</li>" +
-        "<li><b>Flows:</b> An HSB image that indicates the flow of each pixel.</li>" +
+        "<li><b>Flows:</b> An RGB image that indicates the flow of each pixel. Convert it to HSB to extract information.</li>" +
         "<li><b>Probabilities:</b> An image indicating the probabilities for each pixel.</li>" +
         "<li><b>Styles:</b> A vector summarizing each image.</li>" +
         "<li><b>ROI:</b> ROI of the segmented areas.</li>" +
         "</ul>")
 @JIPipeInputSlot(value = ImagePlus3DGreyscaleData.class, slotName = "Input", autoCreate = true)
 @JIPipeOutputSlot(value = ImagePlus3DGreyscaleData.class, slotName = "Labels")
-@JIPipeOutputSlot(value = ImagePlus3DColorHSBData.class, slotName = "Flows")
+@JIPipeOutputSlot(value = ImagePlus3DColorRGBData.class, slotName = "Flows")
 @JIPipeOutputSlot(value = ImagePlus3DGreyscale32FData.class, slotName = "Probabilities")
 @JIPipeOutputSlot(value = ImagePlus2DGreyscale32FData.class, slotName = "Styles")
 @JIPipeOutputSlot(value = ROIListData.class, slotName = "ROI")
@@ -75,6 +76,7 @@ public class CellPoseAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         this.diameter = new OptionalDoubleParameter(other.diameter);
         this.diameterAnnotation = new OptionalAnnotationNameParameter(other.diameterAnnotation);
         this.modelParameters = new ModelParameters(other.modelParameters);
+        this.outputParameters = new OutputParameters(other.outputParameters);
         this.performanceParameters = new PerformanceParameters(other.performanceParameters);
         this.enhancementParameters = new EnhancementParameters(other.enhancementParameters);
         this.thresholdParameters = new ThresholdParameters(other.thresholdParameters);
@@ -102,6 +104,10 @@ public class CellPoseAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         Path inputImagePath = workDirectory.resolve("input.tif");
         Path outputRoiOutline = workDirectory.resolve("outlines.txt");
         Path outputDiameters = workDirectory.resolve("diameters.txt");
+        Path outputLabels = workDirectory.resolve("labels.tif");
+        Path outputFlows = workDirectory.resolve("flows.tif");
+        Path outputProbabilities = workDirectory.resolve("probabilities.tif");
+        Path outputStyles = workDirectory.resolve("styles.tif");
 
         // Save raw image
         progressInfo.log("Saving input image to " + inputImagePath);
@@ -166,6 +172,18 @@ public class CellPoseAlgorithm extends JIPipeSimpleIteratingAlgorithm {
             code.append(String.format("outlines_to_text(\"%s\", outlines)\n",
                     MacroUtils.escapeString(outputRoiOutline.toString())));
         }
+        if(outputParameters.isOutputLabels()) {
+            code.append("io.imsave(").append(PythonUtils.objectToPython(outputLabels)).append(", masks)\n");
+        }
+        if(outputParameters.isOutputFlows()) {
+            code.append("io.imsave(").append(PythonUtils.objectToPython(outputFlows)).append(", flows[0])\n");
+        }
+        if(outputParameters.isOutputProbabilities()) {
+            code.append("io.imsave(").append(PythonUtils.objectToPython(outputProbabilities)).append(", flows[2])\n");
+        }
+        if(outputParameters.isOutputStyles()) {
+            code.append("io.imsave(").append(PythonUtils.objectToPython(outputStyles)).append(", styles)\n");
+        }
 
         // Write diameters
         if(diameterAnnotation.isEnabled()) {
@@ -191,6 +209,22 @@ public class CellPoseAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         if(outputParameters.isOutputROI()) {
             ROIListData rois = CellPoseUtils.cellPoseROIToImageJ(outputRoiOutline);
             dataBatch.addOutputData("ROI", rois, annotationList, JIPipeAnnotationMergeStrategy.Merge, progressInfo);
+        }
+        if(outputParameters.isOutputLabels()) {
+            ImagePlus labels = IJ.openImage(outputLabels.toString());
+            dataBatch.addOutputData("Labels", new ImagePlus3DGreyscaleData(labels), annotationList, JIPipeAnnotationMergeStrategy.Merge, progressInfo);
+        }
+        if(outputParameters.isOutputFlows()) {
+            ImagePlus flows = IJ.openImage(outputFlows.toString());
+            dataBatch.addOutputData("Flows", new ImagePlus3DColorRGBData(flows), annotationList, JIPipeAnnotationMergeStrategy.Merge, progressInfo);
+        }
+        if(outputParameters.isOutputProbabilities()) {
+            ImagePlus probabilities = IJ.openImage(outputProbabilities.toString());
+            dataBatch.addOutputData("Probabilities", new ImagePlus3DGreyscale32FData(probabilities), annotationList, JIPipeAnnotationMergeStrategy.Merge, progressInfo);
+        }
+        if(outputParameters.isOutputStyles()) {
+            ImagePlus styles = IJ.openImage(outputStyles.toString());
+            dataBatch.addOutputData("Styles", new ImagePlus3DGreyscale32FData(styles), annotationList, JIPipeAnnotationMergeStrategy.Merge, progressInfo);
         }
 
         // Cleanup
@@ -283,7 +317,7 @@ public class CellPoseAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         }
         if(outputParameters.isOutputFlows()) {
             if(!getOutputSlotMap().containsKey("Flows")) {
-                slotConfiguration.addOutputSlot("Flows", ImagePlus3DColorHSBData.class, null, false);
+                slotConfiguration.addOutputSlot("Flows", ImagePlus3DColorRGBData.class, null, false);
             }
         }
         else {
@@ -323,3 +357,4 @@ public class CellPoseAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         }
     }
 }
+
