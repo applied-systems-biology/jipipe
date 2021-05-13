@@ -20,6 +20,7 @@ import org.hkijena.jipipe.extensions.parameters.primitives.DoubleList;
 import org.hkijena.jipipe.extensions.parameters.primitives.IntegerList;
 import org.hkijena.jipipe.extensions.parameters.primitives.StringList;
 import org.hkijena.jipipe.extensions.settings.RuntimeSettings;
+import org.hkijena.jipipe.utils.JIPipeRunCancellationExecuteWatchdog;
 import org.hkijena.jipipe.utils.MacroUtils;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.reflections.Reflections;
@@ -352,6 +353,7 @@ public class PythonUtils {
         }
 
         DefaultExecutor executor = new DefaultExecutor();
+        executor.setProcessDestroyer(new ShutdownHookProcessDestroyer());
         executor.setWatchdog(new ExecuteWatchdog(ExecuteWatchdog.INFINITE_TIMEOUT));
         setupLogger(commandLine, executor, progressInfo);
 
