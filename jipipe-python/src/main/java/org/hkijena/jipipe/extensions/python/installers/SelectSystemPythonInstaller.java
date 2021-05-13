@@ -90,7 +90,8 @@ public class SelectSystemPythonInstaller extends ExternalEnvironmentInstaller {
         generatedEnvironment = new PythonEnvironment();
         generatedEnvironment.setType(PythonEnvironmentType.System);
         generatedEnvironment.setArguments(new DefaultExpressionParameter("ARRAY(\"-u\", script_file)"));
-        generatedEnvironment.setExecutablePath(configuration.pythonExecutable);
+        generatedEnvironment.setExecutablePath(configuration.getPythonExecutable());
+        generatedEnvironment.setName(configuration.getName());
         if(getParameterAccess() != null) {
             SwingUtilities.invokeLater(() -> getParameterAccess().set(generatedEnvironment));
         }
@@ -99,6 +100,7 @@ public class SelectSystemPythonInstaller extends ExternalEnvironmentInstaller {
     public static class Configuration implements JIPipeParameterCollection {
         private final EventBus eventBus = new EventBus();
         private Path pythonExecutable = Paths.get("");
+        private String name = "System";
 
         @Override
         public EventBus getEventBus() {
@@ -117,6 +119,17 @@ public class SelectSystemPythonInstaller extends ExternalEnvironmentInstaller {
         @JIPipeParameter("python-executable")
         public void setPythonExecutable(Path pythonExecutable) {
             this.pythonExecutable = pythonExecutable;
+        }
+
+        @JIPipeDocumentation(name = "Name", description = "Name of the created environment")
+        @JIPipeParameter("name")
+        public String getName() {
+            return name;
+        }
+
+        @JIPipeParameter("name")
+        public void setName(String name) {
+            this.name = name;
         }
     }
 }

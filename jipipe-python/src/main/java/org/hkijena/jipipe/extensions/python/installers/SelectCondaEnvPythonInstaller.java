@@ -110,6 +110,7 @@ public class SelectCondaEnvPythonInstaller extends ExternalEnvironmentInstaller 
                     String.format("ARRAY(\"run\", \"--no-capture-output\", \"-n\", \"%s\", \"python\", \"-u\", script_file)",
                             DefaultExpressionEvaluator.escapeString(configuration.environmentName))));
         }
+        generatedEnvironment.setName(configuration.getName());
         return generatedEnvironment;
     }
 
@@ -118,6 +119,7 @@ public class SelectCondaEnvPythonInstaller extends ExternalEnvironmentInstaller 
         private Path condaExecutable = Paths.get("");
         private String environmentName = "base";
         private OptionalPathParameter overrideEnvironment = new OptionalPathParameter();
+        private String name = "Conda";
 
         @Override
         public EventBus getEventBus() {
@@ -159,6 +161,17 @@ public class SelectCondaEnvPythonInstaller extends ExternalEnvironmentInstaller 
         @JIPipeParameter("override-environment")
         public void setOverrideEnvironment(OptionalPathParameter overrideEnvironment) {
             this.overrideEnvironment = overrideEnvironment;
+        }
+
+        @JIPipeDocumentation(name = "Name", description = "Name of the created environment")
+        @JIPipeParameter("name")
+        public String getName() {
+            return name;
+        }
+
+        @JIPipeParameter("name")
+        public void setName(String name) {
+            this.name = name;
         }
     }
 }

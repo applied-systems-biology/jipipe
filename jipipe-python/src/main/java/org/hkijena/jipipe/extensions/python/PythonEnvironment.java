@@ -29,7 +29,7 @@ import java.util.Set;
 /**
  * Parameter that describes a Python environment
  */
-public class PythonEnvironment implements ExternalEnvironment {
+public class PythonEnvironment extends ExternalEnvironment {
     private final EventBus eventBus = new EventBus();
     private PythonEnvironmentType type = PythonEnvironmentType.System;
     private DefaultExpressionParameter arguments = new DefaultExpressionParameter("ARRAY(script_file)");
@@ -47,6 +47,7 @@ public class PythonEnvironment implements ExternalEnvironment {
     }
 
     public PythonEnvironment(PythonEnvironment other) {
+        super(other);
         this.type = other.type;
         this.arguments = new DefaultExpressionParameter(other.arguments);
         this.executablePath = other.executablePath;
@@ -133,11 +134,6 @@ public class PythonEnvironment implements ExternalEnvironment {
     @Override
     public Icon getIcon() {
         return UIUtils.getIconFromResources("apps/python.png");
-    }
-
-    @Override
-    public String getStatus() {
-        return type.toString();
     }
 
     @Override

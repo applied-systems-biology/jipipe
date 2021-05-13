@@ -117,6 +117,7 @@ public class SelectVirtualEnvPythonInstaller extends ExternalEnvironmentInstalle
         }
 
         generatedEnvironment.setArguments(new DefaultExpressionParameter("ARRAY(\"-u\", script_file)"));
+        generatedEnvironment.setName(configuration.getName());
         if(getParameterAccess() != null) {
             SwingUtilities.invokeLater(() -> getParameterAccess().set(generatedEnvironment));
         }
@@ -125,6 +126,7 @@ public class SelectVirtualEnvPythonInstaller extends ExternalEnvironmentInstalle
     public static class Configuration implements JIPipeParameterCollection {
         private final EventBus eventBus = new EventBus();
         private Path virtualEnvDirectory = Paths.get("");
+        private String name = "Virtual env";
 
         @Override
         public EventBus getEventBus() {
@@ -141,6 +143,17 @@ public class SelectVirtualEnvPythonInstaller extends ExternalEnvironmentInstalle
         @JIPipeParameter("venv-dir")
         public void setVirtualEnvDirectory(Path virtualEnvDirectory) {
             this.virtualEnvDirectory = virtualEnvDirectory;
+        }
+
+        @JIPipeDocumentation(name = "Name", description = "Name of the created environment")
+        @JIPipeParameter("name")
+        public String getName() {
+            return name;
+        }
+
+        @JIPipeParameter("name")
+        public void setName(String name) {
+            this.name = name;
         }
     }
 }

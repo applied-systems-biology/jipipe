@@ -27,6 +27,7 @@ public class CellPoseEnvInstaller extends MinicondaEnvPythonInstaller {
         super(workbench, parameterAccess);
         setConfiguration(new Configuration());
         getConfiguration().setInstallationPath(Paths.get("cellpose-cpu"));
+        getConfiguration().setName("Cellpose (CPU)");
     }
 
     @Override

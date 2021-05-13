@@ -13,22 +13,38 @@
 
 package org.hkijena.jipipe.extensions.python;
 
+import com.google.common.collect.ImmutableList;
 import com.google.common.eventbus.EventBus;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeValidityReport;
+import org.hkijena.jipipe.api.environments.ExternalEnvironment;
+import org.hkijena.jipipe.api.environments.ExternalEnvironmentSettings;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
-import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 
-public class PythonExtensionSettings implements JIPipeParameterCollection {
+import java.util.List;
+
+public class PythonExtensionSettings implements ExternalEnvironmentSettings {
 
     public static String ID = "org.hkijena.jipipe:python";
 
     private final EventBus eventBus = new EventBus();
     private PythonEnvironment pythonEnvironment = new PythonEnvironment();
     private boolean providePythonAdapter = true;
+    private PythonEnvironment.List presets = new PythonEnvironment.List();
 
     public PythonExtensionSettings() {
+    }
+
+    @JIPipeDocumentation(name = "Presets", description = "List of presets stored for Python environments.")
+    @JIPipeParameter("presets")
+    public PythonEnvironment.List getPresets() {
+        return presets;
+    }
+
+    @JIPipeParameter("presets")
+    public void setPresets(PythonEnvironment.List presets) {
+        this.presets = presets;
     }
 
     @Override
@@ -58,6 +74,19 @@ public class PythonExtensionSettings implements JIPipeParameterCollection {
     @JIPipeParameter("provide-python-adapter")
     public void setProvidePythonAdapter(boolean providePythonAdapter) {
         this.providePythonAdapter = providePythonAdapter;
+    }
+
+    @Override
+    public List<ExternalEnvironment> getPresetsListInterface() {
+        return ImmutableList.copyOf(presets);
+    }
+
+    @Override
+    public void setPresetsListInterface(List<ExternalEnvironment> presets) {
+        this.presets.clear();
+        for (ExternalEnvironment preset : presets) {
+            this.presets.add((PythonEnvironment) preset);
+        }
     }
 
     public static PythonExtensionSettings getInstance() {

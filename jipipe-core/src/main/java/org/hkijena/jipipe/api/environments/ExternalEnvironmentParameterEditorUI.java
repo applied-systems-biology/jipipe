@@ -2,7 +2,6 @@ package org.hkijena.jipipe.api.environments;
 
 import com.google.common.eventbus.Subscribe;
 import org.hkijena.jipipe.JIPipe;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeRunnable;
 import org.hkijena.jipipe.api.JIPipeValidityReport;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
@@ -20,13 +19,11 @@ import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
 import java.awt.*;
-import java.util.Comparator;
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class ExternalEnvironmentParameterEditorUI extends JIPipeParameterEditorUI {
 
-    private JLabel typeLabel = new JLabel();
+    private JLabel nameLabel = new JLabel();
     private JTextField pathLabel = UIUtils.makeReadonlyBorderlessTextField("");
     private JPopupMenu installMenu = new JPopupMenu();
     private JButton editButton;
@@ -47,12 +44,12 @@ public class ExternalEnvironmentParameterEditorUI extends JIPipeParameterEditorU
 
     private void initialize() {
         setLayout(new BorderLayout(4,0));
-        typeLabel.setFont(new Font(Font.DIALOG, Font.ITALIC, 12));
-        typeLabel.setBorder(BorderFactory.createEmptyBorder(0,4,0,12));
+        nameLabel.setFont(new Font(Font.DIALOG, Font.ITALIC, 12));
+        nameLabel.setBorder(BorderFactory.createEmptyBorder(0,4,0,12));
         setOpaque(true);
         setBackground(UIManager.getColor("TextField.background"));
         setBorder(BorderFactory.createEtchedBorder());
-        add(typeLabel, BorderLayout.WEST);
+        add(nameLabel, BorderLayout.WEST);
         add(pathLabel, BorderLayout.CENTER);
 
         JPanel buttonPanel = new JPanel();
@@ -85,6 +82,27 @@ public class ExternalEnvironmentParameterEditorUI extends JIPipeParameterEditorU
 
         ExternalEnvironmentParameterSettings settings = getParameterAccess().getAnnotationOfType(ExternalEnvironmentParameterSettings.class);
 
+        if(settings == null || settings.allowManagePreset()) {
+            JMenu presetMenu = new JMenu("Load preset");
+            List<ExternalEnvironment> presets = JIPipe.getInstance().getExternalEnvironmentRegistry().getPresets(fieldClass);
+
+            for (ExternalEnvironment preset : presets) {
+                JMenuItem presetItem = new JMenuItem(preset.getName(), preset.getIcon());
+                presetItem.addActionListener(e -> loadPreset(preset));
+                presetMenu.add(presetItem);
+            }
+
+            if(!presets.isEmpty()) {
+                installMenu.add(presetMenu);
+            }
+
+            JMenuItem savePresetItem = new JMenuItem("Save as preset ...", UIUtils.getIconFromResources("actions/save.png"));
+            savePresetItem.addActionListener(e -> saveAsPreset());
+            installMenu.add(savePresetItem);
+        }
+        if(installMenu.getComponentCount() > 0) {
+            installMenu.addSeparator();
+        }
         if(settings == null || settings.allowInstall()) {
             for (JIPipeExternalEnvironmentRegistry.InstallerEntry installer : JIPipe.getInstance()
                     .getExternalEnvironmentRegistry().getInstallers((Class<? extends ExternalEnvironment>) fieldClass)) {
@@ -95,6 +113,39 @@ public class ExternalEnvironmentParameterEditorUI extends JIPipeParameterEditorU
                 installMenu.add(item);
             }
         }
+    }
+
+    private void loadPreset(ExternalEnvironment preset) {
+        if(JOptionPane.showConfirmDialog(getWorkbench().getWindow(), "Do you really want to load " +
+                "the preset '" + preset.getName() + "?", "Load preset", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
+            setParameter(preset, true);
+        }
+    }
+
+    private void saveAsPreset() {
+        JIPipeValidityReport report = new JIPipeValidityReport();
+        ExternalEnvironment parameter = getParameter(ExternalEnvironment.class);
+        parameter.reportValidity(report);
+
+        if(!report.isValid()) {
+            if(JOptionPane.showConfirmDialog(getWorkbench().getWindow(),
+                    "The current settings seem to be invalid. Do you want to save them as preset, anyways?",
+                    "Save preset",
+                    JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
+                return;
+            }
+        }
+
+        Class<?> fieldClass = getParameterAccess().getFieldClass();
+        JIPipeParameterTypeInfo typeInfo = JIPipe.getInstance().getParameterTypeRegistry().getInfoByFieldClass(fieldClass);
+
+        ExternalEnvironment duplicate = (ExternalEnvironment) typeInfo.duplicate(parameter);
+        String newName = JOptionPane.showInputDialog(getWorkbench().getWindow(), "Please insert the name of the preset:", duplicate.getName());
+        if(StringUtils.isNullOrEmpty(newName))
+            return;
+        duplicate.setName(newName);
+
+        JIPipe.getInstance().getExternalEnvironmentRegistry().addPreset(fieldClass, duplicate);
     }
 
     private void editEnvironment() {
@@ -143,8 +194,8 @@ public class ExternalEnvironmentParameterEditorUI extends JIPipeParameterEditorU
         }
 
         ExternalEnvironment parameter = getParameter(ExternalEnvironment.class);
-        typeLabel.setIcon(parameter.getIcon());
-        typeLabel.setText(parameter.getStatus());
+        nameLabel.setIcon(parameter.getIcon());
+        nameLabel.setText(parameter.getName());
         pathLabel.setText(StringUtils.orElse(parameter.getInfo(), "<Nothing set>"));
         JIPipeValidityReport report = new JIPipeValidityReport();
         parameter.reportValidity(report);

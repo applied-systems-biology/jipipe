@@ -27,7 +27,7 @@ import java.nio.file.Paths;
 import java.util.HashSet;
 import java.util.Set;
 
-public class REnvironment implements ExternalEnvironment {
+public class REnvironment extends ExternalEnvironment {
     private final EventBus eventBus = new EventBus();
     private Path RExecutablePath = Paths.get("");
     private Path RScriptExecutablePath = Paths.get("");
@@ -42,6 +42,7 @@ public class REnvironment implements ExternalEnvironment {
     }
 
     public REnvironment(REnvironment other) {
+        super(other);
         this.RExecutablePath = other.RExecutablePath;
         this.RScriptExecutablePath = other.RScriptExecutablePath;
         this.arguments = new DefaultExpressionParameter(other.arguments);
@@ -132,11 +133,6 @@ public class REnvironment implements ExternalEnvironment {
     @Override
     public Icon getIcon() {
         return UIUtils.getIconFromResources("apps/rlogo_icon.png");
-    }
-
-    @Override
-    public String getStatus() {
-        return "R";
     }
 
     @Override

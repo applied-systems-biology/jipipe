@@ -117,6 +117,7 @@ public class REnvInstaller extends ExternalEnvironmentInstaller {
         generatedEnvironment = new REnvironment();
         generatedEnvironment.setRExecutablePath(configuration.installationPath.resolve("bin").resolve("R.exe"));
         generatedEnvironment.setRScriptExecutablePath(configuration.installationPath.resolve("bin").resolve("Rscript.exe"));
+        generatedEnvironment.setName(configuration.getName());
         if(getParameterAccess() != null) {
             SwingUtilities.invokeLater(() -> getParameterAccess().set(generatedEnvironment));
         }
@@ -199,6 +200,7 @@ public class REnvInstaller extends ExternalEnvironmentInstaller {
         private String RDownloadURL = getLatestDownload();
         private Path installationPath;
         private OptionalPathParameter customInstallerPath = new OptionalPathParameter();
+        private String name = "R";
 
         public Configuration() {
             installationPath = Paths.get("r");
@@ -243,6 +245,17 @@ public class REnvInstaller extends ExternalEnvironmentInstaller {
         @JIPipeParameter("custom-installer-path")
         public void setCustomInstallerPath(OptionalPathParameter customInstallerPath) {
             this.customInstallerPath = customInstallerPath;
+        }
+
+        @JIPipeDocumentation(name = "Name", description = "Name of the created environment")
+        @JIPipeParameter("name")
+        public String getName() {
+            return name;
+        }
+
+        @JIPipeParameter("name")
+        public void setName(String name) {
+            this.name = name;
         }
     }
 }

@@ -46,7 +46,6 @@ import org.hkijena.jipipe.ui.parameters.JIPipeParameterGeneratorUI;
 import org.hkijena.jipipe.ui.resultanalysis.JIPipeResultDataSlotPreview;
 import org.hkijena.jipipe.ui.resultanalysis.JIPipeResultDataSlotRowUI;
 import org.hkijena.jipipe.utils.ReflectionUtils;
-import org.hkijena.jipipe.utils.UIUtils;
 import org.scijava.service.AbstractService;
 
 import javax.swing.*;
@@ -527,12 +526,13 @@ public abstract class JIPipeDefaultJavaExtension extends AbstractService impleme
      */
     public <T extends ExternalEnvironment, U extends ListParameter<T>> void registerEnvironment(Class<T> environmentClass,
                                                                     Class<U> listClass,
-                                                                    ExternalEnvironmentSettings<T, U> settings,
+                                                                    ExternalEnvironmentSettings settings,
                                                                     String id,
                                                                     String name,
                                                                     String description,
                                                                     Icon icon) {
         registerParameterType(id, environmentClass, listClass, null, null, name, description, ExternalEnvironmentParameterEditorUI.class);
+        registry.getExternalEnvironmentRegistry().registerEnvironment(environmentClass, settings);
     }
 
     /**

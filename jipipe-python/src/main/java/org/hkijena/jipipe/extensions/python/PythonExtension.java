@@ -46,9 +46,11 @@ public class PythonExtension extends JIPipePrepackagedDefaultJavaExtension {
 
     @Override
     public void register() {
+        PythonExtensionSettings settings = new PythonExtensionSettings();
+
         registerEnvironment(PythonEnvironment.class,
                 PythonEnvironment.List.class,
-                new PythonEnvironmentSettings(),
+                settings,
                 "python",
                 "Python environment",
                 "A Python environment",
@@ -69,7 +71,7 @@ public class PythonExtension extends JIPipePrepackagedDefaultJavaExtension {
                 UIUtils.getIconFromResources("apps/python.png"),
                 "Extensions",
                 UIUtils.getIconFromResources("actions/plugins.png"),
-                new PythonExtensionSettings());
+                settings);
         registerEnvironmentInstaller(PythonEnvironment.class, MinicondaEnvPythonInstaller.class, UIUtils.getIconFromResources("actions/browser-download.png"));
         registerEnvironmentInstaller(PythonEnvironment.class, SelectCondaEnvPythonInstaller.class, UIUtils.getIconFromResources("actions/project-open.png"));
         registerEnvironmentInstaller(PythonEnvironment.class, SelectSystemPythonInstaller.class, UIUtils.getIconFromResources("actions/project-open.png"));

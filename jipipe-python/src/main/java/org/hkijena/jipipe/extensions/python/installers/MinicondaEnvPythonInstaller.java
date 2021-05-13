@@ -98,7 +98,6 @@ public class MinicondaEnvPythonInstaller extends ExternalEnvironmentInstaller {
         if(getParameterAccess() != null) {
             SwingUtilities.invokeLater(() -> {
                 getParameterAccess().set(generatedEnvironment);
-
             });
         }
     }
@@ -149,10 +148,10 @@ public class MinicondaEnvPythonInstaller extends ExternalEnvironmentInstaller {
      */
     public Path getCondaExecutableInInstallationPath() {
         if(SystemUtils.IS_OS_WINDOWS) {
-           return configuration.getInstallationPath().resolve("Scripts").resolve("conda.exe");
+           return getConfiguration().getInstallationPath().resolve("Scripts").resolve("conda.exe");
         }
         else {
-           return configuration.getInstallationPath().resolve("bin").resolve("conda");
+           return getConfiguration().getInstallationPath().resolve("bin").resolve("conda");
         }
     }
 
@@ -163,12 +162,13 @@ public class MinicondaEnvPythonInstaller extends ExternalEnvironmentInstaller {
     protected SelectCondaEnvPythonInstaller.Configuration generateCondaConfig() {
         SelectCondaEnvPythonInstaller.Configuration condaConfig = new SelectCondaEnvPythonInstaller.Configuration();
         if(SystemUtils.IS_OS_WINDOWS) {
-            condaConfig.setCondaExecutable(configuration.getInstallationPath().resolve("Scripts").resolve("conda.exe"));
+            condaConfig.setCondaExecutable(getConfiguration().getInstallationPath().resolve("Scripts").resolve("conda.exe"));
         }
         else {
-            condaConfig.setCondaExecutable(configuration.getInstallationPath().resolve("bin").resolve("conda"));
+            condaConfig.setCondaExecutable(getConfiguration().getInstallationPath().resolve("bin").resolve("conda"));
         }
         condaConfig.setEnvironmentName("base");
+        condaConfig.setName(getConfiguration().getName());
         return condaConfig;
     }
 
@@ -252,7 +252,7 @@ public class MinicondaEnvPythonInstaller extends ExternalEnvironmentInstaller {
         commandLine.addArgument("-b");
         commandLine.addArgument("-f");
         commandLine.addArgument("-p");
-        commandLine.addArgument(configuration.installationPath.toAbsolutePath().toString());
+        commandLine.addArgument(getConfiguration().installationPath.toAbsolutePath().toString());
 
         DefaultExecutor executor = new DefaultExecutor();
         executor.setWatchdog(new ExecuteWatchdog(ExecuteWatchdog.INFINITE_TIMEOUT));
@@ -275,14 +275,14 @@ public class MinicondaEnvPythonInstaller extends ExternalEnvironmentInstaller {
             }
         };
 
-        progressInfo.log("Installation path: " + configuration.installationPath.toAbsolutePath());
+        progressInfo.log("Installation path: " + getConfiguration().installationPath.toAbsolutePath());
         progressInfo.log("Please note that you agreed to the Conda license: https://docs.conda.io/en/latest/license.html");
         CommandLine commandLine = new CommandLine(installerPath.toFile());
         commandLine.addArgument("/InstallationType=JustMe");
         commandLine.addArgument("/AddToPath=0");
         commandLine.addArgument("/RegisterPython=0");
         commandLine.addArgument("/S");
-        commandLine.addArgument("/D=" + configuration.installationPath.toAbsolutePath());
+        commandLine.addArgument("/D=" + getConfiguration().installationPath.toAbsolutePath());
 
         DefaultExecutor executor = new DefaultExecutor();
         executor.setWatchdog(new ExecuteWatchdog(ExecuteWatchdog.INFINITE_TIMEOUT));
@@ -300,7 +300,7 @@ public class MinicondaEnvPythonInstaller extends ExternalEnvironmentInstaller {
 
         URL url;
         try {
-            url = new URL(configuration.getCondaDownloadURL());
+            url = new URL(getConfiguration().getCondaDownloadURL());
         } catch (MalformedURLException e) {
             throw new RuntimeException(e);
         }
@@ -348,6 +348,7 @@ public class MinicondaEnvPythonInstaller extends ExternalEnvironmentInstaller {
         private String condaDownloadURL = getLatestDownload();
         private Path installationPath;
         private OptionalPathParameter customInstallerPath = new OptionalPathParameter();
+        private String name = "Conda";
 
         public Configuration() {
             installationPath = Paths.get("miniconda");
@@ -391,6 +392,17 @@ public class MinicondaEnvPythonInstaller extends ExternalEnvironmentInstaller {
         @JIPipeParameter("custom-installer-path")
         public void setCustomInstallerPath(OptionalPathParameter customInstallerPath) {
             this.customInstallerPath = customInstallerPath;
+        }
+
+        @JIPipeDocumentation(name = "Name", description = "Name of the created environment")
+        @JIPipeParameter("name")
+        public String getName() {
+            return name;
+        }
+
+        @JIPipeParameter("name")
+        public void setName(String name) {
+            this.name = name;
         }
     }
 }

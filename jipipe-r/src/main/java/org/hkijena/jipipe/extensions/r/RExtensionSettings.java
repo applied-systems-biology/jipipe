@@ -13,21 +13,26 @@
 
 package org.hkijena.jipipe.extensions.r;
 
+import com.google.common.collect.ImmutableList;
 import com.google.common.eventbus.EventBus;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeValidityReport;
+import org.hkijena.jipipe.api.environments.ExternalEnvironment;
 import org.hkijena.jipipe.api.environments.ExternalEnvironmentSettings;
 import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 
-public class RExtensionSettings implements ExternalEnvironmentSettings<REnvironment, REnvironment.List> {
+import java.util.List;
+
+public class RExtensionSettings implements ExternalEnvironmentSettings {
 
     public static String ID = "org.hkijena.jipipe:r";
 
     private final EventBus eventBus = new EventBus();
 
     private REnvironment environment = new REnvironment();
+    private REnvironment.List presets = new REnvironment.List();
 
     public RExtensionSettings() {
     }
@@ -46,6 +51,30 @@ public class RExtensionSettings implements ExternalEnvironmentSettings<REnvironm
     @JIPipeParameter("r-environment")
     public void setEnvironment(REnvironment environment) {
         this.environment = environment;
+    }
+
+    @JIPipeDocumentation(name = "Presets", description = "List of presets stored for R environments.")
+    @JIPipeParameter("presets")
+    public REnvironment.List getPresets() {
+        return presets;
+    }
+
+    @JIPipeParameter("presets")
+    public void setPresets(REnvironment.List presets) {
+        this.presets = presets;
+    }
+
+    @Override
+    public List<ExternalEnvironment> getPresetsListInterface() {
+        return ImmutableList.copyOf(presets);
+    }
+
+    @Override
+    public void setPresetsListInterface(List<ExternalEnvironment> presets) {
+        this.presets.clear();
+        for (ExternalEnvironment preset : presets) {
+            this.presets.add((REnvironment) preset);
+        }
     }
 
     public static RExtensionSettings getInstance() {
