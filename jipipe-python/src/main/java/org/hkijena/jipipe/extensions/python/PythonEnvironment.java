@@ -1,4 +1,4 @@
-package org.hkijena.jipipe.extensions.environments;
+package org.hkijena.jipipe.extensions.python;
 
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonSetter;
@@ -7,12 +7,15 @@ import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeValidityReport;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
+import org.hkijena.jipipe.api.environments.ExternalEnvironment;
 import org.hkijena.jipipe.extensions.expressions.DefaultExpressionParameter;
 import org.hkijena.jipipe.extensions.expressions.ExpressionParameterSettings;
 import org.hkijena.jipipe.extensions.expressions.ExpressionParameterVariable;
 import org.hkijena.jipipe.extensions.expressions.ExpressionParameterVariableSource;
+import org.hkijena.jipipe.extensions.parameters.collections.ListParameter;
 import org.hkijena.jipipe.extensions.parameters.pairs.PairParameterSettings;
 import org.hkijena.jipipe.extensions.parameters.pairs.StringQueryExpressionAndStringPairParameter;
+import org.hkijena.jipipe.utils.EnvironmentVariablesSource;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 
@@ -21,7 +24,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.HashSet;
-import java.util.Map;
 import java.util.Set;
 
 /**
@@ -101,7 +103,7 @@ public class PythonEnvironment implements ExternalEnvironment {
             "variables are available as variables")
     @JIPipeParameter("environment-variables")
     @PairParameterSettings(keyLabel = "Value", valueLabel = "Key")
-    @ExpressionParameterSettings(variableSource = PythonEnvironmentVariablesSource.class)
+    @ExpressionParameterSettings(variableSource = EnvironmentVariablesSource.class)
     public StringQueryExpressionAndStringPairParameter.List getEnvironmentVariables() {
         return environmentVariables;
     }
@@ -153,17 +155,6 @@ public class PythonEnvironment implements ExternalEnvironment {
         }
     }
 
-    public static class PythonEnvironmentVariablesSource implements ExpressionParameterVariableSource {
-        @Override
-        public Set<ExpressionParameterVariable> getVariables(JIPipeParameterAccess parameterAccess) {
-            Set<ExpressionParameterVariable> result = new HashSet<>();
-            for (Map.Entry<String, String> entry : System.getenv().entrySet()) {
-                result.add(new ExpressionParameterVariable(entry.getKey(), entry.getValue(), entry.getKey()));
-            }
-            return result;
-        }
-    }
-
     @Override
     public String toString() {
         return "Python environment {" +
@@ -171,5 +162,21 @@ public class PythonEnvironment implements ExternalEnvironment {
                 ", Arguments=" + arguments +
                 ", Executable=" + executablePath +
                 '}';
+    }
+
+    /**
+     * A list of {@link PythonEnvironment}
+     */
+    public static class List extends ListParameter<PythonEnvironment> {
+        public List() {
+            super(PythonEnvironment.class);
+        }
+
+        public List(List other) {
+            super(PythonEnvironment.class);
+            for (PythonEnvironment environment : other) {
+                add(new PythonEnvironment(environment));
+            }
+        }
     }
 }

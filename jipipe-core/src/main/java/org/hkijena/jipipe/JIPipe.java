@@ -84,6 +84,7 @@ public class JIPipe extends AbstractService implements JIPipeRegistry {
     private JIPipeSettingsRegistry settingsRegistry = new JIPipeSettingsRegistry();
     private JIPipeExpressionRegistry tableOperationRegistry = new JIPipeExpressionRegistry();
     private JIPipeUtilityRegistry utilityRegistry = new JIPipeUtilityRegistry();
+    private JIPipeExternalEnvironmentRegistry externalEnvironmentRegistry = new JIPipeExternalEnvironmentRegistry();
     private FilesCollection imageJPlugins = null;
     private boolean initializing = false;
 
@@ -502,6 +503,11 @@ public class JIPipe extends AbstractService implements JIPipeRegistry {
 
     public LogService getLogService() {
         return logService;
+    }
+
+    @Override
+    public JIPipeExternalEnvironmentRegistry getExternalEnvironmentRegistry() {
+        return externalEnvironmentRegistry;
     }
 
     /**

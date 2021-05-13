@@ -9,6 +9,7 @@ import org.hkijena.jipipe.extensions.parameters.primitives.StringList;
 import org.hkijena.jipipe.extensions.r.algorithms.ImportRDatasetAlgorithm;
 import org.hkijena.jipipe.extensions.r.algorithms.IteratingRScriptAlgorithm;
 import org.hkijena.jipipe.extensions.r.algorithms.MergingRScriptAlgorithm;
+import org.hkijena.jipipe.extensions.r.installers.REnvInstaller;
 import org.hkijena.jipipe.extensions.r.parameters.RScriptParameter;
 import org.hkijena.jipipe.extensions.r.ui.RTokenMaker;
 import org.hkijena.jipipe.utils.UIUtils;
@@ -54,6 +55,24 @@ public class RExtension extends JIPipePrepackagedDefaultJavaExtension {
 
     @Override
     public void register() {
+        RExtensionSettings extensionSettings = new RExtensionSettings();
+
+        registerEnvironment(REnvironment.class,
+                REnvironment.List.class,
+                extensionSettings,
+                "r",
+                "R environment",
+                "A R environment",
+                UIUtils.getIconFromResources("apps/rlogo_icon.png"));
+        registerParameterType("optional-r-environment",
+                OptionalREnvironment.class,
+                null,
+                null,
+                "Optional R environment",
+                "An optional R environment",
+                null);
+        registerEnvironmentInstaller(REnvironment.class, REnvInstaller.class, UIUtils.getIconFromResources("actions/browser-download.png"));
+
         AbstractTokenMakerFactory atmf = (AbstractTokenMakerFactory) TokenMakerFactory.getDefaultInstance();
         atmf.putMapping("text/x-r-script", RTokenMaker.class.getName());
 
@@ -69,7 +88,7 @@ public class RExtension extends JIPipePrepackagedDefaultJavaExtension {
                 UIUtils.getIconFromResources("apps/rlogo_icon.png"),
                 "Extensions",
                 UIUtils.getIconFromResources("actions/plugins.png"),
-                new RExtensionSettings());
+                extensionSettings);
         registerNodeType("r-script-iterating", IteratingRScriptAlgorithm.class, UIUtils.getIconURLFromResources("apps/rlogo_icon.png"));
         registerNodeType("r-script-merging", MergingRScriptAlgorithm.class, UIUtils.getIconURLFromResources("apps/rlogo_icon.png"));
 

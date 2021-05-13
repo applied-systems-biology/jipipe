@@ -6,8 +6,8 @@ import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeValidityReport;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
-import org.hkijena.jipipe.extensions.environments.OptionalPythonEnvironment;
-import org.hkijena.jipipe.extensions.environments.PythonEnvironment;
+import org.hkijena.jipipe.extensions.python.OptionalPythonEnvironment;
+import org.hkijena.jipipe.extensions.python.PythonEnvironment;
 import org.hkijena.jipipe.extensions.python.PythonExtensionSettings;
 
 public class CellPoseSettings implements JIPipeParameterCollection {

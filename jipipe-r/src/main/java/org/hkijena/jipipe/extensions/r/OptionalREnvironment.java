@@ -1,4 +1,4 @@
-package org.hkijena.jipipe.extensions.environments;
+package org.hkijena.jipipe.extensions.r;
 
 import org.hkijena.jipipe.extensions.parameters.optional.OptionalParameter;
 

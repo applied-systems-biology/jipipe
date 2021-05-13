@@ -17,14 +17,8 @@ import com.google.common.eventbus.EventBus;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeValidityReport;
-import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
-import org.hkijena.jipipe.extensions.environments.PythonEnvironment;
-import org.hkijena.jipipe.utils.StringUtils;
-
-import java.nio.file.Files;
-import java.nio.file.Paths;
 
 public class PythonExtensionSettings implements JIPipeParameterCollection {
 

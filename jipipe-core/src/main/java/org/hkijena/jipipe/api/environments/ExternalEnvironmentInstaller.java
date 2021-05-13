@@ -1,4 +1,4 @@
-package org.hkijena.jipipe.extensions.environments;
+package org.hkijena.jipipe.api.environments;
 
 import org.hkijena.jipipe.api.JIPipeRunnable;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;

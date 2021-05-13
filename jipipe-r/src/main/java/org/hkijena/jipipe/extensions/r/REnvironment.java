@@ -1,4 +1,4 @@
-package org.hkijena.jipipe.extensions.environments;
+package org.hkijena.jipipe.extensions.r;
 
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonSetter;
@@ -8,12 +8,15 @@ import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeValidityReport;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
+import org.hkijena.jipipe.api.environments.ExternalEnvironment;
 import org.hkijena.jipipe.extensions.expressions.DefaultExpressionParameter;
 import org.hkijena.jipipe.extensions.expressions.ExpressionParameterSettings;
 import org.hkijena.jipipe.extensions.expressions.ExpressionParameterVariable;
 import org.hkijena.jipipe.extensions.expressions.ExpressionParameterVariableSource;
+import org.hkijena.jipipe.extensions.parameters.collections.ListParameter;
 import org.hkijena.jipipe.extensions.parameters.pairs.PairParameterSettings;
 import org.hkijena.jipipe.extensions.parameters.pairs.StringQueryExpressionAndStringPairParameter;
+import org.hkijena.jipipe.utils.EnvironmentVariablesSource;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 
@@ -116,7 +119,7 @@ public class REnvironment implements ExternalEnvironment {
             "variables are available as variables")
     @JIPipeParameter("environment-variables")
     @PairParameterSettings(keyLabel = "Value", valueLabel = "Key")
-    @ExpressionParameterSettings(variableSource = PythonEnvironment.PythonEnvironmentVariablesSource.class)
+    @ExpressionParameterSettings(variableSource = EnvironmentVariablesSource.class)
     public StringQueryExpressionAndStringPairParameter.List getEnvironmentVariables() {
         return environmentVariables;
     }
@@ -148,6 +151,22 @@ public class REnvironment implements ExternalEnvironment {
             result.add(new ExpressionParameterVariable("R executable", "The R executable", "r_executable"));
             result.add(new ExpressionParameterVariable("Script file", "The R script file to be executed", "script_file"));
             return result;
+        }
+    }
+
+    /**
+     * A list of {@link REnvironment}
+     */
+    public static class List extends ListParameter<REnvironment> {
+        public List() {
+            super(REnvironment.class);
+        }
+
+        public List(REnvironment.List other) {
+            super(REnvironment.class);
+            for (REnvironment environment : other) {
+                add(new REnvironment(environment));
+            }
         }
     }
 }

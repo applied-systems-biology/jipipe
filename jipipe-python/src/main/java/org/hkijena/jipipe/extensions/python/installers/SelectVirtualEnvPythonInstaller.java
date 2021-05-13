@@ -1,4 +1,4 @@
-package org.hkijena.jipipe.extensions.environments.installers;
+package org.hkijena.jipipe.extensions.python.installers;
 
 import com.google.common.eventbus.EventBus;
 import org.apache.commons.lang3.SystemUtils;
@@ -9,9 +9,9 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.extensions.expressions.DefaultExpressionEvaluator;
 import org.hkijena.jipipe.extensions.expressions.DefaultExpressionParameter;
-import org.hkijena.jipipe.extensions.environments.ExternalEnvironmentInstaller;
-import org.hkijena.jipipe.extensions.environments.PythonEnvironment;
-import org.hkijena.jipipe.extensions.environments.PythonEnvironmentType;
+import org.hkijena.jipipe.api.environments.ExternalEnvironmentInstaller;
+import org.hkijena.jipipe.extensions.python.PythonEnvironment;
+import org.hkijena.jipipe.extensions.python.PythonEnvironmentType;
 import org.hkijena.jipipe.extensions.parameters.pairs.StringQueryExpressionAndStringPairParameter;
 import org.hkijena.jipipe.extensions.parameters.primitives.FilePathParameterSettings;
 import org.hkijena.jipipe.extensions.settings.FileChooserSettings;

@@ -1,4 +1,4 @@
-package org.hkijena.jipipe.extensions.environments;
+package org.hkijena.jipipe.extensions.python;
 
 /**
  * The supported Python environment types

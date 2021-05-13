@@ -24,18 +24,30 @@ import java.awt.*;
 public class ArrowLessScrollBarUI extends BasicScrollBarUI {
     @Override
     protected JButton createDecreaseButton(int orientation) {
-        if (JIPipe.getInstance() == null || GeneralUISettings.getInstance().getTheme().isModern())
-            return createZeroButton();
-        else
+        try {
+            if (JIPipe.getInstance() == null || GeneralUISettings.getInstance().getTheme().isModern())
+                return createZeroButton();
+            else
+                return super.createDecreaseButton(orientation);
+        }
+        catch (NullPointerException e) {
+            e.printStackTrace();
             return super.createDecreaseButton(orientation);
+        }
     }
 
     @Override
     protected JButton createIncreaseButton(int orientation) {
-        if (JIPipe.getInstance() == null || GeneralUISettings.getInstance().getTheme().isModern())
-            return createZeroButton();
-        else
+        try {
+            if (JIPipe.getInstance() == null || GeneralUISettings.getInstance().getTheme().isModern())
+                return createZeroButton();
+            else
+                return super.createIncreaseButton(orientation);
+        }
+        catch (NullPointerException e) {
+            e.printStackTrace();
             return super.createIncreaseButton(orientation);
+        }
     }
 
     private JButton createZeroButton() {

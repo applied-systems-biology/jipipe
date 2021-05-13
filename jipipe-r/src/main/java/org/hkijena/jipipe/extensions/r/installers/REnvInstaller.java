@@ -1,18 +1,17 @@
-package org.hkijena.jipipe.extensions.environments.installers;
+package org.hkijena.jipipe.extensions.r.installers;
 
 import com.google.common.eventbus.EventBus;
 import org.apache.commons.exec.*;
 import org.apache.commons.lang3.SystemUtils;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
+import org.hkijena.jipipe.api.environments.ExternalEnvironmentInstaller;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
-import org.hkijena.jipipe.extensions.environments.ExternalEnvironmentInstaller;
-import org.hkijena.jipipe.extensions.environments.PythonEnvironment;
-import org.hkijena.jipipe.extensions.environments.REnvironment;
 import org.hkijena.jipipe.extensions.parameters.primitives.OptionalPathParameter;
 import org.hkijena.jipipe.extensions.parameters.primitives.StringParameterSettings;
+import org.hkijena.jipipe.extensions.r.REnvironment;
 import org.hkijena.jipipe.extensions.settings.RuntimeSettings;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.components.MarkdownDocument;
@@ -23,10 +22,8 @@ import javax.swing.*;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.nio.file.attribute.PosixFilePermissions;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 @JIPipeDocumentation(name = "Install R", description = "Downloads and installs R")

@@ -29,10 +29,8 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameterTypeInfo;
 import org.hkijena.jipipe.api.registries.JIPipeJavaNodeRegistrationTask;
 import org.hkijena.jipipe.api.registries.JIPipeNodeRegistrationTask;
 import org.hkijena.jipipe.api.registries.JIPipeParameterTypeRegistry;
-import org.hkijena.jipipe.extensions.environments.REnvironment;
+import org.hkijena.jipipe.api.environments.*;
 import org.hkijena.jipipe.extensions.parameters.collections.ListParameter;
-import org.hkijena.jipipe.extensions.environments.PythonEnvironment;
-import org.hkijena.jipipe.extensions.environments.ExternalEnvironmentInstaller;
 import org.hkijena.jipipe.extensions.expressions.ExpressionFunction;
 import org.hkijena.jipipe.extensions.expressions.functions.ColumnOperationAdapterFunction;
 import org.hkijena.jipipe.extensions.parameters.primitives.EnumParameterTypeInfo;
@@ -48,6 +46,7 @@ import org.hkijena.jipipe.ui.parameters.JIPipeParameterGeneratorUI;
 import org.hkijena.jipipe.ui.resultanalysis.JIPipeResultDataSlotPreview;
 import org.hkijena.jipipe.ui.resultanalysis.JIPipeResultDataSlotRowUI;
 import org.hkijena.jipipe.utils.ReflectionUtils;
+import org.hkijena.jipipe.utils.UIUtils;
 import org.scijava.service.AbstractService;
 
 import javax.swing.*;
@@ -513,19 +512,37 @@ public abstract class JIPipeDefaultJavaExtension extends AbstractService impleme
     }
 
     /**
-     * Register a Python environment installer
-     * @param installerClass the installer
+     * Registers a new environment type.
+     * This will also register the environment class and environment list class a valid parameters.
+     * Requires that the environment class has a default constructor and a deep copy constructor.
+     * Will also register a settings page for the environment
+     * @param environmentClass the environment class. Must be JSON-serializable. Will be registered as parameter type
+     * @param listClass the list list. Will be registered as parameter type with ID [id]-list
+     * @param settings Settings page that stores the user's presets
+     * @param id the ID of the environment class. Will be used as parameter type ID
+     * @param name the name of the environment
+     * @param description the description of the environment
+     * @param <T> environment class
+     * @param <U> list of environment class
      */
-    public void registerPythonEnvironmentInstaller(Class<? extends ExternalEnvironmentInstaller> installerClass) {
-        registerUtility(PythonEnvironment.class, installerClass);
+    public <T extends ExternalEnvironment, U extends ListParameter<T>> void registerEnvironment(Class<T> environmentClass,
+                                                                    Class<U> listClass,
+                                                                    ExternalEnvironmentSettings<T, U> settings,
+                                                                    String id,
+                                                                    String name,
+                                                                    String description,
+                                                                    Icon icon) {
+        registerParameterType(id, environmentClass, listClass, null, null, name, description, ExternalEnvironmentParameterEditorUI.class);
     }
 
     /**
-     * Register a R environment installer
-     * @param installerClass the installer
+     * Registers an installer for a given environment
+     * @param environmentClass the environment type
+     * @param installerClass the installer class
+     * @param icon icon for the installer
      */
-    public void registerREnvironmentInstaller(Class<? extends ExternalEnvironmentInstaller> installerClass) {
-        registerUtility(REnvironment.class, installerClass);
+    public void registerEnvironmentInstaller(Class<? extends ExternalEnvironment> environmentClass, Class<? extends ExternalEnvironmentInstaller> installerClass, Icon icon) {
+        registry.getExternalEnvironmentRegistry().registerInstaller(environmentClass, installerClass, icon);
     }
 
     @Override

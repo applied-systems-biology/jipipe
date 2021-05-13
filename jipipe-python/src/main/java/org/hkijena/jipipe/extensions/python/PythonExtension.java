@@ -19,6 +19,9 @@ import org.hkijena.jipipe.extensions.parameters.primitives.HTMLText;
 import org.hkijena.jipipe.extensions.parameters.primitives.StringList;
 import org.hkijena.jipipe.extensions.python.algorithms.*;
 import org.hkijena.jipipe.extensions.python.installers.MinicondaEnvPythonInstaller;
+import org.hkijena.jipipe.extensions.python.installers.SelectCondaEnvPythonInstaller;
+import org.hkijena.jipipe.extensions.python.installers.SelectSystemPythonInstaller;
+import org.hkijena.jipipe.extensions.python.installers.SelectVirtualEnvPythonInstaller;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.scijava.plugin.Plugin;
 
@@ -43,12 +46,34 @@ public class PythonExtension extends JIPipePrepackagedDefaultJavaExtension {
 
     @Override
     public void register() {
+        registerEnvironment(PythonEnvironment.class,
+                PythonEnvironment.List.class,
+                new PythonEnvironmentSettings(),
+                "python",
+                "Python environment",
+                "A Python environment",
+                UIUtils.getIconFromResources("apps/python.png"));
+        registerParameterType("optional-python-environment",
+                OptionalPythonEnvironment.class,
+                null,
+                null,
+                "Optional Python environment",
+                "An optional Python environment",
+                null);
+        registerEnumParameterType("python-environment-type",
+                PythonEnvironmentType.class,
+                "Python environment type",
+                "A Python environment type");
         registerSettingsSheet(PythonExtensionSettings.ID,
                 "Python integration",
                 UIUtils.getIconFromResources("apps/python.png"),
                 "Extensions",
                 UIUtils.getIconFromResources("actions/plugins.png"),
                 new PythonExtensionSettings());
+        registerEnvironmentInstaller(PythonEnvironment.class, MinicondaEnvPythonInstaller.class, UIUtils.getIconFromResources("actions/browser-download.png"));
+        registerEnvironmentInstaller(PythonEnvironment.class, SelectCondaEnvPythonInstaller.class, UIUtils.getIconFromResources("actions/project-open.png"));
+        registerEnvironmentInstaller(PythonEnvironment.class, SelectSystemPythonInstaller.class, UIUtils.getIconFromResources("actions/project-open.png"));
+        registerEnvironmentInstaller(PythonEnvironment.class, SelectVirtualEnvPythonInstaller.class, UIUtils.getIconFromResources("actions/project-open.png"));
 
         registerNodeType("python-script", JythonScriptAlgorithm.class, UIUtils.getIconURLFromResources("apps/python.png"));
         registerNodeType("python-script-iterating-simple", SimpleIteratingJythonScriptAlgorithm.class, UIUtils.getIconURLFromResources("apps/python.png"));
@@ -57,8 +82,6 @@ public class PythonExtension extends JIPipePrepackagedDefaultJavaExtension {
         registerNodeType("cpython-script", PythonScriptAlgorithm.class, UIUtils.getIconURLFromResources("apps/python.png"));
         registerNodeType("cpython-script-iterating", IteratingPythonScriptAlgorithm.class, UIUtils.getIconURLFromResources("apps/python.png"));
         registerNodeType("cpython-script-merging", MergingPythonScriptAlgorithm.class, UIUtils.getIconURLFromResources("apps/python.png"));
-
-        registerPythonEnvironmentInstaller(MinicondaEnvPythonInstaller.class);
     }
 
     @Override

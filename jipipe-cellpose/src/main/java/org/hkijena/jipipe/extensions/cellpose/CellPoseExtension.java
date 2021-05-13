@@ -7,6 +7,7 @@ import org.hkijena.jipipe.extensions.JIPipePrepackagedDefaultJavaExtension;
 import org.hkijena.jipipe.extensions.cellpose.algorithms.CellPoseAlgorithm;
 import org.hkijena.jipipe.extensions.parameters.primitives.HTMLText;
 import org.hkijena.jipipe.extensions.parameters.primitives.StringList;
+import org.hkijena.jipipe.extensions.python.PythonEnvironment;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.scijava.plugin.Plugin;
 
@@ -56,8 +57,8 @@ public class CellPoseExtension extends JIPipePrepackagedDefaultJavaExtension {
                 "Extensions",
                 UIUtils.getIconFromResources("actions/plugins.png"),
                 new CellPoseSettings());
-        registerPythonEnvironmentInstaller(CellPoseEnvInstaller.class);
-        registerPythonEnvironmentInstaller(CellPoseGPUEnvInstaller.class);
+        registerEnvironmentInstaller(PythonEnvironment.class, CellPoseEnvInstaller.class, UIUtils.getIconFromResources("apps/cellpose.png"));
+        registerEnvironmentInstaller(PythonEnvironment.class, CellPoseGPUEnvInstaller.class, UIUtils.getIconFromResources("apps/cellpose.png"));
 
         registerEnumParameterType("cellpose-model", CellPoseModel.class, "Cellpose model", "A Cellpose model");
 

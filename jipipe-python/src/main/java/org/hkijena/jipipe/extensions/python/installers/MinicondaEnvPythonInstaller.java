@@ -8,9 +8,8 @@ import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
-import org.hkijena.jipipe.extensions.environments.ExternalEnvironmentInstaller;
-import org.hkijena.jipipe.extensions.environments.PythonEnvironment;
-import org.hkijena.jipipe.extensions.environments.installers.SelectCondaEnvPythonInstaller;
+import org.hkijena.jipipe.api.environments.ExternalEnvironmentInstaller;
+import org.hkijena.jipipe.extensions.python.PythonEnvironment;
 import org.hkijena.jipipe.extensions.parameters.primitives.OptionalPathParameter;
 import org.hkijena.jipipe.extensions.parameters.primitives.StringParameterSettings;
 import org.hkijena.jipipe.extensions.python.PythonUtils;
@@ -18,7 +17,6 @@ import org.hkijena.jipipe.extensions.settings.RuntimeSettings;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.components.MarkdownDocument;
 import org.hkijena.jipipe.ui.parameters.ParameterPanel;
-import org.hkijena.jipipe.utils.MacroUtils;
 import org.hkijena.jipipe.utils.WebUtils;
 
 import javax.swing.*;
@@ -29,11 +27,9 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.attribute.PosixFilePermissions;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.stream.Collectors;
 
 @JIPipeDocumentation(name = "Install Miniconda 3", description = "Installs Miniconda 3")
 public class MinicondaEnvPythonInstaller extends ExternalEnvironmentInstaller {

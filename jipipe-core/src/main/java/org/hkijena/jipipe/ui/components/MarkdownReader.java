@@ -218,11 +218,19 @@ public class MarkdownReader extends JPanel {
     }
 
     private void initializeStyleSheet(StyleSheet styleSheet) {
-        if (JIPipe.getInstance() != null && GeneralUISettings.getInstance().getTheme().isDark()) {
-            for (String rule : CSS_RULES_DARK) {
-                styleSheet.addRule(rule);
+        try {
+            if (JIPipe.getInstance() != null && GeneralUISettings.getInstance().getTheme().isDark()) {
+                for (String rule : CSS_RULES_DARK) {
+                    styleSheet.addRule(rule);
+                }
+            } else {
+                for (String rule : CSS_RULES) {
+                    styleSheet.addRule(rule);
+                }
             }
-        } else {
+        }
+        catch (NullPointerException e) {
+            e.printStackTrace();
             for (String rule : CSS_RULES) {
                 styleSheet.addRule(rule);
             }

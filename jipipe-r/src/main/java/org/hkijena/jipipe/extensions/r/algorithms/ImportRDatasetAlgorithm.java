@@ -10,7 +10,7 @@ import org.hkijena.jipipe.api.nodes.JIPipeOutputSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.nodes.categories.DataSourceNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
-import org.hkijena.jipipe.extensions.environments.OptionalREnvironment;
+import org.hkijena.jipipe.extensions.r.OptionalREnvironment;
 import org.hkijena.jipipe.extensions.parameters.primitives.EnumItemInfo;
 import org.hkijena.jipipe.extensions.parameters.primitives.EnumParameterSettings;
 import org.hkijena.jipipe.extensions.r.RExtensionSettings;
