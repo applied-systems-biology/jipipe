@@ -1,13 +1,20 @@
 package org.hkijena.jipipe.extensions.cellpose.algorithms;
 
+import ij.IJ;
+import ij.ImagePlus;
+import org.apache.commons.io.FileUtils;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
+import org.hkijena.jipipe.api.data.JIPipeAnnotation;
+import org.hkijena.jipipe.api.data.JIPipeAnnotationMergeStrategy;
 import org.hkijena.jipipe.api.data.JIPipeDefaultMutableSlotConfiguration;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.cellpose.CellPoseModel;
+import org.hkijena.jipipe.extensions.cellpose.CellPoseSettings;
+import org.hkijena.jipipe.extensions.cellpose.CellPoseUtils;
 import org.hkijena.jipipe.extensions.cellpose.parameters.*;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ROIListData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d2.greyscale.ImagePlus2DGreyscale32FData;
@@ -18,7 +25,17 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d3.greyscale.Imag
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d3.greyscale.ImagePlus3DGreyscaleMaskData;
 import org.hkijena.jipipe.extensions.parameters.primitives.OptionalAnnotationNameParameter;
 import org.hkijena.jipipe.extensions.parameters.primitives.OptionalDoubleParameter;
+import org.hkijena.jipipe.extensions.python.PythonUtils;
+import org.hkijena.jipipe.extensions.settings.RuntimeSettings;
 import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
+import org.hkijena.jipipe.utils.MacroUtils;
+
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.List;
 
 @JIPipeDocumentation(name = "Cellpose", description = "Runs Cellpose on the input image. If the input image is 3D, " +
         "Cellpose will be executed in 3D mode. Following outputs can be generated: " +
@@ -46,7 +63,7 @@ public class CellPoseAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     private OutputParameters outputParameters = new OutputParameters();
     private OptionalDoubleParameter diameter = new OptionalDoubleParameter(30.0, true);
     private OptionalAnnotationNameParameter diameterAnnotation = new OptionalAnnotationNameParameter("Diameter", true);
-
+    private boolean cleanUpAfterwards = true;
 
     public CellPoseAlgorithm(JIPipeNodeInfo info) {
         super(info);
@@ -66,6 +83,7 @@ public class CellPoseAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         this.performanceParameters = new PerformanceParameters(other.performanceParameters);
         this.enhancementParameters = new EnhancementParameters(other.enhancementParameters);
         this.thresholdParameters = new ThresholdParameters(other.thresholdParameters);
+        this.cleanUpAfterwards = other.cleanUpAfterwards;
         updateOutputSlots();
         registerSubParameter(modelParameters);
         registerSubParameter(performanceParameters);
@@ -85,6 +103,99 @@ public class CellPoseAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     @Override
     protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
 
+        Path workDirectory = RuntimeSettings.generateTempDirectory("cellpose");
+        Path inputImagePath = workDirectory.resolve("input.tif");
+        Path outputRoiOutline = workDirectory.resolve("outlines.txt");
+        Path outputDiameters = workDirectory.resolve("diameters.txt");
+
+        // Save raw image
+        progressInfo.log("Saving input image to " + inputImagePath);
+        ImagePlus img = dataBatch.getInputData(getFirstInputSlot(), ImagePlus3DGreyscaleData.class, progressInfo).getImage();
+        IJ.saveAs(img, "TIFF", inputImagePath.toString());
+
+        // Generate code
+        StringBuilder code = new StringBuilder();
+        code.append("from cellpose import models\n");
+        code.append("from cellpose import utils, io\n");
+        code.append(String.format("model = models.Cellpose(model_type=\"%s\", gpu=%s)\n",
+                getModelParameters().getModel().getId(),
+                getModelParameters().isEnableGPU() ? "True" : "False"
+                ));
+        code.append("input_file = \"").append(MacroUtils.escapeString(inputImagePath.toString())).append("\"\n");
+        code.append("img = io.imread(input_file)\n");
+
+        // Generate a progress adapter
+        code.append("class ProgressAdapter:\n");
+        code.append("    def __init__(self):\n");
+        code.append("        pass\n\n");
+        code.append("    def setValue(self, num):\n");
+        code.append("        print(\"-- Cellpose progress \" + str(num) + \"%\")\n\n");
+
+        code.append(String.format("masks, flows, styles, diams = model.eval(img, progress=ProgressAdapter(), diameter=%s, channels=[[0, 0]], do_3D=%s)\n",
+                getDiameter().isEnabled() ? "" + getDiameter().getContent() : "None",
+                img.getNDimensions() > 2 ? "True" : "False"
+                ));
+
+        // Generate ROI output
+        if(outputParameters.isOutputROI()) {
+            code.append("outlines = utils.outlines_list(masks)\n");
+            code.append("def outlines_to_text(path, outlines):\n" +
+                    "    with open(path, 'w') as f:\n" +
+                    "        for o in outlines:\n" +
+                    "            xy = list(o.flatten())\n" +
+                    "            xy_str = ','.join(map(str, xy))\n" +
+                    "            f.write(xy_str)\n" +
+                    "            f.write('\\n')\n");
+            code.append(String.format("outlines_to_text(\"%s\", outlines)\n",
+                    MacroUtils.escapeString(outputRoiOutline.toString())));
+        }
+
+        // Write diameters
+        if(diameterAnnotation.isEnabled()) {
+            code.append(String.format("with open(\"%s\", \"w\") as f:\n", MacroUtils.escapeString(outputDiameters.toString())));
+            code.append("    f.write(str(diams))\n");
+        }
+
+        // Run script
+        PythonUtils.runPython(code.toString(), CellPoseSettings.getInstance().getPythonEnvironment(), progressInfo);
+
+        // Read diameters
+        List<JIPipeAnnotation> annotationList = new ArrayList<>();
+        if(diameterAnnotation.isEnabled()) {
+            try {
+                String value = new String(Files.readAllBytes(outputDiameters), StandardCharsets.UTF_8);
+                diameterAnnotation.addAnnotationIfEnabled(annotationList, value);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
+
+        // Extract outputs
+        if(outputParameters.isOutputROI()) {
+            ROIListData rois = CellPoseUtils.cellPoseROIToImageJ(outputRoiOutline);
+            dataBatch.addOutputData("ROI", rois, annotationList, JIPipeAnnotationMergeStrategy.Merge, progressInfo);
+        }
+
+        // Cleanup
+        if(cleanUpAfterwards) {
+            try {
+                FileUtils.deleteDirectory(workDirectory.toFile());
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    @JIPipeDocumentation(name = "Clean up data after processing", description = "If enabled, data is deleted from temporary directories after " +
+            "the processing was finished. Disable this to make it possible to debug your scripts. The directories are accessible via the logs (Tools &gt; Logs).")
+    @JIPipeParameter("cleanup-afterwards")
+    public boolean isCleanUpAfterwards() {
+        return cleanUpAfterwards;
+    }
+
+    @JIPipeParameter("cleanup-afterwards")
+    public void setCleanUpAfterwards(boolean cleanUpAfterwards) {
+        this.cleanUpAfterwards = cleanUpAfterwards;
     }
 
     @JIPipeDocumentation(name = "Annotate with diameter", description = "If enabled, the diameter is attached as annotation. " +
