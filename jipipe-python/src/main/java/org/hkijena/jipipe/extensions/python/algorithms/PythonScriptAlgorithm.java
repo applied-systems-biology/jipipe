@@ -79,7 +79,8 @@ public class PythonScriptAlgorithm extends JIPipeParameterSlotAlgorithm {
         registerSubParameter(scriptParameters);
     }
 
-    @JIPipeDocumentation(name = "Override Python environment", description = "If enabled, a different Python environment is used for this Node.")
+    @JIPipeDocumentation(name = "Override Python environment", description = "If enabled, a different Python environment is used for this Node. Otherwise " +
+            "the one in the Project > Application settings > Extensions > Python is used.")
     @JIPipeParameter("override-environment")
     public OptionalPythonEnvironment getOverrideEnvironment() {
         return overrideEnvironment;

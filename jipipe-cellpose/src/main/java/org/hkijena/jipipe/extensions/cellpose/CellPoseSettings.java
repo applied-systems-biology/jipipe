@@ -78,9 +78,10 @@ public class CellPoseSettings implements JIPipeParameterCollection {
             report.reportIsInvalid("Python is not configured!",
                     "Project > Application settings > Extensions > Cellpose",
                     "This node requires an installation of Python. You have to point JIPipe to a Python installation.",
-                    "Please install Python from https://www.python.org/, or from https://www.anaconda.com/ or https://docs.conda.io/en/latest/miniconda.html. " +
-                            "If Python is installed, go to Project > Application settings > Extensions > Cellpose and " +
-                            "set the Python executable. virtualenv is supported (you can find the exe in the environment bin folder).");
+                    "Please install Python from https://www.python.org/, or from https://www.anaconda.com/ or https://docs.conda.io/en/latest/miniconda.html and install Cellpose " +
+                            "according to the documentation https://cellpose.readthedocs.io/en/latest/installation.html\n" +
+                            "Then go to Project > Application settings > Extensions > Cellpose and choose the correct environment. " +
+                            "Alternatively, the settings page will provide you with means to install Cellpose automatically.");
         }
     }
 }

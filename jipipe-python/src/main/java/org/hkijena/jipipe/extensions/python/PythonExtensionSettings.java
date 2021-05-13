@@ -70,21 +70,6 @@ public class PythonExtensionSettings implements JIPipeParameterCollection {
         return JIPipe.getSettings().getSettings(ID, PythonExtensionSettings.class);
     }
 
-    /**
-     * Checks if the Python settings are valid or throws an exception
-     */
-    public static void checkPythonSettings() {
-        if (!pythonSettingsAreValid()) {
-            throw new UserFriendlyRuntimeException("The Python installation is invalid!\n" +
-                    "Python=" + getInstance().getPythonEnvironment(),
-                    "Python is not configured!",
-                    "Project > Application settings > Extensions > Python integration",
-                    "This node requires an installation of Python. You have to point JIPipe to a Python installation.",
-                    "Please install Python from https://www.python.org/, or from https://www.anaconda.com/ or https://docs.conda.io/en/latest/miniconda.html. " +
-                            "If Python is installed, go to Project > Application settings > Extensions > Python integration and " +
-                            "set the Python executable. virtualenv is supported (you can find the exe in the environment bin folder).");
-        }
-    }
 
     /**
      * Checks if the Python settings are valid or reports an invalid state
@@ -97,8 +82,8 @@ public class PythonExtensionSettings implements JIPipeParameterCollection {
                     "Project > Application settings > Extensions > Python integration",
                     "This node requires an installation of Python. You have to point JIPipe to a Python installation.",
                     "Please install Python from https://www.python.org/, or from https://www.anaconda.com/ or https://docs.conda.io/en/latest/miniconda.html. " +
-                            "If Python is installed, go to Project > Application settings > Extensions > Python integration and " +
-                            "set the Python executable. virtualenv is supported (you can find the exe in the environment bin folder).");
+                            "Then go to Project > Application settings > Extensions > Python integration and choose the environment. " +
+                            "Alternatively, you can install a Conda environment from the settings page.");
         }
     }
 

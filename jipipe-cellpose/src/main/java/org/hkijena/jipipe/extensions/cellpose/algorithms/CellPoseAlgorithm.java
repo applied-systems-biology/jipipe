@@ -6,6 +6,7 @@ import org.apache.commons.io.FileUtils;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
+import org.hkijena.jipipe.api.JIPipeValidityReport;
 import org.hkijena.jipipe.api.data.JIPipeAnnotation;
 import org.hkijena.jipipe.api.data.JIPipeAnnotationMergeStrategy;
 import org.hkijena.jipipe.api.data.JIPipeDefaultMutableSlotConfiguration;
@@ -15,6 +16,7 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.cellpose.CellPoseSettings;
 import org.hkijena.jipipe.extensions.cellpose.CellPoseUtils;
 import org.hkijena.jipipe.extensions.cellpose.parameters.*;
+import org.hkijena.jipipe.extensions.environments.OptionalPythonEnvironment;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ROIListData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d2.greyscale.ImagePlus2DGreyscale32FData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d3.color.ImagePlus3DColorHSBData;
@@ -23,6 +25,7 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d3.greyscale.Imag
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d3.greyscale.ImagePlus3DGreyscaleData;
 import org.hkijena.jipipe.extensions.parameters.primitives.OptionalAnnotationNameParameter;
 import org.hkijena.jipipe.extensions.parameters.primitives.OptionalDoubleParameter;
+import org.hkijena.jipipe.extensions.python.PythonExtensionSettings;
 import org.hkijena.jipipe.extensions.python.PythonUtils;
 import org.hkijena.jipipe.extensions.settings.RuntimeSettings;
 import org.hkijena.jipipe.utils.MacroUtils;
@@ -34,7 +37,8 @@ import java.nio.file.Path;
 import java.util.*;
 
 @JIPipeDocumentation(name = "Cellpose", description = "Runs Cellpose on the input image. If the input image is 3D, " +
-        "Cellpose will be executed in 3D mode. Following outputs can be generated: " +
+        "Cellpose will be executed in 3D mode. This node can generate a multitude of outputs, although only ROI is activated by default. " +
+        "Go to the 'Outputs' parameter section to enable the other outputs." +
         "<ul>" +
         "<li><b>Labels:</b> A grayscale image where each connected component is assigned a unique value. " +
         "Please note that ImageJ will run into issues if too many objects are present and the labels are saved in int32. ImageJ would load them as float32.</li>" +
@@ -42,7 +46,8 @@ import java.util.*;
         "<li><b>Probabilities:</b> An image indicating the probabilities for each pixel.</li>" +
         "<li><b>Styles:</b> A vector summarizing each image.</li>" +
         "<li><b>ROI:</b> ROI of the segmented areas.</li>" +
-        "</ul>")
+        "</ul>" +
+        "Please note that you need to setup a valid Python environment with Cellpose installed. You can find the setting in Project &gt; Application settings &gt; Extensions &gt; Cellpose.")
 @JIPipeInputSlot(value = ImagePlus3DGreyscaleData.class, slotName = "Input", autoCreate = true)
 @JIPipeOutputSlot(value = ImagePlus3DGreyscaleData.class, slotName = "Labels")
 @JIPipeOutputSlot(value = ImagePlus3DColorRGBData.class, slotName = "Flows")
@@ -60,6 +65,7 @@ public class CellPoseAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     private OptionalDoubleParameter diameter = new OptionalDoubleParameter(30.0, true);
     private OptionalAnnotationNameParameter diameterAnnotation = new OptionalAnnotationNameParameter("Diameter", true);
     private boolean cleanUpAfterwards = true;
+    private OptionalPythonEnvironment overrideEnvironment = new OptionalPythonEnvironment();
 
     public CellPoseAlgorithm(JIPipeNodeInfo info) {
         super(info);
@@ -80,6 +86,7 @@ public class CellPoseAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         this.performanceParameters = new PerformanceParameters(other.performanceParameters);
         this.enhancementParameters = new EnhancementParameters(other.enhancementParameters);
         this.thresholdParameters = new ThresholdParameters(other.thresholdParameters);
+        this.overrideEnvironment = new OptionalPythonEnvironment(other.overrideEnvironment);
         this.cleanUpAfterwards = other.cleanUpAfterwards;
         updateOutputSlots();
         registerSubParameter(modelParameters);
@@ -89,11 +96,36 @@ public class CellPoseAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         registerSubParameter(outputParameters);
     }
 
+    @JIPipeDocumentation(name = "Override Python environment", description = "If enabled, a different Python environment is used for this Node. Otherwise " +
+            "the one in the Project > Application settings > Extensions > Cellpose is used.")
+    @JIPipeParameter("override-environment")
+    public OptionalPythonEnvironment getOverrideEnvironment() {
+        return overrideEnvironment;
+    }
+
+    @JIPipeParameter("override-environment")
+    public void setOverrideEnvironment(OptionalPythonEnvironment overrideEnvironment) {
+        this.overrideEnvironment = overrideEnvironment;
+    }
+
     @Override
     public void onParameterChanged(ParameterChangedEvent event) {
         super.onParameterChanged(event);
         if(event.getSource() == outputParameters) {
             updateOutputSlots();
+        }
+    }
+
+    @Override
+    public void reportValidity(JIPipeValidityReport report) {
+        super.reportValidity(report);
+        if (!isPassThrough()) {
+            if(overrideEnvironment.isEnabled()) {
+                report.forCategory("Override Python environment").report(overrideEnvironment.getContent());
+            }
+            else {
+                CellPoseSettings.checkPythonSettings(report.forCategory("Python"));
+            }
         }
     }
 
@@ -192,7 +224,8 @@ public class CellPoseAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         }
 
         // Run script
-        PythonUtils.runPython(code.toString(), CellPoseSettings.getInstance().getPythonEnvironment(), progressInfo);
+        PythonUtils.runPython(code.toString(), overrideEnvironment.isEnabled() ? overrideEnvironment.getContent() :
+                CellPoseSettings.getInstance().getPythonEnvironment(), progressInfo);
 
         // Read diameters
         List<JIPipeAnnotation> annotationList = new ArrayList<>();
