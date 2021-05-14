@@ -1,10 +1,13 @@
 package org.hkijena.jipipe.extensions.cellpose;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.google.common.collect.ImmutableList;
 import gnu.trove.list.TIntList;
 import gnu.trove.list.array.TIntArrayList;
 import ij.gui.PolygonRoi;
 import ij.gui.Roi;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ROIListData;
+import org.hkijena.jipipe.utils.JsonUtils;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -39,6 +42,40 @@ public class CellPoseUtils {
                     }
                 }
                 rois.add(new PolygonRoi(xList.toArray(), yList.toArray(), xList.size(), Roi.POLYGON));
+            }
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        return rois;
+    }
+
+    /**
+     * Converts ROI in a custom Json format to {@link ROIListData}
+     * @param file the ROI file
+     * @return ImageJ ROI
+     */
+    public static ROIListData cellPoseROIJsonToImageJ(Path file) {
+        ROIListData rois = new ROIListData();
+        try {
+            JsonNode node = JsonUtils.getObjectMapper().readerFor(JsonNode.class).readValue(file.toFile());
+            for (JsonNode roiItem : ImmutableList.copyOf(node.elements())) {
+                TIntList xList = new TIntArrayList();
+                TIntList yList = new TIntArrayList();
+
+                for (JsonNode coordItem : ImmutableList.copyOf(roiItem.get("coords"))) {
+                    int x = coordItem.get("x").asInt();
+                    int y = coordItem.get("y").asInt();
+                    xList.add(x);
+                    yList.add(y);
+                }
+
+                PolygonRoi roi = new PolygonRoi(xList.toArray(), yList.toArray(), xList.size(), Roi.POLYGON);
+                int z = -1;
+                JsonNode zEntry = roiItem.path("z");
+                if(!zEntry.isMissingNode())
+                    z = zEntry.asInt();
+                roi.setPosition(0, z + 1, 0);
+                rois.add(roi);
             }
         } catch (IOException e) {
             throw new RuntimeException(e);

@@ -114,17 +114,19 @@ public class TransformScale3DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         }
 
         // Scale in 3D
-        int sz = img.getStackSize();
-        if (zAxis.isEnabled()) {
-            sz = zAxis.getContent().apply(sz);
-        } else {
-            double fac = Math.min((double) sx / img.getWidth(), (double) sy / img.getHeight());
-            sz = (int) (sz * fac);
-        }
+        if(img.getStackSize() > 1) {
+            int sz = img.getStackSize();
+            if (zAxis.isEnabled()) {
+                sz = zAxis.getContent().apply(sz);
+            } else {
+                double fac = Math.min((double) sx / img.getWidth(), (double) sy / img.getHeight());
+                sz = (int) (sz * fac);
+            }
 
-        if (sz != img.getStackSize()) {
-            Resizer resizer = new Resizer();
-            img = resizer.zScale(img, sz, interpolationMethod.getNativeValue());
+            if (sz != img.getStackSize()) {
+                Resizer resizer = new Resizer();
+                img = resizer.zScale(img, sz, interpolationMethod.getNativeValue());
+            }
         }
 
         dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusData(img), progressInfo);

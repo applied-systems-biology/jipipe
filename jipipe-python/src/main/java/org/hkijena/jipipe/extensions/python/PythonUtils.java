@@ -394,7 +394,7 @@ public class PythonUtils {
             return listToPythonArray((Collection<Object>) object, true);
         }
         else if(object instanceof Map) {
-            return mapToPythonDict((Map<String, Object>) object, true);
+            return mapToPythonDict((Map<String, Object>) object);
         }
         else {
             return "" + object;
@@ -413,14 +413,22 @@ public class PythonUtils {
     }
 
     /**
-     * Converts a dictionary into a Python dict
+     * Converts a dictionary into a set of Python function arguments
      * @param parameters the parameters
-     * @param withSurroundingBraces if enabled, dict braces are added
      * @return Python code
      */
-    public static String mapToPythonDict(Map<String, Object> parameters, boolean withSurroundingBraces) {
-        return (withSurroundingBraces ? "{" : "") + parameters.entrySet().stream().map(entry ->
-                entry.getKey() + "=" + objectToPython(entry.getValue())).collect(Collectors.joining(", ")) + (withSurroundingBraces ? "}" : "");
+    public static String mapToPythonDict(Map<String, Object> parameters) {
+        return "dict(" + mapToPythonArguments(parameters) + ")";
+    }
+
+    /**
+     * Converts a dictionary into a set of Python function arguments
+     * @param parameters the parameters
+     * @return Python code
+     */
+    public static String mapToPythonArguments(Map<String, Object> parameters) {
+        return parameters.entrySet().stream().map(entry ->
+                entry.getKey() + "=" + objectToPython(entry.getValue())).collect(Collectors.joining(", "));
     }
 
     public static void cleanup(Map<String, Path> inputSlotPaths, Map<String, Path> outputSlotPaths, JIPipeProgressInfo progressInfo) {

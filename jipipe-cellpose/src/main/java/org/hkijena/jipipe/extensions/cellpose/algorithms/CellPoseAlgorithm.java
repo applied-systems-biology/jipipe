@@ -34,8 +34,9 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.*;
 
-@JIPipeDocumentation(name = "Cellpose", description = "Runs Cellpose on the input image. If the input image is 3D, " +
-        "Cellpose will be executed in 3D mode. This node can generate a multitude of outputs, although only ROI is activated by default. " +
+@JIPipeDocumentation(name = "Cellpose", description = "Runs Cellpose on the input image. This node supports both segmentation in 3D and executing " +
+        "Cellpose for each 2D image plane. " +
+        "This node can generate a multitude of outputs, although only ROI is activated by default. " +
         "Go to the 'Outputs' parameter section to enable the other outputs." +
         "<ul>" +
         "<li><b>Labels:</b> A grayscale image where each connected component is assigned a unique value. " +
@@ -61,6 +62,7 @@ public class CellPoseAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     private ThresholdParameters thresholdParameters = new ThresholdParameters();
     private OutputParameters outputParameters = new OutputParameters();
     private OptionalDoubleParameter diameter = new OptionalDoubleParameter(30.0, true);
+    private boolean enable3DSegmentation = true;
     private OptionalAnnotationNameParameter diameterAnnotation = new OptionalAnnotationNameParameter("Diameter", true);
     private boolean cleanUpAfterwards = true;
     private OptionalPythonEnvironment overrideEnvironment = new OptionalPythonEnvironment();
@@ -85,6 +87,7 @@ public class CellPoseAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         this.enhancementParameters = new EnhancementParameters(other.enhancementParameters);
         this.thresholdParameters = new ThresholdParameters(other.thresholdParameters);
         this.overrideEnvironment = new OptionalPythonEnvironment(other.overrideEnvironment);
+        this.enable3DSegmentation = other.enable3DSegmentation;
         this.cleanUpAfterwards = other.cleanUpAfterwards;
         updateOutputSlots();
         registerSubParameter(modelParameters);
@@ -92,6 +95,18 @@ public class CellPoseAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         registerSubParameter(enhancementParameters);
         registerSubParameter(thresholdParameters);
         registerSubParameter(outputParameters);
+    }
+
+    @JIPipeDocumentation(name = "Enable 3D segmentation", description = "If enabled, Cellpose will segment in 3D. Otherwise, " +
+            "any 3D image will be processed per-slice. Please note that 3D segmentation requires large amounts of memory.")
+    @JIPipeParameter("enable-3d-segmentation")
+    public boolean isEnable3DSegmentation() {
+        return enable3DSegmentation;
+    }
+
+    @JIPipeParameter("enable-3d-segmentation")
+    public void setEnable3DSegmentation(boolean enable3DSegmentation) {
+        this.enable3DSegmentation = enable3DSegmentation;
     }
 
     @JIPipeDocumentation(name = "Override Python environment", description = "If enabled, a different Python environment is used for this Node. Otherwise " +
@@ -132,7 +147,7 @@ public class CellPoseAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
         Path workDirectory = RuntimeSettings.generateTempDirectory("cellpose");
         Path inputImagePath = workDirectory.resolve("input.tif");
-        Path outputRoiOutline = workDirectory.resolve("outlines.txt");
+        Path outputRoiOutline = workDirectory.resolve("rois.json");
         Path outputDiameters = workDirectory.resolve("diameters.txt");
         Path outputLabels = workDirectory.resolve("labels.tif");
         Path outputFlows = workDirectory.resolve("flows.tif");
@@ -148,21 +163,33 @@ public class CellPoseAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         StringBuilder code = new StringBuilder();
         code.append("from cellpose import models\n");
         code.append("from cellpose import utils, io\n");
+        code.append("import json\n");
+        code.append("import numpy as np\n\n");
+
+        code.append("data_is_3d = ").append(PythonUtils.objectToPython(img.getNDimensions() > 2)).append("\n");
+        code.append("enable_3d_segmentation = ").append(PythonUtils.objectToPython(img.getNDimensions() > 2 && enable3DSegmentation)).append("\n\n");
 
         Map<String, Object> modelParameterMap = new HashMap<>();
         modelParameterMap.put("model_type", getModelParameters().getModel().getId());
         modelParameterMap.put("net_avg", getEnhancementParameters().isNetAverage());
         modelParameterMap.put("gpu", getModelParameters().isEnableGPU());
 
-        code.append(String.format("model = models.Cellpose(%s)\n", PythonUtils.mapToPythonDict(modelParameterMap, false)));
+        code.append(String.format("model = models.Cellpose(%s)\n", PythonUtils.mapToPythonArguments(modelParameterMap)));
         code.append("input_file = \"").append(MacroUtils.escapeString(inputImagePath.toString())).append("\"\n");
         code.append("img = io.imread(input_file)\n");
+
+        // Add split code for 3D data in 2D plane mode
+        code.append("if data_is_3d and not enable_3d_segmentation:\n" +
+                "    imgs = []\n" +
+                "    for z in range(img.shape[0]):\n" +
+                "        imgs.append(img[z,:,:])\n" +
+                "    img = imgs\n\n");
 
         Map<String, Object> evalParameterMap = new HashMap<>();
         evalParameterMap.put("x", PythonUtils.rawPythonCode("img"));
         evalParameterMap.put("diameter", getDiameter().isEnabled() ? getDiameter().getContent() : null);
         evalParameterMap.put("channels", PythonUtils.rawPythonCode("[[0, 0]]"));
-        evalParameterMap.put("do_3D", img.getNDimensions() > 2);
+        evalParameterMap.put("do_3D", PythonUtils.rawPythonCode("enable_3d_segmentation"));
         evalParameterMap.put("normalize", getEnhancementParameters().isNormalize());
         evalParameterMap.put("anisotropy", getEnhancementParameters().getAnisotropy().isEnabled() ?
                 getEnhancementParameters().getAnisotropy().getContent() : null);
@@ -178,32 +205,55 @@ public class CellPoseAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         evalParameterMap.put("stitch_threshold", getThresholdParameters().getStitchThreshold());
 
         code.append(String.format("masks, flows, styles, diams = model.eval(%s)\n",
-                PythonUtils.mapToPythonDict(evalParameterMap, false)
+                PythonUtils.mapToPythonArguments(evalParameterMap)
                 ));
+
+        // Re-merge masks
+        if(outputParameters.isOutputROI() || outputParameters.isOutputLabels()) {
+            code.append("if data_is_3d and not enable_3d_segmentation:\n" +
+                    "    masks = np.stack(masks, 0)\n");
+        }
 
         // Generate ROI output
         if(outputParameters.isOutputROI()) {
-            code.append("outlines = utils.outlines_list(masks)\n");
-            code.append("def outlines_to_text(path, outlines):\n" +
-                    "    with open(path, 'w') as f:\n" +
-                    "        for o in outlines:\n" +
-                    "            xy = list(o.flatten())\n" +
-                    "            xy_str = ','.join(map(str, xy))\n" +
-                    "            f.write(xy_str)\n" +
-                    "            f.write('\\n')\n");
-            code.append(String.format("outlines_to_text(\"%s\", outlines)\n",
+            code.append("roi_list = []\n" +
+                    "if masks.ndim == 3:\n" +
+                    "    for z in range(masks.shape[0]):\n" +
+                    "        coords_list = utils.outlines_list(masks[z,:,:])\n" +
+                    "        for coords in coords_list:\n" +
+                    "            roi = dict(z=z, coords=[ dict(x=int(x[0]), y=int(x[1])) for x in coords ])\n" +
+                    "            roi_list.append(roi)\n" +
+                    "else:\n" +
+                    "    coords_list = utils.outlines_list(masks)\n" +
+                    "    for coords in coords_list:\n" +
+                    "        roi = dict(coords=[ dict(x=int(x[0]), y=int(x[1])) for x in coords ])\n" +
+                    "        roi_list.append(roi)\n");
+            code.append(String.format("with open(\"%s\", \"w\") as f:\n" +
+                            "    json.dump(roi_list, f, indent=4)\n\n",
                     MacroUtils.escapeString(outputRoiOutline.toString())));
         }
         if(outputParameters.isOutputLabels()) {
+            code.append("if masks.dtype != np.short and masks.dtype != np.uint8:\n" +
+                    "    masks = masks.astype(np.float32)\n");
             code.append("io.imsave(").append(PythonUtils.objectToPython(outputLabels)).append(", masks)\n");
         }
         if(outputParameters.isOutputFlows()) {
-            code.append("io.imsave(").append(PythonUtils.objectToPython(outputFlows)).append(", flows[0])\n");
+            code.append("if data_is_3d and not enable_3d_segmentation:\n" +
+                    "    flows_rgb = np.stack([x[0] for x in flows], 0)\n" +
+                    "else:\n" +
+                    "    flows_rgb = flows[0]\n");
+            code.append("io.imsave(").append(PythonUtils.objectToPython(outputFlows)).append(", flows_rgb)\n");
         }
         if(outputParameters.isOutputProbabilities()) {
-            code.append("io.imsave(").append(PythonUtils.objectToPython(outputProbabilities)).append(", flows[2])\n");
+            code.append("if data_is_3d and not enable_3d_segmentation:\n" +
+                    "    probs = np.stack([x[2] for x in flows], 0)\n" +
+                    "else:\n" +
+                    "    probs = flows[2]\n");
+            code.append("io.imsave(").append(PythonUtils.objectToPython(outputProbabilities)).append(", probs)\n");
         }
         if(outputParameters.isOutputStyles()) {
+            code.append("if data_is_3d and not enable_3d_segmentation:\n" +
+                    "    styles = np.stack(styles, 0)\n");
             code.append("io.imsave(").append(PythonUtils.objectToPython(outputStyles)).append(", styles)\n");
         }
 
@@ -230,7 +280,7 @@ public class CellPoseAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
         // Extract outputs
         if(outputParameters.isOutputROI()) {
-            ROIListData rois = CellPoseUtils.cellPoseROIToImageJ(outputRoiOutline);
+            ROIListData rois = CellPoseUtils.cellPoseROIJsonToImageJ(outputRoiOutline);
             dataBatch.addOutputData("ROI", rois, annotationList, JIPipeAnnotationMergeStrategy.Merge, progressInfo);
         }
         if(outputParameters.isOutputLabels()) {
