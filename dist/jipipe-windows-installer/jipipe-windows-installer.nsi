@@ -81,6 +81,7 @@ Section "Common files (Required)" SEC01
   File "..\..\jipipe-utils\target\jipipe-utils-${PRODUCT_VERSION}.jar"
   File "..\..\jipipe-forms\target\jipipe-forms-${PRODUCT_VERSION}.jar"
   File "..\..\jipipe-r\target\jipipe-r-${PRODUCT_VERSION}.jar"
+  File "..\..\jipipe-cellpose\target\jipipe-cellpose-${PRODUCT_VERSION}.jar"
 
   ; JIPipe dependencies
   inetc::get "https://maven.scijava.org/service/local/repositories/central/content/com/github/vatbub/mslinks/1.0.5/mslinks-1.0.5.jar" "$INSTDIR\Fiji.app\jars\mslinks-1.0.5.jar"
