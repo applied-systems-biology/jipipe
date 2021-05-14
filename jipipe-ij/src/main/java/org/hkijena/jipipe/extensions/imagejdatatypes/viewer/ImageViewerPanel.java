@@ -35,6 +35,7 @@ import org.hkijena.jipipe.ui.components.DocumentTabPane;
 import org.hkijena.jipipe.ui.components.FormPanel;
 import org.hkijena.jipipe.ui.components.PathEditor;
 import org.hkijena.jipipe.ui.running.JIPipeRunExecuterUI;
+import org.hkijena.jipipe.utils.BusyCursor;
 import org.hkijena.jipipe.utils.CopyImageToClipboard;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
@@ -228,6 +229,10 @@ public class ImageViewerPanel extends JPanel {
         exportMenuButton.setToolTipText("Export currently displayed image");
         JPopupMenu exportMenu = new JPopupMenu();
 
+        JMenuItem saveRawImageItem = new JMenuItem("Raw image to *.tif", UIUtils.getIconFromResources("actions/save.png"));
+        saveRawImageItem.addActionListener(e -> saveRawImage());
+        exportMenu.add(saveRawImageItem);
+
         JMenuItem copyCurrentSliceItem = new JMenuItem("Copy snapshot of current slice", UIUtils.getIconFromResources("actions/edit-copy.png"));
         copyCurrentSliceItem.addActionListener(e -> copyCurrentSliceToClipboard());
         exportMenu.add(copyCurrentSliceItem);
@@ -324,6 +329,15 @@ public class ImageViewerPanel extends JPanel {
         toolBar.add(enableSideBarButton);
 
         add(toolBar, BorderLayout.NORTH);
+    }
+
+    private void saveRawImage() {
+        Path path = FileChooserSettings.saveFile(this, FileChooserSettings.KEY_DATA, "Save as *.tif", UIUtils.EXTENSION_FILTER_TIFF);
+        if(path != null) {
+            try(BusyCursor cursor = new BusyCursor(this)) {
+                IJ.saveAs(getImage(), "TIFF", path.toString());
+            }
+        }
     }
 
     private void updateSideBar() {

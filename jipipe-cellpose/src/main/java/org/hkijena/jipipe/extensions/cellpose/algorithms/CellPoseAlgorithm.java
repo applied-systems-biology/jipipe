@@ -158,13 +158,6 @@ public class CellPoseAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         code.append("input_file = \"").append(MacroUtils.escapeString(inputImagePath.toString())).append("\"\n");
         code.append("img = io.imread(input_file)\n");
 
-        // Generate a progress adapter
-        code.append("class ProgressAdapter:\n");
-        code.append("    def __init__(self):\n");
-        code.append("        pass\n\n");
-        code.append("    def setValue(self, num):\n");
-        code.append("        print(\"-- Cellpose progress \" + str(num) + \"%\", flush=True)\n\n");
-
         Map<String, Object> evalParameterMap = new HashMap<>();
         evalParameterMap.put("x", PythonUtils.rawPythonCode("img"));
         evalParameterMap.put("diameter", getDiameter().isEnabled() ? getDiameter().getContent() : null);
@@ -183,7 +176,6 @@ public class CellPoseAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         evalParameterMap.put("cellprob_threshold", getThresholdParameters().getCellProbabilityThreshold());
         evalParameterMap.put("min_size", getThresholdParameters().getMinSize());
         evalParameterMap.put("stitch_threshold", getThresholdParameters().getStitchThreshold());
-        evalParameterMap.put("progress", PythonUtils.rawPythonCode("ProgressAdapter()"));
 
         code.append(String.format("masks, flows, styles, diams = model.eval(%s)\n",
                 PythonUtils.mapToPythonDict(evalParameterMap, false)
