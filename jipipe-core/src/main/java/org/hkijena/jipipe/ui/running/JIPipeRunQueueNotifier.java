@@ -59,7 +59,8 @@ public class JIPipeRunQueueNotifier {
     @Subscribe
     public void onWorkerInterrupted(RunUIWorkerInterruptedEvent event) {
         if(settings.isShowRunNotifications()) {
-            if (canShowNotification(event.getWorker())) return;
+            if (!canShowNotification(event.getWorker()))
+                return;
             UIUtils.sendTrayNotification("Run failed", "The run '" + event.getRun().getTaskLabel() + "' failed.",
                     TrayIcon.MessageType.ERROR);
         }
