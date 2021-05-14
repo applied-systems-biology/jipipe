@@ -52,7 +52,10 @@ public class JIPipeTestBench implements JIPipeRunnable, JIPipeValidatable {
 
     private void initialize() {
         JIPipeRunSettings configuration = new JIPipeRunSettings();
-        configuration.setOutputPath(settings.getOutputPath().resolve("initial"));
+        if(settings.isSaveToDisk())
+            configuration.setOutputPath(settings.getOutputPath().resolve("initial"));
+        else
+            configuration.setOutputPath(settings.getOutputPath());
         configuration.setLoadFromCache(settings.isLoadFromCache());
         configuration.setStoreToCache(settings.isStoreToCache());
         configuration.setNumThreads(settings.getNumThreads());

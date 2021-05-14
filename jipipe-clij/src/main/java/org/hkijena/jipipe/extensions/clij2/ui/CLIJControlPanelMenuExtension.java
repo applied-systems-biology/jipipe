@@ -11,7 +11,7 @@ import org.hkijena.jipipe.utils.UIUtils;
 /**
  * Adds a menu item that allows to control CLIJ
  */
-@JIPipeOrganization(menuExtensionTarget = MenuTarget.ProjectToolsMenu)
+@JIPipeOrganization(menuExtensionTarget = MenuTarget.ProjectToolsMenu, menuPath = "Extensions")
 public class CLIJControlPanelMenuExtension extends MenuExtension {
     /**
      * Creates a new instance

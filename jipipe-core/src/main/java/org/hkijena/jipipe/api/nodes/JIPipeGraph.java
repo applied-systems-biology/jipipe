@@ -117,6 +117,20 @@ public class JIPipeGraph implements JIPipeValidatable {
     }
 
     /**
+     * Generates an alias ID for a node
+     * @param node the node
+     * @return a unique alias ID for the node
+     */
+    public String generateAliasIdFor(JIPipeGraphNode node) {
+        String jsonify = StringUtils.jsonify(node.getName());
+        // Limit length for filesystem compatibility
+        if(jsonify.length() > 30) {
+            jsonify = jsonify.substring(0, 31);
+        }
+        return StringUtils.makeUniqueString(jsonify, "-", nodeAliasIds.values());
+    }
+
+    /**
      * Gets the alias ID of a node
      * A unique alias ID is generated if none is assigned yet
      *
@@ -127,7 +141,7 @@ public class JIPipeGraph implements JIPipeValidatable {
         UUID uuid = getUUIDOf(node);
         String aliasId = nodeAliasIds.getOrDefault(uuid, null);
         if (aliasId == null) {
-            aliasId = StringUtils.makeUniqueString(StringUtils.jsonify(node.getName()), "-", nodeAliasIds.values());
+            aliasId = generateAliasIdFor(node);
             nodeAliasIds.put(uuid, aliasId);
         }
         return aliasId;
@@ -1534,19 +1548,29 @@ public class JIPipeGraph implements JIPipeValidatable {
 
     /**
      * Recreates the alias Ids based on their name
+     * @param force force rebuilding
      */
-    public void rebuildAliasIds() {
+    public void rebuildAliasIds(boolean force) {
         for (Map.Entry<UUID, JIPipeGraphNode> entry : nodeUUIDs.entrySet()) {
             UUID uuid = entry.getKey();
             JIPipeGraphNode node = entry.getValue();
-            String aliasId = nodeAliasIds.getOrDefault(uuid, null);
-            String jsonifiedName = StringUtils.jsonify(node.getName());
-            if (aliasId != null && !aliasId.startsWith(jsonifiedName)) {
+            String aliasId;
+            if(force) {
                 aliasId = null;
+            }
+            else {
+                aliasId = nodeAliasIds.getOrDefault(uuid, null);
+                String jsonifiedName = StringUtils.jsonify(node.getName());
+                if(jsonifiedName.length() > 30) {
+                    jsonifiedName = jsonifiedName.substring(0, 31);
+                }
+                if (aliasId != null && !aliasId.startsWith(jsonifiedName)) {
+                    aliasId = null;
+                }
             }
             if (aliasId == null) {
                 // None assigned or name changed -> Create one
-                aliasId = StringUtils.makeUniqueString(jsonifiedName, "-", nodeAliasIds.values());
+                aliasId = generateAliasIdFor(node);
                 nodeAliasIds.put(uuid, aliasId);
             }
         }

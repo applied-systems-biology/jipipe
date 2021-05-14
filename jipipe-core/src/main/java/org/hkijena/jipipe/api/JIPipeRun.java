@@ -51,7 +51,7 @@ public class JIPipeRun implements JIPipeRunnable {
      */
     public JIPipeRun(JIPipeProject project, JIPipeRunSettings configuration) {
         // First clean up the graph
-        project.rebuildAliasIds();
+        project.rebuildAliasIds(false);
         this.project = project;
         this.cacheQuery = new JIPipeProjectCacheQuery(project);
         this.configuration = configuration;

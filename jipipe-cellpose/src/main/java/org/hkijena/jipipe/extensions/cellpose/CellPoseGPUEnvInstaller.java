@@ -35,7 +35,8 @@ public class CellPoseGPUEnvInstaller extends CellPoseEnvInstaller {
                 "pytorch",
                 "cudatoolkit=" + ((Configuration)getConfiguration()).getCudaToolkitVersion(),
                 "-c",
-                "pytorch");
+                "pytorch",
+                "--force-reinstall");
     }
 
     public static class Configuration extends CellPoseEnvInstaller.Configuration {

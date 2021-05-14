@@ -346,12 +346,13 @@ public class JIPipeProject implements JIPipeValidatable {
 
     /**
      * Re-assigns graph node Ids based on their name
+     * @param force force updating
      */
-    public void rebuildAliasIds() {
+    public void rebuildAliasIds(boolean force) {
         try {
             isCleaningUp = true;
-            compartmentGraph.rebuildAliasIds();
-            graph.rebuildAliasIds();
+            compartmentGraph.rebuildAliasIds(force);
+            graph.rebuildAliasIds(force);
         } finally {
             isCleaningUp = false;
         }
