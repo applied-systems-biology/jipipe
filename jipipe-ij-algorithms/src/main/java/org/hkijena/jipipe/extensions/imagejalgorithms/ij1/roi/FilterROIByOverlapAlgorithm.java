@@ -40,6 +40,7 @@ public class FilterROIByOverlapAlgorithm extends JIPipeIteratingAlgorithm {
     private ImageStatisticsSetParameter overlapFilterMeasurements = new ImageStatisticsSetParameter();
     private OutputSlotMapParameterCollection deactivatedOutputs;
     private boolean fastMode = false;
+    private boolean consumeOnOverlap = false;
 
     public FilterROIByOverlapAlgorithm(JIPipeNodeInfo info) {
         super(info, generateSlotConfiguration());
@@ -55,6 +56,7 @@ public class FilterROIByOverlapAlgorithm extends JIPipeIteratingAlgorithm {
         this.overlapFilter = new DefaultExpressionParameter(other.overlapFilter);
         this.overlapFilterMeasurements = new ImageStatisticsSetParameter(other.overlapFilterMeasurements);
         this.fastMode = other.fastMode;
+        this.consumeOnOverlap = other.consumeOnOverlap;
         this.deactivatedOutputs = new OutputSlotMapParameterCollection(Boolean.class, this, () -> false, true);
         other.deactivatedOutputs.copyTo(this.deactivatedOutputs);
         this.deactivatedOutputs.getEventBus().register(this);
@@ -83,12 +85,17 @@ public class FilterROIByOverlapAlgorithm extends JIPipeIteratingAlgorithm {
         for (Map.Entry<String, ROIListData> entry : roiMap.entrySet()) {
             JIPipeProgressInfo subProgress = progressInfo.resolveAndLog("Testing overlaps for input '" + entry.getKey() + "'");
             ROIListData here = entry.getValue();
+
+            // Collect all other ROIs to compare (from other slots)
             List<ROIListData> others = new ArrayList<>();
             for (Map.Entry<String, ROIListData> entry2 : originalRoiMap.entrySet()) {
                 if (entry.getKey().equals(entry2.getKey()))
                     continue;
-                others.add(entry2.getValue());
+                // Make a copy of the ROI list, so we can remove items safely
+                others.add(new ROIListData(entry2.getValue()));
             }
+
+            // Apply comparison
             for (int i = 0; i < here.size(); i++) {
                 if(i % 100 == 0)
                     subProgress.resolveAndLog("ROI", i, here.size());
@@ -97,7 +104,9 @@ public class FilterROIByOverlapAlgorithm extends JIPipeIteratingAlgorithm {
                 List<Boolean> overlapSuccesses = new ArrayList<>();
                 for (ROIListData other : others) {
                     Roi overlap = null;
+                    Roi overlappingRoi = null;
                     for (Roi roi2 : other) {
+                        overlappingRoi = roi2;
                         overlap = calculateOverlap(temp, roi, roi2);
                         if (overlap != null) {
                             if (withFiltering) {
@@ -113,6 +122,10 @@ public class FilterROIByOverlapAlgorithm extends JIPipeIteratingAlgorithm {
                     }
                     if (overlap != null) {
                         overlaps.add(overlap);
+                        if(consumeOnOverlap) {
+                            // We consumed this overlap. Remove Roi2
+                            other.remove(overlappingRoi);
+                        }
                         overlapSuccesses.add(true);
                     } else {
                         overlapSuccesses.add(false);
@@ -210,6 +223,19 @@ public class FilterROIByOverlapAlgorithm extends JIPipeIteratingAlgorithm {
             return roi;
         }
         return null;
+    }
+
+    @JIPipeDocumentation(name = "Consume on overlap", description = "If enabled, ROI are consumed if an overlap is detected, meaning " +
+            "that no other tested ROI can overlap with it. This is useful if you want to prevent duplicate overlaps (e.g., if you " +
+            "compare automated vs manually segmented blobs).")
+    @JIPipeParameter("consume-overlap")
+    public boolean isConsumeOnOverlap() {
+        return consumeOnOverlap;
+    }
+
+    @JIPipeParameter("consume-overlap")
+    public void setConsumeOnOverlap(boolean consumeOnOverlap) {
+        this.consumeOnOverlap = consumeOnOverlap;
     }
 
     @JIPipeDocumentation(name = "Deactivated outputs", description = "Here you can disable the ROI overlapping for the " +
