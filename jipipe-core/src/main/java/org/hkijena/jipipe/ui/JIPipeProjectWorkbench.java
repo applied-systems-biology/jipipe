@@ -131,6 +131,9 @@ public class JIPipeProjectWorkbench extends JPanel implements JIPipeWorkbench {
                 setProjectModified(true);
             }
         });
+
+        // Install the run notifier
+        JIPipeRunQueueNotifier.install();
     }
 
     public void restoreStandardTabs(boolean showIntroduction, boolean isNewProject) {

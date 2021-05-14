@@ -16,6 +16,7 @@ package org.hkijena.jipipe.utils;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.google.common.primitives.Ints;
 import ij.IJ;
+import org.apache.commons.lang3.SystemUtils;
 import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
 import org.fife.ui.rsyntaxtextarea.Theme;
 import org.hkijena.jipipe.JIPipe;
@@ -33,6 +34,7 @@ import org.hkijena.jipipe.ui.theme.JIPipeUITheme;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
+import javax.swing.Timer;
 import javax.swing.border.Border;
 import javax.swing.border.CompoundBorder;
 import javax.swing.border.EmptyBorder;
@@ -50,6 +52,7 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
 import java.util.*;
 import java.util.function.Predicate;
@@ -76,6 +79,53 @@ public class UIUtils {
     public static final Insets UI_PADDING = new Insets(4, 4, 4, 4);
     public static final Map<String, ImageIcon> ICON_FROM_RESOURCES_CACHE = new HashMap<>();
     public static boolean DARK_THEME = false;
+
+    public static void sendTrayNotification(String caption, String message, TrayIcon.MessageType messageType) {
+        if(SystemUtils.IS_OS_LINUX) {
+            // SystemTray does not work well on Linux
+            // Try notify-send, first
+            String notifySendPath = StringUtils.nullToEmpty(ProcessUtils.queryFast(Paths.get("/usr/bin/which"), "notify-send")).trim();
+            if(!StringUtils.isNullOrEmpty(notifySendPath)) {
+                Path exePath = Paths.get(notifySendPath);
+                try {
+                    new ProcessBuilder(exePath.toString(), caption, message).start();
+                    return;
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            // Try zenity
+            String zenityPath = StringUtils.nullToEmpty(ProcessUtils.queryFast(Paths.get("/usr/bin/which"), "zenity")).trim();
+            if(!StringUtils.isNullOrEmpty(zenityPath)) {
+                Path exePath = Paths.get(zenityPath);
+                try {
+                    new ProcessBuilder(exePath.toString(), "--notification", "--text=" + caption + "\\n" + message).start();
+                    return;
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                return;
+            }
+        }
+        if(SystemTray.isSupported()) {
+            SystemTray systemTray = SystemTray.getSystemTray();
+            TrayIcon trayIcon = new TrayIcon(UIUtils.getIcon32FromResources("apps/jipipe.png").getImage(), "JIPipe");
+            trayIcon.setImageAutoSize(true);
+            try {
+                systemTray.add(trayIcon);
+                Timer timer = new Timer(5000, e -> {
+                    systemTray.remove(trayIcon);
+                });
+                timer.setRepeats(false);
+                timer.start();
+
+                trayIcon.displayMessage(caption, message, messageType);
+            } catch (AWTException e) {
+                e.printStackTrace();
+            }
+        }
+    }
 
     /**
      * Attempts to override the look and feel based on the JIPipe settings

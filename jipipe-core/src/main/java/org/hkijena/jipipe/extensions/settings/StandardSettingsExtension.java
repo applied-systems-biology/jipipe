@@ -77,6 +77,12 @@ public class StandardSettingsExtension extends JIPipePrepackagedDefaultJavaExten
                 "UI",
                 null,
                 new GeneralUISettings());
+        registerSettingsSheet(NotificationUISettings.ID,
+                "Notifications",
+                UIUtils.getIconFromResources("actions/dialog-messages.png"),
+                "UI",
+                null,
+                new NotificationUISettings());
         registerSettingsSheet(GraphEditorUISettings.ID,
                 "Graph editor",
                 UIUtils.getIconFromResources("actions/distribute-graph.png"),

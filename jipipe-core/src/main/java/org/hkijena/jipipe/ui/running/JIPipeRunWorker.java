@@ -23,6 +23,7 @@ import javax.swing.*;
 import java.util.List;
 import java.util.concurrent.CancellationException;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.atomic.AtomicLong;
 
 /**
  * A worker
@@ -31,6 +32,8 @@ public class JIPipeRunWorker extends SwingWorker<Exception, Object> {
 
     private final EventBus eventBus = new EventBus();
     private final JIPipeRunnable run;
+    private final AtomicLong startTime = new AtomicLong();
+    private final AtomicLong endTime = new AtomicLong();
 
     /**
      * @param run The executed run
@@ -47,6 +50,7 @@ public class JIPipeRunWorker extends SwingWorker<Exception, Object> {
 
     @Override
     protected Exception doInBackground() throws Exception {
+        startTime.set(System.currentTimeMillis());
         try {
             run.run();
         } catch (Exception e) {
@@ -57,7 +61,7 @@ public class JIPipeRunWorker extends SwingWorker<Exception, Object> {
             e.printStackTrace();
             return e;
         }
-
+        endTime.set(System.currentTimeMillis());
         return null;
     }
 
@@ -73,6 +77,7 @@ public class JIPipeRunWorker extends SwingWorker<Exception, Object> {
 
     @Override
     protected void done() {
+        endTime.set(System.currentTimeMillis());
         try {
             if (isCancelled()) {
                 postInterruptedEvent(new RuntimeException("Execution was cancelled by user!"));
@@ -85,6 +90,10 @@ public class JIPipeRunWorker extends SwingWorker<Exception, Object> {
         } catch (InterruptedException | ExecutionException | CancellationException e) {
             postInterruptedEvent(e);
         }
+    }
+
+    public long getRuntimeMillis() {
+        return endTime.get() - startTime.get();
     }
 
     private void postFinishedEvent() {
@@ -113,4 +122,6 @@ public class JIPipeRunWorker extends SwingWorker<Exception, Object> {
     public JIPipeRunnable getRun() {
         return run;
     }
+
+
 }
