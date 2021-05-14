@@ -114,7 +114,7 @@ public class UIUtils {
             trayIcon.setImageAutoSize(true);
             try {
                 systemTray.add(trayIcon);
-                Timer timer = new Timer(5000, e -> {
+                Timer timer = new Timer(15000, e -> {
                     systemTray.remove(trayIcon);
                 });
                 timer.setRepeats(false);
