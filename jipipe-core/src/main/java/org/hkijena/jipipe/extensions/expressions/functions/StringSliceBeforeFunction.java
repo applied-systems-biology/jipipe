@@ -38,7 +38,14 @@ public class StringSliceBeforeFunction extends ExpressionFunction {
     @Override
     public Object evaluate(List<Object> parameters, ExpressionParameters variables) {
         String text = "" + parameters.get(0);
+
         int end = ((Number) parameters.get(1)).intValue();
+
+        // Case: Limit string
+        if(parameters.size() == 2 && end >= text.length()) {
+            return text;
+        }
+
         int start = parameters.size() >= 3 ? ((Number) parameters.get(2)).intValue() : 0;
 
         return text.substring(start, end);
