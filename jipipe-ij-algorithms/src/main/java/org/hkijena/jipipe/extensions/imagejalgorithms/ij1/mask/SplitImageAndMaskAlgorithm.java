@@ -27,6 +27,6 @@ public class SplitImageAndMaskAlgorithm extends JIPipeIteratingAlgorithm {
     protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
         MaskedImagePlusData compound = dataBatch.getInputData(getFirstInputSlot(), MaskedImagePlusData.class, progressInfo);
         dataBatch.addOutputData("Image", new ImagePlusData(compound.getImage()), progressInfo);
-        dataBatch.addOutputData("MAsk", new ImagePlusGreyscaleMaskData(compound.getMask()), progressInfo);
+        dataBatch.addOutputData("Mask", new ImagePlusGreyscaleMaskData(compound.getMask()), progressInfo);
     }
 }
