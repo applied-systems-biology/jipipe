@@ -52,6 +52,8 @@ import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.io.*;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.lut.LUTInverterAlgorithm;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.lut.RemoveLUTAlgorithm;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.lut.SetLUTFromColorAlgorithm;
+import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.mask.MergeImageAndMaskAlgorithm;
+import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.mask.SplitImageAndMaskAlgorithm;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.math.*;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.misc.DataToPreviewAlgorithm;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.misc.ExportImageToWebAlgorithm;
@@ -214,6 +216,7 @@ public class ImageJAlgorithmsExtension extends JIPipePrepackagedDefaultJavaExten
         registerFeatureAlgorithms();
         registerMathAlgorithms();
         registerMorphologyAlgorithms();
+        registerMaskAlgorithms();
         registerBinaryAlgorithms();
         registerNoiseAlgorithms();
         registerBackgroundAlgorithms();
@@ -244,6 +247,11 @@ public class ImageJAlgorithmsExtension extends JIPipePrepackagedDefaultJavaExten
         registerGlobalParameters();
 
 //        registerIJ2Algorithms();
+    }
+
+    private void registerMaskAlgorithms() {
+        registerNodeType("ij-merge-image-mask", MergeImageAndMaskAlgorithm.class, UIUtils.getIconURLFromResources("actions/rabbitvcs-merge.png"));
+        registerNodeType("ij-split-image-mask", SplitImageAndMaskAlgorithm.class, UIUtils.getIconURLFromResources("actions/split.png"));
     }
 
     private void registerFormAlgorithms() {
