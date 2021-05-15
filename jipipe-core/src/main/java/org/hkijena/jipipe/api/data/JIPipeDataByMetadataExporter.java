@@ -17,8 +17,10 @@ import com.google.common.eventbus.EventBus;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
+import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
-import org.hkijena.jipipe.extensions.expressions.StringQueryExpression;
+import org.hkijena.jipipe.api.parameters.JIPipeParameterVisibility;
+import org.hkijena.jipipe.extensions.expressions.*;
 import org.hkijena.jipipe.extensions.parameters.primitives.StringParameterSettings;
 import org.hkijena.jipipe.utils.ResourceUtils;
 import org.hkijena.jipipe.utils.StringUtils;
@@ -46,6 +48,8 @@ public class JIPipeDataByMetadataExporter implements JIPipeParameterCollection {
     private String missingString = "NA";
     private StringQueryExpression metadataKeyFilter = new StringQueryExpression("");
     private int metadataValueLengthLimit = 80;
+    private Mode mode = Mode.Automatic;
+    private StringQueryExpression customName = new StringQueryExpression("SUMMARIZE_VARIABLES()");
 
     public JIPipeDataByMetadataExporter() {
     }
@@ -61,6 +65,51 @@ public class JIPipeDataByMetadataExporter implements JIPipeParameterCollection {
         this.missingString = other.missingString;
         this.metadataKeyFilter = new StringQueryExpression(other.metadataKeyFilter);
         this.metadataValueLengthLimit = other.metadataValueLengthLimit;
+        this.customName = new StringQueryExpression(other.customName);
+        this.mode = other.mode;
+    }
+
+    @Override
+    public JIPipeParameterVisibility getOverriddenUIParameterVisibility(JIPipeParameterAccess access, JIPipeParameterVisibility currentVisibility) {
+        if(access.getKey().equals("mode"))
+            return currentVisibility;
+        if(mode == Mode.Automatic) {
+            return !access.getKey().equals("custom-name") ? currentVisibility : JIPipeParameterVisibility.Hidden;
+        }
+        else {
+            if(access.getKey().equals("ignore-missing-metadata"))
+                return currentVisibility;
+            if(access.getKey().equals("missing-string"))
+                return currentVisibility;
+            if(access.getKey().equals("custom-name"))
+                return currentVisibility;
+            return JIPipeParameterVisibility.Hidden;
+        }
+    }
+
+    @JIPipeDocumentation(name = "Custom name", description = "This expression is used to generate the file names. You have all metadata available as variables.")
+    @JIPipeParameter("custom-name")
+    @ExpressionParameterSettings(variableSource = VariableSource.class)
+    public StringQueryExpression getCustomName() {
+        return customName;
+    }
+
+    @JIPipeParameter("custom-name")
+    public void setCustomName(StringQueryExpression customName) {
+        this.customName = customName;
+    }
+
+    @JIPipeDocumentation(name = "Mode", description = "If the mode is set to 'Automatic', the string is automatically " +
+            "generated based on various settings. Otherwise, you can use an expression to generate a custom string.")
+    @JIPipeParameter("mode")
+    public Mode getMode() {
+        return mode;
+    }
+
+    @JIPipeParameter("mode")
+    public void setMode(Mode mode) {
+        this.mode = mode;
+        getEventBus().post(new ParameterStructureChangedEvent(this));
     }
 
     @JIPipeDocumentation(name = "Metadata key filters", description = "Only includes the metadata keys that match the filter. " + StringQueryExpression.DOCUMENTATION_DESCRIPTION)
@@ -267,37 +316,53 @@ public class JIPipeDataByMetadataExporter implements JIPipeParameterCollection {
     @Nullable
     public String generateMetadataString(JIPipeDataSlot dataSlot, int row, Set<String> existingMetadata) {
         StringBuilder metadataStringBuilder = new StringBuilder();
-        if (appendDataTypeAsMetadata) {
-            String dataTypeName;
-            if (appendDataTypeUsesRealDataType) {
-                Class<? extends JIPipeData> dataClass = dataSlot.getDataClass(row);
-                dataTypeName = JIPipeDataInfo.getInstance(dataClass).getName();
-            } else {
-                dataTypeName = JIPipeDataInfo.getInstance(dataSlot.getAcceptedDataType()).getName();
+        if(mode == Mode.Automatic) {
+            if (appendDataTypeAsMetadata) {
+                String dataTypeName;
+                if (appendDataTypeUsesRealDataType) {
+                    Class<? extends JIPipeData> dataClass = dataSlot.getDataClass(row);
+                    dataTypeName = JIPipeDataInfo.getInstance(dataClass).getName();
+                } else {
+                    dataTypeName = JIPipeDataInfo.getInstance(dataSlot.getAcceptedDataType()).getName();
+                }
+                if (withMetadataKeys && !StringUtils.isNullOrEmpty(appendDataTypeMetadataKey))
+                    metadataStringBuilder.append(appendDataTypeMetadataKey).append(equalsString);
+                metadataStringBuilder.append(dataTypeName);
             }
-            if (withMetadataKeys && !StringUtils.isNullOrEmpty(appendDataTypeMetadataKey))
-                metadataStringBuilder.append(appendDataTypeMetadataKey).append(equalsString);
-            metadataStringBuilder.append(dataTypeName);
-        }
-        for (int col = 0; col < dataSlot.getAnnotationColumns().size(); col++) {
-            String metadataKey = dataSlot.getAnnotationColumns().get(col);
-            if (!metadataKeyFilter.test(metadataKey))
-                continue;
-            JIPipeAnnotation metadataValue;
-            if (ignoreMissingMetadata) {
-                metadataValue = dataSlot.getAnnotationOr(row, metadataKey, null);
-            } else {
-                metadataValue = dataSlot.getAnnotationOr(row, metadataKey, new JIPipeAnnotation(metadataKey, missingString));
-            }
-            if (metadataValue != null) {
-                if (metadataValue.getValue().length() > metadataValueLengthLimit)
+            for (int col = 0; col < dataSlot.getAnnotationColumns().size(); col++) {
+                String metadataKey = dataSlot.getAnnotationColumns().get(col);
+                if (!metadataKeyFilter.test(metadataKey))
                     continue;
-                if (metadataStringBuilder.length() > 0)
-                    metadataStringBuilder.append(separatorString);
-                if (withMetadataKeys)
-                    metadataStringBuilder.append(metadataKey).append(equalsString);
-                metadataStringBuilder.append(metadataValue.getValue());
+                JIPipeAnnotation metadataValue;
+                if (ignoreMissingMetadata) {
+                    metadataValue = dataSlot.getAnnotationOr(row, metadataKey, null);
+                } else {
+                    metadataValue = dataSlot.getAnnotationOr(row, metadataKey, new JIPipeAnnotation(metadataKey, missingString));
+                }
+                if (metadataValue != null) {
+                    if (metadataValue.getValue().length() > metadataValueLengthLimit)
+                        continue;
+                    if (metadataStringBuilder.length() > 0)
+                        metadataStringBuilder.append(separatorString);
+                    if (withMetadataKeys)
+                        metadataStringBuilder.append(metadataKey).append(equalsString);
+                    metadataStringBuilder.append(metadataValue.getValue());
+                }
             }
+        }
+        else {
+            ExpressionParameters parameters = new ExpressionParameters();
+            for (int col = 0; col < dataSlot.getAnnotationColumns().size(); col++) {
+                String metadataKey = dataSlot.getAnnotationColumns().get(col);
+                JIPipeAnnotation metadataValue = dataSlot.getAnnotationOr(row, metadataKey, null);
+                if(metadataValue == null && ignoreMissingMetadata)
+                    continue;
+                String value = metadataValue != null ? metadataValue.getValue() : missingString;
+                parameters.put(metadataKey, value);
+            }
+
+            String newName = StringUtils.nullToEmpty(customName.generate(parameters));
+            metadataStringBuilder.append(newName);
         }
 
         if (metadataStringBuilder.length() == 0) {
@@ -312,27 +377,38 @@ public class JIPipeDataByMetadataExporter implements JIPipeParameterCollection {
     public String generateMetadataString(JIPipeExportedDataTable exportedDataTable, int row, Set<String> existingMetadata) {
         JIPipeExportedDataTable.Row dataRow = exportedDataTable.getRowList().get(row);
         StringBuilder metadataStringBuilder = new StringBuilder();
-        if (appendDataTypeAsMetadata) {
-            String dataTypeName;
-            if (appendDataTypeUsesRealDataType) {
-                dataTypeName = dataRow.getTrueDataType();
-            } else {
-                dataTypeName = exportedDataTable.getAcceptedDataTypeId();
+        if(mode == Mode.Automatic) {
+            if (appendDataTypeAsMetadata) {
+                String dataTypeName;
+                if (appendDataTypeUsesRealDataType) {
+                    dataTypeName = dataRow.getTrueDataType();
+                } else {
+                    dataTypeName = exportedDataTable.getAcceptedDataTypeId();
+                }
+                if (withMetadataKeys && !StringUtils.isNullOrEmpty(appendDataTypeMetadataKey))
+                    metadataStringBuilder.append(appendDataTypeMetadataKey).append(equalsString);
+                metadataStringBuilder.append(dataTypeName);
             }
-            if (withMetadataKeys && !StringUtils.isNullOrEmpty(appendDataTypeMetadataKey))
-                metadataStringBuilder.append(appendDataTypeMetadataKey).append(equalsString);
-            metadataStringBuilder.append(dataTypeName);
+            for (JIPipeAnnotation metadataValue : dataRow.getAnnotations()) {
+                if (metadataValue.getValue().length() > metadataValueLengthLimit)
+                    continue;
+                if (!metadataKeyFilter.test(metadataValue.getName()))
+                    continue;
+                if (metadataStringBuilder.length() > 0)
+                    metadataStringBuilder.append(separatorString);
+                if (withMetadataKeys)
+                    metadataStringBuilder.append(metadataValue.getName()).append(equalsString);
+                metadataStringBuilder.append(metadataValue.getValue());
+            }
         }
-        for (JIPipeAnnotation metadataValue : dataRow.getAnnotations()) {
-            if (metadataValue.getValue().length() > metadataValueLengthLimit)
-                continue;
-            if (!metadataKeyFilter.test(metadataValue.getName()))
-                continue;
-            if (metadataStringBuilder.length() > 0)
-                metadataStringBuilder.append(separatorString);
-            if (withMetadataKeys)
-                metadataStringBuilder.append(metadataValue.getName()).append(equalsString);
-            metadataStringBuilder.append(metadataValue.getValue());
+        else {
+            ExpressionParameters parameters = new ExpressionParameters();
+            for (JIPipeAnnotation annotation : dataRow.getAnnotations()) {
+                parameters.put(annotation.getName(), annotation.getValue());
+            }
+
+            String newName = StringUtils.nullToEmpty(customName.generate(parameters));
+            metadataStringBuilder.append(newName);
         }
 
         if (metadataStringBuilder.length() == 0) {
@@ -342,5 +418,27 @@ public class JIPipeDataByMetadataExporter implements JIPipeParameterCollection {
         metadataString = StringUtils.makeUniqueString(metadataString, separatorString, existingMetadata);
         existingMetadata.add(metadataString);
         return metadataString;
+    }
+
+    public enum Mode {
+        Automatic,
+        Manual
+    }
+
+    public static class VariableSource implements ExpressionParameterVariableSource {
+
+        public static final Set<ExpressionParameterVariable> VARIABLES;
+
+        static {
+            VARIABLES = new HashSet<>();
+            VARIABLES.add(new ExpressionParameterVariable("<Annotations>",
+                    "Data annotations are available as variables named after their column names (use Update Cache to find the list of annotations)",
+                    ""));
+        }
+
+        @Override
+        public Set<ExpressionParameterVariable> getVariables(JIPipeParameterAccess parameterAccess) {
+            return VARIABLES;
+        }
     }
 }

@@ -27,7 +27,7 @@ public class SummarizeMapFunction extends ExpressionFunction {
             case 2:
                 return new ParameterInfo("Equals", "Equals string between keys and values (default is '=')", String.class);
             default:
-                throw new UnsupportedOperationException();
+                return null;
         }
     }
 

@@ -24,7 +24,7 @@ public class SummarizeVariablesFunction extends ExpressionFunction {
             case 1:
                 return new ParameterInfo("Equals", "Equals string between keys and values (default is '=')", String.class);
             default:
-                throw new UnsupportedOperationException();
+                return null;
         }
     }
 

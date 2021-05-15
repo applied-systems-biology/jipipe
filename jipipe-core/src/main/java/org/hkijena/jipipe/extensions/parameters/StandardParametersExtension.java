@@ -20,6 +20,7 @@ import org.hkijena.jipipe.JIPipeImageJUpdateSiteDependency;
 import org.hkijena.jipipe.JIPipeJavaExtension;
 import org.hkijena.jipipe.api.JIPipeAuthorMetadata;
 import org.hkijena.jipipe.api.data.JIPipeAnnotationMergeStrategy;
+import org.hkijena.jipipe.api.data.JIPipeDataByMetadataExporter;
 import org.hkijena.jipipe.api.grouping.GraphWrapperAlgorithm;
 import org.hkijena.jipipe.api.nodes.JIPipeColumnGrouping;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
@@ -543,6 +544,10 @@ public class StandardParametersExtension extends JIPipePrepackagedDefaultJavaExt
                 "Author",
                 "An author with affiliations",
                 JIPipeAuthorMetadataParameterEditorUI.class);
+        registerEnumParameterType("data-by-metadata-exporter:mode",
+                JIPipeDataByMetadataExporter.Mode.class,
+                "Exporter mode",
+                "Allows you to choose between automatic or manual name generation.");
     }
 
     private void registerCommonJavaTypes() {
