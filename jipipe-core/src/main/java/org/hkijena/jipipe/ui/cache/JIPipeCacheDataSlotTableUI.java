@@ -203,7 +203,11 @@ public class JIPipeCacheDataSlotTableUI extends JIPipeWorkbenchPanel {
         rowUIList.clear();
         for (int viewRow : selectedRows) {
             int row = table.getRowSorter().convertRowIndexToModel(viewRow);
-            String name = slot.getNode().getName() + "/" + slot.getName() + "/" + row;
+            String name;
+            if(slot.getNode() != null)
+                name = slot.getNode().getName() + "/" + slot.getName() + "/" + row;
+            else
+                name = slot.getName() + "/" + row;
             JLabel nameLabel = new JLabel(name, JIPipe.getDataTypes().getIconFor(slot.getAcceptedDataType()), JLabel.LEFT);
             nameLabel.setToolTipText(TooltipUtils.getSlotInstanceTooltip(slot));
             JIPipeDataSlotRowUI rowUI = new JIPipeDataSlotRowUI(getWorkbench(), slot, row);

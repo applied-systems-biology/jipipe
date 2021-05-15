@@ -61,6 +61,7 @@ public class CellPoseExtension extends JIPipePrepackagedDefaultJavaExtension {
         registerEnvironmentInstaller(PythonEnvironment.class, CellPoseGPUEnvInstaller.class, UIUtils.getIconFromResources("apps/cellpose.png"));
 
         registerEnumParameterType("cellpose-model", CellPoseModel.class, "Cellpose model", "A Cellpose model");
+        registerEnumParameterType("cellpose-pretrained-model", CellPosePretrainedModel.class, "Cellpose pre-trained model", "A pretrained model for Cellpose");
 
         registerNodeType("cellpose", CellPoseAlgorithm.class, UIUtils.getIconURLFromResources("apps/cellpose.png"));
     }

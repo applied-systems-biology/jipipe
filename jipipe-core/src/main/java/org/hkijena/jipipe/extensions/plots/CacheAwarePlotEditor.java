@@ -52,24 +52,35 @@ public class CacheAwarePlotEditor extends JIPipePlotBuilderUI {
         this.project = ((JIPipeProjectWorkbench) workbench).getProject();
         this.workbench = workbench;
         this.dataSource = dataSource;
-        this.algorithm = (JIPipeAlgorithm) project.getGraph().getEquivalentAlgorithm(dataSource.getSlot().getNode());
         this.slotName = dataSource.getSlot().getName();
-        this.cacheAwareToggle = new JIPipeCachedDataDisplayCacheControl((JIPipeProjectWorkbench) workbench, getToolBar(), algorithm);
+        if(dataSource.getSlot().getNode() != null) {
+            this.algorithm = (JIPipeAlgorithm) project.getGraph().getEquivalentAlgorithm(dataSource.getSlot().getNode());
+            this.cacheAwareToggle = new JIPipeCachedDataDisplayCacheControl((JIPipeProjectWorkbench) workbench, getToolBar(), algorithm);
+        }
+        else {
+            this.algorithm = null;
+        }
         initialize();
         loadDataFromDataSource();
 
-        project.getCache().getEventBus().register(this);
+        if(algorithm != null)
+            project.getCache().getEventBus().register(this);
     }
 
     private void initialize() {
-        errorPanel = new JLabel("", UIUtils.getIconFromResources("emblems/no-data.png"), JLabel.LEFT);
-        errorPanel.setText(String.format("No data available in node '%s', slot '%s', row %d", algorithm.getName(), slotName, dataSource.getRow()));
+        if(cacheAwareToggle != null) {
+            errorPanel = new JLabel("", UIUtils.getIconFromResources("emblems/no-data.png"), JLabel.LEFT);
+            errorPanel.setText(String.format("No data available in node '%s', slot '%s', row %d", algorithm.getName(), slotName, dataSource.getRow()));
 
-        cacheAwareToggle.installRefreshOnActivate(this::reloadFromCurrentCache);
+            cacheAwareToggle.installRefreshOnActivate(this::reloadFromCurrentCache);
 
-        getToolBar().add(Box.createHorizontalStrut(8), 0);
-        getToolBar().add(errorPanel, 0);
-        cacheAwareToggle.install();
+            getToolBar().add(Box.createHorizontalStrut(8), 0);
+            getToolBar().add(errorPanel, 0);
+            cacheAwareToggle.install();
+        }
+        else {
+            errorPanel = new JLabel("No data available", UIUtils.getIconFromResources("emblems/no-data.png"), JLabel.LEFT);
+        }
     }
 
     private void loadDataFromDataSource() {

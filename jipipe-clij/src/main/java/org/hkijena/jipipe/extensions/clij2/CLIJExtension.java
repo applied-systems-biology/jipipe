@@ -175,7 +175,6 @@ public class CLIJExtension extends JIPipePrepackagedDefaultJavaExtension {
         registerNodeType("clij2:maximum-3d-box", Clij2Maximum3dBox.class, UIUtils.getIconURLFromResources("apps/clij.png"));
         registerNodeType("clij2:jaccard-index", Clij2JaccardIndex.class, UIUtils.getIconURLFromResources("apps/clij.png"));
         registerNodeType("clij2:sum-y-projection", Clij2SumYProjection.class, UIUtils.getIconURLFromResources("apps/clij.png"));
-        registerNodeType("clij2:copy", Clij2Copy.class, UIUtils.getIconURLFromResources("apps/clij.png"));
         registerNodeType("clij2:touch-matrix-to-adjacency-matrix", Clij2TouchMatrixToAdjacencyMatrix.class, UIUtils.getIconURLFromResources("apps/clij.png"));
         registerNodeType("clij2:divide-images", Clij2DivideImages.class, UIUtils.getIconURLFromResources("apps/clij.png"));
         registerNodeType("clij2:greater-or-equal-constant", Clij2GreaterOrEqualConstant.class, UIUtils.getIconURLFromResources("apps/clij.png"));
@@ -199,7 +198,6 @@ public class CLIJExtension extends JIPipePrepackagedDefaultJavaExtension {
         registerNodeType("clij2:generate-distance-matrix", Clij2GenerateDistanceMatrix.class, UIUtils.getIconURLFromResources("apps/clij.png"));
         registerNodeType("clij2:count-non-zero-voxels-3d-sphere", Clij2CountNonZeroVoxels3dSphere.class, UIUtils.getIconURLFromResources("apps/clij.png"));
         registerNodeType("clij2:exclude-labels-with-values-out-of-range", Clij2ExcludeLabelsWithValuesOutOfRange.class, UIUtils.getIconURLFromResources("apps/clij.png"));
-        registerNodeType("clij2:copy-slice", Clij2CopySlice.class, UIUtils.getIconURLFromResources("apps/clij.png"));
         registerNodeType("clij2:concatenate-stacks", Clij2ConcatenateStacks.class, UIUtils.getIconURLFromResources("apps/clij.png"));
         registerNodeType("clij2:exponential", Clij2Exponential.class, UIUtils.getIconURLFromResources("apps/clij.png"));
         registerNodeType("clij2:equalize-mean-intensities-of-slices", Clij2EqualizeMeanIntensitiesOfSlices.class, UIUtils.getIconURLFromResources("apps/clij.png"));

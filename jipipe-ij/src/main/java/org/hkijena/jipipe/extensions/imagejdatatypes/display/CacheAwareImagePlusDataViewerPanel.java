@@ -67,22 +67,33 @@ public class CacheAwareImagePlusDataViewerPanel extends ImageViewerPanel {
         this.project = ((JIPipeProjectWorkbench) workbench).getProject();
         this.workbench = workbench;
         this.dataSource = dataSource;
-        this.algorithm = (JIPipeAlgorithm) project.getGraph().getEquivalentAlgorithm(dataSource.getSlot().getNode());
         this.slotName = dataSource.getSlot().getName();
-        this.cacheAwareToggle = new JIPipeCachedDataDisplayCacheControl((JIPipeProjectWorkbench) workbench, getToolBar(), algorithm);
+        if(dataSource.getSlot().getNode() != null) {
+            this.algorithm = (JIPipeAlgorithm) project.getGraph().getEquivalentAlgorithm(dataSource.getSlot().getNode());
+            this.cacheAwareToggle = new JIPipeCachedDataDisplayCacheControl((JIPipeProjectWorkbench) workbench, getToolBar(), algorithm);
+        }
+        else {
+            this.algorithm = null;
+        }
         initialize();
         loadImageFromDataSource();
 
-        project.getCache().getEventBus().register(this);
+        if(algorithm != null)
+            project.getCache().getEventBus().register(this);
     }
 
     private void initialize() {
-
-        cacheAwareToggle.installRefreshOnActivate(this::reloadFromCurrentCache);
-        errorPanel = new JLabel(String.format("No data available in node '%s', slot '%s', row %d", algorithm.getName(), slotName, dataSource.getRow()),
-                UIUtils.getIconFromResources("emblems/no-data.png"), JLabel.LEFT);
-        getToolBar().add(Box.createHorizontalStrut(8), 0);
-        cacheAwareToggle.install();
+        if(algorithm != null) {
+            cacheAwareToggle.installRefreshOnActivate(this::reloadFromCurrentCache);
+            errorPanel = new JLabel(String.format("No data available in node '%s', slot '%s', row %d", algorithm.getName(), slotName, dataSource.getRow()),
+                    UIUtils.getIconFromResources("emblems/no-data.png"), JLabel.LEFT);
+            getToolBar().add(Box.createHorizontalStrut(8), 0);
+            cacheAwareToggle.install();
+        }
+        else {
+            errorPanel = new JLabel("No data available",
+                    UIUtils.getIconFromResources("emblems/no-data.png"), JLabel.LEFT);
+        }
 //        getToolBar().add(cacheAwareToggle, 0);
     }
 
@@ -103,7 +114,7 @@ public class CacheAwareImagePlusDataViewerPanel extends ImageViewerPanel {
             return;
         if (!isDisplayable())
             return;
-        if (!cacheAwareToggle.shouldRefreshToCache())
+        if(cacheAwareToggle == null)
             return;
         reloadFromCurrentCache();
     }
