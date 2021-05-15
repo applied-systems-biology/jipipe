@@ -49,6 +49,7 @@ public class ExportImageToWebAlgorithm extends JIPipeIteratingAlgorithm {
     public ExportImageToWebAlgorithm(JIPipeNodeInfo info) {
         super(info);
         this.exporter = new JIPipeDataByMetadataExporter(DataExporterSettings.getInstance());
+        registerSubParameter(exporter);
     }
 
     public ExportImageToWebAlgorithm(ExportImageToWebAlgorithm other) {
@@ -60,6 +61,7 @@ public class ExportImageToWebAlgorithm extends JIPipeIteratingAlgorithm {
         this.movieAnimatedDimension = other.movieAnimatedDimension;
         this.aviCompression = other.aviCompression;
         this.jpegQuality = other.jpegQuality;
+        registerSubParameter(exporter);
     }
 
     @Override
