@@ -15,6 +15,7 @@ package org.hkijena.jipipe.ui.cache;
 
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
+import org.hkijena.jipipe.api.JIPipeRunnable;
 import org.hkijena.jipipe.api.data.JIPipeCacheSlotDataSource;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataDisplayOperation;
@@ -22,9 +23,11 @@ import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.extensions.parameters.primitives.DynamicStringEnumParameter;
 import org.hkijena.jipipe.extensions.settings.DefaultCacheDisplaySettings;
 import org.hkijena.jipipe.extensions.settings.DefaultResultImporterSettings;
+import org.hkijena.jipipe.extensions.settings.FileChooserSettings;
 import org.hkijena.jipipe.extensions.settings.GeneralDataSettings;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.JIPipeWorkbenchPanel;
+import org.hkijena.jipipe.ui.running.JIPipeRunExecuterUI;
 import org.hkijena.jipipe.utils.BusyCursor;
 import org.hkijena.jipipe.utils.UIUtils;
 
@@ -32,6 +35,8 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.StringSelection;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.List;
 import java.util.Objects;
 
@@ -69,6 +74,21 @@ public class JIPipeDataSlotRowUI extends JIPipeWorkbenchPanel {
         copyButton.addActionListener(e -> copyString());
         add(copyButton);
 
+        JButton exportButton = new JButton("Export", UIUtils.getIconFromResources("actions/document-export.png"));
+        JPopupMenu exportMenu = UIUtils.addPopupMenuToComponent(exportButton);
+
+        JMenuItem exportToFolderItem = new JMenuItem("Export to folder", UIUtils.getIconFromResources("actions/browser-download.png"));
+        exportToFolderItem.setToolTipText("Saves the data to a folder. If multiple files are present, the names will be generated according to the selected name.");
+        exportToFolderItem.addActionListener(e -> exportToFolder());
+        exportMenu.add(exportToFolderItem);
+
+        JMenuItem exportAsFolderItem = new JMenuItem("Export as folder", UIUtils.getIconFromResources("actions/folder-new.png"));
+        exportAsFolderItem.setToolTipText("Saves the data into a new folder. Files will be named according to the data type standard.");
+        exportAsFolderItem.addActionListener(e -> exportAsFolder());
+        exportMenu.add(exportAsFolderItem);
+
+        add(exportButton);
+
         if (!displayOperations.isEmpty()) {
             JIPipeDataDisplayOperation mainOperation = getMainOperation();
             if (mainOperation == null)
@@ -94,6 +114,74 @@ public class JIPipeDataSlotRowUI extends JIPipeWorkbenchPanel {
                 }
                 add(menuButton);
             }
+        }
+    }
+
+    private void exportAsFolder() {
+        Path path = FileChooserSettings.saveDirectory(getWorkbench().getWindow(), FileChooserSettings.KEY_DATA, "Export " + slot.getNode().getName() + "/" + slot.getName() + "/" + row);
+        if(path != null) {
+            try {
+                Files.createDirectories(path);
+                JIPipeRunnable runnable = new JIPipeRunnable() {
+                    private JIPipeProgressInfo progressInfo = new JIPipeProgressInfo();
+
+                    @Override
+                    public JIPipeProgressInfo getProgressInfo() {
+                        return progressInfo;
+                    }
+
+                    @Override
+                    public void setProgressInfo(JIPipeProgressInfo progressInfo) {
+                        this.progressInfo = progressInfo;
+                    }
+
+                    @Override
+                    public String getTaskLabel() {
+                        return "Export";
+                    }
+
+                    @Override
+                    public void run() {
+                        JIPipeData data = slot.getData(row, JIPipeData.class, progressInfo);
+                        data.saveTo(path, "data", false, progressInfo);
+                    }
+                };
+                JIPipeRunExecuterUI.runInDialog(getWorkbench().getWindow(), runnable);
+            }
+            catch (Exception e) {
+                UIUtils.openErrorDialog(getWorkbench().getWindow(), e);
+            }
+        }
+    }
+
+    private void exportToFolder() {
+        Path path = FileChooserSettings.saveFile(getWorkbench().getWindow(), FileChooserSettings.KEY_DATA, "Export " + slot.getNode().getName() + "/" + slot.getName() + "/" + row);
+        if(path != null) {
+            JIPipeRunnable runnable = new JIPipeRunnable() {
+                private JIPipeProgressInfo progressInfo = new JIPipeProgressInfo();
+
+                @Override
+                public JIPipeProgressInfo getProgressInfo() {
+                    return progressInfo;
+                }
+
+                @Override
+                public void setProgressInfo(JIPipeProgressInfo progressInfo) {
+                    this.progressInfo = progressInfo;
+                }
+
+                @Override
+                public String getTaskLabel() {
+                    return "Export";
+                }
+
+                @Override
+                public void run() {
+                    JIPipeData data = slot.getData(row, JIPipeData.class, progressInfo);
+                    data.saveTo(path.getParent(), path.getFileName().toString(), true, progressInfo);
+                }
+            };
+            JIPipeRunExecuterUI.runInDialog(getWorkbench().getWindow(), runnable);
         }
     }
 
