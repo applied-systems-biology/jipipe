@@ -191,5 +191,8 @@ public class ExpressionExtension extends JIPipePrepackagedDefaultJavaExtension {
         registerExpressionFunction(new ClampFunction());
         registerExpressionFunction(new GetVariableKeysFunction());
         registerExpressionFunction(new GetVariableValuesFunction());
+        registerExpressionFunction(new SummarizeVariablesFunction());
+        registerExpressionFunction(new SummarizeMapFunction());
+        registerExpressionFunction(new GetVariablesAsMapFunction());
     }
 }
