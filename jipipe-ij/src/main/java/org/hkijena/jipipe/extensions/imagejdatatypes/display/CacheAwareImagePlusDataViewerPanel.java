@@ -102,7 +102,8 @@ public class CacheAwareImagePlusDataViewerPanel extends ImageViewerPanel {
         if (lastVirtualData != null && virtualData == lastVirtualData.get())
             return;
         ImagePlusData data = dataSource.getSlot().getData(dataSource.getRow(), ImagePlusData.class, new JIPipeProgressInfo());
-        ImagePlus image = data.getDuplicateImage();
+        ImagePlus image = data.getViewedImage(true);
+        image.setTitle(data.getImage().getTitle());
         setImage(image);
         lastVirtualData = new WeakReference<>(virtualData);
     }

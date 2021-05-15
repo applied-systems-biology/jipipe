@@ -9,8 +9,10 @@ import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.exceptions.UserFriendlyNullPointerException;
 import org.hkijena.jipipe.extensions.imagejdatatypes.ImageJDataTypesSettings;
 import org.hkijena.jipipe.extensions.imagejdatatypes.color.ColorSpace;
+import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.color.ImagePlusColorRGBData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleMaskData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
+import org.hkijena.jipipe.extensions.tables.algorithms.MergeColumnsAlgorithm;
 import org.hkijena.jipipe.utils.PathUtils;
 
 import javax.swing.*;
@@ -24,6 +26,12 @@ import java.util.List;
  */
 @JIPipeDocumentation(name = "Masked image", description = "An image associated with a mask")
 public class MaskedImagePlusData extends ImagePlusData {
+
+    /**
+     * The dimensionality of this data.
+     * -1 means that we do not have information about the dimensionality
+     */
+    public static final int DIMENSIONALITY = -1;
 
     private ImagePlus mask;
 
@@ -41,6 +49,43 @@ public class MaskedImagePlusData extends ImagePlusData {
         if(image.getWidth() != mask.getWidth() || image.getHeight() != mask.getHeight()) {
             throw new RuntimeException("The image and mask do not have the same size!");
         }
+    }
+
+    @Override
+    public ImagePlus getViewedImage(boolean duplicate) {
+        // Ensure RGB data
+        ImagePlus result = new ImagePlusColorRGBData(getImage()).getImage();
+        if(result == getImage()) {
+            result = getImage().duplicate();
+            result.setTitle(getImage().getTitle());
+        }
+
+        ImageJUtils.forEachIndexedZCTSlice(result, (ip, index) -> {
+            int z = Math.min(mask.getNSlices() -1, index.getZ());
+            int c = Math.min(mask.getNChannels() - 1, index.getC());
+            int t = Math.min(mask.getNFrames() - 1, index.getT());
+            ImageProcessor maskProcessor = ImageJUtils.getSliceZero(mask, z, c, t);
+            int[] imagePixels = (int[]) ip.getPixels();
+            byte[] maskPixels = (byte[]) maskProcessor.getPixels();
+            for (int i = 0; i < imagePixels.length; i++) {
+                if(Byte.toUnsignedInt(maskPixels[i]) != 0) {
+                    int rs = (imagePixels[i] & 0xff0000) >> 16;
+                    int gs = (imagePixels[i] & 0xff00) >> 8;
+                    int bs = imagePixels[i] & 0xff;
+                    final int rt = 255;
+                    final int gt = 0;
+                    final int bt = 0;
+                    final double opacity = 0.5;
+                    int r = Math.min(255, Math.max((int) (rs + opacity * (rt - rs)), 0));
+                    int g = Math.min(255, Math.max((int) (gs + opacity * (gt - gs)), 0));
+                    int b = Math.min(255, Math.max((int) (bs + opacity * (bt - bs)), 0));
+                    int rgb = b + (g << 8) + (r << 16);
+                    imagePixels[i] = rgb;
+                }
+            }
+        }, new JIPipeProgressInfo());
+
+        return result;
     }
 
     @Override
@@ -92,20 +137,25 @@ public class MaskedImagePlusData extends ImagePlusData {
         int imageWidth = (int) (getImage().getWidth() * factor);
         int imageHeight = (int) (getImage().getHeight() * factor);
         ImagePlus rgbImage = ImageJUtils.channelsToRGB(getImage());
+        rgbImage = ImagePlusColorRGBData.convertIfNeeded(rgbImage);
         ImageProcessor resizedImage = rgbImage.getProcessor().resize(imageWidth, imageHeight, smooth);
         ImageProcessor resizedMask = getMask().getProcessor().resize(imageWidth, imageHeight, smooth);
         int[] imagePixels = (int[])resizedImage.getPixels();
         byte[] maskPixels = (byte[]) resizedMask.getPixels();
         for (int i = 0; i < imagePixels.length; i++) {
-            if(maskPixels[i] == 0) {
-                int as_rgb = imagePixels[i];
-                int r = (as_rgb & 0xff0000) >> 16;
-                int g = ((as_rgb & 0xff00) >> 8);
-                int b = (as_rgb & 0xff);
-                r /= 2;
-                g /= 2;
-                b /= 2;
-                imagePixels[i] = (r << 16) + (g << 8) + b;
+            if(Byte.toUnsignedInt(maskPixels[i]) > 0) {
+                int rs = (imagePixels[i] & 0xff0000) >> 16;
+                int gs = (imagePixels[i] & 0xff00) >> 8;
+                int bs = imagePixels[i] & 0xff;
+                final int rt = 255;
+                final int gt = 0;
+                final int bt = 0;
+                final double opacity = 0.5;
+                int r = Math.min(255, Math.max((int) (rs + opacity * (rt - rs)), 0));
+                int g = Math.min(255, Math.max((int) (gs + opacity * (gt - gs)), 0));
+                int b = Math.min(255, Math.max((int) (bs + opacity * (bt - bs)), 0));
+                int rgb = b + (g << 8) + (r << 16);
+                imagePixels[i] = rgb;
             }
         }
         BufferedImage bufferedImage = resizedImage.getBufferedImage();
@@ -114,6 +164,27 @@ public class MaskedImagePlusData extends ImagePlusData {
 
     public ImagePlus getMask() {
         return mask;
+    }
+
+    /**
+     * Converts the incoming image data into the current format.
+     *
+     * @param data the data
+     * @return the converted data
+     */
+    public static ImagePlusData convertFrom(ImagePlusData data) {
+        ImagePlus greyscale = ImagePlusGreyscaleMaskData.convertIfNeeded(data.getImage());
+        // Threshold it into a mask
+        ImageJUtils.forEachSlice(greyscale, ip -> {
+            for (int i = 0; i < ip.getPixelCount(); i++) {
+                int v = ip.get(i);
+                if (v > 0)
+                    ip.set(i, 255);
+                else
+                    ip.set(i, 0);
+            }
+        }, new JIPipeProgressInfo());
+        return new MaskedImagePlusData(data.getImage(), greyscale, data.getColorSpace());
     }
 
     public static MaskedImagePlusData importFrom(Path storageFilePath) {

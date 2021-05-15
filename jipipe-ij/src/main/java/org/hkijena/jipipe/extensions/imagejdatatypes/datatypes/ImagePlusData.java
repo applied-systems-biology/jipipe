@@ -86,8 +86,24 @@ public class ImagePlusData implements JIPipeData, ColoredImagePlusData {
         this.colorSpace = colorSpace;
     }
 
+    /**
+     * The ImageJ image
+     * @return the image
+     */
     public ImagePlus getImage() {
         return image;
+    }
+
+    /**
+     * The image used by viewers
+     * @param duplicate if the returned image is a duplicate (a separate copy)
+     * @return the image. is not necessarily equal to getImage()
+     */
+    public ImagePlus getViewedImage(boolean duplicate) {
+        if(duplicate)
+            return getDuplicateImage();
+        else
+            return image;
     }
 
     @Override
