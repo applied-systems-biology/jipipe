@@ -255,6 +255,33 @@ public class ImageJUtils {
     }
 
     /**
+     * Returns a mask with the same size as the image
+     * @param img the image
+     * @param mask the mask
+     * @return the mask (a new mask if they have the same size, otherwise a new object)
+     */
+    public static ImagePlus getNormalizedMask(ImagePlus img, ImagePlus mask) {
+        if(imagesHaveSameSize(img, mask))
+            return mask;
+        if(img.getStackSize() == 1) {
+            return new ImagePlus(mask.getTitle(), mask.getProcessor());
+        }
+        else {
+            ImageStack stack = new ImageStack(img.getWidth(), img.getHeight(), img.getNChannels() * img.getNFrames() * img.getNSlices());
+            forEachIndexedZCTSlice(img, (ip, index) -> {
+                int z = Math.min(mask.getNSlices() -1, index.getZ());
+                int c = Math.min(mask.getNChannels() - 1, index.getC());
+                int t = Math.min(mask.getNFrames() - 1, index.getT());
+                ImageProcessor maskProcessor = ImageJUtils.getSliceZero(mask, z, c, t);
+                stack.setProcessor(maskProcessor, getStackIndexZero(c, z, z, img));
+            }, new JIPipeProgressInfo());
+            ImagePlus newMask = new ImagePlus(mask.getTitle(), stack);
+            newMask.setDimensions(img.getNChannels(), img.getNSlices(), img.getNFrames());
+            return newMask;
+        }
+    }
+
+    /**
      * Rotates the image by a specified amount of degrees to the right
      *
      * @param img          the image

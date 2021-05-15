@@ -1,21 +1,43 @@
 package org.hkijena.jipipe.extensions.cellpose.algorithms;
 
+import ij.IJ;
+import ij.ImagePlus;
+import ij.process.ImageProcessor;
+import org.apache.commons.io.FileUtils;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
+import org.hkijena.jipipe.api.data.JIPipeDataSlotInfo;
+import org.hkijena.jipipe.api.data.JIPipeDefaultMutableSlotConfiguration;
+import org.hkijena.jipipe.api.data.JIPipeSlotType;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.extensions.cellpose.CellPosePretrainedModel;
-import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ROIListData;
+import org.hkijena.jipipe.extensions.cellpose.CellPoseSettings;
+import org.hkijena.jipipe.extensions.cellpose.datatypes.CellPoseModelData;
+import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.MaskedImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d3.greyscale.ImagePlus3DGreyscaleData;
-import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d3.greyscale.ImagePlus3DGreyscaleMaskData;
+import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleData;
+import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.extensions.python.OptionalPythonEnvironment;
+import org.hkijena.jipipe.extensions.python.PythonUtils;
+import org.hkijena.jipipe.extensions.settings.RuntimeSettings;
 
-@JIPipeDocumentation(name = "Cellpose training", description = "Trains a model with Cellpose. You start from an existing model or train from scratch.")
-@JIPipeInputSlot(value = ImagePlus3DGreyscaleData.class, slotName = "Images", autoCreate = true)
-@JIPipeInputSlot(value = ImagePlus3DGreyscaleMaskData.class, slotName = "Masks", autoCreate = true)
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
+
+@JIPipeDocumentation(name = "Cellpose training", description = "Trains a model with Cellpose. You start from an existing model or train from scratch. " +
+        "Incoming images are automatically converted to greyscale. Only 2D or 3D images are supported.")
+@JIPipeInputSlot(value = MaskedImagePlusData.class, slotName = "Training data", autoCreate = true)
+@JIPipeInputSlot(value = MaskedImagePlusData.class, slotName = "Test data", autoCreate = true, optional = true)
+@JIPipeInputSlot(value = CellPoseModelData.class)
+@JIPipeOutputSlot(value = CellPoseModelData.class, slotName = "Model", autoCreate = true)
 @JIPipeOrganization(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Deep learning")
 public class CellPoseTrainingAlgorithm extends JIPipeMergingAlgorithm {
 
@@ -34,10 +56,39 @@ public class CellPoseTrainingAlgorithm extends JIPipeMergingAlgorithm {
 
     public CellPoseTrainingAlgorithm(JIPipeNodeInfo info) {
         super(info);
+        updateSlots();
     }
 
     public CellPoseTrainingAlgorithm(CellPoseTrainingAlgorithm other) {
         super(other);
+        this.enableGPU = other.enableGPU;
+        this.pretrainedModel = other.pretrainedModel;
+        this.numEpochs = other.numEpochs;
+        this.learningRate = other.learningRate;
+        this.batchSize = other.batchSize;
+        this.useResidualConnections = other.useResidualConnections;
+        this.useStyleVector = other.useStyleVector;
+        this.concatenateDownsampledLayers = other.concatenateDownsampledLayers;
+        this.enable3DSegmentation = other.enable3DSegmentation;
+        this.cleanUpAfterwards = other.cleanUpAfterwards;
+        this.diameter = other.diameter;
+        this.overrideEnvironment = new OptionalPythonEnvironment(other.overrideEnvironment);
+        updateSlots();
+    }
+
+    private void updateSlots() {
+        if(pretrainedModel != CellPosePretrainedModel.Custom) {
+            if(getInputSlotMap().containsKey("Pretrained model")) {
+                JIPipeDefaultMutableSlotConfiguration slotConfiguration = (JIPipeDefaultMutableSlotConfiguration) getSlotConfiguration();
+                slotConfiguration.removeInputSlot("Pretrained model", false);
+            }
+        }
+        else {
+            if(!getInputSlotMap().containsKey("Pretrained model")) {
+                JIPipeDefaultMutableSlotConfiguration slotConfiguration = (JIPipeDefaultMutableSlotConfiguration) getSlotConfiguration();
+                slotConfiguration.addSlot("Pretrained model", new JIPipeDataSlotInfo(CellPoseModelData.class, JIPipeSlotType.Input, null), false);
+            }
+        }
     }
 
     @JIPipeDocumentation(name = "Learning rate")
@@ -191,11 +242,133 @@ public class CellPoseTrainingAlgorithm extends JIPipeMergingAlgorithm {
                 }
                 break;
         }
+        updateSlots();
     }
 
     @Override
     protected void runIteration(JIPipeMergingDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
 
+        // Prepare folders
+        Path workDirectory = RuntimeSettings.generateTempDirectory("cellpose-training");
+        Path trainingDir = workDirectory.resolve("training");
+        Path testDir = workDirectory.resolve("test");
+        try {
+            Files.createDirectories(trainingDir);
+            Files.createDirectories(testDir);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
+        // Extract images
+        JIPipeProgressInfo extractProgress = progressInfo.resolveAndLog("Extract input images");
+        boolean dataIs3D = false;
+        AtomicInteger imageCounter = new AtomicInteger(0);
+        for (Integer row : dataBatch.getInputRows("Training data")) {
+            JIPipeProgressInfo rowProgress = extractProgress.resolveAndLog("Row " + row);
+            MaskedImagePlusData masked = getInputSlot("Training data")
+                    .getData(row, MaskedImagePlusData.class, rowProgress);
+            ImagePlus image = ImagePlusGreyscaleData.convertIfNeeded(masked.getImage());
+            ImagePlus mask = ImageJUtils.getNormalizedMask(image, masked.getMask());
+            dataIs3D |= image.getNDimensions() > 2 && enable3DSegmentation;
+
+            saveImagesToPath(trainingDir, imageCounter, rowProgress, image, mask);
+        }
+        for (Integer row : dataBatch.getInputRows("Test data")) {
+            JIPipeProgressInfo rowProgress = extractProgress.resolveAndLog("Row " + row);
+            MaskedImagePlusData masked = getInputSlot("Test data")
+                    .getData(row, MaskedImagePlusData.class, rowProgress);
+            ImagePlus image = ImagePlusGreyscaleData.convertIfNeeded(masked.getImage());
+            ImagePlus mask = ImageJUtils.getNormalizedMask(image, masked.getMask());
+            dataIs3D |= image.getNDimensions() > 2 && enable3DSegmentation;
+
+            saveImagesToPath(testDir, imageCounter, rowProgress, image, mask);
+        }
+
+        // Setup arguments
+        List<String> arguments = new ArrayList<>();
+        arguments.add("-m");
+        arguments.add("cellpose");
+
+        arguments.add("--train");
+
+        arguments.add("--dir");
+        arguments.add(trainingDir.toAbsolutePath().toString());
+
+        if(!dataBatch.getInputRows("Test data").isEmpty()) {
+            arguments.add("--test_dir");
+            arguments.add(testDir.toAbsolutePath().toString());
+        }
+
+        arguments.add("--img_filter");
+        arguments.add("raw");
+
+        arguments.add("--mask_filter");
+        arguments.add("mask");
+
+        arguments.add("--chan");
+        arguments.add("0");
+
+        if(enableGPU)
+            arguments.add("--use_gpu");
+        if(dataIs3D)
+            arguments.add("--do_3D");
+        if(pretrainedModel == CellPosePretrainedModel.Custom || pretrainedModel == CellPosePretrainedModel.None) {
+            arguments.add("--diameter");
+            arguments.add(diameter + "");
+        }
+
+        arguments.add("--learning_rate");
+        arguments.add(learningRate + "");
+
+        arguments.add("--n_epochs");
+        arguments.add(numEpochs + "");
+
+        arguments.add("--batch_size");
+        arguments.add(batchSize + "");
+
+        arguments.add("--residuals_on");
+        arguments.add(useResidualConnections ? "1" : "0");
+
+        arguments.add("--style_on");
+        arguments.add(useStyleVector ? "1" : "0");
+
+        arguments.add("--concatenation");
+        arguments.add(concatenateDownsampledLayers ? "1" : "0");
+
+        // Run the module
+        PythonUtils.runPython(arguments.toArray(new String[0]), overrideEnvironment.isEnabled() ? overrideEnvironment.getContent() :
+                CellPoseSettings.getInstance().getPythonEnvironment(), progressInfo);
+
+        if(cleanUpAfterwards) {
+            try {
+                FileUtils.deleteDirectory(workDirectory.toFile());
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    private void saveImagesToPath(Path dir, AtomicInteger imageCounter, JIPipeProgressInfo rowProgress, ImagePlus image, ImagePlus mask) {
+        if(image.getStackSize() > 1 && !enable3DSegmentation) {
+            ImageJUtils.forEachIndexedZCTSlice(image, (ip, index) -> {
+                ImageProcessor maskSlice = ImageJUtils.getSliceZero(mask, index);
+                ImagePlus maskSliceImage = new ImagePlus("slice", maskSlice);
+                ImagePlus imageSliceImage = new ImagePlus("slice", ip);
+                Path imageFile = dir.resolve("i" + imageCounter + "_raw.tif");
+                Path maskFile = dir.resolve("i" + imageCounter + "_mask.tif");
+                imageCounter.getAndIncrement();
+                IJ.saveAs(maskSliceImage, "TIFF", imageFile.toString());
+                IJ.saveAs(imageSliceImage, "TIFF", maskFile.toString());
+            }, rowProgress);
+        }
+        else {
+            // Save as-is
+            Path imageFile = dir.resolve("i" + imageCounter + "_raw.tif");
+            Path maskFile = dir.resolve("i" + imageCounter + "_mask.tif");
+            imageCounter.getAndIncrement();
+            IJ.saveAs(image, "TIFF", imageFile.toString());
+            IJ.saveAs(mask, "TIFF", maskFile.toString());
+        }
     }
 
     @JIPipeDocumentation(name = "Epochs", description = "Number of epochs that should be trained.")
