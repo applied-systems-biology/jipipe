@@ -259,6 +259,8 @@ public class CellPoseTrainingAlgorithm extends JIPipeMergingAlgorithm {
             throw new RuntimeException(e);
         }
 
+        progressInfo.log("Work directory is " + workDirectory);
+
         // Extract images
         JIPipeProgressInfo extractProgress = progressInfo.resolveAndLog("Extract input images");
         boolean dataIs3D = false;
@@ -317,6 +319,11 @@ public class CellPoseTrainingAlgorithm extends JIPipeMergingAlgorithm {
             arguments.add(diameter + "");
         }
 
+        if(!pretrainedModel.getId().isEmpty()) {
+            arguments.add("--pretrained_model");
+            arguments.add(pretrainedModel.getId());
+        }
+
         arguments.add("--learning_rate");
         arguments.add(learningRate + "");
 
@@ -326,7 +333,7 @@ public class CellPoseTrainingAlgorithm extends JIPipeMergingAlgorithm {
         arguments.add("--batch_size");
         arguments.add(batchSize + "");
 
-        arguments.add("--residuals_on");
+        arguments.add("--residual_on");
         arguments.add(useResidualConnections ? "1" : "0");
 
         arguments.add("--style_on");

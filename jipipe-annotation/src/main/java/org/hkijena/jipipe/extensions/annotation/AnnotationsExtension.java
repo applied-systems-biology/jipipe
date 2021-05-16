@@ -81,6 +81,7 @@ public class AnnotationsExtension extends JIPipePrepackagedDefaultJavaExtension 
         registerNodeType("annotation-merge", MergeAnnotations.class, UIUtils.getIconURLFromResources("actions/merge.png"));
         registerNodeType("annotate-with-annotation-table", AnnotateWithAnnotationTable.class, UIUtils.getIconURLFromResources("data-types/annotation-table.png"));
         registerNodeType("generate-unique-annotation", GenerateUniqueAnnotation.class, UIUtils.getIconURLFromResources("actions/tools-wizard.png"));
+        registerNodeType("generate-unique-random-annotation", GenerateRandomUniqueAnnotation.class, UIUtils.getIconURLFromResources("actions/random.png"));
         registerNodeType("remove-array-annotations", RemoveArrayAnnotationsAlgorithm.class, UIUtils.getIconURLFromResources("actions/filter.png"));
         registerNodeType("remove-na-annotation-columns", RemoveNAAnnotationColumnsAlgorithm.class, UIUtils.getIconURLFromResources("actions/filter.png"));
     }
