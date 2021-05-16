@@ -18,7 +18,12 @@ import org.jgrapht.alg.shortestpath.AllDirectedPaths;
 import org.jgrapht.alg.shortestpath.DijkstraShortestPath;
 import org.jgrapht.graph.DefaultDirectedGraph;
 import org.jgrapht.graph.DefaultEdge;
+import org.jgrapht.nio.Attribute;
+import org.jgrapht.nio.AttributeType;
+import org.jgrapht.nio.DefaultAttribute;
+import org.jgrapht.nio.dot.DOTExporter;
 
+import java.io.File;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -180,6 +185,18 @@ public class JIPipeMergingDataBatchBuilder {
                     graph.addVertex(rowNode);
                 rowNodesBySlot.put(slot, rowNode);
             }
+
+            // Special case: Empty optional slot. Here we must create some dummy data
+            if(slot.getRowCount() == 0 && slot.getInfo().isOptional()) {
+                Map<String, String> annotations = new HashMap<>();
+                if(referenceColumns == null)
+                    annotations.put("\nuid", slot.getName() + "/-1");
+                RowNode rowNode = new RowNode(slot, -1, annotations);
+                if (!applyMerging)
+                    graph.addVertex(rowNode);
+                rowNodesBySlot.put(slot, rowNode);
+            }
+
             if (applyMerging) {
                 Map<Map<String, String>, List<RowNode>> partitions = rowNodesBySlot.get(slot).stream().collect(Collectors.groupingBy(RowNode::getAnnotations));
                 rowNodesBySlot.removeAll(slot);
@@ -267,10 +284,13 @@ public class JIPipeMergingDataBatchBuilder {
 
         List<JIPipeMergingDataBatch> result = new ArrayList<>();
         AllDirectedPaths<RowNode, DefaultEdge> directedPaths = new AllDirectedPaths<>(graph);
-        for (GraphPath<RowNode, DefaultEdge> path : directedPaths.getAllPaths(source, sink, false, Integer.MAX_VALUE)) {
+        List<GraphPath<RowNode, DefaultEdge>> allPaths = directedPaths.getAllPaths(source, sink, false, Integer.MAX_VALUE);
+        for (GraphPath<RowNode, DefaultEdge> path : allPaths) {
             JIPipeMergingDataBatch dataBatch = new JIPipeMergingDataBatch(this.node);
             for (RowNode rowNode : path.getVertexList()) {
                 if (rowNode == source || rowNode == sink)
+                    continue;
+                if(rowNode.rows.contains(-1))
                     continue;
                 dataBatch.addData(rowNode.slot, rowNode.rows);
                 for (Integer row : rowNode.rows) {
