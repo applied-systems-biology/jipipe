@@ -18,6 +18,7 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.extensions.cellpose.CellPosePretrainedModel;
 import org.hkijena.jipipe.extensions.cellpose.CellPoseSettings;
 import org.hkijena.jipipe.extensions.cellpose.datatypes.CellPoseModelData;
+import org.hkijena.jipipe.extensions.cellpose.datatypes.CellPoseSizeModelData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.MaskedImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d3.greyscale.ImagePlus3DGreyscaleData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleData;
@@ -57,6 +58,7 @@ public class CellPoseTrainingAlgorithm extends JIPipeMergingAlgorithm {
     private boolean enable3DSegmentation = true;
     private boolean cleanUpAfterwards = true;
     private double diameter = 30;
+    private boolean trainSizeModel = false;
     private OptionalPythonEnvironment overrideEnvironment = new OptionalPythonEnvironment();
 
     public CellPoseTrainingAlgorithm(JIPipeNodeInfo info) {
@@ -78,6 +80,7 @@ public class CellPoseTrainingAlgorithm extends JIPipeMergingAlgorithm {
         this.cleanUpAfterwards = other.cleanUpAfterwards;
         this.diameter = other.diameter;
         this.overrideEnvironment = new OptionalPythonEnvironment(other.overrideEnvironment);
+        this.trainSizeModel = other.trainSizeModel;
         updateSlots();
     }
 
@@ -94,6 +97,30 @@ public class CellPoseTrainingAlgorithm extends JIPipeMergingAlgorithm {
                 slotConfiguration.addSlot("Pretrained model", new JIPipeDataSlotInfo(CellPoseModelData.class, JIPipeSlotType.Input, null), false);
             }
         }
+        if(!trainSizeModel) {
+            if(getOutputSlotMap().containsKey("Size model")) {
+                JIPipeDefaultMutableSlotConfiguration slotConfiguration = (JIPipeDefaultMutableSlotConfiguration) getSlotConfiguration();
+                slotConfiguration.removeOutputSlot("Size model", false);
+            }
+        }
+        else {
+            if(!getOutputSlotMap().containsKey("Size model")) {
+                JIPipeDefaultMutableSlotConfiguration slotConfiguration = (JIPipeDefaultMutableSlotConfiguration) getSlotConfiguration();
+                slotConfiguration.addSlot("Size model", new JIPipeDataSlotInfo(CellPoseSizeModelData.class, JIPipeSlotType.Output, null), false);
+            }
+        }
+    }
+
+    @JIPipeDocumentation(name = "Train size model", description = "If enabled, also train a size model")
+    @JIPipeParameter("train-size-model")
+    public boolean isTrainSizeModel() {
+        return trainSizeModel;
+    }
+
+    @JIPipeParameter("train-size-model")
+    public void setTrainSizeModel(boolean trainSizeModel) {
+        this.trainSizeModel = trainSizeModel;
+        updateSlots();
     }
 
     @JIPipeDocumentation(name = "Learning rate")
@@ -353,6 +380,9 @@ public class CellPoseTrainingAlgorithm extends JIPipeMergingAlgorithm {
             arguments.add(customModelPath.toAbsolutePath().toString());
         }
 
+        if(trainSizeModel)
+            arguments.add("--train_size");
+
         arguments.add("--learning_rate");
         arguments.add(learningRate + "");
 
@@ -381,6 +411,13 @@ public class CellPoseTrainingAlgorithm extends JIPipeMergingAlgorithm {
         CellPoseModelData modelData = new CellPoseModelData(generatedModelFile);
         dataBatch.addOutputData("Model", modelData, progressInfo);
 
+        // Extract size model
+        if(trainSizeModel) {
+            Path generatedSizeModelFile = findSizeModelFile(modelsPath);
+            CellPoseSizeModelData sizeModelData = new CellPoseSizeModelData(generatedSizeModelFile);
+            dataBatch.addOutputData("Size model", sizeModelData, progressInfo);
+        }
+
         if(cleanUpAfterwards) {
             try {
                 FileUtils.deleteDirectory(workDirectory.toFile());
@@ -406,6 +443,17 @@ public class CellPoseTrainingAlgorithm extends JIPipeMergingAlgorithm {
             }
         }
         throw new RuntimeException("Could not find model in " + modelsPath);
+    }
+
+    private Path findSizeModelFile(Path modelsPath) {
+        List<Path> list = PathUtils.findFilesByExtensionIn(modelsPath, ".npy").stream().sorted(Comparator.comparing(path -> {
+            try {
+                return Files.getLastModifiedTime((Path) path);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }).reversed()).collect(Collectors.toList());
+        return list.get(0);
     }
 
     private void saveImagesToPath(Path dir, AtomicInteger imageCounter, JIPipeProgressInfo rowProgress, ImagePlus image, ImagePlus mask) {

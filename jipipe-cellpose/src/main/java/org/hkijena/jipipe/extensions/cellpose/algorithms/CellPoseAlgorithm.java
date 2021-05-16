@@ -8,6 +8,7 @@ import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.JIPipeValidityReport;
 import org.hkijena.jipipe.api.data.*;
+import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
@@ -15,6 +16,7 @@ import org.hkijena.jipipe.extensions.cellpose.CellPoseModel;
 import org.hkijena.jipipe.extensions.cellpose.CellPoseSettings;
 import org.hkijena.jipipe.extensions.cellpose.CellPoseUtils;
 import org.hkijena.jipipe.extensions.cellpose.datatypes.CellPoseModelData;
+import org.hkijena.jipipe.extensions.cellpose.datatypes.CellPoseSizeModelData;
 import org.hkijena.jipipe.extensions.cellpose.parameters.*;
 import org.hkijena.jipipe.extensions.python.OptionalPythonEnvironment;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ROIListData;
@@ -137,15 +139,23 @@ public class CellPoseAlgorithm extends JIPipeMergingAlgorithm {
 
     private void updateInputSlots() {
         if(modelParameters.getModel() != CellPoseModel.Custom) {
+            JIPipeDefaultMutableSlotConfiguration slotConfiguration = (JIPipeDefaultMutableSlotConfiguration) getSlotConfiguration();
             if(getInputSlotMap().containsKey("Pretrained model")) {
-                JIPipeDefaultMutableSlotConfiguration slotConfiguration = (JIPipeDefaultMutableSlotConfiguration) getSlotConfiguration();
                 slotConfiguration.removeInputSlot("Pretrained model", false);
+            }
+            if(getInputSlotMap().containsKey("Size model")) {
+                slotConfiguration.removeInputSlot("Size model", false);
             }
         }
         else {
+            JIPipeDefaultMutableSlotConfiguration slotConfiguration = (JIPipeDefaultMutableSlotConfiguration) getSlotConfiguration();
             if(!getInputSlotMap().containsKey("Pretrained model")) {
-                JIPipeDefaultMutableSlotConfiguration slotConfiguration = (JIPipeDefaultMutableSlotConfiguration) getSlotConfiguration();
                 slotConfiguration.addSlot("Pretrained model", new JIPipeDataSlotInfo(CellPoseModelData.class, JIPipeSlotType.Input, null), false);
+            }
+            if(!getInputSlotMap().containsKey("Size model")) {
+                JIPipeDataSlotInfo slotInfo = new JIPipeDataSlotInfo(CellPoseSizeModelData.class, JIPipeSlotType.Input, null);
+                slotInfo.setOptional(true);
+                slotConfiguration.addSlot("Size model", slotInfo, false);
             }
         }
     }
@@ -170,6 +180,7 @@ public class CellPoseAlgorithm extends JIPipeMergingAlgorithm {
 
         // Save models if needed
         List<Path> customModelPaths = new ArrayList<>();
+        Path customSizeModelPath = null;
         if(modelParameters.getModel() == CellPoseModel.Custom) {
             List<CellPoseModelData> models = dataBatch.getInputData("Pretrained model", CellPoseModelData.class, progressInfo);
             for (int i = 0; i < models.size(); i++) {
@@ -181,6 +192,25 @@ public class CellPoseAlgorithm extends JIPipeMergingAlgorithm {
                     throw new RuntimeException(e);
                 }
                 customModelPaths.add(customModelPath);
+            }
+
+            List<CellPoseSizeModelData> sizeModels = dataBatch.getInputData("Size model", CellPoseSizeModelData.class, progressInfo);
+            if(sizeModels.size() > 1) {
+                throw new UserFriendlyRuntimeException("Only 1 size model supported!",
+                        "Only one size model is supported!",
+                        getDisplayName(),
+                        "Currently, the node supports only one size model.",
+                        "Remove or modify inputs so that there is only one size model.");
+            }
+            if(!sizeModels.isEmpty()) {
+                CellPoseSizeModelData sizeModelData = sizeModels.get(0);
+                Path customModelPath = workDirectory.resolve("sz" + sizeModelData.getName() + ".npy");
+                try {
+                    Files.write(customModelPath, sizeModelData.getData());
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+                customSizeModelPath = customModelPath;
             }
         }
 
@@ -218,7 +248,7 @@ public class CellPoseAlgorithm extends JIPipeMergingAlgorithm {
 
             // I we provide a custom model, we need to inject custom code (Why?)
             if(modelParameters.getModel() == CellPoseModel.Custom) {
-                setupCustomCellposeModel(code, customModelPaths);
+                setupCustomCellposeModel(code, customModelPaths, customSizeModelPath);
             }
             else {
                 // We can use the combined Cellpose class
@@ -398,8 +428,9 @@ public class CellPoseAlgorithm extends JIPipeMergingAlgorithm {
      * It receives a pretrained model
      * @param code the code
      * @param customModelPaths custom model paths
+     * @param customSizeModelPath custom size model path
      */
-    private void setupCustomCellposeModel(StringBuilder code, List<Path> customModelPaths) {
+    private void setupCustomCellposeModel(StringBuilder code, List<Path> customModelPaths, Path customSizeModelPath) {
         // This is code that allows to embed a custom model
         code.append("\n\nclass CellposeCustom():\n" +
                 "    def __init__(self, gpu=False, pretrained_model=None, diam_mean=None, pretrained_size=None, net_avg=True, device=None, torch=True):\n" +
@@ -497,6 +528,8 @@ public class CellPoseAlgorithm extends JIPipeMergingAlgorithm {
         modelParameterMap.put("net_avg", getEnhancementParameters().isNetAverage());
         modelParameterMap.put("gpu", getModelParameters().isEnableGPU());
         modelParameterMap.put("diam_mean", getModelParameters().getMeanDiameter());
+        if(customSizeModelPath != null)
+            modelParameterMap.put("pretrained_size", customSizeModelPath.toString());
         code.append(String.format("model = CellposeCustom(%s)\n", PythonUtils.mapToPythonArguments(modelParameterMap)));
     }
 
