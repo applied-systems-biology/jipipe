@@ -48,7 +48,7 @@ import static org.hkijena.jipipe.extensions.imagejalgorithms.ImageJAlgorithmsExt
 public class ManualThreshold32F2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     private float minThreshold = 0;
-    private float maxThreshold = 1;
+    private float maxThreshold = Float.POSITIVE_INFINITY;
     private OptionalAnnotationNameParameter minThresholdAnnotation = new OptionalAnnotationNameParameter("Min Threshold", true);
     private OptionalAnnotationNameParameter maxThresholdAnnotation = new OptionalAnnotationNameParameter("Max Threshold", true);
     private JIPipeAnnotationMergeStrategy thresholdAnnotationStrategy = JIPipeAnnotationMergeStrategy.OverwriteExisting;
@@ -124,7 +124,7 @@ public class ManualThreshold32F2DAlgorithm extends JIPipeSimpleIteratingAlgorith
                 progressInfo);
     }
 
-    @JIPipeDocumentation(name = "Min threshold", description = "All pixel values less or equal to this are set to zero. The value interval is [0, 65535].")
+    @JIPipeDocumentation(name = "Min threshold", description = "All pixel values less or equal to this are set to zero.")
     @JIPipeParameter(value = "min-threshold", uiOrder = -50)
     public float getMinThreshold() {
         return minThreshold;
@@ -136,7 +136,7 @@ public class ManualThreshold32F2DAlgorithm extends JIPipeSimpleIteratingAlgorith
 
     }
 
-    @JIPipeDocumentation(name = "Max threshold", description = "All pixel values greater than this are set to zero. The value interval is [0, 65535].")
+    @JIPipeDocumentation(name = "Max threshold", description = "All pixel values greater than this are set to zero.")
     @JIPipeParameter(value = "max-threshold", uiOrder = -40)
     public float getMaxThreshold() {
         return maxThreshold;

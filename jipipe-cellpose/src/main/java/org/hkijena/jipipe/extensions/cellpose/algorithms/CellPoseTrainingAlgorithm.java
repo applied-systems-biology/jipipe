@@ -371,13 +371,20 @@ public class CellPoseTrainingAlgorithm extends JIPipeMergingAlgorithm {
             arguments.add(diameter + "");
         }
 
-        if(!pretrainedModel.getId().isEmpty()) {
-            arguments.add("--pretrained_model");
-            arguments.add(pretrainedModel.getId());
-        }
-        if(pretrainedModel == CellPosePretrainedModel.Custom) {
-            arguments.add("--pretrained_model");
-            arguments.add(customModelPath.toAbsolutePath().toString());
+        switch (pretrainedModel) {
+            case Cytoplasm:
+            case Nucleus:
+                arguments.add("--pretrained_model");
+                arguments.add(pretrainedModel.getId());
+                break;
+            case Custom:
+                arguments.add("--pretrained_model");
+                arguments.add(customModelPath.toAbsolutePath().toString());
+                break;
+            case None:
+                arguments.add("--pretrained_model");
+                arguments.add("None");
+                break;
         }
 
         if(trainSizeModel)
