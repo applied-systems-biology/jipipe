@@ -452,8 +452,8 @@ public class JIPipeMergingDataBatch implements Comparable<JIPipeMergingDataBatch
      * @return if the batch is incomplete
      */
     public boolean isIncomplete() {
-        for (Set<Integer> rows : inputSlotRows.values()) {
-            if (rows.isEmpty())
+        for (Map.Entry<JIPipeDataSlot, Set<Integer>> entry : inputSlotRows.entrySet()) {
+            if(entry.getValue().isEmpty() && !entry.getKey().getInfo().isOptional())
                 return true;
         }
         return false;
