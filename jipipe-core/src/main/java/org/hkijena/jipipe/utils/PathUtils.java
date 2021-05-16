@@ -56,7 +56,7 @@ public class PathUtils {
      */
     public static List<Path> findFilesByExtensionIn(Path folder, String... extensions) {
         try {
-            return Files.list(folder).filter(p -> Files.isRegularFile(p) && Arrays.stream(extensions).anyMatch(e -> p.toString().endsWith(e))).collect(Collectors.toList());
+            return Files.list(folder).filter(p -> Files.isRegularFile(p) && (extensions.length == 0 || Arrays.stream(extensions).anyMatch(e -> p.toString().endsWith(e)))).collect(Collectors.toList());
         } catch (IOException e) {
             return new ArrayList<>();
         }

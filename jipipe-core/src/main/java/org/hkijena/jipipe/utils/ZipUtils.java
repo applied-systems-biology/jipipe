@@ -25,6 +25,14 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
 public class ZipUtils {
+
+    /**
+     * Unzips a file
+     * @param zipFile the zip file
+     * @param targetDir the target dir
+     * @param progressInfo the progress info
+     * @throws IOException io exception
+     */
     public static void unzip(Path zipFile, Path targetDir, JIPipeProgressInfo progressInfo) throws IOException {
         byte[] buffer = new byte[1024];
         ZipInputStream zis = new ZipInputStream(new FileInputStream(zipFile.toFile()));

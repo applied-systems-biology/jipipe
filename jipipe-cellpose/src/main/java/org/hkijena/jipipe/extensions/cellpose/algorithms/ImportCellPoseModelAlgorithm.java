@@ -23,6 +23,7 @@ public class ImportCellPoseModelAlgorithm extends JIPipeSimpleIteratingAlgorithm
 
     @Override
     protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
-
+        FileData fileData = dataBatch.getInputData(getFirstInputSlot(), FileData.class, progressInfo);
+        dataBatch.addOutputData(getFirstOutputSlot(), new CellPoseModelData(fileData.toPath()), progressInfo);
     }
 }

@@ -10,6 +10,7 @@ import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeDataSlotInfo;
 import org.hkijena.jipipe.api.data.JIPipeDefaultMutableSlotConfiguration;
 import org.hkijena.jipipe.api.data.JIPipeSlotType;
+import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
@@ -24,13 +25,17 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.extensions.python.OptionalPythonEnvironment;
 import org.hkijena.jipipe.extensions.python.PythonUtils;
 import org.hkijena.jipipe.extensions.settings.RuntimeSettings;
+import org.hkijena.jipipe.utils.PathUtils;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Collectors;
 
 @JIPipeDocumentation(name = "Cellpose training", description = "Trains a model with Cellpose. You start from an existing model or train from scratch. " +
         "Incoming images are automatically converted to greyscale. Only 2D or 3D images are supported.")
@@ -147,7 +152,7 @@ public class CellPoseTrainingAlgorithm extends JIPipeMergingAlgorithm {
         this.concatenateDownsampledLayers = concatenateDownsampledLayers;
     }
 
-    @JIPipeDocumentation(name = "Diameter", description = "The cell diameter. Depending on the model, you can choose following values: " +
+    @JIPipeDocumentation(name = "Mean diameter", description = "The cell diameter. Depending on the model, you can choose following values: " +
             "<ul>" +
             "<li><b>Cytoplasm</b>: You need to rescale all your images that structures have a diameter of about 30 pixels.</li>" +
             "<li><b>Nuclei</b>: You need to rescale all your images that structures have a diameter of about 17 pixels.</li>" +
@@ -286,6 +291,26 @@ public class CellPoseTrainingAlgorithm extends JIPipeMergingAlgorithm {
             saveImagesToPath(testDir, imageCounter, rowProgress, image, mask);
         }
 
+        // Extract model if custom
+        Path customModelPath = null;
+        if(pretrainedModel == CellPosePretrainedModel.Custom) {
+            Set<Integer> pretrainedModelRows = dataBatch.getInputRows("Pretrained model");
+            if(pretrainedModelRows.size() != 1) {
+                throw new UserFriendlyRuntimeException("Only one pretrained model is allowed",
+                        "Only one pretrained model is allowed",
+                        getDisplayName(),
+                        "You can only provide one pretrained model per data batch for training.",
+                        "Ensure that only one pretrained model is in a data batch.");
+            }
+            CellPoseModelData modelData = dataBatch.getInputData("Pretrained model", CellPoseModelData.class, progressInfo).get(0);
+            customModelPath = workDirectory.resolve(modelData.getName());
+            try {
+                Files.write(customModelPath, modelData.getData());
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
+
         // Setup arguments
         List<String> arguments = new ArrayList<>();
         arguments.add("-m");
@@ -323,6 +348,10 @@ public class CellPoseTrainingAlgorithm extends JIPipeMergingAlgorithm {
             arguments.add("--pretrained_model");
             arguments.add(pretrainedModel.getId());
         }
+        if(pretrainedModel == CellPosePretrainedModel.Custom) {
+            arguments.add("--pretrained_model");
+            arguments.add(customModelPath.toAbsolutePath().toString());
+        }
 
         arguments.add("--learning_rate");
         arguments.add(learningRate + "");
@@ -346,6 +375,12 @@ public class CellPoseTrainingAlgorithm extends JIPipeMergingAlgorithm {
         PythonUtils.runPython(arguments.toArray(new String[0]), overrideEnvironment.isEnabled() ? overrideEnvironment.getContent() :
                 CellPoseSettings.getInstance().getPythonEnvironment(), progressInfo);
 
+        // Extract the model
+        Path modelsPath = trainingDir.resolve("models");
+        Path generatedModelFile = findModelFile(modelsPath);
+        CellPoseModelData modelData = new CellPoseModelData(generatedModelFile);
+        dataBatch.addOutputData("Model", modelData, progressInfo);
+
         if(cleanUpAfterwards) {
             try {
                 FileUtils.deleteDirectory(workDirectory.toFile());
@@ -353,6 +388,24 @@ public class CellPoseTrainingAlgorithm extends JIPipeMergingAlgorithm {
                 e.printStackTrace();
             }
         }
+    }
+
+    private Path findModelFile(Path modelsPath) {
+        for (Path path : PathUtils.findFilesByExtensionIn(modelsPath).stream().sorted(Comparator.comparing(path -> {
+            try {
+                return Files.getLastModifiedTime((Path)path);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }).reversed()).collect(Collectors.toList())) {
+            String name = path.getFileName().toString();
+            if(!name.startsWith("cellpose"))
+                continue;
+            if(!name.endsWith(".npy")) {
+                return path;
+            }
+        }
+        throw new RuntimeException("Could not find model in " + modelsPath);
     }
 
     private void saveImagesToPath(Path dir, AtomicInteger imageCounter, JIPipeProgressInfo rowProgress, ImagePlus image, ImagePlus mask) {

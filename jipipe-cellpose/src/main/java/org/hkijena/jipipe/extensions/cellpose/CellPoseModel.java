@@ -2,7 +2,8 @@ package org.hkijena.jipipe.extensions.cellpose;
 
 public enum CellPoseModel {
     Cytoplasm("cyto"),
-    Nucleus("nuclei");
+    Nucleus("nuclei"),
+    Custom("");
 
     private final String id;
 

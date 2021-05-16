@@ -333,6 +333,31 @@ public class JIPipeMergingDataBatch implements Comparable<JIPipeMergingDataBatch
 
     /**
      * Writes output data into the provided slot
+     * Please note that annotations should be set up till this point
+     *
+     * @param slotName              Slot name
+     * @param data                  Added data
+     * @param additionalAnnotations Annotations that are added additionally to the global ones
+     * @param progressInfo          data storage progress
+     */
+    public void addOutputData(String slotName, JIPipeData data, List<JIPipeAnnotation> additionalAnnotations, JIPipeAnnotationMergeStrategy annotationMergeStrategy, JIPipeProgressInfo progressInfo) {
+        addOutputData(node.getOutputSlot(slotName), data, additionalAnnotations, annotationMergeStrategy, progressInfo);
+    }
+
+    /**
+     * Writes output data into the provided slot
+     * Please note that annotations should be set up till this point
+     *
+     * @param slotName              Slot name
+     * @param data                  Added data
+     * @param additionalAnnotations Annotations that are added additionally to the global ones
+     */
+    public void addOutputData(String slotName, JIPipeVirtualData data, JIPipeAnnotationMergeStrategy annotationMergeStrategy, List<JIPipeAnnotation> additionalAnnotations) {
+        addOutputData(node.getOutputSlot(slotName), data, additionalAnnotations, annotationMergeStrategy);
+    }
+
+    /**
+     * Writes output data into the provided slot
      * Please note that annotations that are added to all annotations should be set up till this point
      *
      * @param slot         Slot instance

@@ -11,6 +11,7 @@ public class ModelParameters implements JIPipeParameterCollection {
 
     private boolean enableGPU = true;
     private CellPoseModel model = CellPoseModel.Cytoplasm;
+    private double meanDiameter = 30;
 
     public ModelParameters() {
     }
@@ -18,6 +19,7 @@ public class ModelParameters implements JIPipeParameterCollection {
     public ModelParameters(ModelParameters other) {
         this.enableGPU = other.enableGPU;
         this.model = other.model;
+        this.meanDiameter = other.meanDiameter;
     }
 
     @JIPipeDocumentation(name = "With GPU", description = "Utilize a GPU if available. Please note that you need to setup Cellpose " +
@@ -43,8 +45,25 @@ public class ModelParameters implements JIPipeParameterCollection {
         this.model = model;
     }
 
+    @JIPipeDocumentation(name = "Mean diameter", description = "Mean diameter of the model. Only necessary if you are using a " +
+            "custom model. If you retrained a pretrained model, set following values:" +
+            "<ul>" +
+            "<li>Model based on Cytoplasm: Set to 30.0</li>" +
+            "<li>Model based on Nuclei: Set to 17.0</li>" +
+            "</ul>")
+    @JIPipeParameter("mean-diameter")
+    public double getMeanDiameter() {
+        return meanDiameter;
+    }
+
+    @JIPipeParameter("mean-diameter")
+    public void setMeanDiameter(double meanDiameter) {
+        this.meanDiameter = meanDiameter;
+    }
+
     @Override
     public EventBus getEventBus() {
         return eventBus;
     }
 }
+
