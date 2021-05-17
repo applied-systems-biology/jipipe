@@ -35,6 +35,7 @@ import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.color.*;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.contrast.CLAHEContrastEnhancer;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.contrast.HistogramContrastEnhancerAlgorithm;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.contrast.IlluminationCorrection2DAlgorithm;
+import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.convert.ConvertImageAlgorithm;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.convolve.ConvolveByImage2DAlgorithm;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.convolve.ConvolveByParameter2DAlgorithm;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.datasources.ImageStackFromFolder;
@@ -231,6 +232,7 @@ public class ImageJAlgorithmsExtension extends JIPipePrepackagedDefaultJavaExten
         registerLUTAlgorithms();
         registerOpticalFlowAlgorithms();
         registerFormAlgorithms();
+        registerConverterAlgorithms();
 
         registerEnumParameterType("ij1-export-image-to-web:file-format", ExportImageToWebAlgorithm.FileFormat.class, "File format", "Exported file format.");
         registerNodeType("iji-export-image-to-web", ExportImageToWebAlgorithm.class, UIUtils.getIconURLFromResources("actions/document-export.png"));
@@ -247,6 +249,10 @@ public class ImageJAlgorithmsExtension extends JIPipePrepackagedDefaultJavaExten
         registerGlobalParameters();
 
 //        registerIJ2Algorithms();
+    }
+
+    private void registerConverterAlgorithms() {
+        registerNodeType("ij-convert-image", ConvertImageAlgorithm.class, UIUtils.getIconURLFromResources("actions/view-refresh.png"));
     }
 
     private void registerMaskAlgorithms() {
