@@ -10,6 +10,7 @@ import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscale8UData;
+import org.hkijena.jipipe.extensions.parameters.editors.JIPipeDataParameterSettings;
 import org.hkijena.jipipe.extensions.parameters.references.JIPipeDataInfoRef;
 
 @JIPipeDocumentation(name = "Convert image", description = "Converts an image into another image type")
@@ -37,6 +38,7 @@ public class ConvertImageAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     @JIPipeDocumentation(name = "Output image type", description = "The image type that is generated.")
     @JIPipeParameter("generated-image-type")
+    @JIPipeDataParameterSettings(dataBaseClass = ImagePlusData.class)
     public JIPipeDataInfoRef getGeneratedImageType() {
         return generatedImageType;
     }

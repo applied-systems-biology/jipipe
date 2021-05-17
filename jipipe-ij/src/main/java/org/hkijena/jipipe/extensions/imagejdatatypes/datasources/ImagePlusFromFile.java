@@ -32,6 +32,7 @@ import org.hkijena.jipipe.extensions.filesystem.dataypes.FileData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.OMEImageData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
+import org.hkijena.jipipe.extensions.parameters.editors.JIPipeDataParameterSettings;
 import org.hkijena.jipipe.extensions.parameters.primitives.OptionalAnnotationNameParameter;
 import org.hkijena.jipipe.extensions.parameters.references.JIPipeDataInfoRef;
 import org.hkijena.jipipe.extensions.settings.VirtualDataSettings;
@@ -156,6 +157,7 @@ public class ImagePlusFromFile extends JIPipeSimpleIteratingAlgorithm {
 
     @JIPipeDocumentation(name = "Generated image type", description = "The image type that is generated.")
     @JIPipeParameter("generated-image-type")
+    @JIPipeDataParameterSettings(dataBaseClass = ImagePlusData.class)
     public JIPipeDataInfoRef getGeneratedImageType() {
         return generatedImageType;
     }
