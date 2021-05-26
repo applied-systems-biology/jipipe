@@ -53,6 +53,7 @@ public class FilterROIByOverlapAlgorithm extends JIPipeIteratingAlgorithm {
         registerSubParameter(roi1Settings);
         registerSubParameter(roi2Settings);
         updateSlots();
+        getEventBus().register(this);
     }
 
     private void updateSlots() {
