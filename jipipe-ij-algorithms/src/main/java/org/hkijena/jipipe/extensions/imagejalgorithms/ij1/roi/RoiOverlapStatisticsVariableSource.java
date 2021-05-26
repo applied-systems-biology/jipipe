@@ -27,17 +27,17 @@ public class RoiOverlapStatisticsVariableSource implements ExpressionParameterVa
 
     static {
         VARIABLES = new HashSet<>();
-        VARIABLES.add(new ExpressionParameterVariable("First ROI Z", "The Z location of the first ROI (first index is 1, zero indicates no Z constraint)", "First.z"));
-        VARIABLES.add(new ExpressionParameterVariable("First ROI C", "The channel (C) location of the first ROI (first index is 1, zero indicates no C constraint)", "First.c"));
-        VARIABLES.add(new ExpressionParameterVariable("First ROI T", "The frame (T) location of the first ROI (first index is 1, zero indicates no T constraint)", "First.t"));
-        VARIABLES.add(new ExpressionParameterVariable("First ROI Name", "The name of the first ROI (empty string if not set)", "First.name"));
-        VARIABLES.add(new ExpressionParameterVariable("Second ROI Z", "The Z location of the second ROI (first index is 1, zero indicates no Z constraint)", "Second.z"));
-        VARIABLES.add(new ExpressionParameterVariable("Second ROI C", "The channel (C) location of the second ROI (first index is 1, zero indicates no C constraint)", "Second.c"));
-        VARIABLES.add(new ExpressionParameterVariable("Second ROI T", "The frame (T) location of the second ROI (first index is 1, zero indicates no T constraint)", "Second.t"));
-        VARIABLES.add(new ExpressionParameterVariable("Second ROI Name", "The name of the second ROI (empty string if not set)", "Second.name"));
+        VARIABLES.add(new ExpressionParameterVariable("ROI 1 Z", "The Z location of the first ROI (first index is 1, zero indicates no Z constraint)", "First.z"));
+        VARIABLES.add(new ExpressionParameterVariable("ROI 1 C", "The channel (C) location of the first ROI (first index is 1, zero indicates no C constraint)", "First.c"));
+        VARIABLES.add(new ExpressionParameterVariable("ROI 1 T", "The frame (T) location of the first ROI (first index is 1, zero indicates no T constraint)", "First.t"));
+        VARIABLES.add(new ExpressionParameterVariable("ROI 1 Name", "The name of the first ROI (empty string if not set)", "First.name"));
+        VARIABLES.add(new ExpressionParameterVariable("ROI 2 Z", "The Z location of the second ROI (first index is 1, zero indicates no Z constraint)", "Second.z"));
+        VARIABLES.add(new ExpressionParameterVariable("ROI 2 C", "The channel (C) location of the second ROI (first index is 1, zero indicates no C constraint)", "Second.c"));
+        VARIABLES.add(new ExpressionParameterVariable("ROI 2 T", "The frame (T) location of the second ROI (first index is 1, zero indicates no T constraint)", "Second.t"));
+        VARIABLES.add(new ExpressionParameterVariable("ROI 2 Name", "The name of the second ROI (empty string if not set)", "Second.name"));
         for (ExpressionParameterVariable variable : MeasurementExpressionParameterVariableSource.VARIABLES) {
-            VARIABLES.add(new ExpressionParameterVariable("First ROI " + variable.getName(), "First ROI. " + variable.getDescription(), "First." + variable.getKey()));
-            VARIABLES.add(new ExpressionParameterVariable("Second ROI " + variable.getName(), "Second ROI. " + variable.getDescription(), "Second." + variable.getKey()));
+            VARIABLES.add(new ExpressionParameterVariable("ROI 1 " + variable.getName(), "ROI1. " + variable.getDescription(), "ROI1." + variable.getKey()));
+            VARIABLES.add(new ExpressionParameterVariable("ROI 2 " + variable.getName(), "ROI2. " + variable.getDescription(), "ROI2." + variable.getKey()));
             VARIABLES.add(new ExpressionParameterVariable("ROI Overlap " + variable.getName(), "Overlap of first and second ROI. " + variable.getDescription(), "Overlap." + variable.getKey()));
         }
     }

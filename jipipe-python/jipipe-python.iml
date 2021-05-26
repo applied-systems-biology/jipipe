@@ -16,6 +16,7 @@
     </content>
     <orderEntry type="jdk" jdkName="1.8" jdkType="JavaSDK" />
     <orderEntry type="sourceFolder" forTests="false" />
+    <orderEntry type="library" name="Python 3.8 interpreter library" level="application" />
     <orderEntry type="module" module-name="jipipe-core" />
     <orderEntry type="library" name="Maven: net.imagej:imagej:2.1.0" level="project" />
     <orderEntry type="library" name="Maven: net.imagej:imagej-common:0.33.0" level="project" />
@@ -267,6 +268,5 @@
     <orderEntry type="library" scope="TEST" name="Maven: org.junit.jupiter:junit-jupiter-params:5.6.2" level="project" />
     <orderEntry type="library" scope="TEST" name="Maven: org.junit.jupiter:junit-jupiter-engine:5.6.2" level="project" />
     <orderEntry type="library" scope="TEST" name="Maven: org.junit.platform:junit-platform-engine:1.7.0" level="project" />
-    <orderEntry type="library" name="Python 3.8 interpreter library" level="application" />
   </component>
 </module>
