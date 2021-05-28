@@ -8,6 +8,7 @@
     <file url="file://$PROJECT_DIR$/jipipe-clij/src/main/resources" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/jipipe-core/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/jipipe-core/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/jipipe-deep-learning/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/jipipe-filesystem/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/jipipe-forms/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/jipipe-forms/src/main/resources" charset="UTF-8" />
@@ -18,6 +19,7 @@
     <file url="file://$PROJECT_DIR$/jipipe-ij/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/jipipe-launcher/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/jipipe-multiparameters/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/jipipe-multiparameters/src/main/resources" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/jipipe-plots/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/jipipe-python/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/jipipe-python/src/main/resources" charset="UTF-8" />

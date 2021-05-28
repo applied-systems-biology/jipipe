@@ -7,6 +7,7 @@
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
+        <module name="jipipe-deep-learning" />
         <module name="jipipe-ij-omero" />
         <module name="jipipe-annotation" />
         <module name="jipipe-core" />
@@ -37,6 +38,7 @@
       <module name="jipipe-clij" target="1.8" />
       <module name="jipipe-core" target="1.8" />
       <module name="jipipe-debug" target="1.8" />
+      <module name="jipipe-deep-learning" target="1.8" />
       <module name="jipipe-filesystem" target="1.8" />
       <module name="jipipe-forms" target="1.8" />
       <module name="jipipe-ij" target="1.8" />

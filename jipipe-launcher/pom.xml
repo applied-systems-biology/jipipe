@@ -187,6 +187,11 @@
                 <artifactId>jipipe-cellpose</artifactId>
                 <version>2021.5</version>
             </dependency>
+            <dependency>
+                <groupId>org.hkijena</groupId>
+                <artifactId>jipipe-deep-learning</artifactId>
+                <version>2021.5</version>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 
@@ -273,6 +278,11 @@
         <dependency>
             <groupId>org.hkijena</groupId>
             <artifactId>jipipe-cellpose</artifactId>
+            <scope>runtime</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.hkijena</groupId>
+            <artifactId>jipipe-deep-learning</artifactId>
             <scope>runtime</scope>
         </dependency>
         <dependency>
