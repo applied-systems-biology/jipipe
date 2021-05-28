@@ -17,4 +17,7 @@ target
 /miniconda/
 /cellpose-cpu/
 /cellpose-gpu/
+/deep-learning-toolkit/
+/deep-learning-toolkit-cpu/
+/deep-learning-toolkit-gpu/
 /r/
