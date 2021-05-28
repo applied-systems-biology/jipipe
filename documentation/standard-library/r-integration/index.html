@@ -5,7 +5,7 @@
     
       <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-<meta name="revised" content="2021-05-11T13:22:58 CEST">
+<meta name="revised" content="2021-05-28T14:43:11 CEST">
 <title>R integration :: JIPipe for ImageJ</title>
 <link rel="shortcut icon" href="../../../images/favicon.png" type="image/x-icon" />
 <link href="../../../css/font-awesome.min.css" rel="stylesheet">
@@ -331,6 +331,20 @@
           </a><i class="fa fa-circle-thin read-icon"></i>
         </div>
     </li>
+      <li data-nav-id="https://www.jipipe.org/documentation/standard-library/cellpose/" class="dd-item">
+        <div>
+          <a href="../../../documentation/standard-library/cellpose/">
+            Cellpose integration
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
+      <li data-nav-id="https://www.jipipe.org/documentation/standard-library/deep-learning/" class="dd-item">
+        <div>
+          <a href="../../../documentation/standard-library/deep-learning/">
+            Deep Learning
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
         </ul>
     </li>
     <li data-nav-id="https://www.jipipe.org/documentation/create-json-extensions/" class="dd-item
@@ -636,6 +650,8 @@
   -- 
    Python integration</option>
       <option value="/documentation/standard-library/r-integration/"  selected>-- R integration</option>
+      <option value="/documentation/standard-library/cellpose/" >-- Cellpose integration</option>
+      <option value="/documentation/standard-library/deep-learning/" >-- Deep Learning</option>
   
     <option value="/documentation/create-json-extensions/" >
   - 
@@ -675,23 +691,22 @@
     
     
     
-    <p>The standard library contains nodes that allow to run R scripts using
-the <a href="https://github.com/jbytecode/rcaller">RCaller</a> library that allows to run any existing R installation.
+    <p>The standard library contains nodes that allow to run R scripts.
 This means that you will need to install a distribution of <a href="https://www.r-project.org/">R</a>.</p>
 
 <div class="notices info" ><p><p>You will need to install R (<a href="https://www.r-project.org/">https://www.r-project.org/</a>) and setup JIPipe to find this installation.</p>
 </p></div>
 
 <h1 id="setting-up-r">Setting up R</h1>
-<p>If not already done, please install <a href="https://www.r-project.org/">R</a>. Then open JIPipe and
-navigate to <code>Project &gt; Application settings &gt; Extensions &gt; R integration</code>.</p>
-<p>Here you will find two settings <code>Override R executable</code> and <code>Override RScript executable</code>.
-Check if both point to the correct R executables. If they are empty or the paths do not exist,
-please set them to the correct paths:</p>
-<ul>
-<li>The R executable should point to R.exe (Windows) or R (RScript). Example: <code>C:\Program Files\R\R-4.0.4\bin\R.exe</code> or <code>/usr/bin/R</code></li>
-<li>The RScript executable should point to RScript.exe (Windows) or RScript (Linux). Example: <code>C:\Program Files\R\R-4.0.4\bin\RScript.exe</code> or <code>/usr/bin/RScript</code></li>
-</ul>
+<p>You have the option to either select an existing R environment, or let JIPipe install a new
+R environment into a folder (only available on Windows).</p>
+<p>To setup Python, navigate to <code>Project &gt; Application settings &gt; Extensions &gt; R integration</code>.
+There you will find a setting <code>R environment</code> that, by default, is not set up.</p>
+<p>If you want to select an existing R environment or let JIPipe handle the installation for you,
+choose the <code>Select/Install</code> button and select the appropriate operation. Follow the instructions provided
+in the newly opened window.</p>
+<p>You can also edit existing R environments by selecting the <code>Edit</code> button to, for example,
+setup environment variables or change command line parameters.</p>
 <h1 id="included-nodes">Included nodes</h1>
 <p>You can find the R scripting nodes in the <code>Miscellaneous</code> menu. You can find algorithms equivalent
 to following Java standard algorithms:</p>
@@ -799,7 +814,7 @@ being determined by the unique ID of the parameter.</p>
         <div class="chevrons">
     <div id="navigation">
 <a class="nav nav-prev" href="../../../documentation/standard-library/python/api/" title="Python API"> <i class="fa fa-chevron-left"></i><label>Python API</label></a>
-    <a class="nav nav-next" href="../../../documentation/create-json-extensions/" title="Extension builder" style="margin-right: 0px;"><label>Extension builder</label><i class="fa fa-chevron-right"></i></a></div>
+    <a class="nav nav-next" href="../../../documentation/standard-library/cellpose/" title="Cellpose integration" style="margin-right: 0px;"><label>Cellpose integration</label><i class="fa fa-chevron-right"></i></a></div>
   </div>
 
   </section>

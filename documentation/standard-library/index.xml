@@ -88,9 +88,32 @@ Creating plots Plots can be created via the Analyze &amp;gt; Plot &amp;gt; Plot 
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
       <guid>https://www.jipipe.org/documentation/standard-library/r-integration/</guid>
-      <description>The standard library contains nodes that allow to run R scripts using the RCaller library that allows to run any existing R installation. This means that you will need to install a distribution of R.
+      <description>The standard library contains nodes that allow to run R scripts. This means that you will need to install a distribution of R.
 You will need to install R (https://www.r-project.org/) and setup JIPipe to find this installation.
-Setting up R If not already done, please install R. Then open JIPipe and navigate to Project &amp;gt; Application settings &amp;gt; Extensions &amp;gt; R integration.</description>
+Setting up R You have the option to either select an existing R environment, or let JIPipe install a new R environment into a folder (only available on Windows).
+To setup Python, navigate to Project &amp;gt; Application settings &amp;gt; Extensions &amp;gt; R integration.</description>
+    </item>
+    
+    <item>
+      <title>Cellpose integration</title>
+      <link>https://www.jipipe.org/documentation/standard-library/cellpose/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://www.jipipe.org/documentation/standard-library/cellpose/</guid>
+      <description>JIPipe provides an integration of Cellpose that both can apply segmentation, and training from within JIPipe.
+Setting up Cellpose Cellpose is a Python library and is integrated via the Python library. This means that you will need to setup a Python environment with Cellpose installed (follow the documentation here: https://github.com/MouseLand/cellpose) and provide the appropriate settings to JIPipe.
+Alternatively, JIPipe provides automated installers (tested on Linux and Windows) that will download and setup Cellpose automatically.</description>
+    </item>
+    
+    <item>
+      <title>Deep Learning</title>
+      <link>https://www.jipipe.org/documentation/standard-library/deep-learning/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://www.jipipe.org/documentation/standard-library/deep-learning/</guid>
+      <description>JIPipe provides Deep Learning support via a standardized Python interface that allows to train/segment with different networks.
+Currently supported are &amp;hellip;
+ SegNet VGG16  Setting up Deep Learning Deep Learning requires a Python installation that comes with the Deep Learning Toolkit (Download TBA). It is integrated via the Python library. This means that you will need to setup a Python environment with this library installed (Installation docs TBA) and provide the appropriate settings to JIPipe.</description>
     </item>
     
   </channel>

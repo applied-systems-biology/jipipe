@@ -6,6 +6,7 @@ org.hkijena.jipipe.api.compartments.algorithms
 org.hkijena.jipipe.api.compartments.datatypes
 org.hkijena.jipipe.api.compat
 org.hkijena.jipipe.api.data
+org.hkijena.jipipe.api.environments
 org.hkijena.jipipe.api.exceptions
 org.hkijena.jipipe.api.grouping
 org.hkijena.jipipe.api.grouping.events
@@ -20,6 +21,10 @@ org.hkijena.jipipe.extensions
 org.hkijena.jipipe.extensions.annotation
 org.hkijena.jipipe.extensions.annotation.algorithms
 org.hkijena.jipipe.extensions.annotation.datasources
+org.hkijena.jipipe.extensions.cellpose
+org.hkijena.jipipe.extensions.cellpose.algorithms
+org.hkijena.jipipe.extensions.cellpose.datatypes
+org.hkijena.jipipe.extensions.cellpose.parameters
 org.hkijena.jipipe.extensions.clij2
 org.hkijena.jipipe.extensions.clij2.algorithms
 org.hkijena.jipipe.extensions.clij2.datatypes
@@ -28,6 +33,14 @@ org.hkijena.jipipe.extensions.clij2.ui
 org.hkijena.jipipe.extensions.core
 org.hkijena.jipipe.extensions.core.data
 org.hkijena.jipipe.extensions.core.nodes
+org.hkijena.jipipe.extensions.datatables
+org.hkijena.jipipe.extensions.datatables.algorithms
+org.hkijena.jipipe.extensions.deeplearning
+org.hkijena.jipipe.extensions.expressions
+org.hkijena.jipipe.extensions.expressions.constants
+org.hkijena.jipipe.extensions.expressions.functions
+org.hkijena.jipipe.extensions.expressions.operators
+org.hkijena.jipipe.extensions.expressions.variables
 org.hkijena.jipipe.extensions.filesystem
 org.hkijena.jipipe.extensions.filesystem.algorithms
 org.hkijena.jipipe.extensions.filesystem.compat
@@ -48,6 +61,7 @@ org.hkijena.jipipe.extensions.imagejalgorithms.ij1.binary
 org.hkijena.jipipe.extensions.imagejalgorithms.ij1.blur
 org.hkijena.jipipe.extensions.imagejalgorithms.ij1.color
 org.hkijena.jipipe.extensions.imagejalgorithms.ij1.contrast
+org.hkijena.jipipe.extensions.imagejalgorithms.ij1.convert
 org.hkijena.jipipe.extensions.imagejalgorithms.ij1.convolve
 org.hkijena.jipipe.extensions.imagejalgorithms.ij1.datasources
 org.hkijena.jipipe.extensions.imagejalgorithms.ij1.dimensions
@@ -58,6 +72,7 @@ org.hkijena.jipipe.extensions.imagejalgorithms.ij1.forms
 org.hkijena.jipipe.extensions.imagejalgorithms.ij1.generate
 org.hkijena.jipipe.extensions.imagejalgorithms.ij1.io
 org.hkijena.jipipe.extensions.imagejalgorithms.ij1.lut
+org.hkijena.jipipe.extensions.imagejalgorithms.ij1.mask
 org.hkijena.jipipe.extensions.imagejalgorithms.ij1.math
 org.hkijena.jipipe.extensions.imagejalgorithms.ij1.misc
 org.hkijena.jipipe.extensions.imagejalgorithms.ij1.morphology
@@ -117,11 +132,6 @@ org.hkijena.jipipe.extensions.parameters.collections
 org.hkijena.jipipe.extensions.parameters.colors
 org.hkijena.jipipe.extensions.parameters.editors
 org.hkijena.jipipe.extensions.parameters.enums
-org.hkijena.jipipe.extensions.parameters.expressions
-org.hkijena.jipipe.extensions.parameters.expressions.constants
-org.hkijena.jipipe.extensions.parameters.expressions.functions
-org.hkijena.jipipe.extensions.parameters.expressions.operators
-org.hkijena.jipipe.extensions.parameters.expressions.variables
 org.hkijena.jipipe.extensions.parameters.functions
 org.hkijena.jipipe.extensions.parameters.generators
 org.hkijena.jipipe.extensions.parameters.matrix
@@ -143,8 +153,10 @@ org.hkijena.jipipe.extensions.plots.ui.resultanalysis
 org.hkijena.jipipe.extensions.plots.utils
 org.hkijena.jipipe.extensions.python
 org.hkijena.jipipe.extensions.python.algorithms
+org.hkijena.jipipe.extensions.python.installers
 org.hkijena.jipipe.extensions.r
 org.hkijena.jipipe.extensions.r.algorithms
+org.hkijena.jipipe.extensions.r.installers
 org.hkijena.jipipe.extensions.r.parameters
 org.hkijena.jipipe.extensions.r.ui
 org.hkijena.jipipe.extensions.settings

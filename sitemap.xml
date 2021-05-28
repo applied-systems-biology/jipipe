@@ -138,11 +138,15 @@
   </url><url>
     <loc>https://www.jipipe.org/documentation/standard-library/</loc>
   </url><url>
+    <loc>https://www.jipipe.org/documentation/standard-library/cellpose/</loc>
+  </url><url>
     <loc>https://www.jipipe.org/documentation/create-json-extensions/</loc>
   </url><url>
     <loc>https://www.jipipe.org/documentation-json-api/project/</loc>
   </url><url>
     <loc>https://www.jipipe.org/citation/</loc>
+  </url><url>
+    <loc>https://www.jipipe.org/documentation/standard-library/deep-learning/</loc>
   </url><url>
     <loc>https://www.jipipe.org/documentation-json-api/slot-definition/</loc>
   </url><url>

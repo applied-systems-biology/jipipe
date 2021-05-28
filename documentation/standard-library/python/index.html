@@ -5,7 +5,7 @@
     
       <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-<meta name="revised" content="2021-05-11T13:22:58 CEST">
+<meta name="revised" content="2021-05-28T14:43:11 CEST">
 <title>Python integration :: JIPipe for ImageJ</title>
 <link rel="shortcut icon" href="../../../images/favicon.png" type="image/x-icon" />
 <link href="../../../css/font-awesome.min.css" rel="stylesheet">
@@ -332,6 +332,20 @@
           </a><i class="fa fa-circle-thin read-icon"></i>
         </div>
     </li>
+      <li data-nav-id="https://www.jipipe.org/documentation/standard-library/cellpose/" class="dd-item">
+        <div>
+          <a href="../../../documentation/standard-library/cellpose/">
+            Cellpose integration
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
+      <li data-nav-id="https://www.jipipe.org/documentation/standard-library/deep-learning/" class="dd-item">
+        <div>
+          <a href="../../../documentation/standard-library/deep-learning/">
+            Deep Learning
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
         </ul>
     </li>
     <li data-nav-id="https://www.jipipe.org/documentation/create-json-extensions/" class="dd-item
@@ -639,6 +653,8 @@
       <option value="/documentation/standard-library/python/api/" >--- Python API</option>
   
       <option value="/documentation/standard-library/r-integration/" >-- R integration</option>
+      <option value="/documentation/standard-library/cellpose/" >-- Cellpose integration</option>
+      <option value="/documentation/standard-library/deep-learning/" >-- Deep Learning</option>
   
     <option value="/documentation/create-json-extensions/" >
   - 
@@ -683,22 +699,15 @@
 installation of Python. This means you will need to download <a href="https://www.python.org/">Python</a>,
 <a href="https://www.anaconda.com/">Anaconda</a>, or <a href="https://docs.conda.io/en/latest/miniconda.html">Miniconda</a>.</p>
 <h2 id="setting-up-python">Setting up Python</h2>
-<p>If not already done, please install <a href="https://www.python.org/">Python</a>. Then open JIPipe and
-navigate to <code>Project &gt; Application settings &gt; Extensions &gt; Python integration</code>.</p>
-<p>Depending on the used Python distribution, you will need to put in different settings:</p>
-<h3 id="standard-python">Standard Python</h3>
-<p>If you use the global System Python from <a href="https://www.python.org/">https://www.python.org/</a> (No virtualenv), set <code>Python executable</code> to the main Python executable (<code>python.exe</code>).</p>
-<p>Set <code>Python arguments</code> to <code>ARRAY(script_file)</code>.</p>
-<h3 id="conda">Conda</h3>
-<p>If you use a Python distribution provided by <a href="https://www.anaconda.com/">Anaconda</a> or <a href="https://docs.conda.io/en/latest/miniconda.html">Miniconda</a>, you need
-to set <code>Python executable</code> to <code>conda.exe</code>. You will find it in the Conda installation folder (e.g., <code>Scripts/conda.exe</code> on Windows).</p>
-<p>Set <code>Python arguments</code> to <code>ARRAY(&quot;run&quot;, &quot;-n&quot;, &quot;base&quot;, &quot;python&quot;, script_file)</code>. Please note the that <code>script_file</code> is not quoted.
-You can replace &ldquo;base&rdquo; by the name of another Conda environment if needed.</p>
-<h3 id="virtualenv">virtualenv</h3>
-<p>virtualenv environments do not have a way to run scripts directly (like Conda does). You can try to set <code>Python executable</code> to the Python executable contained
-in the environment (e.g., <code>Scripts/python.exe</code> on Windows). Set <code>Python arguments</code> to <code>ARRAY(script_file)</code>.</p>
-<p>If this does not work, you will need to write a wrapper script (bat/sh) file that activates the environment before running the script.
-Please ensure that <code>script_file</code> is always passed in some way.</p>
+<p>You have the option to either select an existing Python environment, or let JIPipe install a new
+Conda environment into a folder.</p>
+<p>To setup Python, navigate to <code>Project &gt; Application settings &gt; Extensions &gt; Python integration</code>.
+There you will find a setting <code>Python environment</code> that, by default, is not set up.</p>
+<p>If you want to select an existing Python environment or let JIPipe handle the installation for you,
+choose the <code>Select/Install</code> button and select the appropriate operation. Follow the instructions provided
+in the newly opened window.</p>
+<p>You can also edit existing Python environments by selecting the <code>Edit</code> button to, for example,
+setup environment variables or change command line parameters.</p>
 <h1 id="included-nodes">Included nodes</h1>
 <p>You can find the nodes in the <code>Miscellaneous</code> menu. You can find algorithms equivalent
 to each of the Java standard algorithms:</p>
