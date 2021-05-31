@@ -33,7 +33,7 @@ public class CellPoseGPUEnvInstaller extends CellPoseEnvInstaller {
         runConda("install",
                 "--yes",
                 "pytorch",
-                "cudatoolkit=" + ((Configuration)getConfiguration()).getCudaToolkitVersion(),
+                "cudatoolkit=" + ((Configuration) getConfiguration()).getCudaToolkitVersion(),
                 "-c",
                 "pytorch",
                 "--force-reinstall");

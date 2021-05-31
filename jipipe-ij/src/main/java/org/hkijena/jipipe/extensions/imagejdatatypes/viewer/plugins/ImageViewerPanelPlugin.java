@@ -106,12 +106,14 @@ public abstract class ImageViewerPanelPlugin {
 
     /**
      * The tool panel category where this tool is shown
+     *
      * @return the category
      */
     public abstract String getCategory();
 
     /**
      * The icon for the category if a new one must be created
+     *
      * @return the icon
      */
     public abstract Icon getCategoryIcon();

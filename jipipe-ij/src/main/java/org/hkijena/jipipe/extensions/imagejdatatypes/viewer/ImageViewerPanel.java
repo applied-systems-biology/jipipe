@@ -54,6 +54,7 @@ import java.util.List;
 
 public class ImageViewerPanel extends JPanel {
     private final JButton zoomStatusButton = new JButton();
+    private final ImageViewerUISettings settings;
     private ImagePlus image;
     private ImageProcessor slice;
     private ImageStatistics statistics;
@@ -80,17 +81,15 @@ public class ImageViewerPanel extends JPanel {
     private List<ImageViewerPanelPlugin> plugins = new ArrayList<>();
     private JButton rotateLeftButton;
     private JButton rotateRightButton;
-    private final ImageViewerUISettings settings;
     private JToggleButton enableSideBarButton = new JToggleButton();
     private Component currentContentPanel;
     private DocumentTabPane tabPane = new DocumentTabPane();
     private Map<String, FormPanel> formPanels = new HashMap<>();
 
     public ImageViewerPanel() {
-        if(JIPipe.getInstance() != null) {
+        if (JIPipe.getInstance() != null) {
             settings = ImageViewerUISettings.getInstance();
-        }
-        else {
+        } else {
             settings = null;
         }
         initialize();
@@ -127,7 +126,7 @@ public class ImageViewerPanel extends JPanel {
     private void initialize() {
 
         // Load default animation speed
-        if(settings != null) {
+        if (settings != null) {
             animationSpeedControl.getModel().setValue(settings.getDefaultAnimationSpeed());
         }
 
@@ -165,7 +164,7 @@ public class ImageViewerPanel extends JPanel {
         animationTimer.setRepeats(true);
         animationSpeedControl.addChangeListener(e -> {
             int delay = ((SpinnerNumberModel) animationSpeedControl.getModel()).getNumber().intValue();
-            if(settings != null) {
+            if (settings != null) {
                 settings.setDefaultAnimationSpeed(delay);
             }
             stopAnimations();
@@ -314,14 +313,13 @@ public class ImageViewerPanel extends JPanel {
 
         enableSideBarButton.setIcon(UIUtils.getIconFromResources("actions/sidebar.png"));
         enableSideBarButton.setToolTipText("Show side bar with additional tools");
-        if(settings != null) {
+        if (settings != null) {
             enableSideBarButton.setSelected(settings.isShowSideBar());
-        }
-        else {
+        } else {
             enableSideBarButton.setSelected(true);
         }
         enableSideBarButton.addActionListener(e -> {
-            if(settings != null) {
+            if (settings != null) {
                 settings.setShowSideBar(enableSideBarButton.isSelected());
             }
             updateSideBar();
@@ -333,18 +331,18 @@ public class ImageViewerPanel extends JPanel {
 
     private void saveRawImage() {
         Path path = FileChooserSettings.saveFile(this, FileChooserSettings.KEY_DATA, "Save as *.tif", UIUtils.EXTENSION_FILTER_TIFF);
-        if(path != null) {
-            try(BusyCursor cursor = new BusyCursor(this)) {
+        if (path != null) {
+            try (BusyCursor cursor = new BusyCursor(this)) {
                 IJ.saveAs(getImage(), "TIFF", path.toString());
             }
         }
     }
 
     private void updateSideBar() {
-        if(currentContentPanel != null) {
+        if (currentContentPanel != null) {
             remove(currentContentPanel);
         }
-        if(enableSideBarButton.isSelected()) {
+        if (enableSideBarButton.isSelected()) {
             JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT,
                     scrollPane,
                     tabPane);
@@ -359,8 +357,7 @@ public class ImageViewerPanel extends JPanel {
             });
             add(splitPane, BorderLayout.CENTER);
             currentContentPanel = splitPane;
-        }
-        else {
+        } else {
             add(scrollPane, BorderLayout.CENTER);
             currentContentPanel = scrollPane;
         }
@@ -589,7 +586,7 @@ public class ImageViewerPanel extends JPanel {
         }
         for (ImageViewerPanelPlugin plugin : plugins) {
             FormPanel formPanel = formPanels.getOrDefault(plugin.getCategory(), null);
-            if(formPanel == null) {
+            if (formPanel == null) {
                 formPanel = new FormPanel(null, FormPanel.WITH_SCROLLING);
                 formPanels.put(plugin.getCategory(), formPanel);
                 tabPane.addSingletonTab(plugin.getCategory(),

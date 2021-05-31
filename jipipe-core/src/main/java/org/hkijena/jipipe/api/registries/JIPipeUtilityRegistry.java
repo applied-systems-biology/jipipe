@@ -22,8 +22,9 @@ public class JIPipeUtilityRegistry {
 
     /**
      * Registers a new utility associated to the category
+     *
      * @param categoryClass the category
-     * @param utilityClass the utility
+     * @param utilityClass  the utility
      */
     public void register(Class<?> categoryClass, Class<?> utilityClass) {
         registeredItems.put(categoryClass, utilityClass);
@@ -31,6 +32,7 @@ public class JIPipeUtilityRegistry {
 
     /**
      * Returns a mutable map of all items
+     *
      * @return map from category to utilities
      */
     public Multimap<Class<?>, Class<?>> getRegisteredItems() {

@@ -119,7 +119,7 @@ public class JIPipeDataSlotRowUI extends JIPipeWorkbenchPanel {
 
     private void exportAsFolder() {
         Path path = FileChooserSettings.saveDirectory(getWorkbench().getWindow(), FileChooserSettings.KEY_DATA, "Export " + slot.getNode().getName() + "/" + slot.getName() + "/" + row);
-        if(path != null) {
+        if (path != null) {
             try {
                 Files.createDirectories(path);
                 JIPipeRunnable runnable = new JIPipeRunnable() {
@@ -131,13 +131,11 @@ public class JIPipeDataSlotRowUI extends JIPipeWorkbenchPanel {
                     }
 
                     @Override
-                    public void setProgressInfo(JIPipeProgressInfo progressInfo) {
-                        this.progressInfo = progressInfo;
-                    }
-
-                    @Override
                     public String getTaskLabel() {
                         return "Export";
+                    }                    @Override
+                    public void setProgressInfo(JIPipeProgressInfo progressInfo) {
+                        this.progressInfo = progressInfo;
                     }
 
                     @Override
@@ -145,10 +143,11 @@ public class JIPipeDataSlotRowUI extends JIPipeWorkbenchPanel {
                         JIPipeData data = slot.getData(row, JIPipeData.class, progressInfo);
                         data.saveTo(path, "data", false, progressInfo);
                     }
+
+
                 };
                 JIPipeRunExecuterUI.runInDialog(getWorkbench().getWindow(), runnable);
-            }
-            catch (Exception e) {
+            } catch (Exception e) {
                 UIUtils.openErrorDialog(getWorkbench().getWindow(), e);
             }
         }
@@ -156,7 +155,7 @@ public class JIPipeDataSlotRowUI extends JIPipeWorkbenchPanel {
 
     private void exportToFolder() {
         Path path = FileChooserSettings.saveFile(getWorkbench().getWindow(), FileChooserSettings.KEY_DATA, "Export " + slot.getNode().getName() + "/" + slot.getName() + "/" + row);
-        if(path != null) {
+        if (path != null) {
             JIPipeRunnable runnable = new JIPipeRunnable() {
                 private JIPipeProgressInfo progressInfo = new JIPipeProgressInfo();
 
@@ -166,13 +165,11 @@ public class JIPipeDataSlotRowUI extends JIPipeWorkbenchPanel {
                 }
 
                 @Override
-                public void setProgressInfo(JIPipeProgressInfo progressInfo) {
-                    this.progressInfo = progressInfo;
-                }
-
-                @Override
                 public String getTaskLabel() {
                     return "Export";
+                }                @Override
+                public void setProgressInfo(JIPipeProgressInfo progressInfo) {
+                    this.progressInfo = progressInfo;
                 }
 
                 @Override
@@ -180,6 +177,8 @@ public class JIPipeDataSlotRowUI extends JIPipeWorkbenchPanel {
                     JIPipeData data = slot.getData(row, JIPipeData.class, progressInfo);
                     data.saveTo(path.getParent(), path.getFileName().toString(), true, progressInfo);
                 }
+
+
             };
             JIPipeRunExecuterUI.runInDialog(getWorkbench().getWindow(), runnable);
         }
@@ -189,7 +188,7 @@ public class JIPipeDataSlotRowUI extends JIPipeWorkbenchPanel {
         try (BusyCursor cursor = new BusyCursor(this)) {
             JIPipeData data = slot.getData(row, JIPipeData.class, new JIPipeProgressInfo());
             String displayName;
-            if(slot.getNode() != null)
+            if (slot.getNode() != null)
                 displayName = slot.getNode().getName() + "/" + slot.getName() + "/" + row;
             else
                 displayName = slot.getName() + "/" + row;

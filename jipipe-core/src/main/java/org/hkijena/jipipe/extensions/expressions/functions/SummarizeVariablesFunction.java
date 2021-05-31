@@ -32,9 +32,9 @@ public class SummarizeVariablesFunction extends ExpressionFunction {
     public Object evaluate(List<Object> parameters, ExpressionParameters variables) {
         String delimiter = " ";
         String equals = "=";
-        if(parameters.size() >= 1)
+        if (parameters.size() >= 1)
             delimiter = StringUtils.nullToEmpty(parameters.get(0));
-        if(parameters.size() >= 2)
+        if (parameters.size() >= 2)
             equals = StringUtils.nullToEmpty(parameters.get(1));
         String finalEquals = equals;
         return variables.keySet().stream().sorted().map(key -> key + finalEquals + variables.get(key)).collect(Collectors.joining(delimiter));

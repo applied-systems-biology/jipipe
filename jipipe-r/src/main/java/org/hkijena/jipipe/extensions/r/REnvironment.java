@@ -35,7 +35,7 @@ public class REnvironment extends ExternalEnvironment {
     private StringQueryExpressionAndStringPairParameter.List environmentVariables = new StringQueryExpressionAndStringPairParameter.List();
 
     public REnvironment() {
-        if(SystemUtils.IS_OS_LINUX) {
+        if (SystemUtils.IS_OS_LINUX) {
             RExecutablePath = Paths.get("/usr/bin/R");
             RScriptExecutablePath = Paths.get("/usr/bin/RScript");
         }
@@ -56,7 +56,7 @@ public class REnvironment extends ExternalEnvironment {
 
     @Override
     public void reportValidity(JIPipeValidityReport report) {
-        if(getRExecutablePath() == null || !Files.isRegularFile(getRExecutablePath())) {
+        if (getRExecutablePath() == null || !Files.isRegularFile(getRExecutablePath())) {
             report.forCategory("Executable").reportIsInvalid(
                     "R executable does not exist",
                     "You need to provide a R executable",
@@ -64,7 +64,7 @@ public class REnvironment extends ExternalEnvironment {
                     "R environment"
             );
         }
-        if(getRScriptExecutablePath() == null || !Files.isRegularFile(getRScriptExecutablePath())) {
+        if (getRScriptExecutablePath() == null || !Files.isRegularFile(getRScriptExecutablePath())) {
             report.forCategory("Executable").reportIsInvalid(
                     "RScript executable does not exist",
                     "You need to provide a RScript executable",
@@ -100,7 +100,7 @@ public class REnvironment extends ExternalEnvironment {
         this.RScriptExecutablePath = RScriptExecutablePath;
     }
 
-    @JIPipeDocumentation(name ="Arguments", description = "Arguments passed to the Python/Conda executable (depending on the environment type). " +
+    @JIPipeDocumentation(name = "Arguments", description = "Arguments passed to the Python/Conda executable (depending on the environment type). " +
             "This expression must return an array. You have two variables 'script_file' and 'r_executable'. 'script_file' is always " +
             "replaced by the Python script that is currently executed.")
     @JIPipeParameter("arguments")

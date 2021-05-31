@@ -28,6 +28,7 @@ public abstract class ExternalEnvironment implements JIPipeParameterCollection, 
 
     /**
      * Returns the icon displayed in the UI for the current status
+     *
      * @return the icon
      */
     public abstract Icon getIcon();
@@ -35,6 +36,7 @@ public abstract class ExternalEnvironment implements JIPipeParameterCollection, 
     /**
      * Returns more detailed information (e.g., the executed script environment path).
      * Displayed inside a text field.
+     *
      * @return the info string
      */
     public abstract String getInfo();

@@ -138,10 +138,9 @@ public class MergingPythonScriptAlgorithm extends JIPipeMergingAlgorithm {
         super.reportValidity(report);
         JythonUtils.checkScriptParametersValidity(scriptParameters, report.forCategory("Script parameters"));
         if (!isPassThrough()) {
-            if(overrideEnvironment.isEnabled()) {
+            if (overrideEnvironment.isEnabled()) {
                 report.forCategory("Override Python environment").report(overrideEnvironment.getContent());
-            }
-            else {
+            } else {
                 PythonExtensionSettings.checkPythonSettings(report.forCategory("Python"));
             }
         }

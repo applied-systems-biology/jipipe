@@ -27,10 +27,6 @@ public class DeepLearningSettings implements JIPipeParameterCollection {
         return eventBus;
     }
 
-    public static DeepLearningSettings getInstance() {
-        return JIPipe.getSettings().getSettings(ID, DeepLearningSettings.class);
-    }
-
     @JIPipeDocumentation(name = "Deep Learning Python environment", description = "If enabled, a separate Python environment is used for Deep Learning. " +
             "Alternatively, the standard Python environment from the Python extension is used. Please ensure that the Deep Learning Toolkit is installed. " +
             "You can also install the Deep Learning Toolkit via the Select/Install button (CPU and GPU supported).")
@@ -45,12 +41,15 @@ public class DeepLearningSettings implements JIPipeParameterCollection {
     }
 
     public PythonEnvironment getPythonEnvironment() {
-        if(overridePythonEnvironment.isEnabled()) {
+        if (overridePythonEnvironment.isEnabled()) {
             return overridePythonEnvironment.getContent();
-        }
-        else {
+        } else {
             return PythonExtensionSettings.getInstance().getPythonEnvironment();
         }
+    }
+
+    public static DeepLearningSettings getInstance() {
+        return JIPipe.getSettings().getSettings(ID, DeepLearningSettings.class);
     }
 
     /**

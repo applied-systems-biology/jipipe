@@ -47,7 +47,7 @@ public class CellPoseEnvInstaller extends MinicondaEnvPythonInstaller {
         runConda("run", "--no-capture-output", "pip", "install", "cellpose", "--upgrade");
 
         // Download models
-        if(((Configuration)getConfiguration()).isDownloadModels()) {
+        if (((Configuration) getConfiguration()).isDownloadModels()) {
             runConda("run", "--no-capture-output", "python", "-u", "-c", "from cellpose import models; models.download_model_weights()");
         }
     }

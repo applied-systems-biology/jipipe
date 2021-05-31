@@ -28,8 +28,9 @@ public class ZipUtils {
 
     /**
      * Unzips a file
-     * @param zipFile the zip file
-     * @param targetDir the target dir
+     *
+     * @param zipFile      the zip file
+     * @param targetDir    the target dir
      * @param progressInfo the progress info
      * @throws IOException io exception
      */

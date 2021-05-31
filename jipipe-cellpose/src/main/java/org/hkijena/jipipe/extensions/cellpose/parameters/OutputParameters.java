@@ -58,7 +58,7 @@ public class OutputParameters implements JIPipeParameterCollection {
         this.outputProbabilities = outputProbabilities;
     }
 
-    @JIPipeDocumentation(name = "Output styles",description = "Output a 1D vector that summarizes the image.")
+    @JIPipeDocumentation(name = "Output styles", description = "Output a 1D vector that summarizes the image.")
     @JIPipeParameter("output-styles")
     public boolean isOutputStyles() {
         return outputStyles;

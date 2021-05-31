@@ -147,9 +147,9 @@ public class StringUtils {
      * @return if the string is null or empty
      */
     public static boolean isNullOrEmpty(Object string) {
-        if(string instanceof String)
+        if (string instanceof String)
             return ((String) string).isEmpty();
-        else if(string != null)
+        else if (string != null)
             return ("" + string).isEmpty();
         else
             return true;

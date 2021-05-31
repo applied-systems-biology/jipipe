@@ -23,6 +23,7 @@ public class CellPoseUtils {
 
     /**
      * Converts a Cellpose ROI to {@link ROIListData} according to https://github.com/MouseLand/cellpose/blob/master/imagej_roi_converter.py
+     *
      * @param file the Cellpose ROI
      * @return ImageJ ROI
      */
@@ -34,10 +35,9 @@ public class CellPoseUtils {
                 TIntList yList = new TIntArrayList();
                 List<Integer> xyList = Arrays.stream(line.trim().split(",")).map(Integer::parseInt).collect(Collectors.toList());
                 for (int i = 0; i < xyList.size(); i++) {
-                    if(i % 2 == 0) {
+                    if (i % 2 == 0) {
                         xList.add(xyList.get(i));
-                    }
-                    else {
+                    } else {
                         yList.add(xyList.get(i));
                     }
                 }
@@ -51,6 +51,7 @@ public class CellPoseUtils {
 
     /**
      * Converts ROI in a custom Json format to {@link ROIListData}
+     *
      * @param file the ROI file
      * @return ImageJ ROI
      */
@@ -72,7 +73,7 @@ public class CellPoseUtils {
                 PolygonRoi roi = new PolygonRoi(xList.toArray(), yList.toArray(), xList.size(), Roi.POLYGON);
                 int z = -1;
                 JsonNode zEntry = roiItem.path("z");
-                if(!zEntry.isMissingNode())
+                if (!zEntry.isMissingNode())
                     z = zEntry.asInt();
                 roi.setPosition(0, z + 1, 0);
                 rois.add(roi);

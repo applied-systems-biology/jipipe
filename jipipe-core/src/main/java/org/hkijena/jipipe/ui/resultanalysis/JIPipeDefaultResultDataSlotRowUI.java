@@ -108,7 +108,7 @@ public class JIPipeDefaultResultDataSlotRowUI extends JIPipeResultDataSlotRowUI 
 
     private void exportAsFolder() {
         Path path = FileChooserSettings.saveDirectory(getWorkbench().getWindow(), FileChooserSettings.KEY_DATA, "Export " + getDisplayName());
-        if(path != null) {
+        if (path != null) {
             try {
                 Files.createDirectories(path);
                 JIPipeRunnable runnable = new JIPipeRunnable() {
@@ -120,13 +120,11 @@ public class JIPipeDefaultResultDataSlotRowUI extends JIPipeResultDataSlotRowUI 
                     }
 
                     @Override
-                    public void setProgressInfo(JIPipeProgressInfo progressInfo) {
-                        this.progressInfo = progressInfo;
-                    }
-
-                    @Override
                     public String getTaskLabel() {
                         return "Export";
+                    }                    @Override
+                    public void setProgressInfo(JIPipeProgressInfo progressInfo) {
+                        this.progressInfo = progressInfo;
                     }
 
                     @Override
@@ -135,10 +133,11 @@ public class JIPipeDefaultResultDataSlotRowUI extends JIPipeResultDataSlotRowUI 
                         JIPipeData data = JIPipe.importData(getRowStorageFolder(), JIPipe.getDataTypes().getById(getRow().getTrueDataType()));
                         data.saveTo(path, "data", false, progressInfo.resolveAndLog("Saving data"));
                     }
+
+
                 };
                 JIPipeRunExecuterUI.runInDialog(getWorkbench().getWindow(), runnable);
-            }
-            catch (Exception e) {
+            } catch (Exception e) {
                 UIUtils.openErrorDialog(getWorkbench().getWindow(), e);
             }
         }
@@ -146,7 +145,7 @@ public class JIPipeDefaultResultDataSlotRowUI extends JIPipeResultDataSlotRowUI 
 
     private void exportToFolder() {
         Path path = FileChooserSettings.saveFile(getWorkbench().getWindow(), FileChooserSettings.KEY_DATA, "Export " + getDisplayName());
-        if(path != null) {
+        if (path != null) {
             JIPipeRunnable runnable = new JIPipeRunnable() {
                 private JIPipeProgressInfo progressInfo = new JIPipeProgressInfo();
 
@@ -156,13 +155,11 @@ public class JIPipeDefaultResultDataSlotRowUI extends JIPipeResultDataSlotRowUI 
                 }
 
                 @Override
-                public void setProgressInfo(JIPipeProgressInfo progressInfo) {
-                    this.progressInfo = progressInfo;
-                }
-
-                @Override
                 public String getTaskLabel() {
                     return "Export";
+                }                @Override
+                public void setProgressInfo(JIPipeProgressInfo progressInfo) {
+                    this.progressInfo = progressInfo;
                 }
 
                 @Override
@@ -171,6 +168,8 @@ public class JIPipeDefaultResultDataSlotRowUI extends JIPipeResultDataSlotRowUI 
                     JIPipeData data = JIPipe.importData(getRowStorageFolder(), JIPipe.getDataTypes().getById(getRow().getTrueDataType()));
                     data.saveTo(path.getParent(), path.getFileName().toString(), true, progressInfo.resolveAndLog("Exporting data"));
                 }
+
+
             };
             JIPipeRunExecuterUI.runInDialog(getWorkbench().getWindow(), runnable);
         }

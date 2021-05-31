@@ -957,6 +957,7 @@ public class ResultsTableData implements JIPipeData, TableModel {
 
     /**
      * Adds a new row
+     *
      * @return the newly created row id
      */
     public int addRow() {

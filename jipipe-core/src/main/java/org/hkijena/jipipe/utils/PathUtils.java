@@ -95,12 +95,13 @@ public class PathUtils {
 
     /**
      * Returns the first path that exists
+     *
      * @param paths paths
      * @return first path that exists or null
      */
     public static Path findAnyOf(Path... paths) {
         for (Path path : paths) {
-            if(Files.exists(path)) {
+            if (Files.exists(path)) {
                 return path;
             }
         }

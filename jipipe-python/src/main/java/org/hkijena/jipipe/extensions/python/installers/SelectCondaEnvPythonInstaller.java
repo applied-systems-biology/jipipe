@@ -87,11 +87,11 @@ public class SelectCondaEnvPythonInstaller extends ExternalEnvironmentInstaller 
             }
         }
 
-        if(userCancelled.get())
+        if (userCancelled.get())
             return;
 
         generatedEnvironment = createCondaEnvironment(configuration);
-        if(getParameterAccess() != null) {
+        if (getParameterAccess() != null) {
             SwingUtilities.invokeLater(() -> getParameterAccess().set(generatedEnvironment));
         }
     }
@@ -100,12 +100,11 @@ public class SelectCondaEnvPythonInstaller extends ExternalEnvironmentInstaller 
         PythonEnvironment generatedEnvironment = new PythonEnvironment();
         generatedEnvironment.setType(PythonEnvironmentType.Conda);
         generatedEnvironment.setExecutablePath(configuration.condaExecutable);
-        if(configuration.overrideEnvironment.isEnabled()) {
+        if (configuration.overrideEnvironment.isEnabled()) {
             generatedEnvironment.setArguments(new DefaultExpressionParameter(
                     String.format("ARRAY(\"run\", \"--no-capture-output\", \"-p\", \"%s\", \"python\", \"-u\", script_file)",
                             DefaultExpressionEvaluator.escapeString(configuration.overrideEnvironment.getContent().toString()))));
-        }
-        else {
+        } else {
             generatedEnvironment.setArguments(new DefaultExpressionParameter(
                     String.format("ARRAY(\"run\", \"--no-capture-output\", \"-n\", \"%s\", \"python\", \"-u\", script_file)",
                             DefaultExpressionEvaluator.escapeString(configuration.environmentName))));

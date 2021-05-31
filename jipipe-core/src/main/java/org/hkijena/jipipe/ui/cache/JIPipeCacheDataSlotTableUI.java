@@ -204,7 +204,7 @@ public class JIPipeCacheDataSlotTableUI extends JIPipeWorkbenchPanel {
         for (int viewRow : selectedRows) {
             int row = table.getRowSorter().convertRowIndexToModel(viewRow);
             String name;
-            if(slot.getNode() != null)
+            if (slot.getNode() != null)
                 name = slot.getNode().getName() + "/" + slot.getName() + "/" + row;
             else
                 name = slot.getName() + "/" + row;

@@ -84,7 +84,7 @@ public class SelectSystemPythonInstaller extends ExternalEnvironmentInstaller {
             }
         }
 
-        if(userCancelled.get())
+        if (userCancelled.get())
             return;
 
         generatedEnvironment = new PythonEnvironment();
@@ -92,7 +92,7 @@ public class SelectSystemPythonInstaller extends ExternalEnvironmentInstaller {
         generatedEnvironment.setArguments(new DefaultExpressionParameter("ARRAY(\"-u\", script_file)"));
         generatedEnvironment.setExecutablePath(configuration.getPythonExecutable());
         generatedEnvironment.setName(configuration.getName());
-        if(getParameterAccess() != null) {
+        if (getParameterAccess() != null) {
             SwingUtilities.invokeLater(() -> getParameterAccess().set(generatedEnvironment));
         }
     }

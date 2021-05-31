@@ -50,7 +50,7 @@ public class ExtractTableAlgorithm extends JIPipeParameterSlotAlgorithm {
                 annotations.clear();
                 annotations.addAll(dataTableData.getDataSlot().getAnnotations(row2));
                 annotations.addAll(parameterAnnotations);
-                if(mergeAnnotations) {
+                if (mergeAnnotations) {
                     annotations.addAll(getFirstInputSlot().getAnnotations(row));
                 }
                 getFirstOutputSlot().addData(dataTableData.getDataSlot().getVirtualData(row2),

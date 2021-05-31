@@ -187,9 +187,9 @@ public class JIPipeMergingDataBatchBuilder {
             }
 
             // Special case: Empty optional slot. Here we must create some dummy data
-            if(slot.getRowCount() == 0 && slot.getInfo().isOptional()) {
+            if (slot.getRowCount() == 0 && slot.getInfo().isOptional()) {
                 Map<String, String> annotations = new HashMap<>();
-                if(referenceColumns == null)
+                if (referenceColumns == null)
                     annotations.put("\nuid", slot.getName() + "/-1");
                 RowNode rowNode = new RowNode(slot, -1, annotations);
                 if (!applyMerging)
@@ -290,7 +290,7 @@ public class JIPipeMergingDataBatchBuilder {
             for (RowNode rowNode : path.getVertexList()) {
                 if (rowNode == source || rowNode == sink)
                     continue;
-                if(rowNode.rows.contains(-1))
+                if (rowNode.rows.contains(-1))
                     continue;
                 dataBatch.addData(rowNode.slot, rowNode.rows);
                 for (Integer row : rowNode.rows) {

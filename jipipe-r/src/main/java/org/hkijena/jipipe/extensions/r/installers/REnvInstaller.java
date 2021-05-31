@@ -61,9 +61,9 @@ public class REnvInstaller extends ExternalEnvironmentInstaller {
         synchronized (lock) {
             SwingUtilities.invokeLater(() -> {
 
-                if(!SystemUtils.IS_OS_WINDOWS) {
+                if (!SystemUtils.IS_OS_WINDOWS) {
                     JOptionPane.showMessageDialog(getWorkbench().getWindow(), "We are sorry, but there is unfortunately no " +
-                            "precompiled package for Linux or Mac. Please install R manually and change the file paths.",
+                                    "precompiled package for Linux or Mac. Please install R manually and change the file paths.",
                             "Unsupported operating system",
                             JOptionPane.ERROR_MESSAGE);
                     userCancelled.set(true);
@@ -93,23 +93,22 @@ public class REnvInstaller extends ExternalEnvironmentInstaller {
             }
         }
 
-        if(userCancelled.get())
+        if (userCancelled.get())
             return;
 
         progressInfo.setProgress(1, 2);
         Path installerPath;
-        if(configuration.getCustomInstallerPath().isEnabled())
+        if (configuration.getCustomInstallerPath().isEnabled())
             installerPath = configuration.getCustomInstallerPath().getContent();
         else
             installerPath = downloadMiniconda(progressInfo.resolveAndLog("Download R"));
-        if(progressInfo.isCancelled().get())
+        if (progressInfo.isCancelled().get())
             return;
 
         progressInfo.incrementProgress();
-        if(SystemUtils.IS_OS_WINDOWS) {
+        if (SystemUtils.IS_OS_WINDOWS) {
             installRWindows(installerPath, progressInfo.resolveAndLog("Install R"));
-        }
-        else {
+        } else {
             throw new UnsupportedOperationException();
         }
 
@@ -118,7 +117,7 @@ public class REnvInstaller extends ExternalEnvironmentInstaller {
         generatedEnvironment.setRExecutablePath(configuration.installationPath.resolve("bin").resolve("R.exe"));
         generatedEnvironment.setRScriptExecutablePath(configuration.installationPath.resolve("bin").resolve("Rscript.exe"));
         generatedEnvironment.setName(configuration.getName());
-        if(getParameterAccess() != null) {
+        if (getParameterAccess() != null) {
             SwingUtilities.invokeLater(() -> getParameterAccess().set(generatedEnvironment));
         }
     }
@@ -183,13 +182,13 @@ public class REnvInstaller extends ExternalEnvironmentInstaller {
 
     /**
      * Gets the latest download link for Miniconda
+     *
      * @return the download URL
      */
     public static String getLatestDownload() {
-        if(SystemUtils.IS_OS_WINDOWS) {
+        if (SystemUtils.IS_OS_WINDOWS) {
             return "https://cloud.r-project.org/bin/windows/base/R-4.0.5-win.exe";
-        }
-        else {
+        } else {
             return "https://cloud.r-project.org/bin/";
         }
     }

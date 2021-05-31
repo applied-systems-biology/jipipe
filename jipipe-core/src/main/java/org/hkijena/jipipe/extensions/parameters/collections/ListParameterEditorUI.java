@@ -135,7 +135,7 @@ public class ListParameterEditorUI extends JIPipeParameterEditorUI {
     private void moveEntryDown(Object entry) {
         ListParameter<Object> parameter = getParameter(ListParameter.class);
         int i = parameter.indexOf(entry);
-        if(i >= 0) {
+        if (i >= 0) {
             int j = (i + 1) % parameter.size();
             Object next = parameter.get(j);
             parameter.set(j, entry);
@@ -147,13 +147,12 @@ public class ListParameterEditorUI extends JIPipeParameterEditorUI {
     private void moveEntryUp(Object entry) {
         ListParameter<Object> parameter = getParameter(ListParameter.class);
         int i = parameter.indexOf(entry);
-        if(i >= 0) {
-            if(i == 0) {
+        if (i >= 0) {
+            if (i == 0) {
                 Object previous = parameter.get(parameter.size() - 1);
                 parameter.set(parameter.size() - 1, entry);
                 parameter.set(i, previous);
-            }
-            else {
+            } else {
                 Object previous = parameter.get(i - 1);
                 parameter.set(i - 1, entry);
                 parameter.set(i, previous);

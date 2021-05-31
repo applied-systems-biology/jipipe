@@ -256,20 +256,20 @@ public class ImageJUtils {
 
     /**
      * Returns a mask with the same size as the image
-     * @param img the image
+     *
+     * @param img  the image
      * @param mask the mask
      * @return the mask (a new mask if they have the same size, otherwise a new object)
      */
     public static ImagePlus getNormalizedMask(ImagePlus img, ImagePlus mask) {
-        if(imagesHaveSameSize(img, mask))
+        if (imagesHaveSameSize(img, mask))
             return mask;
-        if(img.getStackSize() == 1) {
+        if (img.getStackSize() == 1) {
             return new ImagePlus(mask.getTitle(), mask.getProcessor());
-        }
-        else {
+        } else {
             ImageStack stack = new ImageStack(img.getWidth(), img.getHeight(), img.getNChannels() * img.getNFrames() * img.getNSlices());
             forEachIndexedZCTSlice(img, (ip, index) -> {
-                int z = Math.min(mask.getNSlices() -1, index.getZ());
+                int z = Math.min(mask.getNSlices() - 1, index.getZ());
                 int c = Math.min(mask.getNChannels() - 1, index.getC());
                 int t = Math.min(mask.getNFrames() - 1, index.getT());
                 ImageProcessor maskProcessor = ImageJUtils.getSliceZero(mask, z, c, t);
@@ -611,7 +611,7 @@ public class ImageJUtils {
     public static void forEachIndexedSlice(ImagePlus img, BiConsumer<ImageProcessor, Integer> function, JIPipeProgressInfo progressInfo) {
         if (img.isStack()) {
             for (int i = 0; i < img.getStack().size(); ++i) {
-                if(progressInfo.isCancelled().get())
+                if (progressInfo.isCancelled().get())
                     return;
                 ImageProcessor ip = img.getStack().getProcessor(i + 1);
                 progressInfo.resolveAndLog("Slice", i, img.getStackSize());
@@ -635,7 +635,7 @@ public class ImageJUtils {
             for (int t = 0; t < img.getNFrames(); t++) {
                 for (int z = 0; z < img.getNSlices(); z++) {
                     for (int c = 0; c < img.getNChannels(); c++) {
-                        if(progressInfo.isCancelled().get())
+                        if (progressInfo.isCancelled().get())
                             return;
                         int index = img.getStackIndex(c + 1, z + 1, t + 1);
                         progressInfo.resolveAndLog("Slice", iterationIndex++, img.getStackSize()).log("z=" + z + ", c=" + c + ", t=" + t);
@@ -664,7 +664,7 @@ public class ImageJUtils {
             for (int z = 0; z < img.getNSlices(); z++) {
                 Map<Integer, ImageProcessor> channels = new HashMap<>();
                 for (int c = 0; c < img.getNChannels(); c++) {
-                    if(progressInfo.isCancelled().get())
+                    if (progressInfo.isCancelled().get())
                         return;
                     progressInfo.resolveAndLog("Slice", iterationIndex++, img.getStackSize()).log("z=" + z + ", c=" + c + ", t=" + t);
                     channels.put(c, img.getStack().getProcessor(img.getStackIndex(c + 1, z + 1, t + 1)));

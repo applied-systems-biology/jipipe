@@ -17,11 +17,11 @@ import java.awt.*;
  */
 public class EllipseMaskDrawerTool extends MaskDrawerTool {
 
+    private final JTextArea infoArea = UIUtils.makeReadonlyBorderlessTextArea("");
     private Point referencePoint;
     private JCheckBox startFromCenterToggle;
     private JCheckBox squareToggle;
     private JCheckBox fillToggle;
-    private final JTextArea infoArea = UIUtils.makeReadonlyBorderlessTextArea("");
 
     public EllipseMaskDrawerTool(MaskDrawerPlugin plugin) {
         super(plugin,
@@ -65,7 +65,7 @@ public class EllipseMaskDrawerTool extends MaskDrawerTool {
     }
 
     private void updateInfo() {
-        if(referencePoint != null) {
+        if (referencePoint != null) {
             Point p0 = referencePoint;
             Point p1 = getViewerPanel().getCanvas().getMouseModelPixelCoordinate(false);
             Rectangle r = RectangleMaskDrawerTool.getDrawnArea(p0, p1, startFromCenterToggle.isSelected(), squareToggle.isSelected());
@@ -89,12 +89,11 @@ public class EllipseMaskDrawerTool extends MaskDrawerTool {
                             "Circumference: %f px",
                     p0.x, p0.y,
                     p1.x, p1.y,
-                    (int)r.getWidth(),
-                    (int)r.getHeight(),
+                    (int) r.getWidth(),
+                    (int) r.getHeight(),
                     Math.PI * a * b,
                     Math.PI * (a + b) * (1 + (3 * h) / (10 + Math.sqrt(4 - 3 * h))))); // Rananujan approximation
-        }
-        else {
+        } else {
             infoArea.setText("P1: -\n" +
                     "P2: -\n" +
                     "Width: -\n" +

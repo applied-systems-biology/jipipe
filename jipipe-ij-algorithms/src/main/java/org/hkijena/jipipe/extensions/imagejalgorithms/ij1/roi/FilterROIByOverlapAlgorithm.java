@@ -27,10 +27,10 @@ import java.util.List;
 @JIPipeDocumentation(name = "Filter ROI by overlap", description = "Filters the ROI lists by testing for mutual overlap. The ROI1 output contains all ROI1 input ROI that overlap with any of ROI2. " +
         "The ROI2 output contains all ROI2 input ROI that overlap with a ROI1 ROI.")
 @JIPipeOrganization(nodeTypeCategory = RoiNodeTypeCategory.class, menuPath = "Filter")
-@JIPipeInputSlot(value = ROIListData.class,slotName = "ROI 1", autoCreate = true)
-@JIPipeInputSlot(value = ROIListData.class,slotName = "ROI 2", autoCreate = true)
-@JIPipeOutputSlot(value = ROIListData.class,slotName = "ROI 1", autoCreate = true)
-@JIPipeOutputSlot(value = ROIListData.class,slotName = "ROI 2", autoCreate = true)
+@JIPipeInputSlot(value = ROIListData.class, slotName = "ROI 1", autoCreate = true)
+@JIPipeInputSlot(value = ROIListData.class, slotName = "ROI 2", autoCreate = true)
+@JIPipeOutputSlot(value = ROIListData.class, slotName = "ROI 1", autoCreate = true)
+@JIPipeOutputSlot(value = ROIListData.class, slotName = "ROI 2", autoCreate = true)
 public class FilterROIByOverlapAlgorithm extends JIPipeIteratingAlgorithm {
 
     private ImageStatisticsSetParameter overlapFilterMeasurements = new ImageStatisticsSetParameter();
@@ -57,26 +57,24 @@ public class FilterROIByOverlapAlgorithm extends JIPipeIteratingAlgorithm {
     }
 
     private void updateSlots() {
-        if(roi1Settings.isEnabled()) {
-            if(!getOutputSlotMap().containsKey("ROI 1")) {
+        if (roi1Settings.isEnabled()) {
+            if (!getOutputSlotMap().containsKey("ROI 1")) {
                 JIPipeDefaultMutableSlotConfiguration slotConfiguration = (JIPipeDefaultMutableSlotConfiguration) getSlotConfiguration();
                 slotConfiguration.addOutputSlot("ROI 1", ROIListData.class, null, false);
             }
-        }
-        else {
-            if(getOutputSlotMap().containsKey("ROI 1")) {
+        } else {
+            if (getOutputSlotMap().containsKey("ROI 1")) {
                 JIPipeDefaultMutableSlotConfiguration slotConfiguration = (JIPipeDefaultMutableSlotConfiguration) getSlotConfiguration();
                 slotConfiguration.removeOutputSlot("ROI 1", false);
             }
         }
-        if(roi2Settings.isEnabled()) {
-            if(!getOutputSlotMap().containsKey("ROI 2")) {
+        if (roi2Settings.isEnabled()) {
+            if (!getOutputSlotMap().containsKey("ROI 2")) {
                 JIPipeDefaultMutableSlotConfiguration slotConfiguration = (JIPipeDefaultMutableSlotConfiguration) getSlotConfiguration();
                 slotConfiguration.addOutputSlot("ROI 2", ROIListData.class, null, false);
             }
-        }
-        else {
-            if(getOutputSlotMap().containsKey("ROI 2")) {
+        } else {
+            if (getOutputSlotMap().containsKey("ROI 2")) {
                 JIPipeDefaultMutableSlotConfiguration slotConfiguration = (JIPipeDefaultMutableSlotConfiguration) getSlotConfiguration();
                 slotConfiguration.removeOutputSlot("ROI 2", false);
             }
@@ -85,8 +83,8 @@ public class FilterROIByOverlapAlgorithm extends JIPipeIteratingAlgorithm {
 
     @Subscribe
     public void onParameterChanged(ParameterChangedEvent event) {
-        if(event.getSource() == roi1Settings || event.getSource() == roi2Settings) {
-            if("enabled".equals(event.getKey())) {
+        if (event.getSource() == roi1Settings || event.getSource() == roi2Settings) {
+            if ("enabled".equals(event.getKey())) {
                 updateSlots();
             }
         }
@@ -95,12 +93,12 @@ public class FilterROIByOverlapAlgorithm extends JIPipeIteratingAlgorithm {
     @Override
     protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
 
-        ROIListData roi1_original = dataBatch.getInputData("ROI 1", ROIListData.class,progressInfo);
-        ROIListData roi2_original = dataBatch.getInputData("ROI 2", ROIListData.class,progressInfo);
+        ROIListData roi1_original = dataBatch.getInputData("ROI 1", ROIListData.class, progressInfo);
+        ROIListData roi2_original = dataBatch.getInputData("ROI 2", ROIListData.class, progressInfo);
 
         ImagePlus referenceImage = ROIListData.createDummyImageFor(Arrays.asList(roi1_original, roi2_original));
 
-        if(roi1Settings.isEnabled()) {
+        if (roi1Settings.isEnabled()) {
             ROIListData roi1 = new ROIListData(roi1_original);
             ROIListData roi2 = new ROIListData(roi2_original);
             applyFiltering(roi1,
@@ -113,7 +111,7 @@ public class FilterROIByOverlapAlgorithm extends JIPipeIteratingAlgorithm {
                     dataBatch,
                     progressInfo.resolveAndLog("ROI 1 filtering"));
         }
-        if(roi2Settings.isEnabled()) {
+        if (roi2Settings.isEnabled()) {
             ROIListData roi1 = new ROIListData(roi1_original);
             ROIListData roi2 = new ROIListData(roi2_original);
             applyFiltering(roi2,
@@ -136,7 +134,7 @@ public class FilterROIByOverlapAlgorithm extends JIPipeIteratingAlgorithm {
 
         // Apply comparison
         for (int i = 0; i < first.size(); i++) {
-            if(i % 100 == 0)
+            if (i % 100 == 0)
                 progressInfo.resolveAndLog("ROI", i, first.size());
             Roi roi = first.get(i);
             List<Roi> overlaps = new ArrayList<>();
@@ -161,7 +159,7 @@ public class FilterROIByOverlapAlgorithm extends JIPipeIteratingAlgorithm {
                 }
                 if (overlap != null) {
                     overlaps.add(overlap);
-                    if(settings.isConsumeOnOverlap()) {
+                    if (settings.isConsumeOnOverlap()) {
                         // We consumed this overlap. Remove Roi2
                         second.remove(overlappingRoi);
                     }
@@ -172,9 +170,8 @@ public class FilterROIByOverlapAlgorithm extends JIPipeIteratingAlgorithm {
                 overlapSuccess = !overlapSuccess;
             if (overlapSuccess) {
                 if (settings.isOutputOverlaps()) {
-                   result.addAll(overlaps);
-                }
-                else {
+                    result.addAll(overlaps);
+                } else {
                     result.add(roi);
                 }
             }
@@ -187,9 +184,9 @@ public class FilterROIByOverlapAlgorithm extends JIPipeIteratingAlgorithm {
     private void putMeasurementsIntoVariable(Roi first, String firstPrefix, Roi second, String secondPrefix, ExpressionParameters variableSet, Roi overlap, ImagePlus referenceImage, ROIListData temp) {
 
         variableSet.set(firstPrefix + ".z", first.getZPosition());
-        variableSet.set(firstPrefix +".c", first.getCPosition());
-        variableSet.set(firstPrefix +".t", first.getTPosition());
-        variableSet.set(firstPrefix +".name", StringUtils.nullToEmpty(first.getName()));
+        variableSet.set(firstPrefix + ".c", first.getCPosition());
+        variableSet.set(firstPrefix + ".t", first.getTPosition());
+        variableSet.set(firstPrefix + ".name", StringUtils.nullToEmpty(first.getName()));
         variableSet.set(secondPrefix + ".z", second.getZPosition());
         variableSet.set(secondPrefix + ".c", second.getCPosition());
         variableSet.set(secondPrefix + ".t", second.getTPosition());
@@ -221,9 +218,9 @@ public class FilterROIByOverlapAlgorithm extends JIPipeIteratingAlgorithm {
     }
 
     private Roi calculateOverlap(ROIListData temp, Roi roi1, Roi roi2, boolean fastMode) {
-        if(fastMode) {
+        if (fastMode) {
             Rectangle intersection = roi1.getBounds().intersection(roi2.getBounds());
-            if(intersection.isEmpty())
+            if (intersection.isEmpty())
                 return null;
             else
                 return new Roi(intersection);
@@ -231,7 +228,7 @@ public class FilterROIByOverlapAlgorithm extends JIPipeIteratingAlgorithm {
 
         temp.clear();
         // BB check for optimization
-        if(!roi1.getBounds().intersects(roi2.getBounds()))
+        if (!roi1.getBounds().intersects(roi2.getBounds()))
             return null;
         temp.add(roi1);
         temp.add(roi2);

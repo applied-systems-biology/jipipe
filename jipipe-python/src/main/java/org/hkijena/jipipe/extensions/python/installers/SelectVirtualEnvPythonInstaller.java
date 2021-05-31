@@ -87,38 +87,37 @@ public class SelectVirtualEnvPythonInstaller extends ExternalEnvironmentInstalle
             }
         }
 
-       if(userCancelled.get())
-           return;
+        if (userCancelled.get())
+            return;
 
-       Path selectedPath = configuration.virtualEnvDirectory;
+        Path selectedPath = configuration.virtualEnvDirectory;
         generatedEnvironment = new PythonEnvironment();
         generatedEnvironment.setType(PythonEnvironmentType.VirtualEnvironment);
-        if(SystemUtils.IS_OS_WINDOWS) {
+        if (SystemUtils.IS_OS_WINDOWS) {
             generatedEnvironment.setExecutablePath(selectedPath.resolve("Scripts").resolve("python.exe"));
             generatedEnvironment.getEnvironmentVariables().add(new StringQueryExpressionAndStringPairParameter(
                     "\"" + DefaultExpressionEvaluator.escapeString(selectedPath.resolve("Scripts").toString()) + ";\"" + " + Path",
                     "Path"
             ));
             generatedEnvironment.getEnvironmentVariables().add(new StringQueryExpressionAndStringPairParameter(
-                    "\"" + DefaultExpressionEvaluator.escapeString(selectedPath.toString()) +"\"",
+                    "\"" + DefaultExpressionEvaluator.escapeString(selectedPath.toString()) + "\"",
                     "VIRTUAL_ENV"
             ));
-        }
-        else {
+        } else {
             generatedEnvironment.setExecutablePath(selectedPath.resolve("bin").resolve("python"));
             generatedEnvironment.getEnvironmentVariables().add(new StringQueryExpressionAndStringPairParameter(
                     "\"" + DefaultExpressionEvaluator.escapeString(selectedPath.resolve("bin").toString()) + ":\"" + " + PATH",
                     "PATH"
             ));
             generatedEnvironment.getEnvironmentVariables().add(new StringQueryExpressionAndStringPairParameter(
-                    "\"" + DefaultExpressionEvaluator.escapeString(selectedPath.toString()) +"\"",
+                    "\"" + DefaultExpressionEvaluator.escapeString(selectedPath.toString()) + "\"",
                     "VIRTUAL_ENV"
             ));
         }
 
         generatedEnvironment.setArguments(new DefaultExpressionParameter("ARRAY(\"-u\", script_file)"));
         generatedEnvironment.setName(configuration.getName());
-        if(getParameterAccess() != null) {
+        if (getParameterAccess() != null) {
             SwingUtilities.invokeLater(() -> getParameterAccess().set(generatedEnvironment));
         }
     }

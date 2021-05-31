@@ -62,56 +62,6 @@ public class ImagePlusFFTData extends ImagePlusData {
         super(convertToFFT(image));
     }
 
-    private static ImagePlus convertToFFT(ImagePlus image) {
-        Object fht = image.getProperty("FHT");
-        if(fht instanceof FHT) {
-            // Already a FFT image
-            return image;
-        }
-        else {
-            // Convert to FFT
-            return FFT.forward(image);
-        }
-    }
-
-    public static ImagePlusFFTData importFrom(Path storageFolder) {
-        Path fhtOutputPath = storageFolder.resolve("fht.ome.tif");
-        Path powerSpectrumOutputPath = storageFolder.resolve("power_spectrum.ome.tif");
-        ImagePlus fhtImage = null;
-        ImagePlus powerSpectrumImage = null;
-        if(!Files.exists(fhtOutputPath)) {
-            fhtOutputPath = storageFolder.resolve("fht.tif");
-            fhtImage = IJ.openImage(fhtOutputPath.toString());
-        }
-        else {
-            fhtImage = OMEImageData.simpleOMEImport(fhtOutputPath).getImage();
-        }
-        if(!Files.exists(powerSpectrumOutputPath)) {
-            powerSpectrumOutputPath = storageFolder.resolve("power_spectrum.tif");
-            powerSpectrumImage = IJ.openImage(powerSpectrumOutputPath.toString());
-        }
-        else {
-            powerSpectrumImage = OMEImageData.simpleOMEImport(powerSpectrumOutputPath).getImage();
-        }
-
-        // Combine both
-        FHT fht = new FHT(fhtImage.getProcessor(), true);
-
-        // Load info
-        Path fhtInfoPath = storageFolder.resolve("fht_info.json");
-        if(Files.exists(fhtInfoPath)) {
-            try {
-                FFTInfo info = JsonUtils.getObjectMapper().readerFor(FFTInfo.class).readValue(fhtInfoPath.toFile());
-                info.writeTo(fht);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-
-        powerSpectrumImage.setProperty("FHT", fht);
-        return new ImagePlusFFTData(powerSpectrumImage);
-    }
-
     @Override
     public void saveTo(Path storageFilePath, String name, boolean forceName, JIPipeProgressInfo progressInfo) {
         FHT fht = (FHT) getImage().getProperty("FHT");
@@ -120,18 +70,17 @@ public class ImagePlusFFTData extends ImagePlusData {
         String fhtImageName = "fht";
         String powerSpectrumImageName = "power_spectrum";
 
-        if(forceName) {
+        if (forceName) {
             fhtImageName = name + "_" + fhtImageName;
             powerSpectrumImageName = name + "_" + powerSpectrumImageName;
         }
 
-        if(ImageJDataTypesSettings.getInstance().isUseBioFormats()) {
+        if (ImageJDataTypesSettings.getInstance().isUseBioFormats()) {
             Path powerSpectrumOutputPath = storageFilePath.resolve(powerSpectrumImageName + ".ome.tif");
             OMEImageData.simpleOMEExport(getImage(), powerSpectrumOutputPath);
             Path fhtOutputPath = storageFilePath.resolve(fhtImageName + ".ome.tif");
             OMEImageData.simpleOMEExport(fhtImage, fhtOutputPath);
-        }
-        else {
+        } else {
             Path powerSpectrumOutputPath = storageFilePath.resolve(powerSpectrumImageName + ".tif");
             IJ.saveAsTiff(getImage(), powerSpectrumOutputPath.toString());
             Path fhtOutputPath = storageFilePath.resolve(fhtImageName + ".tif");
@@ -145,6 +94,53 @@ public class ImagePlusFFTData extends ImagePlusData {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    private static ImagePlus convertToFFT(ImagePlus image) {
+        Object fht = image.getProperty("FHT");
+        if (fht instanceof FHT) {
+            // Already a FFT image
+            return image;
+        } else {
+            // Convert to FFT
+            return FFT.forward(image);
+        }
+    }
+
+    public static ImagePlusFFTData importFrom(Path storageFolder) {
+        Path fhtOutputPath = storageFolder.resolve("fht.ome.tif");
+        Path powerSpectrumOutputPath = storageFolder.resolve("power_spectrum.ome.tif");
+        ImagePlus fhtImage = null;
+        ImagePlus powerSpectrumImage = null;
+        if (!Files.exists(fhtOutputPath)) {
+            fhtOutputPath = storageFolder.resolve("fht.tif");
+            fhtImage = IJ.openImage(fhtOutputPath.toString());
+        } else {
+            fhtImage = OMEImageData.simpleOMEImport(fhtOutputPath).getImage();
+        }
+        if (!Files.exists(powerSpectrumOutputPath)) {
+            powerSpectrumOutputPath = storageFolder.resolve("power_spectrum.tif");
+            powerSpectrumImage = IJ.openImage(powerSpectrumOutputPath.toString());
+        } else {
+            powerSpectrumImage = OMEImageData.simpleOMEImport(powerSpectrumOutputPath).getImage();
+        }
+
+        // Combine both
+        FHT fht = new FHT(fhtImage.getProcessor(), true);
+
+        // Load info
+        Path fhtInfoPath = storageFolder.resolve("fht_info.json");
+        if (Files.exists(fhtInfoPath)) {
+            try {
+                FFTInfo info = JsonUtils.getObjectMapper().readerFor(FFTInfo.class).readValue(fhtInfoPath.toFile());
+                info.writeTo(fht);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+
+        powerSpectrumImage.setProperty("FHT", fht);
+        return new ImagePlusFFTData(powerSpectrumImage);
     }
 
     /**
@@ -162,13 +158,21 @@ public class ImagePlusFFTData extends ImagePlusData {
      */
     public static class FFTInfo {
         private boolean quadrantSwapNeeded;
-        /** Used by the FFT class. */
+        /**
+         * Used by the FFT class.
+         */
         private int originalWidth;
-        /** Used by the FFT class. */
+        /**
+         * Used by the FFT class.
+         */
         private int originalHeight;
-        /** Used by the FFT class. */
+        /**
+         * Used by the FFT class.
+         */
         private int originalBitDepth;
-        /** Used by the FFT class. */
+        /**
+         * Used by the FFT class.
+         */
         private double powerSpectrumMean;
 
         public FFTInfo() {

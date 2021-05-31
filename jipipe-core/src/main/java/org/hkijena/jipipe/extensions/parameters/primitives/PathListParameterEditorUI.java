@@ -106,12 +106,11 @@ public class PathListParameterEditorUI extends JIPipeParameterEditorUI {
     private void sortList() {
         Object order = JOptionPane.showInputDialog(this, "Please select the sort order", "Sort items",
                 JOptionPane.PLAIN_MESSAGE, null, new Object[]{"Ascending", "Descending"}, "Ascending");
-        if(Objects.equals("Ascending", order)) {
+        if (Objects.equals("Ascending", order)) {
             PathList parameter = getParameter(PathList.class);
             parameter.sort(Comparator.naturalOrder());
             setParameter(parameter, true);
-        }
-        else if(Objects.equals("Descending", order)) {
+        } else if (Objects.equals("Descending", order)) {
             PathList parameter = getParameter(PathList.class);
             parameter.sort(Comparator.reverseOrder());
             setParameter(parameter, true);
@@ -141,7 +140,7 @@ public class PathListParameterEditorUI extends JIPipeParameterEditorUI {
         PathList parameter = getParameter(PathList.class);
         String key = FileChooserSettings.KEY_PARAMETER;
         FilePathParameterSettings annotation = getParameterAccess().getAnnotationOfType(FilePathParameterSettings.class);
-        if(annotation != null) {
+        if (annotation != null) {
             key = annotation.key();
         }
         List<Path> paths = FileChooserSettings.selectMulti(this, key, "Add path", ioMode, pathMode);

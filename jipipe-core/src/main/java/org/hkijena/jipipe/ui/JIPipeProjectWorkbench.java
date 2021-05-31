@@ -773,7 +773,7 @@ public class JIPipeProjectWorkbench extends JPanel implements JIPipeWorkbench {
 
     @Override
     public void setProjectModified(boolean projectModified) {
-        if(this.projectModified != projectModified) {
+        if (this.projectModified != projectModified) {
             this.projectModified = projectModified;
             window.updateTitle();
         }

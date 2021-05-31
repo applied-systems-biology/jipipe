@@ -85,26 +85,24 @@ public class CellPoseTrainingAlgorithm extends JIPipeMergingAlgorithm {
     }
 
     private void updateSlots() {
-        if(pretrainedModel != CellPosePretrainedModel.Custom) {
-            if(getInputSlotMap().containsKey("Pretrained model")) {
+        if (pretrainedModel != CellPosePretrainedModel.Custom) {
+            if (getInputSlotMap().containsKey("Pretrained model")) {
                 JIPipeDefaultMutableSlotConfiguration slotConfiguration = (JIPipeDefaultMutableSlotConfiguration) getSlotConfiguration();
                 slotConfiguration.removeInputSlot("Pretrained model", false);
             }
-        }
-        else {
-            if(!getInputSlotMap().containsKey("Pretrained model")) {
+        } else {
+            if (!getInputSlotMap().containsKey("Pretrained model")) {
                 JIPipeDefaultMutableSlotConfiguration slotConfiguration = (JIPipeDefaultMutableSlotConfiguration) getSlotConfiguration();
                 slotConfiguration.addSlot("Pretrained model", new JIPipeDataSlotInfo(CellPoseModelData.class, JIPipeSlotType.Input, null), false);
             }
         }
-        if(!trainSizeModel) {
-            if(getOutputSlotMap().containsKey("Size model")) {
+        if (!trainSizeModel) {
+            if (getOutputSlotMap().containsKey("Size model")) {
                 JIPipeDefaultMutableSlotConfiguration slotConfiguration = (JIPipeDefaultMutableSlotConfiguration) getSlotConfiguration();
                 slotConfiguration.removeOutputSlot("Size model", false);
             }
-        }
-        else {
-            if(!getOutputSlotMap().containsKey("Size model")) {
+        } else {
+            if (!getOutputSlotMap().containsKey("Size model")) {
                 JIPipeDefaultMutableSlotConfiguration slotConfiguration = (JIPipeDefaultMutableSlotConfiguration) getSlotConfiguration();
                 slotConfiguration.addSlot("Size model", new JIPipeDataSlotInfo(CellPoseSizeModelData.class, JIPipeSlotType.Output, null), false);
             }
@@ -264,13 +262,13 @@ public class CellPoseTrainingAlgorithm extends JIPipeMergingAlgorithm {
         // Update diameter
         switch (pretrainedModel) {
             case Cytoplasm:
-                if(diameter != 30) {
-                    JIPipeParameterCollection.setParameter(this, "diameter",  30.0);
+                if (diameter != 30) {
+                    JIPipeParameterCollection.setParameter(this, "diameter", 30.0);
                 }
                 break;
             case Nucleus:
-                if(diameter != 17) {
-                    JIPipeParameterCollection.setParameter(this, "diameter",  17.0);
+                if (diameter != 17) {
+                    JIPipeParameterCollection.setParameter(this, "diameter", 17.0);
                 }
                 break;
         }
@@ -320,9 +318,9 @@ public class CellPoseTrainingAlgorithm extends JIPipeMergingAlgorithm {
 
         // Extract model if custom
         Path customModelPath = null;
-        if(pretrainedModel == CellPosePretrainedModel.Custom) {
+        if (pretrainedModel == CellPosePretrainedModel.Custom) {
             Set<Integer> pretrainedModelRows = dataBatch.getInputRows("Pretrained model");
-            if(pretrainedModelRows.size() != 1) {
+            if (pretrainedModelRows.size() != 1) {
                 throw new UserFriendlyRuntimeException("Only one pretrained model is allowed",
                         "Only one pretrained model is allowed",
                         getDisplayName(),
@@ -348,7 +346,7 @@ public class CellPoseTrainingAlgorithm extends JIPipeMergingAlgorithm {
         arguments.add("--dir");
         arguments.add(trainingDir.toAbsolutePath().toString());
 
-        if(!dataBatch.getInputRows("Test data").isEmpty()) {
+        if (!dataBatch.getInputRows("Test data").isEmpty()) {
             arguments.add("--test_dir");
             arguments.add(testDir.toAbsolutePath().toString());
         }
@@ -362,11 +360,11 @@ public class CellPoseTrainingAlgorithm extends JIPipeMergingAlgorithm {
         arguments.add("--chan");
         arguments.add("0");
 
-        if(enableGPU)
+        if (enableGPU)
             arguments.add("--use_gpu");
-        if(dataIs3D)
+        if (dataIs3D)
             arguments.add("--do_3D");
-        if(pretrainedModel == CellPosePretrainedModel.Custom || pretrainedModel == CellPosePretrainedModel.None) {
+        if (pretrainedModel == CellPosePretrainedModel.Custom || pretrainedModel == CellPosePretrainedModel.None) {
             arguments.add("--diameter");
             arguments.add(diameter + "");
         }
@@ -387,7 +385,7 @@ public class CellPoseTrainingAlgorithm extends JIPipeMergingAlgorithm {
                 break;
         }
 
-        if(trainSizeModel)
+        if (trainSizeModel)
             arguments.add("--train_size");
 
         arguments.add("--learning_rate");
@@ -419,13 +417,13 @@ public class CellPoseTrainingAlgorithm extends JIPipeMergingAlgorithm {
         dataBatch.addOutputData("Model", modelData, progressInfo);
 
         // Extract size model
-        if(trainSizeModel) {
+        if (trainSizeModel) {
             Path generatedSizeModelFile = findSizeModelFile(modelsPath);
             CellPoseSizeModelData sizeModelData = new CellPoseSizeModelData(generatedSizeModelFile);
             dataBatch.addOutputData("Size model", sizeModelData, progressInfo);
         }
 
-        if(cleanUpAfterwards) {
+        if (cleanUpAfterwards) {
             try {
                 FileUtils.deleteDirectory(workDirectory.toFile());
             } catch (IOException e) {
@@ -437,15 +435,15 @@ public class CellPoseTrainingAlgorithm extends JIPipeMergingAlgorithm {
     private Path findModelFile(Path modelsPath) {
         for (Path path : PathUtils.findFilesByExtensionIn(modelsPath).stream().sorted(Comparator.comparing(path -> {
             try {
-                return Files.getLastModifiedTime((Path)path);
+                return Files.getLastModifiedTime((Path) path);
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
         }).reversed()).collect(Collectors.toList())) {
             String name = path.getFileName().toString();
-            if(!name.startsWith("cellpose"))
+            if (!name.startsWith("cellpose"))
                 continue;
-            if(!name.endsWith(".npy")) {
+            if (!name.endsWith(".npy")) {
                 return path;
             }
         }
@@ -464,7 +462,7 @@ public class CellPoseTrainingAlgorithm extends JIPipeMergingAlgorithm {
     }
 
     private void saveImagesToPath(Path dir, AtomicInteger imageCounter, JIPipeProgressInfo rowProgress, ImagePlus image, ImagePlus mask) {
-        if(image.getStackSize() > 1 && !enable3DSegmentation) {
+        if (image.getStackSize() > 1 && !enable3DSegmentation) {
             ImageJUtils.forEachIndexedZCTSlice(image, (ip, index) -> {
                 ImageProcessor maskSlice = ImageJUtils.getSliceZero(mask, index);
                 ImagePlus maskSliceImage = new ImagePlus("slice", maskSlice);
@@ -475,8 +473,7 @@ public class CellPoseTrainingAlgorithm extends JIPipeMergingAlgorithm {
                 IJ.saveAs(maskSliceImage, "TIFF", imageFile.toString());
                 IJ.saveAs(imageSliceImage, "TIFF", maskFile.toString());
             }, rowProgress);
-        }
-        else {
+        } else {
             // Save as-is
             Path imageFile = dir.resolve("i" + imageCounter + "_raw.tif");
             Path maskFile = dir.resolve("i" + imageCounter + "_mask.tif");

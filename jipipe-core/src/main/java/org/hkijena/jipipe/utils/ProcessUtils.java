@@ -29,11 +29,12 @@ public class ProcessUtils {
 
     /**
      * Queries standard output and error with a timeout
+     *
      * @param executable
      * @param args
      * @return
      */
-    public static String queryAllFast(Path executable, String ...args) {
+    public static String queryAllFast(Path executable, String... args) {
         CommandLine commandLine = new CommandLine(executable.toFile());
         commandLine.addArguments(args);
         DefaultExecutor executor = new DefaultExecutor();
@@ -48,10 +49,9 @@ public class ProcessUtils {
         try {
             int exitValue = executor.execute(commandLine);
 
-            if(!executor.isFailure(exitValue)) {
+            if (!executor.isFailure(exitValue)) {
                 return new String(standardOutputStream.toByteArray());
-            }
-            else {
+            } else {
                 return null;
             }
 
@@ -62,11 +62,12 @@ public class ProcessUtils {
 
     /**
      * Queries standard output with a timeout
+     *
      * @param executable
      * @param args
      * @return
      */
-    public static String queryFast(Path executable, String ...args) {
+    public static String queryFast(Path executable, String... args) {
         CommandLine commandLine = new CommandLine(executable.toFile());
         commandLine.addArguments(args);
         DefaultExecutor executor = new DefaultExecutor();
@@ -82,10 +83,9 @@ public class ProcessUtils {
         try {
             int exitValue = executor.execute(commandLine);
 
-            if(!executor.isFailure(exitValue)) {
+            if (!executor.isFailure(exitValue)) {
                 return new String(standardOutputStream.toByteArray());
-            }
-            else {
+            } else {
                 return null;
             }
 

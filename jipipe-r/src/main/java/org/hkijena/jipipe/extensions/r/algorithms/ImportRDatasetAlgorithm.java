@@ -46,10 +46,9 @@ public class ImportRDatasetAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     public void reportValidity(JIPipeValidityReport report) {
         super.reportValidity(report);
         if (!isPassThrough()) {
-            if(overrideEnvironment.isEnabled()) {
+            if (overrideEnvironment.isEnabled()) {
                 report.forCategory("Override R environment").report(overrideEnvironment.getContent());
-            }
-            else {
+            } else {
                 RExtensionSettings.checkRSettings(report.forCategory("R"));
             }
         }

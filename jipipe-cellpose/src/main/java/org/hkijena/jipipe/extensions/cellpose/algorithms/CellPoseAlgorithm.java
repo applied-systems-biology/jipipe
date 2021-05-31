@@ -129,30 +129,28 @@ public class CellPoseAlgorithm extends JIPipeMergingAlgorithm {
     @Override
     public void onParameterChanged(ParameterChangedEvent event) {
         super.onParameterChanged(event);
-        if(event.getSource() == outputParameters) {
+        if (event.getSource() == outputParameters) {
             updateOutputSlots();
-        }
-        else if(event.getSource() == modelParameters && event.getKey().equals("model")) {
+        } else if (event.getSource() == modelParameters && event.getKey().equals("model")) {
             updateInputSlots();
         }
     }
 
     private void updateInputSlots() {
-        if(modelParameters.getModel() != CellPoseModel.Custom) {
+        if (modelParameters.getModel() != CellPoseModel.Custom) {
             JIPipeDefaultMutableSlotConfiguration slotConfiguration = (JIPipeDefaultMutableSlotConfiguration) getSlotConfiguration();
-            if(getInputSlotMap().containsKey("Pretrained model")) {
+            if (getInputSlotMap().containsKey("Pretrained model")) {
                 slotConfiguration.removeInputSlot("Pretrained model", false);
             }
-            if(getInputSlotMap().containsKey("Size model")) {
+            if (getInputSlotMap().containsKey("Size model")) {
                 slotConfiguration.removeInputSlot("Size model", false);
             }
-        }
-        else {
+        } else {
             JIPipeDefaultMutableSlotConfiguration slotConfiguration = (JIPipeDefaultMutableSlotConfiguration) getSlotConfiguration();
-            if(!getInputSlotMap().containsKey("Pretrained model")) {
+            if (!getInputSlotMap().containsKey("Pretrained model")) {
                 slotConfiguration.addSlot("Pretrained model", new JIPipeDataSlotInfo(CellPoseModelData.class, JIPipeSlotType.Input, null), false);
             }
-            if(!getInputSlotMap().containsKey("Size model")) {
+            if (!getInputSlotMap().containsKey("Size model")) {
                 JIPipeDataSlotInfo slotInfo = new JIPipeDataSlotInfo(CellPoseSizeModelData.class, JIPipeSlotType.Input, null);
                 slotInfo.setOptional(true);
                 slotConfiguration.addSlot("Size model", slotInfo, false);
@@ -164,10 +162,9 @@ public class CellPoseAlgorithm extends JIPipeMergingAlgorithm {
     public void reportValidity(JIPipeValidityReport report) {
         super.reportValidity(report);
         if (!isPassThrough()) {
-            if(overrideEnvironment.isEnabled()) {
+            if (overrideEnvironment.isEnabled()) {
                 report.forCategory("Override Python environment").report(overrideEnvironment.getContent());
-            }
-            else {
+            } else {
                 CellPoseSettings.checkPythonSettings(report.forCategory("Python"));
             }
         }
@@ -181,7 +178,7 @@ public class CellPoseAlgorithm extends JIPipeMergingAlgorithm {
         // Save models if needed
         List<Path> customModelPaths = new ArrayList<>();
         Path customSizeModelPath = null;
-        if(modelParameters.getModel() == CellPoseModel.Custom) {
+        if (modelParameters.getModel() == CellPoseModel.Custom) {
             List<CellPoseModelData> models = dataBatch.getInputData("Pretrained model", CellPoseModelData.class, progressInfo);
             for (int i = 0; i < models.size(); i++) {
                 CellPoseModelData modelData = models.get(i);
@@ -195,14 +192,14 @@ public class CellPoseAlgorithm extends JIPipeMergingAlgorithm {
             }
 
             List<CellPoseSizeModelData> sizeModels = dataBatch.getInputData("Size model", CellPoseSizeModelData.class, progressInfo);
-            if(sizeModels.size() > 1) {
+            if (sizeModels.size() > 1) {
                 throw new UserFriendlyRuntimeException("Only 1 size model supported!",
                         "Only one size model is supported!",
                         getDisplayName(),
                         "Currently, the node supports only one size model.",
                         "Remove or modify inputs so that there is only one size model.");
             }
-            if(!sizeModels.isEmpty()) {
+            if (!sizeModels.isEmpty()) {
                 CellPoseSizeModelData sizeModelData = sizeModels.get(0);
                 Path customModelPath = workDirectory.resolve("sz" + sizeModelData.getName() + ".npy");
                 try {
@@ -247,10 +244,9 @@ public class CellPoseAlgorithm extends JIPipeMergingAlgorithm {
             code.append("enable_3d_segmentation = ").append(PythonUtils.objectToPython(img.getNDimensions() > 2 && enable3DSegmentation)).append("\n\n");
 
             // I we provide a custom model, we need to inject custom code (Why?)
-            if(modelParameters.getModel() == CellPoseModel.Custom) {
+            if (modelParameters.getModel() == CellPoseModel.Custom) {
                 setupCustomCellposeModel(code, customModelPaths, customSizeModelPath);
-            }
-            else {
+            } else {
                 // We can use the combined Cellpose class
                 setupCombinedCellposeModel(code);
             }
@@ -268,30 +264,30 @@ public class CellPoseAlgorithm extends JIPipeMergingAlgorithm {
             setupModelEval(code);
 
             // Re-merge masks
-            if(outputParameters.isOutputROI() || outputParameters.isOutputLabels()) {
+            if (outputParameters.isOutputROI() || outputParameters.isOutputLabels()) {
                 code.append("if data_is_3d and not enable_3d_segmentation:\n" +
                         "    masks = np.stack(masks, 0)\n");
             }
 
             // Generate ROI output
-            if(outputParameters.isOutputROI()) {
+            if (outputParameters.isOutputROI()) {
                 setupGenerateOutputROI(outputRoiOutline, code);
             }
-            if(outputParameters.isOutputLabels()) {
+            if (outputParameters.isOutputLabels()) {
                 setupGenerateOutputLabels(outputLabels, code);
             }
-            if(outputParameters.isOutputFlows()) {
+            if (outputParameters.isOutputFlows()) {
                 setupGenerateOutputFlows(outputFlows, code);
             }
-            if(outputParameters.isOutputProbabilities()) {
+            if (outputParameters.isOutputProbabilities()) {
                 setupGenerateOutputProbabilities(outputProbabilities, code);
             }
-            if(outputParameters.isOutputStyles()) {
+            if (outputParameters.isOutputStyles()) {
                 setupGenerateOutputStyles(outputStyles, code);
             }
 
             // Write diameters
-            if(diameterAnnotation.isEnabled()) {
+            if (diameterAnnotation.isEnabled()) {
                 code.append(String.format("with open(\"%s\", \"w\") as f:\n", MacroUtils.escapeString(outputDiameters.toString())));
                 code.append("    f.write(str(diams))\n");
             }
@@ -302,7 +298,7 @@ public class CellPoseAlgorithm extends JIPipeMergingAlgorithm {
 
             // Read diameters
             List<JIPipeAnnotation> annotationList = new ArrayList<>();
-            if(diameterAnnotation.isEnabled()) {
+            if (diameterAnnotation.isEnabled()) {
                 try {
                     String value = new String(Files.readAllBytes(outputDiameters), StandardCharsets.UTF_8);
                     diameterAnnotation.addAnnotationIfEnabled(annotationList, value);
@@ -312,30 +308,30 @@ public class CellPoseAlgorithm extends JIPipeMergingAlgorithm {
             }
 
             // Extract outputs
-            if(outputParameters.isOutputROI()) {
+            if (outputParameters.isOutputROI()) {
                 ROIListData rois = CellPoseUtils.cellPoseROIJsonToImageJ(outputRoiOutline);
                 dataBatch.addOutputData("ROI", rois, annotationList, JIPipeAnnotationMergeStrategy.Merge, progressInfo);
             }
-            if(outputParameters.isOutputLabels()) {
+            if (outputParameters.isOutputLabels()) {
                 ImagePlus labels = IJ.openImage(outputLabels.toString());
                 dataBatch.addOutputData("Labels", new ImagePlus3DGreyscaleData(labels), annotationList, JIPipeAnnotationMergeStrategy.Merge, progressInfo);
             }
-            if(outputParameters.isOutputFlows()) {
+            if (outputParameters.isOutputFlows()) {
                 ImagePlus flows = IJ.openImage(outputFlows.toString());
                 dataBatch.addOutputData("Flows", new ImagePlus3DColorRGBData(flows), annotationList, JIPipeAnnotationMergeStrategy.Merge, progressInfo);
             }
-            if(outputParameters.isOutputProbabilities()) {
+            if (outputParameters.isOutputProbabilities()) {
                 ImagePlus probabilities = IJ.openImage(outputProbabilities.toString());
                 dataBatch.addOutputData("Probabilities", new ImagePlus3DGreyscale32FData(probabilities), annotationList, JIPipeAnnotationMergeStrategy.Merge, progressInfo);
             }
-            if(outputParameters.isOutputStyles()) {
+            if (outputParameters.isOutputStyles()) {
                 ImagePlus styles = IJ.openImage(outputStyles.toString());
                 dataBatch.addOutputData("Styles", new ImagePlus3DGreyscale32FData(styles), annotationList, JIPipeAnnotationMergeStrategy.Merge, progressInfo);
             }
         }
 
         // Cleanup
-        if(cleanUpAfterwards) {
+        if (cleanUpAfterwards) {
             try {
                 FileUtils.deleteDirectory(workDirectory.toFile());
             } catch (IOException e) {
@@ -426,8 +422,9 @@ public class CellPoseAlgorithm extends JIPipeMergingAlgorithm {
     /**
      * Injects an extended Cellpose runner into Python.
      * It receives a pretrained model
-     * @param code the code
-     * @param customModelPaths custom model paths
+     *
+     * @param code                the code
+     * @param customModelPaths    custom model paths
      * @param customSizeModelPath custom size model path
      */
     private void setupCustomCellposeModel(StringBuilder code, List<Path> customModelPaths, Path customSizeModelPath) {
@@ -528,7 +525,7 @@ public class CellPoseAlgorithm extends JIPipeMergingAlgorithm {
         modelParameterMap.put("net_avg", getEnhancementParameters().isNetAverage());
         modelParameterMap.put("gpu", getModelParameters().isEnableGPU());
         modelParameterMap.put("diam_mean", getModelParameters().getMeanDiameter());
-        if(customSizeModelPath != null)
+        if (customSizeModelPath != null)
             modelParameterMap.put("pretrained_size", customSizeModelPath.toString());
         code.append(String.format("model = CellposeCustom(%s)\n", PythonUtils.mapToPythonArguments(modelParameterMap)));
     }
@@ -601,53 +598,48 @@ public class CellPoseAlgorithm extends JIPipeMergingAlgorithm {
 
     private void updateOutputSlots() {
         JIPipeDefaultMutableSlotConfiguration slotConfiguration = (JIPipeDefaultMutableSlotConfiguration) getSlotConfiguration();
-        if(outputParameters.isOutputLabels()) {
-            if(!getOutputSlotMap().containsKey("Labels")) {
+        if (outputParameters.isOutputLabels()) {
+            if (!getOutputSlotMap().containsKey("Labels")) {
                 slotConfiguration.addOutputSlot("Labels", ImagePlus3DGreyscaleData.class, null, false);
             }
-        }
-        else {
-            if(getOutputSlotMap().containsKey("Labels")) {
+        } else {
+            if (getOutputSlotMap().containsKey("Labels")) {
                 slotConfiguration.removeOutputSlot("Labels", false);
             }
         }
-        if(outputParameters.isOutputFlows()) {
-            if(!getOutputSlotMap().containsKey("Flows")) {
+        if (outputParameters.isOutputFlows()) {
+            if (!getOutputSlotMap().containsKey("Flows")) {
                 slotConfiguration.addOutputSlot("Flows", ImagePlus3DColorRGBData.class, null, false);
             }
-        }
-        else {
-            if(getOutputSlotMap().containsKey("Flows")) {
+        } else {
+            if (getOutputSlotMap().containsKey("Flows")) {
                 slotConfiguration.removeOutputSlot("Flows", false);
             }
         }
-        if(outputParameters.isOutputProbabilities()) {
-            if(!getOutputSlotMap().containsKey("Probabilities")) {
+        if (outputParameters.isOutputProbabilities()) {
+            if (!getOutputSlotMap().containsKey("Probabilities")) {
                 slotConfiguration.addOutputSlot("Probabilities", ImagePlus3DGreyscale32FData.class, null, false);
             }
-        }
-        else {
-            if(getOutputSlotMap().containsKey("Probabilities")) {
+        } else {
+            if (getOutputSlotMap().containsKey("Probabilities")) {
                 slotConfiguration.removeOutputSlot("Probabilities", false);
             }
         }
-        if(outputParameters.isOutputStyles()) {
-            if(!getOutputSlotMap().containsKey("Styles")) {
+        if (outputParameters.isOutputStyles()) {
+            if (!getOutputSlotMap().containsKey("Styles")) {
                 slotConfiguration.addOutputSlot("Styles", ImagePlus3DGreyscale32FData.class, null, false);
             }
-        }
-        else {
-            if(getOutputSlotMap().containsKey("Styles")) {
+        } else {
+            if (getOutputSlotMap().containsKey("Styles")) {
                 slotConfiguration.removeOutputSlot("Styles", false);
             }
         }
-        if(outputParameters.isOutputROI()) {
-            if(!getOutputSlotMap().containsKey("ROI")) {
+        if (outputParameters.isOutputROI()) {
+            if (!getOutputSlotMap().containsKey("ROI")) {
                 slotConfiguration.addOutputSlot("ROI", ROIListData.class, null, false);
             }
-        }
-        else {
-            if(getOutputSlotMap().containsKey("ROI")) {
+        } else {
+            if (getOutputSlotMap().containsKey("ROI")) {
                 slotConfiguration.removeOutputSlot("ROI", false);
             }
         }

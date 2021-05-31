@@ -50,7 +50,7 @@ public class MeasurementPlugin extends ImageViewerPanelPlugin implements JIPipeP
         this.autoMeasureToggle.setSelected(true);
         this.autoMeasureToggle.setToolTipText("Update automatically");
         this.autoMeasureToggle.addActionListener(e -> {
-            if(autoMeasureToggle.isSelected()) {
+            if (autoMeasureToggle.isSelected()) {
                 measureCurrentMask();
             }
         });
@@ -58,9 +58,9 @@ public class MeasurementPlugin extends ImageViewerPanelPlugin implements JIPipeP
     }
 
     public MaskDrawerPlugin getMaskDrawerPlugin() {
-        if(maskDrawerPlugin == null) {
+        if (maskDrawerPlugin == null) {
             for (ImageViewerPanelPlugin plugin : getViewerPanel().getPlugins()) {
-                if(plugin instanceof MaskDrawerPlugin) {
+                if (plugin instanceof MaskDrawerPlugin) {
                     maskDrawerPlugin = (MaskDrawerPlugin) plugin;
                     break;
                 }
@@ -70,20 +70,20 @@ public class MeasurementPlugin extends ImageViewerPanelPlugin implements JIPipeP
     }
 
     public void measureCurrentMask() {
-        if(getCurrentImage() == null) {
+        if (getCurrentImage() == null) {
             showNoMeasurements();
             return;
         }
-        if(getMaskDrawerPlugin() == null) {
+        if (getMaskDrawerPlugin() == null) {
             showNoMeasurements();
             return;
         }
-        if(getViewerPanel().getSlice() == null) {
+        if (getViewerPanel().getSlice() == null) {
             showNoMeasurements();
             return;
         }
         ImageProcessor ip = getMaskDrawerPlugin().getCurrentMaskSlice();
-        if(ip == null) {
+        if (ip == null) {
             showNoMeasurements();
             return;
         }
@@ -91,14 +91,14 @@ public class MeasurementPlugin extends ImageViewerPanelPlugin implements JIPipeP
         threshold = (threshold == 255) ? 0 : 255;
         ip.setThreshold(threshold, threshold, ImageProcessor.NO_LUT_UPDATE);
         Roi roi = ThresholdToSelection.run(new ImagePlus("slice", ip));
-        if(roi == null) {
-            roi = new Roi(0,0,getCurrentImage().getWidth(), getCurrentImage().getHeight());
+        if (roi == null) {
+            roi = new Roi(0, 0, getCurrentImage().getWidth(), getCurrentImage().getHeight());
         }
         ROIListData data = new ROIListData();
         data.add(roi);
         ResultsTableData measurements = data.measure(new ImagePlus("Reference", getViewerPanel().getSlice()),
                 statistics, false);
-        if(measurements.getRowCount() != 1) {
+        if (measurements.getRowCount() != 1) {
             showNoMeasurements();
             return;
         }
@@ -134,7 +134,7 @@ public class MeasurementPlugin extends ImageViewerPanelPlugin implements JIPipeP
         dialog.setTitle("Measurement settings");
         dialog.setContentPane(new ParameterPanel(new JIPipeDummyWorkbench(), this, null, FormPanel.WITH_SCROLLING));
         UIUtils.addEscapeListener(dialog);
-        dialog.setSize(640,480);
+        dialog.setSize(640, 480);
         dialog.setLocationRelativeTo(getViewerPanel());
         dialog.revalidate();
         dialog.repaint();
@@ -157,7 +157,7 @@ public class MeasurementPlugin extends ImageViewerPanelPlugin implements JIPipeP
 
     @Subscribe
     public void onMaskChanged(MaskDrawerPlugin.MaskChangedEvent event) {
-        if(autoMeasureToggle.isSelected()) {
+        if (autoMeasureToggle.isSelected()) {
             measureCurrentMask();
         }
     }
@@ -171,7 +171,7 @@ public class MeasurementPlugin extends ImageViewerPanelPlugin implements JIPipeP
     @JIPipeParameter("statistics")
     public void setStatistics(ImageStatisticsSetParameter statistics) {
         this.statistics = statistics;
-        if(autoMeasureToggle.isSelected()) {
+        if (autoMeasureToggle.isSelected()) {
             measureCurrentMask();
         }
     }

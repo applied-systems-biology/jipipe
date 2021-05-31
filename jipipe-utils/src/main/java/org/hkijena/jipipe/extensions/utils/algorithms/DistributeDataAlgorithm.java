@@ -28,9 +28,9 @@ public class DistributeDataAlgorithm extends JIPipeParameterSlotAlgorithm {
 
     public DistributeDataAlgorithm(JIPipeNodeInfo info) {
         super(info, JIPipeDefaultMutableSlotConfiguration.builder()
-        .addInputSlot("Input", JIPipeData.class)
-        .sealInput()
-        .build());
+                .addInputSlot("Input", JIPipeData.class)
+                .sealInput()
+                .build());
         weights = new OutputSlotMapParameterCollection(Double.class, this, () -> 1, false);
         weights.updateSlots();
         registerSubParameter(weights);
@@ -45,7 +45,7 @@ public class DistributeDataAlgorithm extends JIPipeParameterSlotAlgorithm {
 
     @Override
     public void runParameterSet(JIPipeProgressInfo progressInfo, List<JIPipeAnnotation> parameterAnnotations) {
-        if(getInputSlots().isEmpty())
+        if (getInputSlots().isEmpty())
             return;
         Map<String, Double> weightMap = new HashMap<>();
         double weightSum = 0;
@@ -54,13 +54,12 @@ public class DistributeDataAlgorithm extends JIPipeParameterSlotAlgorithm {
             weightMap.put(entry.getKey(), w);
             weightSum += w;
         }
-        if(weightSum == 0) {
+        if (weightSum == 0) {
             // Fallback to 0
             for (String name : getOutputSlotMap().keySet()) {
                 weightMap.put(name, 0.0);
             }
-        }
-        else {
+        } else {
             for (String name : getOutputSlotMap().keySet()) {
                 weightMap.put(name, weightMap.get(name) / weightSum * getFirstInputSlot().getRowCount()); // Turn this into an absolute available count
             }
@@ -72,18 +71,18 @@ public class DistributeDataAlgorithm extends JIPipeParameterSlotAlgorithm {
         }
         Collections.shuffle(availableRows);
         for (Integer row : availableRows) {
-            if(weightMap.isEmpty())
+            if (weightMap.isEmpty())
                 return;
             String target = weightMap.keySet().iterator().next();
             double available = weightMap.get(target);
-            if(available > 0) {
+            if (available > 0) {
                 getOutputSlot(target).addData(getFirstInputSlot().getVirtualData(row),
                         getFirstInputSlot().getAnnotations(row),
                         JIPipeAnnotationMergeStrategy.OverwriteExisting);
             }
             --available;
             weightMap.put(target, available);
-            if(available <= 0 && weightMap.size() != 1) {
+            if (available <= 0 && weightMap.size() != 1) {
                 weightMap.remove(target);
             }
         }

@@ -53,22 +53,21 @@ public class CacheAwarePlotEditor extends JIPipePlotBuilderUI {
         this.workbench = workbench;
         this.dataSource = dataSource;
         this.slotName = dataSource.getSlot().getName();
-        if(dataSource.getSlot().getNode() != null) {
+        if (dataSource.getSlot().getNode() != null) {
             this.algorithm = (JIPipeAlgorithm) project.getGraph().getEquivalentAlgorithm(dataSource.getSlot().getNode());
             this.cacheAwareToggle = new JIPipeCachedDataDisplayCacheControl((JIPipeProjectWorkbench) workbench, getToolBar(), algorithm);
-        }
-        else {
+        } else {
             this.algorithm = null;
         }
         initialize();
         loadDataFromDataSource();
 
-        if(algorithm != null)
+        if (algorithm != null)
             project.getCache().getEventBus().register(this);
     }
 
     private void initialize() {
-        if(cacheAwareToggle != null) {
+        if (cacheAwareToggle != null) {
             errorPanel = new JLabel("", UIUtils.getIconFromResources("emblems/no-data.png"), JLabel.LEFT);
             errorPanel.setText(String.format("No data available in node '%s', slot '%s', row %d", algorithm.getName(), slotName, dataSource.getRow()));
 
@@ -77,8 +76,7 @@ public class CacheAwarePlotEditor extends JIPipePlotBuilderUI {
             getToolBar().add(Box.createHorizontalStrut(8), 0);
             getToolBar().add(errorPanel, 0);
             cacheAwareToggle.install();
-        }
-        else {
+        } else {
             errorPanel = new JLabel("No data available", UIUtils.getIconFromResources("emblems/no-data.png"), JLabel.LEFT);
         }
     }

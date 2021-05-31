@@ -346,6 +346,7 @@ public class JIPipeProject implements JIPipeValidatable {
 
     /**
      * Re-assigns graph node Ids based on their name
+     *
      * @param force force updating
      */
     public void rebuildAliasIds(boolean force) {

@@ -20,7 +20,7 @@ public class MeasurementDrawerPlugin extends MaskDrawerPlugin {
     }
 
     private ImagePlus generateMask(ImagePlus imagePlus) {
-        return  IJ.createHyperStack("Mask",
+        return IJ.createHyperStack("Mask",
                 getCurrentImage().getWidth(),
                 getCurrentImage().getHeight(),
                 1,

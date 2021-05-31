@@ -38,7 +38,7 @@ public class MaskedImagePlusData extends ImagePlusData {
     public MaskedImagePlusData(ImagePlus image, ImagePlus mask) {
         super(image);
         this.mask = ImagePlusGreyscaleMaskData.convertIfNeeded(mask);
-        if(image.getWidth() != mask.getWidth() || image.getHeight() != mask.getHeight()) {
+        if (image.getWidth() != mask.getWidth() || image.getHeight() != mask.getHeight()) {
             throw new RuntimeException("The image and mask do not have the same size!");
         }
     }
@@ -46,7 +46,7 @@ public class MaskedImagePlusData extends ImagePlusData {
     public MaskedImagePlusData(ImagePlus image, ImagePlus mask, ColorSpace colorSpace) {
         super(image, colorSpace);
         this.mask = ImagePlusGreyscaleMaskData.convertIfNeeded(mask);
-        if(image.getWidth() != mask.getWidth() || image.getHeight() != mask.getHeight()) {
+        if (image.getWidth() != mask.getWidth() || image.getHeight() != mask.getHeight()) {
             throw new RuntimeException("The image and mask do not have the same size!");
         }
     }
@@ -55,20 +55,20 @@ public class MaskedImagePlusData extends ImagePlusData {
     public ImagePlus getViewedImage(boolean duplicate) {
         // Ensure RGB data
         ImagePlus result = new ImagePlusColorRGBData(getImage()).getImage();
-        if(result == getImage()) {
+        if (result == getImage()) {
             result = getImage().duplicate();
             result.setTitle(getImage().getTitle());
         }
 
         ImageJUtils.forEachIndexedZCTSlice(result, (ip, index) -> {
-            int z = Math.min(mask.getNSlices() -1, index.getZ());
+            int z = Math.min(mask.getNSlices() - 1, index.getZ());
             int c = Math.min(mask.getNChannels() - 1, index.getC());
             int t = Math.min(mask.getNFrames() - 1, index.getT());
             ImageProcessor maskProcessor = ImageJUtils.getSliceZero(mask, z, c, t);
             int[] imagePixels = (int[]) ip.getPixels();
             byte[] maskPixels = (byte[]) maskProcessor.getPixels();
             for (int i = 0; i < imagePixels.length; i++) {
-                if(Byte.toUnsignedInt(maskPixels[i]) != 0) {
+                if (Byte.toUnsignedInt(maskPixels[i]) != 0) {
                     int rs = (imagePixels[i] & 0xff0000) >> 16;
                     int gs = (imagePixels[i] & 0xff00) >> 8;
                     int bs = imagePixels[i] & 0xff;
@@ -140,10 +140,10 @@ public class MaskedImagePlusData extends ImagePlusData {
         rgbImage = ImagePlusColorRGBData.convertIfNeeded(rgbImage);
         ImageProcessor resizedImage = rgbImage.getProcessor().resize(imageWidth, imageHeight, smooth);
         ImageProcessor resizedMask = getMask().getProcessor().resize(imageWidth, imageHeight, smooth);
-        int[] imagePixels = (int[])resizedImage.getPixels();
+        int[] imagePixels = (int[]) resizedImage.getPixels();
         byte[] maskPixels = (byte[]) resizedMask.getPixels();
         for (int i = 0; i < imagePixels.length; i++) {
-            if(Byte.toUnsignedInt(maskPixels[i]) > 0) {
+            if (Byte.toUnsignedInt(maskPixels[i]) > 0) {
                 int rs = (imagePixels[i] & 0xff0000) >> 16;
                 int gs = (imagePixels[i] & 0xff00) >> 8;
                 int bs = imagePixels[i] & 0xff;
@@ -193,12 +193,12 @@ public class MaskedImagePlusData extends ImagePlusData {
         Path maskFile = null;
         for (Path file : files) {
             String name = file.getFileName().toString();
-            if(name.contains("mask"))
+            if (name.contains("mask"))
                 maskFile = file;
-            if(name.contains("image"))
+            if (name.contains("image"))
                 imageFile = file;
         }
-        if(imageFile == null || maskFile == null) {
+        if (imageFile == null || maskFile == null) {
             throw new UserFriendlyNullPointerException("Could not find a compatible image file in '" + storageFilePath + "'!",
                     "Unable to find file in location '" + storageFilePath + "'",
                     "ImagePlusData loading",

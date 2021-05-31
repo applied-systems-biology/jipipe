@@ -71,17 +71,16 @@ public class JIPipeDataByMetadataExporter implements JIPipeParameterCollection {
 
     @Override
     public JIPipeParameterVisibility getOverriddenUIParameterVisibility(JIPipeParameterAccess access, JIPipeParameterVisibility currentVisibility) {
-        if(access.getKey().equals("mode"))
+        if (access.getKey().equals("mode"))
             return currentVisibility;
-        if(mode == Mode.Automatic) {
+        if (mode == Mode.Automatic) {
             return !access.getKey().equals("custom-name") ? currentVisibility : JIPipeParameterVisibility.Hidden;
-        }
-        else {
-            if(access.getKey().equals("ignore-missing-metadata"))
+        } else {
+            if (access.getKey().equals("ignore-missing-metadata"))
                 return currentVisibility;
-            if(access.getKey().equals("missing-string"))
+            if (access.getKey().equals("missing-string"))
                 return currentVisibility;
-            if(access.getKey().equals("custom-name"))
+            if (access.getKey().equals("custom-name"))
                 return currentVisibility;
             return JIPipeParameterVisibility.Hidden;
         }
@@ -316,7 +315,7 @@ public class JIPipeDataByMetadataExporter implements JIPipeParameterCollection {
     @Nullable
     public String generateMetadataString(JIPipeDataSlot dataSlot, int row, Set<String> existingMetadata) {
         StringBuilder metadataStringBuilder = new StringBuilder();
-        if(mode == Mode.Automatic) {
+        if (mode == Mode.Automatic) {
             if (appendDataTypeAsMetadata) {
                 String dataTypeName;
                 if (appendDataTypeUsesRealDataType) {
@@ -349,13 +348,12 @@ public class JIPipeDataByMetadataExporter implements JIPipeParameterCollection {
                     metadataStringBuilder.append(metadataValue.getValue());
                 }
             }
-        }
-        else {
+        } else {
             ExpressionParameters parameters = new ExpressionParameters();
             for (int col = 0; col < dataSlot.getAnnotationColumns().size(); col++) {
                 String metadataKey = dataSlot.getAnnotationColumns().get(col);
                 JIPipeAnnotation metadataValue = dataSlot.getAnnotationOr(row, metadataKey, null);
-                if(metadataValue == null && ignoreMissingMetadata)
+                if (metadataValue == null && ignoreMissingMetadata)
                     continue;
                 String value = metadataValue != null ? metadataValue.getValue() : missingString;
                 parameters.put(metadataKey, value);
@@ -377,7 +375,7 @@ public class JIPipeDataByMetadataExporter implements JIPipeParameterCollection {
     public String generateMetadataString(JIPipeExportedDataTable exportedDataTable, int row, Set<String> existingMetadata) {
         JIPipeExportedDataTable.Row dataRow = exportedDataTable.getRowList().get(row);
         StringBuilder metadataStringBuilder = new StringBuilder();
-        if(mode == Mode.Automatic) {
+        if (mode == Mode.Automatic) {
             if (appendDataTypeAsMetadata) {
                 String dataTypeName;
                 if (appendDataTypeUsesRealDataType) {
@@ -400,8 +398,7 @@ public class JIPipeDataByMetadataExporter implements JIPipeParameterCollection {
                     metadataStringBuilder.append(metadataValue.getName()).append(equalsString);
                 metadataStringBuilder.append(metadataValue.getValue());
             }
-        }
-        else {
+        } else {
             ExpressionParameters parameters = new ExpressionParameters();
             for (JIPipeAnnotation annotation : dataRow.getAnnotations()) {
                 parameters.put(annotation.getName(), annotation.getValue());

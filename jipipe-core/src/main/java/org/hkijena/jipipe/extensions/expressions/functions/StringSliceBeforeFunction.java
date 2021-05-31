@@ -42,7 +42,7 @@ public class StringSliceBeforeFunction extends ExpressionFunction {
         int end = ((Number) parameters.get(1)).intValue();
 
         // Case: Limit string
-        if(parameters.size() == 2 && end >= text.length()) {
+        if (parameters.size() == 2 && end >= text.length()) {
             return text;
         }
 

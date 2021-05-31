@@ -38,28 +38,23 @@ import java.util.stream.Collectors;
  */
 public class FileChooserSettings implements JIPipeParameterCollection {
 
-    public static String ID = "file-chooser";
-
     /**
      * Path key for project locations
      */
     public static final String KEY_PROJECT = "Projects";
-
     /**
      * Path key for data
      */
     public static final String KEY_DATA = "Data";
-
     /**
      * Path key for any parameter
      */
     public static final String KEY_PARAMETER = "Parameters";
-
     /**
      * Path key for some external/utility file
      */
     public static final String KEY_EXTERNAL = "External";
-
+    public static String ID = "file-chooser";
     private EventBus eventBus = new EventBus();
     private boolean useNativeChooser = false;
     private Path lastProjectsDirectory;
@@ -125,7 +120,7 @@ public class FileChooserSettings implements JIPipeParameterCollection {
     @JIPipeDocumentation(name = "Last external directory", description = "The file chooser will open in this folder when selecting external utilities.")
     @JIPipeParameter("last-external-directory")
     public Path getLastExternalDirectory() {
-        if(lastExternalDirectory == null)
+        if (lastExternalDirectory == null)
             lastExternalDirectory = Paths.get("").toAbsolutePath();
         return lastExternalDirectory;
     }

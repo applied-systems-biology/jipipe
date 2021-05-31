@@ -31,10 +31,10 @@ public class CountROIAlgorithm extends JIPipeMergingAlgorithm {
 
     public CountROIAlgorithm(JIPipeNodeInfo info) {
         super(info, JIPipeDefaultMutableSlotConfiguration.builder()
-        .addInputSlot("Counted ROI", ROIListData.class)
-        .addOutputSlot("Counts", AnnotationTableData.class, null)
-        .restrictInputTo(ROIListData.class)
-        .sealOutput().build());
+                .addInputSlot("Counted ROI", ROIListData.class)
+                .addOutputSlot("Counts", AnnotationTableData.class, null)
+                .restrictInputTo(ROIListData.class)
+                .sealOutput().build());
     }
 
     public CountROIAlgorithm(CountROIAlgorithm other) {
@@ -83,7 +83,7 @@ public class CountROIAlgorithm extends JIPipeMergingAlgorithm {
             int col = currentResult.getOrCreateColumnIndex(inputSlot.getName(), false);
             currentResult.setValueAt(1.0 * count, row, col);
         }
-        if(addAnnotations) {
+        if (addAnnotations) {
             for (JIPipeAnnotation annotation : dataBatch.getAnnotations().values()) {
                 int col = currentResult.getOrCreateColumnIndex(annotation.getName(), false);
                 currentResult.setValueAt(annotation.getValue(), row, col);

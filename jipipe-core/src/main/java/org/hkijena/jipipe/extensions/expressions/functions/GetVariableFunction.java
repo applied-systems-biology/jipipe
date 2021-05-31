@@ -32,8 +32,7 @@ public class GetVariableFunction extends ExpressionFunction {
     public ParameterInfo getParameterInfo(int index) {
         if (index == 0) {
             return new ParameterInfo("name", "The variable name", String.class);
-        }
-        else if(index == 1) {
+        } else if (index == 1) {
             return new ParameterInfo("default_value", "Value to be used if the variable is not set", Object.class);
         }
         return null;
@@ -42,7 +41,7 @@ public class GetVariableFunction extends ExpressionFunction {
     @Override
     public Object evaluate(List<Object> parameters, ExpressionParameters variables) {
         Object defaultValue = null;
-        if(parameters.size() > 1)
+        if (parameters.size() > 1)
             defaultValue = parameters.get(1);
         return variables.getOrDefault("" + parameters.get(0), defaultValue);
     }

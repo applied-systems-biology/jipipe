@@ -48,7 +48,7 @@ public class DeepLearningToolkitEnvInstaller extends MinicondaEnvPythonInstaller
     private Path createEnvironment() {
         Path path = RuntimeSettings.generateTempFile("environment", ".yml");
         // Create the appropriate environment
-        try(BufferedWriter writer = new BufferedWriter(new FileWriter(path.toFile()))) {
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(path.toFile()))) {
             writer.write("name: base");
             writer.newLine();
             writer.write("dependencies:");
@@ -71,12 +71,11 @@ public class DeepLearningToolkitEnvInstaller extends MinicondaEnvPythonInstaller
                 writer.newLine();
             }
             Configuration configuration = (Configuration) getConfiguration();
-            if(configuration.isWithGPU()) {
+            if (configuration.isWithGPU()) {
                 writer.write("  - tensorflow-gpu==");
                 writer.write(configuration.getTensorFlowVersion());
                 writer.newLine();
-            }
-            else {
+            } else {
                 writer.write("  - tensorflow==");
                 writer.write(configuration.getTensorFlowVersion());
                 writer.newLine();

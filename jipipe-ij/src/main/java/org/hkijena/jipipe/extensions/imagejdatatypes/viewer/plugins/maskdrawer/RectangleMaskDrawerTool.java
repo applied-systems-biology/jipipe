@@ -17,11 +17,11 @@ import java.awt.*;
  */
 public class RectangleMaskDrawerTool extends MaskDrawerTool {
 
+    private final JTextArea infoArea = UIUtils.makeReadonlyBorderlessTextArea("");
     private Point referencePoint;
     private JCheckBox startFromCenterToggle;
     private JCheckBox squareToggle;
     private JCheckBox fillToggle;
-    private final JTextArea infoArea = UIUtils.makeReadonlyBorderlessTextArea("");
 
     public RectangleMaskDrawerTool(MaskDrawerPlugin plugin) {
         super(plugin,
@@ -140,7 +140,7 @@ public class RectangleMaskDrawerTool extends MaskDrawerTool {
     }
 
     private void updateInfo() {
-        if(referencePoint != null) {
+        if (referencePoint != null) {
             Point p0 = referencePoint;
             Point p1 = getViewerPanel().getCanvas().getMouseModelPixelCoordinate(false);
             Rectangle r = RectangleMaskDrawerTool.getDrawnArea(p0, p1, startFromCenterToggle.isSelected(), squareToggle.isSelected());
@@ -161,12 +161,11 @@ public class RectangleMaskDrawerTool extends MaskDrawerTool {
                             "Circumference: %d px",
                     p0.x, p0.y,
                     p1.x, p1.y,
-                    (int)r.getWidth(),
-                    (int)r.getHeight(),
-                    (int)(r.getWidth() * r.getHeight()),
-                    (int)(2 * r.getWidth() + 2 * r.getHeight())));
-        }
-        else {
+                    (int) r.getWidth(),
+                    (int) r.getHeight(),
+                    (int) (r.getWidth() * r.getHeight()),
+                    (int) (2 * r.getWidth() + 2 * r.getHeight())));
+        } else {
             infoArea.setText("P1: -\n" +
                     "P2: -\n" +
                     "Width: -\n" +

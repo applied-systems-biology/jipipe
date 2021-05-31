@@ -24,10 +24,9 @@ public class JIPipeDataTableData implements JIPipeData {
 
     @Override
     public void saveTo(Path storageFilePath, String name, boolean forceName, JIPipeProgressInfo progressInfo) {
-        if(forceName) {
+        if (forceName) {
             dataSlot.saveToStoragePath(storageFilePath.resolve(name), progressInfo);
-        }
-        else {
+        } else {
             dataSlot.saveToStoragePath(storageFilePath, progressInfo);
         }
     }
@@ -63,6 +62,7 @@ public class JIPipeDataTableData implements JIPipeData {
 
     /**
      * Returns the stored data slot
+     *
      * @return the data slot
      */
     public JIPipeDataSlot getDataSlot() {
@@ -71,6 +71,7 @@ public class JIPipeDataTableData implements JIPipeData {
 
     /**
      * Imports this data from the path
+     *
      * @param storagePath the storage path
      * @return the data
      */

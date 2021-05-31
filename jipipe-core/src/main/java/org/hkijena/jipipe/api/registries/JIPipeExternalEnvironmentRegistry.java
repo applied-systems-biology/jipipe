@@ -24,8 +24,9 @@ public class JIPipeExternalEnvironmentRegistry {
 
     /**
      * Registers an environment and its corresponding settings
+     *
      * @param environmentClass the environment
-     * @param settings the settings
+     * @param settings         the settings
      */
     public void registerEnvironment(Class<? extends ExternalEnvironment> environmentClass, ExternalEnvironmentSettings settings) {
         this.settings.put(environmentClass, settings);
@@ -33,9 +34,10 @@ public class JIPipeExternalEnvironmentRegistry {
 
     /**
      * Registers an installer
+     *
      * @param environmentClass the environment
-     * @param installerClass the installer
-     * @param icon icon for the installer
+     * @param installerClass   the installer
+     * @param icon             icon for the installer
      */
     public void registerInstaller(Class<? extends ExternalEnvironment> environmentClass, Class<? extends ExternalEnvironmentInstaller> installerClass, Icon icon) {
         installers.put(environmentClass, new InstallerEntry(installerClass, icon));
@@ -43,6 +45,7 @@ public class JIPipeExternalEnvironmentRegistry {
 
     /**
      * Returns a sorted list of installer items for the environment
+     *
      * @param environmentClass the environment
      * @return list of installers
      */
@@ -52,6 +55,7 @@ public class JIPipeExternalEnvironmentRegistry {
 
     /**
      * Returns the settings instance
+     *
      * @param environmentClass the environment class
      * @return settings
      */
@@ -61,12 +65,13 @@ public class JIPipeExternalEnvironmentRegistry {
 
     /**
      * Gets the presets of an environment
+     *
      * @param environmentClass the environment class
      * @return list of presets
      */
     public List<ExternalEnvironment> getPresets(Class<?> environmentClass) {
         ExternalEnvironmentSettings settings = getSettings(environmentClass);
-        if(settings == null)
+        if (settings == null)
             return Collections.emptyList();
         return settings.getPresetsListInterface().stream()
                 .sorted(Comparator.comparing(ExternalEnvironment::getName)).collect(Collectors.toList());
@@ -74,8 +79,9 @@ public class JIPipeExternalEnvironmentRegistry {
 
     /**
      * Adds a new preset into the storage of the environment class
+     *
      * @param environmentClass the environment class
-     * @param preset the preset
+     * @param preset           the preset
      */
     public void addPreset(Class<?> environmentClass, ExternalEnvironment preset) {
         ExternalEnvironmentSettings settings = getSettings(environmentClass);
@@ -98,11 +104,10 @@ public class JIPipeExternalEnvironmentRegistry {
             this.installerClass = installerClass;
             this.icon = icon;
             JIPipeDocumentation documentation = installerClass.getAnnotation(JIPipeDocumentation.class);
-            if(documentation != null) {
+            if (documentation != null) {
                 name = documentation.name();
                 description = documentation.description();
-            }
-            else {
+            } else {
                 name = installerClass.getName();
                 description = "";
             }

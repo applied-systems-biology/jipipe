@@ -46,6 +46,7 @@ public interface JIPipeWorkbench {
 
     /**
      * Sets the modification state of the project
+     *
      * @param modified if the project is modified
      */
     void setProjectModified(boolean modified);

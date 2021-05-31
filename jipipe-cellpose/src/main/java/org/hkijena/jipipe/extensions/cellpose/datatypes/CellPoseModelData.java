@@ -55,7 +55,7 @@ public class CellPoseModelData implements JIPipeData {
 
     @Override
     public void saveTo(Path storageFilePath, String name, boolean forceName, JIPipeProgressInfo progressInfo) {
-        if(!forceName)
+        if (!forceName)
             name = this.name;
         try {
             Files.write(storageFilePath.resolve(name), data);
@@ -75,6 +75,11 @@ public class CellPoseModelData implements JIPipeData {
                 "Show Cellpose model", JOptionPane.ERROR_MESSAGE);
     }
 
+    @Override
+    public String toString() {
+        return "Cellpose model: " + name + " (" + (data.length / 1024 / 1024) + " MB)";
+    }
+
     public static CellPoseModelData importFrom(Path storagePath) {
         List<Path> files = PathUtils.findFilesByExtensionIn(storagePath);
         Path file = null;
@@ -82,20 +87,15 @@ public class CellPoseModelData implements JIPipeData {
         for (Path path : files) {
             String name = path.getFileName().toString();
             // Skip dot files
-            if(name.startsWith("."))
+            if (name.startsWith("."))
                 continue;
-            if(name.contains("cellpose")) {
+            if (name.contains("cellpose")) {
                 file = path;
                 break;
             }
         }
-        if(file == null)
+        if (file == null)
             file = files.get(0);
         return new CellPoseModelData(file);
-    }
-
-    @Override
-    public String toString() {
-        return "Cellpose model: " + name + " (" + (data.length / 1024 / 1024) + " MB)";
     }
 }

@@ -33,12 +33,12 @@ public class SummarizeMapFunction extends ExpressionFunction {
 
     @Override
     public Object evaluate(List<Object> parameters, ExpressionParameters variables) {
-        Map<?,?> map = (Map<?, ?>) parameters.get(0);
+        Map<?, ?> map = (Map<?, ?>) parameters.get(0);
         String delimiter = " ";
         String equals = "=";
-        if(parameters.size() >= 2)
+        if (parameters.size() >= 2)
             delimiter = StringUtils.nullToEmpty(parameters.get(1));
-        if(parameters.size() >= 3)
+        if (parameters.size() >= 3)
             equals = StringUtils.nullToEmpty(parameters.get(2));
         String finalEquals = equals;
         return map.keySet().stream().sorted().map(key -> key + finalEquals + map.get(key)).collect(Collectors.joining(delimiter));

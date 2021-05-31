@@ -75,14 +75,13 @@ public class WebUtils {
                         total += n;
                         output.write(buffer, 0, n);
                         long currentMessageTime = System.currentTimeMillis();
-                        if(currentMessageTime - lastMessageTime > 1000) {
+                        if (currentMessageTime - lastMessageTime > 1000) {
                             lastMessageTime = currentMessageTime;
                             String message;
-                            if(contentLength <= 0) {
+                            if (contentLength <= 0) {
                                 message = "Downloaded " + df.format(total / 1024.0 / 1024.0) + " MB";
-                            }
-                            else {
-                                message =  "Downloaded " + df.format(total / 1024.0 / 1024.0) + " MB / " + df.format(contentLength / 1024.0 / 1024.0) + " MB";
+                            } else {
+                                message = "Downloaded " + df.format(total / 1024.0 / 1024.0) + " MB / " + df.format(contentLength / 1024.0 / 1024.0) + " MB";
                             }
                             progressInfo.log(message);
                         }

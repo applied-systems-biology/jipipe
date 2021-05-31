@@ -94,20 +94,18 @@ public class ProcessColumnsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
             expressionParameters.set("values", values);
             Object result = processor.getParameter().evaluate(expressionParameters);
             TableColumn resultColumn;
-            if(result instanceof Number) {
-                resultColumn = new DoubleArrayTableColumn(new double[] { ((Number) result).doubleValue() }, processor.getOutput());
-            }
-            else if(result instanceof Collection) {
-                if(((Collection<?>) result).stream().allMatch(v -> v instanceof Number)) {
+            if (result instanceof Number) {
+                resultColumn = new DoubleArrayTableColumn(new double[]{((Number) result).doubleValue()}, processor.getOutput());
+            } else if (result instanceof Collection) {
+                if (((Collection<?>) result).stream().allMatch(v -> v instanceof Number)) {
                     double[] data = new double[((Collection<?>) result).size()];
                     int i = 0;
                     for (Object o : (Collection<?>) result) {
-                        data[i] = ((Number)o).doubleValue();
-                     ++i;
+                        data[i] = ((Number) o).doubleValue();
+                        ++i;
                     }
                     resultColumn = new DoubleArrayTableColumn(data, processor.getOutput());
-                }
-                else {
+                } else {
                     String[] data = new String[((Collection<?>) result).size()];
                     int i = 0;
                     for (Object o : (Collection<?>) result) {
@@ -116,9 +114,8 @@ public class ProcessColumnsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
                     }
                     resultColumn = new StringArrayTableColumn(data, processor.getOutput());
                 }
-            }
-            else {
-                resultColumn = new StringArrayTableColumn(new String[] { StringUtils.nullToEmpty(result) }, processor.getOutput());
+            } else {
+                resultColumn = new StringArrayTableColumn(new String[]{StringUtils.nullToEmpty(result)}, processor.getOutput());
             }
             resultColumns.put(processor.getOutput(), resultColumn);
         }

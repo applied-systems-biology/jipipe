@@ -228,8 +228,7 @@ public class MarkdownReader extends JPanel {
                     styleSheet.addRule(rule);
                 }
             }
-        }
-        catch (NullPointerException e) {
+        } catch (NullPointerException e) {
             e.printStackTrace();
             for (String rule : CSS_RULES) {
                 styleSheet.addRule(rule);

@@ -14,8 +14,7 @@ public abstract class ExternalEnvironmentInstaller implements JIPipeRunnable {
     private final JIPipeParameterAccess parameterAccess;
 
     /**
-     *
-     * @param workbench the workbench
+     * @param workbench       the workbench
      * @param parameterAccess the parameter access that will receive the generated environment
      */
     public ExternalEnvironmentInstaller(JIPipeWorkbench workbench, JIPipeParameterAccess parameterAccess) {
@@ -25,6 +24,7 @@ public abstract class ExternalEnvironmentInstaller implements JIPipeRunnable {
 
     /**
      * Returns the final environment after installation
+     *
      * @return the final environment or null if there was an error
      */
     public abstract ExternalEnvironment getInstalledEnvironment();

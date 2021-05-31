@@ -81,11 +81,11 @@ public class UIUtils {
     public static boolean DARK_THEME = false;
 
     public static void sendTrayNotification(String caption, String message, TrayIcon.MessageType messageType) {
-        if(SystemUtils.IS_OS_LINUX) {
+        if (SystemUtils.IS_OS_LINUX) {
             // SystemTray does not work well on Linux
             // Try notify-send, first
             String notifySendPath = StringUtils.nullToEmpty(ProcessUtils.queryFast(Paths.get("/usr/bin/which"), "notify-send")).trim();
-            if(!StringUtils.isNullOrEmpty(notifySendPath)) {
+            if (!StringUtils.isNullOrEmpty(notifySendPath)) {
                 Path exePath = Paths.get(notifySendPath);
                 try {
                     new ProcessBuilder(exePath.toString(), caption, message).start();
@@ -97,7 +97,7 @@ public class UIUtils {
 
             // Try zenity
             String zenityPath = StringUtils.nullToEmpty(ProcessUtils.queryFast(Paths.get("/usr/bin/which"), "zenity")).trim();
-            if(!StringUtils.isNullOrEmpty(zenityPath)) {
+            if (!StringUtils.isNullOrEmpty(zenityPath)) {
                 Path exePath = Paths.get(zenityPath);
                 try {
                     new ProcessBuilder(exePath.toString(), "--notification", "--text=" + caption + "\\n" + message).start();
@@ -108,7 +108,7 @@ public class UIUtils {
                 return;
             }
         }
-        if(SystemTray.isSupported()) {
+        if (SystemTray.isSupported()) {
             SystemTray systemTray = SystemTray.getSystemTray();
             TrayIcon trayIcon = new TrayIcon(UIUtils.getIcon32FromResources("apps/jipipe.png").getImage(), "JIPipe");
             trayIcon.setImageAutoSize(true);

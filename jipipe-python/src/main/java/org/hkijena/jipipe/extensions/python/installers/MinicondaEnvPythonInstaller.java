@@ -62,40 +62,40 @@ public class MinicondaEnvPythonInstaller extends ExternalEnvironmentInstaller {
 
         // Config phase
         if (!configure()) return;
-        if(progressInfo.isCancelled().get())
+        if (progressInfo.isCancelled().get())
             return;
         progressInfo.incrementProgress();
 
         // Download phase
         progressInfo.log("Acquire setup ...");
         Path installerPath = download();
-        if(progressInfo.isCancelled().get())
+        if (progressInfo.isCancelled().get())
             return;
         progressInfo.incrementProgress();
 
         // Install phase
         progressInfo.log("Install ...");
         install(installerPath);
-        if(progressInfo.isCancelled().get())
+        if (progressInfo.isCancelled().get())
             return;
         progressInfo.incrementProgress();
 
         // Postprocess phase
         progressInfo.log("Postprocess install ...");
         postprocessInstall();
-        if(progressInfo.isCancelled().get())
+        if (progressInfo.isCancelled().get())
             return;
         progressInfo.incrementProgress();
 
         // Generate phase
         progressInfo.log("Generating config ...");
         SelectCondaEnvPythonInstaller.Configuration condaConfig = generateCondaConfig();
-        if(progressInfo.isCancelled().get())
+        if (progressInfo.isCancelled().get())
             return;
         progressInfo.incrementProgress();
 
         generatedEnvironment = SelectCondaEnvPythonInstaller.createCondaEnvironment(condaConfig);
-        if(getParameterAccess() != null) {
+        if (getParameterAccess() != null) {
             SwingUtilities.invokeLater(() -> {
                 getParameterAccess().set(generatedEnvironment);
             });
@@ -104,6 +104,7 @@ public class MinicondaEnvPythonInstaller extends ExternalEnvironmentInstaller {
 
     /**
      * Runs the conda executable (for postprocessing)
+     *
      * @param args arguments
      */
     public void runConda(String... args) {
@@ -117,7 +118,7 @@ public class MinicondaEnvPythonInstaller extends ExternalEnvironmentInstaller {
         for (Map.Entry<String, String> entry : System.getenv().entrySet()) {
             environmentVariables.put(entry.getKey(), entry.getValue());
         }
-        if(SystemUtils.IS_OS_WINDOWS) {
+        if (SystemUtils.IS_OS_WINDOWS) {
             environmentVariables.put("Path", getConfiguration().getInstallationPath().resolve("Library").resolve("bin").toAbsolutePath() + ";" +
                     environmentVariables.getOrDefault("Path", ""));
         }
@@ -144,27 +145,27 @@ public class MinicondaEnvPythonInstaller extends ExternalEnvironmentInstaller {
 
     /**
      * Returns the path to the conda executable within the configured installation directory
+     *
      * @return the conda path
      */
     public Path getCondaExecutableInInstallationPath() {
-        if(SystemUtils.IS_OS_WINDOWS) {
-           return getConfiguration().getInstallationPath().resolve("Scripts").resolve("conda.exe");
-        }
-        else {
-           return getConfiguration().getInstallationPath().resolve("bin").resolve("conda");
+        if (SystemUtils.IS_OS_WINDOWS) {
+            return getConfiguration().getInstallationPath().resolve("Scripts").resolve("conda.exe");
+        } else {
+            return getConfiguration().getInstallationPath().resolve("bin").resolve("conda");
         }
     }
 
     /**
      * Generates the configuration for the conda environment
+     *
      * @return the config
      */
     protected SelectCondaEnvPythonInstaller.Configuration generateCondaConfig() {
         SelectCondaEnvPythonInstaller.Configuration condaConfig = new SelectCondaEnvPythonInstaller.Configuration();
-        if(SystemUtils.IS_OS_WINDOWS) {
+        if (SystemUtils.IS_OS_WINDOWS) {
             condaConfig.setCondaExecutable(getConfiguration().getInstallationPath().resolve("Scripts").resolve("conda.exe"));
-        }
-        else {
+        } else {
             condaConfig.setCondaExecutable(getConfiguration().getInstallationPath().resolve("bin").resolve("conda"));
         }
         condaConfig.setEnvironmentName("base");
@@ -174,24 +175,25 @@ public class MinicondaEnvPythonInstaller extends ExternalEnvironmentInstaller {
 
     /**
      * Installs Miniconda
+     *
      * @param installerPath the setup
      */
     protected void install(Path installerPath) {
-        if(SystemUtils.IS_OS_WINDOWS) {
+        if (SystemUtils.IS_OS_WINDOWS) {
             installMinicondaWindows(installerPath, progressInfo.resolveAndLog("Install Conda"));
-        }
-        else {
+        } else {
             installMinicondaLinuxMac(installerPath, progressInfo.resolveAndLog("Install Conda"));
         }
     }
 
     /**
      * Downloads the installer
+     *
      * @return the installer path
      */
     protected Path download() {
         Path installerPath;
-        if(configuration.getCustomInstallerPath().isEnabled())
+        if (configuration.getCustomInstallerPath().isEnabled())
             installerPath = configuration.getCustomInstallerPath().getContent();
         else
             installerPath = downloadMiniconda(progressInfo.resolveAndLog("Download Miniconda"));
@@ -200,6 +202,7 @@ public class MinicondaEnvPythonInstaller extends ExternalEnvironmentInstaller {
 
     /**
      * UI configuration
+     *
      * @return false if the operation was cancelled
      */
     protected boolean configure() {
@@ -328,16 +331,15 @@ public class MinicondaEnvPythonInstaller extends ExternalEnvironmentInstaller {
 
     /**
      * Gets the latest download link for Miniconda
+     *
      * @return the download URL
      */
     public static String getLatestDownload() {
-        if(SystemUtils.IS_OS_WINDOWS) {
+        if (SystemUtils.IS_OS_WINDOWS) {
             return "https://repo.anaconda.com/miniconda/Miniconda3-latest-Windows-x86_64.exe";
-        }
-        else if(SystemUtils.IS_OS_MAC) {
+        } else if (SystemUtils.IS_OS_MAC) {
             return "https://repo.anaconda.com/miniconda/Miniconda3-latest-MacOSX-x86_64.sh";
-        }
-        else {
+        } else {
             return "https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh";
         }
     }

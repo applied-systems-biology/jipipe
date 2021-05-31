@@ -27,7 +27,7 @@ public class JIPipeConnectionDragAndDropBehavior implements DropTargetListener, 
     /**
      * Adds connection drag and drop behavior to a data slot
      *
-     * @param slotUI       the slot UI
+     * @param slotUI               the slot UI
      * @param additionalComponents additional components that accepts drags
      */
     public JIPipeConnectionDragAndDropBehavior(JIPipeDataSlotUI slotUI, Component... additionalComponents) {

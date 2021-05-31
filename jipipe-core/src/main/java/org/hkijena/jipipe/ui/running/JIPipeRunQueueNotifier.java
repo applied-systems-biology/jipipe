@@ -28,7 +28,7 @@ public class JIPipeRunQueueNotifier {
      */
     @Subscribe
     public void onWorkerFinished(RunUIWorkerFinishedEvent event) {
-        if(settings.isShowRunNotifications()) {
+        if (settings.isShowRunNotifications()) {
             if (!canShowNotification(event.getWorker()))
                 return;
             UIUtils.sendTrayNotification("Run finished", "The run \"" + event.getRun().getTaskLabel() + "\" finished in "
@@ -38,13 +38,13 @@ public class JIPipeRunQueueNotifier {
     }
 
     public boolean canShowNotification(JIPipeRunWorker worker) {
-        if(settings.isShowRunOnlyIfInactive()) {
-          if(JIPipeProjectWindow.getOpenWindows().stream().anyMatch(Window::isActive))
-              return false;
+        if (settings.isShowRunOnlyIfInactive()) {
+            if (JIPipeProjectWindow.getOpenWindows().stream().anyMatch(Window::isActive))
+                return false;
         }
-        if(settings.getShowAfterMinRuntime().isEnabled()) {
+        if (settings.getShowAfterMinRuntime().isEnabled()) {
             long minutes = worker.getRuntimeMillis() / 1000 / 60;
-            if(minutes < settings.getShowAfterMinRuntime().getContent()) {
+            if (minutes < settings.getShowAfterMinRuntime().getContent()) {
                 return false;
             }
         }
@@ -58,7 +58,7 @@ public class JIPipeRunQueueNotifier {
      */
     @Subscribe
     public void onWorkerInterrupted(RunUIWorkerInterruptedEvent event) {
-        if(settings.isShowRunNotifications()) {
+        if (settings.isShowRunNotifications()) {
             if (!canShowNotification(event.getWorker()))
                 return;
             UIUtils.sendTrayNotification("Run failed", "The run '" + event.getRun().getTaskLabel() + "' failed.",
@@ -70,7 +70,7 @@ public class JIPipeRunQueueNotifier {
      * Installs the notifier. Can be called multiple times (singleton)
      */
     public static void install() {
-        if(INSTANCE == null) {
+        if (INSTANCE == null) {
             INSTANCE = new JIPipeRunQueueNotifier();
         }
     }

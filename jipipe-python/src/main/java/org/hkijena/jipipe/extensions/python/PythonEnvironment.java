@@ -69,7 +69,7 @@ public class PythonEnvironment extends ExternalEnvironment {
         this.type = type;
     }
 
-    @JIPipeDocumentation(name ="Arguments", description = "Arguments passed to the Python/Conda executable (depending on the environment type). " +
+    @JIPipeDocumentation(name = "Arguments", description = "Arguments passed to the Python/Conda executable (depending on the environment type). " +
             "This expression must return an array. You have two variables 'script_file' and 'python_executable'. 'script_file' is always " +
             "replaced by the Python script that is currently executed.")
     @JIPipeParameter("arguments")
@@ -121,7 +121,7 @@ public class PythonEnvironment extends ExternalEnvironment {
 
     @Override
     public void reportValidity(JIPipeValidityReport report) {
-        if(getExecutablePath() == null || !Files.isRegularFile(getExecutablePath())) {
+        if (getExecutablePath() == null || !Files.isRegularFile(getExecutablePath())) {
             report.forCategory("Executable").reportIsInvalid(
                     "Python executable does not exist",
                     "You need to provide a Python executable",
@@ -141,6 +141,15 @@ public class PythonEnvironment extends ExternalEnvironment {
         return StringUtils.orElse(getExecutablePath(), "<Not set>");
     }
 
+    @Override
+    public String toString() {
+        return "Python environment {" +
+                "Type=" + type +
+                ", Arguments=" + arguments +
+                ", Executable=" + executablePath +
+                '}';
+    }
+
     public static class PythonArgumentsVariableSource implements ExpressionParameterVariableSource {
         @Override
         public Set<ExpressionParameterVariable> getVariables(JIPipeParameterAccess parameterAccess) {
@@ -149,15 +158,6 @@ public class PythonEnvironment extends ExternalEnvironment {
             result.add(new ExpressionParameterVariable("Script file", "The Python script file to be executed", "script_file"));
             return result;
         }
-    }
-
-    @Override
-    public String toString() {
-        return "Python environment {" +
-                "Type=" + type +
-                ", Arguments=" + arguments +
-                ", Executable=" + executablePath +
-                '}';
     }
 
     /**

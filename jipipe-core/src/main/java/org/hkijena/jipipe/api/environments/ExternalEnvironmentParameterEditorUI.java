@@ -43,9 +43,9 @@ public class ExternalEnvironmentParameterEditorUI extends JIPipeParameterEditorU
     }
 
     private void initialize() {
-        setLayout(new BorderLayout(4,0));
+        setLayout(new BorderLayout(4, 0));
         nameLabel.setFont(new Font(Font.DIALOG, Font.ITALIC, 12));
-        nameLabel.setBorder(BorderFactory.createEmptyBorder(0,4,0,12));
+        nameLabel.setBorder(BorderFactory.createEmptyBorder(0, 4, 0, 12));
         setOpaque(true);
         setBackground(UIManager.getColor("TextField.background"));
         setBorder(BorderFactory.createEtchedBorder());
@@ -58,7 +58,7 @@ public class ExternalEnvironmentParameterEditorUI extends JIPipeParameterEditorU
         add(buttonPanel, BorderLayout.EAST);
 
         editButton = new JButton("Edit", UIUtils.getIconFromResources("actions/document-edit.png"));
-        editButton.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createMatteBorder(0,1,0,0,
+        editButton.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createMatteBorder(0, 1, 0, 0,
                 UIManager.getColor("Separator.foreground")),
                 BorderFactory.createEmptyBorder(4, 3, 4, 3)));
         editButton.setOpaque(false);
@@ -67,7 +67,7 @@ public class ExternalEnvironmentParameterEditorUI extends JIPipeParameterEditorU
         buttonPanel.add(editButton);
 
         installButton = new JButton("Select/Install", UIUtils.getIconFromResources("actions/browser-download.png"));
-        installButton.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createMatteBorder(0,1,0,0,
+        installButton.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createMatteBorder(0, 1, 0, 0,
                 UIManager.getColor("Separator.foreground")),
                 BorderFactory.createEmptyBorder(4, 3, 4, 8)));
         installButton.setOpaque(false);
@@ -82,7 +82,7 @@ public class ExternalEnvironmentParameterEditorUI extends JIPipeParameterEditorU
 
         ExternalEnvironmentParameterSettings settings = getParameterAccess().getAnnotationOfType(ExternalEnvironmentParameterSettings.class);
 
-        if(settings == null || settings.allowManagePreset()) {
+        if (settings == null || settings.allowManagePreset()) {
             JMenu presetMenu = new JMenu("Load preset");
             List<ExternalEnvironment> presets = JIPipe.getInstance().getExternalEnvironmentRegistry().getPresets(fieldClass);
 
@@ -92,7 +92,7 @@ public class ExternalEnvironmentParameterEditorUI extends JIPipeParameterEditorU
                 presetMenu.add(presetItem);
             }
 
-            if(!presets.isEmpty()) {
+            if (!presets.isEmpty()) {
                 installMenu.add(presetMenu);
             }
 
@@ -100,10 +100,10 @@ public class ExternalEnvironmentParameterEditorUI extends JIPipeParameterEditorU
             savePresetItem.addActionListener(e -> saveAsPreset());
             installMenu.add(savePresetItem);
         }
-        if(installMenu.getComponentCount() > 0) {
+        if (installMenu.getComponentCount() > 0) {
             installMenu.addSeparator();
         }
-        if(settings == null || settings.allowInstall()) {
+        if (settings == null || settings.allowInstall()) {
             for (JIPipeExternalEnvironmentRegistry.InstallerEntry installer : JIPipe.getInstance()
                     .getExternalEnvironmentRegistry().getInstallers((Class<? extends ExternalEnvironment>) fieldClass)) {
                 JMenuItem item = new JMenuItem(installer.getName(), installer.getIcon());
@@ -116,7 +116,7 @@ public class ExternalEnvironmentParameterEditorUI extends JIPipeParameterEditorU
     }
 
     private void loadPreset(ExternalEnvironment preset) {
-        if(JOptionPane.showConfirmDialog(getWorkbench().getWindow(), "Do you really want to load " +
+        if (JOptionPane.showConfirmDialog(getWorkbench().getWindow(), "Do you really want to load " +
                 "the preset '" + preset.getName() + "?", "Load preset", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
             setParameter(preset, true);
         }
@@ -127,8 +127,8 @@ public class ExternalEnvironmentParameterEditorUI extends JIPipeParameterEditorU
         ExternalEnvironment parameter = getParameter(ExternalEnvironment.class);
         parameter.reportValidity(report);
 
-        if(!report.isValid()) {
-            if(JOptionPane.showConfirmDialog(getWorkbench().getWindow(),
+        if (!report.isValid()) {
+            if (JOptionPane.showConfirmDialog(getWorkbench().getWindow(),
                     "The current settings seem to be invalid. Do you want to save them as preset, anyways?",
                     "Save preset",
                     JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
@@ -141,7 +141,7 @@ public class ExternalEnvironmentParameterEditorUI extends JIPipeParameterEditorU
 
         ExternalEnvironment duplicate = (ExternalEnvironment) typeInfo.duplicate(parameter);
         String newName = JOptionPane.showInputDialog(getWorkbench().getWindow(), "Please insert the name of the preset:", duplicate.getName());
-        if(StringUtils.isNullOrEmpty(newName))
+        if (StringUtils.isNullOrEmpty(newName))
             return;
         duplicate.setName(newName);
 
@@ -157,7 +157,7 @@ public class ExternalEnvironmentParameterEditorUI extends JIPipeParameterEditorU
                 null,
                 "Edit environment",
                 ParameterPanel.NO_GROUP_HEADERS | ParameterPanel.WITH_SEARCH_BAR | ParameterPanel.WITH_SCROLLING | ParameterPanel.WITH_DOCUMENTATION);
-        if(result) {
+        if (result) {
             setParameter(parameter, true);
         }
     }
@@ -167,11 +167,11 @@ public class ExternalEnvironmentParameterEditorUI extends JIPipeParameterEditorU
      */
     @Subscribe
     public void onInstallationFinished(RunUIWorkerFinishedEvent event) {
-        if(!isDisplayable()) {
+        if (!isDisplayable()) {
             JIPipeRunnerQueue.getInstance().getEventBus().unregister(this);
             return;
         }
-        if(event.getWorker().getRun() instanceof ExternalEnvironmentInstaller) {
+        if (event.getWorker().getRun() instanceof ExternalEnvironmentInstaller) {
             reload();
         }
     }
@@ -184,11 +184,10 @@ public class ExternalEnvironmentParameterEditorUI extends JIPipeParameterEditorU
     @Override
     public void reload() {
         ExternalEnvironmentParameterSettings settings = getParameterAccess().getAnnotationOfType(ExternalEnvironmentParameterSettings.class);
-        if(settings != null) {
+        if (settings != null) {
             editButton.setVisible(settings.allowEditButton());
             installButton.setVisible(settings.allowInstallButton());
-        }
-        else {
+        } else {
             editButton.setVisible(true);
             installButton.setVisible(true);
         }
@@ -199,10 +198,9 @@ public class ExternalEnvironmentParameterEditorUI extends JIPipeParameterEditorU
         pathLabel.setText(StringUtils.orElse(parameter.getInfo(), "<Nothing set>"));
         JIPipeValidityReport report = new JIPipeValidityReport();
         parameter.reportValidity(report);
-        if(!report.isValid()) {
+        if (!report.isValid()) {
             pathLabel.setForeground(Color.RED);
-        }
-        else {
+        } else {
             pathLabel.setForeground(UIManager.getColor("Label.foreground"));
         }
     }

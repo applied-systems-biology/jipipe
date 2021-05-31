@@ -21,10 +21,10 @@ import java.util.List;
  */
 public class PolygonMaskDrawerTool extends MaskDrawerTool {
 
+    private final JTextArea infoArea = UIUtils.makeReadonlyBorderlessTextArea("");
     private List<Point> referencePoints = new ArrayList<>();
     private JCheckBox closeToggle;
     private JCheckBox fillToggle;
-    private final JTextArea infoArea = UIUtils.makeReadonlyBorderlessTextArea("");
 
     public PolygonMaskDrawerTool(MaskDrawerPlugin plugin) {
         super(plugin,
@@ -69,11 +69,10 @@ public class PolygonMaskDrawerTool extends MaskDrawerTool {
     }
 
     private void updateInfo() {
-        if(referencePoints.isEmpty()) {
+        if (referencePoints.isEmpty()) {
             infoArea.setText("Length: -\n" +
                     "Length (+ mouse): -");
-        }
-        else {
+        } else {
             double length = 0;
             for (int i = 1; i < referencePoints.size(); i++) {
                 Point p0 = referencePoints.get(i - 1);
@@ -82,11 +81,11 @@ public class PolygonMaskDrawerTool extends MaskDrawerTool {
             }
             double lengthPlusMouse = 0;
             Point mouse = getViewerPanel().getCanvas().getMouseModelPixelCoordinate(false);
-            if(mouse != null) {
+            if (mouse != null) {
                 lengthPlusMouse = length + referencePoints.get(referencePoints.size() - 1).distance(mouse);
             }
             infoArea.setText(String.format("Length: %f px\n" +
-                    "Length (+ mouse): %f px",
+                            "Length (+ mouse): %f px",
                     length,
                     lengthPlusMouse));
         }

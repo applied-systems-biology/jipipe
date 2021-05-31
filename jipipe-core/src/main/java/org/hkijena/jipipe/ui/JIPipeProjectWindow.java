@@ -82,10 +82,9 @@ public class JIPipeProjectWindow extends JFrame {
         updateTitle();
         setIconImage(UIUtils.getIcon128FromResources("jipipe.png").getImage());
         UIUtils.setToAskOnClose(this, () -> {
-            if(projectUI != null && projectUI.isProjectModified()) {
+            if (projectUI != null && projectUI.isProjectModified()) {
                 return "Do you really want to close JIPipe?\nThere are some unsaved changes.";
-            }
-            else {
+            } else {
                 return "Do you really want to close JIPipe?";
             }
         }, "Close window");
@@ -154,14 +153,13 @@ public class JIPipeProjectWindow extends JFrame {
      * Updates the title based on the current state
      */
     public void updateTitle() {
-        if(projectUI == null) {
+        if (projectUI == null) {
             setTitle("JIPipe");
             return;
         }
-        if(projectSavePath == null) {
+        if (projectSavePath == null) {
             setTitle("JIPipe - New project" + (projectUI.isProjectModified() ? "*" : ""));
-        }
-        else {
+        } else {
             setTitle("JIPipe - " + projectSavePath + (projectUI.isProjectModified() ? "*" : ""));
         }
     }

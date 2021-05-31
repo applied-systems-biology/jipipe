@@ -114,7 +114,7 @@ public class TransformScale3DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         }
 
         // Scale in 3D
-        if(img.getStackSize() > 1) {
+        if (img.getStackSize() > 1) {
             int sz = img.getStackSize();
             if (zAxis.isEnabled()) {
                 sz = zAxis.getContent().apply(sz);

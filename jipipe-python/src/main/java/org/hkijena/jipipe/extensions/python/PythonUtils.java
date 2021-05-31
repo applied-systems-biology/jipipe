@@ -326,8 +326,9 @@ public class PythonUtils {
 
     /**
      * Runs a Python script file
-     * @param scriptFile the script file
-     * @param environment the environment
+     *
+     * @param scriptFile   the script file
+     * @param environment  the environment
      * @param progressInfo the progress info
      */
     public static void runPython(Path scriptFile, PythonEnvironment environment, JIPipeProgressInfo progressInfo) {
@@ -369,8 +370,9 @@ public class PythonUtils {
 
     /**
      * Runs Python with a set of arguments
-     * @param arguments the arguments
-     * @param environment the environment
+     *
+     * @param arguments    the arguments
+     * @param environment  the environment
      * @param progressInfo the progress info
      */
     public static void runPython(String[] arguments, PythonEnvironment environment, JIPipeProgressInfo progressInfo) {
@@ -397,7 +399,7 @@ public class PythonUtils {
         Object evaluationResult = environment.getArguments().evaluate(parameters);
         for (Object item : (Collection<?>) evaluationResult) {
             String arg = StringUtils.nullToEmpty(item);
-            if(!StringUtils.isNullOrEmpty(arg))
+            if (!StringUtils.isNullOrEmpty(arg))
                 commandLine.addArgument(arg);
         }
         for (String argument : arguments) {
@@ -428,36 +430,33 @@ public class PythonUtils {
 
     /**
      * Converts the object into valid Python code
+     *
      * @param object the object
      * @return Python code
      */
     public static String objectToPython(Object object) {
-        if(object instanceof String) {
-            return "\"" + escapeString(object.toString()) +"\"";
+        if (object instanceof String) {
+            return "\"" + escapeString(object.toString()) + "\"";
         }
-        if(object instanceof Path) {
-            return "\"" + escapeString(object.toString()) +"\"";
-        }
-        else if(object instanceof Boolean) {
-            return (((Boolean)object) ? "True" : "False");
-        }
-        else if(object == null) {
+        if (object instanceof Path) {
+            return "\"" + escapeString(object.toString()) + "\"";
+        } else if (object instanceof Boolean) {
+            return (((Boolean) object) ? "True" : "False");
+        } else if (object == null) {
             return "None";
-        }
-        else if(object instanceof Collection) {
+        } else if (object instanceof Collection) {
             return listToPythonArray((Collection<Object>) object, true);
-        }
-        else if(object instanceof Map) {
+        } else if (object instanceof Map) {
             return mapToPythonDict((Map<String, Object>) object);
-        }
-        else {
+        } else {
             return "" + object;
         }
     }
-    
+
     /**
      * Converts a collection into a Python array
-     * @param items the items
+     *
+     * @param items                   the items
      * @param withSurroundingBrackets if enabled, surrounding brackets are added
      * @return Python code
      */
@@ -468,6 +467,7 @@ public class PythonUtils {
 
     /**
      * Converts a dictionary into a set of Python function arguments
+     *
      * @param parameters the parameters
      * @return Python code
      */
@@ -477,6 +477,7 @@ public class PythonUtils {
 
     /**
      * Converts a dictionary into a set of Python function arguments
+     *
      * @param parameters the parameters
      * @return Python code
      */
@@ -511,7 +512,7 @@ public class PythonUtils {
             outputSlotPaths.put(slot.getName(), tempPath);
         }
         PythonUtils.outputSlotsToPython(code, outputSlots, outputSlotPaths);
-        return  outputSlotPaths;
+        return outputSlotPaths;
     }
 
     public static RawPythonCode rawPythonCode(String code) {
@@ -531,7 +532,7 @@ public class PythonUtils {
 
         @Override
         public String toString() {
-           return code;
+            return code;
         }
     }
 }

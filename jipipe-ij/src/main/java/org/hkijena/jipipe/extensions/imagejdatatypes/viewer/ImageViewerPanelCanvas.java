@@ -149,16 +149,16 @@ public class ImageViewerPanelCanvas extends JPanel implements MouseListener, Mou
         zoom = Math.max(zoom, 10e-4);
         Point mousePosition = getMousePosition();
         Point2D.Double currentPixel = null;
-        if(mousePosition != null) {
+        if (mousePosition != null) {
             currentPixel = screenToImageSubPixelCoordinate(mousePosition, false);
         }
         this.zoom = zoom;
-        if(currentPixel != null) {
+        if (currentPixel != null) {
             Point2D.Double newPixelLocation = imageSubPixelCoordinateToScreen(currentPixel);
             double dx = newPixelLocation.x - mousePosition.x;
             double dy = newPixelLocation.y - mousePosition.y;
-            contentX -= (int)dx;
-            contentY -= (int)dy;
+            contentX -= (int) dx;
+            contentY -= (int) dy;
         }
         revalidate();
         repaint();
@@ -354,6 +354,7 @@ public class ImageViewerPanelCanvas extends JPanel implements MouseListener, Mou
 
     /**
      * Finds the screen coordinate for a pixel coordinate
+     *
      * @param subPixelCoordinate the pixel coordinate
      * @return the screen coordinate
      */
@@ -367,8 +368,9 @@ public class ImageViewerPanelCanvas extends JPanel implements MouseListener, Mou
 
     /**
      * Converts screen coordinates into image pixel coordinates
+     *
      * @param screenCoordinate the screen coordinates
-     * @param checkBounds If true, check for bounds (if false, negative and larger than the image coordinates will be returned)
+     * @param checkBounds      If true, check for bounds (if false, negative and larger than the image coordinates will be returned)
      * @return the pixel coordinates. Null if the checkBounds is true and the coordinate is outside the image coordinates
      */
     public Point2D.Double screenToImageSubPixelCoordinate(Point screenCoordinate, boolean checkBounds) {
@@ -399,8 +401,9 @@ public class ImageViewerPanelCanvas extends JPanel implements MouseListener, Mou
 
     /**
      * Converts screen coordinates into image pixel coordinates
+     *
      * @param screenCoordinate the screen coordinates
-     * @param checkBounds If true, check for bounds (if false, negative and larger than the image coordinates will be returned)
+     * @param checkBounds      If true, check for bounds (if false, negative and larger than the image coordinates will be returned)
      * @return the pixel coordinates. Null if the checkBounds is true and the coordinate is outside the image coordinates
      */
     public Point screenToImageCoordinate(Point screenCoordinate, boolean checkBounds) {
@@ -439,7 +442,7 @@ public class ImageViewerPanelCanvas extends JPanel implements MouseListener, Mou
             return null;
         Point mousePosition = getMousePosition();
         if (mousePosition != null) {
-           return screenToImageCoordinate(mousePosition, checkBounds);
+            return screenToImageCoordinate(mousePosition, checkBounds);
         }
         return null;
     }

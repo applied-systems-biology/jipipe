@@ -510,6 +510,11 @@ public class JIPipe extends AbstractService implements JIPipeRegistry {
         return externalEnvironmentRegistry;
     }
 
+    @Override
+    public JIPipeUtilityRegistry getUtilityRegistry() {
+        return utilityRegistry;
+    }
+
     /**
      * Imports data of given data type from its output folder.
      * Generally, the output folder should conform to the data type's saveTo() function without 'forceName' enabled
@@ -751,11 +756,6 @@ public class JIPipe extends AbstractService implements JIPipeRegistry {
             throw new UserFriendlyRuntimeException(e, "Cannot create data instance!", "Undefined", "There is an error in the code that provides the annotation type.",
                     "Please contact the author of the plugin that provides the annotation type " + klass);
         }
-    }
-
-    @Override
-    public JIPipeUtilityRegistry getUtilityRegistry() {
-        return utilityRegistry;
     }
 
     /**

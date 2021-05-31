@@ -309,55 +309,6 @@ public class ParameterPanel extends FormPanel implements Contextual {
         }
     }
 
-    /**
-     * Shows a parameter collection inside a modal dialog
-     * @param workbench parent component
-     * @param parameterCollection the parameter collection
-     * @param flags flags for the editor
-     * @return if the user clicked "OK"
-     */
-    public static boolean showDialog(JIPipeWorkbench workbench, JIPipeParameterCollection parameterCollection, MarkdownDocument defaultDocumentation, String title, int flags) {
-        JDialog dialog = new JDialog(workbench.getWindow());
-        ParameterPanel parameterPanel = new ParameterPanel(workbench, parameterCollection, defaultDocumentation, flags);
-
-        JPanel panel = new JPanel(new BorderLayout(8,8));
-        panel.setBorder(BorderFactory.createEmptyBorder(4,4,4,4));
-        panel.add(parameterPanel, BorderLayout.CENTER);
-
-        JPanel buttonPanel = new JPanel();
-        buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.X_AXIS));
-        buttonPanel.add(Box.createHorizontalGlue());
-
-        AtomicBoolean clickedOK = new AtomicBoolean(false);
-
-        JButton cancelButton = new JButton("Cancel", UIUtils.getIconFromResources("actions/cancel.png"));
-        cancelButton.addActionListener(e -> {
-            clickedOK.set(false);
-            dialog.setVisible(false);
-        });
-        buttonPanel.add(cancelButton);
-
-        JButton confirmButton = new JButton("OK", UIUtils.getIconFromResources("actions/checkmark.png"));
-        confirmButton.addActionListener(e -> {
-            clickedOK.set(true);
-            dialog.setVisible(false);
-        });
-        buttonPanel.add(confirmButton);
-
-        panel.add(buttonPanel, BorderLayout.SOUTH);
-
-        dialog.setContentPane(panel);
-        dialog.setTitle(title);
-        dialog.setModal(true);
-        dialog.pack();
-        dialog.setSize(new Dimension(800, 600));
-        dialog.setLocationRelativeTo(workbench.getWindow());
-        UIUtils.addEscapeListener(dialog);
-        dialog.setVisible(true);
-
-        return clickedOK.get();
-    }
-
     private void showCollapse(List<Component> uiComponents, boolean selected) {
         for (Component component : uiComponents) {
             component.setVisible(selected);
@@ -418,6 +369,56 @@ public class ParameterPanel extends FormPanel implements Contextual {
     @Override
     public Context context() {
         return context;
+    }
+
+    /**
+     * Shows a parameter collection inside a modal dialog
+     *
+     * @param workbench           parent component
+     * @param parameterCollection the parameter collection
+     * @param flags               flags for the editor
+     * @return if the user clicked "OK"
+     */
+    public static boolean showDialog(JIPipeWorkbench workbench, JIPipeParameterCollection parameterCollection, MarkdownDocument defaultDocumentation, String title, int flags) {
+        JDialog dialog = new JDialog(workbench.getWindow());
+        ParameterPanel parameterPanel = new ParameterPanel(workbench, parameterCollection, defaultDocumentation, flags);
+
+        JPanel panel = new JPanel(new BorderLayout(8, 8));
+        panel.setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
+        panel.add(parameterPanel, BorderLayout.CENTER);
+
+        JPanel buttonPanel = new JPanel();
+        buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.X_AXIS));
+        buttonPanel.add(Box.createHorizontalGlue());
+
+        AtomicBoolean clickedOK = new AtomicBoolean(false);
+
+        JButton cancelButton = new JButton("Cancel", UIUtils.getIconFromResources("actions/cancel.png"));
+        cancelButton.addActionListener(e -> {
+            clickedOK.set(false);
+            dialog.setVisible(false);
+        });
+        buttonPanel.add(cancelButton);
+
+        JButton confirmButton = new JButton("OK", UIUtils.getIconFromResources("actions/checkmark.png"));
+        confirmButton.addActionListener(e -> {
+            clickedOK.set(true);
+            dialog.setVisible(false);
+        });
+        buttonPanel.add(confirmButton);
+
+        panel.add(buttonPanel, BorderLayout.SOUTH);
+
+        dialog.setContentPane(panel);
+        dialog.setTitle(title);
+        dialog.setModal(true);
+        dialog.pack();
+        dialog.setSize(new Dimension(800, 600));
+        dialog.setLocationRelativeTo(workbench.getWindow());
+        UIUtils.addEscapeListener(dialog);
+        dialog.setVisible(true);
+
+        return clickedOK.get();
     }
 
     private static List<String> getParameterKeysSortedByParameterName(Map<String, JIPipeParameterAccess> parameters, Collection<String> keys) {

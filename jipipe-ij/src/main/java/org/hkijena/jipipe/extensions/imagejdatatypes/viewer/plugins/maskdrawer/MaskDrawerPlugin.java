@@ -413,11 +413,11 @@ public class MaskDrawerPlugin extends ImageViewerPanelPlugin {
         BufferedImageOp op = new AffineTransformOp(transform, zoom < 1 ? AffineTransformOp.TYPE_BILINEAR : AffineTransformOp.TYPE_NEAREST_NEIGHBOR);
         graphics2D.drawImage(currentMaskSlicePreview, op, x, y);
         currentTool.postprocessDraw(graphics2D, x, y, w, h);
-        if(showGuidesToggle.isSelected() && currentTool.showGuides()) {
+        if (showGuidesToggle.isSelected() && currentTool.showGuides()) {
             graphics2D.setStroke(STROKE_GUIDE_LINE);
             graphics2D.setColor(getHighlightColor());
             Point mousePosition = getViewerPanel().getCanvas().getMouseModelPixelCoordinate(false);
-            if(mousePosition != null) {
+            if (mousePosition != null) {
                 int displayedX = (int) (x + zoom * mousePosition.x);
                 int displayedY = (int) (y + zoom * mousePosition.y);
                 graphics2D.drawLine(x, displayedY, x + w, displayedY);

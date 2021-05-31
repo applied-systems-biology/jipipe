@@ -503,8 +503,9 @@ public abstract class JIPipeDefaultJavaExtension extends AbstractService impleme
      * Registers an arbitrary utility associated to a category class.
      * There can be multiple utilities per category
      * The exact type of utility class depends on the utility implementation
+     *
      * @param categoryClass the category class
-     * @param utilityClass the utility class
+     * @param utilityClass  the utility class
      */
     public void registerUtility(Class<?> categoryClass, Class<?> utilityClass) {
         registry.getUtilityRegistry().register(categoryClass, utilityClass);
@@ -515,31 +516,33 @@ public abstract class JIPipeDefaultJavaExtension extends AbstractService impleme
      * This will also register the environment class and environment list class a valid parameters.
      * Requires that the environment class has a default constructor and a deep copy constructor.
      * Will also register a settings page for the environment
+     *
      * @param environmentClass the environment class. Must be JSON-serializable. Will be registered as parameter type
-     * @param listClass the list list. Will be registered as parameter type with ID [id]-list
-     * @param settings Settings page that stores the user's presets
-     * @param id the ID of the environment class. Will be used as parameter type ID
-     * @param name the name of the environment
-     * @param description the description of the environment
-     * @param <T> environment class
-     * @param <U> list of environment class
+     * @param listClass        the list list. Will be registered as parameter type with ID [id]-list
+     * @param settings         Settings page that stores the user's presets
+     * @param id               the ID of the environment class. Will be used as parameter type ID
+     * @param name             the name of the environment
+     * @param description      the description of the environment
+     * @param <T>              environment class
+     * @param <U>              list of environment class
      */
     public <T extends ExternalEnvironment, U extends ListParameter<T>> void registerEnvironment(Class<T> environmentClass,
-                                                                    Class<U> listClass,
-                                                                    ExternalEnvironmentSettings settings,
-                                                                    String id,
-                                                                    String name,
-                                                                    String description,
-                                                                    Icon icon) {
+                                                                                                Class<U> listClass,
+                                                                                                ExternalEnvironmentSettings settings,
+                                                                                                String id,
+                                                                                                String name,
+                                                                                                String description,
+                                                                                                Icon icon) {
         registerParameterType(id, environmentClass, listClass, null, null, name, description, ExternalEnvironmentParameterEditorUI.class);
         registry.getExternalEnvironmentRegistry().registerEnvironment(environmentClass, settings);
     }
 
     /**
      * Registers an installer for a given environment
+     *
      * @param environmentClass the environment type
-     * @param installerClass the installer class
-     * @param icon icon for the installer
+     * @param installerClass   the installer class
+     * @param icon             icon for the installer
      */
     public void registerEnvironmentInstaller(Class<? extends ExternalEnvironment> environmentClass, Class<? extends ExternalEnvironmentInstaller> installerClass, Icon icon) {
         registry.getExternalEnvironmentRegistry().registerInstaller(environmentClass, installerClass, icon);

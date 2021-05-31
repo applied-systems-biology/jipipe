@@ -11,7 +11,7 @@ public enum PythonEnvironmentType {
 
     @Override
     public String toString() {
-        if(this == VirtualEnvironment)
+        if (this == VirtualEnvironment)
             return "Virtual environment";
         else
             return this.name();

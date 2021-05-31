@@ -27,10 +27,6 @@ public class CellPoseSettings implements JIPipeParameterCollection {
         return eventBus;
     }
 
-    public static CellPoseSettings getInstance() {
-        return JIPipe.getSettings().getSettings(ID, CellPoseSettings.class);
-    }
-
     @JIPipeDocumentation(name = "Cellpose Python environment", description = "If enabled, a separate Python environment is used for CellPose. " +
             "Alternatively, the standard Python environment from the Python extension is used. Please ensure that CellPose is installed. " +
             "You can also install CellPose via the Select/Install button (CPU and GPU supported).")
@@ -45,12 +41,15 @@ public class CellPoseSettings implements JIPipeParameterCollection {
     }
 
     public PythonEnvironment getPythonEnvironment() {
-        if(overridePythonEnvironment.isEnabled()) {
+        if (overridePythonEnvironment.isEnabled()) {
             return overridePythonEnvironment.getContent();
-        }
-        else {
+        } else {
             return PythonExtensionSettings.getInstance().getPythonEnvironment();
         }
+    }
+
+    public static CellPoseSettings getInstance() {
+        return JIPipe.getSettings().getSettings(ID, CellPoseSettings.class);
     }
 
     /**
