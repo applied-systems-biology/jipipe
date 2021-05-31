@@ -21,3 +21,6 @@ target
 /deep-learning-toolkit-cpu/
 /deep-learning-toolkit-gpu/
 /r/
+
+/dist/zip/*
+/dist/JIPipe-2021.5.zip
