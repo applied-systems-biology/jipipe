@@ -25,10 +25,7 @@ import org.hkijena.jipipe.api.grouping.NodeGroup;
 import org.hkijena.jipipe.api.nodes.JIPipeGraph;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.extensions.parameters.primitives.HTMLText;
-import org.hkijena.jipipe.extensions.settings.AutoSaveSettings;
-import org.hkijena.jipipe.extensions.settings.GeneralUISettings;
-import org.hkijena.jipipe.extensions.settings.ProjectsSettings;
-import org.hkijena.jipipe.extensions.settings.RuntimeSettings;
+import org.hkijena.jipipe.extensions.settings.*;
 import org.hkijena.jipipe.ui.cache.JIPipeCacheBrowserUI;
 import org.hkijena.jipipe.ui.cache.JIPipeCacheManagerUI;
 import org.hkijena.jipipe.ui.compartments.JIPipeCompartmentGraphUI;
@@ -43,6 +40,7 @@ import org.hkijena.jipipe.ui.extensions.JIPipePluginManagerUIPanel;
 import org.hkijena.jipipe.ui.extensions.JIPipePluginValidityCheckerPanel;
 import org.hkijena.jipipe.ui.ijupdater.JIPipeImageJPluginManager;
 import org.hkijena.jipipe.ui.project.JIPipeProjectTabMetadata;
+import org.hkijena.jipipe.ui.project.SaveProjectAndCacheRun;
 import org.hkijena.jipipe.ui.running.*;
 import org.hkijena.jipipe.ui.settings.JIPipeApplicationSettingsUI;
 import org.hkijena.jipipe.ui.settings.JIPipeProjectSettingsUI;
@@ -393,6 +391,15 @@ public class JIPipeProjectWorkbench extends JPanel implements JIPipeWorkbench {
             }
         });
         projectMenu.add(saveProjectAsButton);
+
+        // "Save project" entry
+        JMenuItem saveProjectAndCache = new JMenuItem("Save project and cache ...", UIUtils.getIconFromResources("actions/document-export.png"));
+        saveProjectAndCache.setToolTipText("Saves the project and all current cached data into a folder.");
+        saveProjectAndCache.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, KeyEvent.CTRL_DOWN_MASK + KeyEvent.SHIFT_DOWN_MASK + KeyEvent.ALT_DOWN_MASK));
+        saveProjectAndCache.addActionListener(e -> {
+            window.saveProjectAndCache();
+        });
+        projectMenu.add(saveProjectAndCache);
 
         // "Export as algorithm" entry
         JMenuItem exportProjectAsAlgorithmButton = new JMenuItem("Export as custom algorithm", UIUtils.getIconFromResources("actions/document-export.png"));

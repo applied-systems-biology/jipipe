@@ -978,7 +978,7 @@ public abstract class JIPipeGraphNode implements JIPipeValidatable, JIPipeParame
      */
     public String getDisplayName() {
         String compartment = getCompartmentDisplayName();
-        return getName() + (!StringUtils.isNullOrEmpty(compartment) ? "in compartment '" + compartment + "'" : "");
+        return getName() + (!StringUtils.isNullOrEmpty(compartment) ? " in compartment '" + compartment + "'" : "");
     }
 
     /**

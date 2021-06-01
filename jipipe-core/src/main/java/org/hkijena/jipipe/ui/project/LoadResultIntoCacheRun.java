@@ -11,7 +11,7 @@
  * See the LICENSE file provided with the code for the full license.
  */
 
-package org.hkijena.jipipe.extensions.tools;
+package org.hkijena.jipipe.ui.project;
 
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.JIPipeProject;
@@ -21,8 +21,7 @@ import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.cache.JIPipeCachedSlotToOutputExporterRun;
-import org.hkijena.jipipe.ui.running.JIPipeRunExecuterUI;
-import org.hkijena.jipipe.utils.JsonUtils;
+import org.hkijena.jipipe.ui.cache.JIPipeImportCachedSlotOutputRun;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -30,16 +29,16 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Map;
 
-public class SaveAllCachedDataRun implements JIPipeRunnable {
+public class LoadResultIntoCacheRun implements JIPipeRunnable {
     private final JIPipeWorkbench workbench;
     private final JIPipeProject project;
-    private final Path outputPath;
+    private final Path resultPath;
     private JIPipeProgressInfo progressInfo = new JIPipeProgressInfo();
 
-    public SaveAllCachedDataRun(JIPipeWorkbench workbench, JIPipeProject project, Path outputPath) {
+    public LoadResultIntoCacheRun(JIPipeWorkbench workbench, JIPipeProject project, Path resultPath) {
         this.workbench = workbench;
         this.project = project;
-        this.outputPath = outputPath;
+        this.resultPath = resultPath;
     }
 
     @Override
@@ -54,46 +53,25 @@ public class SaveAllCachedDataRun implements JIPipeRunnable {
 
     @Override
     public String getTaskLabel() {
-        return "Save all cached data";
+        return "Load result into cache";
     }
 
     @Override
     public void run() {
-        try {
-            project.saveProject(outputPath.resolve("project.jip"));
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
         ArrayList<JIPipeGraphNode> nodes = new ArrayList<>(project.getGraph().getGraphNodes());
         progressInfo.setProgress(0, nodes.size());
-        JIPipeProjectCacheQuery query = new JIPipeProjectCacheQuery(project);
         for (int i = 0; i < nodes.size(); i++) {
-            JIPipeProgressInfo nodeProgress = progressInfo.resolveAndLog("Node", i, nodes.size());
+            if(getProgressInfo().isCancelled().get())
+                return;
             JIPipeGraphNode node = nodes.get(i);
+            JIPipeProgressInfo nodeProgress = progressInfo.resolveAndLog(node.getDisplayName(), i, nodes.size());
+            Path nodeDir = resultPath.resolve(node.getProjectCompartment().getAliasIdInGraph()).resolve(node.getAliasIdInGraph());
 
-            Map<String, JIPipeDataSlot> cache = query.getCachedCache(node);
-            if(cache == null || cache.isEmpty())
-                continue;
-
-            Path nodeDir = outputPath.resolve(node.getUUIDInGraph().toString());
-            try {
-                Files.createDirectories(nodeDir);
+            if(Files.isDirectory(nodeDir)) {
+                JIPipeImportCachedSlotOutputRun run = new JIPipeImportCachedSlotOutputRun(project, node, nodeDir);
+                run.setProgressInfo(nodeProgress);
+                run.run();
             }
-            catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-
-            // Save the node's state to a file
-            Path nodeStateFile = nodeDir.resolve("node.json");
-            try {
-                JsonUtils.getObjectMapper().writerWithDefaultPrettyPrinter().writeValue(nodeStateFile.toFile(), node);
-            } catch (IOException e) {
-               throw new RuntimeException(e);
-            }
-            JIPipeCachedSlotToOutputExporterRun run = new JIPipeCachedSlotToOutputExporterRun(workbench, nodeDir,
-                    new ArrayList<>(cache.values()), true);
-            run.setProgressInfo(nodeProgress);
-            run.run();
         }
     }
 }

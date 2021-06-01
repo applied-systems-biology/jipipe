@@ -31,10 +31,9 @@ import org.hkijena.jipipe.ui.components.DocumentTabPane;
 import org.hkijena.jipipe.ui.components.SplashScreen;
 import org.hkijena.jipipe.ui.events.WindowClosedEvent;
 import org.hkijena.jipipe.ui.events.WindowOpenedEvent;
-import org.hkijena.jipipe.ui.project.JIPipeProjectTabMetadata;
-import org.hkijena.jipipe.ui.project.JIPipeTemplateSelectionDialog;
-import org.hkijena.jipipe.ui.project.UnsatisfiedDependenciesDialog;
+import org.hkijena.jipipe.ui.project.*;
 import org.hkijena.jipipe.ui.resultanalysis.JIPipeResultUI;
+import org.hkijena.jipipe.ui.running.JIPipeRunExecuterUI;
 import org.hkijena.jipipe.utils.JsonUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.scijava.Context;
@@ -236,14 +235,33 @@ public class JIPipeProjectWindow extends JFrame {
                 window.getProjectUI().sendStatusBarText("Opened project from " + window.projectSavePath);
                 window.updateTitle();
 
-                // Create a new tab
-                window.getProjectUI().getDocumentTabPane().addTab("Run",
-                        UIUtils.getIconFromResources("actions/run-build.png"),
-                        new JIPipeResultUI(window.projectUI, run),
-                        DocumentTabPane.CloseMode.withAskOnCloseButton,
-                        true);
-                window.getProjectUI().getDocumentTabPane().switchToLastTab();
                 ProjectsSettings.getInstance().addRecentProject(path);
+
+                // Give user the option to either open in tab or cache
+                int selectedOption = JOptionPane.showOptionDialog(window,
+                        "You can either open the output in a tab or load them into the cache. " +
+                                "Please note that caching the results might require large amounts of memory.",
+                        "Open JIPipe output",
+                        JOptionPane.YES_NO_CANCEL_OPTION,
+                        JOptionPane.QUESTION_MESSAGE,
+                        null,
+                        new Object[]{"Load in new tab", "Load into cache", "Cancel"},
+                        "Load in new tab");
+
+                if(selectedOption == JOptionPane.YES_OPTION) {
+                    // Create a new tab
+                    window.getProjectUI().getDocumentTabPane().addTab("Run",
+                            UIUtils.getIconFromResources("actions/run-build.png"),
+                            new JIPipeResultUI(window.projectUI, run),
+                            DocumentTabPane.CloseMode.withAskOnCloseButton,
+                            true);
+                    window.getProjectUI().getDocumentTabPane().switchToLastTab();
+                }
+                else if (selectedOption == JOptionPane.NO_OPTION) {
+                    // Load into cache with a run
+                    JIPipeRunExecuterUI.runInDialog(this, new LoadResultIntoCacheRun(projectUI, project, path));
+                }
+
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
@@ -431,5 +449,26 @@ public class JIPipeProjectWindow extends JFrame {
      */
     public static EventBus getWindowsEvents() {
         return WINDOWS_EVENTS;
+    }
+
+    /**
+     * Saves the project and cache
+     */
+    public void saveProjectAndCache() {
+        Path directory = FileChooserSettings.saveDirectory(this, FileChooserSettings.KEY_PROJECT, "Save project and cache");
+        if(directory == null)
+            return;
+        try {
+            if (Files.exists(directory) && Files.list(directory).count() > 0) {
+                if(JOptionPane.showConfirmDialog(this, "The selected directory " + directory + " is not empty. This can lead to problems. " +
+                        "Continue anyways?", "Save project and cache", JOptionPane.YES_NO_OPTION) == JOptionPane.NO_OPTION)
+                    return;
+            }
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+        }
+        SaveProjectAndCacheRun run = new SaveProjectAndCacheRun(projectUI, project, directory);
+        JIPipeRunExecuterUI.runInDialog(this, run);
     }
 }
