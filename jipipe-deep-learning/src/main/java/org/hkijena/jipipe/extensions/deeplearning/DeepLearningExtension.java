@@ -54,6 +54,12 @@ public class DeepLearningExtension extends JIPipePrepackagedDefaultJavaExtension
     }
 
     @Override
+    public List<ImageIcon> getSplashIcons() {
+        return Arrays.asList(UIUtils.getIcon32FromResources("apps/tensorflow.png"),
+                UIUtils.getIcon32FromResources("apps/keras.png"));
+    }
+
+    @Override
     public void register() {
         DeepLearningSettings settings = new DeepLearningSettings();
         registerEnvironment(DeepLearningToolkitLibraryEnvironment.class,
