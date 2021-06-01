@@ -70,6 +70,15 @@ public class CellPoseUtils {
                     yList.add(y);
                 }
 
+                if(xList.size() != yList.size()) {
+                    System.err.println("Error: Different X and  Y array sizes");
+                    continue;
+                }
+                if(xList.size() < 3) {
+                    // Empty ROIs are not allowed
+                    continue;
+                }
+
                 PolygonRoi roi = new PolygonRoi(xList.toArray(), yList.toArray(), xList.size(), Roi.POLYGON);
                 int z = -1;
                 JsonNode zEntry = roiItem.path("z");
