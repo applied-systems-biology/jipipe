@@ -31,6 +31,7 @@ import org.hkijena.jipipe.ui.components.SearchBox;
 import org.hkijena.jipipe.ui.components.ZoomViewPort;
 import org.hkijena.jipipe.ui.extension.GraphEditorToolBarButtonExtension;
 import org.hkijena.jipipe.ui.grapheditor.contextmenu.NodeUIContextAction;
+import org.hkijena.jipipe.utils.CopyImageToClipboard;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.jfree.graphics2d.svg.SVGGraphics2D;
@@ -294,10 +295,13 @@ public abstract class JIPipeGraphEditorUI extends JIPipeWorkbenchPanel implement
 
         JPopupMenu exportAsImageMenu = UIUtils.addPopupMenuToComponent(exportButton);
 
-        JMenuItem exportAsPngItem = new JMenuItem("as *.png", UIUtils.getIconFromResources("actions/viewimage.png"));
+        JMenuItem exportToClipboardItem = new JMenuItem("Copy snapshot to clipboard", UIUtils.getIconFromResources("actions/edit-copy.png"));
+        exportToClipboardItem.addActionListener(e -> createScreenshotClipboard());
+        exportAsImageMenu.add(exportToClipboardItem);
+        JMenuItem exportAsPngItem = new JMenuItem("Export as *.png", UIUtils.getIconFromResources("actions/viewimage.png"));
         exportAsPngItem.addActionListener(e -> createScreenshotPNG());
         exportAsImageMenu.add(exportAsPngItem);
-        JMenuItem exportAsSvgItem = new JMenuItem("as *.svg", UIUtils.getIconFromResources("actions/viewimage.png"));
+        JMenuItem exportAsSvgItem = new JMenuItem("Export as *.svg", UIUtils.getIconFromResources("actions/viewimage.png"));
         exportAsSvgItem.addActionListener(e -> createScreenshotSVG());
         exportAsImageMenu.add(exportAsSvgItem);
 
@@ -349,6 +353,13 @@ public abstract class JIPipeGraphEditorUI extends JIPipeWorkbenchPanel implement
         zoomInButton.setToolTipText("<html>Zoom in<br><i>Ctrl-NumPad +</i></html>");
         zoomInButton.addActionListener(e -> canvasUI.zoomIn());
         menuBar.add(zoomInButton);
+    }
+
+    public void createScreenshotClipboard() {
+        BufferedImage screenshot = canvasUI.createScreenshotPNG();
+        CopyImageToClipboard copyImageToClipboard = new CopyImageToClipboard();
+        copyImageToClipboard.copyImage(screenshot);
+        getWorkbench().sendStatusBarText("Copied screenshot to clipboard");
     }
 
     private void initializeViewModeMenu(JMenuBar menuBar) {
