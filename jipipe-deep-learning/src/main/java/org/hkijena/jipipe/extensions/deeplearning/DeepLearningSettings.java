@@ -1,22 +1,29 @@
 package org.hkijena.jipipe.extensions.deeplearning;
 
+import com.google.common.collect.ImmutableList;
 import com.google.common.eventbus.EventBus;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeValidityReport;
+import org.hkijena.jipipe.api.environments.ExternalEnvironment;
+import org.hkijena.jipipe.api.environments.ExternalEnvironmentSettings;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.extensions.python.OptionalPythonEnvironment;
 import org.hkijena.jipipe.extensions.python.PythonEnvironment;
 import org.hkijena.jipipe.extensions.python.PythonExtensionSettings;
 
-public class DeepLearningSettings implements JIPipeParameterCollection {
+import java.util.List;
+
+public class DeepLearningSettings implements JIPipeParameterCollection, ExternalEnvironmentSettings {
 
     public static String ID = "org.hkijena.jipipe:deep-learning";
 
     private final EventBus eventBus = new EventBus();
 
     private OptionalPythonEnvironment overridePythonEnvironment = new OptionalPythonEnvironment();
+    private DeepLearningToolkitLibraryEnvironment.List deepLearningToolkitPresets = new DeepLearningToolkitLibraryEnvironment.List();
+    private DeepLearningToolkitLibraryEnvironment deepLearningToolkit = new DeepLearningToolkitLibraryEnvironment();
 
     public DeepLearningSettings() {
         overridePythonEnvironment.setEnabled(true);
@@ -46,6 +53,43 @@ public class DeepLearningSettings implements JIPipeParameterCollection {
         } else {
             return PythonExtensionSettings.getInstance().getPythonEnvironment();
         }
+    }
+
+    @Override
+    public List<ExternalEnvironment> getPresetsListInterface(Class<?> environmentClass) {
+        return ImmutableList.copyOf(deepLearningToolkitPresets);
+    }
+
+    @Override
+    public void setPresetsListInterface(List<ExternalEnvironment> presets, Class<?> environmentClass) {
+        deepLearningToolkitPresets.clear();
+        for (ExternalEnvironment preset : presets) {
+            deepLearningToolkitPresets.add((DeepLearningToolkitLibraryEnvironment) preset);
+        }
+    }
+
+    @JIPipeDocumentation(name = "Deep learning toolkit presets", description = "Presets for the Deep Learning Toolkit library")
+    @JIPipeParameter("deep-learning-toolkit-presets")
+    public DeepLearningToolkitLibraryEnvironment.List getDeepLearningToolkitPresets() {
+        return deepLearningToolkitPresets;
+    }
+
+    @JIPipeParameter("deep-learning-toolkit-presets")
+    public void setDeepLearningToolkitPresets(DeepLearningToolkitLibraryEnvironment.List deepLearningToolkitPresets) {
+        this.deepLearningToolkitPresets = deepLearningToolkitPresets;
+    }
+
+    @JIPipeDocumentation(name = "Deep learning toolkit", description = "This environment allows you to setup how the JIPipe Deep Learning Toolkit library is supplied. " +
+            "By default, JIPipe will automatically extract the library into the ImageJ folder and add code to include it. Alternatively, you can install the toolkit " +
+            "into your Python environment and disable this feature.")
+    @JIPipeParameter("deep-learning-toolkit")
+    public DeepLearningToolkitLibraryEnvironment getDeepLearningToolkit() {
+        return deepLearningToolkit;
+    }
+
+    @JIPipeParameter("deep-learning-toolkit")
+    public void setDeepLearningToolkit(DeepLearningToolkitLibraryEnvironment deepLearningToolkit) {
+        this.deepLearningToolkit = deepLearningToolkit;
     }
 
     public static DeepLearningSettings getInstance() {

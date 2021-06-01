@@ -54,18 +54,21 @@ public class DeepLearningExtension extends JIPipePrepackagedDefaultJavaExtension
     }
 
     @Override
-    public List<ImageIcon> getSplashIcons() {
-        return Arrays.asList(UIUtils.getIcon32FromResources("apps/cellpose.png"));
-    }
-
-    @Override
     public void register() {
+        DeepLearningSettings settings = new DeepLearningSettings();
+        registerEnvironment(DeepLearningToolkitLibraryEnvironment.class,
+                DeepLearningToolkitLibraryEnvironment.List.class,
+                settings,
+                "deep-learning-toolkit-library",
+                "Deep Learning Toolkit",
+                "Library that provides Deep Learning capabilities",
+                UIUtils.getIconFromResources("actions/plugins.png"));
         registerSettingsSheet(DeepLearningSettings.ID,
                 "Deep Learning",
                 UIUtils.getIconFromResources("data-types/dl-model.png"),
                 "Extensions",
                 UIUtils.getIconFromResources("actions/plugins.png"),
-                new DeepLearningSettings());
+                settings);
         registerEnvironmentInstaller(PythonEnvironment.class,
                 DeepLearningToolkitEnvInstaller.class,
                 UIUtils.getIconFromResources("data-types/dl-model.png"));
