@@ -37,7 +37,7 @@ public class REnvironment extends ExternalEnvironment {
     public REnvironment() {
         if (SystemUtils.IS_OS_LINUX) {
             RExecutablePath = Paths.get("/usr/bin/R");
-            RScriptExecutablePath = Paths.get("/usr/bin/RScript");
+            RScriptExecutablePath = Paths.get("/usr/bin/Rscript");
         }
     }
 

@@ -30,8 +30,9 @@ public class PythonExtensionSettings implements ExternalEnvironmentSettings {
 
     private final EventBus eventBus = new EventBus();
     private PythonEnvironment pythonEnvironment = new PythonEnvironment();
-    private boolean providePythonAdapter = true;
+    private JIPipePythonAdapterLibraryEnvironment pythonAdapterLibraryEnvironment = new JIPipePythonAdapterLibraryEnvironment();
     private PythonEnvironment.List presets = new PythonEnvironment.List();
+    private JIPipePythonAdapterLibraryEnvironment.List pythonAdapterPresets = new JIPipePythonAdapterLibraryEnvironment.List();
 
     public PythonExtensionSettings() {
     }
@@ -47,9 +48,33 @@ public class PythonExtensionSettings implements ExternalEnvironmentSettings {
         this.presets = presets;
     }
 
+    @JIPipeDocumentation(name = "Python adapter presets", description = "List of presets stored for JIPipe Python adapters")
+    @JIPipeParameter("python-adapter-presets")
+    public JIPipePythonAdapterLibraryEnvironment.List getPythonAdapterPresets() {
+        return pythonAdapterPresets;
+    }
+
+    @JIPipeParameter("python-adapter-presets")
+    public void setPythonAdapterPresets(JIPipePythonAdapterLibraryEnvironment.List pythonAdapterPresets) {
+        this.pythonAdapterPresets = pythonAdapterPresets;
+    }
+
     @Override
     public EventBus getEventBus() {
         return eventBus;
+    }
+
+    @JIPipeDocumentation(name = "JIPipe Python adapter", description = "This environment allows you to setup how the JIPipe Python adapter library is supplied. " +
+            "By default, JIPipe will automatically extract the adapter into the ImageJ folder and add code to include it. Alternatively, you can install the Python adapter " +
+            "into your Python environment and disable this feature.")
+    @JIPipeParameter("python-adapter-library")
+    public JIPipePythonAdapterLibraryEnvironment getPythonAdapterLibraryEnvironment() {
+        return pythonAdapterLibraryEnvironment;
+    }
+
+    @JIPipeParameter("python-adapter-library")
+    public void setPythonAdapterLibraryEnvironment(JIPipePythonAdapterLibraryEnvironment pythonAdapterLibraryEnvironment) {
+        this.pythonAdapterLibraryEnvironment = pythonAdapterLibraryEnvironment;
     }
 
     @JIPipeDocumentation(name = "Python environment", description = "The Python environment that is utilized by the Python nodes. " +
@@ -64,28 +89,26 @@ public class PythonExtensionSettings implements ExternalEnvironmentSettings {
         this.pythonEnvironment = pythonEnvironment;
     }
 
-    @JIPipeDocumentation(name = "Provide Python adapter", description = "If enabled, JIPipe will provide any Python node with the JIPipe Python Adapter modules. " +
-            "You may want to disable this if you installed a JIPipe adapter into your Python library.")
-    @JIPipeParameter("provide-python-adapter")
-    public boolean isProvidePythonAdapter() {
-        return providePythonAdapter;
-    }
-
-    @JIPipeParameter("provide-python-adapter")
-    public void setProvidePythonAdapter(boolean providePythonAdapter) {
-        this.providePythonAdapter = providePythonAdapter;
-    }
-
     @Override
-    public List<ExternalEnvironment> getPresetsListInterface() {
+    public List<ExternalEnvironment> getPresetsListInterface(Class<?> environmentClass) {
+        if(environmentClass == JIPipePythonAdapterLibraryEnvironment.class)
+            return ImmutableList.copyOf(pythonAdapterPresets);
         return ImmutableList.copyOf(presets);
     }
 
     @Override
-    public void setPresetsListInterface(List<ExternalEnvironment> presets) {
-        this.presets.clear();
-        for (ExternalEnvironment preset : presets) {
-            this.presets.add((PythonEnvironment) preset);
+    public void setPresetsListInterface(List<ExternalEnvironment> presets, Class<?> environmentClass) {
+        if(environmentClass == JIPipePythonAdapterLibraryEnvironment.class) {
+            this.pythonAdapterPresets.clear();
+            for (ExternalEnvironment preset : presets) {
+                this.pythonAdapterPresets.add((JIPipePythonAdapterLibraryEnvironment) preset);
+            }
+        }
+        else {
+            this.presets.clear();
+            for (ExternalEnvironment preset : presets) {
+                this.presets.add((PythonEnvironment) preset);
+            }
         }
     }
 

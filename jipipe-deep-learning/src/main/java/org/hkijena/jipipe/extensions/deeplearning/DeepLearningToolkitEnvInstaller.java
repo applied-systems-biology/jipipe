@@ -3,23 +3,17 @@ package org.hkijena.jipipe.extensions.deeplearning;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
-import org.hkijena.jipipe.extensions.python.installers.MinicondaEnvPythonInstaller;
+import org.hkijena.jipipe.extensions.python.installers.BasicMinicondaEnvPythonInstaller;
 import org.hkijena.jipipe.extensions.settings.RuntimeSettings;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
-import org.hkijena.jipipe.utils.WebUtils;
 
 import java.io.*;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.nio.file.StandardOpenOption;
 import java.util.Arrays;
 
 @JIPipeDocumentation(name = "Download & install Deep Learning Toolkit", description = "Creates a new Python environment with the Deep Learning Toolkit installed.")
-public class DeepLearningToolkitEnvInstaller extends MinicondaEnvPythonInstaller {
+public class DeepLearningToolkitEnvInstaller extends BasicMinicondaEnvPythonInstaller {
     /**
      * @param workbench       the workbench
      * @param parameterAccess the parameter access that will receive the generated environment
@@ -86,7 +80,7 @@ public class DeepLearningToolkitEnvInstaller extends MinicondaEnvPythonInstaller
         return path;
     }
 
-    public static class Configuration extends MinicondaEnvPythonInstaller.Configuration {
+    public static class Configuration extends BasicMinicondaEnvPythonInstaller.Configuration {
         private boolean withGPU = true;
         private String tensorFlowVersion = "2.1.0";
 

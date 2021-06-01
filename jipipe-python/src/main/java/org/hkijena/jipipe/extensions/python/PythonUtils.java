@@ -50,7 +50,6 @@ public class PythonUtils {
             DoubleList.class,
             IntegerRange.class
     };
-    private static Path PYTHON_ADAPTER_PATH;
 
     private PythonUtils() {
 
@@ -135,53 +134,8 @@ public class PythonUtils {
         }
     }
 
-    /**
-     * Gets the current path of the Python adapter. Extracts the adapter if needed.
-     *
-     * @return the path
-     */
-    public static Path getPythonAdapterPath() {
-        if (PYTHON_ADAPTER_PATH == null || !Files.isDirectory(PYTHON_ADAPTER_PATH)) {
-            Path tempDir = RuntimeSettings.generateTempDirectory("python-adapter");
-            Reflections reflections = new Reflections(new ConfigurationBuilder()
-                    .setUrls(ClasspathHelper.forPackage("org.hkijena.jipipe"))
-                    .setScanners(new ResourcesScanner()));
-            Set<String> allResources = reflections.getResources(Pattern.compile(".*"));
-            allResources = allResources.stream().map(s -> {
-                if (!s.startsWith("/"))
-                    return "/" + s;
-                else
-                    return s;
-            }).collect(Collectors.toSet());
-            String globalFolder = "/org/hkijena/jipipe/extensions/python/adapter";
-            Set<String> toInstall = allResources.stream().filter(s -> s.startsWith(globalFolder)).collect(Collectors.toSet());
-            for (String resource : toInstall) {
-                Path targetPath = tempDir.resolve(resource.substring(globalFolder.length() + 1));
-                if (!Files.isDirectory(targetPath.getParent())) {
-                    try {
-                        Files.createDirectories(targetPath.getParent());
-                    } catch (IOException e) {
-                        throw new RuntimeException(e);
-                    }
-                }
-                try {
-                    Files.copy(PythonUtils.class.getResourceAsStream(resource), targetPath);
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
-                }
-            }
-
-            PYTHON_ADAPTER_PATH = tempDir;
-        }
-        return PYTHON_ADAPTER_PATH;
-    }
-
     public static void installAdapterCodeIfNeeded(StringBuilder pythonCode) {
-        if (PythonExtensionSettings.getInstance().isProvidePythonAdapter()) {
-            Path adapterPath = getPythonAdapterPath();
-            pythonCode.append("import sys\n");
-            pythonCode.append("sys.path.append(\"").append(MacroUtils.escapeString(adapterPath.toAbsolutePath().toString())).append("\")\n");
-        }
+        PythonExtensionSettings.getInstance().getPythonAdapterLibraryEnvironment().generateCode(pythonCode, new JIPipeProgressInfo());
         pythonCode.append("import jipipe.data_slot\n");
     }
 

@@ -3,7 +3,7 @@ package org.hkijena.jipipe.extensions.cellpose;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
-import org.hkijena.jipipe.extensions.python.installers.MinicondaEnvPythonInstaller;
+import org.hkijena.jipipe.extensions.python.installers.BasicMinicondaEnvPythonInstaller;
 import org.hkijena.jipipe.extensions.settings.RuntimeSettings;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.utils.WebUtils;
@@ -18,7 +18,7 @@ import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 
 @JIPipeDocumentation(name = "Download & install Cellpose (CPU)", description = "Creates a new Python environment with Cellpose installed.")
-public class CellPoseEnvInstaller extends MinicondaEnvPythonInstaller {
+public class CellPoseEnvInstaller extends BasicMinicondaEnvPythonInstaller {
     /**
      * @param workbench       the workbench
      * @param parameterAccess the parameter access that will receive the generated environment
@@ -73,7 +73,7 @@ public class CellPoseEnvInstaller extends MinicondaEnvPythonInstaller {
         return path;
     }
 
-    public static class Configuration extends MinicondaEnvPythonInstaller.Configuration {
+    public static class Configuration extends BasicMinicondaEnvPythonInstaller.Configuration {
         private boolean downloadModels = true;
 
         @JIPipeDocumentation(name = "Download models", description = "If enabled, models will also be downloaded. " +

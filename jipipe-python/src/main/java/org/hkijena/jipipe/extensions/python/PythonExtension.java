@@ -18,6 +18,7 @@ import org.hkijena.jipipe.extensions.JIPipePrepackagedDefaultJavaExtension;
 import org.hkijena.jipipe.extensions.parameters.primitives.HTMLText;
 import org.hkijena.jipipe.extensions.parameters.primitives.StringList;
 import org.hkijena.jipipe.extensions.python.algorithms.*;
+import org.hkijena.jipipe.extensions.python.installers.BasicMinicondaEnvPythonInstaller;
 import org.hkijena.jipipe.extensions.python.installers.MinicondaEnvPythonInstaller;
 import org.hkijena.jipipe.extensions.python.installers.SelectCondaEnvPythonInstaller;
 import org.hkijena.jipipe.extensions.python.installers.SelectSystemPythonInstaller;
@@ -62,6 +63,13 @@ public class PythonExtension extends JIPipePrepackagedDefaultJavaExtension {
                 "Optional Python environment",
                 "An optional Python environment",
                 null);
+        registerEnvironment(JIPipePythonAdapterLibraryEnvironment.class,
+                JIPipePythonAdapterLibraryEnvironment.List.class,
+                settings,
+                "jipipe-python-adapter-library",
+                "JIPipe Python adapter library",
+                "Additional library for Python",
+                UIUtils.getIconFromResources("actions/plugins.png"));
         registerEnumParameterType("python-environment-type",
                 PythonEnvironmentType.class,
                 "Python environment type",

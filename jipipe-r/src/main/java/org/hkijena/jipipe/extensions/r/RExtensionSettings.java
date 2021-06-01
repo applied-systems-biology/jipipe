@@ -65,12 +65,12 @@ public class RExtensionSettings implements ExternalEnvironmentSettings {
     }
 
     @Override
-    public List<ExternalEnvironment> getPresetsListInterface() {
+    public List<ExternalEnvironment> getPresetsListInterface(Class<?> environmentClass) {
         return ImmutableList.copyOf(presets);
     }
 
     @Override
-    public void setPresetsListInterface(List<ExternalEnvironment> presets) {
+    public void setPresetsListInterface(List<ExternalEnvironment> presets, Class<?> environmentClass) {
         this.presets.clear();
         for (ExternalEnvironment preset : presets) {
             this.presets.add((REnvironment) preset);

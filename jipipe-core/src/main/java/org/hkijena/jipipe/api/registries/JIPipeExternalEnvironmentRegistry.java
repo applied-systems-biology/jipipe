@@ -12,7 +12,9 @@ import javax.swing.*;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
@@ -20,7 +22,7 @@ import java.util.stream.Collectors;
  */
 public class JIPipeExternalEnvironmentRegistry {
     private Multimap<Class<? extends ExternalEnvironment>, InstallerEntry> installers = HashMultimap.create();
-    private BiMap<Class<? extends ExternalEnvironment>, ExternalEnvironmentSettings> settings = HashBiMap.create();
+    private Map<Class<? extends ExternalEnvironment>, ExternalEnvironmentSettings> settings = new HashMap<>();
 
     /**
      * Registers an environment and its corresponding settings
@@ -73,7 +75,7 @@ public class JIPipeExternalEnvironmentRegistry {
         ExternalEnvironmentSettings settings = getSettings(environmentClass);
         if (settings == null)
             return Collections.emptyList();
-        return settings.getPresetsListInterface().stream()
+        return settings.getPresetsListInterface(environmentClass).stream()
                 .sorted(Comparator.comparing(ExternalEnvironment::getName)).collect(Collectors.toList());
     }
 
@@ -85,9 +87,9 @@ public class JIPipeExternalEnvironmentRegistry {
      */
     public void addPreset(Class<?> environmentClass, ExternalEnvironment preset) {
         ExternalEnvironmentSettings settings = getSettings(environmentClass);
-        List<ExternalEnvironment> presets = new ArrayList<>(settings.getPresetsListInterface());
+        List<ExternalEnvironment> presets = new ArrayList<>(settings.getPresetsListInterface(environmentClass));
         presets.add(preset);
-        settings.setPresetsListInterface(presets);
+        settings.setPresetsListInterface(presets, environmentClass);
         settings.getEventBus().post(new JIPipeParameterCollection.ParameterChangedEvent(settings, "presets"));
     }
 
