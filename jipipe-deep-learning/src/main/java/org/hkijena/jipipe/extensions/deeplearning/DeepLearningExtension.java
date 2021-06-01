@@ -72,5 +72,9 @@ public class DeepLearningExtension extends JIPipePrepackagedDefaultJavaExtension
         registerEnvironmentInstaller(PythonEnvironment.class,
                 DeepLearningToolkitEnvInstaller.class,
                 UIUtils.getIconFromResources("data-types/dl-model.png"));
+        registerEnumParameterType("deep-learning-architecture",
+                DeepLearningArchitecture.class,
+                "Deep Learning architecture",
+                "Architecture to be used");
     }
 }
