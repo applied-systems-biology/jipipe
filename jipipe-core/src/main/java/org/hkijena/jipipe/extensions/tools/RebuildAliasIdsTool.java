@@ -19,7 +19,7 @@ public class RebuildAliasIdsTool extends MenuExtension {
         super(workbench);
         setText("Force rebuild alias IDs");
         setToolTipText("Rebuilds the node alias IDs for all nodes. This can help if the " +
-                "generated alias IDs are too long or ");
+                "generated alias IDs are too long.");
         setIcon(UIUtils.getIconFromResources("actions/tag.png"));
         addActionListener(e -> rebuildIds());
     }
