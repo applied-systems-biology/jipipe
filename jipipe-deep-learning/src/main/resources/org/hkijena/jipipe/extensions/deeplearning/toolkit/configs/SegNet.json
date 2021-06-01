@@ -1,0 +1,20 @@
+{
+    "input_dir": ["/asbdata/Philipp/FattyTissueProportion/subwindows_512x512_v3/original/", "path to folder containing input images"],
+    "label_dir": ["/asbdata/Philipp/FattyTissueProportion/subwindows_512x512_v3/labels/", "path to folder containing output images"],
+    "data_info": ["/asbdata/Philipp/FattyTissueProportion/subwindows_512x512_v3/subwindows_512x512_creation.csv", "csv-file where information about the images are stored"],
+    "checkpoint_dir": ["./", "where to put model and log files"],
+    "max_epochs": [1000, "number of training epochs"],
+    "kernel_size": [7, "kernel-size for the convolutional filter"],
+    "regularization": ["GaussianDropout", 0.1, "regularization method within the architecture - second parameter specifies the rate/std - possible values: {none,Dropout,GaussianDropout,GaussianNoise}"],
+    "batch_size": [32, "number of images in batch"],
+    "n_filters": [64, "number of filters in first conv layer"],
+    "img_size": [512, "crop images to this size before for training input"],
+    "augmentation_factor": [5, "factor to augment the data by {flip, rotate, shift} the batch-image, 1 means no augmentation"],
+    "learning_rate": [0.0001, "initial learning rate for adam"],
+    "beta1": [0.5, "momentum term of adam"],
+    "monitor_loss":["val_loss", "select the parameters which are valid to monitor during the training: { loss , val_loss }" ],
+    "n_classes": [2, "number of classes for distingish semantic segmentation"],
+    "validation_split": [0.85, "percentage which is used for validation (e.g.: 0.8 => 80% training, 20% test"],
+    "segmentation_threshold": [0.9, "binary threshold for set the black-white output of the network to rest OR intected tissue"],
+    "num_K_folds": [9, "number of K-fold cross-validation"]
+}
