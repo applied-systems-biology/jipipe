@@ -13,6 +13,8 @@
 
 package org.hkijena.jipipe.api.exceptions;
 
+import org.apache.commons.lang3.exception.ExceptionUtils;
+
 /**
  * A {@link RuntimeException} that contains more detailed information for users.
  * It answers in understandable terms: (1) What happened (2) Where it happened (3) Why it happened, and (4) What to do to resolve the issue
@@ -87,7 +89,8 @@ public class UserFriendlyRuntimeException extends RuntimeException implements Us
         return String.format("An error occurred @ " + userWhere + "\n" +
                 "What:\t%s\n" +
                 "Why:\t%s\n" +
-                "How to solve:\t%s\n\n%s", userWhat, userWhy, userHow, super.toString());
+                "How to solve:\t%s\n\n%s", userWhat, userWhy, userHow,
+                getCause() != null ? super.toString() + "\n\n" + ExceptionUtils.getStackTrace(getCause()) : super.toString());
     }
 
     public String getUserWhere() {
