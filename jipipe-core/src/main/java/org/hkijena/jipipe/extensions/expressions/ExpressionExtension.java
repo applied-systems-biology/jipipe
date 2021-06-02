@@ -31,7 +31,7 @@ public class ExpressionExtension extends JIPipePrepackagedDefaultJavaExtension {
 
     @Override
     public String getDependencyVersion() {
-        return "2021.5";
+        return "2021.6";
     }
 
     @Override

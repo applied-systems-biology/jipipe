@@ -13,7 +13,7 @@ target
 /dist/zip/package/
 /dist/zip/dependencies/
 /dist/zip/*.zip
-/dist/jipipe-windows-installer/JIPipe-2021.5-Setup.exe
+/dist/jipipe-windows-installer/JIPipe-2021.6-Setup.exe
 /miniconda/
 /cellpose-cpu/
 /cellpose-gpu/
@@ -24,4 +24,4 @@ target
 /r/
 
 /dist/zip/*
-/dist/JIPipe-2021.5.zip
+/dist/JIPipe-2021.6.zip
