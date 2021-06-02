@@ -111,14 +111,16 @@ public class TransformScale2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         }
 
         if (img.isStack()) {
-            ImageStack result = new ImageStack(sx, sy, img.getProcessor().getColorModel());
+            ImageStack result = new ImageStack(sx, sy, img.getStackSize());
             int finalSx = sx;
             int finalSy = sy;
-            ImageJUtils.forEachIndexedSlice(img, (imp, index) -> {
+            ImageJUtils.forEachIndexedZCTSlice(img, (imp, index) -> {
                 ImageProcessor resized = scaleProcessor(imp, finalSx, finalSy, interpolationMethod, useAveraging, scaleMode, anchor, background);
-                result.addSlice("" + index, resized);
+                result.setProcessor(resized, index.getStackIndex(img));
             }, progressInfo);
-            dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusData(new ImagePlus("Resized", result)), progressInfo);
+            ImagePlusData resized = new ImagePlusData(new ImagePlus("Resized", result));
+            resized.getImage().setDimensions(img.getNChannels(), img.getNSlices(), img.getNFrames());
+            dataBatch.addOutputData(getFirstOutputSlot(), resized, progressInfo);
         } else {
             ImageProcessor resized = scaleProcessor(img.getProcessor(), sx, sy, interpolationMethod, useAveraging, scaleMode, anchor, background);
             ImagePlus result = new ImagePlus("Resized", resized);

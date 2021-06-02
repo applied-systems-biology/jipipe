@@ -417,6 +417,7 @@ public class ImageJAlgorithmsExtension extends JIPipePrepackagedDefaultJavaExten
         registerNodeType("ij1-transform-equalize-expand2d", TransformEqualCanvasSize2DAlgorithm.class, UIUtils.getIconURLFromResources("actions/transform-scale.png"));
         registerNodeType("ij1-transform-warp2d", Warp2DAlgorithm.class, UIUtils.getIconURLFromResources("actions/object-tweak-rotate.png"));
         registerNodeType("ij1-overlay", MergeImagesAlgorithm.class, UIUtils.getIconURLFromResources("actions/insert-image.png"));
+        registerNodeType("ij1-transform-tile", TileImageAlgorithm.class, UIUtils.getIconURLFromResources("actions/grid-rectangular.png"));
 
         registerEnumParameterType("ij1-transform-flip2d:flip-mode", TransformFlip2DAlgorithm.FlipMode.class,
                 "Flip mode", "Available modes");
