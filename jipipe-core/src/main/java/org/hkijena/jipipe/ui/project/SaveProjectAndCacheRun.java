@@ -60,6 +60,7 @@ public class SaveProjectAndCacheRun implements JIPipeRunnable {
     @Override
     public void run() {
         try {
+            Files.createDirectories(outputPath);
             project.saveProject(outputPath.resolve("project.jip"));
         } catch (IOException e) {
             throw new RuntimeException(e);
