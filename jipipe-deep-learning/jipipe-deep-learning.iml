@@ -2,7 +2,7 @@
 <module org.jetbrains.idea.maven.project.MavenProjectsManager.isMavenModule="true" type="JAVA_MODULE" version="4">
   <component name="FacetManager">
     <facet type="Python" name="Python">
-      <configuration sdkName="" />
+      <configuration sdkName="Python 3.7 (base)" />
     </facet>
   </component>
   <component name="NewModuleRootManager" LANGUAGE_LEVEL="JDK_1_8">
@@ -15,6 +15,7 @@
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
+    <orderEntry type="library" name="Python 3.7 (base) interpreter library" level="application" />
     <orderEntry type="module" module-name="jipipe-core" />
     <orderEntry type="library" name="Maven: net.imagej:imagej:2.1.0" level="project" />
     <orderEntry type="library" name="Maven: net.imagej:imagej-common:0.33.0" level="project" />

@@ -13,10 +13,8 @@
 
 package org.hkijena.jipipe.extensions.deeplearning;
 
-/**
- * Available architectures
- */
-public enum DeepLearningArchitecture {
-    SegNet,
-    VGG16
+public enum RegularizationMethod {
+    Dropout,
+    GaussianDropout,
+    GaussianNoise
 }
