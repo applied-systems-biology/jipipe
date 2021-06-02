@@ -35,7 +35,7 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePl
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleMaskData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.extensions.parameters.roi.Anchor;
-import org.hkijena.jipipe.extensions.parameters.roi.IntModificationParameter;
+import org.hkijena.jipipe.extensions.expressions.NumericFunctionExpression;
 import org.hkijena.jipipe.extensions.parameters.roi.Margin;
 import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
 
@@ -328,10 +328,10 @@ public class FastHoughSegmentation2DAlgorithm extends JIPipeSimpleIteratingAlgor
          */
         Margin imageMargin = new Margin();
         imageMargin.setAnchor(Anchor.TopLeft);
-        imageMargin.setLeft(new IntModificationParameter(0, 0, true));
-        imageMargin.setTop(new IntModificationParameter(0, 0, true));
-        imageMargin.setWidth(new IntModificationParameter(imp.getWidth(), 1, true));
-        imageMargin.setHeight(new IntModificationParameter(imp.getHeight(), 1, true));
+        imageMargin.setLeft(new NumericFunctionExpression("0"));
+        imageMargin.setTop(new NumericFunctionExpression("0"));
+        imageMargin.setWidth(new NumericFunctionExpression(imp.getWidth() + ""));
+        imageMargin.setHeight(new NumericFunctionExpression(imp.getHeight() + ""));
         ImagePlus mask = IJ.createImage("Mask", "8-bit black", W, H, 1);
         rois.drawMask(false, true, 1, mask);
 //        mask.show();

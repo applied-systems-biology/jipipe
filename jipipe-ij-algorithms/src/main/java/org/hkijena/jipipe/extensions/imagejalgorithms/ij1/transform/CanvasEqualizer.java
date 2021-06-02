@@ -22,7 +22,7 @@ import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.extensions.parameters.roi.Anchor;
-import org.hkijena.jipipe.extensions.parameters.roi.IntModificationParameter;
+import org.hkijena.jipipe.extensions.expressions.NumericFunctionExpression;
 
 import java.awt.*;
 import java.util.ArrayList;
@@ -30,8 +30,8 @@ import java.util.List;
 
 public class CanvasEqualizer implements JIPipeParameterCollection {
     private final EventBus eventBus = new EventBus();
-    private IntModificationParameter xAxis = new IntModificationParameter();
-    private IntModificationParameter yAxis = new IntModificationParameter();
+    private NumericFunctionExpression xAxis = new NumericFunctionExpression();
+    private NumericFunctionExpression yAxis = new NumericFunctionExpression();
     private Color backgroundColor = Color.BLACK;
     private Anchor anchor = Anchor.CenterCenter;
 
@@ -39,8 +39,8 @@ public class CanvasEqualizer implements JIPipeParameterCollection {
     }
 
     public CanvasEqualizer(CanvasEqualizer other) {
-        this.xAxis = new IntModificationParameter(other.xAxis);
-        this.yAxis = new IntModificationParameter(other.yAxis);
+        this.xAxis = new NumericFunctionExpression(other.xAxis);
+        this.yAxis = new NumericFunctionExpression(other.yAxis);
         this.backgroundColor = other.backgroundColor;
         this.anchor = other.anchor;
     }
@@ -151,23 +151,23 @@ public class CanvasEqualizer implements JIPipeParameterCollection {
 
     @JIPipeDocumentation(name = "X axis", description = "Defines the size of the output canvas")
     @JIPipeParameter("x-axis")
-    public IntModificationParameter getxAxis() {
+    public NumericFunctionExpression getxAxis() {
         return xAxis;
     }
 
     @JIPipeParameter("x-axis")
-    public void setxAxis(IntModificationParameter xAxis) {
+    public void setxAxis(NumericFunctionExpression xAxis) {
         this.xAxis = xAxis;
     }
 
     @JIPipeDocumentation(name = "Y axis", description = "Defines the size of the output canvas")
     @JIPipeParameter("y-axis")
-    public IntModificationParameter getyAxis() {
+    public NumericFunctionExpression getyAxis() {
         return yAxis;
     }
 
     @JIPipeParameter("y-axis")
-    public void setyAxis(IntModificationParameter yAxis) {
+    public void setyAxis(NumericFunctionExpression yAxis) {
         this.yAxis = yAxis;
     }
 

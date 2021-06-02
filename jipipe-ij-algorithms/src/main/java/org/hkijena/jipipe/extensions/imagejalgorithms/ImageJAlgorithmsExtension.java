@@ -424,6 +424,10 @@ public class ImageJAlgorithmsExtension extends JIPipePrepackagedDefaultJavaExten
                 "Rotation mode", "Available modes");
         registerEnumParameterType("ij1-transform:wrap-mode", WrapMode.class,
                 "Wrap mode", "Available wrap modes");
+        registerEnumParameterType("ij1-transform:scale-mode",
+                ScaleMode.class,
+                "Scale mode",
+                "Determines how the image is scaled");
     }
 
     private void registerFFTAlgorithms() {

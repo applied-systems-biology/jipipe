@@ -56,8 +56,8 @@ public class UnreferencedRoiToMaskAlgorithm extends JIPipeSimpleIteratingAlgorit
                 .addOutputSlot("Output", ImagePlusGreyscaleMaskData.class, null)
                 .seal()
                 .build());
-        imageArea.getWidth().setUseExactValue(false);
-        imageArea.getHeight().setUseExactValue(false);
+        imageArea.getWidth().ensureExactValue(false);
+        imageArea.getHeight().ensureExactValue(false);
     }
 
     /**

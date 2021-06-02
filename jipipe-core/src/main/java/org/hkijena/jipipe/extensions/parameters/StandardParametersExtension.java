@@ -26,6 +26,7 @@ import org.hkijena.jipipe.api.nodes.JIPipeColumnGrouping;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollectionVisibilities;
 import org.hkijena.jipipe.extensions.JIPipePrepackagedDefaultJavaExtension;
+import org.hkijena.jipipe.extensions.expressions.NumericFunctionExpression;
 import org.hkijena.jipipe.extensions.parameters.collections.ListParameter;
 import org.hkijena.jipipe.extensions.parameters.collections.ListParameterEditorUI;
 import org.hkijena.jipipe.extensions.parameters.colors.*;
@@ -33,8 +34,6 @@ import org.hkijena.jipipe.extensions.parameters.editors.JIPipeAlgorithmIconRefPa
 import org.hkijena.jipipe.extensions.parameters.editors.JIPipeDataInfoRefParameterEditorUI;
 import org.hkijena.jipipe.extensions.parameters.editors.JIPipeNodeInfoRefParameterEditorUI;
 import org.hkijena.jipipe.extensions.parameters.editors.JIPipeParameterCollectionVisibilitiesParameterEditorUI;
-import org.hkijena.jipipe.extensions.expressions.*;
-import org.hkijena.jipipe.extensions.expressions.functions.*;
 import org.hkijena.jipipe.extensions.parameters.functions.FunctionParameter;
 import org.hkijena.jipipe.extensions.parameters.functions.FunctionParameterEditorUI;
 import org.hkijena.jipipe.extensions.parameters.functions.StringPatternExtractionFunction;
@@ -259,12 +258,12 @@ public class StandardParametersExtension extends JIPipePrepackagedDefaultJavaExt
                 "A table that contains parameters",
                 ParameterTableEditorUI.class);
         registerParameterType("int-modification",
-                IntModificationParameter.class,
-                IntModificationParameter::new,
-                t -> new IntModificationParameter((IntModificationParameter) t),
+                NumericFunctionExpression.class,
+                NumericFunctionExpression::new,
+                t -> new NumericFunctionExpression((NumericFunctionExpression) t),
                 "Integer modification",
                 "Modifies an integer",
-                IntModificationParameterEditorUI.class);
+                null);
         registerParameterType("margin",
                 Margin.class,
                 Margin.List.class,

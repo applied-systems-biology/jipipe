@@ -19,6 +19,7 @@ import com.google.common.eventbus.EventBus;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
+import org.hkijena.jipipe.extensions.expressions.NumericFunctionExpression;
 import org.hkijena.jipipe.extensions.parameters.collections.ListParameter;
 
 import java.awt.*;
@@ -38,25 +39,25 @@ public class Margin implements Function<Rectangle, Rectangle>, JIPipeParameterCo
     public static final int PARAM_WIDTH = 16;
     public static final int PARAM_HEIGHT = 32;
     private EventBus eventBus = new EventBus();
-    private IntModificationParameter left = new IntModificationParameter();
-    private IntModificationParameter top = new IntModificationParameter();
-    private IntModificationParameter right = new IntModificationParameter();
-    private IntModificationParameter bottom = new IntModificationParameter();
-    private IntModificationParameter width = new IntModificationParameter();
-    private IntModificationParameter height = new IntModificationParameter();
+    private NumericFunctionExpression left = new NumericFunctionExpression();
+    private NumericFunctionExpression top = new NumericFunctionExpression();
+    private NumericFunctionExpression right = new NumericFunctionExpression();
+    private NumericFunctionExpression bottom = new NumericFunctionExpression();
+    private NumericFunctionExpression width = new NumericFunctionExpression();
+    private NumericFunctionExpression height = new NumericFunctionExpression();
     private Anchor anchor = Anchor.TopLeft;
 
     /**
      * Creates a new instance
      */
     public Margin() {
-        this.left.setUseExactValue(true);
-        this.top.setUseExactValue(true);
-        this.right.setUseExactValue(true);
-        this.bottom.setUseExactValue(true);
+        this.left.ensureExactValue(true);
+        this.top.ensureExactValue(true);
+        this.right.ensureExactValue(true);
+        this.bottom.ensureExactValue(true);
         this.anchor = Anchor.CenterCenter;
-        this.width.setUseExactValue(false);
-        this.height.setUseExactValue(false);
+        this.width.ensureExactValue(false);
+        this.height.ensureExactValue(false);
     }
 
     /**
@@ -65,13 +66,13 @@ public class Margin implements Function<Rectangle, Rectangle>, JIPipeParameterCo
      * @param rectangle the rectangle
      */
     public Margin(Rectangle rectangle) {
-        this.left.setUseExactValue(true);
-        this.top.setUseExactValue(true);
-        this.right.setUseExactValue(false);
-        this.bottom.setUseExactValue(false);
+        this.left.ensureExactValue(true);
+        this.top.ensureExactValue(true);
+        this.right.ensureExactValue(false);
+        this.bottom.ensureExactValue(false);
         this.anchor = Anchor.TopLeft;
-        this.width.setUseExactValue(true);
-        this.height.setUseExactValue(true);
+        this.width.ensureExactValue(true);
+        this.height.ensureExactValue(true);
         this.left.setExactValue(rectangle.x);
         this.top.setExactValue(rectangle.y);
         this.width.setExactValue(rectangle.width);
@@ -84,12 +85,12 @@ public class Margin implements Function<Rectangle, Rectangle>, JIPipeParameterCo
      * @param other the original
      */
     public Margin(Margin other) {
-        this.left = new IntModificationParameter(other.left);
-        this.top = new IntModificationParameter(other.top);
-        this.right = new IntModificationParameter(other.right);
-        this.bottom = new IntModificationParameter(other.bottom);
-        this.width = new IntModificationParameter(other.width);
-        this.height = new IntModificationParameter(other.height);
+        this.left = new NumericFunctionExpression(other.left);
+        this.top = new NumericFunctionExpression(other.top);
+        this.right = new NumericFunctionExpression(other.right);
+        this.bottom = new NumericFunctionExpression(other.bottom);
+        this.width = new NumericFunctionExpression(other.width);
+        this.height = new NumericFunctionExpression(other.height);
         this.anchor = other.anchor;
     }
 
@@ -119,78 +120,78 @@ public class Margin implements Function<Rectangle, Rectangle>, JIPipeParameterCo
     @JIPipeDocumentation(name = "Left")
     @JIPipeParameter(value = "left", uiOrder = 0)
     @JsonGetter("left")
-    public IntModificationParameter getLeft() {
+    public NumericFunctionExpression getLeft() {
         return left;
     }
 
     @JIPipeParameter("left")
     @JsonSetter("left")
-    public void setLeft(IntModificationParameter left) {
+    public void setLeft(NumericFunctionExpression left) {
         this.left = left;
     }
 
     @JIPipeDocumentation(name = "Top")
     @JIPipeParameter(value = "top", uiOrder = 1)
     @JsonGetter("top")
-    public IntModificationParameter getTop() {
+    public NumericFunctionExpression getTop() {
         return top;
     }
 
     @JIPipeParameter("top")
     @JsonSetter("top")
-    public void setTop(IntModificationParameter top) {
+    public void setTop(NumericFunctionExpression top) {
         this.top = top;
     }
 
     @JIPipeDocumentation(name = "Right")
     @JIPipeParameter(value = "right", uiOrder = 2)
     @JsonGetter("right")
-    public IntModificationParameter getRight() {
+    public NumericFunctionExpression getRight() {
         return right;
     }
 
     @JIPipeParameter("right")
     @JsonSetter("right")
-    public void setRight(IntModificationParameter right) {
+    public void setRight(NumericFunctionExpression right) {
         this.right = right;
     }
 
     @JIPipeDocumentation(name = "Bottom")
     @JIPipeParameter(value = "bottom", uiOrder = 3)
     @JsonGetter("bottom")
-    public IntModificationParameter getBottom() {
+    public NumericFunctionExpression getBottom() {
         return bottom;
     }
 
     @JIPipeParameter("bottom")
     @JsonSetter("bottom")
-    public void setBottom(IntModificationParameter bottom) {
+    public void setBottom(NumericFunctionExpression bottom) {
         this.bottom = bottom;
     }
 
     @JIPipeDocumentation(name = "Width")
     @JIPipeParameter(value = "width", uiOrder = 4)
     @JsonGetter("width")
-    public IntModificationParameter getWidth() {
+    public NumericFunctionExpression getWidth() {
         return width;
     }
 
     @JIPipeParameter("width")
     @JsonSetter("width")
-    public void setWidth(IntModificationParameter width) {
+    public void setWidth(NumericFunctionExpression width) {
         this.width = width;
     }
 
     @JIPipeDocumentation(name = "Height")
     @JIPipeParameter(value = "height", uiOrder = 5)
     @JsonGetter("height")
-    public IntModificationParameter getHeight() {
+    public NumericFunctionExpression getHeight() {
         return height;
     }
 
     @JIPipeParameter("height")
     @JsonSetter("height")
-    public void setHeight(IntModificationParameter height) {
+    public void setHeight(NumericFunctionExpression height) {
         this.height = height;
     }
 
@@ -216,12 +217,12 @@ public class Margin implements Function<Rectangle, Rectangle>, JIPipeParameterCo
      */
     @Override
     public Rectangle apply(Rectangle rectangle) {
-        final int left_ = left.apply(rectangle.width);
-        final int top_ = top.apply(rectangle.height);
-        final int right_ = right.apply(rectangle.width);
-        final int bottom_ = bottom.apply(rectangle.height);
-        final int width_ = width.apply(rectangle.width);
-        final int height_ = height.apply(rectangle.height);
+        final int left_ = (int) left.apply(rectangle.width);
+        final int top_ = (int) top.apply(rectangle.height);
+        final int right_ = (int) right.apply(rectangle.width);
+        final int bottom_ = (int) bottom.apply(rectangle.height);
+        final int width_ = (int) width.apply(rectangle.width);
+        final int height_ = (int) height.apply(rectangle.height);
         final int aw = rectangle.width;
         final int ah = rectangle.height;
 

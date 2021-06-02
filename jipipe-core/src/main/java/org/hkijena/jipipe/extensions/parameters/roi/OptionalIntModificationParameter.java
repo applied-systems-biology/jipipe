@@ -13,14 +13,15 @@
 
 package org.hkijena.jipipe.extensions.parameters.roi;
 
+import org.hkijena.jipipe.extensions.expressions.NumericFunctionExpression;
 import org.hkijena.jipipe.extensions.parameters.optional.OptionalParameter;
 
 /**
- * An optional {@link IntModificationParameter}
+ * An optional {@link NumericFunctionExpression}
  */
-public class OptionalIntModificationParameter extends OptionalParameter<IntModificationParameter> {
+public class OptionalIntModificationParameter extends OptionalParameter<NumericFunctionExpression> {
     public OptionalIntModificationParameter() {
-        super(IntModificationParameter.class);
+        super(NumericFunctionExpression.class);
     }
 
     public OptionalIntModificationParameter(OptionalIntModificationParameter other) {

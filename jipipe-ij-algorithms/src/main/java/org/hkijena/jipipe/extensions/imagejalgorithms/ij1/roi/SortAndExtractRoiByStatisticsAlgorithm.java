@@ -30,7 +30,7 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.util.measure.MeasurementCol
 import org.hkijena.jipipe.extensions.parameters.colors.ColorMapEnumItemInfo;
 import org.hkijena.jipipe.extensions.parameters.colors.OptionalColorMapParameter;
 import org.hkijena.jipipe.extensions.parameters.primitives.EnumParameterSettings;
-import org.hkijena.jipipe.extensions.parameters.roi.IntModificationParameter;
+import org.hkijena.jipipe.extensions.expressions.NumericFunctionExpression;
 import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
 
 import java.util.ArrayList;
@@ -52,7 +52,7 @@ import static org.hkijena.jipipe.extensions.imagejalgorithms.ij1.roi.ImageRoiPro
 public class SortAndExtractRoiByStatisticsAlgorithm extends ImageRoiProcessorAlgorithm {
 
     private MeasurementColumnSortOrder.List sortOrderList = new MeasurementColumnSortOrder.List();
-    private IntModificationParameter selection = new IntModificationParameter();
+    private NumericFunctionExpression selection = new NumericFunctionExpression();
     private RoiStatisticsAlgorithm roiStatisticsAlgorithm = JIPipe.createNode("ij1-roi-statistics",
             RoiStatisticsAlgorithm.class);
     private boolean autoClamp = true;
@@ -67,7 +67,7 @@ public class SortAndExtractRoiByStatisticsAlgorithm extends ImageRoiProcessorAlg
     public SortAndExtractRoiByStatisticsAlgorithm(JIPipeNodeInfo info) {
         super(info, ROIListData.class, "Output");
         roiStatisticsAlgorithm.setAllSlotsVirtual(false, false, null);
-        selection.setUseExactValue(true);
+        selection.ensureExactValue(true);
         sortOrderList.addNewInstance();
     }
 
@@ -80,7 +80,7 @@ public class SortAndExtractRoiByStatisticsAlgorithm extends ImageRoiProcessorAlg
         super(other);
         roiStatisticsAlgorithm.setAllSlotsVirtual(false, false, null);
         this.sortOrderList = new MeasurementColumnSortOrder.List(other.sortOrderList);
-        this.selection = new IntModificationParameter(other.selection);
+        this.selection = new NumericFunctionExpression(other.selection);
         this.autoClamp = other.autoClamp;
         this.mapFillColor = new OptionalColorMapParameter(other.mapFillColor);
         this.mapLineColor = new OptionalColorMapParameter(other.mapLineColor);
@@ -137,7 +137,7 @@ public class SortAndExtractRoiByStatisticsAlgorithm extends ImageRoiProcessorAlg
                 data = sortedData;
             }
 
-            int topN = selection.apply(data.size());
+            int topN = (int) selection.apply(data.size());
             if (autoClamp) {
                 topN = Math.min(topN, data.size());
             }
@@ -171,12 +171,12 @@ public class SortAndExtractRoiByStatisticsAlgorithm extends ImageRoiProcessorAlg
 
     @JIPipeDocumentation(name = "Selection (top n)", description = "Allows you to select an exact amount or a fraction of ROI. The top N items will be selected.")
     @JIPipeParameter("selection")
-    public IntModificationParameter getSelection() {
+    public NumericFunctionExpression getSelection() {
         return selection;
     }
 
     @JIPipeParameter("selection")
-    public void setSelection(IntModificationParameter selection) {
+    public void setSelection(NumericFunctionExpression selection) {
         this.selection = selection;
     }
 

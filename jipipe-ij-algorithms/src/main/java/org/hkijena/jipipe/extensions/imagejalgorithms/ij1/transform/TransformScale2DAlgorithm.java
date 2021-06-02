@@ -13,6 +13,7 @@
 
 package org.hkijena.jipipe.extensions.imagejalgorithms.ij1.transform;
 
+import ij.IJ;
 import ij.ImagePlus;
 import ij.ImageStack;
 import ij.process.ImageProcessor;
@@ -43,6 +44,7 @@ public class TransformScale2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     private OptionalIntModificationParameter xAxis = new OptionalIntModificationParameter();
     private OptionalIntModificationParameter yAxis = new OptionalIntModificationParameter();
     private boolean useAveraging = true;
+    private ScaleMode scaleMode = ScaleMode.Stretch;
 
     /**
      * Instantiates a new node type.
@@ -70,6 +72,7 @@ public class TransformScale2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         this.xAxis = new OptionalIntModificationParameter(other.xAxis);
         this.yAxis = new OptionalIntModificationParameter(other.yAxis);
         this.useAveraging = other.useAveraging;
+        this.scaleMode = other.scaleMode;
     }
 
     @Override
@@ -85,14 +88,14 @@ public class TransformScale2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         int sx = img.getWidth();
         int sy = img.getHeight();
         if (xAxis.isEnabled() && yAxis.isEnabled()) {
-            sx = xAxis.getContent().apply(sx);
-            sy = yAxis.getContent().apply(sy);
+            sx = (int) xAxis.getContent().apply(sx);
+            sy = (int) yAxis.getContent().apply(sy);
         } else if (xAxis.isEnabled()) {
-            sx = xAxis.getContent().apply(sx);
+            sx = (int) xAxis.getContent().apply(sx);
             double fac = (double) sx / img.getWidth();
             sy = (int) (sy * fac);
         } else if (yAxis.isEnabled()) {
-            sy = yAxis.getContent().apply(sy);
+            sy = (int) yAxis.getContent().apply(sy);
             double fac = (double) sy / img.getHeight();
             sx = (int) (sx * fac);
         }
@@ -102,33 +105,16 @@ public class TransformScale2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
             int finalSx = sx;
             int finalSy = sy;
             ImageJUtils.forEachIndexedSlice(img, (imp, index) -> {
-                imp.setInterpolationMethod(interpolationMethod.getNativeValue());
-                ImageProcessor resized = imp.resize(finalSx, finalSy, useAveraging);
+                ImageProcessor resized = scaleProcessor(imp, finalSx, finalSy, interpolationMethod, useAveraging, scaleMode);
                 result.addSlice("" + index, resized);
             }, progressInfo);
             dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusData(new ImagePlus("Resized", result)), progressInfo);
         } else {
-            img.getProcessor().setInterpolationMethod(interpolationMethod.getNativeValue());
-            ImageProcessor resized = img.getProcessor().resize(sx, sy, useAveraging);
+            ImageProcessor resized = scaleProcessor(img.getProcessor(), sx, sy, interpolationMethod, useAveraging, scaleMode);
             ImagePlus result = new ImagePlus("Resized", resized);
             dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusData(result), progressInfo);
         }
 
-    }
-
-
-    @Override
-    public void reportValidity(JIPipeValidityReport report) {
-        if (xAxis.isEnabled() && xAxis.getContent().isUseExactValue()) {
-            report.forCategory("X axis").checkIfWithin(this, xAxis.getContent().getExactValue(), 0, Double.POSITIVE_INFINITY, false, false);
-        } else {
-            report.forCategory("X axis").checkIfWithin(this, xAxis.getContent().getFactor(), 0, Double.POSITIVE_INFINITY, false, false);
-        }
-        if (yAxis.isEnabled() && yAxis.getContent().isUseExactValue()) {
-            report.forCategory("Y axis").checkIfWithin(this, yAxis.getContent().getExactValue(), 0, Double.POSITIVE_INFINITY, false, false);
-        } else {
-            report.forCategory("Y axis").checkIfWithin(this, yAxis.getContent().getFactor(), 0, Double.POSITIVE_INFINITY, false, false);
-        }
     }
 
     @JIPipeDocumentation(name = "Interpolation", description = "The interpolation method")
@@ -164,6 +150,18 @@ public class TransformScale2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         this.yAxis = yAxis;
     }
 
+    @JIPipeDocumentation(name = "Scale mode", description = "Determines how the image is fit into the output. You can either stretch the image " +
+            "to the new dimensions, fit it inside the boundaries, or cut off parts to cover the whole output")
+    @JIPipeParameter("scale-mode")
+    public ScaleMode getScaleMode() {
+        return scaleMode;
+    }
+
+    @JIPipeParameter("scale-mode")
+    public void setScaleMode(ScaleMode scaleMode) {
+        this.scaleMode = scaleMode;
+    }
+
     @JIPipeDocumentation(name = "Use averaging", description = "True means that the averaging occurs to avoid " +
             "aliasing artifacts; the kernel shape for averaging is determined by " +
             "the interpolationMethod. False if subsampling without any averaging " +
@@ -176,5 +174,29 @@ public class TransformScale2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     @JIPipeParameter("use-averaging")
     public void setUseAveraging(boolean useAveraging) {
         this.useAveraging = useAveraging;
+    }
+
+    public static ImageProcessor scaleProcessor(ImageProcessor imp, int width, int height, InterpolationMethod interpolationMethod, boolean useAveraging, ScaleMode scaleMode) {
+        imp.setInterpolationMethod(interpolationMethod.getNativeValue());
+        switch (scaleMode) {
+            case Stretch:
+                return imp.resize(width, height, useAveraging);
+            case Fit: {
+                double factor = Math.min(width * 1.0 / imp.getWidth(), height * 1.0 / imp.getHeight());
+                ImageProcessor resized = imp.resize((int) (imp.getWidth() * factor), (int) (imp.getHeight() * factor), useAveraging);
+                ImageProcessor container = IJ.createImage("", width, height, 1, imp.getBitDepth()).getProcessor();
+                container.insert(resized, width / 2 - resized.getWidth() / 2, height / 2 - resized.getHeight() / 2);
+                return container;
+            }
+            case Cover: {
+                double factor = Math.max(width * 1.0 / imp.getWidth(), height * 1.0 / imp.getHeight());
+                ImageProcessor resized = imp.resize((int) (imp.getWidth() * factor), (int) (imp.getHeight() * factor), useAveraging);
+                ImageProcessor container = IJ.createImage("", width, height, 1, imp.getBitDepth()).getProcessor();
+                container.insert(resized, width / 2 - resized.getWidth() / 2, height / 2 - resized.getHeight() / 2);
+                return container;
+            }
+            default:
+                throw new UnsupportedOperationException();
+        }
     }
 }

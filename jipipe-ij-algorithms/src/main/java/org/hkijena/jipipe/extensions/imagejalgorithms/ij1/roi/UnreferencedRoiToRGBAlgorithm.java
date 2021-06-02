@@ -70,8 +70,8 @@ public class UnreferencedRoiToRGBAlgorithm extends JIPipeSimpleIteratingAlgorith
                 .addOutputSlot("Output", ImagePlusColorRGBData.class, null)
                 .seal()
                 .build());
-        imageArea.getWidth().setUseExactValue(false);
-        imageArea.getHeight().setUseExactValue(false);
+        imageArea.getWidth().ensureExactValue(false);
+        imageArea.getHeight().ensureExactValue(false);
         overrideLineWidth.setContent(1.0);
         overrideFillColor.setContent(Color.RED);
         overrideLineColor.setContent(Color.YELLOW);

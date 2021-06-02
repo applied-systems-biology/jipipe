@@ -92,14 +92,14 @@ public class TransformScale3DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         int sx = img.getWidth();
         int sy = img.getHeight();
         if (xAxis.isEnabled() && yAxis.isEnabled()) {
-            sx = xAxis.getContent().apply(sx);
-            sy = yAxis.getContent().apply(sy);
+            sx = (int) xAxis.getContent().apply(sx);
+            sy = (int) yAxis.getContent().apply(sy);
         } else if (xAxis.isEnabled()) {
-            sx = xAxis.getContent().apply(sx);
+            sx = (int) xAxis.getContent().apply(sx);
             double fac = (double) sx / img.getWidth();
             sy = (int) (sy * fac);
         } else if (yAxis.isEnabled()) {
-            sy = yAxis.getContent().apply(sy);
+            sy = (int) yAxis.getContent().apply(sy);
             double fac = (double) sy / img.getHeight();
             sx = (int) (sx * fac);
         }
@@ -117,7 +117,7 @@ public class TransformScale3DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         if (img.getStackSize() > 1) {
             int sz = img.getStackSize();
             if (zAxis.isEnabled()) {
-                sz = zAxis.getContent().apply(sz);
+                sz = (int) zAxis.getContent().apply(sz);
             } else {
                 double fac = Math.min((double) sx / img.getWidth(), (double) sy / img.getHeight());
                 sz = (int) (sz * fac);
@@ -130,26 +130,6 @@ public class TransformScale3DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         }
 
         dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusData(img), progressInfo);
-    }
-
-
-    @Override
-    public void reportValidity(JIPipeValidityReport report) {
-        if (xAxis.isEnabled() && xAxis.getContent().isUseExactValue()) {
-            report.forCategory("X axis").checkIfWithin(this, xAxis.getContent().getExactValue(), 0, Double.POSITIVE_INFINITY, false, false);
-        } else {
-            report.forCategory("X axis").checkIfWithin(this, xAxis.getContent().getFactor(), 0, Double.POSITIVE_INFINITY, false, false);
-        }
-        if (xAxis.isEnabled() && yAxis.getContent().isUseExactValue()) {
-            report.forCategory("Y axis").checkIfWithin(this, yAxis.getContent().getExactValue(), 0, Double.POSITIVE_INFINITY, false, false);
-        } else {
-            report.forCategory("Y axis").checkIfWithin(this, yAxis.getContent().getFactor(), 0, Double.POSITIVE_INFINITY, false, false);
-        }
-        if (xAxis.isEnabled() && zAxis.getContent().isUseExactValue()) {
-            report.forCategory("Z axis").checkIfWithin(this, zAxis.getContent().getExactValue(), 0, Double.POSITIVE_INFINITY, false, false);
-        } else {
-            report.forCategory("Z axis").checkIfWithin(this, zAxis.getContent().getFactor(), 0, Double.POSITIVE_INFINITY, false, false);
-        }
     }
 
     @JIPipeDocumentation(name = "Interpolation", description = "The interpolation method")

@@ -200,8 +200,8 @@ public class ROIListData extends ArrayList<Roi> implements JIPipeData {
 
         ImagePlus fallbackImage = WindowManager.getCurrentImage();
         Margin margin = new Margin();
-        margin.getWidth().setUseExactValue(false);
-        margin.getHeight().setUseExactValue(false);
+        margin.getWidth().ensureExactValue(false);
+        margin.getHeight().ensureExactValue(false);
 
         if (roiManager.getCount() > 0) {
             int result = JOptionPane.showOptionDialog(workbench.getWindow(),
