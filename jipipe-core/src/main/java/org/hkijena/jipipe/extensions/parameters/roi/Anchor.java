@@ -13,6 +13,8 @@
 
 package org.hkijena.jipipe.extensions.parameters.roi;
 
+import org.hkijena.jipipe.extensions.expressions.NumericFunctionExpression;
+
 import java.awt.*;
 
 /**
@@ -65,6 +67,37 @@ public enum Anchor {
     public Point getRectangleCoordinates(Rectangle rectangle) {
         return new Point((int) (rectangle.x + relativeX * (rectangle.width - 1)),
                 (int) (rectangle.y + relativeY * (rectangle.height - 1)));
+    }
+
+    /**
+     * Places the inner rectangle into the outer rectangle according to the anchor
+     * @param inner the inner (x and y are used to shift the rectangle; ignored on center-center); relative x and y
+     * @param outer the outer rectangle; absolute x and y
+     * @return the new inner rectangle. width and height are unchanged
+     */
+    public Rectangle placeInside(Rectangle inner, Rectangle outer) {
+        switch (this) {
+            case TopLeft:
+                return new Rectangle(inner.x + outer.x, inner.y + outer.y, inner.width, inner.height);
+            case TopRight:
+                return new Rectangle(outer.x + outer.width - inner.width - inner.x, inner.y + outer.y, inner.width, inner.height);
+            case TopCenter:
+                return new Rectangle(outer.x + outer.width / 2 - inner.width / 2, inner.y + outer.y, inner.width, inner.height);
+            case BottomLeft:
+                return new Rectangle(inner.x + outer.x, outer.y + outer.height - inner.height - inner.y, inner.width, inner.height);
+            case BottomRight:
+                return new Rectangle(outer.x + outer.width - inner.width - inner.x, outer.y + outer.height - inner.height - inner.y, inner.width, inner.height);
+            case BottomCenter:
+                return new Rectangle(outer.x + outer.width / 2 - inner.width / 2, outer.y + outer.height - inner.height - inner.y, inner.width, inner.height);
+            case CenterLeft:
+                return new Rectangle(outer.x + inner.x, outer.y + outer.height / 2 - inner.height / 2, inner.width, inner.height);
+            case CenterRight:
+                return new Rectangle(outer.x + outer.width - inner.width - inner.x, outer.y + outer.height / 2 - inner.height / 2, inner.width, inner.height);
+            case CenterCenter:
+                return new Rectangle(outer.x + outer.width / 2 - inner.width / 2, outer.y + outer.height / 2 - inner.height / 2, inner.width, inner.height);
+            default:
+                throw new UnsupportedOperationException();
+        }
     }
 
     public double getRelativeX() {

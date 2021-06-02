@@ -94,6 +94,10 @@ public class Margin implements Function<Rectangle, Rectangle>, JIPipeParameterCo
         this.anchor = other.anchor;
     }
 
+    public Margin(Anchor anchor) {
+        this.anchor = anchor;
+    }
+
     /**
      * Finds the parameter keys that are relevant according to the current anchor setting
      * The anchor key 'anchor' is not part of the result.
