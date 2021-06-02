@@ -25,7 +25,7 @@ import numpy as np
 import json
 from sklearn.model_selection import train_test_split
 from keras.preprocessing.image import ImageDataGenerator
-from keras import callbacks
+from keras import callbacks, models
 
 
 # set the GPU where the underlying model will be trained on
@@ -36,13 +36,28 @@ def set_GPU_device(device_id):
 #############################################################
 #           train a single segmentation network             #
 #############################################################
-def train_model(model, X, Y, config, verbose):
+def train_model(X, Y, config_path, verbose):
+    """Train a unet model.
+
+    Args:
+        X (np.array): input images in format [batch_size, x-dim, y_dim, channels] 
+        Y (np.array): output images in format [batch_size, x-dim, y_dim, channels]
+        config_path (json): path to config file
+        verbose (bool): verbose parameter
+    """
+
+    # read parameter from json file
+    with open(config_path) as json_file:
+        config = json.load(json_file)
 
     ### assign hyper-parameter for training procedure
-    n_epochs = config['max_epochs'][0]
-    batch_size = config['batch_size'][0]
-    validation_split = config['validation_split'][0]
-    monitor_loss = config['monitor_loss'][0]
+    n_epochs = config['max_epochs']
+    batch_size = config['batch_size']
+    validation_split = config['validation_split']
+    monitor_loss = config['monitor_loss']
+    model_path = config['model_path']
+
+    model = models.load_model(model_path, compile=True)    
     
     # if verbose > 0:
     #     [ print(parameter,':\t', value_desc) for parameter, value_desc in config.items() ]
@@ -144,7 +159,7 @@ def train_model(model, X, Y, config, verbose):
         
     steps_epoch = x_train.shape[0] / batch_size
     print('\nsteps per epoch-original:', steps_epoch)
-    steps_epoch = int(steps_epoch * config['augmentation_factor'][0])
+    steps_epoch = int(steps_epoch * config['augmentation_factor'])
     print('steps per epoch-augmented:', steps_epoch)
         
     # fits the model on batches with real-time data augmentation:

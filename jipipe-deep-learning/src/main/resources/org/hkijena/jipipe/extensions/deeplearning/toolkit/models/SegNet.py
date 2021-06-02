@@ -19,6 +19,7 @@ Script to create a SegNet model
 
 
 import os
+import json
 
 os.environ["CUDA_DEVICE_ORDER"] = "PCI_BUS_ID"
 
@@ -32,7 +33,17 @@ from metrics import *
 #############################################################
 #                           SegNet                          #
 #############################################################
-def build_model(img_shape, reg_method='GaussianDropout', reg_method_rate=0.1, nClasses=2):
+def build_model(config_path):
+
+    # read parameter from json file
+    with open(config_path) as json_file:
+        config = json.load(json_file)
+
+    img_shape = config['img_size']
+    reg_method = config['regularization_method']
+    reg_method_rate = config['regularization_lambda']
+    nClasses = config['n_classes']
+    model_path = config['model_path']
 
     def conv_block(input_tensor, num_filters, kernel_size=7, reg_method='GaussianDropout'):#config['kernel_size'][0]):
 
@@ -141,7 +152,11 @@ def build_model(img_shape, reg_method='GaussianDropout', reg_method_rate=0.1, nC
     else:
         model.compile(optimizer='adam', loss=ce_dice_loss, metrics=[dice_loss])
 
-    return model
+    model.summary()
+
+    model.save(model_path)
+
+    # return model
 
 
 

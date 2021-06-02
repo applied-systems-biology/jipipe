@@ -31,7 +31,15 @@ from keras import losses
 #############################################################
 #                           VGG16                           #
 #############################################################
-def build_model(img_shape, num_classes):
+def build_model(config_path):
+
+    # read parameter from json file
+    with open(config_path) as json_file:
+        config = json.load(json_file)
+
+    img_shape = config['img_size']
+    num_classes = config['n_classes']
+    model_path = config['model_path']
 
     def secondConvBlock(input_tensor, num_filters):
         sec_conv = layers.Conv2D(num_filters, (3,3), padding='same' )(input_tensor)
@@ -80,7 +88,11 @@ def build_model(img_shape, num_classes):
     # compile model
     model.compile(loss='categorical_crossentropy', optimizer=optimizers.Adam(), metrics=['acc'])
 
-    return model
+    model.summary()
+    
+    model.save(model_path)
+
+    # return model
 
 
 
