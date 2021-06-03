@@ -14,6 +14,7 @@
 package org.hkijena.jipipe.api.data;
 
 import com.google.common.eventbus.EventBus;
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
@@ -358,6 +359,9 @@ public class JIPipeDataByMetadataExporter implements JIPipeParameterCollection {
                 String value = metadataValue != null ? metadataValue.getValue() : missingString;
                 parameters.put(metadataKey, value);
             }
+            parameters.set("data_string", dataSlot.getVirtualData(row).getStringRepresentation());
+            parameters.set("data_type", JIPipe.getDataTypes().getIdOf(dataSlot.getDataClass(row)));
+            parameters.set("row", row + "");
 
             String newName = StringUtils.nullToEmpty(customName.generate(parameters));
             metadataStringBuilder.append(newName);
@@ -431,6 +435,15 @@ public class JIPipeDataByMetadataExporter implements JIPipeParameterCollection {
             VARIABLES.add(new ExpressionParameterVariable("<Annotations>",
                     "Data annotations are available as variables named after their column names (use Update Cache to find the list of annotations)",
                     ""));
+            VARIABLES.add(new ExpressionParameterVariable("Data string",
+                    "The data stored as string",
+                    "data_string"));
+            VARIABLES.add(new ExpressionParameterVariable("Data type ID",
+                    "The data type ID",
+                    "data_type"));
+            VARIABLES.add(new ExpressionParameterVariable("Row",
+                    "The row inside the data table",
+                    "row"));
         }
 
         @Override

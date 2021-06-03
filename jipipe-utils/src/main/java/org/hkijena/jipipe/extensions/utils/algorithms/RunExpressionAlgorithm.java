@@ -86,6 +86,7 @@ public class RunExpressionAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         }
         variableSet.set("data_string", "" + data);
         variableSet.set("data_type", JIPipeDataInfo.getInstance(data.getClass()).getId());
+        variableSet.set("row", dataBatch.getInputSlotRows().get(getFirstInputSlot()));
         Object result = expression.evaluate(variableSet);
         List<JIPipeAnnotation> annotationList = new ArrayList<>();
         if (result != null && writeToAnnotation.isEnabled()) {
@@ -100,6 +101,7 @@ public class RunExpressionAlgorithm extends JIPipeSimpleIteratingAlgorithm {
             Set<ExpressionParameterVariable> result = new HashSet<>();
             result.add(new ExpressionParameterVariable("Data as string", "The data value, represented as string", "data_string"));
             result.add(new ExpressionParameterVariable("Data type id", "The ID of the data type", "data_type"));
+            result.add(new ExpressionParameterVariable("Row", "The row inside the data type", "row"));
             return result;
         }
     }

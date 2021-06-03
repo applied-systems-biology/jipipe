@@ -41,15 +41,14 @@ public class AnnotationGeneratorExpression extends DefaultExpressionParameter {
      * Generates an annotation value
      *
      * @param annotations existing annotations for the data
-     * @param dataString  the data as string
+     * @param variableSet existing variables
      * @return the annotation value
      */
-    public String generateAnnotationValue(Collection<JIPipeAnnotation> annotations, String dataString) {
-        ExpressionParameters variableSet = new ExpressionParameters();
+    public String generateAnnotationValue(Collection<JIPipeAnnotation> annotations, ExpressionParameters variableSet) {
         for (JIPipeAnnotation annotation : annotations) {
-            variableSet.set(annotation.getName(), annotation.getValue());
+            if(!variableSet.containsKey(annotation.getName()))
+                variableSet.set(annotation.getName(), annotation.getValue());
         }
-        variableSet.set("data_string", dataString);
         return "" + evaluate(variableSet);
     }
 

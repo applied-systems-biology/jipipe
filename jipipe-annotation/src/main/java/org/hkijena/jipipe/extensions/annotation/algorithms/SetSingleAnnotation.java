@@ -13,6 +13,7 @@
 
 package org.hkijena.jipipe.extensions.annotation.algorithms;
 
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
@@ -69,6 +70,8 @@ public class SetSingleAnnotation extends JIPipeSimpleIteratingAlgorithm {
             variableSet.set(annotation.getName(), annotation.getValue());
         }
         variableSet.set("data_string", getFirstInputSlot().getVirtualData(dataBatch.getInputSlotRows().get(getFirstInputSlot())).getStringRepresentation());
+        variableSet.set("data_type", JIPipe.getDataTypes().getIdOf(getFirstInputSlot().getVirtualData(dataBatch.getInputSlotRows().get(getFirstInputSlot())).getDataClass()));
+        variableSet.set("row", dataBatch.getInputSlotRows().get(getFirstInputSlot()));
         String name = StringUtils.nullToEmpty(annotationName.generate(variableSet));
         String value = StringUtils.nullToEmpty(annotationValue.generate(variableSet));
         if (StringUtils.isNullOrEmpty(name)) {
@@ -115,6 +118,15 @@ public class SetSingleAnnotation extends JIPipeSimpleIteratingAlgorithm {
             VARIABLES.add(new ExpressionParameterVariable("<Annotations>",
                     "Annotations of the source ROI list are available (use Update Cache to find the list of annotations)",
                     ""));
+            VARIABLES.add(new ExpressionParameterVariable("Data string",
+                    "The data stored as string",
+                    "data_string"));
+            VARIABLES.add(new ExpressionParameterVariable("Data type ID",
+                    "The data type ID",
+                    "data_type"));
+            VARIABLES.add(new ExpressionParameterVariable("Row",
+                    "The row inside the data table",
+                    "row"));
         }
 
         @Override

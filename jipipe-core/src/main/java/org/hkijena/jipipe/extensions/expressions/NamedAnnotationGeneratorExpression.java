@@ -34,11 +34,11 @@ public class NamedAnnotationGeneratorExpression extends PairParameter<Annotation
      * Generates an annotation
      *
      * @param annotations existing annotations for the data
-     * @param dataString  the data as string
+     * @param variableSet existing variables
      * @return the annotation
      */
-    public JIPipeAnnotation generateAnnotation(Collection<JIPipeAnnotation> annotations, String dataString) {
-        return new JIPipeAnnotation(getValue(), getKey().generateAnnotationValue(annotations, dataString));
+    public JIPipeAnnotation generateAnnotation(Collection<JIPipeAnnotation> annotations, ExpressionParameters variableSet) {
+        return new JIPipeAnnotation(getValue(), getKey().generateAnnotationValue(annotations, variableSet));
     }
 
     public static class List extends ListParameter<NamedAnnotationGeneratorExpression> {

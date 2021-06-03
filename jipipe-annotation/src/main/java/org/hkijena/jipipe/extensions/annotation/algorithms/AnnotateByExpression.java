@@ -13,6 +13,7 @@
 
 package org.hkijena.jipipe.extensions.annotation.algorithms;
 
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
@@ -75,10 +76,13 @@ public class AnnotateByExpression extends JIPipeSimpleIteratingAlgorithm {
     @Override
     protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
         for (NamedAnnotationGeneratorExpression expression : annotations) {
-            dataBatch.addGlobalAnnotation(expression.generateAnnotation(dataBatch.getAnnotations().values(), dataBatch.getInputData(getFirstInputSlot(),
-                    JIPipeData.class,
-                    progressInfo).toString()),
-                    annotationMergeStrategy);
+            ExpressionParameters variableSet = new ExpressionParameters();
+            variableSet.set("data_string", getFirstInputSlot().getVirtualData(dataBatch.getInputSlotRows().get(getFirstInputSlot())).getStringRepresentation());
+            variableSet.set("data_type", JIPipe.getDataTypes().getIdOf(getFirstInputSlot().getVirtualData(dataBatch.getInputSlotRows().get(getFirstInputSlot())).getDataClass()));
+            variableSet.set("row", dataBatch.getInputSlotRows().get(getFirstInputSlot()));
+            dataBatch.addGlobalAnnotation(expression.generateAnnotation(dataBatch.getAnnotations().values(),  variableSet),
+                    annotationMergeStrategy
+            );
         }
         dataBatch.addOutputData(getFirstOutputSlot(), dataBatch.getInputData(getFirstInputSlot(), JIPipeData.class, progressInfo), progressInfo);
     }
@@ -129,6 +133,15 @@ public class AnnotateByExpression extends JIPipeSimpleIteratingAlgorithm {
             VARIABLES.add(new ExpressionParameterVariable("<Annotations>",
                     "Annotations of the source ROI list are available (use Update Cache to find the list of annotations)",
                     ""));
+            VARIABLES.add(new ExpressionParameterVariable("Data string",
+                    "The data stored as string",
+                    "data_string"));
+            VARIABLES.add(new ExpressionParameterVariable("Data type ID",
+                    "The data type ID",
+                    "data_type"));
+            VARIABLES.add(new ExpressionParameterVariable("Row",
+                    "The row inside the data table",
+                    "row"));
         }
 
         @Override
