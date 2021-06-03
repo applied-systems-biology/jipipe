@@ -19,6 +19,7 @@ Script to create a SegNet model
 
 
 import os
+import sys
 import json
 
 os.environ["CUDA_DEVICE_ORDER"] = "PCI_BUS_ID"
@@ -39,7 +40,7 @@ def build_model(config_path):
     with open(config_path) as json_file:
         config = json.load(json_file)
 
-    img_shape = config['img_size']
+    img_shape = ( config['img_size'] , config['img_size'] , 3 )   
     reg_method = config['regularization_method']
     reg_method_rate = config['regularization_lambda']
     nClasses = config['n_classes']
@@ -156,10 +157,19 @@ def build_model(config_path):
 
     model.save(model_path)
 
+    # TODO: speichere hier model-Archituekture & config in den gleichen Ordner: mache das in einer utils-Funktions, da das für alle Methoden gemacht wird
+
     # return model
 
+    print('save model to:', model_path)
 
+if __name__ == "__main__":
 
-# TODO:später löschen
-#model = build_model(img_shape=(512,512,3))    
-#model.summary()
+    print('Number of arguments:', len(sys.argv), 'arguments.')
+    print('Argument List:', str(sys.argv))
+
+    # TODO: das hier später noch sauber mit "argparse" machen
+    config_path = sys.argv[1]
+    print('\nconfig-path:', config_path)
+
+    build_model(config_path)
