@@ -250,7 +250,7 @@ public class FilterROIByOverlapAlgorithm extends JIPipeIteratingAlgorithm {
         return roi1Settings;
     }
 
-    @JIPipeDocumentation(name = "ROI 1 filter", description = "Use following settings to determine how inputs into <b>ROI 2</b> are filtered " +
+    @JIPipeDocumentation(name = "ROI 2 filter", description = "Use following settings to determine how inputs into <b>ROI 2</b> are filtered " +
             "(by overlapping them with items in <b>ROI 1</b>). " +
             "Filtered ROI will be put into the corresponding <b>ROI 2</b> output.")
     @JIPipeParameter("roi2")
