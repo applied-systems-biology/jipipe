@@ -83,6 +83,7 @@ public class DeepLearningToolkitEnvInstaller extends BasicMinicondaEnvPythonInst
                 writer.write(configuration.getTensorFlowVersion());
                 writer.newLine();
             }
+            // This is needed - otherwise conda might pull the wrong version
             writer.write("  - tensorflow-estimator==");
             writer.write(configuration.getTensorFlowVersion());
             writer.newLine();
