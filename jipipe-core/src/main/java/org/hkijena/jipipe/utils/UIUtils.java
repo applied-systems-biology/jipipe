@@ -20,6 +20,7 @@ import org.apache.commons.lang3.SystemUtils;
 import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
 import org.fife.ui.rsyntaxtextarea.Theme;
 import org.hkijena.jipipe.JIPipe;
+import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.JIPipeValidityReport;
 import org.hkijena.jipipe.api.data.JIPipeDataInfo;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
@@ -84,7 +85,7 @@ public class UIUtils {
         if (SystemUtils.IS_OS_LINUX) {
             // SystemTray does not work well on Linux
             // Try notify-send, first
-            String notifySendPath = StringUtils.nullToEmpty(ProcessUtils.queryFast(Paths.get("/usr/bin/which"), "notify-send")).trim();
+            String notifySendPath = StringUtils.nullToEmpty(ProcessUtils.queryFast(Paths.get("/usr/bin/which"), new JIPipeProgressInfo(), "notify-send")).trim();
             if (!StringUtils.isNullOrEmpty(notifySendPath)) {
                 Path exePath = Paths.get(notifySendPath);
                 try {
@@ -96,7 +97,7 @@ public class UIUtils {
             }
 
             // Try zenity
-            String zenityPath = StringUtils.nullToEmpty(ProcessUtils.queryFast(Paths.get("/usr/bin/which"), "zenity")).trim();
+            String zenityPath = StringUtils.nullToEmpty(ProcessUtils.queryFast(Paths.get("/usr/bin/which"), new JIPipeProgressInfo(), "zenity")).trim();
             if (!StringUtils.isNullOrEmpty(zenityPath)) {
                 Path exePath = Paths.get(zenityPath);
                 try {

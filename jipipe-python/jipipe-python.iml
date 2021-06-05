@@ -226,6 +226,8 @@
     <orderEntry type="library" name="Maven: net.sf.trove4j:trove4j:3.0.3" level="project" />
     <orderEntry type="library" name="Maven: com.github.vatbub:mslinks:1.0.5" level="project" />
     <orderEntry type="library" name="Maven: com.fathzer:javaluator:3.0.3" level="project" />
+    <orderEntry type="library" name="Maven: net.java.dev.jna:jna:4.5.2" level="project" />
+    <orderEntry type="library" name="Maven: net.java.dev.jna:jna-platform:4.5.1" level="project" />
     <orderEntry type="library" name="Maven: org.python:jython-slim:2.7.2" level="project" />
     <orderEntry type="library" name="Maven: org.antlr:antlr:3.5.2" level="project" />
     <orderEntry type="library" name="Maven: org.antlr:ST4:4.0.8" level="project" />

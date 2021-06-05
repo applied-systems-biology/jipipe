@@ -17,6 +17,7 @@ import org.hkijena.jipipe.extensions.settings.RuntimeSettings;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.components.MarkdownDocument;
 import org.hkijena.jipipe.ui.parameters.ParameterPanel;
+import org.hkijena.jipipe.utils.ProcessUtils;
 import org.hkijena.jipipe.utils.WebUtils;
 
 import javax.swing.*;
@@ -123,8 +124,7 @@ public class BasicMinicondaEnvPythonInstaller extends ExternalEnvironmentInstall
                     environmentVariables.getOrDefault("Path", ""));
         }
 
-        DefaultExecutor executor = new DefaultExecutor();
-        executor.setWatchdog(new ExecuteWatchdog(ExecuteWatchdog.INFINITE_TIMEOUT));
+        ProcessUtils.ExtendedExecutor executor = new ProcessUtils.ExtendedExecutor(ExecuteWatchdog.INFINITE_TIMEOUT, progressInfo);
         PythonUtils.setupLogger(commandLine, executor, progressInfo);
 
         // Set working directory, so conda can see its DLLs
@@ -257,8 +257,7 @@ public class BasicMinicondaEnvPythonInstaller extends ExternalEnvironmentInstall
         commandLine.addArgument("-p");
         commandLine.addArgument(getConfiguration().installationPath.toAbsolutePath().toString());
 
-        DefaultExecutor executor = new DefaultExecutor();
-        executor.setWatchdog(new ExecuteWatchdog(ExecuteWatchdog.INFINITE_TIMEOUT));
+        ProcessUtils.ExtendedExecutor executor = new ProcessUtils.ExtendedExecutor(ExecuteWatchdog.INFINITE_TIMEOUT, progressInfo);
         executor.setStreamHandler(new PumpStreamHandler(progressInfoLog, progressInfoLog));
 
         try {
@@ -287,8 +286,7 @@ public class BasicMinicondaEnvPythonInstaller extends ExternalEnvironmentInstall
         commandLine.addArgument("/S");
         commandLine.addArgument("/D=" + getConfiguration().installationPath.toAbsolutePath());
 
-        DefaultExecutor executor = new DefaultExecutor();
-        executor.setWatchdog(new ExecuteWatchdog(ExecuteWatchdog.INFINITE_TIMEOUT));
+        ProcessUtils.ExtendedExecutor executor = new ProcessUtils.ExtendedExecutor(ExecuteWatchdog.INFINITE_TIMEOUT, progressInfo);
         executor.setStreamHandler(new PumpStreamHandler(progressInfoLog, progressInfoLog));
 
         try {

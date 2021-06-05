@@ -16,6 +16,7 @@ import org.hkijena.jipipe.extensions.parameters.primitives.IntegerList;
 import org.hkijena.jipipe.extensions.parameters.primitives.StringList;
 import org.hkijena.jipipe.extensions.settings.RuntimeSettings;
 import org.hkijena.jipipe.utils.MacroUtils;
+import org.hkijena.jipipe.utils.ProcessUtils;
 import org.hkijena.jipipe.utils.StringUtils;
 
 import java.io.IOException;
@@ -273,8 +274,7 @@ public class RUtils {
             }
         };
 
-        DefaultExecutor executor = new DefaultExecutor();
-        executor.setWatchdog(new ExecuteWatchdog(ExecuteWatchdog.INFINITE_TIMEOUT));
+        ProcessUtils.ExtendedExecutor executor = new ProcessUtils.ExtendedExecutor(ExecuteWatchdog.INFINITE_TIMEOUT, progressInfo);
         executor.setStreamHandler(new PumpStreamHandler(progressInfoLog, progressInfoLog));
 
         try {

@@ -20,18 +20,14 @@ import org.hkijena.jipipe.extensions.parameters.primitives.IntegerList;
 import org.hkijena.jipipe.extensions.parameters.primitives.StringList;
 import org.hkijena.jipipe.extensions.settings.RuntimeSettings;
 import org.hkijena.jipipe.utils.MacroUtils;
+import org.hkijena.jipipe.utils.ProcessUtils;
 import org.hkijena.jipipe.utils.StringUtils;
-import org.reflections.Reflections;
-import org.reflections.scanners.ResourcesScanner;
-import org.reflections.util.ClasspathHelper;
-import org.reflections.util.ConfigurationBuilder;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.*;
-import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 public class PythonUtils {
@@ -311,8 +307,7 @@ public class PythonUtils {
             commandLine.addArgument(StringUtils.nullToEmpty(item));
         }
 
-        DefaultExecutor executor = new DefaultExecutor();
-        executor.setWatchdog(new ExecuteWatchdog(ExecuteWatchdog.INFINITE_TIMEOUT));
+        ProcessUtils.ExtendedExecutor executor = new ProcessUtils.ExtendedExecutor(ExecuteWatchdog.INFINITE_TIMEOUT, progressInfo);
         setupLogger(commandLine, executor, progressInfo);
 
         try {
@@ -360,8 +355,7 @@ public class PythonUtils {
             commandLine.addArgument(argument);
         }
 
-        DefaultExecutor executor = new DefaultExecutor();
-        executor.setWatchdog(new ExecuteWatchdog(ExecuteWatchdog.INFINITE_TIMEOUT));
+        ProcessUtils.ExtendedExecutor executor = new ProcessUtils.ExtendedExecutor(ExecuteWatchdog.INFINITE_TIMEOUT, progressInfo);
         setupLogger(commandLine, executor, progressInfo);
 
         try {
