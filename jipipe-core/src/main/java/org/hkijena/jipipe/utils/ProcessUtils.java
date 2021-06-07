@@ -20,6 +20,10 @@ import com.sun.jna.platform.win32.WinNT;
 import org.apache.commons.exec.*;
 import org.apache.commons.lang3.SystemUtils;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
+import org.jgrapht.graph.DefaultDirectedGraph;
+import org.jgrapht.graph.DefaultEdge;
+import org.jgrapht.graph.DefaultUndirectedGraph;
+import org.jgrapht.traverse.BreadthFirstIterator;
 
 import java.io.*;
 import java.lang.reflect.Field;
@@ -206,11 +210,39 @@ public class ProcessUtils {
             }
             else {
                 // Unix provides pkill
-                String pKillPath = StringUtils.nullToEmpty(ProcessUtils.queryFast(Paths.get("/usr/bin/which"), new JIPipeProgressInfo(), "pkill")).trim();
-                if (!StringUtils.isNullOrEmpty(pKillPath)) {
-                    progressInfo.log(queryFast(Paths.get(pKillPath),
+                String psPath = StringUtils.nullToEmpty(ProcessUtils.queryFast(Paths.get("/usr/bin/which"), new JIPipeProgressInfo(), "ps")).trim();
+                String killPath = StringUtils.nullToEmpty(ProcessUtils.queryFast(Paths.get("/usr/bin/which"), new JIPipeProgressInfo(), "kill")).trim();
+                if (!StringUtils.isNullOrEmpty(psPath)) {
+                    String psOutput = queryFast(Paths.get(psPath),
                             progressInfo,
-                            "-9", "-P", pid + ""));
+                            "-A", "-o", "pid,ppid");
+                    if(!StringUtils.isNullOrEmpty(psOutput)) {
+                        psOutput = psOutput.trim();
+                        DefaultDirectedGraph<Long, DefaultEdge> graph = new DefaultDirectedGraph<>(DefaultEdge.class);
+                        for (String line : psOutput.split("\n")) {
+                            String line_ = line.trim();
+                            if(line_.startsWith("P"))
+                                continue;
+                            String[] components = line_.split("\\s+");
+                            long psPid = Long.parseLong(components[0]);
+                            long psParentPid = Long.parseLong(components[1]);
+                            if(!graph.containsVertex(psPid))
+                                graph.addVertex(psPid);
+                            if(psParentPid > 0) {
+                                if(!graph.containsVertex(psParentPid))
+                                    graph.addVertex(psParentPid);
+                                graph.addEdge(psParentPid, psPid);
+                            }
+                        }
+
+                        // List all children
+                        BreadthFirstIterator<Long, DefaultEdge> breadthFirstIterator = new BreadthFirstIterator<>(graph, pid);
+                        while(breadthFirstIterator.hasNext()) {
+                            long toKill = breadthFirstIterator.next();
+                            progressInfo.log("Killing orphaned PID " + toKill);
+                            queryFast(Paths.get(killPath), progressInfo, "-9", toKill + "");
+                        }
+                    }
                 }
                 else {
                     progressInfo.log("Error: Could not find pkill.");
