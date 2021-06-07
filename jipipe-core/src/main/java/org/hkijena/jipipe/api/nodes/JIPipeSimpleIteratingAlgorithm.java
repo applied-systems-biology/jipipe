@@ -13,6 +13,7 @@
 
 package org.hkijena.jipipe.api.nodes;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.google.common.eventbus.EventBus;
 import gnu.trove.set.TIntSet;
 import gnu.trove.set.hash.TIntHashSet;
@@ -24,14 +25,26 @@ import org.hkijena.jipipe.api.data.JIPipeAnnotationMergeStrategy;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.data.JIPipeSlotConfiguration;
 import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
+import org.hkijena.jipipe.api.parameters.JIPipeContextAction;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
+import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
+import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterVisibility;
+import org.hkijena.jipipe.extensions.expressions.ExpressionParameters;
 import org.hkijena.jipipe.extensions.parameters.generators.IntegerRange;
 import org.hkijena.jipipe.extensions.parameters.generators.OptionalIntegerRange;
+import org.hkijena.jipipe.extensions.parameters.pairs.StringQueryExpressionAndStringPairParameter;
+import org.hkijena.jipipe.ui.JIPipeWorkbench;
+import org.hkijena.jipipe.utils.JsonUtils;
+import org.hkijena.jipipe.utils.ResourceUtils;
+import org.hkijena.jipipe.utils.StringUtils;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
@@ -44,6 +57,7 @@ public abstract class JIPipeSimpleIteratingAlgorithm extends JIPipeParameterSlot
 
     private boolean parallelizationEnabled = true;
     private DataBatchGenerationSettings dataBatchGenerationSettings = new DataBatchGenerationSettings();
+    private JIPipeAdaptiveParameterSettings adaptiveParameterSettings = new JIPipeAdaptiveParameterSettings();
 
     /**
      * Creates a new instance
@@ -54,6 +68,7 @@ public abstract class JIPipeSimpleIteratingAlgorithm extends JIPipeParameterSlot
     public JIPipeSimpleIteratingAlgorithm(JIPipeNodeInfo info, JIPipeSlotConfiguration slotConfiguration) {
         super(info, slotConfiguration);
         registerSubParameter(dataBatchGenerationSettings);
+        registerSubParameter(adaptiveParameterSettings);
     }
 
     /**
@@ -64,6 +79,7 @@ public abstract class JIPipeSimpleIteratingAlgorithm extends JIPipeParameterSlot
     public JIPipeSimpleIteratingAlgorithm(JIPipeNodeInfo info) {
         super(info, null);
         registerSubParameter(dataBatchGenerationSettings);
+        registerSubParameter(adaptiveParameterSettings);
     }
 
     /**
@@ -74,8 +90,10 @@ public abstract class JIPipeSimpleIteratingAlgorithm extends JIPipeParameterSlot
     public JIPipeSimpleIteratingAlgorithm(JIPipeSimpleIteratingAlgorithm other) {
         super(other);
         this.dataBatchGenerationSettings = new DataBatchGenerationSettings(other.dataBatchGenerationSettings);
+        this.adaptiveParameterSettings = new JIPipeAdaptiveParameterSettings(other.adaptiveParameterSettings);
         this.parallelizationEnabled = other.parallelizationEnabled;
         registerSubParameter(dataBatchGenerationSettings);
+        registerSubParameter(adaptiveParameterSettings);
     }
 
     @Override
@@ -92,11 +110,22 @@ public abstract class JIPipeSimpleIteratingAlgorithm extends JIPipeParameterSlot
             return;
         }
 
+        // Adaptive parameter backups
+        JIPipeParameterTree tree = null;
+        Map<String, Object> parameterBackups = new HashMap<>();
+        if(getAdaptiveParameterSettings().isEnabled() && !getAdaptiveParameterSettings().getOverriddenParameters().isEmpty()) {
+            tree = new JIPipeParameterTree(this);
+            for (Map.Entry<String, JIPipeParameterAccess> entry : tree.getParameters().entrySet()) {
+                parameterBackups.put(entry.getKey(), entry.getValue().get(Object.class));
+            }
+        }
+
         if (getInputSlots().isEmpty()) {
             final int row = 0;
             JIPipeProgressInfo slotProgress = progressInfo.resolveAndLog("Data row", row, 1);
             JIPipeDataBatch dataBatch = new JIPipeDataBatch(this);
             dataBatch.addGlobalAnnotations(parameterAnnotations, JIPipeAnnotationMergeStrategy.Merge);
+            uploadAdaptiveParameters(dataBatch, tree, parameterBackups, progressInfo);
             runIteration(dataBatch, slotProgress);
         } else {
 
@@ -115,6 +144,7 @@ public abstract class JIPipeSimpleIteratingAlgorithm extends JIPipeParameterSlot
                     dataBatch.setData(getFirstInputSlot(), i);
                     dataBatch.addGlobalAnnotations(getFirstInputSlot().getAnnotations(i), JIPipeAnnotationMergeStrategy.Merge);
                     dataBatch.addGlobalAnnotations(parameterAnnotations, JIPipeAnnotationMergeStrategy.Merge);
+                    uploadAdaptiveParameters(dataBatch, tree, parameterBackups, progressInfo);
                     runIteration(dataBatch, slotProgress);
                 }
             } else {
@@ -123,6 +153,7 @@ public abstract class JIPipeSimpleIteratingAlgorithm extends JIPipeParameterSlot
                     if (withLimit && !allowedIndices.contains(i))
                         continue;
                     int rowIndex = i;
+                    JIPipeParameterTree finalTree = tree;
                     tasks.add(() -> {
                         if (progressInfo.isCancelled().get())
                             return;
@@ -131,6 +162,7 @@ public abstract class JIPipeSimpleIteratingAlgorithm extends JIPipeParameterSlot
                         dataBatch.setData(getFirstInputSlot(), rowIndex);
                         dataBatch.addGlobalAnnotations(getFirstInputSlot().getAnnotations(rowIndex), JIPipeAnnotationMergeStrategy.Merge);
                         dataBatch.addGlobalAnnotations(parameterAnnotations, JIPipeAnnotationMergeStrategy.Merge);
+                        uploadAdaptiveParameters(dataBatch, finalTree, parameterBackups, progressInfo);
                         runIteration(dataBatch, slotProgress);
                     });
                 }
@@ -146,6 +178,60 @@ public abstract class JIPipeSimpleIteratingAlgorithm extends JIPipeParameterSlot
                 }
             }
         }
+    }
+
+    private void uploadAdaptiveParameters(JIPipeDataBatch dataBatch, JIPipeParameterTree tree, Map<String, Object> parameterBackups, JIPipeProgressInfo progressInfo) {
+        ExpressionParameters expressionParameters = new ExpressionParameters();
+        for (JIPipeAnnotation annotation : dataBatch.getAnnotations().values()) {
+            expressionParameters.put(annotation.getName(), annotation.getValue());
+        }
+        for (StringQueryExpressionAndStringPairParameter overriddenParameter : getAdaptiveParameterSettings().getOverriddenParameters()) {
+            String key = overriddenParameter.getValue();
+            JIPipeParameterAccess target = tree.getParameters().getOrDefault(key, null);
+            if (target == null) {
+                progressInfo.log("Unable to find parameter '" + key + "' in " + getName() + "! Ignoring.");
+                continue;
+            }
+            Object oldValue = parameterBackups.get(key);
+            expressionParameters.put("default", oldValue);
+            Object newValue = overriddenParameter.getKey().evaluate(expressionParameters);
+            if(Objects.equals(newValue, oldValue)) {
+                // No changes
+                if(getAdaptiveParameterSettings().isAttachParameterAnnotations() && !getAdaptiveParameterSettings().isAttachOnlyNonDefaultParameterAnnotations()) {
+                    annotateWithParameter(dataBatch, key, target, newValue);
+                }
+            }
+            else if(target.getFieldClass().isAssignableFrom(newValue.getClass())) {
+                // Set new value
+                target.set(newValue);
+                if(getAdaptiveParameterSettings().isAttachParameterAnnotations()) {
+                    annotateWithParameter(dataBatch, key, target, newValue);
+                }
+            }
+            else {
+                // Is JSON. Parse
+                try {
+                    newValue = JsonUtils.getObjectMapper().readerFor(target.getFieldClass()).readValue(StringUtils.nullToEmpty(newValue));
+                } catch (JsonProcessingException e) {
+                    throw new RuntimeException(e);
+                }
+                target.set(newValue);
+                if(getAdaptiveParameterSettings().isAttachParameterAnnotations()) {
+                    annotateWithParameter(dataBatch, key, target, newValue);
+                }
+            }
+        }
+    }
+
+    private void annotateWithParameter(JIPipeDataBatch dataBatch, String key, JIPipeParameterAccess target, Object newValue) {
+        String name;
+        if(getAdaptiveParameterSettings().isParameterAnnotationsUseInternalNames())
+            name = key;
+        else
+            name = target.getName();
+        name = getAdaptiveParameterSettings().getParameterAnnotationsPrefix() + name;
+        String value = JsonUtils.toJsonString(newValue);
+        dataBatch.addGlobalAnnotation(new JIPipeAnnotation(name, value), JIPipeAnnotationMergeStrategy.Merge);
     }
 
     @Override
@@ -202,6 +288,12 @@ public abstract class JIPipeSimpleIteratingAlgorithm extends JIPipeParameterSlot
     @Override
     public JIPipeParameterCollection getGenerationSettingsInterface() {
         return dataBatchGenerationSettings;
+    }
+
+    @JIPipeDocumentation(name = "Adaptive parameters", description = "You can use the following settings to generate parameter values for each data batch based on annotations.")
+    @JIPipeParameter(value = "jipipe:adaptive-parameters", visibility = JIPipeParameterVisibility.Visible, collapsed = true)
+    public JIPipeAdaptiveParameterSettings getAdaptiveParameterSettings() {
+        return adaptiveParameterSettings;
     }
 
     @Override

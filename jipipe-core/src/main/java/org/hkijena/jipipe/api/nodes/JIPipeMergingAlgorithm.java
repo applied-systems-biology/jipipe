@@ -13,6 +13,7 @@
 
 package org.hkijena.jipipe.api.nodes;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.google.common.eventbus.EventBus;
 import gnu.trove.set.TIntSet;
 import gnu.trove.set.hash.TIntHashSet;
@@ -24,13 +25,19 @@ import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.data.JIPipeSlotConfiguration;
 import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
+import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
+import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterVisibility;
+import org.hkijena.jipipe.extensions.expressions.ExpressionParameters;
 import org.hkijena.jipipe.extensions.expressions.StringQueryExpression;
 import org.hkijena.jipipe.extensions.parameters.generators.IntegerRange;
 import org.hkijena.jipipe.extensions.parameters.generators.OptionalIntegerRange;
+import org.hkijena.jipipe.extensions.parameters.pairs.StringQueryExpressionAndStringPairParameter;
 import org.hkijena.jipipe.extensions.parameters.primitives.StringParameterSettings;
+import org.hkijena.jipipe.utils.JsonUtils;
 import org.hkijena.jipipe.utils.ResourceUtils;
+import org.hkijena.jipipe.utils.StringUtils;
 
 import java.util.*;
 import java.util.concurrent.ExecutionException;
@@ -50,6 +57,7 @@ public abstract class JIPipeMergingAlgorithm extends JIPipeParameterSlotAlgorith
 
     private boolean parallelizationEnabled = true;
     private DataBatchGenerationSettings dataBatchGenerationSettings = new DataBatchGenerationSettings();
+    private JIPipeAdaptiveParameterSettings adaptiveParameterSettings = new JIPipeAdaptiveParameterSettings();
 
 
     /**
@@ -61,6 +69,7 @@ public abstract class JIPipeMergingAlgorithm extends JIPipeParameterSlotAlgorith
     public JIPipeMergingAlgorithm(JIPipeNodeInfo info, JIPipeSlotConfiguration slotConfiguration) {
         super(info, slotConfiguration);
         registerSubParameter(dataBatchGenerationSettings);
+        registerSubParameter(adaptiveParameterSettings);
     }
 
     /**
@@ -70,6 +79,8 @@ public abstract class JIPipeMergingAlgorithm extends JIPipeParameterSlotAlgorith
      */
     public JIPipeMergingAlgorithm(JIPipeNodeInfo info) {
         super(info, null);
+        registerSubParameter(dataBatchGenerationSettings);
+        registerSubParameter(adaptiveParameterSettings);
     }
 
     /**
@@ -80,8 +91,10 @@ public abstract class JIPipeMergingAlgorithm extends JIPipeParameterSlotAlgorith
     public JIPipeMergingAlgorithm(JIPipeMergingAlgorithm other) {
         super(other);
         this.dataBatchGenerationSettings = new DataBatchGenerationSettings(other.dataBatchGenerationSettings);
+        this.adaptiveParameterSettings = new JIPipeAdaptiveParameterSettings(other.adaptiveParameterSettings);
         this.parallelizationEnabled = other.parallelizationEnabled;
         registerSubParameter(dataBatchGenerationSettings);
+        registerSubParameter(adaptiveParameterSettings);
     }
 
     @Override
@@ -127,6 +140,17 @@ public abstract class JIPipeMergingAlgorithm extends JIPipeParameterSlotAlgorith
 
     @Override
     public void runParameterSet(JIPipeProgressInfo progressInfo, List<JIPipeAnnotation> parameterAnnotations) {
+
+        // Adaptive parameter backups
+        Map<String, Object> parameterBackups = new HashMap<>();
+        JIPipeParameterTree tree = null;
+        if(getAdaptiveParameterSettings().isEnabled() && !getAdaptiveParameterSettings().getOverriddenParameters().isEmpty()) {
+            tree = new JIPipeParameterTree(this);
+            for (Map.Entry<String, JIPipeParameterAccess> entry : tree.getParameters().entrySet()) {
+                parameterBackups.put(entry.getKey(), entry.getValue().get(Object.class));
+            }
+        }
+
         // Special case: No input slots
         if (getEffectiveInputSlotCount() == 0) {
             if (progressInfo.isCancelled().get())
@@ -135,6 +159,7 @@ public abstract class JIPipeMergingAlgorithm extends JIPipeParameterSlotAlgorith
             JIPipeProgressInfo slotProgress = progressInfo.resolveAndLog("Data row", row, 1);
             JIPipeMergingDataBatch dataBatch = new JIPipeMergingDataBatch(this);
             dataBatch.addGlobalAnnotations(parameterAnnotations, dataBatchGenerationSettings.annotationMergeStrategy);
+            uploadAdaptiveParameters(dataBatch, tree, parameterBackups, progressInfo);
             runIteration(dataBatch, slotProgress);
             return;
         }
@@ -167,18 +192,21 @@ public abstract class JIPipeMergingAlgorithm extends JIPipeParameterSlotAlgorith
                 if (progressInfo.isCancelled().get())
                     return;
                 JIPipeProgressInfo slotProgress = progressInfo.resolveAndLog("Data row", i, dataBatches.size());
+                uploadAdaptiveParameters(dataBatches.get(i), tree, parameterBackups, progressInfo);
                 runIteration(dataBatches.get(i), slotProgress);
             }
         } else {
             List<Runnable> tasks = new ArrayList<>();
             for (int i = 0; i < getFirstInputSlot().getRowCount(); i++) {
                 int rowIndex = i;
+                JIPipeParameterTree finalTree = tree;
                 tasks.add(() -> {
                     if (progressInfo.isCancelled().get())
                         return;
                     JIPipeProgressInfo slotProgress = progressInfo.resolveAndLog("Data row", rowIndex, dataBatches.size());
                     JIPipeMergingDataBatch dataBatch = dataBatches.get(rowIndex);
-                    runIteration(dataBatch, progressInfo);
+                    uploadAdaptiveParameters(dataBatch, finalTree, parameterBackups, progressInfo);
+                    runIteration(dataBatch, slotProgress);
                 });
             }
             progressInfo.log(String.format("Running %d batches (batch size %d) in parallel. Available threads = %d", tasks.size(), getParallelizationBatchSize(), getThreadPool().getMaxThreads()));
@@ -192,6 +220,60 @@ public abstract class JIPipeMergingAlgorithm extends JIPipeParameterSlotAlgorith
                 }
             }
         }
+    }
+
+    private void uploadAdaptiveParameters(JIPipeMergingDataBatch dataBatch, JIPipeParameterTree tree, Map<String, Object> parameterBackups, JIPipeProgressInfo progressInfo) {
+        ExpressionParameters expressionParameters = new ExpressionParameters();
+        for (JIPipeAnnotation annotation : dataBatch.getAnnotations().values()) {
+            expressionParameters.put(annotation.getName(), annotation.getValue());
+        }
+        for (StringQueryExpressionAndStringPairParameter overriddenParameter : getAdaptiveParameterSettings().getOverriddenParameters()) {
+            String key = overriddenParameter.getValue();
+            JIPipeParameterAccess target = tree.getParameters().getOrDefault(key, null);
+            if (target == null) {
+                progressInfo.log("Unable to find parameter '" + key + "' in " + getName() + "! Ignoring.");
+                continue;
+            }
+            Object oldValue = parameterBackups.get(key);
+            expressionParameters.put("default", oldValue);
+            Object newValue = overriddenParameter.getKey().evaluate(expressionParameters);
+            if(Objects.equals(newValue, oldValue)) {
+                // No changes
+                if(getAdaptiveParameterSettings().isAttachParameterAnnotations() && !getAdaptiveParameterSettings().isAttachOnlyNonDefaultParameterAnnotations()) {
+                    annotateWithParameter(dataBatch, key, target, newValue);
+                }
+            }
+            else if(target.getFieldClass().isAssignableFrom(newValue.getClass())) {
+                // Set new value
+                target.set(newValue);
+                if(getAdaptiveParameterSettings().isAttachParameterAnnotations()) {
+                    annotateWithParameter(dataBatch, key, target, newValue);
+                }
+            }
+            else {
+                // Is JSON. Parse
+                try {
+                    newValue = JsonUtils.getObjectMapper().readerFor(target.getFieldClass()).readValue(StringUtils.nullToEmpty(newValue));
+                } catch (JsonProcessingException e) {
+                    throw new RuntimeException(e);
+                }
+                target.set(newValue);
+                if(getAdaptiveParameterSettings().isAttachParameterAnnotations()) {
+                    annotateWithParameter(dataBatch, key, target, newValue);
+                }
+            }
+        }
+    }
+
+    private void annotateWithParameter(JIPipeMergingDataBatch dataBatch, String key, JIPipeParameterAccess target, Object newValue) {
+        String name;
+        if(getAdaptiveParameterSettings().isParameterAnnotationsUseInternalNames())
+            name = key;
+        else
+            name = target.getName();
+        name = getAdaptiveParameterSettings().getParameterAnnotationsPrefix() + name;
+        String value = JsonUtils.toJsonString(newValue);
+        dataBatch.addGlobalAnnotation(new JIPipeAnnotation(name, value), JIPipeAnnotationMergeStrategy.Merge);
     }
 
     /**
@@ -233,6 +315,12 @@ public abstract class JIPipeMergingAlgorithm extends JIPipeParameterSlotAlgorith
     @JIPipeParameter(value = "jipipe:data-batch-generation", visibility = JIPipeParameterVisibility.Visible, collapsed = true)
     public DataBatchGenerationSettings getDataBatchGenerationSettings() {
         return dataBatchGenerationSettings;
+    }
+
+    @JIPipeDocumentation(name = "Adaptive parameters", description = "You can use the following settings to generate parameter values for each data batch based on annotations.")
+    @JIPipeParameter(value = "jipipe:adaptive-parameters", collapsed = true, visibility = JIPipeParameterVisibility.Visible)
+    public JIPipeAdaptiveParameterSettings getAdaptiveParameterSettings() {
+        return adaptiveParameterSettings;
     }
 
     public static class DataBatchGenerationSettings implements JIPipeParameterCollection {
