@@ -31,6 +31,7 @@ import java.util.Set;
 public abstract class DynamicSetParameter<T> {
     private Set<T> values = new HashSet<>();
     private List<T> allowedValues = new ArrayList<>();
+    private boolean collapsed = false;
 
     /**
      * Creates a new instance with null value
@@ -41,6 +42,7 @@ public abstract class DynamicSetParameter<T> {
     public DynamicSetParameter(DynamicSetParameter<T> other) {
         this.values = new HashSet<>(other.values);
         this.allowedValues = other.allowedValues;
+        this.collapsed = other.collapsed;
     }
 
     public DynamicSetParameter(Set<T> values) {
@@ -55,6 +57,16 @@ public abstract class DynamicSetParameter<T> {
     @JsonSetter("values")
     public void setValues(Set<T> values) {
         this.values = values;
+    }
+
+    @JsonGetter("collapsed")
+    public boolean isCollapsed() {
+        return collapsed;
+    }
+
+    @JsonSetter("collapsed")
+    public void setCollapsed(boolean collapsed) {
+        this.collapsed = collapsed;
     }
 
     public List<T> getAllowedValues() {

@@ -18,6 +18,7 @@ import org.hkijena.jipipe.extensions.expressions.DefaultExpressionParameter;
 import org.hkijena.jipipe.extensions.expressions.ExpressionParameterSettings;
 import org.hkijena.jipipe.extensions.expressions.ExpressionParameters;
 import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
+import org.hkijena.jipipe.utils.ResourceUtils;
 import org.hkijena.jipipe.utils.StringUtils;
 
 import java.awt.*;
@@ -245,7 +246,8 @@ public class FilterROIByOverlapAlgorithm extends JIPipeIteratingAlgorithm {
     @JIPipeDocumentation(name = "ROI 1 filter", description = "Use following settings to determine how inputs into <b>ROI 1</b> are filtered " +
             "(by overlapping them with items in <b>ROI 2</b>). " +
             "Filtered ROI will be put into the corresponding <b>ROI 1</b> output.")
-    @JIPipeParameter("roi1")
+    @JIPipeParameter(value = "roi1", iconURL = ResourceUtils.RESOURCE_BASE_PATH + "/icons/actions/roi.png",
+            iconDarkURL = ResourceUtils.RESOURCE_BASE_PATH + "/dark/icons/actions/roi.png")
     public ROIFilterSettings getRoi1Settings() {
         return roi1Settings;
     }
@@ -253,7 +255,8 @@ public class FilterROIByOverlapAlgorithm extends JIPipeIteratingAlgorithm {
     @JIPipeDocumentation(name = "ROI 2 filter", description = "Use following settings to determine how inputs into <b>ROI 2</b> are filtered " +
             "(by overlapping them with items in <b>ROI 1</b>). " +
             "Filtered ROI will be put into the corresponding <b>ROI 2</b> output.")
-    @JIPipeParameter("roi2")
+    @JIPipeParameter(value = "roi2", iconURL = ResourceUtils.RESOURCE_BASE_PATH + "/icons/actions/roi.png",
+            iconDarkURL = ResourceUtils.RESOURCE_BASE_PATH + "/dark/icons/actions/roi.png")
     public ROIFilterSettings getRoi2Settings() {
         return roi2Settings;
     }

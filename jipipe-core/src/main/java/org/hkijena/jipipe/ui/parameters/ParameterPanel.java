@@ -231,11 +231,11 @@ public class ParameterPanel extends FormPanel implements Contextual {
                     leftComponents = new Component[0];
                 Icon groupIcon;
                 if(UIUtils.DARK_THEME && !StringUtils.isNullOrEmpty(node.getDarkIconURL())) {
-                    groupIcon = new ImageIcon(node.getDarkIconURL());
+                    groupIcon = new ImageIcon(node.getResourceClass().getResource(node.getDarkIconURL()));
                 }
                 else {
                     if(!StringUtils.isNullOrEmpty(node.getIconURL())) {
-                        groupIcon = new ImageIcon(node.getIconURL());
+                        groupIcon = new ImageIcon(node.getResourceClass().getResource(node.getIconURL()));
                     }
                     else {
                         groupIcon = UIUtils.getIconFromResources("actions/configure.png");

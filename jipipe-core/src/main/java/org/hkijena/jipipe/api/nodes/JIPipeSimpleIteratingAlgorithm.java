@@ -283,7 +283,7 @@ public abstract class JIPipeSimpleIteratingAlgorithm extends JIPipeParameterSlot
     @JIPipeParameter(value = "jipipe:data-batch-generation", visibility = JIPipeParameterVisibility.Visible,
             collapsed = true,
             iconURL = ResourceUtils.RESOURCE_BASE_PATH + "/icons/actions/package.png",
-            iconDarkURL = ResourceUtils.RESOURCE_BASE_PATH + "/dark/icons/package.png")
+            iconDarkURL = ResourceUtils.RESOURCE_BASE_PATH + "/dark/icons/actions/package.png")
     public DataBatchGenerationSettings getDataBatchGenerationSettings() {
         return dataBatchGenerationSettings;
     }
@@ -294,7 +294,9 @@ public abstract class JIPipeSimpleIteratingAlgorithm extends JIPipeParameterSlot
     }
 
     @JIPipeDocumentation(name = "Adaptive parameters", description = "You can use the following settings to generate parameter values for each data batch based on annotations.")
-    @JIPipeParameter(value = "jipipe:adaptive-parameters", visibility = JIPipeParameterVisibility.Visible, collapsed = true)
+    @JIPipeParameter(value = "jipipe:adaptive-parameters", visibility = JIPipeParameterVisibility.Visible, collapsed = true,
+            iconURL = ResourceUtils.RESOURCE_BASE_PATH + "/icons/actions/insert-function.png",
+            iconDarkURL = ResourceUtils.RESOURCE_BASE_PATH + "/dark/icons/actions/insert-function.png")
     public JIPipeAdaptiveParameterSettings getAdaptiveParameterSettings() {
         return adaptiveParameterSettings;
     }

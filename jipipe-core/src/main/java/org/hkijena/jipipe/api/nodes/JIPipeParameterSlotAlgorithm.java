@@ -21,6 +21,7 @@ import org.hkijena.jipipe.api.data.*;
 import org.hkijena.jipipe.api.parameters.*;
 import org.hkijena.jipipe.extensions.multiparameters.datatypes.ParametersData;
 import org.hkijena.jipipe.extensions.parameters.primitives.StringParameterSettings;
+import org.hkijena.jipipe.utils.ResourceUtils;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -98,7 +99,9 @@ public abstract class JIPipeParameterSlotAlgorithm extends JIPipeAlgorithm {
 
     @JIPipeDocumentation(name = "Multi-parameter settings", description = "This algorithm supports running with multiple parameter sets. Just enable 'Multiple parameters' and " +
             "connect parameter data to the newly created slot. The algorithm is then automatically repeated for all parameter sets.")
-    @JIPipeParameter(value = "jipipe:parameter-slot-algorithm", visibility = JIPipeParameterVisibility.Visible, collapsed = true)
+    @JIPipeParameter(value = "jipipe:parameter-slot-algorithm", visibility = JIPipeParameterVisibility.Visible, collapsed = true,
+            iconURL = ResourceUtils.RESOURCE_BASE_PATH + "/icons/actions/wrench.png",
+            iconDarkURL = ResourceUtils.RESOURCE_BASE_PATH + "/dark/icons/actions/wrench.png")
     public ParameterSlotAlgorithmSettings getParameterSlotAlgorithmSettings() {
         return parameterSlotAlgorithmSettings;
     }

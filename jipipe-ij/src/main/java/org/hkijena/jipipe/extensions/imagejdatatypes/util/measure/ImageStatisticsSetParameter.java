@@ -37,6 +37,7 @@ public class ImageStatisticsSetParameter extends DynamicSetParameter<Measurement
 
     public ImageStatisticsSetParameter() {
         super(new HashSet<>(Arrays.asList(Measurement.Area, Measurement.Centroid, Measurement.PixelValueMinMax)));
+        setCollapsed(true);
         initialize();
     }
 

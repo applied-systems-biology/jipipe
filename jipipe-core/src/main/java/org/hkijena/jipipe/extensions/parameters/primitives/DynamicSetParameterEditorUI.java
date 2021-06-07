@@ -31,6 +31,8 @@ import java.util.function.Supplier;
 public class DynamicSetParameterEditorUI extends JIPipeParameterEditorUI {
 
     private Map<Object, JCheckBox> checkBoxMap = new HashMap<>();
+    private JToggleButton collapseToggle;
+    private JLabel collapseInfoLabel;
 
     /**
      * @param workbench       workbench
@@ -67,6 +69,13 @@ public class DynamicSetParameterEditorUI extends JIPipeParameterEditorUI {
                 entry.getValue().setSelected(!parameter.getValues().contains(entry.getKey()));
             }
         }
+        for (JCheckBox checkBox : checkBoxMap.values()) {
+            checkBox.setVisible(!parameter.isCollapsed());
+        }
+        collapseInfoLabel.setVisible(parameter.isCollapsed());
+        collapseToggle.setSelected(parameter.isCollapsed());
+        revalidate();
+        repaint();
     }
 
 
@@ -109,10 +118,21 @@ public class DynamicSetParameterEditorUI extends JIPipeParameterEditorUI {
             contentPanel.add(checkBox);
         }
 
+        collapseInfoLabel = new JLabel("The available items are hidden. Click the 'Collapse' button to show it",
+                UIUtils.getIconFromResources("actions/eye-slash.png"),
+                JLabel.LEFT);
+        collapseInfoLabel.setFont(new Font(Font.DIALOG, Font.PLAIN, 12));
+        contentPanel.add(collapseInfoLabel);
+
         JToolBar toolBar = new JToolBar();
         toolBar.add(Box.createHorizontalStrut(4));
         toolBar.add(new JLabel(getParameterAccess().getName()));
         toolBar.add(Box.createHorizontalGlue());
+
+        collapseToggle = new JToggleButton("Collapse",
+                UIUtils.getIconFromResources("actions/eye-slash.png"));
+        toolBar.add(collapseToggle);
+        collapseToggle.addActionListener(e -> saveCollapsedState());
 
         JButton selectAllButton = new JButton("Select all", UIUtils.getIconFromResources("actions/stock_select-all.png"));
         selectAllButton.addActionListener(e -> selectAll());
@@ -124,6 +144,14 @@ public class DynamicSetParameterEditorUI extends JIPipeParameterEditorUI {
 
         add(toolBar, BorderLayout.NORTH);
         add(contentPanel, BorderLayout.CENTER);
+    }
+
+    private void saveCollapsedState() {
+        DynamicSetParameter<Object> parameter = getParameter(DynamicSetParameter.class);
+        if(parameter.isCollapsed() != collapseToggle.isSelected()) {
+            parameter.setCollapsed(collapseToggle.isSelected());
+            setParameter(parameter, true);
+        }
     }
 
     private void selectNone() {
