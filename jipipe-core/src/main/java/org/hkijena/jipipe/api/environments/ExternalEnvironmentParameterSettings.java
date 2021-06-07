@@ -2,7 +2,6 @@ package org.hkijena.jipipe.api.environments;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
 
 /**
  * Can be attached to control the UI of

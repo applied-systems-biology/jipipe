@@ -27,7 +27,6 @@ import org.hkijena.jipipe.extensions.settings.GeneralDataSettings;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
 import org.hkijena.jipipe.ui.running.JIPipeRunExecuterUI;
 import org.hkijena.jipipe.utils.BusyCursor;
-import org.hkijena.jipipe.utils.PathUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
@@ -122,9 +121,6 @@ public class JIPipeDefaultResultDataSlotRowUI extends JIPipeResultDataSlotRowUI 
                     @Override
                     public String getTaskLabel() {
                         return "Export";
-                    }                    @Override
-                    public void setProgressInfo(JIPipeProgressInfo progressInfo) {
-                        this.progressInfo = progressInfo;
                     }
 
                     @Override
@@ -132,7 +128,12 @@ public class JIPipeDefaultResultDataSlotRowUI extends JIPipeResultDataSlotRowUI 
                         progressInfo.log("Importing data from " + getRowStorageFolder() + " ...");
                         JIPipeData data = JIPipe.importData(getRowStorageFolder(), JIPipe.getDataTypes().getById(getRow().getTrueDataType()));
                         data.saveTo(path, "data", false, progressInfo.resolveAndLog("Saving data"));
+                    }                    @Override
+                    public void setProgressInfo(JIPipeProgressInfo progressInfo) {
+                        this.progressInfo = progressInfo;
                     }
+
+
 
 
                 };
@@ -157,9 +158,6 @@ public class JIPipeDefaultResultDataSlotRowUI extends JIPipeResultDataSlotRowUI 
                 @Override
                 public String getTaskLabel() {
                     return "Export";
-                }                @Override
-                public void setProgressInfo(JIPipeProgressInfo progressInfo) {
-                    this.progressInfo = progressInfo;
                 }
 
                 @Override
@@ -167,7 +165,12 @@ public class JIPipeDefaultResultDataSlotRowUI extends JIPipeResultDataSlotRowUI 
                     progressInfo.log("Importing data from " + getRowStorageFolder() + " ...");
                     JIPipeData data = JIPipe.importData(getRowStorageFolder(), JIPipe.getDataTypes().getById(getRow().getTrueDataType()));
                     data.saveTo(path.getParent(), path.getFileName().toString(), true, progressInfo.resolveAndLog("Exporting data"));
+                }                @Override
+                public void setProgressInfo(JIPipeProgressInfo progressInfo) {
+                    this.progressInfo = progressInfo;
                 }
+
+
 
 
             };

@@ -37,46 +37,6 @@ public class RExtensionSettings implements ExternalEnvironmentSettings {
     public RExtensionSettings() {
     }
 
-    @Override
-    public EventBus getEventBus() {
-        return eventBus;
-    }
-
-    @JIPipeDocumentation(name = "R environment", description = "Describes the R environment to use.")
-    @JIPipeParameter("r-environment")
-    public REnvironment getEnvironment() {
-        return environment;
-    }
-
-    @JIPipeParameter("r-environment")
-    public void setEnvironment(REnvironment environment) {
-        this.environment = environment;
-    }
-
-    @JIPipeDocumentation(name = "Presets", description = "List of presets stored for R environments.")
-    @JIPipeParameter("presets")
-    public REnvironment.List getPresets() {
-        return presets;
-    }
-
-    @JIPipeParameter("presets")
-    public void setPresets(REnvironment.List presets) {
-        this.presets = presets;
-    }
-
-    @Override
-    public List<ExternalEnvironment> getPresetsListInterface(Class<?> environmentClass) {
-        return ImmutableList.copyOf(presets);
-    }
-
-    @Override
-    public void setPresetsListInterface(List<ExternalEnvironment> presets, Class<?> environmentClass) {
-        this.presets.clear();
-        for (ExternalEnvironment preset : presets) {
-            this.presets.add((REnvironment) preset);
-        }
-    }
-
     public static RExtensionSettings getInstance() {
         return JIPipe.getSettings().getSettings(ID, RExtensionSettings.class);
     }
@@ -125,5 +85,45 @@ public class RExtensionSettings implements ExternalEnvironmentSettings {
             return report.isValid();
         }
         return false;
+    }
+
+    @Override
+    public EventBus getEventBus() {
+        return eventBus;
+    }
+
+    @JIPipeDocumentation(name = "R environment", description = "Describes the R environment to use.")
+    @JIPipeParameter("r-environment")
+    public REnvironment getEnvironment() {
+        return environment;
+    }
+
+    @JIPipeParameter("r-environment")
+    public void setEnvironment(REnvironment environment) {
+        this.environment = environment;
+    }
+
+    @JIPipeDocumentation(name = "Presets", description = "List of presets stored for R environments.")
+    @JIPipeParameter("presets")
+    public REnvironment.List getPresets() {
+        return presets;
+    }
+
+    @JIPipeParameter("presets")
+    public void setPresets(REnvironment.List presets) {
+        this.presets = presets;
+    }
+
+    @Override
+    public List<ExternalEnvironment> getPresetsListInterface(Class<?> environmentClass) {
+        return ImmutableList.copyOf(presets);
+    }
+
+    @Override
+    public void setPresetsListInterface(List<ExternalEnvironment> presets, Class<?> environmentClass) {
+        this.presets.clear();
+        for (ExternalEnvironment preset : presets) {
+            this.presets.add((REnvironment) preset);
+        }
     }
 }

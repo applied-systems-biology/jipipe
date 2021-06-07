@@ -21,8 +21,6 @@ import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.cache.JIPipeCachedSlotToOutputExporterRun;
-import org.hkijena.jipipe.ui.running.JIPipeRunExecuterUI;
-import org.hkijena.jipipe.utils.JsonUtils;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -69,20 +67,19 @@ public class SaveProjectAndCacheRun implements JIPipeRunnable {
         progressInfo.setProgress(0, nodes.size());
         JIPipeProjectCacheQuery query = new JIPipeProjectCacheQuery(project);
         for (int i = 0; i < nodes.size(); i++) {
-            if(getProgressInfo().isCancelled().get())
+            if (getProgressInfo().isCancelled().get())
                 return;
             JIPipeGraphNode node = nodes.get(i);
             JIPipeProgressInfo nodeProgress = progressInfo.resolveAndLog(node.getDisplayName(), i, nodes.size());
 
             Map<String, JIPipeDataSlot> cache = query.getCachedCache(node);
-            if(cache == null || cache.isEmpty())
+            if (cache == null || cache.isEmpty())
                 continue;
 
             Path nodeDir = outputPath.resolve(node.getProjectCompartment().getAliasIdInGraph()).resolve(node.getAliasIdInGraph());
             try {
                 Files.createDirectories(nodeDir);
-            }
-            catch (IOException e) {
+            } catch (IOException e) {
                 throw new RuntimeException(e);
             }
 

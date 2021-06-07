@@ -53,11 +53,6 @@ public class ImagePlusColorRGBData extends ImagePlusColorData implements Colored
         super(ImagePlusColorRGBData.convertIfNeeded(image));
     }
 
-    @Override
-    public ColorSpace getColorSpace() {
-        return COLOR_SPACE;
-    }
-
     /**
      * Converts an {@link ImagePlus} to the color space of this data.
      * Does not guarantee that the input image is copied.
@@ -99,5 +94,10 @@ public class ImagePlusColorRGBData extends ImagePlusColorData implements Colored
         } else {
             return new ImagePlusColorRGBData(data.getImage());
         }
+    }
+
+    @Override
+    public ColorSpace getColorSpace() {
+        return COLOR_SPACE;
     }
 }

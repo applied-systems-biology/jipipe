@@ -45,6 +45,10 @@ public class BarBoxAndWhiskerCategoryPlotData extends BoxAndWhiskerCategoryPlotD
         super(other);
     }
 
+    public static BarBoxAndWhiskerCategoryPlotData importFrom(Path storagePath) {
+        return PlotData.importFrom(storagePath, BarBoxAndWhiskerCategoryPlotData.class);
+    }
+
     @Override
     public JFreeChart getChart() {
         JFreeChart chart = ChartFactory.createBoxAndWhiskerChart(getTitle(),
@@ -61,9 +65,5 @@ public class BarBoxAndWhiskerCategoryPlotData extends BoxAndWhiskerCategoryPlotD
         chart.getCategoryPlot().getRangeAxis().setTickLabelFont(new Font(Font.SANS_SERIF, Font.PLAIN, getValueAxisFontSize()));
         updateChartProperties(chart);
         return chart;
-    }
-
-    public static BarBoxAndWhiskerCategoryPlotData importFrom(Path storagePath) {
-        return PlotData.importFrom(storagePath, BarBoxAndWhiskerCategoryPlotData.class);
     }
 }

@@ -39,6 +39,10 @@ public class JIPipeOutputData extends FolderData {
         super(path);
     }
 
+    public static JIPipeOutputData importFrom(Path folder) {
+        return new JIPipeOutputData(FolderData.importFrom(folder).getPath());
+    }
+
     @Override
     public void saveTo(Path storageFilePath, String name, boolean forceName, JIPipeProgressInfo progressInfo) {
         // Copy if we copy it to a different folder
@@ -97,9 +101,5 @@ public class JIPipeOutputData extends FolderData {
             this.setPath(outputPath);
         }
         super.saveTo(storageFilePath, name, forceName, progressInfo);
-    }
-
-    public static JIPipeOutputData importFrom(Path folder) {
-        return new JIPipeOutputData(FolderData.importFrom(folder).getPath());
     }
 }

@@ -18,7 +18,6 @@ import org.hkijena.jipipe.extensions.JIPipePrepackagedDefaultJavaExtension;
 import org.hkijena.jipipe.extensions.parameters.primitives.HTMLText;
 import org.hkijena.jipipe.extensions.parameters.primitives.StringList;
 import org.hkijena.jipipe.extensions.python.algorithms.*;
-import org.hkijena.jipipe.extensions.python.installers.BasicMinicondaEnvPythonInstaller;
 import org.hkijena.jipipe.extensions.python.installers.MinicondaEnvPythonInstaller;
 import org.hkijena.jipipe.extensions.python.installers.SelectCondaEnvPythonInstaller;
 import org.hkijena.jipipe.extensions.python.installers.SelectSystemPythonInstaller;

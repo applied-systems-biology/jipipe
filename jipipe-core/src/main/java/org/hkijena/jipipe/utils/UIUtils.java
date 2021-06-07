@@ -34,8 +34,8 @@ import org.hkijena.jipipe.ui.extension.MenuTarget;
 import org.hkijena.jipipe.ui.theme.JIPipeUITheme;
 
 import javax.imageio.ImageIO;
-import javax.swing.*;
 import javax.swing.Timer;
+import javax.swing.*;
 import javax.swing.border.Border;
 import javax.swing.border.CompoundBorder;
 import javax.swing.border.EmptyBorder;

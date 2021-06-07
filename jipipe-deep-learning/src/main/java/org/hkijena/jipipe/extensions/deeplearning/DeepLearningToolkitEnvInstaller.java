@@ -8,7 +8,9 @@ import org.hkijena.jipipe.extensions.python.installers.BasicMinicondaEnvPythonIn
 import org.hkijena.jipipe.extensions.settings.RuntimeSettings;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 
-import java.io.*;
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Arrays;
@@ -65,12 +67,11 @@ public class DeepLearningToolkitEnvInstaller extends BasicMinicondaEnvPythonInst
                 writer.newLine();
             }
             Configuration configuration = (Configuration) getConfiguration();
-            if(configuration.getH5pyVersion().isEnabled()) {
+            if (configuration.getH5pyVersion().isEnabled()) {
                 writer.write("  - h5py==");
                 writer.write(configuration.getH5pyVersion().getContent());
                 writer.newLine();
-            }
-            else {
+            } else {
                 writer.write("  - h5py");
                 writer.newLine();
             }

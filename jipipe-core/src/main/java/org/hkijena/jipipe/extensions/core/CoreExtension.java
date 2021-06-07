@@ -2,7 +2,6 @@ package org.hkijena.jipipe.extensions.core;
 
 import org.hkijena.jipipe.JIPipeJavaExtension;
 import org.hkijena.jipipe.api.data.JIPipeData;
-import org.hkijena.jipipe.api.data.JIPipeDataTableData;
 import org.hkijena.jipipe.api.nodes.categories.*;
 import org.hkijena.jipipe.extensions.JIPipePrepackagedDefaultJavaExtension;
 import org.hkijena.jipipe.extensions.core.data.CopyContainingFolderDataImportOperation;

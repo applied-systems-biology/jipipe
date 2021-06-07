@@ -3,17 +3,17 @@ package org.hkijena.jipipe.extensions.python.installers;
 import com.google.common.eventbus.EventBus;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
+import org.hkijena.jipipe.api.environments.ExternalEnvironmentInstaller;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.extensions.expressions.DefaultExpressionEvaluator;
 import org.hkijena.jipipe.extensions.expressions.DefaultExpressionParameter;
-import org.hkijena.jipipe.api.environments.ExternalEnvironmentInstaller;
-import org.hkijena.jipipe.extensions.python.PythonEnvironment;
-import org.hkijena.jipipe.extensions.python.PythonEnvironmentType;
 import org.hkijena.jipipe.extensions.parameters.primitives.FilePathParameterSettings;
 import org.hkijena.jipipe.extensions.parameters.primitives.OptionalPathParameter;
 import org.hkijena.jipipe.extensions.parameters.primitives.StringParameterSettings;
+import org.hkijena.jipipe.extensions.python.PythonEnvironment;
+import org.hkijena.jipipe.extensions.python.PythonEnvironmentType;
 import org.hkijena.jipipe.extensions.settings.FileChooserSettings;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.components.MarkdownDocument;
@@ -37,6 +37,23 @@ public class SelectCondaEnvPythonInstaller extends ExternalEnvironmentInstaller 
      */
     public SelectCondaEnvPythonInstaller(JIPipeWorkbench workbench, JIPipeParameterAccess parameterAccess) {
         super(workbench, parameterAccess);
+    }
+
+    public static PythonEnvironment createCondaEnvironment(Configuration configuration) {
+        PythonEnvironment generatedEnvironment = new PythonEnvironment();
+        generatedEnvironment.setType(PythonEnvironmentType.Conda);
+        generatedEnvironment.setExecutablePath(configuration.condaExecutable);
+        if (configuration.overrideEnvironment.isEnabled()) {
+            generatedEnvironment.setArguments(new DefaultExpressionParameter(
+                    String.format("ARRAY(\"run\", \"--no-capture-output\", \"-p\", \"%s\", \"python\", \"-u\", script_file)",
+                            DefaultExpressionEvaluator.escapeString(configuration.overrideEnvironment.getContent().toString()))));
+        } else {
+            generatedEnvironment.setArguments(new DefaultExpressionParameter(
+                    String.format("ARRAY(\"run\", \"--no-capture-output\", \"-n\", \"%s\", \"python\", \"-u\", script_file)",
+                            DefaultExpressionEvaluator.escapeString(configuration.environmentName))));
+        }
+        generatedEnvironment.setName(configuration.getName());
+        return generatedEnvironment;
     }
 
     @Override
@@ -94,23 +111,6 @@ public class SelectCondaEnvPythonInstaller extends ExternalEnvironmentInstaller 
         if (getParameterAccess() != null) {
             SwingUtilities.invokeLater(() -> getParameterAccess().set(generatedEnvironment));
         }
-    }
-
-    public static PythonEnvironment createCondaEnvironment(Configuration configuration) {
-        PythonEnvironment generatedEnvironment = new PythonEnvironment();
-        generatedEnvironment.setType(PythonEnvironmentType.Conda);
-        generatedEnvironment.setExecutablePath(configuration.condaExecutable);
-        if (configuration.overrideEnvironment.isEnabled()) {
-            generatedEnvironment.setArguments(new DefaultExpressionParameter(
-                    String.format("ARRAY(\"run\", \"--no-capture-output\", \"-p\", \"%s\", \"python\", \"-u\", script_file)",
-                            DefaultExpressionEvaluator.escapeString(configuration.overrideEnvironment.getContent().toString()))));
-        } else {
-            generatedEnvironment.setArguments(new DefaultExpressionParameter(
-                    String.format("ARRAY(\"run\", \"--no-capture-output\", \"-n\", \"%s\", \"python\", \"-u\", script_file)",
-                            DefaultExpressionEvaluator.escapeString(configuration.environmentName))));
-        }
-        generatedEnvironment.setName(configuration.getName());
-        return generatedEnvironment;
     }
 
     public static class Configuration implements JIPipeParameterCollection {

@@ -43,6 +43,14 @@ public class NumberParameterEditorUI extends JIPipeParameterEditorUI {
         reload();
     }
 
+    public static String formatNumber(double number) {
+        if (number % 1 == 0) {
+            return "" + (long) number;
+        } else {
+            return "" + number;
+        }
+    }
+
     @Override
     public boolean isUILabelEnabled() {
         return true;
@@ -249,14 +257,6 @@ public class NumberParameterEditorUI extends JIPipeParameterEditorUI {
             } else {
                 setBorder(BorderFactory.createLineBorder(Color.RED, 2));
             }
-        }
-    }
-
-    public static String formatNumber(double number) {
-        if (number % 1 == 0) {
-            return "" + (long) number;
-        } else {
-            return "" + number;
         }
     }
 }

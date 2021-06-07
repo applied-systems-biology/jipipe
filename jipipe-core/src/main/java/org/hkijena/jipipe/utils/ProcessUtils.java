@@ -22,7 +22,6 @@ import org.apache.commons.lang3.SystemUtils;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.jgrapht.graph.DefaultDirectedGraph;
 import org.jgrapht.graph.DefaultEdge;
-import org.jgrapht.graph.DefaultUndirectedGraph;
 import org.jgrapht.traverse.BreadthFirstIterator;
 
 import java.io.*;
@@ -39,19 +38,17 @@ public class ProcessUtils {
 
     /**
      * Gets the process ID of a process
+     *
      * @param p the process
      * @return the pid or -1 if it is not found
      */
-    public static long getProcessID(Process p)
-    {
+    public static long getProcessID(Process p) {
         // Based on https://stackoverflow.com/a/43426878
         long result = -1;
-        try
-        {
+        try {
             //for windows
             if (p.getClass().getName().equals("java.lang.Win32Process") ||
-                    p.getClass().getName().equals("java.lang.ProcessImpl"))
-            {
+                    p.getClass().getName().equals("java.lang.ProcessImpl")) {
                 Field f = p.getClass().getDeclaredField("handle");
                 f.setAccessible(true);
                 long handl = f.getLong(p);
@@ -62,16 +59,13 @@ public class ProcessUtils {
                 f.setAccessible(false);
             }
             //for unix based operating systems
-            else if (p.getClass().getName().equals("java.lang.UNIXProcess"))
-            {
+            else if (p.getClass().getName().equals("java.lang.UNIXProcess")) {
                 Field f = p.getClass().getDeclaredField("pid");
                 f.setAccessible(true);
                 result = f.getLong(p);
                 f.setAccessible(false);
             }
-        }
-        catch(Exception ex)
-        {
+        } catch (Exception ex) {
             result = -1;
         }
         return result;
@@ -88,7 +82,7 @@ public class ProcessUtils {
     public static String queryFast(Path executable, JIPipeProgressInfo progressInfo, String... args) {
         CommandLine commandLine = new CommandLine(executable.toFile());
         commandLine.addArguments(args);
-        progressInfo.log("Running " + executable +" " + String.join(" ", args));
+        progressInfo.log("Running " + executable + " " + String.join(" ", args));
         ProcessUtils.ExtendedExecutor executor = new ProcessUtils.ExtendedExecutor(5000, progressInfo);
 
         // Capture stdout
@@ -108,6 +102,58 @@ public class ProcessUtils {
 
         } catch (IOException e) {
             return null;
+        }
+    }
+
+    public static void killProcessTree(long pid, JIPipeProgressInfo progressInfo) {
+        if (pid != -1) {
+            progressInfo.log("Cancelling process tree rooted at PID " + pid);
+            if (SystemUtils.IS_OS_WINDOWS) {
+                // Windows uses taskkill
+                progressInfo.log(queryFast(Paths.get(System.getenv("WINDIR")).resolve("System32").resolve("taskkill"),
+                        progressInfo,
+                        "/F", "/PID", pid + "", "/T"));
+            } else {
+                // Unix provides pkill
+                String psPath = StringUtils.nullToEmpty(ProcessUtils.queryFast(Paths.get("/usr/bin/which"), new JIPipeProgressInfo(), "ps")).trim();
+                String killPath = StringUtils.nullToEmpty(ProcessUtils.queryFast(Paths.get("/usr/bin/which"), new JIPipeProgressInfo(), "kill")).trim();
+                if (!StringUtils.isNullOrEmpty(psPath)) {
+                    String psOutput = queryFast(Paths.get(psPath),
+                            progressInfo,
+                            "-A", "-o", "pid,ppid");
+                    if (!StringUtils.isNullOrEmpty(psOutput)) {
+                        psOutput = psOutput.trim();
+                        DefaultDirectedGraph<Long, DefaultEdge> graph = new DefaultDirectedGraph<>(DefaultEdge.class);
+                        for (String line : psOutput.split("\n")) {
+                            String line_ = line.trim();
+                            if (line_.startsWith("P"))
+                                continue;
+                            String[] components = line_.split("\\s+");
+                            long psPid = Long.parseLong(components[0]);
+                            long psParentPid = Long.parseLong(components[1]);
+                            if (!graph.containsVertex(psPid))
+                                graph.addVertex(psPid);
+                            if (psParentPid > 0) {
+                                if (!graph.containsVertex(psParentPid))
+                                    graph.addVertex(psParentPid);
+                                graph.addEdge(psParentPid, psPid);
+                            }
+                        }
+
+                        // List all children
+                        BreadthFirstIterator<Long, DefaultEdge> breadthFirstIterator = new BreadthFirstIterator<>(graph, pid);
+                        while (breadthFirstIterator.hasNext()) {
+                            long toKill = breadthFirstIterator.next();
+                            progressInfo.log("Killing orphaned PID " + toKill);
+                            queryFast(Paths.get(killPath), progressInfo, "-9", toKill + "");
+                        }
+                    }
+                } else {
+                    progressInfo.log("Error: Could not find pkill.");
+                }
+            }
+        } else {
+            progressInfo.log("Error: PID is -1. Cannot cancel process tree.");
         }
     }
 
@@ -199,61 +245,6 @@ public class ProcessUtils {
         }
     }
 
-    public static void killProcessTree(long pid, JIPipeProgressInfo progressInfo) {
-        if(pid != -1) {
-            progressInfo.log("Cancelling process tree rooted at PID " + pid);
-            if(SystemUtils.IS_OS_WINDOWS) {
-                // Windows uses taskkill
-                progressInfo.log(queryFast(Paths.get(System.getenv("WINDIR")).resolve("System32").resolve("taskkill"),
-                        progressInfo,
-                        "/F", "/PID", pid + "", "/T"));
-            }
-            else {
-                // Unix provides pkill
-                String psPath = StringUtils.nullToEmpty(ProcessUtils.queryFast(Paths.get("/usr/bin/which"), new JIPipeProgressInfo(), "ps")).trim();
-                String killPath = StringUtils.nullToEmpty(ProcessUtils.queryFast(Paths.get("/usr/bin/which"), new JIPipeProgressInfo(), "kill")).trim();
-                if (!StringUtils.isNullOrEmpty(psPath)) {
-                    String psOutput = queryFast(Paths.get(psPath),
-                            progressInfo,
-                            "-A", "-o", "pid,ppid");
-                    if(!StringUtils.isNullOrEmpty(psOutput)) {
-                        psOutput = psOutput.trim();
-                        DefaultDirectedGraph<Long, DefaultEdge> graph = new DefaultDirectedGraph<>(DefaultEdge.class);
-                        for (String line : psOutput.split("\n")) {
-                            String line_ = line.trim();
-                            if(line_.startsWith("P"))
-                                continue;
-                            String[] components = line_.split("\\s+");
-                            long psPid = Long.parseLong(components[0]);
-                            long psParentPid = Long.parseLong(components[1]);
-                            if(!graph.containsVertex(psPid))
-                                graph.addVertex(psPid);
-                            if(psParentPid > 0) {
-                                if(!graph.containsVertex(psParentPid))
-                                    graph.addVertex(psParentPid);
-                                graph.addEdge(psParentPid, psPid);
-                            }
-                        }
-
-                        // List all children
-                        BreadthFirstIterator<Long, DefaultEdge> breadthFirstIterator = new BreadthFirstIterator<>(graph, pid);
-                        while(breadthFirstIterator.hasNext()) {
-                            long toKill = breadthFirstIterator.next();
-                            progressInfo.log("Killing orphaned PID " + toKill);
-                            queryFast(Paths.get(killPath), progressInfo, "-9", toKill + "");
-                        }
-                    }
-                }
-                else {
-                    progressInfo.log("Error: Could not find pkill.");
-                }
-            }
-        }
-        else {
-            progressInfo.log("Error: PID is -1. Cannot cancel process tree.");
-        }
-    }
-
     /**
      * Based on {@link ExecuteWatchdog}. Adapted to listed to {@link JIPipeProgressInfo} cancellation.
      */
@@ -266,8 +257,8 @@ public class ProcessUtils {
         /**
          * Creates a new watchdog with a given timeout.
          *
-         * @param timeout the timeout for the process in milliseconds. It must be
-         *                greater than 0 or 'INFINITE_TIMEOUT'
+         * @param timeout          the timeout for the process in milliseconds. It must be
+         *                         greater than 0 or 'INFINITE_TIMEOUT'
          * @param extendedExecutor the executor
          */
         public RunCancellationExecuteWatchdog(long timeout, JIPipeProgressInfo progressInfo, ExtendedExecutor extendedExecutor) {

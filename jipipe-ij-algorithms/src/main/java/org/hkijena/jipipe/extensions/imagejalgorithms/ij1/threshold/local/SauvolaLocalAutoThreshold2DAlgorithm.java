@@ -73,6 +73,60 @@ public class SauvolaLocalAutoThreshold2DAlgorithm extends JIPipeSimpleIteratingA
         this.r = other.r;
     }
 
+    public static void Sauvola(ImagePlus imp, int radius, double k_value, double r_value, boolean doIwhite) {
+        // Sauvola recommends K_VALUE = 0.5 and R_VALUE = 128.
+        // This is a modification of Niblack's thresholding method.
+        // Sauvola J. and Pietaksinen M. (2000) "Adaptive Document Image Binarization"
+        // Pattern Recognition, 33(2): 225-236
+        // http://www.ee.oulu.fi/mvg/publications/show_pdf.php?ID=24
+        // Ported to ImageJ plugin from E Celebi's fourier_0.8 routines
+        // This version uses a circular local window, instead of a rectagular one
+
+        ImagePlus Meanimp, Varimp;
+        ImageProcessor ip = imp.getProcessor(), ipMean, ipVar;
+        byte object;
+        byte backg;
+
+        if (doIwhite) {
+            object = (byte) 0xff;
+            backg = (byte) 0;
+        } else {
+            object = (byte) 0;
+            backg = (byte) 0xff;
+        }
+
+        Meanimp = duplicateImage(ip);
+        ImageConverter ic = new ImageConverter(Meanimp);
+        ic.convertToGray32();
+
+        ipMean = Meanimp.getProcessor();
+        RankFilters rf = new RankFilters();
+        rf.rank(ipMean, radius, rf.MEAN);// Mean
+        //Meanimp.show();
+        Varimp = duplicateImage(ip);
+        ic = new ImageConverter(Varimp);
+        ic.convertToGray32();
+        ipVar = Varimp.getProcessor();
+        rf.rank(ipVar, radius, rf.VARIANCE); //Variance
+        //Varimp.show();
+        byte[] pixels = (byte[]) ip.getPixels();
+        float[] mean = (float[]) ipMean.getPixels();
+        float[] var = (float[]) ipVar.getPixels();
+
+        for (int i = 0; i < pixels.length; i++)
+            pixels[i] = ((pixels[i] & 0xff) > (int) (mean[i] * (1.0 + k_value * ((Math.sqrt(var[i]) / r_value) - 1.0)))) ? object : backg;
+        //imp.updateAndDraw();
+    }
+
+    public static ImagePlus duplicateImage(ImageProcessor iProcessor) {
+        int w = iProcessor.getWidth();
+        int h = iProcessor.getHeight();
+        ImagePlus iPlus = NewImage.createByteImage("Image", w, h, 1, NewImage.FILL_BLACK);
+        ImageProcessor imageProcessor = iPlus.getProcessor();
+        imageProcessor.copyBits(iProcessor, 0, 0, Blitter.COPY);
+        return iPlus;
+    }
+
     @JIPipeDocumentation(name = "K", description = "Value of the parameter 'k' in the threshold formula (see Sauvola et al., 2000). A recommended value is 0.5.")
     @JIPipeParameter("k")
     public double getK() {
@@ -134,59 +188,5 @@ public class SauvolaLocalAutoThreshold2DAlgorithm extends JIPipeSimpleIteratingA
     @JIPipeParameter("dark-background")
     public void setDarkBackground(boolean darkBackground) {
         this.darkBackground = darkBackground;
-    }
-
-    public static void Sauvola(ImagePlus imp, int radius, double k_value, double r_value, boolean doIwhite) {
-        // Sauvola recommends K_VALUE = 0.5 and R_VALUE = 128.
-        // This is a modification of Niblack's thresholding method.
-        // Sauvola J. and Pietaksinen M. (2000) "Adaptive Document Image Binarization"
-        // Pattern Recognition, 33(2): 225-236
-        // http://www.ee.oulu.fi/mvg/publications/show_pdf.php?ID=24
-        // Ported to ImageJ plugin from E Celebi's fourier_0.8 routines
-        // This version uses a circular local window, instead of a rectagular one
-
-        ImagePlus Meanimp, Varimp;
-        ImageProcessor ip = imp.getProcessor(), ipMean, ipVar;
-        byte object;
-        byte backg;
-
-        if (doIwhite) {
-            object = (byte) 0xff;
-            backg = (byte) 0;
-        } else {
-            object = (byte) 0;
-            backg = (byte) 0xff;
-        }
-
-        Meanimp = duplicateImage(ip);
-        ImageConverter ic = new ImageConverter(Meanimp);
-        ic.convertToGray32();
-
-        ipMean = Meanimp.getProcessor();
-        RankFilters rf = new RankFilters();
-        rf.rank(ipMean, radius, rf.MEAN);// Mean
-        //Meanimp.show();
-        Varimp = duplicateImage(ip);
-        ic = new ImageConverter(Varimp);
-        ic.convertToGray32();
-        ipVar = Varimp.getProcessor();
-        rf.rank(ipVar, radius, rf.VARIANCE); //Variance
-        //Varimp.show();
-        byte[] pixels = (byte[]) ip.getPixels();
-        float[] mean = (float[]) ipMean.getPixels();
-        float[] var = (float[]) ipVar.getPixels();
-
-        for (int i = 0; i < pixels.length; i++)
-            pixels[i] = ((pixels[i] & 0xff) > (int) (mean[i] * (1.0 + k_value * ((Math.sqrt(var[i]) / r_value) - 1.0)))) ? object : backg;
-        //imp.updateAndDraw();
-    }
-
-    public static ImagePlus duplicateImage(ImageProcessor iProcessor) {
-        int w = iProcessor.getWidth();
-        int h = iProcessor.getHeight();
-        ImagePlus iPlus = NewImage.createByteImage("Image", w, h, 1, NewImage.FILL_BLACK);
-        ImageProcessor imageProcessor = iPlus.getProcessor();
-        imageProcessor.copyBits(iProcessor, 0, 0, Blitter.COPY);
-        return iPlus;
     }
 }

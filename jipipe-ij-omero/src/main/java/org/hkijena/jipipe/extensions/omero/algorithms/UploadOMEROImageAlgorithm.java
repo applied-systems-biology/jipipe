@@ -39,6 +39,7 @@ import org.hkijena.jipipe.api.data.*;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
+import org.hkijena.jipipe.extensions.expressions.AnnotationQueryExpression;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.OMEImageData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.parameters.OMEExporterSettings;
 import org.hkijena.jipipe.extensions.omero.OMEROCredentials;
@@ -48,7 +49,6 @@ import org.hkijena.jipipe.extensions.omero.datatypes.OMEROImageReferenceData;
 import org.hkijena.jipipe.extensions.omero.util.OMEROToJIPipeLogger;
 import org.hkijena.jipipe.extensions.omero.util.OMEROUploadToJIPipeLogger;
 import org.hkijena.jipipe.extensions.omero.util.OMEROUtils;
-import org.hkijena.jipipe.extensions.expressions.AnnotationQueryExpression;
 import org.hkijena.jipipe.extensions.settings.RuntimeSettings;
 import org.hkijena.jipipe.utils.PathUtils;
 

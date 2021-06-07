@@ -13,7 +13,8 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ROIListData;
 import org.hkijena.jipipe.extensions.tables.datatypes.AnnotationTableData;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.stream.Collectors;
 
 @JIPipeDocumentation(name = "Count ROI", description = "Outputs one table that contains the counts for each incoming ROI. " +

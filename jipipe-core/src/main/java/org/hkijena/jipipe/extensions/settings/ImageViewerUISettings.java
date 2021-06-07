@@ -19,8 +19,6 @@ import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.ui.grapheditor.JIPipeGraphEditorUI;
-import org.hkijena.jipipe.ui.grapheditor.JIPipeGraphViewMode;
-import org.hkijena.jipipe.ui.grapheditor.layout.GraphAutoLayout;
 
 /**
  * All settings for {@link JIPipeGraphEditorUI}
@@ -32,6 +30,10 @@ public class ImageViewerUISettings implements JIPipeParameterCollection {
     private EventBus eventBus = new EventBus();
     private boolean showSideBar = true;
     private int defaultAnimationSpeed = 250;
+
+    public static ImageViewerUISettings getInstance() {
+        return JIPipe.getSettings().getSettings(ID, ImageViewerUISettings.class);
+    }
 
     @JIPipeDocumentation(name = "Show side bar", description = "If enabled, show a side bar with additional settings and tools")
     @JIPipeParameter("show-side-bar")
@@ -58,9 +60,5 @@ public class ImageViewerUISettings implements JIPipeParameterCollection {
     @Override
     public EventBus getEventBus() {
         return eventBus;
-    }
-
-    public static ImageViewerUISettings getInstance() {
-        return JIPipe.getSettings().getSettings(ID, ImageViewerUISettings.class);
     }
 }

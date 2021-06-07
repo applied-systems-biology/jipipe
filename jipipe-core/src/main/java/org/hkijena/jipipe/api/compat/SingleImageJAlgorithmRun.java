@@ -58,6 +58,28 @@ public class SingleImageJAlgorithmRun implements JIPipeValidatable {
         algorithm.getEventBus().register(this);
     }
 
+    /**
+     * Returns true if an algorithm can be run in a single ImageJ algorithm run
+     *
+     * @param info the algorithm type
+     * @return if the algorithm is compatible
+     */
+    public static boolean isCompatible(JIPipeNodeInfo info) {
+        if (!info.getCategory().userCanCreate())
+            return false;
+        JIPipeGraphNode algorithm = info.newInstance();
+        for (JIPipeDataSlot inputSlot : algorithm.getInputSlots()) {
+            if (!JIPipe.getImageJAdapters().supportsJIPipeData(inputSlot.getAcceptedDataType()))
+                return false;
+        }
+        for (JIPipeDataSlot outputSlot : algorithm.getOutputSlots()) {
+            if (!JIPipe.getImageJAdapters().supportsJIPipeData(outputSlot.getAcceptedDataType()))
+                return false;
+        }
+
+        return true;
+    }
+
     @Override
     public void reportValidity(JIPipeValidityReport report) {
         if (algorithm == null) {
@@ -177,28 +199,6 @@ public class SingleImageJAlgorithmRun implements JIPipeValidatable {
 
     public EventBus getEventBus() {
         return eventBus;
-    }
-
-    /**
-     * Returns true if an algorithm can be run in a single ImageJ algorithm run
-     *
-     * @param info the algorithm type
-     * @return if the algorithm is compatible
-     */
-    public static boolean isCompatible(JIPipeNodeInfo info) {
-        if (!info.getCategory().userCanCreate())
-            return false;
-        JIPipeGraphNode algorithm = info.newInstance();
-        for (JIPipeDataSlot inputSlot : algorithm.getInputSlots()) {
-            if (!JIPipe.getImageJAdapters().supportsJIPipeData(inputSlot.getAcceptedDataType()))
-                return false;
-        }
-        for (JIPipeDataSlot outputSlot : algorithm.getOutputSlots()) {
-            if (!JIPipe.getImageJAdapters().supportsJIPipeData(outputSlot.getAcceptedDataType()))
-                return false;
-        }
-
-        return true;
     }
 
     /**

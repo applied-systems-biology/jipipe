@@ -13,8 +13,6 @@
 
 package org.hkijena.jipipe.extensions.parameters.roi;
 
-import org.hkijena.jipipe.extensions.expressions.NumericFunctionExpression;
-
 import java.awt.*;
 
 /**
@@ -71,6 +69,7 @@ public enum Anchor {
 
     /**
      * Places the inner rectangle into the outer rectangle according to the anchor
+     *
      * @param inner the inner (x and y are used to shift the rectangle; ignored on center-center); relative x and y
      * @param outer the outer rectangle; absolute x and y
      * @return the new inner rectangle. width and height are unchanged

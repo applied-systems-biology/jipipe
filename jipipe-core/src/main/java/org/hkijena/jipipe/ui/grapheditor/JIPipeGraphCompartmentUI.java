@@ -43,7 +43,6 @@ import org.hkijena.jipipe.ui.grapheditor.contextmenu.clipboard.AlgorithmGraphPas
 import org.hkijena.jipipe.ui.grapheditor.settings.JIPipeMultiAlgorithmSelectionPanelUI;
 import org.hkijena.jipipe.ui.grapheditor.settings.JIPipeSingleAlgorithmSelectionPanelUI;
 import org.hkijena.jipipe.ui.grouping.JIPipeNodeGroupUI;
-import org.hkijena.jipipe.utils.ResourceUtils;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.TooltipUtils;
 import org.hkijena.jipipe.utils.UIUtils;
@@ -86,224 +85,6 @@ public class JIPipeGraphCompartmentUI extends JIPipeGraphEditorUI {
 
         // Set D&D and Copy&Paste behavior
         initializeContextActions();
-    }
-
-    @Override
-    public UUID getCompartment() {
-        if (compartmentInstance == null) {
-            return super.getCompartment();
-        } else {
-            return compartmentInstance.getProjectCompartmentUUID();
-        }
-    }
-
-    private void initializeContextActions() {
-        getCanvasUI().setDragAndDropBehavior(new JIPipeGraphCompartmentDragAndDropBehavior());
-        List<NodeUIContextAction> nodeSpecificContextActions = new ArrayList<>();
-        if (GeneralUISettings.getInstance().isAddContextActionsToContextMenu()) {
-            for (JIPipeNodeInfo info : JIPipe.getNodes().getRegisteredNodeInfos().values()) {
-                for (Method method : info.getInstanceClass().getMethods()) {
-                    JIPipeContextAction actionAnnotation = method.getAnnotation(JIPipeContextAction.class);
-                    if (actionAnnotation == null)
-                        continue;
-                    if (!actionAnnotation.showInContextMenu())
-                        continue;
-                    JIPipeDocumentation documentationAnnotation = method.getAnnotation(JIPipeDocumentation.class);
-                    if (documentationAnnotation == null) {
-                        documentationAnnotation = new JIPipeDefaultDocumentation(method.getName(), "");
-                    }
-                    URL iconURL;
-                    if(UIUtils.DARK_THEME && !StringUtils.isNullOrEmpty(actionAnnotation.iconDarkURL())) {
-                        iconURL = actionAnnotation.resourceClass().getResource(actionAnnotation.iconDarkURL());
-                    }
-                    else {
-                        if (!StringUtils.isNullOrEmpty(actionAnnotation.iconURL())) {
-                            iconURL = actionAnnotation.resourceClass().getResource(actionAnnotation.iconURL());
-                        } else {
-                            iconURL = UIUtils.getIconURLFromResources("actions/configure.png");
-                        }
-                    }
-                    if (iconURL == null) {
-                        iconURL = UIUtils.getIconURLFromResources("actions/configure.png");
-                    }
-                    Icon icon = new ImageIcon(iconURL);
-
-                    NodeContextActionWrapperUIContextAction action = new NodeContextActionWrapperUIContextAction(info, documentationAnnotation.name(), documentationAnnotation.description(), icon, method);
-                    nodeSpecificContextActions.add(action);
-                }
-            }
-        }
-
-        List<NodeUIContextAction> actions = new ArrayList<>(Arrays.asList(
-                new SelectAllNodeUIContextAction(),
-                new InvertSelectionNodeUIContextAction(),
-                NodeUIContextAction.SEPARATOR,
-                new AlgorithmGraphCutNodeUIContextAction(),
-                new AlgorithmGraphCopyNodeUIContextAction(),
-                new AlgorithmGraphPasteNodeUIContextAction(),
-                new AlgorithmGraphDuplicateNodeUIContextAction(),
-                NodeUIContextAction.SEPARATOR,
-                new RunAndShowResultsNodeUIContextAction(),
-                new UpdateCacheNodeUIContextAction(),
-                new OpenCacheBrowserInWindowUIContextAction(),
-                NodeUIContextAction.SEPARATOR,
-                new RunAndShowIntermediateResultsNodeUIContextAction(),
-                new UpdateCacheShowIntermediateNodeUIContextAction(),
-                NodeUIContextAction.SEPARATOR,
-                new ExportNodeUIContextAction(),
-                NodeUIContextAction.SEPARATOR,
-                new IsolateNodesUIContextAction(),
-                new JsonAlgorithmToGroupNodeUIContextAction(),
-                new GroupNodeUIContextAction(),
-                new CollapseIOInterfaceNodeUIContextAction(),
-                NodeUIContextAction.SEPARATOR,
-                new SetNodeHotkeyContextAction(),
-                NodeUIContextAction.SEPARATOR,
-                new EnableNodeUIContextAction(),
-                new DisableNodeUIContextAction(),
-                new EnablePassThroughNodeUIContextAction(),
-                new DisablePassThroughNodeUIContextAction(),
-                new EnableSaveOutputsNodeUIContextAction(),
-                new DisableSaveOutputsNodeUIContextAction(),
-                new EnableVirtualOutputsNodeUIContextAction(),
-                new DisableVirtualOutputNodeUIContextAction(),
-                new DeleteNodeUIContextAction(),
-                NodeUIContextAction.SEPARATOR,
-                new SelectAndMoveNodeHereNodeUIContextAction()
-        ));
-
-        // Custom entries (from registry)
-        List<NodeUIContextAction> registeredEntries = JIPipe.getCustomMenus().getRegisteredContextMenuActions().stream()
-                .filter(NodeUIContextAction::showInGraphCompartment)
-                .sorted(Comparator.comparing(NodeUIContextAction::getName))
-                .collect(Collectors.toList());
-        if (!registeredEntries.isEmpty()) {
-            actions.add(NodeUIContextAction.SEPARATOR);
-            actions.addAll(registeredEntries);
-        }
-
-        // Node context actions
-        if (!nodeSpecificContextActions.isEmpty()) {
-            actions = new ArrayList<>(actions);
-            actions.add(NodeUIContextAction.SEPARATOR);
-            nodeSpecificContextActions.sort(Comparator.comparing(NodeUIContextAction::getName));
-            actions.addAll(nodeSpecificContextActions);
-        }
-
-        getCanvasUI().setContextActions(actions);
-    }
-
-    private void initializeDefaultPanel() {
-        defaultPanel = new JPanel(new BorderLayout());
-
-        JSplitPane splitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT);
-        splitPane.setDividerSize(3);
-        splitPane.setResizeWeight(0.33);
-        addComponentListener(new ComponentAdapter() {
-            @Override
-            public void componentResized(ComponentEvent e) {
-                super.componentResized(e);
-                splitPane.setDividerLocation(0.33);
-            }
-        });
-        defaultPanel.add(splitPane, BorderLayout.CENTER);
-
-        JIPipeGraphEditorMinimap minimap = new JIPipeGraphEditorMinimap(this);
-        splitPane.setTopComponent(minimap);
-
-        MarkdownReader markdownReader = new MarkdownReader(false);
-        markdownReader.setDocument(MarkdownDocument.fromPluginResource("documentation/algorithm-graph.md"));
-        splitPane.setBottomComponent(markdownReader);
-    }
-
-//    @Override
-//    public void installNodeUIFeatures(JIPipeAlgorithmUI ui) {
-//        ui.installContextMenu(Arrays.asList(
-//                new OpenSettingsAlgorithmContextMenuFeature(),
-//                new AddToSelectionAlgorithmContextMenuFeature(),
-//                new SeparatorAlgorithmContextMenuFeature(),
-//                new RunAndShowResultsAlgorithmContextMenuFeature(),
-//                new SeparatorAlgorithmContextMenuFeature(),
-//                new CutCopyAlgorithmContextMenuFeature(),
-//                new SeparatorAlgorithmContextMenuFeature(),
-//                new EnableDisablePassThroughAlgorithmContextMenuFeature(),
-//                new SeparatorAlgorithmContextMenuFeature(),
-//                new JsonAlgorithmToGroupAlgorithmContextMenuFeature(),
-//                new CollapseIOInterfaceAlgorithmContextMenuFeature(),
-//                new DeleteAlgorithmContextMenuFeature()
-//        ));
-//    }
-
-    @Override
-    public void reloadMenuBar() {
-        getMenuBar().removeAll();
-        getAddableAlgorithms().clear();
-        initializeAddNodesMenus(this, getMenuBar(), getAddableAlgorithms());
-        initializeCommonActions();
-        updateNavigation();
-    }
-
-    @Override
-    protected void updateSelection() {
-        super.updateSelection();
-        if (disableUpdateOnSelection)
-            return;
-        if (getSelection().isEmpty()) {
-            setPropertyPanel(defaultPanel);
-        } else if (getSelection().size() == 1) {
-            JIPipeNodeUI ui = getSelection().iterator().next();
-            setPropertyPanel(new JIPipeSingleAlgorithmSelectionPanelUI(this, ui.getNode()));
-        } else {
-            setPropertyPanel(new JIPipeMultiAlgorithmSelectionPanelUI((JIPipeProjectWorkbench) getWorkbench(), getCanvasUI(),
-                    getSelection().stream().map(JIPipeNodeUI::getNode).collect(Collectors.toSet())));
-        }
-    }
-
-    @Subscribe
-    public void onDefaultActionRequested(JIPipeGraphCanvasUI.DefaultAlgorithmUIActionRequestedEvent event) {
-        if (event.getUi().getNode() instanceof NodeGroup) {
-            if (event.getUi().getNode() instanceof NodeGroup) {
-                if (getWorkbench() instanceof JIPipeProjectWorkbench) {
-                    JIPipeNodeGroupUI.openGroupNodeGraph(getWorkbench(), (NodeGroup) event.getUi().getNode(), true);
-                }
-            }
-        }
-    }
-
-    /**
-     * Listens to events of algorithms requesting some action
-     *
-     * @param event the event
-     */
-    @Subscribe
-    public void onAlgorithmActionRequested(JIPipeGraphCanvasUI.NodeUIActionRequestedEvent event) {
-        if (event.getAction() instanceof RunAndShowResultsAction) {
-            disableUpdateOnSelection = true;
-            selectOnly(event.getUi());
-            JIPipeSingleAlgorithmSelectionPanelUI panel = new JIPipeSingleAlgorithmSelectionPanelUI(this,
-                    event.getUi().getNode());
-            setPropertyPanel(panel);
-            panel.runTestBench(true,
-                    false,
-                    false,
-                    true,
-                    ((RunAndShowResultsAction) event.getAction()).isStoreIntermediateResults(),
-                    false);
-            SwingUtilities.invokeLater(() -> disableUpdateOnSelection = false);
-        } else if (event.getAction() instanceof UpdateCacheAction) {
-            disableUpdateOnSelection = true;
-            selectOnly(event.getUi());
-            JIPipeSingleAlgorithmSelectionPanelUI panel = new JIPipeSingleAlgorithmSelectionPanelUI(this,
-                    event.getUi().getNode());
-            setPropertyPanel(panel);
-            panel.runTestBench(false,
-                    true,
-                    false,
-                    false,
-                    ((UpdateCacheAction) event.getAction()).isStoreIntermediateResults(),
-                    false);
-            SwingUtilities.invokeLater(() -> disableUpdateOnSelection = false);
-        }
     }
 
     /**
@@ -444,5 +225,222 @@ public class JIPipeGraphCompartmentUI extends JIPipeGraphEditorUI {
         }
         while (changed);
 
+    }
+
+//    @Override
+//    public void installNodeUIFeatures(JIPipeAlgorithmUI ui) {
+//        ui.installContextMenu(Arrays.asList(
+//                new OpenSettingsAlgorithmContextMenuFeature(),
+//                new AddToSelectionAlgorithmContextMenuFeature(),
+//                new SeparatorAlgorithmContextMenuFeature(),
+//                new RunAndShowResultsAlgorithmContextMenuFeature(),
+//                new SeparatorAlgorithmContextMenuFeature(),
+//                new CutCopyAlgorithmContextMenuFeature(),
+//                new SeparatorAlgorithmContextMenuFeature(),
+//                new EnableDisablePassThroughAlgorithmContextMenuFeature(),
+//                new SeparatorAlgorithmContextMenuFeature(),
+//                new JsonAlgorithmToGroupAlgorithmContextMenuFeature(),
+//                new CollapseIOInterfaceAlgorithmContextMenuFeature(),
+//                new DeleteAlgorithmContextMenuFeature()
+//        ));
+//    }
+
+    @Override
+    public UUID getCompartment() {
+        if (compartmentInstance == null) {
+            return super.getCompartment();
+        } else {
+            return compartmentInstance.getProjectCompartmentUUID();
+        }
+    }
+
+    private void initializeContextActions() {
+        getCanvasUI().setDragAndDropBehavior(new JIPipeGraphCompartmentDragAndDropBehavior());
+        List<NodeUIContextAction> nodeSpecificContextActions = new ArrayList<>();
+        if (GeneralUISettings.getInstance().isAddContextActionsToContextMenu()) {
+            for (JIPipeNodeInfo info : JIPipe.getNodes().getRegisteredNodeInfos().values()) {
+                for (Method method : info.getInstanceClass().getMethods()) {
+                    JIPipeContextAction actionAnnotation = method.getAnnotation(JIPipeContextAction.class);
+                    if (actionAnnotation == null)
+                        continue;
+                    if (!actionAnnotation.showInContextMenu())
+                        continue;
+                    JIPipeDocumentation documentationAnnotation = method.getAnnotation(JIPipeDocumentation.class);
+                    if (documentationAnnotation == null) {
+                        documentationAnnotation = new JIPipeDefaultDocumentation(method.getName(), "");
+                    }
+                    URL iconURL;
+                    if (UIUtils.DARK_THEME && !StringUtils.isNullOrEmpty(actionAnnotation.iconDarkURL())) {
+                        iconURL = actionAnnotation.resourceClass().getResource(actionAnnotation.iconDarkURL());
+                    } else {
+                        if (!StringUtils.isNullOrEmpty(actionAnnotation.iconURL())) {
+                            iconURL = actionAnnotation.resourceClass().getResource(actionAnnotation.iconURL());
+                        } else {
+                            iconURL = UIUtils.getIconURLFromResources("actions/configure.png");
+                        }
+                    }
+                    if (iconURL == null) {
+                        iconURL = UIUtils.getIconURLFromResources("actions/configure.png");
+                    }
+                    Icon icon = new ImageIcon(iconURL);
+
+                    NodeContextActionWrapperUIContextAction action = new NodeContextActionWrapperUIContextAction(info, documentationAnnotation.name(), documentationAnnotation.description(), icon, method);
+                    nodeSpecificContextActions.add(action);
+                }
+            }
+        }
+
+        List<NodeUIContextAction> actions = new ArrayList<>(Arrays.asList(
+                new SelectAllNodeUIContextAction(),
+                new InvertSelectionNodeUIContextAction(),
+                NodeUIContextAction.SEPARATOR,
+                new AlgorithmGraphCutNodeUIContextAction(),
+                new AlgorithmGraphCopyNodeUIContextAction(),
+                new AlgorithmGraphPasteNodeUIContextAction(),
+                new AlgorithmGraphDuplicateNodeUIContextAction(),
+                NodeUIContextAction.SEPARATOR,
+                new RunAndShowResultsNodeUIContextAction(),
+                new UpdateCacheNodeUIContextAction(),
+                new OpenCacheBrowserInWindowUIContextAction(),
+                NodeUIContextAction.SEPARATOR,
+                new RunAndShowIntermediateResultsNodeUIContextAction(),
+                new UpdateCacheShowIntermediateNodeUIContextAction(),
+                NodeUIContextAction.SEPARATOR,
+                new ExportNodeUIContextAction(),
+                NodeUIContextAction.SEPARATOR,
+                new IsolateNodesUIContextAction(),
+                new JsonAlgorithmToGroupNodeUIContextAction(),
+                new GroupNodeUIContextAction(),
+                new CollapseIOInterfaceNodeUIContextAction(),
+                NodeUIContextAction.SEPARATOR,
+                new SetNodeHotkeyContextAction(),
+                NodeUIContextAction.SEPARATOR,
+                new EnableNodeUIContextAction(),
+                new DisableNodeUIContextAction(),
+                new EnablePassThroughNodeUIContextAction(),
+                new DisablePassThroughNodeUIContextAction(),
+                new EnableSaveOutputsNodeUIContextAction(),
+                new DisableSaveOutputsNodeUIContextAction(),
+                new EnableVirtualOutputsNodeUIContextAction(),
+                new DisableVirtualOutputNodeUIContextAction(),
+                new DeleteNodeUIContextAction(),
+                NodeUIContextAction.SEPARATOR,
+                new SelectAndMoveNodeHereNodeUIContextAction()
+        ));
+
+        // Custom entries (from registry)
+        List<NodeUIContextAction> registeredEntries = JIPipe.getCustomMenus().getRegisteredContextMenuActions().stream()
+                .filter(NodeUIContextAction::showInGraphCompartment)
+                .sorted(Comparator.comparing(NodeUIContextAction::getName))
+                .collect(Collectors.toList());
+        if (!registeredEntries.isEmpty()) {
+            actions.add(NodeUIContextAction.SEPARATOR);
+            actions.addAll(registeredEntries);
+        }
+
+        // Node context actions
+        if (!nodeSpecificContextActions.isEmpty()) {
+            actions = new ArrayList<>(actions);
+            actions.add(NodeUIContextAction.SEPARATOR);
+            nodeSpecificContextActions.sort(Comparator.comparing(NodeUIContextAction::getName));
+            actions.addAll(nodeSpecificContextActions);
+        }
+
+        getCanvasUI().setContextActions(actions);
+    }
+
+    private void initializeDefaultPanel() {
+        defaultPanel = new JPanel(new BorderLayout());
+
+        JSplitPane splitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT);
+        splitPane.setDividerSize(3);
+        splitPane.setResizeWeight(0.33);
+        addComponentListener(new ComponentAdapter() {
+            @Override
+            public void componentResized(ComponentEvent e) {
+                super.componentResized(e);
+                splitPane.setDividerLocation(0.33);
+            }
+        });
+        defaultPanel.add(splitPane, BorderLayout.CENTER);
+
+        JIPipeGraphEditorMinimap minimap = new JIPipeGraphEditorMinimap(this);
+        splitPane.setTopComponent(minimap);
+
+        MarkdownReader markdownReader = new MarkdownReader(false);
+        markdownReader.setDocument(MarkdownDocument.fromPluginResource("documentation/algorithm-graph.md"));
+        splitPane.setBottomComponent(markdownReader);
+    }
+
+    @Override
+    public void reloadMenuBar() {
+        getMenuBar().removeAll();
+        getAddableAlgorithms().clear();
+        initializeAddNodesMenus(this, getMenuBar(), getAddableAlgorithms());
+        initializeCommonActions();
+        updateNavigation();
+    }
+
+    @Override
+    protected void updateSelection() {
+        super.updateSelection();
+        if (disableUpdateOnSelection)
+            return;
+        if (getSelection().isEmpty()) {
+            setPropertyPanel(defaultPanel);
+        } else if (getSelection().size() == 1) {
+            JIPipeNodeUI ui = getSelection().iterator().next();
+            setPropertyPanel(new JIPipeSingleAlgorithmSelectionPanelUI(this, ui.getNode()));
+        } else {
+            setPropertyPanel(new JIPipeMultiAlgorithmSelectionPanelUI((JIPipeProjectWorkbench) getWorkbench(), getCanvasUI(),
+                    getSelection().stream().map(JIPipeNodeUI::getNode).collect(Collectors.toSet())));
+        }
+    }
+
+    @Subscribe
+    public void onDefaultActionRequested(JIPipeGraphCanvasUI.DefaultAlgorithmUIActionRequestedEvent event) {
+        if (event.getUi().getNode() instanceof NodeGroup) {
+            if (event.getUi().getNode() instanceof NodeGroup) {
+                if (getWorkbench() instanceof JIPipeProjectWorkbench) {
+                    JIPipeNodeGroupUI.openGroupNodeGraph(getWorkbench(), (NodeGroup) event.getUi().getNode(), true);
+                }
+            }
+        }
+    }
+
+    /**
+     * Listens to events of algorithms requesting some action
+     *
+     * @param event the event
+     */
+    @Subscribe
+    public void onAlgorithmActionRequested(JIPipeGraphCanvasUI.NodeUIActionRequestedEvent event) {
+        if (event.getAction() instanceof RunAndShowResultsAction) {
+            disableUpdateOnSelection = true;
+            selectOnly(event.getUi());
+            JIPipeSingleAlgorithmSelectionPanelUI panel = new JIPipeSingleAlgorithmSelectionPanelUI(this,
+                    event.getUi().getNode());
+            setPropertyPanel(panel);
+            panel.runTestBench(true,
+                    false,
+                    false,
+                    true,
+                    ((RunAndShowResultsAction) event.getAction()).isStoreIntermediateResults(),
+                    false);
+            SwingUtilities.invokeLater(() -> disableUpdateOnSelection = false);
+        } else if (event.getAction() instanceof UpdateCacheAction) {
+            disableUpdateOnSelection = true;
+            selectOnly(event.getUi());
+            JIPipeSingleAlgorithmSelectionPanelUI panel = new JIPipeSingleAlgorithmSelectionPanelUI(this,
+                    event.getUi().getNode());
+            setPropertyPanel(panel);
+            panel.runTestBench(false,
+                    true,
+                    false,
+                    false,
+                    ((UpdateCacheAction) event.getAction()).isStoreIntermediateResults(),
+                    false);
+            SwingUtilities.invokeLater(() -> disableUpdateOnSelection = false);
+        }
     }
 }

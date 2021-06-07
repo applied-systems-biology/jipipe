@@ -47,6 +47,18 @@ public enum Measurement {
         this.nativeValue = nativeValue;
     }
 
+    public static String getAllDescriptions() {
+        StringBuilder builder = new StringBuilder();
+        List<Measurement> measurements = Arrays.asList(values());
+        measurements.sort(Comparator.comparing(Measurement::getLabel));
+        for (Measurement measurement : measurements) {
+            builder.append("<p><strong>").append(measurement.getLabel()).append("</strong><br/><br/>");
+            builder.append(measurement.getDescription());
+            builder.append("</p><br/>");
+        }
+        return builder.toString();
+    }
+
     public int getNativeValue() {
         return nativeValue;
     }
@@ -154,17 +166,5 @@ public enum Measurement {
             default:
                 return "";
         }
-    }
-
-    public static String getAllDescriptions() {
-        StringBuilder builder = new StringBuilder();
-        List<Measurement> measurements = Arrays.asList(values());
-        measurements.sort(Comparator.comparing(Measurement::getLabel));
-        for (Measurement measurement : measurements) {
-            builder.append("<p><strong>").append(measurement.getLabel()).append("</strong><br/><br/>");
-            builder.append(measurement.getDescription());
-            builder.append("</p><br/>");
-        }
-        return builder.toString();
     }
 }

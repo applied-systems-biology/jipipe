@@ -1,9 +1,6 @@
 package org.hkijena.jipipe.api.environments;
 
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
-import org.hkijena.jipipe.extensions.parameters.collections.ListParameter;
 
 import java.util.List;
 

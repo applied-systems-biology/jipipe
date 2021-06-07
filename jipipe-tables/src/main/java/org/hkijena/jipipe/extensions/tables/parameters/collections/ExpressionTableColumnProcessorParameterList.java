@@ -14,7 +14,6 @@
 package org.hkijena.jipipe.extensions.tables.parameters.collections;
 
 import org.hkijena.jipipe.extensions.parameters.collections.ListParameter;
-import org.hkijena.jipipe.extensions.tables.parameters.processors.ConvertingTableColumnProcessorParameter;
 import org.hkijena.jipipe.extensions.tables.parameters.processors.ExpressionTableColumnProcessorParameter;
 
 public class ExpressionTableColumnProcessorParameterList extends ListParameter<ExpressionTableColumnProcessorParameter> {

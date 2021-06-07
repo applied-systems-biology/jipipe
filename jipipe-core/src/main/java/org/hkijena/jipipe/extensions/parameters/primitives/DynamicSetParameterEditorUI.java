@@ -148,7 +148,7 @@ public class DynamicSetParameterEditorUI extends JIPipeParameterEditorUI {
 
     private void saveCollapsedState() {
         DynamicSetParameter<Object> parameter = getParameter(DynamicSetParameter.class);
-        if(parameter.isCollapsed() != collapseToggle.isSelected()) {
+        if (parameter.isCollapsed() != collapseToggle.isSelected()) {
             parameter.setCollapsed(collapseToggle.isSelected());
             setParameter(parameter, true);
         }

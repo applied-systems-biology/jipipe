@@ -18,13 +18,9 @@ import org.hkijena.jipipe.extensions.settings.RuntimeSettings;
 import org.hkijena.jipipe.utils.ResourceUtils;
 import org.hkijena.jipipe.utils.WebUtils;
 
-import java.io.IOException;
-import java.math.RoundingMode;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.file.Path;
-import java.text.DecimalFormat;
-import java.util.Objects;
 
 @JIPipeDocumentation(name = "Download files", description = "Downloads one or multiple files from web resources. This node will download the files and places each one of them into a temporary folder. The output of this node is the path to the downloaded file.")
 @JIPipeOrganization(nodeTypeCategory = DataSourceNodeTypeCategory.class)

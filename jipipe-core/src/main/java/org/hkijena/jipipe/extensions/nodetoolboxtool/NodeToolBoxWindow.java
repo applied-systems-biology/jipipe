@@ -29,6 +29,44 @@ public class NodeToolBoxWindow extends JFrame {
         reloadAlgorithmList();
     }
 
+    public static NodeToolBoxWindow openNewToolBox() {
+        NodeToolBoxWindow window = new NodeToolBoxWindow();
+        window.setTitle("Available nodes");
+        window.setIconImage(UIUtils.getIcon128FromResources("jipipe.png").getImage());
+        window.pack();
+        window.setSize(300, 700);
+        window.setVisible(true);
+        return window;
+    }
+
+    private static int[] rankNavigationEntry(JIPipeNodeInfo info, String[] searchStrings) {
+        if (searchStrings == null || searchStrings.length == 0)
+            return new int[0];
+        String nameHayStack;
+        String descriptionHayStack;
+        if (info.isHidden())
+            return null;
+        nameHayStack = StringUtils.orElse(info.getName(), "").toLowerCase();
+        descriptionHayStack = StringUtils.orElse(info.getDescription().getBody(), "").toLowerCase();
+
+        nameHayStack = nameHayStack.toLowerCase();
+        descriptionHayStack = descriptionHayStack.toLowerCase();
+
+        int[] ranks = new int[2];
+
+        for (String string : searchStrings) {
+            if (nameHayStack.contains(string.toLowerCase()))
+                --ranks[0];
+            if (descriptionHayStack.contains(string.toLowerCase()))
+                --ranks[1];
+        }
+
+        if (ranks[0] == 0 && ranks[1] == 0)
+            return null;
+
+        return ranks;
+    }
+
     private void initialize() {
         setContentPane(new JPanel(new BorderLayout()));
 
@@ -131,43 +169,5 @@ public class NodeToolBoxWindow extends JFrame {
                 JIPipeNodeInfo::getName,
                 NodeToolBoxWindow::rankNavigationEntry,
                 searchField.getSearchStrings());
-    }
-
-    public static NodeToolBoxWindow openNewToolBox() {
-        NodeToolBoxWindow window = new NodeToolBoxWindow();
-        window.setTitle("Available nodes");
-        window.setIconImage(UIUtils.getIcon128FromResources("jipipe.png").getImage());
-        window.pack();
-        window.setSize(300, 700);
-        window.setVisible(true);
-        return window;
-    }
-
-    private static int[] rankNavigationEntry(JIPipeNodeInfo info, String[] searchStrings) {
-        if (searchStrings == null || searchStrings.length == 0)
-            return new int[0];
-        String nameHayStack;
-        String descriptionHayStack;
-        if (info.isHidden())
-            return null;
-        nameHayStack = StringUtils.orElse(info.getName(), "").toLowerCase();
-        descriptionHayStack = StringUtils.orElse(info.getDescription().getBody(), "").toLowerCase();
-
-        nameHayStack = nameHayStack.toLowerCase();
-        descriptionHayStack = descriptionHayStack.toLowerCase();
-
-        int[] ranks = new int[2];
-
-        for (String string : searchStrings) {
-            if (nameHayStack.contains(string.toLowerCase()))
-                --ranks[0];
-            if (descriptionHayStack.contains(string.toLowerCase()))
-                --ranks[1];
-        }
-
-        if (ranks[0] == 0 && ranks[1] == 0)
-            return null;
-
-        return ranks;
     }
 }

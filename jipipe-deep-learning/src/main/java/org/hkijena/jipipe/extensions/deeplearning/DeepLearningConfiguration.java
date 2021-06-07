@@ -17,7 +17,6 @@ import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonSetter;
 
 import java.nio.file.Path;
-import java.nio.file.Paths;
 
 /**
  * POJO class for storing the configuration

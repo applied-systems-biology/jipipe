@@ -17,6 +17,26 @@ public enum JIPipeAnnotationMergeStrategy {
     MergeLists;
 
     /**
+     * Extracts merged annotations
+     *
+     * @param merged the annotation value
+     * @return the components
+     */
+    public static String[] extractMergedAnnotations(String merged) {
+        if (StringUtils.isNullOrEmpty(merged))
+            return new String[0];
+        if (merged.contains("[") && merged.contains("]")) {
+            try {
+                return JsonUtils.getObjectMapper().readerFor(String[].class).readValue(merged);
+            } catch (IOException e) {
+                return new String[]{merged};
+            }
+        } else {
+            return new String[]{merged};
+        }
+    }
+
+    /**
      * Ensures that a list of annotations has unique names. Merges according to the strategy if needed.
      *
      * @param annotations input annotations. can have duplicate names.
@@ -111,26 +131,6 @@ public enum JIPipeAnnotationMergeStrategy {
                 return "Overwrite existing";
             default:
                 return super.toString();
-        }
-    }
-
-    /**
-     * Extracts merged annotations
-     *
-     * @param merged the annotation value
-     * @return the components
-     */
-    public static String[] extractMergedAnnotations(String merged) {
-        if (StringUtils.isNullOrEmpty(merged))
-            return new String[0];
-        if (merged.contains("[") && merged.contains("]")) {
-            try {
-                return JsonUtils.getObjectMapper().readerFor(String[].class).readValue(merged);
-            } catch (IOException e) {
-                return new String[]{merged};
-            }
-        } else {
-            return new String[]{merged};
         }
     }
 

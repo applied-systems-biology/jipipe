@@ -20,9 +20,7 @@ import com.google.common.eventbus.Subscribe;
 import org.hkijena.jipipe.api.JIPipeDefaultDocumentation;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.extensions.parameters.primitives.HTMLText;
-import org.hkijena.jipipe.extensions.settings.GeneralUISettings;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
-import org.hkijena.jipipe.utils.ResourceUtils;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.scijava.Priority;
@@ -97,6 +95,16 @@ public class JIPipeParameterTree implements JIPipeParameterCollection, JIPipeCus
         this.ignoreCustomParameters = (flags & IGNORE_CUSTOM) == IGNORE_CUSTOM;
         this.forceReflection = (flags & FORCE_REFLECTION) == FORCE_REFLECTION;
         merge(rootParameter, root);
+    }
+
+    /**
+     * Accesses the parameters of a collection
+     *
+     * @param collection the collection
+     * @return traversed parameters
+     */
+    public static Map<String, JIPipeParameterAccess> getParameters(JIPipeParameterCollection collection) {
+        return (new JIPipeParameterTree(collection)).getParameters();
     }
 
     /**
@@ -195,10 +203,9 @@ public class JIPipeParameterTree implements JIPipeParameterCollection, JIPipeCus
                 documentationAnnotation = new JIPipeDefaultDocumentation(method.getName(), "");
             }
             URL iconURL = null;
-            if(UIUtils.DARK_THEME && !StringUtils.isNullOrEmpty(actionAnnotation.iconDarkURL())) {
+            if (UIUtils.DARK_THEME && !StringUtils.isNullOrEmpty(actionAnnotation.iconDarkURL())) {
                 iconURL = actionAnnotation.resourceClass().getResource(actionAnnotation.iconDarkURL());
-            }
-            else {
+            } else {
                 if (!StringUtils.isNullOrEmpty(actionAnnotation.iconURL())) {
                     iconURL = actionAnnotation.resourceClass().getResource(actionAnnotation.iconURL());
                 }
@@ -500,16 +507,6 @@ public class JIPipeParameterTree implements JIPipeParameterCollection, JIPipeCus
                 node.getParameters().inverse().remove(access);
             }
         }
-    }
-
-    /**
-     * Accesses the parameters of a collection
-     *
-     * @param collection the collection
-     * @return traversed parameters
-     */
-    public static Map<String, JIPipeParameterAccess> getParameters(JIPipeParameterCollection collection) {
-        return (new JIPipeParameterTree(collection)).getParameters();
     }
 
     /**

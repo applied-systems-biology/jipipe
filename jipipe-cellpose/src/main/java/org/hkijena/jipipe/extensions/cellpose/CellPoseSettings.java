@@ -22,32 +22,6 @@ public class CellPoseSettings implements JIPipeParameterCollection {
         overridePythonEnvironment.setEnabled(true);
     }
 
-    @Override
-    public EventBus getEventBus() {
-        return eventBus;
-    }
-
-    @JIPipeDocumentation(name = "Cellpose Python environment", description = "If enabled, a separate Python environment is used for CellPose. " +
-            "Alternatively, the standard Python environment from the Python extension is used. Please ensure that CellPose is installed. " +
-            "You can also install CellPose via the Select/Install button (CPU and GPU supported).")
-    @JIPipeParameter("python-environment")
-    public OptionalPythonEnvironment getOverridePythonEnvironment() {
-        return overridePythonEnvironment;
-    }
-
-    @JIPipeParameter("python-environment")
-    public void setOverridePythonEnvironment(OptionalPythonEnvironment overridePythonEnvironment) {
-        this.overridePythonEnvironment = overridePythonEnvironment;
-    }
-
-    public PythonEnvironment getPythonEnvironment() {
-        if (overridePythonEnvironment.isEnabled()) {
-            return overridePythonEnvironment.getContent();
-        } else {
-            return PythonExtensionSettings.getInstance().getPythonEnvironment();
-        }
-    }
-
     public static CellPoseSettings getInstance() {
         return JIPipe.getSettings().getSettings(ID, CellPoseSettings.class);
     }
@@ -81,6 +55,32 @@ public class CellPoseSettings implements JIPipeParameterCollection {
                             "according to the documentation https://cellpose.readthedocs.io/en/latest/installation.html\n" +
                             "Then go to Project > Application settings > Extensions > Cellpose and choose the correct environment. " +
                             "Alternatively, the settings page will provide you with means to install Cellpose automatically.");
+        }
+    }
+
+    @Override
+    public EventBus getEventBus() {
+        return eventBus;
+    }
+
+    @JIPipeDocumentation(name = "Cellpose Python environment", description = "If enabled, a separate Python environment is used for CellPose. " +
+            "Alternatively, the standard Python environment from the Python extension is used. Please ensure that CellPose is installed. " +
+            "You can also install CellPose via the Select/Install button (CPU and GPU supported).")
+    @JIPipeParameter("python-environment")
+    public OptionalPythonEnvironment getOverridePythonEnvironment() {
+        return overridePythonEnvironment;
+    }
+
+    @JIPipeParameter("python-environment")
+    public void setOverridePythonEnvironment(OptionalPythonEnvironment overridePythonEnvironment) {
+        this.overridePythonEnvironment = overridePythonEnvironment;
+    }
+
+    public PythonEnvironment getPythonEnvironment() {
+        if (overridePythonEnvironment.isEnabled()) {
+            return overridePythonEnvironment.getContent();
+        } else {
+            return PythonExtensionSettings.getInstance().getPythonEnvironment();
         }
     }
 }

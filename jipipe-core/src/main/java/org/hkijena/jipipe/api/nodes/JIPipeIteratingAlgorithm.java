@@ -24,11 +24,7 @@ import org.hkijena.jipipe.api.data.JIPipeAnnotationMergeStrategy;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.data.JIPipeSlotConfiguration;
 import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
-import org.hkijena.jipipe.api.parameters.JIPipeParameter;
-import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
-import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
-import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
-import org.hkijena.jipipe.api.parameters.JIPipeParameterVisibility;
+import org.hkijena.jipipe.api.parameters.*;
 import org.hkijena.jipipe.extensions.expressions.ExpressionParameters;
 import org.hkijena.jipipe.extensions.expressions.StringQueryExpression;
 import org.hkijena.jipipe.extensions.parameters.generators.IntegerRange;
@@ -39,12 +35,7 @@ import org.hkijena.jipipe.utils.JsonUtils;
 import org.hkijena.jipipe.utils.ResourceUtils;
 import org.hkijena.jipipe.utils.StringUtils;
 
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
@@ -142,7 +133,7 @@ public abstract class JIPipeIteratingAlgorithm extends JIPipeParameterSlotAlgori
         // Adaptive parameter backups
         JIPipeParameterTree tree = null;
         Map<String, Object> parameterBackups = new HashMap<>();
-        if(getAdaptiveParameterSettings().isEnabled() && !getAdaptiveParameterSettings().getOverriddenParameters().isEmpty()) {
+        if (getAdaptiveParameterSettings().isEnabled() && !getAdaptiveParameterSettings().getOverriddenParameters().isEmpty()) {
             tree = new JIPipeParameterTree(this);
             for (Map.Entry<String, JIPipeParameterAccess> entry : tree.getParameters().entrySet()) {
                 parameterBackups.put(entry.getKey(), entry.getValue().get(Object.class));
@@ -261,20 +252,18 @@ public abstract class JIPipeIteratingAlgorithm extends JIPipeParameterSlotAlgori
             Object oldValue = parameterBackups.get(key);
             expressionParameters.put("default", oldValue);
             Object newValue = overriddenParameter.getKey().evaluate(expressionParameters);
-            if(Objects.equals(newValue, oldValue)) {
+            if (Objects.equals(newValue, oldValue)) {
                 // No changes
-                if(getAdaptiveParameterSettings().isAttachParameterAnnotations() && !getAdaptiveParameterSettings().isAttachOnlyNonDefaultParameterAnnotations()) {
+                if (getAdaptiveParameterSettings().isAttachParameterAnnotations() && !getAdaptiveParameterSettings().isAttachOnlyNonDefaultParameterAnnotations()) {
                     annotateWithParameter(dataBatch, key, target, newValue);
                 }
-            }
-            else if(target.getFieldClass().isAssignableFrom(newValue.getClass())) {
+            } else if (target.getFieldClass().isAssignableFrom(newValue.getClass())) {
                 // Set new value
                 target.set(newValue);
-                if(getAdaptiveParameterSettings().isAttachParameterAnnotations()) {
+                if (getAdaptiveParameterSettings().isAttachParameterAnnotations()) {
                     annotateWithParameter(dataBatch, key, target, newValue);
                 }
-            }
-            else {
+            } else {
                 // Is JSON. Parse
                 try {
                     newValue = JsonUtils.getObjectMapper().readerFor(target.getFieldClass()).readValue(StringUtils.nullToEmpty(newValue));
@@ -282,7 +271,7 @@ public abstract class JIPipeIteratingAlgorithm extends JIPipeParameterSlotAlgori
                     throw new RuntimeException(e);
                 }
                 target.set(newValue);
-                if(getAdaptiveParameterSettings().isAttachParameterAnnotations()) {
+                if (getAdaptiveParameterSettings().isAttachParameterAnnotations()) {
                     annotateWithParameter(dataBatch, key, target, newValue);
                 }
             }
@@ -291,7 +280,7 @@ public abstract class JIPipeIteratingAlgorithm extends JIPipeParameterSlotAlgori
 
     private void annotateWithParameter(JIPipeDataBatch dataBatch, String key, JIPipeParameterAccess target, Object newValue) {
         String name;
-        if(getAdaptiveParameterSettings().isParameterAnnotationsUseInternalNames())
+        if (getAdaptiveParameterSettings().isParameterAnnotationsUseInternalNames())
             name = key;
         else
             name = target.getName();

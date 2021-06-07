@@ -29,6 +29,42 @@ public class DeepLearningSettings implements JIPipeParameterCollection, External
         overridePythonEnvironment.setEnabled(true);
     }
 
+    public static DeepLearningSettings getInstance() {
+        return JIPipe.getSettings().getSettings(ID, DeepLearningSettings.class);
+    }
+
+    /**
+     * Checks the Python settings
+     *
+     * @return if the settings are correct
+     */
+    public static boolean pythonSettingsAreValid() {
+        if (JIPipe.getInstance() != null) {
+            DeepLearningSettings instance = getInstance();
+            JIPipeValidityReport report = new JIPipeValidityReport();
+            instance.getPythonEnvironment().reportValidity(report);
+            return report.isValid();
+        }
+        return false;
+    }
+
+    /**
+     * Checks if the Python settings are valid or reports an invalid state
+     *
+     * @param report the report
+     */
+    public static void checkPythonSettings(JIPipeValidityReport report) {
+        if (!pythonSettingsAreValid()) {
+            report.reportIsInvalid("Python is not configured!",
+                    "Project > Application settings > Extensions > Deep Learning",
+                    "This node requires an installation of Python. You have to point JIPipe to a Python installation.",
+                    "Please install Python from https://www.python.org/, or from https://www.anaconda.com/ or https://docs.conda.io/en/latest/miniconda.html and install the Deep Learning Toolkit " +
+                            "according to the documentation https://www.jipipe.org/documentation/standard-library/deep-learning/\n" +
+                            "Then go to Project > Application settings > Extensions > Deep Learning and choose the correct environment. " +
+                            "Alternatively, the settings page will provide you with means to install the Deep Learning Toolkit automatically.");
+        }
+    }
+
     @Override
     public EventBus getEventBus() {
         return eventBus;
@@ -90,41 +126,5 @@ public class DeepLearningSettings implements JIPipeParameterCollection, External
     @JIPipeParameter("deep-learning-toolkit")
     public void setDeepLearningToolkit(DeepLearningToolkitLibraryEnvironment deepLearningToolkit) {
         this.deepLearningToolkit = deepLearningToolkit;
-    }
-
-    public static DeepLearningSettings getInstance() {
-        return JIPipe.getSettings().getSettings(ID, DeepLearningSettings.class);
-    }
-
-    /**
-     * Checks the Python settings
-     *
-     * @return if the settings are correct
-     */
-    public static boolean pythonSettingsAreValid() {
-        if (JIPipe.getInstance() != null) {
-            DeepLearningSettings instance = getInstance();
-            JIPipeValidityReport report = new JIPipeValidityReport();
-            instance.getPythonEnvironment().reportValidity(report);
-            return report.isValid();
-        }
-        return false;
-    }
-
-    /**
-     * Checks if the Python settings are valid or reports an invalid state
-     *
-     * @param report the report
-     */
-    public static void checkPythonSettings(JIPipeValidityReport report) {
-        if (!pythonSettingsAreValid()) {
-            report.reportIsInvalid("Python is not configured!",
-                    "Project > Application settings > Extensions > Deep Learning",
-                    "This node requires an installation of Python. You have to point JIPipe to a Python installation.",
-                    "Please install Python from https://www.python.org/, or from https://www.anaconda.com/ or https://docs.conda.io/en/latest/miniconda.html and install the Deep Learning Toolkit " +
-                            "according to the documentation https://www.jipipe.org/documentation/standard-library/deep-learning/\n" +
-                            "Then go to Project > Application settings > Extensions > Deep Learning and choose the correct environment. " +
-                            "Alternatively, the settings page will provide you with means to install the Deep Learning Toolkit automatically.");
-        }
     }
 }

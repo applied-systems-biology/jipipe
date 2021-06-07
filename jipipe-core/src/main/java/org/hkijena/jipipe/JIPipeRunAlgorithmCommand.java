@@ -56,6 +56,15 @@ public class JIPipeRunAlgorithmCommand extends DynamicCommand implements Initial
     @Parameter(persist = false)
     private int threads = 1;
 
+    /**
+     * @param args ignored
+     */
+    public static void main(String[] args) {
+        final ImageJ ij = new ImageJ();
+        ij.ui().showUI();
+        ij.command().run(JIPipeRunAlgorithmCommand.class, true);
+    }
+
     @Override
     public void initialize() {
         resolveInput("nodeId");
@@ -159,14 +168,5 @@ public class JIPipeRunAlgorithmCommand extends DynamicCommand implements Initial
         }
         IJ.showProgress(3, 3);
         settings.pullOutput();
-    }
-
-    /**
-     * @param args ignored
-     */
-    public static void main(String[] args) {
-        final ImageJ ij = new ImageJ();
-        ij.ui().showUI();
-        ij.command().run(JIPipeRunAlgorithmCommand.class, true);
     }
 }

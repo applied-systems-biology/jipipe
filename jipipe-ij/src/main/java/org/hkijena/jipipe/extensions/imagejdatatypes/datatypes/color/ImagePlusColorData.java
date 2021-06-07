@@ -56,21 +56,6 @@ public class ImagePlusColorData extends ImagePlusData implements ColoredImagePlu
         this.colorSpace = colorSpace;
     }
 
-    @Override
-    public ColorSpace getColorSpace() {
-        return colorSpace;
-    }
-
-    @Override
-    public Component preview(int width, int height) {
-        return ImageJUtils.generatePreview(this.getImage(), getColorSpace(), width, height);
-    }
-
-    @Override
-    public String toString() {
-        return super.toString() + " [" + getColorSpace() + " colors]";
-    }
-
     /**
      * Converts an {@link ImagePlus} to the color space of this data.
      * Does not guarantee that the input image is copied.
@@ -109,5 +94,20 @@ public class ImagePlusColorData extends ImagePlusData implements ColoredImagePlu
         } else {
             return new ImagePlusColorData(image, ((ColoredImagePlusData) data).getColorSpace());
         }
+    }
+
+    @Override
+    public ColorSpace getColorSpace() {
+        return colorSpace;
+    }
+
+    @Override
+    public Component preview(int width, int height) {
+        return ImageJUtils.generatePreview(this.getImage(), getColorSpace(), width, height);
+    }
+
+    @Override
+    public String toString() {
+        return super.toString() + " [" + getColorSpace() + " colors]";
     }
 }

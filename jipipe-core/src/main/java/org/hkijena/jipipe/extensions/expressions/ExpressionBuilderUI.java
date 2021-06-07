@@ -72,6 +72,44 @@ public class ExpressionBuilderUI extends JPanel {
         updateInserter();
     }
 
+    public static String showDialog(Component parent, String expression, Set<ExpressionParameterVariable> variables) {
+        JDialog dialog = new JDialog(SwingUtilities.getWindowAncestor(parent));
+
+        ExpressionBuilderUI expressionBuilderUI = new ExpressionBuilderUI(expression, variables);
+        JPanel contentPanel = new JPanel(new BorderLayout(4, 4));
+        contentPanel.add(expressionBuilderUI, BorderLayout.CENTER);
+
+        JPanel buttonPanel = new JPanel();
+        buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.X_AXIS));
+
+        buttonPanel.add(new ExpressionBuilderSyntaxChecker(expressionBuilderUI.expressionEditor));
+
+        buttonPanel.add(Box.createHorizontalGlue());
+
+        JButton cancelButton = new JButton("Discard", UIUtils.getIconFromResources("actions/cancel.png"));
+        cancelButton.addActionListener(e -> dialog.setVisible(false));
+        buttonPanel.add(cancelButton);
+
+        AtomicBoolean confirmed = new AtomicBoolean(false);
+        JButton confirmButton = new JButton("Accept", UIUtils.getIconFromResources("actions/checkmark.png"));
+        confirmButton.addActionListener(e -> {
+            confirmed.set(true);
+            dialog.setVisible(false);
+        });
+        buttonPanel.add(confirmButton);
+
+        contentPanel.add(buttonPanel, BorderLayout.SOUTH);
+
+        dialog.setContentPane(contentPanel);
+        dialog.setModal(true);
+        dialog.setTitle("Expression builder");
+        dialog.pack();
+        dialog.setSize(800, 600);
+        dialog.setLocationRelativeTo(parent);
+        dialog.setVisible(true);
+        return confirmed.get() ? expressionBuilderUI.getExpression() : null;
+    }
+
     private void rebuildPalette() {
         List<Object> dataItems = new ArrayList<>();
         if (!variables.isEmpty()) {
@@ -422,44 +460,6 @@ public class ExpressionBuilderUI extends JPanel {
 
     private String getExpression() {
         return expressionEditor.getText().trim();
-    }
-
-    public static String showDialog(Component parent, String expression, Set<ExpressionParameterVariable> variables) {
-        JDialog dialog = new JDialog(SwingUtilities.getWindowAncestor(parent));
-
-        ExpressionBuilderUI expressionBuilderUI = new ExpressionBuilderUI(expression, variables);
-        JPanel contentPanel = new JPanel(new BorderLayout(4, 4));
-        contentPanel.add(expressionBuilderUI, BorderLayout.CENTER);
-
-        JPanel buttonPanel = new JPanel();
-        buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.X_AXIS));
-
-        buttonPanel.add(new ExpressionBuilderSyntaxChecker(expressionBuilderUI.expressionEditor));
-
-        buttonPanel.add(Box.createHorizontalGlue());
-
-        JButton cancelButton = new JButton("Discard", UIUtils.getIconFromResources("actions/cancel.png"));
-        cancelButton.addActionListener(e -> dialog.setVisible(false));
-        buttonPanel.add(cancelButton);
-
-        AtomicBoolean confirmed = new AtomicBoolean(false);
-        JButton confirmButton = new JButton("Accept", UIUtils.getIconFromResources("actions/checkmark.png"));
-        confirmButton.addActionListener(e -> {
-            confirmed.set(true);
-            dialog.setVisible(false);
-        });
-        buttonPanel.add(confirmButton);
-
-        contentPanel.add(buttonPanel, BorderLayout.SOUTH);
-
-        dialog.setContentPane(contentPanel);
-        dialog.setModal(true);
-        dialog.setTitle("Expression builder");
-        dialog.pack();
-        dialog.setSize(800, 600);
-        dialog.setLocationRelativeTo(parent);
-        dialog.setVisible(true);
-        return confirmed.get() ? expressionBuilderUI.getExpression() : null;
     }
 
     public static class EntryToStringFunction implements Function<Object, String> {

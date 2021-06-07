@@ -42,15 +42,16 @@ import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
-import javax.swing.Timer;
 import java.awt.*;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.nio.file.Path;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class ImageViewerPanel extends JPanel {
     private final JButton zoomStatusButton = new JButton();
@@ -94,6 +95,31 @@ public class ImageViewerPanel extends JPanel {
         }
         initialize();
         updateZoomStatus();
+    }
+
+    /**
+     * Opens the image in a new frame
+     *
+     * @param image the image
+     * @param title the title
+     * @return the panel
+     */
+    public static ImageViewerPanel showImage(ImagePlus image, String title) {
+        ImageViewerPanel dataDisplay = new ImageViewerPanel();
+        List<ImageViewerPanelPlugin> pluginList = new ArrayList<>();
+        pluginList.add(new CalibrationPlugin(dataDisplay));
+        pluginList.add(new PixelInfoPlugin(dataDisplay));
+        pluginList.add(new LUTManagerPlugin(dataDisplay));
+        pluginList.add(new ROIManagerPlugin(dataDisplay));
+        pluginList.add(new AnimationSpeedPlugin(dataDisplay));
+        pluginList.add(new MeasurementDrawerPlugin(dataDisplay));
+        pluginList.add(new MeasurementPlugin(dataDisplay));
+        dataDisplay.setPlugins(pluginList);
+        dataDisplay.setImage(image);
+        ImageViewerWindow window = new ImageViewerWindow(dataDisplay);
+        window.setTitle(title);
+        window.setVisible(true);
+        return dataDisplay;
     }
 
     public List<ImageViewerPanelPlugin> getPlugins() {
@@ -773,31 +799,6 @@ public class ImageViewerPanel extends JPanel {
 
     public ImageStatistics getStatistics() {
         return statistics;
-    }
-
-    /**
-     * Opens the image in a new frame
-     *
-     * @param image the image
-     * @param title the title
-     * @return the panel
-     */
-    public static ImageViewerPanel showImage(ImagePlus image, String title) {
-        ImageViewerPanel dataDisplay = new ImageViewerPanel();
-        List<ImageViewerPanelPlugin> pluginList = new ArrayList<>();
-        pluginList.add(new CalibrationPlugin(dataDisplay));
-        pluginList.add(new PixelInfoPlugin(dataDisplay));
-        pluginList.add(new LUTManagerPlugin(dataDisplay));
-        pluginList.add(new ROIManagerPlugin(dataDisplay));
-        pluginList.add(new AnimationSpeedPlugin(dataDisplay));
-        pluginList.add(new MeasurementDrawerPlugin(dataDisplay));
-        pluginList.add(new MeasurementPlugin(dataDisplay));
-        dataDisplay.setPlugins(pluginList);
-        dataDisplay.setImage(image);
-        ImageViewerWindow window = new ImageViewerWindow(dataDisplay);
-        window.setTitle(title);
-        window.setVisible(true);
-        return dataDisplay;
     }
 
 }

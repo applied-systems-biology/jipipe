@@ -46,6 +46,10 @@ public class BarCategoryPlotData extends CategoryPlotData {
         super(other);
     }
 
+    public static BarCategoryPlotData importFrom(Path storagePath) {
+        return PlotData.importFrom(storagePath, BarCategoryPlotData.class);
+    }
+
     @Override
     public JFreeChart getChart() {
         JFreeChart chart = ChartFactory.createBarChart(getTitle(), getCategoryAxisLabel(), getValueAxisLabel(), createDataSet());
@@ -57,9 +61,5 @@ public class BarCategoryPlotData extends CategoryPlotData {
         chart.getCategoryPlot().getRangeAxis().setTickLabelFont(new Font(Font.SANS_SERIF, Font.PLAIN, getValueAxisFontSize()));
         updateChartProperties(chart);
         return chart;
-    }
-
-    public static BarCategoryPlotData importFrom(Path storagePath) {
-        return PlotData.importFrom(storagePath, BarCategoryPlotData.class);
     }
 }

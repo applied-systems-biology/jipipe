@@ -15,19 +15,14 @@ package org.hkijena.jipipe.ui.project;
 
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.JIPipeProject;
-import org.hkijena.jipipe.api.JIPipeProjectCacheQuery;
 import org.hkijena.jipipe.api.JIPipeRunnable;
-import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
-import org.hkijena.jipipe.ui.cache.JIPipeCachedSlotToOutputExporterRun;
 import org.hkijena.jipipe.ui.cache.JIPipeImportCachedSlotOutputRun;
 
-import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
-import java.util.Map;
 
 public class LoadResultIntoCacheRun implements JIPipeRunnable {
     private final JIPipeWorkbench workbench;
@@ -61,13 +56,13 @@ public class LoadResultIntoCacheRun implements JIPipeRunnable {
         ArrayList<JIPipeGraphNode> nodes = new ArrayList<>(project.getGraph().getGraphNodes());
         progressInfo.setProgress(0, nodes.size());
         for (int i = 0; i < nodes.size(); i++) {
-            if(getProgressInfo().isCancelled().get())
+            if (getProgressInfo().isCancelled().get())
                 return;
             JIPipeGraphNode node = nodes.get(i);
             JIPipeProgressInfo nodeProgress = progressInfo.resolveAndLog(node.getDisplayName(), i, nodes.size());
             Path nodeDir = resultPath.resolve(node.getProjectCompartment().getAliasIdInGraph()).resolve(node.getAliasIdInGraph());
 
-            if(Files.isDirectory(nodeDir)) {
+            if (Files.isDirectory(nodeDir)) {
                 JIPipeImportCachedSlotOutputRun run = new JIPipeImportCachedSlotOutputRun(project, node, nodeDir);
                 run.setProgressInfo(nodeProgress);
                 run.run();

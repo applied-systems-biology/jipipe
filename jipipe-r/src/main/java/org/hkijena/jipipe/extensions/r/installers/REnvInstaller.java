@@ -1,7 +1,10 @@
 package org.hkijena.jipipe.extensions.r.installers;
 
 import com.google.common.eventbus.EventBus;
-import org.apache.commons.exec.*;
+import org.apache.commons.exec.CommandLine;
+import org.apache.commons.exec.ExecuteWatchdog;
+import org.apache.commons.exec.LogOutputStream;
+import org.apache.commons.exec.PumpStreamHandler;
 import org.apache.commons.lang3.SystemUtils;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
@@ -40,6 +43,19 @@ public class REnvInstaller extends ExternalEnvironmentInstaller {
      */
     public REnvInstaller(JIPipeWorkbench workbench, JIPipeParameterAccess parameterAccess) {
         super(workbench, parameterAccess);
+    }
+
+    /**
+     * Gets the latest download link for Miniconda
+     *
+     * @return the download URL
+     */
+    public static String getLatestDownload() {
+        if (SystemUtils.IS_OS_WINDOWS) {
+            return "https://cloud.r-project.org/bin/windows/base/R-4.0.5-win.exe";
+        } else {
+            return "https://cloud.r-project.org/bin/";
+        }
     }
 
     @Override
@@ -178,19 +194,6 @@ public class REnvInstaller extends ExternalEnvironmentInstaller {
 
     public void setConfiguration(Configuration configuration) {
         this.configuration = configuration;
-    }
-
-    /**
-     * Gets the latest download link for Miniconda
-     *
-     * @return the download URL
-     */
-    public static String getLatestDownload() {
-        if (SystemUtils.IS_OS_WINDOWS) {
-            return "https://cloud.r-project.org/bin/windows/base/R-4.0.5-win.exe";
-        } else {
-            return "https://cloud.r-project.org/bin/";
-        }
     }
 
     public static class Configuration implements JIPipeParameterCollection {

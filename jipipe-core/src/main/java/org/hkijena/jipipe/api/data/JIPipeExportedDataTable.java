@@ -73,6 +73,22 @@ public class JIPipeExportedDataTable implements TableModel {
     }
 
     /**
+     * Loads the table from JSON
+     *
+     * @param fileName JSON file
+     * @return Loaded table
+     */
+    public static JIPipeExportedDataTable loadFromJson(Path fileName) {
+        try {
+            return JsonUtils.getObjectMapper().readerFor(JIPipeExportedDataTable.class).readValue(fileName.toFile());
+        } catch (IOException e) {
+            throw new UserFriendlyRuntimeException(e, "Unable to load data table from '" + fileName + "'!",
+                    "Load JIPipe results", "Either the file is inaccessible, or corrupt.",
+                    "Check if the file is readable and contains valid JSON data.");
+        }
+    }
+
+    /**
      * @return Gets the algorithm ID
      */
     @JsonGetter("node-id")
@@ -314,22 +330,6 @@ public class JIPipeExportedDataTable implements TableModel {
     @Override
     public void removeTableModelListener(TableModelListener l) {
 
-    }
-
-    /**
-     * Loads the table from JSON
-     *
-     * @param fileName JSON file
-     * @return Loaded table
-     */
-    public static JIPipeExportedDataTable loadFromJson(Path fileName) {
-        try {
-            return JsonUtils.getObjectMapper().readerFor(JIPipeExportedDataTable.class).readValue(fileName.toFile());
-        } catch (IOException e) {
-            throw new UserFriendlyRuntimeException(e, "Unable to load data table from '" + fileName + "'!",
-                    "Load JIPipe results", "Either the file is inaccessible, or corrupt.",
-                    "Check if the file is readable and contains valid JSON data.");
-        }
     }
 
     /**

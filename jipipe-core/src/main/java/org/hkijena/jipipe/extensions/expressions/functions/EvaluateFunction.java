@@ -18,6 +18,22 @@ public class EvaluateFunction extends ExpressionFunction {
         super("EVALUATE", 1, Integer.MAX_VALUE);
     }
 
+    public static void parseVariableAssignment(ExpressionParameters source, ExpressionParameters target, String assignment) {
+        int separatorIndex = assignment.indexOf('=');
+        if (separatorIndex < 0) {
+            throw new UserFriendlyRuntimeException("Variable assignment '" + assignment + "' is invalid: Missing '='.",
+                    "Invalid variable assignment expression!",
+                    "Assignment '" + assignment + "'",
+                    "You used an expression function that assigns variables. Variable assignments always have following format: [Variable name]=[Expression]. " +
+                            "For example: var1=x+1",
+                    "Insert a correct variable assignment");
+        }
+        String variableName = assignment.substring(0, separatorIndex);
+        String expression = assignment.substring(separatorIndex + 1);
+        Object value = DefaultExpressionParameter.getEvaluatorInstance().evaluate(expression, source);
+        target.put(variableName, value);
+    }
+
     @Override
     public ParameterInfo getParameterInfo(int index) {
         if (index == 0) {
@@ -48,21 +64,5 @@ public class EvaluateFunction extends ExpressionFunction {
         }
 
         return DefaultExpressionParameter.getEvaluatorInstance().evaluate(StringUtils.nullToEmpty(parameters.get(0)), localVariables);
-    }
-
-    public static void parseVariableAssignment(ExpressionParameters source, ExpressionParameters target, String assignment) {
-        int separatorIndex = assignment.indexOf('=');
-        if (separatorIndex < 0) {
-            throw new UserFriendlyRuntimeException("Variable assignment '" + assignment + "' is invalid: Missing '='.",
-                    "Invalid variable assignment expression!",
-                    "Assignment '" + assignment + "'",
-                    "You used an expression function that assigns variables. Variable assignments always have following format: [Variable name]=[Expression]. " +
-                            "For example: var1=x+1",
-                    "Insert a correct variable assignment");
-        }
-        String variableName = assignment.substring(0, separatorIndex);
-        String expression = assignment.substring(separatorIndex + 1);
-        Object value = DefaultExpressionParameter.getEvaluatorInstance().evaluate(expression, source);
-        target.put(variableName, value);
     }
 }

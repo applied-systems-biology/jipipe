@@ -83,6 +83,169 @@ public class JIPipeJsonExtensionWindow extends JFrame {
             setTitle("New project");
     }
 
+    /**
+     * Opens a new window
+     *
+     * @param context          The context
+     * @param project          The project
+     * @param showIntroduction whether to show introduction
+     * @return The window
+     */
+    public static JIPipeJsonExtensionWindow newWindow(Context context, JIPipeJsonExtension project, boolean showIntroduction) {
+        JIPipeJsonExtensionWindow frame = new JIPipeJsonExtensionWindow(context, project, showIntroduction);
+        frame.pack();
+        frame.setSize(1024, 768);
+        frame.setVisible(true);
+//        frame.setExtendedState(frame.getExtendedState() | JFrame.MAXIMIZED_BOTH);
+        return frame;
+    }
+
+    /**
+     * Allows the user to select files to install
+     *
+     * @param workbench The parent component
+     */
+    public static void installExtensions(JIPipeWorkbench workbench) {
+        List<Path> files = FileChooserSettings.openFiles(workbench.getWindow(), FileChooserSettings.KEY_PROJECT, "Open JIPipe JSON extension (*.jipe)");
+        for (Path selectedFile : files) {
+            installExtensionFromFile(workbench, selectedFile, true, false);
+        }
+        if (ExtensionSettings.getInstance().isValidateImageJDependencies()) {
+            checkExtensionDependencies(workbench);
+        }
+        if (!files.isEmpty()) {
+            JOptionPane.showMessageDialog(workbench.getWindow(), "The extensions were copied into the plugin directory. Please check if any errors occurred. " +
+                    "We recommend to restart ImageJ, " +
+                    "especially if you updated an existing extension.", "Extensions copied", JOptionPane.INFORMATION_MESSAGE);
+        }
+    }
+
+    /**
+     * Loads a project and installs it
+     *
+     * @param workbench         The parent component
+     * @param filePath          The file path
+     * @param silent            if not dialogs should be  shown
+     * @param checkDependencies whether to check dependencies
+     */
+    public static void installExtensionFromFile(JIPipeWorkbench workbench, Path filePath, boolean silent, boolean checkDependencies) {
+        try {
+            JsonNode jsonData = JsonUtils.getObjectMapper().readValue(filePath.toFile(), JsonNode.class);
+            Set<JIPipeDependency> dependencySet = JIPipeProject.loadDependenciesFromJson(jsonData);
+            Set<JIPipeDependency> missingDependencies = JIPipeDependency.findUnsatisfiedDependencies(dependencySet);
+            if (!missingDependencies.isEmpty()) {
+                if (!UnsatisfiedDependenciesDialog.showDialog(workbench, filePath, missingDependencies, Collections.emptySet()))
+                    return;
+            }
+
+            JIPipeJsonExtension project = JIPipeJsonExtension.loadProject(jsonData);
+            installExtension(workbench, project, true, checkDependencies);
+
+            if (!silent) {
+                JOptionPane.showMessageDialog(workbench.getWindow(), "The extension was installed. We recommend to restart ImageJ, " +
+                        "especially if you updated an existing extension.", "Extension installed", JOptionPane.INFORMATION_MESSAGE);
+            }
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    /**
+     * Installs a loaded project
+     *
+     * @param workbench         The parent component
+     * @param extension         The extension
+     * @param silent            whether to show a dialog confirming the installation
+     * @param checkDependencies whether to check dependencies
+     */
+    public static void installExtension(JIPipeWorkbench workbench, JIPipeJsonExtension extension, boolean silent, boolean checkDependencies) {
+        boolean alreadyExists = JIPipe.getInstance().getRegisteredExtensionIds().contains(extension.getDependencyId());
+        if (alreadyExists) {
+            if (JOptionPane.showConfirmDialog(workbench.getWindow(), "There already exists an extension with ID '"
+                    + extension.getDependencyId() + "'. Do you want to install this extension anyways?", "Install", JOptionPane.YES_NO_OPTION) == JOptionPane.NO_OPTION) {
+                return;
+            }
+        }
+        Path pluginFolder = JsonExtensionLoaderExtension.getPluginDirectory();
+        if (!Files.exists(pluginFolder)) {
+            try {
+                Files.createDirectories(pluginFolder);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
+
+        // Suggest a path that the user can later change
+        Path suggestedPath = pluginFolder.resolve(StringUtils.makeFilesystemCompatible(extension.getDependencyId()) + ".jipipe.json");
+        if (alreadyExists) {
+            JIPipeDependency dependency = JIPipe.getInstance().findExtensionById(extension.getDependencyId());
+            if (dependency instanceof JIPipeJsonExtension) {
+                Path jsonExtensionPath = ((JIPipeJsonExtension) dependency).getJsonFilePath();
+                if (jsonExtensionPath != null && Files.exists(jsonExtensionPath)) {
+                    suggestedPath = jsonExtensionPath;
+                }
+            }
+        }
+
+        // Let the user select a file path
+        JFileChooser fileChooser = new JFileChooser();
+        fileChooser.setDialogTitle("Install extension '" + extension.getMetadata().getName() + "'");
+        fileChooser.setCurrentDirectory(pluginFolder.toFile());
+        fileChooser.setSelectedFile(suggestedPath.toFile());
+        if (fileChooser.showSaveDialog(workbench.getWindow()) != JFileChooser.APPROVE_OPTION)
+            return;
+
+        Path selectedPath = fileChooser.getSelectedFile().toPath();
+        try {
+            extension.saveProject(selectedPath);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
+        // Install extension by reloading (to be sure)
+        try {
+            JIPipeJsonExtension loadedExtension = JsonUtils.getObjectMapper().readValue(selectedPath.toFile(), JIPipeJsonExtension.class);
+            JIPipe.getInstance().register(loadedExtension);
+            if (!silent) {
+                JOptionPane.showMessageDialog(workbench.getWindow(), "The extension was installed. We recommend to restart ImageJ, " +
+                        "especially if you updated an existing extension.", "Extension installed", JOptionPane.INFORMATION_MESSAGE);
+            }
+            if (checkDependencies && ExtensionSettings.getInstance().isValidateImageJDependencies()) {
+                checkExtensionDependencies(workbench);
+            }
+        } catch (Exception e) {
+            IJ.handleException(e);
+        }
+    }
+
+    public static void checkExtensionDependencies(JIPipeWorkbench workbench) {
+        JIPipeRegistryIssues issues = new JIPipeRegistryIssues();
+        JIPipe.getInstance().checkUpdateSites(issues,
+                JIPipe.getInstance().getRegisteredExtensions(),
+                new ProgressDialog((Frame) workbench.getWindow(), "Checking dependencies ..."));
+        if (!issues.getMissingImageJSites().isEmpty()) {
+            MissingUpdateSiteResolver resolver = new MissingUpdateSiteResolver(workbench.getContext(), issues);
+            resolver.revalidate();
+            resolver.repaint();
+            resolver.setLocationRelativeTo(null);
+            resolver.setVisible(true);
+        }
+    }
+
+    /**
+     * @return The list of open windows
+     */
+    public static Set<JIPipeJsonExtensionWindow> getOpenWindows() {
+        return Collections.unmodifiableSet(OPEN_WINDOWS);
+    }
+
+    /**
+     * @return EventBus that generate window open/close events
+     */
+    public static EventBus getWindowsEvents() {
+        return WINDOWS_EVENTS;
+    }
+
     @Override
     public void dispose() {
         OPEN_WINDOWS.remove(this);
@@ -313,168 +476,5 @@ public class JIPipeJsonExtensionWindow extends JFrame {
      */
     public Path getProjectSavePath() {
         return projectSavePath;
-    }
-
-    /**
-     * Opens a new window
-     *
-     * @param context          The context
-     * @param project          The project
-     * @param showIntroduction whether to show introduction
-     * @return The window
-     */
-    public static JIPipeJsonExtensionWindow newWindow(Context context, JIPipeJsonExtension project, boolean showIntroduction) {
-        JIPipeJsonExtensionWindow frame = new JIPipeJsonExtensionWindow(context, project, showIntroduction);
-        frame.pack();
-        frame.setSize(1024, 768);
-        frame.setVisible(true);
-//        frame.setExtendedState(frame.getExtendedState() | JFrame.MAXIMIZED_BOTH);
-        return frame;
-    }
-
-    /**
-     * Allows the user to select files to install
-     *
-     * @param workbench The parent component
-     */
-    public static void installExtensions(JIPipeWorkbench workbench) {
-        List<Path> files = FileChooserSettings.openFiles(workbench.getWindow(), FileChooserSettings.KEY_PROJECT, "Open JIPipe JSON extension (*.jipe)");
-        for (Path selectedFile : files) {
-            installExtensionFromFile(workbench, selectedFile, true, false);
-        }
-        if (ExtensionSettings.getInstance().isValidateImageJDependencies()) {
-            checkExtensionDependencies(workbench);
-        }
-        if (!files.isEmpty()) {
-            JOptionPane.showMessageDialog(workbench.getWindow(), "The extensions were copied into the plugin directory. Please check if any errors occurred. " +
-                    "We recommend to restart ImageJ, " +
-                    "especially if you updated an existing extension.", "Extensions copied", JOptionPane.INFORMATION_MESSAGE);
-        }
-    }
-
-    /**
-     * Loads a project and installs it
-     *
-     * @param workbench         The parent component
-     * @param filePath          The file path
-     * @param silent            if not dialogs should be  shown
-     * @param checkDependencies whether to check dependencies
-     */
-    public static void installExtensionFromFile(JIPipeWorkbench workbench, Path filePath, boolean silent, boolean checkDependencies) {
-        try {
-            JsonNode jsonData = JsonUtils.getObjectMapper().readValue(filePath.toFile(), JsonNode.class);
-            Set<JIPipeDependency> dependencySet = JIPipeProject.loadDependenciesFromJson(jsonData);
-            Set<JIPipeDependency> missingDependencies = JIPipeDependency.findUnsatisfiedDependencies(dependencySet);
-            if (!missingDependencies.isEmpty()) {
-                if (!UnsatisfiedDependenciesDialog.showDialog(workbench, filePath, missingDependencies, Collections.emptySet()))
-                    return;
-            }
-
-            JIPipeJsonExtension project = JIPipeJsonExtension.loadProject(jsonData);
-            installExtension(workbench, project, true, checkDependencies);
-
-            if (!silent) {
-                JOptionPane.showMessageDialog(workbench.getWindow(), "The extension was installed. We recommend to restart ImageJ, " +
-                        "especially if you updated an existing extension.", "Extension installed", JOptionPane.INFORMATION_MESSAGE);
-            }
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    /**
-     * Installs a loaded project
-     *
-     * @param workbench         The parent component
-     * @param extension         The extension
-     * @param silent            whether to show a dialog confirming the installation
-     * @param checkDependencies whether to check dependencies
-     */
-    public static void installExtension(JIPipeWorkbench workbench, JIPipeJsonExtension extension, boolean silent, boolean checkDependencies) {
-        boolean alreadyExists = JIPipe.getInstance().getRegisteredExtensionIds().contains(extension.getDependencyId());
-        if (alreadyExists) {
-            if (JOptionPane.showConfirmDialog(workbench.getWindow(), "There already exists an extension with ID '"
-                    + extension.getDependencyId() + "'. Do you want to install this extension anyways?", "Install", JOptionPane.YES_NO_OPTION) == JOptionPane.NO_OPTION) {
-                return;
-            }
-        }
-        Path pluginFolder = JsonExtensionLoaderExtension.getPluginDirectory();
-        if (!Files.exists(pluginFolder)) {
-            try {
-                Files.createDirectories(pluginFolder);
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-        }
-
-        // Suggest a path that the user can later change
-        Path suggestedPath = pluginFolder.resolve(StringUtils.makeFilesystemCompatible(extension.getDependencyId()) + ".jipipe.json");
-        if (alreadyExists) {
-            JIPipeDependency dependency = JIPipe.getInstance().findExtensionById(extension.getDependencyId());
-            if (dependency instanceof JIPipeJsonExtension) {
-                Path jsonExtensionPath = ((JIPipeJsonExtension) dependency).getJsonFilePath();
-                if (jsonExtensionPath != null && Files.exists(jsonExtensionPath)) {
-                    suggestedPath = jsonExtensionPath;
-                }
-            }
-        }
-
-        // Let the user select a file path
-        JFileChooser fileChooser = new JFileChooser();
-        fileChooser.setDialogTitle("Install extension '" + extension.getMetadata().getName() + "'");
-        fileChooser.setCurrentDirectory(pluginFolder.toFile());
-        fileChooser.setSelectedFile(suggestedPath.toFile());
-        if (fileChooser.showSaveDialog(workbench.getWindow()) != JFileChooser.APPROVE_OPTION)
-            return;
-
-        Path selectedPath = fileChooser.getSelectedFile().toPath();
-        try {
-            extension.saveProject(selectedPath);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-
-        // Install extension by reloading (to be sure)
-        try {
-            JIPipeJsonExtension loadedExtension = JsonUtils.getObjectMapper().readValue(selectedPath.toFile(), JIPipeJsonExtension.class);
-            JIPipe.getInstance().register(loadedExtension);
-            if (!silent) {
-                JOptionPane.showMessageDialog(workbench.getWindow(), "The extension was installed. We recommend to restart ImageJ, " +
-                        "especially if you updated an existing extension.", "Extension installed", JOptionPane.INFORMATION_MESSAGE);
-            }
-            if (checkDependencies && ExtensionSettings.getInstance().isValidateImageJDependencies()) {
-                checkExtensionDependencies(workbench);
-            }
-        } catch (Exception e) {
-            IJ.handleException(e);
-        }
-    }
-
-    public static void checkExtensionDependencies(JIPipeWorkbench workbench) {
-        JIPipeRegistryIssues issues = new JIPipeRegistryIssues();
-        JIPipe.getInstance().checkUpdateSites(issues,
-                JIPipe.getInstance().getRegisteredExtensions(),
-                new ProgressDialog((Frame) workbench.getWindow(), "Checking dependencies ..."));
-        if (!issues.getMissingImageJSites().isEmpty()) {
-            MissingUpdateSiteResolver resolver = new MissingUpdateSiteResolver(workbench.getContext(), issues);
-            resolver.revalidate();
-            resolver.repaint();
-            resolver.setLocationRelativeTo(null);
-            resolver.setVisible(true);
-        }
-    }
-
-    /**
-     * @return The list of open windows
-     */
-    public static Set<JIPipeJsonExtensionWindow> getOpenWindows() {
-        return Collections.unmodifiableSet(OPEN_WINDOWS);
-    }
-
-    /**
-     * @return EventBus that generate window open/close events
-     */
-    public static EventBus getWindowsEvents() {
-        return WINDOWS_EVENTS;
     }
 }

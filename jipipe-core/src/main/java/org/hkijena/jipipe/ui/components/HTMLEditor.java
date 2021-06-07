@@ -33,6 +33,15 @@ public class HTMLEditor extends JPanel {
         initializeEvents();
     }
 
+    public static void main(String[] args) {
+        UIUtils.getThemeFromRawSettings().install();
+        JFrame frame = new JFrame();
+        frame.setContentPane(new HTMLEditor(WITH_SCROLL_BAR));
+        frame.setSize(800, 600);
+        frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+        frame.setVisible(true);
+    }
+
     public JTextPane getTextPane() {
         return textPane;
     }
@@ -419,15 +428,6 @@ public class HTMLEditor extends JPanel {
 
         // Workaround https://stackoverflow.com/questions/1527021/html-jtextpane-newline-support
 //        textPane.getDocument().putProperty(DefaultEditorKit.EndOfLineStringProperty, "<br/>\n");
-    }
-
-    public static void main(String[] args) {
-        UIUtils.getThemeFromRawSettings().install();
-        JFrame frame = new JFrame();
-        frame.setContentPane(new HTMLEditor(WITH_SCROLL_BAR));
-        frame.setSize(800, 600);
-        frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-        frame.setVisible(true);
     }
 
     public static class StrikeThroughAction extends StyledEditorKit.StyledTextAction {

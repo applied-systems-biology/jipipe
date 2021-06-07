@@ -25,16 +25,13 @@ import org.hkijena.jipipe.api.data.JIPipeDefaultMutableSlotConfiguration;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
-import org.hkijena.jipipe.extensions.expressions.NumericFunctionExpression;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.InterpolationMethod;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.extensions.parameters.roi.Anchor;
-import org.hkijena.jipipe.extensions.parameters.roi.Margin;
 import org.hkijena.jipipe.extensions.parameters.roi.OptionalIntModificationParameter;
 
-import java.awt.Color;
-import java.awt.Rectangle;
+import java.awt.*;
 
 /**
  * Wrapper around {@link ImageProcessor}
@@ -83,6 +80,43 @@ public class TransformScale2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         this.scaleMode = other.scaleMode;
         this.anchor = other.anchor;
         this.background = other.background;
+    }
+
+    public static ImageProcessor scaleProcessor(ImageProcessor imp, int width, int height, InterpolationMethod interpolationMethod, boolean useAveraging, ScaleMode scaleMode, Anchor location, Color background) {
+        imp.setInterpolationMethod(interpolationMethod.getNativeValue());
+
+        switch (scaleMode) {
+            case Stretch:
+                return imp.resize(width, height, useAveraging);
+            case Fit: {
+                double factor = Math.min(width * 1.0 / imp.getWidth(), height * 1.0 / imp.getHeight());
+                ImageProcessor resized = imp.resize((int) (imp.getWidth() * factor), (int) (imp.getHeight() * factor), useAveraging);
+                ImageProcessor container = IJ.createImage("", width, height, 1, imp.getBitDepth()).getProcessor();
+                container.setRoi(0, 0, width, height);
+                container.setColor(background);
+                container.fill();
+                container.setRoi((Roi) null);
+
+                Rectangle finalRect = location.placeInside(new Rectangle(0, 0, resized.getWidth(), resized.getHeight()), new Rectangle(0, 0, width, height));
+                container.insert(resized, finalRect.x, finalRect.y);
+                return container;
+            }
+            case Cover: {
+                double factor = Math.max(width * 1.0 / imp.getWidth(), height * 1.0 / imp.getHeight());
+                ImageProcessor resized = imp.resize((int) (imp.getWidth() * factor), (int) (imp.getHeight() * factor), useAveraging);
+                ImageProcessor container = IJ.createImage("", width, height, 1, imp.getBitDepth()).getProcessor();
+                container.setRoi(0, 0, width, height);
+                container.setColor(background);
+                container.fill();
+                container.setRoi((Roi) null);
+
+                Rectangle finalRect = location.placeInside(new Rectangle(0, 0, resized.getWidth(), resized.getHeight()), new Rectangle(0, 0, width, height));
+                container.insert(resized, finalRect.x, finalRect.y);
+                return container;
+            }
+            default:
+                throw new UnsupportedOperationException();
+        }
     }
 
     @Override
@@ -208,42 +242,5 @@ public class TransformScale2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     @JIPipeParameter("use-averaging")
     public void setUseAveraging(boolean useAveraging) {
         this.useAveraging = useAveraging;
-    }
-
-    public static ImageProcessor scaleProcessor(ImageProcessor imp, int width, int height, InterpolationMethod interpolationMethod, boolean useAveraging, ScaleMode scaleMode, Anchor location, Color background) {
-        imp.setInterpolationMethod(interpolationMethod.getNativeValue());
-
-        switch (scaleMode) {
-            case Stretch:
-                return imp.resize(width, height, useAveraging);
-            case Fit: {
-                double factor = Math.min(width * 1.0 / imp.getWidth(), height * 1.0 / imp.getHeight());
-                ImageProcessor resized = imp.resize((int) (imp.getWidth() * factor), (int) (imp.getHeight() * factor), useAveraging);
-                ImageProcessor container = IJ.createImage("", width, height, 1, imp.getBitDepth()).getProcessor();
-                container.setRoi(0,0,width, height);
-                container.setColor(background);
-                container.fill();
-                container.setRoi((Roi) null);
-
-                Rectangle finalRect = location.placeInside(new Rectangle(0,0, resized.getWidth(), resized.getHeight()), new Rectangle(0, 0, width, height));
-                container.insert(resized, finalRect.x,finalRect.y);
-                return container;
-            }
-            case Cover: {
-                double factor = Math.max(width * 1.0 / imp.getWidth(), height * 1.0 / imp.getHeight());
-                ImageProcessor resized = imp.resize((int) (imp.getWidth() * factor), (int) (imp.getHeight() * factor), useAveraging);
-                ImageProcessor container = IJ.createImage("", width, height, 1, imp.getBitDepth()).getProcessor();
-                container.setRoi(0,0,width, height);
-                container.setColor(background);
-                container.fill();
-                container.setRoi((Roi) null);
-
-                Rectangle finalRect = location.placeInside(new Rectangle(0,0, resized.getWidth(), resized.getHeight()), new Rectangle(0, 0, width, height));
-                container.insert(resized, finalRect.x,finalRect.y);
-                return container;
-            }
-            default:
-                throw new UnsupportedOperationException();
-        }
     }
 }

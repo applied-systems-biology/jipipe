@@ -19,7 +19,6 @@ import org.hkijena.jipipe.extensions.expressions.ExpressionParameters;
 
 import java.util.HashMap;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @JIPipeDocumentation(name = "Get all variables as map", description = "Returns all variables at map.")
 public class GetVariablesAsMapFunction extends ExpressionFunction {

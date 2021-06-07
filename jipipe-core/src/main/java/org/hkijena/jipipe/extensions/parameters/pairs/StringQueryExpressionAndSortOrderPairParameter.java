@@ -13,8 +13,8 @@
 
 package org.hkijena.jipipe.extensions.parameters.pairs;
 
-import org.hkijena.jipipe.extensions.parameters.collections.ListParameter;
 import org.hkijena.jipipe.extensions.expressions.StringQueryExpression;
+import org.hkijena.jipipe.extensions.parameters.collections.ListParameter;
 import org.hkijena.jipipe.extensions.parameters.util.SortOrder;
 
 /**

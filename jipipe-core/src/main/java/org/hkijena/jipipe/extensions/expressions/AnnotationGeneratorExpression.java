@@ -46,7 +46,7 @@ public class AnnotationGeneratorExpression extends DefaultExpressionParameter {
      */
     public String generateAnnotationValue(Collection<JIPipeAnnotation> annotations, ExpressionParameters variableSet) {
         for (JIPipeAnnotation annotation : annotations) {
-            if(!variableSet.containsKey(annotation.getName()))
+            if (!variableSet.containsKey(annotation.getName()))
                 variableSet.set(annotation.getName(), annotation.getValue());
         }
         return "" + evaluate(variableSet);

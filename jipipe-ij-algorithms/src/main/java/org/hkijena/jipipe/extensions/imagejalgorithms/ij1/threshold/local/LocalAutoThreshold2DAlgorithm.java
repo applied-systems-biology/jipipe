@@ -80,86 +80,6 @@ public class LocalAutoThreshold2DAlgorithm extends JIPipeSimpleIteratingAlgorith
         this.radius = other.radius;
     }
 
-    @Override
-    public boolean supportsParallelization() {
-        return true;
-    }
-
-    @Override
-    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
-        ImagePlusData inputData = dataBatch.getInputData(getFirstInputSlot(), ImagePlusGreyscale8UData.class, progressInfo);
-        ImagePlus img = inputData.getDuplicateImage();
-        if (!darkBackground) {
-            img.getProcessor().invert();
-        }
-        switch (method) {
-            case Mean:
-                Mean(img, radius, modifier, true);
-                break;
-            case Otsu:
-                Otsu(img, radius, modifier, true);
-                break;
-            case Median:
-                Median(img, radius, modifier, true);
-                break;
-            case MidGrey:
-                MidGrey(img, radius, modifier, true);
-                break;
-        }
-        dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusGreyscaleMaskData(img), progressInfo);
-    }
-
-    @JIPipeParameter(value = "method", priority = Priority.HIGH)
-    @JIPipeDocumentation(name = "Method", description = "Determines the thresholding method:\n\n" +
-            "Mean (threshold is mean local pixel value)\n" +
-            "Median (threshold is median local pixel value)\n" +
-            "MidGray (threshold is average of min and max pixel values)\n" +
-            "Otsu (threshold is the local otsu threshold)")
-    public Method getMethod() {
-        return method;
-    }
-
-    @JIPipeParameter("method")
-    public void setMethod(Method method) {
-        this.method = method;
-    }
-
-    @JIPipeDocumentation(name = "Dark background", description = "If the background color is dark. Disable this if your image has a bright background.")
-    @JIPipeParameter("dark-background")
-    public boolean isDarkBackground() {
-        return darkBackground;
-    }
-
-    @JIPipeParameter("dark-background")
-    public void setDarkBackground(boolean darkBackground) {
-        this.darkBackground = darkBackground;
-    }
-
-    @JIPipeDocumentation(name = "Modifier", description = "This value is subtracted from each calculated local threshold.")
-    @JIPipeParameter("modifier")
-    public int getModifier() {
-        return modifier;
-    }
-
-    @JIPipeParameter("modifier")
-    public void setModifier(int modifier) {
-        this.modifier = modifier;
-    }
-
-    @JIPipeDocumentation(name = "Radius", description = "The radius of the circular local window.")
-    @JIPipeParameter("radius")
-    public int getRadius() {
-        return radius;
-    }
-
-    @JIPipeParameter("radius")
-    public boolean setRadius(int radius) {
-        if (radius <= 0)
-            return false;
-        this.radius = radius;
-        return true;
-    }
-
     public static void Mean(ImagePlus imp, int radius, int c_value, boolean doIwhite) {
         // See: Image Processing Learning Resourches HIPR2
         // http://homepages.inf.ed.ac.uk/rbf/HIPR2/adpthrsh.htm
@@ -360,6 +280,86 @@ public class LocalAutoThreshold2DAlgorithm extends JIPipeSimpleIteratingAlgorith
         ImageProcessor imageProcessor = iPlus.getProcessor();
         imageProcessor.copyBits(iProcessor, 0, 0, Blitter.COPY);
         return iPlus;
+    }
+
+    @Override
+    public boolean supportsParallelization() {
+        return true;
+    }
+
+    @Override
+    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
+        ImagePlusData inputData = dataBatch.getInputData(getFirstInputSlot(), ImagePlusGreyscale8UData.class, progressInfo);
+        ImagePlus img = inputData.getDuplicateImage();
+        if (!darkBackground) {
+            img.getProcessor().invert();
+        }
+        switch (method) {
+            case Mean:
+                Mean(img, radius, modifier, true);
+                break;
+            case Otsu:
+                Otsu(img, radius, modifier, true);
+                break;
+            case Median:
+                Median(img, radius, modifier, true);
+                break;
+            case MidGrey:
+                MidGrey(img, radius, modifier, true);
+                break;
+        }
+        dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusGreyscaleMaskData(img), progressInfo);
+    }
+
+    @JIPipeParameter(value = "method", priority = Priority.HIGH)
+    @JIPipeDocumentation(name = "Method", description = "Determines the thresholding method:\n\n" +
+            "Mean (threshold is mean local pixel value)\n" +
+            "Median (threshold is median local pixel value)\n" +
+            "MidGray (threshold is average of min and max pixel values)\n" +
+            "Otsu (threshold is the local otsu threshold)")
+    public Method getMethod() {
+        return method;
+    }
+
+    @JIPipeParameter("method")
+    public void setMethod(Method method) {
+        this.method = method;
+    }
+
+    @JIPipeDocumentation(name = "Dark background", description = "If the background color is dark. Disable this if your image has a bright background.")
+    @JIPipeParameter("dark-background")
+    public boolean isDarkBackground() {
+        return darkBackground;
+    }
+
+    @JIPipeParameter("dark-background")
+    public void setDarkBackground(boolean darkBackground) {
+        this.darkBackground = darkBackground;
+    }
+
+    @JIPipeDocumentation(name = "Modifier", description = "This value is subtracted from each calculated local threshold.")
+    @JIPipeParameter("modifier")
+    public int getModifier() {
+        return modifier;
+    }
+
+    @JIPipeParameter("modifier")
+    public void setModifier(int modifier) {
+        this.modifier = modifier;
+    }
+
+    @JIPipeDocumentation(name = "Radius", description = "The radius of the circular local window.")
+    @JIPipeParameter("radius")
+    public int getRadius() {
+        return radius;
+    }
+
+    @JIPipeParameter("radius")
+    public boolean setRadius(int radius) {
+        if (radius <= 0)
+            return false;
+        this.radius = radius;
+        return true;
     }
 
     public enum Method {

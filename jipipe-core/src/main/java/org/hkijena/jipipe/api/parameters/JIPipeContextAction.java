@@ -14,7 +14,6 @@
 package org.hkijena.jipipe.api.parameters;
 
 import org.hkijena.jipipe.utils.ResourceUtils;
-import org.jgrapht.graph.DefaultDirectedGraph;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -46,6 +45,7 @@ public @interface JIPipeContextAction {
 
     /**
      * The class that loads the resource
+     *
      * @return the resource class
      */
     Class<?> resourceClass() default ResourceUtils.class;

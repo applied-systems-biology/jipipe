@@ -12,7 +12,6 @@ import javax.swing.*;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.List;
 
 /**
  * Wrapper around Cellpose models
@@ -41,6 +40,10 @@ public class CellPoseSizeModelData implements JIPipeData {
     public CellPoseSizeModelData(CellPoseSizeModelData other) {
         this.data = other.data;
         this.name = other.name;
+    }
+
+    public static CellPoseSizeModelData importFrom(Path storagePath) {
+        return new CellPoseSizeModelData(PathUtils.findFileByExtensionIn(storagePath, ".npy"));
     }
 
     private String extractFileName(Path file) {
@@ -83,9 +86,5 @@ public class CellPoseSizeModelData implements JIPipeData {
     @Override
     public String toString() {
         return "Cellpose size model: " + name + " (" + (data.length / 1024 / 1024) + " MB)";
-    }
-
-    public static CellPoseSizeModelData importFrom(Path storagePath) {
-        return new CellPoseSizeModelData(PathUtils.findFileByExtensionIn(storagePath, ".npy"));
     }
 }

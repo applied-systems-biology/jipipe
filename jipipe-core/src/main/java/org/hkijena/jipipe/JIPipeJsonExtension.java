@@ -68,6 +68,39 @@ public class JIPipeJsonExtension implements JIPipeParameterCollection, JIPipeDep
     public JIPipeJsonExtension() {
     }
 
+    /**
+     * Loads a {@link JIPipeJsonExtension} from JSON
+     *
+     * @param jsonData JSON data
+     * @return Loaded instance
+     */
+    public static JIPipeJsonExtension loadProject(JsonNode jsonData) {
+        try {
+            return JsonUtils.getObjectMapper().readerFor(JIPipeJsonExtension.class).readValue(jsonData);
+        } catch (IOException e) {
+            throw new UserFriendlyRuntimeException(e, "Could not load JSON plugin.",
+                    "JIPipe JSON extension loader", "The plugin file was corrupted, so JIPipe does not know how to load some essential information. Or you are using an older JIPipe version.",
+                    "Try to update JIPipe. If this does not work, contact the plugin's author.");
+        }
+    }
+
+    /**
+     * Loads an extension from a file
+     *
+     * @param path the path to the project file
+     * @return the project
+     */
+    public static JIPipeJsonExtension loadProject(Path path) {
+        try {
+            JsonNode jsonData = JsonUtils.getObjectMapper().readValue(path.toFile(), JsonNode.class);
+            return loadProject(jsonData);
+        } catch (IOException e) {
+            throw new UserFriendlyRuntimeException(e, "Could not load JSON plugin.",
+                    "JIPipe JSON extension loader", "The plugin file was corrupted, so JIPipe does not know how to load some essential information. Or you are using an older JIPipe version.",
+                    "Try to update JIPipe. If this does not work, contact the plugin's author.");
+        }
+    }
+
     @Override
     @JsonGetter("metadata")
     @JIPipeParameter("metadata")
@@ -316,39 +349,6 @@ public class JIPipeJsonExtension implements JIPipeParameterCollection, JIPipeDep
             deserializeNodeInfos();
         if (nodeInfos.remove(info)) {
             eventBus.post(new JIPipe.ExtensionContentRemovedEvent(this, info));
-        }
-    }
-
-    /**
-     * Loads a {@link JIPipeJsonExtension} from JSON
-     *
-     * @param jsonData JSON data
-     * @return Loaded instance
-     */
-    public static JIPipeJsonExtension loadProject(JsonNode jsonData) {
-        try {
-            return JsonUtils.getObjectMapper().readerFor(JIPipeJsonExtension.class).readValue(jsonData);
-        } catch (IOException e) {
-            throw new UserFriendlyRuntimeException(e, "Could not load JSON plugin.",
-                    "JIPipe JSON extension loader", "The plugin file was corrupted, so JIPipe does not know how to load some essential information. Or you are using an older JIPipe version.",
-                    "Try to update JIPipe. If this does not work, contact the plugin's author.");
-        }
-    }
-
-    /**
-     * Loads an extension from a file
-     *
-     * @param path the path to the project file
-     * @return the project
-     */
-    public static JIPipeJsonExtension loadProject(Path path) {
-        try {
-            JsonNode jsonData = JsonUtils.getObjectMapper().readValue(path.toFile(), JsonNode.class);
-            return loadProject(jsonData);
-        } catch (IOException e) {
-            throw new UserFriendlyRuntimeException(e, "Could not load JSON plugin.",
-                    "JIPipe JSON extension loader", "The plugin file was corrupted, so JIPipe does not know how to load some essential information. Or you are using an older JIPipe version.",
-                    "Try to update JIPipe. If this does not work, contact the plugin's author.");
         }
     }
 

@@ -7,13 +7,11 @@ import org.hkijena.jipipe.api.data.JIPipeDataSource;
 import org.hkijena.jipipe.api.data.JIPipeDataStorageDocumentation;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.utils.PathUtils;
-import org.hkijena.jipipe.utils.StringUtils;
 
 import javax.swing.*;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.StandardOpenOption;
 import java.util.List;
 
 /**
@@ -43,6 +41,25 @@ public class CellPoseModelData implements JIPipeData {
     public CellPoseModelData(CellPoseModelData other) {
         this.data = other.data;
         this.name = other.name;
+    }
+
+    public static CellPoseModelData importFrom(Path storagePath) {
+        List<Path> files = PathUtils.findFilesByExtensionIn(storagePath);
+        Path file = null;
+
+        for (Path path : files) {
+            String name = path.getFileName().toString();
+            // Skip dot files
+            if (name.startsWith("."))
+                continue;
+            if (name.contains("cellpose")) {
+                file = path;
+                break;
+            }
+        }
+        if (file == null)
+            file = files.get(0);
+        return new CellPoseModelData(file);
     }
 
     public byte[] getData() {
@@ -78,24 +95,5 @@ public class CellPoseModelData implements JIPipeData {
     @Override
     public String toString() {
         return "Cellpose model: " + name + " (" + (data.length / 1024 / 1024) + " MB)";
-    }
-
-    public static CellPoseModelData importFrom(Path storagePath) {
-        List<Path> files = PathUtils.findFilesByExtensionIn(storagePath);
-        Path file = null;
-
-        for (Path path : files) {
-            String name = path.getFileName().toString();
-            // Skip dot files
-            if (name.startsWith("."))
-                continue;
-            if (name.contains("cellpose")) {
-                file = path;
-                break;
-            }
-        }
-        if (file == null)
-            file = files.get(0);
-        return new CellPoseModelData(file);
     }
 }

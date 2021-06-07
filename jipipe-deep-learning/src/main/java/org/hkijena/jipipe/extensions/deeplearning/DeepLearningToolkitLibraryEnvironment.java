@@ -16,7 +16,6 @@ package org.hkijena.jipipe.extensions.deeplearning;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.extensions.parameters.collections.ListParameter;
 import org.hkijena.jipipe.extensions.python.PythonPackageLibraryEnvironment;
-import org.hkijena.jipipe.extensions.python.PythonUtils;
 import org.reflections.Reflections;
 import org.reflections.scanners.ResourcesScanner;
 import org.reflections.util.ClasspathHelper;

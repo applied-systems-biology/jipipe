@@ -22,6 +22,15 @@ public class JIPipeRunQueueNotifier {
     }
 
     /**
+     * Installs the notifier. Can be called multiple times (singleton)
+     */
+    public static void install() {
+        if (INSTANCE == null) {
+            INSTANCE = new JIPipeRunQueueNotifier();
+        }
+    }
+
+    /**
      * Triggered when a worker is finished
      *
      * @param event Generated event
@@ -63,15 +72,6 @@ public class JIPipeRunQueueNotifier {
                 return;
             UIUtils.sendTrayNotification("Run failed", "The run '" + event.getRun().getTaskLabel() + "' failed.",
                     TrayIcon.MessageType.ERROR);
-        }
-    }
-
-    /**
-     * Installs the notifier. Can be called multiple times (singleton)
-     */
-    public static void install() {
-        if (INSTANCE == null) {
-            INSTANCE = new JIPipeRunQueueNotifier();
         }
     }
 }

@@ -21,8 +21,8 @@ import ij.process.ImageProcessor;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
-import org.hkijena.jipipe.extensions.parameters.roi.Anchor;
 import org.hkijena.jipipe.extensions.expressions.NumericFunctionExpression;
+import org.hkijena.jipipe.extensions.parameters.roi.Anchor;
 
 import java.awt.*;
 import java.util.ArrayList;

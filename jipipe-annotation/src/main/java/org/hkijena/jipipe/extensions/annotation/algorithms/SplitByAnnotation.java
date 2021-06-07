@@ -22,8 +22,8 @@ import org.hkijena.jipipe.api.nodes.JIPipeInputSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.categories.AnnotationsNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
-import org.hkijena.jipipe.extensions.parameters.collections.OutputSlotMapParameterCollection;
 import org.hkijena.jipipe.extensions.expressions.AnnotationGeneratorExpression;
+import org.hkijena.jipipe.extensions.parameters.collections.OutputSlotMapParameterCollection;
 
 import java.util.List;
 import java.util.stream.Collectors;

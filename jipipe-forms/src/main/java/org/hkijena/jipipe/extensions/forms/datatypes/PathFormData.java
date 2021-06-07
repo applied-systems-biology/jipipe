@@ -8,8 +8,8 @@ import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.nodes.JIPipeMergingDataBatch;
 import org.hkijena.jipipe.api.parameters.JIPipeManualParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
-import org.hkijena.jipipe.extensions.forms.utils.SingleAnnotationIOSettings;
 import org.hkijena.jipipe.extensions.expressions.StringQueryExpression;
+import org.hkijena.jipipe.extensions.forms.utils.SingleAnnotationIOSettings;
 import org.hkijena.jipipe.extensions.parameters.primitives.FilePathParameterSettings;
 import org.hkijena.jipipe.extensions.parameters.primitives.StringList;
 import org.hkijena.jipipe.extensions.settings.FileChooserSettings;
@@ -46,6 +46,10 @@ public class PathFormData extends ParameterFormData {
         this.ioMode = other.ioMode;
         this.extensions = new StringList(other.extensions);
         annotationIOSettings.getEventBus().register(this);
+    }
+
+    public static PathFormData importFrom(Path rowStorage) {
+        return FormData.importFrom(rowStorage, PathFormData.class);
     }
 
     @JIPipeDocumentation(name = "Initial value", description = "The initial string value")
@@ -188,9 +192,5 @@ public class PathFormData extends ParameterFormData {
             annotationIOSettings.getAnnotationMergeStrategy().mergeInto(dataBatch.getAnnotations(),
                     Collections.singletonList(annotationIOSettings.getOutputAnnotation().createAnnotation(StringUtils.nullToEmpty(value))));
         }
-    }
-
-    public static PathFormData importFrom(Path rowStorage) {
-        return FormData.importFrom(rowStorage, PathFormData.class);
     }
 }

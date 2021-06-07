@@ -12,7 +12,6 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.color.ColorSpace;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.color.ImagePlusColorRGBData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleMaskData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
-import org.hkijena.jipipe.extensions.tables.algorithms.MergeColumnsAlgorithm;
 import org.hkijena.jipipe.utils.PathUtils;
 
 import javax.swing.*;
@@ -49,6 +48,68 @@ public class MaskedImagePlusData extends ImagePlusData {
         if (image.getWidth() != mask.getWidth() || image.getHeight() != mask.getHeight()) {
             throw new RuntimeException("The image and mask do not have the same size!");
         }
+    }
+
+    /**
+     * Converts the incoming image data into the current format.
+     *
+     * @param data the data
+     * @return the converted data
+     */
+    public static ImagePlusData convertFrom(ImagePlusData data) {
+        ImagePlus greyscale = ImagePlusGreyscaleMaskData.convertIfNeeded(data.getImage());
+        // Threshold it into a mask
+        ImageJUtils.forEachSlice(greyscale, ip -> {
+            for (int i = 0; i < ip.getPixelCount(); i++) {
+                int v = ip.get(i);
+                if (v > 0)
+                    ip.set(i, 255);
+                else
+                    ip.set(i, 0);
+            }
+        }, new JIPipeProgressInfo());
+        return new MaskedImagePlusData(data.getImage(), greyscale, data.getColorSpace());
+    }
+
+    public static MaskedImagePlusData importFrom(Path storageFilePath) {
+        List<Path> files = PathUtils.findFilesByExtensionIn(storageFilePath, ".tif", ".tiff", ".png", ".jpg", ".jpeg", ".bmp");
+        Path imageFile = null;
+        Path maskFile = null;
+        for (Path file : files) {
+            String name = file.getFileName().toString();
+            if (name.contains("mask"))
+                maskFile = file;
+            if (name.contains("image"))
+                imageFile = file;
+        }
+        if (imageFile == null || maskFile == null) {
+            throw new UserFriendlyNullPointerException("Could not find a compatible image file in '" + storageFilePath + "'!",
+                    "Unable to find file in location '" + storageFilePath + "'",
+                    "ImagePlusData loading",
+                    "JIPipe needs to load the image from a folder, but it could not find any matching file.",
+                    "Please contact the JIPipe developers about this issue.");
+        }
+        ImagePlus image;
+        ImagePlus mask;
+        {
+            String fileName = imageFile.toString().toLowerCase();
+            if ((fileName.endsWith(".tiff") || fileName.endsWith(".tif")) && ImageJDataTypesSettings.getInstance().isUseBioFormats()) {
+                OMEImageData omeImageData = OMEImageData.importFrom(storageFilePath);
+                image = omeImageData.getImage();
+            } else {
+                image = IJ.openImage(imageFile.toString());
+            }
+        }
+        {
+            String fileName = maskFile.toString().toLowerCase();
+            if ((fileName.endsWith(".tiff") || fileName.endsWith(".tif")) && ImageJDataTypesSettings.getInstance().isUseBioFormats()) {
+                OMEImageData omeImageData = OMEImageData.importFrom(storageFilePath);
+                mask = omeImageData.getImage();
+            } else {
+                mask = IJ.openImage(maskFile.toString());
+            }
+        }
+        return new MaskedImagePlusData(image, mask);
     }
 
     @Override
@@ -164,67 +225,5 @@ public class MaskedImagePlusData extends ImagePlusData {
 
     public ImagePlus getMask() {
         return mask;
-    }
-
-    /**
-     * Converts the incoming image data into the current format.
-     *
-     * @param data the data
-     * @return the converted data
-     */
-    public static ImagePlusData convertFrom(ImagePlusData data) {
-        ImagePlus greyscale = ImagePlusGreyscaleMaskData.convertIfNeeded(data.getImage());
-        // Threshold it into a mask
-        ImageJUtils.forEachSlice(greyscale, ip -> {
-            for (int i = 0; i < ip.getPixelCount(); i++) {
-                int v = ip.get(i);
-                if (v > 0)
-                    ip.set(i, 255);
-                else
-                    ip.set(i, 0);
-            }
-        }, new JIPipeProgressInfo());
-        return new MaskedImagePlusData(data.getImage(), greyscale, data.getColorSpace());
-    }
-
-    public static MaskedImagePlusData importFrom(Path storageFilePath) {
-        List<Path> files = PathUtils.findFilesByExtensionIn(storageFilePath, ".tif", ".tiff", ".png", ".jpg", ".jpeg", ".bmp");
-        Path imageFile = null;
-        Path maskFile = null;
-        for (Path file : files) {
-            String name = file.getFileName().toString();
-            if (name.contains("mask"))
-                maskFile = file;
-            if (name.contains("image"))
-                imageFile = file;
-        }
-        if (imageFile == null || maskFile == null) {
-            throw new UserFriendlyNullPointerException("Could not find a compatible image file in '" + storageFilePath + "'!",
-                    "Unable to find file in location '" + storageFilePath + "'",
-                    "ImagePlusData loading",
-                    "JIPipe needs to load the image from a folder, but it could not find any matching file.",
-                    "Please contact the JIPipe developers about this issue.");
-        }
-        ImagePlus image;
-        ImagePlus mask;
-        {
-            String fileName = imageFile.toString().toLowerCase();
-            if ((fileName.endsWith(".tiff") || fileName.endsWith(".tif")) && ImageJDataTypesSettings.getInstance().isUseBioFormats()) {
-                OMEImageData omeImageData = OMEImageData.importFrom(storageFilePath);
-                image = omeImageData.getImage();
-            } else {
-                image = IJ.openImage(imageFile.toString());
-            }
-        }
-        {
-            String fileName = maskFile.toString().toLowerCase();
-            if ((fileName.endsWith(".tiff") || fileName.endsWith(".tif")) && ImageJDataTypesSettings.getInstance().isUseBioFormats()) {
-                OMEImageData omeImageData = OMEImageData.importFrom(storageFilePath);
-                mask = omeImageData.getImage();
-            } else {
-                mask = IJ.openImage(maskFile.toString());
-            }
-        }
-        return new MaskedImagePlusData(image, mask);
     }
 }

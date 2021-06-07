@@ -38,22 +38,24 @@ public class NumericFunctionExpression extends DefaultExpressionParameter {
     public double apply(double x) {
         ExpressionParameters parameters = new ExpressionParameters();
         parameters.set("x", x);
-        return ((Number)evaluate(parameters)).doubleValue();
+        return ((Number) evaluate(parameters)).doubleValue();
     }
 
     /**
      * Modifies the expression to 0 or x depending on whether an exact value should be set
+     *
      * @param exactValue if an exact value is expected
      */
     public void ensureExactValue(boolean exactValue) {
-        if(exactValue) {
-            if(getExpression().contains("x"))
+        if (exactValue) {
+            if (getExpression().contains("x"))
                 setExpression("0");
         }
     }
 
     /**
      * Sets the expression to an exact value
+     *
      * @param x the exact value
      */
     public void setExactValue(double x) {

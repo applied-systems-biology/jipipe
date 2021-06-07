@@ -75,6 +75,72 @@ public class JIPipeProjectWindow extends JFrame {
         loadProject(project, showIntroduction, isNewProject);
     }
 
+    /**
+     * Tries to find the window that belongs to the provided project
+     *
+     * @param project the project
+     * @return the window or null if none is found
+     */
+    public static JIPipeProjectWindow getWindowFor(JIPipeProject project) {
+        for (JIPipeProjectWindow window : OPEN_WINDOWS) {
+            if (window.project == project)
+                return window;
+        }
+        return null;
+    }
+
+    /**
+     * Creates a new project instance based on the current template selection
+     *
+     * @return the project
+     */
+    public static JIPipeProject getDefaultTemplateProject() {
+        JIPipeProject project = null;
+        if (ProjectsSettings.getInstance().getProjectTemplate().getValue() != null) {
+            try {
+                project = ProjectsSettings.getInstance().getProjectTemplate().getValue().load();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        if (project == null) {
+            project = new JIPipeProject();
+        }
+        return project;
+    }
+
+    /**
+     * Creates a new window
+     *
+     * @param context          context
+     * @param project          The project
+     * @param showIntroduction show an introduction
+     * @param isNewProject     if the project is a new empty project
+     * @return The window
+     */
+    public static JIPipeProjectWindow newWindow(Context context, JIPipeProject project, boolean showIntroduction, boolean isNewProject) {
+        JIPipeProjectWindow frame = new JIPipeProjectWindow(context, project, showIntroduction, isNewProject);
+        frame.pack();
+        frame.setSize(1024, 768);
+        frame.setVisible(true);
+//        frame.setExtendedState(frame.getExtendedState() | JFrame.MAXIMIZED_BOTH);
+        return frame;
+    }
+
+    /**
+     * @return All open project windows
+     */
+    public static Set<JIPipeProjectWindow> getOpenWindows() {
+        return Collections.unmodifiableSet(OPEN_WINDOWS);
+    }
+
+    /**
+     * @return EventBus that generate window open/close events
+     */
+    public static EventBus getWindowsEvents() {
+        return WINDOWS_EVENTS;
+    }
+
     private void initialize() {
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         getContentPane().setLayout(new BorderLayout(8, 8));
@@ -248,7 +314,7 @@ public class JIPipeProjectWindow extends JFrame {
                         new Object[]{"Load in new tab", "Load into cache", "Cancel"},
                         "Load in new tab");
 
-                if(selectedOption == JOptionPane.YES_OPTION) {
+                if (selectedOption == JOptionPane.YES_OPTION) {
                     // Create a new tab
                     window.getProjectUI().getDocumentTabPane().addTab("Run",
                             UIUtils.getIconFromResources("actions/run-build.png"),
@@ -256,8 +322,7 @@ public class JIPipeProjectWindow extends JFrame {
                             DocumentTabPane.CloseMode.withAskOnCloseButton,
                             true);
                     window.getProjectUI().getDocumentTabPane().switchToLastTab();
-                }
-                else if (selectedOption == JOptionPane.NO_OPTION) {
+                } else if (selectedOption == JOptionPane.NO_OPTION) {
                     // Load into cache with a run
                     JIPipeRunExecuterUI.runInDialog(this, new LoadResultIntoCacheRun(projectUI, project, path));
                 }
@@ -386,86 +451,19 @@ public class JIPipeProjectWindow extends JFrame {
     }
 
     /**
-     * Tries to find the window that belongs to the provided project
-     *
-     * @param project the project
-     * @return the window or null if none is found
-     */
-    public static JIPipeProjectWindow getWindowFor(JIPipeProject project) {
-        for (JIPipeProjectWindow window : OPEN_WINDOWS) {
-            if (window.project == project)
-                return window;
-        }
-        return null;
-    }
-
-    /**
-     * Creates a new project instance based on the current template selection
-     *
-     * @return the project
-     */
-    public static JIPipeProject getDefaultTemplateProject() {
-        JIPipeProject project = null;
-        if (ProjectsSettings.getInstance().getProjectTemplate().getValue() != null) {
-            try {
-                project = ProjectsSettings.getInstance().getProjectTemplate().getValue().load();
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-        if (project == null) {
-            project = new JIPipeProject();
-        }
-        return project;
-    }
-
-    /**
-     * Creates a new window
-     *
-     * @param context          context
-     * @param project          The project
-     * @param showIntroduction show an introduction
-     * @param isNewProject     if the project is a new empty project
-     * @return The window
-     */
-    public static JIPipeProjectWindow newWindow(Context context, JIPipeProject project, boolean showIntroduction, boolean isNewProject) {
-        JIPipeProjectWindow frame = new JIPipeProjectWindow(context, project, showIntroduction, isNewProject);
-        frame.pack();
-        frame.setSize(1024, 768);
-        frame.setVisible(true);
-//        frame.setExtendedState(frame.getExtendedState() | JFrame.MAXIMIZED_BOTH);
-        return frame;
-    }
-
-    /**
-     * @return All open project windows
-     */
-    public static Set<JIPipeProjectWindow> getOpenWindows() {
-        return Collections.unmodifiableSet(OPEN_WINDOWS);
-    }
-
-    /**
-     * @return EventBus that generate window open/close events
-     */
-    public static EventBus getWindowsEvents() {
-        return WINDOWS_EVENTS;
-    }
-
-    /**
      * Saves the project and cache
      */
     public void saveProjectAndCache() {
         Path directory = FileChooserSettings.saveDirectory(this, FileChooserSettings.KEY_PROJECT, "Save project and cache");
-        if(directory == null)
+        if (directory == null)
             return;
         try {
             if (Files.exists(directory) && Files.list(directory).count() > 0) {
-                if(JOptionPane.showConfirmDialog(this, "The selected directory " + directory + " is not empty. This can lead to problems. " +
+                if (JOptionPane.showConfirmDialog(this, "The selected directory " + directory + " is not empty. This can lead to problems. " +
                         "Continue anyways?", "Save project and cache", JOptionPane.YES_NO_OPTION) == JOptionPane.NO_OPTION)
                     return;
             }
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
         SaveProjectAndCacheRun run = new SaveProjectAndCacheRun(projectUI, project, directory);

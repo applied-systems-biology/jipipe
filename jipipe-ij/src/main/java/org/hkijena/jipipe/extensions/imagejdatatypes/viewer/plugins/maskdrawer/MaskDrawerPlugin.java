@@ -1,6 +1,5 @@
 package org.hkijena.jipipe.extensions.imagejdatatypes.viewer.plugins.maskdrawer;
 
-import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 import ij.IJ;
 import ij.ImagePlus;
@@ -76,6 +75,22 @@ public class MaskDrawerPlugin extends ImageViewerPanelPlugin {
 
         viewerPanel.getCanvas().getEventBus().register(this);
         setCurrentTool(currentTool);
+    }
+
+    public static void main(String[] args) {
+//        ImagePlus img = IJ.openImage("E:\\Projects\\JIPipe\\testdata\\ATTC_IµL_3rdReplicate-Experiment-5516\\in\\data.tif");
+        ImagePlus img = IJ.openImage("E:\\Projects\\Mitochondria\\data_21.12.20\\1 Deconv.lif - 1_Series047_5_cmle_converted.tif");
+        JIPipeUITheme.ModernLight.install();
+        JFrame frame = new JFrame();
+        ImageViewerPanel panel = new ImageViewerPanel();
+        MaskDrawerPlugin maskDrawerPlugin = new MaskDrawerPlugin(panel);
+        panel.setPlugins(Collections.singletonList(maskDrawerPlugin));
+        panel.setImage(img);
+//        maskDrawerPlugin.setMask(IJ.createImage("Mask", img.getWidth(), img.getHeight(), 1, 8));
+        frame.setContentPane(panel);
+        frame.pack();
+        frame.setSize(1280, 1024);
+        frame.setVisible(true);
     }
 
     public void installTool(MaskDrawerTool tool) {
@@ -490,22 +505,6 @@ public class MaskDrawerPlugin extends ImageViewerPanelPlugin {
 
     public void setMaskGenerator(Function<ImagePlus, ImagePlus> maskGenerator) {
         this.maskGenerator = maskGenerator;
-    }
-
-    public static void main(String[] args) {
-//        ImagePlus img = IJ.openImage("E:\\Projects\\JIPipe\\testdata\\ATTC_IµL_3rdReplicate-Experiment-5516\\in\\data.tif");
-        ImagePlus img = IJ.openImage("E:\\Projects\\Mitochondria\\data_21.12.20\\1 Deconv.lif - 1_Series047_5_cmle_converted.tif");
-        JIPipeUITheme.ModernLight.install();
-        JFrame frame = new JFrame();
-        ImageViewerPanel panel = new ImageViewerPanel();
-        MaskDrawerPlugin maskDrawerPlugin = new MaskDrawerPlugin(panel);
-        panel.setPlugins(Collections.singletonList(maskDrawerPlugin));
-        panel.setImage(img);
-//        maskDrawerPlugin.setMask(IJ.createImage("Mask", img.getWidth(), img.getHeight(), 1, 8));
-        frame.setContentPane(panel);
-        frame.pack();
-        frame.setSize(1280, 1024);
-        frame.setVisible(true);
     }
 
     public enum MaskColor {

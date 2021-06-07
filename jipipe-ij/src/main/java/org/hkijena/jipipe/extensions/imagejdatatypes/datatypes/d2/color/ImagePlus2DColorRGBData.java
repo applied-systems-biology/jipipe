@@ -50,11 +50,6 @@ public class ImagePlus2DColorRGBData extends ImagePlus2DColorData implements Col
         super(ImagePlusColorRGBData.convertIfNeeded(image));
     }
 
-    @Override
-    public ColorSpace getColorSpace() {
-        return COLOR_SPACE;
-    }
-
     public static ImagePlusData importFrom(Path storageFolder) {
         return new ImagePlus2DColorRGBData(ImagePlusData.importImagePlusFrom(storageFolder));
     }
@@ -67,5 +62,10 @@ public class ImagePlus2DColorRGBData extends ImagePlus2DColorData implements Col
      */
     public static ImagePlusData convertFrom(ImagePlusData data) {
         return new ImagePlus2DColorRGBData(ImagePlusColorRGBData.convertFrom(data).getImage());
+    }
+
+    @Override
+    public ColorSpace getColorSpace() {
+        return COLOR_SPACE;
     }
 }

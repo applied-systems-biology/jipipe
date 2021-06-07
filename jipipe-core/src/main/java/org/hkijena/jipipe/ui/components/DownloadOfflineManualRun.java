@@ -4,19 +4,15 @@ import ij.IJ;
 import ij.Prefs;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.JIPipeRunnable;
-import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
 import org.hkijena.jipipe.utils.WebUtils;
 import org.hkijena.jipipe.utils.ZipUtils;
 
 import java.io.IOException;
-import java.math.RoundingMode;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.text.DecimalFormat;
-import java.util.Objects;
 
 public class DownloadOfflineManualRun implements JIPipeRunnable {
 

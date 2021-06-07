@@ -16,7 +16,6 @@ package org.hkijena.jipipe.extensions.expressions.functions;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.extensions.expressions.ExpressionFunction;
 import org.hkijena.jipipe.extensions.expressions.ExpressionParameters;
-import org.hkijena.jipipe.extensions.expressions.ParameterInfo;
 
 import java.util.List;
 import java.util.stream.Collectors;

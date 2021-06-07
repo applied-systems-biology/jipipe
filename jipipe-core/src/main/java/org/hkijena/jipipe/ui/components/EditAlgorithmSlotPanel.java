@@ -68,6 +68,27 @@ public class EditAlgorithmSlotPanel extends JPanel {
         setInitialValues();
     }
 
+    /**
+     * Shows a dialog for adding slots
+     *
+     * @param parent       parent component
+     * @param graphHistory the graph history for undo snapshots
+     * @param existingSlot the slot to be edited
+     */
+    public static void showDialog(Component parent, JIPipeGraphHistory graphHistory, JIPipeDataSlot existingSlot) {
+        JDialog dialog = new JDialog();
+        EditAlgorithmSlotPanel panel = new EditAlgorithmSlotPanel(existingSlot, graphHistory);
+        panel.setDialog(dialog);
+        dialog.setContentPane(panel);
+        dialog.setTitle("Edit slot '" + existingSlot.getName() + "'");
+        dialog.setModal(true);
+        dialog.pack();
+        dialog.setSize(new Dimension(640, 480));
+        dialog.setLocationRelativeTo(parent);
+        UIUtils.addEscapeListener(dialog);
+        dialog.setVisible(true);
+    }
+
     private void setInitialValues() {
         nameEditor.setText(existingSlot.getName());
         datatypeList.setSelectedValue(JIPipeDataInfo.getInstance(existingSlot.getAcceptedDataType()), true);
@@ -353,26 +374,5 @@ public class EditAlgorithmSlotPanel extends JPanel {
 
     public void setDialog(JDialog dialog) {
         this.dialog = dialog;
-    }
-
-    /**
-     * Shows a dialog for adding slots
-     *
-     * @param parent       parent component
-     * @param graphHistory the graph history for undo snapshots
-     * @param existingSlot the slot to be edited
-     */
-    public static void showDialog(Component parent, JIPipeGraphHistory graphHistory, JIPipeDataSlot existingSlot) {
-        JDialog dialog = new JDialog();
-        EditAlgorithmSlotPanel panel = new EditAlgorithmSlotPanel(existingSlot, graphHistory);
-        panel.setDialog(dialog);
-        dialog.setContentPane(panel);
-        dialog.setTitle("Edit slot '" + existingSlot.getName() + "'");
-        dialog.setModal(true);
-        dialog.pack();
-        dialog.setSize(new Dimension(640, 480));
-        dialog.setLocationRelativeTo(parent);
-        UIUtils.addEscapeListener(dialog);
-        dialog.setVisible(true);
     }
 }

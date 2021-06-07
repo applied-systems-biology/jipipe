@@ -46,6 +46,23 @@ public abstract class FormData implements JIPipeData, JIPipeParameterCollection,
         tabSettings.getEventBus().register(this);
     }
 
+    /**
+     * Helper method that simplifies the importFrom() method definition
+     *
+     * @param storageFilePath the storage folder
+     * @param klass           the form class
+     * @param <T>             the form class
+     * @return the deserialized form
+     */
+    public static <T extends FormData> T importFrom(Path storageFilePath, Class<T> klass) {
+        try {
+            FormData formData = JsonUtils.getObjectMapper().readerFor(klass).readValue(storageFilePath.resolve("form.json").toFile());
+            return (T) formData;
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     @Override
     public void saveTo(Path storageFilePath, String name, boolean forceName, JIPipeProgressInfo progressInfo) {
         Path fileName = forceName ? Paths.get(name) : Paths.get("form.json");
@@ -152,23 +169,6 @@ public abstract class FormData implements JIPipeData, JIPipeParameterCollection,
     @JIPipeParameter("form:tabs")
     public TabSettings getTabSettings() {
         return tabSettings;
-    }
-
-    /**
-     * Helper method that simplifies the importFrom() method definition
-     *
-     * @param storageFilePath the storage folder
-     * @param klass           the form class
-     * @param <T>             the form class
-     * @return the deserialized form
-     */
-    public static <T extends FormData> T importFrom(Path storageFilePath, Class<T> klass) {
-        try {
-            FormData formData = JsonUtils.getObjectMapper().readerFor(klass).readValue(storageFilePath.resolve("form.json").toFile());
-            return (T) formData;
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
     }
 
     public static class Serializer extends JsonSerializer<FormData> {

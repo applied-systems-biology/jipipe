@@ -107,6 +107,15 @@ public class MacroWrapperAlgorithm extends JIPipeIteratingAlgorithm {
         this.macroParameters.getEventBus().register(this);
     }
 
+    /**
+     * Returns all types compatible with the {@link MacroWrapperAlgorithm}
+     *
+     * @return compatible data types
+     */
+    public static Class[] getCompatibleTypes() {
+        return JIPipe.getImageJAdapters().getSupportedJIPipeDataTypes().toArray(new Class[0]);
+    }
+
     @Override
     protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
         backupWindows();
@@ -355,15 +364,6 @@ public class MacroWrapperAlgorithm extends JIPipeIteratingAlgorithm {
     @JIPipeDocumentation(name = "Macro parameters", description = "The parameters are passed as variables to the macro.")
     public JIPipeDynamicParameterCollection getMacroParameters() {
         return macroParameters;
-    }
-
-    /**
-     * Returns all types compatible with the {@link MacroWrapperAlgorithm}
-     *
-     * @return compatible data types
-     */
-    public static Class[] getCompatibleTypes() {
-        return JIPipe.getImageJAdapters().getSupportedJIPipeDataTypes().toArray(new Class[0]);
     }
 }
 

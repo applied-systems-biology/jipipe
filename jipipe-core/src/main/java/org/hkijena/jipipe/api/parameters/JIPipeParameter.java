@@ -105,6 +105,7 @@ public @interface JIPipeParameter {
 
     /**
      * The class that loads the resource for iconURL
+     *
      * @return the resource class
      */
     Class<?> resourceClass() default ResourceUtils.class;

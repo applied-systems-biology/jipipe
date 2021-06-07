@@ -54,16 +54,6 @@ public class ImagePlus2DColorData extends ImagePlus2DData implements ColoredImag
         super(ImagePlus2DColorData.convertIfNeeded(image), colorSpace);
     }
 
-    @Override
-    public Component preview(int width, int height) {
-        return ImageJUtils.generatePreview(this.getImage(), getColorSpace(), width, height);
-    }
-
-    @Override
-    public String toString() {
-        return super.toString() + " [" + getColorSpace() + " colors]";
-    }
-
     /**
      * Converts an {@link ImagePlus} to the color space of this data.
      * Does not guarantee that the input image is copied.
@@ -102,5 +92,15 @@ public class ImagePlus2DColorData extends ImagePlus2DData implements ColoredImag
         } else {
             return new ImagePlus2DColorData(image, ((ColoredImagePlusData) data).getColorSpace());
         }
+    }
+
+    @Override
+    public Component preview(int width, int height) {
+        return ImageJUtils.generatePreview(this.getImage(), getColorSpace(), width, height);
+    }
+
+    @Override
+    public String toString() {
+        return super.toString() + " [" + getColorSpace() + " colors]";
     }
 }

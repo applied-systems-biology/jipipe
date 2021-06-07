@@ -70,11 +70,11 @@ public class CellPoseUtils {
                     yList.add(y);
                 }
 
-                if(xList.size() != yList.size()) {
+                if (xList.size() != yList.size()) {
                     System.err.println("Error: Different X and  Y array sizes");
                     continue;
                 }
-                if(xList.size() < 3) {
+                if (xList.size() < 3) {
                     // Empty ROIs are not allowed
                     continue;
                 }

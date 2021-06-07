@@ -78,24 +78,24 @@ public abstract class PythonPackageLibraryEnvironment extends ExternalEnvironmen
 
     @Override
     public String getInfo() {
-        if(providedByEnvironment) {
+        if (providedByEnvironment) {
             return "Provided by Python environment";
-        }
-        else {
+        } else {
             return libraryDirectory.toString();
         }
     }
 
     /**
      * Installs the library if needed
+     *
      * @param code the current Python code
      */
     public void generateCode(StringBuilder code, JIPipeProgressInfo progressInfo) {
-        if(needsInstall()) {
+        if (needsInstall()) {
             install(progressInfo);
         }
-        if(!isProvidedByEnvironment()) {
-            if(!code.toString().contains("import sys")) {
+        if (!isProvidedByEnvironment()) {
+            if (!code.toString().contains("import sys")) {
                 code.append("import sys\n");
             }
             code.append("sys.path.append(\"").append(MacroUtils.escapeString(getLibraryDirectory().toAbsolutePath().toString())).append("\")\n");
@@ -104,10 +104,11 @@ public abstract class PythonPackageLibraryEnvironment extends ExternalEnvironmen
 
     /**
      * Returns true if the library is not installed
+     *
      * @return if the library is not installed
      */
     public boolean needsInstall() {
-        if(!isProvidedByEnvironment()) {
+        if (!isProvidedByEnvironment()) {
             return !Files.isDirectory(libraryDirectory);
         }
         return false;

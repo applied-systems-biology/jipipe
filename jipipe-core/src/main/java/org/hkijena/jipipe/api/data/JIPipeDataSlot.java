@@ -59,6 +59,42 @@ public class JIPipeDataSlot {
         this.acceptedDataType = info.getDataClass();
     }
 
+    /**
+     * Loads this slot from a storage path
+     *
+     * @param storagePath the storage path
+     * @return the slot
+     */
+    public static JIPipeDataSlot loadFromStoragePath(Path storagePath, JIPipeProgressInfo progressInfo) {
+        JIPipeExportedDataTable dataTable = JIPipeExportedDataTable.loadFromJson(storagePath.resolve("data-table.json"));
+        Class<? extends JIPipeData> acceptedDataType = JIPipe.getDataTypes().getById(dataTable.getAcceptedDataTypeId());
+        JIPipeDataSlot slot = new JIPipeDataSlot(new JIPipeDataSlotInfo(acceptedDataType, JIPipeSlotType.Input, ""), null);
+        for (int i = 0; i < dataTable.getRowCount(); i++) {
+            JIPipeProgressInfo rowProgress = progressInfo.resolveAndLog("Row", i, dataTable.getRowCount());
+            JIPipeExportedDataTable.Row row = dataTable.getRowList().get(i);
+            Path rowStorage = storagePath.resolve("" + row.getIndex());
+            Class<? extends JIPipeData> rowDataType = JIPipe.getDataTypes().getById(row.getTrueDataType());
+            JIPipeData data = JIPipe.importData(rowStorage, rowDataType);
+            slot.addData(data, row.getAnnotations(), JIPipeAnnotationMergeStrategy.OverwriteExisting, rowProgress);
+        }
+        return slot;
+    }
+
+    /**
+     * Creates a new input slot that contains only one data item
+     *
+     * @param data the data
+     * @return the slot
+     */
+    public static JIPipeDataSlot createSingletonSlot(JIPipeData data, JIPipeGraphNode node) {
+        JIPipeDataSlot slot = new JIPipeDataSlot(new JIPipeDataSlotInfo(data.getClass(),
+                JIPipeSlotType.Input,
+                "Data",
+                null), node);
+        slot.addData(data, new JIPipeProgressInfo());
+        return slot;
+    }
+
     public List<String> getAnnotationColumns() {
         return Collections.unmodifiableList(annotationColumns);
     }
@@ -663,41 +699,5 @@ public class JIPipeDataSlot {
             result.addData(getVirtualData(row), getAnnotations(row), JIPipeAnnotationMergeStrategy.OverwriteExisting);
         }
         return result;
-    }
-
-    /**
-     * Loads this slot from a storage path
-     *
-     * @param storagePath the storage path
-     * @return the slot
-     */
-    public static JIPipeDataSlot loadFromStoragePath(Path storagePath, JIPipeProgressInfo progressInfo) {
-        JIPipeExportedDataTable dataTable = JIPipeExportedDataTable.loadFromJson(storagePath.resolve("data-table.json"));
-        Class<? extends JIPipeData> acceptedDataType = JIPipe.getDataTypes().getById(dataTable.getAcceptedDataTypeId());
-        JIPipeDataSlot slot = new JIPipeDataSlot(new JIPipeDataSlotInfo(acceptedDataType, JIPipeSlotType.Input, ""), null);
-        for (int i = 0; i < dataTable.getRowCount(); i++) {
-            JIPipeProgressInfo rowProgress = progressInfo.resolveAndLog("Row", i, dataTable.getRowCount());
-            JIPipeExportedDataTable.Row row = dataTable.getRowList().get(i);
-            Path rowStorage = storagePath.resolve("" + row.getIndex());
-            Class<? extends JIPipeData> rowDataType = JIPipe.getDataTypes().getById(row.getTrueDataType());
-            JIPipeData data = JIPipe.importData(rowStorage, rowDataType);
-            slot.addData(data, row.getAnnotations(), JIPipeAnnotationMergeStrategy.OverwriteExisting, rowProgress);
-        }
-        return slot;
-    }
-
-    /**
-     * Creates a new input slot that contains only one data item
-     *
-     * @param data the data
-     * @return the slot
-     */
-    public static JIPipeDataSlot createSingletonSlot(JIPipeData data, JIPipeGraphNode node) {
-        JIPipeDataSlot slot = new JIPipeDataSlot(new JIPipeDataSlotInfo(data.getClass(),
-                JIPipeSlotType.Input,
-                "Data",
-                null), node);
-        slot.addData(data, new JIPipeProgressInfo());
-        return slot;
     }
 }

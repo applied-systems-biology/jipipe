@@ -34,32 +34,32 @@ public class MinicondaEnvPythonInstaller extends BasicMinicondaEnvPythonInstalle
         super.postprocessInstall();
 
         Configuration configuration = (Configuration) getConfiguration();
-        if(configuration.isInstallNumpy()) {
+        if (configuration.isInstallNumpy()) {
             runConda("install", "--yes", "numpy");
         }
-        if(configuration.isInstallScikitImage()) {
+        if (configuration.isInstallScikitImage()) {
             runConda("install", "--yes", "scikit-image");
         }
-        if(configuration.isInstallScikitLearn()) {
+        if (configuration.isInstallScikitLearn()) {
             runConda("install", "--yes", "-c", "conda-forge", "scikit-learn");
         }
-        if(configuration.isInstallTiffFile()) {
+        if (configuration.isInstallTiffFile()) {
             runConda("install", "--yes", "-c", "conda-forge", "tifffile");
         }
-        if(configuration.isInstallPandas()) {
+        if (configuration.isInstallPandas()) {
             runConda("install", "--yes", "-c", "anaconda", "pandas");
         }
     }
 
     public static class Configuration extends BasicMinicondaEnvPythonInstaller.Configuration {
-       private boolean installNumpy = true;
-       private boolean installScikitImage = true;
-       private boolean installScikitLearn = true;
-       private boolean installTiffFile = true;
-       private boolean installPandas = true;
+        private boolean installNumpy = true;
+        private boolean installScikitImage = true;
+        private boolean installScikitLearn = true;
+        private boolean installTiffFile = true;
+        private boolean installPandas = true;
 
-       @JIPipeDocumentation(name = "Install Numpy", description = "Install the numpy library")
-       @JIPipeParameter("install-numpy")
+        @JIPipeDocumentation(name = "Install Numpy", description = "Install the numpy library")
+        @JIPipeParameter("install-numpy")
         public boolean isInstallNumpy() {
             return installNumpy;
         }

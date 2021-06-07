@@ -1,17 +1,20 @@
 package org.hkijena.jipipe.extensions.python.installers;
 
 import com.google.common.eventbus.EventBus;
-import org.apache.commons.exec.*;
+import org.apache.commons.exec.CommandLine;
+import org.apache.commons.exec.ExecuteWatchdog;
+import org.apache.commons.exec.LogOutputStream;
+import org.apache.commons.exec.PumpStreamHandler;
 import org.apache.commons.lang3.SystemUtils;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
+import org.hkijena.jipipe.api.environments.ExternalEnvironmentInstaller;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
-import org.hkijena.jipipe.api.environments.ExternalEnvironmentInstaller;
-import org.hkijena.jipipe.extensions.python.PythonEnvironment;
 import org.hkijena.jipipe.extensions.parameters.primitives.OptionalPathParameter;
 import org.hkijena.jipipe.extensions.parameters.primitives.StringParameterSettings;
+import org.hkijena.jipipe.extensions.python.PythonEnvironment;
 import org.hkijena.jipipe.extensions.python.PythonUtils;
 import org.hkijena.jipipe.extensions.settings.RuntimeSettings;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
@@ -45,6 +48,21 @@ public class BasicMinicondaEnvPythonInstaller extends ExternalEnvironmentInstall
      */
     public BasicMinicondaEnvPythonInstaller(JIPipeWorkbench workbench, JIPipeParameterAccess parameterAccess) {
         super(workbench, parameterAccess);
+    }
+
+    /**
+     * Gets the latest download link for Miniconda
+     *
+     * @return the download URL
+     */
+    public static String getLatestDownload() {
+        if (SystemUtils.IS_OS_WINDOWS) {
+            return "https://repo.anaconda.com/miniconda/Miniconda3-latest-Windows-x86_64.exe";
+        } else if (SystemUtils.IS_OS_MAC) {
+            return "https://repo.anaconda.com/miniconda/Miniconda3-latest-MacOSX-x86_64.sh";
+        } else {
+            return "https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh";
+        }
     }
 
     @Override
@@ -325,21 +343,6 @@ public class BasicMinicondaEnvPythonInstaller extends ExternalEnvironmentInstall
 
     public void setConfiguration(Configuration configuration) {
         this.configuration = configuration;
-    }
-
-    /**
-     * Gets the latest download link for Miniconda
-     *
-     * @return the download URL
-     */
-    public static String getLatestDownload() {
-        if (SystemUtils.IS_OS_WINDOWS) {
-            return "https://repo.anaconda.com/miniconda/Miniconda3-latest-Windows-x86_64.exe";
-        } else if (SystemUtils.IS_OS_MAC) {
-            return "https://repo.anaconda.com/miniconda/Miniconda3-latest-MacOSX-x86_64.sh";
-        } else {
-            return "https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh";
-        }
     }
 
     public static class Configuration implements JIPipeParameterCollection {

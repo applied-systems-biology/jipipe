@@ -1,16 +1,11 @@
 package org.hkijena.jipipe.extensions.imagejdatatypes.viewer.plugins;
 
-import com.google.common.eventbus.Subscribe;
 import ij.ImagePlus;
-import ij.process.ColorProcessor;
-import ij.process.ImageProcessor;
 import org.hkijena.jipipe.extensions.imagejdatatypes.viewer.ImageViewerPanel;
-import org.hkijena.jipipe.extensions.imagejdatatypes.viewer.ImageViewerPanelCanvas;
 import org.hkijena.jipipe.ui.components.FormPanel;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
-import java.awt.*;
 
 public class AnimationSpeedPlugin extends GeneralImageViewerPanelPlugin {
     public AnimationSpeedPlugin(ImageViewerPanel viewerPanel) {
