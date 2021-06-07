@@ -267,7 +267,7 @@
     <orderEntry type="library" name="Maven: com.fathzer:javaluator:3.0.3" level="project" />
     <orderEntry type="library" name="Maven: org.apache.commons:commons-exec:1.3" level="project" />
     <orderEntry type="library" name="Maven: net.java.dev.jna:jna:4.5.2" level="project" />
-    <orderEntry type="library" name="Maven: net.java.dev.jna:jna-platform:4.5.1" level="project" />
+    <orderEntry type="library" name="Maven: net.java.dev.jna:jna-platform:4.5.2" level="project" />
     <orderEntry type="module" module-name="jipipe-ij" />
     <orderEntry type="module" module-name="jipipe-tables" />
     <orderEntry type="module" module-name="jipipe-annotation" />
