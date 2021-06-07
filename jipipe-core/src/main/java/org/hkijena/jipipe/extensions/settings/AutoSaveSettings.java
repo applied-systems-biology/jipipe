@@ -144,7 +144,7 @@ public class AutoSaveSettings implements JIPipeParameterCollection {
     }
 
     @JIPipeDocumentation(name = "Restore backup", description = "Restores a backup from the list below")
-    @JIPipeContextAction(iconURL = ResourceUtils.RESOURCE_BASE_PATH + "/icons/actions/reload.png")
+    @JIPipeContextAction(iconURL = ResourceUtils.RESOURCE_BASE_PATH + "/icons/actions/reload.png", iconDarkURL = ResourceUtils.RESOURCE_BASE_PATH + "/dark/icons/actions/reload.png")
     public void openRestoreMenu(JIPipeWorkbench workbench) {
         JList<Path> listControl = new JList<>();
         DefaultListModel<Path> model = new DefaultListModel<>();

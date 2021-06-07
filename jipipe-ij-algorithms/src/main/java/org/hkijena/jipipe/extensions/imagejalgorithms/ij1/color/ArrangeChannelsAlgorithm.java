@@ -186,7 +186,7 @@ public class ArrangeChannelsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     }
 
     @JIPipeDocumentation(name = "Simple reorder", description = "Allows you to input the reordering like in ImageJ.")
-    @JIPipeContextAction(iconURL = ResourceUtils.RESOURCE_BASE_PATH + "/icons/apps/imagej.png")
+    @JIPipeContextAction(iconURL = ResourceUtils.RESOURCE_BASE_PATH + "/icons/apps/imagej.png", iconDarkURL = ResourceUtils.RESOURCE_BASE_PATH + "/icons/apps/imagej.png")
     public void setToExample(JIPipeWorkbench parent) {
         String reordering = JOptionPane.showInputDialog(parent.getWindow(),
                 "Please put in the list of numbers how the channels should be re-ordered. " +

@@ -95,7 +95,7 @@ public class DistributeDataAlgorithm extends JIPipeParameterSlotAlgorithm {
     }
 
     @JIPipeDocumentation(name = "80:20 distribution", description = "Loads example parameters that distributes the outputs 80:20.")
-    @JIPipeContextAction(iconURL = ResourceUtils.RESOURCE_BASE_PATH + "/icons/actions/distribute-randomize.png")
+    @JIPipeContextAction(iconURL = ResourceUtils.RESOURCE_BASE_PATH + "/icons/actions/distribute-randomize.png", iconDarkURL = ResourceUtils.RESOURCE_BASE_PATH + "/dark/icons/actions/distribute-randomize.png")
     public void setTo80And20Distribution(JIPipeWorkbench parent) {
         if (UIUtils.confirmResetParameters(parent, "Load example")) {
             JIPipeDefaultMutableSlotConfiguration slotConfiguration = (JIPipeDefaultMutableSlotConfiguration) getSlotConfiguration();

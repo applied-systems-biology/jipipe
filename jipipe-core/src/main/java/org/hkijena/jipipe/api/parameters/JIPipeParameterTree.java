@@ -20,9 +20,11 @@ import com.google.common.eventbus.Subscribe;
 import org.hkijena.jipipe.api.JIPipeDefaultDocumentation;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.extensions.parameters.primitives.HTMLText;
+import org.hkijena.jipipe.extensions.settings.GeneralUISettings;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.utils.ResourceUtils;
 import org.hkijena.jipipe.utils.StringUtils;
+import org.hkijena.jipipe.utils.UIUtils;
 import org.scijava.Priority;
 
 import java.lang.reflect.InvocationTargetException;
@@ -193,8 +195,13 @@ public class JIPipeParameterTree implements JIPipeParameterCollection, JIPipeCus
                 documentationAnnotation = new JIPipeDefaultDocumentation(method.getName(), "");
             }
             URL iconURL = null;
-            if (!StringUtils.isNullOrEmpty(actionAnnotation.iconURL())) {
-                iconURL = ResourceUtils.class.getResource(actionAnnotation.iconURL());
+            if(UIUtils.DARK_THEME && !StringUtils.isNullOrEmpty(actionAnnotation.iconDarkURL())) {
+                iconURL = actionAnnotation.resourceClass().getResource(actionAnnotation.iconDarkURL());
+            }
+            else {
+                if (!StringUtils.isNullOrEmpty(actionAnnotation.iconURL())) {
+                    iconURL = actionAnnotation.resourceClass().getResource(actionAnnotation.iconURL());
+                }
             }
             target.actions.add(new ContextAction(source, method, iconURL, documentationAnnotation));
         }
@@ -279,6 +286,9 @@ public class JIPipeParameterTree implements JIPipeParameterCollection, JIPipeCus
                     childNode.setVisibility(entry.getValue().getVisibility());
                     childNode.setUiExcludedSubParameters(entry.getValue().getUIExcludedSubParameters());
                     childNode.setPersistence(entry.getValue().getPersistence());
+                    childNode.setIconURL(entry.getValue().getIconURL());
+                    childNode.setDarkIconURL(entry.getValue().getIconDarkURL());
+                    childNode.setResourceClass(entry.getValue().getResourceClass());
                 } catch (IllegalAccessException | InvocationTargetException e) {
                     e.printStackTrace();
                 }
@@ -575,6 +585,21 @@ public class JIPipeParameterTree implements JIPipeParameterCollection, JIPipeCus
             JIPipeParameter getterAnnotation = getter.getAnnotation(JIPipeParameter.class);
             return getterAnnotation.collapsed();
         }
+
+        public String getIconURL() {
+            JIPipeParameter getterAnnotation = getter.getAnnotation(JIPipeParameter.class);
+            return getterAnnotation.iconURL();
+        }
+
+        public String getIconDarkURL() {
+            JIPipeParameter getterAnnotation = getter.getAnnotation(JIPipeParameter.class);
+            return getterAnnotation.iconDarkURL();
+        }
+
+        public Class<?> getResourceClass() {
+            JIPipeParameter getterAnnotation = getter.getAnnotation(JIPipeParameter.class);
+            return getterAnnotation.resourceClass();
+        }
     }
 
     public static class ContextAction implements Consumer<JIPipeWorkbench> {
@@ -634,6 +659,9 @@ public class JIPipeParameterTree implements JIPipeParameterCollection, JIPipeCus
         private Set<String> uiExcludedSubParameters = new HashSet<>();
         private JIPipeParameterPersistence persistence = JIPipeParameterPersistence.Collection;
         private boolean collapsed;
+        private String iconURL;
+        private String darkIconURL;
+        private Class<?> resourceClass;
 
         /**
          * Creates a node
@@ -733,6 +761,30 @@ public class JIPipeParameterTree implements JIPipeParameterCollection, JIPipeCus
 
         public void setCollapsed(boolean collapsed) {
             this.collapsed = collapsed;
+        }
+
+        public String getIconURL() {
+            return iconURL;
+        }
+
+        public void setIconURL(String iconURL) {
+            this.iconURL = iconURL;
+        }
+
+        public String getDarkIconURL() {
+            return darkIconURL;
+        }
+
+        public void setDarkIconURL(String darkIconURL) {
+            this.darkIconURL = darkIconURL;
+        }
+
+        public Class<?> getResourceClass() {
+            return resourceClass;
+        }
+
+        public void setResourceClass(Class<?> resourceClass) {
+            this.resourceClass = resourceClass;
         }
 
         public void addChild(String key, Node child) {

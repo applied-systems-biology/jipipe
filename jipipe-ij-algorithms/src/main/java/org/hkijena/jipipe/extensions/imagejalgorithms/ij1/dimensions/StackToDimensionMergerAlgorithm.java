@@ -213,7 +213,7 @@ public class StackToDimensionMergerAlgorithm extends JIPipeIteratingAlgorithm {
     }
 
     @JIPipeDocumentation(name = "3 stack merge", description = "Loads example parameters that merge three stacks.")
-    @JIPipeContextAction(iconURL = ResourceUtils.RESOURCE_BASE_PATH + "/icons/actions/channelmixer.png")
+    @JIPipeContextAction(iconURL = ResourceUtils.RESOURCE_BASE_PATH + "/icons/actions/channelmixer.png", iconDarkURL = ResourceUtils.RESOURCE_BASE_PATH + "/dark/icons/actions/channelmixer.png")
     public void setTo3ChannelExample(JIPipeWorkbench parent) {
         if (UIUtils.confirmResetParameters(parent, "Load example")) {
             JIPipeDefaultMutableSlotConfiguration slotConfiguration = (JIPipeDefaultMutableSlotConfiguration) getSlotConfiguration();
@@ -225,7 +225,7 @@ public class StackToDimensionMergerAlgorithm extends JIPipeIteratingAlgorithm {
     }
 
     @JIPipeDocumentation(name = "2 stack merge", description = "Loads example parameters that merge two stacks.")
-    @JIPipeContextAction(iconURL = ResourceUtils.RESOURCE_BASE_PATH + "/icons/actions/channelmixer.png")
+    @JIPipeContextAction(iconURL = ResourceUtils.RESOURCE_BASE_PATH + "/icons/actions/channelmixer.png", iconDarkURL = ResourceUtils.RESOURCE_BASE_PATH + "/dark/icons/actions/channelmixer.png")
     public void setTo2ChannelExample(JIPipeWorkbench parent) {
         if (UIUtils.confirmResetParameters(parent, "Load example")) {
             JIPipeDefaultMutableSlotConfiguration slotConfiguration = (JIPipeDefaultMutableSlotConfiguration) getSlotConfiguration();

@@ -13,6 +13,7 @@
 
 package org.hkijena.jipipe.api.parameters;
 
+import org.hkijena.jipipe.utils.ResourceUtils;
 import org.scijava.Priority;
 
 import java.lang.annotation.ElementType;
@@ -87,4 +88,24 @@ public @interface JIPipeParameter {
      * @return if a sub-parameter is collapsed
      */
     boolean collapsed() default false;
+
+    /**
+     * The icon resource URL (optional). Only used if this a is sub-parameter
+     *
+     * @return icon resource URL or empty
+     */
+    String iconURL() default "";
+
+    /**
+     * The icon resource URL (optional). Only used if this a is sub-parameter
+     *
+     * @return icon resource URL or empty
+     */
+    String iconDarkURL() default "";
+
+    /**
+     * The class that loads the resource for iconURL
+     * @return the resource class
+     */
+    Class<?> resourceClass() default ResourceUtils.class;
 }

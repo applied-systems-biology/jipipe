@@ -13,6 +13,9 @@
 
 package org.hkijena.jipipe.api.parameters;
 
+import org.hkijena.jipipe.utils.ResourceUtils;
+import org.jgrapht.graph.DefaultDirectedGraph;
+
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -33,6 +36,19 @@ public @interface JIPipeContextAction {
      * @return icon resource URL or empty
      */
     String iconURL() default "";
+
+    /**
+     * The icon resource URL (optional)
+     *
+     * @return icon resource URL or empty
+     */
+    String iconDarkURL() default "";
+
+    /**
+     * The class that loads the resource
+     * @return the resource class
+     */
+    Class<?> resourceClass() default ResourceUtils.class;
 
     /**
      * Determines if the context action is shown as button in the parameters

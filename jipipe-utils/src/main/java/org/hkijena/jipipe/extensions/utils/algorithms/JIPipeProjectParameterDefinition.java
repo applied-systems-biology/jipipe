@@ -51,7 +51,7 @@ public class JIPipeProjectParameterDefinition extends ParametersDataTableDefinit
         super(other);
     }
 
-    @JIPipeContextAction(iconURL = ResourceUtils.RESOURCE_BASE_PATH + "/icons/actions/folder-open.png")
+    @JIPipeContextAction(iconURL = ResourceUtils.RESOURCE_BASE_PATH + "/icons/actions/folder-open.png", iconDarkURL = ResourceUtils.RESOURCE_BASE_PATH + "/dark/icons/actions/folder-open.png")
     @JIPipeDocumentation(name = "Load parameters from project", description = "Loads parameters from a project file")
     public void importParametersFromProject(JIPipeWorkbench workbench) {
         Path projectFile = FileChooserSettings.openFile(workbench.getWindow(), FileChooserSettings.KEY_PROJECT, "Import JIPipe project", UIUtils.EXTENSION_FILTER_JIP);

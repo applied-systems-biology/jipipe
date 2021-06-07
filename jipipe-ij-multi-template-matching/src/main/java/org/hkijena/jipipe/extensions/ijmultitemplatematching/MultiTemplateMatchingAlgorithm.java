@@ -387,7 +387,7 @@ public class MultiTemplateMatchingAlgorithm extends JIPipeMergingAlgorithm {
         }
     }
 
-    @JIPipeContextAction(iconURL = ResourceUtils.RESOURCE_BASE_PATH + "/icons/actions/draw-use-tilt.png")
+    @JIPipeContextAction(iconURL = ResourceUtils.RESOURCE_BASE_PATH + "/icons/actions/draw-use-tilt.png", iconDarkURL = ResourceUtils.RESOURCE_BASE_PATH + "/dark/icons/actions/draw-use-tilt.png")
     @JIPipeDocumentation(name = "Generate angles", description = "Generates additional rotation angles by providing the distance between them.")
     public void generateRotations(JIPipeWorkbench workbench) {
         JSpinner startAngle = new JSpinner(new SpinnerNumberModel(0, Integer.MIN_VALUE, Integer.MAX_VALUE, 1));

@@ -229,8 +229,20 @@ public class ParameterPanel extends FormPanel implements Contextual {
                     leftComponents = new Component[]{collapseButton};
                 else
                     leftComponents = new Component[0];
+                Icon groupIcon;
+                if(UIUtils.DARK_THEME && !StringUtils.isNullOrEmpty(node.getDarkIconURL())) {
+                    groupIcon = new ImageIcon(node.getDarkIconURL());
+                }
+                else {
+                    if(!StringUtils.isNullOrEmpty(node.getIconURL())) {
+                        groupIcon = new ImageIcon(node.getIconURL());
+                    }
+                    else {
+                        groupIcon = UIUtils.getIconFromResources("actions/configure.png");
+                    }
+                }
                 GroupHeaderPanel groupHeaderPanel = new GroupHeaderPanel(traversed.getSourceDocumentationName(parameterHolder),
-                        UIUtils.getIconFromResources("actions/configure.png"), leftComponents);
+                        groupIcon, leftComponents);
                 addWideToForm(groupHeaderPanel, null);
 
                 if (documentation != null && !StringUtils.isNullOrEmpty(documentation.description())) {

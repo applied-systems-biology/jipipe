@@ -113,10 +113,15 @@ public class JIPipeGraphCompartmentUI extends JIPipeGraphEditorUI {
                         documentationAnnotation = new JIPipeDefaultDocumentation(method.getName(), "");
                     }
                     URL iconURL;
-                    if (!StringUtils.isNullOrEmpty(actionAnnotation.iconURL())) {
-                        iconURL = ResourceUtils.class.getResource(actionAnnotation.iconURL());
-                    } else {
-                        iconURL = UIUtils.getIconURLFromResources("actions/configure.png");
+                    if(UIUtils.DARK_THEME && !StringUtils.isNullOrEmpty(actionAnnotation.iconDarkURL())) {
+                        iconURL = actionAnnotation.resourceClass().getResource(actionAnnotation.iconDarkURL());
+                    }
+                    else {
+                        if (!StringUtils.isNullOrEmpty(actionAnnotation.iconURL())) {
+                            iconURL = actionAnnotation.resourceClass().getResource(actionAnnotation.iconURL());
+                        } else {
+                            iconURL = UIUtils.getIconURLFromResources("actions/configure.png");
+                        }
                     }
                     if (iconURL == null) {
                         iconURL = UIUtils.getIconURLFromResources("actions/configure.png");
