@@ -30,7 +30,7 @@ public class DeepLearningTrainingConfiguration implements JIPipeParameterCollect
     private Path inputModelPath = Paths.get("");
     private Path outputModelPath = Paths.get("");
     private String inputImagesPattern = "raw/*.tif";
-    private String outputImagesPattern = "labels/*.tif";
+    private String inputLabelsPattern = "labels/*.tif";
     private int maxEpochs = 1000;
     private int batchSize = 32;
     private double learningRate = 0.0001;
@@ -45,7 +45,7 @@ public class DeepLearningTrainingConfiguration implements JIPipeParameterCollect
         this.inputModelPath = other.inputModelPath;
         this.outputModelPath = other.outputModelPath;
         this.inputImagesPattern = other.inputImagesPattern;
-        this.outputImagesPattern = other.outputImagesPattern;
+        this.inputLabelsPattern = other.inputLabelsPattern;
         this.maxEpochs = other.maxEpochs;
         this.batchSize = other.batchSize;
         this.learningRate = other.learningRate;
@@ -89,14 +89,14 @@ public class DeepLearningTrainingConfiguration implements JIPipeParameterCollect
         this.inputImagesPattern = inputImagesPattern;
     }
 
-    @JsonGetter("output_dir")
-    public String getOutputImagesPattern() {
-        return outputImagesPattern;
+    @JsonGetter("label_dir")
+    public String getInputLabelsPattern() {
+        return inputLabelsPattern;
     }
 
-    @JsonSetter("output_dir")
-    public void setOutputImagesPattern(String outputImagesPattern) {
-        this.outputImagesPattern = outputImagesPattern;
+    @JsonSetter("label_dir")
+    public void setInputLabelsPattern(String inputLabelsPattern) {
+        this.inputLabelsPattern = inputLabelsPattern;
     }
 
     @JIPipeDocumentation(name = "Max epochs", description = "The maximum number of epochs")

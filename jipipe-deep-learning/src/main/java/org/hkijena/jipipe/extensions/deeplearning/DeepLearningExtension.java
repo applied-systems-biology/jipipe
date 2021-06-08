@@ -4,6 +4,7 @@ import org.hkijena.jipipe.JIPipeJavaExtension;
 import org.hkijena.jipipe.extensions.JIPipePrepackagedDefaultJavaExtension;
 import org.hkijena.jipipe.extensions.deeplearning.datatypes.DeepLearningModelData;
 import org.hkijena.jipipe.extensions.deeplearning.nodes.CreateModelAlgorithm;
+import org.hkijena.jipipe.extensions.deeplearning.nodes.TrainModelAlgorithm;
 import org.hkijena.jipipe.extensions.parameters.primitives.HTMLText;
 import org.hkijena.jipipe.extensions.parameters.primitives.StringList;
 import org.hkijena.jipipe.extensions.python.PythonEnvironment;
@@ -100,6 +101,9 @@ public class DeepLearningExtension extends JIPipePrepackagedDefaultJavaExtension
                 null);
         registerNodeType("create-deep-learning-model",
                 CreateModelAlgorithm.class,
+                UIUtils.getIconURLFromResources("data-types/dl-model.png"));
+        registerNodeType("train-deep-learning-model",
+                TrainModelAlgorithm.class,
                 UIUtils.getIconURLFromResources("data-types/dl-model.png"));
     }
 }

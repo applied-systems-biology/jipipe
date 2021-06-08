@@ -19,7 +19,7 @@ import org.hkijena.jipipe.extensions.cellpose.CellPosePretrainedModel;
 import org.hkijena.jipipe.extensions.cellpose.CellPoseSettings;
 import org.hkijena.jipipe.extensions.cellpose.datatypes.CellPoseModelData;
 import org.hkijena.jipipe.extensions.cellpose.datatypes.CellPoseSizeModelData;
-import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.MaskedImagePlusData;
+import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.LabeledImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.extensions.python.OptionalPythonEnvironment;
@@ -40,8 +40,8 @@ import java.util.stream.Collectors;
 
 @JIPipeDocumentation(name = "Cellpose training", description = "Trains a model with Cellpose. You start from an existing model or train from scratch. " +
         "Incoming images are automatically converted to greyscale. Only 2D or 3D images are supported.")
-@JIPipeInputSlot(value = MaskedImagePlusData.class, slotName = "Training data", autoCreate = true)
-@JIPipeInputSlot(value = MaskedImagePlusData.class, slotName = "Test data", autoCreate = true, optional = true)
+@JIPipeInputSlot(value = LabeledImagePlusData.class, slotName = "Training data", autoCreate = true)
+@JIPipeInputSlot(value = LabeledImagePlusData.class, slotName = "Test data", autoCreate = true, optional = true)
 @JIPipeInputSlot(value = CellPoseModelData.class)
 @JIPipeOutputSlot(value = CellPoseModelData.class, slotName = "Model", autoCreate = true)
 @JIPipeOrganization(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Deep learning")
@@ -297,20 +297,20 @@ public class CellPoseTrainingAlgorithm extends JIPipeMergingAlgorithm {
         AtomicInteger imageCounter = new AtomicInteger(0);
         for (Integer row : dataBatch.getInputRows("Training data")) {
             JIPipeProgressInfo rowProgress = extractProgress.resolveAndLog("Row " + row);
-            MaskedImagePlusData masked = getInputSlot("Training data")
-                    .getData(row, MaskedImagePlusData.class, rowProgress);
+            LabeledImagePlusData masked = getInputSlot("Training data")
+                    .getData(row, LabeledImagePlusData.class, rowProgress);
             ImagePlus image = ImagePlusGreyscaleData.convertIfNeeded(masked.getImage());
-            ImagePlus mask = ImageJUtils.getNormalizedMask(image, masked.getMask());
+            ImagePlus mask = ImageJUtils.getNormalizedMask(image, masked.getLabels());
             dataIs3D |= image.getNDimensions() > 2 && enable3DSegmentation;
 
             saveImagesToPath(trainingDir, imageCounter, rowProgress, image, mask);
         }
         for (Integer row : dataBatch.getInputRows("Test data")) {
             JIPipeProgressInfo rowProgress = extractProgress.resolveAndLog("Row " + row);
-            MaskedImagePlusData masked = getInputSlot("Test data")
-                    .getData(row, MaskedImagePlusData.class, rowProgress);
+            LabeledImagePlusData masked = getInputSlot("Test data")
+                    .getData(row, LabeledImagePlusData.class, rowProgress);
             ImagePlus image = ImagePlusGreyscaleData.convertIfNeeded(masked.getImage());
-            ImagePlus mask = ImageJUtils.getNormalizedMask(image, masked.getMask());
+            ImagePlus mask = ImageJUtils.getNormalizedMask(image, masked.getLabels());
             dataIs3D |= image.getNDimensions() > 2 && enable3DSegmentation;
 
             saveImagesToPath(testDir, imageCounter, rowProgress, image, mask);

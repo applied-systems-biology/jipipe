@@ -13,6 +13,7 @@
 
 package org.hkijena.jipipe.extensions.deeplearning.nodes;
 
+import org.apache.commons.io.FileUtils;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
@@ -44,6 +45,7 @@ public class CreateModelAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     private DeepLearningModelConfiguration modelConfiguration = new DeepLearningModelConfiguration();
     private OptionalPythonEnvironment overrideEnvironment = new OptionalPythonEnvironment();
+    private boolean cleanUpAfterwards = true;
 
     public CreateModelAlgorithm(JIPipeNodeInfo info) {
         super(info);
@@ -54,6 +56,7 @@ public class CreateModelAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         super(other);
         this.overrideEnvironment = new OptionalPythonEnvironment(other.overrideEnvironment);
         this.modelConfiguration = new DeepLearningModelConfiguration(other.modelConfiguration);
+        this.cleanUpAfterwards = other.cleanUpAfterwards;
         registerSubParameter(modelConfiguration);
     }
 
@@ -99,6 +102,14 @@ public class CreateModelAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
         DeepLearningModelData modelData = new DeepLearningModelData(modelPath, modelConfigurationPath);
         dataBatch.addOutputData(getFirstOutputSlot(), modelData, progressInfo);
+
+        if (cleanUpAfterwards) {
+            try {
+                FileUtils.deleteDirectory(workDirectory.toFile());
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     @JIPipeDocumentation(name = "Override Python environment", description = "If enabled, a different Python environment is used for this Node. Otherwise " +
@@ -113,4 +124,15 @@ public class CreateModelAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         this.overrideEnvironment = overrideEnvironment;
     }
 
+    @JIPipeDocumentation(name = "Clean up data after processing", description = "If enabled, data is deleted from temporary directories after " +
+            "the processing was finished. Disable this to make it possible to debug your scripts. The directories are accessible via the logs (Tools &gt; Logs).")
+    @JIPipeParameter("cleanup-afterwards")
+    public boolean isCleanUpAfterwards() {
+        return cleanUpAfterwards;
+    }
+
+    @JIPipeParameter("cleanup-afterwards")
+    public void setCleanUpAfterwards(boolean cleanUpAfterwards) {
+        this.cleanUpAfterwards = cleanUpAfterwards;
+    }
 }
