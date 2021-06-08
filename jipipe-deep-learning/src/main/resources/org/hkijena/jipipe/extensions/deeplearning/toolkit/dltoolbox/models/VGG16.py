@@ -21,66 +21,68 @@ import os
 
 os.environ["CUDA_DEVICE_ORDER"] = "PCI_BUS_ID"
 
-import json
 from keras import layers
 from keras import models
 from keras import optimizers
-from keras import losses
 
 
 #############################################################
 #                           VGG16                           #
 #############################################################
-def build_model(config_path):
+def build_model(config):
+    """
+    Creates a VGG16 model
+    Args:
+        config: the model parameters
 
-    # read parameter from json file
-    with open(config_path) as json_file:
-        config = json.load(json_file)
+    Returns: the model
+
+    """
 
     img_shape = config['img_size']
     num_classes = config['n_classes']
-    model_path = config['model_path']
+    model_path = config['output_model_path']
 
     def secondConvBlock(input_tensor, num_filters):
-        sec_conv = layers.Conv2D(num_filters, (3,3), padding='same' )(input_tensor)
-        sec_conv = layers.Conv2D(num_filters, (3,3), padding='same')(sec_conv)
+        sec_conv = layers.Conv2D(num_filters, (3, 3), padding='same')(input_tensor)
+        sec_conv = layers.Conv2D(num_filters, (3, 3), padding='same')(sec_conv)
         sec_conv = layers.BatchNormalization()(sec_conv)
         sec_conv = layers.Activation('relu')(sec_conv)
-        sec_conv = layers.MaxPooling2D((2,2))(sec_conv)
+        sec_conv = layers.MaxPooling2D((2, 2))(sec_conv)
         return sec_conv
 
     def thirdConvBlock(input_tensor, num_filters):
-        thi_conv = layers.Conv2D(num_filters, (3,3), padding='same')(input_tensor)
-        thi_conv = layers.Conv2D(num_filters, (3,3), padding='same')(thi_conv)
-        thi_conv = layers.Conv2D(num_filters, (3,3), padding='same')(thi_conv)
+        thi_conv = layers.Conv2D(num_filters, (3, 3), padding='same')(input_tensor)
+        thi_conv = layers.Conv2D(num_filters, (3, 3), padding='same')(thi_conv)
+        thi_conv = layers.Conv2D(num_filters, (3, 3), padding='same')(thi_conv)
         thi_conv = layers.BatchNormalization()(thi_conv)
         thi_conv = layers.Activation('relu')(thi_conv)
-        thi_conv = layers.MaxPooling2D((2,2))(thi_conv)
+        thi_conv = layers.MaxPooling2D((2, 2))(thi_conv)
         return thi_conv
 
-    inputs = layers.Input( img_shape )
+    inputs = layers.Input(img_shape)
 
     # 2nd - convolution - block
-    sCB_0 = secondConvBlock( inputs, num_filters=64 )
-    sCB_1 = secondConvBlock( sCB_0, num_filters=128 )
+    sCB_0 = secondConvBlock(inputs, num_filters=64)
+    sCB_1 = secondConvBlock(sCB_0, num_filters=128)
 
     # 3rd - convolution - block
-    tCB_2 = thirdConvBlock( sCB_1, num_filters=256 )
-    tCB_3 = thirdConvBlock( tCB_2, num_filters=512 )
-    tCB_4 = thirdConvBlock( tCB_3, num_filters=512 )
+    tCB_2 = thirdConvBlock(sCB_1, num_filters=256)
+    tCB_3 = thirdConvBlock(tCB_2, num_filters=512)
+    tCB_4 = thirdConvBlock(tCB_3, num_filters=512)
 
     # flatten the last convolutional layer
     flatten = layers.Flatten()(tCB_4)
 
     # dense-layers for classification
-    dense_5 = layers.Dense(4096, activation='relu')(flatten) # relu/leakyrelu
+    dense_5 = layers.Dense(4096, activation='relu')(flatten)  # relu/leakyrelu
     dropout_6 = layers.Dropout(0.5)(dense_5)
 
-    dense_7 = layers.Dense(4096, activation='relu')(dropout_6) # relu/leakyrelu
+    dense_7 = layers.Dense(4096, activation='relu')(dropout_6)  # relu/leakyrelu
     dropout_8 = layers.Dropout(0.5)(dense_7)
 
     # last layer for classification
-    output = layers.Dense( num_classes , activation='softmax')(dropout_8)
+    output = layers.Dense(num_classes, activation='softmax')(dropout_8)
 
     # create the model
     model = models.Model(inputs=[inputs], outputs=[output])
@@ -89,25 +91,9 @@ def build_model(config_path):
     model.compile(loss='categorical_crossentropy', optimizer=optimizers.Adam(), metrics=['acc'])
 
     model.summary()
-    
-    model.save(model_path)
 
-    # return model
+    if model_path:
+        model.save(model_path)
+        print('save model to:', model_path)
 
-
-
-# TODO:später löschen build the model. We'll build the U-Net model.
-# model = build_model(img_shape=(224,224,3), num_classes=2)
-# model.summary()
-
-# TODO: vor definiertes Keras model nutzen ?!
-# import keras
-# mymodel = keras.applications.VGG16(
-#     include_top=True,
-#     input_tensor=None,
-#     input_shape=None,
-#     pooling=None,
-#     classes=1000
-# )
-
-# mymodel.summary()
+    return model

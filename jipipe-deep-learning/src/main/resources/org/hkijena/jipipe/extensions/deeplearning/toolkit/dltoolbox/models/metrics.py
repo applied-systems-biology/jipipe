@@ -17,14 +17,14 @@ Adolf-Reichwein-Straße 23, 07745 Jena, Germany
 Script to define costum-made metrcis
 """
 
-
 import tensorflow as tf
 from keras import losses
-
 
 ''' 
 Sørensen-Dice coefficient
 '''
+
+
 def dice_coeff(y_true, y_pred):
     smooth = 1.
     # Flatten
@@ -34,23 +34,32 @@ def dice_coeff(y_true, y_pred):
     score = (2. * intersection + smooth) / (tf.reduce_sum(y_true_f) + tf.reduce_sum(y_pred_f) + smooth)
     return score
 
+
 ''' 
 Sørensen-Dice loss: 1 - Sørensen-Dice coefficient
 '''
+
+
 def dice_loss(y_true, y_pred):
     loss = 1 - dice_coeff(y_true, y_pred)
     return loss
 
+
 ''' 
 binary-cross-entropy with dice loss as regularization term (TODO: alle regularisierungs-terme mit **kwargs dynamisch ergänzen)
 '''
+
+
 def bce_dice_loss(y_true, y_pred):
     loss = losses.binary_crossentropy(y_true, y_pred) + dice_loss(y_true, y_pred)
     return loss
 
+
 ''' 
 categorical-cross-entropy with dice loss as regularization term
 '''
+
+
 def ce_dice_loss(y_true, y_pred):
     loss = losses.categorical_crossentropy(y_true, y_pred) + dice_loss(y_true, y_pred)
     return loss

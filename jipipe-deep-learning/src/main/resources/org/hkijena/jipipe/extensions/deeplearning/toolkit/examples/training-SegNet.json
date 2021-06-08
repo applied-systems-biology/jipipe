@@ -1,0 +1,11 @@
+{
+  "output_model_path": "trained-model.hdf5",
+  "input_dir": "raw/*.tif",
+  "label_dir": "labels/*.tif",
+  "max_epochs": 1000,
+  "batch_size": 32,
+  "learning_rate": 0.0001,
+  "monitor_loss": "val_loss",
+  "validation_split": 0.85,
+  "augmentation_factor": 5
+}

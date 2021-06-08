@@ -11,8 +11,6 @@ Adolf-Reichwein-Straße 23, 07745 Jena, Germany
 """
 
 from __future__ import print_function
-import numpy as np
-
 
 #############################################################
 #             		    utils functions                     #
@@ -21,9 +19,11 @@ import numpy as np
 """
 slide over the specified input image
 """
-def sliding_window(img, stepSize, windowSize=(256,256)):
-	# slide a window across the image
-	for y in range(0, img.shape[0], stepSize):
-		for x in range(0, img.shape[1], stepSize):
-			# yield the current window, cause of reduce memory costs
-			yield (x, y, img[y:y + windowSize[1], x:x + windowSize[0]])
+
+
+def sliding_window(img, stepSize, windowSize=(256, 256)):
+    # slide a window across the image
+    for y in range(0, img.shape[0], stepSize):
+        for x in range(0, img.shape[1], stepSize):
+            # yield the current window, cause of reduce memory costs
+            yield (x, y, img[y:y + windowSize[1], x:x + windowSize[0]])

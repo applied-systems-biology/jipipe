@@ -9,64 +9,65 @@ dependencies:
   - scikit-learn
   - scikit-image>0.16
   - tensorflow-gpu==2.1.0
+  - tensorflow-estimator==2.1.0
   - keras>=2.3.1
   - opencv
   - tqdm
   - tifffile
-  - h5py
+  - h5py==2.10
 
 
 
 # Cuda Comment
 cuda_comment: >
-   From the template it looks like you are installing **TensorFlow** (TF) prebuilt binaries:
-      * For TF-GPU - See point 1
-      * For TF-CPU - See point 2
-   -----------------------------------------------------------------------------------------------
-   
-   **1. Installing **TensorFlow-GPU** (TF) prebuilt binaries**
-   
-   
-   Make sure you are using compatible TF and CUDA versions.
-   Please refer following TF version and CUDA version compatibility table.
-   
-   | TF  | CUDA |
-   
-   | :-------------: | :-------------: |
-   
-   | 2.5.0  | 11.2 |
-   
-   | 2.4.0  | 11.0 |
-    
-   | 2.1.0 - 2.3.0  | 10.1 |
-   
-   | 1.13.1 - 2.0  | 10.0  |
-   
-   | 1.5.0 - 1.12.0 | 9.0 |
-   
-     * If you have above configuration and using _**Windows**_ platform -
-       * Try adding the CUDA, CUPTI, and cuDNN installation directories to the %PATH% environment variable.
-       * Refer [windows setup guide](https://www.tensorflow.org/install/gpu#windows_setup).
-     * If you have above configuration and using _**Ubuntu/Linux**_ platform -
-       * Try adding the CUDA, CUPTI, and cuDNN installation directories to the $LD_LIBRARY_PATH environment variable.
-       * Refer [linux setup guide](https://www.tensorflow.org/install/gpu#linux_setup).
-     * If error still persists then, apparently your CPU model does not support AVX instruction sets.
-       * Refer [hardware requirements](https://www.tensorflow.org/install/pip#hardware-requirements).
-   
-   -----------------------------------------------------------------------------------------------
-   
-   **2. Installing **TensorFlow** (TF) CPU prebuilt binaries**
-   
-   
-   *TensorFlow release binaries version 1.6 and higher are prebuilt with AVX instruction sets.*
-   
-   
-   Therefore on any CPU that does not have these instruction sets, either CPU or GPU version of TF will fail to load.
-   
-   Apparently, your CPU model does not support AVX instruction sets. You can still use TensorFlow with the alternatives given below:
-   
-      * Try Google Colab to use TensorFlow.
-         * The easiest way to use TF will be to switch to [google colab](https://colab.sandbox.google.com/notebooks/welcome.ipynb#recent=true). You get pre-installed latest stable TF version. Also you can use ```pip install```  to install any other preferred TF version.
-         * It has an added advantage since you can you easily switch to different hardware accelerators (cpu, gpu, tpu) as per the task.
-         * All you need is a good internet connection and you are all set.
-      * Try to build TF from sources by changing CPU optimization flags.
+  From the template it looks like you are installing **TensorFlow** (TF) prebuilt binaries:
+     * For TF-GPU - See point 1
+     * For TF-CPU - See point 2
+  -----------------------------------------------------------------------------------------------
+
+  **1. Installing **TensorFlow-GPU** (TF) prebuilt binaries**
+
+
+  Make sure you are using compatible TF and CUDA versions.
+  Please refer following TF version and CUDA version compatibility table.
+
+  | TF  | CUDA |
+
+  | :-------------: | :-------------: |
+
+  | 2.5.0  | 11.2 |
+
+  | 2.4.0  | 11.0 |
+
+  | 2.1.0 - 2.3.0  | 10.1 |
+
+  | 1.13.1 - 2.0  | 10.0  |
+
+  | 1.5.0 - 1.12.0 | 9.0 |
+
+    * If you have above configuration and using _**Windows**_ platform -
+      * Try adding the CUDA, CUPTI, and cuDNN installation directories to the %PATH% environment variable.
+      * Refer [windows setup guide](https://www.tensorflow.org/install/gpu#windows_setup).
+    * If you have above configuration and using _**Ubuntu/Linux**_ platform -
+      * Try adding the CUDA, CUPTI, and cuDNN installation directories to the $LD_LIBRARY_PATH environment variable.
+      * Refer [linux setup guide](https://www.tensorflow.org/install/gpu#linux_setup).
+    * If error still persists then, apparently your CPU model does not support AVX instruction sets.
+      * Refer [hardware requirements](https://www.tensorflow.org/install/pip#hardware-requirements).
+
+  -----------------------------------------------------------------------------------------------
+
+  **2. Installing **TensorFlow** (TF) CPU prebuilt binaries**
+
+
+  *TensorFlow release binaries version 1.6 and higher are prebuilt with AVX instruction sets.*
+
+
+  Therefore on any CPU that does not have these instruction sets, either CPU or GPU version of TF will fail to load.
+
+  Apparently, your CPU model does not support AVX instruction sets. You can still use TensorFlow with the alternatives given below:
+
+     * Try Google Colab to use TensorFlow.
+        * The easiest way to use TF will be to switch to [google colab](https://colab.sandbox.google.com/notebooks/welcome.ipynb#recent=true). You get pre-installed latest stable TF version. Also you can use ```pip install```  to install any other preferred TF version.
+        * It has an added advantage since you can you easily switch to different hardware accelerators (cpu, gpu, tpu) as per the task.
+        * All you need is a good internet connection and you are all set.
+     * Try to build TF from sources by changing CPU optimization flags.
