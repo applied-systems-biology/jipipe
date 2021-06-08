@@ -128,6 +128,14 @@ public abstract class JIPipeParameterEditorUI extends JIPipeWorkbenchPanel imple
      */
     @Subscribe
     public void onParameterChanged(JIPipeParameterCollection.ParameterChangedEvent event) {
+        if(!isDisplayable()) {
+            try {
+                parameterAccess.getSource().getEventBus().unregister(this);
+            }
+            catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
         if (Objects.equals(event.getKey(), parameterAccess.getKey())) {
             if (preventReload == 0) {
                 reloadScheduled = false;

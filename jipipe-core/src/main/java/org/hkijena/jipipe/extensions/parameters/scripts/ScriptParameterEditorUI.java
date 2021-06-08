@@ -13,10 +13,17 @@
 
 package org.hkijena.jipipe.extensions.parameters.scripts;
 
+import org.hkijena.jipipe.JIPipe;
+import org.hkijena.jipipe.api.parameters.JIPipeDummyParameterCollection;
+import org.hkijena.jipipe.api.parameters.JIPipeManualParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
+import org.hkijena.jipipe.extensions.parameters.primitives.FilePathParameterSettings;
+import org.hkijena.jipipe.extensions.settings.FileChooserSettings;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.components.DocumentChangeListener;
 import org.hkijena.jipipe.ui.components.DocumentTabPane;
+import org.hkijena.jipipe.ui.components.FormPanel;
+import org.hkijena.jipipe.ui.components.PathEditor;
 import org.hkijena.jipipe.ui.parameters.JIPipeParameterEditorUI;
 import org.hkijena.jipipe.utils.ReflectionUtils;
 import org.hkijena.jipipe.utils.UIUtils;
@@ -25,6 +32,8 @@ import org.scijava.ui.swing.script.EditorPane;
 import javax.swing.*;
 import javax.swing.event.DocumentEvent;
 import java.awt.*;
+import java.lang.annotation.Annotation;
+import java.nio.file.Path;
 import java.util.Objects;
 
 /**
@@ -35,6 +44,8 @@ public class ScriptParameterEditorUI extends JIPipeParameterEditorUI {
     private EditorPane textArea;
     private JLabel collapseInfoLabel;
     private boolean isCollapsed;
+    private JToggleButton externalCodeToggle;
+    private Component pathEditorComponent;
 
     /**
      * @param workbench       workbench
@@ -79,6 +90,11 @@ public class ScriptParameterEditorUI extends JIPipeParameterEditorUI {
 
         toolBar.add(Box.createHorizontalGlue());
 
+        externalCodeToggle = new JToggleButton("External", UIUtils.getIconFromResources("actions/edit-link.png"));
+        externalCodeToggle.setToolTipText("If enabled, the code is extracted from an external file.");
+        externalCodeToggle.addActionListener(e -> toggleExternalCode());
+        toolBar.add(externalCodeToggle);
+
         JToggleButton collapseButton = new JToggleButton("Collapse", UIUtils.getIconFromResources("actions/eye-slash.png"));
         collapseButton.setSelected(code.isCollapsed());
         collapseButton.addActionListener(e -> toggleCollapse());
@@ -91,6 +107,12 @@ public class ScriptParameterEditorUI extends JIPipeParameterEditorUI {
         add(toolBar, BorderLayout.NORTH);
 
         setBorder(BorderFactory.createEtchedBorder());
+    }
+
+    private void toggleExternalCode() {
+        ScriptParameter code = getParameter(ScriptParameter.class);
+        code.getExternalScriptFile().setEnabled(!code.getExternalScriptFile().isEnabled());
+        setParameter(code, true);
     }
 
     private void toggleCollapse() {
@@ -127,13 +149,55 @@ public class ScriptParameterEditorUI extends JIPipeParameterEditorUI {
         if (!code.isCollapsed() || !isCollapsed) {
             remove(textArea);
             remove(collapseInfoLabel);
+            if(pathEditorComponent != null)
+                remove(pathEditorComponent);
             if (code.isCollapsed()) {
                 add(collapseInfoLabel, BorderLayout.CENTER);
             } else {
-                add(textArea, BorderLayout.CENTER);
+                if(code.getExternalScriptFile().isEnabled()) {
+                    JIPipeManualParameterAccess access = JIPipeManualParameterAccess.builder().setFieldClass(Path.class)
+                            .setGetter(() -> code.getExternalScriptFile().getContent())
+                            .setSetter((Object p) -> code.getExternalScriptFile().setContent((Path) p))
+                            .setSource(new JIPipeDummyParameterCollection())
+                            .setKey("external-path")
+                            .addAnnotation(new FilePathParameterSettings() {
+                                @Override
+                                public Class<? extends Annotation> annotationType() {
+                                    return FilePathParameterSettings.class;
+                                }
+
+                                @Override
+                                public PathEditor.IOMode ioMode() {
+                                    return PathEditor.IOMode.Open;
+                                }
+
+                                @Override
+                                public PathEditor.PathMode pathMode() {
+                                    return PathEditor.PathMode.FilesOnly;
+                                }
+
+                                @Override
+                                public String[] extensions() {
+                                    return new String[0];
+                                }
+
+                                @Override
+                                public String key() {
+                                    return FileChooserSettings.KEY_PROJECT;
+                                }
+                            }).build();
+                    JIPipeParameterEditorUI pathEditor = JIPipe.getInstance().getParameterTypeRegistry().createEditorFor(getWorkbench(), access);
+                    FormPanel formPanel = new FormPanel(null, FormPanel.NONE);
+                    formPanel.addToForm(pathEditor, new JLabel("External script path"), null);
+                    add(formPanel, BorderLayout.CENTER);
+                    pathEditorComponent = formPanel;
+                }
+                else {
+                    add(textArea, BorderLayout.CENTER);
+                }
             }
             isCollapsed = code.isCollapsed();
-            if (!Objects.equals(textArea.getText(), code.getCode()))
+            if (!code.getExternalScriptFile().isEnabled() && !Objects.equals(textArea.getText(), code.getCode()))
                 textArea.setText(code.getCode());
             revalidate();
             repaint();
