@@ -37,6 +37,7 @@ public class DeepLearningToolkitEnvInstaller extends BasicMinicondaEnvPythonInst
     protected void postprocessInstall() {
         // We need to create the environment
         Path environmentDefinitionPath = createEnvironment();
+        Configuration configuration = (Configuration) getConfiguration();
 
         // Apply the environment
         runConda("env", "update", "--file", environmentDefinitionPath.toAbsolutePath().toString());
@@ -68,7 +69,7 @@ public class DeepLearningToolkitEnvInstaller extends BasicMinicondaEnvPythonInst
             }
             Configuration configuration = (Configuration) getConfiguration();
             if (configuration.getH5pyVersion().isEnabled()) {
-                writer.write("  - h5py==");
+                writer.write("  - h5py");
                 writer.write(configuration.getH5pyVersion().getContent());
                 writer.newLine();
             } else {
@@ -97,7 +98,7 @@ public class DeepLearningToolkitEnvInstaller extends BasicMinicondaEnvPythonInst
     public static class Configuration extends BasicMinicondaEnvPythonInstaller.Configuration {
         private boolean withGPU = true;
         private String tensorFlowVersion = "2.1.0";
-        private OptionalStringParameter h5pyVersion = new OptionalStringParameter("2.10.0", true);
+        private OptionalStringParameter h5pyVersion = new OptionalStringParameter("<3", true);
 
         @JIPipeDocumentation(name = "GPU support", description = "If enabled, install Tensorflow with GPU support.")
         @JIPipeParameter("with-gpu")

@@ -294,7 +294,7 @@ public class CellPoseAlgorithm extends JIPipeMergingAlgorithm {
 
             // Run script
             PythonUtils.runPython(code.toString(), overrideEnvironment.isEnabled() ? overrideEnvironment.getContent() :
-                    CellPoseSettings.getInstance().getPythonEnvironment(), progressInfo);
+                    CellPoseSettings.getInstance().getPythonEnvironment(), Collections.emptyList(), progressInfo);
 
             // Read diameters
             List<JIPipeAnnotation> annotationList = new ArrayList<>();

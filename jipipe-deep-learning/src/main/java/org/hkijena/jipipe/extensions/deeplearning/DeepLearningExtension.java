@@ -2,6 +2,8 @@ package org.hkijena.jipipe.extensions.deeplearning;
 
 import org.hkijena.jipipe.JIPipeJavaExtension;
 import org.hkijena.jipipe.extensions.JIPipePrepackagedDefaultJavaExtension;
+import org.hkijena.jipipe.extensions.deeplearning.datatypes.DeepLearningModelData;
+import org.hkijena.jipipe.extensions.deeplearning.nodes.CreateModelAlgorithm;
 import org.hkijena.jipipe.extensions.parameters.primitives.HTMLText;
 import org.hkijena.jipipe.extensions.parameters.primitives.StringList;
 import org.hkijena.jipipe.extensions.python.PythonEnvironment;
@@ -82,5 +84,22 @@ public class DeepLearningExtension extends JIPipePrepackagedDefaultJavaExtension
                 DeepLearningArchitecture.class,
                 "Deep Learning architecture",
                 "Architecture to be used");
+        registerEnumParameterType("deep-learning-regularization-method",
+                RegularizationMethod.class,
+                "Deep Learning regularization method",
+                "Regularization method to be used");
+        registerEnumParameterType("deep-learning-monitor-loss",
+                MonitorLoss.class,
+                "Deep Learning monitor loss",
+                "Monitor loss method to be used");
+
+        registerDatatype("deep-learning-model",
+                DeepLearningModelData.class,
+                UIUtils.getIconURLFromResources("data-types/dl-model.png"),
+                null,
+                null);
+        registerNodeType("create-deep-learning-model",
+                CreateModelAlgorithm.class,
+                UIUtils.getIconURLFromResources("data-types/dl-model.png"));
     }
 }

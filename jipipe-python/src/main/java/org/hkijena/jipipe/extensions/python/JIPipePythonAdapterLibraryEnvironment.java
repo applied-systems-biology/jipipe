@@ -35,7 +35,7 @@ public class JIPipePythonAdapterLibraryEnvironment extends PythonPackageLibraryE
 
     public JIPipePythonAdapterLibraryEnvironment() {
         this.setName("Default");
-        this.setLibraryDirectory(Paths.get("jipipe-python-adapter"));
+        this.setLibraryDirectory(Paths.get("lib-jipipe-py"));
     }
 
     public JIPipePythonAdapterLibraryEnvironment(PythonPackageLibraryEnvironment other) {
@@ -54,7 +54,7 @@ public class JIPipePythonAdapterLibraryEnvironment extends PythonPackageLibraryE
             else
                 return s;
         }).collect(Collectors.toSet());
-        String globalFolder = "/org/hkijena/jipipe/extensions/python/adapter";
+        String globalFolder = "/org/hkijena/jipipe/extensions/python/lib";
         Set<String> toInstall = allResources.stream().filter(s -> s.startsWith(globalFolder)).collect(Collectors.toSet());
         for (String resource : toInstall) {
             progressInfo.log("Installing " + resource);

@@ -40,6 +40,7 @@ import org.hkijena.jipipe.utils.ResourceUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import java.nio.file.Path;
+import java.util.Collections;
 import java.util.Map;
 
 /**
@@ -174,7 +175,7 @@ public class IteratingPythonScriptAlgorithm extends JIPipeIteratingAlgorithm {
         // Run Python
         PythonUtils.runPython(code.toString(),
                 getOverrideEnvironment().isEnabled() ? getOverrideEnvironment().getContent() : PythonExtensionSettings.getInstance().getPythonEnvironment(),
-                progressInfo);
+                Collections.emptyList(), progressInfo);
 
         // Extract outputs
         PythonUtils.extractOutputs(dataBatch, outputSlotPaths, getOutputSlots(), annotationMergeStrategy, progressInfo);

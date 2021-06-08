@@ -36,7 +36,7 @@ public class DeepLearningToolkitLibraryEnvironment extends PythonPackageLibraryE
 
     public DeepLearningToolkitLibraryEnvironment() {
         this.setName("Default");
-        this.setLibraryDirectory(Paths.get("jipipe-deep-learning-toolkit"));
+        this.setLibraryDirectory(Paths.get("lib-dltoolkit"));
     }
 
     public DeepLearningToolkitLibraryEnvironment(PythonPackageLibraryEnvironment other) {
@@ -55,7 +55,7 @@ public class DeepLearningToolkitLibraryEnvironment extends PythonPackageLibraryE
             else
                 return s;
         }).collect(Collectors.toSet());
-        String globalFolder = "/org/hkijena/jipipe/extensions/deeplearning/toolkit";
+        String globalFolder = "/org/hkijena/jipipe/extensions/deeplearning/lib";
         Set<String> toInstall = allResources.stream().filter(s -> s.startsWith(globalFolder)).collect(Collectors.toSet());
         for (String resource : toInstall) {
             progressInfo.log("Installing " + resource);

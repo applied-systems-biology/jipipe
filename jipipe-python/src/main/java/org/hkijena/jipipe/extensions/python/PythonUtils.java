@@ -3,6 +3,7 @@ package org.hkijena.jipipe.extensions.python;
 import org.apache.commons.exec.*;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.WordUtils;
+import org.apache.commons.lang3.SystemUtils;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.*;
@@ -204,7 +205,7 @@ public class PythonUtils {
         return inputSlotPaths;
     }
 
-    public static void runPython(String code, PythonEnvironment environment, JIPipeProgressInfo progressInfo) {
+    public static void runPython(String code, PythonEnvironment environment, List<Path> libraryPaths, JIPipeProgressInfo progressInfo) {
         progressInfo.log(code);
         Path codeFilePath = RuntimeSettings.generateTempFile("py", ".py");
         try {
@@ -212,7 +213,7 @@ public class PythonUtils {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-        runPython(codeFilePath, environment, progressInfo);
+        runPython(codeFilePath, environment, libraryPaths, progressInfo);
     }
 
     public static void extractOutputs(JIPipeDataBatch dataBatch, Map<String, Path> outputSlotPaths, List<JIPipeDataSlot> outputSlots, JIPipeAnnotationMergeStrategy annotationMergeStrategy, JIPipeProgressInfo progressInfo) {
@@ -276,12 +277,12 @@ public class PythonUtils {
 
     /**
      * Runs a Python script file
-     *
-     * @param scriptFile   the script file
+     *  @param scriptFile   the script file
      * @param environment  the environment
+     * @param libraryPaths additional library paths
      * @param progressInfo the progress info
      */
-    public static void runPython(Path scriptFile, PythonEnvironment environment, JIPipeProgressInfo progressInfo) {
+    public static void runPython(Path scriptFile, PythonEnvironment environment, List<Path> libraryPaths, JIPipeProgressInfo progressInfo) {
         Path pythonExecutable = environment.getExecutablePath();
         CommandLine commandLine = new CommandLine(pythonExecutable.toFile());
 
@@ -295,6 +296,7 @@ public class PythonUtils {
             String value = StringUtils.nullToEmpty(environmentVariable.getKey().evaluate(existingEnvironmentVariables));
             environmentVariables.put(environmentVariable.getValue(), value);
         }
+        installLibraryPaths(environmentVariables, libraryPaths);
         for (Map.Entry<String, String> entry : environmentVariables.entrySet()) {
             progressInfo.log("Setting environment variable " + entry.getKey() + "=" + entry.getValue());
         }
@@ -318,13 +320,32 @@ public class PythonUtils {
     }
 
     /**
+     * Sets the PYTHONPATH variable, so it contains the provided libraries
+     * @param environmentVariables the env variables
+     * @param libraryPaths library paths to add
+     */
+    private static void installLibraryPaths(Map<String, String> environmentVariables, List<Path> libraryPaths) {
+        if(libraryPaths.isEmpty())
+            return;
+        String delimiter = SystemUtils.IS_OS_WINDOWS ? ";" : ":";
+        String existing = environmentVariables.getOrDefault("PYTHONPATH", null);
+        if(StringUtils.isNullOrEmpty(existing)) {
+            existing = libraryPaths.stream().map(Objects::toString).collect(Collectors.joining(delimiter));
+        }
+        else {
+            existing = libraryPaths.stream().map(Objects::toString).collect(Collectors.joining(delimiter)) + delimiter + existing;
+        }
+        environmentVariables.put("PYTHONPATH", existing);
+    }
+
+    /**
      * Runs Python with a set of arguments
-     *
      * @param arguments    the arguments
      * @param environment  the environment
+     * @param libraryPaths additional library paths
      * @param progressInfo the progress info
      */
-    public static void runPython(String[] arguments, PythonEnvironment environment, JIPipeProgressInfo progressInfo) {
+    public static void runPython(String[] arguments, PythonEnvironment environment, List<Path> libraryPaths, JIPipeProgressInfo progressInfo) {
         Path pythonExecutable = environment.getExecutablePath();
         CommandLine commandLine = new CommandLine(pythonExecutable.toFile());
 
@@ -338,6 +359,7 @@ public class PythonUtils {
             String value = StringUtils.nullToEmpty(environmentVariable.getKey().evaluate(existingEnvironmentVariables));
             environmentVariables.put(environmentVariable.getValue(), value);
         }
+        installLibraryPaths(environmentVariables, libraryPaths);
         for (Map.Entry<String, String> entry : environmentVariables.entrySet()) {
             progressInfo.log("Setting environment variable " + entry.getKey() + "=" + entry.getValue());
         }

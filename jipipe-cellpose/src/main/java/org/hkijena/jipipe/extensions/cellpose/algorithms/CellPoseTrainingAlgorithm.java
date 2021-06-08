@@ -31,6 +31,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
@@ -407,7 +408,7 @@ public class CellPoseTrainingAlgorithm extends JIPipeMergingAlgorithm {
 
         // Run the module
         PythonUtils.runPython(arguments.toArray(new String[0]), overrideEnvironment.isEnabled() ? overrideEnvironment.getContent() :
-                CellPoseSettings.getInstance().getPythonEnvironment(), progressInfo);
+                CellPoseSettings.getInstance().getPythonEnvironment(), Collections.emptyList(), progressInfo);
 
         // Extract the model
         Path modelsPath = trainingDir.resolve("models");

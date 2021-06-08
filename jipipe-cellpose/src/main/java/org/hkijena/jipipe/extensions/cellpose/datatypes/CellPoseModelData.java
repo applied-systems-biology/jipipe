@@ -21,8 +21,8 @@ import java.util.List;
 @JIPipeDataStorageDocumentation("A single file without extension that contains the Cellpose model")
 public class CellPoseModelData implements JIPipeData {
 
-    final byte[] data;
-    final String name;
+    private final byte[] data;
+    private final String name;
 
     public CellPoseModelData(Path file) {
         this.name = file.getFileName().toString();
