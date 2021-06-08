@@ -19,11 +19,7 @@ import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
-import org.hkijena.jipipe.api.nodes.JIPipeInputSlot;
-import org.hkijena.jipipe.api.nodes.JIPipeMergingAlgorithm;
-import org.hkijena.jipipe.api.nodes.JIPipeMergingDataBatch;
-import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
-import org.hkijena.jipipe.api.nodes.JIPipeOutputSlot;
+import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.deeplearning.DeepLearningSettings;
@@ -58,6 +54,7 @@ public class TrainModelAlgorithm extends JIPipeMergingAlgorithm {
 
     public TrainModelAlgorithm(JIPipeNodeInfo info) {
         super(info);
+        getDataBatchGenerationSettings().setDataSetMatching(JIPipeColumnGrouping.MergeAll);
         registerSubParameter(trainingConfiguration);
     }
 
