@@ -13,6 +13,7 @@
 
 package org.hkijena.jipipe.ui.batchassistant;
 
+import org.apache.commons.lang.WordUtils;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.data.JIPipeAnnotation;
 import org.hkijena.jipipe.api.data.JIPipeAnnotationMergeStrategy;
@@ -59,7 +60,8 @@ public class DataBatchUI extends JIPipeProjectWorkbenchPanel {
         FormPanel metaDataList = new FormPanel(null, FormPanel.NONE);
         for (JIPipeAnnotation annotation : batch.getAnnotations().values()) {
             JLabel title = new JLabel(annotation.getName(), UIUtils.getIconFromResources("data-types/annotation.png"), JLabel.LEFT);
-            JTextField content = UIUtils.makeReadonlyBorderlessTextField(annotation.getValue());
+            JTextField content = UIUtils.makeReadonlyBorderlessTextField(WordUtils.abbreviate(annotation.getValue(), 50, 70, " ..."));
+            content.setToolTipText(annotation.getValue());
             metaDataList.addToForm(content, title, null);
         }
         metaDataList.addVerticalGlue();

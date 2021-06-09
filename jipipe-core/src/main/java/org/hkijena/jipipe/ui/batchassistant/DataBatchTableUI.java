@@ -9,6 +9,7 @@ import org.hkijena.jipipe.ui.components.PreviewControlUI;
 import org.hkijena.jipipe.ui.components.SearchTextField;
 import org.hkijena.jipipe.ui.components.SearchTextFieldTableRowFilter;
 import org.hkijena.jipipe.utils.StringUtils;
+import org.hkijena.jipipe.utils.UIUtils;
 import org.jdesktop.swingx.JXTable;
 
 import javax.swing.*;
@@ -97,7 +98,7 @@ public class DataBatchTableUI extends JPanel {
         table.setRowFilter(new SearchTextFieldTableRowFilter(searchTextField));
         TableColumnModel columnModel = table.getColumnModel();
         table.setAutoCreateRowSorter(true);
-        table.packAll();
+        UIUtils.packDataTable(table);
         columnModel.getColumn(1).setPreferredWidth(GeneralDataSettings.getInstance().getPreviewSize());
         SwingUtilities.invokeLater(dataTable::updateRenderedPreviews);
     }

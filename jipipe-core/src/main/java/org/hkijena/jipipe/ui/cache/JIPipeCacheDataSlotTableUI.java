@@ -99,7 +99,7 @@ public class JIPipeCacheDataSlotTableUI extends JIPipeWorkbenchPanel {
             column.setHeaderRenderer(new WrapperColumnHeaderRenderer(slot));
         }
         table.setAutoCreateRowSorter(true);
-        table.packAll();
+        UIUtils.packDataTable(table);
         columnModel.getColumn(1).setPreferredWidth(GeneralDataSettings.getInstance().getPreviewSize());
         SwingUtilities.invokeLater(dataTable::updateRenderedPreviews);
     }

@@ -109,7 +109,7 @@ public class JIPipeCacheMultiDataSlotTableUI extends JIPipeWorkbenchPanel {
         }
         table.setAutoCreateRowSorter(true);
         table.setRowFilter(new SearchTextFieldTableRowFilter(searchTextField));
-        table.packAll();
+        UIUtils.packDataTable(table);
 
         int previewColumn = withCompartmentAndAlgorithm ? 4 : 2;
         columnModel.getColumn(previewColumn).setPreferredWidth(GeneralDataSettings.getInstance().getPreviewSize());

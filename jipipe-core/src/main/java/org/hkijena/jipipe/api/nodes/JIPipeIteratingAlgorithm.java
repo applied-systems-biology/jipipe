@@ -30,6 +30,7 @@ import org.hkijena.jipipe.extensions.expressions.StringQueryExpression;
 import org.hkijena.jipipe.extensions.parameters.generators.IntegerRange;
 import org.hkijena.jipipe.extensions.parameters.generators.OptionalIntegerRange;
 import org.hkijena.jipipe.extensions.parameters.pairs.StringQueryExpressionAndStringPairParameter;
+import org.hkijena.jipipe.extensions.parameters.primitives.OptionalIntegerParameter;
 import org.hkijena.jipipe.extensions.parameters.primitives.StringParameterSettings;
 import org.hkijena.jipipe.utils.JsonUtils;
 import org.hkijena.jipipe.utils.ResourceUtils;

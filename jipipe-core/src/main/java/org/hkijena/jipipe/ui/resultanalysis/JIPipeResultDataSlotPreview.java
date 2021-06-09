@@ -17,6 +17,7 @@ import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.data.JIPipeExportedDataTable;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbenchPanel;
+import org.hkijena.jipipe.utils.UIUtils;
 import org.jdesktop.swingx.JXTable;
 
 import javax.swing.*;
@@ -122,7 +123,7 @@ public abstract class JIPipeResultDataSlotPreview extends JIPipeProjectWorkbench
     public void refreshTable() {
         if (getTable() != null) {
             if (getTable() instanceof JXTable)
-                ((JXTable) getTable()).packAll();
+                UIUtils.packDataTable((JXTable) getTable());
             getTable().repaint();
         }
     }

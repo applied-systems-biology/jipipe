@@ -13,7 +13,7 @@ public class GeneralDataSettings implements JIPipeParameterCollection {
     private boolean autoSaveLastImporter = true;
     private boolean autoSaveLastDisplay = true;
     private int previewSize = 64;
-    private int previewHeight = 64;
+    private int maxTableColumnSize = 250;
     private boolean generateCachePreviews = true;
     private boolean generateResultPreviews = true;
 
@@ -81,5 +81,16 @@ public class GeneralDataSettings implements JIPipeParameterCollection {
     @JIPipeParameter("generate-result-previews")
     public void setGenerateResultPreviews(boolean generateResultPreviews) {
         this.generateResultPreviews = generateResultPreviews;
+    }
+
+    @JIPipeDocumentation(name = "Max table column size", description = "The maximum width of data table columns. Set to -1 for no limit.")
+    @JIPipeParameter("max-table-column-size")
+    public int getMaxTableColumnSize() {
+        return maxTableColumnSize;
+    }
+
+    @JIPipeParameter("max-table-column-size")
+    public void setMaxTableColumnSize(int maxTableColumnSize) {
+        this.maxTableColumnSize = maxTableColumnSize;
     }
 }

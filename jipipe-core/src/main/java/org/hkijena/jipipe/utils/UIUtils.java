@@ -27,11 +27,13 @@ import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.registries.JIPipeSettingsRegistry;
 import org.hkijena.jipipe.extensions.parameters.primitives.HTMLText;
+import org.hkijena.jipipe.extensions.settings.GeneralDataSettings;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.components.*;
 import org.hkijena.jipipe.ui.extension.MenuExtension;
 import org.hkijena.jipipe.ui.extension.MenuTarget;
 import org.hkijena.jipipe.ui.theme.JIPipeUITheme;
+import org.jdesktop.swingx.JXTable;
 
 import javax.imageio.ImageIO;
 import javax.swing.Timer;
@@ -126,6 +128,16 @@ public class UIUtils {
                 e.printStackTrace();
             }
         }
+    }
+
+    /**
+     * packAll() for a data table (with a limit)
+     * @param table the table
+     */
+    public static void packDataTable(JXTable table) {
+        int max = Math.max(-1, GeneralDataSettings.getInstance().getMaxTableColumnSize());
+        for (int c = 0; c < table.getColumnCount(); c++)
+            table.packColumn(c, -1, max);
     }
 
     /**

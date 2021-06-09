@@ -206,7 +206,7 @@ public class JIPipeResultDataSlotTableUI extends JIPipeProjectWorkbenchPanel {
         }
         table.setAutoCreateRowSorter(true);
         table.setRowFilter(new SearchTextFieldTableRowFilter(searchTextField));
-        table.packAll();
+        UIUtils.packDataTable(table);
 
         if (dataTable.getRowCount() == 1) {
             table.setRowSelectionInterval(0, 0);

@@ -219,7 +219,7 @@ public class JIPipeMergedResultDataSlotTableUI extends JIPipeProjectWorkbenchPan
         }
         table.setAutoCreateRowSorter(true);
         table.setRowFilter(new SearchTextFieldTableRowFilter(searchTextField));
-        table.packAll();
+        UIUtils.packDataTable(table);
 
         if (mergedDataTable.getRowCount() == 1) {
             table.setRowSelectionInterval(0, 0);
