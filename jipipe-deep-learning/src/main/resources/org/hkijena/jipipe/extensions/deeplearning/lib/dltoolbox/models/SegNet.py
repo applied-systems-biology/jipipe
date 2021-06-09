@@ -36,10 +36,10 @@ def build_model(config):
 
     """
 
-    img_shape = (config['img_size'], config['img_size'], 3)
+    img_shape = tuple(config["image_shape"])
     reg_method = config['regularization_method']
     reg_method_rate = config['regularization_lambda']
-    nClasses = config['n_classes']
+    n_classes = config['n_classes']
     model_path = config['output_model_path']
     model_json_path = config["output_model_json_path"]
 
@@ -123,18 +123,18 @@ def build_model(config):
     # def mysqueeze(out):
     #     return tf.keras.backend.squeeze(out, axis=-1)
 
-    if nClasses == 2:
+    if n_classes == 2:
         outputs = layers.Conv2D(1, (1, 1), activation='sigmoid')(decoder0)
         # if labels have only 2 dimension, e.g.: (256,256)
         # outputs = layers.Lambda(mysqueeze)(outputs)
     else:
-        outputs = layers.Conv2D(nClasses, (1, 1), activation='sigmoid')(decoder0)
+        outputs = layers.Conv2D(n_classes, (1, 1), activation='sigmoid')(decoder0)
 
     # create the model
     model = models.Model(inputs=[inputs], outputs=[outputs])
 
     # compile model, depend on the number of classes/segments (2 classes or more)
-    if nClasses == 2:
+    if n_classes == 2:
         model.compile(optimizer='adam', loss=bce_dice_loss, metrics=[dice_loss])
     else:
         model.compile(optimizer='adam', loss=ce_dice_loss, metrics=[dice_loss])

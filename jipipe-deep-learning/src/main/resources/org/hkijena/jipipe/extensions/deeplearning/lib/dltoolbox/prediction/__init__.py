@@ -42,7 +42,7 @@ def predict(model_config, config, model=None):
     input_dir = config['input_dir']
     output_dir = config['output_dir']
     input_model_path = config["input_model_path"] if "input_model_path" in config else model_config['output_model_path']
-    img_size = model_config["img_size"]
+    img_shape = tuple(config["image_shape"])
 
     # Load the model
     model = load_and_compile_model(model_config, input_model_path, model)
@@ -57,14 +57,11 @@ def predict(model_config, config, model=None):
         print("[Predict] " + str(file_name))
 
         # Downscaling (if needed)
-        if image.shape[0] != img_size or image.shape[1] != img_size:
-            target_shape = list(image.shape)
-            target_shape[0] = target_shape[1] = img_size
-            target_shape = tuple(target_shape)
-            print("[Predict] Resizing image from " + str(image.shape) + " to " + str(target_shape))
-            image = resize(image, target_shape)
+        if image.shape != img_shape:
+            print("[Predict] Resizing image from " + str(image.shape) + " to " + str(img_shape))
+            image = resize(image, img_shape)
 
-        if len(image.shape) == 3:
+        while len(image.shape) < 4:
             image = np.expand_dims(image, axis=0)
 
         prediction = model.predict_on_batch([image])

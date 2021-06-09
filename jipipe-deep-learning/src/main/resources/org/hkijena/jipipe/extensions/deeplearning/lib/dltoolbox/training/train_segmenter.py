@@ -69,9 +69,9 @@ def train_model(model_config, config, model=None):
     y_train, y_valid = np.array(y_train), np.array(y_valid)
 
     # TODO: Hier ein Validitätsvergleich durchführen, ob input/output = input/output von Model
-    if len(y_train.shape) == 3:
+    while len(y_train.shape) < 4:
         y_train = np.expand_dims(np.array(y_train), axis=-1)
-    if len(y_valid.shape) == 3:
+    while len(y_valid.shape) < 4:
         y_valid = np.expand_dims(np.array(y_valid), axis=-1)
 
     print('[Train model] Train data:', x_train.shape, y_train.shape)

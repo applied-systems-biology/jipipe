@@ -32,7 +32,7 @@ def build_model(config):
 
     """
 
-    img_shape = config['img_size']
+    img_shape = tuple(config['img_size'])
     num_classes = config['n_classes']
     model_path = config['output_model_path']
     model_json_path = config["output_model_json_path"]
@@ -54,7 +54,7 @@ def build_model(config):
         thi_conv = layers.MaxPooling2D((2, 2))(thi_conv)
         return thi_conv
 
-    inputs = layers.Input(img_shape)
+    inputs = layers.Input(shape=img_shape)
 
     # 2nd - convolution - block
     sCB_0 = secondConvBlock(inputs, num_filters=64)

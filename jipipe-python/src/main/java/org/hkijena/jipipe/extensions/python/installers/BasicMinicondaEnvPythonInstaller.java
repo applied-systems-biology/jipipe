@@ -5,6 +5,7 @@ import org.apache.commons.exec.CommandLine;
 import org.apache.commons.exec.ExecuteWatchdog;
 import org.apache.commons.exec.LogOutputStream;
 import org.apache.commons.exec.PumpStreamHandler;
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.SystemUtils;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
@@ -84,6 +85,17 @@ public class BasicMinicondaEnvPythonInstaller extends ExternalEnvironmentInstall
         if (progressInfo.isCancelled().get())
             return;
         progressInfo.incrementProgress();
+
+        // Cleanup phase
+        if(Files.exists(getConfiguration().getInstallationPath().toAbsolutePath())) {
+            progressInfo.log("Deleting old installation");
+            progressInfo.log("Deleting: " + getConfiguration().getInstallationPath().toAbsolutePath());
+            try {
+                FileUtils.deleteDirectory(getConfiguration().getInstallationPath().toAbsolutePath().toFile());
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
 
         // Download phase
         progressInfo.log("Acquire setup ...");
@@ -235,6 +247,12 @@ public class BasicMinicondaEnvPythonInstaller extends ExternalEnvironmentInstall
                                 "Please review the settings on the left-hand side. Click OK to install Miniconda.\n\n" +
                                 "You have to agree to the following license: https://docs.conda.io/en/latest/license.html"), "Download & install Miniconda",
                         ParameterPanel.NO_GROUP_HEADERS | ParameterPanel.WITH_SEARCH_BAR | ParameterPanel.WITH_DOCUMENTATION | ParameterPanel.WITH_SCROLLING);
+                if(result && Files.exists(getConfiguration().installationPath)) {
+                    if(JOptionPane.showConfirmDialog(getWorkbench().getWindow(), "The directory " + getConfiguration().getInstallationPath().toAbsolutePath()
+                    + " already exists. Do you want to overwrite it?", getTaskLabel(), JOptionPane.YES_NO_OPTION) == JOptionPane.NO_OPTION) {
+                        result = false;
+                    }
+                }
                 userCancelled.set(!result);
                 windowOpened.set(false);
                 synchronized (lock) {

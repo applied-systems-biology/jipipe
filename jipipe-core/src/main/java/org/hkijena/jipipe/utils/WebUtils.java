@@ -80,6 +80,8 @@ public class WebUtils {
                                 message = "Downloaded " + df.format(total / 1024.0 / 1024.0) + " MB / " + df.format(contentLength / 1024.0 / 1024.0) + " MB";
                             }
                             progressInfo.log(message);
+                            if (progressInfo.isCancelled().get())
+                                return;
                         }
                     }
                 }

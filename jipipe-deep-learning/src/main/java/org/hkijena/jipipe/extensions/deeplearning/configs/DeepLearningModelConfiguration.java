@@ -25,6 +25,8 @@ import org.hkijena.jipipe.extensions.deeplearning.RegularizationMethod;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * POJO class for the model configuration
@@ -34,7 +36,11 @@ public class DeepLearningModelConfiguration implements JIPipeParameterCollection
     private DeepLearningArchitecture architecture = DeepLearningArchitecture.SegNet;
     private RegularizationMethod regularizationMethod = RegularizationMethod.GaussianDropout;
     private double regularizationLambda = 0.1;
-    private int imageSize = 256;
+    private int imageWidth = 256;
+    private int imageHeight = 256;
+    private int imageChannels = 1;
+    private int imageDepth = 3;
+    private int imageFrames = 1;
     private int numClasses = 2;
     private Path outputModelPath = Paths.get("");
     private Path outputModelJsonPath = Paths.get("");
@@ -46,7 +52,11 @@ public class DeepLearningModelConfiguration implements JIPipeParameterCollection
         this.architecture = other.architecture;
         this.regularizationMethod = other.regularizationMethod;
         this.regularizationLambda = other.regularizationLambda;
-        this.imageSize = other.imageSize;
+        this.imageWidth = other.imageWidth;
+        this.imageHeight = other.imageHeight;
+        this.imageChannels = other.imageChannels;
+        this.imageDepth = other.imageDepth;
+        this.imageFrames = other.imageFrames;
         this.numClasses = other.numClasses;
         this.outputModelPath = other.outputModelPath;
         this.outputModelJsonPath = other.outputModelJsonPath;
@@ -96,17 +106,88 @@ public class DeepLearningModelConfiguration implements JIPipeParameterCollection
         this.regularizationLambda = regularizationLambda;
     }
 
-    @JIPipeDocumentation(name = "Image size", description = "The width and height of the image")
-    @JIPipeParameter("image-size")
-    @JsonGetter("img_size")
-    public int getImageSize() {
-        return imageSize;
+    @JIPipeDocumentation(name = "Image width", description = "The width of the image")
+    @JIPipeParameter("image-width")
+    public int getImageWidth() {
+        return imageWidth;
     }
 
-    @JIPipeParameter("image-size")
-    @JsonSetter("img_size")
-    public void setImageSize(int imageSize) {
-        this.imageSize = imageSize;
+    @JIPipeParameter("image-width")
+    public void setImageWidth(int imageWidth) {
+        this.imageWidth = imageWidth;
+    }
+
+    @JIPipeDocumentation(name = "Image height", description = "The height of the image")
+    @JIPipeParameter("image-height")
+    public int getImageHeight() {
+        return imageHeight;
+    }
+
+    @JIPipeParameter("image-height")
+    public void setImageHeight(int imageHeight) {
+        this.imageHeight = imageHeight;
+    }
+
+    @JIPipeDocumentation(name = "Image channels", description = "The number of channels in the image")
+    @JIPipeParameter("image-channels")
+    public int getImageChannels() {
+        return imageChannels;
+    }
+
+    @JIPipeParameter("image-channels")
+    public void setImageChannels(int imageChannels) {
+        this.imageChannels = imageChannels;
+    }
+
+    @JIPipeDocumentation(name = "Image depth", description = "The number of Z slices in the image")
+    @JIPipeParameter("image-depth")
+    public int getImageDepth() {
+        return imageDepth;
+    }
+
+    @JIPipeParameter("image-depth")
+    public void setImageDepth(int imageDepth) {
+        this.imageDepth = imageDepth;
+    }
+
+    @JIPipeDocumentation(name = "Image frames", description = "The number of frame slices in the image")
+    @JIPipeParameter("image-frames")
+    public int getImageFrames() {
+        return imageFrames;
+    }
+
+    @JIPipeParameter("image-frames")
+    public void setImageFrames(int imageFrames) {
+        this.imageFrames = imageFrames;
+    }
+
+    @JsonGetter("image_shape")
+    public List<Integer> getImageShape() {
+        // Order is WHZCT
+        List<Integer> shape = new ArrayList<>();
+        shape.add(getImageWidth());
+        if(getImageHeight() > 1)
+            shape.add(getImageHeight());
+        if(getImageDepth() > 1)
+            shape.add(getImageDepth());
+        if(getImageChannels() > 1)
+            shape.add(getImageChannels());
+        if(getImageFrames() > 1)
+            shape.add(getImageFrames());
+        return shape;
+    }
+
+    @JsonSetter("image_shape")
+    public void setImageShape(List<Integer> shape) {
+        setImageWidth(shape.get(0));
+        if(shape.size() > 1)
+            setImageHeight(shape.get(1));
+        if(shape.size() > 2)
+            setImageDepth(shape.get(2));
+        if(shape.size() > 3)
+            setImageChannels(shape.get(3));
+        if(shape.size() > 4)
+            setImageFrames(shape.get(4));
     }
 
     @JIPipeDocumentation(name = "Number of classes", description = "The number of classes")
