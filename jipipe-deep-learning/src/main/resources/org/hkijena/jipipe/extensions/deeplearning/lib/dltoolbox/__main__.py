@@ -1,8 +1,25 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+"""
+
+@author: J-P Praetorius
+@email: jan-philipp.praetorius@leibniz-hki.de or p.e.mueller07@gmail.com
+
+Copyright by Jan-Philipp Praetorius
+
+Research Group Applied Systems Biology - Head: Prof. Dr. Marc Thilo Figge
+https://www.leibniz-hki.de/en/applied-systems-biology.html
+HKI-Center for Systems Biology of Infection
+Leibniz Institute for Natural Product Research and Infection Biology -
+Hans Knöll Insitute (HKI)
+Adolf-Reichwein-Straße 23, 07745 Jena, Germany
+"""
+
 import argparse
 import json
 
 parser = argparse.ArgumentParser(prog="python -m dltoolbox", description="Runs the Deep Learning Toolbox")
-parser.add_argument("--operation", "-o", dest="operation", choices=["create-model", "train", "list-devices",
+parser.add_argument("--operation", "-o", dest="operation", choices=["create-model", "train", "predict", "list-devices",
                                                                     "list-devices-json"], required=True,
                     help="The operation to apply")
 parser.add_argument("--model-config", dest="model_config",
@@ -44,6 +61,22 @@ elif args.operation == "train":
 
     import dltoolbox.training
     dltoolbox.training.train_model(model_config, config)
+elif args.operation == "predict":
+    with open(args.config, "r") as f:
+        config = json.load(f)
+    with open(args.model_config, "r") as f:
+        model_config = json.load(f)
+    if args.device_config:
+        with(open(args.device_config), "r") as f:
+            device_config = json.load(f)
+    else:
+        device_config = {}
+
+    import dltoolbox.utils
+    dltoolbox.utils.setup_devices(device_config)
+
+    import dltoolbox.prediction
+    dltoolbox.prediction.predict(model_config, config)
 elif args.operation == "list-devices":
     import tensorflow as tf
 

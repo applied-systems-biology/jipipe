@@ -133,7 +133,6 @@ public abstract class JIPipeParameterEditorUI extends JIPipeWorkbenchPanel imple
                 parameterAccess.getSource().getEventBus().unregister(this);
             }
             catch (Exception e) {
-                e.printStackTrace();
             }
         }
         if (Objects.equals(event.getKey(), parameterAccess.getKey())) {

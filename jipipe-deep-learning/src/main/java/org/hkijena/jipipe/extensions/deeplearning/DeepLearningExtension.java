@@ -4,6 +4,8 @@ import org.hkijena.jipipe.JIPipeJavaExtension;
 import org.hkijena.jipipe.extensions.JIPipePrepackagedDefaultJavaExtension;
 import org.hkijena.jipipe.extensions.deeplearning.datatypes.DeepLearningModelData;
 import org.hkijena.jipipe.extensions.deeplearning.nodes.CreateModelAlgorithm;
+import org.hkijena.jipipe.extensions.deeplearning.nodes.ImportModelAlgorithm;
+import org.hkijena.jipipe.extensions.deeplearning.nodes.PredictAlgorithm;
 import org.hkijena.jipipe.extensions.deeplearning.nodes.TrainModelAlgorithm;
 import org.hkijena.jipipe.extensions.parameters.primitives.HTMLText;
 import org.hkijena.jipipe.extensions.parameters.primitives.StringList;
@@ -102,8 +104,14 @@ public class DeepLearningExtension extends JIPipePrepackagedDefaultJavaExtension
         registerNodeType("create-deep-learning-model",
                 CreateModelAlgorithm.class,
                 UIUtils.getIconURLFromResources("data-types/dl-model.png"));
+        registerNodeType("import-deep-learning-model",
+                ImportModelAlgorithm.class,
+                UIUtils.getIconURLFromResources("data-types/dl-model.png"));
         registerNodeType("train-deep-learning-model",
                 TrainModelAlgorithm.class,
+                UIUtils.getIconURLFromResources("data-types/dl-model.png"));
+        registerNodeType("deep-learning-predict",
+                PredictAlgorithm.class,
                 UIUtils.getIconURLFromResources("data-types/dl-model.png"));
     }
 }

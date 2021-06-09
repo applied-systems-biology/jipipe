@@ -17,29 +17,14 @@ Adolf-Reichwein-Straße 23, 07745 Jena, Germany
 Script to train a segmentation network
 """
 
-import os
-
-os.environ["CUDA_DEVICE_ORDER"] = "PCI_BUS_ID"
-
 import numpy as np
 from sklearn.model_selection import train_test_split
 from skimage import io
 from keras.preprocessing.image import ImageDataGenerator
-from keras import callbacks, models
-
-# import all metrics for model-compilation
-from dltoolbox.models.metrics import *
+from keras import callbacks
+from dltoolbox.utils import load_and_compile_model
 
 
-# set the GPU where the underlying model will be trained on
-def set_GPU_device(device_id):
-    os.environ["CUDA_VISIBLE_DEVICES"] = str(device_id)
-    print('os.environ["CUDA_VISIBLE_DEVICES"]:', os.environ["CUDA_VISIBLE_DEVICES"])
-
-
-#############################################################
-#           train a single segmentation network             #
-#############################################################
 def train_model(model_config, config, model=None):
     """
     Trains an existing model. The existing model path is either extracted from a parameter input_model_path of the config,
@@ -62,28 +47,14 @@ def train_model(model_config, config, model=None):
     input_model_path = config["input_model_path"] if "input_model_path" in config else model_config['output_model_path']
     output_model_path = config['output_model_path']
     output_model_json_path = config['output_model_json_path']
-    nClasses = model_config['n_classes']
 
-    if model is None:
-        model = models.load_model(input_model_path, compile=False)
-    # oder so lösen: #, custom_objects={'loss_min': loss_max}
-
-    # compile model, depend on the number of classes/segments (2 classes or more)
-    if nClasses == 2:
-        model.compile(optimizer='adam', loss=bce_dice_loss, metrics=[dice_loss])
-    else:
-        model.compile(optimizer='adam', loss=ce_dice_loss, metrics=[dice_loss])
-
-    # if verbose > 0:
-    #     [ print(parameter,':\t', value_desc) for parameter, value_desc in config.items() ]
+    model = load_and_compile_model(model_config, input_model_path, model)
 
     # validate input and label images
     X = io.imread_collection(input_dir)
     Y = io.imread_collection(label_dir)
-    # x = np.ones(shape=(20,256,256,3))
-    # y = np.ones(shape=(20,256,256))*3
 
-    print('\n\tinput-images:', len(X), 'label-images:', len(Y))
+    print('[Train model] Input-images:', len(X), ', Label-images:', len(Y))
 
     assert len(X) == len(Y) > 0
 
@@ -93,7 +64,7 @@ def train_model(model_config, config, model=None):
                                                           shuffle=True,
                                                           random_state=42)
 
-    # tranfer to numpy required arrays input: (height,width,3) -> (height,width,1)
+    # transfer to numpy required arrays input: (height,width,3) -> (height,width,1)
     x_train, x_valid = np.array(x_train), np.array(x_valid)
     y_train, y_valid = np.array(y_train), np.array(y_valid)
 
@@ -103,8 +74,8 @@ def train_model(model_config, config, model=None):
     if len(y_valid.shape) == 3:
         y_valid = np.expand_dims(np.array(y_valid), axis=-1)
 
-    print('\n\ttrain data:', x_train.shape, y_train.shape)
-    print('\tvalid data:', x_valid.shape, y_valid.shape)
+    print('[Train model] Train data:', x_train.shape, y_train.shape)
+    print('[Train model] Validation data:', x_valid.shape, y_valid.shape)
 
     # TODO: geometrical transformation implementieren mit folgendem parameter:
     # preprocessing_function: function that will be applied on each input. 
@@ -134,17 +105,6 @@ def train_model(model_config, config, model=None):
 
     train_generator = zip(train_image_generator, train_label_generator)
 
-    # TODO: das hier wird von einer separaten node gemacht
-    # store model-keras-parameter to JSON
-    # model_json = unet.to_json()
-    # json_path = os.path.join(mod_dir, 'mdl_wts.json')
-    # with open(json_path, "w") as json_file:
-    #     json_file.write(model_json)
-
-    # if verbose > 0:
-    #     print('save model-hyperparameter to json:', json_path)
-    #     print('save model-info to json:', json_path)
-
     # create and define callback to monitor the training
     if monitor_loss not in ['loss', 'val_loss']:
         monitor_loss = 'val_loss'
@@ -163,9 +123,9 @@ def train_model(model_config, config, model=None):
                                             patience=50, min_lr=0.000001, verbose=1)
 
     steps_epoch = x_train.shape[0] / batch_size
-    print('\nsteps per epoch-original:', steps_epoch)
+    print('[Train model] Number of steps per epoch-original:', steps_epoch)
     steps_epoch = int(steps_epoch * config['augmentation_factor'])
-    print('steps per epoch-augmented:', steps_epoch)
+    print('[Train model] Steps per epoch-augmented:', steps_epoch)
 
     # fits the model on batches with real-time data augmentation:
     print('Start training ...')
@@ -205,12 +165,12 @@ def train_model(model_config, config, model=None):
 
     if output_model_path:
         model.save(output_model_path)
-        print('saved trained model to:', output_model_path)
+        print('[Train model] Saved trained model to:', output_model_path)
 
     if output_model_json_path:
         model_json = model.to_json()
         with open(output_model_json_path, "w") as f:
             f.write(model_json)
-        print('saved trained model JSON to:', output_model_json_path)
+        print('[Train model] Saved trained model JSON to:', output_model_json_path)
 
     return model

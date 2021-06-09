@@ -143,12 +143,12 @@ def build_model(config):
 
     if model_path:
         model.save(model_path)
-        print('save model to:', model_path)
+        print('[Create model] Saved model to:', model_path)
 
     if model_json_path:
         model_json = model.to_json()
         with open(model_json_path, "w") as f:
             f.write(model_json)
-        print('saved model JSON to:', model_json_path)
+        print('[Create model] Saved model JSON to:', model_json_path)
 
     return model

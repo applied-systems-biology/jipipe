@@ -12,6 +12,38 @@ Adolf-Reichwein-Straße 23, 07745 Jena, Germany
 
 import os
 
+import keras
+
+from dltoolbox.models.metrics import *
+
+
+def load_and_compile_model(model_config, model_path, model=None) -> keras.Model:
+    """
+    Loads an compiles a model
+    Args:
+        model_config: Model configuration
+        model_path: Path to the model file
+        model: An existing model. If not None, model_path is ignored
+
+    Returns: The model
+    """
+
+    from keras import models
+
+    n_classes = model_config['n_classes']
+
+    if model is None:
+        print("[DLToolbox] Loading model from " + str(model_path))
+        model = models.load_model(model_path, compile=False)
+
+        # compile model, depend on the number of classes/segments (2 classes or more)
+        if n_classes == 2:
+            model.compile(optimizer='adam', loss=bce_dice_loss, metrics=[dice_loss])
+        else:
+            model.compile(optimizer='adam', loss=ce_dice_loss, metrics=[dice_loss])
+
+    return model
+
 
 def setup_devices(config=None):
     """
@@ -44,7 +76,7 @@ def setup_devices(config=None):
 
     # Configure GPUs
     if gpu_config == "all":
-        print("Using all available CPUs")
+        print("Using all available GPUs")
     else:
         gpus = tf.config.list_physical_devices('GPU')
         visible_gpus = []

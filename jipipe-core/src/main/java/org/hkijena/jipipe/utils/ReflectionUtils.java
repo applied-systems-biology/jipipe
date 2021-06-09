@@ -15,11 +15,13 @@ package org.hkijena.jipipe.utils;
 
 import org.apache.commons.lang.reflect.ConstructorUtils;
 import org.apache.commons.lang.reflect.MethodUtils;
+import org.hkijena.jipipe.api.data.JIPipeData;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
@@ -199,5 +201,9 @@ public class ReflectionUtils {
             }
         }
         return false;
+    }
+
+    public static boolean isAbstractOrInterface(Class<?> klass) {
+        return klass.isInterface() || Modifier.isAbstract(klass.getModifiers());
     }
 }
