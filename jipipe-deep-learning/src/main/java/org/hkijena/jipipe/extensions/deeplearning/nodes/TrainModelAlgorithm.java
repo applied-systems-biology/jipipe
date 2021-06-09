@@ -14,7 +14,9 @@
 package org.hkijena.jipipe.extensions.deeplearning.nodes;
 
 import ij.IJ;
+import ij.ImagePlus;
 import org.apache.commons.io.FileUtils;
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
@@ -22,9 +24,14 @@ import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
+import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
+import org.hkijena.jipipe.api.parameters.JIPipeParameterVisibility;
 import org.hkijena.jipipe.extensions.deeplearning.DeepLearningSettings;
+import org.hkijena.jipipe.extensions.deeplearning.DeepLearningUtils;
 import org.hkijena.jipipe.extensions.deeplearning.configs.DeepLearningTrainingConfiguration;
 import org.hkijena.jipipe.extensions.deeplearning.datatypes.DeepLearningModelData;
+import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.transform.ScaleMode;
+import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.transform.TransformScale2DAlgorithm;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.LabeledImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleData;
 import org.hkijena.jipipe.extensions.python.OptionalPythonEnvironment;
@@ -48,6 +55,7 @@ import java.util.Set;
 @JIPipeOutputSlot(value = DeepLearningModelData.class, slotName = "Trained model", autoCreate = true)
 public class TrainModelAlgorithm extends JIPipeMergingAlgorithm {
 
+    private TransformScale2DAlgorithm scale2DAlgorithm;
     private DeepLearningTrainingConfiguration trainingConfiguration = new DeepLearningTrainingConfiguration();
     private OptionalPythonEnvironment overrideEnvironment = new OptionalPythonEnvironment();
     private boolean cleanUpAfterwards = true;
@@ -56,6 +64,9 @@ public class TrainModelAlgorithm extends JIPipeMergingAlgorithm {
         super(info);
         getDataBatchGenerationSettings().setDataSetMatching(JIPipeColumnGrouping.MergeAll);
         registerSubParameter(trainingConfiguration);
+        scale2DAlgorithm = JIPipe.createNode(TransformScale2DAlgorithm.class);
+        scale2DAlgorithm.setScaleMode(ScaleMode.Fit);
+        registerSubParameter(scale2DAlgorithm);
     }
 
     public TrainModelAlgorithm(TrainModelAlgorithm other) {
@@ -64,6 +75,8 @@ public class TrainModelAlgorithm extends JIPipeMergingAlgorithm {
         this.overrideEnvironment = new OptionalPythonEnvironment(other.overrideEnvironment);
         this.cleanUpAfterwards = other.cleanUpAfterwards;
         registerSubParameter(trainingConfiguration);
+        this.scale2DAlgorithm = new TransformScale2DAlgorithm(other.scale2DAlgorithm);
+        registerSubParameter(scale2DAlgorithm);
     }
 
     @Override
@@ -95,8 +108,17 @@ public class TrainModelAlgorithm extends JIPipeMergingAlgorithm {
                 Path rawPath = rawsDirectory.resolve(imageCounter + "_img.tif");
                 Path labelPath = labelsDirectory.resolve(imageCounter + "_img.tif");
 
-                IJ.saveAsTiff(label.getImage(), rawPath.toString());
-                IJ.saveAsTiff(label.getLabels(), labelPath.toString());
+                ImagePlus rawImage = DeepLearningUtils.scaleToModel(label.getImage(),
+                        inputModel.getModelConfiguration(),
+                        getScale2DAlgorithm(),
+                        modelProgress);
+                ImagePlus labelImage = DeepLearningUtils.scaleToModel(label.getLabels(),
+                        inputModel.getModelConfiguration(),
+                        getScale2DAlgorithm(),
+                        modelProgress);
+
+                IJ.saveAsTiff(rawImage, rawPath.toString());
+                IJ.saveAsTiff(labelImage, labelPath.toString());
             }
 
             // Save model according to standard interface
@@ -177,5 +199,22 @@ public class TrainModelAlgorithm extends JIPipeMergingAlgorithm {
     @JIPipeParameter("cleanup-afterwards")
     public void setCleanUpAfterwards(boolean cleanUpAfterwards) {
         this.cleanUpAfterwards = cleanUpAfterwards;
+    }
+
+    @JIPipeDocumentation(name = "Scaling", description = "The following settings determine how the image is scaled in 2D if it does not fit to the size the model is designed for.")
+    @JIPipeParameter(value = "scale-algorithm",
+            uiExcludeSubParameters = {"jipipe:data-batch-generation", "jipipe:parameter-slot-algorithm"},
+            collapsed = true,
+            iconURL = ResourceUtils.RESOURCE_BASE_PATH + "/icons/actions/transform-scale.png",
+            iconDarkURL = ResourceUtils.RESOURCE_BASE_PATH + "/dark/icons/actions/transform-scale.png")
+    public TransformScale2DAlgorithm getScale2DAlgorithm() {
+        return scale2DAlgorithm;
+    }
+
+    @Override
+    public JIPipeParameterVisibility getOverriddenUIParameterVisibility(JIPipeParameterAccess access, JIPipeParameterVisibility currentVisibility) {
+        if (access.getSource() == scale2DAlgorithm && access.getKey().contains("axis"))
+            return JIPipeParameterVisibility.Hidden;
+        return super.getOverriddenUIParameterVisibility(access, currentVisibility);
     }
 }

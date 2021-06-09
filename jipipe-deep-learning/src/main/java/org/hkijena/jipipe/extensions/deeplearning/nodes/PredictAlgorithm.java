@@ -16,6 +16,7 @@ package org.hkijena.jipipe.extensions.deeplearning.nodes;
 import ij.IJ;
 import ij.ImagePlus;
 import org.apache.commons.io.FileUtils;
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
@@ -32,9 +33,14 @@ import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.JIPipeOutputSlot;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
+import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
+import org.hkijena.jipipe.api.parameters.JIPipeParameterVisibility;
 import org.hkijena.jipipe.extensions.deeplearning.DeepLearningSettings;
+import org.hkijena.jipipe.extensions.deeplearning.DeepLearningUtils;
 import org.hkijena.jipipe.extensions.deeplearning.configs.DeepLearningPredictionConfiguration;
 import org.hkijena.jipipe.extensions.deeplearning.datatypes.DeepLearningModelData;
+import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.transform.ScaleMode;
+import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.transform.TransformScale2DAlgorithm;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.LabeledImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscale32FData;
@@ -42,6 +48,7 @@ import org.hkijena.jipipe.extensions.python.OptionalPythonEnvironment;
 import org.hkijena.jipipe.extensions.python.PythonUtils;
 import org.hkijena.jipipe.extensions.settings.RuntimeSettings;
 import org.hkijena.jipipe.utils.JsonUtils;
+import org.hkijena.jipipe.utils.ResourceUtils;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -58,18 +65,24 @@ import java.util.Set;
 @JIPipeOutputSlot(value = ImagePlusGreyscale32FData.class, slotName = "Prediction", autoCreate = true)
 public class PredictAlgorithm extends JIPipeMergingAlgorithm {
 
+    private TransformScale2DAlgorithm scale2DAlgorithm;
     private boolean cleanUpAfterwards = true;
     private OptionalPythonEnvironment overrideEnvironment = new OptionalPythonEnvironment();
 
     public PredictAlgorithm(JIPipeNodeInfo info) {
         super(info);
         getDataBatchGenerationSettings().setDataSetMatching(JIPipeColumnGrouping.MergeAll);
+        scale2DAlgorithm = JIPipe.createNode(TransformScale2DAlgorithm.class);
+        scale2DAlgorithm.setScaleMode(ScaleMode.Fit);
+        registerSubParameter(scale2DAlgorithm);
     }
 
     public PredictAlgorithm(PredictAlgorithm other) {
         super(other);
         this.overrideEnvironment = new OptionalPythonEnvironment(other.overrideEnvironment);
         this.cleanUpAfterwards = other.cleanUpAfterwards;
+        this.scale2DAlgorithm = new TransformScale2DAlgorithm(other.scale2DAlgorithm);
+        registerSubParameter(scale2DAlgorithm);
     }
 
     @Override
@@ -97,10 +110,15 @@ public class PredictAlgorithm extends JIPipeMergingAlgorithm {
                 Set<Integer> inputRows = dataBatch.getInputSlotRows().get(inputRawImageSlot);
                 for (Integer imageIndex : inputRows) {
                     JIPipeProgressInfo imageProgress = modelProgress.resolveAndLog("Write inputs", imageCounter++, inputRows.size());
-                    ImagePlusData label = inputRawImageSlot.getData(imageIndex, ImagePlusData.class, imageProgress);
+                    ImagePlusData raw = inputRawImageSlot.getData(imageIndex, ImagePlusData.class, imageProgress);
                     Path rawPath = rawsDirectory.resolve(imageCounter + "_img.tif");
 
-                    IJ.saveAsTiff(label.getImage(), rawPath.toString());
+                    ImagePlus rawImage = DeepLearningUtils.scaleToModel(raw.getImage(),
+                            inputModel.getModelConfiguration(),
+                            getScale2DAlgorithm(),
+                            modelProgress);
+
+                    IJ.saveAsTiff(rawImage, rawPath.toString());
                 }
             }
 
@@ -183,5 +201,22 @@ public class PredictAlgorithm extends JIPipeMergingAlgorithm {
     @JIPipeParameter("cleanup-afterwards")
     public void setCleanUpAfterwards(boolean cleanUpAfterwards) {
         this.cleanUpAfterwards = cleanUpAfterwards;
+    }
+
+    @JIPipeDocumentation(name = "Scaling", description = "The following settings determine how the image is scaled in 2D if it does not fit to the size the model is designed for.")
+    @JIPipeParameter(value = "scale-algorithm",
+            uiExcludeSubParameters = {"jipipe:data-batch-generation", "jipipe:parameter-slot-algorithm"},
+            collapsed = true,
+            iconURL = ResourceUtils.RESOURCE_BASE_PATH + "/icons/actions/transform-scale.png",
+            iconDarkURL = ResourceUtils.RESOURCE_BASE_PATH + "/dark/icons/actions/transform-scale.png")
+    public TransformScale2DAlgorithm getScale2DAlgorithm() {
+        return scale2DAlgorithm;
+    }
+
+    @Override
+    public JIPipeParameterVisibility getOverriddenUIParameterVisibility(JIPipeParameterAccess access, JIPipeParameterVisibility currentVisibility) {
+        if (access.getSource() == scale2DAlgorithm && access.getKey().contains("axis"))
+            return JIPipeParameterVisibility.Hidden;
+        return super.getOverriddenUIParameterVisibility(access, currentVisibility);
     }
 }

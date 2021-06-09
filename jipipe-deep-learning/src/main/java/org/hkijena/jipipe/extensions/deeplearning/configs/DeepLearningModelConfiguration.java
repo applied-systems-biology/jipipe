@@ -161,6 +161,19 @@ public class DeepLearningModelConfiguration implements JIPipeParameterCollection
         this.imageFrames = imageFrames;
     }
 
+    public int getImageDimensions() {
+        int dimensions = 1;
+        if(getImageHeight() > 1)
+            ++dimensions;
+        if(getImageDepth() > 1)
+            ++dimensions;
+        if(getImageChannels() > 1)
+            ++dimensions;
+        if(getImageFrames() > 1)
+            ++dimensions;
+        return dimensions;
+    }
+
     @JsonGetter("image_shape")
     public List<Integer> getImageShape() {
         // Order is WHZCT
