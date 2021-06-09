@@ -458,6 +458,15 @@ public class JIPipeParameterTree implements JIPipeParameterCollection, JIPipeCus
     }
 
     /**
+     * Gets information about if the source is collapsed
+     * @param source source
+     * @return if the source is collapsed by default
+     */
+    public boolean getSourceCollapsed(JIPipeParameterCollection source) {
+        return nodeMap.get(source).collapsed;
+    }
+
+    /**
      * Gets source documentation
      *
      * @param source source

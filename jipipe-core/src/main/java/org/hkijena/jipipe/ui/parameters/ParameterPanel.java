@@ -262,7 +262,7 @@ public class ParameterPanel extends FormPanel implements Contextual {
         }
 
         for (JIPipeParameterCollection collection : groupedBySource.keySet().stream().sorted(
-                Comparator.comparing(traversed::getSourceUIOrder).thenComparing(
+                Comparator.comparing(traversed::getSourceCollapsed).thenComparing(traversed::getSourceUIOrder).thenComparing(
                         Comparator.nullsFirst(Comparator.comparing(traversed::getSourceDocumentationName))))
                 .collect(Collectors.toList())) {
             if (collection == this.displayedParameters)
