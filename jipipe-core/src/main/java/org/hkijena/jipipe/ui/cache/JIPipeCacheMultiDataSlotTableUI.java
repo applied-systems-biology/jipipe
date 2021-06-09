@@ -161,7 +161,7 @@ public class JIPipeCacheMultiDataSlotTableUI extends JIPipeWorkbenchPanel {
         searchTextField.addActionListener(e -> reloadTable());
         toolBar.add(searchTextField);
 
-        JButton exportButton = new JButton("Export", UIUtils.getIconFromResources("actions/document-export.png"));
+        JButton exportButton = new JButton("Export table", UIUtils.getIconFromResources("actions/document-export.png"));
         toolBar.add(exportButton);
         JPopupMenu exportMenu = UIUtils.addPopupMenuToComponent(exportButton);
 

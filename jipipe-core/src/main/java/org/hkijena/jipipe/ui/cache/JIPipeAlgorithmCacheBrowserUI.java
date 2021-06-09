@@ -183,12 +183,12 @@ public class JIPipeAlgorithmCacheBrowserUI extends JIPipeProjectWorkbenchPanel {
 
         toolBar.add(Box.createHorizontalGlue());
 
-        JButton importButton = new JButton("Import", UIUtils.getIconFromResources("actions/document-import.png"));
+        JButton importButton = new JButton("Import cache", UIUtils.getIconFromResources("actions/document-import.png"));
         importButton.setToolTipText("Imports cached data from a folder");
         importButton.addActionListener(e -> importCache());
         toolBar.add(importButton);
 
-        JButton exportButton = new JButton("Export", UIUtils.getIconFromResources("actions/document-export.png"));
+        JButton exportButton = new JButton("Export cache", UIUtils.getIconFromResources("actions/document-export.png"));
         exportButton.setToolTipText("Exports cached data to a folder");
         exportButton.addActionListener(e -> exportCache());
         toolBar.add(exportButton);
