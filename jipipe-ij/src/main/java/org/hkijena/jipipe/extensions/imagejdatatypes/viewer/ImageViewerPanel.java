@@ -358,9 +358,7 @@ public class ImageViewerPanel extends JPanel {
     private void saveRawImage() {
         Path path = FileChooserSettings.saveFile(this, FileChooserSettings.KEY_DATA, "Save as *.tif", UIUtils.EXTENSION_FILTER_TIFF);
         if (path != null) {
-            try (BusyCursor cursor = new BusyCursor(this)) {
-                IJ.saveAs(getImage(), "TIFF", path.toString());
-            }
+            JIPipeRunExecuterUI.runInDialog(this, new ImageViewerPanelRawImageExporterRun(getImage(), path));
         }
     }
 
