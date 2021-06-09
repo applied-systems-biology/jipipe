@@ -99,7 +99,8 @@ public class IlluminationCorrection2DAlgorithm extends JIPipeSimpleIteratingAlgo
     }
 
     @JIPipeDocumentation(name = "Gaussian filter")
-    @JIPipeParameter(value = "gaussian-algorithm", visibility = JIPipeParameterVisibility.TransitiveVisible, uiExcludeSubParameters = {"jipipe:data-batch-generation", "jipipe:parameter-slot-algorithm"})
+    @JIPipeParameter(value = "gaussian-algorithm", visibility = JIPipeParameterVisibility.TransitiveVisible, uiExcludeSubParameters = {"jipipe:data-batch-generation",
+            "jipipe:parameter-slot-algorithm", "jipipe:adaptive-parameters"})
     public GaussianBlur2DAlgorithm getGaussianAlgorithm() {
         return gaussianAlgorithm;
     }

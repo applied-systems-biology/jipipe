@@ -227,13 +227,15 @@ public class InternalGradientSegmentation2DAlgorithm extends JIPipeSimpleIterati
 
     }
 
-    @JIPipeParameter(value = "auto-thresholding", uiExcludeSubParameters = {"jipipe:data-batch-generation", "jipipe:parameter-slot-algorithm"})
+    @JIPipeParameter(value = "auto-thresholding", uiExcludeSubParameters = {"jipipe:data-batch-generation",
+            "jipipe:parameter-slot-algorithm", "jipipe:adaptive-parameters"})
     @JIPipeDocumentation(name = "Auto thresholding", description = "Parameters for underlying auto thresholding")
     public AutoThreshold2DAlgorithm getAutoThresholding() {
         return autoThresholding;
     }
 
-    @JIPipeParameter(value = "clahe-enhancing", uiExcludeSubParameters = {"jipipe:data-batch-generation", "jipipe:parameter-slot-algorithm"})
+    @JIPipeParameter(value = "clahe-enhancing", uiExcludeSubParameters = {"jipipe:data-batch-generation",
+            "jipipe:parameter-slot-algorithm", "jipipe:adaptive-parameters"})
     @JIPipeDocumentation(name = "CLAHE Enhancer", description = "Parameters for underlying CLAHE Enhancing algorithm")
     public CLAHEContrastEnhancer getContrastEnhancer() {
         return contrastEnhancer;

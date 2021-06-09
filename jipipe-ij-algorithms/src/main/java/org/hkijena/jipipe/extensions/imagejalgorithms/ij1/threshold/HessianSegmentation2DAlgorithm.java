@@ -183,7 +183,8 @@ public class HessianSegmentation2DAlgorithm extends JIPipeSimpleIteratingAlgorit
 
     }
 
-    @JIPipeParameter(value = "auto-thresholding", uiExcludeSubParameters = {"jipipe:data-batch-generation", "jipipe:parameter-slot-algorithm"})
+    @JIPipeParameter(value = "auto-thresholding", uiExcludeSubParameters = {"jipipe:data-batch-generation",
+            "jipipe:parameter-slot-algorithm", "jipipe:adaptive-parameters"})
     @JIPipeDocumentation(name = "Auto thresholding", description = "Parameters for underlying auto thresholding")
     public AutoThreshold2DAlgorithm getAutoThresholding() {
         return autoThresholding;

@@ -195,7 +195,7 @@ public class TileImageAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     }
 
     @JIPipeDocumentation(name = "Scaling", description = "The following settings determine how the image is scaled if it is not perfectly tileable.")
-    @JIPipeParameter(value = "scale-algorithm", uiExcludeSubParameters = {"jipipe:data-batch-generation", "jipipe:parameter-slot-algorithm"})
+    @JIPipeParameter(value = "scale-algorithm", uiExcludeSubParameters = {"jipipe:data-batch-generation", "jipipe:parameter-slot-algorithm", "jipipe:adaptive-parameters"})
     public TransformScale2DAlgorithm getScale2DAlgorithm() {
         return scale2DAlgorithm;
     }
