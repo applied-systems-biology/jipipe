@@ -48,6 +48,9 @@ public class TileImageAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     private int tileY = 512;
     private OptionalAnnotationNameParameter tileXAnnotation = new OptionalAnnotationNameParameter("Tile X", true);
     private OptionalAnnotationNameParameter tileYAnnotation = new OptionalAnnotationNameParameter("Tile Y", true);
+    private OptionalAnnotationNameParameter numTilesX = new OptionalAnnotationNameParameter("Num Tiles X", true);
+    private OptionalAnnotationNameParameter numTilesY = new OptionalAnnotationNameParameter("Num Tiles Y", true);
+
     private JIPipeAnnotationMergeStrategy annotationMergeStrategy = JIPipeAnnotationMergeStrategy.OverwriteExisting;
 
     public TileImageAlgorithm(JIPipeNodeInfo info) {
@@ -100,6 +103,8 @@ public class TileImageAlgorithm extends JIPipeSimpleIteratingAlgorithm {
                 List<JIPipeAnnotation> annotations = new ArrayList<>();
                 tileXAnnotation.addAnnotationIfEnabled(annotations, x + "");
                 tileYAnnotation.addAnnotationIfEnabled(annotations, y + "");
+                numTilesX.addAnnotationIfEnabled(annotations, nTilesX + "");
+                numTilesY.addAnnotationIfEnabled(annotations, nTilesY + "");
                 dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusData(tileImage), annotations, annotationMergeStrategy, tileProgress);
             }
         }
@@ -143,6 +148,28 @@ public class TileImageAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     @JIPipeParameter("tile-y-annotation")
     public void setTileYAnnotation(OptionalAnnotationNameParameter tileYAnnotation) {
         this.tileYAnnotation = tileYAnnotation;
+    }
+
+    @JIPipeDocumentation(name = "Annotate with number of X tiles", description = "If true, annotate each tile with the number of tiles in the image")
+    @JIPipeParameter("num-tile-x-annotation")
+    public OptionalAnnotationNameParameter getNumTilesX() {
+        return numTilesX;
+    }
+
+    @JIPipeParameter("num-tile-x-annotation")
+    public void setNumTilesX(OptionalAnnotationNameParameter numTilesX) {
+        this.numTilesX = numTilesX;
+    }
+
+    @JIPipeDocumentation(name = "Annotate with number of Y tiles", description = "If true, annotate each tile with the number of tiles in the image")
+    @JIPipeParameter("num-tile-y-annotation")
+    public OptionalAnnotationNameParameter getNumTilesY() {
+        return numTilesY;
+    }
+
+    @JIPipeParameter("num-tile-y-annotation")
+    public void setNumTilesY(OptionalAnnotationNameParameter numTilesY) {
+        this.numTilesY = numTilesY;
     }
 
     @JIPipeDocumentation(name = "Tile width", description = "The width of a tile")
