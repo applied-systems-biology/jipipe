@@ -61,6 +61,7 @@ def train_model(model_config, config, model=None):
     monitor_loss = config['monitor_loss']
     input_model_path = config["input_model_path"] if "input_model_path" in config else model_config['output_model_path']
     output_model_path = config['output_model_path']
+    output_model_json_path = config['output_model_json_path']
     nClasses = model_config['n_classes']
 
     if model is None:
@@ -112,7 +113,6 @@ def train_model(model_config, config, model=None):
     # and should output a Numpy tensor with the same shape.
 
     data_gen_args = dict(
-        # rescale=1./255, # TODO: dieser ververarbeitungs Schritt wird von einer node innerhalb JIPipe erledigt
         rotation_range=120,
         width_shift_range=0.1,
         height_shift_range=0.1,
@@ -133,17 +133,6 @@ def train_model(model_config, config, model=None):
     train_label_generator = train_label_datagen.flow(y_train, seed=seed)
 
     train_generator = zip(train_image_generator, train_label_generator)
-
-    # TODO: dieser ververarbeitungs Schritt wird von einer node innerhalb JIPipe erledigt
-    # for write_images in TensorBoard, validation data must be provided without generator:
-    # x_valid = utils.preprocessing(x_valid)
-    # y_valid = utils.preprocessing(y_valid)
-
-    # TODO: das hier wird von einer separaten node gemacht
-    # store hyperparameter to JSON
-    # json_path = os.path.join(mod_dir, 'mdl_hyperparameter.json')
-    # with open(json_path, 'w') as f:
-    #     json.dump(config, f)
 
     # TODO: das hier wird von einer separaten node gemacht
     # store model-keras-parameter to JSON
@@ -217,5 +206,11 @@ def train_model(model_config, config, model=None):
     if output_model_path:
         model.save(output_model_path)
         print('saved trained model to:', output_model_path)
+
+    if output_model_json_path:
+        model_json = model.to_json()
+        with open(output_model_json_path, "w") as f:
+            f.write(model_json)
+        print('saved trained model JSON to:', output_model_json_path)
 
     return model

@@ -21,13 +21,12 @@ import org.hkijena.jipipe.api.data.JIPipeDataStorageDocumentation;
 import org.hkijena.jipipe.extensions.deeplearning.configs.DeepLearningModelConfiguration;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.utils.JsonUtils;
-import org.hkijena.jipipe.utils.PathUtils;
 
 import javax.swing.*;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.List;
 
 /**
  * Data that models a deep learning model
@@ -38,32 +37,38 @@ public class DeepLearningModelData implements JIPipeData {
 
     private final byte[] modelData;
     private final DeepLearningModelConfiguration modelConfiguration;
+    private final String modelDataJson;
 
-    public DeepLearningModelData(Path modelPath, Path modelConfigPath) {
+    public DeepLearningModelData(Path modelPath, Path modelConfigPath, Path modelJsonPath) {
         try {
             modelData = Files.readAllBytes(modelPath);
+            modelDataJson = new String(Files.readAllBytes(modelJsonPath), StandardCharsets.UTF_8);
             modelConfiguration = JsonUtils.getObjectMapper().readValue(modelConfigPath.toFile(), DeepLearningModelConfiguration.class);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }
 
-    public DeepLearningModelData(byte[] modelData, DeepLearningModelConfiguration modelConfiguration) {
+    public DeepLearningModelData(byte[] modelData, DeepLearningModelConfiguration modelConfiguration, String modelDataJson) {
         this.modelData = modelData;
         this.modelConfiguration = modelConfiguration;
+        this.modelDataJson = modelDataJson;
     }
 
     public DeepLearningModelData(DeepLearningModelData other) {
         this.modelData = other.modelData;
         this.modelConfiguration = other.modelConfiguration;
+        this.modelDataJson = other.modelDataJson;
     }
 
     @Override
     public void saveTo(Path storageFilePath, String name, boolean forceName, JIPipeProgressInfo progressInfo) {
         Path modelPath = forceName ? storageFilePath.resolve(name + ".hdf5") : storageFilePath.resolve("model.hdf5");
+        Path modelJsonPath = forceName ? storageFilePath.resolve(name + ".json") : storageFilePath.resolve("model.json");
         Path modelConfigPath = forceName ? storageFilePath.resolve(name + ".json") : storageFilePath.resolve("model-config.json");
         try {
             Files.write(modelPath, modelData);
+            Files.write(modelJsonPath, modelDataJson.getBytes(StandardCharsets.UTF_8));
             JsonUtils.getObjectMapper().writerWithDefaultPrettyPrinter().writeValue(modelConfigPath.toFile(), modelConfiguration);
         } catch (IOException e) {
             throw new RuntimeException(e);
@@ -90,7 +95,7 @@ public class DeepLearningModelData implements JIPipeData {
     }
 
     public static DeepLearningModelData importFrom(Path storagePath) {
-        return new DeepLearningModelData(storagePath.resolve("model.hdf5"), storagePath.resolve("model-config.json"));
+        return new DeepLearningModelData(storagePath.resolve("model.hdf5"), storagePath.resolve("model-config.json"), storagePath.resolve("model.json"));
     }
 
     @Override

@@ -1,0 +1,5 @@
+{
+  "cpus": "all",
+  "gpus": "all",
+  "log-device-placement": true
+}

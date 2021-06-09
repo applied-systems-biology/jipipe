@@ -19,7 +19,6 @@ Script to create a SegNet model
 
 import os
 
-os.environ["CUDA_DEVICE_ORDER"] = "PCI_BUS_ID"
 
 from keras import layers, models
 
@@ -27,9 +26,6 @@ from keras import layers, models
 from dltoolbox.models.metrics import *
 
 
-#############################################################
-#                           SegNet                          #
-#############################################################
 def build_model(config):
     """
     Builds a SegNet model
@@ -45,6 +41,7 @@ def build_model(config):
     reg_method_rate = config['regularization_lambda']
     nClasses = config['n_classes']
     model_path = config['output_model_path']
+    model_json_path = config["output_model_json_path"]
 
     def conv_block(input_tensor, num_filters, kernel_size=7, reg_method='GaussianDropout'):
 
@@ -111,23 +108,14 @@ def build_model(config):
         encoder0_pool, encoder0 = encoder_block(inputs_reg, 16)
 
     encoder1_pool, encoder1 = encoder_block(encoder0_pool, 32)
-
     encoder2_pool, encoder2 = encoder_block(encoder1_pool, 64)
-
     encoder3_pool, encoder3 = encoder_block(encoder2_pool, 128)
-
     encoder4_pool, encoder4 = encoder_block(encoder3_pool, 256)
-
     center = conv_block(encoder4_pool, 512)
-
     decoder4 = decoder_block(center, encoder4, 256)
-
     decoder3 = decoder_block(decoder4, encoder3, 128)
-
     decoder2 = decoder_block(decoder3, encoder2, 64)
-
     decoder1 = decoder_block(decoder2, encoder1, 32)
-
     decoder0 = decoder_block(decoder1, encoder0, 16)
 
     # if labels only have 2 dimension, remove the last one, e.g.: (256,256,1) => (256,256)
@@ -156,5 +144,11 @@ def build_model(config):
     if model_path:
         model.save(model_path)
         print('save model to:', model_path)
+
+    if model_json_path:
+        model_json = model.to_json()
+        with open(model_json_path, "w") as f:
+            f.write(model_json)
+        print('saved model JSON to:', model_json_path)
 
     return model

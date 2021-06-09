@@ -1,6 +1,7 @@
 {
   "architecture": "SegNet",
   "output_model_path": "untrained-model.hdf5",
+  "output_model_json_path": "untrained-model.json",
   "regularization_method": "GaussianDropout",
   "regularization_lambda": 0.1,
   "img_size": 256,

@@ -120,6 +120,40 @@ set `model_input_path` inside the training config to always override this.
 python -m dltoolbox --operation train --model-config examples/model-SegNet-Segmentation.json --config examples/training-SegNet.json
 ```
 
+#### Device configuration
+
+The CLI provides a configuration tool to determine which devices (GPU/CPU) should be available to Tensorflow. 
+This configuration is supplied via the `device-config` parameter and contains following items:
+
+```json 
+{
+  "cpus": "all",
+  "gpus": "all",
+  "log-device-placement": true
+}
+```
+
+* `cpus` sets the list of CPUs made available to tensorflow. It can be `all` (default) or a list of numeric IDs
+* `gpus` sets the list of GPUs made available to tensorflow. It can be `all` (default) or a list of numeric IDs
+* `log-device-placement` allows you to enable or disable printing information on which hardware workloads are executed
+
+To list all devices and their numeric IDs, you can use following CLI commands:
+
+```bash 
+# List all CPUs and GPUs
+python -m dltoolbox --operation list-devices
+```
+
+These methods will print the number of available devices and each device in a separate line, starting with the numeric ID.
+If you want to process the device list in a script, you can also output them as JSON:
+
+```bash 
+# List all CPUs and GPUs
+python -m dltoolbox --operation list-devices-json
+```
+
+If you do not supply a device configuration, all CPUs and all GPUs will be made visible to Tensorflow. 
+
 ### Library
 
 #### Creating and training a model
@@ -127,6 +161,7 @@ python -m dltoolbox --operation train --model-config examples/model-SegNet-Segme
 ```python 
 from dltoolbox.models import build_model
 from dltoolbox.training import train_model
+from dltoolbox.utils import setup_devices
 import json
 
 # Load configurations
@@ -134,6 +169,9 @@ with open("examples/model-SegNet-Segmentation.json", "r") as f:
    model_config = json.load(f)
 with open("examples/train-SegNet.json", "r") as f:
    training_config = json.load(f)
+   
+# Configure the devices
+setup_devices() # = Empty config = All CPUs, All GPUs
 
 # You can disable the saving of models by setting the output paths to empty
 model_config["model_output_path"] = ""

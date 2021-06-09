@@ -1,5 +1,6 @@
 {
   "output_model_path": "trained-model.hdf5",
+  "output_model_json_path": "trained-model.json",
   "input_dir": "raw/*.tif",
   "label_dir": "labels/*.tif",
   "max_epochs": 1000,

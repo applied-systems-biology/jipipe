@@ -37,6 +37,7 @@ public class DeepLearningModelConfiguration implements JIPipeParameterCollection
     private int imageSize = 256;
     private int numClasses = 2;
     private Path outputModelPath = Paths.get("");
+    private Path outputModelJsonPath = Paths.get("");
 
     public DeepLearningModelConfiguration() {
     }
@@ -48,6 +49,7 @@ public class DeepLearningModelConfiguration implements JIPipeParameterCollection
         this.imageSize = other.imageSize;
         this.numClasses = other.numClasses;
         this.outputModelPath = other.outputModelPath;
+        this.outputModelJsonPath = other.outputModelJsonPath;
     }
 
     @Override
@@ -128,5 +130,15 @@ public class DeepLearningModelConfiguration implements JIPipeParameterCollection
     @JsonSetter("output_model_path")
     public void setOutputModelPath(Path outputModelPath) {
         this.outputModelPath = outputModelPath;
+    }
+
+    @JsonGetter("output_model_json_path")
+    public Path getOutputModelJsonPath() {
+        return outputModelJsonPath;
+    }
+
+    @JsonSetter("output_model_json_path")
+    public void setOutputModelJsonPath(Path outputModelJsonPath) {
+        this.outputModelJsonPath = outputModelJsonPath;
     }
 }

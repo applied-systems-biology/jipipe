@@ -17,18 +17,11 @@ Adolf-Reichwein-Straße 23, 07745 Jena, Germany
 Script to create a VGG16 model
 """
 
-import os
-
-os.environ["CUDA_DEVICE_ORDER"] = "PCI_BUS_ID"
-
 from keras import layers
 from keras import models
 from keras import optimizers
 
 
-#############################################################
-#                           VGG16                           #
-#############################################################
 def build_model(config):
     """
     Creates a VGG16 model
@@ -42,6 +35,7 @@ def build_model(config):
     img_shape = config['img_size']
     num_classes = config['n_classes']
     model_path = config['output_model_path']
+    model_json_path = config["output_model_json_path"]
 
     def secondConvBlock(input_tensor, num_filters):
         sec_conv = layers.Conv2D(num_filters, (3, 3), padding='same')(input_tensor)
@@ -95,5 +89,11 @@ def build_model(config):
     if model_path:
         model.save(model_path)
         print('save model to:', model_path)
+
+    if model_json_path:
+        model_json = model.to_json()
+        with open(model_json_path, "w") as f:
+            f.write(model_json)
+        print('saved model JSON to:', model_json_path)
 
     return model

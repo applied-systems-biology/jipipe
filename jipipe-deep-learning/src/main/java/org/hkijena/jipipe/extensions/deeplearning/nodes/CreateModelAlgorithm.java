@@ -74,9 +74,11 @@ public class CreateModelAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         DeepLearningModelConfiguration modelConfiguration = new DeepLearningModelConfiguration(this.modelConfiguration);
         Path modelConfigurationPath = workDirectory.resolve("model-configuration.json");
         Path modelPath = workDirectory.resolve("model.hdf5");
+        Path modelJsonPath = workDirectory.resolve("model.json");
 
         // Configure
         modelConfiguration.setOutputModelPath(modelPath);
+        modelConfiguration.setOutputModelJsonPath(modelJsonPath);
 
         // Save the config
         try {
@@ -100,7 +102,7 @@ public class CreateModelAlgorithm extends JIPipeSimpleIteratingAlgorithm {
                 DeepLearningSettings.getInstance().getPythonEnvironment(),
                 Collections.singletonList(DeepLearningSettings.getInstance().getDeepLearningToolkit().getLibraryDirectory().toAbsolutePath()), progressInfo);
 
-        DeepLearningModelData modelData = new DeepLearningModelData(modelPath, modelConfigurationPath);
+        DeepLearningModelData modelData = new DeepLearningModelData(modelPath, modelConfigurationPath, modelJsonPath);
         dataBatch.addOutputData(getFirstOutputSlot(), modelData, progressInfo);
 
         if (cleanUpAfterwards) {

@@ -29,6 +29,7 @@ public class DeepLearningTrainingConfiguration implements JIPipeParameterCollect
     private final EventBus eventBus = new EventBus();
     private Path inputModelPath = Paths.get("");
     private Path outputModelPath = Paths.get("");
+    private Path outputModelJsonPath = Paths.get("");
     private String inputImagesPattern = "raw/*.tif";
     private String inputLabelsPattern = "labels/*.tif";
     private int maxEpochs = 1000;
@@ -44,6 +45,7 @@ public class DeepLearningTrainingConfiguration implements JIPipeParameterCollect
     public DeepLearningTrainingConfiguration(DeepLearningTrainingConfiguration other) {
         this.inputModelPath = other.inputModelPath;
         this.outputModelPath = other.outputModelPath;
+        this.outputModelJsonPath = other.outputModelJsonPath;
         this.inputImagesPattern = other.inputImagesPattern;
         this.inputLabelsPattern = other.inputLabelsPattern;
         this.maxEpochs = other.maxEpochs;
@@ -176,5 +178,15 @@ public class DeepLearningTrainingConfiguration implements JIPipeParameterCollect
     @JsonSetter("augmentation_factor")
     public void setAugmentationFactor(int augmentationFactor) {
         this.augmentationFactor = augmentationFactor;
+    }
+
+    @JsonGetter("output_model_json_path")
+    public Path getOutputModelJsonPath() {
+        return outputModelJsonPath;
+    }
+
+    @JsonSetter("output_model_json_path")
+    public void setOutputModelJsonPath(Path outputModelJsonPath) {
+        this.outputModelJsonPath = outputModelJsonPath;
     }
 }

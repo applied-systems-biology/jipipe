@@ -106,6 +106,7 @@ public class TrainModelAlgorithm extends JIPipeMergingAlgorithm {
             DeepLearningTrainingConfiguration trainingConfiguration = new DeepLearningTrainingConfiguration(this.trainingConfiguration);
             trainingConfiguration.setInputModelPath(workDirectory.resolve("model.hdf5"));
             trainingConfiguration.setOutputModelPath(workDirectory.resolve("trained_model.hdf5"));
+            trainingConfiguration.setOutputModelJsonPath(workDirectory.resolve("trained_model.json"));
             trainingConfiguration.setInputImagesPattern(rawsDirectory + "/*.tif");
             trainingConfiguration.setInputLabelsPattern(labelsDirectory + "/*.tif");
             try {
@@ -131,7 +132,9 @@ public class TrainModelAlgorithm extends JIPipeMergingAlgorithm {
                             DeepLearningSettings.getInstance().getPythonEnvironment(),
                     Collections.singletonList(DeepLearningSettings.getInstance().getDeepLearningToolkit().getLibraryDirectory().toAbsolutePath()), modelProgress);
 
-            DeepLearningModelData modelData = new DeepLearningModelData(workDirectory.resolve("trained_model.hdf5"), workDirectory.resolve("model-config.json"));
+            DeepLearningModelData modelData = new DeepLearningModelData(workDirectory.resolve("trained_model.hdf5"),
+                    workDirectory.resolve("model-config.json"),
+                    workDirectory.resolve("trained_model.json"));
             dataBatch.addOutputData(getFirstOutputSlot(), modelData, modelProgress);
 
             if (cleanUpAfterwards) {
