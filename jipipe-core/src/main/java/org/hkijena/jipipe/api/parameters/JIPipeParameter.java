@@ -36,16 +36,6 @@ public @interface JIPipeParameter {
     String value();
 
     /**
-     * Sets if the parameter is visible to the user or only exported into JSON
-     * Lower visibilities override higher visibilities.
-     * If used as visibility for a sub-parameter collection, this property determined a minimum visibility the
-     * sub-parameters must have to be shown in the UI.
-     *
-     * @return Parameter visibility
-     */
-    JIPipeParameterVisibility visibility() default JIPipeParameterVisibility.TransitiveVisible;
-
-    /**
      * Sets the priority for (de)serializing this parameter.
      * Please use the priority constants provided by {@link Priority}
      *
@@ -69,13 +59,6 @@ public @interface JIPipeParameter {
     int uiOrder() default 0;
 
     /**
-     * Controls which sub-sub-parameters will not be shown in the UI
-     *
-     * @return array of sub-sub-parameter keys
-     */
-    String[] uiExcludeSubParameters() default {};
-
-    /**
      * Controls how the parameter is serialized/deserialized
      *
      * @return the serialization behavior
@@ -88,6 +71,13 @@ public @interface JIPipeParameter {
      * @return if a sub-parameter is collapsed
      */
     boolean collapsed() default false;
+
+    /**
+     * Allows to hide the parameter by default (Can be overridden within the parameter collection=
+     * )
+     * @return if the parameter or sub-parameter is hidden by default
+     */
+    boolean hidden() default false;
 
     /**
      * The icon resource URL (optional). Only used if this a is sub-parameter

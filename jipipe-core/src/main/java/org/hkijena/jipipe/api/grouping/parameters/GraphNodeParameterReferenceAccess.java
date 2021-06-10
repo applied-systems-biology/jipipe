@@ -64,8 +64,8 @@ public class GraphNodeParameterReferenceAccess implements JIPipeParameterAccess 
     }
 
     @Override
-    public JIPipeParameterVisibility getVisibility() {
-        return target.getVisibility();
+    public boolean isHidden() {
+        return target.isHidden();
     }
 
     @Override

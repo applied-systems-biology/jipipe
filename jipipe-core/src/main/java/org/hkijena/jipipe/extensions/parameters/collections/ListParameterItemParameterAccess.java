@@ -15,7 +15,6 @@ package org.hkijena.jipipe.extensions.parameters.collections;
 
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
-import org.hkijena.jipipe.api.parameters.JIPipeParameterVisibility;
 import org.scijava.Priority;
 
 import java.lang.annotation.Annotation;
@@ -62,8 +61,8 @@ public class ListParameterItemParameterAccess<T> implements JIPipeParameterAcces
     }
 
     @Override
-    public JIPipeParameterVisibility getVisibility() {
-        return parent.getVisibility();
+    public boolean isHidden() {
+        return false;
     }
 
     @Override

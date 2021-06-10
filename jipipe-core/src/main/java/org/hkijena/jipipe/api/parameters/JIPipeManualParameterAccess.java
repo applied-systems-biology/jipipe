@@ -33,7 +33,7 @@ public class JIPipeManualParameterAccess implements JIPipeParameterAccess {
     private String key;
     private String name;
     private String description;
-    private JIPipeParameterVisibility visibility = JIPipeParameterVisibility.TransitiveVisible;
+    private boolean hidden;
     private Map<Class<? extends Annotation>, Annotation> annotations = new HashMap<>();
     private Function<Class<? extends Annotation>, Annotation> annotationSupplier;
     private Class<?> fieldClass;
@@ -73,8 +73,8 @@ public class JIPipeManualParameterAccess implements JIPipeParameterAccess {
     }
 
     @Override
-    public JIPipeParameterVisibility getVisibility() {
-        return visibility;
+    public boolean isHidden() {
+        return hidden;
     }
 
     @Override
@@ -217,11 +217,11 @@ public class JIPipeManualParameterAccess implements JIPipeParameterAccess {
         /**
          * Sets the visibility
          *
-         * @param visibility the visibility
+         * @param hidden the visibility
          * @return this
          */
-        public Builder setVisibility(JIPipeParameterVisibility visibility) {
-            access.visibility = visibility;
+        public Builder setHidden(boolean hidden) {
+            access.hidden = hidden;
             return this;
         }
 

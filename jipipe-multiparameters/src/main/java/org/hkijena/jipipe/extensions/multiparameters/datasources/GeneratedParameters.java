@@ -54,10 +54,8 @@ public class GeneratedParameters extends JIPipeDynamicParameterCollection {
                 importParameter(node, (JIPipeParameterAccess) importedParameter);
             } else if (importedParameter instanceof JIPipeParameterTree.Node) {
                 for (JIPipeParameterAccess access : ((JIPipeParameterTree.Node) importedParameter).getParameters().values()) {
-                    if (access.getVisibility().isVisibleIn(JIPipeParameterVisibility.TransitiveVisible)) {
-                        JIPipeParameterTree.Node node = globalTree.getSourceNode(access.getSource());
-                        importParameter(node, access);
-                    }
+                    JIPipeParameterTree.Node node = globalTree.getSourceNode(access.getSource());
+                    importParameter(node, access);
                 }
             }
         }

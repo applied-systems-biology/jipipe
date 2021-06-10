@@ -28,7 +28,7 @@ import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
-import org.hkijena.jipipe.api.parameters.JIPipeParameterVisibility;
+import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.extensions.parameters.primitives.OptionalAnnotationNameParameter;
@@ -195,15 +195,16 @@ public class TileImageAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     }
 
     @JIPipeDocumentation(name = "Scaling", description = "The following settings determine how the image is scaled if it is not perfectly tileable.")
-    @JIPipeParameter(value = "scale-algorithm", uiExcludeSubParameters = {"jipipe:data-batch-generation", "jipipe:parameter-slot-algorithm", "jipipe:adaptive-parameters"})
+    @JIPipeParameter(value = "scale-algorithm")
     public TransformScale2DAlgorithm getScale2DAlgorithm() {
         return scale2DAlgorithm;
     }
 
     @Override
-    public JIPipeParameterVisibility getOverriddenUIParameterVisibility(JIPipeParameterAccess access, JIPipeParameterVisibility currentVisibility) {
-        if (access.getSource() == scale2DAlgorithm && access.getKey().contains("axis"))
-            return JIPipeParameterVisibility.Hidden;
-        return super.getOverriddenUIParameterVisibility(access, currentVisibility);
+    public boolean isParameterUIVisible(JIPipeParameterTree tree, JIPipeParameterAccess access) {
+        if("axis".equals(access.getKey()) && access.getSource() == getScale2DAlgorithm()) {
+            return false;
+        }
+        return super.isParameterUIVisible(tree, access);
     }
 }

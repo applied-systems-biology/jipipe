@@ -7,11 +7,11 @@ import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.TableNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeContextAction;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
-import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.extensions.expressions.ExpressionParameters;
 import org.hkijena.jipipe.extensions.expressions.StringQueryExpression;
 import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
+import org.hkijena.jipipe.utils.ParameterUtils;
 import org.hkijena.jipipe.utils.ResourceUtils;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
@@ -73,7 +73,7 @@ public class ModifyTableColumnNamesAlgorithm extends JIPipeSimpleIteratingAlgori
     @JIPipeContextAction(iconURL = ResourceUtils.RESOURCE_BASE_PATH + "/icons/actions/graduation-cap.png", iconDarkURL = ResourceUtils.RESOURCE_BASE_PATH + "/dark/icons/actions/graduation-cap.png")
     public void setToExample(JIPipeWorkbench parent) {
         if (UIUtils.confirmResetParameters(parent, "Load example")) {
-            JIPipeParameterCollection.setParameter(this, "expression", new StringQueryExpression("\"PrependedText.\" + value"));
+            ParameterUtils.setParameter(this, "expression", new StringQueryExpression("\"PrependedText.\" + value"));
         }
     }
 }

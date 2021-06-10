@@ -118,15 +118,13 @@ public class JIPipeAlgorithmCompendiumUI extends JIPipeCompendiumUI<JIPipeNodeIn
                 .sorted(Comparator.nullsFirst(Comparator.comparing(traversed::getSourceDocumentationName))).collect(Collectors.toList())) {
             if (subParameters == algorithm)
                 continue;
-            JIPipeParameterVisibility sourceVisibility = traversed.getSourceVisibility(subParameters);
             builder.append("## ").append(traversed.getSourceDocumentationName(subParameters)).append("\n\n");
             JIPipeDocumentation documentation = traversed.getSourceDocumentation(subParameters);
             if (documentation != null) {
                 builder.append(documentation.description()).append("\n\n");
             }
             for (JIPipeParameterAccess parameterAccess : groupedBySource.get(subParameters)) {
-                JIPipeParameterVisibility visibility = parameterAccess.getVisibility();
-                if (!visibility.isVisibleIn(sourceVisibility))
+                if(!algorithm.isParameterUIVisible(traversed, parameterAccess))
                     continue;
                 generateParameterDocumentation(parameterAccess, builder);
                 builder.append("\n\n");

@@ -39,6 +39,7 @@ import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.components.DocumentTabPane;
 import org.hkijena.jipipe.ui.plotbuilder.JIPipePlotBuilderUI;
 import org.hkijena.jipipe.utils.JsonUtils;
+import org.hkijena.jipipe.utils.ParameterUtils;
 import org.hkijena.jipipe.utils.PathUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.jfree.chart.ChartUtils;
@@ -118,7 +119,7 @@ public abstract class PlotData implements JIPipeData, JIPipeParameterCollection,
         try {
             JsonNode node = JsonUtils.getObjectMapper().readerFor(JsonNode.class).readValue(storageFilePath.resolve("plot-metadata.json").toFile());
             PlotData plotData = JsonUtils.getObjectMapper().readerFor(klass).readValue(node);
-            JIPipeParameterCollection.deserializeParametersFromJson(plotData, node, new JIPipeValidityReport());
+            ParameterUtils.deserializeParametersFromJson(plotData, node, new JIPipeValidityReport());
             List<Path> seriesFiles = PathUtils.findFilesByExtensionIn(storageFilePath, ".csv").stream()
                     .filter(p -> p.getFileName().toString().matches("series\\d+.csv")).sorted(Comparator.comparing(p -> p.getFileName().toString())).collect(Collectors.toList());
             for (Path seriesFile : seriesFiles) {
@@ -430,7 +431,7 @@ public abstract class PlotData implements JIPipeData, JIPipeParameterCollection,
      * @param node JSON node
      */
     public void fromJson(JsonNode node) {
-        JIPipeParameterCollection.deserializeParametersFromJson(this, node, new JIPipeValidityReport());
+        ParameterUtils.deserializeParametersFromJson(this, node, new JIPipeValidityReport());
     }
 
     /**
@@ -443,7 +444,7 @@ public abstract class PlotData implements JIPipeData, JIPipeParameterCollection,
             gen.writeStringField("plot-data-type", JIPipe.getDataTypes().getIdOf(value.getClass()));
 
             // Write parameters
-            JIPipeParameterCollection.serializeParametersToJson(value, gen);
+            ParameterUtils.serializeParametersToJson(value, gen);
 
             // Write series mapping
             gen.writeFieldName("plot-series");

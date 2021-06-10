@@ -20,7 +20,6 @@ import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
-import org.hkijena.jipipe.api.parameters.JIPipeParameterVisibility;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.JIPipeWorkbenchPanel;
 import org.hkijena.jipipe.ui.components.FormPanel;
@@ -102,7 +101,7 @@ public class GraphNodeParametersUI extends JIPipeWorkbenchPanel {
 
                 JIPipeParameterTree.Node node = tree.getSourceNode(top);
                 for (JIPipeParameterAccess parameter : node.getParameters().values()) {
-                    if (parameter.getVisibility().isVisibleIn(JIPipeParameterVisibility.TransitiveVisible)) {
+                    if (algorithm.isParameterUIVisible(tree, parameter)) {
                         GraphNodeParameterReference reference = new GraphNodeParameterReference(parameter, tree);
                         group.addContent(reference);
                     }

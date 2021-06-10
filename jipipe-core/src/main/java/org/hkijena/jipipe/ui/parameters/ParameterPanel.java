@@ -165,13 +165,13 @@ public class ParameterPanel extends FormPanel implements Contextual {
         return keys.stream().sorted(Comparator.comparing(k0 -> parameters.get(k0).getName())).collect(Collectors.toList());
     }
 
-    public static MarkdownDocument generateParameterDocumentation(JIPipeParameterAccess access) {
+    public static MarkdownDocument generateParameterDocumentation(JIPipeParameterAccess access, JIPipeParameterTree tree) {
         StringBuilder markdownString = new StringBuilder();
         markdownString.append("# ").append(access.getName()).append("\n\n");
         markdownString.append("<table><tr>");
         markdownString.append("<td><img src=\"").append(ResourceUtils.getPluginResource("icons/actions/dialog-xml-editor.png")).append("\" /></td>");
         markdownString.append("<td><strong>Unique identifier</strong>: <code>");
-        markdownString.append(HtmlEscapers.htmlEscaper().escape(access.getKey())).append("</code></td></tr>\n\n");
+        markdownString.append(HtmlEscapers.htmlEscaper().escape(tree != null ? tree.getUniqueKey(access) : access.getKey())).append("</code></td></tr>\n\n");
 
         JIPipeParameterTypeInfo info = JIPipe.getParameterTypes().getInfoByFieldClass(access.getFieldClass());
         if (info != null) {
@@ -224,27 +224,22 @@ public class ParameterPanel extends FormPanel implements Contextual {
         Set<JIPipeParameterCollection> hiddenCollections = new HashSet<>();
         Set<JIPipeParameterAccess> hiddenAccesses = new HashSet<>();
 
+        JIPipeParameterCollection rootCollection = traversed.getRoot().getCollection();
+
         for (JIPipeParameterCollection source : traversed.getRegisteredSources()) {
+
             JIPipeParameterTree.Node sourceNode = traversed.getSourceNode(source);
 
-            // UI exclusion annotation
-            for (String subParameterId : sourceNode.getUiExcludedSubParameters()) {
-                JIPipeParameterTree.Node subParameterNode = sourceNode.getChildren().getOrDefault(subParameterId, null);
-                if (subParameterNode != null) {
-                    hiddenCollections.add(subParameterNode.getCollection());
-                }
+            // Hidden parameter groups
+            if(rootCollection != null && rootCollection != source && !rootCollection.isParameterUIVisible(traversed, source)) {
+                hiddenCollections.add(source);
             }
 
             // Visibility check
             int parameterCount = sourceNode.getParameters().size();
-            JIPipeParameterVisibility sourceVisibility = sourceNode.getVisibility();
             for (JIPipeParameterAccess parameterAccess : sourceNode.getParameters().values()) {
-                JIPipeParameterVisibility visibility = parameterAccess.getVisibility();
-
-                visibility = parameterAccess.getSource().getOverriddenUIParameterVisibility(parameterAccess, visibility);
-                visibility = displayedParameters.getOverriddenUIParameterVisibility(parameterAccess, visibility);
-
-                if (!visibility.isVisibleIn(sourceVisibility)) {
+                boolean visible = (rootCollection != null ? rootCollection.isParameterUIVisible(traversed, parameterAccess) : !parameterAccess.isHidden());
+                if (!visible) {
                     hiddenAccesses.add(parameterAccess);
                     --parameterCount;
                 }
@@ -386,10 +381,10 @@ public class ParameterPanel extends FormPanel implements Contextual {
             }
 
             if (ui.isUILabelEnabled() || parameterHolder instanceof JIPipeDynamicParameterCollection) {
-                addToForm(ui, labelPanel, generateParameterDocumentation(parameterAccess));
+                addToForm(ui, labelPanel, generateParameterDocumentation(parameterAccess, traversed));
                 uiComponents.add(labelPanel);
             } else
-                addToForm(ui, generateParameterDocumentation(parameterAccess));
+                addToForm(ui, generateParameterDocumentation(parameterAccess, traversed));
         }
 
         if (allowCollapse) {

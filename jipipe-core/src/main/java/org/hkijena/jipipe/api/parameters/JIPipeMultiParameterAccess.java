@@ -35,8 +35,8 @@ public class JIPipeMultiParameterAccess implements JIPipeParameterAccess {
     }
 
     @Override
-    public JIPipeParameterVisibility getVisibility() {
-        return getFirstAccess().getVisibility();
+    public boolean isHidden() {
+        return getFirstAccess().isHidden();
     }
 
     @Override

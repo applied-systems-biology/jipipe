@@ -13,13 +13,13 @@ import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeContextAction;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
-import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.extensions.expressions.*;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageSliceIndices;
 import org.hkijena.jipipe.extensions.parameters.primitives.OptionalAnnotationNameParameter;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
+import org.hkijena.jipipe.utils.ParameterUtils;
 import org.hkijena.jipipe.utils.ResourceUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 
@@ -352,12 +352,12 @@ public class ExpressionSlicerAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         }
 
         public void apply(ExpressionSlicerAlgorithm algorithm) {
-            JIPipeParameterCollection.setParameter(algorithm, "expression-z", new DefaultExpressionParameter(expressionZ));
-            JIPipeParameterCollection.setParameter(algorithm, "expression-c", new DefaultExpressionParameter(expressionC));
-            JIPipeParameterCollection.setParameter(algorithm, "expression-t", new DefaultExpressionParameter(expressionT));
-            JIPipeParameterCollection.setParameter(algorithm, "iterate-per-z", iterateZ);
-            JIPipeParameterCollection.setParameter(algorithm, "iterate-per-c", iterateC);
-            JIPipeParameterCollection.setParameter(algorithm, "iterate-per-t", iterateT);
+            ParameterUtils.setParameter(algorithm, "expression-z", new DefaultExpressionParameter(expressionZ));
+            ParameterUtils.setParameter(algorithm, "expression-c", new DefaultExpressionParameter(expressionC));
+            ParameterUtils.setParameter(algorithm, "expression-t", new DefaultExpressionParameter(expressionT));
+            ParameterUtils.setParameter(algorithm, "iterate-per-z", iterateZ);
+            ParameterUtils.setParameter(algorithm, "iterate-per-c", iterateC);
+            ParameterUtils.setParameter(algorithm, "iterate-per-t", iterateT);
         }
 
         @Override

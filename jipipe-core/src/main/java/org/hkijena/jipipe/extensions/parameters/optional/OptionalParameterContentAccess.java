@@ -15,7 +15,6 @@ package org.hkijena.jipipe.extensions.parameters.optional;
 
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
-import org.hkijena.jipipe.api.parameters.JIPipeParameterVisibility;
 import org.hkijena.jipipe.extensions.parameters.pairs.PairParameter;
 
 import java.lang.annotation.Annotation;
@@ -58,8 +57,8 @@ public class OptionalParameterContentAccess<T> implements JIPipeParameterAccess 
     }
 
     @Override
-    public JIPipeParameterVisibility getVisibility() {
-        return JIPipeParameterVisibility.TransitiveVisible;
+    public boolean isHidden() {
+        return false;
     }
 
     @Override

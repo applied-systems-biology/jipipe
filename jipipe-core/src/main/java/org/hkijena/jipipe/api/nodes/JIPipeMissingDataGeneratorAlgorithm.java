@@ -13,7 +13,6 @@
 
 package org.hkijena.jipipe.api.nodes;
 
-import com.google.common.eventbus.EventBus;
 import gnu.trove.set.TIntSet;
 import gnu.trove.set.hash.TIntHashSet;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
@@ -21,13 +20,11 @@ import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.*;
 import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
+import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
-import org.hkijena.jipipe.api.parameters.JIPipeParameterVisibility;
-import org.hkijena.jipipe.extensions.expressions.StringQueryExpression;
+import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
 import org.hkijena.jipipe.extensions.parameters.generators.IntegerRange;
-import org.hkijena.jipipe.extensions.parameters.generators.OptionalIntegerRange;
-import org.hkijena.jipipe.extensions.parameters.primitives.StringParameterSettings;
-import org.hkijena.jipipe.utils.ResourceUtils;
+import org.hkijena.jipipe.utils.ParameterUtils;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -48,7 +45,7 @@ public abstract class JIPipeMissingDataGeneratorAlgorithm extends JIPipeParamete
             "If items are missing, they will be generated according to this node's generator function. " +
             "Otherwise data will be passed through.";
 
-    private DataBatchGenerationSettings dataBatchGenerationSettings = new DataBatchGenerationSettings();
+    private JIPipeMissingDataGeneratorDataBatchGenerationSettings dataBatchGenerationSettings = new JIPipeMissingDataGeneratorDataBatchGenerationSettings();
     private boolean parallelizationEnabled = true;
     private boolean keepOriginalAnnotations = true;
 
@@ -79,7 +76,7 @@ public abstract class JIPipeMissingDataGeneratorAlgorithm extends JIPipeParamete
      */
     public JIPipeMissingDataGeneratorAlgorithm(JIPipeMissingDataGeneratorAlgorithm other) {
         super(other);
-        this.dataBatchGenerationSettings = new DataBatchGenerationSettings(other.dataBatchGenerationSettings);
+        this.dataBatchGenerationSettings = new JIPipeMissingDataGeneratorDataBatchGenerationSettings(other.dataBatchGenerationSettings);
         this.parallelizationEnabled = other.parallelizationEnabled;
         this.keepOriginalAnnotations = other.keepOriginalAnnotations;
         registerSubParameter(dataBatchGenerationSettings);
@@ -94,11 +91,11 @@ public abstract class JIPipeMissingDataGeneratorAlgorithm extends JIPipeParamete
     public List<JIPipeMergingDataBatch> generateDataBatchesDryRun(List<JIPipeDataSlot> slots) {
         JIPipeMergingDataBatchBuilder builder = new JIPipeMergingDataBatchBuilder();
         builder.setNode(this);
-        builder.setApplyMerging(dataBatchGenerationSettings.allowMerging);
+        builder.setApplyMerging(dataBatchGenerationSettings.isAllowMerging());
         builder.setSlots(slots);
-        builder.setAnnotationMergeStrategy(dataBatchGenerationSettings.annotationMergeStrategy);
-        builder.setReferenceColumns(dataBatchGenerationSettings.dataSetMatching,
-                dataBatchGenerationSettings.customColumns);
+        builder.setAnnotationMergeStrategy(dataBatchGenerationSettings.getAnnotationMergeStrategy());
+        builder.setReferenceColumns(dataBatchGenerationSettings.getDataSetMatching(),
+                dataBatchGenerationSettings.getCustomColumns());
         List<JIPipeMergingDataBatch> dataBatches = builder.build();
         dataBatches.sort(Comparator.naturalOrder());
         boolean withLimit = dataBatchGenerationSettings.getLimit().isEnabled();
@@ -137,8 +134,8 @@ public abstract class JIPipeMissingDataGeneratorAlgorithm extends JIPipeParamete
                     break;
                 JIPipeMergingDataBatch dataBatch = new JIPipeMergingDataBatch(this);
                 dataBatch.setData(getFirstInputSlot(), row);
-                dataBatch.addGlobalAnnotations(parameterAnnotations, dataBatchGenerationSettings.annotationMergeStrategy);
-                dataBatch.addGlobalAnnotations(getFirstInputSlot().getAnnotations(row), dataBatchGenerationSettings.annotationMergeStrategy);
+                dataBatch.addGlobalAnnotations(parameterAnnotations, dataBatchGenerationSettings.getAnnotationMergeStrategy());
+                dataBatch.addGlobalAnnotations(getFirstInputSlot().getAnnotations(row), dataBatchGenerationSettings.getAnnotationMergeStrategy());
                 dataBatches.add(dataBatch);
             }
         } else {
@@ -185,10 +182,18 @@ public abstract class JIPipeMissingDataGeneratorAlgorithm extends JIPipeParamete
         }
     }
 
+    @Override
+    public boolean isParameterUIVisible(JIPipeParameterTree tree, JIPipeParameterAccess access) {
+        if(ParameterUtils.isHiddenLocalParameter(tree, access, "jipipe:parallelization:enabled")) {
+            return false;
+        }
+        return super.isParameterUIVisible(tree, access);
+    }
+
     @JIPipeDocumentation(name = "Data batch generation", description = "This algorithm can have multiple inputs. This means that JIPipe has to match incoming data into batches via metadata annotations. " +
             "The following settings allow you to control which columns are used as reference to organize data.")
-    @JIPipeParameter(value = "jipipe:data-batch-generation", visibility = JIPipeParameterVisibility.Visible, collapsed = true)
-    public DataBatchGenerationSettings getDataBatchGenerationSettings() {
+    @JIPipeParameter(value = "jipipe:data-batch-generation", collapsed = true)
+    public JIPipeMissingDataGeneratorDataBatchGenerationSettings getDataBatchGenerationSettings() {
         return dataBatchGenerationSettings;
     }
 
@@ -205,7 +210,7 @@ public abstract class JIPipeMissingDataGeneratorAlgorithm extends JIPipeParamete
     @JIPipeDocumentation(name = "Enable parallelization", description = "If enabled, the workload can be calculated across multiple threads to for speedup. " +
             "Please note that the actual usage of multiple threads depend on the runtime settings and the algorithm implementation. " +
             "We recommend to use the runtime parameters to control parallelization in most cases.")
-    @JIPipeParameter(value = "jipipe:parallelization:enabled", visibility = JIPipeParameterVisibility.Visible)
+    @JIPipeParameter(value = "jipipe:parallelization:enabled")
     @Override
     public boolean isParallelizationEnabled() {
         return parallelizationEnabled;
@@ -284,96 +289,4 @@ public abstract class JIPipeMissingDataGeneratorAlgorithm extends JIPipeParamete
      */
     protected abstract void runGenerator(JIPipeMergingDataBatch dataBatch, JIPipeDataSlot inputSlot, JIPipeDataSlot outputSlot, JIPipeProgressInfo progressInfo);
 
-    /**
-     * Groups data batch generation settings
-     */
-    public static class DataBatchGenerationSettings implements JIPipeParameterCollection {
-        private final EventBus eventBus = new EventBus();
-        private JIPipeColumnGrouping dataSetMatching = JIPipeColumnGrouping.PrefixHashUnion;
-        private StringQueryExpression customColumns = new StringQueryExpression();
-        private OptionalIntegerRange limit = new OptionalIntegerRange(new IntegerRange("0-9"), false);
-        private boolean allowMerging = false;
-        private JIPipeAnnotationMergeStrategy annotationMergeStrategy = JIPipeAnnotationMergeStrategy.Merge;
-
-        public DataBatchGenerationSettings() {
-        }
-
-        public DataBatchGenerationSettings(DataBatchGenerationSettings other) {
-            this.dataSetMatching = other.dataSetMatching;
-            this.customColumns = new StringQueryExpression(other.customColumns);
-            this.limit = new OptionalIntegerRange(other.limit);
-            this.allowMerging = other.allowMerging;
-            this.annotationMergeStrategy = other.annotationMergeStrategy;
-        }
-
-        @Override
-        public EventBus getEventBus() {
-            return eventBus;
-        }
-
-        @JIPipeDocumentation(name = "Grouping method", description = "Algorithms with multiple inputs require to match the incoming data " +
-                "to data sets. This allows you to determine how interesting data annotation columns are extracted from the incoming data. " +
-                "Union matches using the union of annotation columns. Intersection intersects the sets of available columns. You can also" +
-                " customize which columns should be included or excluded.")
-        @JIPipeParameter(value = "column-matching", uiOrder = 999, visibility = JIPipeParameterVisibility.Visible)
-        public JIPipeColumnGrouping getDataSetMatching() {
-            return dataSetMatching;
-        }
-
-        @JIPipeParameter("column-matching")
-        public void setDataSetMatching(JIPipeColumnGrouping dataSetMatching) {
-            this.dataSetMatching = dataSetMatching;
-
-        }
-
-        @JIPipeDocumentation(name = "Custom grouping columns", description = "Only used if 'Grouping method' is set to 'Custom'. " +
-                "Determines which annotation columns are referred to group data sets. " + StringQueryExpression.DOCUMENTATION_DESCRIPTION)
-        @JIPipeParameter(value = "custom-matched-columns-expression", uiOrder = 999, visibility = JIPipeParameterVisibility.Visible)
-        @StringParameterSettings(monospace = true, icon = ResourceUtils.RESOURCE_BASE_PATH + "/icons/data-types/annotation.png")
-        public StringQueryExpression getCustomColumns() {
-            if (customColumns == null)
-                customColumns = new StringQueryExpression();
-            return customColumns;
-        }
-
-        @JIPipeParameter(value = "custom-matched-columns-expression", visibility = JIPipeParameterVisibility.Visible)
-        public void setCustomColumns(StringQueryExpression customColumns) {
-            this.customColumns = customColumns;
-        }
-
-        @JIPipeDocumentation(name = "Limit", description = "Limits which data batches are generated. The first index is zero.\n" + IntegerRange.DOCUMENTATION_DESCRIPTION)
-        @JIPipeParameter(value = "limit")
-        public OptionalIntegerRange getLimit() {
-            return limit;
-        }
-
-        @JIPipeParameter("limit")
-        public void setLimit(OptionalIntegerRange limit) {
-            this.limit = limit;
-        }
-
-        @JIPipeDocumentation(name = "Allow merging", description = "If enabled, there can be multiple rows per data batch for any slot. " +
-                "Otherwise, only one will be present at most.")
-        @JIPipeParameter("allow-merging")
-        public boolean isAllowMerging() {
-            return allowMerging;
-        }
-
-        @JIPipeParameter("allow-merging")
-        public void setAllowMerging(boolean allowMerging) {
-            this.allowMerging = allowMerging;
-        }
-
-        @JIPipeDocumentation(name = "Merge same annotation values", description = "Determines which strategy is applied if data sets that " +
-                "define different values for the same annotation columns are encountered.")
-        @JIPipeParameter("annotation-merge-strategy")
-        public JIPipeAnnotationMergeStrategy getAnnotationMergeStrategy() {
-            return annotationMergeStrategy;
-        }
-
-        @JIPipeParameter("annotation-merge-strategy")
-        public void setAnnotationMergeStrategy(JIPipeAnnotationMergeStrategy annotationMergeStrategy) {
-            this.annotationMergeStrategy = annotationMergeStrategy;
-        }
-    }
 }

@@ -44,7 +44,7 @@ public class GraphWrapperAlgorithm extends JIPipeAlgorithm implements JIPipeData
     private IOSlotWatcher ioSlotWatcher;
     private boolean preventUpdateSlots = false;
     private IterationMode iterationMode = IterationMode.PassThrough;
-    private JIPipeMergingAlgorithm.DataBatchGenerationSettings batchGenerationSettings = new JIPipeMergingAlgorithm.DataBatchGenerationSettings();
+    private JIPipeMergingAlgorithmDataBatchGenerationSettings batchGenerationSettings = new JIPipeMergingAlgorithmDataBatchGenerationSettings();
 
     /**
      * @param info         the info
@@ -63,7 +63,7 @@ public class GraphWrapperAlgorithm extends JIPipeAlgorithm implements JIPipeData
     public GraphWrapperAlgorithm(GraphWrapperAlgorithm other) {
         super(other);
         this.iterationMode = other.iterationMode;
-        this.batchGenerationSettings = new JIPipeMergingAlgorithm.DataBatchGenerationSettings(other.batchGenerationSettings);
+        this.batchGenerationSettings = new JIPipeMergingAlgorithmDataBatchGenerationSettings(other.batchGenerationSettings);
         setWrappedGraph(new JIPipeGraph(other.wrappedGraph));
     }
 
@@ -322,7 +322,7 @@ public class GraphWrapperAlgorithm extends JIPipeAlgorithm implements JIPipeData
         }
     }
 
-    public JIPipeMergingAlgorithm.DataBatchGenerationSettings getBatchGenerationSettings() {
+    public JIPipeMergingAlgorithmDataBatchGenerationSettings getBatchGenerationSettings() {
         return batchGenerationSettings;
     }
 

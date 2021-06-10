@@ -16,6 +16,7 @@ package org.hkijena.jipipe.ui.components;
 import com.google.common.eventbus.Subscribe;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.extensions.settings.GeneralDataSettings;
+import org.hkijena.jipipe.utils.ParameterUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
@@ -59,7 +60,7 @@ public class PreviewControlUI extends JPanel {
         if (selected != null) {
             int newSize = selected;
             if (newSize != current) {
-                JIPipeParameterCollection.setParameter(dataSettings, "preview-size", newSize);
+                ParameterUtils.setParameter(dataSettings, "preview-size", newSize);
             }
         }
     }
@@ -69,7 +70,7 @@ public class PreviewControlUI extends JPanel {
         int change = 10;
         int newSize = Math.max(40, current - change);
         if (newSize != current) {
-            JIPipeParameterCollection.setParameter(dataSettings, "preview-size", newSize);
+            ParameterUtils.setParameter(dataSettings, "preview-size", newSize);
         }
     }
 
@@ -78,7 +79,7 @@ public class PreviewControlUI extends JPanel {
         int change = 10;
         int newSize = current + change;
         if (newSize != current) {
-            JIPipeParameterCollection.setParameter(dataSettings, "preview-size", newSize);
+            ParameterUtils.setParameter(dataSettings, "preview-size", newSize);
         }
     }
 

@@ -43,7 +43,7 @@ public class JIPipeMutableParameterAccess implements JIPipeParameterAccess {
     private String key;
     private String name;
     private String description;
-    private JIPipeParameterVisibility visibility = JIPipeParameterVisibility.TransitiveVisible;
+    private boolean hidden;
     private Class<?> fieldClass;
     private Object value;
     private double priority = Priority.NORMAL;
@@ -68,7 +68,7 @@ public class JIPipeMutableParameterAccess implements JIPipeParameterAccess {
         this.key = other.getKey();
         this.name = other.getName();
         this.description = other.getDescription();
-        this.visibility = other.getVisibility();
+        this.hidden = other.isHidden();
         this.fieldClass = other.getFieldClass();
         this.persistence = other.getPersistence();
         this.uiOrder = other.getUIOrder();
@@ -102,7 +102,7 @@ public class JIPipeMutableParameterAccess implements JIPipeParameterAccess {
         this.key = other.key;
         this.name = other.name;
         this.description = other.description;
-        this.visibility = other.visibility;
+        this.hidden = other.hidden;
         this.fieldClass = other.fieldClass;
         this.value = other.value;
         this.priority = other.priority;
@@ -155,22 +155,15 @@ public class JIPipeMutableParameterAccess implements JIPipeParameterAccess {
         this.description = description;
     }
 
+    @JsonGetter("hidden")
     @Override
-    @JsonGetter("visibility")
-    public JIPipeParameterVisibility getVisibility() {
-        if (visibility == null)
-            return JIPipeParameterVisibility.TransitiveVisible;
-        return visibility;
+    public boolean isHidden() {
+        return hidden;
     }
 
-    /**
-     * Sets the visibility
-     *
-     * @param visibility The visibilities
-     */
-    @JsonSetter("visibility")
-    public void setVisibility(JIPipeParameterVisibility visibility) {
-        this.visibility = visibility;
+    @JsonSetter("hidden")
+    public void setHidden(boolean hidden) {
+        this.hidden = hidden;
     }
 
     @Override
@@ -308,8 +301,9 @@ public class JIPipeMutableParameterAccess implements JIPipeParameterAccess {
             JIPipeMutableParameterAccess result = new JIPipeMutableParameterAccess();
             result.setName(jsonNode.get("name").textValue());
             result.setDescription(jsonNode.get("description").textValue());
-            result.setVisibility(JsonUtils.getObjectMapper().readerFor(JIPipeParameterVisibility.class).readValue(jsonNode.get("visibility")));
             result.setFieldClassInfoId(jsonNode.get("field-class-id").textValue());
+            if(jsonNode.has("hidden"))
+                result.setHidden(jsonNode.get("hidden").asBoolean());
             if (jsonNode.has("value"))
                 result.set(JsonUtils.getObjectMapper().readerFor(result.getFieldClass()).readValue(jsonNode.get("value")));
             if (jsonNode.has("short-key"))

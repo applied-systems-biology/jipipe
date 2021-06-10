@@ -14,7 +14,6 @@ import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
-import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.extensions.cellpose.CellPosePretrainedModel;
 import org.hkijena.jipipe.extensions.cellpose.CellPoseSettings;
 import org.hkijena.jipipe.extensions.cellpose.datatypes.CellPoseModelData;
@@ -25,6 +24,7 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.extensions.python.OptionalPythonEnvironment;
 import org.hkijena.jipipe.extensions.python.PythonUtils;
 import org.hkijena.jipipe.extensions.settings.RuntimeSettings;
+import org.hkijena.jipipe.utils.ParameterUtils;
 import org.hkijena.jipipe.utils.PathUtils;
 
 import java.io.IOException;
@@ -263,12 +263,12 @@ public class CellPoseTrainingAlgorithm extends JIPipeMergingAlgorithm {
         switch (pretrainedModel) {
             case Cytoplasm:
                 if (diameter != 30) {
-                    JIPipeParameterCollection.setParameter(this, "diameter", 30.0);
+                    ParameterUtils.setParameter(this, "diameter", 30.0);
                 }
                 break;
             case Nucleus:
                 if (diameter != 17) {
-                    JIPipeParameterCollection.setParameter(this, "diameter", 17.0);
+                    ParameterUtils.setParameter(this, "diameter", 17.0);
                 }
                 break;
         }

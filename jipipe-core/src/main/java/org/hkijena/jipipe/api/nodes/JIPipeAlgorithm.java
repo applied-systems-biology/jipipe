@@ -25,9 +25,9 @@ import org.hkijena.jipipe.api.JIPipeValidityReport;
 import org.hkijena.jipipe.api.data.JIPipeSlotConfiguration;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
-import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
-import org.hkijena.jipipe.api.parameters.JIPipeParameterVisibility;
+import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
 import org.hkijena.jipipe.utils.JsonUtils;
+import org.hkijena.jipipe.utils.ParameterUtils;
 
 import java.io.IOException;
 import java.io.StringWriter;
@@ -135,7 +135,7 @@ public abstract class JIPipeAlgorithm extends JIPipeGraphNode {
 
     @JIPipeDocumentation(name = "Enabled", description = "If disabled, this algorithm will be skipped in a run. " +
             "Please note that this will also disable all algorithms dependent on this algorithm.")
-    @JIPipeParameter(value = "jipipe:algorithm:enabled", visibility = JIPipeParameterVisibility.Visible)
+    @JIPipeParameter(value = "jipipe:algorithm:enabled")
     public boolean isEnabled() {
         return enabled;
     }
@@ -148,7 +148,7 @@ public abstract class JIPipeAlgorithm extends JIPipeGraphNode {
 
     @JIPipeDocumentation(name = "Pass through", description = "If enabled, the algorithm will pass the input data directly to the output data without any processing. " +
             "This is different from enabling/disabling the algorithm as this will not disable dependent algorithms.")
-    @JIPipeParameter(value = "jipipe:algorithm:pass-through", visibility = JIPipeParameterVisibility.Visible)
+    @JIPipeParameter(value = "jipipe:algorithm:pass-through")
     public boolean isPassThrough() {
         return passThrough;
     }
@@ -156,7 +156,14 @@ public abstract class JIPipeAlgorithm extends JIPipeGraphNode {
     @JIPipeParameter("jipipe:algorithm:pass-through")
     public void setPassThrough(boolean passThrough) {
         this.passThrough = passThrough;
+    }
 
+    @Override
+    public boolean isParameterUIVisible(JIPipeParameterTree tree, JIPipeParameterAccess access) {
+        if(ParameterUtils.isHiddenLocalParameter(tree, access, "jipipe:algorithm:enabled", "jipipe:algorithm:pass-through")) {
+            return false;
+        }
+        return super.isParameterUIVisible(tree, access);
     }
 
     /**
@@ -239,7 +246,7 @@ public abstract class JIPipeAlgorithm extends JIPipeGraphNode {
 //                jsonGenerator.writeStringField("jipipe:node-alias-id", algorithm.getAliasIdInGraph());
 //            }
 //            jsonGenerator.writeObjectField("jipipe:cache-state:source-nodes", sources);
-            JIPipeParameterCollection.serializeParametersToJson(algorithm, jsonGenerator, this::serializeParameter);
+            ParameterUtils.serializeParametersToJson(algorithm, jsonGenerator, this::serializeParameter);
             jsonGenerator.writeEndObject();
         }
 

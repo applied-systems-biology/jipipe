@@ -9,12 +9,13 @@ import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.MiscellaneousNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
-import org.hkijena.jipipe.api.parameters.JIPipeParameterVisibility;
+import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
 import org.hkijena.jipipe.extensions.forms.datatypes.FormData;
 import org.hkijena.jipipe.extensions.forms.ui.FormsDialog;
 import org.hkijena.jipipe.extensions.parameters.primitives.StringParameterSettings;
 import org.hkijena.jipipe.ui.JIPipeDummyWorkbench;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
+import org.hkijena.jipipe.utils.ParameterUtils;
 import org.hkijena.jipipe.utils.ResourceUtils;
 
 import javax.swing.*;
@@ -41,7 +42,7 @@ public class IteratingFormProcessorAlgorithm extends JIPipeAlgorithm implements 
     public static final String SLOT_FORMS = "Forms";
 
     private String tabAnnotation = "Tab";
-    private JIPipeMergingAlgorithm.DataBatchGenerationSettings dataBatchGenerationSettings = new JIPipeMergingAlgorithm.DataBatchGenerationSettings();
+    private JIPipeMergingAlgorithmDataBatchGenerationSettings dataBatchGenerationSettings = new JIPipeMergingAlgorithmDataBatchGenerationSettings();
 
     public IteratingFormProcessorAlgorithm(JIPipeNodeInfo info) {
         super(info, new JIPipeIOSlotConfiguration());
@@ -51,7 +52,7 @@ public class IteratingFormProcessorAlgorithm extends JIPipeAlgorithm implements 
     public IteratingFormProcessorAlgorithm(IteratingFormProcessorAlgorithm other) {
         super(other);
         this.tabAnnotation = other.tabAnnotation;
-        this.dataBatchGenerationSettings = new JIPipeMergingAlgorithm.DataBatchGenerationSettings(other.dataBatchGenerationSettings);
+        this.dataBatchGenerationSettings = new JIPipeMergingAlgorithmDataBatchGenerationSettings(other.dataBatchGenerationSettings);
         updateFormsSlot();
     }
 
@@ -205,9 +206,17 @@ public class IteratingFormProcessorAlgorithm extends JIPipeAlgorithm implements 
 
     @JIPipeDocumentation(name = "Data batch generation", description = "This algorithm will iterate through multiple inputs at once and apply the workload. " +
             "Use following settings to control which data batches are generated.")
-    @JIPipeParameter(value = "jipipe:data-batch-generation", visibility = JIPipeParameterVisibility.Visible, collapsed = true)
-    public JIPipeMergingAlgorithm.DataBatchGenerationSettings getDataBatchGenerationSettings() {
+    @JIPipeParameter(value = "jipipe:data-batch-generation", collapsed = true)
+    public JIPipeMergingAlgorithmDataBatchGenerationSettings getDataBatchGenerationSettings() {
         return dataBatchGenerationSettings;
+    }
+
+    @Override
+    public boolean isParameterUIVisible(JIPipeParameterTree tree, JIPipeParameterCollection subParameter) {
+        if(ParameterUtils.isHiddenLocalParameterCollection(tree, subParameter, "jipipe:data-batch-generation", "jipipe:adaptive-parameters")) {
+            return false;
+        }
+        return super.isParameterUIVisible(tree, subParameter);
     }
 
     @Override

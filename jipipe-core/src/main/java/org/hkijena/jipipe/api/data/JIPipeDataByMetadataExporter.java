@@ -20,7 +20,7 @@ import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
-import org.hkijena.jipipe.api.parameters.JIPipeParameterVisibility;
+import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
 import org.hkijena.jipipe.extensions.expressions.*;
 import org.hkijena.jipipe.extensions.parameters.primitives.StringParameterSettings;
 import org.hkijena.jipipe.utils.ResourceUtils;
@@ -71,19 +71,17 @@ public class JIPipeDataByMetadataExporter implements JIPipeParameterCollection {
     }
 
     @Override
-    public JIPipeParameterVisibility getOverriddenUIParameterVisibility(JIPipeParameterAccess access, JIPipeParameterVisibility currentVisibility) {
+    public boolean isParameterUIVisible(JIPipeParameterTree tree, JIPipeParameterAccess access) {
         if (access.getKey().equals("mode"))
-            return currentVisibility;
+            return true;
         if (mode == Mode.Automatic) {
-            return !access.getKey().equals("custom-name") ? currentVisibility : JIPipeParameterVisibility.Hidden;
+            return !access.getKey().equals("custom-name");
         } else {
             if (access.getKey().equals("ignore-missing-metadata"))
-                return currentVisibility;
+                return true;
             if (access.getKey().equals("missing-string"))
-                return currentVisibility;
-            if (access.getKey().equals("custom-name"))
-                return currentVisibility;
-            return JIPipeParameterVisibility.Hidden;
+                return true;
+            return access.getKey().equals("custom-name");
         }
     }
 

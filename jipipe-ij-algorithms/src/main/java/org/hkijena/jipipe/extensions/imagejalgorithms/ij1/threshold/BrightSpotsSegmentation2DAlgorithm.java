@@ -180,8 +180,7 @@ public class BrightSpotsSegmentation2DAlgorithm extends JIPipeSimpleIteratingAlg
 
     }
 
-    @JIPipeParameter(value = "auto-thresholding", uiExcludeSubParameters = {"jipipe:data-batch-generation",
-            "jipipe:parameter-slot-algorithm", "jipipe:adaptive-parameters"})
+    @JIPipeParameter(value = "auto-thresholding")
     @JIPipeDocumentation(name = "Auto thresholding", description = "Parameters for underlying auto thresholding")
     public AutoThreshold2DAlgorithm getAutoThresholding() {
         return autoThresholding;

@@ -8,7 +8,6 @@ import ij.process.ImageProcessor;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.parameters.JIPipeDynamicParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeMutableParameterAccess;
-import org.hkijena.jipipe.api.parameters.JIPipeParameterVisibility;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageSliceIndex;
 import org.hkijena.jipipe.extensions.imagejdatatypes.viewer.ImageViewerPanel;
@@ -333,13 +332,13 @@ public class MaskDrawerPlugin extends ImageViewerPanelPlugin {
                     }
                 });
         if (mask.getNSlices() == 1) {
-            ((JIPipeMutableParameterAccess) parameterCollection.get("z")).setVisibility(JIPipeParameterVisibility.Hidden);
+            ((JIPipeMutableParameterAccess) parameterCollection.get("z")).setHidden(true);
         }
         if (mask.getNChannels() == 1) {
-            ((JIPipeMutableParameterAccess) parameterCollection.get("c")).setVisibility(JIPipeParameterVisibility.Hidden);
+            ((JIPipeMutableParameterAccess) parameterCollection.get("c")).setHidden(true);
         }
         if (mask.getNFrames() == 1) {
-            ((JIPipeMutableParameterAccess) parameterCollection.get("t")).setVisibility(JIPipeParameterVisibility.Hidden);
+            ((JIPipeMutableParameterAccess) parameterCollection.get("t")).setHidden(true);
         }
 
         ParameterPanel parameterPanel = new ParameterPanel(new JIPipeDummyWorkbench(),

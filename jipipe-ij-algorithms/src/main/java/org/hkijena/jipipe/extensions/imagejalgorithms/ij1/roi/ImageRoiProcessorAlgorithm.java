@@ -139,8 +139,7 @@ public abstract class ImageRoiProcessorAlgorithm extends JIPipeIteratingAlgorith
     @JIPipeDocumentation(name = "Reference image generator", description = "Only relevant if 'Require reference image' is disabled. " +
             "The measurements are always extracted on images. This algorithm " +
             "generates a reference image by converting the ROIs into masks.")
-    @JIPipeParameter(value = "reference-generator", uiExcludeSubParameters = {"jipipe:data-batch-generation",
-            "jipipe:parameter-slot-algorithm", "jipipe:adaptive-parameters"})
+    @JIPipeParameter(value = "reference-generator")
     public UnreferencedRoiToMaskAlgorithm getToMaskAlgorithm() {
         return toMaskAlgorithm;
     }

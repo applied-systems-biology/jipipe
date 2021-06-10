@@ -12,7 +12,6 @@ import org.hkijena.jipipe.api.nodes.categories.MiscellaneousNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeContextAction;
 import org.hkijena.jipipe.api.parameters.JIPipeDynamicParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
-import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.color.ImagePlusColorRGBData;
 import org.hkijena.jipipe.extensions.r.OptionalREnvironment;
 import org.hkijena.jipipe.extensions.r.RExtensionSettings;
@@ -21,6 +20,7 @@ import org.hkijena.jipipe.extensions.r.parameters.RScriptParameter;
 import org.hkijena.jipipe.extensions.settings.RuntimeSettings;
 import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
+import org.hkijena.jipipe.utils.ParameterUtils;
 import org.hkijena.jipipe.utils.ResourceUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 
@@ -290,7 +290,7 @@ public class IteratingRScriptAlgorithm extends JIPipeIteratingAlgorithm {
         }
 
         public void apply(IteratingRScriptAlgorithm algorithm) {
-            JIPipeParameterCollection.setParameter(algorithm, "script", new RScriptParameter(code));
+            ParameterUtils.setParameter(algorithm, "script", new RScriptParameter(code));
             JIPipeDefaultMutableSlotConfiguration slotConfiguration = (JIPipeDefaultMutableSlotConfiguration) algorithm.getSlotConfiguration();
             slotConfiguration.clearInputSlots(true);
             slotConfiguration.clearOutputSlots(true);

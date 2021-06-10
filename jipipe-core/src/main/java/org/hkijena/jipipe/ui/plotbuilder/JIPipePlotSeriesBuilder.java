@@ -153,7 +153,7 @@ public class JIPipePlotSeriesBuilder implements JIPipeParameterCollection, JIPip
     }
 
     @JIPipeDocumentation(name = "Enabled", description = "If the series is shown")
-    @JIPipeParameter(value = "enabled", visibility = JIPipeParameterVisibility.Hidden)
+    @JIPipeParameter(value = "enabled", hidden = true)
     public boolean isEnabled() {
         return enabled;
     }

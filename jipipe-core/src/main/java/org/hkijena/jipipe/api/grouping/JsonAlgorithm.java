@@ -19,8 +19,9 @@ import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.grouping.parameters.GraphNodeParameterReferenceAccessGroupList;
 import org.hkijena.jipipe.api.grouping.parameters.GraphNodeParameters;
 import org.hkijena.jipipe.api.nodes.JIPipeGraph;
-import org.hkijena.jipipe.api.nodes.JIPipeMergingAlgorithm;
+import org.hkijena.jipipe.api.nodes.JIPipeMergingAlgorithmDataBatchGenerationSettings;
 import org.hkijena.jipipe.api.parameters.*;
+import org.hkijena.jipipe.utils.ParameterUtils;
 
 import java.util.*;
 
@@ -120,9 +121,17 @@ public class JsonAlgorithm extends GraphWrapperAlgorithm implements JIPipeCustom
     @JIPipeDocumentation(name = "Data batch generation", description = "Only used if the graph iteration mode is not set to 'Pass data through'. " +
             "This algorithm can have multiple inputs. This means that JIPipe has to match incoming data into batches via metadata annotations. " +
             "The following settings allow you to control which columns are used as reference to organize data.")
-    @JIPipeParameter(value = "jipipe:data-batch-generation", visibility = JIPipeParameterVisibility.Visible, collapsed = true)
-    public JIPipeMergingAlgorithm.DataBatchGenerationSettings getBatchGenerationSettings() {
+    @JIPipeParameter(value = "jipipe:data-batch-generation", collapsed = true)
+    public JIPipeMergingAlgorithmDataBatchGenerationSettings getBatchGenerationSettings() {
         return super.getBatchGenerationSettings();
+    }
+
+    @Override
+    public boolean isParameterUIVisible(JIPipeParameterTree tree, JIPipeParameterCollection subParameter) {
+        if(ParameterUtils.isHiddenLocalParameterCollection(tree, subParameter, "jipipe:data-batch-generation", "jipipe:adaptive-parameters")) {
+            return false;
+        }
+        return super.isParameterUIVisible(tree, subParameter);
     }
 
     @JIPipeDocumentation(name = "Graph iteration mode", description = "Determines how the wrapped graph is iterated:" +

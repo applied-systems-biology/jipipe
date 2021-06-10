@@ -24,7 +24,6 @@ import org.hkijena.jipipe.api.data.JIPipeDefaultMutableSlotConfiguration;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
-import org.hkijena.jipipe.api.parameters.JIPipeParameterVisibility;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.blur.GaussianBlur2DAlgorithm;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscale32FData;
@@ -99,8 +98,7 @@ public class IlluminationCorrection2DAlgorithm extends JIPipeSimpleIteratingAlgo
     }
 
     @JIPipeDocumentation(name = "Gaussian filter")
-    @JIPipeParameter(value = "gaussian-algorithm", visibility = JIPipeParameterVisibility.TransitiveVisible, uiExcludeSubParameters = {"jipipe:data-batch-generation",
-            "jipipe:parameter-slot-algorithm", "jipipe:adaptive-parameters"})
+    @JIPipeParameter(value = "gaussian-algorithm")
     public GaussianBlur2DAlgorithm getGaussianAlgorithm() {
         return gaussianAlgorithm;
     }

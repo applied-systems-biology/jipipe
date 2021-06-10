@@ -14,13 +14,14 @@ import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.MiscellaneousNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
-import org.hkijena.jipipe.api.parameters.JIPipeParameterVisibility;
+import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
 import org.hkijena.jipipe.extensions.forms.datatypes.FormData;
 import org.hkijena.jipipe.extensions.forms.ui.FormsDialog;
 import org.hkijena.jipipe.extensions.parameters.generators.IntegerRange;
 import org.hkijena.jipipe.extensions.parameters.primitives.StringParameterSettings;
 import org.hkijena.jipipe.ui.JIPipeDummyWorkbench;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
+import org.hkijena.jipipe.utils.ParameterUtils;
 import org.hkijena.jipipe.utils.ResourceUtils;
 
 import javax.swing.*;
@@ -43,7 +44,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 public class SimpleIteratingFormProcessorAlgorithm extends JIPipeAlgorithm implements JIPipeDataBatchAlgorithm {
 
     private String tabAnnotation = "Tab";
-    private JIPipeSimpleIteratingAlgorithm.DataBatchGenerationSettings dataBatchGenerationSettings = new JIPipeSimpleIteratingAlgorithm.DataBatchGenerationSettings();
+    private JIPipeSimpleIteratingAlgorithmDataBatchGenerationSettings dataBatchGenerationSettings = new JIPipeSimpleIteratingAlgorithmDataBatchGenerationSettings();
 
     public SimpleIteratingFormProcessorAlgorithm(JIPipeNodeInfo info) {
         super(info);
@@ -52,7 +53,7 @@ public class SimpleIteratingFormProcessorAlgorithm extends JIPipeAlgorithm imple
     public SimpleIteratingFormProcessorAlgorithm(SimpleIteratingFormProcessorAlgorithm other) {
         super(other);
         this.tabAnnotation = other.tabAnnotation;
-        this.dataBatchGenerationSettings = new JIPipeSimpleIteratingAlgorithm.DataBatchGenerationSettings(other.dataBatchGenerationSettings);
+        this.dataBatchGenerationSettings = new JIPipeSimpleIteratingAlgorithmDataBatchGenerationSettings(other.dataBatchGenerationSettings);
     }
 
     @Override
@@ -193,9 +194,17 @@ public class SimpleIteratingFormProcessorAlgorithm extends JIPipeAlgorithm imple
 
     @JIPipeDocumentation(name = "Data batch generation", description = "This algorithm has one input and will iterate through each row of its input and apply the workload. " +
             "Use following settings to control which data batches are generated.")
-    @JIPipeParameter(value = "jipipe:data-batch-generation", visibility = JIPipeParameterVisibility.Visible, collapsed = true)
-    public JIPipeSimpleIteratingAlgorithm.DataBatchGenerationSettings getDataBatchGenerationSettings() {
+    @JIPipeParameter(value = "jipipe:data-batch-generation", collapsed = true)
+    public JIPipeSimpleIteratingAlgorithmDataBatchGenerationSettings getDataBatchGenerationSettings() {
         return dataBatchGenerationSettings;
+    }
+
+    @Override
+    public boolean isParameterUIVisible(JIPipeParameterTree tree, JIPipeParameterCollection subParameter) {
+        if(ParameterUtils.isHiddenLocalParameterCollection(tree, subParameter, "jipipe:data-batch-generation", "jipipe:adaptive-parameters")) {
+            return false;
+        }
+        return super.isParameterUIVisible(tree, subParameter);
     }
 
     @Override

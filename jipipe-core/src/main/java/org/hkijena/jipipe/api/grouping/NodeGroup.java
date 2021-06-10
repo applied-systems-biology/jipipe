@@ -32,10 +32,11 @@ import org.hkijena.jipipe.api.grouping.parameters.GraphNodeParameters;
 import org.hkijena.jipipe.api.grouping.parameters.NodeGroupContents;
 import org.hkijena.jipipe.api.nodes.JIPipeGraph;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
-import org.hkijena.jipipe.api.nodes.JIPipeMergingAlgorithm;
+import org.hkijena.jipipe.api.nodes.JIPipeMergingAlgorithmDataBatchGenerationSettings;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.categories.MiscellaneousNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.*;
+import org.hkijena.jipipe.utils.ParameterUtils;
 import org.hkijena.jipipe.utils.StringUtils;
 
 import java.util.Collections;
@@ -207,21 +208,22 @@ public class NodeGroup extends GraphWrapperAlgorithm implements JIPipeCustomPara
     }
 
     @Override
-    public JIPipeParameterVisibility getOverriddenUIParameterVisibility(JIPipeParameterAccess access, JIPipeParameterVisibility currentVisibility) {
+    public boolean isParameterUIVisible(JIPipeParameterTree tree, JIPipeParameterAccess access) {
         if (showLimitedParameters) {
             if (access.getSource() == this) {
                 String key = access.getKey();
                 if ("show-limited-parameters".equals(key) || "jipipe:node:name".equals(key) || "jipipe:node:description".equals(key)) {
-                    return currentVisibility;
+                    return true;
                 } else {
-                    return JIPipeParameterVisibility.Hidden;
+                    return false;
                 }
             }
             if (access.getSource() == getBatchGenerationSettings())
-                return JIPipeParameterVisibility.Hidden;
+                return false;
         }
-        return super.getOverriddenUIParameterVisibility(access, currentVisibility);
+        return super.isParameterUIVisible(tree, access);
     }
+
 
     @Override
     public Map<String, JIPipeParameterAccess> getParameters() {
@@ -255,9 +257,17 @@ public class NodeGroup extends GraphWrapperAlgorithm implements JIPipeCustomPara
     @JIPipeDocumentation(name = "Data batch generation", description = "Only used if the graph iteration mode is not set to 'Pass data through'. " +
             "This algorithm can have multiple inputs. This means that JIPipe has to match incoming data into batches via metadata annotations. " +
             "The following settings allow you to control which columns are used as reference to organize data.")
-    @JIPipeParameter(value = "jipipe:data-batch-generation", visibility = JIPipeParameterVisibility.Visible, collapsed = true)
-    public JIPipeMergingAlgorithm.DataBatchGenerationSettings getBatchGenerationSettings() {
+    @JIPipeParameter(value = "jipipe:data-batch-generation", collapsed = true)
+    public JIPipeMergingAlgorithmDataBatchGenerationSettings getBatchGenerationSettings() {
         return super.getBatchGenerationSettings();
+    }
+
+    @Override
+    public boolean isParameterUIVisible(JIPipeParameterTree tree, JIPipeParameterCollection subParameter) {
+        if(ParameterUtils.isHiddenLocalParameterCollection(tree, subParameter, "jipipe:data-batch-generation", "jipipe:adaptive-parameters")) {
+            return false;
+        }
+        return super.isParameterUIVisible(tree, subParameter);
     }
 
     @JIPipeDocumentation(name = "Graph iteration mode", description = "Determines how the wrapped graph is iterated:" +

@@ -55,11 +55,11 @@ public interface JIPipeParameterAccess {
     String getDescription();
 
     /**
-     * Returns if the parameter should be visible to users or only stored to JSON
+     * Returns if the parameter should be hidden from the user
      *
      * @return Parameter visibility
      */
-    JIPipeParameterVisibility getVisibility();
+    boolean isHidden();
 
     /**
      * Finds an annotation for this parameter
@@ -81,7 +81,7 @@ public interface JIPipeParameterAccess {
      * Gets the parameter value
      *
      * @param <T>   Parameter data type
-     * @param klass
+     * @param klass Parameter data type
      * @return Parameter value
      */
     <T> T get(Class<T> klass);

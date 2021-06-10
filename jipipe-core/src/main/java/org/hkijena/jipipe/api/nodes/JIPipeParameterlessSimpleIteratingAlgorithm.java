@@ -24,10 +24,12 @@ import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.data.JIPipeSlotConfiguration;
 import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
+import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
-import org.hkijena.jipipe.api.parameters.JIPipeParameterVisibility;
+import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
 import org.hkijena.jipipe.extensions.parameters.generators.IntegerRange;
 import org.hkijena.jipipe.extensions.parameters.generators.OptionalIntegerRange;
+import org.hkijena.jipipe.utils.ParameterUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -176,7 +178,7 @@ public abstract class JIPipeParameterlessSimpleIteratingAlgorithm extends JIPipe
     @JIPipeDocumentation(name = "Enable parallelization", description = "If enabled, the workload can be calculated across multiple threads to for speedup. " +
             "Please note that the actual usage of multiple threads depend on the runtime settings and the algorithm implementation. " +
             "We recommend to use the runtime parameters to control parallelization in most cases.")
-    @JIPipeParameter(value = "jipipe:parallelization:enabled", visibility = JIPipeParameterVisibility.Visible)
+    @JIPipeParameter(value = "jipipe:parallelization:enabled")
     @Override
     public boolean isParallelizationEnabled() {
         return parallelizationEnabled;
@@ -190,7 +192,7 @@ public abstract class JIPipeParameterlessSimpleIteratingAlgorithm extends JIPipe
 
     @JIPipeDocumentation(name = "Data batch generation", description = "This algorithm has one input and will iterate through each row of its input and apply the workload. " +
             "Use following settings to control which data batches are generated.")
-    @JIPipeParameter(value = "jipipe:data-batch-generation", visibility = JIPipeParameterVisibility.Visible, collapsed = true)
+    @JIPipeParameter(value = "jipipe:data-batch-generation", collapsed = true)
     public DataBatchGenerationSettings getDataBatchGenerationSettings() {
         return dataBatchGenerationSettings;
     }
@@ -198,6 +200,22 @@ public abstract class JIPipeParameterlessSimpleIteratingAlgorithm extends JIPipe
     @Override
     public JIPipeParameterCollection getGenerationSettingsInterface() {
         return dataBatchGenerationSettings;
+    }
+
+    @Override
+    public boolean isParameterUIVisible(JIPipeParameterTree tree, JIPipeParameterCollection subParameter) {
+        if(ParameterUtils.isHiddenLocalParameterCollection(tree, subParameter, "jipipe:data-batch-generation", "jipipe:adaptive-parameters")) {
+            return false;
+        }
+        return super.isParameterUIVisible(tree, subParameter);
+    }
+
+    @Override
+    public boolean isParameterUIVisible(JIPipeParameterTree tree, JIPipeParameterAccess access) {
+        if(ParameterUtils.isHiddenLocalParameter(tree, access, "jipipe:parallelization:enabled")) {
+            return false;
+        }
+        return super.isParameterUIVisible(tree, access);
     }
 
     @Override

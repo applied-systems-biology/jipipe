@@ -24,9 +24,7 @@ import org.hkijena.jipipe.api.data.JIPipeAnnotation;
 import org.hkijena.jipipe.api.data.JIPipeAnnotationMergeStrategy;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeColumnGrouping;
-import org.hkijena.jipipe.api.nodes.JIPipeDataBatch;
 import org.hkijena.jipipe.api.nodes.JIPipeInputSlot;
-import org.hkijena.jipipe.api.nodes.JIPipeIteratingAlgorithm;
 import org.hkijena.jipipe.api.nodes.JIPipeMergingAlgorithm;
 import org.hkijena.jipipe.api.nodes.JIPipeMergingDataBatch;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
@@ -34,7 +32,7 @@ import org.hkijena.jipipe.api.nodes.JIPipeOutputSlot;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
-import org.hkijena.jipipe.api.parameters.JIPipeParameterVisibility;
+import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
 import org.hkijena.jipipe.extensions.deeplearning.DeepLearningSettings;
 import org.hkijena.jipipe.extensions.deeplearning.DeepLearningUtils;
 import org.hkijena.jipipe.extensions.deeplearning.configs.DeepLearningPredictionConfiguration;
@@ -42,7 +40,6 @@ import org.hkijena.jipipe.extensions.deeplearning.datatypes.DeepLearningModelDat
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.transform.ScaleMode;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.transform.TransformScale2DAlgorithm;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
-import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.LabeledImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscale32FData;
 import org.hkijena.jipipe.extensions.python.OptionalPythonEnvironment;
 import org.hkijena.jipipe.extensions.python.PythonUtils;
@@ -67,6 +64,7 @@ public class PredictAlgorithm extends JIPipeMergingAlgorithm {
 
     private TransformScale2DAlgorithm scale2DAlgorithm;
     private boolean cleanUpAfterwards = true;
+    private boolean scaleToModelSize = false;
     private OptionalPythonEnvironment overrideEnvironment = new OptionalPythonEnvironment();
 
     public PredictAlgorithm(JIPipeNodeInfo info) {
@@ -82,6 +80,7 @@ public class PredictAlgorithm extends JIPipeMergingAlgorithm {
         this.overrideEnvironment = new OptionalPythonEnvironment(other.overrideEnvironment);
         this.cleanUpAfterwards = other.cleanUpAfterwards;
         this.scale2DAlgorithm = new TransformScale2DAlgorithm(other.scale2DAlgorithm);
+        this.scaleToModelSize = other.scaleToModelSize;
         registerSubParameter(scale2DAlgorithm);
     }
 
@@ -203,9 +202,21 @@ public class PredictAlgorithm extends JIPipeMergingAlgorithm {
         this.cleanUpAfterwards = cleanUpAfterwards;
     }
 
+    @JIPipeDocumentation(name = "Scale images to model size", description = "If enabled, images are automatically scaled to fit to the model size. Otherwise, " +
+            "Keras will apply tiling automatically if you provide images of an unsupported size.")
+    @JIPipeParameter("scale-to-model-size")
+    public boolean isScaleToModelSize() {
+        return scaleToModelSize;
+    }
+
+    @JIPipeParameter("scale-to-model-size")
+    public void setScaleToModelSize(boolean scaleToModelSize) {
+        this.scaleToModelSize = scaleToModelSize;
+        triggerParameterStructureChange();
+    }
+
     @JIPipeDocumentation(name = "Scaling", description = "The following settings determine how the image is scaled in 2D if it does not fit to the size the model is designed for.")
     @JIPipeParameter(value = "scale-algorithm",
-            uiExcludeSubParameters = {"jipipe:data-batch-generation", "jipipe:parameter-slot-algorithm", "jipipe:adaptive-parameters"},
             collapsed = true,
             iconURL = ResourceUtils.RESOURCE_BASE_PATH + "/icons/actions/transform-scale.png",
             iconDarkURL = ResourceUtils.RESOURCE_BASE_PATH + "/dark/icons/actions/transform-scale.png")
@@ -214,9 +225,10 @@ public class PredictAlgorithm extends JIPipeMergingAlgorithm {
     }
 
     @Override
-    public JIPipeParameterVisibility getOverriddenUIParameterVisibility(JIPipeParameterAccess access, JIPipeParameterVisibility currentVisibility) {
-        if (access.getSource() == scale2DAlgorithm && access.getKey().contains("axis"))
-            return JIPipeParameterVisibility.Hidden;
-        return super.getOverriddenUIParameterVisibility(access, currentVisibility);
+    public boolean isParameterUIVisible(JIPipeParameterTree tree, JIPipeParameterAccess access) {
+        if("axis".equals(access.getKey()) && access.getSource() == getScale2DAlgorithm()) {
+            return false;
+        }
+        return super.isParameterUIVisible(tree, access);
     }
 }

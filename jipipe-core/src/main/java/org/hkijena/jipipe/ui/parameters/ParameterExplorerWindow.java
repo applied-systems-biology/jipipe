@@ -277,7 +277,7 @@ public class ParameterExplorerWindow extends JFrame {
         JIPipeParameterAccess parameterAccess = (JIPipeParameterAccess) selectedNode.getUserObject();
         JIPipeParameterTypeInfo typeInfo = JIPipe.getParameterTypes().getInfoByFieldClass(parameterAccess.getFieldClass());
 
-        formPanel.getParameterHelp().setDocument(ParameterPanel.generateParameterDocumentation(parameterAccess));
+        formPanel.getParameterHelp().setDocument(ParameterPanel.generateParameterDocumentation(parameterAccess, parameterTree));
 
         // Set current value & tester
         currentValue = parameterAccess;

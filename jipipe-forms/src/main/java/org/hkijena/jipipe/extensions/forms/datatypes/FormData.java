@@ -18,6 +18,7 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.extensions.parameters.primitives.OptionalAnnotationNameParameter;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.utils.JsonUtils;
+import org.hkijena.jipipe.utils.ParameterUtils;
 
 import java.awt.*;
 import java.io.IOException;
@@ -112,7 +113,7 @@ public abstract class FormData implements JIPipeData, JIPipeParameterCollection,
      * @param node JSON node
      */
     public void fromJson(JsonNode node) {
-        JIPipeParameterCollection.deserializeParametersFromJson(this, node, new JIPipeValidityReport());
+        ParameterUtils.deserializeParametersFromJson(this, node, new JIPipeValidityReport());
     }
 
     /**
@@ -175,7 +176,7 @@ public abstract class FormData implements JIPipeData, JIPipeParameterCollection,
         @Override
         public void serialize(FormData value, JsonGenerator gen, SerializerProvider serializers) throws IOException {
             gen.writeStartObject();
-            JIPipeParameterCollection.serializeParametersToJson(value, gen);
+            ParameterUtils.serializeParametersToJson(value, gen);
             gen.writeEndObject();
         }
     }

@@ -24,7 +24,6 @@ import org.hkijena.jipipe.api.nodes.categories.DataSourceNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterPersistence;
-import org.hkijena.jipipe.api.parameters.JIPipeParameterVisibility;
 import org.hkijena.jipipe.extensions.multiparameters.datatypes.ParametersData;
 
 import java.util.Map;
@@ -66,9 +65,7 @@ public class ParametersDataDefinition extends JIPipeAlgorithm {
     public void run(JIPipeProgressInfo progressInfo) {
         ParametersData result = new ParametersData();
         for (Map.Entry<String, JIPipeParameterAccess> entry : parameters.getParameters().entrySet()) {
-            if (entry.getValue().getVisibility().isVisibleIn(JIPipeParameterVisibility.TransitiveVisible)) {
-                result.getParameterData().put(entry.getKey(), entry.getValue().get(Object.class));
-            }
+            result.getParameterData().put(entry.getKey(), entry.getValue().get(Object.class));
         }
         getFirstOutputSlot().addData(result, progressInfo);
     }

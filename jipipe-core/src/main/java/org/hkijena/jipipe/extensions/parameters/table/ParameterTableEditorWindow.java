@@ -123,7 +123,7 @@ public class ParameterTableEditorWindow extends JFrame {
                     ParameterTableCellAccess access = new ParameterTableCellAccess(getParameterAccess(), parameterTable,
                             selectedRows[0], selectedColumns[0]);
                     JIPipeParameterEditorUI editor = JIPipe.getParameterTypes().createEditorFor(getWorkbench(), access);
-                    palettePanel.addWideToForm(editor, ParameterPanel.generateParameterDocumentation(access));
+                    palettePanel.addWideToForm(editor, ParameterPanel.generateParameterDocumentation(access, null));
                 } else {
                     palettePanel.addGroupHeader("Edit multiple parameters", UIUtils.getIconFromResources("actions/document-edit.png"));
                     List<JIPipeParameterAccess> accessList = new ArrayList<>();
@@ -133,7 +133,7 @@ public class ParameterTableEditorWindow extends JFrame {
                     }
                     JIPipeMultiParameterAccess multiParameterAccess = new JIPipeMultiParameterAccess(accessList);
                     JIPipeParameterEditorUI editor = JIPipe.getParameterTypes().createEditorFor(getWorkbench(), multiParameterAccess);
-                    palettePanel.addWideToForm(editor, ParameterPanel.generateParameterDocumentation(multiParameterAccess));
+                    palettePanel.addWideToForm(editor, ParameterPanel.generateParameterDocumentation(multiParameterAccess, null));
                 }
 
                 JTextField keyInfo = UIUtils.makeReadonlyBorderlessTextField(parameterTable.getColumnInfo(selectedColumns[0]).getKey());
@@ -335,10 +335,11 @@ public class ParameterTableEditorWindow extends JFrame {
                     JIPipeParameterTree.Node node = globalTree.getSourceNode(((JIPipeParameterAccess) importedParameter).getSource());
                     importParameterColumn(node, (JIPipeParameterAccess) importedParameter);
                 } else if (importedParameter instanceof JIPipeParameterTree.Node) {
-                    for (JIPipeParameterAccess access : ((JIPipeParameterTree.Node) importedParameter).getParameters().values()) {
-                        if (access.getVisibility().isVisibleIn(JIPipeParameterVisibility.TransitiveVisible)) {
-                            JIPipeParameterTree.Node node = globalTree.getSourceNode(access.getSource());
-                            importParameterColumn(node, access);
+                    JIPipeParameterTree.Node node = (JIPipeParameterTree.Node) importedParameter;
+                    for (JIPipeParameterAccess access : node.getParameters().values()) {
+                        if (!access.isHidden()) {
+                            JIPipeParameterTree.Node sourceNode = globalTree.getSourceNode(access.getSource());
+                            importParameterColumn(sourceNode, access);
                         }
                     }
                 }

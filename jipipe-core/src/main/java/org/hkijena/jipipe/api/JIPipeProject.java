@@ -42,6 +42,7 @@ import org.hkijena.jipipe.extensions.parameters.primitives.HTMLText;
 import org.hkijena.jipipe.ui.components.MarkdownDocument;
 import org.hkijena.jipipe.ui.settings.JIPipeProjectInfoParameters;
 import org.hkijena.jipipe.utils.JsonUtils;
+import org.hkijena.jipipe.utils.ParameterUtils;
 import org.hkijena.jipipe.utils.ReflectionUtils;
 import org.hkijena.jipipe.utils.StringUtils;
 
@@ -445,7 +446,7 @@ public class JIPipeProject implements JIPipeValidatable {
                 if (entry.getValue() instanceof JIPipeParameterCollection) {
                     generator.writeObjectFieldStart(entry.getKey());
                     generator.writeObjectField("jipipe:type", entry.getValue().getClass());
-                    JIPipeParameterCollection.serializeParametersToJson((JIPipeParameterCollection) entry.getValue(), generator);
+                    ParameterUtils.serializeParametersToJson((JIPipeParameterCollection) entry.getValue(), generator);
                     generator.writeEndObject();
                 } else {
                     generator.writeObjectFieldStart(entry.getKey());
@@ -484,7 +485,7 @@ public class JIPipeProject implements JIPipeValidatable {
                     Class<?> metadataClass = JsonUtils.getObjectMapper().readerFor(Class.class).readValue(metadataEntry.getValue().get("jipipe:type"));
                     if (JIPipeParameterCollection.class.isAssignableFrom(metadataClass)) {
                         JIPipeParameterCollection metadata = (JIPipeParameterCollection) ReflectionUtils.newInstance(metadataClass);
-                        JIPipeParameterCollection.deserializeParametersFromJson(metadata, metadataEntry.getValue(), report.forCategory("Metadata"));
+                        ParameterUtils.deserializeParametersFromJson(metadata, metadataEntry.getValue(), report.forCategory("Metadata"));
                         additionalMetadata.put(metadataEntry.getKey(), metadata);
                     } else {
                         Object data = JsonUtils.getObjectMapper().readerFor(metadataClass).readValue(metadataEntry.getValue().get("data"));

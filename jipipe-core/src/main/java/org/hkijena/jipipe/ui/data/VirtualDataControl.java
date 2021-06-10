@@ -19,6 +19,7 @@ import org.hkijena.jipipe.ui.JIPipeProjectWindow;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbenchPanel;
 import org.hkijena.jipipe.ui.running.JIPipeRunnerQueue;
+import org.hkijena.jipipe.utils.ParameterUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
@@ -117,7 +118,7 @@ public class VirtualDataControl extends JIPipeProjectWorkbenchPanel {
 
     public void moveAllCacheToVirtual() {
         // Make all caches virtual by default
-        JIPipeParameterCollection.setParameter(virtualDataSettings, "virtual-cache", true);
+        ParameterUtils.setParameter(virtualDataSettings, "virtual-cache", true);
         JIPipeRunnerQueue.getInstance().enqueue(new AllCacheToVirtualRun());
     }
 
@@ -127,7 +128,7 @@ public class VirtualDataControl extends JIPipeProjectWorkbenchPanel {
 
     public void moveCacheToVirtual() {
         // Make all caches virtual by default
-        JIPipeParameterCollection.setParameter(virtualDataSettings, "virtual-cache", true);
+        ParameterUtils.setParameter(virtualDataSettings, "virtual-cache", true);
         JIPipeRunnerQueue.getInstance().enqueue(new CacheToVirtualRun(getProject()));
     }
 

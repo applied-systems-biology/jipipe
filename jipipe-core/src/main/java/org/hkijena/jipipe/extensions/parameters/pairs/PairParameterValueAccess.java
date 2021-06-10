@@ -15,7 +15,6 @@ package org.hkijena.jipipe.extensions.parameters.pairs;
 
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
-import org.hkijena.jipipe.api.parameters.JIPipeParameterVisibility;
 
 import java.lang.annotation.Annotation;
 
@@ -57,8 +56,8 @@ public class PairParameterValueAccess<K, V> implements JIPipeParameterAccess {
     }
 
     @Override
-    public JIPipeParameterVisibility getVisibility() {
-        return JIPipeParameterVisibility.TransitiveVisible;
+    public boolean isHidden() {
+        return false;
     }
 
     @Override

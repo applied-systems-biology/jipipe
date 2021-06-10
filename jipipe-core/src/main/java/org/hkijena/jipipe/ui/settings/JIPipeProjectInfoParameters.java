@@ -44,7 +44,7 @@ public class JIPipeProjectInfoParameters implements JIPipeParameterCollection, J
         return eventBus;
     }
 
-    @JIPipeParameter(value = "exported-parameters", visibility = JIPipeParameterVisibility.Hidden)
+    @JIPipeParameter(value = "exported-parameters", hidden = true)
     public GraphNodeParameters getExportedParameters() {
         return exportedParameters;
     }

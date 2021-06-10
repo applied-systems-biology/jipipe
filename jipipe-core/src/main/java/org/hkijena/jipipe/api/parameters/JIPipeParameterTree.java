@@ -263,7 +263,7 @@ public class JIPipeParameterTree implements JIPipeParameterCollection, JIPipeCus
                 parameterAccess.setShortKey(pair.getShortKey());
                 parameterAccess.setUIOrder(pair.getUIOrder());
                 parameterAccess.setDocumentation(pair.getDocumentation());
-                parameterAccess.setVisibility(pair.getVisibility());
+                parameterAccess.setHidden(pair.isHidden());
                 parameterAccess.setPriority(pair.getPriority());
                 parameterAccess.setPersistence(pair.getPersistence());
 
@@ -290,8 +290,7 @@ public class JIPipeParameterTree implements JIPipeParameterCollection, JIPipeCus
 
                     childNode.setCollapsed(entry.getValue().isCollapsed());
                     childNode.setUiOrder(entry.getValue().getUIOrder());
-                    childNode.setVisibility(entry.getValue().getVisibility());
-                    childNode.setUiExcludedSubParameters(entry.getValue().getUIExcludedSubParameters());
+                    childNode.setHidden(entry.getValue().isHidden());
                     childNode.setPersistence(entry.getValue().getPersistence());
                     childNode.setIconURL(entry.getValue().getIconURL());
                     childNode.setDarkIconURL(entry.getValue().getIconDarkURL());
@@ -443,8 +442,8 @@ public class JIPipeParameterTree implements JIPipeParameterCollection, JIPipeCus
      * @param source source
      * @return visibility
      */
-    public JIPipeParameterVisibility getSourceVisibility(JIPipeParameterCollection source) {
-        return nodeMap.get(source).getVisibility();
+    public boolean isSourceHidden(JIPipeParameterCollection source) {
+        return nodeMap.get(source).isHidden();
     }
 
     /**
@@ -529,12 +528,12 @@ public class JIPipeParameterTree implements JIPipeParameterCollection, JIPipeCus
             return getter != null ? getter.getReturnType() : null;
         }
 
-        public JIPipeParameterVisibility getVisibility() {
+        public boolean isHidden() {
             JIPipeParameter getterAnnotation = getter.getAnnotation(JIPipeParameter.class);
             if (setter == null)
-                return getterAnnotation.visibility();
+                return getterAnnotation.hidden();
             JIPipeParameter setterAnnotation = setter.getAnnotation(JIPipeParameter.class);
-            return getterAnnotation.visibility().intersectWith(setterAnnotation.visibility());
+            return getterAnnotation.hidden() || setterAnnotation.hidden();
         }
 
         public JIPipeParameterPersistence getPersistence() {
@@ -570,11 +569,6 @@ public class JIPipeParameterTree implements JIPipeParameterCollection, JIPipeCus
                 return getterAnnotation.uiOrder();
             JIPipeParameter setterAnnotation = setter.getAnnotation(JIPipeParameter.class);
             return getterAnnotation.uiOrder() != 0 ? getterAnnotation.uiOrder() : setterAnnotation.uiOrder();
-        }
-
-        public Set<String> getUIExcludedSubParameters() {
-            JIPipeParameter getterAnnotation = getter.getAnnotation(JIPipeParameter.class);
-            return new HashSet<>(Arrays.asList(getterAnnotation.uiExcludeSubParameters()));
         }
 
         public JIPipeDocumentation getDocumentation() {
@@ -654,7 +648,7 @@ public class JIPipeParameterTree implements JIPipeParameterCollection, JIPipeCus
         private Node parent;
         private JIPipeParameterCollection collection;
         private String key;
-        private JIPipeParameterVisibility visibility = JIPipeParameterVisibility.Visible;
+        private boolean hidden;
         private String name;
         private HTMLText description = new HTMLText();
         private int order;
@@ -713,12 +707,12 @@ public class JIPipeParameterTree implements JIPipeParameterCollection, JIPipeCus
             this.key = key;
         }
 
-        public JIPipeParameterVisibility getVisibility() {
-            return visibility;
+        public boolean isHidden() {
+            return hidden;
         }
 
-        public void setVisibility(JIPipeParameterVisibility visibility) {
-            this.visibility = visibility;
+        public void setHidden(boolean hidden) {
+            this.hidden = hidden;
         }
 
         public String getName() {
@@ -817,14 +811,6 @@ public class JIPipeParameterTree implements JIPipeParameterCollection, JIPipeCus
 
         public void setActions(List<ContextAction> actions) {
             this.actions = actions;
-        }
-
-        public Set<String> getUiExcludedSubParameters() {
-            return uiExcludedSubParameters;
-        }
-
-        public void setUiExcludedSubParameters(Set<String> uiExcludedSubParameters) {
-            this.uiExcludedSubParameters = uiExcludedSubParameters;
         }
 
         public JIPipeParameterPersistence getPersistence() {

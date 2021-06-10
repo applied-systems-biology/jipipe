@@ -121,7 +121,7 @@ public class CLIJSettings implements JIPipeParameterCollection {
     }
 
     @JIPipeDocumentation(name = "Calibration settings", description = "Following settings will be used if you enable auto-calibration:")
-    @JIPipeParameter(value = "contrast-enhancer", uiExcludeSubParameters = {"jipipe:data-batch-generation", "jipipe:parameter-slot-algorithm", "duplicate-image", "jipipe:adaptive-parameters"})
+    @JIPipeParameter(value = "contrast-enhancer")
     public DisplayRangeCalibrationAlgorithm getContrastEnhancer() {
         return contrastEnhancer;
     }

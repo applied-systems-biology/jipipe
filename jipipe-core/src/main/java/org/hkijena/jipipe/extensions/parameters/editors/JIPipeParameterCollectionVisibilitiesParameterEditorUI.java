@@ -16,7 +16,6 @@ package org.hkijena.jipipe.extensions.parameters.editors;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollectionVisibilities;
-import org.hkijena.jipipe.api.parameters.JIPipeParameterVisibility;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.components.FormPanel;
 import org.hkijena.jipipe.ui.parameters.JIPipeParameterEditorUI;
@@ -72,8 +71,7 @@ public class JIPipeParameterCollectionVisibilitiesParameterEditorUI extends JIPi
             List<String> parameterIds = groupedByHolder.get(parameterHolder).stream().sorted().collect(Collectors.toList());
             parameterIds.removeIf(key -> {
                 JIPipeParameterAccess parameterAccess = parameters.get(key);
-                return parameterAccess.getVisibility() == JIPipeParameterVisibility.Hidden ||
-                        parameterAccess.getVisibility() == JIPipeParameterVisibility.Visible;
+                return parameterAccess.isHidden();
             });
 
             if (parameterIds.isEmpty())

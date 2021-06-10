@@ -30,10 +30,12 @@ import org.hkijena.jipipe.api.*;
 import org.hkijena.jipipe.api.compartments.algorithms.JIPipeProjectCompartment;
 import org.hkijena.jipipe.api.data.*;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
+import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
-import org.hkijena.jipipe.api.parameters.JIPipeParameterVisibility;
+import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
 import org.hkijena.jipipe.extensions.parameters.primitives.HTMLText;
 import org.hkijena.jipipe.extensions.parameters.primitives.StringParameterSettings;
+import org.hkijena.jipipe.utils.ParameterUtils;
 import org.hkijena.jipipe.utils.StringUtils;
 
 import java.awt.*;
@@ -258,7 +260,7 @@ public abstract class JIPipeGraphNode implements JIPipeValidatable, JIPipeParame
      *
      * @return algorithm name
      */
-    @JIPipeParameter(value = "jipipe:node:name", visibility = JIPipeParameterVisibility.Visible, uiOrder = -9999)
+    @JIPipeParameter(value = "jipipe:node:name", uiOrder = -9999)
     @JIPipeDocumentation(name = "Name", description = "Custom algorithm name.")
     public String getName() {
         if (customName == null || customName.isEmpty())
@@ -274,7 +276,14 @@ public abstract class JIPipeGraphNode implements JIPipeValidatable, JIPipeParame
     @JIPipeParameter("jipipe:node:name")
     public void setCustomName(String customName) {
         this.customName = customName;
+    }
 
+    @Override
+    public boolean isParameterUIVisible(JIPipeParameterTree tree, JIPipeParameterAccess access) {
+        if(ParameterUtils.isHiddenLocalParameter(tree, access, "jipipe:node:description", "jipipe:node:name")) {
+            return false;
+        }
+        return !access.isHidden();
     }
 
     /**
@@ -474,7 +483,7 @@ public abstract class JIPipeGraphNode implements JIPipeValidatable, JIPipeParame
         jsonGenerator.writeEndObject();
         jsonGenerator.writeStringField("jipipe:node-info-id", getInfo().getId());
 
-        JIPipeParameterCollection.serializeParametersToJson(this, jsonGenerator);
+        ParameterUtils.serializeParametersToJson(this, jsonGenerator);
 
         jsonGenerator.writeEndObject();
     }
@@ -502,7 +511,7 @@ public abstract class JIPipeGraphNode implements JIPipeValidatable, JIPipeParame
         }
 
         // Deserialize algorithm-specific parameters
-        JIPipeParameterCollection.deserializeParametersFromJson(this, node, issues);
+        ParameterUtils.deserializeParametersFromJson(this, node, issues);
     }
 
     /**
@@ -707,7 +716,7 @@ public abstract class JIPipeGraphNode implements JIPipeValidatable, JIPipeParame
      */
     @JIPipeDocumentation(name = "Description", description = "A custom description")
     @StringParameterSettings(multiline = true)
-    @JIPipeParameter(value = "jipipe:node:description", visibility = JIPipeParameterVisibility.Visible, uiOrder = -999)
+    @JIPipeParameter(value = "jipipe:node:description", uiOrder = -999)
     public HTMLText getCustomDescription() {
         if (customDescription == null)
             customDescription = new HTMLText();

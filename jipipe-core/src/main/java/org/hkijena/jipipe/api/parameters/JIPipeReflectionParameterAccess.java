@@ -32,7 +32,7 @@ public class JIPipeReflectionParameterAccess implements JIPipeParameterAccess {
     private Method setter;
     private double priority;
     private JIPipeDocumentation documentation;
-    private JIPipeParameterVisibility visibility = JIPipeParameterVisibility.TransitiveVisible;
+    private boolean hidden;
     private JIPipeParameterCollection source;
     private String shortKey;
     private int uiOrder;
@@ -134,12 +134,12 @@ public class JIPipeReflectionParameterAccess implements JIPipeParameterAccess {
     }
 
     @Override
-    public JIPipeParameterVisibility getVisibility() {
-        return visibility;
+    public boolean isHidden() {
+        return hidden;
     }
 
-    public void setVisibility(JIPipeParameterVisibility visibility) {
-        this.visibility = visibility;
+    public void setHidden(boolean hidden) {
+        this.hidden = hidden;
     }
 
     @Override

@@ -16,69 +16,41 @@ package org.hkijena.jipipe.api.nodes;
 import com.google.common.eventbus.EventBus;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
-import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
-import org.hkijena.jipipe.extensions.expressions.ExpressionParameterVariable;
-import org.hkijena.jipipe.extensions.expressions.ExpressionParameterVariableSource;
-import org.hkijena.jipipe.extensions.parameters.pairs.PairParameterSettings;
-import org.hkijena.jipipe.extensions.parameters.pairs.StringQueryExpressionAndStringPairParameter;
 import org.hkijena.jipipe.extensions.parameters.primitives.StringParameterSettings;
 
-import java.util.HashSet;
-import java.util.Set;
-
 /**
- * Settings class that allows users to generate expressions with adaptive parameters
+ * Groups parameter slot settings
  */
-public class JIPipeAdaptiveParameterSettings implements JIPipeParameterCollection {
+public class JIPipeParameterSlotAlgorithmSettings implements JIPipeParameterCollection {
     private final EventBus eventBus = new EventBus();
-    private boolean enabled = true;
-    private StringQueryExpressionAndStringPairParameter.List overriddenParameters = new StringQueryExpressionAndStringPairParameter.List();
+    private boolean hasParameterSlot = false;
     private boolean attachParameterAnnotations = true;
     private boolean attachOnlyNonDefaultParameterAnnotations = true;
     private boolean parameterAnnotationsUseInternalNames = false;
     private String parameterAnnotationsPrefix = "";
 
-    public JIPipeAdaptiveParameterSettings() {
+    public JIPipeParameterSlotAlgorithmSettings() {
     }
 
-    public JIPipeAdaptiveParameterSettings(JIPipeAdaptiveParameterSettings other) {
-        this.enabled = other.enabled;
-        this.overriddenParameters = new StringQueryExpressionAndStringPairParameter.List(other.overriddenParameters);
+    public JIPipeParameterSlotAlgorithmSettings(JIPipeParameterSlotAlgorithmSettings other) {
+        this.hasParameterSlot = other.hasParameterSlot;
         this.attachParameterAnnotations = other.attachParameterAnnotations;
         this.attachOnlyNonDefaultParameterAnnotations = other.attachOnlyNonDefaultParameterAnnotations;
         this.parameterAnnotationsUseInternalNames = other.parameterAnnotationsUseInternalNames;
         this.parameterAnnotationsPrefix = other.parameterAnnotationsPrefix;
     }
 
-    @Override
-    public EventBus getEventBus() {
-        return eventBus;
+    @JIPipeDocumentation(name = "Multiple parameters", description = "If enabled, there will be an additional slot that consumes " +
+            "parameter data sets. The algorithm then will be applied for each of this parameter sets.")
+    @JIPipeParameter(value = "has-parameter-slot")
+    public boolean isHasParameterSlot() {
+        return hasParameterSlot;
     }
 
-    @JIPipeDocumentation(name = "Enable adaptive parameters", description = "If enabled, you can use custom expressions to generate parameters.")
-    @JIPipeParameter("enabled")
-    public boolean isEnabled() {
-        return enabled;
-    }
-
-    @JIPipeParameter("enabled")
-    public void setEnabled(boolean enabled) {
-        this.enabled = enabled;
-    }
-
-    @JIPipeDocumentation(name = "Overridden parameters", description = "Here you can override the value of parameters based on annotations. The 'Value' settings should return a value for the parameter type or a JSON string that can be converted into a valid parameter value. " +
-            "The 'Parameter key' setting determines to which parameter this value is written to.")
-    @PairParameterSettings(keyLabel = "Value", valueLabel = "Parameter key")
-    @StringParameterSettings(monospace = true)
-    @JIPipeParameter("overridden-parameters")
-    public StringQueryExpressionAndStringPairParameter.List getOverriddenParameters() {
-        return overriddenParameters;
-    }
-
-    @JIPipeParameter("overridden-parameters")
-    public void setOverriddenParameters(StringQueryExpressionAndStringPairParameter.List overriddenParameters) {
-        this.overriddenParameters = overriddenParameters;
+    @JIPipeParameter("has-parameter-slot")
+    public void setHasParameterSlot(boolean hasParameterSlot) {
+        this.hasParameterSlot = hasParameterSlot;
     }
 
     @JIPipeDocumentation(name = "Attach parameter annotations", description = "If multiple parameters are allowed, attach the parameter values as annotations.")
@@ -127,23 +99,8 @@ public class JIPipeAdaptiveParameterSettings implements JIPipeParameterCollectio
         this.parameterAnnotationsPrefix = parameterAnnotationsPrefix;
     }
 
-    public static class VariableSource implements ExpressionParameterVariableSource {
-
-        public static final Set<ExpressionParameterVariable> VARIABLES;
-
-        static {
-            VARIABLES = new HashSet<>();
-            VARIABLES.add(new ExpressionParameterVariable("<Annotations>",
-                    "Data annotations are available as variables named after their column names (use Update Cache to find the list of annotations)",
-                    ""));
-            VARIABLES.add(new ExpressionParameterVariable("Default value",
-                    "The default value of this parameter",
-                    "default"));
-        }
-
-        @Override
-        public Set<ExpressionParameterVariable> getVariables(JIPipeParameterAccess parameterAccess) {
-            return VARIABLES;
-        }
+    @Override
+    public EventBus getEventBus() {
+        return eventBus;
     }
 }

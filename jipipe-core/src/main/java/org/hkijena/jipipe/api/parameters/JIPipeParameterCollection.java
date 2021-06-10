@@ -31,179 +31,40 @@ import java.util.stream.Collectors;
  * Interfaced for a parameterized object
  */
 public interface JIPipeParameterCollection {
+
     /**
-     * Deserializes parameters from JSON
-     *
-     * @param target the target object that contains the parameters
-     * @param node   the JSON node
-     * @param issues issues during deserialization
+     * Allows to override the visibility of parameters inside the UI
+     * @param  tree the parameter tree that is used to access this parameter
+     * @param access the parameter
+     * @return if the parameter is visible inside the UI
      */
-    static void deserializeParametersFromJson(JIPipeParameterCollection target, JsonNode node, JIPipeValidityReport issues) {
-        AtomicBoolean changedStructure = new AtomicBoolean();
-        changedStructure.set(true);
-        target.getEventBus().register(new Object() {
-            @Subscribe
-            public void onParametersChanged(ParameterStructureChangedEvent event) {
-                changedStructure.set(true);
-            }
-        });
-
-        JIPipeParameterTree parameterCollection = new JIPipeParameterTree(target);
-        Stack<JIPipeParameterTree.Node> stack = new Stack<>();
-
-        // Load all collection-type parameters
-        Set<String> loadedParameters = new HashSet<>();
-        while (changedStructure.get()) {
-            changedStructure.set(false);
-
-            parameterCollection = new JIPipeParameterTree(target);
-            stack.clear();
-            stack.push(parameterCollection.getRoot());
-
-            outer:
-            while (!stack.isEmpty()) {
-                JIPipeParameterTree.Node top = stack.pop();
-
-                if (top.getPersistence() == JIPipeParameterPersistence.Collection) {
-                    for (Map.Entry<String, JIPipeParameterAccess> entry : top.getParameters().entrySet().stream()
-                            .sorted(Comparator.comparing(kv -> -kv.getValue().getPriority())).collect(Collectors.toList())) {
-                        JIPipeParameterAccess parameterAccess = entry.getValue();
-                        if (parameterAccess.getPersistence() != JIPipeParameterPersistence.None) {
-                            String key = parameterCollection.getUniqueKey(parameterAccess);
-                            if (loadedParameters.contains(key))
-                                continue;
-                            loadedParameters.add(key);
-                            JsonNode objectNode = node.path(key);
-                            if (!objectNode.isMissingNode()) {
-                                Object v;
-                                try {
-                                    v = JsonUtils.getObjectMapper().readerFor(parameterAccess.getFieldClass()).readValue(node.get(key));
-                                    parameterAccess.set(v);
-                                } catch (Exception | Error e) {
-                                    issues.forCategory(key).reportIsInvalid("Could not load parameter '" + key + "'!",
-                                            "The data might be not compatible with your operating system or from an older or newer JIPipe version.",
-                                            "Please check the value of the parameter.",
-                                            "In: node.get(key)\n\n" + e);
-                                }
-
-
-                                // Stop loading here to prevent already traversed parameters from being not loaded
-                                if (changedStructure.get())
-                                    continue outer;
-                            }
-                        }
-                    }
-                    for (JIPipeParameterTree.Node child : top.getChildren().values()) {
-                        stack.push(child);
-                    }
-                }
-            }
-        }
-
-        // Load all object-type parameters
-        stack.clear();
-        stack.push(parameterCollection.getRoot());
-
-        while (!stack.isEmpty()) {
-            JIPipeParameterTree.Node top = stack.pop();
-
-            if (top.getPersistence() == JIPipeParameterPersistence.Object) {
-                JsonNode objectNode = node.path(String.join("/", top.getPath()));
-                if (!objectNode.isMissingNode()) {
-                    JIPipeParameterCollection collection = top.getCollection();
-                    if (collection instanceof JsonDeserializable) {
-                        ((JsonDeserializable) collection).fromJson(objectNode);
-                    } else {
-                        throw new RuntimeException("Cannot deserialize object-like persistence into non-Json-deserializable target!");
-                    }
-                }
-            } else if (top.getPersistence() == JIPipeParameterPersistence.Collection) {
-                for (JIPipeParameterTree.Node child : top.getChildren().values()) {
-                    stack.push(child);
-                }
-            }
-        }
+    default boolean isParameterUIVisible(JIPipeParameterTree tree, JIPipeParameterAccess access) {
+        return !access.isHidden();
     }
 
     /**
-     * Serializes parameters to JSON using a generator
-     *
-     * @param target        the serialized parameter collection
-     * @param jsonGenerator the JSON target
+     * Allows to override the visibility of sub-parameters inside the UI
+     * @param tree the parameter tree that is used to access this parameter
+     * @param subParameter a sub parameter
+     * @return if the parameter is visible inside the UI
      */
-    static void serializeParametersToJson(JIPipeParameterCollection target, JsonGenerator jsonGenerator) throws IOException {
-        serializeParametersToJson(target, jsonGenerator, null);
+    default boolean isParameterUIVisible(JIPipeParameterTree tree, JIPipeParameterCollection subParameter) {
+        return !tree.getSourceNode(subParameter).isHidden();
     }
 
     /**
-     * Serializes parameters to JSON using a generator
-     *
-     * @param target        the serialized parameter collection
-     * @param jsonGenerator the JSON target
-     * @param filter        filter to conditionally serialize entries. can be null
+     * Triggers a {@link ParameterStructureChangedEvent} on this collection
      */
-    static void serializeParametersToJson(JIPipeParameterCollection target, JsonGenerator jsonGenerator, Predicate<Map.Entry<String, JIPipeParameterAccess>> filter) throws IOException {
-        JIPipeParameterTree parameterCollection = new JIPipeParameterTree(target);
-        Stack<JIPipeParameterTree.Node> stack = new Stack<>();
-        stack.push(parameterCollection.getRoot());
-
-        while (!stack.isEmpty()) {
-            JIPipeParameterTree.Node top = stack.pop();
-
-            if (top.getPersistence() == JIPipeParameterPersistence.Object) {
-                jsonGenerator.writeObjectField(String.join("/", top.getPath()), top.getCollection());
-            } else if (top.getPersistence() == JIPipeParameterPersistence.Collection) {
-                for (Map.Entry<String, JIPipeParameterAccess> entry : top.getParameters().entrySet()) {
-                    if (filter != null && !filter.test(entry))
-                        continue;
-                    JIPipeParameterAccess parameterAccess = entry.getValue();
-                    if (parameterAccess.getPersistence() != JIPipeParameterPersistence.None)
-                        jsonGenerator.writeObjectField(parameterCollection.getUniqueKey(parameterAccess), parameterAccess.get(Object.class));
-                }
-                for (JIPipeParameterTree.Node node : top.getChildren().values()) {
-                    stack.push(node);
-                }
-            }
-        }
+    default void triggerParameterStructureChange() {
+        getEventBus().post(new ParameterStructureChangedEvent(this));
     }
 
     /**
-     * Sets a parameter of a {@link JIPipeParameterCollection} and triggers the associated events
-     *
-     * @param collection the collection
-     * @param key        the parameter key
-     * @param value      the parameter value
-     * @return if the parameter could be set
+     * Triggers a {@link ParameterChangedEvent} on this collection
+     * @param key the parameter key
      */
-    static boolean setParameter(JIPipeParameterCollection collection, String key, Object value) {
-        JIPipeParameterTree tree = new JIPipeParameterTree(collection);
-        return tree.getParameters().get(key).set(value);
-    }
-
-    /**
-     * Gets a parameter from a {@link JIPipeParameterCollection}
-     *
-     * @param collection the collection
-     * @param key        the parameter key
-     * @param klass      the parameter class
-     * @param <T>        the parameter class
-     * @return the current value
-     */
-    static <T> T getParameter(JIPipeParameterCollection collection, String key, Class<T> klass) {
-        JIPipeParameterTree tree = new JIPipeParameterTree(collection);
-        return tree.getParameters().get(key).get(klass);
-    }
-
-    /**
-     * Allows to override the visibility of a parameter. This is queried by the UI only.
-     * The UI will generate the query for the source and displayed parameter collection (in a chain)
-     *
-     * @param access            the parameter access
-     * @param currentVisibility the current visibility. May be different from the access' visibility if it is a chained call
-     * @return the visibility
-     */
-    default JIPipeParameterVisibility getOverriddenUIParameterVisibility(JIPipeParameterAccess access, JIPipeParameterVisibility currentVisibility) {
-        return currentVisibility;
+    default void triggerParameterChange(String key) {
+        getEventBus().post(new ParameterChangedEvent(this, key));
     }
 
     /**
@@ -217,8 +78,8 @@ public interface JIPipeParameterCollection {
      * Triggered when a parameter holder's parameters are changed
      */
     class ParameterChangedEvent {
-        private Object source;
-        private String key;
+        private final Object source;
+        private final String key;
 
         /**
          * @param source event source
@@ -242,7 +103,7 @@ public interface JIPipeParameterCollection {
      * Triggered by an {@link JIPipeParameterCollection} if the list of available parameters is changed
      */
     class ParameterStructureChangedEvent {
-        private JIPipeParameterCollection source;
+        private final JIPipeParameterCollection source;
 
         /**
          * @param source event source

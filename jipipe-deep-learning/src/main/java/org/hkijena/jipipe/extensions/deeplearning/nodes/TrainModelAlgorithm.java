@@ -25,7 +25,7 @@ import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
-import org.hkijena.jipipe.api.parameters.JIPipeParameterVisibility;
+import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
 import org.hkijena.jipipe.extensions.deeplearning.DeepLearningSettings;
 import org.hkijena.jipipe.extensions.deeplearning.DeepLearningUtils;
 import org.hkijena.jipipe.extensions.deeplearning.configs.DeepLearningTrainingConfiguration;
@@ -33,7 +33,6 @@ import org.hkijena.jipipe.extensions.deeplearning.datatypes.DeepLearningModelDat
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.transform.ScaleMode;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.transform.TransformScale2DAlgorithm;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.LabeledImagePlusData;
-import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleData;
 import org.hkijena.jipipe.extensions.python.OptionalPythonEnvironment;
 import org.hkijena.jipipe.extensions.python.PythonUtils;
 import org.hkijena.jipipe.extensions.settings.RuntimeSettings;
@@ -56,6 +55,7 @@ import java.util.Set;
 public class TrainModelAlgorithm extends JIPipeMergingAlgorithm {
 
     private TransformScale2DAlgorithm scale2DAlgorithm;
+    private boolean scaleToModelSize = false;
     private DeepLearningTrainingConfiguration trainingConfiguration = new DeepLearningTrainingConfiguration();
     private OptionalPythonEnvironment overrideEnvironment = new OptionalPythonEnvironment();
     private boolean cleanUpAfterwards = true;
@@ -73,6 +73,7 @@ public class TrainModelAlgorithm extends JIPipeMergingAlgorithm {
         super(other);
         this.trainingConfiguration = new DeepLearningTrainingConfiguration(other.trainingConfiguration);
         this.overrideEnvironment = new OptionalPythonEnvironment(other.overrideEnvironment);
+        this.scaleToModelSize = other.scaleToModelSize;
         this.cleanUpAfterwards = other.cleanUpAfterwards;
         registerSubParameter(trainingConfiguration);
         this.scale2DAlgorithm = new TransformScale2DAlgorithm(other.scale2DAlgorithm);
@@ -203,7 +204,6 @@ public class TrainModelAlgorithm extends JIPipeMergingAlgorithm {
 
     @JIPipeDocumentation(name = "Scaling", description = "The following settings determine how the image is scaled in 2D if it does not fit to the size the model is designed for.")
     @JIPipeParameter(value = "scale-algorithm",
-            uiExcludeSubParameters = {"jipipe:data-batch-generation", "jipipe:parameter-slot-algorithm", "jipipe:adaptive-parameters"},
             collapsed = true,
             iconURL = ResourceUtils.RESOURCE_BASE_PATH + "/icons/actions/transform-scale.png",
             iconDarkURL = ResourceUtils.RESOURCE_BASE_PATH + "/dark/icons/actions/transform-scale.png")
@@ -211,10 +211,24 @@ public class TrainModelAlgorithm extends JIPipeMergingAlgorithm {
         return scale2DAlgorithm;
     }
 
+    @JIPipeDocumentation(name = "Scale images to model size", description = "If enabled, images are automatically scaled to fit to the model size. Otherwise, " +
+            "Keras will apply tiling automatically if you provide images of an unsupported size.")
+    @JIPipeParameter("scale-to-model-size")
+    public boolean isScaleToModelSize() {
+        return scaleToModelSize;
+    }
+
+    @JIPipeParameter("scale-to-model-size")
+    public void setScaleToModelSize(boolean scaleToModelSize) {
+        this.scaleToModelSize = scaleToModelSize;
+        triggerParameterStructureChange();
+    }
+
     @Override
-    public JIPipeParameterVisibility getOverriddenUIParameterVisibility(JIPipeParameterAccess access, JIPipeParameterVisibility currentVisibility) {
-        if (access.getSource() == scale2DAlgorithm && access.getKey().contains("axis"))
-            return JIPipeParameterVisibility.Hidden;
-        return super.getOverriddenUIParameterVisibility(access, currentVisibility);
+    public boolean isParameterUIVisible(JIPipeParameterTree tree, JIPipeParameterAccess access) {
+        if("axis".equals(access.getKey()) && access.getSource() == getScale2DAlgorithm()) {
+            return false;
+        }
+        return super.isParameterUIVisible(tree, access);
     }
 }
