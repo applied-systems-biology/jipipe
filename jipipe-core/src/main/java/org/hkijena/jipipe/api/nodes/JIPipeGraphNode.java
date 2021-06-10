@@ -283,7 +283,7 @@ public abstract class JIPipeGraphNode implements JIPipeValidatable, JIPipeParame
         if(ParameterUtils.isHiddenLocalParameter(tree, access, "jipipe:node:description", "jipipe:node:name")) {
             return false;
         }
-        return !access.isHidden();
+        return JIPipeParameterCollection.super.isParameterUIVisible(tree, access);
     }
 
     /**

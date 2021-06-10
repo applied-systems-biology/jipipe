@@ -39,7 +39,10 @@ public interface JIPipeParameterCollection {
      * @return if the parameter is visible inside the UI
      */
     default boolean isParameterUIVisible(JIPipeParameterTree tree, JIPipeParameterAccess access) {
-        return !access.isHidden();
+        if(access.getSource() == this)
+            return !access.isHidden();
+        else
+            return access.getSource().isParameterUIVisible(tree, access);
     }
 
     /**
@@ -49,7 +52,13 @@ public interface JIPipeParameterCollection {
      * @return if the parameter is visible inside the UI
      */
     default boolean isParameterUIVisible(JIPipeParameterTree tree, JIPipeParameterCollection subParameter) {
-        return !tree.getSourceNode(subParameter).isHidden();
+        JIPipeParameterTree.Node sourceNode = tree.getSourceNode(subParameter);
+        if(sourceNode.getParent() == this || sourceNode.getParent() == null) {
+            return !sourceNode.isHidden();
+        }
+        else {
+            return sourceNode.getParent().getCollection().isParameterUIVisible(tree, subParameter);
+        }
     }
 
     /**
