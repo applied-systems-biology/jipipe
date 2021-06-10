@@ -32,6 +32,7 @@ import org.hkijena.jipipe.api.nodes.JIPipeOutputSlot;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
+import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
 import org.hkijena.jipipe.extensions.deeplearning.DeepLearningSettings;
 import org.hkijena.jipipe.extensions.deeplearning.DeepLearningUtils;
@@ -112,10 +113,10 @@ public class PredictAlgorithm extends JIPipeMergingAlgorithm {
                     ImagePlusData raw = inputRawImageSlot.getData(imageIndex, ImagePlusData.class, imageProgress);
                     Path rawPath = rawsDirectory.resolve(imageCounter + "_img.tif");
 
-                    ImagePlus rawImage = DeepLearningUtils.scaleToModel(raw.getImage(),
+                    ImagePlus rawImage = isScaleToModelSize() ? DeepLearningUtils.scaleToModel(raw.getImage(),
                             inputModel.getModelConfiguration(),
                             getScale2DAlgorithm(),
-                            modelProgress);
+                            modelProgress) : raw.getImage();
 
                     IJ.saveAsTiff(rawImage, rawPath.toString());
                 }
@@ -222,6 +223,14 @@ public class PredictAlgorithm extends JIPipeMergingAlgorithm {
             iconDarkURL = ResourceUtils.RESOURCE_BASE_PATH + "/dark/icons/actions/transform-scale.png")
     public TransformScale2DAlgorithm getScale2DAlgorithm() {
         return scale2DAlgorithm;
+    }
+
+    @Override
+    public boolean isParameterUIVisible(JIPipeParameterTree tree, JIPipeParameterCollection subParameter) {
+        if(!scaleToModelSize && subParameter == getScale2DAlgorithm()) {
+            return false;
+        }
+        return super.isParameterUIVisible(tree, subParameter);
     }
 
     @Override

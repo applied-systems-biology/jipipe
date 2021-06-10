@@ -231,8 +231,13 @@ public class ParameterPanel extends FormPanel implements Contextual {
             JIPipeParameterTree.Node sourceNode = traversed.getSourceNode(source);
 
             // Hidden parameter groups
-            if(rootCollection != null && rootCollection != source && !rootCollection.isParameterUIVisible(traversed, source)) {
-                hiddenCollections.add(source);
+            if(rootCollection != null) {
+                if(rootCollection != source && !rootCollection.isParameterUIVisible(traversed, source))
+                    hiddenCollections.add(source);
+            }
+            else if(sourceNode.getParent() != null && sourceNode.getParent().getCollection() != null) {
+                if(!sourceNode.getParent().getCollection().isParameterUIVisible(traversed, source))
+                    hiddenCollections.add(source);
             }
 
             // Visibility check

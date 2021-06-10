@@ -25,6 +25,7 @@ import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
+import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
 import org.hkijena.jipipe.extensions.deeplearning.DeepLearningSettings;
 import org.hkijena.jipipe.extensions.deeplearning.DeepLearningUtils;
@@ -109,14 +110,14 @@ public class TrainModelAlgorithm extends JIPipeMergingAlgorithm {
                 Path rawPath = rawsDirectory.resolve(imageCounter + "_img.tif");
                 Path labelPath = labelsDirectory.resolve(imageCounter + "_img.tif");
 
-                ImagePlus rawImage = DeepLearningUtils.scaleToModel(label.getImage(),
+                ImagePlus rawImage = isScaleToModelSize() ? DeepLearningUtils.scaleToModel(label.getImage(),
                         inputModel.getModelConfiguration(),
                         getScale2DAlgorithm(),
-                        modelProgress);
-                ImagePlus labelImage = DeepLearningUtils.scaleToModel(label.getLabels(),
+                        modelProgress) : label.getImage();
+                ImagePlus labelImage = isScaleToModelSize() ? DeepLearningUtils.scaleToModel(label.getLabels(),
                         inputModel.getModelConfiguration(),
                         getScale2DAlgorithm(),
-                        modelProgress);
+                        modelProgress) : label.getLabels();
 
                 IJ.saveAsTiff(rawImage, rawPath.toString());
                 IJ.saveAsTiff(labelImage, labelPath.toString());
@@ -222,6 +223,14 @@ public class TrainModelAlgorithm extends JIPipeMergingAlgorithm {
     public void setScaleToModelSize(boolean scaleToModelSize) {
         this.scaleToModelSize = scaleToModelSize;
         triggerParameterStructureChange();
+    }
+
+    @Override
+    public boolean isParameterUIVisible(JIPipeParameterTree tree, JIPipeParameterCollection subParameter) {
+        if(!scaleToModelSize && subParameter == getScale2DAlgorithm()) {
+            return false;
+        }
+        return super.isParameterUIVisible(tree, subParameter);
     }
 
     @Override

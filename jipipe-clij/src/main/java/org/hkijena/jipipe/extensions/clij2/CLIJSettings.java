@@ -7,10 +7,9 @@ import net.haesleinhuepf.clij.macro.CLIJHandler;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
-import org.hkijena.jipipe.api.nodes.JIPipeJavaNodeInfo;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
-import org.hkijena.jipipe.extensions.imagejdatatypes.algorithms.DisplayRangeCalibrationAlgorithm;
+import org.hkijena.jipipe.utils.ImageJCalibrationMode;
 import org.scijava.Context;
 import org.scijava.log.LogService;
 
@@ -27,10 +26,9 @@ public class CLIJSettings implements JIPipeParameterCollection {
     private int device = 0;
     private boolean initialized = false;
     private boolean autoCalibrateAfterPulling = true;
-    private DisplayRangeCalibrationAlgorithm contrastEnhancer;
+    private ContrastEnhancerSettings contrastEnhancerSettings = new ContrastEnhancerSettings();
 
     public CLIJSettings() {
-        contrastEnhancer = new DisplayRangeCalibrationAlgorithm(new JIPipeJavaNodeInfo("", DisplayRangeCalibrationAlgorithm.class));
     }
 
     public static CLIJSettings getInstance() {
@@ -122,7 +120,76 @@ public class CLIJSettings implements JIPipeParameterCollection {
 
     @JIPipeDocumentation(name = "Calibration settings", description = "Following settings will be used if you enable auto-calibration:")
     @JIPipeParameter(value = "contrast-enhancer")
-    public DisplayRangeCalibrationAlgorithm getContrastEnhancer() {
-        return contrastEnhancer;
+    public ContrastEnhancerSettings getContrastEnhancerSettings() {
+        return contrastEnhancerSettings;
+    }
+
+    public static class ContrastEnhancerSettings implements JIPipeParameterCollection {
+        private final EventBus eventBus = new EventBus();
+        private ImageJCalibrationMode calibrationMode = ImageJCalibrationMode.AutomaticImageJ;
+        private double customMin = 0;
+        private double customMax = 1;
+        private boolean duplicateImage = true;
+        private boolean applyToAllPlanes = true;
+
+        @Override
+        public EventBus getEventBus() {
+            return eventBus;
+        }
+
+        @JIPipeDocumentation(name = "Calibration method", description = "The method to apply for calibration.")
+        @JIPipeParameter("calibration-mode")
+        public ImageJCalibrationMode getCalibrationMode() {
+            return calibrationMode;
+        }
+
+        @JIPipeParameter("calibration-mode")
+        public void setCalibrationMode(ImageJCalibrationMode calibrationMode) {
+            this.calibrationMode = calibrationMode;
+        }
+
+        @JIPipeDocumentation(name = "Custom min", description = "Used if 'Calibration' method is set to 'Custom'. Sets custom minimum value.")
+        @JIPipeParameter("custom-min")
+        public double getCustomMin() {
+            return customMin;
+        }
+
+        @JIPipeParameter("custom-min")
+        public void setCustomMin(double customMin) {
+            this.customMin = customMin;
+        }
+
+        @JIPipeDocumentation(name = "Custom max", description = "Used if 'Calibration' method is set to 'Custom'. Sets custom maximum value.")
+        @JIPipeParameter("custom-max")
+        public double getCustomMax() {
+            return customMax;
+        }
+
+        @JIPipeParameter("custom-max")
+        public void setCustomMax(double customMax) {
+            this.customMax = customMax;
+        }
+
+        @JIPipeDocumentation(name = "Duplicate image", description = "As the calibration does not change any image data, you can disable creating a duplicate.")
+        @JIPipeParameter("duplicate-image")
+        public boolean isDuplicateImage() {
+            return duplicateImage;
+        }
+
+        @JIPipeParameter("duplicate-image")
+        public void setDuplicateImage(boolean duplicateImage) {
+            this.duplicateImage = duplicateImage;
+        }
+
+        @JIPipeDocumentation(name = "Apply to all planes", description = "If enabled, all image planes are recalibrated, not only the one of the current plane.")
+        @JIPipeParameter("apply-to-all-planes")
+        public boolean isApplyToAllPlanes() {
+            return applyToAllPlanes;
+        }
+
+        @JIPipeParameter("apply-to-all-planes")
+        public void setApplyToAllPlanes(boolean applyToAllPlanes) {
+            this.applyToAllPlanes = applyToAllPlanes;
+        }
     }
 }

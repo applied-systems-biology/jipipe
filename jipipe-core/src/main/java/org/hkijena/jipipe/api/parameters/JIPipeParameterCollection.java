@@ -53,7 +53,7 @@ public interface JIPipeParameterCollection {
      */
     default boolean isParameterUIVisible(JIPipeParameterTree tree, JIPipeParameterCollection subParameter) {
         JIPipeParameterTree.Node sourceNode = tree.getSourceNode(subParameter);
-        if(sourceNode.getParent() == this || sourceNode.getParent() == null) {
+        if( sourceNode.getParent() == null || sourceNode.getParent().getCollection() == this) {
             return !sourceNode.isHidden();
         }
         else {
