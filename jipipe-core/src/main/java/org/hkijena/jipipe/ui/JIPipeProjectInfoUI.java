@@ -41,6 +41,7 @@ import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.concurrent.ExecutionException;
 
 /**
@@ -74,7 +75,7 @@ public class JIPipeProjectInfoUI extends JIPipeProjectWorkbenchPanel {
         descriptionReaderScrollPane = new JScrollPane(descriptionReader);
         parameterPanel = new ParameterPanel(getWorkbench(),
                 getProject().getPipelineParameters(),
-                MarkdownDocument.fromPluginResource("documentation/project-info-parameters.md"),
+                MarkdownDocument.fromPluginResource("documentation/project-info-parameters.md", new HashMap<>()),
                 ParameterPanel.WITH_SEARCH_BAR | ParameterPanel.WITH_SCROLLING
                         | ParameterPanel.NO_EMPTY_GROUP_HEADERS | ParameterPanel.WITH_DOCUMENTATION |
                         ParameterPanel.DOCUMENTATION_BELOW);

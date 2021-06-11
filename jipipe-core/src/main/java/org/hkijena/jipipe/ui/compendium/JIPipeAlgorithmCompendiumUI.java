@@ -31,6 +31,7 @@ import org.hkijena.jipipe.utils.StringUtils;
 
 import javax.swing.*;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Predicate;
@@ -45,7 +46,7 @@ public class JIPipeAlgorithmCompendiumUI extends JIPipeCompendiumUI<JIPipeNodeIn
      * Creates a new instance
      */
     public JIPipeAlgorithmCompendiumUI() {
-        super(MarkdownDocument.fromPluginResource("documentation/algorithm-compendium.md"));
+        super(MarkdownDocument.fromPluginResource("documentation/algorithm-compendium.md", new HashMap<>()));
     }
 
     @Override

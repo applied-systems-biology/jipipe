@@ -149,7 +149,7 @@ public class JIPipeTableEditor extends JIPipeWorkbenchPanel {
         add(toolBar, BorderLayout.NORTH);
 
         // Create palette
-        palettePanel = new FormPanel(MarkdownDocument.fromPluginResource("documentation/table-analyzer.md"),
+        palettePanel = new FormPanel(MarkdownDocument.fromPluginResource("documentation/table-analyzer.md", new HashMap<>()),
                 FormPanel.WITH_SCROLLING);
         JXPanel contentPanel = palettePanel.getContentPanel();
         // This is needed for our flow layout

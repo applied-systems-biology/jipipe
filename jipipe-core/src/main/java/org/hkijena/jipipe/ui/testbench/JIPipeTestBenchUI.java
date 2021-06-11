@@ -34,6 +34,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
+import java.util.HashMap;
 
 /**
  * UI for {@link JIPipeTestBench}
@@ -209,7 +210,7 @@ public class JIPipeTestBenchUI extends JIPipeProjectWorkbenchPanel {
         backup.restore();
 
         ParameterPanel parameters = new ParameterPanel(getProjectWorkbench(), testBench.getBenchedAlgorithm(),
-                MarkdownDocument.fromPluginResource("documentation/testbench.md"),
+                MarkdownDocument.fromPluginResource("documentation/testbench.md", new HashMap<>()),
                 ParameterPanel.WITH_DOCUMENTATION | ParameterPanel.DOCUMENTATION_BELOW | ParameterPanel.WITH_SCROLLING);
         splitPane.setLeftComponent(parameters);
 

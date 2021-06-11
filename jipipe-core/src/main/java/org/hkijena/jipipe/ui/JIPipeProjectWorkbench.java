@@ -62,6 +62,7 @@ import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -210,7 +211,7 @@ public class JIPipeProjectWorkbench extends JPanel implements JIPipeWorkbench {
         documentTabPane.addSingletonTab(TAB_LICENSE,
                 "License",
                 UIUtils.getIconFromResources("actions/license.png"),
-                new MarkdownReader(true, MarkdownDocument.fromPluginResource("documentation/license.md")),
+                new MarkdownReader(true, MarkdownDocument.fromPluginResource("documentation/license.md", new HashMap<>())),
                 true);
         documentTabPane.addSingletonTab(TAB_COMPARTMENT_EDITOR,
                 "Compartments",

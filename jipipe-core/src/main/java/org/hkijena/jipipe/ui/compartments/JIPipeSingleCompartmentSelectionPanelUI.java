@@ -30,6 +30,7 @@ import org.hkijena.jipipe.utils.UIUtils;
 import javax.swing.*;
 import java.awt.*;
 import java.util.Collections;
+import java.util.HashMap;
 
 /**
  * UI for a single {@link JIPipeProjectCompartment}
@@ -57,7 +58,7 @@ public class JIPipeSingleCompartmentSelectionPanelUI extends JIPipeProjectWorkbe
 
         ParameterPanel parametersUI = new ParameterPanel(getProjectWorkbench(),
                 compartment,
-                MarkdownDocument.fromPluginResource("documentation/compartment-graph.md"),
+                MarkdownDocument.fromPluginResource("documentation/compartment-graph.md", new HashMap<>()),
                 ParameterPanel.WITH_DOCUMENTATION | ParameterPanel.DOCUMENTATION_BELOW | ParameterPanel.WITH_SCROLLING);
         tabbedPane.addTab("Parameters", UIUtils.getIconFromResources("actions/configure.png"),
                 parametersUI,

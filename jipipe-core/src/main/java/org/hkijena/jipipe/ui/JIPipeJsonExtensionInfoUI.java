@@ -28,6 +28,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.HashMap;
 import java.util.jar.Attributes;
 
 /**
@@ -71,7 +72,7 @@ public class JIPipeJsonExtensionInfoUI extends JIPipeJsonExtensionWorkbenchPanel
     }
 
     private void initContent() {
-        MarkdownReader markdownReader = new MarkdownReader(false, MarkdownDocument.fromPluginResource("documentation/introduction-extension-builder.md"));
+        MarkdownReader markdownReader = new MarkdownReader(false, MarkdownDocument.fromPluginResource("documentation/introduction-extension-builder.md", new HashMap<>()));
         markdownReader.setBorder(null);
         markdownReader.getScrollPane().setBorder(null);
         add(markdownReader, BorderLayout.CENTER);

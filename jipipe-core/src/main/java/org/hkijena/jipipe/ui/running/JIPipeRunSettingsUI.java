@@ -41,6 +41,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -80,7 +81,7 @@ public class JIPipeRunSettingsUI extends JIPipeProjectWorkbenchPanel {
         reportUI.setReport(report);
 
         MarkdownReader help = new MarkdownReader(false);
-        help.setDocument(MarkdownDocument.fromPluginResource("documentation/validation.md"));
+        help.setDocument(MarkdownDocument.fromPluginResource("documentation/validation.md", new HashMap<>()));
 
         JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, reportUI, help);
         splitPane.setDividerSize(3);
@@ -132,7 +133,7 @@ public class JIPipeRunSettingsUI extends JIPipeProjectWorkbenchPanel {
         JPanel setupPanel = new JPanel(new BorderLayout());
         ParameterPanel formPanel = new ParameterPanel(getProjectWorkbench(),
                 run.getConfiguration(),
-                MarkdownDocument.fromPluginResource("documentation/run.md"),
+                MarkdownDocument.fromPluginResource("documentation/run.md", new HashMap<>()),
                 ParameterPanel.WITH_DOCUMENTATION | ParameterPanel.WITH_SCROLLING);
 
         Set<JIPipeGraphNode> algorithmsWithMissingInput = getProjectWorkbench().getProject().getGraph().getDeactivatedAlgorithms(true);
@@ -314,7 +315,7 @@ public class JIPipeRunSettingsUI extends JIPipeProjectWorkbenchPanel {
 
     private void openError(Exception exception) {
         removeAll();
-        UserFriendlyErrorUI errorUI = new UserFriendlyErrorUI(MarkdownDocument.fromPluginResource("documentation/run-error.md"),
+        UserFriendlyErrorUI errorUI = new UserFriendlyErrorUI(MarkdownDocument.fromPluginResource("documentation/run-error.md", new HashMap<>()),
                 UserFriendlyErrorUI.WITH_SCROLLING);
         errorUI.displayErrors(exception);
         errorUI.addVerticalGlue();

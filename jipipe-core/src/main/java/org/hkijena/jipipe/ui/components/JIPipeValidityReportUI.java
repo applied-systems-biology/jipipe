@@ -20,6 +20,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
+import java.util.HashMap;
 
 /**
  * UI for an {@link JIPipeValidityReport}
@@ -36,7 +37,7 @@ public class JIPipeValidityReportUI extends JPanel {
      * @param withHelp if a help panel should be shown
      */
     public JIPipeValidityReportUI(boolean withHelp) {
-        this(withHelp, MarkdownDocument.fromPluginResource("documentation/validation.md"));
+        this(withHelp, MarkdownDocument.fromPluginResource("documentation/validation.md", new HashMap<>()));
     }
 
     /**
@@ -45,7 +46,7 @@ public class JIPipeValidityReportUI extends JPanel {
      */
     public JIPipeValidityReportUI(boolean withHelp, MarkdownDocument helpDocument) {
         if (helpDocument == null)
-            helpDocument = MarkdownDocument.fromPluginResource("documentation/validation.md");
+            helpDocument = MarkdownDocument.fromPluginResource("documentation/validation.md", new HashMap<>());
 
         this.withHelp = withHelp;
         this.helpDocument = helpDocument;

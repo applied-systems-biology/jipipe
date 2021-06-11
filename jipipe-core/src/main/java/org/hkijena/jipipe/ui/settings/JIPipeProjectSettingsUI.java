@@ -24,6 +24,7 @@ import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
 import java.awt.*;
+import java.util.HashMap;
 
 /**
  * UI around the metadata of an {@link org.hkijena.jipipe.api.JIPipeProject}
@@ -44,7 +45,7 @@ public class JIPipeProjectSettingsUI extends JIPipeProjectWorkbenchPanel {
 
         ParameterPanel metadataUI = new ParameterPanel(getProjectWorkbench(),
                 getProject().getMetadata(),
-                MarkdownDocument.fromPluginResource("documentation/project-settings.md"),
+                MarkdownDocument.fromPluginResource("documentation/project-settings.md", new HashMap<>()),
                 ParameterPanel.WITH_DOCUMENTATION | ParameterPanel.WITH_SCROLLING);
         tabPane.addTab("General",
                 UIUtils.getIconFromResources("actions/configure.png"),
@@ -52,7 +53,7 @@ public class JIPipeProjectSettingsUI extends JIPipeProjectWorkbenchPanel {
                 DocumentTabPane.CloseMode.withoutCloseButton,
                 false);
 
-        FormPanel parameterUI = new FormPanel(MarkdownDocument.fromPluginResource("documentation/project-settings-parameters.md"),
+        FormPanel parameterUI = new FormPanel(MarkdownDocument.fromPluginResource("documentation/project-settings-parameters.md", new HashMap<>()),
                 FormPanel.WITH_SCROLLING | FormPanel.WITH_DOCUMENTATION);
         GraphNodeParametersUI graphNodeParametersUI = new GraphNodeParametersUI(getWorkbench(), getPipelineParameters().getExportedParameters(), FormPanel.NONE);
         graphNodeParametersUI.setBorder(BorderFactory.createLineBorder(Color.DARK_GRAY));

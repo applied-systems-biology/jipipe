@@ -36,6 +36,7 @@ import javax.swing.tree.TreePath;
 import java.awt.*;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -66,7 +67,7 @@ public class JIPipeSlotEditorUI extends JPanel {
         slotTree.setCellRenderer(new JIPipeDataSlotTreeCellRenderer());
 
         MarkdownReader helpPanel = new MarkdownReader(false);
-        helpPanel.setDocument(MarkdownDocument.fromPluginResource("documentation/algorithm-slots.md"));
+        helpPanel.setDocument(MarkdownDocument.fromPluginResource("documentation/algorithm-slots.md", new HashMap<>()));
         JScrollPane scrollPane = new JScrollPane(slotTree);
         JSplitPane splitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT, scrollPane, helpPanel);
         splitPane.setDividerSize(3);

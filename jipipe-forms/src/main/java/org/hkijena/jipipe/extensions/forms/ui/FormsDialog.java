@@ -50,7 +50,7 @@ public class FormsDialog extends JFrame {
         this.dataBatchList = dataBatchList;
         this.tabAnnotation = tabAnnotation;
         this.documentation = MarkdownDocument.fromResourceURL(FormsExtension.class.getResource("/org/hkijena/jipipe/extensions/forms/form-dialog-documentation.md"),
-                true);
+                true, new HashMap<>());
 
         JIPipeProgressInfo progressInfo = new JIPipeProgressInfo();
         // We need to make copies of the FormData objects, as they are mutable

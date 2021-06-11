@@ -18,6 +18,8 @@ import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.ui.components.MarkdownDocument;
 import org.hkijena.jipipe.ui.components.ReloadableValidityChecker;
 
+import java.util.HashMap;
+
 /**
  * Panel that checks plugin validity
  */
@@ -27,7 +29,7 @@ public class JIPipePluginValidityCheckerPanel extends ReloadableValidityChecker 
      */
     public JIPipePluginValidityCheckerPanel() {
         super(JIPipe.getInstance(),
-                MarkdownDocument.fromPluginResource("documentation/plugin-validation.md"));
+                MarkdownDocument.fromPluginResource("documentation/plugin-validation.md", new HashMap<>()));
         JIPipe.getInstance().getEventBus().register(this);
     }
 

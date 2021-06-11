@@ -50,6 +50,7 @@ import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -117,7 +118,7 @@ public class JIPipeCompartmentGraphUI extends JIPipeGraphEditorUI {
         splitPane.setTopComponent(minimap);
 
         MarkdownReader markdownReader = new MarkdownReader(false);
-        markdownReader.setDocument(MarkdownDocument.fromPluginResource("documentation/compartment-graph.md"));
+        markdownReader.setDocument(MarkdownDocument.fromPluginResource("documentation/compartment-graph.md", new HashMap<>()));
         splitPane.setBottomComponent(markdownReader);
     }
 

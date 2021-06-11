@@ -32,6 +32,7 @@ import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
 import java.awt.*;
+import java.util.HashMap;
 import java.util.Set;
 import java.util.function.Consumer;
 
@@ -90,7 +91,7 @@ public class JIPipeTestBenchSetupUI extends JIPipeProjectWorkbenchPanel {
         validationReportPanel.setLayout(new BorderLayout());
         validationReportUI = new JIPipeValidityReportUI(false);
         DocumentedComponent pane = new DocumentedComponent(true,
-                MarkdownDocument.fromPluginResource("documentation/testbench.md"),
+                MarkdownDocument.fromPluginResource("documentation/testbench.md", new HashMap<>()),
                 validationReportUI);
         validationReportPanel.add(pane, BorderLayout.CENTER);
 
@@ -111,7 +112,7 @@ public class JIPipeTestBenchSetupUI extends JIPipeProjectWorkbenchPanel {
 
         currentSettings = new JIPipeTestBenchSettings();
         ParameterPanel formPanel = new ParameterPanel(getWorkbench(), currentSettings,
-                MarkdownDocument.fromPluginResource("documentation/testbench.md"), ParameterPanel.WITH_SCROLLING |
+                MarkdownDocument.fromPluginResource("documentation/testbench.md", new HashMap<>()), ParameterPanel.WITH_SCROLLING |
                 ParameterPanel.WITH_DOCUMENTATION | ParameterPanel.DOCUMENTATION_BELOW);
         setupPanel.add(formPanel, BorderLayout.CENTER);
 

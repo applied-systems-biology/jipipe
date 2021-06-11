@@ -73,7 +73,7 @@ public class ParameterTableEditorWindow extends JFrame {
         setLayout(new BorderLayout());
 
         // Create form panel
-        palettePanel = new FormPanel(MarkdownDocument.fromPluginResource("documentation/documentation-parameter-table.md"),
+        palettePanel = new FormPanel(MarkdownDocument.fromPluginResource("documentation/documentation-parameter-table.md", new HashMap<>()),
                 FormPanel.WITH_DOCUMENTATION | FormPanel.WITH_SCROLLING | FormPanel.DOCUMENTATION_BELOW);
 
         // Create table panel

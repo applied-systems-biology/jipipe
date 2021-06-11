@@ -28,6 +28,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.HashMap;
 import java.util.jar.Attributes;
 
 /**
@@ -94,19 +95,19 @@ public class JIPipeInfoUI extends JIPipeProjectWorkbenchPanel {
         add(tourPanel, BorderLayout.CENTER);
 
         DotSlideshow slideshow = new DotSlideshow();
-        MarkdownReader slideWelcome = new MarkdownReader(false, MarkdownDocument.fromPluginResource("documentation/introduction_welcome.md"));
+        MarkdownReader slideWelcome = new MarkdownReader(false, MarkdownDocument.fromPluginResource("documentation/introduction_welcome.md", new HashMap<>()));
         slideWelcome.setBorder(BorderFactory.createLineBorder(UIManager.getColor("TextArea.background"), 16));
         slideshow.addSlide(slideWelcome, "Welcome to JIPipe");
 
-        MarkdownReader slideOrganization = new MarkdownReader(false, MarkdownDocument.fromPluginResource("documentation/introduction_organization.md"));
+        MarkdownReader slideOrganization = new MarkdownReader(false, MarkdownDocument.fromPluginResource("documentation/introduction_organization.md", new HashMap<>()));
         slideOrganization.setBorder(BorderFactory.createLineBorder(UIManager.getColor("TextArea.background"), 16));
         slideshow.addSlide(slideOrganization, "Organizing your pipeline");
 
-        MarkdownReader slideNodes = new MarkdownReader(false, MarkdownDocument.fromPluginResource("documentation/introduction_nodes.md"));
+        MarkdownReader slideNodes = new MarkdownReader(false, MarkdownDocument.fromPluginResource("documentation/introduction_nodes.md", new HashMap<>()));
         slideNodes.setBorder(BorderFactory.createLineBorder(UIManager.getColor("TextArea.background"), 16));
         slideshow.addSlide(slideNodes, "Adding nodes");
 
-        MarkdownReader slidesRunning = new MarkdownReader(false, MarkdownDocument.fromPluginResource("documentation/introduction_running.md"));
+        MarkdownReader slidesRunning = new MarkdownReader(false, MarkdownDocument.fromPluginResource("documentation/introduction_running.md", new HashMap<>()));
         slidesRunning.setBorder(BorderFactory.createLineBorder(UIManager.getColor("TextArea.background"), 16));
         slideshow.addSlide(slidesRunning, "Running your pipeline");
 

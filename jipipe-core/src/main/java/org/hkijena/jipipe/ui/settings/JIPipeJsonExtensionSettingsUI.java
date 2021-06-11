@@ -19,6 +19,7 @@ import org.hkijena.jipipe.ui.components.MarkdownDocument;
 import org.hkijena.jipipe.ui.parameters.ParameterPanel;
 
 import java.awt.*;
+import java.util.HashMap;
 
 /**
  * Panel containing algorithm settings when algorithms are edited in a {@link org.hkijena.jipipe.JIPipeJsonExtension}
@@ -36,7 +37,7 @@ public class JIPipeJsonExtensionSettingsUI extends JIPipeJsonExtensionWorkbenchP
         setLayout(new BorderLayout());
         ParameterPanel metadataUI = new ParameterPanel(getExtensionWorkbenchUI(),
                 getProject(),
-                MarkdownDocument.fromPluginResource("documentation/project-settings.md"),
+                MarkdownDocument.fromPluginResource("documentation/project-settings.md", new HashMap<>()),
                 ParameterPanel.WITH_DOCUMENTATION | ParameterPanel.WITH_SCROLLING | ParameterPanel.WITHOUT_LABEL_SEPARATION);
         add(metadataUI, BorderLayout.CENTER);
     }

@@ -17,6 +17,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
+import java.util.HashMap;
 
 /**
  * Graphical control panel for CLIJ
@@ -40,7 +41,7 @@ public class CLIJControlPanel extends JIPipeWorkbenchPanel {
 
     private void initialize() {
         setLayout(new BorderLayout());
-        MarkdownReader documentation = new MarkdownReader(false, MarkdownDocument.fromPluginResource("extensions/clij2/introduction.md"));
+        MarkdownReader documentation = new MarkdownReader(false, MarkdownDocument.fromPluginResource("extensions/clij2/introduction.md", new HashMap<>()));
         documentation.getScrollPane().setBorder(null);
         ParameterPanel parameterPanel = new ParameterPanel(getWorkbench(),
                 CLIJSettings.getInstance(),

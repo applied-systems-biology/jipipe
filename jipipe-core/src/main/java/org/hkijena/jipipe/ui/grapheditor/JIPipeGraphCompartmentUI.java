@@ -368,7 +368,7 @@ public class JIPipeGraphCompartmentUI extends JIPipeGraphEditorUI {
         splitPane.setTopComponent(minimap);
 
         MarkdownReader markdownReader = new MarkdownReader(false);
-        markdownReader.setDocument(MarkdownDocument.fromPluginResource("documentation/algorithm-graph.md"));
+        markdownReader.setDocument(MarkdownDocument.fromPluginResource("documentation/algorithm-graph.md", new HashMap<>()));
         splitPane.setBottomComponent(markdownReader);
     }
 

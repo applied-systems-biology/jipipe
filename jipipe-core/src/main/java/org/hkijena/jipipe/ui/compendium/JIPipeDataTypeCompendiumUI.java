@@ -24,6 +24,7 @@ import org.hkijena.jipipe.ui.components.MarkdownDocument;
 
 import javax.swing.*;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -33,7 +34,7 @@ public class JIPipeDataTypeCompendiumUI extends JIPipeCompendiumUI<JIPipeDataInf
     List<JIPipeDataInfo> dataInfos;
 
     public JIPipeDataTypeCompendiumUI() {
-        super(MarkdownDocument.fromPluginResource("documentation/data-type-compendium.md"));
+        super(MarkdownDocument.fromPluginResource("documentation/data-type-compendium.md", new HashMap<>()));
     }
 
     @Override

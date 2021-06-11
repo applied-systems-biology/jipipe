@@ -28,6 +28,7 @@ import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
 import java.awt.*;
+import java.util.HashMap;
 
 /**
  * UI around a {@link JsonNodeInfo}
@@ -50,7 +51,7 @@ public class JsonNodeInfoUI extends JIPipeJsonExtensionWorkbenchPanel {
     private void initialize() {
         setLayout(new BorderLayout());
 
-        FormPanel parameterEditor = new FormPanel(MarkdownDocument.fromPluginResource("documentation/algorithm-extension.md"),
+        FormPanel parameterEditor = new FormPanel(MarkdownDocument.fromPluginResource("documentation/algorithm-extension.md", new HashMap<>()),
                 FormPanel.WITH_SCROLLING | FormPanel.WITH_DOCUMENTATION);
         initializeParameterEditor(parameterEditor);
         add(parameterEditor, BorderLayout.CENTER);

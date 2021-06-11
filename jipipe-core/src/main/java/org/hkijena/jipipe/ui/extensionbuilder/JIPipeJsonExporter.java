@@ -30,6 +30,7 @@ import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
 import java.awt.*;
+import java.util.HashMap;
 import java.util.stream.Collectors;
 
 /**
@@ -89,7 +90,7 @@ public class JIPipeJsonExporter extends JIPipeGraphEditorUI {
         exportPanel = new JPanel(new BorderLayout());
 
         ParameterPanel parameterPanel = new ParameterPanel(getWorkbench(), nodeInfo,
-                MarkdownDocument.fromPluginResource("documentation/exporting-algorithms.md"),
+                MarkdownDocument.fromPluginResource("documentation/exporting-algorithms.md", new HashMap<>()),
                 ParameterPanel.WITH_DOCUMENTATION | ParameterPanel.WITH_SCROLLING | ParameterPanel.DOCUMENTATION_BELOW | ParameterPanel.WITH_SEARCH_BAR);
         exportPanel.add(parameterPanel, BorderLayout.CENTER);
 

@@ -29,6 +29,7 @@ import java.awt.*;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -99,7 +100,7 @@ public class JIPipeJsonExtensionGraphUI extends JIPipeGraphEditorUI {
         splitPane.setTopComponent(minimap);
 
         MarkdownReader markdownReader = new MarkdownReader(false);
-        markdownReader.setDocument(MarkdownDocument.fromPluginResource("documentation/algorithm-graph.md"));
+        markdownReader.setDocument(MarkdownDocument.fromPluginResource("documentation/algorithm-graph.md", new HashMap<>()));
         splitPane.setBottomComponent(markdownReader);
     }
 

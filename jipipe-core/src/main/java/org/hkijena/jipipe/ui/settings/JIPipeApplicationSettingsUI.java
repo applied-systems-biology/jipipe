@@ -101,7 +101,7 @@ public class JIPipeApplicationSettingsUI extends JIPipeWorkbenchPanel {
 
                 ParameterPanel parameterPanel = new ParameterPanel(getWorkbench(),
                         traversedParameterCollection,
-                        MarkdownDocument.fromPluginResource("documentation/application-settings.md"),
+                        MarkdownDocument.fromPluginResource("documentation/application-settings.md", new HashMap<>()),
                         ParameterPanel.WITH_SCROLLING | ParameterPanel.WITH_DOCUMENTATION | ParameterPanel.WITH_SEARCH_BAR);
                 splitPane.setRightComponent(parameterPanel);
             }

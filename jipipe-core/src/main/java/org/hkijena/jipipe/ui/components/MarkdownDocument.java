@@ -77,23 +77,17 @@ public class MarkdownDocument {
      * Loads a document from the JIPipe plugin resources
      *
      * @param internalPath resource path. Relative to JIPipe resources
+     * @param additionalResourceProtocols Additional protocols. The key is the name of the protocol, while the value sets the resource loader class
      * @return the document
      */
-    public static MarkdownDocument fromPluginResource(String internalPath) {
+    public static MarkdownDocument fromPluginResource(String internalPath, Map<String, Class<?>> additionalResourceProtocols) {
         try {
             URL resourcePath = ResourceUtils.getPluginResource(internalPath);
             MarkdownDocument existing = fromResourcesCache.getOrDefault(resourcePath, null);
             if (existing != null)
                 return existing;
             String md = Resources.toString(resourcePath, Charsets.UTF_8);
-            Set<String> resourceURLs = getResourceURLs(md, "resource://");
-            for (String imageURL : resourceURLs) {
-                URL url = resourceReplacementCache.getOrDefault(imageURL, null);
-                if (url == null) {
-                    url = ResourceUtils.getPluginResource(imageURL);
-                }
-                md = md.replace("resource://" + imageURL, "" + url);
-            }
+            md = replaceResourceURLs(md, additionalResourceProtocols);
 
             MarkdownDocument markdownDocument = new MarkdownDocument(md);
             fromResourcesCache.put(resourcePath, markdownDocument);
@@ -104,24 +98,44 @@ public class MarkdownDocument {
     }
 
     /**
+     * Replaces resource URLs inside the Markdown document
+     * @param md Markdown string
+     * @param additionalResourceProtocols Additional protocols. The key is the name of the protocol, while the value sets the resource loader class
+     * @return modified markdown
+     */
+    private static String replaceResourceURLs(String md, Map<String, Class<?>> additionalResourceProtocols) {
+        {
+            Set<String> resourceURLs = getResourceURLs(md, "resource://");
+            for (String imageURL : resourceURLs) {
+                URL url = resourceReplacementCache.getOrDefault(imageURL, null);
+                if (url == null) {
+                    url = ResourceUtils.getPluginResource(imageURL);
+                }
+                md = md.replace("resource://" + imageURL, "" + url);
+            }
+        }
+        for (Map.Entry<String, Class<?>> entry : additionalResourceProtocols.entrySet()) {
+            Set<String> resourceURLs = getResourceURLs(md, entry.getKey());
+            for (String imageURL : resourceURLs) {
+                md = md.replace("resource://" + imageURL, "" + entry.getValue().getResource(imageURL));
+            }
+        }
+        return md;
+    }
+
+    /**
      * Loads a document from a resource URL
      *
      * @param resourcePath           resource path
      * @param enableResourceProtocol Allows to target core JIPipe resources with resource://
+     * @param additionalResourceProtocols Additional protocols. The key is the name of the protocol, while the value sets the resource loader class
      * @return the document
      */
-    public static MarkdownDocument fromResourceURL(URL resourcePath, boolean enableResourceProtocol) {
+    public static MarkdownDocument fromResourceURL(URL resourcePath, boolean enableResourceProtocol, Map<String, Class<?>> additionalResourceProtocols) {
         try {
             String md = Resources.toString(resourcePath, Charsets.UTF_8);
             if (enableResourceProtocol) {
-                Set<String> resourceURLs = getResourceURLs(md, "resource://");
-                for (String imageURL : resourceURLs) {
-                    URL url = resourceReplacementCache.getOrDefault(imageURL, null);
-                    if (url == null) {
-                        url = ResourceUtils.getPluginResource(imageURL);
-                    }
-                    md = md.replace("resource://" + imageURL, "" + url);
-                }
+                md = replaceResourceURLs(md, additionalResourceProtocols);
             }
             return new MarkdownDocument(md);
         } catch (IOException e) {
