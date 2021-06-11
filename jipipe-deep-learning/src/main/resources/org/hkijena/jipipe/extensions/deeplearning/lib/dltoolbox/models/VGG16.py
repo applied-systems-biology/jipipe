@@ -32,7 +32,7 @@ def build_model(config):
 
     """
 
-    img_shape = tuple(config['img_size'])
+    img_shape = tuple(config["image_shape"])
     num_classes = config['n_classes']
     model_path = config['output_model_path']
     model_json_path = config["output_model_json_path"]
