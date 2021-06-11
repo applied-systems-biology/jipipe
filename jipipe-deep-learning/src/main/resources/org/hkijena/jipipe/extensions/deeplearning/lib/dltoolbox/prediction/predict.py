@@ -34,43 +34,6 @@ import numpy as np
 # import matplotlib.image as mpimg
 # import pandas as pd
 
-### model to evalute images with given chars in 'abbrevation' ### 
-# def evaluate_model(model, X, Y):  # #X_Y_path):
-#
-#
-#     # read ALL images path
-#     # original_path_all = np.sort( glob( os.path.join( input_path, 'original', '*.png') ) )
-#     # labels_path_all = np.sort( glob( os.path.join( input_path, 'labels', '*.png') ) )
-#     # print('[INFO] total images in directory - originals: {0} and labels: {1}'.format(len(original_path_all), len(labels_path_all)) )
-#
-#     # X_test_path, Y_test_path = X_Y_path
-#
-#     # print('\n\tX_test_path:', len(X_test_path), 'Y_test_path:', len(Y_test_path))
-#
-#     # read all test images
-#     # X_test_images = skimage.io.ImageCollection(X_test_path)
-#     # Y_test_images = skimage.io.ImageCollection(Y_test_path)
-#     # print('\n\tX_test_images:', len(X_test_images), 'Y_test_images:', len(Y_test_images) )
-#
-#     print('\n\tX:', len(X), 'Y:', len(Y))
-#
-#     # tranfer to numpy required arrays
-#     # x_test, y_test = np.array(X_test_images), np.array(Y_test_images)
-#     x_test, y_test = np.array(X), np.array(Y)
-#     y_test = np.expand_dims(np.array(y_test), axis=-1)
-#
-#     # TODO: dieser ververarbeitungs Schritt wird von einer node innerhalb JIPipe erledigt
-#     # normalize input data
-#     # x_test = utils.preprocessing(x_test)
-#
-#     print('\n\ttest data:', x_test.shape, y_test.shape, '\n\n')
-#
-#     scores = model.evaluate(x_test, y_test, verbose=1)
-#
-#     print(f'Score: {model.metrics_names[0]} of {scores[0]} ;\t {model.metrics_names[1]} of {scores[1]}')
-#
-#     return scores
-
 
 ### predict a whole sample ###
 # """

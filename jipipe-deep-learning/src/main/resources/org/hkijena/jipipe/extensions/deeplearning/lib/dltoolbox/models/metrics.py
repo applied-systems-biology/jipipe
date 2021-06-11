@@ -17,8 +17,10 @@ Adolf-Reichwein-Straße 23, 07745 Jena, Germany
 Script to define costum-made metrcis
 """
 
+import numpy as np
 import tensorflow as tf
 from keras import losses
+from sklearn.metrics import matthews_corrcoef
 
 
 def dice_coeff(y_true, y_pred):
@@ -81,6 +83,35 @@ def ce_dice_loss(y_true, y_pred):
     """
     loss = losses.categorical_crossentropy(y_true, y_pred) + dice_loss(y_true, y_pred)
     return loss
+
+def MCC(y_true, y_pred):
+    """
+    calculate the Matthews correlation coefficient (MCC)
+    Args:
+        y_true:
+        y_pred:
+
+    Returns:
+        float: The final score.
+    """
+
+
+    '''
+    calculate the Matthew correlation coefficient
+    '''
+    
+    # TP = df_tmp["TruePositive"]
+    # FP = df_tmp["FalsePositive"]
+    # FN = df_tmp["FalseNegative"]
+    # TN = df_tmp["TrueNegative"]
+    
+    # counter = (TN * TP) - (FP * FN)
+    # denominator = np.sqrt( (TN + FN)*(FP + TP)*(TN + FP)*(FN + TP) )
+    
+    # return counter / denominator
+
+    return matthews_corrcoef(y_true, y_pred)
+
 
 
 # TODO: averaged F1-score over thresholds from 1 to 5 pixelsaround the ground truth

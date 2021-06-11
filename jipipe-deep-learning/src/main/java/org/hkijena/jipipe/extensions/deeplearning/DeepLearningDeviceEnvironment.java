@@ -38,7 +38,7 @@ public class DeepLearningDeviceEnvironment extends ExternalEnvironment {
     private OptionalIntegerRange cpuIds = new OptionalIntegerRange(new IntegerRange("0"), false);
     private OptionalIntegerRange gpuIds = new OptionalIntegerRange(new IntegerRange("0"), false);
     private boolean withGPU = true;
-    private boolean logDevicePlacement = true;
+    private boolean logDevicePlacement = false;
 
     public DeepLearningDeviceEnvironment() {
         setName("Default");

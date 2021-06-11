@@ -89,19 +89,17 @@ def setup_devices(config=None):
     tf.debugging.set_log_device_placement(config.get("log-device-placement", False))
 
 
-def sliding_window(img, stepSize, windowSize=(256, 256)):
+def sliding_window(img, step_size=(256, 256), window_size=(256, 256)):
     """
     Slide over the specified input image
     Args:
         img: the input image
-        stepSize: the step size
-        windowSize: the window size
+        step_size: the step size (x1, x0)
+        window_size: the window size (width, height)
 
-    Returns:
-
+    Returns: Generator of (x0, x1, window)
     """
-    # slide a window across the image
-    for y in range(0, img.shape[0], stepSize):
-        for x in range(0, img.shape[1], stepSize):
-            # yield the current window, cause of reduce memory costs
-            yield (x, y, img[y:y + windowSize[1], x:x + windowSize[0]])
+
+    for x0 in range(0, img.shape[0], step_size[0]):
+        for x1 in range(0, img.shape[1], step_size[1]):
+            yield x0, x1, img[x0:x0 + window_size[1], x1:x1 + window_size[0]]

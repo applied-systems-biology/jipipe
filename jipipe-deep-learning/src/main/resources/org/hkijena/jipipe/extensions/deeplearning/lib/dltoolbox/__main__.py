@@ -20,7 +20,7 @@ import json
 
 parser = argparse.ArgumentParser(prog="python -m dltoolbox", description="Runs the Deep Learning Toolbox")
 parser.add_argument("--operation", "-o", dest="operation", choices=["create-model", "train", "predict", "list-devices",
-                                                                    "list-devices-json"], required=True,
+                                                                    "list-devices-json", "evaluate"], required=True,
                     help="The operation to apply")
 parser.add_argument("--model-config", dest="model_config",
                     help="The configuration file that describes the model parameters")
@@ -77,6 +77,22 @@ elif args.operation == "predict":
 
     import dltoolbox.prediction
     dltoolbox.prediction.predict(model_config, config)
+elif args.operation == "evaluate":
+    with open(args.config, "r") as f:
+        config = json.load(f)
+    with open(args.model_config, "r") as f:
+        model_config = json.load(f)
+    if args.device_config:
+        with(open(args.device_config), "r") as f:
+            device_config = json.load(f)
+    else:
+        device_config = {}
+
+    import dltoolbox.utils
+    dltoolbox.utils.setup_devices(device_config)
+
+    import dltoolbox.evaluation
+    dltoolbox.evaluation.evaluate_model(model_config, config)
 elif args.operation == "list-devices":
     import tensorflow as tf
 
