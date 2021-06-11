@@ -5,7 +5,7 @@
     
       <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-<meta name="revised" content="2021-05-28T14:43:11 CEST">
+<meta name="revised" content="2021-06-11T12:52:52 CEST">
 <title>Usage in Java :: JIPipe for ImageJ</title>
 <link rel="shortcut icon" href="../../images/favicon.png" type="image/x-icon" />
 <link href="../../css/font-awesome.min.css" rel="stylesheet">
@@ -783,20 +783,20 @@ A simple <a href="../../apidocs/org/hkijena/jipipe/api/JIPipeGraphRunner.html">g
 </span><span style="color:#75715e"></span>
   <span style="color:#111">JIPipeSimpleIteratingAlgorithm</span> <span style="color:#111">node</span> <span style="color:#f92672">=</span> <span style="color:#111">JIPipe</span><span style="color:#f92672">.</span><span style="color:#75af00">createNode</span><span style="color:#f92672">(</span><span style="color:#d88200">&#34;import-imagej-imgplus-from-file&#34;</span><span style="color:#f92672">,</span> <span style="color:#111">JIPipeSimpleIteratingAlgorithm</span><span style="color:#f92672">.</span><span style="color:#75af00">class</span><span style="color:#f92672">);</span>
 
+  <span style="color:#75715e">// The node requires a progress info 
+</span><span style="color:#75715e"></span>  <span style="color:#111">JIPipeProgressInfo</span> <span style="color:#111">progress</span> <span style="color:#f92672">=</span> <span style="color:#00a8c8">new</span> <span style="color:#111">JIPipeProgressInfo</span><span style="color:#f92672">();</span>
+
   <span style="color:#75715e">// Always clear the node first (allows you to re-use it)
 </span><span style="color:#75715e"></span>  <span style="color:#111">node</span><span style="color:#f92672">.</span><span style="color:#75af00">clearSlotData</span><span style="color:#f92672">();</span>
 
   <span style="color:#75715e">// Add inputs
-</span><span style="color:#75715e"></span>  <span style="color:#111">node</span><span style="color:#f92672">.</span><span style="color:#75af00">getFirstInputSlot</span><span style="color:#f92672">().</span><span style="color:#75af00">addData</span><span style="color:#f92672">(</span><span style="color:#00a8c8">new</span> <span style="color:#111">FileData</span><span style="color:#f92672">(</span><span style="color:#111">Paths</span><span style="color:#f92672">.</span><span style="color:#75af00">get</span><span style="color:#f92672">(</span><span style="color:#d88200">&#34;/data/image.tif&#34;</span><span style="color:#f92672">)));</span>
-
-  <span style="color:#75715e">// The node requires a progress info 
-</span><span style="color:#75715e"></span>  <span style="color:#111">JIPipeProgressInfo</span> <span style="color:#111">progress</span> <span style="color:#f92672">=</span> <span style="color:#00a8c8">new</span> <span style="color:#111">JIPipeProgressInfo</span><span style="color:#f92672">();</span>
+</span><span style="color:#75715e"></span>  <span style="color:#111">node</span><span style="color:#f92672">.</span><span style="color:#75af00">getFirstInputSlot</span><span style="color:#f92672">().</span><span style="color:#75af00">addData</span><span style="color:#f92672">(</span><span style="color:#00a8c8">new</span> <span style="color:#111">FileData</span><span style="color:#f92672">(</span><span style="color:#111">Paths</span><span style="color:#f92672">.</span><span style="color:#75af00">get</span><span style="color:#f92672">(</span><span style="color:#d88200">&#34;/data/image.tif&#34;</span><span style="color:#f92672">)),</span> <span style="color:#111">progress</span><span style="color:#f92672">);</span>
 
   <span style="color:#75715e">// Run the node
 </span><span style="color:#75715e"></span>  <span style="color:#111">node</span><span style="color:#f92672">.</span><span style="color:#75af00">run</span><span style="color:#f92672">(</span><span style="color:#111">progress</span><span style="color:#f92672">);</span>
 
   <span style="color:#75715e">// Extract the output
-</span><span style="color:#75715e"></span>  <span style="color:#111">ImagePlusData</span> <span style="color:#111">image</span> <span style="color:#f92672">=</span> <span style="color:#111">node</span><span style="color:#f92672">.</span><span style="color:#75af00">getFirstOutputSlot</span><span style="color:#f92672">().</span><span style="color:#75af00">getData</span><span style="color:#f92672">(</span><span style="color:#111">0</span><span style="color:#f92672">,</span> <span style="color:#111">ImagePlusData</span><span style="color:#f92672">.</span><span style="color:#75af00">class</span><span style="color:#f92672">);</span>
+</span><span style="color:#75715e"></span>  <span style="color:#111">ImagePlusData</span> <span style="color:#111">image</span> <span style="color:#f92672">=</span> <span style="color:#111">node</span><span style="color:#f92672">.</span><span style="color:#75af00">getFirstOutputSlot</span><span style="color:#f92672">().</span><span style="color:#75af00">getData</span><span style="color:#f92672">(</span><span style="color:#111">0</span><span style="color:#f92672">,</span> <span style="color:#111">ImagePlusData</span><span style="color:#f92672">.</span><span style="color:#75af00">class</span><span style="color:#f92672">,</span> <span style="color:#111">progress</span><span style="color:#f92672">);</span>
 <span style="color:#f92672">}</span>
 </code></pre></div>
 

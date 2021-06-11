@@ -5,7 +5,7 @@
     
       <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-<meta name="revised" content="2021-05-28T14:43:11 CEST">
+<meta name="revised" content="2021-06-11T12:52:52 CEST">
 <title>Creating a parameter type :: JIPipe for ImageJ</title>
 <link rel="shortcut icon" href="../../images/favicon.png" type="image/x-icon" />
 <link href="../../css/font-awesome.min.css" rel="stylesheet">
@@ -686,7 +686,7 @@ a parameter if you require a list of it down the line. The list parameter inheri
 
 <h2 id="creating-an-editor">Creating an editor</h2>
 <p>To create an editor UI, you have to inherit from <a href="../../apidocs/org/hkijena/jipipe/ui/grapheditor/settings/JIPipeParameterEditorUI.html">JIPipeParameterEditorUI</a>.</p>
-<p>The UI class provides access to the <a href="../../apidocs/org/hkijena/jipipe/api/parameters/JIPipeParameterHolder.html">JIPipeParameterHolder</a> object and the <a href="../../apidocs/org/hkijena/jipipe/api/parameters/JIPipeParameterAccess.html">JIPipeParameterAccess</a> object that encapsulates the getter and setters, as well as additional annotations.</p>
+<p>The UI class provides access to the <a href="../../apidocs/org/hkijena/jipipe/api/parameters/JIPipeParameterCollection.html">JIPipeParameterCollection</a> object and the <a href="../../apidocs/org/hkijena/jipipe/api/parameters/JIPipeParameterAccess.html">JIPipeParameterAccess</a> object that encapsulates the getter and setters, as well as additional annotations.</p>
 <p>There is also access to the SciJava context object.</p>
 
 <div class="notices warning" ><p><p>Please be careful to avoid infinite loops between reloading and setting parameters from UI elements.</p>

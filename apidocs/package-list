@@ -36,6 +36,9 @@ org.hkijena.jipipe.extensions.core.nodes
 org.hkijena.jipipe.extensions.datatables
 org.hkijena.jipipe.extensions.datatables.algorithms
 org.hkijena.jipipe.extensions.deeplearning
+org.hkijena.jipipe.extensions.deeplearning.configs
+org.hkijena.jipipe.extensions.deeplearning.datatypes
+org.hkijena.jipipe.extensions.deeplearning.nodes
 org.hkijena.jipipe.extensions.expressions
 org.hkijena.jipipe.extensions.expressions.constants
 org.hkijena.jipipe.extensions.expressions.functions

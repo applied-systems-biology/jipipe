@@ -5,7 +5,7 @@
     
       <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-<meta name="revised" content="2021-05-28T14:43:11 CEST">
+<meta name="revised" content="2021-06-11T12:52:52 CEST">
 <title>Parameters :: JIPipe for ImageJ</title>
 <link rel="shortcut icon" href="../../../images/favicon.png" type="image/x-icon" />
 <link href="../../../css/font-awesome.min.css" rel="stylesheet">
@@ -721,20 +721,80 @@ Then you annotate the getter <strong>and</strong> setter with the same <a href="
 <div class="notices warning" ><p><p>Not all data types are supported. Data types are registered into JIPipe and available via JIPipeUIParametertypeRegistry.getInstance(). In a later tutorial we show how to register custom data types. JIPipe supports common primitives like boolean, int, float, double, String, and all enum data types.</p>
 </p></div>
 </p>
+<h1 id="accessing-parameters-from-within-code">Accessing parameters from within code</h1>
+<p>When a user sets a parameter within the UI, it goes through an instance of <a href="../../../apidocs/org/hkijena/jipipe/api/parameters/JIPipeParameterAccess.html">JIPipeParameterAccess</a>.
+This object is responsible for triggering the required events to notify the UI.</p>
+<p>If you set a parameter setter via code, you will notice that any open parameter UI does not respond to this change - due to the absence of the <a href="../../../apidocs/org/hkijena/jipipe/api/parameters/JIPipeParameterCollection.ParameterChangedEvent.html">JIPipeParameterAccess.ParameterChangedEvent</a>.
+To notify the UI, you can either trigger this event manually via the <code>EventBus</code> of the parameter collection, or use the 
+<a href="../../../apidocs/org/hkijena/jipipe/utils/ParameterUtils.html#setParameter-org.hkijena.jipipe.api.parameters.JIPipeParameterCollection-java.lang.String-java.lang.Object-">parameter setter utility</a>.
+This requires the unique key of the parameter, which can be different to the key defined in <a href="../../../apidocs/org/hkijena/jipipe/api/parameters/JIPipeParameter.html">@JIPipeParameter</a> (if it is a sub-parameter).</p>
 <h1 id="parameter-settings">Parameter settings</h1>
 <p>Some parameter types have different styles or other settings that can change the behavior of the parameter editor UI. An example is <a href="../../../apidocs/org/hkijena/jipipe/extensions/standardparametereditors/ui/parametereditors/StringParameterSettings.html">StringParameterSettings</a> that allows to change between single-line and multi-line editors.</p>
 <h1 id="sub-parameters">Sub-parameters</h1>
-<p><a href="../../../apidocs/org/hkijena/jipipe/api/nodes/JIPipeAlgorithm.html">JIPipeAlgorithm</a>, like any <a href="../../../apidocs/org/hkijena/jipipe/api/parameters/JIPipeParameterHolder.html">JIPipeParameterHolder</a> allows sub-parameters.</p>
-<p>To create a sub-parameter create a getter to an <a href="../../../apidocs/org/hkijena/jipipe/api/parameters/JIPipeParameterHolder.html">JIPipeParameterHolder</a> and annotate it with <a href="../../../apidocs/org/hkijena/jipipe/api/parameters/JIPipeSubParameters.html">@JIPipeParameter</a>. The key provided with the annotation should be an unique parameter key. The parameters in the sub-parameter instance are automatically displayed as new group in the parameter editor.</p>
+<p><a href="../../../apidocs/org/hkijena/jipipe/api/nodes/JIPipeAlgorithm.html">JIPipeAlgorithm</a>, like any <a href="../../../apidocs/org/hkijena/jipipe/api/parameters/JIPipeParameterCollection.html">JIPipeParameterCollection</a> allows sub-parameters.</p>
+<p>To create a sub-parameter create a getter to an <a href="../../../apidocs/org/hkijena/jipipe/api/parameters/JIPipeParameterCollection.html">JIPipeParameterCollection</a> and annotate it with <a href="../../../apidocs/org/hkijena/jipipe/api/parameters/JIPipeSubParameters.html">@JIPipeParameter</a>. The key provided with the annotation should be an unique parameter key. The parameters in the sub-parameter instance are automatically displayed as new group in the parameter editor.</p>
+<div class="highlight"><pre style="color:#272822;background-color:#fafafa;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#75af00">@JIPipeDocumentation</span><span style="color:#f92672">(</span><span style="color:#111">name</span> <span style="color:#f92672">=</span> <span style="color:#d88200">&#34;Gaussian filter&#34;</span><span style="color:#f92672">)</span>
+<span style="color:#75af00">@JIPipeParameter</span><span style="color:#f92672">(</span><span style="color:#111">value</span> <span style="color:#f92672">=</span> <span style="color:#d88200">&#34;gaussian-algorithm&#34;</span><span style="color:#f92672">)</span>
+<span style="color:#00a8c8">public</span> <span style="color:#111">GaussianBlur2DAlgorithm</span> <span style="color:#75af00">getGaussianAlgorithm</span><span style="color:#f92672">()</span> <span style="color:#f92672">{</span>
+    <span style="color:#00a8c8">return</span> <span style="color:#111">gaussianAlgorithm</span><span style="color:#f92672">;</span>
+<span style="color:#f92672">}</span>
+</code></pre></div><p>The <a href="../../../apidocs/org/hkijena/jipipe/api/parameters/JIPipeSubParameters.html">@JIPipeParameter</a> annotation allows you to determine various properties, like 
+if the sub-parameter should be collapsed or hidden by default.</p>
 
 <div class="notices warning" ><p><p>Please do not forget to listen for the ParameterStructureChangedEvent and pass it to the algorithm&rsquo;s event bus. Otherwise there can be issues with the extension builder.
 You can use the registerSubParameter() method in the constructor and copy constructor as a shortcut.</p>
 </p></div>
 
-<h1 id="user-defined-parameters">User-defined parameters</h1>
+<h1 id="conditional-parameters">Conditional parameters</h1>
+<p>Each parameter collection (including nodes) allow the conditional display of parameters or sub-parameters.
+To setup this display, override the <a href="../../../apidocs/org/hkijena/jipipe/api/parameters/JIPipeParameterCollection.html#isParameterUIVisible-org.hkijena.jipipe.api.parameters.JIPipeParameterTree-org.hkijena.jipipe.api.parameters.JIPipeParameterAccess-">isParameterUIVisible</a>
+method. There are two overloads, one for displaying or hiding single parameters, and one for controlling the display of sub-parameters.</p>
+<div class="highlight"><pre style="color:#272822;background-color:#fafafa;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#75715e">// Example for conditional showing/hidding of single parameters
+</span><span style="color:#75715e"></span> <span style="color:#75af00">@Override</span>
+<span style="color:#00a8c8">public</span> <span style="color:#00a8c8">boolean</span> <span style="color:#75af00">isParameterUIVisible</span><span style="color:#f92672">(</span><span style="color:#111">JIPipeParameterTree</span> <span style="color:#111">tree</span><span style="color:#f92672">,</span> <span style="color:#111">JIPipeParameterAccess</span> <span style="color:#111">access</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+    <span style="color:#00a8c8">if</span> <span style="color:#f92672">(</span><span style="color:#111">access</span><span style="color:#f92672">.</span><span style="color:#75af00">getKey</span><span style="color:#f92672">().</span><span style="color:#75af00">equals</span><span style="color:#f92672">(</span><span style="color:#d88200">&#34;mode&#34;</span><span style="color:#f92672">))</span>
+        <span style="color:#00a8c8">return</span> <span style="color:#00a8c8">true</span><span style="color:#f92672">;</span>
+    <span style="color:#00a8c8">if</span> <span style="color:#f92672">(</span><span style="color:#111">mode</span> <span style="color:#f92672">==</span> <span style="color:#111">Mode</span><span style="color:#f92672">.</span><span style="color:#75af00">Automatic</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+        <span style="color:#00a8c8">return</span> <span style="color:#f92672">!</span><span style="color:#111">access</span><span style="color:#f92672">.</span><span style="color:#75af00">getKey</span><span style="color:#f92672">().</span><span style="color:#75af00">equals</span><span style="color:#f92672">(</span><span style="color:#d88200">&#34;custom-name&#34;</span><span style="color:#f92672">);</span>
+    <span style="color:#f92672">}</span> <span style="color:#00a8c8">else</span> <span style="color:#f92672">{</span>
+        <span style="color:#00a8c8">if</span> <span style="color:#f92672">(</span><span style="color:#111">access</span><span style="color:#f92672">.</span><span style="color:#75af00">getKey</span><span style="color:#f92672">().</span><span style="color:#75af00">equals</span><span style="color:#f92672">(</span><span style="color:#d88200">&#34;ignore-missing-metadata&#34;</span><span style="color:#f92672">))</span>
+            <span style="color:#00a8c8">return</span> <span style="color:#00a8c8">true</span><span style="color:#f92672">;</span>
+        <span style="color:#00a8c8">if</span> <span style="color:#f92672">(</span><span style="color:#111">access</span><span style="color:#f92672">.</span><span style="color:#75af00">getKey</span><span style="color:#f92672">().</span><span style="color:#75af00">equals</span><span style="color:#f92672">(</span><span style="color:#d88200">&#34;missing-string&#34;</span><span style="color:#f92672">))</span>
+            <span style="color:#00a8c8">return</span> <span style="color:#00a8c8">true</span><span style="color:#f92672">;</span>
+        <span style="color:#00a8c8">return</span> <span style="color:#111">access</span><span style="color:#f92672">.</span><span style="color:#75af00">getKey</span><span style="color:#f92672">().</span><span style="color:#75af00">equals</span><span style="color:#f92672">(</span><span style="color:#d88200">&#34;custom-name&#34;</span><span style="color:#f92672">);</span>
+    <span style="color:#f92672">}</span>
+<span style="color:#f92672">}</span> 
+
+<span style="color:#75715e">// Example for sub-parameters
+</span><span style="color:#75715e"></span><span style="color:#75af00">@Override</span>
+<span style="color:#00a8c8">public</span> <span style="color:#00a8c8">boolean</span> <span style="color:#75af00">isParameterUIVisible</span><span style="color:#f92672">(</span><span style="color:#111">JIPipeParameterTree</span> <span style="color:#111">tree</span><span style="color:#f92672">,</span> <span style="color:#111">JIPipeParameterCollection</span> <span style="color:#111">subParameter</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+    <span style="color:#00a8c8">if</span><span style="color:#f92672">(!</span><span style="color:#111">scaleToModelSize</span> <span style="color:#f92672">&amp;&amp;</span> <span style="color:#111">subParameter</span> <span style="color:#f92672">==</span> <span style="color:#111">getScale2DAlgorithm</span><span style="color:#f92672">())</span> <span style="color:#f92672">{</span>
+        <span style="color:#00a8c8">return</span> <span style="color:#00a8c8">false</span><span style="color:#f92672">;</span>
+    <span style="color:#f92672">}</span>
+    <span style="color:#00a8c8">return</span> <span style="color:#00a8c8">super</span><span style="color:#f92672">.</span><span style="color:#75af00">isParameterUIVisible</span><span style="color:#f92672">(</span><span style="color:#111">tree</span><span style="color:#f92672">,</span> <span style="color:#111">subParameter</span><span style="color:#f92672">);</span>
+<span style="color:#f92672">}</span>
+</code></pre></div><h1 id="user-defined-parameters">User-defined parameters</h1>
 <p>If you want to make it possible for users to create custom parameters, create an <a href="../../../apidocs/org/hkijena/jipipe/api/parameters/JIPipeDynamicParameterHolder.html">JIPipeDynamicParameterHolder</a> as sub-parameter.
 You can control the list of allowed parameter types and other settings.</p>
-<p>
+<div class="highlight"><pre style="color:#272822;background-color:#fafafa;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#75715e">// Field that initializes the dynamic parameter collection with all supported parameter types
+</span><span style="color:#75715e"></span><span style="color:#00a8c8">private</span> <span style="color:#111">JIPipeDynamicParameterCollection</span> <span style="color:#111">scriptParameters</span> <span style="color:#f92672">=</span> <span style="color:#00a8c8">new</span> <span style="color:#111">JIPipeDynamicParameterCollection</span><span style="color:#f92672">(</span><span style="color:#00a8c8">true</span><span style="color:#f92672">,</span>
+            <span style="color:#111">JIPipe</span><span style="color:#f92672">.</span><span style="color:#75af00">getParameterTypes</span><span style="color:#f92672">().</span><span style="color:#75af00">getRegisteredParameters</span><span style="color:#f92672">().</span><span style="color:#75af00">values</span><span style="color:#f92672">());</span>
+            
+<span style="color:#00a8c8">public</span> <span style="color:#75af00">MyClass</span><span style="color:#f92672">()</span> <span style="color:#f92672">{</span>
+    <span style="color:#111">registerSubParameter</span><span style="color:#f92672">(</span><span style="color:#111">scriptParameters</span><span style="color:#f92672">);</span>
+<span style="color:#f92672">}</span>
+
+<span style="color:#00a8c8">public</span> <span style="color:#75af00">MyClass</span><span style="color:#f92672">(</span><span style="color:#111">MyClass</span> <span style="color:#111">other</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+    <span style="color:#00a8c8">this</span><span style="color:#f92672">.</span><span style="color:#75af00">scriptParameters</span> <span style="color:#f92672">=</span> <span style="color:#00a8c8">new</span> <span style="color:#111">JIPipeDynamicParameterCollection</span><span style="color:#f92672">(</span><span style="color:#111">other</span><span style="color:#f92672">.</span><span style="color:#75af00">scriptParameters</span><span style="color:#f92672">);</span>
+    <span style="color:#111">registerSubParameter</span><span style="color:#f92672">(</span><span style="color:#111">scriptParameters</span><span style="color:#f92672">);</span>
+<span style="color:#f92672">}</span>
+
+<span style="color:#75af00">@JIPipeDocumentation</span><span style="color:#f92672">(</span><span style="color:#111">name</span> <span style="color:#f92672">=</span> <span style="color:#d88200">&#34;Script parameters&#34;</span><span style="color:#f92672">)</span>
+<span style="color:#75af00">@JIPipeParameter</span><span style="color:#f92672">(</span><span style="color:#111">value</span> <span style="color:#f92672">=</span> <span style="color:#d88200">&#34;script-parameters&#34;</span><span style="color:#f92672">,</span> <span style="color:#111">persistence</span> <span style="color:#f92672">=</span> <span style="color:#111">JIPipeParameterPersistence</span><span style="color:#f92672">.</span><span style="color:#75af00">Object</span><span style="color:#f92672">)</span> <span style="color:#75715e">// Important: Set persistence
+</span><span style="color:#75715e"></span><span style="color:#00a8c8">public</span> <span style="color:#111">JIPipeDynamicParameterCollection</span> <span style="color:#75af00">getScriptParameters</span><span style="color:#f92672">()</span> <span style="color:#f92672">{</span>
+    <span style="color:#00a8c8">return</span> <span style="color:#111">scriptParameters</span><span style="color:#f92672">;</span>
+<span style="color:#f92672">}</span>
+</code></pre></div><p>
 <div class="notices warning" ><p><p>Do not forget to deep-copy the JIPipeDynamicParameterHolder. The class has a copy constructor for
 such an operation.</p>
 </p></div>
@@ -742,6 +802,11 @@ such an operation.</p>
 
 <div class="notices warning" ><p><p>Please do not forget to listen for the ParameterStructureChangedEvent and pass it to the algorithm&rsquo;s event bus. Otherwise there can be issues with the extension builder.
 JIPipeAlgorithm comes with a pre-made function registerSubParameters() that should be called in the constructors.</p>
+</p></div>
+
+
+<div class="notices warning" ><p><p>We recommend setting the persistence of the getter to JIPipeParameterPersistence.Object. Otherwise, JIPipe will have issues with 
+de-serializing the parameter and lose all settings.</p>
 </p></div>
 </p>
 <h1 id="full-control">Full control</h1>

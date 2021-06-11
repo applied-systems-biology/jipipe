@@ -75,7 +75,7 @@ Can I save data by their metadata? Yes, use the node Miscellaneous &amp;gt; Expo
       <guid>https://www.jipipe.org/documentation/batch-pipelines/</guid>
       <description>JIPipe was designed to always process data in batches, meaning that algorithms always work on multiple data sets at once. This greatly reduces the required work to upscale a processing pipeline from one or few to a large amount of data sets.
 We will use this pipeline as example:
-mermaid.initialize({startOnLoad:true});graph LR;A[File] -- B[Load image]B -- C[Apply gaussian] In the pipeline, a file is provided as input. Then the file is loaded as image.</description>
+mermaid.initialize({startOnLoad:true}); graph LR;A[File] -- B[Load image]B -- C[Apply gaussian] In the pipeline, a file is provided as input. Then the file is loaded as image.</description>
     </item>
     
     <item>
@@ -169,7 +169,7 @@ An user interface is shown when a user select a row in the results table. There 
       <guid>https://www.jipipe.org/documentation-java-api/algorithm/merging-algorithms/</guid>
       <description>You might need to develop an algorithm that does not simply iterate through its input(s), but organize it into groups to be merged. JIPipe comes with JIPipeMergingAlgorithm that uses the annotation attached during processing to find data rows that belong to the same data set. The implementation creates JIPipeMergingDataBatch instances that represent multiple data rows merged into one group.
 Please access data via the data interface.
-The only difference to JIPipeAlgorithm is that you need to override a different function called runIteration.</description>
+ The only difference to JIPipeAlgorithm is that you need to override a different function called runIteration.</description>
     </item>
     
     <item>
@@ -381,7 +381,7 @@ Please make sure to send an event when the parameter is set, so the UI can updat
       <guid>https://www.jipipe.org/documentation-data-api/pipeline-output/</guid>
       <description>A pipeline output folder is generated on running a pipeline using the Run function or via other means of running the pipeline and saving the results to the hard drive.
 The generated folder follows a hierarchical structure that is based on the location of data within graph compartments, nodes, and slots. It also contains a copy of the project that generated the data in a file project.jip.
-mermaid.initialize({startOnLoad:true});graph LR;Root[&#34;</description>
+mermaid.initialize({startOnLoad:true}); graph LR; Root[&#34;</description>
     </item>
     
     <item>
@@ -526,8 +526,8 @@ Creating plots Plots can be created via the Analyze &amp;gt; Plot &amp;gt; Plot 
       
       <guid>https://www.jipipe.org/documentation/standard-library/jython/</guid>
       <description>The standard library contains nodes that allow to run Python scripts using the Jython library. Python scripts have access to all JIPipe and ImageJ APIs that are available at runtime.
-Due to restrictions in the Jython library, Python libraries that are built on a native backend (such as Numpy) will not work.
-As JIPipe builds on the functionality provided by ImageJ. Please refer to the ImageJ documentation to find information on how to expand Jython with additional libraries.</description>
+ Due to restrictions in the Jython library, Python libraries that are built on a native backend (such as Numpy) will not work.
+ As JIPipe builds on the functionality provided by ImageJ. Please refer to the ImageJ documentation to find information on how to expand Jython with additional libraries.</description>
     </item>
     
     <item>
@@ -569,7 +569,7 @@ public static void main(String[] args) { // Extract necessary SciJava variables 
       <guid>https://www.jipipe.org/documentation/standard-library/r-integration/</guid>
       <description>The standard library contains nodes that allow to run R scripts. This means that you will need to install a distribution of R.
 You will need to install R (https://www.r-project.org/) and setup JIPipe to find this installation.
-Setting up R You have the option to either select an existing R environment, or let JIPipe install a new R environment into a folder (only available on Windows).
+ Setting up R You have the option to either select an existing R environment, or let JIPipe install a new R environment into a folder (only available on Windows).
 To setup Python, navigate to Project &amp;gt; Application settings &amp;gt; Extensions &amp;gt; R integration.</description>
     </item>
     
@@ -622,7 +622,7 @@ Currently supported are &amp;hellip;
       
       <guid>https://www.jipipe.org/documentation-json-api/data-table/</guid>
       <description>This document describes the properties of the JSON API object. You also can access the document in JSON Schema format: data-table.schema.json
-Defines a data tablenode-id:stringThe node type ID that generated the data. Optional.slot:stringThe slot name that generated the data. Optional.rows:object[]The data row itemsSee data-table-rowdata-type:stringThe data type ID behind the rowExample { &amp;#34;node-id&amp;#34; : &amp;#34;ij1-fft-forward2d&amp;#34;, &amp;#34;slot&amp;#34; : &amp;#34;Output&amp;#34;, &amp;#34;internal-path&amp;#34; : &amp;#34;/fastdata/projects/JIPipe/Output&amp;#34;, &amp;#34;rows&amp;#34; : [ { &amp;#34;index&amp;#34; : 0, &amp;#34;annotations&amp;#34; : [ ], &amp;#34;true-data-type&amp;#34; : &amp;#34;imagej-imgplus-fft-2d&amp;#34; } ], &amp;#34;data-type&amp;#34; : &amp;#34;imagej-imgplus-fft-2d&amp;#34; } </description>
+ Defines a data table   node-id:  string      The node type ID that generated the data. Optional.   slot:  string      The slot name that generated the data. Optional.   rows:  object[]       The data row items See data-table-row        data-type:  string       The data type ID behind the row      Example { &amp;#34;node-id&amp;#34; : &amp;#34;ij1-fft-forward2d&amp;#34;, &amp;#34;slot&amp;#34; : &amp;#34;Output&amp;#34;, &amp;#34;internal-path&amp;#34; : &amp;#34;/fastdata/projects/JIPipe/Output&amp;#34;, &amp;#34;rows&amp;#34; : [ { &amp;#34;index&amp;#34; : 0, &amp;#34;annotations&amp;#34; : [ ], &amp;#34;true-data-type&amp;#34; : &amp;#34;imagej-imgplus-fft-2d&amp;#34; } ], &amp;#34;data-type&amp;#34; : &amp;#34;imagej-imgplus-fft-2d&amp;#34; } </description>
     </item>
     
     <item>
@@ -632,7 +632,7 @@ Currently supported are &amp;hellip;
       
       <guid>https://www.jipipe.org/documentation-json-api/data-table-row/</guid>
       <description>This document describes the properties of the JSON API object. You also can access the document in JSON Schema format: data-table-row.schema.json
-Defines a data table rowid:numberRow index within the data tableannotations:object[]Annotations attached to the data rowSee annotationtrue-data-type:stringThe true (not the slot) data type ID behind the rowExample { &amp;#34;index&amp;#34; : 0, &amp;#34;annotations&amp;#34; : [ ], &amp;#34;true-data-type&amp;#34; : &amp;#34;imagej-imgplus-fft-2d&amp;#34; } </description>
+ Defines a data table row   id:  number      Row index within the data table   annotations:  object[]       Annotations attached to the data row See annotation        true-data-type:  string       The true (not the slot) data type ID behind the row      Example { &amp;#34;index&amp;#34; : 0, &amp;#34;annotations&amp;#34; : [ ], &amp;#34;true-data-type&amp;#34; : &amp;#34;imagej-imgplus-fft-2d&amp;#34; } </description>
     </item>
     
     <item>
@@ -642,7 +642,7 @@ Currently supported are &amp;hellip;
       
       <guid>https://www.jipipe.org/documentation-json-api/annotation/</guid>
       <description>This document describes the properties of the JSON API object. You also can access the document in JSON Schema format: annotation.schema.json
-An annotationname:stringName of the annotationvalue:stringValue of the annotationExample { &amp;#34;name&amp;#34; : &amp;#34;#Dataset&amp;#34;, &amp;#34;value&amp;#34;: &amp;#34;Experiment 1&amp;#34; } </description>
+ An annotation   name:  string       Name of the annotation   value:  string       Value of the annotation      Example { &amp;#34;name&amp;#34; : &amp;#34;#Dataset&amp;#34;, &amp;#34;value&amp;#34;: &amp;#34;Experiment 1&amp;#34; } </description>
     </item>
     
     <item>
