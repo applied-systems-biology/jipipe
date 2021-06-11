@@ -16,27 +16,34 @@ import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.util.List;
 
-public class NodeToolBoxWindow extends JFrame {
+public class NodeToolBox extends JPanel {
 
     private JList<JIPipeNodeInfo> algorithmList;
     private SearchTextField searchField;
     private MarkdownReader documentationReader = new MarkdownReader(false);
+    private JToolBar toolBar = new JToolBar();
 
-    public NodeToolBoxWindow() {
-        setDefaultCloseOperation(DISPOSE_ON_CLOSE);
-        setAlwaysOnTop(true);
+    public NodeToolBox() {
         initialize();
         reloadAlgorithmList();
     }
 
-    public static NodeToolBoxWindow openNewToolBox() {
-        NodeToolBoxWindow window = new NodeToolBoxWindow();
+    public JToolBar getToolBar() {
+        return toolBar;
+    }
+
+    public static void openNewToolBoxWindow() {
+        NodeToolBox toolBox = new NodeToolBox();
+        JFrame window = new JFrame();
+        toolBox.getToolBar().add(new AlwaysOnTopToggle(window));
+        window.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+        window.setAlwaysOnTop(true);
         window.setTitle("Available nodes");
         window.setIconImage(UIUtils.getIcon128FromResources("jipipe.png").getImage());
+        window.setContentPane(new NodeToolBox());
         window.pack();
         window.setSize(300, 700);
         window.setVisible(true);
-        return window;
     }
 
     private static int[] rankNavigationEntry(JIPipeNodeInfo info, String[] searchStrings) {
@@ -68,16 +75,14 @@ public class NodeToolBoxWindow extends JFrame {
     }
 
     private void initialize() {
-        setContentPane(new JPanel(new BorderLayout()));
+        setLayout(new BorderLayout());
 
         JToolBar toolBar = new JToolBar();
-        getContentPane().add(toolBar, BorderLayout.NORTH);
+        add(toolBar, BorderLayout.NORTH);
 
         searchField = new SearchTextField();
         searchField.addActionListener(e -> reloadAlgorithmList());
         toolBar.add(searchField);
-
-        toolBar.add(new AlwaysOnTopToggle(this));
 
         algorithmList = new JList<>();
         algorithmList.setToolTipText("Drag one or multiple entries from the list into the graph to create nodes.");
@@ -103,7 +108,7 @@ public class NodeToolBoxWindow extends JFrame {
             }
         });
 
-        getContentPane().add(splitPane, BorderLayout.CENTER);
+        add(splitPane, BorderLayout.CENTER);
     }
 
     private void reloadAlgorithmList() {
@@ -167,7 +172,7 @@ public class NodeToolBoxWindow extends JFrame {
     private List<JIPipeNodeInfo> getFilteredAndSortedInfos() {
         return RankedData.getSortedAndFilteredData(JIPipe.getNodes().getRegisteredNodeInfos().values(),
                 JIPipeNodeInfo::getName,
-                NodeToolBoxWindow::rankNavigationEntry,
+                NodeToolBox::rankNavigationEntry,
                 searchField.getSearchStrings());
     }
 }

@@ -11,7 +11,7 @@ public class NodeToolBoxMenuExtension extends GraphEditorToolBarButtonExtension 
         super(graphEditorUI);
         setToolTipText("Open a list of all available nodes that can be dragged into the graph");
         setIcon(UIUtils.getIconFromResources("actions/cm_thumbnailsview.png"));
-        addActionListener(e -> NodeToolBoxWindow.openNewToolBox());
+        addActionListener(e -> NodeToolBox.openNewToolBoxWindow());
     }
 
     @Override

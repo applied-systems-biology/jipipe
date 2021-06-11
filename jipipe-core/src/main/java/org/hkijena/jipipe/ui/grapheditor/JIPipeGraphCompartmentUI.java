@@ -28,9 +28,11 @@ import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.categories.DataSourceNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeContextAction;
+import org.hkijena.jipipe.extensions.nodetoolboxtool.NodeToolBox;
 import org.hkijena.jipipe.extensions.settings.GeneralUISettings;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
+import org.hkijena.jipipe.ui.components.DocumentTabPane;
 import org.hkijena.jipipe.ui.components.MarkdownDocument;
 import org.hkijena.jipipe.ui.components.MarkdownReader;
 import org.hkijena.jipipe.ui.grapheditor.actions.RunAndShowResultsAction;
@@ -367,9 +369,16 @@ public class JIPipeGraphCompartmentUI extends JIPipeGraphEditorUI {
         JIPipeGraphEditorMinimap minimap = new JIPipeGraphEditorMinimap(this);
         splitPane.setTopComponent(minimap);
 
+        DocumentTabPane bottomPanel = new DocumentTabPane();
+
         MarkdownReader markdownReader = new MarkdownReader(false);
         markdownReader.setDocument(MarkdownDocument.fromPluginResource("documentation/algorithm-graph.md", new HashMap<>()));
-        splitPane.setBottomComponent(markdownReader);
+        bottomPanel.addTab("Quick guide", UIUtils.getIconFromResources("actions/help.png"), markdownReader, DocumentTabPane.CloseMode.withoutCloseButton);
+
+        bottomPanel.addTab("Available nodes", UIUtils.getIconFromResources("actions/configuration.png"),
+                new NodeToolBox(), DocumentTabPane.CloseMode.withoutCloseButton);
+
+        splitPane.setBottomComponent(bottomPanel);
     }
 
     @Override
