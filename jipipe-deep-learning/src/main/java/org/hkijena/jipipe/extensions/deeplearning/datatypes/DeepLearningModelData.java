@@ -32,7 +32,7 @@ import java.nio.file.Path;
  * Data that models a deep learning model
  */
 @JIPipeDocumentation(name = "Deep learning model", description = "A Deep learning model")
-@JIPipeDataStorageDocumentation("Two files: model.hdf5 stores the model in Keras/Tensorflow format. model-config.json stores the parameters of this model (dltoolbox format).")
+@JIPipeDataStorageDocumentation("3 files: model.hdf5 stores the model in Keras/Tensorflow format. model.json stores the model metadata in Keras/Tensorflow format. model-config.json stores the parameters of this model (dltoolbox format).")
 public class DeepLearningModelData implements JIPipeData {
 
     private final byte[] modelData;
