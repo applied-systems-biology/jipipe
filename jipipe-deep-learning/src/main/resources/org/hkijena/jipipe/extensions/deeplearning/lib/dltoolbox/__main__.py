@@ -34,7 +34,7 @@ if args.operation == "create-model":
     with open(args.config, "r") as f:
         config = json.load(f)
     if args.device_config:
-        with(open(args.device_config), "r") as f:
+        with open(args.device_config, "r") as f:
             device_config = json.load(f)
     else:
         device_config = {}
@@ -51,7 +51,7 @@ elif args.operation == "train":
     with open(args.model_config, "r") as f:
         model_config = json.load(f)
     if args.device_config:
-        with(open(args.device_config), "r") as f:
+        with open(args.device_config, "r") as f:
             device_config = json.load(f)
     else:
         device_config = {}
@@ -67,7 +67,7 @@ elif args.operation == "predict":
     with open(args.model_config, "r") as f:
         model_config = json.load(f)
     if args.device_config:
-        with(open(args.device_config), "r") as f:
+        with open(args.device_config, "r") as f:
             device_config = json.load(f)
     else:
         device_config = {}

@@ -29,7 +29,7 @@ def train_model(model_config, config):
 
     """
 
-    if model_config["n_classes"] == 2:
+    if model_config["n_classes"] == 2 and model_config["architecture"] == "SegNet":
         print("Detected a segmentation (2-classification) training")
         train_segmenter.train_model(model_config=model_config, config=config)
     else:

@@ -17,6 +17,7 @@ Adolf-Reichwein-Straße 23, 07745 Jena, Germany
 
 from dltoolbox.models import SegNet
 from dltoolbox.models import VGG16
+from dltoolbox.models import FCN32
 
 
 def build_model(config):
@@ -35,3 +36,5 @@ def build_model(config):
         SegNet.build_model(config)
     elif config["architecture"] == "VGG16":
         VGG16.build_model(config)
+    elif config["architecture"] == "FCN32":
+        FCN32.build_model(config)

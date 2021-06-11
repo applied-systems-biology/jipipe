@@ -57,8 +57,8 @@ public class JIPipePythonAdapterLibraryEnvironment extends PythonPackageLibraryE
         String globalFolder = "/org/hkijena/jipipe/extensions/python/lib";
         Set<String> toInstall = allResources.stream().filter(s -> s.startsWith(globalFolder)).collect(Collectors.toSet());
         for (String resource : toInstall) {
-            progressInfo.log("Installing " + resource);
             Path targetPath = getLibraryDirectory().resolve(resource.substring(globalFolder.length() + 1));
+            progressInfo.log("Installing " + resource + " to " + targetPath);
             if (!Files.isDirectory(targetPath.getParent())) {
                 try {
                     Files.createDirectories(targetPath.getParent());

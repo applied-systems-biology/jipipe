@@ -9,6 +9,8 @@ import org.hkijena.jipipe.extensions.deeplearning.nodes.PredictAlgorithm;
 import org.hkijena.jipipe.extensions.deeplearning.nodes.TrainModelAlgorithm;
 import org.hkijena.jipipe.extensions.parameters.primitives.HTMLText;
 import org.hkijena.jipipe.extensions.parameters.primitives.StringList;
+import org.hkijena.jipipe.extensions.python.JIPipePythonAdapterLibraryEnvironment;
+import org.hkijena.jipipe.extensions.python.JIPipePythonAdapterLibraryEnvironmentInstaller;
 import org.hkijena.jipipe.extensions.python.PythonEnvironment;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.scijava.plugin.Plugin;
@@ -68,6 +70,7 @@ public class DeepLearningExtension extends JIPipePrepackagedDefaultJavaExtension
     public void register() {
         DeepLearningSettings settings = new DeepLearningSettings();
 
+        // Deep learning toolkit
         registerEnvironment(DeepLearningToolkitLibraryEnvironment.class,
                 DeepLearningToolkitLibraryEnvironment.List.class,
                 settings,
@@ -75,6 +78,11 @@ public class DeepLearningExtension extends JIPipePrepackagedDefaultJavaExtension
                 "Deep Learning Toolkit",
                 "Library that provides Deep Learning capabilities",
                 UIUtils.getIconFromResources("actions/plugins.png"));
+        registerEnvironmentInstaller(DeepLearningToolkitLibraryEnvironment.class,
+                DeepLearningToolkitLibraryEnvironmentInstaller.class,
+                UIUtils.getIconFromResources("actions/browser-download.png"));
+
+        // Deep learning device
         registerEnvironment(DeepLearningDeviceEnvironment.class,
                 DeepLearningDeviceEnvironment.List.class,
                 settings,

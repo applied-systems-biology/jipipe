@@ -32,7 +32,7 @@ def build_model(config):
 
     """
 
-    img_shape = config['img_size']
+    img_shape = tuple(config['img_size'])
     num_classes = config['n_classes']
     model_path = config['output_model_path']
     model_json_path = config["output_model_json_path"]
@@ -54,7 +54,7 @@ def build_model(config):
         thi_conv = layers.MaxPooling2D((2, 2))(thi_conv)
         return thi_conv
 
-    inputs = layers.Input(img_shape)
+    inputs = layers.Input(shape=img_shape)
 
     # 2nd - convolution - block
     sCB_0 = secondConvBlock(inputs, num_filters=64)
@@ -69,10 +69,10 @@ def build_model(config):
     flatten = layers.Flatten()(tCB_4)
 
     # dense-layers for classification
-    dense_5 = layers.Dense(4096, activation='relu')(flatten)  # relu/leakyrelu
+    dense_5 = layers.Dense(4096, activation='relu')(flatten)  
     dropout_6 = layers.Dropout(0.5)(dense_5)
 
-    dense_7 = layers.Dense(4096, activation='relu')(dropout_6)  # relu/leakyrelu
+    dense_7 = layers.Dense(4096, activation='relu')(dropout_6)  
     dropout_8 = layers.Dropout(0.5)(dense_7)
 
     # last layer for classification

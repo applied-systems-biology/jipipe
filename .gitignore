@@ -26,3 +26,5 @@ target
 /r/
 /dist/zip/*
 /dist/JIPipe-2021.6.zip
+**/__pycache__/
+
