@@ -29,6 +29,7 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
 import org.hkijena.jipipe.extensions.deeplearning.DeepLearningSettings;
 import org.hkijena.jipipe.extensions.deeplearning.DeepLearningUtils;
+import org.hkijena.jipipe.extensions.deeplearning.OptionalDeepLearningDeviceEnvironment;
 import org.hkijena.jipipe.extensions.deeplearning.configs.DeepLearningTrainingConfiguration;
 import org.hkijena.jipipe.extensions.deeplearning.datatypes.DeepLearningModelData;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.transform.ScaleMode;
@@ -60,6 +61,7 @@ public class TrainModelAlgorithm extends JIPipeMergingAlgorithm {
     private DeepLearningTrainingConfiguration trainingConfiguration = new DeepLearningTrainingConfiguration();
     private OptionalPythonEnvironment overrideEnvironment = new OptionalPythonEnvironment();
     private boolean cleanUpAfterwards = true;
+    private OptionalDeepLearningDeviceEnvironment overrideDevices = new OptionalDeepLearningDeviceEnvironment();
 
     public TrainModelAlgorithm(JIPipeNodeInfo info) {
         super(info);
@@ -79,6 +81,19 @@ public class TrainModelAlgorithm extends JIPipeMergingAlgorithm {
         registerSubParameter(trainingConfiguration);
         this.scale2DAlgorithm = new TransformScale2DAlgorithm(other.scale2DAlgorithm);
         registerSubParameter(scale2DAlgorithm);
+        this.overrideDevices = new OptionalDeepLearningDeviceEnvironment(other.overrideDevices);
+    }
+
+    @JIPipeDocumentation(name = "Override device configuration", description = "If enabled, this nodes provides a custom device configuration, " +
+            "different to the one inside the application settings")
+    @JIPipeParameter("override-devices")
+    public OptionalDeepLearningDeviceEnvironment getOverrideDevices() {
+        return overrideDevices;
+    }
+
+    @JIPipeParameter("override-devices")
+    public void setOverrideDevices(OptionalDeepLearningDeviceEnvironment overrideDevices) {
+        this.overrideDevices = overrideDevices;
     }
 
     @Override
@@ -139,6 +154,12 @@ public class TrainModelAlgorithm extends JIPipeMergingAlgorithm {
                 throw new RuntimeException(e);
             }
 
+            Path deviceConfigurationPath = workDirectory.resolve("device-configuration.json");
+            if(getOverrideDevices().isEnabled())
+                getOverrideDevices().getContent().saveAsJson(deviceConfigurationPath);
+            else
+                DeepLearningSettings.getInstance().getDeepLearningDevice().saveAsJson(deviceConfigurationPath);
+
             // Run Python
             List<String> arguments = new ArrayList<>();
             arguments.add("-m");
@@ -149,6 +170,8 @@ public class TrainModelAlgorithm extends JIPipeMergingAlgorithm {
             arguments.add(workDirectory.resolve("training-config.json").toString());
             arguments.add("--model-config");
             arguments.add(workDirectory.resolve("model-config.json").toString());
+            arguments.add("--device-config");
+            arguments.add(deviceConfigurationPath.toString());
 
             if(DeepLearningSettings.getInstance().getDeepLearningToolkit().needsInstall())
                 DeepLearningSettings.getInstance().getDeepLearningToolkit().install(modelProgress);

@@ -24,6 +24,8 @@ public class DeepLearningSettings implements JIPipeParameterCollection, External
     private OptionalPythonEnvironment overridePythonEnvironment = new OptionalPythonEnvironment();
     private DeepLearningToolkitLibraryEnvironment.List deepLearningToolkitPresets = new DeepLearningToolkitLibraryEnvironment.List();
     private DeepLearningToolkitLibraryEnvironment deepLearningToolkit = new DeepLearningToolkitLibraryEnvironment();
+    private DeepLearningDeviceEnvironment deepLearningDevice = new DeepLearningDeviceEnvironment();
+    private DeepLearningDeviceEnvironment.List deepLearningDevicePresets = new DeepLearningDeviceEnvironment.List();
 
     public DeepLearningSettings() {
         overridePythonEnvironment.setEnabled(true);
@@ -93,14 +95,30 @@ public class DeepLearningSettings implements JIPipeParameterCollection, External
 
     @Override
     public List<ExternalEnvironment> getPresetsListInterface(Class<?> environmentClass) {
-        return ImmutableList.copyOf(deepLearningToolkitPresets);
+        if(environmentClass == DeepLearningToolkitLibraryEnvironment.class)
+            return ImmutableList.copyOf(deepLearningToolkitPresets);
+        else if(environmentClass == DeepLearningDeviceEnvironment.class)
+            return ImmutableList.copyOf(deepLearningDevicePresets);
+        else
+            throw new UnsupportedOperationException();
     }
 
     @Override
     public void setPresetsListInterface(List<ExternalEnvironment> presets, Class<?> environmentClass) {
-        deepLearningToolkitPresets.clear();
-        for (ExternalEnvironment preset : presets) {
-            deepLearningToolkitPresets.add((DeepLearningToolkitLibraryEnvironment) preset);
+        if(environmentClass == DeepLearningToolkitLibraryEnvironment.class) {
+            deepLearningToolkitPresets.clear();
+            for (ExternalEnvironment preset : presets) {
+                deepLearningToolkitPresets.add((DeepLearningToolkitLibraryEnvironment) preset);
+            }
+        }
+        else if(environmentClass == DeepLearningDeviceEnvironment.class) {
+            deepLearningDevicePresets.clear();
+            for (ExternalEnvironment preset : presets) {
+                deepLearningDevicePresets.add((DeepLearningDeviceEnvironment) preset);
+            }
+        }
+        else {
+            throw new UnsupportedOperationException();
         }
     }
 
@@ -126,5 +144,27 @@ public class DeepLearningSettings implements JIPipeParameterCollection, External
     @JIPipeParameter("deep-learning-toolkit")
     public void setDeepLearningToolkit(DeepLearningToolkitLibraryEnvironment deepLearningToolkit) {
         this.deepLearningToolkit = deepLearningToolkit;
+    }
+
+    @JIPipeDocumentation(name = "Devices", description = "Determines the default devices to be used for the processing")
+    @JIPipeParameter("deep-learning-device")
+    public DeepLearningDeviceEnvironment getDeepLearningDevice() {
+        return deepLearningDevice;
+    }
+
+    @JIPipeParameter("deep-learning-device")
+    public void setDeepLearningDevice(DeepLearningDeviceEnvironment deepLearningDevice) {
+        this.deepLearningDevice = deepLearningDevice;
+    }
+
+    @JIPipeDocumentation(name = "Deep learning device presets", description = "Presets for different device configurations")
+    @JIPipeParameter("deep-learning-device-presets")
+    public DeepLearningDeviceEnvironment.List getDeepLearningDevicePresets() {
+        return deepLearningDevicePresets;
+    }
+
+    @JIPipeParameter("deep-learning-device-presets")
+    public void setDeepLearningDevicePresets(DeepLearningDeviceEnvironment.List deepLearningDevicePresets) {
+        this.deepLearningDevicePresets = deepLearningDevicePresets;
     }
 }

@@ -24,6 +24,7 @@ import org.hkijena.jipipe.api.nodes.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.nodes.categories.DataSourceNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.deeplearning.DeepLearningSettings;
+import org.hkijena.jipipe.extensions.deeplearning.OptionalDeepLearningDeviceEnvironment;
 import org.hkijena.jipipe.extensions.deeplearning.configs.DeepLearningModelConfiguration;
 import org.hkijena.jipipe.extensions.deeplearning.datatypes.DeepLearningModelData;
 import org.hkijena.jipipe.extensions.python.OptionalPythonEnvironment;
@@ -45,6 +46,7 @@ public class CreateModelAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     private DeepLearningModelConfiguration modelConfiguration = new DeepLearningModelConfiguration();
     private OptionalPythonEnvironment overrideEnvironment = new OptionalPythonEnvironment();
+    private OptionalDeepLearningDeviceEnvironment overrideDevices = new OptionalDeepLearningDeviceEnvironment();
     private boolean cleanUpAfterwards = true;
 
     public CreateModelAlgorithm(JIPipeNodeInfo info) {
@@ -56,8 +58,21 @@ public class CreateModelAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         super(other);
         this.overrideEnvironment = new OptionalPythonEnvironment(other.overrideEnvironment);
         this.modelConfiguration = new DeepLearningModelConfiguration(other.modelConfiguration);
+        this.overrideDevices = new OptionalDeepLearningDeviceEnvironment(other.overrideDevices);
         this.cleanUpAfterwards = other.cleanUpAfterwards;
         registerSubParameter(modelConfiguration);
+    }
+
+    @JIPipeDocumentation(name = "Override device configuration", description = "If enabled, this nodes provides a custom device configuration, " +
+            "different to the one inside the application settings")
+    @JIPipeParameter("override-devices")
+    public OptionalDeepLearningDeviceEnvironment getOverrideDevices() {
+        return overrideDevices;
+    }
+
+    @JIPipeParameter("override-devices")
+    public void setOverrideDevices(OptionalDeepLearningDeviceEnvironment overrideDevices) {
+        this.overrideDevices = overrideDevices;
     }
 
     @JIPipeDocumentation(name = "Model", description = "Use following settings to change the properties of the generated model")
@@ -75,6 +90,7 @@ public class CreateModelAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         Path modelConfigurationPath = workDirectory.resolve("model-configuration.json");
         Path modelPath = workDirectory.resolve("model.hdf5");
         Path modelJsonPath = workDirectory.resolve("model.json");
+        Path deviceConfigurationPath = workDirectory.resolve("device-configuration.json");
 
         // Configure
         modelConfiguration.setOutputModelPath(modelPath);
@@ -87,6 +103,11 @@ public class CreateModelAlgorithm extends JIPipeSimpleIteratingAlgorithm {
             throw new RuntimeException(e);
         }
 
+        if(getOverrideDevices().isEnabled())
+            getOverrideDevices().getContent().saveAsJson(deviceConfigurationPath);
+        else
+            DeepLearningSettings.getInstance().getDeepLearningDevice().saveAsJson(deviceConfigurationPath);
+
         // Build arguments and run
         List<String> arguments = new ArrayList<>();
         arguments.add("-m");
@@ -95,6 +116,8 @@ public class CreateModelAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         arguments.add("create-model");
         arguments.add("--config");
         arguments.add(modelConfigurationPath.toString());
+        arguments.add("--device-config");
+        arguments.add(deviceConfigurationPath.toString());
 
         if(DeepLearningSettings.getInstance().getDeepLearningToolkit().needsInstall())
             DeepLearningSettings.getInstance().getDeepLearningToolkit().install(progressInfo);

@@ -112,3 +112,7 @@ can resolve this.
 ### Maven complains about Java version
 
 Only Java 8 is supported. This means that you have to run Maven with Java 8. Other versions will not work.
+
+## Nullpointer exception on launching in IDE
+
+Clean and compile Maven. Then compile inside the IDE, again.

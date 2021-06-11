@@ -67,6 +67,7 @@ public class DeepLearningExtension extends JIPipePrepackagedDefaultJavaExtension
     @Override
     public void register() {
         DeepLearningSettings settings = new DeepLearningSettings();
+
         registerEnvironment(DeepLearningToolkitLibraryEnvironment.class,
                 DeepLearningToolkitLibraryEnvironment.List.class,
                 settings,
@@ -74,6 +75,18 @@ public class DeepLearningExtension extends JIPipePrepackagedDefaultJavaExtension
                 "Deep Learning Toolkit",
                 "Library that provides Deep Learning capabilities",
                 UIUtils.getIconFromResources("actions/plugins.png"));
+        registerEnvironment(DeepLearningDeviceEnvironment.class,
+                DeepLearningDeviceEnvironment.List.class,
+                settings,
+                "deep-learning-device",
+                "Deep Learning device configuration",
+                "Determines the devices used for processing",
+                UIUtils.getIconFromResources("devices/cpu.png"));
+        registerParameterType("optional-deep-learning-device",
+                OptionalDeepLearningDeviceEnvironment.class,
+                "Optional deep learning device configuration",
+                "Determines the devices used for processing");
+
         registerSettingsSheet(DeepLearningSettings.ID,
                 "Deep Learning",
                 UIUtils.getIconFromResources("data-types/dl-model.png"),
@@ -114,4 +127,6 @@ public class DeepLearningExtension extends JIPipePrepackagedDefaultJavaExtension
                 PredictAlgorithm.class,
                 UIUtils.getIconURLFromResources("data-types/dl-model.png"));
     }
+
+
 }
