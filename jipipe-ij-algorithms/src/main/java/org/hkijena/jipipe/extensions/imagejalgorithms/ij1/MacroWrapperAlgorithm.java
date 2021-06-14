@@ -107,15 +107,6 @@ public class MacroWrapperAlgorithm extends JIPipeIteratingAlgorithm {
         this.macroParameters.getEventBus().register(this);
     }
 
-    /**
-     * Returns all types compatible with the {@link MacroWrapperAlgorithm}
-     *
-     * @return compatible data types
-     */
-    public static Class[] getCompatibleTypes() {
-        return JIPipe.getImageJAdapters().getSupportedJIPipeDataTypes().toArray(new Class[0]);
-    }
-
     @Override
     protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
         backupWindows();
@@ -177,7 +168,7 @@ public class MacroWrapperAlgorithm extends JIPipeIteratingAlgorithm {
             }
         }
 
-        finalCode.append("\n").append(code.getCode());
+        finalCode.append("\n").append(code.getCode(getWorkDirectory()));
 
         Interpreter interpreter = new Interpreter();
         try {
@@ -317,7 +308,7 @@ public class MacroWrapperAlgorithm extends JIPipeIteratingAlgorithm {
         if (strictMode) {
             for (JIPipeDataSlot inputSlot : getNonParameterInputSlots()) {
                 if (ImagePlusData.class.isAssignableFrom(inputSlot.getAcceptedDataType())) {
-                    if (!code.getCode().contains("\"" + inputSlot.getName() + "\"")) {
+                    if (!code.getCode(getWorkDirectory()).contains("\"" + inputSlot.getName() + "\"")) {
                         report.reportIsInvalid("Strict mode: Unused input image",
                                 "Input image '" + inputSlot.getName() + "' is not used!",
                                 "You can use selectWindow(\"" + inputSlot.getName() + "\"); to process the image. Disable strict mode to stop this message.",
@@ -327,7 +318,7 @@ public class MacroWrapperAlgorithm extends JIPipeIteratingAlgorithm {
             }
             for (JIPipeDataSlot outputSlot : getOutputSlots()) {
                 if (ImagePlusData.class.isAssignableFrom(outputSlot.getAcceptedDataType())) {
-                    if (!code.getCode().contains("\"" + outputSlot.getName() + "\"")) {
+                    if (!code.getCode(getWorkDirectory()).contains("\"" + outputSlot.getName() + "\"")) {
                         report.reportIsInvalid("Strict mode: Unused output image",
                                 "Output image '" + outputSlot.getName() + "' is not used!",
                                 "You should rename an output image via rename(\"" + outputSlot.getName() + "\"); to allow JIPipe to find it. Disable strict mode to stop this message.",
@@ -336,6 +327,12 @@ public class MacroWrapperAlgorithm extends JIPipeIteratingAlgorithm {
                 }
             }
         }
+    }
+
+    @Override
+    public void setWorkDirectory(Path workDirectory) {
+        super.setWorkDirectory(workDirectory);
+        code.makeExternalScriptFileRelative(workDirectory);
     }
 
     @JIPipeDocumentation(name = "Code")
@@ -364,6 +361,15 @@ public class MacroWrapperAlgorithm extends JIPipeIteratingAlgorithm {
     @JIPipeDocumentation(name = "Macro parameters", description = "The parameters are passed as variables to the macro.")
     public JIPipeDynamicParameterCollection getMacroParameters() {
         return macroParameters;
+    }
+
+    /**
+     * Returns all types compatible with the {@link MacroWrapperAlgorithm}
+     *
+     * @return compatible data types
+     */
+    public static Class[] getCompatibleTypes() {
+        return JIPipe.getImageJAdapters().getSupportedJIPipeDataTypes().toArray(new Class[0]);
     }
 }
 

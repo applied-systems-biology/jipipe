@@ -94,10 +94,6 @@ public class DeepLearningModelData implements JIPipeData {
                 "Show Deep learning model", JOptionPane.ERROR_MESSAGE);
     }
 
-    public static DeepLearningModelData importFrom(Path storagePath) {
-        return new DeepLearningModelData(storagePath.resolve("model.hdf5"), storagePath.resolve("model-config.json"), storagePath.resolve("model.json"));
-    }
-
     @Override
     public String toString() {
         return String.format("%s model [%dx%d Z%d C%d T%d -> %d-classification]  (%d MB)",
@@ -109,5 +105,9 @@ public class DeepLearningModelData implements JIPipeData {
                 modelConfiguration.getImageFrames(),
                 modelConfiguration.getNumClasses(),
                 modelData.length / 1024 / 1024);
+    }
+
+    public static DeepLearningModelData importFrom(Path storagePath) {
+        return new DeepLearningModelData(storagePath.resolve("model.hdf5"), storagePath.resolve("model-config.json"), storagePath.resolve("model.json"));
     }
 }

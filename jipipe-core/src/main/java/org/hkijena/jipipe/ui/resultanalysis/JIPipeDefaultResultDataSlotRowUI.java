@@ -128,12 +128,12 @@ public class JIPipeDefaultResultDataSlotRowUI extends JIPipeResultDataSlotRowUI 
                         progressInfo.log("Importing data from " + getRowStorageFolder() + " ...");
                         JIPipeData data = JIPipe.importData(getRowStorageFolder(), JIPipe.getDataTypes().getById(getRow().getTrueDataType()));
                         data.saveTo(path, "data", false, progressInfo.resolveAndLog("Saving data"));
-                    }                    @Override
+                    }
+
+                    @Override
                     public void setProgressInfo(JIPipeProgressInfo progressInfo) {
                         this.progressInfo = progressInfo;
                     }
-
-
 
 
                 };
@@ -165,12 +165,12 @@ public class JIPipeDefaultResultDataSlotRowUI extends JIPipeResultDataSlotRowUI 
                     progressInfo.log("Importing data from " + getRowStorageFolder() + " ...");
                     JIPipeData data = JIPipe.importData(getRowStorageFolder(), JIPipe.getDataTypes().getById(getRow().getTrueDataType()));
                     data.saveTo(path.getParent(), path.getFileName().toString(), true, progressInfo.resolveAndLog("Exporting data"));
-                }                @Override
+                }
+
+                @Override
                 public void setProgressInfo(JIPipeProgressInfo progressInfo) {
                     this.progressInfo = progressInfo;
                 }
-
-
 
 
             };

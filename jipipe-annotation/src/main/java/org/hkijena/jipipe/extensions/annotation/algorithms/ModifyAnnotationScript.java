@@ -34,6 +34,8 @@ import org.hkijena.jipipe.utils.UIUtils;
 import org.python.core.PyDictionary;
 import org.python.util.PythonInterpreter;
 
+import java.nio.file.Path;
+
 
 /**
  * Algorithm that annotates all data with the same annotation
@@ -85,8 +87,14 @@ public class ModifyAnnotationScript extends JIPipeSimpleIteratingAlgorithm {
 
     @Override
     public void reportValidity(JIPipeValidityReport report) {
-        JythonUtils.checkScriptValidity(code.getCode(), scriptParameters, report.forCategory("Script"));
+        JythonUtils.checkScriptValidity(code.getCode(getWorkDirectory()), scriptParameters, report.forCategory("Script"));
         JythonUtils.checkScriptParametersValidity(scriptParameters, report.forCategory("Script parameters"));
+    }
+
+    @Override
+    public void setWorkDirectory(Path workDirectory) {
+        super.setWorkDirectory(workDirectory);
+        code.makeExternalScriptFileRelative(workDirectory);
     }
 
     @Override
@@ -101,7 +109,7 @@ public class ModifyAnnotationScript extends JIPipeSimpleIteratingAlgorithm {
     protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
         PyDictionary annotationDict = JIPipeAnnotation.annotationMapToPython(dataBatch.getAnnotations());
         pythonInterpreter.set("annotations", annotationDict);
-        pythonInterpreter.exec(code.getCode());
+        pythonInterpreter.exec(code.getCode(getWorkDirectory()));
         annotationDict = (PyDictionary) pythonInterpreter.get("annotations");
 
         // Convert the results back into JIPipe

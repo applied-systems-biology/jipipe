@@ -22,17 +22,6 @@ public class JIPipeDataTableData implements JIPipeData {
         this.dataSlot = dataSlot;
     }
 
-    /**
-     * Imports this data from the path
-     *
-     * @param storagePath the storage path
-     * @return the data
-     */
-    public static JIPipeDataTableData importFrom(Path storagePath) {
-        JIPipeDataSlot slot = JIPipeDataSlot.loadFromStoragePath(storagePath, new JIPipeProgressInfo());
-        return new JIPipeDataTableData(slot);
-    }
-
     @Override
     public void saveTo(Path storageFilePath, String name, boolean forceName, JIPipeProgressInfo progressInfo) {
         if (forceName) {
@@ -78,5 +67,16 @@ public class JIPipeDataTableData implements JIPipeData {
      */
     public JIPipeDataSlot getDataSlot() {
         return dataSlot;
+    }
+
+    /**
+     * Imports this data from the path
+     *
+     * @param storagePath the storage path
+     * @return the data
+     */
+    public static JIPipeDataTableData importFrom(Path storagePath) {
+        JIPipeDataSlot slot = JIPipeDataSlot.loadFromStoragePath(storagePath, new JIPipeProgressInfo());
+        return new JIPipeDataTableData(slot);
     }
 }

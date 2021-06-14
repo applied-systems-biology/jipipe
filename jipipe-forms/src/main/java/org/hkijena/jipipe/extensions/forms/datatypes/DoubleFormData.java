@@ -38,10 +38,6 @@ public class DoubleFormData extends ParameterFormData {
         annotationIOSettings.getEventBus().register(this);
     }
 
-    public static DoubleFormData importFrom(Path rowStorage) {
-        return FormData.importFrom(rowStorage, DoubleFormData.class);
-    }
-
     @JIPipeDocumentation(name = "Initial value", description = "The initial value")
     @JIPipeParameter("initial-value")
     public double getValue() {
@@ -123,5 +119,9 @@ public class DoubleFormData extends ParameterFormData {
             annotationIOSettings.getAnnotationMergeStrategy().mergeInto(dataBatch.getAnnotations(),
                     Collections.singletonList(annotationIOSettings.getOutputAnnotation().createAnnotation("" + value)));
         }
+    }
+
+    public static DoubleFormData importFrom(Path rowStorage) {
+        return FormData.importFrom(rowStorage, DoubleFormData.class);
     }
 }

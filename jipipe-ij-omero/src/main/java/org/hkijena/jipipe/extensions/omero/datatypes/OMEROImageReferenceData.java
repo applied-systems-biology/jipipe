@@ -36,15 +36,6 @@ public class OMEROImageReferenceData implements JIPipeData {
         this.imageId = imageId;
     }
 
-    public static OMEROImageReferenceData importFrom(Path storageFilePath) {
-        Path targetFile = PathUtils.findFileByExtensionIn(storageFilePath, ".json");
-        try {
-            return JsonUtils.getObjectMapper().readerFor(OMEROImageReferenceData.class).readValue(targetFile.toFile());
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
     @JsonGetter("image-id")
     public long getImageId() {
         return imageId;
@@ -78,5 +69,14 @@ public class OMEROImageReferenceData implements JIPipeData {
     @Override
     public String toString() {
         return "OMERO Image ID=" + imageId;
+    }
+
+    public static OMEROImageReferenceData importFrom(Path storageFilePath) {
+        Path targetFile = PathUtils.findFileByExtensionIn(storageFilePath, ".json");
+        try {
+            return JsonUtils.getObjectMapper().readerFor(OMEROImageReferenceData.class).readValue(targetFile.toFile());
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 }

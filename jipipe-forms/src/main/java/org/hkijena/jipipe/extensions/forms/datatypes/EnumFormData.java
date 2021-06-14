@@ -43,10 +43,6 @@ public class EnumFormData extends ParameterFormData {
         annotationIOSettings.getEventBus().register(this);
     }
 
-    public static EnumFormData importFrom(Path rowStorage) {
-        return FormData.importFrom(rowStorage, EnumFormData.class);
-    }
-
     @JIPipeDocumentation(name = "Initial value", description = "The initial value. Should be the annotation value of the item.")
     @JIPipeParameter("initial-value")
     public String getValue() {
@@ -137,5 +133,9 @@ public class EnumFormData extends ParameterFormData {
             annotationIOSettings.getAnnotationMergeStrategy().mergeInto(dataBatch.getAnnotations(),
                     Collections.singletonList(annotationIOSettings.getOutputAnnotation().createAnnotation(value)));
         }
+    }
+
+    public static EnumFormData importFrom(Path rowStorage) {
+        return FormData.importFrom(rowStorage, EnumFormData.class);
     }
 }

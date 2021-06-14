@@ -17,10 +17,6 @@ public class GeneralDataSettings implements JIPipeParameterCollection {
     private boolean generateCachePreviews = true;
     private boolean generateResultPreviews = true;
 
-    public static GeneralDataSettings getInstance() {
-        return JIPipe.getSettings().getSettings(ID, GeneralDataSettings.class);
-    }
-
     @Override
     public EventBus getEventBus() {
         return eventBus;
@@ -92,5 +88,9 @@ public class GeneralDataSettings implements JIPipeParameterCollection {
     @JIPipeParameter("max-table-column-size")
     public void setMaxTableColumnSize(int maxTableColumnSize) {
         this.maxTableColumnSize = maxTableColumnSize;
+    }
+
+    public static GeneralDataSettings getInstance() {
+        return JIPipe.getSettings().getSettings(ID, GeneralDataSettings.class);
     }
 }

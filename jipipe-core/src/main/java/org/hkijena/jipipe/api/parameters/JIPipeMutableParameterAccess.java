@@ -302,7 +302,7 @@ public class JIPipeMutableParameterAccess implements JIPipeParameterAccess {
             result.setName(jsonNode.get("name").textValue());
             result.setDescription(jsonNode.get("description").textValue());
             result.setFieldClassInfoId(jsonNode.get("field-class-id").textValue());
-            if(jsonNode.has("hidden"))
+            if (jsonNode.has("hidden"))
                 result.setHidden(jsonNode.get("hidden").asBoolean());
             if (jsonNode.has("value"))
                 result.set(JsonUtils.getObjectMapper().readerFor(result.getFieldClass()).readValue(jsonNode.get("value")));

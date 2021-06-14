@@ -47,10 +47,6 @@ public class AutoSaveSettings implements JIPipeParameterCollection {
         autoSaveTimer.start();
     }
 
-    public static AutoSaveSettings getInstance() {
-        return JIPipe.getSettings().getSettings(ID, AutoSaveSettings.class);
-    }
-
     public void autoSave(JIPipeProjectWindow window) {
         String name = "untitled";
         if (window.getProjectSavePath() != null) {
@@ -173,6 +169,10 @@ public class AutoSaveSettings implements JIPipeParameterCollection {
                 window.openProject(listControl.getSelectedValue());
             }
         }
+    }
+
+    public static AutoSaveSettings getInstance() {
+        return JIPipe.getSettings().getSettings(ID, AutoSaveSettings.class);
     }
 
 }

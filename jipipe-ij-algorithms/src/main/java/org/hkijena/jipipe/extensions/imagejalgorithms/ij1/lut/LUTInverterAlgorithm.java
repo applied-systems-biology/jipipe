@@ -46,19 +46,6 @@ public class LUTInverterAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         this.applyToAllPlanes = other.applyToAllPlanes;
     }
 
-    public static void applyLUT(ImagePlus image) {
-        if (image.getLuts().length == 0) {
-            image.setLut(LUT.createLutFromColor(Color.WHITE).createInvertedLut());
-        } else {
-            LUT lut = image.getLuts()[0];
-            if (lut != null) {
-                image.setLut(lut.createInvertedLut());
-            } else {
-                image.setLut(LUT.createLutFromColor(Color.WHITE).createInvertedLut());
-            }
-        }
-    }
-
     @Override
     protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
         ImagePlusData data = dataBatch.getInputData(getFirstInputSlot(), ImagePlusData.class, progressInfo);
@@ -102,5 +89,18 @@ public class LUTInverterAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     @JIPipeParameter("apply-to-all-planes")
     public void setApplyToAllPlanes(boolean applyToAllPlanes) {
         this.applyToAllPlanes = applyToAllPlanes;
+    }
+
+    public static void applyLUT(ImagePlus image) {
+        if (image.getLuts().length == 0) {
+            image.setLut(LUT.createLutFromColor(Color.WHITE).createInvertedLut());
+        } else {
+            LUT lut = image.getLuts()[0];
+            if (lut != null) {
+                image.setLut(lut.createInvertedLut());
+            } else {
+                image.setLut(LUT.createLutFromColor(Color.WHITE).createInvertedLut());
+            }
+        }
     }
 }

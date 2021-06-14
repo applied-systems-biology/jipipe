@@ -48,10 +48,6 @@ public class Pie3DPlotData extends PiePlotData {
         this.labelFontSize = other.labelFontSize;
     }
 
-    public static Pie3DPlotData importFrom(Path storagePath) {
-        return PlotData.importFrom(storagePath, Pie3DPlotData.class);
-    }
-
     @Override
     public JFreeChart getChart() {
         JFreeChart chart = ChartFactory.createPieChart3D(getTitle(), createDataSet(), true, true, false);
@@ -74,5 +70,9 @@ public class Pie3DPlotData extends PiePlotData {
             return false;
         this.labelFontSize = labelFontSize;
         return true;
+    }
+
+    public static Pie3DPlotData importFrom(Path storagePath) {
+        return PlotData.importFrom(storagePath, Pie3DPlotData.class);
     }
 }

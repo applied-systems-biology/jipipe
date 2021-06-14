@@ -22,13 +22,9 @@ import org.hkijena.jipipe.api.environments.ExternalEnvironmentInstaller;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
-import org.hkijena.jipipe.extensions.parameters.primitives.OptionalPathParameter;
-import org.hkijena.jipipe.extensions.parameters.primitives.StringParameterSettings;
-import org.hkijena.jipipe.extensions.python.installers.BasicMinicondaEnvPythonInstaller;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.components.MarkdownDocument;
 import org.hkijena.jipipe.ui.parameters.ParameterPanel;
-import org.hkijena.jipipe.utils.ReflectionUtils;
 
 import javax.swing.*;
 import java.io.IOException;
@@ -85,11 +81,11 @@ public abstract class PythonPackageLibraryEnvironmentInstaller<T extends PythonP
         getConfiguration().setName(environment.getName());
 
         // Configure
-        if(!configure())
+        if (!configure())
             return;
 
         environment.setLibraryDirectory(getConfiguration().getInstallationPath());
-        if(Files.exists(getConfiguration().getInstallationPath())) {
+        if (Files.exists(getConfiguration().getInstallationPath())) {
             try {
                 FileUtils.deleteDirectory(getConfiguration().getInstallationPath().toFile());
             } catch (IOException e) {
@@ -115,8 +111,8 @@ public abstract class PythonPackageLibraryEnvironmentInstaller<T extends PythonP
                 boolean result = ParameterPanel.showDialog(getWorkbench(), configuration, new MarkdownDocument("# Install Python library\n\n" +
                                 "Please review the settings on the left-hand side. Click OK to install the library."), "Download & install " + getEnvironmentName(),
                         ParameterPanel.NO_GROUP_HEADERS | ParameterPanel.WITH_SEARCH_BAR | ParameterPanel.WITH_DOCUMENTATION | ParameterPanel.WITH_SCROLLING);
-                if(result && Files.exists(getConfiguration().installationPath)) {
-                    if(JOptionPane.showConfirmDialog(getWorkbench().getWindow(), "The directory " + getConfiguration().getInstallationPath().toAbsolutePath()
+                if (result && Files.exists(getConfiguration().installationPath)) {
+                    if (JOptionPane.showConfirmDialog(getWorkbench().getWindow(), "The directory " + getConfiguration().getInstallationPath().toAbsolutePath()
                             + " already exists. Do you want to overwrite it?", getTaskLabel(), JOptionPane.YES_NO_OPTION) == JOptionPane.NO_OPTION) {
                         result = false;
                     }

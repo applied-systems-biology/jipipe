@@ -13,32 +13,15 @@
 
 package org.hkijena.jipipe.extensions.deeplearning.nodes;
 
-import org.apache.commons.io.FileUtils;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
-import org.hkijena.jipipe.api.nodes.JIPipeDataBatch;
-import org.hkijena.jipipe.api.nodes.JIPipeInputSlot;
-import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
-import org.hkijena.jipipe.api.nodes.JIPipeOutputSlot;
-import org.hkijena.jipipe.api.nodes.JIPipeSimpleIteratingAlgorithm;
+import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.DataSourceNodeTypeCategory;
-import org.hkijena.jipipe.api.parameters.JIPipeParameter;
-import org.hkijena.jipipe.extensions.deeplearning.DeepLearningSettings;
-import org.hkijena.jipipe.extensions.deeplearning.configs.DeepLearningModelConfiguration;
 import org.hkijena.jipipe.extensions.deeplearning.datatypes.DeepLearningModelData;
 import org.hkijena.jipipe.extensions.filesystem.dataypes.FileData;
-import org.hkijena.jipipe.extensions.python.OptionalPythonEnvironment;
-import org.hkijena.jipipe.extensions.python.PythonUtils;
-import org.hkijena.jipipe.extensions.settings.RuntimeSettings;
-import org.hkijena.jipipe.utils.JsonUtils;
-import org.hkijena.jipipe.utils.ResourceUtils;
 
-import java.io.IOException;
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 
 @JIPipeDocumentation(name = "Import Model", description = "Imports an existing Deep Learning model. " +
         "<ul>" +

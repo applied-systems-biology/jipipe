@@ -150,7 +150,7 @@ public class MergingRScriptAlgorithm extends JIPipeMergingAlgorithm {
         RUtils.outputSlotsToR(code, getOutputSlots(), outputSlotPaths);
         RUtils.installOutputGeneratorCode(code);
 
-        code.append("\n").append(script.getCode()).append("\n");
+        code.append("\n").append(script.getCode(getWorkDirectory())).append("\n");
         RUtils.installPostprocessorCode(code);
 
         progressInfo.log(code.toString());
@@ -189,6 +189,12 @@ public class MergingRScriptAlgorithm extends JIPipeMergingAlgorithm {
                 }
             }
         }
+    }
+
+    @Override
+    public void setWorkDirectory(Path workDirectory) {
+        super.setWorkDirectory(workDirectory);
+        script.makeExternalScriptFileRelative(workDirectory);
     }
 
     @JIPipeDocumentation(name = "Script", description = "The script that contains the R commands. " +

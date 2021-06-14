@@ -53,6 +53,21 @@ public class MarkdownDocument {
         render();
     }
 
+    private void render() {
+        Parser parser = Parser.builder(OPTIONS).build();
+        Node document = parser.parse(markdown);
+        HtmlRenderer renderer = HtmlRenderer.builder(OPTIONS).build();
+        this.renderedHTML = renderer.render(document);
+    }
+
+    public String getRenderedHTML() {
+        return renderedHTML;
+    }
+
+    public String getMarkdown() {
+        return markdown;
+    }
+
     /**
      * Loads a document from file
      *
@@ -76,7 +91,7 @@ public class MarkdownDocument {
     /**
      * Loads a document from the JIPipe plugin resources
      *
-     * @param internalPath resource path. Relative to JIPipe resources
+     * @param internalPath                resource path. Relative to JIPipe resources
      * @param additionalResourceProtocols Additional protocols. The key is the name of the protocol, while the value sets the resource loader class
      * @return the document
      */
@@ -99,7 +114,8 @@ public class MarkdownDocument {
 
     /**
      * Replaces resource URLs inside the Markdown document
-     * @param md Markdown string
+     *
+     * @param md                          Markdown string
      * @param additionalResourceProtocols Additional protocols. The key is the name of the protocol, while the value sets the resource loader class
      * @return modified markdown
      */
@@ -126,8 +142,8 @@ public class MarkdownDocument {
     /**
      * Loads a document from a resource URL
      *
-     * @param resourcePath           resource path
-     * @param enableResourceProtocol Allows to target core JIPipe resources with resource://
+     * @param resourcePath                resource path
+     * @param enableResourceProtocol      Allows to target core JIPipe resources with resource://
      * @param additionalResourceProtocols Additional protocols. The key is the name of the protocol, while the value sets the resource loader class
      * @return the document
      */
@@ -170,21 +186,6 @@ public class MarkdownDocument {
             index = md.indexOf(protocol, index);
         }
         return imageURLs;
-    }
-
-    private void render() {
-        Parser parser = Parser.builder(OPTIONS).build();
-        Node document = parser.parse(markdown);
-        HtmlRenderer renderer = HtmlRenderer.builder(OPTIONS).build();
-        this.renderedHTML = renderer.render(document);
-    }
-
-    public String getRenderedHTML() {
-        return renderedHTML;
-    }
-
-    public String getMarkdown() {
-        return markdown;
     }
 
 

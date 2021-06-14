@@ -83,28 +83,6 @@ public class AddAlgorithmSlotPanel extends JPanel {
         }
     }
 
-    /**
-     * Shows a dialog for adding slots
-     *
-     * @param parent       parent component
-     * @param graphHistory the graph history
-     * @param algorithm    target algorithm
-     * @param slotType     slot type to be created
-     */
-    public static void showDialog(Component parent, JIPipeGraphHistory graphHistory, JIPipeGraphNode algorithm, JIPipeSlotType slotType) {
-        JDialog dialog = new JDialog();
-        AddAlgorithmSlotPanel panel = new AddAlgorithmSlotPanel(algorithm, slotType, graphHistory);
-        panel.setDialog(dialog);
-        dialog.setContentPane(panel);
-        dialog.setTitle("Add slot");
-        dialog.setModal(true);
-        dialog.pack();
-        dialog.setSize(new Dimension(640, 480));
-        dialog.setLocationRelativeTo(parent);
-        UIUtils.addEscapeListener(dialog);
-        dialog.setVisible(true);
-    }
-
     private void setInitialName() {
         String initialValue = slotType.toString();
 
@@ -361,5 +339,27 @@ public class AddAlgorithmSlotPanel extends JPanel {
 
     public void setDialog(JDialog dialog) {
         this.dialog = dialog;
+    }
+
+    /**
+     * Shows a dialog for adding slots
+     *
+     * @param parent       parent component
+     * @param graphHistory the graph history
+     * @param algorithm    target algorithm
+     * @param slotType     slot type to be created
+     */
+    public static void showDialog(Component parent, JIPipeGraphHistory graphHistory, JIPipeGraphNode algorithm, JIPipeSlotType slotType) {
+        JDialog dialog = new JDialog();
+        AddAlgorithmSlotPanel panel = new AddAlgorithmSlotPanel(algorithm, slotType, graphHistory);
+        panel.setDialog(dialog);
+        dialog.setContentPane(panel);
+        dialog.setTitle("Add slot");
+        dialog.setModal(true);
+        dialog.pack();
+        dialog.setSize(new Dimension(640, 480));
+        dialog.setLocationRelativeTo(parent);
+        UIUtils.addEscapeListener(dialog);
+        dialog.setVisible(true);
     }
 }

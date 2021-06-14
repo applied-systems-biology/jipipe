@@ -277,7 +277,8 @@ public class PythonUtils {
 
     /**
      * Runs a Python script file
-     *  @param scriptFile   the script file
+     *
+     * @param scriptFile   the script file
      * @param environment  the environment
      * @param libraryPaths additional library paths
      * @param progressInfo the progress info
@@ -321,18 +322,18 @@ public class PythonUtils {
 
     /**
      * Sets the PYTHONPATH variable, so it contains the provided libraries
+     *
      * @param environmentVariables the env variables
-     * @param libraryPaths library paths to add
+     * @param libraryPaths         library paths to add
      */
     private static void installLibraryPaths(Map<String, String> environmentVariables, List<Path> libraryPaths) {
-        if(libraryPaths.isEmpty())
+        if (libraryPaths.isEmpty())
             return;
         String delimiter = SystemUtils.IS_OS_WINDOWS ? ";" : ":";
         String existing = environmentVariables.getOrDefault("PYTHONPATH", null);
-        if(StringUtils.isNullOrEmpty(existing)) {
+        if (StringUtils.isNullOrEmpty(existing)) {
             existing = libraryPaths.stream().map(Objects::toString).collect(Collectors.joining(delimiter));
-        }
-        else {
+        } else {
             existing = libraryPaths.stream().map(Objects::toString).collect(Collectors.joining(delimiter)) + delimiter + existing;
         }
         environmentVariables.put("PYTHONPATH", existing);
@@ -340,6 +341,7 @@ public class PythonUtils {
 
     /**
      * Runs Python with a set of arguments
+     *
      * @param arguments    the arguments
      * @param environment  the environment
      * @param libraryPaths additional library paths

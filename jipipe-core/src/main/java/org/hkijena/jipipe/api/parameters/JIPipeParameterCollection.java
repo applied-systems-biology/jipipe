@@ -13,19 +13,7 @@
 
 package org.hkijena.jipipe.api.parameters;
 
-import com.fasterxml.jackson.core.JsonGenerator;
-import com.fasterxml.jackson.databind.JsonNode;
 import com.google.common.eventbus.EventBus;
-import com.google.common.eventbus.Subscribe;
-import org.hkijena.jipipe.api.JIPipeValidityReport;
-import org.hkijena.jipipe.utils.JsonDeserializable;
-import org.hkijena.jipipe.utils.JsonUtils;
-
-import java.io.IOException;
-import java.util.*;
-import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.function.Predicate;
-import java.util.stream.Collectors;
 
 /**
  * Interfaced for a parameterized object
@@ -34,12 +22,13 @@ public interface JIPipeParameterCollection {
 
     /**
      * Allows to override the visibility of parameters inside the UI
-     * @param  tree the parameter tree that is used to access this parameter
+     *
+     * @param tree   the parameter tree that is used to access this parameter
      * @param access the parameter
      * @return if the parameter is visible inside the UI
      */
     default boolean isParameterUIVisible(JIPipeParameterTree tree, JIPipeParameterAccess access) {
-        if(access.getSource() == this)
+        if (access.getSource() == this)
             return !access.isHidden();
         else
             return access.getSource().isParameterUIVisible(tree, access);
@@ -47,16 +36,16 @@ public interface JIPipeParameterCollection {
 
     /**
      * Allows to override the visibility of sub-parameters inside the UI
-     * @param tree the parameter tree that is used to access this parameter
+     *
+     * @param tree         the parameter tree that is used to access this parameter
      * @param subParameter a sub parameter
      * @return if the parameter is visible inside the UI
      */
     default boolean isParameterUIVisible(JIPipeParameterTree tree, JIPipeParameterCollection subParameter) {
         JIPipeParameterTree.Node sourceNode = tree.getSourceNode(subParameter);
-        if( sourceNode.getParent() == null || sourceNode.getParent().getCollection() == this) {
+        if (sourceNode.getParent() == null || sourceNode.getParent().getCollection() == this) {
             return !sourceNode.isHidden();
-        }
-        else {
+        } else {
             return sourceNode.getParent().getCollection().isParameterUIVisible(tree, subParameter);
         }
     }
@@ -70,6 +59,7 @@ public interface JIPipeParameterCollection {
 
     /**
      * Triggers a {@link ParameterChangedEvent} on this collection
+     *
      * @param key the parameter key
      */
     default void triggerParameterChange(String key) {

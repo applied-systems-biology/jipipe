@@ -43,10 +43,6 @@ public class ScatterXYPlotData extends XYPlotData {
         super(other);
     }
 
-    public static ScatterXYPlotData importFrom(Path storagePath) {
-        return PlotData.importFrom(storagePath, ScatterXYPlotData.class);
-    }
-
     @Override
     public JFreeChart getChart() {
         JFreeChart chart = ChartFactory.createScatterPlot(getTitle(), getxAxisLabel(), getyAxisLabel(), createDataSet());
@@ -57,5 +53,9 @@ public class ScatterXYPlotData extends XYPlotData {
         chart.getXYPlot().getRangeAxis().setTickLabelFont(new Font(Font.SANS_SERIF, Font.PLAIN, getyAxisFontSize()));
         updateChartProperties(chart);
         return chart;
+    }
+
+    public static ScatterXYPlotData importFrom(Path storagePath) {
+        return PlotData.importFrom(storagePath, ScatterXYPlotData.class);
     }
 }

@@ -41,10 +41,6 @@ public class BooleanFormData extends ParameterFormData {
         annotationIOSettings.getEventBus().register(this);
     }
 
-    public static BooleanFormData importFrom(Path rowStorage) {
-        return FormData.importFrom(rowStorage, BooleanFormData.class);
-    }
-
     @JIPipeDocumentation(name = "Initial value", description = "The initial value")
     @JIPipeParameter("initial-value")
     public boolean getValue() {
@@ -146,5 +142,9 @@ public class BooleanFormData extends ParameterFormData {
                 }
             }
         }
+    }
+
+    public static BooleanFormData importFrom(Path rowStorage) {
+        return FormData.importFrom(rowStorage, BooleanFormData.class);
     }
 }

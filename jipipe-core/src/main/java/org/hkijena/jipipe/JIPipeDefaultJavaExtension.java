@@ -342,10 +342,11 @@ public abstract class JIPipeDefaultJavaExtension extends AbstractService impleme
     /**
      * Registers a new parameter type that already has an existing editor.
      * Must have a default constructor and a deep copy constructor
-     * @param id Unique ID of this parameter type
+     *
+     * @param id             Unique ID of this parameter type
      * @param parameterClass Parameter class
-     * @param name Parameter class name
-     * @param description Description for the parameter type
+     * @param name           Parameter class name
+     * @param description    Description for the parameter type
      */
     public void registerParameterType(String id, Class<?> parameterClass, String name, String description) {
         registerParameterType(id, parameterClass, null, null, name, description, null);
@@ -354,11 +355,12 @@ public abstract class JIPipeDefaultJavaExtension extends AbstractService impleme
     /**
      * Registers a new parameter type.
      * Must have a default constructor and a deep copy constructor
-     * @param id Unique ID of this parameter type
+     *
+     * @param id             Unique ID of this parameter type
      * @param parameterClass Parameter class
-     * @param name Parameter class name
-     * @param description Description for the parameter type
-     * @param uiClass              Parameter editor UI. Can be null if the editor is already provided.
+     * @param name           Parameter class name
+     * @param description    Description for the parameter type
+     * @param uiClass        Parameter editor UI. Can be null if the editor is already provided.
      */
     public void registerParameterType(String id, Class<?> parameterClass, String name, String description, Class<? extends JIPipeParameterEditorUI> uiClass) {
         registerParameterType(id, parameterClass, null, null, name, description, uiClass);

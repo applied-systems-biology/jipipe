@@ -9,8 +9,6 @@ import org.hkijena.jipipe.extensions.deeplearning.nodes.PredictAlgorithm;
 import org.hkijena.jipipe.extensions.deeplearning.nodes.TrainModelAlgorithm;
 import org.hkijena.jipipe.extensions.parameters.primitives.HTMLText;
 import org.hkijena.jipipe.extensions.parameters.primitives.StringList;
-import org.hkijena.jipipe.extensions.python.JIPipePythonAdapterLibraryEnvironment;
-import org.hkijena.jipipe.extensions.python.JIPipePythonAdapterLibraryEnvironmentInstaller;
 import org.hkijena.jipipe.extensions.python.PythonEnvironment;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.scijava.plugin.Plugin;

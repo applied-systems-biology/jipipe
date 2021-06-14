@@ -132,6 +132,7 @@ public class UIUtils {
 
     /**
      * packAll() for a data table (with a limit)
+     *
      * @param table the table
      */
     public static void packDataTable(JXTable table) {

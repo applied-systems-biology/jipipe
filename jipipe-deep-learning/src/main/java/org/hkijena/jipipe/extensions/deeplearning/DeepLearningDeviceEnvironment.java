@@ -14,10 +14,8 @@
 package org.hkijena.jipipe.extensions.deeplearning;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.BooleanNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import jdk.nashorn.internal.runtime.regexp.joni.ast.StringNode;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeValidityReport;
 import org.hkijena.jipipe.api.environments.ExternalEnvironment;
@@ -64,17 +62,16 @@ public class DeepLearningDeviceEnvironment extends ExternalEnvironment {
 
     @Override
     public String getInfo() {
-        if(isWithGPU()) {
+        if (isWithGPU()) {
             String gpuString = "GPU";
-            if(getGpuIds().isEnabled())
+            if (getGpuIds().isEnabled())
                 gpuString += " (" + getGpuIds().getContent().getValue() + ")";
             String cpuString = "CPU";
-            if(getCpuIds().isEnabled())
+            if (getCpuIds().isEnabled())
                 cpuString += " (" + getCpuIds().getContent().getValue() + ")";
             return gpuString + " + " + cpuString;
-        }
-        else {
-            if(getCpuIds().isEnabled())
+        } else {
+            if (getCpuIds().isEnabled())
                 return "CPU only (" + getCpuIds().getContent().getValue() + ")";
             else
                 return "CPU only";
@@ -127,21 +124,21 @@ public class DeepLearningDeviceEnvironment extends ExternalEnvironment {
 
     /**
      * Converts the settings into a dltoolbox device configuration
+     *
      * @return the device configuration
      */
     public JsonNode toDeviceConfigurationJSON() {
         ObjectNode root = JsonUtils.getObjectMapper().createObjectNode();
         root.set("log-device-placement", isLogDevicePlacement() ? BooleanNode.TRUE : BooleanNode.FALSE);
-        if(isWithGPU()) {
-            if(getGpuIds().isEnabled())
+        if (isWithGPU()) {
+            if (getGpuIds().isEnabled())
                 root.set("gpus", JsonUtils.getObjectMapper().convertValue(getCpuIds().getContent().getIntegers(), JsonNode.class));
             else
                 root.set("gpus", JsonUtils.getObjectMapper().convertValue("all", JsonNode.class));
-        }
-        else {
+        } else {
             root.set("gpus", JsonUtils.getObjectMapper().convertValue(new ArrayList<>(), JsonNode.class));
         }
-        if(getCpuIds().isEnabled())
+        if (getCpuIds().isEnabled())
             root.set("cpus", JsonUtils.getObjectMapper().convertValue(getCpuIds().getContent().getIntegers(), JsonNode.class));
         else
             root.set("cpus", JsonUtils.getObjectMapper().convertValue("all", JsonNode.class));
@@ -150,6 +147,7 @@ public class DeepLearningDeviceEnvironment extends ExternalEnvironment {
 
     /**
      * Saves the device configuration in dltoolbox JSON format
+     *
      * @param outputPath the JSON file
      */
     public void saveAsJson(Path outputPath) {

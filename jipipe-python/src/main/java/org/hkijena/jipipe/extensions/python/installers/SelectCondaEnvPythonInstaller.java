@@ -39,23 +39,6 @@ public class SelectCondaEnvPythonInstaller extends ExternalEnvironmentInstaller 
         super(workbench, parameterAccess);
     }
 
-    public static PythonEnvironment createCondaEnvironment(Configuration configuration) {
-        PythonEnvironment generatedEnvironment = new PythonEnvironment();
-        generatedEnvironment.setType(PythonEnvironmentType.Conda);
-        generatedEnvironment.setExecutablePath(configuration.condaExecutable);
-        if (configuration.overrideEnvironment.isEnabled()) {
-            generatedEnvironment.setArguments(new DefaultExpressionParameter(
-                    String.format("ARRAY(\"run\", \"--no-capture-output\", \"-p\", \"%s\", \"python\", \"-u\", script_file)",
-                            DefaultExpressionEvaluator.escapeString(configuration.overrideEnvironment.getContent().toString()))));
-        } else {
-            generatedEnvironment.setArguments(new DefaultExpressionParameter(
-                    String.format("ARRAY(\"run\", \"--no-capture-output\", \"-n\", \"%s\", \"python\", \"-u\", script_file)",
-                            DefaultExpressionEvaluator.escapeString(configuration.environmentName))));
-        }
-        generatedEnvironment.setName(configuration.getName());
-        return generatedEnvironment;
-    }
-
     @Override
     public JIPipeProgressInfo getProgressInfo() {
         return progressInfo;
@@ -111,6 +94,23 @@ public class SelectCondaEnvPythonInstaller extends ExternalEnvironmentInstaller 
         if (getParameterAccess() != null) {
             SwingUtilities.invokeLater(() -> getParameterAccess().set(generatedEnvironment));
         }
+    }
+
+    public static PythonEnvironment createCondaEnvironment(Configuration configuration) {
+        PythonEnvironment generatedEnvironment = new PythonEnvironment();
+        generatedEnvironment.setType(PythonEnvironmentType.Conda);
+        generatedEnvironment.setExecutablePath(configuration.condaExecutable);
+        if (configuration.overrideEnvironment.isEnabled()) {
+            generatedEnvironment.setArguments(new DefaultExpressionParameter(
+                    String.format("ARRAY(\"run\", \"--no-capture-output\", \"-p\", \"%s\", \"python\", \"-u\", script_file)",
+                            DefaultExpressionEvaluator.escapeString(configuration.overrideEnvironment.getContent().toString()))));
+        } else {
+            generatedEnvironment.setArguments(new DefaultExpressionParameter(
+                    String.format("ARRAY(\"run\", \"--no-capture-output\", \"-n\", \"%s\", \"python\", \"-u\", script_file)",
+                            DefaultExpressionEvaluator.escapeString(configuration.environmentName))));
+        }
+        generatedEnvironment.setName(configuration.getName());
+        return generatedEnvironment;
     }
 
     public static class Configuration implements JIPipeParameterCollection {

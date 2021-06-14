@@ -137,30 +137,6 @@ public class JIPipeProjectWorkbench extends JPanel implements JIPipeWorkbench {
         JIPipeRunQueueNotifier.install();
     }
 
-    public static boolean canAddOrDeleteNodes(JIPipeWorkbench workbench) {
-        if (workbench instanceof JIPipeProjectWorkbench) {
-            JIPipeProject project = ((JIPipeProjectWorkbench) workbench).getProject();
-            if (project.getMetadata().getPermissions().isPreventAddingDeletingNodes()) {
-                JOptionPane.showMessageDialog(workbench.getWindow(), "Deleting nodes & compartments is disabled for this project. " +
-                        "\n\nIf this is not intentional, change this setting in Project > Project settings > Prevent adding/deleting nodes");
-                return false;
-            }
-        }
-        return true;
-    }
-
-    public static boolean canModifySlots(JIPipeWorkbench workbench) {
-        if (workbench instanceof JIPipeProjectWorkbench) {
-            JIPipeProject project = ((JIPipeProjectWorkbench) workbench).getProject();
-            if (project.getMetadata().getPermissions().isPreventModifyingSlots()) {
-                JOptionPane.showMessageDialog(workbench.getWindow(), "Modifying slots is disabled for this project. " +
-                        "\n\nIf this is not intentional, change this setting in Project > Project settings > Prevent modifying slots");
-                return false;
-            }
-        }
-        return true;
-    }
-
     public void restoreStandardTabs(boolean showIntroduction, boolean isNewProject) {
         if (GeneralUISettings.getInstance().isShowIntroduction() && showIntroduction)
             documentTabPane.selectSingletonTab(TAB_INTRODUCTION);
@@ -811,5 +787,29 @@ public class JIPipeProjectWorkbench extends JPanel implements JIPipeWorkbench {
             this.projectModified = projectModified;
             window.updateTitle();
         }
+    }
+
+    public static boolean canAddOrDeleteNodes(JIPipeWorkbench workbench) {
+        if (workbench instanceof JIPipeProjectWorkbench) {
+            JIPipeProject project = ((JIPipeProjectWorkbench) workbench).getProject();
+            if (project.getMetadata().getPermissions().isPreventAddingDeletingNodes()) {
+                JOptionPane.showMessageDialog(workbench.getWindow(), "Deleting nodes & compartments is disabled for this project. " +
+                        "\n\nIf this is not intentional, change this setting in Project > Project settings > Prevent adding/deleting nodes");
+                return false;
+            }
+        }
+        return true;
+    }
+
+    public static boolean canModifySlots(JIPipeWorkbench workbench) {
+        if (workbench instanceof JIPipeProjectWorkbench) {
+            JIPipeProject project = ((JIPipeProjectWorkbench) workbench).getProject();
+            if (project.getMetadata().getPermissions().isPreventModifyingSlots()) {
+                JOptionPane.showMessageDialog(workbench.getWindow(), "Modifying slots is disabled for this project. " +
+                        "\n\nIf this is not intentional, change this setting in Project > Project settings > Prevent modifying slots");
+                return false;
+            }
+        }
+        return true;
     }
 }

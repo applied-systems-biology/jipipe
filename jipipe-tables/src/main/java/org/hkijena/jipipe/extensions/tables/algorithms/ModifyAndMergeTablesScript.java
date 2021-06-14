@@ -38,6 +38,7 @@ import org.hkijena.jipipe.utils.UIUtils;
 import org.python.core.PyDictionary;
 import org.python.util.PythonInterpreter;
 
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -100,8 +101,14 @@ public class ModifyAndMergeTablesScript extends JIPipeAlgorithm {
 
     @Override
     public void reportValidity(JIPipeValidityReport report) {
-        JythonUtils.checkScriptValidity(code.getCode(), scriptParameters, report.forCategory("Script"));
+        JythonUtils.checkScriptValidity(code.getCode(getWorkDirectory()), scriptParameters, report.forCategory("Script"));
         JythonUtils.checkScriptParametersValidity(scriptParameters, report.forCategory("Script parameters"));
+    }
+
+    @Override
+    public void setWorkDirectory(Path workDirectory) {
+        super.setWorkDirectory(workDirectory);
+        code.makeExternalScriptFileRelative(workDirectory);
     }
 
     @Override
@@ -127,7 +134,7 @@ public class ModifyAndMergeTablesScript extends JIPipeAlgorithm {
         }
 
         pythonInterpreter.set("tables", rows);
-        pythonInterpreter.exec(code.getCode());
+        pythonInterpreter.exec(code.getCode(getWorkDirectory()));
         rows = (List<PyDictionary>) pythonInterpreter.get("tables").__tojava__(List.class);
 
         for (PyDictionary row : rows) {

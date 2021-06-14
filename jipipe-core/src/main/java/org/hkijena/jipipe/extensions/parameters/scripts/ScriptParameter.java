@@ -20,6 +20,7 @@ import org.scijava.script.ScriptLanguage;
 
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.attribute.FileTime;
 import java.util.Objects;
@@ -53,14 +54,13 @@ public abstract class ScriptParameter {
 
     @JsonGetter("code")
     public String getCode() {
-        if(externalScriptFile.isEnabled()) {
+        if (externalScriptFile.isEnabled()) {
             try {
                 if (externalCodeBuffer == null || !Objects.equals(externalCodeBufferLastUpdate, Files.getLastModifiedTime(externalScriptFile.getContent()))) {
                     externalCodeBuffer = new String(Files.readAllBytes(externalScriptFile.getContent()), StandardCharsets.UTF_8);
                 }
                 return externalCodeBuffer;
-            }
-            catch (Exception e) {
+            } catch (Exception e) {
                 e.printStackTrace();
                 return code;
             }
@@ -71,6 +71,46 @@ public abstract class ScriptParameter {
     @JsonSetter("code")
     public void setCode(String code) {
         this.code = code;
+    }
+
+    /**
+     * Gets the code. Supports relative external script paths
+     *
+     * @param workDirectory the work directory
+     * @return the code
+     */
+    public String getCode(Path workDirectory) {
+        if (workDirectory == null)
+            return getCode();
+        if (externalScriptFile.isEnabled()) {
+            Path externalScriptPath = externalScriptFile.getContent();
+            if (!externalScriptPath.isAbsolute()) {
+                externalScriptPath = workDirectory.resolve(externalScriptPath);
+            }
+            try {
+                if (externalCodeBuffer == null || !Objects.equals(externalCodeBufferLastUpdate, Files.getLastModifiedTime(externalScriptPath))) {
+                    externalCodeBuffer = new String(Files.readAllBytes(externalScriptPath), StandardCharsets.UTF_8);
+                }
+                return externalCodeBuffer;
+            } catch (Exception e) {
+                e.printStackTrace();
+                return code;
+            }
+        }
+        return code;
+    }
+
+    /**
+     * Converts the external script file reference into a relative path
+     *
+     * @param workDirectory the current work directory
+     */
+    public void makeExternalScriptFileRelative(Path workDirectory) {
+        if (externalScriptFile.isEnabled() && workDirectory != null && externalScriptFile.getContent() != null) {
+            if (externalScriptFile.getContent().isAbsolute() && externalScriptFile.getContent().startsWith(workDirectory)) {
+                externalScriptFile.setContent(workDirectory.relativize(externalScriptFile.getContent()));
+            }
+        }
     }
 
     /**

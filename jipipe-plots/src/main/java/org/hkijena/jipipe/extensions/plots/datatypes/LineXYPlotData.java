@@ -49,10 +49,6 @@ public class LineXYPlotData extends XYPlotData {
         this.lineThickness = other.lineThickness;
     }
 
-    public static LineXYPlotData importFrom(Path storagePath) {
-        return PlotData.importFrom(storagePath, LineXYPlotData.class);
-    }
-
     @Override
     public JFreeChart getChart() {
         JFreeChart chart = ChartFactory.createXYLineChart(getTitle(), getxAxisLabel(), getyAxisLabel(), createDataSet());
@@ -80,5 +76,9 @@ public class LineXYPlotData extends XYPlotData {
     @JIPipeParameter("line-thickness")
     public void setLineThickness(int lineThickness) {
         this.lineThickness = lineThickness;
+    }
+
+    public static LineXYPlotData importFrom(Path storagePath) {
+        return PlotData.importFrom(storagePath, LineXYPlotData.class);
     }
 }

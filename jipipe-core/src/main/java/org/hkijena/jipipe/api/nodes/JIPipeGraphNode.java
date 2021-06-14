@@ -129,22 +129,6 @@ public abstract class JIPipeGraphNode implements JIPipeValidatable, JIPipeParame
         slotConfiguration.getEventBus().register(this);
     }
 
-    public static <T extends JIPipeGraphNode> T fromJsonNode(JsonNode node, JIPipeValidityReport issues) {
-        String id = node.get("jipipe:node-info-id").asText();
-        if (!JIPipe.getNodes().hasNodeInfoWithId(id)) {
-            System.err.println("Unable to find node type with ID '" + id + "'. Skipping.");
-            issues.forCategory("Nodes").forCategory(id).reportIsInvalid("Unable to find node type '" + id + "'!",
-                    "The JSON data requested to load a node of type '" + id + "', but it is not known to JIPipe.",
-                    "Please check if all extensions are are correctly loaded.",
-                    node);
-            return null;
-        }
-        JIPipeNodeInfo info = JIPipe.getNodes().getInfoById(id);
-        JIPipeGraphNode algorithm = info.newInstance();
-        algorithm.fromJson(node, issues.forCategory("Nodes").forCategory(id));
-        return (T) algorithm;
-    }
-
     /**
      * Synchronizes the slots with the slot definition
      */
@@ -280,7 +264,7 @@ public abstract class JIPipeGraphNode implements JIPipeValidatable, JIPipeParame
 
     @Override
     public boolean isParameterUIVisible(JIPipeParameterTree tree, JIPipeParameterAccess access) {
-        if(ParameterUtils.isHiddenLocalParameter(tree, access, "jipipe:node:description", "jipipe:node:name")) {
+        if (ParameterUtils.isHiddenLocalParameter(tree, access, "jipipe:node:description", "jipipe:node:name")) {
             return false;
         }
         return JIPipeParameterCollection.super.isParameterUIVisible(tree, access);
@@ -1040,6 +1024,22 @@ public abstract class JIPipeGraphNode implements JIPipeValidatable, JIPipeParame
     public JIPipeProjectCompartment getProjectCompartment() {
         JIPipeProject project = graph.getAttachment(JIPipeProject.class);
         return project.getCompartments().getOrDefault(getCompartmentUUIDInGraph(), null);
+    }
+
+    public static <T extends JIPipeGraphNode> T fromJsonNode(JsonNode node, JIPipeValidityReport issues) {
+        String id = node.get("jipipe:node-info-id").asText();
+        if (!JIPipe.getNodes().hasNodeInfoWithId(id)) {
+            System.err.println("Unable to find node type with ID '" + id + "'. Skipping.");
+            issues.forCategory("Nodes").forCategory(id).reportIsInvalid("Unable to find node type '" + id + "'!",
+                    "The JSON data requested to load a node of type '" + id + "', but it is not known to JIPipe.",
+                    "Please check if all extensions are are correctly loaded.",
+                    node);
+            return null;
+        }
+        JIPipeNodeInfo info = JIPipe.getNodes().getInfoById(id);
+        JIPipeGraphNode algorithm = info.newInstance();
+        algorithm.fromJson(node, issues.forCategory("Nodes").forCategory(id));
+        return (T) algorithm;
     }
 
     /**

@@ -46,6 +46,18 @@ public class ExpressionConstantEntry {
         this.constant = constant;
     }
 
+    public String getName() {
+        return name;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public Constant getConstant() {
+        return constant;
+    }
+
     /**
      * Extracts operators from an evaluator
      *
@@ -61,17 +73,5 @@ public class ExpressionConstantEntry {
             result.add(new ExpressionConstantEntry(constant));
         }
         return result;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public Constant getConstant() {
-        return constant;
     }
 }

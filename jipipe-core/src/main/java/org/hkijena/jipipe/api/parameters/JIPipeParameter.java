@@ -75,6 +75,7 @@ public @interface JIPipeParameter {
     /**
      * Allows to hide the parameter by default (Can be overridden within the parameter collection=
      * )
+     *
      * @return if the parameter or sub-parameter is hidden by default
      */
     boolean hidden() default false;

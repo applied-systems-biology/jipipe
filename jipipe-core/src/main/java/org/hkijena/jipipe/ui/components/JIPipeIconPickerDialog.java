@@ -48,28 +48,6 @@ public class JIPipeIconPickerDialog extends JDialog implements MouseListener {
         reloadIconList();
     }
 
-    /**
-     * Picks an icon name using a dialog
-     *
-     * @param parent         The parent component
-     * @param prefix         The prefix put in front of the icon names for rendering the icon
-     * @param availableIcons Icon names without prefix
-     * @return The selected icon or null
-     */
-    public static String showDialog(Component parent, String prefix, Set<String> availableIcons) {
-        JIPipeIconPickerDialog dialog = new JIPipeIconPickerDialog(SwingUtilities.getWindowAncestor(parent),
-                prefix,
-                availableIcons);
-        dialog.pack();
-        dialog.setSize(new Dimension(500, 400));
-        dialog.setLocationRelativeTo(parent);
-        UIUtils.addEscapeListener(dialog);
-        dialog.setModal(true);
-        dialog.setVisible(true);
-
-        return dialog.getSelectedIcon();
-    }
-
     private void initialize() {
         setLayout(new BorderLayout(8, 8));
         initializeToolbar();
@@ -157,5 +135,27 @@ public class JIPipeIconPickerDialog extends JDialog implements MouseListener {
     @Override
     public void mouseExited(MouseEvent e) {
 
+    }
+
+    /**
+     * Picks an icon name using a dialog
+     *
+     * @param parent         The parent component
+     * @param prefix         The prefix put in front of the icon names for rendering the icon
+     * @param availableIcons Icon names without prefix
+     * @return The selected icon or null
+     */
+    public static String showDialog(Component parent, String prefix, Set<String> availableIcons) {
+        JIPipeIconPickerDialog dialog = new JIPipeIconPickerDialog(SwingUtilities.getWindowAncestor(parent),
+                prefix,
+                availableIcons);
+        dialog.pack();
+        dialog.setSize(new Dimension(500, 400));
+        dialog.setLocationRelativeTo(parent);
+        UIUtils.addEscapeListener(dialog);
+        dialog.setModal(true);
+        dialog.setVisible(true);
+
+        return dialog.getSelectedIcon();
     }
 }

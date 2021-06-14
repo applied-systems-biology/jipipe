@@ -154,7 +154,7 @@ public class DeepLearningTrainingConfiguration implements JIPipeParameterCollect
         this.monitorLoss = monitorLoss;
     }
 
-    @JIPipeDocumentation(name = "Validation split",description = "Ratio between training and validation data")
+    @JIPipeDocumentation(name = "Validation split", description = "Ratio between training and validation data")
     @JIPipeParameter("validation-split")
     @JsonGetter("validation_split")
     public double getValidationSplit() {

@@ -20,7 +20,6 @@ import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.extensions.deeplearning.DeepLearningArchitecture;
-import org.hkijena.jipipe.extensions.deeplearning.MonitorLoss;
 import org.hkijena.jipipe.extensions.deeplearning.RegularizationMethod;
 
 import java.nio.file.Path;
@@ -163,13 +162,13 @@ public class DeepLearningModelConfiguration implements JIPipeParameterCollection
 
     public int getImageDimensions() {
         int dimensions = 1;
-        if(getImageHeight() > 1)
+        if (getImageHeight() > 1)
             ++dimensions;
-        if(getImageDepth() > 1)
+        if (getImageDepth() > 1)
             ++dimensions;
-        if(getImageChannels() > 1)
+        if (getImageChannels() > 1)
             ++dimensions;
-        if(getImageFrames() > 1)
+        if (getImageFrames() > 1)
             ++dimensions;
         return dimensions;
     }
@@ -179,13 +178,13 @@ public class DeepLearningModelConfiguration implements JIPipeParameterCollection
         // Order is WHZCT
         List<Integer> shape = new ArrayList<>();
         shape.add(getImageWidth());
-        if(getImageHeight() > 1)
+        if (getImageHeight() > 1)
             shape.add(getImageHeight());
-        if(getImageDepth() > 1)
+        if (getImageDepth() > 1)
             shape.add(getImageDepth());
-        if(getImageChannels() > 1)
+        if (getImageChannels() > 1)
             shape.add(getImageChannels());
-        if(getImageFrames() > 1)
+        if (getImageFrames() > 1)
             shape.add(getImageFrames());
         return shape;
     }
@@ -193,13 +192,13 @@ public class DeepLearningModelConfiguration implements JIPipeParameterCollection
     @JsonSetter("image_shape")
     public void setImageShape(List<Integer> shape) {
         setImageWidth(shape.get(0));
-        if(shape.size() > 1)
+        if (shape.size() > 1)
             setImageHeight(shape.get(1));
-        if(shape.size() > 2)
+        if (shape.size() > 2)
             setImageDepth(shape.get(2));
-        if(shape.size() > 3)
+        if (shape.size() > 3)
             setImageChannels(shape.get(3));
-        if(shape.size() > 4)
+        if (shape.size() > 4)
             setImageFrames(shape.get(4));
     }
 

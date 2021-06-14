@@ -31,10 +31,6 @@ public class ImageViewerUISettings implements JIPipeParameterCollection {
     private boolean showSideBar = true;
     private int defaultAnimationSpeed = 250;
 
-    public static ImageViewerUISettings getInstance() {
-        return JIPipe.getSettings().getSettings(ID, ImageViewerUISettings.class);
-    }
-
     @JIPipeDocumentation(name = "Show side bar", description = "If enabled, show a side bar with additional settings and tools")
     @JIPipeParameter("show-side-bar")
     public boolean isShowSideBar() {
@@ -60,5 +56,9 @@ public class ImageViewerUISettings implements JIPipeParameterCollection {
     @Override
     public EventBus getEventBus() {
         return eventBus;
+    }
+
+    public static ImageViewerUISettings getInstance() {
+        return JIPipe.getSettings().getSettings(ID, ImageViewerUISettings.class);
     }
 }

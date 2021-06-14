@@ -228,7 +228,7 @@ public abstract class JIPipeIteratingMissingDataGeneratorAlgorithm extends JIPip
 
     @Override
     public boolean isParameterUIVisible(JIPipeParameterTree tree, JIPipeParameterCollection subParameter) {
-        if(ParameterUtils.isHiddenLocalParameterCollection(tree, subParameter, "jipipe:data-batch-generation", "jipipe:adaptive-parameters")) {
+        if (ParameterUtils.isHiddenLocalParameterCollection(tree, subParameter, "jipipe:data-batch-generation", "jipipe:adaptive-parameters")) {
             return false;
         }
         return super.isParameterUIVisible(tree, subParameter);
@@ -236,7 +236,7 @@ public abstract class JIPipeIteratingMissingDataGeneratorAlgorithm extends JIPip
 
     @Override
     public boolean isParameterUIVisible(JIPipeParameterTree tree, JIPipeParameterAccess access) {
-        if(ParameterUtils.isHiddenLocalParameter(tree, access, "jipipe:parallelization:enabled")) {
+        if (ParameterUtils.isHiddenLocalParameter(tree, access, "jipipe:parallelization:enabled")) {
             return false;
         }
         return super.isParameterUIVisible(tree, access);

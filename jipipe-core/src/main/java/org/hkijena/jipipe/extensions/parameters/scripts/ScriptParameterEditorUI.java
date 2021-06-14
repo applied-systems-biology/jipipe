@@ -149,12 +149,12 @@ public class ScriptParameterEditorUI extends JIPipeParameterEditorUI {
         if (!code.isCollapsed() || !isCollapsed) {
             remove(textArea);
             remove(collapseInfoLabel);
-            if(pathEditorComponent != null)
+            if (pathEditorComponent != null)
                 remove(pathEditorComponent);
             if (code.isCollapsed()) {
                 add(collapseInfoLabel, BorderLayout.CENTER);
             } else {
-                if(code.getExternalScriptFile().isEnabled()) {
+                if (code.getExternalScriptFile().isEnabled()) {
                     JIPipeManualParameterAccess access = JIPipeManualParameterAccess.builder().setFieldClass(Path.class)
                             .setGetter(() -> code.getExternalScriptFile().getContent())
                             .setSetter((Object p) -> code.getExternalScriptFile().setContent((Path) p))
@@ -191,8 +191,7 @@ public class ScriptParameterEditorUI extends JIPipeParameterEditorUI {
                     formPanel.addToForm(pathEditor, new JLabel("External script path"), null);
                     add(formPanel, BorderLayout.CENTER);
                     pathEditorComponent = formPanel;
-                }
-                else {
+                } else {
                     add(textArea, BorderLayout.CENTER);
                 }
             }

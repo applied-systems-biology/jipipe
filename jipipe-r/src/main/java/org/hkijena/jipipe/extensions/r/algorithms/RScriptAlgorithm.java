@@ -130,7 +130,7 @@ public class RScriptAlgorithm extends JIPipeParameterSlotAlgorithm {
         RUtils.outputSlotsToR(code, getOutputSlots(), outputSlotPaths);
         RUtils.installOutputGeneratorCode(code);
 
-        code.append("\n").append(script.getCode()).append("\n");
+        code.append("\n").append(script.getCode(getWorkDirectory())).append("\n");
         RUtils.installPostprocessorCode(code);
 
         progressInfo.log(code.toString());
@@ -169,6 +169,12 @@ public class RScriptAlgorithm extends JIPipeParameterSlotAlgorithm {
                 }
             }
         }
+    }
+
+    @Override
+    public void setWorkDirectory(Path workDirectory) {
+        super.setWorkDirectory(workDirectory);
+        script.makeExternalScriptFileRelative(workDirectory);
     }
 
     @JIPipeParameter("variables")

@@ -39,6 +39,7 @@ import org.hkijena.jipipe.utils.UIUtils;
 import org.python.core.PyDictionary;
 import org.python.util.PythonInterpreter;
 
+import java.nio.file.Path;
 import java.util.ArrayList;
 
 /**
@@ -108,8 +109,14 @@ public class MergingJythonScriptAlgorithm extends JIPipeMergingAlgorithm {
     @Override
     public void reportValidity(JIPipeValidityReport report) {
         super.reportValidity(report);
-        JythonUtils.checkScriptValidity(code.getCode(), scriptParameters, report.forCategory("Script"));
+        JythonUtils.checkScriptValidity(code.getCode(getWorkDirectory()), scriptParameters, report.forCategory("Script"));
         JythonUtils.checkScriptParametersValidity(scriptParameters, report.forCategory("Script parameters"));
+    }
+
+    @Override
+    public void setWorkDirectory(Path workDirectory) {
+        super.setWorkDirectory(workDirectory);
+        code.makeExternalScriptFileRelative(workDirectory);
     }
 
     @Override
@@ -129,7 +136,7 @@ public class MergingJythonScriptAlgorithm extends JIPipeMergingAlgorithm {
         pythonInterpreter.set("output_slots", new ArrayList<>(getOutputSlots()));
         pythonInterpreter.set("input_slot_map", inputSlotMap);
         pythonInterpreter.set("output_slot_map", outputSlotMap);
-        pythonInterpreter.exec(code.getCode());
+        pythonInterpreter.exec(code.getCode(getWorkDirectory()));
     }
 
     @JIPipeDocumentation(name = "Script", description = "Access to the data batch is done via a variable 'data_batch' that provides access to all input and output data, as well as annotations." +

@@ -37,41 +37,6 @@ public class PythonExtensionSettings implements ExternalEnvironmentSettings {
     public PythonExtensionSettings() {
     }
 
-    public static PythonExtensionSettings getInstance() {
-        return JIPipe.getSettings().getSettings(ID, PythonExtensionSettings.class);
-    }
-
-    /**
-     * Checks if the Python settings are valid or reports an invalid state
-     *
-     * @param report the report
-     */
-    public static void checkPythonSettings(JIPipeValidityReport report) {
-        if (!pythonSettingsAreValid()) {
-            report.reportIsInvalid("Python is not configured!",
-                    "Project > Application settings > Extensions > Python integration",
-                    "This node requires an installation of Python. You have to point JIPipe to a Python installation.",
-                    "Please install Python from https://www.python.org/, or from https://www.anaconda.com/ or https://docs.conda.io/en/latest/miniconda.html. " +
-                            "Then go to Project > Application settings > Extensions > Python integration and choose the environment. " +
-                            "Alternatively, you can install a Conda environment from the settings page.");
-        }
-    }
-
-    /**
-     * Checks the Python settings
-     *
-     * @return if the settings are correct
-     */
-    public static boolean pythonSettingsAreValid() {
-        if (JIPipe.getInstance() != null) {
-            PythonExtensionSettings instance = getInstance();
-            JIPipeValidityReport report = new JIPipeValidityReport();
-            instance.getPythonEnvironment().reportValidity(report);
-            return report.isValid();
-        }
-        return false;
-    }
-
     @JIPipeDocumentation(name = "Presets", description = "List of presets stored for Python environments.")
     @JIPipeParameter("presets")
     public PythonEnvironment.List getPresets() {
@@ -144,5 +109,40 @@ public class PythonExtensionSettings implements ExternalEnvironmentSettings {
                 this.presets.add((PythonEnvironment) preset);
             }
         }
+    }
+
+    public static PythonExtensionSettings getInstance() {
+        return JIPipe.getSettings().getSettings(ID, PythonExtensionSettings.class);
+    }
+
+    /**
+     * Checks if the Python settings are valid or reports an invalid state
+     *
+     * @param report the report
+     */
+    public static void checkPythonSettings(JIPipeValidityReport report) {
+        if (!pythonSettingsAreValid()) {
+            report.reportIsInvalid("Python is not configured!",
+                    "Project > Application settings > Extensions > Python integration",
+                    "This node requires an installation of Python. You have to point JIPipe to a Python installation.",
+                    "Please install Python from https://www.python.org/, or from https://www.anaconda.com/ or https://docs.conda.io/en/latest/miniconda.html. " +
+                            "Then go to Project > Application settings > Extensions > Python integration and choose the environment. " +
+                            "Alternatively, you can install a Conda environment from the settings page.");
+        }
+    }
+
+    /**
+     * Checks the Python settings
+     *
+     * @return if the settings are correct
+     */
+    public static boolean pythonSettingsAreValid() {
+        if (JIPipe.getInstance() != null) {
+            PythonExtensionSettings instance = getInstance();
+            JIPipeValidityReport report = new JIPipeValidityReport();
+            instance.getPythonEnvironment().reportValidity(report);
+            return report.isValid();
+        }
+        return false;
     }
 }

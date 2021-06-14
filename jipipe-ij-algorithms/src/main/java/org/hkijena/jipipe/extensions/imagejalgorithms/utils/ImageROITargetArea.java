@@ -13,14 +13,6 @@ public enum ImageROITargetArea {
     InsideMask,
     OutsideMask;
 
-    public static ByteProcessor createWhiteMask(ImagePlus img) {
-        ByteProcessor processor = new ByteProcessor(img.getWidth(), img.getHeight());
-        processor.setValue(255);
-        processor.setRoi(0, 0, processor.getWidth(), processor.getHeight());
-        processor.fill();
-        return processor;
-    }
-
     /**
      * Gets the appropriate mask for the current setting
      *
@@ -79,5 +71,13 @@ public enum ImageROITargetArea {
                 return "Outside mask";
         }
         throw new UnsupportedOperationException();
+    }
+
+    public static ByteProcessor createWhiteMask(ImagePlus img) {
+        ByteProcessor processor = new ByteProcessor(img.getWidth(), img.getHeight());
+        processor.setValue(255);
+        processor.setRoi(0, 0, processor.getWidth(), processor.getHeight());
+        processor.fill();
+        return processor;
     }
 }

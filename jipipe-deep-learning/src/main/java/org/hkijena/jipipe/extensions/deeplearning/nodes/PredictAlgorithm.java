@@ -23,12 +23,7 @@ import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeAnnotation;
 import org.hkijena.jipipe.api.data.JIPipeAnnotationMergeStrategy;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
-import org.hkijena.jipipe.api.nodes.JIPipeColumnGrouping;
-import org.hkijena.jipipe.api.nodes.JIPipeInputSlot;
-import org.hkijena.jipipe.api.nodes.JIPipeMergingAlgorithm;
-import org.hkijena.jipipe.api.nodes.JIPipeMergingDataBatch;
-import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
-import org.hkijena.jipipe.api.nodes.JIPipeOutputSlot;
+import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
@@ -116,8 +111,7 @@ public class PredictAlgorithm extends JIPipeMergingAlgorithm {
             try {
                 Files.createDirectories(predictionsDirectory);
                 Files.createDirectories(rawsDirectory);
-            }
-            catch (IOException e) {
+            } catch (IOException e) {
                 throw new RuntimeException(e);
             }
             {
@@ -152,7 +146,7 @@ public class PredictAlgorithm extends JIPipeMergingAlgorithm {
             }
 
             Path deviceConfigurationPath = workDirectory.resolve("device-configuration.json");
-            if(getOverrideDevices().isEnabled())
+            if (getOverrideDevices().isEnabled())
                 getOverrideDevices().getContent().saveAsJson(deviceConfigurationPath);
             else
                 DeepLearningSettings.getInstance().getDeepLearningDevice().saveAsJson(deviceConfigurationPath);
@@ -170,7 +164,7 @@ public class PredictAlgorithm extends JIPipeMergingAlgorithm {
             arguments.add("--device-config");
             arguments.add(deviceConfigurationPath.toString());
 
-            if(DeepLearningSettings.getInstance().getDeepLearningToolkit().needsInstall())
+            if (DeepLearningSettings.getInstance().getDeepLearningToolkit().needsInstall())
                 DeepLearningSettings.getInstance().getDeepLearningToolkit().install(modelProgress);
             PythonUtils.runPython(arguments.toArray(new String[0]), overrideEnvironment.isEnabled() ? overrideEnvironment.getContent() :
                             DeepLearningSettings.getInstance().getPythonEnvironment(),
@@ -250,7 +244,7 @@ public class PredictAlgorithm extends JIPipeMergingAlgorithm {
 
     @Override
     public boolean isParameterUIVisible(JIPipeParameterTree tree, JIPipeParameterCollection subParameter) {
-        if(!scaleToModelSize && subParameter == getScale2DAlgorithm()) {
+        if (!scaleToModelSize && subParameter == getScale2DAlgorithm()) {
             return false;
         }
         return super.isParameterUIVisible(tree, subParameter);
@@ -258,7 +252,7 @@ public class PredictAlgorithm extends JIPipeMergingAlgorithm {
 
     @Override
     public boolean isParameterUIVisible(JIPipeParameterTree tree, JIPipeParameterAccess access) {
-        if("axis".equals(access.getKey()) && access.getSource() == getScale2DAlgorithm()) {
+        if ("axis".equals(access.getKey()) && access.getSource() == getScale2DAlgorithm()) {
             return false;
         }
         return super.isParameterUIVisible(tree, access);

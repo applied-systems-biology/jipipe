@@ -46,6 +46,19 @@ public class JIPipeNodeGroupUI extends JIPipeWorkbenchPanel {
         initialize();
     }
 
+    private void initialize() {
+        setLayout(new BorderLayout());
+        graphUI = new JIPipeGraphCompartmentUI(getWorkbench(), nodeGroup.getWrappedGraph(), null);
+        add(graphUI, BorderLayout.CENTER);
+    }
+
+    /**
+     * @return The displayed compartment
+     */
+    public NodeGroup getNodeGroup() {
+        return nodeGroup;
+    }
+
     /**
      * Opens the graph editor for specified compartment
      *
@@ -83,18 +96,5 @@ public class JIPipeNodeGroupUI extends JIPipeWorkbenchPanel {
             }
         }
         return result;
-    }
-
-    private void initialize() {
-        setLayout(new BorderLayout());
-        graphUI = new JIPipeGraphCompartmentUI(getWorkbench(), nodeGroup.getWrappedGraph(), null);
-        add(graphUI, BorderLayout.CENTER);
-    }
-
-    /**
-     * @return The displayed compartment
-     */
-    public NodeGroup getNodeGroup() {
-        return nodeGroup;
     }
 }

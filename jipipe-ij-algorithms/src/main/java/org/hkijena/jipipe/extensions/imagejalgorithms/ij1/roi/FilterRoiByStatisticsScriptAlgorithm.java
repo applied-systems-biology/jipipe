@@ -40,6 +40,7 @@ import org.hkijena.jipipe.utils.UIUtils;
 import org.python.core.PyDictionary;
 import org.python.util.PythonInterpreter;
 
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -149,7 +150,7 @@ public class FilterRoiByStatisticsScriptAlgorithm extends ImageRoiProcessorAlgor
         PyDictionary annotationDict = JIPipeAnnotation.annotationMapToPython(dataBatch.getAnnotations());
         pythonInterpreter.set("annotations", annotationDict);
         pythonInterpreter.set("roi_list", roiList);
-        pythonInterpreter.exec(code.getCode());
+        pythonInterpreter.exec(code.getCode(getWorkDirectory()));
         roiList = (List<PyDictionary>) pythonInterpreter.get("roi_list").__tojava__(List.class);
         annotationDict = (PyDictionary) pythonInterpreter.get("annotations");
 
@@ -165,8 +166,14 @@ public class FilterRoiByStatisticsScriptAlgorithm extends ImageRoiProcessorAlgor
     }
 
     @Override
+    public void setWorkDirectory(Path workDirectory) {
+        super.setWorkDirectory(workDirectory);
+        code.makeExternalScriptFileRelative(workDirectory);
+    }
+
+    @Override
     public void reportValidity(JIPipeValidityReport report) {
-        JythonUtils.checkScriptValidity(code.getCode(), scriptParameters, report.forCategory("Script"));
+        JythonUtils.checkScriptValidity(code.getCode(getWorkDirectory()), scriptParameters, report.forCategory("Script"));
         JythonUtils.checkScriptParametersValidity(scriptParameters, report.forCategory("Script parameters"));
     }
 

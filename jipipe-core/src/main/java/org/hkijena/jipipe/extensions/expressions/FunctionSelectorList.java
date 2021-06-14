@@ -34,6 +34,17 @@ public class FunctionSelectorList extends JList<JIPipeExpressionRegistry.Express
         initialize();
     }
 
+    private void initialize() {
+        DefaultListModel<JIPipeExpressionRegistry.ExpressionFunctionEntry> model = new DefaultListModel<>();
+        for (JIPipeExpressionRegistry.ExpressionFunctionEntry functionEntry : JIPipe.getInstance().getExpressionRegistry().getRegisteredExpressionFunctions().values().stream()
+                .sorted(Comparator.comparing(JIPipeExpressionRegistry.ExpressionFunctionEntry::getName)).collect(Collectors.toList())) {
+            model.addElement(functionEntry);
+        }
+        setCellRenderer(new ExpressionFunctionRenderer());
+        setModel(model);
+        setSelectedIndex(0);
+    }
+
     public static JIPipeExpressionRegistry.ExpressionFunctionEntry showDialog(Component parent) {
         JDialog dialog = new JDialog(SwingUtilities.getWindowAncestor(parent));
 
@@ -77,17 +88,6 @@ public class FunctionSelectorList extends JList<JIPipeExpressionRegistry.Express
         UIUtils.addEscapeListener(dialog);
         dialog.setVisible(true);
         return confirmed.get() ? functionSelectorList.getSelectedValue() : null;
-    }
-
-    private void initialize() {
-        DefaultListModel<JIPipeExpressionRegistry.ExpressionFunctionEntry> model = new DefaultListModel<>();
-        for (JIPipeExpressionRegistry.ExpressionFunctionEntry functionEntry : JIPipe.getInstance().getExpressionRegistry().getRegisteredExpressionFunctions().values().stream()
-                .sorted(Comparator.comparing(JIPipeExpressionRegistry.ExpressionFunctionEntry::getName)).collect(Collectors.toList())) {
-            model.addElement(functionEntry);
-        }
-        setCellRenderer(new ExpressionFunctionRenderer());
-        setModel(model);
-        setSelectedIndex(0);
     }
 
     public static class ExpressionFunctionRenderer extends JPanel implements ListCellRenderer<JIPipeExpressionRegistry.ExpressionFunctionEntry> {

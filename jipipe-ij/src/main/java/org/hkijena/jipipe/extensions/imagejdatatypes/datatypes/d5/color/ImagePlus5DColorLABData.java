@@ -52,6 +52,16 @@ public class ImagePlus5DColorLABData extends ImagePlus5DColorData implements Col
         super(ImagePlusColorLABData.convertIfNeeded(image));
     }
 
+    @Override
+    public ColorSpace getColorSpace() {
+        return COLOR_SPACE;
+    }
+
+    @Override
+    public Component preview(int width, int height) {
+        return ImageJUtils.generatePreview(this.getImage(), getColorSpace(), width, height);
+    }
+
     public static ImagePlusData importFrom(Path storageFolder) {
         return new ImagePlus5DColorLABData(ImagePlusData.importImagePlusFrom(storageFolder));
     }
@@ -64,15 +74,5 @@ public class ImagePlus5DColorLABData extends ImagePlus5DColorData implements Col
      */
     public static ImagePlusData convertFrom(ImagePlusData data) {
         return new ImagePlus5DColorLABData(ImagePlusColorLABData.convertFrom(data).getImage());
-    }
-
-    @Override
-    public ColorSpace getColorSpace() {
-        return COLOR_SPACE;
-    }
-
-    @Override
-    public Component preview(int width, int height) {
-        return ImageJUtils.generatePreview(this.getImage(), getColorSpace(), width, height);
     }
 }

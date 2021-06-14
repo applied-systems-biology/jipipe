@@ -45,19 +45,6 @@ public class REnvInstaller extends ExternalEnvironmentInstaller {
         super(workbench, parameterAccess);
     }
 
-    /**
-     * Gets the latest download link for Miniconda
-     *
-     * @return the download URL
-     */
-    public static String getLatestDownload() {
-        if (SystemUtils.IS_OS_WINDOWS) {
-            return "https://cloud.r-project.org/bin/windows/base/R-4.0.5-win.exe";
-        } else {
-            return "https://cloud.r-project.org/bin/";
-        }
-    }
-
     @Override
     public String getTaskLabel() {
         return "Install R";
@@ -194,6 +181,19 @@ public class REnvInstaller extends ExternalEnvironmentInstaller {
 
     public void setConfiguration(Configuration configuration) {
         this.configuration = configuration;
+    }
+
+    /**
+     * Gets the latest download link for Miniconda
+     *
+     * @return the download URL
+     */
+    public static String getLatestDownload() {
+        if (SystemUtils.IS_OS_WINDOWS) {
+            return "https://cloud.r-project.org/bin/windows/base/R-4.0.5-win.exe";
+        } else {
+            return "https://cloud.r-project.org/bin/";
+        }
     }
 
     public static class Configuration implements JIPipeParameterCollection {

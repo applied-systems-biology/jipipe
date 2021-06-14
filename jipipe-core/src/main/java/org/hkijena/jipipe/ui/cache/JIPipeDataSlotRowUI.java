@@ -139,12 +139,12 @@ public class JIPipeDataSlotRowUI extends JIPipeWorkbenchPanel {
                     public void run() {
                         JIPipeData data = slot.getData(row, JIPipeData.class, progressInfo);
                         data.saveTo(path, "data", false, progressInfo);
-                    }                    @Override
+                    }
+
+                    @Override
                     public void setProgressInfo(JIPipeProgressInfo progressInfo) {
                         this.progressInfo = progressInfo;
                     }
-
-
 
 
                 };
@@ -175,12 +175,12 @@ public class JIPipeDataSlotRowUI extends JIPipeWorkbenchPanel {
                 public void run() {
                     JIPipeData data = slot.getData(row, JIPipeData.class, progressInfo);
                     data.saveTo(path.getParent(), path.getFileName().toString(), true, progressInfo);
-                }                @Override
+                }
+
+                @Override
                 public void setProgressInfo(JIPipeProgressInfo progressInfo) {
                     this.progressInfo = progressInfo;
                 }
-
-
 
 
             };

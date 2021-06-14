@@ -25,10 +25,6 @@ public class ModernSpinnerUI extends BasicSpinnerUI {
     public ModernSpinnerUI() {
     }
 
-    public static ComponentUI createUI(JComponent c) {
-        return new ModernSpinnerUI();
-    }
-
     @Override
     protected Component createPreviousButton() {
         JButton button = new JButton(UIUtils.getIconFromResources("actions/arrow-down.png"));
@@ -47,5 +43,9 @@ public class ModernSpinnerUI extends BasicSpinnerUI {
         button.setBorder(BorderFactory.createEmptyBorder(0, 4, 0, 4));
         installNextButtonListeners(button);
         return button;
+    }
+
+    public static ComponentUI createUI(JComponent c) {
+        return new ModernSpinnerUI();
     }
 }

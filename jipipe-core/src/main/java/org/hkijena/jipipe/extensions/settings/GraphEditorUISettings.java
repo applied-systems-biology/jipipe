@@ -45,10 +45,6 @@ public class GraphEditorUISettings implements JIPipeParameterCollection {
     private boolean showSettingsNodeButton = false;
     private boolean accurateMiniMap = false;
 
-    public static GraphEditorUISettings getInstance() {
-        return JIPipe.getSettings().getSettings(ID, GraphEditorUISettings.class);
-    }
-
     @JIPipeDocumentation(name = "Accurate minimap", description = "If enabled, the minimap shows a screenshot of the whole graph. " +
             "Please note that this is slower than the standard overview map. To apply this setting, you must re-open the graph or reload the project.")
     @JIPipeParameter("accurate-mini-map")
@@ -216,5 +212,9 @@ public class GraphEditorUISettings implements JIPipeParameterCollection {
     @JIPipeParameter("show-open-context-menu-button")
     public void setShowSettingsNodeButton(boolean showSettingsNodeButton) {
         this.showSettingsNodeButton = showSettingsNodeButton;
+    }
+
+    public static GraphEditorUISettings getInstance() {
+        return JIPipe.getSettings().getSettings(ID, GraphEditorUISettings.class);
     }
 }

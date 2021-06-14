@@ -21,10 +21,6 @@ public class GroupHeaderFormData extends ParameterFormData {
         super(other);
     }
 
-    public static GroupHeaderFormData importFrom(Path rowStorage) {
-        return FormData.importFrom(rowStorage, GroupHeaderFormData.class);
-    }
-
     @Override
     public void reportValidity(JIPipeValidityReport report) {
 
@@ -59,6 +55,10 @@ public class GroupHeaderFormData extends ParameterFormData {
     @Override
     public void writeData(JIPipeMergingDataBatch dataBatch) {
 
+    }
+
+    public static GroupHeaderFormData importFrom(Path rowStorage) {
+        return FormData.importFrom(rowStorage, GroupHeaderFormData.class);
     }
 
 

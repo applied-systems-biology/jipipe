@@ -23,6 +23,26 @@ public class DataBatchStatusTableCellRenderer extends JLabel implements TableCel
         this.colorUnvisited = getColorUnvisited();
     }
 
+    @Override
+    public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
+        setText("" + value);
+        DataBatchStatus status = dataBatchStatuses.get(table.convertRowIndexToModel(row));
+        if (isSelected) {
+            if (status == DataBatchStatus.Invalid)
+                setBackground(colorInvalidSelected);
+            else
+                setBackground(UIManager.getColor("List.selectionBackground"));
+        } else {
+            if (status == DataBatchStatus.Invalid)
+                setBackground(colorInvalid);
+            else if (status == DataBatchStatus.Unvisited)
+                setBackground(colorUnvisited);
+            else
+                setBackground(UIManager.getColor("List.background"));
+        }
+        return this;
+    }
+
     public static Color getColorUnvisited() {
         if (GeneralUISettings.getInstance().getTheme().isDark())
             return new Color(0x9A7E29);
@@ -49,25 +69,5 @@ public class DataBatchStatusTableCellRenderer extends JLabel implements TableCel
             return new Color(0x753232);
         else
             return new Color(0xb57979);
-    }
-
-    @Override
-    public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
-        setText("" + value);
-        DataBatchStatus status = dataBatchStatuses.get(table.convertRowIndexToModel(row));
-        if (isSelected) {
-            if (status == DataBatchStatus.Invalid)
-                setBackground(colorInvalidSelected);
-            else
-                setBackground(UIManager.getColor("List.selectionBackground"));
-        } else {
-            if (status == DataBatchStatus.Invalid)
-                setBackground(colorInvalid);
-            else if (status == DataBatchStatus.Unvisited)
-                setBackground(colorUnvisited);
-            else
-                setBackground(UIManager.getColor("List.background"));
-        }
-        return this;
     }
 }

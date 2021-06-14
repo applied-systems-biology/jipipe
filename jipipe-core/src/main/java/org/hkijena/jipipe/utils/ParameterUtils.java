@@ -23,12 +23,7 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameterPersistence;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
 
 import java.io.IOException;
-import java.util.Comparator;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
-import java.util.Stack;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -211,9 +206,9 @@ public class ParameterUtils {
      */
     public static boolean isHiddenLocalParameter(JIPipeParameterTree tree, JIPipeParameterAccess access, String... keys) {
         // Root is parent -> Always shown
-        if(tree.getRoot().getCollection() == access.getSource())
+        if (tree.getRoot().getCollection() == access.getSource())
             return false;
-        if(keys.length == 0)
+        if (keys.length == 0)
             return true;
         for (String key : keys) {
             if (key.equals(access.getKey())) {
@@ -226,21 +221,21 @@ public class ParameterUtils {
 
     /**
      * Returns true if the collection is not a direct child of the tree root
-     * @param tree the parameter tree
+     *
+     * @param tree       the parameter tree
      * @param collection the collection to be tested
-     * @param keys list of collection local keys. only collections with these keys are tested. If empty, all collections are tested.
+     * @param keys       list of collection local keys. only collections with these keys are tested. If empty, all collections are tested.
      * @return if the collection is hidden
      */
     public static boolean isHiddenLocalParameterCollection(JIPipeParameterTree tree, JIPipeParameterCollection collection, String... keys) {
         JIPipeParameterTree.Node node = tree.getSourceNode(collection);
-        if(keys.length > 0) {
+        if (keys.length > 0) {
             for (String key : keys) {
                 if (Objects.equals(key, node.getKey())) {
                     return node.getParent() != tree.getRoot();
                 }
             }
-        }
-        else {
+        } else {
             return node.getParent() != tree.getRoot();
         }
         return false;

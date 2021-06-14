@@ -39,6 +39,7 @@ import org.python.core.PyArray;
 import org.python.core.PyDictionary;
 import org.python.util.PythonInterpreter;
 
+import java.nio.file.Path;
 import java.util.*;
 
 @JIPipeDocumentation(name = "CLIJ2 Execute OpenCL kernel (simple iterating)", description = "Executes an OpenCL kernel via CLIJ2 to process images. This node can have only one input.")
@@ -157,7 +158,7 @@ public class Clij2ExecuteKernelSimpleIterating extends JIPipeSimpleIteratingAlgo
         if (!getNonParameterInputSlots().isEmpty()) {
             pythonInterpreter.set("input_slot", getFirstInputSlot());
         }
-        pythonInterpreter.exec(preprocessingScript.getCode());
+        pythonInterpreter.exec(preprocessingScript.getCode(getWorkDirectory()));
 
         // Fetch constants
         Map<String, Object> clParameters = new HashMap<>();
@@ -193,12 +194,18 @@ public class Clij2ExecuteKernelSimpleIterating extends JIPipeSimpleIteratingAlgo
         if (pythonInterpreter.get("cl_program") != null) {
             kernelName = pythonInterpreter.get("cl_program").__tojava__(String.class).toString();
         }
-        clij2.executeCode(kernelScript.getCode(), kernelName, clDimensionsArr, clGlobalSizesArr, clParameters);
+        clij2.executeCode(kernelScript.getCode(getWorkDirectory()), kernelName, clDimensionsArr, clGlobalSizesArr, clParameters);
 
         // Extract outputs
         for (Map.Entry<String, JIPipeDataSlot> entry : getOutputSlotMap().entrySet()) {
             dataBatch.addOutputData(entry.getKey(), new CLIJImageData((ClearCLBuffer) clParameters.get(entry.getKey())), progressInfo);
         }
+    }
+
+    @Override
+    public void setWorkDirectory(Path workDirectory) {
+        super.setWorkDirectory(workDirectory);
+        kernelScript.makeExternalScriptFileRelative(workDirectory);
     }
 
     @JIPipeDocumentation(name = "Preprocessing", description = "CLIJ2 requires some information about the output image(s) and the memory that is allocated by the kernel operation. " +

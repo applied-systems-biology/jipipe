@@ -201,7 +201,7 @@ public class SimpleIteratingFormProcessorAlgorithm extends JIPipeAlgorithm imple
 
     @Override
     public boolean isParameterUIVisible(JIPipeParameterTree tree, JIPipeParameterCollection subParameter) {
-        if(ParameterUtils.isHiddenLocalParameterCollection(tree, subParameter, "jipipe:data-batch-generation", "jipipe:adaptive-parameters")) {
+        if (ParameterUtils.isHiddenLocalParameterCollection(tree, subParameter, "jipipe:data-batch-generation", "jipipe:adaptive-parameters")) {
             return false;
         }
         return super.isParameterUIVisible(tree, subParameter);

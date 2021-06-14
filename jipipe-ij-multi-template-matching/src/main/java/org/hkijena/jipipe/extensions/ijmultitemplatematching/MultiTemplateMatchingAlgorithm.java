@@ -107,10 +107,6 @@ public class MultiTemplateMatchingAlgorithm extends JIPipeMergingAlgorithm {
         this.withNonMaximaSuppression = other.withNonMaximaSuppression;
     }
 
-    private static String loadScriptFromResources() {
-        return ResourceUtils.getPluginResourceAsString("extensions/ijmultitemplatematching/template-matching-script.py");
-    }
-
     @Override
     protected void runIteration(JIPipeMergingDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
         List<ImagePlus> images = new ArrayList<>();
@@ -480,5 +476,9 @@ public class MultiTemplateMatchingAlgorithm extends JIPipeMergingAlgorithm {
     @JIPipeParameter("assemble-templates-output")
     public void setAssembleTemplatesOutput(OptionalDataInfoRefParameter assembleTemplatesOutput) {
         this.assembleTemplatesOutput = assembleTemplatesOutput;
+    }
+
+    private static String loadScriptFromResources() {
+        return ResourceUtils.getPluginResourceAsString("extensions/ijmultitemplatematching/template-matching-script.py");
     }
 }

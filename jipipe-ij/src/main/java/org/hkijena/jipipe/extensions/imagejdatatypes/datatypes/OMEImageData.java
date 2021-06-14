@@ -86,6 +86,79 @@ public class OMEImageData implements JIPipeData {
         this.metadata = metadata;
     }
 
+    @Override
+    public Component preview(int width, int height) {
+        return new ImagePlusData(image).preview(width, height);
+    }
+
+    public ImagePlus getImage() {
+        return image;
+    }
+
+    public ROIListData getRois() {
+        return rois;
+    }
+
+    public OMEXMLMetadata getMetadata() {
+        return metadata;
+    }
+
+    public OMEExporterSettings getExporterSettings() {
+        return exporterSettings;
+    }
+
+    public void setExporterSettings(OMEExporterSettings exporterSettings) {
+        this.exporterSettings = exporterSettings;
+    }
+
+    @Override
+    public void saveTo(Path storageFilePath, String name, boolean forceName, JIPipeProgressInfo progressInfo) {
+        OMEExport(this, storageFilePath.resolve(name + ".ome.tif"), exporterSettings);
+    }
+
+    @Override
+    public JIPipeData duplicate() {
+        ImagePlus imp = image.duplicate();
+        imp.setTitle(getImage().getTitle());
+        OMEImageData copy = new OMEImageData(imp, new ROIListData(rois), metadata);
+        copy.exporterSettings = new OMEExporterSettings(exporterSettings);
+        return copy;
+    }
+
+    @Override
+    public void display(String displayName, JIPipeWorkbench workbench, JIPipeDataSource source) {
+        if (rois != null && !rois.isEmpty()) {
+            ROIListData data = new ROIListData(rois);
+            for (Roi roi : data) {
+                roi.setImage(image);
+            }
+            data.display(displayName, workbench, source);
+        } else {
+            (new ImagePlusData(image)).display(displayName, workbench, source);
+        }
+    }
+
+    @Override
+    public String toString() {
+        String result = "OME [" + image + "]";
+        if (rois != null && !rois.isEmpty())
+            result += " + [" + rois + "]";
+        if (metadata != null)
+            result += " + OME-XML";
+        return result;
+    }
+
+    /**
+     * Returns a duplicate of the contained image
+     *
+     * @return the duplicate
+     */
+    public ImagePlus getDuplicateImage() {
+        ImagePlus imp = image.duplicate();
+        imp.setTitle(getImage().getTitle());
+        return imp;
+    }
+
     public static OMEImageData importFrom(Path storageFilePath) {
         Path targetFile = PathUtils.findFileByExtensionIn(storageFilePath, ".tif");
         if (targetFile == null) {
@@ -991,78 +1064,5 @@ public class OMEImageData implements JIPipeData {
         } catch (FormatException | IOException e) {
             WindowTools.reportException(e);
         }
-    }
-
-    @Override
-    public Component preview(int width, int height) {
-        return new ImagePlusData(image).preview(width, height);
-    }
-
-    public ImagePlus getImage() {
-        return image;
-    }
-
-    public ROIListData getRois() {
-        return rois;
-    }
-
-    public OMEXMLMetadata getMetadata() {
-        return metadata;
-    }
-
-    public OMEExporterSettings getExporterSettings() {
-        return exporterSettings;
-    }
-
-    public void setExporterSettings(OMEExporterSettings exporterSettings) {
-        this.exporterSettings = exporterSettings;
-    }
-
-    @Override
-    public void saveTo(Path storageFilePath, String name, boolean forceName, JIPipeProgressInfo progressInfo) {
-        OMEExport(this, storageFilePath.resolve(name + ".ome.tif"), exporterSettings);
-    }
-
-    @Override
-    public JIPipeData duplicate() {
-        ImagePlus imp = image.duplicate();
-        imp.setTitle(getImage().getTitle());
-        OMEImageData copy = new OMEImageData(imp, new ROIListData(rois), metadata);
-        copy.exporterSettings = new OMEExporterSettings(exporterSettings);
-        return copy;
-    }
-
-    @Override
-    public void display(String displayName, JIPipeWorkbench workbench, JIPipeDataSource source) {
-        if (rois != null && !rois.isEmpty()) {
-            ROIListData data = new ROIListData(rois);
-            for (Roi roi : data) {
-                roi.setImage(image);
-            }
-            data.display(displayName, workbench, source);
-        } else {
-            (new ImagePlusData(image)).display(displayName, workbench, source);
-        }
-    }
-
-    @Override
-    public String toString() {
-        String result = "OME [" + image + "]";
-        if (rois != null && !rois.isEmpty())
-            result += " + [" + rois + "]";
-        if (metadata != null)
-            result += " + OME-XML";
-        return result;
-    }
-
-    /**
-     * Returns a duplicate of the contained image
-     *
-     * @return the duplicate
-     */
-    public ImagePlus getDuplicateImage() {
-        ImagePlus imp = image.duplicate();
-        imp.setTitle(getImage().getTitle());
-        return imp;
     }
 }

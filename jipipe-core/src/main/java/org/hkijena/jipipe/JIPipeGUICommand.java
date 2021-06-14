@@ -42,15 +42,6 @@ public class JIPipeGUICommand implements Command {
     @Parameter
     private Context context;
 
-    /**
-     * @param args ignored
-     */
-    public static void main(final String... args) {
-        final ImageJ ij = new ImageJ();
-//        ij.ui().showUI();
-        SwingUtilities.invokeLater(() -> ij.command().run(JIPipeGUICommand.class, true));
-    }
-
     @Override
     public void run() {
         // Update look & feel
@@ -181,5 +172,14 @@ public class JIPipeGUICommand implements Command {
      */
     public Context getContext() {
         return context;
+    }
+
+    /**
+     * @param args ignored
+     */
+    public static void main(final String... args) {
+        final ImageJ ij = new ImageJ();
+//        ij.ui().showUI();
+        SwingUtilities.invokeLater(() -> ij.command().run(JIPipeGUICommand.class, true));
     }
 }

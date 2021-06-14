@@ -15,10 +15,6 @@ public class NotificationUISettings implements JIPipeParameterCollection {
     private boolean showRunOnlyIfInactive = false;
     private OptionalIntegerParameter showAfterMinRuntime = new OptionalIntegerParameter(true, 7);
 
-    public static NotificationUISettings getInstance() {
-        return JIPipe.getSettings().getSettings(ID, NotificationUISettings.class);
-    }
-
     @JIPipeDocumentation(name = "Show run notifications", description = "If enabled, show notifications when a run is finished. " +
             "Following processes are considered as run: " +
             "<ul>" +
@@ -67,5 +63,9 @@ public class NotificationUISettings implements JIPipeParameterCollection {
     @Override
     public EventBus getEventBus() {
         return eventBus;
+    }
+
+    public static NotificationUISettings getInstance() {
+        return JIPipe.getSettings().getSettings(ID, NotificationUISettings.class);
     }
 }

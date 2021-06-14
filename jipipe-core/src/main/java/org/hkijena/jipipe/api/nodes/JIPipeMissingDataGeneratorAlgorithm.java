@@ -184,7 +184,7 @@ public abstract class JIPipeMissingDataGeneratorAlgorithm extends JIPipeParamete
 
     @Override
     public boolean isParameterUIVisible(JIPipeParameterTree tree, JIPipeParameterAccess access) {
-        if(ParameterUtils.isHiddenLocalParameter(tree, access, "jipipe:parallelization:enabled")) {
+        if (ParameterUtils.isHiddenLocalParameter(tree, access, "jipipe:parallelization:enabled")) {
             return false;
         }
         return super.isParameterUIVisible(tree, access);

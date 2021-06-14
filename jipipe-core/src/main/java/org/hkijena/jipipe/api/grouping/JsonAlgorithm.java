@@ -51,45 +51,6 @@ public class JsonAlgorithm extends GraphWrapperAlgorithm implements JIPipeCustom
         super(other);
     }
 
-    /**
-     * Replaces the targeted {@link JsonAlgorithm} by a {@link NodeGroup}
-     *
-     * @param algorithm the algorithm
-     */
-    public static void unpackToNodeGroup(JsonAlgorithm algorithm) {
-        JIPipeGraph graph = algorithm.getGraph();
-        NodeGroup group = JIPipe.createNode("node-group", NodeGroup.class);
-        group.setCustomName(algorithm.getName());
-        group.setCustomDescription(algorithm.getCustomDescription());
-        group.setEnabled(algorithm.isEnabled());
-        group.setPassThrough(algorithm.isPassThrough());
-        group.setWrappedGraph(new JIPipeGraph(algorithm.getWrappedGraph()));
-        group.setLocations(algorithm.getLocations());
-
-        List<Map.Entry<JIPipeDataSlot, JIPipeDataSlot>> edges = new ArrayList<>();
-        for (Map.Entry<JIPipeDataSlot, JIPipeDataSlot> edge : graph.getSlotEdges()) {
-            if (edge.getKey().getNode() == algorithm || edge.getValue().getNode() == algorithm) {
-                edges.add(edge);
-            }
-        }
-
-        graph.removeNode(algorithm, false);
-        graph.insertNode(group, algorithm.getCompartmentUUIDInGraph());
-
-        for (Map.Entry<JIPipeDataSlot, JIPipeDataSlot> edge : edges) {
-            if (edge.getKey().getNode() == algorithm) {
-                // Output node
-                JIPipeDataSlot source = group.getOutputSlot(edge.getKey().getName());
-                graph.connect(source, edge.getValue());
-            } else if (edge.getValue().getNode() == algorithm) {
-                // Input node
-                JIPipeDataSlot target = group.getInputSlot(edge.getValue().getName());
-                graph.connect(edge.getKey(), target);
-            }
-        }
-
-    }
-
     public GraphNodeParameters getExportedParameters() {
         return exportedParameters;
     }
@@ -128,7 +89,7 @@ public class JsonAlgorithm extends GraphWrapperAlgorithm implements JIPipeCustom
 
     @Override
     public boolean isParameterUIVisible(JIPipeParameterTree tree, JIPipeParameterCollection subParameter) {
-        if(ParameterUtils.isHiddenLocalParameterCollection(tree, subParameter, "jipipe:data-batch-generation", "jipipe:adaptive-parameters")) {
+        if (ParameterUtils.isHiddenLocalParameterCollection(tree, subParameter, "jipipe:data-batch-generation", "jipipe:adaptive-parameters")) {
             return false;
         }
         return super.isParameterUIVisible(tree, subParameter);
@@ -148,5 +109,44 @@ public class JsonAlgorithm extends GraphWrapperAlgorithm implements JIPipeCustom
     @JIPipeParameter("iteration-mode")
     public void setIterationMode(IterationMode iterationMode) {
         super.setIterationMode(iterationMode);
+    }
+
+    /**
+     * Replaces the targeted {@link JsonAlgorithm} by a {@link NodeGroup}
+     *
+     * @param algorithm the algorithm
+     */
+    public static void unpackToNodeGroup(JsonAlgorithm algorithm) {
+        JIPipeGraph graph = algorithm.getGraph();
+        NodeGroup group = JIPipe.createNode("node-group", NodeGroup.class);
+        group.setCustomName(algorithm.getName());
+        group.setCustomDescription(algorithm.getCustomDescription());
+        group.setEnabled(algorithm.isEnabled());
+        group.setPassThrough(algorithm.isPassThrough());
+        group.setWrappedGraph(new JIPipeGraph(algorithm.getWrappedGraph()));
+        group.setLocations(algorithm.getLocations());
+
+        List<Map.Entry<JIPipeDataSlot, JIPipeDataSlot>> edges = new ArrayList<>();
+        for (Map.Entry<JIPipeDataSlot, JIPipeDataSlot> edge : graph.getSlotEdges()) {
+            if (edge.getKey().getNode() == algorithm || edge.getValue().getNode() == algorithm) {
+                edges.add(edge);
+            }
+        }
+
+        graph.removeNode(algorithm, false);
+        graph.insertNode(group, algorithm.getCompartmentUUIDInGraph());
+
+        for (Map.Entry<JIPipeDataSlot, JIPipeDataSlot> edge : edges) {
+            if (edge.getKey().getNode() == algorithm) {
+                // Output node
+                JIPipeDataSlot source = group.getOutputSlot(edge.getKey().getName());
+                graph.connect(source, edge.getValue());
+            } else if (edge.getValue().getNode() == algorithm) {
+                // Input node
+                JIPipeDataSlot target = group.getInputSlot(edge.getValue().getName());
+                graph.connect(edge.getKey(), target);
+            }
+        }
+
     }
 }

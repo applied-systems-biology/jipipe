@@ -51,21 +51,6 @@ public class BasicMinicondaEnvPythonInstaller extends ExternalEnvironmentInstall
         super(workbench, parameterAccess);
     }
 
-    /**
-     * Gets the latest download link for Miniconda
-     *
-     * @return the download URL
-     */
-    public static String getLatestDownload() {
-        if (SystemUtils.IS_OS_WINDOWS) {
-            return "https://repo.anaconda.com/miniconda/Miniconda3-latest-Windows-x86_64.exe";
-        } else if (SystemUtils.IS_OS_MAC) {
-            return "https://repo.anaconda.com/miniconda/Miniconda3-latest-MacOSX-x86_64.sh";
-        } else {
-            return "https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh";
-        }
-    }
-
     @Override
     public String getTaskLabel() {
         return "Install Conda";
@@ -87,7 +72,7 @@ public class BasicMinicondaEnvPythonInstaller extends ExternalEnvironmentInstall
         progressInfo.incrementProgress();
 
         // Cleanup phase
-        if(Files.exists(getConfiguration().getInstallationPath().toAbsolutePath())) {
+        if (Files.exists(getConfiguration().getInstallationPath().toAbsolutePath())) {
             progressInfo.log("Deleting old installation");
             progressInfo.log("Deleting: " + getConfiguration().getInstallationPath().toAbsolutePath());
             try {
@@ -247,9 +232,9 @@ public class BasicMinicondaEnvPythonInstaller extends ExternalEnvironmentInstall
                                 "Please review the settings on the left-hand side. Click OK to install Miniconda.\n\n" +
                                 "You have to agree to the following license: https://docs.conda.io/en/latest/license.html"), "Download & install Miniconda",
                         ParameterPanel.NO_GROUP_HEADERS | ParameterPanel.WITH_SEARCH_BAR | ParameterPanel.WITH_DOCUMENTATION | ParameterPanel.WITH_SCROLLING);
-                if(result && Files.exists(getConfiguration().installationPath)) {
-                    if(JOptionPane.showConfirmDialog(getWorkbench().getWindow(), "The directory " + getConfiguration().getInstallationPath().toAbsolutePath()
-                    + " already exists. Do you want to overwrite it?", getTaskLabel(), JOptionPane.YES_NO_OPTION) == JOptionPane.NO_OPTION) {
+                if (result && Files.exists(getConfiguration().installationPath)) {
+                    if (JOptionPane.showConfirmDialog(getWorkbench().getWindow(), "The directory " + getConfiguration().getInstallationPath().toAbsolutePath()
+                            + " already exists. Do you want to overwrite it?", getTaskLabel(), JOptionPane.YES_NO_OPTION) == JOptionPane.NO_OPTION) {
                         result = false;
                     }
                 }
@@ -361,6 +346,21 @@ public class BasicMinicondaEnvPythonInstaller extends ExternalEnvironmentInstall
 
     public void setConfiguration(Configuration configuration) {
         this.configuration = configuration;
+    }
+
+    /**
+     * Gets the latest download link for Miniconda
+     *
+     * @return the download URL
+     */
+    public static String getLatestDownload() {
+        if (SystemUtils.IS_OS_WINDOWS) {
+            return "https://repo.anaconda.com/miniconda/Miniconda3-latest-Windows-x86_64.exe";
+        } else if (SystemUtils.IS_OS_MAC) {
+            return "https://repo.anaconda.com/miniconda/Miniconda3-latest-MacOSX-x86_64.sh";
+        } else {
+            return "https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh";
+        }
     }
 
     public static class Configuration implements JIPipeParameterCollection {

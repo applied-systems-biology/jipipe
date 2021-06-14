@@ -50,6 +50,129 @@ public class LabeledImagePlusData extends ImagePlusData {
         }
     }
 
+    @Override
+    public ImagePlus getViewedImage(boolean duplicate) {
+        if (labels.getBitDepth() == 8) {
+            // Ensure RGB data
+            ImagePlus result = new ImagePlusColorRGBData(getImage()).getImage();
+            if (result == getImage()) {
+                result = getImage().duplicate();
+                result.setTitle(getImage().getTitle());
+            }
+
+            ImageJUtils.forEachIndexedZCTSlice(result, (ip, index) -> {
+                int z = Math.min(labels.getNSlices() - 1, index.getZ());
+                int c = Math.min(labels.getNChannels() - 1, index.getC());
+                int t = Math.min(labels.getNFrames() - 1, index.getT());
+                ImageProcessor maskProcessor = ImageJUtils.getSliceZero(labels, z, c, t);
+                int[] imagePixels = (int[]) ip.getPixels();
+                byte[] maskPixels = (byte[]) maskProcessor.getPixels();
+                for (int i = 0; i < imagePixels.length; i++) {
+                    if (Byte.toUnsignedInt(maskPixels[i]) != 0) {
+                        int rs = (imagePixels[i] & 0xff0000) >> 16;
+                        int gs = (imagePixels[i] & 0xff00) >> 8;
+                        int bs = imagePixels[i] & 0xff;
+                        final int rt = 255;
+                        final int gt = 0;
+                        final int bt = 0;
+                        final double opacity = 0.5;
+                        int r = Math.min(255, Math.max((int) (rs + opacity * (rt - rs)), 0));
+                        int g = Math.min(255, Math.max((int) (gs + opacity * (gt - gs)), 0));
+                        int b = Math.min(255, Math.max((int) (bs + opacity * (bt - bs)), 0));
+                        int rgb = b + (g << 8) + (r << 16);
+                        imagePixels[i] = rgb;
+                    }
+                }
+            }, new JIPipeProgressInfo());
+
+            return result;
+        } else {
+            return super.getViewedImage(duplicate);
+        }
+    }
+
+    @Override
+    public void makeUnique() {
+        super.makeUnique();
+        labels = getDuplicateLabels();
+    }
+
+    /**
+     * Returns a duplicate of the contained mask
+     *
+     * @return the duplicate
+     */
+    public ImagePlus getDuplicateLabels() {
+        ImagePlus imp = labels.duplicate();
+        imp.setTitle(getLabels().getTitle());
+        return imp;
+    }
+
+    @Override
+    public void saveTo(Path storageFilePath, String name, boolean forceName, JIPipeProgressInfo progressInfo) {
+        String imageName = forceName ? name + "_image" : "image";
+        String maskName = forceName ? name + "_labels" : "labels";
+
+        // Save the image
+        super.saveTo(storageFilePath, imageName, forceName, progressInfo);
+
+        // Save the mask
+        if (ImageJDataTypesSettings.getInstance().isUseBioFormats() && !(labels.getType() == ImagePlus.COLOR_RGB && ImageJDataTypesSettings.getInstance().isSaveRGBWithImageJ())) {
+            Path outputPath = storageFilePath.resolve(maskName + ".ome.tif");
+            OMEImageData.simpleOMEExport(labels, outputPath);
+        } else {
+            Path outputPath = storageFilePath.resolve(maskName + ".tif");
+            IJ.saveAsTiff(getLabels(), outputPath.toString());
+        }
+    }
+
+    @Override
+    public JIPipeData duplicate() {
+        return new LabeledImagePlusData(getImage().duplicate(), getLabels().duplicate(), getColorSpace());
+    }
+
+    @Override
+    public Component preview(int width, int height) {
+        if (labels.getBitDepth() == 8) {
+            double factorX = 1.0 * width / getImage().getWidth();
+            double factorY = 1.0 * height / getImage().getHeight();
+            double factor = Math.max(factorX, factorY);
+            boolean smooth = factor < 0;
+            int imageWidth = (int) (getImage().getWidth() * factor);
+            int imageHeight = (int) (getImage().getHeight() * factor);
+            ImagePlus rgbImage = ImageJUtils.channelsToRGB(getImage());
+            rgbImage = ImagePlusColorRGBData.convertIfNeeded(rgbImage);
+            ImageProcessor resizedImage = rgbImage.getProcessor().resize(imageWidth, imageHeight, smooth);
+            ImageProcessor resizedMask = getLabels().getProcessor().resize(imageWidth, imageHeight, smooth);
+            int[] imagePixels = (int[]) resizedImage.getPixels();
+            byte[] maskPixels = (byte[]) resizedMask.getPixels();
+            for (int i = 0; i < imagePixels.length; i++) {
+                if (Byte.toUnsignedInt(maskPixels[i]) > 0) {
+                    int rs = (imagePixels[i] & 0xff0000) >> 16;
+                    int gs = (imagePixels[i] & 0xff00) >> 8;
+                    int bs = imagePixels[i] & 0xff;
+                    final int rt = 255;
+                    final int gt = 0;
+                    final int bt = 0;
+                    final double opacity = 0.5;
+                    int r = Math.min(255, Math.max((int) (rs + opacity * (rt - rs)), 0));
+                    int g = Math.min(255, Math.max((int) (gs + opacity * (gt - gs)), 0));
+                    int b = Math.min(255, Math.max((int) (bs + opacity * (bt - bs)), 0));
+                    int rgb = b + (g << 8) + (r << 16);
+                    imagePixels[i] = rgb;
+                }
+            }
+            BufferedImage bufferedImage = resizedImage.getBufferedImage();
+            return new JLabel(new ImageIcon(bufferedImage));
+        } else {
+            return super.preview(width, height);
+        }
+    }
+
+    public ImagePlus getLabels() {
+        return labels;
+    }
+
     /**
      * Converts the incoming image data into the current format.
      *
@@ -110,130 +233,5 @@ public class LabeledImagePlusData extends ImagePlusData {
             }
         }
         return new LabeledImagePlusData(image, mask);
-    }
-
-    @Override
-    public ImagePlus getViewedImage(boolean duplicate) {
-        if(labels.getBitDepth() == 8) {
-            // Ensure RGB data
-            ImagePlus result = new ImagePlusColorRGBData(getImage()).getImage();
-            if (result == getImage()) {
-                result = getImage().duplicate();
-                result.setTitle(getImage().getTitle());
-            }
-
-            ImageJUtils.forEachIndexedZCTSlice(result, (ip, index) -> {
-                int z = Math.min(labels.getNSlices() - 1, index.getZ());
-                int c = Math.min(labels.getNChannels() - 1, index.getC());
-                int t = Math.min(labels.getNFrames() - 1, index.getT());
-                ImageProcessor maskProcessor = ImageJUtils.getSliceZero(labels, z, c, t);
-                int[] imagePixels = (int[]) ip.getPixels();
-                byte[] maskPixels = (byte[]) maskProcessor.getPixels();
-                for (int i = 0; i < imagePixels.length; i++) {
-                    if (Byte.toUnsignedInt(maskPixels[i]) != 0) {
-                        int rs = (imagePixels[i] & 0xff0000) >> 16;
-                        int gs = (imagePixels[i] & 0xff00) >> 8;
-                        int bs = imagePixels[i] & 0xff;
-                        final int rt = 255;
-                        final int gt = 0;
-                        final int bt = 0;
-                        final double opacity = 0.5;
-                        int r = Math.min(255, Math.max((int) (rs + opacity * (rt - rs)), 0));
-                        int g = Math.min(255, Math.max((int) (gs + opacity * (gt - gs)), 0));
-                        int b = Math.min(255, Math.max((int) (bs + opacity * (bt - bs)), 0));
-                        int rgb = b + (g << 8) + (r << 16);
-                        imagePixels[i] = rgb;
-                    }
-                }
-            }, new JIPipeProgressInfo());
-
-            return result;
-        }
-        else {
-            return super.getViewedImage(duplicate);
-        }
-    }
-
-    @Override
-    public void makeUnique() {
-        super.makeUnique();
-        labels = getDuplicateLabels();
-    }
-
-    /**
-     * Returns a duplicate of the contained mask
-     *
-     * @return the duplicate
-     */
-    public ImagePlus getDuplicateLabels() {
-        ImagePlus imp = labels.duplicate();
-        imp.setTitle(getLabels().getTitle());
-        return imp;
-    }
-
-    @Override
-    public void saveTo(Path storageFilePath, String name, boolean forceName, JIPipeProgressInfo progressInfo) {
-        String imageName = forceName ? name + "_image" : "image";
-        String maskName = forceName ? name + "_labels" : "labels";
-
-        // Save the image
-        super.saveTo(storageFilePath, imageName, forceName, progressInfo);
-
-        // Save the mask
-        if (ImageJDataTypesSettings.getInstance().isUseBioFormats() && !(labels.getType() == ImagePlus.COLOR_RGB && ImageJDataTypesSettings.getInstance().isSaveRGBWithImageJ())) {
-            Path outputPath = storageFilePath.resolve(maskName + ".ome.tif");
-            OMEImageData.simpleOMEExport(labels, outputPath);
-        } else {
-            Path outputPath = storageFilePath.resolve(maskName + ".tif");
-            IJ.saveAsTiff(getLabels(), outputPath.toString());
-        }
-    }
-
-    @Override
-    public JIPipeData duplicate() {
-        return new LabeledImagePlusData(getImage().duplicate(), getLabels().duplicate(), getColorSpace());
-    }
-
-    @Override
-    public Component preview(int width, int height) {
-        if(labels.getBitDepth() == 8) {
-            double factorX = 1.0 * width / getImage().getWidth();
-            double factorY = 1.0 * height / getImage().getHeight();
-            double factor = Math.max(factorX, factorY);
-            boolean smooth = factor < 0;
-            int imageWidth = (int) (getImage().getWidth() * factor);
-            int imageHeight = (int) (getImage().getHeight() * factor);
-            ImagePlus rgbImage = ImageJUtils.channelsToRGB(getImage());
-            rgbImage = ImagePlusColorRGBData.convertIfNeeded(rgbImage);
-            ImageProcessor resizedImage = rgbImage.getProcessor().resize(imageWidth, imageHeight, smooth);
-            ImageProcessor resizedMask = getLabels().getProcessor().resize(imageWidth, imageHeight, smooth);
-            int[] imagePixels = (int[]) resizedImage.getPixels();
-            byte[] maskPixels = (byte[]) resizedMask.getPixels();
-            for (int i = 0; i < imagePixels.length; i++) {
-                if (Byte.toUnsignedInt(maskPixels[i]) > 0) {
-                    int rs = (imagePixels[i] & 0xff0000) >> 16;
-                    int gs = (imagePixels[i] & 0xff00) >> 8;
-                    int bs = imagePixels[i] & 0xff;
-                    final int rt = 255;
-                    final int gt = 0;
-                    final int bt = 0;
-                    final double opacity = 0.5;
-                    int r = Math.min(255, Math.max((int) (rs + opacity * (rt - rs)), 0));
-                    int g = Math.min(255, Math.max((int) (gs + opacity * (gt - gs)), 0));
-                    int b = Math.min(255, Math.max((int) (bs + opacity * (bt - bs)), 0));
-                    int rgb = b + (g << 8) + (r << 16);
-                    imagePixels[i] = rgb;
-                }
-            }
-            BufferedImage bufferedImage = resizedImage.getBufferedImage();
-            return new JLabel(new ImageIcon(bufferedImage));
-        }
-        else {
-          return super.preview(width, height);
-        }
-    }
-
-    public ImagePlus getLabels() {
-        return labels;
     }
 }

@@ -32,48 +32,6 @@ public class NodeToolBox extends JPanel {
         return toolBar;
     }
 
-    public static void openNewToolBoxWindow() {
-        NodeToolBox toolBox = new NodeToolBox();
-        JFrame window = new JFrame();
-        toolBox.getToolBar().add(new AlwaysOnTopToggle(window));
-        window.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
-        window.setAlwaysOnTop(true);
-        window.setTitle("Available nodes");
-        window.setIconImage(UIUtils.getIcon128FromResources("jipipe.png").getImage());
-        window.setContentPane(new NodeToolBox());
-        window.pack();
-        window.setSize(300, 700);
-        window.setVisible(true);
-    }
-
-    private static int[] rankNavigationEntry(JIPipeNodeInfo info, String[] searchStrings) {
-        if (searchStrings == null || searchStrings.length == 0)
-            return new int[0];
-        String nameHayStack;
-        String descriptionHayStack;
-        if (info.isHidden())
-            return null;
-        nameHayStack = StringUtils.orElse(info.getName(), "").toLowerCase();
-        descriptionHayStack = StringUtils.orElse(info.getDescription().getBody(), "").toLowerCase();
-
-        nameHayStack = nameHayStack.toLowerCase();
-        descriptionHayStack = descriptionHayStack.toLowerCase();
-
-        int[] ranks = new int[2];
-
-        for (String string : searchStrings) {
-            if (nameHayStack.contains(string.toLowerCase()))
-                --ranks[0];
-            if (descriptionHayStack.contains(string.toLowerCase()))
-                --ranks[1];
-        }
-
-        if (ranks[0] == 0 && ranks[1] == 0)
-            return null;
-
-        return ranks;
-    }
-
     private void initialize() {
         setLayout(new BorderLayout());
 
@@ -174,5 +132,47 @@ public class NodeToolBox extends JPanel {
                 JIPipeNodeInfo::getName,
                 NodeToolBox::rankNavigationEntry,
                 searchField.getSearchStrings());
+    }
+
+    public static void openNewToolBoxWindow() {
+        NodeToolBox toolBox = new NodeToolBox();
+        JFrame window = new JFrame();
+        toolBox.getToolBar().add(new AlwaysOnTopToggle(window));
+        window.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+        window.setAlwaysOnTop(true);
+        window.setTitle("Available nodes");
+        window.setIconImage(UIUtils.getIcon128FromResources("jipipe.png").getImage());
+        window.setContentPane(new NodeToolBox());
+        window.pack();
+        window.setSize(300, 700);
+        window.setVisible(true);
+    }
+
+    private static int[] rankNavigationEntry(JIPipeNodeInfo info, String[] searchStrings) {
+        if (searchStrings == null || searchStrings.length == 0)
+            return new int[0];
+        String nameHayStack;
+        String descriptionHayStack;
+        if (info.isHidden())
+            return null;
+        nameHayStack = StringUtils.orElse(info.getName(), "").toLowerCase();
+        descriptionHayStack = StringUtils.orElse(info.getDescription().getBody(), "").toLowerCase();
+
+        nameHayStack = nameHayStack.toLowerCase();
+        descriptionHayStack = descriptionHayStack.toLowerCase();
+
+        int[] ranks = new int[2];
+
+        for (String string : searchStrings) {
+            if (nameHayStack.contains(string.toLowerCase()))
+                --ranks[0];
+            if (descriptionHayStack.contains(string.toLowerCase()))
+                --ranks[1];
+        }
+
+        if (ranks[0] == 0 && ranks[1] == 0)
+            return null;
+
+        return ranks;
     }
 }

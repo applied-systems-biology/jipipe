@@ -59,6 +59,40 @@ public class ImagePlusFFTData extends ImagePlusData {
         super(convertToFFT(image));
     }
 
+    @Override
+    public void saveTo(Path storageFilePath, String name, boolean forceName, JIPipeProgressInfo progressInfo) {
+        FHT fht = (FHT) getImage().getProperty("FHT");
+        ImagePlus fhtImage = new ImagePlus("FHT", fht);
+
+        String fhtImageName = "fht";
+        String powerSpectrumImageName = "power_spectrum";
+
+        if (forceName) {
+            fhtImageName = name + "_" + fhtImageName;
+            powerSpectrumImageName = name + "_" + powerSpectrumImageName;
+        }
+
+        if (ImageJDataTypesSettings.getInstance().isUseBioFormats()) {
+            Path powerSpectrumOutputPath = storageFilePath.resolve(powerSpectrumImageName + ".ome.tif");
+            OMEImageData.simpleOMEExport(getImage(), powerSpectrumOutputPath);
+            Path fhtOutputPath = storageFilePath.resolve(fhtImageName + ".ome.tif");
+            OMEImageData.simpleOMEExport(fhtImage, fhtOutputPath);
+        } else {
+            Path powerSpectrumOutputPath = storageFilePath.resolve(powerSpectrumImageName + ".tif");
+            IJ.saveAsTiff(getImage(), powerSpectrumOutputPath.toString());
+            Path fhtOutputPath = storageFilePath.resolve(fhtImageName + ".tif");
+            IJ.saveAsTiff(fhtImage, fhtOutputPath.toString());
+        }
+
+        Path fhtInfoPath = forceName ? storageFilePath.resolve(name + "_fht_info.json") :
+                storageFilePath.resolve("fht_info.json");
+        try {
+            JsonUtils.getObjectMapper().writerWithDefaultPrettyPrinter().writeValue(fhtInfoPath.toFile(), new FFTInfo(fht));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
     private static ImagePlus convertToFFT(ImagePlus image) {
         Object fht = image.getProperty("FHT");
         if (fht instanceof FHT) {
@@ -114,40 +148,6 @@ public class ImagePlusFFTData extends ImagePlusData {
      */
     public static ImagePlusData convertFrom(ImagePlusData data) {
         return new ImagePlusFFTData(data.getImage());
-    }
-
-    @Override
-    public void saveTo(Path storageFilePath, String name, boolean forceName, JIPipeProgressInfo progressInfo) {
-        FHT fht = (FHT) getImage().getProperty("FHT");
-        ImagePlus fhtImage = new ImagePlus("FHT", fht);
-
-        String fhtImageName = "fht";
-        String powerSpectrumImageName = "power_spectrum";
-
-        if (forceName) {
-            fhtImageName = name + "_" + fhtImageName;
-            powerSpectrumImageName = name + "_" + powerSpectrumImageName;
-        }
-
-        if (ImageJDataTypesSettings.getInstance().isUseBioFormats()) {
-            Path powerSpectrumOutputPath = storageFilePath.resolve(powerSpectrumImageName + ".ome.tif");
-            OMEImageData.simpleOMEExport(getImage(), powerSpectrumOutputPath);
-            Path fhtOutputPath = storageFilePath.resolve(fhtImageName + ".ome.tif");
-            OMEImageData.simpleOMEExport(fhtImage, fhtOutputPath);
-        } else {
-            Path powerSpectrumOutputPath = storageFilePath.resolve(powerSpectrumImageName + ".tif");
-            IJ.saveAsTiff(getImage(), powerSpectrumOutputPath.toString());
-            Path fhtOutputPath = storageFilePath.resolve(fhtImageName + ".tif");
-            IJ.saveAsTiff(fhtImage, fhtOutputPath.toString());
-        }
-
-        Path fhtInfoPath = forceName ? storageFilePath.resolve(name + "_fht_info.json") :
-                storageFilePath.resolve("fht_info.json");
-        try {
-            JsonUtils.getObjectMapper().writerWithDefaultPrettyPrinter().writeValue(fhtInfoPath.toFile(), new FFTInfo(fht));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
     }
 
     /**

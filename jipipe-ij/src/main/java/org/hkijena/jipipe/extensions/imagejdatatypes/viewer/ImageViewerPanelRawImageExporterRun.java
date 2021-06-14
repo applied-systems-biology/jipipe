@@ -21,9 +21,9 @@ import org.hkijena.jipipe.api.JIPipeRunnable;
 import java.nio.file.Path;
 
 public class ImageViewerPanelRawImageExporterRun implements JIPipeRunnable {
-    private JIPipeProgressInfo progressInfo = new JIPipeProgressInfo();
     private final ImagePlus imagePlus;
     private final Path outputPath;
+    private JIPipeProgressInfo progressInfo = new JIPipeProgressInfo();
 
     public ImageViewerPanelRawImageExporterRun(ImagePlus imagePlus, Path outputPath) {
         this.imagePlus = imagePlus;

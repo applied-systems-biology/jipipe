@@ -34,14 +34,6 @@ public class JIPipeTextEditor extends JIPipeWorkbenchPanel {
         initialize();
     }
 
-    public static JIPipeTextEditor openInNewTab(JIPipeWorkbench workbench, String name) {
-        JIPipeTextEditor editor = new JIPipeTextEditor(workbench);
-        workbench.getDocumentTabPane().addTab(name, UIUtils.getIconFromResources("actions/edit-select-text.png"),
-                editor, DocumentTabPane.CloseMode.withAskOnCloseButton, true);
-        workbench.getDocumentTabPane().switchToLastTab();
-        return editor;
-    }
-
     private void initialize() {
         setLayout(new BorderLayout());
         textArea = new EditorPane();
@@ -77,5 +69,13 @@ public class JIPipeTextEditor extends JIPipeWorkbenchPanel {
 
     public void setText(String data) {
         textArea.setText(data);
+    }
+
+    public static JIPipeTextEditor openInNewTab(JIPipeWorkbench workbench, String name) {
+        JIPipeTextEditor editor = new JIPipeTextEditor(workbench);
+        workbench.getDocumentTabPane().addTab(name, UIUtils.getIconFromResources("actions/edit-select-text.png"),
+                editor, DocumentTabPane.CloseMode.withAskOnCloseButton, true);
+        workbench.getDocumentTabPane().switchToLastTab();
+        return editor;
     }
 }

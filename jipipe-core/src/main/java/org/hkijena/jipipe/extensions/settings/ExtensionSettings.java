@@ -43,32 +43,6 @@ public class ExtensionSettings implements JIPipeParameterCollection {
     public ExtensionSettings() {
     }
 
-    public static ExtensionSettings getInstance() {
-        return JIPipe.getSettings().getSettings(ID, ExtensionSettings.class);
-    }
-
-    /**
-     * Gets an instance from the raw properties file.
-     * It works before settings sheets are registered
-     *
-     * @return the instance
-     */
-    public static ExtensionSettings getInstanceFromRaw() {
-        ExtensionSettings result = new ExtensionSettings();
-        JsonNode node = JIPipeSettingsRegistry.getRawNode();
-        JIPipeParameterTree tree = new JIPipeParameterTree(result);
-        try {
-            for (Map.Entry<String, JIPipeParameterAccess> entry : tree.getParameters().entrySet()) {
-                JsonNode entryNode = node.path(ID + "/" + entry.getKey());
-                Object value = JsonUtils.getObjectMapper().readerFor(entry.getValue().getFieldClass()).readValue(entryNode);
-                entry.getValue().set(value);
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return result;
-    }
-
     @Override
     public EventBus getEventBus() {
         return eventBus;
@@ -105,5 +79,31 @@ public class ExtensionSettings implements JIPipeParameterCollection {
     @JIPipeParameter("silent")
     public void setSilent(boolean silent) {
         this.silent = silent;
+    }
+
+    public static ExtensionSettings getInstance() {
+        return JIPipe.getSettings().getSettings(ID, ExtensionSettings.class);
+    }
+
+    /**
+     * Gets an instance from the raw properties file.
+     * It works before settings sheets are registered
+     *
+     * @return the instance
+     */
+    public static ExtensionSettings getInstanceFromRaw() {
+        ExtensionSettings result = new ExtensionSettings();
+        JsonNode node = JIPipeSettingsRegistry.getRawNode();
+        JIPipeParameterTree tree = new JIPipeParameterTree(result);
+        try {
+            for (Map.Entry<String, JIPipeParameterAccess> entry : tree.getParameters().entrySet()) {
+                JsonNode entryNode = node.path(ID + "/" + entry.getKey());
+                Object value = JsonUtils.getObjectMapper().readerFor(entry.getValue().getFieldClass()).readValue(entryNode);
+                entry.getValue().set(value);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return result;
     }
 }

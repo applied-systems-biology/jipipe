@@ -21,14 +21,7 @@ import org.hkijena.jipipe.api.JIPipeValidityReport;
 import org.hkijena.jipipe.api.data.JIPipeAnnotation;
 import org.hkijena.jipipe.api.data.JIPipeAnnotationMergeStrategy;
 import org.hkijena.jipipe.api.data.JIPipeData;
-import org.hkijena.jipipe.api.data.JIPipeDataInfo;
-import org.hkijena.jipipe.api.data.JIPipeExportedDataTable;
-import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
-import org.hkijena.jipipe.api.nodes.JIPipeDataBatch;
-import org.hkijena.jipipe.api.nodes.JIPipeInputSlot;
-import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
-import org.hkijena.jipipe.api.nodes.JIPipeOutputSlot;
-import org.hkijena.jipipe.api.nodes.JIPipeSimpleIteratingAlgorithm;
+import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.MiscellaneousNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.filesystem.dataypes.FolderData;
@@ -39,11 +32,8 @@ import org.hkijena.jipipe.extensions.parameters.references.JIPipeDataInfoRef;
 import org.hkijena.jipipe.utils.NonGenericClassFilter;
 import org.hkijena.jipipe.utils.ReflectionUtils;
 
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 
 @JIPipeDocumentation(name = "Import data row folder", description = "Imports one data row from a standardized row folder. Please ensure to define the appropriate data type.")
@@ -69,7 +59,7 @@ public class ImportDataRowFolder extends JIPipeSimpleIteratingAlgorithm {
     protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
         Path folder = dataBatch.getInputData("Data row folder", FolderData.class, progressInfo).toPath();
         JIPipeData data = JIPipe.importData(folder, dataType.getInfo().getDataClass());
-        List<JIPipeAnnotation > annotations = new ArrayList<>();
+        List<JIPipeAnnotation> annotations = new ArrayList<>();
         for (StringAndStringPairParameter item : this.annotations) {
             annotations.add(new JIPipeAnnotation(item.getKey(), item.getValue()));
         }
@@ -99,7 +89,7 @@ public class ImportDataRowFolder extends JIPipeSimpleIteratingAlgorithm {
     @JIPipeParameter("data-type")
     public void setDataType(JIPipeDataInfoRef dataType) {
         this.dataType = dataType;
-        if(dataType.getInfo() != null)
+        if (dataType.getInfo() != null)
             getFirstOutputSlot().setAcceptedDataType(dataType.getInfo().getDataClass());
         else
             getFirstOutputSlot().setAcceptedDataType(JIPipeData.class);
@@ -108,11 +98,10 @@ public class ImportDataRowFolder extends JIPipeSimpleIteratingAlgorithm {
     @Override
     public void reportValidity(JIPipeValidityReport report) {
         super.reportValidity(report);
-        if(dataType.getInfo() == null ) {
+        if (dataType.getInfo() == null) {
             report.forCategory("Data type").reportIsInvalid("Please select a data type!", "This node requires you to select a data type that should be imported.",
                     "Please select a data type in the parameters", this);
-        }
-        else if(ReflectionUtils.isAbstractOrInterface(dataType.getInfo().getDataClass())) {
+        } else if (ReflectionUtils.isAbstractOrInterface(dataType.getInfo().getDataClass())) {
             report.forCategory("Data type").reportIsInvalid("Data type is generic!", "This node requires you to select a data type that does not act as general concept.",
                     "Please select a data type in the parameters", this);
         }

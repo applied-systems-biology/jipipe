@@ -37,6 +37,7 @@ import org.hkijena.jipipe.utils.UIUtils;
 import org.python.core.PyDictionary;
 import org.python.util.PythonInterpreter;
 
+import java.nio.file.Path;
 import java.util.List;
 
 /**
@@ -96,8 +97,14 @@ public class TablesFromScript extends JIPipeAlgorithm {
     }
 
     @Override
+    public void setWorkDirectory(Path workDirectory) {
+        super.setWorkDirectory(workDirectory);
+        code.makeExternalScriptFileRelative(workDirectory);
+    }
+
+    @Override
     public void reportValidity(JIPipeValidityReport report) {
-        JythonUtils.checkScriptValidity(code.getCode(), scriptParameters, report.forCategory("Script"));
+        JythonUtils.checkScriptValidity(code.getCode(getWorkDirectory()), scriptParameters, report.forCategory("Script"));
         JythonUtils.checkScriptParametersValidity(scriptParameters, report.forCategory("Script parameters"));
     }
 
@@ -106,7 +113,7 @@ public class TablesFromScript extends JIPipeAlgorithm {
         this.pythonInterpreter = new PythonInterpreter();
         JythonUtils.passParametersToPython(pythonInterpreter, scriptParameters);
 
-        pythonInterpreter.exec(code.getCode());
+        pythonInterpreter.exec(code.getCode(getWorkDirectory()));
         List<PyDictionary> rows = (List<PyDictionary>) pythonInterpreter.get("tables").__tojava__(List.class);
 
         for (PyDictionary row : rows) {

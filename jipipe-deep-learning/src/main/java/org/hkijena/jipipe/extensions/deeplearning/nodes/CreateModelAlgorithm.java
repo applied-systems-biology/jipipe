@@ -103,7 +103,7 @@ public class CreateModelAlgorithm extends JIPipeSimpleIteratingAlgorithm {
             throw new RuntimeException(e);
         }
 
-        if(getOverrideDevices().isEnabled())
+        if (getOverrideDevices().isEnabled())
             getOverrideDevices().getContent().saveAsJson(deviceConfigurationPath);
         else
             DeepLearningSettings.getInstance().getDeepLearningDevice().saveAsJson(deviceConfigurationPath);
@@ -119,10 +119,10 @@ public class CreateModelAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         arguments.add("--device-config");
         arguments.add(deviceConfigurationPath.toString());
 
-        if(DeepLearningSettings.getInstance().getDeepLearningToolkit().needsInstall())
+        if (DeepLearningSettings.getInstance().getDeepLearningToolkit().needsInstall())
             DeepLearningSettings.getInstance().getDeepLearningToolkit().install(progressInfo);
         PythonUtils.runPython(arguments.toArray(new String[0]), overrideEnvironment.isEnabled() ? overrideEnvironment.getContent() :
-                DeepLearningSettings.getInstance().getPythonEnvironment(),
+                        DeepLearningSettings.getInstance().getPythonEnvironment(),
                 Collections.singletonList(DeepLearningSettings.getInstance().getDeepLearningToolkit().getLibraryDirectory().toAbsolutePath()), progressInfo);
 
         DeepLearningModelData modelData = new DeepLearningModelData(modelPath, modelConfigurationPath, modelJsonPath);

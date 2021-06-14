@@ -23,7 +23,10 @@ import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.nodes.JIPipeInputSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.JIPipeOutputSlot;
-import org.hkijena.jipipe.api.parameters.*;
+import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
+import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
+import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
+import org.hkijena.jipipe.api.parameters.JIPipeParameterTypeInfo;
 import org.hkijena.jipipe.ui.components.JIPipeNodeInfoListCellRenderer;
 import org.hkijena.jipipe.ui.components.MarkdownDocument;
 import org.hkijena.jipipe.utils.ResourceUtils;
@@ -125,7 +128,7 @@ public class JIPipeAlgorithmCompendiumUI extends JIPipeCompendiumUI<JIPipeNodeIn
                 builder.append(documentation.description()).append("\n\n");
             }
             for (JIPipeParameterAccess parameterAccess : groupedBySource.get(subParameters)) {
-                if(!algorithm.isParameterUIVisible(traversed, parameterAccess))
+                if (!algorithm.isParameterUIVisible(traversed, parameterAccess))
                     continue;
                 generateParameterDocumentation(parameterAccess, builder);
                 builder.append("\n\n");

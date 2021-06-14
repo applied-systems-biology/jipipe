@@ -170,7 +170,7 @@ public class MergingPythonScriptAlgorithm extends JIPipeMergingAlgorithm {
         Map<String, Path> outputSlotPaths = PythonUtils.installOutputSlots(code, getOutputSlots(), progressInfo);
 
         // Add main code
-        code.append("\n").append(this.code.getCode()).append("\n");
+        code.append("\n").append(this.code.getCode(getWorkDirectory())).append("\n");
 
         // Add postprocessor code
         PythonUtils.addPostprocessorCode(code, getOutputSlots());
@@ -187,6 +187,12 @@ public class MergingPythonScriptAlgorithm extends JIPipeMergingAlgorithm {
         if (cleanUpAfterwards) {
             PythonUtils.cleanup(inputSlotPaths, outputSlotPaths, progressInfo);
         }
+    }
+
+    @Override
+    public void setWorkDirectory(Path workDirectory) {
+        super.setWorkDirectory(workDirectory);
+        code.makeExternalScriptFileRelative(workDirectory);
     }
 
     @JIPipeDocumentation(name = "Script", description = "The Python script to be executed. " +

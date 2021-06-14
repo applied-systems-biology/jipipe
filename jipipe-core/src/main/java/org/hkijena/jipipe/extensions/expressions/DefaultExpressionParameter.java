@@ -36,6 +36,11 @@ public class DefaultExpressionParameter extends ExpressionParameter {
         super(other);
     }
 
+    @Override
+    public ExpressionEvaluator getEvaluator() {
+        return getEvaluatorInstance();
+    }
+
     public static DefaultExpressionEvaluator getEvaluatorInstance() {
         if (EVALUATOR == null) {
             EVALUATOR = new DefaultExpressionEvaluator();
@@ -50,11 +55,6 @@ public class DefaultExpressionParameter extends ExpressionParameter {
             }
         }
         return EVALUATOR;
-    }
-
-    @Override
-    public ExpressionEvaluator getEvaluator() {
-        return getEvaluatorInstance();
     }
 
     public static class List extends ListParameter<DefaultExpressionParameter> {
