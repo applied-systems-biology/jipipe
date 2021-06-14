@@ -753,34 +753,40 @@ public abstract class JIPipeGraphEditorUI extends JIPipeWorkbenchPanel implement
         if (searchStrings == null || searchStrings.length == 0)
             return new int[0];
         String nameHayStack;
+        String menuHayStack;
         String descriptionHayStack;
         if (value instanceof JIPipeNodeUI) {
             JIPipeGraphNode node = ((JIPipeNodeUI) value).getNode();
             nameHayStack = node.getName();
+            menuHayStack = node.getInfo().getCategory().getName() + "\n" + node.getInfo().getMenuPath();
             descriptionHayStack = StringUtils.orElse(node.getCustomDescription().getBody(), node.getInfo().getDescription().getBody());
         } else if (value instanceof JIPipeNodeInfo) {
             JIPipeNodeInfo info = (JIPipeNodeInfo) value;
             if (info.isHidden())
                 return null;
             nameHayStack = StringUtils.orElse(info.getName(), "").toLowerCase();
+            menuHayStack = info.getCategory().getName() + "\n" + info.getMenuPath();
             descriptionHayStack = StringUtils.orElse(info.getDescription().getBody(), "").toLowerCase();
         } else {
             return null;
         }
 
         nameHayStack = nameHayStack.toLowerCase();
+        menuHayStack = menuHayStack.toLowerCase();
         descriptionHayStack = descriptionHayStack.toLowerCase();
 
-        int[] ranks = new int[2];
+        int[] ranks = new int[3];
 
         for (String string : searchStrings) {
             if (nameHayStack.contains(string.toLowerCase()))
                 --ranks[0];
-            if (descriptionHayStack.contains(string.toLowerCase()))
+            if (menuHayStack.contains(string.toLowerCase()))
                 --ranks[1];
+            if (descriptionHayStack.contains(string.toLowerCase()))
+                --ranks[2];
         }
 
-        if (ranks[0] == 0 && ranks[1] == 0)
+        if (ranks[0] == 0 && ranks[1] == 0 && ranks[2] == 0)
             return null;
 
         return ranks;
