@@ -29,7 +29,10 @@ import org.hkijena.jipipe.ui.components.AlwaysOnTopToggle;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
-import java.awt.Window;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.InputEvent;
+import java.awt.event.KeyEvent;
 import java.lang.ref.WeakReference;
 import java.util.Map;
 
@@ -47,6 +50,10 @@ public abstract class JIPipeCacheDataViewerWindow extends JFrame {
     private final String slotName;
     private JIPipeCachedDataDisplayCacheControl cacheAwareToggle;
     private WeakReference<JIPipeVirtualData> lastVirtualData;
+    private JButton previousRowButton;
+    private JButton nextRowButton;
+    private JLabel rowInfoLabel;
+    private JPanel contentPane = new JPanel(new BorderLayout());
 
     public JIPipeCacheDataViewerWindow(JIPipeWorkbench workbench, JIPipeCacheSlotDataSource dataSource, String displayName) {
         this.workbench = workbench;
@@ -56,6 +63,7 @@ public abstract class JIPipeCacheDataViewerWindow extends JFrame {
         this.displayName = displayName;
         setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
         setIconImage(UIUtils.getIcon128FromResources("jipipe.png").getImage());
+        initialize();
 
 
         if (dataSource.getSlot().getNode() != null) {
@@ -74,11 +82,70 @@ public abstract class JIPipeCacheDataViewerWindow extends JFrame {
         setLocationRelativeTo(workbench.getWindow());
     }
 
+    private void initialize() {
+        previousRowButton = new JButton(UIUtils.getIconFromResources("actions/arrow-up.png"));
+        previousRowButton.setToolTipText("<html>Go to previous data row<br/>Ctrl+Up</html>");
+        previousRowButton.addActionListener(e -> gotoPreviousRow());
+        UIUtils.makeFlat25x25(previousRowButton);
+        nextRowButton = new JButton(UIUtils.getIconFromResources("actions/arrow-down.png"));
+        nextRowButton.setToolTipText("<html>Go to next data row<br/>Ctrl+Down</html>");
+        nextRowButton.addActionListener(e -> gotoNextRow());
+        UIUtils.makeFlat25x25(nextRowButton);
+        rowInfoLabel = new JLabel("?/?");
+
+        super.setContentPane(contentPane);
+        InputMap inputMap = contentPane.getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
+        ActionMap actionMap = contentPane.getActionMap();
+
+        actionMap.put("next-row", new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                gotoNextRow();
+            }
+        });
+        actionMap.put("previous-row", new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                gotoPreviousRow();
+            }
+        });
+
+        inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_UP, InputEvent.CTRL_DOWN_MASK), "previous-row");
+        inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_DOWN, InputEvent.CTRL_DOWN_MASK), "next-row");
+    }
+
+    @Override
+    public Container getContentPane() {
+        return contentPane;
+    }
+
+    @Override
+    public void setContentPane(Container contentPane) {
+        this.contentPane.removeAll();
+        this.contentPane.add(contentPane);
+        revalidate();
+        repaint();
+    }
+
+    private void gotoPreviousRow() {
+        int row = getDataSource().getRow() - 1;
+        if(row < 0)
+            row += getDataSource().getSlot().getRowCount();
+        setDataSourceRow(row);
+    }
+
+    public void gotoNextRow() {
+        int row = (getDataSource().getRow() +1) % getDataSource().getSlot().getRowCount();
+        setDataSourceRow(row);
+    }
+
     public void reloadDisplayedData() {
         setDataSourceRow(getDataSource().getRow());
     }
 
     public void setDataSourceRow(int row) {
+
+        rowInfoLabel.setText((row + 1) + "/" + getDataSource().getSlot().getRowCount());
 
         if(getAlgorithm() != null) {
             setTitle(getAlgorithm().getName() + "/" + getSlotName() + "/" + row);
@@ -143,6 +210,9 @@ public abstract class JIPipeCacheDataViewerWindow extends JFrame {
     private void removeDataControls() {
         if(getToolBar() == null)
             return;
+        getToolBar().remove(previousRowButton);
+        getToolBar().remove(nextRowButton);
+        getToolBar().remove(rowInfoLabel);
         getToolBar().remove(alwaysOnTopToggle);
         if(cacheAwareToggle != null)
             cacheAwareToggle.uninstall();
@@ -157,6 +227,9 @@ public abstract class JIPipeCacheDataViewerWindow extends JFrame {
         if(algorithm != null) {
             cacheAwareToggle.installRefreshOnActivate(this::reloadFromCurrentCache);
         }
+        getToolBar().add(nextRowButton, 0);
+        getToolBar().add(rowInfoLabel, 0);
+        getToolBar().add(previousRowButton, 0);
     }
 
     public JIPipeAlgorithm getAlgorithm() {

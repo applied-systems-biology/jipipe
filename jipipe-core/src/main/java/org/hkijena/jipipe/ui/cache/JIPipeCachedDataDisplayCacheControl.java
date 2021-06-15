@@ -19,7 +19,7 @@ public class JIPipeCachedDataDisplayCacheControl {
     private final JIPipeProjectWorkbench workbench;
     private final JToolBar toolBar;
     private final JIPipeGraphNode algorithm;
-    private JToggleButton cacheAwareToggle;
+    private JCheckBoxMenuItem cacheAwareToggle;
     private JButton updateCacheButton;
     private JIPipeRunnerQueueUI runnerQueue;
 
@@ -50,11 +50,9 @@ public class JIPipeCachedDataDisplayCacheControl {
     private void updateRunnerQueueStatus() {
         if (JIPipeRunnerQueue.getInstance().isEmpty()) {
             updateCacheButton.setVisible(true);
-            cacheAwareToggle.setVisible(true);
             runnerQueue.setVisible(false);
         } else {
             updateCacheButton.setVisible(false);
-            cacheAwareToggle.setVisible(false);
             runnerQueue.setVisible(true);
             SwingUtilities.invokeLater(() -> {
                 toolBar.revalidate();
@@ -64,13 +62,15 @@ public class JIPipeCachedDataDisplayCacheControl {
     }
 
     private void initialize() {
-        cacheAwareToggle = new JToggleButton("Refresh to cache", UIUtils.getIconFromResources("actions/view-refresh.png"));
-        cacheAwareToggle.setSelected(true);
-
-        updateCacheButton = new JButton(UIUtils.getIconFromResources("actions/database.png"));
-        updateCacheButton.setToolTipText("Update this data");
+        updateCacheButton = new JButton("Update cache", UIUtils.getIconFromResources("actions/database.png"));
+        updateCacheButton.setToolTipText("Updates the cache, so the currently viewed data is updated.");
 
         JPopupMenu menu = UIUtils.addPopupMenuToComponent(updateCacheButton);
+
+        cacheAwareToggle = new JCheckBoxMenuItem("Keep up-to-date");
+        cacheAwareToggle.setToolTipText("Keep up-to-date with cache.");
+        cacheAwareToggle.setSelected(true);
+        menu.add(cacheAwareToggle);
 
         JMenuItem updateCacheItem = new JMenuItem("Update cache", UIUtils.getIconFromResources("actions/database.png"));
         updateCacheButton.setToolTipText("Updates the node that contains this viewed data. Intermediate results are discarded.");
@@ -128,13 +128,11 @@ public class JIPipeCachedDataDisplayCacheControl {
 
     public void uninstall() {
         toolBar.remove(runnerQueue);
-        toolBar.remove(cacheAwareToggle);
         toolBar.remove(updateCacheButton);
     }
 
     public void install() {
         toolBar.add(runnerQueue, 0);
-        toolBar.add(cacheAwareToggle, 0);
         toolBar.add(updateCacheButton, 0);
     }
 }
