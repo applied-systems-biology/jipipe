@@ -11,7 +11,7 @@
  * See the LICENSE file provided with the code for the full license.
  */
 
-package org.hkijena.jipipe.ui.tableanalyzer;
+package org.hkijena.jipipe.ui.tableeditor;
 
 import com.google.common.base.Charsets;
 import com.google.common.base.Joiner;
@@ -28,7 +28,7 @@ import org.hkijena.jipipe.ui.components.DocumentTabPane;
 import org.hkijena.jipipe.ui.components.FormPanel;
 import org.hkijena.jipipe.ui.components.MarkdownDocument;
 import org.hkijena.jipipe.ui.components.ModifiedFlowLayout;
-import org.hkijena.jipipe.ui.plotbuilder.JIPipePlotBuilderUI;
+import org.hkijena.jipipe.ui.plotbuilder.PlotEditor;
 import org.hkijena.jipipe.utils.BusyCursor;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
@@ -53,7 +53,7 @@ import java.util.stream.Collectors;
 /**
  * Spreadsheet UI
  */
-public class JIPipeTableEditor extends JIPipeWorkbenchPanel {
+public class TableEditor extends JIPipeWorkbenchPanel {
     private static final int MAX_UNDO = 10;
     private ResultsTableData tableModel;
     private JXTable jxTable;
@@ -74,7 +74,7 @@ public class JIPipeTableEditor extends JIPipeWorkbenchPanel {
      * @param workbench  the workbench
      * @param tableModel the table
      */
-    public JIPipeTableEditor(JIPipeWorkbench workbench, ResultsTableData tableModel) {
+    public TableEditor(JIPipeWorkbench workbench, ResultsTableData tableModel) {
         super(workbench);
         this.tableModel = tableModel;
         initialize();
@@ -369,7 +369,7 @@ public class JIPipeTableEditor extends JIPipeWorkbenchPanel {
     }
 
     private void createNewPlot() {
-        JIPipePlotBuilderUI plotBuilderUI = new JIPipePlotBuilderUI(getWorkbench());
+        PlotEditor plotBuilderUI = new PlotEditor(getWorkbench());
         plotBuilderUI.importData(tableModel, getWorkbench().getDocumentTabPane().findTabNameFor(this));
         getWorkbench().getDocumentTabPane().addTab("Plot",
                 UIUtils.getIconFromResources("data-types/data-type-plot.png"),
@@ -479,7 +479,7 @@ public class JIPipeTableEditor extends JIPipeWorkbenchPanel {
     private void cloneDataToNewTab() {
         getWorkbench().getDocumentTabPane().addTab("Table",
                 UIUtils.getIconFromResources("data-types/results-table.png"),
-                new JIPipeTableEditor(getWorkbench(), new ResultsTableData(tableModel)),
+                new TableEditor(getWorkbench(), new ResultsTableData(tableModel)),
                 DocumentTabPane.CloseMode.withAskOnCloseButton, true);
         getWorkbench().getDocumentTabPane().switchToLastTab();
     }
@@ -721,7 +721,7 @@ public class JIPipeTableEditor extends JIPipeWorkbenchPanel {
     }
 
     /**
-     * Imports a table from CSV and creates a new {@link JIPipeTableEditor} tab
+     * Imports a table from CSV and creates a new {@link TableEditor} tab
      *
      * @param fileName    CSV file
      * @param workbenchUI workbench
@@ -731,7 +731,7 @@ public class JIPipeTableEditor extends JIPipeWorkbenchPanel {
             ResultsTableData tableData = ResultsTableData.fromCSV(fileName);
             // Create table analyzer
             workbenchUI.getDocumentTabPane().addTab(fileName.getFileName().toString(), UIUtils.getIconFromResources("data-types/results-table.png"),
-                    new JIPipeTableEditor(workbenchUI, tableData), DocumentTabPane.CloseMode.withAskOnCloseButton, true);
+                    new TableEditor(workbenchUI, tableData), DocumentTabPane.CloseMode.withAskOnCloseButton, true);
             return tableData;
         } catch (IOException e) {
             throw new RuntimeException(e);
@@ -743,14 +743,14 @@ public class JIPipeTableEditor extends JIPipeWorkbenchPanel {
      */
     private static class Renderer extends JLabel implements TableCellRenderer {
 
-        private final JIPipeTableEditor tableEditor;
+        private final TableEditor tableEditor;
 
         /**
          * Creates a new renderer
          *
          * @param tableEditor the parent component
          */
-        public Renderer(JIPipeTableEditor tableEditor) {
+        public Renderer(TableEditor tableEditor) {
             this.tableEditor = tableEditor;
             setOpaque(true);
             setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));

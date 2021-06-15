@@ -18,7 +18,7 @@ import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.components.DocumentTabPane;
 import org.hkijena.jipipe.ui.extension.MenuExtension;
 import org.hkijena.jipipe.ui.extension.MenuTarget;
-import org.hkijena.jipipe.ui.plotbuilder.JIPipePlotBuilderUI;
+import org.hkijena.jipipe.ui.plotbuilder.PlotEditor;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import java.awt.event.ActionEvent;
@@ -43,7 +43,7 @@ public class NewPlotMenuExtension extends MenuExtension implements ActionListene
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        JIPipePlotBuilderUI plotBuilderUI = new JIPipePlotBuilderUI(getWorkbench());
+        PlotEditor plotBuilderUI = new PlotEditor(getWorkbench());
         getWorkbench().getDocumentTabPane().addTab("Plot", UIUtils.getIconFromResources("data-types/data-type-plot.png"),
                 plotBuilderUI, DocumentTabPane.CloseMode.withAskOnCloseButton, true);
         getWorkbench().getDocumentTabPane().switchToLastTab();

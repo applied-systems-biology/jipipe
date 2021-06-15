@@ -36,7 +36,7 @@ import java.util.Map;
  * Constructs a series from a set of columns
  */
 public class JIPipePlotSeriesBuilder implements JIPipeParameterCollection, JIPipeValidatable {
-    private JIPipePlotBuilderUI plotBuilderUI;
+    private PlotEditor plotBuilderUI;
     private JIPipeDataInfo plotType;
     private EventBus eventBus = new EventBus();
     private JIPipeDynamicParameterCollection columnAssignments = new JIPipeDynamicParameterCollection(false);
@@ -49,7 +49,7 @@ public class JIPipePlotSeriesBuilder implements JIPipeParameterCollection, JIPip
      * @param plotBuilderUI the plot builder
      * @param plotType      the plot type this series builder is defined for
      */
-    public JIPipePlotSeriesBuilder(JIPipePlotBuilderUI plotBuilderUI, JIPipeDataInfo plotType) {
+    public JIPipePlotSeriesBuilder(PlotEditor plotBuilderUI, JIPipeDataInfo plotType) {
         this.plotBuilderUI = plotBuilderUI;
         this.plotType = plotType;
 
@@ -148,7 +148,7 @@ public class JIPipePlotSeriesBuilder implements JIPipeParameterCollection, JIPip
         this.name = name;
     }
 
-    public JIPipePlotBuilderUI getPlotBuilderUI() {
+    public PlotEditor getPlotBuilderUI() {
         return plotBuilderUI;
     }
 

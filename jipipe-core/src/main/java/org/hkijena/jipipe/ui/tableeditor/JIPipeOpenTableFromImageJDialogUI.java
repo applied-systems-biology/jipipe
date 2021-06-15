@@ -11,7 +11,7 @@
  * See the LICENSE file provided with the code for the full license.
  */
 
-package org.hkijena.jipipe.ui.tableanalyzer;
+package org.hkijena.jipipe.ui.tableeditor;
 
 import ij.WindowManager;
 import ij.measure.ResultsTable;
@@ -112,7 +112,7 @@ public class JIPipeOpenTableFromImageJDialogUI extends JDialog {
     private void open() {
         if (tableSelection.getSelectedItem() instanceof ResultsTableData) {
             ResultsTableData tableData = (ResultsTableData) tableSelection.getSelectedItem();
-            JIPipeTableEditor tableAnalyzerUI = new JIPipeTableEditor((JIPipeProjectWorkbench) workbench, tableData);
+            TableEditor tableAnalyzerUI = new TableEditor((JIPipeProjectWorkbench) workbench, tableData);
             workbench.getDocumentTabPane().addTab("Table", UIUtils.getIconFromResources("data-types/results-table.png"),
                     tableAnalyzerUI, DocumentTabPane.CloseMode.withAskOnCloseButton, true);
             workbench.getDocumentTabPane().switchToLastTab();

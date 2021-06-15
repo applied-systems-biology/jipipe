@@ -57,7 +57,7 @@ import java.util.*;
 /**
  * User interface for displaying and creating plots
  */
-public class JIPipePlotBuilderUI extends JIPipeWorkbenchPanel implements JIPipeParameterCollection, JIPipeValidatable {
+public class PlotEditor extends JIPipeWorkbenchPanel implements JIPipeParameterCollection, JIPipeValidatable {
 
     private EventBus eventBus = new EventBus();
     private JIPipeDataInfoRef plotType = new JIPipeDataInfoRef();
@@ -71,7 +71,7 @@ public class JIPipePlotBuilderUI extends JIPipeWorkbenchPanel implements JIPipeP
     /**
      * @param workbench the workbench
      */
-    public JIPipePlotBuilderUI(JIPipeWorkbench workbench) {
+    public PlotEditor(JIPipeWorkbench workbench) {
         super(workbench);
         initialize();
         rebuildPlot();

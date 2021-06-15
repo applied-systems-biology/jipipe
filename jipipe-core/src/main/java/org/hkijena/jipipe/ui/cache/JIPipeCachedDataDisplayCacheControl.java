@@ -126,6 +126,12 @@ public class JIPipeCachedDataDisplayCacheControl {
         return algorithm;
     }
 
+    public void uninstall() {
+        toolBar.remove(runnerQueue);
+        toolBar.remove(cacheAwareToggle);
+        toolBar.remove(updateCacheButton);
+    }
+
     public void install() {
         toolBar.add(runnerQueue, 0);
         toolBar.add(cacheAwareToggle, 0);

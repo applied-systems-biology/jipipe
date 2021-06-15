@@ -14,7 +14,7 @@
 package org.hkijena.jipipe.ui.components;
 
 import org.hkijena.jipipe.extensions.settings.FileChooserSettings;
-import org.hkijena.jipipe.ui.plotbuilder.JIPipePlotBuilderUI;
+import org.hkijena.jipipe.ui.plotbuilder.PlotEditor;
 import org.hkijena.jipipe.utils.CopyImageToClipboard;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.jfree.chart.ChartPanel;
@@ -35,7 +35,7 @@ import java.nio.file.Path;
  */
 public class PlotReader extends JPanel {
 
-    private final JIPipePlotBuilderUI plotBuilderUI;
+    private final PlotEditor plotBuilderUI;
     private ChartPanel chartPanel;
     private JToolBar toolBar;
 
@@ -44,7 +44,7 @@ public class PlotReader extends JPanel {
      *
      * @param plotBuilderUI the plot builder associated to this reader
      */
-    public PlotReader(JIPipePlotBuilderUI plotBuilderUI) {
+    public PlotReader(PlotEditor plotBuilderUI) {
         this.plotBuilderUI = plotBuilderUI;
         initialize();
     }

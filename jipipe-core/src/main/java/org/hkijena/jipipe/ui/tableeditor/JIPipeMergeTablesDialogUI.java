@@ -11,7 +11,7 @@
  * See the LICENSE file provided with the code for the full license.
  */
 
-package org.hkijena.jipipe.ui.tableanalyzer;
+package org.hkijena.jipipe.ui.tableeditor;
 
 import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
 import org.hkijena.jipipe.ui.components.DocumentTabListCellRenderer;
@@ -26,7 +26,7 @@ import java.awt.*;
  * UI that merges tables
  */
 public class JIPipeMergeTablesDialogUI extends JDialog {
-    private JIPipeTableEditor tableAnalyzerUI;
+    private TableEditor tableAnalyzerUI;
     private JComboBox<DocumentTabPane.DocumentTab> tableSelection;
     private JXTable jxTable;
 
@@ -35,12 +35,12 @@ public class JIPipeMergeTablesDialogUI extends JDialog {
      *
      * @param tableAnalyzerUI The table analyzer
      */
-    public JIPipeMergeTablesDialogUI(JIPipeTableEditor tableAnalyzerUI) {
+    public JIPipeMergeTablesDialogUI(TableEditor tableAnalyzerUI) {
         this.tableAnalyzerUI = tableAnalyzerUI;
         initialize();
 
         for (DocumentTabPane.DocumentTab tab : tableAnalyzerUI.getWorkbench().getDocumentTabPane().getTabs()) {
-            if (tab.getContent() instanceof JIPipeTableEditor) {
+            if (tab.getContent() instanceof TableEditor) {
                 tableSelection.addItem(tab);
             }
         }
@@ -55,7 +55,7 @@ public class JIPipeMergeTablesDialogUI extends JDialog {
         tableSelection.setRenderer(new DocumentTabListCellRenderer());
         tableSelection.addItemListener(e -> {
             if (e.getItem() instanceof DocumentTabPane.DocumentTab) {
-                jxTable.setModel(((JIPipeTableEditor) ((DocumentTabPane.DocumentTab) e.getItem()).getContent()).getTableModel());
+                jxTable.setModel(((TableEditor) ((DocumentTabPane.DocumentTab) e.getItem()).getContent()).getTableModel());
                 jxTable.packAll();
             }
         });
@@ -84,7 +84,7 @@ public class JIPipeMergeTablesDialogUI extends JDialog {
     private void calculate() {
         if (tableSelection.getSelectedItem() != null) {
             tableAnalyzerUI.createUndoSnapshot();
-            ResultsTableData sourceModel = ((JIPipeTableEditor) ((DocumentTabPane.DocumentTab) tableSelection.getSelectedItem()).getContent()).getTableModel();
+            ResultsTableData sourceModel = ((TableEditor) ((DocumentTabPane.DocumentTab) tableSelection.getSelectedItem()).getContent()).getTableModel();
             ResultsTableData targetModel = tableAnalyzerUI.getTableModel();
 
             targetModel.addRows(sourceModel);

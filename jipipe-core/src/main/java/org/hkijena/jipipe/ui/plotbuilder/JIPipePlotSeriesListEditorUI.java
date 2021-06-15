@@ -24,10 +24,10 @@ import javax.swing.*;
 import java.awt.*;
 
 /**
- * Manages the list of series in a {@link JIPipePlotBuilderUI}
+ * Manages the list of series in a {@link PlotEditor}
  */
 public class JIPipePlotSeriesListEditorUI extends JIPipeWorkbenchPanel {
-    private JIPipePlotBuilderUI plotBuilderUI;
+    private PlotEditor plotBuilderUI;
     private FormPanel entriesPanel;
 
     /**
@@ -36,7 +36,7 @@ public class JIPipePlotSeriesListEditorUI extends JIPipeWorkbenchPanel {
      * @param workbench     the workbench
      * @param plotBuilderUI the plot builder
      */
-    public JIPipePlotSeriesListEditorUI(JIPipeWorkbench workbench, JIPipePlotBuilderUI plotBuilderUI) {
+    public JIPipePlotSeriesListEditorUI(JIPipeWorkbench workbench, PlotEditor plotBuilderUI) {
         super(workbench);
         this.plotBuilderUI = plotBuilderUI;
         initialize();

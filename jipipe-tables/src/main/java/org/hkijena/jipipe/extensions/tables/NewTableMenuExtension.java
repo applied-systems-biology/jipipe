@@ -20,7 +20,7 @@ import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.components.DocumentTabPane;
 import org.hkijena.jipipe.ui.extension.MenuExtension;
 import org.hkijena.jipipe.ui.extension.MenuTarget;
-import org.hkijena.jipipe.ui.tableanalyzer.JIPipeTableEditor;
+import org.hkijena.jipipe.ui.tableeditor.TableEditor;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import java.awt.event.ActionEvent;
@@ -45,7 +45,7 @@ public class NewTableMenuExtension extends MenuExtension implements ActionListen
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        JIPipeTableEditor tableAnalyzerUI = new JIPipeTableEditor((JIPipeProjectWorkbench) getWorkbench(), new ResultsTableData());
+        TableEditor tableAnalyzerUI = new TableEditor((JIPipeProjectWorkbench) getWorkbench(), new ResultsTableData());
         getWorkbench().getDocumentTabPane().addTab("Table", UIUtils.getIconFromResources("data-types/results-table.png"),
                 tableAnalyzerUI, DocumentTabPane.CloseMode.withAskOnCloseButton, true);
         getWorkbench().getDocumentTabPane().switchToLastTab();

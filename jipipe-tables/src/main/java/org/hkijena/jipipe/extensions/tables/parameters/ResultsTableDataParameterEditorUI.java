@@ -5,7 +5,7 @@ import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.components.DocumentTabPane;
 import org.hkijena.jipipe.ui.parameters.JIPipeParameterEditorUI;
-import org.hkijena.jipipe.ui.tableanalyzer.JIPipeTableEditor;
+import org.hkijena.jipipe.ui.tableeditor.TableEditor;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
@@ -36,8 +36,8 @@ public class ResultsTableDataParameterEditorUI extends JIPipeParameterEditorUI {
     private void editParameters() {
         ResultsTableData parameters = getParameter(ResultsTableData.class);
         for (DocumentTabPane.DocumentTab tab : getWorkbench().getDocumentTabPane().getTabs()) {
-            if (tab.getContent() instanceof JIPipeTableEditor) {
-                if (((JIPipeTableEditor) tab.getContent()).getTableModel() == parameters) {
+            if (tab.getContent() instanceof TableEditor) {
+                if (((TableEditor) tab.getContent()).getTableModel() == parameters) {
                     getWorkbench().getDocumentTabPane().switchToContent(tab.getContent());
                     return;
                 }
@@ -45,7 +45,7 @@ public class ResultsTableDataParameterEditorUI extends JIPipeParameterEditorUI {
         }
         getWorkbench().getDocumentTabPane().addTab(getParameterAccess().getName(),
                 UIUtils.getIconFromResources("data-types/results-table.png"),
-                new JIPipeTableEditor(getWorkbench(), parameters),
+                new TableEditor(getWorkbench(), parameters),
                 DocumentTabPane.CloseMode.withAskOnCloseButton, true);
         getWorkbench().getDocumentTabPane().switchToLastTab();
     }

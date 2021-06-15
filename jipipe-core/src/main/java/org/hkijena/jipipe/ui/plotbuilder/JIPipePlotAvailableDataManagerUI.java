@@ -24,7 +24,7 @@ import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.JIPipeWorkbenchPanel;
 import org.hkijena.jipipe.ui.components.DocumentTabPane;
-import org.hkijena.jipipe.ui.tableanalyzer.JIPipeTableEditor;
+import org.hkijena.jipipe.ui.tableeditor.TableEditor;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
@@ -42,7 +42,7 @@ import java.util.stream.Collectors;
  */
 public class JIPipePlotAvailableDataManagerUI extends JIPipeWorkbenchPanel {
 
-    private JIPipePlotBuilderUI plotBuilderUI;
+    private PlotEditor plotBuilderUI;
     private JList<TableColumn> dataSourceJList;
     private JPopupMenu importPopupMenu;
 
@@ -50,7 +50,7 @@ public class JIPipePlotAvailableDataManagerUI extends JIPipeWorkbenchPanel {
      * @param workbench     the workbench
      * @param plotBuilderUI the plot builder
      */
-    public JIPipePlotAvailableDataManagerUI(JIPipeWorkbench workbench, JIPipePlotBuilderUI plotBuilderUI) {
+    public JIPipePlotAvailableDataManagerUI(JIPipeWorkbench workbench, PlotEditor plotBuilderUI) {
         super(workbench);
         this.plotBuilderUI = plotBuilderUI;
         initialize();
@@ -106,19 +106,19 @@ public class JIPipePlotAvailableDataManagerUI extends JIPipeWorkbenchPanel {
         importCSVItem.addActionListener(e -> importFromCSV());
         importPopupMenu.add(importCSVItem);
 
-        List<DocumentTabPane.DocumentTab> tableAnalyzers = getWorkbench().getDocumentTabPane().getTabsContaining(JIPipeTableEditor.class);
+        List<DocumentTabPane.DocumentTab> tableAnalyzers = getWorkbench().getDocumentTabPane().getTabsContaining(TableEditor.class);
         if (!tableAnalyzers.isEmpty()) {
             importPopupMenu.addSeparator();
             for (DocumentTabPane.DocumentTab tab : tableAnalyzers) {
                 JMenuItem importItem = new JMenuItem("Import from '" + tab.getTitle() + "'", UIUtils.getIconFromResources("data-types/results-table.png"));
-                JIPipeTableEditor tableAnalyzerUI = (JIPipeTableEditor) tab.getContent();
+                TableEditor tableAnalyzerUI = (TableEditor) tab.getContent();
                 importItem.addActionListener(e -> importFromTableAnalyzer(tableAnalyzerUI, tab.getTitle()));
                 importPopupMenu.add(importItem);
             }
         }
     }
 
-    private void importFromTableAnalyzer(JIPipeTableEditor tableAnalyzerUI, String title) {
+    private void importFromTableAnalyzer(TableEditor tableAnalyzerUI, String title) {
         ResultsTableData tableModel = tableAnalyzerUI.getTableModel();
         plotBuilderUI.importData(tableModel, title);
     }
@@ -163,7 +163,7 @@ public class JIPipePlotAvailableDataManagerUI extends JIPipeWorkbenchPanel {
         }
 
         String name = dataSourceJList.getSelectedValuesList().size() == 1 ? dataSourceJList.getSelectedValuesList().get(0).getLabel() : "Table";
-        JIPipeTableEditor tableAnalyzerUI = new JIPipeTableEditor((JIPipeProjectWorkbench) getWorkbench(), tableModel);
+        TableEditor tableAnalyzerUI = new TableEditor((JIPipeProjectWorkbench) getWorkbench(), tableModel);
         getWorkbench().getDocumentTabPane().addTab(name, UIUtils.getIconFromResources("data-types/results-table.png"),
                 tableAnalyzerUI,
                 DocumentTabPane.CloseMode.withAskOnCloseButton,

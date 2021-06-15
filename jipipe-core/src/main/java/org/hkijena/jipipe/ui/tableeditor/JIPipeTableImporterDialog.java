@@ -11,7 +11,7 @@
  * See the LICENSE file provided with the code for the full license.
  */
 
-package org.hkijena.jipipe.ui.tableanalyzer;
+package org.hkijena.jipipe.ui.tableeditor;
 
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
 import org.hkijena.jipipe.ui.components.PathEditor;
@@ -97,7 +97,7 @@ public class JIPipeTableImporterDialog extends JDialog {
         exportButton.addActionListener(e -> {
             if (importFormat.getSelectedItem() == FileFormat.CSV) {
                 if (pathEditor.getPath() != null) {
-                    JIPipeTableEditor.importTableFromCSV(pathEditor.getPath(), workbench);
+                    TableEditor.importTableFromCSV(pathEditor.getPath(), workbench);
                 }
             }
 //            else if(importFormat.getSelectedItem() == FileFormat.XLSX) {

@@ -26,7 +26,7 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.ImageJDataTypesSettings;
 import org.hkijena.jipipe.extensions.imagejdatatypes.color.ColorSpace;
 import org.hkijena.jipipe.extensions.imagejdatatypes.color.RGBColorSpace;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.color.ColoredImagePlusData;
-import org.hkijena.jipipe.extensions.imagejdatatypes.display.CacheAwareImagePlusDataViewerPanel;
+import org.hkijena.jipipe.extensions.imagejdatatypes.display.CachedImagePlusDataViewerWindow;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.utils.PathUtils;
@@ -148,7 +148,9 @@ public class ImagePlusData implements JIPipeData, ColoredImagePlusData {
     @Override
     public void display(String displayName, JIPipeWorkbench workbench, JIPipeDataSource source) {
         if (source instanceof JIPipeCacheSlotDataSource) {
-            CacheAwareImagePlusDataViewerPanel.show(workbench, (JIPipeCacheSlotDataSource) source, displayName);
+//            CacheAwareImagePlusDataViewerPanel.show(workbench, (JIPipeCacheSlotDataSource) source, displayName);
+            CachedImagePlusDataViewerWindow window = new CachedImagePlusDataViewerWindow(workbench, (JIPipeCacheSlotDataSource) source, displayName);
+            window.setVisible(true);
         } else {
             getDuplicateImage().show();
         }

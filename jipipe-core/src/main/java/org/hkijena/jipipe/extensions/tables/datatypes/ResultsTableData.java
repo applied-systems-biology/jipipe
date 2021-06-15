@@ -38,10 +38,10 @@ import org.hkijena.jipipe.api.data.JIPipeDataStorageDocumentation;
 import org.hkijena.jipipe.extensions.tables.ConvertingColumnOperation;
 import org.hkijena.jipipe.extensions.tables.IntegratingColumnOperation;
 import org.hkijena.jipipe.extensions.tables.TableColumnReference;
-import org.hkijena.jipipe.extensions.tables.display.CacheAwareTableEditor;
+import org.hkijena.jipipe.extensions.tables.display.CachedTableViewerWindow;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.components.DocumentTabPane;
-import org.hkijena.jipipe.ui.tableanalyzer.JIPipeTableEditor;
+import org.hkijena.jipipe.ui.tableeditor.TableEditor;
 import org.hkijena.jipipe.utils.JsonUtils;
 import org.hkijena.jipipe.utils.PathUtils;
 import org.hkijena.jipipe.utils.StringUtils;
@@ -443,10 +443,12 @@ public class ResultsTableData implements JIPipeData, TableModel {
     @Override
     public void display(String displayName, JIPipeWorkbench workbench, JIPipeDataSource source) {
         if (source instanceof JIPipeCacheSlotDataSource) {
-            CacheAwareTableEditor.show(workbench, (JIPipeCacheSlotDataSource) source, displayName);
+//            CacheAwareTableEditor.show(workbench, (JIPipeCacheSlotDataSource) source, displayName);
+            CachedTableViewerWindow window = new CachedTableViewerWindow(workbench, (JIPipeCacheSlotDataSource) source, displayName);
+            window.setVisible(true);
         } else {
             workbench.getDocumentTabPane().addTab(displayName, UIUtils.getIconFromResources("data-types/results-table.png"),
-                    new JIPipeTableEditor(workbench, (ResultsTableData) duplicate()), DocumentTabPane.CloseMode.withAskOnCloseButton, true);
+                    new TableEditor(workbench, (ResultsTableData) duplicate()), DocumentTabPane.CloseMode.withAskOnCloseButton, true);
             workbench.getDocumentTabPane().switchToLastTab();
         }
     }

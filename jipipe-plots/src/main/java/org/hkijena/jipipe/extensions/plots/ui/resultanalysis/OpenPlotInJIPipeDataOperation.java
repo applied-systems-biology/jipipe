@@ -4,7 +4,7 @@ import org.hkijena.jipipe.api.data.*;
 import org.hkijena.jipipe.extensions.plots.datatypes.PlotData;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.components.DocumentTabPane;
-import org.hkijena.jipipe.ui.plotbuilder.JIPipePlotBuilderUI;
+import org.hkijena.jipipe.ui.plotbuilder.PlotEditor;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
@@ -19,7 +19,7 @@ public class OpenPlotInJIPipeDataOperation implements JIPipeDataDisplayOperation
     @Override
     public JIPipeData show(JIPipeDataSlot slot, JIPipeExportedDataTable.Row row, Path rowStorageFolder, String compartmentName, String algorithmName, String displayName, JIPipeWorkbench workbench) {
         PlotData plotData = PlotData.fromFolder(rowStorageFolder);
-        JIPipePlotBuilderUI plotBuilderUI = new JIPipePlotBuilderUI(workbench);
+        PlotEditor plotBuilderUI = new PlotEditor(workbench);
         plotBuilderUI.importExistingPlot(plotData);
         workbench.getDocumentTabPane().addTab(displayName, UIUtils.getIconFromResources("data-types/data-type-plot.png"),
                 plotBuilderUI, DocumentTabPane.CloseMode.withAskOnCloseButton, true);

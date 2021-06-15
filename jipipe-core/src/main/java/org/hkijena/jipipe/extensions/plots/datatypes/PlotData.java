@@ -31,13 +31,13 @@ import org.hkijena.jipipe.api.data.*;
 import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
-import org.hkijena.jipipe.extensions.plots.CacheAwarePlotEditor;
+import org.hkijena.jipipe.extensions.plots.CachedPlotViewerWindow;
 import org.hkijena.jipipe.extensions.plots.utils.ColorMap;
 import org.hkijena.jipipe.extensions.plots.utils.ColorMapSupplier;
 import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.components.DocumentTabPane;
-import org.hkijena.jipipe.ui.plotbuilder.JIPipePlotBuilderUI;
+import org.hkijena.jipipe.ui.plotbuilder.PlotEditor;
 import org.hkijena.jipipe.utils.JsonUtils;
 import org.hkijena.jipipe.utils.ParameterUtils;
 import org.hkijena.jipipe.utils.PathUtils;
@@ -118,9 +118,10 @@ public abstract class PlotData implements JIPipeData, JIPipeParameterCollection,
     @Override
     public void display(String displayName, JIPipeWorkbench workbench, JIPipeDataSource source) {
         if (source instanceof JIPipeCacheSlotDataSource) {
-            CacheAwarePlotEditor.show(workbench, (JIPipeCacheSlotDataSource) source, displayName);
+            CachedPlotViewerWindow window = new CachedPlotViewerWindow(workbench, (JIPipeCacheSlotDataSource) source, displayName);
+            window.setVisible(true);
         } else {
-            JIPipePlotBuilderUI plotBuilderUI = new JIPipePlotBuilderUI(workbench);
+            PlotEditor plotBuilderUI = new PlotEditor(workbench);
             plotBuilderUI.importExistingPlot((PlotData) duplicate());
             workbench.getDocumentTabPane().addTab(displayName, UIUtils.getIconFromResources("data-types/data-type-plot.png"),
                     plotBuilderUI, DocumentTabPane.CloseMode.withAskOnCloseButton, true);
