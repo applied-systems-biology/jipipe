@@ -21,6 +21,7 @@ import org.hkijena.jipipe.JIPipeDependency;
 import org.hkijena.jipipe.JIPipeImageJUpdateSiteDependency;
 import org.hkijena.jipipe.api.JIPipeProject;
 import org.hkijena.jipipe.api.JIPipeProjectMetadata;
+import org.hkijena.jipipe.api.JIPipeProjectTemplate;
 import org.hkijena.jipipe.api.JIPipeRun;
 import org.hkijena.jipipe.api.JIPipeValidityReport;
 import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
@@ -145,6 +146,23 @@ public class JIPipeProjectWindow extends JFrame {
             } catch (IOException e) {
                 e.printStackTrace();
             }
+        }
+    }
+
+    /**
+     * Creates a new project from template
+     */
+    public void newProjectFromTemplate(JIPipeProjectTemplate template) {
+        try {
+            JIPipeProject project = template.load();
+            JIPipeProjectWindow window = openProjectInThisOrNewWindow("New project", project, true, true);
+            if (window == null)
+                return;
+            window.projectSavePath = null;
+            window.updateTitle();
+            window.getProjectUI().sendStatusBarText("Created new project");
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 

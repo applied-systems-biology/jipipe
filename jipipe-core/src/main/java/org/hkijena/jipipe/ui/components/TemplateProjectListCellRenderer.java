@@ -5,6 +5,7 @@ import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
 import java.awt.*;
+import java.nio.file.Path;
 
 /**
  * Renders a recent project
@@ -14,6 +15,7 @@ public class TemplateProjectListCellRenderer extends JPanel implements ListCellR
     private JLabel iconLabel;
     private JLabel nameLabel;
     private JLabel pathLabel;
+    private JButton openButton;
 
     public TemplateProjectListCellRenderer() {
         setOpaque(true);
@@ -29,6 +31,9 @@ public class TemplateProjectListCellRenderer extends JPanel implements ListCellR
         pathLabel = new JLabel();
         pathLabel.setForeground(Color.GRAY);
         pathLabel.setFont(new Font(Font.DIALOG, Font.ITALIC, 12));
+        openButton = new JButton("New");
+        UIUtils.makeFlat(openButton);
+        openButton.setBorder(BorderFactory.createLineBorder(Color.GRAY, 1, true));
 
         add(iconLabel, new GridBagConstraints() {
             {
@@ -53,6 +58,14 @@ public class TemplateProjectListCellRenderer extends JPanel implements ListCellR
                 weightx = 1;
             }
         });
+        add(openButton, new GridBagConstraints() {
+            {
+                gridx = 2;
+                gridy = 0;
+                gridheight = 2;
+                insets = new Insets(0, 4, 0, 0);
+            }
+        });
     }
 
     @Override
@@ -61,6 +74,11 @@ public class TemplateProjectListCellRenderer extends JPanel implements ListCellR
         if (value != null) {
             nameLabel.setText(value.getMetadata().getName());
             pathLabel.setText(value.getMetadata().getTemplateDescription());
+            openButton.setVisible(isSelected);
+        } else {
+            nameLabel.setText("No templates");
+            pathLabel.setText("");
+            openButton.setVisible(false);
         }
 
         if (isSelected) {

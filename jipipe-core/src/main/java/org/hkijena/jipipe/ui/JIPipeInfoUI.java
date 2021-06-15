@@ -16,6 +16,7 @@ package org.hkijena.jipipe.ui;
 import com.google.common.eventbus.Subscribe;
 import ij.IJ;
 import org.hkijena.jipipe.JIPipe;
+import org.hkijena.jipipe.api.JIPipeProjectTemplate;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.extensions.settings.GeneralUISettings;
 import org.hkijena.jipipe.extensions.settings.ProjectsSettings;
@@ -26,6 +27,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.HashMap;
@@ -37,6 +39,7 @@ import java.util.jar.Attributes;
 public class JIPipeInfoUI extends JIPipeProjectWorkbenchPanel {
 
     private final JList<Path> recentProjectsList = new JList<>();
+    private final JList<JIPipeProjectTemplate> templateList = new JList<>();
 
     /**
      * Creates a new instance
@@ -47,7 +50,19 @@ public class JIPipeInfoUI extends JIPipeProjectWorkbenchPanel {
         super(workbenchUI);
         initialize();
         refreshRecentProjects();
+        refreshTemplateProjects();
         ProjectsSettings.getInstance().getEventBus().register(this);
+    }
+
+    private void refreshTemplateProjects() {
+        DefaultListModel<JIPipeProjectTemplate> model = new DefaultListModel<>();
+        for (JIPipeProjectTemplate template : JIPipeProjectTemplate.listTemplates()) {
+            model.addElement(template);
+        }
+        if (model.getSize() == 0) {
+            model.addElement(null);
+        }
+        templateList.setModel(model);
     }
 
     private void refreshRecentProjects() {
@@ -67,7 +82,7 @@ public class JIPipeInfoUI extends JIPipeProjectWorkbenchPanel {
         setLayout(new BorderLayout());
 
         initializeHeaderPanel();
-        initRecentProjects();
+        initRecentProjectsAndTemplates();
         initContent();
     }
 
@@ -116,16 +131,13 @@ public class JIPipeInfoUI extends JIPipeProjectWorkbenchPanel {
         tourContentPanel.add(slideshow, BorderLayout.CENTER);
     }
 
-    private void initRecentProjects() {
+    private void initRecentProjectsAndTemplates() {
+        DocumentTabPane tabPane = new DocumentTabPane();
+
+        // Recent projects list
         recentProjectsList.setCellRenderer(new RecentProjectListCellRenderer());
-        JScrollPane scrollPane = new JScrollPane(recentProjectsList);
-        scrollPane.setBorder(BorderFactory.createMatteBorder(0, 0, 0, 1, Color.DARK_GRAY));
-        if (!GeneralUISettings.getInstance().isShowIntroductionTour())
-            add(scrollPane, BorderLayout.CENTER);
-        else
-            add(scrollPane, BorderLayout.WEST);
-
-
+        JScrollPane recentProjectsScrollPane = new JScrollPane(recentProjectsList);
+//        recentProjectsScrollPane.setBorder(BorderFactory.createMatteBorder(0, 0, 0, 1, Color.DARK_GRAY));
         recentProjectsList.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
@@ -144,6 +156,44 @@ public class JIPipeInfoUI extends JIPipeProjectWorkbenchPanel {
                 }
             }
         });
+        tabPane.addTab("Recent projects",
+                UIUtils.getIconFromResources("actions/view-calendar-time-spent.png"),
+                recentProjectsScrollPane,
+                DocumentTabPane.CloseMode.withoutCloseButton);
+
+        // Template list
+        templateList.setCellRenderer(new TemplateProjectListCellRenderer());
+        JScrollPane templateListScrollPane = new JScrollPane(templateList);
+//        templateListScrollPane.setBorder(BorderFactory.createMatteBorder(0, 0, 0, 1, Color.DARK_GRAY));
+        templateList.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                if (e.getClickCount() == 2) {
+                    JIPipeProjectTemplate value = templateList.getSelectedValue();
+                    if (value != null) {
+                        ((JIPipeProjectWindow) getProjectWorkbench().getWindow()).newProjectFromTemplate(value);
+                    }
+                } else {
+                    if (templateList.getMousePosition().x > templateList.getWidth() - 50) {
+                        JIPipeProjectTemplate value = templateList.getSelectedValue();
+                        if (value != null) {
+                            ((JIPipeProjectWindow) getProjectWorkbench().getWindow()).newProjectFromTemplate(value);
+                        }
+                    }
+                }
+            }
+        });
+        tabPane.addTab("Example projects & templates",
+                UIUtils.getIconFromResources("actions/graduation-cap.png"),
+                templateListScrollPane,
+                DocumentTabPane.CloseMode.withoutCloseButton);
+
+        tabPane.setBorder(BorderFactory.createMatteBorder(0, 0, 0, 1, Color.DARK_GRAY));
+
+        if (!GeneralUISettings.getInstance().isShowIntroductionTour())
+            add(tabPane, BorderLayout.CENTER);
+        else
+            add(tabPane, BorderLayout.WEST);
     }
 
     @Subscribe
