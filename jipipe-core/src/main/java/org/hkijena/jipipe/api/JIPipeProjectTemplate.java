@@ -18,6 +18,7 @@ import com.fasterxml.jackson.annotation.JsonSetter;
 import com.fasterxml.jackson.databind.JsonNode;
 import ij.IJ;
 import ij.Prefs;
+import org.hkijena.jipipe.extensions.settings.GraphEditorUISettings;
 import org.hkijena.jipipe.utils.JsonUtils;
 import org.hkijena.jipipe.utils.ResourceUtils;
 import org.hkijena.jipipe.utils.StringUtils;
@@ -57,6 +58,9 @@ public class JIPipeProjectTemplate {
         JsonNode node = JsonUtils.getObjectMapper().readValue(getLocation(), JsonNode.class);
         JIPipeProject project = new JIPipeProject();
         project.fromJson(node, new JIPipeValidityReport());
+        // Apply selected default style
+        project.getGraph().attachAdditionalMetadata("jipipe:graph:view-mode", GraphEditorUISettings.getInstance().getDefaultViewMode());
+        project.getCompartmentGraph().attachAdditionalMetadata("jipipe:graph:view-mode", GraphEditorUISettings.getInstance().getDefaultViewMode());
         return project;
     }
 

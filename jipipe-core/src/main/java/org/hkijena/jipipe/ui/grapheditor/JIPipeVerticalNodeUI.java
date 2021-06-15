@@ -15,6 +15,7 @@ package org.hkijena.jipipe.ui.grapheditor;
 
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
+import org.apache.pdfbox.contentstream.operator.color.SetColor;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.compartments.algorithms.JIPipeCompartmentOutput;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
@@ -212,8 +213,8 @@ public class JIPipeVerticalNodeUI extends JIPipeNodeUI {
     }
 
     @Override
-    protected void paintComponent(Graphics g) {
-        super.paintComponent(g);
+    public void paint(Graphics g) {
+        super.paint(g);
         g.setColor(getBorderColor());
         g.drawRect(0, 0, getWidth() - 1, getHeight() - 1);
     }
