@@ -18,6 +18,9 @@ import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.JIPipeValidityReport;
 import org.hkijena.jipipe.api.environments.ExternalEnvironment;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
+import org.hkijena.jipipe.extensions.parameters.primitives.FilePathParameterSettings;
+import org.hkijena.jipipe.extensions.settings.FileChooserSettings;
+import org.hkijena.jipipe.ui.components.PathEditor;
 import org.hkijena.jipipe.utils.MacroUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 
@@ -46,6 +49,7 @@ public abstract class PythonPackageLibraryEnvironment extends ExternalEnvironmen
 
     @JIPipeDocumentation(name = "Library directory", description = "The directory that contains the Python packages. Ignored if the Python packages are provided by the Python environment.")
     @JIPipeParameter("library-directory")
+    @FilePathParameterSettings(key = FileChooserSettings.KEY_EXTERNAL, pathMode = PathEditor.PathMode.DirectoriesOnly, ioMode = PathEditor.IOMode.Open)
     public Path getLibraryDirectory() {
         return libraryDirectory;
     }
