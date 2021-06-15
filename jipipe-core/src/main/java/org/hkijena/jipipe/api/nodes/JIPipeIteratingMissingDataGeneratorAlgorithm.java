@@ -94,7 +94,7 @@ public abstract class JIPipeIteratingMissingDataGeneratorAlgorithm extends JIPip
         builder.setApplyMerging(false);
         builder.setSlots(slots);
         builder.setAnnotationMergeStrategy(dataBatchGenerationSettings.getAnnotationMergeStrategy());
-        builder.setReferenceColumns(dataBatchGenerationSettings.getDataSetMatching(),
+        builder.setReferenceColumns(dataBatchGenerationSettings.getColumnMatching(),
                 dataBatchGenerationSettings.getCustomColumns());
         List<JIPipeMergingDataBatch> dataBatches = builder.build();
         dataBatches.sort(Comparator.naturalOrder());

@@ -22,7 +22,7 @@ import org.hkijena.jipipe.api.JIPipeAuthorMetadata;
 import org.hkijena.jipipe.api.data.JIPipeAnnotationMergeStrategy;
 import org.hkijena.jipipe.api.data.JIPipeDataByMetadataExporter;
 import org.hkijena.jipipe.api.grouping.GraphWrapperAlgorithm;
-import org.hkijena.jipipe.api.nodes.JIPipeColumnGrouping;
+import org.hkijena.jipipe.api.nodes.JIPipeColumMatching;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollectionVisibilities;
 import org.hkijena.jipipe.extensions.JIPipePrepackagedDefaultJavaExtension;
@@ -402,7 +402,7 @@ public class StandardParametersExtension extends JIPipePrepackagedDefaultJavaExt
                 "Color map",
                 "Available color maps that convert a scalar to a color");
         registerEnumParameterType("column-matching",
-                JIPipeColumnGrouping.class,
+                JIPipeColumMatching.class,
                 "Column matching strategy",
                 "Determines how columns for dataset matching are selected");
         registerEnumParameterType("jipipe:ui:graph-editor-view-mode",

@@ -236,7 +236,7 @@ public class IteratingFormProcessorAlgorithm extends JIPipeAlgorithm implements 
         builder.setSlots(slots);
         builder.setApplyMerging(true);
         builder.setAnnotationMergeStrategy(dataBatchGenerationSettings.getAnnotationMergeStrategy());
-        builder.setReferenceColumns(dataBatchGenerationSettings.getDataSetMatching(),
+        builder.setReferenceColumns(dataBatchGenerationSettings.getColumnMatching(),
                 dataBatchGenerationSettings.getCustomColumns());
         List<JIPipeMergingDataBatch> dataBatches = builder.build();
         dataBatches.sort(Comparator.naturalOrder());

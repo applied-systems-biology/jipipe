@@ -67,7 +67,7 @@ public class PredictAlgorithm extends JIPipeMergingAlgorithm {
 
     public PredictAlgorithm(JIPipeNodeInfo info) {
         super(info);
-        getDataBatchGenerationSettings().setDataSetMatching(JIPipeColumnGrouping.MergeAll);
+        getDataBatchGenerationSettings().setColumnMatching(JIPipeColumMatching.MergeAll);
         scale2DAlgorithm = JIPipe.createNode(TransformScale2DAlgorithm.class);
         scale2DAlgorithm.setScaleMode(ScaleMode.Fit);
         registerSubParameter(scale2DAlgorithm);

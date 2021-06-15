@@ -52,7 +52,7 @@ public class InputImagesToMontage extends JIPipeMergingAlgorithm {
 
     public InputImagesToMontage(JIPipeNodeInfo info) {
         super(info);
-        this.getDataBatchGenerationSettings().setDataSetMatching(JIPipeColumnGrouping.MergeAll);
+        this.getDataBatchGenerationSettings().setColumnMatching(JIPipeColumMatching.MergeAll);
         registerSubParameter(canvasEqualizer);
         registerSubParameter(labelGenerator);
     }

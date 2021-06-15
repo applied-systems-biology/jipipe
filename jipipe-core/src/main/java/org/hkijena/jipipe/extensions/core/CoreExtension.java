@@ -2,6 +2,7 @@ package org.hkijena.jipipe.extensions.core;
 
 import org.hkijena.jipipe.JIPipeJavaExtension;
 import org.hkijena.jipipe.api.data.JIPipeData;
+import org.hkijena.jipipe.api.nodes.JIPipeAnnotationMatchingMethod;
 import org.hkijena.jipipe.api.nodes.categories.*;
 import org.hkijena.jipipe.extensions.JIPipePrepackagedDefaultJavaExtension;
 import org.hkijena.jipipe.extensions.core.data.CopyContainingFolderDataImportOperation;
@@ -56,7 +57,14 @@ public class CoreExtension extends JIPipePrepackagedDefaultJavaExtension {
         registerDatatypeDisplayOperation("", new DefaultDataDisplayOperation());
 
         // Global parameters
-        registerEnumParameterType("theme", JIPipeUITheme.class, "Theme", "A theme for the JIPipe GUI");
+        registerEnumParameterType("jipipe:annotation-matching-method",
+                JIPipeAnnotationMatchingMethod.class,
+                "Annotation matching method",
+                "Determines how annotations are matched with each other");
+        registerEnumParameterType("theme",
+                JIPipeUITheme.class,
+                "Theme",
+                "A theme for the JIPipe GUI");
     }
 
     @Override

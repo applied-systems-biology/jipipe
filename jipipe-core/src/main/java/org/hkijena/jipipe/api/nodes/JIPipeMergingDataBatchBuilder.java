@@ -69,7 +69,7 @@ public class JIPipeMergingDataBatchBuilder {
         this.referenceColumns = referenceColumns;
     }
 
-    public void setReferenceColumns(JIPipeColumnGrouping columnGrouping, StringQueryExpression customColumns) {
+    public void setReferenceColumns(JIPipeColumMatching columnGrouping, StringQueryExpression customColumns) {
         if (slots.isEmpty())
             System.err.println("Warning: Trying to calculate reference columns with empty slot list!");
         switch (columnGrouping) {

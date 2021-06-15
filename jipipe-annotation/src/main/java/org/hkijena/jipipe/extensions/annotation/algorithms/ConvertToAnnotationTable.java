@@ -47,7 +47,7 @@ public class ConvertToAnnotationTable extends JIPipeMergingAlgorithm {
      */
     public ConvertToAnnotationTable(JIPipeNodeInfo info) {
         super(info);
-        getDataBatchGenerationSettings().setDataSetMatching(JIPipeColumnGrouping.Custom);
+        getDataBatchGenerationSettings().setColumnMatching(JIPipeColumMatching.Custom);
     }
 
     /**

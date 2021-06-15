@@ -3,7 +3,7 @@ package org.hkijena.jipipe.api.nodes;
 /**
  * Strategies that determine how to detect the columns that should be used for matching
  */
-public enum JIPipeColumnGrouping {
+public enum JIPipeColumMatching {
     Union,
     Intersection,
     PrefixHashUnion,

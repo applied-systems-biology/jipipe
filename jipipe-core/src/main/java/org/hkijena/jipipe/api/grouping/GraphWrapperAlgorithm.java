@@ -292,7 +292,7 @@ public class GraphWrapperAlgorithm extends JIPipeAlgorithm implements JIPipeData
             builder.setApplyMerging(iterationMode == IterationMode.MergingDataBatch);
             builder.setSlots(slots);
             builder.setAnnotationMergeStrategy(batchGenerationSettings.getAnnotationMergeStrategy());
-            builder.setReferenceColumns(batchGenerationSettings.getDataSetMatching(),
+            builder.setReferenceColumns(batchGenerationSettings.getColumnMatching(),
                     batchGenerationSettings.getCustomColumns());
             List<JIPipeMergingDataBatch> dataBatches = builder.build();
             dataBatches.sort(Comparator.naturalOrder());

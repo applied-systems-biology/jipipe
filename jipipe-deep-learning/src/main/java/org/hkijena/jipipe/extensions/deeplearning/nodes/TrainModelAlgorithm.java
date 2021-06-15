@@ -65,7 +65,7 @@ public class TrainModelAlgorithm extends JIPipeMergingAlgorithm {
 
     public TrainModelAlgorithm(JIPipeNodeInfo info) {
         super(info);
-        getDataBatchGenerationSettings().setDataSetMatching(JIPipeColumnGrouping.MergeAll);
+        getDataBatchGenerationSettings().setColumnMatching(JIPipeColumMatching.MergeAll);
         registerSubParameter(trainingConfiguration);
         scale2DAlgorithm = JIPipe.createNode(TransformScale2DAlgorithm.class);
         scale2DAlgorithm.setScaleMode(ScaleMode.Fit);

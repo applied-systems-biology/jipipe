@@ -17,7 +17,9 @@ import com.google.common.eventbus.EventBus;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.data.JIPipeAnnotationMergeStrategy;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
+import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
+import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
 import org.hkijena.jipipe.extensions.expressions.StringQueryExpression;
 import org.hkijena.jipipe.extensions.parameters.generators.IntegerRange;
 import org.hkijena.jipipe.extensions.parameters.generators.OptionalIntegerRange;
@@ -26,7 +28,7 @@ import org.hkijena.jipipe.utils.ResourceUtils;
 
 public class JIPipeMergingAlgorithmDataBatchGenerationSettings implements JIPipeParameterCollection {
     private final EventBus eventBus = new EventBus();
-    private JIPipeColumnGrouping dataSetMatching = JIPipeColumnGrouping.PrefixHashUnion;
+    private JIPipeColumMatching columnMatching = JIPipeColumMatching.PrefixHashUnion;
     private boolean skipIncompleteDataSets = false;
     private StringQueryExpression customColumns = new StringQueryExpression();
     private JIPipeAnnotationMergeStrategy annotationMergeStrategy = JIPipeAnnotationMergeStrategy.Merge;
@@ -36,7 +38,7 @@ public class JIPipeMergingAlgorithmDataBatchGenerationSettings implements JIPipe
     }
 
     public JIPipeMergingAlgorithmDataBatchGenerationSettings(JIPipeMergingAlgorithmDataBatchGenerationSettings other) {
-        this.dataSetMatching = other.dataSetMatching;
+        this.columnMatching = other.columnMatching;
         this.skipIncompleteDataSets = other.skipIncompleteDataSets;
         this.customColumns = new StringQueryExpression(other.customColumns);
         this.annotationMergeStrategy = other.annotationMergeStrategy;
@@ -53,14 +55,25 @@ public class JIPipeMergingAlgorithmDataBatchGenerationSettings implements JIPipe
             "Union matches using the union of annotation columns. Intersection intersects the sets of available columns. You can also" +
             " customize which columns should be included or excluded.")
     @JIPipeParameter(value = "column-matching", uiOrder = 999)
-    public JIPipeColumnGrouping getDataSetMatching() {
-        return dataSetMatching;
+    public JIPipeColumMatching getColumnMatching() {
+        return columnMatching;
     }
 
     @JIPipeParameter("column-matching")
-    public void setDataSetMatching(JIPipeColumnGrouping dataSetMatching) {
-        this.dataSetMatching = dataSetMatching;
+    public void setColumnMatching(JIPipeColumMatching columnMatching) {
+        boolean needsTriggerStructureChange = columnMatching == JIPipeColumMatching.Custom || this.columnMatching == JIPipeColumMatching.Custom;
+        this.columnMatching = columnMatching;
+        if(needsTriggerStructureChange)
+            triggerParameterStructureChange();
+    }
 
+    @Override
+    public boolean isParameterUIVisible(JIPipeParameterTree tree, JIPipeParameterAccess access) {
+        if(access.getSource() == this && "custom-matched-columns-expression".equals(access.getKey())) {
+            if(getColumnMatching() != JIPipeColumMatching.Custom)
+                return false;
+        }
+        return JIPipeParameterCollection.super.isParameterUIVisible(tree, access);
     }
 
     @JIPipeDocumentation(name = "Custom grouping columns", description = "Only used if 'Grouping method' is set to 'Custom'. " +

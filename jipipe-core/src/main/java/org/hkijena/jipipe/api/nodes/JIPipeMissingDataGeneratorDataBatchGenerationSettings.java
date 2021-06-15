@@ -29,7 +29,7 @@ import org.hkijena.jipipe.utils.ResourceUtils;
  */
 public class JIPipeMissingDataGeneratorDataBatchGenerationSettings implements JIPipeParameterCollection {
     private final EventBus eventBus = new EventBus();
-    private JIPipeColumnGrouping dataSetMatching = JIPipeColumnGrouping.PrefixHashUnion;
+    private JIPipeColumMatching dataSetMatching = JIPipeColumMatching.PrefixHashUnion;
     private StringQueryExpression customColumns = new StringQueryExpression();
     private OptionalIntegerRange limit = new OptionalIntegerRange(new IntegerRange("0-9"), false);
     private boolean allowMerging = false;
@@ -56,12 +56,12 @@ public class JIPipeMissingDataGeneratorDataBatchGenerationSettings implements JI
             "Union matches using the union of annotation columns. Intersection intersects the sets of available columns. You can also" +
             " customize which columns should be included or excluded.")
     @JIPipeParameter(value = "column-matching", uiOrder = 999)
-    public JIPipeColumnGrouping getDataSetMatching() {
+    public JIPipeColumMatching getDataSetMatching() {
         return dataSetMatching;
     }
 
     @JIPipeParameter("column-matching")
-    public void setDataSetMatching(JIPipeColumnGrouping dataSetMatching) {
+    public void setDataSetMatching(JIPipeColumMatching dataSetMatching) {
         this.dataSetMatching = dataSetMatching;
 
     }
