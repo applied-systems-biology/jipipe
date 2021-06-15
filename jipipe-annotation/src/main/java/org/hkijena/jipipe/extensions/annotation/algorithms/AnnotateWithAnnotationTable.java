@@ -1,5 +1,7 @@
 package org.hkijena.jipipe.extensions.annotation.algorithms;
 
+import gnu.trove.set.TIntSet;
+import gnu.trove.set.hash.TIntHashSet;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
@@ -7,7 +9,9 @@ import org.hkijena.jipipe.api.data.*;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.AnnotationsNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
+import org.hkijena.jipipe.extensions.parameters.generators.IntegerRange;
 import org.hkijena.jipipe.extensions.tables.datatypes.AnnotationTableData;
+import org.hkijena.jipipe.utils.ResourceUtils;
 
 import java.util.*;
 
@@ -19,8 +23,9 @@ import java.util.*;
 @JIPipeInputSlot(value = JIPipeData.class, slotName = "Data", autoCreate = true)
 @JIPipeInputSlot(value = AnnotationTableData.class, slotName = "Annotations", autoCreate = true)
 @JIPipeOutputSlot(value = JIPipeData.class, slotName = "Annotated data", autoCreate = true, inheritedSlot = "Data")
-public class AnnotateWithAnnotationTable extends JIPipeIteratingAlgorithm {
+public class AnnotateWithAnnotationTable extends JIPipeParameterSlotAlgorithm {
 
+    private JIPipeIteratingAlgorithmDataBatchGenerationSettings tableMergeSettings = new JIPipeIteratingAlgorithmDataBatchGenerationSettings();
     private boolean discardExistingAnnotations = false;
 
     /**
@@ -30,6 +35,7 @@ public class AnnotateWithAnnotationTable extends JIPipeIteratingAlgorithm {
      */
     public AnnotateWithAnnotationTable(JIPipeNodeInfo info) {
         super(info);
+        registerSubParameter(tableMergeSettings);
     }
 
     /**
@@ -40,6 +46,44 @@ public class AnnotateWithAnnotationTable extends JIPipeIteratingAlgorithm {
     public AnnotateWithAnnotationTable(AnnotateWithAnnotationTable other) {
         super(other);
         this.discardExistingAnnotations = other.discardExistingAnnotations;
+        this.tableMergeSettings = new JIPipeIteratingAlgorithmDataBatchGenerationSettings(other.tableMergeSettings);
+        registerSubParameter(tableMergeSettings);
+    }
+
+    @JIPipeDocumentation(name = "Table row matching", description = "The following settings determine how rows are matched up between " +
+            "the annotation table and the incoming data table.")
+    @JIPipeParameter(value = "table-merge-settings", collapsed = true,
+            iconURL = ResourceUtils.RESOURCE_BASE_PATH + "/icons/actions/connector-orthogonal.png",
+            iconDarkURL = ResourceUtils.RESOURCE_BASE_PATH + "/dark/icons/actions/connector-orthogonal.png")
+    public JIPipeIteratingAlgorithmDataBatchGenerationSettings getTableMergeSettings() {
+        return tableMergeSettings;
+    }
+
+    private List<JIPipeMergingDataBatch> generateDataBatchesDryRun(List<JIPipeDataSlot> slots) {
+        JIPipeMergingDataBatchBuilder builder = new JIPipeMergingDataBatchBuilder();
+        builder.setNode(this);
+        builder.setApplyMerging(false);
+        builder.setSlots(slots);
+        builder.setAnnotationMergeStrategy(tableMergeSettings.getAnnotationMergeStrategy());
+        builder.setReferenceColumns(tableMergeSettings.getColumnMatching(),
+                tableMergeSettings.getCustomColumns());
+        builder.setCustomAnnotationMatching(tableMergeSettings.getCustomAnnotationMatching());
+        builder.setAnnotationMatchingMethod(tableMergeSettings.getAnnotationMatchingMethod());
+        List<JIPipeMergingDataBatch> dataBatches = builder.build();
+        dataBatches.sort(Comparator.naturalOrder());
+        boolean withLimit = tableMergeSettings.getLimit().isEnabled();
+        IntegerRange limit = tableMergeSettings.getLimit().getContent();
+        TIntSet allowedIndices = withLimit ? new TIntHashSet(limit.getIntegers()) : null;
+        if (withLimit) {
+            List<JIPipeMergingDataBatch> limitedBatches = new ArrayList<>();
+            for (int i = 0; i < dataBatches.size(); i++) {
+                if (allowedIndices.contains(i)) {
+                    limitedBatches.add(dataBatches.get(i));
+                }
+            }
+            dataBatches = limitedBatches;
+        }
+        return dataBatches;
     }
 
     @Override
@@ -76,7 +120,7 @@ public class AnnotateWithAnnotationTable extends JIPipeIteratingAlgorithm {
                 for (JIPipeAnnotation annotation : dummy.getAnnotations(row)) {
                     JIPipeAnnotation existing = newAnnotations.getOrDefault(annotation.getName(), null);
                     if (existing != null) {
-                        String value = getDataBatchGenerationSettings().getAnnotationMergeStrategy().merge(existing.getValue(), annotation.getValue());
+                        String value = getTableMergeSettings().getAnnotationMergeStrategy().merge(existing.getValue(), annotation.getValue());
                         existing = new JIPipeAnnotation(existing.getName(), value);
                     } else {
                         existing = annotation;
@@ -99,7 +143,7 @@ public class AnnotateWithAnnotationTable extends JIPipeIteratingAlgorithm {
                 for (JIPipeAnnotation annotation : newAnnotations.values()) {
                     JIPipeAnnotation existing = annotationMap.getOrDefault(annotation.getName(), null);
                     if (existing != null) {
-                        String value = getDataBatchGenerationSettings().getAnnotationMergeStrategy().merge(existing.getValue(), annotation.getValue());
+                        String value = getTableMergeSettings().getAnnotationMergeStrategy().merge(existing.getValue(), annotation.getValue());
                         existing = new JIPipeAnnotation(existing.getName(), value);
                     } else {
                         existing = annotation;
@@ -111,11 +155,6 @@ public class AnnotateWithAnnotationTable extends JIPipeIteratingAlgorithm {
                 getFirstOutputSlot().addData(dataInputSlot.getData(row, JIPipeData.class, progressInfo), new ArrayList<>(annotationMap.values()), JIPipeAnnotationMergeStrategy.Merge, progressInfo);
             }
         }
-    }
-
-    @Override
-    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
-        // Non-functional
     }
 
     @Override
