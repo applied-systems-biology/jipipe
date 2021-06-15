@@ -45,7 +45,7 @@ public abstract class JIPipeIteratingMissingDataGeneratorAlgorithm extends JIPip
             "If items are missing, they will be generated according to this node's generator function. " +
             "Otherwise data will be passed through.";
 
-    private JIPipeIteratingMisingDataGeneratorDataBatchGenerationSettings dataBatchGenerationSettings = new JIPipeIteratingMisingDataGeneratorDataBatchGenerationSettings();
+    private JIPipeIteratingMissingDataGeneratorDataBatchGenerationSettings dataBatchGenerationSettings = new JIPipeIteratingMissingDataGeneratorDataBatchGenerationSettings();
     private boolean parallelizationEnabled = true;
     private boolean keepOriginalAnnotations = true;
 
@@ -76,7 +76,7 @@ public abstract class JIPipeIteratingMissingDataGeneratorAlgorithm extends JIPip
      */
     public JIPipeIteratingMissingDataGeneratorAlgorithm(JIPipeIteratingMissingDataGeneratorAlgorithm other) {
         super(other);
-        this.dataBatchGenerationSettings = new JIPipeIteratingMisingDataGeneratorDataBatchGenerationSettings(other.dataBatchGenerationSettings);
+        this.dataBatchGenerationSettings = new JIPipeIteratingMissingDataGeneratorDataBatchGenerationSettings(other.dataBatchGenerationSettings);
         this.parallelizationEnabled = other.parallelizationEnabled;
         this.keepOriginalAnnotations = other.keepOriginalAnnotations;
         registerSubParameter(dataBatchGenerationSettings);
@@ -96,6 +96,8 @@ public abstract class JIPipeIteratingMissingDataGeneratorAlgorithm extends JIPip
         builder.setAnnotationMergeStrategy(dataBatchGenerationSettings.getAnnotationMergeStrategy());
         builder.setReferenceColumns(dataBatchGenerationSettings.getColumnMatching(),
                 dataBatchGenerationSettings.getCustomColumns());
+        builder.setAnnotationMatchingMethod(dataBatchGenerationSettings.getAnnotationMatchingMethod());
+        builder.setCustomAnnotationMatching(dataBatchGenerationSettings.getCustomAnnotationMatching());
         List<JIPipeMergingDataBatch> dataBatches = builder.build();
         dataBatches.sort(Comparator.naturalOrder());
         boolean withLimit = dataBatchGenerationSettings.getLimit().isEnabled();
@@ -185,7 +187,7 @@ public abstract class JIPipeIteratingMissingDataGeneratorAlgorithm extends JIPip
     @JIPipeDocumentation(name = "Data batch generation", description = "This algorithm can have multiple inputs. This means that JIPipe has to match incoming data into batches via metadata annotations. " +
             "The following settings allow you to control which columns are used as reference to organize data.")
     @JIPipeParameter(value = "jipipe:data-batch-generation", collapsed = true)
-    public JIPipeIteratingMisingDataGeneratorDataBatchGenerationSettings getDataBatchGenerationSettings() {
+    public JIPipeIteratingMissingDataGeneratorDataBatchGenerationSettings getDataBatchGenerationSettings() {
         return dataBatchGenerationSettings;
     }
 

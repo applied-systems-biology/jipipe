@@ -20,6 +20,8 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
+import org.hkijena.jipipe.extensions.expressions.DefaultExpressionParameter;
+import org.hkijena.jipipe.extensions.expressions.ExpressionParameterSettings;
 import org.hkijena.jipipe.extensions.expressions.StringQueryExpression;
 import org.hkijena.jipipe.extensions.parameters.generators.IntegerRange;
 import org.hkijena.jipipe.extensions.parameters.generators.OptionalIntegerRange;
@@ -29,26 +31,55 @@ import org.hkijena.jipipe.utils.ResourceUtils;
 /**
  * Groups data batch generation settings
  */
-public class JIPipeIteratingMisingDataGeneratorDataBatchGenerationSettings implements JIPipeParameterCollection {
+public class JIPipeIteratingMissingDataGeneratorDataBatchGenerationSettings implements JIPipeParameterCollection {
     private final EventBus eventBus = new EventBus();
     private JIPipeColumMatching columnMatching = JIPipeColumMatching.PrefixHashUnion;
     private StringQueryExpression customColumns = new StringQueryExpression();
     private OptionalIntegerRange limit = new OptionalIntegerRange(new IntegerRange("0-9"), false);
     private JIPipeAnnotationMergeStrategy annotationMergeStrategy = JIPipeAnnotationMergeStrategy.Merge;
+    private JIPipeAnnotationMatchingMethod annotationMatchingMethod = JIPipeAnnotationMatchingMethod.ExactMatch;
+    private DefaultExpressionParameter customAnnotationMatching = new DefaultExpressionParameter("exact_match_results");
 
-    public JIPipeIteratingMisingDataGeneratorDataBatchGenerationSettings() {
+    public JIPipeIteratingMissingDataGeneratorDataBatchGenerationSettings() {
     }
 
-    public JIPipeIteratingMisingDataGeneratorDataBatchGenerationSettings(JIPipeIteratingMisingDataGeneratorDataBatchGenerationSettings other) {
+    public JIPipeIteratingMissingDataGeneratorDataBatchGenerationSettings(JIPipeIteratingMissingDataGeneratorDataBatchGenerationSettings other) {
         this.columnMatching = other.columnMatching;
         this.customColumns = new StringQueryExpression(other.customColumns);
         this.limit = new OptionalIntegerRange(other.limit);
         this.annotationMergeStrategy = other.annotationMergeStrategy;
+        this.annotationMatchingMethod = other.annotationMatchingMethod;
+        this.customAnnotationMatching = new DefaultExpressionParameter(other.customAnnotationMatching);
     }
 
     @Override
     public EventBus getEventBus() {
         return eventBus;
+    }
+
+    @JIPipeDocumentation(name = "Annotation matching method", description = "Allows to customize when two annotation sets are considered as equal. " +
+            "By default, non-empty annotation values should match exactly. You can also use a custom expression, instead.")
+    @JIPipeParameter(value = "annotation-matching-method", uiOrder = 1999)
+    public JIPipeAnnotationMatchingMethod getAnnotationMatchingMethod() {
+        return annotationMatchingMethod;
+    }
+
+    @JIPipeParameter("annotation-matching-method")
+    public void setAnnotationMatchingMethod(JIPipeAnnotationMatchingMethod annotationMatchingMethod) {
+        this.annotationMatchingMethod = annotationMatchingMethod;
+        triggerParameterStructureChange();
+    }
+
+    @JIPipeDocumentation(name = "Custom annotation matching method", description = "Expression used to compare two annotation sets.")
+    @ExpressionParameterSettings(variableSource = JIPipeCustomAnnotationMatchingExpressionVariables.class)
+    @JIPipeParameter(value = "custom-annotation-matching", uiOrder = 2100)
+    public DefaultExpressionParameter getCustomAnnotationMatching() {
+        return customAnnotationMatching;
+    }
+
+    @JIPipeParameter("custom-annotation-matching")
+    public void setCustomAnnotationMatching(DefaultExpressionParameter customAnnotationMatching) {
+        this.customAnnotationMatching = customAnnotationMatching;
     }
 
     @JIPipeDocumentation(name = "Grouping method", description = "Algorithms with multiple inputs require to match the incoming data " +
@@ -72,6 +103,10 @@ public class JIPipeIteratingMisingDataGeneratorDataBatchGenerationSettings imple
     public boolean isParameterUIVisible(JIPipeParameterTree tree, JIPipeParameterAccess access) {
         if(access.getSource() == this && "custom-matched-columns-expression".equals(access.getKey())) {
             if(getColumnMatching() != JIPipeColumMatching.Custom)
+                return false;
+        }
+        if(access.getSource() == this && "custom-annotation-matching".equals(access.getKey())) {
+            if(getAnnotationMatchingMethod() != JIPipeAnnotationMatchingMethod.CustomExpression)
                 return false;
         }
         return JIPipeParameterCollection.super.isParameterUIVisible(tree, access);

@@ -214,6 +214,8 @@ public class MergingFormProcessorAlgorithm extends JIPipeAlgorithm implements JI
         builder.setAnnotationMergeStrategy(dataBatchGenerationSettings.getAnnotationMergeStrategy());
         builder.setReferenceColumns(dataBatchGenerationSettings.getColumnMatching(),
                 dataBatchGenerationSettings.getCustomColumns());
+        builder.setCustomAnnotationMatching(dataBatchGenerationSettings.getCustomAnnotationMatching());
+        builder.setAnnotationMatchingMethod(dataBatchGenerationSettings.getAnnotationMatchingMethod());
         List<JIPipeMergingDataBatch> dataBatches = builder.build();
         dataBatches.sort(Comparator.naturalOrder());
         return dataBatches;

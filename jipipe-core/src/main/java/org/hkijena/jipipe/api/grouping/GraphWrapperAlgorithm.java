@@ -294,6 +294,8 @@ public class GraphWrapperAlgorithm extends JIPipeAlgorithm implements JIPipeData
             builder.setAnnotationMergeStrategy(batchGenerationSettings.getAnnotationMergeStrategy());
             builder.setReferenceColumns(batchGenerationSettings.getColumnMatching(),
                     batchGenerationSettings.getCustomColumns());
+            builder.setCustomAnnotationMatching(batchGenerationSettings.getCustomAnnotationMatching());
+            builder.setAnnotationMatchingMethod(batchGenerationSettings.getAnnotationMatchingMethod());
             List<JIPipeMergingDataBatch> dataBatches = builder.build();
             dataBatches.sort(Comparator.naturalOrder());
             boolean withLimit = batchGenerationSettings.getLimit().isEnabled();

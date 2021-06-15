@@ -8,6 +8,7 @@ import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.JIPipeRegistryIssues;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.*;
+import org.hkijena.jipipe.extensions.expressions.DefaultExpressionParameter;
 import org.hkijena.jipipe.extensions.expressions.ExpressionParameters;
 import org.hkijena.jipipe.extensions.expressions.StringQueryExpression;
 import org.hkijena.jipipe.extensions.settings.ExtensionSettings;
@@ -36,6 +37,8 @@ public class JIPipeMergingDataBatchBuilder {
     private Set<String> referenceColumns = new HashSet<>();
     private JIPipeAnnotationMergeStrategy annotationMergeStrategy = JIPipeAnnotationMergeStrategy.Merge;
     private boolean applyMerging = true;
+    private JIPipeAnnotationMatchingMethod annotationMatchingMethod = JIPipeAnnotationMatchingMethod.ExactMatch;
+    private DefaultExpressionParameter customAnnotationMatching = new DefaultExpressionParameter("exact_match_results");
 
     public JIPipeMergingDataBatchBuilder() {
 
@@ -213,7 +216,7 @@ public class JIPipeMergingDataBatchBuilder {
             JIPipeDataSlot currentSlot = slotList.get(layer);
             for (RowNode previousNode : rowNodesBySlot.get(previousSlot)) {
                 for (RowNode currentNode : rowNodesBySlot.get(currentSlot)) {
-                    if (previousNode.isCompatibleTo(currentNode)) {
+                    if (previousNode.isCompatibleTo(currentNode, getAnnotationMatchingMethod(), getCustomAnnotationMatching())) {
                         graph.addEdge(previousNode, currentNode);
                     }
                 }
@@ -332,6 +335,22 @@ public class JIPipeMergingDataBatchBuilder {
         this.annotationMergeStrategy = annotationMergeStrategy;
     }
 
+    public JIPipeAnnotationMatchingMethod getAnnotationMatchingMethod() {
+        return annotationMatchingMethod;
+    }
+
+    public void setAnnotationMatchingMethod(JIPipeAnnotationMatchingMethod annotationMatchingMethod) {
+        this.annotationMatchingMethod = annotationMatchingMethod;
+    }
+
+    public DefaultExpressionParameter getCustomAnnotationMatching() {
+        return customAnnotationMatching;
+    }
+
+    public void setCustomAnnotationMatching(DefaultExpressionParameter customAnnotationMatching) {
+        this.customAnnotationMatching = customAnnotationMatching;
+    }
+
     public static void main(String[] args) {
         ImageJ imageJ = new ImageJ();
         JIPipe jiPipe = JIPipe.createInstance(imageJ.context());
@@ -399,14 +418,29 @@ public class JIPipeMergingDataBatchBuilder {
             this.annotations = annotations;
         }
 
-        public boolean isCompatibleTo(RowNode otherNode) {
-            Set<String> annotationsToTest = new HashSet<>(annotations.keySet());
-            annotationsToTest.retainAll(otherNode.annotations.keySet());
-            for (String key : annotationsToTest) {
-                if (!Objects.equals(annotations.get(key), otherNode.annotations.get(key)))
-                    return false;
+        public boolean isCompatibleTo(RowNode otherNode, JIPipeAnnotationMatchingMethod annotationMatchingMethod, DefaultExpressionParameter customAnnotationMatching) {
+            boolean exactMatchResults;
+            {
+                Set<String> annotationsToTest = new HashSet<>(annotations.keySet());
+                annotationsToTest.retainAll(otherNode.annotations.keySet());
+                exactMatchResults = true;
+                for (String key : annotationsToTest) {
+                    if (!Objects.equals(annotations.get(key), otherNode.annotations.get(key))) {
+                        exactMatchResults = false;
+                        break;
+                    }
+                }
             }
-            return true;
+            if(annotationMatchingMethod == JIPipeAnnotationMatchingMethod.ExactMatch) {
+                return exactMatchResults;
+            } else
+            {
+                    ExpressionParameters expressionParameters = new ExpressionParameters();
+                    expressionParameters.put("annotations", annotations);
+                    expressionParameters.put("other_annotations", otherNode.annotations);
+                    expressionParameters.put("exact_match_results", exactMatchResults);
+                    return customAnnotationMatching.test(expressionParameters);
+                }
         }
 
         @Override
