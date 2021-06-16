@@ -1225,7 +1225,7 @@ public class JIPipeGraphCanvasUI extends JIPipeWorkbenchPanel implements MouseMo
         // Tighten the point ranges: Bringing the centers together
         PointRange.tighten(sourcePoint, targetPoint);
 
-        if (viewMode == JIPipeGraphViewMode.Vertical) {
+        if (viewMode == JIPipeGraphViewMode.Vertical || viewMode == JIPipeGraphViewMode.VerticalCompact) {
             // From source to target
             {
                 int x = sourcePoint.center.x;

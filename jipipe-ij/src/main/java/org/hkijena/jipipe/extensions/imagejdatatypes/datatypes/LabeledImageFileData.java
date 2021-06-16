@@ -15,6 +15,7 @@ package org.hkijena.jipipe.extensions.imagejdatatypes.datatypes;
 
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonSetter;
+import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.data.JIPipeDataStorageDocumentation;
 import org.hkijena.jipipe.extensions.filesystem.dataypes.FileData;
 import org.hkijena.jipipe.extensions.filesystem.dataypes.PathData;
@@ -33,6 +34,7 @@ import java.nio.file.Paths;
         "    \"label-path\": \"[The label path]\"\n" +
         "}" +
         "</pre>")
+@JIPipeDocumentation(name = "Labeled image file", description = "Data that references to an image file and a second image file that contains labels")
 public class LabeledImageFileData extends FileData {
 
     private String labelPath;
