@@ -36,6 +36,7 @@ import java.awt.*;
 import java.util.List;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.function.BiFunction;
 import java.util.stream.Collectors;
 
 /**
@@ -85,6 +86,8 @@ public class ParameterPanel extends FormPanel implements Contextual {
     private boolean allowCollapse;
     private JIPipeParameterTree traversed;
     private SearchTextField searchField = new SearchTextField();
+    private BiFunction<JIPipeParameterTree, JIPipeParameterAccess, Boolean> customIsParameterVisible;
+    private BiFunction<JIPipeParameterTree, JIPipeParameterCollection, Boolean> customIsParameterCollectionVisible;
 
     /**
      * @param workbench           SciJava context
@@ -109,6 +112,24 @@ public class ParameterPanel extends FormPanel implements Contextual {
             reloadForm();
             this.displayedParameters.getEventBus().register(this);
         }
+    }
+
+    public BiFunction<JIPipeParameterTree, JIPipeParameterAccess, Boolean> getCustomIsParameterVisible() {
+        return customIsParameterVisible;
+    }
+
+    public void setCustomIsParameterVisible(BiFunction<JIPipeParameterTree, JIPipeParameterAccess, Boolean> customIsParameterVisible) {
+        this.customIsParameterVisible = customIsParameterVisible;
+        refreshForm();
+    }
+
+    public BiFunction<JIPipeParameterTree, JIPipeParameterCollection, Boolean> getCustomIsParameterCollectionVisible() {
+        return customIsParameterCollectionVisible;
+    }
+
+    public void setCustomIsParameterCollectionVisible(BiFunction<JIPipeParameterTree, JIPipeParameterCollection, Boolean> customIsParameterCollectionVisible) {
+        this.customIsParameterCollectionVisible = customIsParameterCollectionVisible;
+        refreshForm();
     }
 
     private void initialize() {
@@ -154,8 +175,14 @@ public class ParameterPanel extends FormPanel implements Contextual {
 
             // Hidden parameter groups
             if (rootCollection != null) {
-                if (rootCollection != source && !rootCollection.isParameterUIVisible(traversed, source))
-                    hiddenCollections.add(source);
+                if(customIsParameterCollectionVisible == null ) {
+                    if (rootCollection != source && !rootCollection.isParameterUIVisible(traversed, source))
+                        hiddenCollections.add(source);
+                }
+                else {
+                    if (rootCollection != source && !customIsParameterCollectionVisible.apply(traversed, source))
+                        hiddenCollections.add(source);
+                }
             } else if (sourceNode.getParent() != null && sourceNode.getParent().getCollection() != null) {
                 if (!sourceNode.getParent().getCollection().isParameterUIVisible(traversed, source))
                     hiddenCollections.add(source);
@@ -164,7 +191,11 @@ public class ParameterPanel extends FormPanel implements Contextual {
             // Visibility check
             int parameterCount = sourceNode.getParameters().size();
             for (JIPipeParameterAccess parameterAccess : sourceNode.getParameters().values()) {
-                boolean visible = (rootCollection != null ? rootCollection.isParameterUIVisible(traversed, parameterAccess) : !parameterAccess.isHidden());
+                boolean visible;
+                if(customIsParameterVisible == null)
+                    visible = (rootCollection != null ? rootCollection.isParameterUIVisible(traversed, parameterAccess) : !parameterAccess.isHidden());
+                else
+                    visible = (rootCollection != null ? customIsParameterVisible.apply(traversed, parameterAccess) : !parameterAccess.isHidden());
                 if (!visible) {
                     hiddenAccesses.add(parameterAccess);
                     --parameterCount;
@@ -356,7 +387,7 @@ public class ParameterPanel extends FormPanel implements Contextual {
      */
     @Subscribe
     public void onParameterUIChanged(JIPipeParameterCollection.ParameterUIChangedEvent event) {
-        reloadForm();
+        refreshForm();
     }
 
     /**

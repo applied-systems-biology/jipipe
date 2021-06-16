@@ -13,23 +13,34 @@
 
 package org.hkijena.jipipe.ui.settings;
 
+import org.hkijena.jipipe.api.JIPipeDefaultDocumentation;
 import org.hkijena.jipipe.api.grouping.parameters.GraphNodeParametersUI;
+import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
+import org.hkijena.jipipe.api.registries.JIPipeSettingsRegistry;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbenchPanel;
-import org.hkijena.jipipe.ui.components.DocumentTabPane;
 import org.hkijena.jipipe.ui.components.FormPanel;
 import org.hkijena.jipipe.ui.components.MarkdownDocument;
 import org.hkijena.jipipe.ui.parameters.ParameterPanel;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
+import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.DefaultTreeModel;
+import javax.swing.tree.TreeCellRenderer;
+import javax.swing.tree.TreePath;
 import java.awt.*;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
 import java.util.HashMap;
 
 /**
  * UI around the metadata of an {@link org.hkijena.jipipe.api.JIPipeProject}
  */
 public class JIPipeProjectSettingsUI extends JIPipeProjectWorkbenchPanel {
+
+    private JSplitPane splitPane;
+
     /**
      * @param workbenchUI The workbench UI
      */
@@ -41,31 +52,84 @@ public class JIPipeProjectSettingsUI extends JIPipeProjectWorkbenchPanel {
     private void initialize() {
         setLayout(new BorderLayout());
 
-        DocumentTabPane tabPane = new DocumentTabPane();
+        JTree tree = new JTree();
+        tree.setCellRenderer(new SettingsCategoryNodeRenderer());
+        splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, tree, new JPanel());
+        splitPane.setDividerSize(3);
+        splitPane.setResizeWeight(0.33);
+        addComponentListener(new ComponentAdapter() {
+            @Override
+            public void componentResized(ComponentEvent e) {
+                super.componentResized(e);
+                splitPane.setDividerLocation(0.33);
+            }
+        });
+        add(splitPane, BorderLayout.CENTER);
 
-        ParameterPanel metadataUI = new ParameterPanel(getProjectWorkbench(),
-                getProject().getMetadata(),
-                MarkdownDocument.fromPluginResource("documentation/project-settings.md", new HashMap<>()),
-                ParameterPanel.WITH_DOCUMENTATION | ParameterPanel.WITH_SCROLLING);
-        tabPane.addTab("General",
-                UIUtils.getIconFromResources("actions/configure.png"),
-                metadataUI,
-                DocumentTabPane.CloseMode.withoutCloseButton,
-                false);
+        DefaultMutableTreeNode rootNode = new DefaultMutableTreeNode();
+        rootNode.add(new SettingsCategoryNode("GENERAL", "General", UIUtils.getIconFromResources("actions/wrench.png")));
+        rootNode.add(new SettingsCategoryNode("PERMISSIONS", "Permissions", UIUtils.getIconFromResources("actions/lock.png")));
+        rootNode.add(new SettingsCategoryNode("PARAMETERS", "Parameters", UIUtils.getIconFromResources("data-types/parameters.png")));
+        rootNode.add(new SettingsCategoryNode("MISC", "Miscellaneous", UIUtils.getIconFromResources("actions/configure.png")));
+        tree.setModel(new DefaultTreeModel(rootNode));
 
-        FormPanel parameterUI = new FormPanel(MarkdownDocument.fromPluginResource("documentation/project-settings-parameters.md", new HashMap<>()),
-                FormPanel.WITH_SCROLLING | FormPanel.WITH_DOCUMENTATION);
-        GraphNodeParametersUI graphNodeParametersUI = new GraphNodeParametersUI(getWorkbench(), getPipelineParameters().getExportedParameters(), FormPanel.NONE);
-        graphNodeParametersUI.setBorder(BorderFactory.createLineBorder(Color.DARK_GRAY));
-        parameterUI.addWideToForm(graphNodeParametersUI, null);
-        parameterUI.addVerticalGlue();
-        tabPane.addTab("Parameters",
-                UIUtils.getIconFromResources("data-types/parameters.png"),
-                parameterUI,
-                DocumentTabPane.CloseMode.withoutCloseButton,
-                false);
+        tree.addTreeSelectionListener(e -> {
+            if (tree.getLastSelectedPathComponent() instanceof SettingsCategoryNode) {
+                selectCategory(((SettingsCategoryNode) tree.getLastSelectedPathComponent()).getId());
+            }
+        });
 
-        add(tabPane, BorderLayout.CENTER);
+        tree.getSelectionModel().setSelectionPath(new TreePath(((DefaultTreeModel) tree.getModel()).getPathToRoot(rootNode.getChildAt(0))));
+        UIUtils.expandAllTree(tree);
+    }
+
+    private void selectCategory(String id) {
+        if(id.equals("GENERAL")) {
+            ParameterPanel parameterPanel = new ParameterPanel(getWorkbench(),
+                    new JIPipeParameterTree(getProject().getMetadata()),
+                    MarkdownDocument.fromPluginResource("documentation/project-settings.md", new HashMap<>()),
+                    ParameterPanel.WITH_SCROLLING | ParameterPanel.WITH_DOCUMENTATION | ParameterPanel.WITH_SEARCH_BAR);
+            parameterPanel.setCustomIsParameterCollectionVisible((tree, collection) -> false);
+            parameterPanel.setCustomIsParameterVisible((tree, parameter) -> {
+                if(parameter.getKey().contains("template"))
+                    return false;
+                if(parameter.getKey().equals("update-site-dependencies"))
+                    return false;
+                return !parameter.isHidden();
+            });
+            splitPane.setRightComponent(parameterPanel);
+        }
+        else if(id.equals("PERMISSIONS")) {
+            ParameterPanel parameterPanel = new ParameterPanel(getWorkbench(),
+                    new JIPipeParameterTree(getProject().getMetadata().getPermissions()),
+                    MarkdownDocument.fromPluginResource("documentation/project-settings.md", new HashMap<>()),
+                    ParameterPanel.WITH_SCROLLING | ParameterPanel.WITH_DOCUMENTATION | ParameterPanel.WITH_SEARCH_BAR);
+            splitPane.setRightComponent(parameterPanel);
+        }
+        else if(id.equals("PARAMETERS")) {
+            FormPanel parameterUI = new FormPanel(MarkdownDocument.fromPluginResource("documentation/project-settings-parameters.md", new HashMap<>()),
+            FormPanel.WITH_SCROLLING | FormPanel.WITH_DOCUMENTATION);
+            GraphNodeParametersUI graphNodeParametersUI = new GraphNodeParametersUI(getWorkbench(), getPipelineParameters().getExportedParameters(), FormPanel.NONE);
+            graphNodeParametersUI.setBorder(BorderFactory.createLineBorder(Color.DARK_GRAY));
+            parameterUI.addWideToForm(graphNodeParametersUI, null);
+            parameterUI.addVerticalGlue();
+            splitPane.setRightComponent(parameterUI);
+        }
+        else if(id.equals("MISC")) {
+            ParameterPanel parameterPanel = new ParameterPanel(getWorkbench(),
+                    new JIPipeParameterTree(getProject().getMetadata()),
+                    MarkdownDocument.fromPluginResource("documentation/project-settings.md", new HashMap<>()),
+                    ParameterPanel.WITH_SCROLLING | ParameterPanel.WITH_DOCUMENTATION | ParameterPanel.WITH_SEARCH_BAR);
+            parameterPanel.setCustomIsParameterCollectionVisible((tree, collection) -> false);
+            parameterPanel.setCustomIsParameterVisible((tree, parameter) -> {
+                if(parameter.getKey().contains("template"))
+                    return true;
+                if(parameter.getKey().equals("update-site-dependencies"))
+                    return true;
+                return false;
+            });
+            splitPane.setRightComponent(parameterPanel);
+        }
     }
 
     private JIPipeProjectInfoParameters getPipelineParameters() {
@@ -79,5 +143,54 @@ public class JIPipeProjectSettingsUI extends JIPipeProjectWorkbenchPanel {
         }
         result.setProject(getProject());
         return result;
+    }
+
+    private static class SettingsCategoryNode extends DefaultMutableTreeNode {
+        private final String id;
+        private final String label;
+        private final Icon icon;
+
+        private SettingsCategoryNode(String id, String label, Icon icon) {
+            this.id = id;
+            this.label = label;
+            this.icon = icon;
+        }
+
+        public String getLabel() {
+            return label;
+        }
+
+        public Icon getIcon() {
+            return icon;
+        }
+
+        public String getId() {
+            return id;
+        }
+    }
+
+    private static class SettingsCategoryNodeRenderer extends JLabel implements TreeCellRenderer {
+
+        public SettingsCategoryNodeRenderer() {
+            setOpaque(true);
+            setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
+        }
+
+        @Override
+        public Component getTreeCellRendererComponent(JTree tree, Object value, boolean selected, boolean expanded, boolean leaf, int row, boolean hasFocus) {
+            if (value instanceof SettingsCategoryNode) {
+                setText(((SettingsCategoryNode) value).getLabel());
+                setIcon(((SettingsCategoryNode) value).getIcon());
+            } else {
+                setText("");
+                setIcon(null);
+            }
+            if (selected) {
+                setBackground(UIManager.getColor("List.selectionBackground"));
+            } else {
+                setBackground(UIManager.getColor("List.background"));
+            }
+            return this;
+        }
     }
 }
