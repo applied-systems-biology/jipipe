@@ -127,7 +127,7 @@ public class Clij2ExecuteKernelIterating extends JIPipeIteratingAlgorithm {
             scriptParameters.clear();
             scriptParameters.addParameter("flipx", Boolean.class).setName("Flip X");
             scriptParameters.addParameter("flipy", Boolean.class).setName("Flip Y");
-            scriptParameters.getEventBus().post(new ParameterStructureChangedEvent(scriptParameters));
+            scriptParameters.triggerParameterStructureChange();
         }
     }
 

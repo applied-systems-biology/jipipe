@@ -58,6 +58,13 @@ public interface JIPipeParameterCollection {
     }
 
     /**
+     * Triggers a {@link ParameterUIChangedEvent} on this collection
+     */
+    default void triggerParameterUIChange() {
+        getEventBus().post(new ParameterUIChangedEvent(this));
+    }
+
+    /**
      * Triggers a {@link ParameterChangedEvent} on this collection
      *
      * @param key the parameter key
@@ -99,7 +106,9 @@ public interface JIPipeParameterCollection {
     }
 
     /**
-     * Triggered by an {@link JIPipeParameterCollection} if the list of available parameters is changed
+     * Triggered by an {@link JIPipeParameterCollection} if the list of available parameters is changed.
+     * Please be very careful with this event, as it can trigger infinite loops while loading data from parameters.
+     * If possible, use {@link ParameterUIChangedEvent}, if you only want the UI to update.
      */
     class ParameterStructureChangedEvent {
         private final JIPipeParameterCollection source;
@@ -108,6 +117,24 @@ public interface JIPipeParameterCollection {
          * @param source event source
          */
         public ParameterStructureChangedEvent(JIPipeParameterCollection source) {
+            this.source = source;
+        }
+
+        public JIPipeParameterCollection getSource() {
+            return source;
+        }
+    }
+
+    /**
+     * Triggered by an {@link JIPipeParameterCollection} if the parameter UI should be updated
+     */
+    class ParameterUIChangedEvent {
+        private final JIPipeParameterCollection source;
+
+        /**
+         * @param source event source
+         */
+        public ParameterUIChangedEvent(JIPipeParameterCollection source) {
             this.source = source;
         }
 

@@ -312,6 +312,17 @@ public class JIPipeParameterTree implements JIPipeParameterCollection, JIPipeCus
     }
 
     /**
+     * Triggered when a source informs that the parameter UI should be updated
+     * Passes the event to listeners.
+     *
+     * @param event generated event
+     */
+    @Subscribe
+    public void onParameterUIChanged(ParameterUIChangedEvent event) {
+        eventBus.post(event);
+    }
+
+    /**
      * Triggered when a parameter value was changed.
      * Passes the event to listeners.
      *

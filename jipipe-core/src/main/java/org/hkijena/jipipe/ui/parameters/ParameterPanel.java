@@ -350,6 +350,16 @@ public class ParameterPanel extends FormPanel implements Contextual {
     }
 
     /**
+     * Triggered when the parameter UI should be updated
+     *
+     * @param event generated event
+     */
+    @Subscribe
+    public void onParameterUIChanged(JIPipeParameterCollection.ParameterUIChangedEvent event) {
+        reloadForm();
+    }
+
+    /**
      * @return The parameterized object
      */
     public JIPipeParameterCollection getDisplayedParameters() {

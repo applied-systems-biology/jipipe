@@ -69,7 +69,7 @@ public class JIPipeIteratingAlgorithmDataBatchGenerationSettings implements JIPi
     @JIPipeParameter("annotation-matching-method")
     public void setAnnotationMatchingMethod(JIPipeAnnotationMatchingMethod annotationMatchingMethod) {
         this.annotationMatchingMethod = annotationMatchingMethod;
-        triggerParameterStructureChange();
+        triggerParameterUIChange();
     }
 
     @JIPipeDocumentation(name = "Custom annotation matching method", description = "Expression used to compare two annotation sets.")
@@ -98,7 +98,7 @@ public class JIPipeIteratingAlgorithmDataBatchGenerationSettings implements JIPi
         boolean needsTriggerStructureChange = columnMatching == JIPipeColumMatching.Custom || this.columnMatching == JIPipeColumMatching.Custom;
         this.columnMatching = columnMatching;
         if(needsTriggerStructureChange)
-            triggerParameterStructureChange();
+            triggerParameterUIChange();
     }
 
     @Override

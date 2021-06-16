@@ -244,7 +244,7 @@ public class TrainModelAlgorithm extends JIPipeMergingAlgorithm {
     @JIPipeParameter("scale-to-model-size")
     public void setScaleToModelSize(boolean scaleToModelSize) {
         this.scaleToModelSize = scaleToModelSize;
-        triggerParameterStructureChange();
+        triggerParameterUIChange();
     }
 
     @Override

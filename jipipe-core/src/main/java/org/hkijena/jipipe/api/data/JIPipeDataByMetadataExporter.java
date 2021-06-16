@@ -107,7 +107,7 @@ public class JIPipeDataByMetadataExporter implements JIPipeParameterCollection {
     @JIPipeParameter("mode")
     public void setMode(Mode mode) {
         this.mode = mode;
-        getEventBus().post(new ParameterStructureChangedEvent(this));
+        triggerParameterUIChange();
     }
 
     @JIPipeDocumentation(name = "Metadata key filters", description = "Only includes the metadata keys that match the filter. " + StringQueryExpression.DOCUMENTATION_DESCRIPTION)

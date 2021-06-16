@@ -128,7 +128,7 @@ public class Clij2ExecuteKernelSimpleIterating extends JIPipeSimpleIteratingAlgo
             scriptParameters.clear();
             scriptParameters.addParameter("flipx", Boolean.class).setName("Flip X");
             scriptParameters.addParameter("flipy", Boolean.class).setName("Flip Y");
-            scriptParameters.getEventBus().post(new ParameterStructureChangedEvent(scriptParameters));
+            scriptParameters.triggerParameterUIChange();
         }
     }
 

@@ -204,7 +204,7 @@ public class NodeGroup extends GraphWrapperAlgorithm implements JIPipeCustomPara
     @JIPipeParameter("show-limited-parameters")
     public void setShowLimitedParameters(boolean showLimitedParameters) {
         this.showLimitedParameters = showLimitedParameters;
-        getEventBus().post(new ParameterStructureChangedEvent(this));
+        triggerParameterUIChange();
     }
 
     @Override

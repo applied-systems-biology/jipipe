@@ -230,7 +230,7 @@ public class PredictAlgorithm extends JIPipeMergingAlgorithm {
     @JIPipeParameter("scale-to-model-size")
     public void setScaleToModelSize(boolean scaleToModelSize) {
         this.scaleToModelSize = scaleToModelSize;
-        triggerParameterStructureChange();
+        triggerParameterUIChange();
     }
 
     @JIPipeDocumentation(name = "Scaling", description = "The following settings determine how the image is scaled in 2D if it does not fit to the size the model is designed for.")
