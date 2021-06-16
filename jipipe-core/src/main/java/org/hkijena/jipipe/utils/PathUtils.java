@@ -14,6 +14,7 @@
 package org.hkijena.jipipe.utils;
 
 import org.apache.commons.lang3.SystemUtils;
+import org.hkijena.jipipe.api.JIPipeProgressInfo;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -30,6 +31,27 @@ import java.util.stream.Collectors;
 public class PathUtils {
     private PathUtils() {
 
+    }
+
+    public static void copyOrLink(Path source, Path target, JIPipeProgressInfo progressInfo) {
+        if(SystemUtils.IS_OS_WINDOWS) {
+            // Copy file
+            progressInfo.log("Copy " + source + " to " + target);
+            try {
+                Files.copy(source, target);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
+        else {
+            // Create symlink
+            progressInfo.log("Link " + source + " to " + target);
+            try {
+                Files.createSymbolicLink(target, source);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
     }
 
     /**

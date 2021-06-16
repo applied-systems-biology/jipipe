@@ -3,13 +3,21 @@ package org.hkijena.jipipe.extensions.cellpose.algorithms;
 import ij.IJ;
 import ij.ImagePlus;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang3.SystemUtils;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.JIPipeValidityReport;
-import org.hkijena.jipipe.api.data.*;
+import org.hkijena.jipipe.api.data.JIPipeAnnotation;
+import org.hkijena.jipipe.api.data.JIPipeDataSlotInfo;
+import org.hkijena.jipipe.api.data.JIPipeDefaultMutableSlotConfiguration;
+import org.hkijena.jipipe.api.data.JIPipeSlotType;
 import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
-import org.hkijena.jipipe.api.nodes.*;
+import org.hkijena.jipipe.api.nodes.JIPipeInputSlot;
+import org.hkijena.jipipe.api.nodes.JIPipeMergingAlgorithm;
+import org.hkijena.jipipe.api.nodes.JIPipeMergingDataBatch;
+import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
+import org.hkijena.jipipe.api.nodes.JIPipeOutputSlot;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.cellpose.CellPoseModel;
@@ -17,27 +25,37 @@ import org.hkijena.jipipe.extensions.cellpose.CellPoseSettings;
 import org.hkijena.jipipe.extensions.cellpose.CellPoseUtils;
 import org.hkijena.jipipe.extensions.cellpose.datatypes.CellPoseModelData;
 import org.hkijena.jipipe.extensions.cellpose.datatypes.CellPoseSizeModelData;
-import org.hkijena.jipipe.extensions.cellpose.parameters.*;
+import org.hkijena.jipipe.extensions.cellpose.parameters.EnhancementParameters;
+import org.hkijena.jipipe.extensions.cellpose.parameters.ModelParameters;
+import org.hkijena.jipipe.extensions.cellpose.parameters.OutputParameters;
+import org.hkijena.jipipe.extensions.cellpose.parameters.PerformanceParameters;
+import org.hkijena.jipipe.extensions.cellpose.parameters.ThresholdParameters;
+import org.hkijena.jipipe.extensions.filesystem.dataypes.FileData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ROIListData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d2.greyscale.ImagePlus2DGreyscale32FData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d3.color.ImagePlus3DColorRGBData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d3.greyscale.ImagePlus3DGreyscale32FData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d3.greyscale.ImagePlus3DGreyscaleData;
+import org.hkijena.jipipe.extensions.parameters.primitives.FilePathParameterSettings;
 import org.hkijena.jipipe.extensions.parameters.primitives.OptionalAnnotationNameParameter;
 import org.hkijena.jipipe.extensions.parameters.primitives.OptionalDoubleParameter;
+import org.hkijena.jipipe.extensions.parameters.primitives.OptionalPathParameter;
 import org.hkijena.jipipe.extensions.python.OptionalPythonEnvironment;
 import org.hkijena.jipipe.extensions.python.PythonUtils;
 import org.hkijena.jipipe.extensions.settings.RuntimeSettings;
+import org.hkijena.jipipe.ui.components.PathEditor;
 import org.hkijena.jipipe.utils.MacroUtils;
+import org.hkijena.jipipe.utils.PathUtils;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.*;
-import java.util.stream.Collectors;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
-@JIPipeDocumentation(name = "Cellpose", description = "Runs Cellpose on the input image. This node supports both segmentation in 3D and executing " +
+@JIPipeDocumentation(name = "Cellpose (File based)", description = "Runs Cellpose on the input image. The image is provided as file. This node supports both segmentation in 3D and executing " +
         "Cellpose for each 2D image plane. " +
         "This node can generate a multitude of outputs, although only ROI is activated by default. " +
         "Go to the 'Outputs' parameter section to enable the other outputs." +
@@ -49,15 +67,16 @@ import java.util.stream.Collectors;
         "<li><b>Styles:</b> A vector summarizing each image.</li>" +
         "<li><b>ROI:</b> ROI of the segmented areas.</li>" +
         "</ul>" +
+        "All outputs except the labels are returned as files. " +
         "Please note that you need to setup a valid Python environment with Cellpose installed. You can find the setting in Project &gt; Application settings &gt; Extensions &gt; Cellpose.")
-@JIPipeInputSlot(value = ImagePlus3DGreyscaleData.class, slotName = "Input", autoCreate = true)
-@JIPipeOutputSlot(value = ImagePlus3DGreyscaleData.class, slotName = "Labels")
-@JIPipeOutputSlot(value = ImagePlus3DColorRGBData.class, slotName = "Flows")
-@JIPipeOutputSlot(value = ImagePlus3DGreyscale32FData.class, slotName = "Probabilities")
-@JIPipeOutputSlot(value = ImagePlus2DGreyscale32FData.class, slotName = "Styles")
+@JIPipeInputSlot(value = FileData.class, slotName = "Input", autoCreate = true)
+@JIPipeOutputSlot(value = FileData.class, slotName = "Labels")
+@JIPipeOutputSlot(value = FileData.class, slotName = "Flows")
+@JIPipeOutputSlot(value = FileData.class, slotName = "Probabilities")
+@JIPipeOutputSlot(value = FileData.class, slotName = "Styles")
 @JIPipeOutputSlot(value = ROIListData.class, slotName = "ROI")
 @JIPipeOrganization(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Deep learning")
-public class CellPoseAlgorithm extends JIPipeMergingAlgorithm {
+public class FileBasedCellPoseAlgorithm extends JIPipeMergingAlgorithm {
 
     private ModelParameters modelParameters = new ModelParameters();
     private PerformanceParameters performanceParameters = new PerformanceParameters();
@@ -65,12 +84,12 @@ public class CellPoseAlgorithm extends JIPipeMergingAlgorithm {
     private ThresholdParameters thresholdParameters = new ThresholdParameters();
     private OutputParameters outputParameters = new OutputParameters();
     private OptionalDoubleParameter diameter = new OptionalDoubleParameter(30.0, true);
-    private boolean enable3DSegmentation = true;
+    private boolean enable3DSegmentation = false;
     private OptionalAnnotationNameParameter diameterAnnotation = new OptionalAnnotationNameParameter("Diameter", true);
-    private boolean cleanUpAfterwards = true;
     private OptionalPythonEnvironment overrideEnvironment = new OptionalPythonEnvironment();
+    private OptionalPathParameter overrideOutputPath = new OptionalPathParameter();
 
-    public CellPoseAlgorithm(JIPipeNodeInfo info) {
+    public FileBasedCellPoseAlgorithm(JIPipeNodeInfo info) {
         super(info);
         updateOutputSlots();
         updateInputSlots();
@@ -81,7 +100,7 @@ public class CellPoseAlgorithm extends JIPipeMergingAlgorithm {
         registerSubParameter(outputParameters);
     }
 
-    public CellPoseAlgorithm(CellPoseAlgorithm other) {
+    public FileBasedCellPoseAlgorithm(FileBasedCellPoseAlgorithm other) {
         super(other);
         this.diameter = new OptionalDoubleParameter(other.diameter);
         this.diameterAnnotation = new OptionalAnnotationNameParameter(other.diameterAnnotation);
@@ -92,7 +111,7 @@ public class CellPoseAlgorithm extends JIPipeMergingAlgorithm {
         this.thresholdParameters = new ThresholdParameters(other.thresholdParameters);
         this.overrideEnvironment = new OptionalPythonEnvironment(other.overrideEnvironment);
         this.enable3DSegmentation = other.enable3DSegmentation;
-        this.cleanUpAfterwards = other.cleanUpAfterwards;
+        this.overrideOutputPath = new OptionalPathParameter(other.overrideOutputPath);
         updateOutputSlots();
         updateInputSlots();
         registerSubParameter(modelParameters);
@@ -173,7 +192,21 @@ public class CellPoseAlgorithm extends JIPipeMergingAlgorithm {
     @Override
     protected void runIteration(JIPipeMergingDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
 
-        Path workDirectory = RuntimeSettings.generateTempDirectory("cellpose");
+        Path workDirectory;
+
+        // Create work directory
+        if(overrideOutputPath.isEnabled()) {
+            workDirectory = overrideOutputPath.getContent();
+            try {
+                if(Files.exists(workDirectory))
+                    FileUtils.deleteDirectory(workDirectory.toFile());
+                Files.createDirectories(workDirectory);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        else
+            workDirectory = RuntimeSettings.generateTempDirectory("cellpose");
 
         // Save models if needed
         List<Path> customModelPaths = new ArrayList<>();
@@ -229,30 +262,26 @@ public class CellPoseAlgorithm extends JIPipeMergingAlgorithm {
             // Save raw image
             progressInfo.log("Saving input image to " + inputImagePath);
 
-            ImagePlus img = getInputSlot("Input").getData(inputRow, ImagePlus3DGreyscaleData.class, progressInfo).getImage();
-            IJ.saveAs(img, "TIFF", inputImagePath.toString());
+            Path _inputImagePath = getInputSlot("Input").getData(inputRow, FileData.class, progressInfo).toPath();
+            PathUtils.copyOrLink(_inputImagePath, inputImagePath, progressInfo);
 
             // Generate code
             StringBuilder code = new StringBuilder();
-            code.append("from cellpose import models\n");
-            code.append("from cellpose import utils, io\n");
-            code.append("import json\n");
-            code.append("import time\n");
-            code.append("import numpy as np\n\n");
+            CellPoseUtils.setupCellposeImports(code);
 
-            code.append("data_is_3d = ").append(PythonUtils.objectToPython(img.getNDimensions() > 2)).append("\n");
-            code.append("enable_3d_segmentation = ").append(PythonUtils.objectToPython(img.getNDimensions() > 2 && enable3DSegmentation)).append("\n\n");
+            code.append("enable_3d_segmentation = ").append(PythonUtils.objectToPython(enable3DSegmentation)).append("\n\n");
 
             // I we provide a custom model, we need to inject custom code (Why?)
             if (modelParameters.getModel() == CellPoseModel.Custom) {
-                setupCustomCellposeModel(code, customModelPaths, customSizeModelPath);
+                CellPoseUtils.setupCustomCellposeModel(code, customModelPaths, customSizeModelPath, getEnhancementParameters(), getModelParameters());
             } else {
                 // We can use the combined Cellpose class
-                setupCombinedCellposeModel(code);
+                CellPoseUtils.setupCombinedCellposeModel(code, getEnhancementParameters(), getModelParameters());
             }
 
             code.append("input_file = \"").append(MacroUtils.escapeString(inputImagePath.toString())).append("\"\n");
             code.append("img = io.imread(input_file)\n");
+            code.append("data_is_3d = ").append("len(img.shape) > 2").append("\n");
 
             // Add split code for 3D data in 2D plane mode
             code.append("if data_is_3d and not enable_3d_segmentation:\n" +
@@ -261,7 +290,7 @@ public class CellPoseAlgorithm extends JIPipeMergingAlgorithm {
                     "        imgs.append(img[z,:,:])\n" +
                     "    img = imgs\n\n");
 
-            setupModelEval(code);
+            CellPoseUtils.setupModelEval(code, getDiameter(), getEnhancementParameters(), getPerformanceParameters(), getThresholdParameters());
 
             // Re-merge masks
             if (outputParameters.isOutputROI() || outputParameters.isOutputLabels()) {
@@ -271,19 +300,19 @@ public class CellPoseAlgorithm extends JIPipeMergingAlgorithm {
 
             // Generate ROI output
             if (outputParameters.isOutputROI()) {
-                setupGenerateOutputROI(outputRoiOutline, code);
+                CellPoseUtils.setupGenerateOutputROI(outputRoiOutline, code);
             }
             if (outputParameters.isOutputLabels()) {
-                setupGenerateOutputLabels(outputLabels, code);
+                CellPoseUtils.setupGenerateOutputLabels(outputLabels, code);
             }
             if (outputParameters.isOutputFlows()) {
-                setupGenerateOutputFlows(outputFlows, code);
+                CellPoseUtils.setupGenerateOutputFlows(outputFlows, code);
             }
             if (outputParameters.isOutputProbabilities()) {
-                setupGenerateOutputProbabilities(outputProbabilities, code);
+                CellPoseUtils.setupGenerateOutputProbabilities(outputProbabilities, code);
             }
             if (outputParameters.isOutputStyles()) {
-                setupGenerateOutputStyles(outputStyles, code);
+                CellPoseUtils.setupGenerateOutputStyles(outputStyles, code);
             }
 
             // Write diameters
@@ -295,6 +324,7 @@ public class CellPoseAlgorithm extends JIPipeMergingAlgorithm {
             // Run script
             PythonUtils.runPython(code.toString(), overrideEnvironment.isEnabled() ? overrideEnvironment.getContent() :
                     CellPoseSettings.getInstance().getPythonEnvironment(), Collections.emptyList(), progressInfo);
+
 
             // Fetch original annotations and write them
             List<JIPipeAnnotation> annotationList = new ArrayList<>(getInputSlot("Input").getAnnotations(inputRow));
@@ -310,7 +340,7 @@ public class CellPoseAlgorithm extends JIPipeMergingAlgorithm {
             }
 
             // Extract outputs
-            CellPoseUtils.extractCellposeOutputs(dataBatch,
+            CellPoseUtils.extractCellposeFileOutputs(dataBatch,
                     progressInfo,
                     outputRoiOutline,
                     outputLabels,
@@ -318,219 +348,20 @@ public class CellPoseAlgorithm extends JIPipeMergingAlgorithm {
                     outputProbabilities,
                     outputStyles,
                     annotationList,
-                    outputParameters);
-        }
-
-        // Cleanup
-        if (cleanUpAfterwards) {
-            try {
-                FileUtils.deleteDirectory(workDirectory.toFile());
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+                    getOutputParameters());
         }
     }
 
-    private void setupGenerateOutputStyles(Path outputStyles, StringBuilder code) {
-        code.append("if data_is_3d and not enable_3d_segmentation:\n" +
-                "    styles = np.stack(styles, 0)\n");
-        code.append("io.imsave(").append(PythonUtils.objectToPython(outputStyles)).append(", styles)\n");
+    @JIPipeDocumentation(name = "Override output path", description = "If enabled, overrides the path where the outputs and intermediate results.")
+    @JIPipeParameter("override-output-path")
+    @FilePathParameterSettings(ioMode = PathEditor.IOMode.Open, pathMode = PathEditor.PathMode.DirectoriesOnly)
+    public OptionalPathParameter getOverrideOutputPath() {
+        return overrideOutputPath;
     }
 
-    private void setupGenerateOutputProbabilities(Path outputProbabilities, StringBuilder code) {
-        code.append("if data_is_3d and not enable_3d_segmentation:\n" +
-                "    probs = np.stack([x[2] for x in flows], 0)\n" +
-                "else:\n" +
-                "    probs = flows[2]\n");
-        code.append("io.imsave(").append(PythonUtils.objectToPython(outputProbabilities)).append(", probs)\n");
-    }
-
-    private void setupGenerateOutputFlows(Path outputFlows, StringBuilder code) {
-        code.append("if data_is_3d and not enable_3d_segmentation:\n" +
-                "    flows_rgb = np.stack([x[0] for x in flows], 0)\n" +
-                "else:\n" +
-                "    flows_rgb = flows[0]\n");
-        code.append("io.imsave(").append(PythonUtils.objectToPython(outputFlows)).append(", flows_rgb)\n");
-    }
-
-    private void setupGenerateOutputLabels(Path outputLabels, StringBuilder code) {
-        code.append("if masks.dtype != np.short and masks.dtype != np.uint8:\n" +
-                "    masks = masks.astype(np.float32)\n");
-        code.append("io.imsave(").append(PythonUtils.objectToPython(outputLabels)).append(", masks)\n");
-    }
-
-    private void setupGenerateOutputROI(Path outputRoiOutline, StringBuilder code) {
-        code.append("roi_list = []\n" +
-                "if masks.ndim == 3:\n" +
-                "    for z in range(masks.shape[0]):\n" +
-                "        coords_list = utils.outlines_list(masks[z,:,:])\n" +
-                "        for coords in coords_list:\n" +
-                "            roi = dict(z=z, coords=[ dict(x=int(x[0]), y=int(x[1])) for x in coords ])\n" +
-                "            roi_list.append(roi)\n" +
-                "else:\n" +
-                "    coords_list = utils.outlines_list(masks)\n" +
-                "    for coords in coords_list:\n" +
-                "        roi = dict(coords=[ dict(x=int(x[0]), y=int(x[1])) for x in coords ])\n" +
-                "        roi_list.append(roi)\n");
-        code.append(String.format("with open(\"%s\", \"w\") as f:\n" +
-                        "    json.dump(roi_list, f, indent=4)\n\n",
-                MacroUtils.escapeString(outputRoiOutline.toString())));
-    }
-
-    private void setupModelEval(StringBuilder code) {
-        Map<String, Object> evalParameterMap = new HashMap<>();
-        evalParameterMap.put("x", PythonUtils.rawPythonCode("img"));
-        evalParameterMap.put("diameter", getDiameter().isEnabled() ? getDiameter().getContent() : null);
-        evalParameterMap.put("channels", PythonUtils.rawPythonCode("[[0, 0]]"));
-        evalParameterMap.put("do_3D", PythonUtils.rawPythonCode("enable_3d_segmentation"));
-        evalParameterMap.put("normalize", getEnhancementParameters().isNormalize());
-        evalParameterMap.put("anisotropy", getEnhancementParameters().getAnisotropy().isEnabled() ?
-                getEnhancementParameters().getAnisotropy().getContent() : null);
-        evalParameterMap.put("net_avg", getEnhancementParameters().isNetAverage());
-        evalParameterMap.put("augment", getEnhancementParameters().isAugment());
-        evalParameterMap.put("tile", getPerformanceParameters().isTile());
-        evalParameterMap.put("tile_overlap", getPerformanceParameters().getTileOverlap());
-        evalParameterMap.put("resample", getPerformanceParameters().isResample());
-        evalParameterMap.put("interp", getEnhancementParameters().isInterpolate());
-        evalParameterMap.put("flow_threshold", getThresholdParameters().getFlowThreshold());
-        evalParameterMap.put("cellprob_threshold", getThresholdParameters().getCellProbabilityThreshold());
-        evalParameterMap.put("min_size", getThresholdParameters().getMinSize());
-        evalParameterMap.put("stitch_threshold", getThresholdParameters().getStitchThreshold());
-
-        code.append(String.format("masks, flows, styles, diams = model.eval(%s)\n",
-                PythonUtils.mapToPythonArguments(evalParameterMap)
-        ));
-    }
-
-    private void setupCombinedCellposeModel(StringBuilder code) {
-        Map<String, Object> modelParameterMap = new HashMap<>();
-        modelParameterMap.put("model_type", getModelParameters().getModel().getId());
-        modelParameterMap.put("net_avg", getEnhancementParameters().isNetAverage());
-        modelParameterMap.put("gpu", getModelParameters().isEnableGPU());
-        code.append(String.format("model = models.Cellpose(%s)\n", PythonUtils.mapToPythonArguments(modelParameterMap)));
-    }
-
-    /**
-     * Injects an extended Cellpose runner into Python.
-     * It receives a pretrained model
-     *
-     * @param code                the code
-     * @param customModelPaths    custom model paths
-     * @param customSizeModelPath custom size model path
-     */
-    private void setupCustomCellposeModel(StringBuilder code, List<Path> customModelPaths, Path customSizeModelPath) {
-        // This is code that allows to embed a custom model
-        code.append("\n\nclass CellposeCustom():\n" +
-                "    def __init__(self, gpu=False, pretrained_model=None, diam_mean=None, pretrained_size=None, net_avg=True, device=None, torch=True):\n" +
-                "        super(CellposeCustom, self).__init__()\n" +
-                "        from cellpose.core import UnetModel, assign_device, check_mkl, use_gpu, MXNET_ENABLED, parse_model_string\n" +
-                "        from cellpose.models import CellposeModel, SizeModel\n\n" +
-                "        if not torch:\n" +
-                "            if not MXNET_ENABLED:\n" +
-                "                torch = True\n" +
-                "        self.torch = torch\n" +
-                "        torch_str = ['','torch'][self.torch]\n" +
-                "        \n" +
-                "        # assign device (GPU or CPU)\n" +
-                "        sdevice, gpu = assign_device(self.torch, gpu)\n" +
-                "        self.device = device if device is not None else sdevice\n" +
-                "        self.gpu = gpu\n" +
-                "        self.pretrained_model = pretrained_model\n" +
-                "        self.pretrained_size = pretrained_size\n" +
-                "        self.diam_mean = diam_mean\n" +
-                "        \n" +
-                "        if not net_avg:\n" +
-                "            self.pretrained_model = self.pretrained_model[0]\n" +
-                "\n" +
-                "        self.cp = CellposeModel(device=self.device, gpu=self.gpu,\n" +
-                "                                pretrained_model=self.pretrained_model,\n" +
-                "                                diam_mean=self.diam_mean, torch=self.torch)\n" +
-                "        if pretrained_size is not None:\n" +
-                "            self.sz = SizeModel(device=self.device, pretrained_size=self.pretrained_size,\n" +
-                "                            cp_model=self.cp)\n" +
-                "        else:\n" +
-                "            self.sz = None\n" +
-                "\n" +
-                "    def eval(self, x, batch_size=8, channels=None, channel_axis=None, z_axis=None,\n" +
-                "             invert=False, normalize=True, diameter=30., do_3D=False, anisotropy=None,\n" +
-                "             net_avg=True, augment=False, tile=True, tile_overlap=0.1, resample=False, interp=True,\n" +
-                "             flow_threshold=0.4, cellprob_threshold=0.0, min_size=15, \n" +
-                "              stitch_threshold=0.0, rescale=None, progress=None):\n" +
-                "        from cellpose.models import models_logger\n" +
-                "        tic0 = time.time()\n" +
-                "\n" +
-                "        estimate_size = True if (diameter is None or diameter==0) else False\n" +
-                "        models_logger.info('Estimate size: ' + str(estimate_size))\n" +
-                "        if estimate_size and self.pretrained_size is not None and not do_3D and x[0].ndim < 4:\n" +
-                "            tic = time.time()\n" +
-                "            models_logger.info('~~~ ESTIMATING CELL DIAMETER(S) ~~~')\n" +
-                "            diams, _ = self.sz.eval(x, channels=channels, channel_axis=channel_axis, invert=invert, batch_size=batch_size, \n" +
-                "                                    augment=augment, tile=tile)\n" +
-                "            rescale = self.diam_mean / np.array(diams)\n" +
-                "            diameter = None\n" +
-                "            models_logger.info('estimated cell diameter(s) in %0.2f sec'%(time.time()-tic))\n" +
-                "            models_logger.info('>>> diameter(s) = ')\n" +
-                "            if isinstance(diams, list) or isinstance(diams, np.ndarray):\n" +
-                "                diam_string = '[' + ''.join(['%0.2f, '%d for d in diams]) + ']'\n" +
-                "            else:\n" +
-                "                diam_string = '[ %0.2f ]'%diams\n" +
-                "            models_logger.info(diam_string)\n" +
-                "        elif estimate_size:\n" +
-                "            if self.pretrained_size is None:\n" +
-                "                reason = 'no pretrained size model specified in model Cellpose'\n" +
-                "            else:\n" +
-                "                reason = 'does not work on non-2D images'\n" +
-                "            models_logger.warning(f'could not estimate diameter, {reason}')\n" +
-                "            diams = self.diam_mean \n" +
-                "        else:\n" +
-                "            diams = diameter\n" +
-                "\n" +
-                "        tic = time.time()\n" +
-                "        models_logger.info('~~~ FINDING MASKS ~~~')\n" +
-                "        masks, flows, styles = self.cp.eval(x, \n" +
-                "                                            batch_size=batch_size, \n" +
-                "                                            invert=invert, \n" +
-                "                                            diameter=diameter,\n" +
-                "                                            rescale=rescale, \n" +
-                "                                            anisotropy=anisotropy, \n" +
-                "                                            channels=channels,\n" +
-                "                                            channel_axis=channel_axis, \n" +
-                "                                            z_axis=z_axis,\n" +
-                "                                            augment=augment, \n" +
-                "                                            tile=tile, \n" +
-                "                                            do_3D=do_3D, \n" +
-                "                                            net_avg=net_avg, \n" +
-                "                                            progress=progress,\n" +
-                "                                            tile_overlap=tile_overlap,\n" +
-                "                                            resample=resample,\n" +
-                "                                            interp=interp,\n" +
-                "                                            flow_threshold=flow_threshold, \n" +
-                "                                            cellprob_threshold=cellprob_threshold,\n" +
-                "                                            min_size=min_size, \n" +
-                "                                            stitch_threshold=stitch_threshold)\n" +
-                "        models_logger.info('>>>> TOTAL TIME %0.2f sec'%(time.time()-tic0))\n" +
-                "    \n" +
-                "        return masks, flows, styles, diams\n\n");
-        Map<String, Object> modelParameterMap = new HashMap<>();
-        modelParameterMap.put("pretrained_model", customModelPaths.stream().map(Objects::toString).collect(Collectors.toList()));
-        modelParameterMap.put("net_avg", getEnhancementParameters().isNetAverage());
-        modelParameterMap.put("gpu", getModelParameters().isEnableGPU());
-        modelParameterMap.put("diam_mean", getModelParameters().getMeanDiameter());
-        if (customSizeModelPath != null)
-            modelParameterMap.put("pretrained_size", customSizeModelPath.toString());
-        code.append(String.format("model = CellposeCustom(%s)\n", PythonUtils.mapToPythonArguments(modelParameterMap)));
-    }
-
-    @JIPipeDocumentation(name = "Clean up data after processing", description = "If enabled, data is deleted from temporary directories after " +
-            "the processing was finished. Disable this to make it possible to debug your scripts. The directories are accessible via the logs (Tools &gt; Logs).")
-    @JIPipeParameter("cleanup-afterwards")
-    public boolean isCleanUpAfterwards() {
-        return cleanUpAfterwards;
-    }
-
-    @JIPipeParameter("cleanup-afterwards")
-    public void setCleanUpAfterwards(boolean cleanUpAfterwards) {
-        this.cleanUpAfterwards = cleanUpAfterwards;
+    @JIPipeParameter("override-output-path")
+    public void setOverrideOutputPath(OptionalPathParameter overrideOutputPath) {
+        this.overrideOutputPath = overrideOutputPath;
     }
 
     @JIPipeDocumentation(name = "Annotate with diameter", description = "If enabled, the diameter is attached as annotation. " +
@@ -591,7 +422,7 @@ public class CellPoseAlgorithm extends JIPipeMergingAlgorithm {
         JIPipeDefaultMutableSlotConfiguration slotConfiguration = (JIPipeDefaultMutableSlotConfiguration) getSlotConfiguration();
         if (outputParameters.isOutputLabels()) {
             if (!getOutputSlotMap().containsKey("Labels")) {
-                slotConfiguration.addOutputSlot("Labels", ImagePlus3DGreyscaleData.class, null, false);
+                slotConfiguration.addOutputSlot("Labels", FileData.class, null, false);
             }
         } else {
             if (getOutputSlotMap().containsKey("Labels")) {
@@ -600,7 +431,7 @@ public class CellPoseAlgorithm extends JIPipeMergingAlgorithm {
         }
         if (outputParameters.isOutputFlows()) {
             if (!getOutputSlotMap().containsKey("Flows")) {
-                slotConfiguration.addOutputSlot("Flows", ImagePlus3DColorRGBData.class, null, false);
+                slotConfiguration.addOutputSlot("Flows", FileData.class, null, false);
             }
         } else {
             if (getOutputSlotMap().containsKey("Flows")) {
@@ -609,7 +440,7 @@ public class CellPoseAlgorithm extends JIPipeMergingAlgorithm {
         }
         if (outputParameters.isOutputProbabilities()) {
             if (!getOutputSlotMap().containsKey("Probabilities")) {
-                slotConfiguration.addOutputSlot("Probabilities", ImagePlus3DGreyscale32FData.class, null, false);
+                slotConfiguration.addOutputSlot("Probabilities", FileData.class, null, false);
             }
         } else {
             if (getOutputSlotMap().containsKey("Probabilities")) {
@@ -618,7 +449,7 @@ public class CellPoseAlgorithm extends JIPipeMergingAlgorithm {
         }
         if (outputParameters.isOutputStyles()) {
             if (!getOutputSlotMap().containsKey("Styles")) {
-                slotConfiguration.addOutputSlot("Styles", ImagePlus3DGreyscale32FData.class, null, false);
+                slotConfiguration.addOutputSlot("Styles", FileData.class, null, false);
             }
         } else {
             if (getOutputSlotMap().containsKey("Styles")) {

@@ -110,6 +110,10 @@ public class ExpressionExtension extends JIPipePrepackagedDefaultJavaExtension {
                 "Named annotation generator expression",
                 "Used to generate annotations",
                 null);
+        registerParameterType("data-row-query-expression",
+                DataRowQueryExpression.class,
+                "Data row query",
+                "");
         registerExpressionFunction(new ContainsStringPredicateFunction());
         registerExpressionFunction(new EqualsStringPredicateFunction());
         registerExpressionFunction(new GlobStringPredicateFunction());

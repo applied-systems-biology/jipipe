@@ -19,6 +19,8 @@ import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.registries.JIPipeDatatypeRegistry;
 import org.hkijena.jipipe.extensions.JIPipePrepackagedDefaultJavaExtension;
 import org.hkijena.jipipe.extensions.core.data.OpenInNativeApplicationDataImportOperation;
+import org.hkijena.jipipe.extensions.filesystem.resultanalysis.CopyPathDataOperation;
+import org.hkijena.jipipe.extensions.filesystem.resultanalysis.OpenPathDataOperation;
 import org.hkijena.jipipe.extensions.imagejdatatypes.algorithms.*;
 import org.hkijena.jipipe.extensions.imagejdatatypes.algorithms.color.ToHSBColorSpaceConverterAlgorithm;
 import org.hkijena.jipipe.extensions.imagejdatatypes.algorithms.color.ToLABColorSpaceConverterAlgorithm;
@@ -29,6 +31,7 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.datasources.ImagePlusFromFi
 import org.hkijena.jipipe.extensions.imagejdatatypes.datasources.ROIDataFromFile;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datasources.ResultsTableFromFile;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
+import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.LabeledImageFileData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.LabeledImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.OMEImageData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ROIListData;
@@ -263,13 +266,20 @@ public class ImageJDataTypesExtension extends JIPipePrepackagedDefaultJavaExtens
                 new OMEImageDataImportIntoJIPipeOperation());
         registerDatatype("imagej-imgplus-masked",
                 LabeledImagePlusData.class,
-                UIUtils.getIconURLFromResources("data-types/masked-image.png"),
+                UIUtils.getIconURLFromResources("data-types/labeled-image.png"),
                 null,
                 null,
                 new ImagePlusDataImportIntoJIPipeOperation(),
                 new ImagePlusDataImportIntoImageJOperation(),
                 new OpenInImageJDataDisplay(),
                 new OMEImageDataImportViaBioFormatsOperation());
+        registerDatatype("imagej-labeled-image-file",
+                LabeledImageFileData.class,
+                UIUtils.getIconURLFromResources("data-types/labeled-image-file.png"),
+                null,
+                null,
+                new OpenPathDataOperation(),
+                new CopyPathDataOperation());
         registerImageJDataAdapter(new OMEImageDataImageJAdapter(), ImagePlusDataImporterUI.class);
         registerImageDataType("imagej-imgplus", ImagePlusData.class, "icons/data-types/imgplus.png");
         registerImageDataType("imagej-imgplus-greyscale", ImagePlusGreyscaleData.class, "icons/data-types/imgplus-greyscale.png");

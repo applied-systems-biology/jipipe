@@ -261,6 +261,7 @@
     <orderEntry type="module" module-name="jipipe-tables" />
     <orderEntry type="module" module-name="jipipe-annotation" />
     <orderEntry type="module" module-name="jipipe-strings" />
+    <orderEntry type="module" module-name="jipipe-filesystem" />
     <orderEntry type="library" name="Maven: ome:bio-formats_plugins:6.5.1" level="project" />
     <orderEntry type="library" name="Maven: org.openmicroscopy:ome-common:6.0.4" level="project" />
     <orderEntry type="library" name="Maven: io.minio:minio:5.0.2" level="project" />

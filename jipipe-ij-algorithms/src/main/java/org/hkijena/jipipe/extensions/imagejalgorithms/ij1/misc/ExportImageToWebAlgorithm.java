@@ -19,6 +19,8 @@ import org.hkijena.jipipe.extensions.parameters.primitives.FilePathParameterSett
 import org.hkijena.jipipe.extensions.settings.DataExporterSettings;
 import org.hkijena.jipipe.ui.components.PathEditor;
 
+import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.HashSet;
@@ -77,6 +79,12 @@ public class ExportImageToWebAlgorithm extends JIPipeIteratingAlgorithm {
             outputPath = getFirstOutputSlot().getStoragePath().resolve(outputDirectory);
         } else {
             outputPath = outputDirectory;
+        }
+
+        try {
+            Files.createDirectories(outputPath);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
 
         ImagePlus image = dataBatch.getInputData(getFirstInputSlot(), ImagePlusData.class, progressInfo).getImage();
