@@ -173,7 +173,7 @@ public class CellPoseAlgorithm extends JIPipeMergingAlgorithm {
     @Override
     protected void runIteration(JIPipeMergingDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
 
-        Path workDirectory = RuntimeSettings.generateTempDirectory("cellpose");
+        Path workDirectory = getNewScratch();
 
         // Save models if needed
         List<Path> customModelPaths = new ArrayList<>();

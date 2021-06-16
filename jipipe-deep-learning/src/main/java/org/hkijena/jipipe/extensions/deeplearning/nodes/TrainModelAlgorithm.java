@@ -105,7 +105,7 @@ public class TrainModelAlgorithm extends JIPipeMergingAlgorithm {
             JIPipeProgressInfo modelProgress = progressInfo.resolveAndLog("Model", modelCounter++, dataBatch.getInputSlotRows().get(inputModelSlot).size());
             DeepLearningModelData inputModel = inputModelSlot.getData(modelIndex, DeepLearningModelData.class, modelProgress);
 
-            Path workDirectory = RuntimeSettings.generateTempDirectory("dltoolbox");
+            Path workDirectory = getNewScratch();
 
             // Save labels & raw images
             Path labelsDirectory = workDirectory.resolve("labels");

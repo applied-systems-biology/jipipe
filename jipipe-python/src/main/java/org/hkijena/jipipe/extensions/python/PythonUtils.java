@@ -167,10 +167,15 @@ public class PythonUtils {
         }
     }
 
-    public static Map<String, Path> installInputSlots(StringBuilder code, JIPipeDataBatch dataBatch, JIPipeGraphNode node, List<JIPipeDataSlot> effectiveInputSlots, JIPipeProgressInfo progressInfo) {
+    public static Map<String, Path> installInputSlots(StringBuilder code, JIPipeDataBatch dataBatch, JIPipeGraphNode node, List<JIPipeDataSlot> effectiveInputSlots, Path workDirectory, JIPipeProgressInfo progressInfo) {
         Map<String, Path> inputSlotPaths = new HashMap<>();
         for (JIPipeDataSlot slot : effectiveInputSlots) {
-            Path tempPath = RuntimeSettings.generateTempDirectory("py-input");
+            Path tempPath = workDirectory.resolve("inputs").resolve(slot.getName());
+            try {
+                Files.createDirectories(tempPath);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
             progressInfo.log("Input slot '" + slot.getName() + "' is stored in " + tempPath);
             JIPipeDataSlot dummy = dataBatch.toDummySlot(slot.getInfo(), node, slot);
             dummy.save(tempPath, null, progressInfo);
@@ -180,10 +185,15 @@ public class PythonUtils {
         return inputSlotPaths;
     }
 
-    public static Map<String, Path> installInputSlots(StringBuilder code, List<JIPipeDataSlot> effectiveInputSlots, JIPipeProgressInfo progressInfo) {
+    public static Map<String, Path> installInputSlots(StringBuilder code, List<JIPipeDataSlot> effectiveInputSlots, Path workDirectory, JIPipeProgressInfo progressInfo) {
         Map<String, Path> inputSlotPaths = new HashMap<>();
         for (JIPipeDataSlot slot : effectiveInputSlots) {
-            Path tempPath = RuntimeSettings.generateTempDirectory("py-input");
+            Path tempPath = workDirectory.resolve("inputs").resolve(slot.getName());
+            try {
+                Files.createDirectories(tempPath);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
             progressInfo.log("Input slot '" + slot.getName() + "' is stored in " + tempPath);
             slot.save(tempPath, null, progressInfo);
             inputSlotPaths.put(slot.getName(), tempPath);
@@ -192,10 +202,15 @@ public class PythonUtils {
         return inputSlotPaths;
     }
 
-    public static Map<String, Path> installInputSlots(StringBuilder code, JIPipeMergingDataBatch dataBatch, JIPipeGraphNode node, List<JIPipeDataSlot> effectiveInputSlots, JIPipeProgressInfo progressInfo) {
+    public static Map<String, Path> installInputSlots(StringBuilder code, JIPipeMergingDataBatch dataBatch, JIPipeGraphNode node, List<JIPipeDataSlot> effectiveInputSlots, Path workDirectory, JIPipeProgressInfo progressInfo) {
         Map<String, Path> inputSlotPaths = new HashMap<>();
         for (JIPipeDataSlot slot : effectiveInputSlots) {
-            Path tempPath = RuntimeSettings.generateTempDirectory("py-input");
+            Path tempPath = workDirectory.resolve("inputs").resolve(slot.getName());
+            try {
+                Files.createDirectories(tempPath);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
             progressInfo.log("Input slot '" + slot.getName() + "' is stored in " + tempPath);
             JIPipeDataSlot dummy = dataBatch.toDummySlot(slot.getInfo(), node, slot);
             dummy.save(tempPath, null, progressInfo);
@@ -476,10 +491,15 @@ public class PythonUtils {
         }
     }
 
-    public static Map<String, Path> installOutputSlots(StringBuilder code, List<JIPipeDataSlot> outputSlots, JIPipeProgressInfo progressInfo) {
+    public static Map<String, Path> installOutputSlots(StringBuilder code, List<JIPipeDataSlot> outputSlots, Path workDirectory, JIPipeProgressInfo progressInfo) {
         Map<String, Path> outputSlotPaths = new HashMap<>();
         for (JIPipeDataSlot slot : outputSlots) {
-            Path tempPath = RuntimeSettings.generateTempDirectory("py-output");
+            Path tempPath = workDirectory.resolve("outputs").resolve(slot.getName());
+            try {
+                Files.createDirectories(tempPath);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
             progressInfo.log("Output slot '" + slot.getName() + "' is stored in " + tempPath);
             outputSlotPaths.put(slot.getName(), tempPath);
         }

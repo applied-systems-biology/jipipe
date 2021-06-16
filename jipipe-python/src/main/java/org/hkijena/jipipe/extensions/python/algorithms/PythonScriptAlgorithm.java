@@ -155,14 +155,16 @@ public class PythonScriptAlgorithm extends JIPipeParameterSlotAlgorithm {
         // Add user variables
         PythonUtils.parametersToPython(code, scriptParameters);
 
+        Path workDirectory = getNewScratch();
+
         // Install input slots
-        Map<String, Path> inputSlotPaths = PythonUtils.installInputSlots(code, getEffectiveInputSlots(), progressInfo);
+        Map<String, Path> inputSlotPaths = PythonUtils.installInputSlots(code, getEffectiveInputSlots(), workDirectory, progressInfo);
 
         // Install output slots
-        Map<String, Path> outputSlotPaths = PythonUtils.installOutputSlots(code, getOutputSlots(), progressInfo);
+        Map<String, Path> outputSlotPaths = PythonUtils.installOutputSlots(code, getOutputSlots(), workDirectory, progressInfo);
 
         // Add main code
-        code.append("\n").append(this.code.getCode(getWorkDirectory())).append("\n");
+        code.append("\n").append(this.code.getCode(getProjectWorkDirectory())).append("\n");
 
         // Add postprocessor code
         PythonUtils.addPostprocessorCode(code, getOutputSlots());
@@ -182,9 +184,9 @@ public class PythonScriptAlgorithm extends JIPipeParameterSlotAlgorithm {
     }
 
     @Override
-    public void setWorkDirectory(Path workDirectory) {
-        super.setWorkDirectory(workDirectory);
-        code.makeExternalScriptFileRelative(workDirectory);
+    public void setProjectWorkDirectory(Path projectWorkDirectory) {
+        super.setProjectWorkDirectory(projectWorkDirectory);
+        code.makeExternalScriptFileRelative(projectWorkDirectory);
     }
 
     @JIPipeDocumentation(name = "Script", description = "The Python script to be executed. " +

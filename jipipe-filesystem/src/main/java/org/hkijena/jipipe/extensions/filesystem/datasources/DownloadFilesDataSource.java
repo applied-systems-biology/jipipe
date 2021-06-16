@@ -49,7 +49,7 @@ public class DownloadFilesDataSource extends JIPipeSimpleIteratingAlgorithm {
                 String s = StringUtils.stripEnd(urlString, " /\\");
                 String[] components = s.split("/");
                 String fileName = components[components.length - 1];
-                Path targetFile = RuntimeSettings.generateTempDirectory("Download").resolve(fileName);
+                Path targetFile = getNewScratch().resolve(fileName);
                 WebUtils.download(url, targetFile, getDisplayName(), progressInfo);
 
                 dataBatch.addOutputData(getFirstOutputSlot(), new FileData(targetFile), progressInfo);

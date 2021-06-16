@@ -296,7 +296,7 @@ public class FileBasedCellPoseTrainingAlgorithm extends JIPipeMergingAlgorithm {
 
         // Prepare folders
         // Create work directory
-        Path workDirectory = RuntimeSettings.generateTempDirectory("cellpose-training");
+        Path workDirectory = getNewScratch();
 
 
         Path trainingDir = workDirectory.resolve("training");

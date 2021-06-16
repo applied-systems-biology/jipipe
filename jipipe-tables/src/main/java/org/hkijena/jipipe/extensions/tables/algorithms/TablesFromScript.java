@@ -97,14 +97,14 @@ public class TablesFromScript extends JIPipeAlgorithm {
     }
 
     @Override
-    public void setWorkDirectory(Path workDirectory) {
-        super.setWorkDirectory(workDirectory);
-        code.makeExternalScriptFileRelative(workDirectory);
+    public void setProjectWorkDirectory(Path projectWorkDirectory) {
+        super.setProjectWorkDirectory(projectWorkDirectory);
+        code.makeExternalScriptFileRelative(projectWorkDirectory);
     }
 
     @Override
     public void reportValidity(JIPipeValidityReport report) {
-        JythonUtils.checkScriptValidity(code.getCode(getWorkDirectory()), scriptParameters, report.forCategory("Script"));
+        JythonUtils.checkScriptValidity(code.getCode(getProjectWorkDirectory()), scriptParameters, report.forCategory("Script"));
         JythonUtils.checkScriptParametersValidity(scriptParameters, report.forCategory("Script parameters"));
     }
 
@@ -113,7 +113,7 @@ public class TablesFromScript extends JIPipeAlgorithm {
         this.pythonInterpreter = new PythonInterpreter();
         JythonUtils.passParametersToPython(pythonInterpreter, scriptParameters);
 
-        pythonInterpreter.exec(code.getCode(getWorkDirectory()));
+        pythonInterpreter.exec(code.getCode(getProjectWorkDirectory()));
         List<PyDictionary> rows = (List<PyDictionary>) pythonInterpreter.get("tables").__tojava__(List.class);
 
         for (PyDictionary row : rows) {

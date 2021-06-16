@@ -85,7 +85,7 @@ public class CreateModelAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     @Override
     protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
-        Path workDirectory = RuntimeSettings.generateTempDirectory("dltoolbox");
+        Path workDirectory = getNewScratch();
         DeepLearningModelConfiguration modelConfiguration = new DeepLearningModelConfiguration(this.modelConfiguration);
         Path modelConfigurationPath = workDirectory.resolve("model-configuration.json");
         Path modelPath = workDirectory.resolve("model.hdf5");

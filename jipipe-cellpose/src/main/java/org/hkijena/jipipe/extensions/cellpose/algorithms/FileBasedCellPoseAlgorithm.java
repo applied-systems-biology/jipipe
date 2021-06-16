@@ -206,7 +206,7 @@ public class FileBasedCellPoseAlgorithm extends JIPipeMergingAlgorithm {
             }
         }
         else
-            workDirectory = RuntimeSettings.generateTempDirectory("cellpose");
+            workDirectory = getNewScratch();
 
         // Save models if needed
         List<Path> customModelPaths = new ArrayList<>();

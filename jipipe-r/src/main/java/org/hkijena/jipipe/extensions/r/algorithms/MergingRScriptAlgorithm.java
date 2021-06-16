@@ -26,6 +26,7 @@ import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -127,10 +128,17 @@ public class MergingRScriptAlgorithm extends JIPipeMergingAlgorithm {
         // Add annotations
         RUtils.annotationsToR(code, dataBatch.getAnnotations().values());
 
+        Path workDirectory = getNewScratch();
+
         Map<String, Path> inputSlotPaths = new HashMap<>();
         List<JIPipeDataSlot> dummySlots = new ArrayList<>();
         for (JIPipeDataSlot slot : getEffectiveInputSlots()) {
-            Path tempPath = RuntimeSettings.generateTempDirectory("r-input");
+            Path tempPath = workDirectory.resolve("inputs").resolve(slot.getName());
+            try {
+                Files.createDirectories(tempPath);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
             progressInfo.log("Input slot '" + slot.getName() + "' is stored in " + tempPath);
             JIPipeDataSlot dummy = dataBatch.toDummySlot(slot.getInfo(), this, slot);
             dummy.save(tempPath, null, progressInfo);
@@ -143,14 +151,19 @@ public class MergingRScriptAlgorithm extends JIPipeMergingAlgorithm {
 
         Map<String, Path> outputSlotPaths = new HashMap<>();
         for (JIPipeDataSlot slot : getOutputSlots()) {
-            Path tempPath = RuntimeSettings.generateTempDirectory("r-output");
+            Path tempPath = workDirectory.resolve("outputs").resolve(slot.getName());
+            try {
+                Files.createDirectories(tempPath);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
             progressInfo.log("Output slot '" + slot.getName() + "' is stored in " + tempPath);
             outputSlotPaths.put(slot.getName(), tempPath);
         }
         RUtils.outputSlotsToR(code, getOutputSlots(), outputSlotPaths);
         RUtils.installOutputGeneratorCode(code);
 
-        code.append("\n").append(script.getCode(getWorkDirectory())).append("\n");
+        code.append("\n").append(script.getCode(getProjectWorkDirectory())).append("\n");
         RUtils.installPostprocessorCode(code);
 
         progressInfo.log(code.toString());
@@ -192,9 +205,9 @@ public class MergingRScriptAlgorithm extends JIPipeMergingAlgorithm {
     }
 
     @Override
-    public void setWorkDirectory(Path workDirectory) {
-        super.setWorkDirectory(workDirectory);
-        script.makeExternalScriptFileRelative(workDirectory);
+    public void setProjectWorkDirectory(Path projectWorkDirectory) {
+        super.setProjectWorkDirectory(projectWorkDirectory);
+        script.makeExternalScriptFileRelative(projectWorkDirectory);
     }
 
     @JIPipeDocumentation(name = "Script", description = "The script that contains the R commands. " +

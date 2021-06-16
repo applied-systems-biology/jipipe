@@ -275,7 +275,7 @@ public class CellPoseTrainingAlgorithm extends JIPipeMergingAlgorithm {
     protected void runIteration(JIPipeMergingDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
 
         // Prepare folders
-        Path workDirectory = RuntimeSettings.generateTempDirectory("cellpose-training");
+        Path workDirectory = getNewScratch();
         Path trainingDir = workDirectory.resolve("training");
         Path testDir = workDirectory.resolve("test");
         try {

@@ -58,13 +58,25 @@ public class JIPipeRun implements JIPipeRunnable {
         this.copiedGraph = new JIPipeGraph(project.getGraph());
         this.copiedGraph.setAttachments(project.getGraph().getAttachments());
         this.copiedGraph.attach(this);
+        initializeScratchDirectory();
         initializeRelativeDirectories();
         initializeInternalStoragePaths();
     }
 
+    private void initializeScratchDirectory() {
+        try {
+            Files.createDirectories(configuration.getOutputPath().resolve("_scratch"));
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        for (JIPipeGraphNode algorithm : copiedGraph.getGraphNodes()) {
+            algorithm.setScratchBaseDirectory(configuration.getOutputPath().resolve("_scratch"));
+        }
+    }
+
     private void initializeRelativeDirectories() {
         for (JIPipeGraphNode algorithm : copiedGraph.getGraphNodes()) {
-            algorithm.setWorkDirectory(null);
+            algorithm.setProjectWorkDirectory(null);
         }
     }
 

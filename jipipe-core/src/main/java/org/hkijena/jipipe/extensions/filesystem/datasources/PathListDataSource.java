@@ -135,8 +135,8 @@ public class PathListDataSource extends JIPipeAlgorithm {
     }
 
     @Override
-    public void setWorkDirectory(Path workDirectory) {
-        super.setWorkDirectory(workDirectory);
+    public void setProjectWorkDirectory(Path projectWorkDirectory) {
+        super.setProjectWorkDirectory(projectWorkDirectory);
 
         boolean modified = false;
         for (int i = 0; i < paths.size(); ++i) {
@@ -147,8 +147,8 @@ public class PathListDataSource extends JIPipeAlgorithm {
                     if (currentWorkingDirectory != null) {
                         folderPath = currentWorkingDirectory.resolve(folderPath);
                         modified = true;
-                    } else if (workDirectory != null) {
-                        folderPath = workDirectory.resolve(folderPath);
+                    } else if (projectWorkDirectory != null) {
+                        folderPath = projectWorkDirectory.resolve(folderPath);
                         modified = true;
                     }
                 }
@@ -156,8 +156,8 @@ public class PathListDataSource extends JIPipeAlgorithm {
                 FilesystemExtensionSettings settings = FilesystemExtensionSettings.getInstance();
                 if (settings == null || settings.isRelativizePaths()) {
                     if (folderPath.isAbsolute()) {
-                        if (workDirectory != null && folderPath.startsWith(workDirectory)) {
-                            folderPath = workDirectory.relativize(folderPath);
+                        if (projectWorkDirectory != null && folderPath.startsWith(projectWorkDirectory)) {
+                            folderPath = projectWorkDirectory.relativize(folderPath);
                             modified = true;
                         }
                     }
@@ -167,6 +167,6 @@ public class PathListDataSource extends JIPipeAlgorithm {
                     this.paths.set(i, folderPath);
             }
         }
-        currentWorkingDirectory = workDirectory;
+        currentWorkingDirectory = projectWorkDirectory;
     }
 }

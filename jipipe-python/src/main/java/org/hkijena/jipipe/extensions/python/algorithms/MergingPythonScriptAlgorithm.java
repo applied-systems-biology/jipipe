@@ -163,14 +163,16 @@ public class MergingPythonScriptAlgorithm extends JIPipeMergingAlgorithm {
         // Add annotations
         PythonUtils.annotationsToPython(code, dataBatch.getAnnotations().values());
 
+        Path workDirectory = getNewScratch();
+
         // Install input slots
-        Map<String, Path> inputSlotPaths = PythonUtils.installInputSlots(code, dataBatch, this, getEffectiveInputSlots(), progressInfo);
+        Map<String, Path> inputSlotPaths = PythonUtils.installInputSlots(code, dataBatch, this, getEffectiveInputSlots(), workDirectory, progressInfo);
 
         // Install output slots
-        Map<String, Path> outputSlotPaths = PythonUtils.installOutputSlots(code, getOutputSlots(), progressInfo);
+        Map<String, Path> outputSlotPaths = PythonUtils.installOutputSlots(code, getOutputSlots(), workDirectory, progressInfo);
 
         // Add main code
-        code.append("\n").append(this.code.getCode(getWorkDirectory())).append("\n");
+        code.append("\n").append(this.code.getCode(getProjectWorkDirectory())).append("\n");
 
         // Add postprocessor code
         PythonUtils.addPostprocessorCode(code, getOutputSlots());
@@ -190,9 +192,9 @@ public class MergingPythonScriptAlgorithm extends JIPipeMergingAlgorithm {
     }
 
     @Override
-    public void setWorkDirectory(Path workDirectory) {
-        super.setWorkDirectory(workDirectory);
-        code.makeExternalScriptFileRelative(workDirectory);
+    public void setProjectWorkDirectory(Path projectWorkDirectory) {
+        super.setProjectWorkDirectory(projectWorkDirectory);
+        code.makeExternalScriptFileRelative(projectWorkDirectory);
     }
 
     @JIPipeDocumentation(name = "Script", description = "The Python script to be executed. " +

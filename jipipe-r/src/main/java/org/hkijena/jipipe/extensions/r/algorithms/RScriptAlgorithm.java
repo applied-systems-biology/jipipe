@@ -26,6 +26,7 @@ import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.List;
@@ -110,9 +111,16 @@ public class RScriptAlgorithm extends JIPipeParameterSlotAlgorithm {
         // Add user variables
         RUtils.parametersToR(code, variables);
 
+        Path workDirectory = getNewScratch();
+
         Map<String, Path> inputSlotPaths = new HashMap<>();
         for (JIPipeDataSlot slot : getEffectiveInputSlots()) {
-            Path tempPath = RuntimeSettings.generateTempDirectory("r-input");
+            Path tempPath = workDirectory.resolve("inputs").resolve(slot.getName());
+            try {
+                Files.createDirectories(tempPath);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
             progressInfo.log("Input slot '" + slot.getName() + "' is stored in " + tempPath);
             slot.save(tempPath, null, progressInfo);
             inputSlotPaths.put(slot.getName(), tempPath);
@@ -123,14 +131,19 @@ public class RScriptAlgorithm extends JIPipeParameterSlotAlgorithm {
 
         Map<String, Path> outputSlotPaths = new HashMap<>();
         for (JIPipeDataSlot slot : getOutputSlots()) {
-            Path tempPath = RuntimeSettings.generateTempDirectory("r-output");
+            Path tempPath = workDirectory.resolve("outputs").resolve(slot.getName());
+            try {
+                Files.createDirectories(tempPath);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
             progressInfo.log("Output slot '" + slot.getName() + "' is stored in " + tempPath);
             outputSlotPaths.put(slot.getName(), tempPath);
         }
         RUtils.outputSlotsToR(code, getOutputSlots(), outputSlotPaths);
         RUtils.installOutputGeneratorCode(code);
 
-        code.append("\n").append(script.getCode(getWorkDirectory())).append("\n");
+        code.append("\n").append(script.getCode(getProjectWorkDirectory())).append("\n");
         RUtils.installPostprocessorCode(code);
 
         progressInfo.log(code.toString());
@@ -172,9 +185,9 @@ public class RScriptAlgorithm extends JIPipeParameterSlotAlgorithm {
     }
 
     @Override
-    public void setWorkDirectory(Path workDirectory) {
-        super.setWorkDirectory(workDirectory);
-        script.makeExternalScriptFileRelative(workDirectory);
+    public void setProjectWorkDirectory(Path projectWorkDirectory) {
+        super.setProjectWorkDirectory(projectWorkDirectory);
+        script.makeExternalScriptFileRelative(projectWorkDirectory);
     }
 
     @JIPipeParameter("variables")

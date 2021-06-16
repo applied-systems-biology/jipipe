@@ -158,7 +158,7 @@ public class Clij2ExecuteKernelSimpleIterating extends JIPipeSimpleIteratingAlgo
         if (!getNonParameterInputSlots().isEmpty()) {
             pythonInterpreter.set("input_slot", getFirstInputSlot());
         }
-        pythonInterpreter.exec(preprocessingScript.getCode(getWorkDirectory()));
+        pythonInterpreter.exec(preprocessingScript.getCode(getProjectWorkDirectory()));
 
         // Fetch constants
         Map<String, Object> clParameters = new HashMap<>();
@@ -194,7 +194,7 @@ public class Clij2ExecuteKernelSimpleIterating extends JIPipeSimpleIteratingAlgo
         if (pythonInterpreter.get("cl_program") != null) {
             kernelName = pythonInterpreter.get("cl_program").__tojava__(String.class).toString();
         }
-        clij2.executeCode(kernelScript.getCode(getWorkDirectory()), kernelName, clDimensionsArr, clGlobalSizesArr, clParameters);
+        clij2.executeCode(kernelScript.getCode(getProjectWorkDirectory()), kernelName, clDimensionsArr, clGlobalSizesArr, clParameters);
 
         // Extract outputs
         for (Map.Entry<String, JIPipeDataSlot> entry : getOutputSlotMap().entrySet()) {
@@ -203,9 +203,9 @@ public class Clij2ExecuteKernelSimpleIterating extends JIPipeSimpleIteratingAlgo
     }
 
     @Override
-    public void setWorkDirectory(Path workDirectory) {
-        super.setWorkDirectory(workDirectory);
-        kernelScript.makeExternalScriptFileRelative(workDirectory);
+    public void setProjectWorkDirectory(Path projectWorkDirectory) {
+        super.setProjectWorkDirectory(projectWorkDirectory);
+        kernelScript.makeExternalScriptFileRelative(projectWorkDirectory);
     }
 
     @JIPipeDocumentation(name = "Preprocessing", description = "CLIJ2 requires some information about the output image(s) and the memory that is allocated by the kernel operation. " +

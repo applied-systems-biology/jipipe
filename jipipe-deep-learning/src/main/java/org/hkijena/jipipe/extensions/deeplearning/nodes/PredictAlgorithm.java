@@ -104,7 +104,7 @@ public class PredictAlgorithm extends JIPipeMergingAlgorithm {
             JIPipeProgressInfo modelProgress = progressInfo.resolveAndLog("Model", modelCounter++, dataBatch.getInputSlotRows().get(inputModelSlot).size());
             DeepLearningModelData inputModel = inputModelSlot.getData(modelIndex, DeepLearningModelData.class, modelProgress);
 
-            Path workDirectory = RuntimeSettings.generateTempDirectory("dltoolbox");
+            Path workDirectory = getNewScratch();
 
             Path predictionsDirectory = workDirectory.resolve("predict");
             Path rawsDirectory = workDirectory.resolve("raw");

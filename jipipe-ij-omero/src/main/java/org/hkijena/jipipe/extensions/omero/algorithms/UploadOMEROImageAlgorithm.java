@@ -95,7 +95,7 @@ public class UploadOMEROImageAlgorithm extends JIPipeMergingAlgorithm {
         List<OMEImageData> images = dataBatch.getInputData("Image", OMEImageData.class, progressInfo);
         ArrayList<JIPipeAnnotation> annotations = new ArrayList<>(dataBatch.getAnnotations().values());
         for (int index = 0; index < images.size(); index++) {
-            Path targetPath = RuntimeSettings.generateTempDirectory("OMERO-Upload");
+            Path targetPath = getNewScratch();
             exportImages(images.get(index), annotations, targetPath, progressInfo);
             for (OMERODatasetReferenceData dataset : dataBatch.getInputData("Dataset", OMERODatasetReferenceData.class, progressInfo)) {
                 uploadImages(targetPath, annotations, dataset.getDatasetId(), progressInfo);

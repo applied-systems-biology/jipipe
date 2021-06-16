@@ -24,6 +24,7 @@ import java.util.List;
 public class TemporaryFolderDataSource extends JIPipeParameterSlotAlgorithm {
 
     private String baseName = "";
+    private boolean useScratchDirectory = true;
 
     public TemporaryFolderDataSource(JIPipeNodeInfo info) {
         super(info);
@@ -36,7 +37,7 @@ public class TemporaryFolderDataSource extends JIPipeParameterSlotAlgorithm {
 
     @Override
     public void runParameterSet(JIPipeProgressInfo progressInfo, List<JIPipeAnnotation> parameterAnnotations) {
-        getFirstOutputSlot().addData(new FileData(RuntimeSettings.generateTempDirectory(baseName)), progressInfo);
+        getFirstOutputSlot().addData(new FileData(isUseScratchDirectory() ? getNewScratch() : RuntimeSettings.generateTempDirectory(getBaseName())), progressInfo);
     }
 
     @JIPipeDocumentation(name = "Base name", description = "Optional string that will be put into the directory name.")
@@ -49,5 +50,16 @@ public class TemporaryFolderDataSource extends JIPipeParameterSlotAlgorithm {
     @JIPipeParameter("base-name")
     public void setBaseName(String baseName) {
         this.baseName = baseName;
+    }
+
+    @JIPipeDocumentation(name = "Use scratch directory", description = "If enabled, the temporary directory will be located inside the current output directory if possible.")
+    @JIPipeParameter("use-scratch-dir")
+    public boolean isUseScratchDirectory() {
+        return useScratchDirectory;
+    }
+
+    @JIPipeParameter("use-scratch-dir")
+    public void setUseScratchDirectory(boolean useScratchDirectory) {
+        this.useScratchDirectory = useScratchDirectory;
     }
 }

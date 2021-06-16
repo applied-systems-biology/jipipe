@@ -35,11 +35,13 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
 import org.hkijena.jipipe.extensions.parameters.primitives.HTMLText;
 import org.hkijena.jipipe.extensions.parameters.primitives.StringParameterSettings;
+import org.hkijena.jipipe.extensions.settings.RuntimeSettings;
 import org.hkijena.jipipe.utils.ParameterUtils;
 import org.hkijena.jipipe.utils.StringUtils;
 
 import java.awt.*;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.*;
@@ -67,7 +69,8 @@ public abstract class JIPipeGraphNode implements JIPipeValidatable, JIPipeParame
     private String customName;
     private HTMLText customDescription;
     private JIPipeGraph graph;
-    private Path workDirectory;
+    private Path projectWorkDirectory;
+    private Path scratchBaseDirectory;
 
     /**
      * Initializes this algorithm with a custom provided slot configuration
@@ -722,19 +725,51 @@ public abstract class JIPipeGraphNode implements JIPipeValidatable, JIPipeParame
      *
      * @return The current work directory or null.
      */
-    public Path getWorkDirectory() {
-        return workDirectory;
+    public Path getProjectWorkDirectory() {
+        return projectWorkDirectory;
     }
 
     /**
      * Sets the current work directory of this algorithm. This is used internally to allow loading data from relative paths.
      * This triggers a {@link JIPipeProject.WorkDirectoryChangedEvent} that can be received by {@link JIPipeDataSlot} instances to adapt to the work directory.
      *
-     * @param workDirectory The work directory. Can be null
+     * @param projectWorkDirectory The work directory. Can be null
      */
-    public void setWorkDirectory(Path workDirectory) {
-        this.workDirectory = workDirectory;
-        eventBus.post(new JIPipeProject.WorkDirectoryChangedEvent(workDirectory));
+    public void setProjectWorkDirectory(Path projectWorkDirectory) {
+        this.projectWorkDirectory = projectWorkDirectory;
+        eventBus.post(new JIPipeProject.WorkDirectoryChangedEvent(projectWorkDirectory));
+    }
+
+    /**
+     * Gets the scratch directory of the current run associated to this algorithm.
+     * @return the scratch base directory
+     */
+    public Path getScratchBaseDirectory() {
+        return scratchBaseDirectory;
+    }
+
+    /**
+     * Sets the scratch base directory of the current run.
+     * Please note that this directory will be propagated to sub-graphs
+     * @param scratchBaseDirectory the scratch base directory
+     */
+    public void setScratchBaseDirectory(Path scratchBaseDirectory) {
+        this.scratchBaseDirectory = scratchBaseDirectory;
+    }
+
+    /**
+     * Returns a new scratch directory that is unique and based on the alias ID of this node
+     * @return the scratch directory
+     */
+    public Path getNewScratch() {
+        if(getScratchBaseDirectory() == null) {
+            return RuntimeSettings.generateTempDirectory(getGraph() != null ? getAliasIdInGraph() : "scratch");
+        }
+        try {
+            return Files.createTempDirectory(getScratchBaseDirectory(), getGraph() != null ? getAliasIdInGraph() : "scratch");
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     /**

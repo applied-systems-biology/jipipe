@@ -331,7 +331,7 @@ public class JIPipeProject implements JIPipeValidatable {
     public void setWorkDirectory(Path workDirectory) {
         this.workDirectory = workDirectory;
         for (JIPipeGraphNode algorithm : graph.getGraphNodes()) {
-            algorithm.setWorkDirectory(workDirectory);
+            algorithm.setProjectWorkDirectory(workDirectory);
         }
         eventBus.post(new WorkDirectoryChangedEvent(workDirectory));
     }
