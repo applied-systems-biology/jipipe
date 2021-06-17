@@ -42,21 +42,21 @@ import java.util.stream.Collectors;
  */
 public class JIPipePlotAvailableDataManagerUI extends JIPipeWorkbenchPanel {
 
-    private PlotEditor plotBuilderUI;
+    private PlotEditor plotEditor;
     private JList<TableColumn> dataSourceJList;
     private JPopupMenu importPopupMenu;
 
     /**
      * @param workbench     the workbench
-     * @param plotBuilderUI the plot builder
+     * @param plotEditor the plot builder
      */
-    public JIPipePlotAvailableDataManagerUI(JIPipeWorkbench workbench, PlotEditor plotBuilderUI) {
+    public JIPipePlotAvailableDataManagerUI(JIPipeWorkbench workbench, PlotEditor plotEditor) {
         super(workbench);
-        this.plotBuilderUI = plotBuilderUI;
+        this.plotEditor = plotEditor;
         initialize();
         reloadList();
 
-        plotBuilderUI.getEventBus().register(this);
+        plotEditor.getEventBus().register(this);
     }
 
     private void initialize() {
@@ -96,7 +96,7 @@ public class JIPipePlotAvailableDataManagerUI extends JIPipeWorkbenchPanel {
     }
 
     private void removeSelectedData() {
-        plotBuilderUI.removeData(dataSourceJList.getSelectedValuesList());
+        plotEditor.removeData(dataSourceJList.getSelectedValuesList());
     }
 
     private void reloadImportPopupMenu() {
@@ -120,7 +120,7 @@ public class JIPipePlotAvailableDataManagerUI extends JIPipeWorkbenchPanel {
 
     private void importFromTableAnalyzer(TableEditor tableAnalyzerUI, String title) {
         ResultsTableData tableModel = tableAnalyzerUI.getTableModel();
-        plotBuilderUI.importData(tableModel, title);
+        plotEditor.importData(tableModel, title);
     }
 
     private void importFromCSV() {
@@ -131,7 +131,7 @@ public class JIPipePlotAvailableDataManagerUI extends JIPipeWorkbenchPanel {
                 ResultsTable table = ResultsTable.open(selectedPath.toString());
                 PlotDataSeries series = new PlotDataSeries(table);
                 series.setName(fileName);
-                plotBuilderUI.importData(series);
+                plotEditor.importData(series);
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
@@ -177,7 +177,7 @@ public class JIPipePlotAvailableDataManagerUI extends JIPipeWorkbenchPanel {
     public void reloadList() {
         DefaultListModel<TableColumn> model = (DefaultListModel<TableColumn>) dataSourceJList.getModel();
         model.clear();
-        for (TableColumn dataSource : plotBuilderUI.getAvailableData().values().stream()
+        for (TableColumn dataSource : plotEditor.getAvailableData().values().stream()
                 .sorted(Comparator.comparing(TableColumn::getLabel)).collect(Collectors.toList())) {
             model.addElement(dataSource);
         }
