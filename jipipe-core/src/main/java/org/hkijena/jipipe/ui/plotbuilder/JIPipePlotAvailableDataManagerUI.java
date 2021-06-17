@@ -83,7 +83,7 @@ public class JIPipePlotAvailableDataManagerUI extends JIPipeWorkbenchPanel {
 
         dataSourceJList = new JList<>(new DefaultListModel<>());
         dataSourceJList.setCellRenderer(new PlotDataSeriesColumnListCellRenderer());
-        add(dataSourceJList, BorderLayout.CENTER);
+        add(new JScrollPane(dataSourceJList), BorderLayout.CENTER);
 
         dataSourceJList.addMouseListener(new MouseAdapter() {
             @Override
