@@ -21,7 +21,8 @@ import org.jfree.chart.renderer.AbstractRenderer;
 import org.jfree.chart.renderer.category.CategoryItemRenderer;
 import org.jfree.chart.renderer.category.StatisticalLineAndShapeRenderer;
 
-import java.awt.*;
+import java.awt.BasicStroke;
+import java.awt.Font;
 import java.nio.file.Path;
 
 /**

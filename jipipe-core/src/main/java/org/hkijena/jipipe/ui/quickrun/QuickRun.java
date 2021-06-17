@@ -13,29 +13,38 @@
 
 package org.hkijena.jipipe.ui.quickrun;
 
-import org.hkijena.jipipe.api.*;
+import org.hkijena.jipipe.api.JIPipeProgressInfo;
+import org.hkijena.jipipe.api.JIPipeProject;
+import org.hkijena.jipipe.api.JIPipeProjectCacheQuery;
+import org.hkijena.jipipe.api.JIPipeRun;
+import org.hkijena.jipipe.api.JIPipeRunSettings;
+import org.hkijena.jipipe.api.JIPipeRunnable;
+import org.hkijena.jipipe.api.JIPipeValidatable;
+import org.hkijena.jipipe.api.JIPipeValidityReport;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeAlgorithm;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 
-import java.util.*;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+import java.util.Stack;
 
 /**
  * Allows to test one algorithm with multiple parameters
  */
 public class QuickRun implements JIPipeRunnable, JIPipeValidatable {
-    private JIPipeProgressInfo progressInfo = new JIPipeProgressInfo();
     private final JIPipeProject project;
     private final JIPipeGraphNode targetNode;
     private final QuickRunSettings settings;
-
+    private JIPipeProgressInfo progressInfo = new JIPipeProgressInfo();
     private JIPipeRun run;
     private JIPipeGraphNode targetNodeCopy;
 
     /**
-     * @param project          The project
+     * @param project    The project
      * @param targetNode The tested algorithm
-     * @param settings         The settings
+     * @param settings   The settings
      */
     public QuickRun(JIPipeProject project, JIPipeGraphNode targetNode, QuickRunSettings settings) {
         this.project = project;
@@ -154,6 +163,7 @@ public class QuickRun implements JIPipeRunnable, JIPipeValidatable {
 
     /**
      * The project where the run was created
+     *
      * @return the project
      */
     public JIPipeProject getProject() {
@@ -163,6 +173,7 @@ public class QuickRun implements JIPipeRunnable, JIPipeValidatable {
     /**
      * The node targeted to be executed
      * In project graph
+     *
      * @return the target node
      */
     public JIPipeGraphNode getTargetNode() {
@@ -171,6 +182,7 @@ public class QuickRun implements JIPipeRunnable, JIPipeValidatable {
 
     /**
      * Settings for this quick run
+     *
      * @return the settings
      */
     public QuickRunSettings getSettings() {
@@ -179,6 +191,7 @@ public class QuickRun implements JIPipeRunnable, JIPipeValidatable {
 
     /**
      * The run that runs the pipeline
+     *
      * @return the pipeline run
      */
     public JIPipeRun getRun() {
@@ -187,6 +200,7 @@ public class QuickRun implements JIPipeRunnable, JIPipeValidatable {
 
     /**
      * Copy of the targeted node (in the run's graph)
+     *
      * @return copy of the targeted node
      */
     public JIPipeGraphNode getTargetNodeCopy() {

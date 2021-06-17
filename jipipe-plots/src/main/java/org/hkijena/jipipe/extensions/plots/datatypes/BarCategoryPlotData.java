@@ -19,7 +19,7 @@ import org.jfree.chart.JFreeChart;
 import org.jfree.chart.renderer.category.BarRenderer;
 import org.jfree.chart.renderer.category.StandardBarPainter;
 
-import java.awt.*;
+import java.awt.Font;
 import java.nio.file.Path;
 
 /**

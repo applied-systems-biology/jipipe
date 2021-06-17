@@ -13,7 +13,11 @@
 
 package org.hkijena.jipipe.installer.linux.api;
 
-import org.apache.commons.exec.*;
+import org.apache.commons.exec.CommandLine;
+import org.apache.commons.exec.DefaultExecutor;
+import org.apache.commons.exec.ExecuteWatchdog;
+import org.apache.commons.exec.LogOutputStream;
+import org.apache.commons.exec.PumpStreamHandler;
 import org.apache.commons.io.FileUtils;
 import org.hkijena.jipipe.installer.linux.ui.utils.ResourceUtils;
 import org.hkijena.jipipe.installer.linux.ui.utils.StringUtils;

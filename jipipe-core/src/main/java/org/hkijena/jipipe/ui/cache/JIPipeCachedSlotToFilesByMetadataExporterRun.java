@@ -32,7 +32,7 @@ import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
-import java.awt.*;
+import java.awt.BorderLayout;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.HashSet;

@@ -16,13 +16,18 @@ package org.hkijena.jipipe.ui.grapheditor.settings;
 import com.google.common.eventbus.Subscribe;
 import org.hkijena.jipipe.api.JIPipeValidityReport;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
-import org.hkijena.jipipe.ui.quickrun.QuickRun;
-import org.hkijena.jipipe.ui.quickrun.QuickRunSettings;
 import org.hkijena.jipipe.extensions.settings.RuntimeSettings;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbenchPanel;
-import org.hkijena.jipipe.ui.components.*;
+import org.hkijena.jipipe.ui.components.DocumentTabPane;
+import org.hkijena.jipipe.ui.components.DocumentedComponent;
+import org.hkijena.jipipe.ui.components.FormPanel;
+import org.hkijena.jipipe.ui.components.JIPipeValidityReportUI;
+import org.hkijena.jipipe.ui.components.MarkdownDocument;
+import org.hkijena.jipipe.ui.components.UserFriendlyErrorUI;
 import org.hkijena.jipipe.ui.parameters.ParameterPanel;
+import org.hkijena.jipipe.ui.quickrun.QuickRun;
+import org.hkijena.jipipe.ui.quickrun.QuickRunSettings;
 import org.hkijena.jipipe.ui.resultanalysis.JIPipeResultUI;
 import org.hkijena.jipipe.ui.running.JIPipeRunExecuterUI;
 import org.hkijena.jipipe.ui.running.JIPipeRunnerQueue;
@@ -31,7 +36,10 @@ import org.hkijena.jipipe.ui.running.RunUIWorkerInterruptedEvent;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
-import java.awt.*;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.Font;
 import java.util.HashMap;
 import java.util.Set;
 import java.util.function.Consumer;
@@ -41,8 +49,8 @@ import java.util.function.Consumer;
  */
 public class QuickRunSetupUI extends JIPipeProjectWorkbenchPanel {
 
-    boolean showNextResults;
     private final JIPipeGraphNode algorithm;
+    boolean showNextResults;
     private JPanel setupPanel;
     private JPanel selectionPanel;
     private JPanel validationReportPanel;
@@ -126,10 +134,10 @@ public class QuickRunSetupUI extends JIPipeProjectWorkbenchPanel {
         descriptionArea.setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
         panel.add(descriptionArea, BorderLayout.CENTER);
 
-        JPanel buttonPanel = new JPanel(new BorderLayout(4,4));
+        JPanel buttonPanel = new JPanel(new BorderLayout(4, 4));
         buttonPanel.setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
         JButton actionButton = new JButton(name, icon);
-        actionButton.setPreferredSize(new Dimension(200,32));
+        actionButton.setPreferredSize(new Dimension(200, 32));
         actionButton.addActionListener(e -> action.run());
         buttonPanel.add(actionButton, BorderLayout.EAST);
 

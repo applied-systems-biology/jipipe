@@ -1,7 +1,11 @@
 package org.hkijena.jipipe.ui.components;
 
 import javax.swing.*;
-import java.awt.*;
+import java.awt.Component;
+import java.awt.Container;
+import java.awt.Dimension;
+import java.awt.FlowLayout;
+import java.awt.Insets;
 
 /**
  * Adapted from https://github.com/timabell/WrapLayout/blob/master/src/uk/co/timwise/wraplayout/WrapLayout.java

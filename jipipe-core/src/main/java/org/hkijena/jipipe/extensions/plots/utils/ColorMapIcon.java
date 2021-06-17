@@ -14,7 +14,9 @@
 package org.hkijena.jipipe.extensions.plots.utils;
 
 import javax.swing.*;
-import java.awt.*;
+import java.awt.Component;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
 
 public class ColorMapIcon implements Icon {
 

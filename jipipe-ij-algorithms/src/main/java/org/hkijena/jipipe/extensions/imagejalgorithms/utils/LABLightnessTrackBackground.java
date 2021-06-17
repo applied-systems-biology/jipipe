@@ -2,7 +2,9 @@ package org.hkijena.jipipe.extensions.imagejalgorithms.utils;
 
 import org.hkijena.jipipe.extensions.parameters.ranges.PaintGenerator;
 
-import java.awt.*;
+import java.awt.Color;
+import java.awt.LinearGradientPaint;
+import java.awt.Paint;
 
 public class LABLightnessTrackBackground implements PaintGenerator {
 

@@ -30,7 +30,7 @@ import org.hkijena.jipipe.utils.BusyCursor;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
-import java.awt.*;
+import java.awt.Dimension;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;

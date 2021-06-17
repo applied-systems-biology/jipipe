@@ -15,7 +15,7 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.utils.PathUtils;
 
 import javax.swing.*;
-import java.awt.*;
+import java.awt.Component;
 import java.awt.image.BufferedImage;
 import java.nio.file.Path;
 import java.util.List;

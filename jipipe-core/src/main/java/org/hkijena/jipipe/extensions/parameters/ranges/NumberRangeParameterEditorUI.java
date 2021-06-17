@@ -15,7 +15,12 @@ import org.jdesktop.swingx.multislider.ThumbListener;
 
 import javax.swing.*;
 import javax.swing.event.DocumentEvent;
-import java.awt.*;
+import java.awt.BorderLayout;
+import java.awt.Dimension;
+import java.awt.FontMetrics;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.Polygon;
 import java.awt.event.MouseEvent;
 
 public class NumberRangeParameterEditorUI extends JIPipeParameterEditorUI implements ThumbListener {

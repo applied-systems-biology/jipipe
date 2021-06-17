@@ -7,7 +7,7 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.viewer.ImageViewerPanel;
 import org.hkijena.jipipe.ui.components.FormPanel;
 
 import javax.swing.*;
-import java.awt.*;
+import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 
 public abstract class ImageViewerPanelPlugin {

@@ -17,7 +17,12 @@ import com.google.common.eventbus.Subscribe;
 import com.google.common.html.HtmlEscapers;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.parameters.*;
+import org.hkijena.jipipe.api.parameters.JIPipeDynamicParameterCollection;
+import org.hkijena.jipipe.api.parameters.JIPipeMutableParameterAccess;
+import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
+import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
+import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
+import org.hkijena.jipipe.api.parameters.JIPipeParameterTypeInfo;
 import org.hkijena.jipipe.extensions.settings.GeneralUISettings;
 import org.hkijena.jipipe.extensions.settings.GraphEditorUISettings;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
@@ -32,9 +37,16 @@ import org.scijava.Context;
 import org.scijava.Contextual;
 
 import javax.swing.*;
-import java.awt.*;
+import java.awt.BorderLayout;
+import java.awt.Component;
+import java.awt.Dimension;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Comparator;
+import java.util.HashSet;
 import java.util.List;
-import java.util.*;
+import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.BiFunction;
 import java.util.stream.Collectors;
@@ -175,11 +187,10 @@ public class ParameterPanel extends FormPanel implements Contextual {
 
             // Hidden parameter groups
             if (rootCollection != null) {
-                if(customIsParameterCollectionVisible == null ) {
+                if (customIsParameterCollectionVisible == null) {
                     if (rootCollection != source && !rootCollection.isParameterUIVisible(traversed, source))
                         hiddenCollections.add(source);
-                }
-                else {
+                } else {
                     if (rootCollection != source && !customIsParameterCollectionVisible.apply(traversed, source))
                         hiddenCollections.add(source);
                 }
@@ -192,7 +203,7 @@ public class ParameterPanel extends FormPanel implements Contextual {
             int parameterCount = sourceNode.getParameters().size();
             for (JIPipeParameterAccess parameterAccess : sourceNode.getParameters().values()) {
                 boolean visible;
-                if(customIsParameterVisible == null)
+                if (customIsParameterVisible == null)
                     visible = (rootCollection != null ? rootCollection.isParameterUIVisible(traversed, parameterAccess) : !parameterAccess.isHidden());
                 else
                     visible = (rootCollection != null ? customIsParameterVisible.apply(traversed, parameterAccess) : !parameterAccess.isHidden());

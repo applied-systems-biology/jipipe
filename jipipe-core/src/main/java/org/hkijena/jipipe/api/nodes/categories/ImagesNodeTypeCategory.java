@@ -17,7 +17,7 @@ import org.hkijena.jipipe.api.nodes.JIPipeNodeTypeCategory;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
-import java.awt.*;
+import java.awt.Color;
 
 public class ImagesNodeTypeCategory implements JIPipeNodeTypeCategory {
 

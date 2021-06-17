@@ -16,7 +16,7 @@ package org.hkijena.jipipe.ui.grapheditor;
 import org.hkijena.jipipe.extensions.settings.GraphEditorUISettings;
 
 import javax.swing.*;
-import java.awt.*;
+import java.awt.Point;
 import java.awt.dnd.DropTargetDragEvent;
 import java.awt.dnd.DropTargetDropEvent;
 import java.awt.dnd.DropTargetEvent;

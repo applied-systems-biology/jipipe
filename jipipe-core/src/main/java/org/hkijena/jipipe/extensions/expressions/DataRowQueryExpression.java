@@ -22,7 +22,6 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 /**
@@ -48,8 +47,9 @@ public class DataRowQueryExpression extends DefaultExpressionParameter {
 
     /**
      * Returns true if the data contained in this slot matches the expression
+     *
      * @param slot the data slot
-     * @param row data row index
+     * @param row  data row index
      * @return if the expression matches
      */
     public boolean test(JIPipeDataSlot slot, int row) {
@@ -58,20 +58,22 @@ public class DataRowQueryExpression extends DefaultExpressionParameter {
 
     /**
      * Returns matching rows
+     *
      * @param slot the data slot
      * @return matching rows
      */
     public java.util.List<Integer> query(JIPipeDataSlot slot) {
-       java.util.List<Integer> result = new ArrayList<>();
+        java.util.List<Integer> result = new ArrayList<>();
         for (int row = 0; row < slot.getRowCount(); row++) {
-            if(test(slot, row))
+            if (test(slot, row))
                 result.add(row);
         }
-       return result;
+        return result;
     }
 
     /**
      * Returns matching rows
+     *
      * @param slot the data slot
      * @param rows rows to be checked
      * @return matching rows
@@ -79,7 +81,7 @@ public class DataRowQueryExpression extends DefaultExpressionParameter {
     public java.util.List<Integer> query(JIPipeDataSlot slot, Collection<Integer> rows) {
         java.util.List<Integer> result = new ArrayList<>();
         for (int row : rows) {
-            if(test(slot, row))
+            if (test(slot, row))
                 result.add(row);
         }
         return result;
@@ -87,7 +89,8 @@ public class DataRowQueryExpression extends DefaultExpressionParameter {
 
     /**
      * Returns true if the data matches the expression
-     * @param data the data
+     *
+     * @param data        the data
      * @param annotations the annotations
      * @return if the expression matches
      */
@@ -103,7 +106,8 @@ public class DataRowQueryExpression extends DefaultExpressionParameter {
 
     /**
      * Returns true if the data matches the expression
-     * @param data the data
+     *
+     * @param data        the data
      * @param annotations the annotations
      * @return if the expression matches
      */

@@ -15,7 +15,7 @@ package org.hkijena.jipipe.ui.grapheditor.connections;
 
 import org.hkijena.jipipe.ui.grapheditor.JIPipeGraphViewMode;
 
-import java.awt.*;
+import java.awt.Graphics2D;
 import java.awt.geom.Path2D;
 import java.util.ArrayList;
 import java.util.List;

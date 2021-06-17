@@ -4,7 +4,8 @@ import org.hkijena.jipipe.extensions.settings.GeneralUISettings;
 
 import javax.swing.*;
 import javax.swing.table.TableCellRenderer;
-import java.awt.*;
+import java.awt.Color;
+import java.awt.Component;
 import java.util.List;
 
 public class DataBatchStatusTableCellRenderer extends JLabel implements TableCellRenderer {

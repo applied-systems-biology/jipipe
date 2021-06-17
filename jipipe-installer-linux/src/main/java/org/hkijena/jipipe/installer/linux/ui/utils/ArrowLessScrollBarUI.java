@@ -16,7 +16,7 @@ package org.hkijena.jipipe.installer.linux.ui.utils;
 import javax.swing.*;
 import javax.swing.plaf.ComponentUI;
 import javax.swing.plaf.basic.BasicScrollBarUI;
-import java.awt.*;
+import java.awt.Dimension;
 
 public class ArrowLessScrollBarUI extends BasicScrollBarUI {
     @Override

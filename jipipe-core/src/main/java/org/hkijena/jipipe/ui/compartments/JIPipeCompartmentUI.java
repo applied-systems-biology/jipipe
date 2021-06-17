@@ -18,7 +18,7 @@ import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbenchPanel;
 import org.hkijena.jipipe.ui.grapheditor.JIPipeGraphCompartmentUI;
 
-import java.awt.*;
+import java.awt.BorderLayout;
 
 /**
  * Editor for one project compartment graph

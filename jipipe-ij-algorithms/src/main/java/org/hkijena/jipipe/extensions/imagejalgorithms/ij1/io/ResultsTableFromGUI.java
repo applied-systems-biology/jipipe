@@ -30,7 +30,7 @@ import org.hkijena.jipipe.extensions.expressions.ExpressionParameters;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
 
-import java.awt.*;
+import java.awt.Window;
 
 /**
  * Imports {@link ImagePlusData} from the GUI

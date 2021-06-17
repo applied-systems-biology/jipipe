@@ -36,7 +36,8 @@ import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 
 import javax.swing.*;
-import java.awt.*;
+import java.awt.Dimension;
+import java.awt.GraphicsEnvironment;
 import java.io.IOException;
 import java.util.Map;
 

@@ -16,7 +16,12 @@ package org.hkijena.jipipe.extensions.expressions.operators;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.extensions.expressions.ParameterInfo;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 
 @JIPipeDocumentation(name = "Addition", description = "Adds two numbers together, concatenates two strings, or concatenates two arrays.")
 public class AdditionFunctionOperator extends GenericOperator {

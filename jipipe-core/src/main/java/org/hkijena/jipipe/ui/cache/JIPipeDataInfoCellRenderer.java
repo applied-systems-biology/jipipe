@@ -19,7 +19,7 @@ import org.hkijena.jipipe.api.data.JIPipeDataInfo;
 
 import javax.swing.*;
 import javax.swing.table.TableCellRenderer;
-import java.awt.*;
+import java.awt.Component;
 
 /**
  * Renders {@link JIPipeData}

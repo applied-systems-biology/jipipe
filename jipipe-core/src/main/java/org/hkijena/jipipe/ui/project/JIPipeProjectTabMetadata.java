@@ -22,7 +22,7 @@ import org.hkijena.jipipe.ui.components.DocumentTabPane;
 import org.hkijena.jipipe.utils.StringUtils;
 
 import javax.swing.*;
-import java.awt.*;
+import java.awt.Component;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;

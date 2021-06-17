@@ -21,7 +21,7 @@ import org.hkijena.jipipe.ui.parameters.JIPipeParameterEditorUI;
 import org.hkijena.jipipe.ui.parameters.ParameterPanel;
 
 import javax.swing.*;
-import java.awt.*;
+import java.awt.BorderLayout;
 
 public class JIPipeParameterCollectionParameterEditorUI extends JIPipeParameterEditorUI {
 

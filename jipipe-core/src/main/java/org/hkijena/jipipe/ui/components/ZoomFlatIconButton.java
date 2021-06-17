@@ -3,7 +3,7 @@ package org.hkijena.jipipe.ui.components;
 import com.google.common.eventbus.Subscribe;
 
 import javax.swing.*;
-import java.awt.*;
+import java.awt.Dimension;
 
 /**
  * Flat {@link javax.swing.JButton} that zooms and displays a zoomable icon

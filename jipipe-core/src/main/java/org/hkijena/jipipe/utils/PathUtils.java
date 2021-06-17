@@ -34,7 +34,7 @@ public class PathUtils {
     }
 
     public static void copyOrLink(Path source, Path target, JIPipeProgressInfo progressInfo) {
-        if(SystemUtils.IS_OS_WINDOWS) {
+        if (SystemUtils.IS_OS_WINDOWS) {
             // Copy file
             progressInfo.log("Copy " + source + " to " + target);
             try {
@@ -42,8 +42,7 @@ public class PathUtils {
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
-        }
-        else {
+        } else {
             // Create symlink
             progressInfo.log("Link " + source + " to " + target);
             try {

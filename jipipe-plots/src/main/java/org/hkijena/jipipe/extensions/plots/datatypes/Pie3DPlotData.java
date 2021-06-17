@@ -19,7 +19,7 @@ import org.jfree.chart.ChartFactory;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.plot.PiePlot3D;
 
-import java.awt.*;
+import java.awt.Font;
 import java.nio.file.Path;
 
 /**

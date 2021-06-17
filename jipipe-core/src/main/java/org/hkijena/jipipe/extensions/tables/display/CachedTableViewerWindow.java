@@ -44,7 +44,7 @@ public class CachedTableViewerWindow extends JIPipeCacheDataViewerWindow {
 
     @Override
     public JToolBar getToolBar() {
-        if(tableEditor == null)
+        if (tableEditor == null)
             return null;
         return tableEditor.getToolBar();
     }
@@ -66,10 +66,9 @@ public class CachedTableViewerWindow extends JIPipeCacheDataViewerWindow {
 
     @Override
     protected void addErrorUI() {
-        if(getAlgorithm() != null) {
+        if (getAlgorithm() != null) {
             errorLabel.setText(String.format("No data available in node '%s', slot '%s', row %d", getAlgorithm().getName(), getSlotName(), getDataSource().getRow()));
-        }
-        else {
+        } else {
             errorLabel.setText("No data available");
         }
         errorLabel.setVisible(true);

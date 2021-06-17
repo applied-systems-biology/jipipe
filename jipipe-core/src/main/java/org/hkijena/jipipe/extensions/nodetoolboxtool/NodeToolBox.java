@@ -2,18 +2,22 @@ package org.hkijena.jipipe.extensions.nodetoolboxtool;
 
 import com.google.common.html.HtmlEscapers;
 import org.hkijena.jipipe.JIPipe;
-import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataInfo;
 import org.hkijena.jipipe.api.nodes.JIPipeInputSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.JIPipeOutputSlot;
-import org.hkijena.jipipe.ui.components.*;
+import org.hkijena.jipipe.ui.components.AlwaysOnTopToggle;
+import org.hkijena.jipipe.ui.components.JIPipeNodeInfoListCellRenderer;
+import org.hkijena.jipipe.ui.components.MarkdownDocument;
+import org.hkijena.jipipe.ui.components.MarkdownReader;
+import org.hkijena.jipipe.ui.components.SearchTextField;
 import org.hkijena.jipipe.utils.RankedData;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
-import java.awt.*;
+import java.awt.BorderLayout;
+import java.awt.Cursor;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.util.List;

@@ -6,7 +6,8 @@ import org.hkijena.jipipe.extensions.settings.NotificationUISettings;
 import org.hkijena.jipipe.ui.JIPipeProjectWindow;
 import org.hkijena.jipipe.utils.UIUtils;
 
-import java.awt.*;
+import java.awt.TrayIcon;
+import java.awt.Window;
 
 /**
  * Generates notifications based on the the runner

@@ -13,7 +13,7 @@
 
 package org.hkijena.jipipe.utils;
 
-import java.awt.*;
+import java.awt.Point;
 
 /**
  * Stores three points, representing the center point, and an area around it

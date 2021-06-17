@@ -14,15 +14,14 @@
 package org.hkijena.jipipe.ui.project;
 
 import org.hkijena.jipipe.api.JIPipeProjectTemplate;
-import org.hkijena.jipipe.ui.JIPipeProjectWindow;
 import org.hkijena.jipipe.ui.components.TemplateProjectListCellRenderer;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
-import java.awt.*;
+import java.awt.BorderLayout;
+import java.awt.Window;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.Comparator;
 
@@ -56,8 +55,7 @@ public class JIPipeTemplateSelectionDialog extends JDialog {
                 if (e.getClickCount() == 2) {
                     isConfirmed = true;
                     setVisible(false);
-                }
-                else {
+                } else {
                     if (templateJList.getMousePosition().x > templateJList.getWidth() - 50) {
                         isConfirmed = true;
                         setVisible(false);

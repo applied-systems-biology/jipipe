@@ -16,7 +16,12 @@ package org.hkijena.jipipe.extensions.expressions.operators;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.extensions.expressions.ParameterInfo;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 
 @JIPipeDocumentation(name = "Subtract", description = "Subtracts the right operand from the left operand. If the left operand is an array, the right operand is removed from the array. If the left operand is a map, the right operand is removed from the map's keys.")
 public class SubtractionFunctionOperator extends GenericOperator {

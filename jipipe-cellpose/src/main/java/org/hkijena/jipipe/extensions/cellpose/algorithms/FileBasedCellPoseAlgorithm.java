@@ -1,9 +1,6 @@
 package org.hkijena.jipipe.extensions.cellpose.algorithms;
 
-import ij.IJ;
-import ij.ImagePlus;
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.lang3.SystemUtils;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
@@ -32,17 +29,12 @@ import org.hkijena.jipipe.extensions.cellpose.parameters.PerformanceParameters;
 import org.hkijena.jipipe.extensions.cellpose.parameters.ThresholdParameters;
 import org.hkijena.jipipe.extensions.filesystem.dataypes.FileData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ROIListData;
-import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d2.greyscale.ImagePlus2DGreyscale32FData;
-import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d3.color.ImagePlus3DColorRGBData;
-import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d3.greyscale.ImagePlus3DGreyscale32FData;
-import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d3.greyscale.ImagePlus3DGreyscaleData;
 import org.hkijena.jipipe.extensions.parameters.primitives.FilePathParameterSettings;
 import org.hkijena.jipipe.extensions.parameters.primitives.OptionalAnnotationNameParameter;
 import org.hkijena.jipipe.extensions.parameters.primitives.OptionalDoubleParameter;
 import org.hkijena.jipipe.extensions.parameters.primitives.OptionalPathParameter;
 import org.hkijena.jipipe.extensions.python.OptionalPythonEnvironment;
 import org.hkijena.jipipe.extensions.python.PythonUtils;
-import org.hkijena.jipipe.extensions.settings.RuntimeSettings;
 import org.hkijena.jipipe.ui.components.PathEditor;
 import org.hkijena.jipipe.utils.MacroUtils;
 import org.hkijena.jipipe.utils.PathUtils;
@@ -195,17 +187,16 @@ public class FileBasedCellPoseAlgorithm extends JIPipeMergingAlgorithm {
         Path workDirectory;
 
         // Create work directory
-        if(overrideOutputPath.isEnabled()) {
+        if (overrideOutputPath.isEnabled()) {
             workDirectory = overrideOutputPath.getContent();
             try {
-                if(Files.exists(workDirectory))
+                if (Files.exists(workDirectory))
                     FileUtils.deleteDirectory(workDirectory.toFile());
                 Files.createDirectories(workDirectory);
             } catch (IOException e) {
                 e.printStackTrace();
             }
-        }
-        else
+        } else
             workDirectory = getNewScratch();
 
         // Save models if needed

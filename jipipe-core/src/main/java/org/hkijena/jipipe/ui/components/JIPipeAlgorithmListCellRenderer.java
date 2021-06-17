@@ -17,7 +17,7 @@ import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 
 import javax.swing.*;
-import java.awt.*;
+import java.awt.Component;
 
 /**
  * Renders {@link JIPipeGraphNode}

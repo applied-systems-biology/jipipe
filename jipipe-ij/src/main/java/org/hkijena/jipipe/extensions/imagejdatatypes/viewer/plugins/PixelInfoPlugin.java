@@ -9,7 +9,8 @@ import org.hkijena.jipipe.ui.components.FormPanel;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
-import java.awt.*;
+import java.awt.Color;
+import java.awt.Point;
 
 public class PixelInfoPlugin extends GeneralImageViewerPanelPlugin {
 

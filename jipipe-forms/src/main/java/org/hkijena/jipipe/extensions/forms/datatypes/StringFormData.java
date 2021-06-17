@@ -14,7 +14,7 @@ import org.hkijena.jipipe.extensions.expressions.StringQueryExpression;
 import org.hkijena.jipipe.extensions.forms.utils.SingleAnnotationIOSettings;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 
-import java.awt.*;
+import java.awt.Component;
 import java.nio.file.Path;
 import java.util.Collections;
 

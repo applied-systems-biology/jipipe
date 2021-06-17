@@ -3,7 +3,7 @@ package org.hkijena.jipipe.ui.components;
 import com.google.common.eventbus.Subscribe;
 
 import javax.swing.*;
-import java.awt.*;
+import java.awt.Font;
 
 /**
  * {@link JLabel} that changes its font based on the {@link ZoomViewPort} zoom level

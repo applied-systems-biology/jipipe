@@ -13,7 +13,7 @@
 
 package org.hkijena.jipipe.utils;
 
-import java.awt.*;
+import java.awt.Color;
 import java.util.HashMap;
 import java.util.Map;
 

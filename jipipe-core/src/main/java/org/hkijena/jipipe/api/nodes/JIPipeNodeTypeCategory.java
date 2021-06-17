@@ -14,7 +14,7 @@
 package org.hkijena.jipipe.api.nodes;
 
 import javax.swing.*;
-import java.awt.*;
+import java.awt.Color;
 
 /**
  * Describes a node category

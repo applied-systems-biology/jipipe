@@ -20,7 +20,7 @@ import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.utils.JsonUtils;
 import org.hkijena.jipipe.utils.ParameterUtils;
 
-import java.awt.*;
+import java.awt.Component;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;

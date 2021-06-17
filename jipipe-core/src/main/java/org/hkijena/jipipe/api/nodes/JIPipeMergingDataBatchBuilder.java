@@ -7,7 +7,11 @@ import net.imagej.ImageJ;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.JIPipeRegistryIssues;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
-import org.hkijena.jipipe.api.data.*;
+import org.hkijena.jipipe.api.data.JIPipeAnnotation;
+import org.hkijena.jipipe.api.data.JIPipeAnnotationMergeStrategy;
+import org.hkijena.jipipe.api.data.JIPipeDataSlot;
+import org.hkijena.jipipe.api.data.JIPipeDataSlotInfo;
+import org.hkijena.jipipe.api.data.JIPipeSlotType;
 import org.hkijena.jipipe.extensions.expressions.DefaultExpressionParameter;
 import org.hkijena.jipipe.extensions.expressions.ExpressionParameters;
 import org.hkijena.jipipe.extensions.expressions.StringQueryExpression;
@@ -431,16 +435,15 @@ public class JIPipeMergingDataBatchBuilder {
                     }
                 }
             }
-            if(annotationMatchingMethod == JIPipeAnnotationMatchingMethod.ExactMatch) {
+            if (annotationMatchingMethod == JIPipeAnnotationMatchingMethod.ExactMatch) {
                 return exactMatchResults;
-            } else
-            {
-                    ExpressionParameters expressionParameters = new ExpressionParameters();
-                    expressionParameters.put("annotations", annotations);
-                    expressionParameters.put("other_annotations", otherNode.annotations);
-                    expressionParameters.put("exact_match_results", exactMatchResults);
-                    return customAnnotationMatching.test(expressionParameters);
-                }
+            } else {
+                ExpressionParameters expressionParameters = new ExpressionParameters();
+                expressionParameters.put("annotations", annotations);
+                expressionParameters.put("other_annotations", otherNode.annotations);
+                expressionParameters.put("exact_match_results", exactMatchResults);
+                return customAnnotationMatching.test(expressionParameters);
+            }
         }
 
         @Override

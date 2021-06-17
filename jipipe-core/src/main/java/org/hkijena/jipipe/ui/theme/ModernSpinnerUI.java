@@ -18,7 +18,8 @@ import org.hkijena.jipipe.utils.UIUtils;
 import javax.swing.*;
 import javax.swing.plaf.ComponentUI;
 import javax.swing.plaf.basic.BasicSpinnerUI;
-import java.awt.*;
+import java.awt.Component;
+import java.awt.Dimension;
 
 public class ModernSpinnerUI extends BasicSpinnerUI {
 

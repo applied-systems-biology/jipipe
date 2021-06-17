@@ -14,7 +14,10 @@
 package org.hkijena.jipipe.ui.components;
 
 import javax.swing.*;
-import java.awt.*;
+import java.awt.Component;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.RenderingHints;
 import java.awt.geom.AffineTransform;
 
 public class ThrobberIcon implements Icon {

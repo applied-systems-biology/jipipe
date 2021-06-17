@@ -44,7 +44,7 @@ public class CachedPlotViewerWindow extends JIPipeCacheDataViewerWindow {
 
     @Override
     public JToolBar getToolBar() {
-        if(plotEditor == null)
+        if (plotEditor == null)
             return null;
         else
             return plotEditor.getToolBar();
@@ -67,10 +67,9 @@ public class CachedPlotViewerWindow extends JIPipeCacheDataViewerWindow {
 
     @Override
     protected void addErrorUI() {
-        if(getAlgorithm() != null) {
+        if (getAlgorithm() != null) {
             errorLabel.setText(String.format("No data available in node '%s', slot '%s', row %d", getAlgorithm().getName(), getSlotName(), getDataSource().getRow()));
-        }
-        else {
+        } else {
             errorLabel.setText("No data available");
         }
         errorLabel.setVisible(true);

@@ -18,7 +18,7 @@ import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 
 import javax.swing.*;
 import javax.swing.table.TableCellRenderer;
-import java.awt.*;
+import java.awt.Component;
 
 /**
  * Renders {@link JIPipeGraphNode} instances in a table cell

@@ -3,7 +3,7 @@ package org.hkijena.jipipe.ui.ijupdater;
 import net.imagej.updater.Conflicts;
 import net.imagej.updater.FilesCollection;
 
-import java.awt.*;
+import java.awt.Window;
 import java.util.ArrayList;
 
 public class ResolveDependencies extends ConflictDialog {

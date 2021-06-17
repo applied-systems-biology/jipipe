@@ -21,7 +21,7 @@ import org.hkijena.jipipe.utils.UIUtils;
 import org.scijava.ui.swing.script.EditorPane;
 
 import javax.swing.*;
-import java.awt.*;
+import java.awt.BorderLayout;
 
 public class JIPipeTextEditor extends JIPipeWorkbenchPanel {
     private EditorPane textArea;

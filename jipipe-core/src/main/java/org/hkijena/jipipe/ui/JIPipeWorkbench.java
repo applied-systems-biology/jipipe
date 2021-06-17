@@ -18,7 +18,7 @@ import org.hkijena.jipipe.api.nodes.JIPipeGraph;
 import org.hkijena.jipipe.ui.components.DocumentTabPane;
 import org.scijava.Context;
 
-import java.awt.*;
+import java.awt.Window;
 
 /**
  * Interface shared by all workbench UIs

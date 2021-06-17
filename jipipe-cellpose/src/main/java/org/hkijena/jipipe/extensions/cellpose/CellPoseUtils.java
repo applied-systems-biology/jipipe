@@ -23,7 +23,6 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d3.color.ImagePlu
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d3.greyscale.ImagePlus3DGreyscale32FData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d3.greyscale.ImagePlus3DGreyscaleData;
 import org.hkijena.jipipe.extensions.parameters.primitives.OptionalDoubleParameter;
-import org.hkijena.jipipe.extensions.parameters.primitives.OptionalIntegerParameter;
 import org.hkijena.jipipe.extensions.python.PythonUtils;
 import org.hkijena.jipipe.utils.JsonUtils;
 import org.hkijena.jipipe.utils.MacroUtils;

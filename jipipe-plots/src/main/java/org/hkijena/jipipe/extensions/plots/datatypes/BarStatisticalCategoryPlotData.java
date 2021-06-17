@@ -20,7 +20,7 @@ import org.jfree.chart.renderer.category.BarRenderer;
 import org.jfree.chart.renderer.category.StandardBarPainter;
 import org.jfree.chart.renderer.category.StatisticalBarRenderer;
 
-import java.awt.*;
+import java.awt.Font;
 import java.nio.file.Path;
 
 /**

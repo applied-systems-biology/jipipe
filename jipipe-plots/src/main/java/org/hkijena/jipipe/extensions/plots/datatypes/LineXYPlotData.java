@@ -20,7 +20,8 @@ import org.jfree.chart.JFreeChart;
 import org.jfree.chart.renderer.AbstractRenderer;
 import org.jfree.chart.renderer.xy.XYItemRenderer;
 
-import java.awt.*;
+import java.awt.BasicStroke;
+import java.awt.Font;
 import java.nio.file.Path;
 
 /**

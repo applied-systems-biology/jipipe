@@ -1,7 +1,8 @@
 package org.hkijena.jipipe.ui.components;
 
 import javax.swing.*;
-import java.awt.*;
+import java.awt.Component;
+import java.awt.Graphics;
 
 /**
  * Icon that adapts to the zoom level of a {@link ZoomViewPort}

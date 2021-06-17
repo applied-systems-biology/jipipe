@@ -23,7 +23,7 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.color.RGBColorSpace;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 
-import java.awt.*;
+import java.awt.Component;
 import java.nio.file.Path;
 
 /**

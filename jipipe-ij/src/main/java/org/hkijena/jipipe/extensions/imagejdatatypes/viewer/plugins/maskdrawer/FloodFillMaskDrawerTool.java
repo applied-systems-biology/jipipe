@@ -8,7 +8,8 @@ import org.hkijena.jipipe.utils.MouseClickedEvent;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
-import java.awt.*;
+import java.awt.Cursor;
+import java.awt.Point;
 
 /**
  * The standard mouse selection.

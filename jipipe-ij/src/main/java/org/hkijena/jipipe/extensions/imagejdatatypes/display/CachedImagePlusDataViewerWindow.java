@@ -37,8 +37,8 @@ import java.util.List;
 
 public class CachedImagePlusDataViewerWindow extends JIPipeCacheDataViewerWindow {
 
-    private ImageViewerPanel imageViewerPanel;
     private final JLabel errorLabel = new JLabel(UIUtils.getIconFromResources("emblems/no-data.png"));
+    private ImageViewerPanel imageViewerPanel;
 
     public CachedImagePlusDataViewerWindow(JIPipeWorkbench workbench, JIPipeCacheSlotDataSource dataSource, String displayName) {
         super(workbench, dataSource, displayName);
@@ -64,7 +64,7 @@ public class CachedImagePlusDataViewerWindow extends JIPipeCacheDataViewerWindow
 
     @Override
     public JToolBar getToolBar() {
-        if(imageViewerPanel == null)
+        if (imageViewerPanel == null)
             return null;
         else
             return imageViewerPanel.getToolBar();
@@ -86,10 +86,9 @@ public class CachedImagePlusDataViewerWindow extends JIPipeCacheDataViewerWindow
 
     @Override
     protected void addErrorUI() {
-        if(getAlgorithm() != null) {
+        if (getAlgorithm() != null) {
             errorLabel.setText(String.format("No data available in node '%s', slot '%s', row %d", getAlgorithm().getName(), getSlotName(), getDataSource().getRow()));
-        }
-        else {
+        } else {
             errorLabel.setText("No data available");
         }
         imageViewerPanel.getCanvas().setError(errorLabel);
@@ -103,7 +102,7 @@ public class CachedImagePlusDataViewerWindow extends JIPipeCacheDataViewerWindow
         image.setTitle(data.getImage().getTitle());
         boolean fitImage = imageViewerPanel.getImage() == null;
         imageViewerPanel.setImage(image);
-        if(fitImage)
+        if (fitImage)
             SwingUtilities.invokeLater(imageViewerPanel::fitImageToScreen);
     }
 }

@@ -24,7 +24,7 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.color.ColoredImag
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.color.ImagePlusColorHSBData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 
-import java.awt.*;
+import java.awt.Component;
 import java.nio.file.Path;
 
 /**

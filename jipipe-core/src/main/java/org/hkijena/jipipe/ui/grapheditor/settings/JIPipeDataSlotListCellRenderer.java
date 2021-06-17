@@ -17,7 +17,7 @@ import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 
 import javax.swing.*;
-import java.awt.*;
+import java.awt.Component;
 
 /**
  * Renders a {@link JIPipeDataSlot}

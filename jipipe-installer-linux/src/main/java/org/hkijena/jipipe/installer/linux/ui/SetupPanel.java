@@ -13,10 +13,15 @@
 
 package org.hkijena.jipipe.installer.linux.ui;
 
-import org.hkijena.jipipe.installer.linux.ui.utils.*;
+import org.hkijena.jipipe.installer.linux.ui.utils.FormPanel;
+import org.hkijena.jipipe.installer.linux.ui.utils.MarkdownDocument;
+import org.hkijena.jipipe.installer.linux.ui.utils.MarkdownReader;
+import org.hkijena.jipipe.installer.linux.ui.utils.PathEditor;
+import org.hkijena.jipipe.installer.linux.ui.utils.ResourceUtils;
+import org.hkijena.jipipe.installer.linux.ui.utils.UIUtils;
 
 import javax.swing.*;
-import java.awt.*;
+import java.awt.BorderLayout;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.io.IOException;

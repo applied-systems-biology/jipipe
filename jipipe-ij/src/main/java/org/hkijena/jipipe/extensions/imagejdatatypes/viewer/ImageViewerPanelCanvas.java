@@ -15,10 +15,21 @@ package org.hkijena.jipipe.extensions.imagejdatatypes.viewer;
 
 import com.google.common.eventbus.EventBus;
 import org.hkijena.jipipe.extensions.imagejdatatypes.viewer.plugins.ImageViewerPanelPlugin;
-import org.hkijena.jipipe.utils.*;
+import org.hkijena.jipipe.utils.MouseClickedEvent;
+import org.hkijena.jipipe.utils.MouseDraggedEvent;
+import org.hkijena.jipipe.utils.MouseEnteredEvent;
+import org.hkijena.jipipe.utils.MouseExitedEvent;
+import org.hkijena.jipipe.utils.MouseMovedEvent;
+import org.hkijena.jipipe.utils.MousePressedEvent;
+import org.hkijena.jipipe.utils.MouseReleasedEvent;
 
 import javax.swing.*;
-import java.awt.*;
+import java.awt.Component;
+import java.awt.Cursor;
+import java.awt.Dimension;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.Point;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;

@@ -18,7 +18,7 @@ import org.jfree.chart.ChartFactory;
 import org.jfree.chart.JFreeChart;
 import org.jfree.data.statistics.BoxAndWhiskerCategoryDataset;
 
-import java.awt.*;
+import java.awt.Font;
 import java.nio.file.Path;
 
 /**

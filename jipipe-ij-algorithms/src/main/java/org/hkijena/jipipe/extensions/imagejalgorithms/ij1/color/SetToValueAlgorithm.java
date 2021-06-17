@@ -29,7 +29,7 @@ import org.hkijena.jipipe.extensions.imagejalgorithms.utils.SimpleImageAndRoiIte
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 
-import java.awt.*;
+import java.awt.Color;
 import java.util.Collections;
 
 @JIPipeDocumentation(name = "Set to color (grayscale)", description = "Sets all pixels of the input image to the specified grayscale value. If the image is RGB, the value is converted into an integer that is parsed as RGB.")

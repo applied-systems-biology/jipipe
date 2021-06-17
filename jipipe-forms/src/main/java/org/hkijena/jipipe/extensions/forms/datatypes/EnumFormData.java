@@ -19,7 +19,7 @@ import org.hkijena.jipipe.extensions.parameters.primitives.DynamicStringEnumPara
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.utils.StringUtils;
 
-import java.awt.*;
+import java.awt.Component;
 import java.nio.file.Path;
 import java.util.Collections;
 import java.util.stream.Collectors;

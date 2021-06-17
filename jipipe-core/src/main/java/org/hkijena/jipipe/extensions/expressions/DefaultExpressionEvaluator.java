@@ -13,13 +13,21 @@
 
 package org.hkijena.jipipe.extensions.expressions;
 
-import com.fathzer.soft.javaluator.*;
+import com.fathzer.soft.javaluator.BracketPair;
+import com.fathzer.soft.javaluator.Constant;
+import com.fathzer.soft.javaluator.Function;
+import com.fathzer.soft.javaluator.Operator;
+import com.fathzer.soft.javaluator.Parameters;
 import com.google.common.collect.ImmutableList;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
 import org.hkijena.jipipe.api.registries.JIPipeExpressionRegistry;
-import org.hkijena.jipipe.extensions.expressions.constants.*;
+import org.hkijena.jipipe.extensions.expressions.constants.BooleanFalseConstant;
+import org.hkijena.jipipe.extensions.expressions.constants.BooleanTrueConstant;
+import org.hkijena.jipipe.extensions.expressions.constants.NumericEulerConstant;
+import org.hkijena.jipipe.extensions.expressions.constants.NumericPiConstant;
+import org.hkijena.jipipe.extensions.expressions.constants.NumericTauConstant;
 import org.hkijena.jipipe.extensions.expressions.operators.*;
 
 import java.util.*;

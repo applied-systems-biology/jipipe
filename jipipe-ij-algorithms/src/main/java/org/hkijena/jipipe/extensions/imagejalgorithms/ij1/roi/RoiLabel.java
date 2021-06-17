@@ -6,7 +6,10 @@ import ij.process.ImageProcessor;
 import org.hkijena.jipipe.extensions.imagejalgorithms.utils.DrawUtils;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ROIListData;
 
-import java.awt.*;
+import java.awt.Color;
+import java.awt.Font;
+import java.awt.Point;
+import java.awt.Rectangle;
 
 public enum RoiLabel {
     None,

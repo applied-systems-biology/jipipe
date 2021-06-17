@@ -13,10 +13,8 @@
 
 package org.hkijena.jipipe.ui.settings;
 
-import org.hkijena.jipipe.api.JIPipeDefaultDocumentation;
 import org.hkijena.jipipe.api.grouping.parameters.GraphNodeParametersUI;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
-import org.hkijena.jipipe.api.registries.JIPipeSettingsRegistry;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbenchPanel;
 import org.hkijena.jipipe.ui.components.FormPanel;
@@ -29,7 +27,9 @@ import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreeCellRenderer;
 import javax.swing.tree.TreePath;
-import java.awt.*;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Component;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.util.HashMap;
@@ -84,47 +84,44 @@ public class JIPipeProjectSettingsUI extends JIPipeProjectWorkbenchPanel {
     }
 
     private void selectCategory(String id) {
-        if(id.equals("GENERAL")) {
+        if (id.equals("GENERAL")) {
             ParameterPanel parameterPanel = new ParameterPanel(getWorkbench(),
                     new JIPipeParameterTree(getProject().getMetadata()),
                     MarkdownDocument.fromPluginResource("documentation/project-settings.md", new HashMap<>()),
                     ParameterPanel.WITH_SCROLLING | ParameterPanel.WITH_DOCUMENTATION | ParameterPanel.WITH_SEARCH_BAR);
             parameterPanel.setCustomIsParameterCollectionVisible((tree, collection) -> false);
             parameterPanel.setCustomIsParameterVisible((tree, parameter) -> {
-                if(parameter.getKey().contains("template"))
+                if (parameter.getKey().contains("template"))
                     return false;
-                if(parameter.getKey().equals("update-site-dependencies"))
+                if (parameter.getKey().equals("update-site-dependencies"))
                     return false;
                 return !parameter.isHidden();
             });
             splitPane.setRightComponent(parameterPanel);
-        }
-        else if(id.equals("PERMISSIONS")) {
+        } else if (id.equals("PERMISSIONS")) {
             ParameterPanel parameterPanel = new ParameterPanel(getWorkbench(),
                     new JIPipeParameterTree(getProject().getMetadata().getPermissions()),
                     MarkdownDocument.fromPluginResource("documentation/project-settings.md", new HashMap<>()),
                     ParameterPanel.WITH_SCROLLING | ParameterPanel.WITH_DOCUMENTATION | ParameterPanel.WITH_SEARCH_BAR);
             splitPane.setRightComponent(parameterPanel);
-        }
-        else if(id.equals("PARAMETERS")) {
+        } else if (id.equals("PARAMETERS")) {
             FormPanel parameterUI = new FormPanel(MarkdownDocument.fromPluginResource("documentation/project-settings-parameters.md", new HashMap<>()),
-            FormPanel.WITH_SCROLLING | FormPanel.WITH_DOCUMENTATION);
+                    FormPanel.WITH_SCROLLING | FormPanel.WITH_DOCUMENTATION);
             GraphNodeParametersUI graphNodeParametersUI = new GraphNodeParametersUI(getWorkbench(), getPipelineParameters().getExportedParameters(), FormPanel.NONE);
             graphNodeParametersUI.setBorder(BorderFactory.createLineBorder(Color.DARK_GRAY));
             parameterUI.addWideToForm(graphNodeParametersUI, null);
             parameterUI.addVerticalGlue();
             splitPane.setRightComponent(parameterUI);
-        }
-        else if(id.equals("MISC")) {
+        } else if (id.equals("MISC")) {
             ParameterPanel parameterPanel = new ParameterPanel(getWorkbench(),
                     new JIPipeParameterTree(getProject().getMetadata()),
                     MarkdownDocument.fromPluginResource("documentation/project-settings.md", new HashMap<>()),
                     ParameterPanel.WITH_SCROLLING | ParameterPanel.WITH_DOCUMENTATION | ParameterPanel.WITH_SEARCH_BAR);
             parameterPanel.setCustomIsParameterCollectionVisible((tree, collection) -> false);
             parameterPanel.setCustomIsParameterVisible((tree, parameter) -> {
-                if(parameter.getKey().contains("template"))
+                if (parameter.getKey().contains("template"))
                     return true;
-                if(parameter.getKey().equals("update-site-dependencies"))
+                if (parameter.getKey().equals("update-site-dependencies"))
                     return true;
                 return false;
             });

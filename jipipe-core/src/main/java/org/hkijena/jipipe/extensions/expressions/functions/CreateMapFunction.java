@@ -17,7 +17,11 @@ import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.extensions.expressions.ExpressionFunction;
 import org.hkijena.jipipe.extensions.expressions.ExpressionParameters;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 
 @JIPipeDocumentation(name = "Create map", description = "Creates a map from multiple pair arrays. Use the PAIR(key, value) function to create pairs. Duplicate keys are overwritten by newer values.")
 public class CreateMapFunction extends ExpressionFunction {

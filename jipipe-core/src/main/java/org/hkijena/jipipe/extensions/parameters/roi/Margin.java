@@ -22,7 +22,7 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.extensions.expressions.NumericFunctionExpression;
 import org.hkijena.jipipe.extensions.parameters.collections.ListParameter;
 
-import java.awt.*;
+import java.awt.Rectangle;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.function.Function;

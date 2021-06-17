@@ -17,7 +17,7 @@ import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.JFreeChart;
 
-import java.awt.*;
+import java.awt.Font;
 import java.nio.file.Path;
 
 /**

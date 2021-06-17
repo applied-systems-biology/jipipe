@@ -97,18 +97,18 @@ public class JIPipeIteratingAlgorithmDataBatchGenerationSettings implements JIPi
     public void setColumnMatching(JIPipeColumMatching columnMatching) {
         boolean needsTriggerStructureChange = columnMatching == JIPipeColumMatching.Custom || this.columnMatching == JIPipeColumMatching.Custom;
         this.columnMatching = columnMatching;
-        if(needsTriggerStructureChange)
+        if (needsTriggerStructureChange)
             triggerParameterUIChange();
     }
 
     @Override
     public boolean isParameterUIVisible(JIPipeParameterTree tree, JIPipeParameterAccess access) {
-        if(access.getSource() == this && "custom-matched-columns-expression".equals(access.getKey())) {
-            if(getColumnMatching() != JIPipeColumMatching.Custom)
+        if (access.getSource() == this && "custom-matched-columns-expression".equals(access.getKey())) {
+            if (getColumnMatching() != JIPipeColumMatching.Custom)
                 return false;
         }
-        if(access.getSource() == this && "custom-annotation-matching".equals(access.getKey())) {
-            if(getAnnotationMatchingMethod() != JIPipeAnnotationMatchingMethod.CustomExpression)
+        if (access.getSource() == this && "custom-annotation-matching".equals(access.getKey())) {
+            if (getAnnotationMatchingMethod() != JIPipeAnnotationMatchingMethod.CustomExpression)
                 return false;
         }
         return JIPipeParameterCollection.super.isParameterUIVisible(tree, access);

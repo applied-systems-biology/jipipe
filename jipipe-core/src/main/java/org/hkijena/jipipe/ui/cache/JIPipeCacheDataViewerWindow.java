@@ -29,7 +29,9 @@ import org.hkijena.jipipe.ui.components.AlwaysOnTopToggle;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
-import java.awt.*;
+import java.awt.BorderLayout;
+import java.awt.Container;
+import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
@@ -41,13 +43,13 @@ import java.util.Map;
  */
 public abstract class JIPipeCacheDataViewerWindow extends JFrame {
 
-    private final  AlwaysOnTopToggle alwaysOnTopToggle = new AlwaysOnTopToggle(this);
+    private final AlwaysOnTopToggle alwaysOnTopToggle = new AlwaysOnTopToggle(this);
     private final JIPipeWorkbench workbench;
-    private JIPipeCacheSlotDataSource dataSource;
     private final JIPipeAlgorithm algorithm;
     private final JIPipeProject project;
     private final String displayName;
     private final String slotName;
+    private JIPipeCacheSlotDataSource dataSource;
     private JIPipeCachedDataDisplayCacheControl cacheAwareToggle;
     private WeakReference<JIPipeVirtualData> lastVirtualData;
     private JButton previousRowButton;
@@ -129,13 +131,13 @@ public abstract class JIPipeCacheDataViewerWindow extends JFrame {
 
     private void gotoPreviousRow() {
         int row = getDataSource().getRow() - 1;
-        if(row < 0)
+        if (row < 0)
             row += getDataSource().getSlot().getRowCount();
         setDataSourceRow(row);
     }
 
     public void gotoNextRow() {
-        int row = (getDataSource().getRow() +1) % getDataSource().getSlot().getRowCount();
+        int row = (getDataSource().getRow() + 1) % getDataSource().getSlot().getRowCount();
         setDataSourceRow(row);
     }
 
@@ -147,10 +149,9 @@ public abstract class JIPipeCacheDataViewerWindow extends JFrame {
 
         rowInfoLabel.setText((row + 1) + "/" + getDataSource().getSlot().getRowCount());
 
-        if(getAlgorithm() != null) {
+        if (getAlgorithm() != null) {
             setTitle(getAlgorithm().getName() + "/" + getSlotName() + "/" + row);
-        }
-        else {
+        } else {
             setTitle(getDisplayName());
         }
 
@@ -176,6 +177,7 @@ public abstract class JIPipeCacheDataViewerWindow extends JFrame {
 
     /**
      * Returns the toolbar that contains
+     *
      * @return the toolbar
      */
     public abstract JToolBar getToolBar();
@@ -202,29 +204,30 @@ public abstract class JIPipeCacheDataViewerWindow extends JFrame {
 
     /**
      * Instruction to load the data from the current data source
-     * @param virtualData the data to be loaded
+     *
+     * @param virtualData  the data to be loaded
      * @param progressInfo the progress info
      */
     protected abstract void loadData(JIPipeVirtualData virtualData, JIPipeProgressInfo progressInfo);
 
     private void removeDataControls() {
-        if(getToolBar() == null)
+        if (getToolBar() == null)
             return;
         getToolBar().remove(previousRowButton);
         getToolBar().remove(nextRowButton);
         getToolBar().remove(rowInfoLabel);
         getToolBar().remove(alwaysOnTopToggle);
-        if(cacheAwareToggle != null)
+        if (cacheAwareToggle != null)
             cacheAwareToggle.uninstall();
     }
 
     private void addDataControls() {
-        if(getToolBar() == null)
+        if (getToolBar() == null)
             return;
         getToolBar().add(alwaysOnTopToggle);
         cacheAwareToggle = new JIPipeCachedDataDisplayCacheControl((JIPipeProjectWorkbench) workbench, getToolBar(), algorithm);
         cacheAwareToggle.install();
-        if(algorithm != null) {
+        if (algorithm != null) {
             cacheAwareToggle.installRefreshOnActivate(this::reloadFromCurrentCache);
         }
         getToolBar().add(nextRowButton, 0);

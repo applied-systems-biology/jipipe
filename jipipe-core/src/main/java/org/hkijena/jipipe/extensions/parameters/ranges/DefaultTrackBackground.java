@@ -1,7 +1,7 @@
 package org.hkijena.jipipe.extensions.parameters.ranges;
 
 import javax.swing.*;
-import java.awt.*;
+import java.awt.Paint;
 
 public class DefaultTrackBackground implements PaintGenerator {
     @Override
