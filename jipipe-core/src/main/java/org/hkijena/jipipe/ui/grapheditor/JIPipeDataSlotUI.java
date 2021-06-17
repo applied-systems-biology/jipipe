@@ -160,10 +160,6 @@ public abstract class JIPipeDataSlotUI extends JIPipeWorkbenchPanel {
 
             addInputSlotEditMenu(sourceSlots);
 
-            JMenuItem relabelButton = new JMenuItem("Label this slot", UIUtils.getIconFromResources("actions/tag.png"));
-            relabelButton.setToolTipText("Sets a custom name for this slot without deleting it");
-            relabelButton.addActionListener(e -> relabelSlot());
-            assignButtonMenu.add(relabelButton);
         } else if (slot.isOutput()) {
             Set<JIPipeDataSlot> targetSlots = getGraph().getTargetSlots(slot);
             if (!targetSlots.isEmpty()) {
@@ -268,11 +264,26 @@ public abstract class JIPipeDataSlotUI extends JIPipeWorkbenchPanel {
                 toggleVirtualButton.addActionListener(e -> makeVirtual());
                 assignButtonMenu.add(toggleVirtualButton);
             }
+        }
 
-            JMenuItem relabelButton = new JMenuItem("Label this slot", UIUtils.getIconFromResources("actions/tag.png"));
-            relabelButton.setToolTipText("Sets a custom name for this slot without deleting it");
-            relabelButton.addActionListener(e -> relabelSlot());
-            assignButtonMenu.add(relabelButton);
+        // Global actions at the end
+        JMenuItem relabelButton = new JMenuItem("Label this slot", UIUtils.getIconFromResources("actions/tag.png"));
+        relabelButton.setToolTipText("Sets a custom name for this slot without deleting it");
+        relabelButton.addActionListener(e -> relabelSlot());
+        assignButtonMenu.add(relabelButton);
+
+        if((slot.isInput() && nodeUI.getNode().getInputSlots().size() > 1) || (slot.isOutput() && nodeUI.getNode().getOutputSlots().size() > 1)) {
+            JMenuItem moveUpButton = new JMenuItem(getGraphUI().getViewMode() == JIPipeGraphViewMode.Horizontal ? "Move up" : "Move to the left",
+                    getGraphUI().getViewMode() == JIPipeGraphViewMode.Horizontal ? UIUtils.getIconFromResources("actions/up.png") : UIUtils.getIconFromResources("actions/go-left.png"));
+            moveUpButton.setToolTipText("Reorders the slots");
+            moveUpButton.addActionListener(e -> moveSlotUp());
+            assignButtonMenu.add(moveUpButton);
+
+            JMenuItem moveDownButton = new JMenuItem(getGraphUI().getViewMode() == JIPipeGraphViewMode.Horizontal ? "Move down" : "Move to the right",
+                    getGraphUI().getViewMode() == JIPipeGraphViewMode.Horizontal ? UIUtils.getIconFromResources("actions/down.png") : UIUtils.getIconFromResources("actions/go-right.png"));
+            moveDownButton.setToolTipText("Reorders the slots");
+            moveDownButton.addActionListener(e -> moveSlotDown());
+            assignButtonMenu.add(moveDownButton);
         }
     }
 
@@ -593,6 +604,24 @@ public abstract class JIPipeDataSlotUI extends JIPipeWorkbenchPanel {
             slotConfiguration.removeInputSlot(slot.getName(), true);
         else if (slot.isOutput())
             slotConfiguration.removeOutputSlot(slot.getName(), true);
+    }
+
+    private void moveSlotDown() {
+        if (slot != null) {
+            getGraphUI().getGraphHistory().addSnapshotBefore(new SlotConfigurationHistorySnapshot(slot.getNode(),
+                    "Move slot '" + slot.getDisplayName() + "' down"));
+            ((JIPipeMutableSlotConfiguration) nodeUI.getNode().getSlotConfiguration()).moveDown(slot.getName(), slot.getSlotType());
+            getGraphUI().repaint();
+        }
+    }
+
+    private void moveSlotUp() {
+        if (slot != null) {
+            getGraphUI().getGraphHistory().addSnapshotBefore(new SlotConfigurationHistorySnapshot(slot.getNode(),
+                    "Move slot '" + slot.getDisplayName() + "' up"));
+            ((JIPipeMutableSlotConfiguration) nodeUI.getNode().getSlotConfiguration()).moveUp(slot.getName(), slot.getSlotType());
+            getGraphUI().repaint();
+        }
     }
 
     private void findTargetAlgorithm(JIPipeDataSlot slot) {
