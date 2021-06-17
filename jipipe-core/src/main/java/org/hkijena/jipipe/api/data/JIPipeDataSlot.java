@@ -52,6 +52,9 @@ public class JIPipeDataSlot {
     private List<String> annotationColumns = new ArrayList<>();
     private Map<String, ArrayList<JIPipeAnnotation>> annotations = new HashMap<>();
 
+    private List<String> dataAnnotationColumns = new ArrayList<>();
+    private Map<String, ArrayList<JIPipeVirtualData>> dataAnnotations = new HashMap<>();
+
     /**
      * Creates a new slot
      *
@@ -68,6 +71,10 @@ public class JIPipeDataSlot {
 
     public List<String> getAnnotationColumns() {
         return Collections.unmodifiableList(annotationColumns);
+    }
+
+    public List<String> getDataAnnotationColumns() {
+        return Collections.unmodifiableList(dataAnnotationColumns);
     }
 
     /**
@@ -574,7 +581,7 @@ public class JIPipeDataSlot {
 
     @Override
     public String toString() {
-        return String.format("%s: %s (%d rows, %d annotation columns)", getSlotType(), getName(), getRowCount(), getAnnotationColumns().size());
+        return String.format("%s: %s (%d rows, %d annotation columns, %d data annotation columns)", getSlotType(), getName(), getRowCount(), getAnnotationColumns().size(), getDataAnnotationColumns().size());
     }
 
     public boolean isVirtual() {
@@ -604,6 +611,8 @@ public class JIPipeDataSlot {
             if (virtualData.isVirtual()) {
                 virtualData.makeNonVirtual(subProgress.resolveAndLog("Row", row, getRowCount()), removeVirtualDataStorage);
             }
+
+            // TODO: Make data annotation non-virtual
         }
     }
 
@@ -619,6 +628,8 @@ public class JIPipeDataSlot {
             if (!virtualData.isVirtual()) {
                 virtualData.makeVirtual(subProgress.resolveAndLog("Row", row, getRowCount()), false);
             }
+
+            // TODO: Make data annotation virtual
         }
     }
 
@@ -637,6 +648,12 @@ public class JIPipeDataSlot {
         }
     }
 
+    /**
+     * Gets an annotation at a specific index
+     * @param row the data row
+     * @param column the column
+     * @return the annotation
+     */
     public JIPipeAnnotation getAnnotation(int row, int column) {
         String annotation = annotationColumns.get(column);
         return annotations.get(annotation).get(row);
@@ -650,7 +667,11 @@ public class JIPipeDataSlot {
         for (int i = 0; i < data.size(); ++i) {
             data.set(i, null);
         }
-//        System.gc();
+        for (ArrayList<JIPipeVirtualData> list : dataAnnotations.values()) {
+            for (int i = 0; i < list.size(); i++) {
+                list.set(i, null);
+            }
+        }
     }
 
     public boolean isEmpty() {
@@ -669,6 +690,7 @@ public class JIPipeDataSlot {
         for (Integer row : rows) {
             result.addData(getVirtualData(row), getAnnotations(row), JIPipeAnnotationMergeStrategy.OverwriteExisting);
         }
+        // TODO: Slice data annotations as well
         return result;
     }
 
@@ -689,6 +711,8 @@ public class JIPipeDataSlot {
             Class<? extends JIPipeData> rowDataType = JIPipe.getDataTypes().getById(row.getTrueDataType());
             JIPipeData data = JIPipe.importData(rowStorage, rowDataType);
             slot.addData(data, row.getAnnotations(), JIPipeAnnotationMergeStrategy.OverwriteExisting, rowProgress);
+
+            // TODO: Load data annotations
         }
         return slot;
     }
