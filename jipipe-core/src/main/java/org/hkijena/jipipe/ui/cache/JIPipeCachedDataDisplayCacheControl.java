@@ -3,8 +3,8 @@ package org.hkijena.jipipe.ui.cache;
 import com.google.common.eventbus.Subscribe;
 import org.hkijena.jipipe.api.JIPipeProject;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
-import org.hkijena.jipipe.api.testbench.JIPipeTestBench;
-import org.hkijena.jipipe.api.testbench.JIPipeTestBenchSettings;
+import org.hkijena.jipipe.ui.quickrun.QuickRun;
+import org.hkijena.jipipe.ui.quickrun.QuickRunSettings;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
 import org.hkijena.jipipe.ui.running.*;
 import org.hkijena.jipipe.utils.UIUtils;
@@ -99,12 +99,12 @@ public class JIPipeCachedDataDisplayCacheControl {
     }
 
     private void runCacheIntermediateResults() {
-        JIPipeTestBenchSettings settings = new JIPipeTestBenchSettings();
+        QuickRunSettings settings = new QuickRunSettings();
         settings.setLoadFromCache(true);
         settings.setStoreIntermediateResults(true);
         settings.setSaveToDisk(false);
         settings.setStoreToCache(true);
-        JIPipeTestBench testBench = new JIPipeTestBench(getProject(), algorithm, settings);
+        QuickRun testBench = new QuickRun(getProject(), algorithm, settings);
         JIPipeRunnerQueue.getInstance().enqueue(testBench);
     }
 
@@ -113,12 +113,12 @@ public class JIPipeCachedDataDisplayCacheControl {
     }
 
     private void runUpdateCache() {
-        JIPipeTestBenchSettings settings = new JIPipeTestBenchSettings();
+        QuickRunSettings settings = new QuickRunSettings();
         settings.setLoadFromCache(true);
         settings.setStoreIntermediateResults(false);
         settings.setSaveToDisk(false);
         settings.setStoreToCache(true);
-        JIPipeTestBench testBench = new JIPipeTestBench(getProject(), algorithm, settings);
+        QuickRun testBench = new QuickRun(getProject(), algorithm, settings);
         JIPipeRunnerQueue.getInstance().enqueue(testBench);
     }
 

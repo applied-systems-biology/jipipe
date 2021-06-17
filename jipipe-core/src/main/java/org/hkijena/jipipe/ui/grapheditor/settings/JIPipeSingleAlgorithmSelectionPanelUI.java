@@ -18,7 +18,7 @@ import org.hkijena.jipipe.api.JIPipeGraphType;
 import org.hkijena.jipipe.api.nodes.JIPipeAlgorithm;
 import org.hkijena.jipipe.api.nodes.JIPipeDataBatchAlgorithm;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
-import org.hkijena.jipipe.api.testbench.JIPipeTestBenchSettings;
+import org.hkijena.jipipe.ui.quickrun.QuickRunSettings;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbenchPanel;
 import org.hkijena.jipipe.ui.batchassistant.DataBatchAssistantUI;
@@ -142,7 +142,7 @@ public class JIPipeSingleAlgorithmSelectionPanelUI extends JIPipeProjectWorkbenc
     private void activateLazyContent(DocumentTabPane tabbedPane) {
         if (testBenchTabContent != null && tabbedPane.getCurrentContent() == testBenchTabContent) {
             if (testBenchTabContent.getComponentCount() == 0) {
-                JIPipeTestBenchSetupUI testBenchSetupUI = new JIPipeTestBenchSetupUI(getProjectWorkbench(), algorithm);
+                QuickRunSetupUI testBenchSetupUI = new QuickRunSetupUI(getProjectWorkbench(), algorithm);
                 testBenchTabContent.add(testBenchSetupUI, BorderLayout.CENTER);
             }
         }
@@ -227,8 +227,8 @@ public class JIPipeSingleAlgorithmSelectionPanelUI extends JIPipeProjectWorkbenc
     public void runTestBench(boolean showResults, boolean showCache, boolean showBatchAssistant, boolean saveToDisk, boolean storeIntermediateOutputs, boolean excludeSelected) {
         // Activate the quick run
         tabbedPane.switchToContent(testBenchTabContent);
-        JIPipeTestBenchSetupUI testBenchSetupUI = (JIPipeTestBenchSetupUI) testBenchTabContent.getComponent(0);
-        JIPipeTestBenchSettings settings = new JIPipeTestBenchSettings();
+        QuickRunSetupUI testBenchSetupUI = (QuickRunSetupUI) testBenchTabContent.getComponent(0);
+        QuickRunSettings settings = new QuickRunSettings();
         settings.setSaveToDisk(saveToDisk);
         settings.setExcludeSelected(excludeSelected);
         settings.setStoreIntermediateResults(storeIntermediateOutputs);

@@ -11,7 +11,7 @@
  * See the LICENSE file provided with the code for the full license.
  */
 
-package org.hkijena.jipipe.api.testbench;
+package org.hkijena.jipipe.ui.quickrun;
 
 import com.google.common.eventbus.EventBus;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
@@ -24,9 +24,9 @@ import org.hkijena.jipipe.ui.components.PathEditor;
 import java.nio.file.Path;
 
 /**
- * Settings for {@link JIPipeTestBench}
+ * Settings for {@link QuickRun}
  */
-public class JIPipeTestBenchSettings implements JIPipeParameterCollection {
+public class QuickRunSettings implements JIPipeParameterCollection {
     private EventBus eventBus = new EventBus();
     private Path outputPath;
     private boolean loadFromCache = true;
@@ -39,7 +39,7 @@ public class JIPipeTestBenchSettings implements JIPipeParameterCollection {
     /**
      * Creates a new instance
      */
-    public JIPipeTestBenchSettings() {
+    public QuickRunSettings() {
         outputPath = RuntimeSettings.generateTempDirectory("TestBench");
     }
 

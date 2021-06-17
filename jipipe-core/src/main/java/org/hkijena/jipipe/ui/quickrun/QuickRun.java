@@ -11,40 +11,35 @@
  * See the LICENSE file provided with the code for the full license.
  */
 
-package org.hkijena.jipipe.api.testbench;
+package org.hkijena.jipipe.ui.quickrun;
 
 import org.hkijena.jipipe.api.*;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeAlgorithm;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.*;
 
 /**
  * Allows to test one algorithm with multiple parameters
  */
-public class JIPipeTestBench implements JIPipeRunnable, JIPipeValidatable {
+public class QuickRun implements JIPipeRunnable, JIPipeValidatable {
     private JIPipeProgressInfo progressInfo = new JIPipeProgressInfo();
-    private JIPipeProject project;
-    private JIPipeGraphNode projectAlgorithm;
-    private JIPipeTestBenchSettings settings;
+    private final JIPipeProject project;
+    private final JIPipeGraphNode targetNode;
+    private final QuickRunSettings settings;
 
-    private JIPipeRun testBenchRun;
-    private JIPipeGraphNode benchedAlgorithm;
-    private volatile JIPipeTestbenchSnapshot initialBackup;
-
-    private List<JIPipeTestbenchSnapshot> backupList = new ArrayList<>();
+    private JIPipeRun run;
+    private JIPipeGraphNode targetNodeCopy;
 
     /**
      * @param project          The project
-     * @param projectAlgorithm The tested algorithm
+     * @param targetNode The tested algorithm
      * @param settings         The settings
      */
-    public JIPipeTestBench(JIPipeProject project, JIPipeGraphNode projectAlgorithm, JIPipeTestBenchSettings settings) {
+    public QuickRun(JIPipeProject project, JIPipeGraphNode targetNode, QuickRunSettings settings) {
         this.project = project;
-        this.projectAlgorithm = projectAlgorithm;
+        this.targetNode = targetNode;
         this.settings = settings;
 
         initialize();
@@ -66,18 +61,18 @@ public class JIPipeTestBench implements JIPipeRunnable, JIPipeValidatable {
         // The test bench will handle this!
         configuration.setIgnoreDeactivatedInputs(true);
 
-        testBenchRun = new JIPipeRun(project, configuration);
-        testBenchRun.setProgressInfo(progressInfo);
-        benchedAlgorithm = testBenchRun.getGraph().getEquivalentAlgorithm(projectAlgorithm);
-        ((JIPipeAlgorithm) benchedAlgorithm).setEnabled(true);
+        run = new JIPipeRun(project, configuration);
+        run.setProgressInfo(progressInfo);
+        targetNodeCopy = run.getGraph().getEquivalentAlgorithm(targetNode);
+        ((JIPipeAlgorithm) targetNodeCopy).setEnabled(true);
 
         // Disable all algorithms that are not dependencies of the benched algorithm
 //        List<JIPipeGraphNode> predecessorAlgorithms = testBenchRun.getGraph()
 //                .getPredecessorAlgorithms(benchedAlgorithm, testBenchRun.getGraph().traverse());
         Set<JIPipeGraphNode> predecessorAlgorithms = findPredecessorsWithoutCache();
         if (!settings.isExcludeSelected())
-            predecessorAlgorithms.add(benchedAlgorithm);
-        for (JIPipeGraphNode node : testBenchRun.getGraph().getGraphNodes()) {
+            predecessorAlgorithms.add(targetNodeCopy);
+        for (JIPipeGraphNode node : run.getGraph().getGraphNodes()) {
             if (!predecessorAlgorithms.contains(node)) {
                 if (node instanceof JIPipeAlgorithm) {
                     ((JIPipeAlgorithm) node).setEnabled(false);
@@ -87,8 +82,8 @@ public class JIPipeTestBench implements JIPipeRunnable, JIPipeValidatable {
 
         // Disable storing intermediate results
         if (!settings.isStoreIntermediateResults()) {
-            HashSet<JIPipeGraphNode> disabled = new HashSet<>(testBenchRun.getGraph().getGraphNodes());
-            disabled.remove(benchedAlgorithm);
+            HashSet<JIPipeGraphNode> disabled = new HashSet<>(run.getGraph().getGraphNodes());
+            disabled.remove(targetNodeCopy);
             configuration.setDisableSaveToDiskNodes(disabled);
             configuration.setDisableStoreToCacheNodes(disabled);
         }
@@ -99,12 +94,12 @@ public class JIPipeTestBench implements JIPipeRunnable, JIPipeValidatable {
         Set<JIPipeGraphNode> predecessors = new HashSet<>();
         Set<JIPipeGraphNode> handledNodes = new HashSet<>();
         Stack<JIPipeGraphNode> stack = new Stack<>();
-        stack.push(benchedAlgorithm);
+        stack.push(targetNodeCopy);
         JIPipeProgressInfo progressInfo = new JIPipeProgressInfo();
         while (!stack.isEmpty()) {
             JIPipeGraphNode node = stack.pop();
             for (JIPipeDataSlot inputSlot : node.getInputSlots()) {
-                for (JIPipeDataSlot sourceSlot : testBenchRun.getGraph().getSourceSlots(inputSlot)) {
+                for (JIPipeDataSlot sourceSlot : run.getGraph().getSourceSlots(inputSlot)) {
                     JIPipeGraphNode predecessorNode = sourceSlot.getNode();
                     if (handledNodes.contains(predecessorNode))
                         continue;
@@ -131,7 +126,7 @@ public class JIPipeTestBench implements JIPipeRunnable, JIPipeValidatable {
             }
         }
         // To be sure
-        predecessors.remove(benchedAlgorithm);
+        predecessors.remove(targetNodeCopy);
         return predecessors;
     }
 
@@ -139,20 +134,14 @@ public class JIPipeTestBench implements JIPipeRunnable, JIPipeValidatable {
     public void run() {
         // Remove the benched algorithm from cache. This is a workaround.
         if (settings.isLoadFromCache()) {
-            getProject().getCache().clear(projectAlgorithm);
+            getProject().getCache().clear(targetNode);
         }
 
         // Run the internal graph runner
-        testBenchRun.run();
-
-        // Create initial backup
-        if (initialBackup == null) {
-            initialBackup = new JIPipeTestbenchSnapshot(this);
-            backupList.add(initialBackup);
-        }
+        run.run();
 
         // Clear all data
-        for (JIPipeGraphNode node : testBenchRun.getGraph().getGraphNodes()) {
+        for (JIPipeGraphNode node : run.getGraph().getGraphNodes()) {
             for (JIPipeDataSlot inputSlot : node.getInputSlots()) {
                 inputSlot.clearData();
             }
@@ -163,75 +152,50 @@ public class JIPipeTestBench implements JIPipeRunnable, JIPipeValidatable {
 
     }
 
+    /**
+     * The project where the run was created
+     * @return the project
+     */
     public JIPipeProject getProject() {
         return project;
     }
 
-
-    public JIPipeGraphNode getProjectAlgorithm() {
-        return projectAlgorithm;
+    /**
+     * The node targeted to be executed
+     * In project graph
+     * @return the target node
+     */
+    public JIPipeGraphNode getTargetNode() {
+        return targetNode;
     }
 
-    public JIPipeTestBenchSettings getSettings() {
+    /**
+     * Settings for this quick run
+     * @return the settings
+     */
+    public QuickRunSettings getSettings() {
         return settings;
     }
 
-    public JIPipeRun getTestBenchRun() {
-        return testBenchRun;
-    }
-
-    public JIPipeGraphNode getBenchedAlgorithm() {
-        return benchedAlgorithm;
-    }
-
-    public List<JIPipeTestbenchSnapshot> getBackupList() {
-        return backupList;
+    /**
+     * The run that runs the pipeline
+     * @return the pipeline run
+     */
+    public JIPipeRun getRun() {
+        return run;
     }
 
     /**
-     * Creates a backup
+     * Copy of the targeted node (in the run's graph)
+     * @return copy of the targeted node
      */
-    public void createBackup() {
-        backupList.add(new JIPipeTestbenchSnapshot(this));
-    }
-
-    /**
-     * @return the latest backup
-     */
-    public JIPipeTestbenchSnapshot getLatestBackup() {
-        return backupList.get(backupList.size() - 1);
+    public JIPipeGraphNode getTargetNodeCopy() {
+        return targetNodeCopy;
     }
 
     @Override
     public void reportValidity(JIPipeValidityReport report) {
-        benchedAlgorithm.reportValidity(report);
-    }
-
-    /**
-     * Creates a new test
-     */
-    public void newTest() {
-        JIPipeValidityReport report = new JIPipeValidityReport();
-        reportValidity(report);
-        if (!report.isValid())
-            throw new RuntimeException("Quick run is not valid!");
-
-        Path outputBasePath = testBenchRun.getConfiguration().getOutputPath().getParent();
-        Path outputPath;
-        int index = 1;
-        do {
-            outputPath = outputBasePath.resolve("test-" + index);
-            ++index;
-        }
-        while (Files.isDirectory(outputPath));
-        testBenchRun.getConfiguration().setOutputPath(outputPath);
-    }
-
-    /**
-     * @return the first backup. This is used as reference to get the intermediate data
-     */
-    public JIPipeTestbenchSnapshot getInitialBackup() {
-        return initialBackup;
+        targetNodeCopy.reportValidity(report);
     }
 
     @Override

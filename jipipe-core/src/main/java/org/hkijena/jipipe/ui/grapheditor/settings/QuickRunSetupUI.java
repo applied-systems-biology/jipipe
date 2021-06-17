@@ -16,18 +16,18 @@ package org.hkijena.jipipe.ui.grapheditor.settings;
 import com.google.common.eventbus.Subscribe;
 import org.hkijena.jipipe.api.JIPipeValidityReport;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
-import org.hkijena.jipipe.api.testbench.JIPipeTestBench;
-import org.hkijena.jipipe.api.testbench.JIPipeTestBenchSettings;
+import org.hkijena.jipipe.ui.quickrun.QuickRun;
+import org.hkijena.jipipe.ui.quickrun.QuickRunSettings;
 import org.hkijena.jipipe.extensions.settings.RuntimeSettings;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbenchPanel;
 import org.hkijena.jipipe.ui.components.*;
 import org.hkijena.jipipe.ui.parameters.ParameterPanel;
+import org.hkijena.jipipe.ui.resultanalysis.JIPipeResultUI;
 import org.hkijena.jipipe.ui.running.JIPipeRunExecuterUI;
 import org.hkijena.jipipe.ui.running.JIPipeRunnerQueue;
 import org.hkijena.jipipe.ui.running.RunUIWorkerFinishedEvent;
 import org.hkijena.jipipe.ui.running.RunUIWorkerInterruptedEvent;
-import org.hkijena.jipipe.ui.testbench.JIPipeTestBenchUI;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
@@ -37,24 +37,24 @@ import java.util.Set;
 import java.util.function.Consumer;
 
 /**
- * UI for generating {@link JIPipeTestBench}
+ * UI for generating {@link QuickRun}
  */
-public class JIPipeTestBenchSetupUI extends JIPipeProjectWorkbenchPanel {
+public class QuickRunSetupUI extends JIPipeProjectWorkbenchPanel {
 
     boolean showNextResults;
     private JIPipeGraphNode algorithm;
     private JPanel setupPanel;
     private JPanel validationReportPanel;
     private JIPipeValidityReportUI validationReportUI;
-    private JIPipeTestBenchSettings currentSettings;
-    private JIPipeTestBench currentTestBench;
-    private Consumer<JIPipeTestBench> nextRunOnSuccess;
+    private QuickRunSettings currentSettings;
+    private QuickRun currentQuickRun;
+    private Consumer<QuickRun> nextRunOnSuccess;
 
     /**
      * @param workbenchUI the workbench
      * @param algorithm   the target algorithm
      */
-    public JIPipeTestBenchSetupUI(JIPipeProjectWorkbench workbenchUI, JIPipeGraphNode algorithm) {
+    public QuickRunSetupUI(JIPipeProjectWorkbench workbenchUI, JIPipeGraphNode algorithm) {
         super(workbenchUI);
         this.algorithm = algorithm;
 
@@ -77,7 +77,7 @@ public class JIPipeTestBenchSetupUI extends JIPipeProjectWorkbenchPanel {
      * @param onSuccess   called if successful
      * @return if the initial validation failed
      */
-    public boolean tryAutoRun(boolean showResults, JIPipeTestBenchSettings settings, Consumer<JIPipeTestBench> onSuccess) {
+    public boolean tryAutoRun(boolean showResults, QuickRunSettings settings, Consumer<QuickRun> onSuccess) {
         if (!validateOrShowError())
             return false;
         currentSettings = settings;
@@ -110,7 +110,7 @@ public class JIPipeTestBenchSetupUI extends JIPipeProjectWorkbenchPanel {
         setupPanel = new JPanel();
         setupPanel.setLayout(new BorderLayout());
 
-        currentSettings = new JIPipeTestBenchSettings();
+        currentSettings = new QuickRunSettings();
         ParameterPanel formPanel = new ParameterPanel(getWorkbench(), currentSettings,
                 MarkdownDocument.fromPluginResource("documentation/testbench.md", new HashMap<>()), ParameterPanel.WITH_SCROLLING |
                 ParameterPanel.WITH_DOCUMENTATION | ParameterPanel.DOCUMENTATION_BELOW);
@@ -199,12 +199,12 @@ public class JIPipeTestBenchSetupUI extends JIPipeProjectWorkbenchPanel {
             return;
         }
 
-        currentTestBench = new JIPipeTestBench(getProject(), algorithm, currentSettings);
+        currentQuickRun = new QuickRun(getProject(), algorithm, currentSettings);
         RuntimeSettings.getInstance().setDefaultTestBenchThreads(currentSettings.getNumThreads());
         showNextResults = showResults;
 
         removeAll();
-        JIPipeRunExecuterUI executerUI = new JIPipeRunExecuterUI(currentTestBench);
+        JIPipeRunExecuterUI executerUI = new JIPipeRunExecuterUI(currentQuickRun);
         add(executerUI, BorderLayout.CENTER);
         revalidate();
         repaint();
@@ -218,26 +218,26 @@ public class JIPipeTestBenchSetupUI extends JIPipeProjectWorkbenchPanel {
      */
     @Subscribe
     public void onWorkerFinished(RunUIWorkerFinishedEvent event) {
-        if (event.getRun() == currentTestBench) {
+        if (event.getRun() == currentQuickRun) {
             tryShowSetupPanel();
 
             if (showNextResults) {
                 try {
-                    JIPipeTestBenchUI testBenchUI = new JIPipeTestBenchUI(getProjectWorkbench(), currentTestBench);
+                    JIPipeResultUI resultUI = new JIPipeResultUI(getProjectWorkbench(), currentQuickRun.getRun());
                     String name = "Quick run: " + algorithm.getName();
                     getProjectWorkbench().getDocumentTabPane().addTab(name, UIUtils.getIconFromResources("actions/testbench.png"),
-                            testBenchUI, DocumentTabPane.CloseMode.withAskOnCloseButton, true);
+                            resultUI, DocumentTabPane.CloseMode.withAskOnCloseButton, true);
                     getProjectWorkbench().getDocumentTabPane().switchToLastTab();
-                    currentTestBench = null;
+                    currentQuickRun = null;
                 } catch (Exception e) {
                     openError(e);
                 }
             } else {
                 if (nextRunOnSuccess != null) {
-                    nextRunOnSuccess.accept(currentTestBench);
+                    nextRunOnSuccess.accept(currentQuickRun);
                     nextRunOnSuccess = null;
                 }
-                currentTestBench = null;
+                currentQuickRun = null;
             }
         }
     }
@@ -249,7 +249,7 @@ public class JIPipeTestBenchSetupUI extends JIPipeProjectWorkbenchPanel {
      */
     @Subscribe
     public void onWorkerInterrupted(RunUIWorkerInterruptedEvent event) {
-        if (event.getRun() == currentTestBench) {
+        if (event.getRun() == currentQuickRun) {
             openError(event.getException());
         }
     }

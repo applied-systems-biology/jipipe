@@ -23,8 +23,8 @@ import org.hkijena.jipipe.api.JIPipeValidityReport;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeAlgorithm;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
-import org.hkijena.jipipe.api.testbench.JIPipeTestBench;
-import org.hkijena.jipipe.api.testbench.JIPipeTestBenchSettings;
+import org.hkijena.jipipe.ui.quickrun.QuickRun;
+import org.hkijena.jipipe.ui.quickrun.QuickRunSettings;
 import org.hkijena.jipipe.extensions.settings.FileChooserSettings;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbenchPanel;
@@ -205,12 +205,12 @@ public class JIPipeAlgorithmCacheBrowserUI extends JIPipeProjectWorkbenchPanel {
             }
         }
 
-        JIPipeTestBenchSettings settings = new JIPipeTestBenchSettings();
+        QuickRunSettings settings = new QuickRunSettings();
         settings.setLoadFromCache(true);
         settings.setStoreIntermediateResults(storeIntermediateResults);
         settings.setSaveToDisk(false);
         settings.setStoreToCache(true);
-        JIPipeTestBench testBench = new JIPipeTestBench(getProject(), graphNode, settings);
+        QuickRun testBench = new QuickRun(getProject(), graphNode, settings);
         JIPipeRunnerQueue.getInstance().enqueue(testBench);
     }
 
