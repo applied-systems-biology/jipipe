@@ -1,7 +1,9 @@
 package org.hkijena.jipipe.extensions.nodetoolboxtool;
 
+import com.google.common.html.HtmlEscapers;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.data.JIPipeData;
+import org.hkijena.jipipe.api.data.JIPipeDataInfo;
 import org.hkijena.jipipe.api.nodes.JIPipeInputSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.JIPipeOutputSlot;
@@ -87,40 +89,31 @@ public class NodeToolBox extends JPanel {
         if (info != null) {
             StringBuilder builder = new StringBuilder();
             builder.append("# ").append(info.getName()).append("\n\n");
-            // Write algorithm slot info
-            builder.append("<table>");
-            {
-                List<JIPipeInputSlot> inputSlots = info.getInputSlots();
-                List<JIPipeOutputSlot> outputSlots = info.getOutputSlots();
-
-                int displayedSlots = Math.max(inputSlots.size(), outputSlots.size());
-                if (displayedSlots > 0) {
-                    builder.append("<tr><td><i>Input</i></td><td><i>Output</i></td></tr>");
-                    for (int i = 0; i < displayedSlots; ++i) {
-                        Class<? extends JIPipeData> inputSlot = i < inputSlots.size() ? inputSlots.get(i).value() : null;
-                        Class<? extends JIPipeData> outputSlot = i < outputSlots.size() ? outputSlots.get(i).value() : null;
-                        builder.append("<tr>");
-                        builder.append("<td>");
-                        if (inputSlot != null) {
-                            builder.append(StringUtils.createIconTextHTMLTableElement(JIPipeData.getNameOf(inputSlot), JIPipe.getDataTypes().getIconURLFor(inputSlot)));
-                        }
-                        builder.append("</td>");
-                        builder.append("<td>");
-                        if (outputSlot != null) {
-                            builder.append(StringUtils.createRightIconTextHTMLTableElement(JIPipeData.getNameOf(outputSlot), JIPipe.getDataTypes().getIconURLFor(outputSlot)));
-                        }
-                        builder.append("</td>");
-                        builder.append("</tr>");
-                    }
-                }
-            }
-            builder.append("</table>\n\n");
 
             // Write description
             String description = info.getDescription().getBody();
             if (description != null && !description.isEmpty())
                 builder.append(description).append("</br>");
 
+            // Write algorithm slot info
+            builder.append("<table style=\"margin-top: 10px;\">");
+            for (JIPipeInputSlot slot : info.getInputSlots()) {
+                builder.append("<tr>");
+                builder.append("<td><p style=\"background-color:#27ae60; color:white;border:3px solid #27ae60;border-radius:5px;text-align:center;\">Input</p></td>");
+                builder.append("<td>").append("<img src=\"").append(JIPipe.getDataTypes().getIconURLFor(slot.value())).append("\"/></td>");
+                builder.append("<td>").append(HtmlEscapers.htmlEscaper().escape(StringUtils.orElse(slot.slotName(), "-"))).append("</td>");
+                builder.append("<td><i>(").append(HtmlEscapers.htmlEscaper().escape(JIPipeDataInfo.getInstance(slot.value()).getName())).append(")</i></td>");
+                builder.append("</tr>");
+            }
+            for (JIPipeOutputSlot slot : info.getOutputSlots()) {
+                builder.append("<tr>");
+                builder.append("<td><p style=\"background-color:#da4453; color:white;border:3px solid #da4453;border-radius:5px;text-align:center;\">Output</p></td>");
+                builder.append("<td>").append("<img src=\"").append(JIPipe.getDataTypes().getIconURLFor(slot.value())).append("\"/></td>");
+                builder.append("<td>").append(HtmlEscapers.htmlEscaper().escape(StringUtils.orElse(slot.slotName(), "-"))).append("</td>");
+                builder.append("<td><i>(").append(HtmlEscapers.htmlEscaper().escape(JIPipeDataInfo.getInstance(slot.value()).getName())).append(")</i></td>");
+                builder.append("</tr>");
+            }
+            builder.append("</table>\n\n");
 
             documentationReader.setDocument(new MarkdownDocument(builder.toString()));
         } else
