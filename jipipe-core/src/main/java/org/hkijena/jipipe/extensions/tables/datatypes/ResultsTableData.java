@@ -63,7 +63,7 @@ import java.util.stream.Collectors;
 /**
  * Data containing a {@link ResultsTable}
  */
-@JIPipeDocumentation(name = "Results table")
+@JIPipeDocumentation(name = "Results table", description = "An ImageJ table")
 @JsonSerialize(using = ResultsTableData.Serializer.class)
 @JsonDeserialize(using = ResultsTableData.Deserializer.class)
 @JIPipeDataStorageDocumentation("Contains a single *.csv file that contains the table data.")

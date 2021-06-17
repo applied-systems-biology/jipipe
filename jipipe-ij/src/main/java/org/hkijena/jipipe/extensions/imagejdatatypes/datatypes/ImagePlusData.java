@@ -39,7 +39,7 @@ import java.nio.file.Path;
 /**
  * ImageJ image
  */
-@JIPipeDocumentation(name = "Image")
+@JIPipeDocumentation(name = "Image", description = "An ImageJ image")
 @JIPipeHeavyData
 @JIPipeDataStorageDocumentation("Contains one image file with one of following extensions: *.tif, *.tiff, *.png, *.jpeg, *.jpeg, *.png. " +
         "We recommend the usage of TIFF.")
