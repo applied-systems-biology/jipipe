@@ -64,11 +64,6 @@ public class DisablePassThroughNodeUIContextAction implements NodeUIContextActio
     }
 
     @Override
-    public boolean isShowingInOverhang() {
-        return true;
-    }
-
-    @Override
     public boolean disableOnNonMatch() {
         return false;
     }

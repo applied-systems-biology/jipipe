@@ -52,11 +52,6 @@ public class CollapseIOInterfaceNodeUIContextAction implements NodeUIContextActi
     }
 
     @Override
-    public boolean isShowingInOverhang() {
-        return true;
-    }
-
-    @Override
     public boolean disableOnNonMatch() {
         return false;
     }

@@ -60,11 +60,6 @@ public class RunAndShowIntermediateResultsNodeUIContextAction implements NodeUIC
     }
 
     @Override
-    public boolean isShowingInOverhang() {
-        return true;
-    }
-
-    @Override
     public boolean disableOnNonMatch() {
         return false;
     }

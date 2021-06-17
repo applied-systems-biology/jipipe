@@ -101,8 +101,4 @@ public class SetNodeHotkeyContextAction implements NodeUIContextAction {
         return UIUtils.getIconFromResources("actions/key-enter.png");
     }
 
-    @Override
-    public boolean isShowingInOverhang() {
-        return false;
-    }
 }

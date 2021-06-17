@@ -61,11 +61,6 @@ public class AlgorithmGraphDuplicateNodeUIContextAction implements NodeUIContext
     }
 
     @Override
-    public boolean isShowingInOverhang() {
-        return false;
-    }
-
-    @Override
     public KeyStroke getKeyboardShortcut() {
         return KeyStroke.getKeyStroke(KeyEvent.VK_D, InputEvent.CTRL_MASK, true);
     }

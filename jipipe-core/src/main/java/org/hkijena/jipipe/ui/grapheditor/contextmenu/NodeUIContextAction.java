@@ -61,13 +61,6 @@ public interface NodeUIContextAction {
     Icon getIcon();
 
     /**
-     * If true, this item is shown in the toolbar overhang menu instead of the toolbar itself.
-     *
-     * @return show in toolbar overhang menu
-     */
-    boolean isShowingInOverhang();
-
-    /**
      * Determines if an item should be disabled or removed if it does not match
      *
      * @return if an item should be disabled or removed if it does not match

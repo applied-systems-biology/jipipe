@@ -38,8 +38,4 @@ public class ParameterExplorerContextMenuAction implements NodeUIContextAction {
         return UIUtils.getIconFromResources("actions/dialog-icon-preview.png");
     }
 
-    @Override
-    public boolean isShowingInOverhang() {
-        return true;
-    }
 }

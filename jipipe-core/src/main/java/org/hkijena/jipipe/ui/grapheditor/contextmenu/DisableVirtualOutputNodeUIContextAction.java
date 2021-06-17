@@ -66,11 +66,6 @@ public class DisableVirtualOutputNodeUIContextAction implements NodeUIContextAct
     }
 
     @Override
-    public boolean isShowingInOverhang() {
-        return true;
-    }
-
-    @Override
     public boolean disableOnNonMatch() {
         return false;
     }

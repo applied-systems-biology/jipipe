@@ -54,11 +54,6 @@ public class AlgorithmGraphCutNodeUIContextAction extends AlgorithmGraphCopyNode
     }
 
     @Override
-    public boolean isShowingInOverhang() {
-        return false;
-    }
-
-    @Override
     public KeyStroke getKeyboardShortcut() {
         return KeyStroke.getKeyStroke(KeyEvent.VK_X, InputEvent.CTRL_MASK, true);
     }

@@ -793,46 +793,33 @@ public abstract class JIPipeGraphEditorUI extends JIPipeWorkbenchPanel implement
     }
 
     public static void installContextActionsInto(JToolBar toolBar, Set<JIPipeNodeUI> selection, List<NodeUIContextAction> actionList, JIPipeGraphCanvasUI canvasUI) {
-        JPopupMenu overhang = new JPopupMenu();
-        boolean scheduledSeparator = false;
+        JPopupMenu menu = new JPopupMenu();
         for (NodeUIContextAction action : actionList) {
             if (action == null) {
-                scheduledSeparator = true;
+                menu.addSeparator();
                 continue;
             }
+
             boolean matches = action.matches(selection);
             if (!matches && !action.disableOnNonMatch())
                 continue;
-            if (!action.isShowingInOverhang()) {
-                if (scheduledSeparator)
-                    toolBar.add(Box.createHorizontalStrut(4));
-                JButton button = new JButton(action.getIcon());
-                UIUtils.makeFlat25x25(button);
-                button.setToolTipText("<html><strong>" + action.getName() + "</strong><br/>" + action.getDescription() + "</html>");
-                if (matches)
-                    button.addActionListener(e -> action.run(canvasUI, ImmutableSet.copyOf(selection)));
-                else
-                    button.setEnabled(false);
-                toolBar.add(button);
-            } else {
-                JMenuItem item = new JMenuItem(action.getName(), action.getIcon());
-                item.setToolTipText(action.getDescription());
-                if (matches)
-                    item.addActionListener(e -> action.run(canvasUI, ImmutableSet.copyOf(selection)));
-                else
-                    item.setEnabled(false);
-                overhang.add(item);
-            }
+
+            JMenuItem item = new JMenuItem(action.getName(), action.getIcon());
+            item.setToolTipText(action.getDescription());
+            if (matches)
+                item.addActionListener(e -> action.run(canvasUI, ImmutableSet.copyOf(selection)));
+            else
+                item.setEnabled(false);
+            menu.add(item);
         }
 
-        if (overhang.getComponentCount() > 0) {
-            toolBar.add(Box.createHorizontalStrut(4));
-            JButton button = new JButton("Open with ...");
+        if (menu.getComponentCount() > 0) {
+            JButton button = new JButton(UIUtils.getIconFromResources("actions/open-menu.png"));
             UIUtils.makeFlat25x25(button);
-            button.setToolTipText("Shows more actions to display the data. On selecting an entry, " +
-                    "it becomes the default action.");
-            UIUtils.addPopupMenuToComponent(button, overhang);
-            toolBar.add(button);
+            button.setToolTipText("Shows the context menu for the selected node. Alternatively, you can also right-click the node");
+            UIUtils.addPopupMenuToComponent(button, menu);
+            toolBar.add(Box.createHorizontalStrut(4), 0);
+            toolBar.add(button, 0);
         }
     }
 

@@ -75,11 +75,6 @@ public class NodeContextActionWrapperUIContextAction implements NodeUIContextAct
         return icon;
     }
 
-    @Override
-    public boolean isShowingInOverhang() {
-        return true;
-    }
-
     public JIPipeNodeInfo getNodeInfo() {
         return nodeInfo;
     }

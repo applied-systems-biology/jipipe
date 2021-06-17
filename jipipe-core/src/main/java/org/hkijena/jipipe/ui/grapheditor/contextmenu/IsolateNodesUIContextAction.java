@@ -66,11 +66,6 @@ public class IsolateNodesUIContextAction implements NodeUIContextAction {
     }
 
     @Override
-    public boolean isShowingInOverhang() {
-        return true;
-    }
-
-    @Override
     public boolean disableOnNonMatch() {
         return false;
     }

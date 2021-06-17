@@ -47,11 +47,6 @@ public class InvertSelectionNodeUIContextAction implements NodeUIContextAction {
     }
 
     @Override
-    public boolean isShowingInOverhang() {
-        return false;
-    }
-
-    @Override
     public boolean disableOnNonMatch() {
         return false;
     }

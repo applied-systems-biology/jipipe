@@ -73,11 +73,6 @@ public class GraphCompartmentCopyNodeUIContextAction implements NodeUIContextAct
     }
 
     @Override
-    public boolean isShowingInOverhang() {
-        return false;
-    }
-
-    @Override
     public KeyStroke getKeyboardShortcut() {
         return KeyStroke.getKeyStroke(KeyEvent.VK_C, InputEvent.CTRL_MASK, true);
     }
