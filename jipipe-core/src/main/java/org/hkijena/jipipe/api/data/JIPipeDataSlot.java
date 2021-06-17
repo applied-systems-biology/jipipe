@@ -194,15 +194,35 @@ public class JIPipeDataSlot {
      * Gets the annotation column or creates it
      * Ensures that the output size is equal to getRowCount()
      *
-     * @param info Annotation type
+     * @param columnName Annotation type
      * @return All annotation instances of the provided type. Size is getRowCount()
      */
-    private synchronized List<JIPipeAnnotation> getOrCreateAnnotationColumnData(String info) {
-        ArrayList<JIPipeAnnotation> arrayList = annotations.getOrDefault(info, null);
+    private synchronized List<JIPipeAnnotation> getOrCreateAnnotationColumnData(String columnName) {
+        ArrayList<JIPipeAnnotation> arrayList = annotations.getOrDefault(columnName, null);
         if (arrayList == null) {
-            annotationColumns.add(info);
+            annotationColumns.add(columnName);
             arrayList = new ArrayList<>();
-            annotations.put(info, arrayList);
+            annotations.put(columnName, arrayList);
+        }
+        while (arrayList.size() < getRowCount()) {
+            arrayList.add(null);
+        }
+        return arrayList;
+    }
+
+    /**
+     * Gets the annotation data column or creates it
+     * Ensures that the output size is equal to getRowCount()
+     *
+     * @param columnName Annotation type
+     * @return All annotation instances of the provided type. Size is getRowCount()
+     */
+    private synchronized List<JIPipeVirtualData> getOrCreateDataAnnotationColumnData(String columnName) {
+        ArrayList<JIPipeVirtualData> arrayList = dataAnnotations.getOrDefault(columnName, null);
+        if (arrayList == null) {
+            dataAnnotationColumns.add(columnName);
+            arrayList = new ArrayList<>();
+            dataAnnotations.put(columnName, arrayList);
         }
         while (arrayList.size() < getRowCount()) {
             arrayList.add(null);
