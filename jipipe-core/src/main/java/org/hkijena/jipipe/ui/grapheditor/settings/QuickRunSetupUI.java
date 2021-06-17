@@ -42,8 +42,9 @@ import java.util.function.Consumer;
 public class QuickRunSetupUI extends JIPipeProjectWorkbenchPanel {
 
     boolean showNextResults;
-    private JIPipeGraphNode algorithm;
+    private final JIPipeGraphNode algorithm;
     private JPanel setupPanel;
+    private JPanel selectionPanel;
     private JPanel validationReportPanel;
     private JIPipeValidityReportUI validationReportUI;
     private QuickRunSettings currentSettings;
@@ -62,11 +63,91 @@ public class QuickRunSetupUI extends JIPipeProjectWorkbenchPanel {
         this.validationReportUI = new JIPipeValidityReportUI(false);
 
         initializeValidationReportUI();
+        initializeSelectionPanel();
         initializeSetupPanel();
 
-        tryShowSetupPanel();
+        tryShowSelectionPanel();
 
         JIPipeRunnerQueue.getInstance().getEventBus().register(this);
+    }
+
+    private void initializeSelectionPanel() {
+        selectionPanel = new JPanel(new BorderLayout());
+        FormPanel formPanel = new FormPanel(null, FormPanel.WITH_SCROLLING);
+
+        addSelectionPanelItem(formPanel,
+                "Update cache",
+                UIUtils.getIconFromResources("actions/database.png"),
+                "This runs the current node and all dependencies. Results are stored into the memory cache. Intermediate results are discarded. Already cached intermediate results are used if possible.",
+                () -> updateCache(false));
+        addSelectionPanelItem(formPanel,
+                "Cache intermediate results",
+                UIUtils.getIconFromResources("actions/cache-intermediate-results.png"),
+                "This runs the current node and all dependencies. Results and intermediate results are stored into the memory cache.  Already cached intermediate results are used if possible.",
+                () -> updateCache(true));
+        addSelectionPanelItem(formPanel,
+                "Quick run",
+                UIUtils.getIconFromResources("actions/player_start.png"),
+                "This runs the current node and all dependencies. Results are saved to the hard drive into a temporary directory. After the run, a tab opens where you can review the results.",
+                this::quickRun);
+        addSelectionPanelItem(formPanel,
+                "Custom quick run",
+                UIUtils.getIconFromResources("actions/configure.png"),
+                "Allows to customize all aspects of a quick run, including the output path an whether to utilize already cached results.",
+                this::tryShowSetupPanel);
+
+        formPanel.addVerticalGlue();
+
+        selectionPanel.add(formPanel, BorderLayout.CENTER);
+    }
+
+    private void quickRun() {
+        if (validateOrShowError()) {
+            currentSettings = new QuickRunSettings();
+            currentSettings.setSaveToDisk(true);
+            currentSettings.setExcludeSelected(false);
+            currentSettings.setLoadFromCache(true);
+            currentSettings.setStoreToCache(false);
+            currentSettings.setStoreIntermediateResults(true);
+            generateQuickRun(true);
+        }
+    }
+
+    private void addSelectionPanelItem(FormPanel formPanel, String name, ImageIcon icon, String description, Runnable action) {
+        JPanel panel = new JPanel(new BorderLayout());
+        panel.setBorder(BorderFactory.createLineBorder(Color.GRAY, 1, true));
+
+        JLabel nameLabel = new JLabel(name);
+        nameLabel.setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
+        nameLabel.setFont(new Font(Font.DIALOG, Font.BOLD, 16));
+        panel.add(nameLabel, BorderLayout.NORTH);
+
+        JTextArea descriptionArea = UIUtils.makeReadonlyBorderlessTextArea(description);
+        descriptionArea.setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
+        panel.add(descriptionArea, BorderLayout.CENTER);
+
+        JPanel buttonPanel = new JPanel(new BorderLayout(4,4));
+        buttonPanel.setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
+        JButton actionButton = new JButton(name, icon);
+        actionButton.setPreferredSize(new Dimension(200,32));
+        actionButton.addActionListener(e -> action.run());
+        buttonPanel.add(actionButton, BorderLayout.EAST);
+
+        panel.add(buttonPanel, BorderLayout.SOUTH);
+
+        formPanel.addWideToForm(panel, null);
+    }
+
+    private void updateCache(boolean cacheIntermediateResults) {
+        if (validateOrShowError()) {
+            currentSettings = new QuickRunSettings();
+            currentSettings.setSaveToDisk(false);
+            currentSettings.setExcludeSelected(false);
+            currentSettings.setLoadFromCache(true);
+            currentSettings.setStoreToCache(true);
+            currentSettings.setStoreIntermediateResults(cacheIntermediateResults);
+            generateQuickRun(false);
+        }
     }
 
     /**
@@ -82,7 +163,7 @@ public class QuickRunSetupUI extends JIPipeProjectWorkbenchPanel {
             return false;
         currentSettings = settings;
         nextRunOnSuccess = onSuccess;
-        generateTestBench(showResults);
+        generateQuickRun(showResults);
         return true;
     }
 
@@ -100,7 +181,7 @@ public class QuickRunSetupUI extends JIPipeProjectWorkbenchPanel {
         toolBar.add(Box.createHorizontalGlue());
 
         JButton refreshButton = new JButton("Retry", UIUtils.getIconFromResources("actions/view-refresh.png"));
-        refreshButton.addActionListener(e -> tryShowSetupPanel());
+        refreshButton.addActionListener(e -> tryShowSelectionPanel());
         toolBar.add(refreshButton);
 
         validationReportPanel.add(toolBar, BorderLayout.NORTH);
@@ -121,11 +202,11 @@ public class QuickRunSetupUI extends JIPipeProjectWorkbenchPanel {
         toolBar.add(Box.createHorizontalGlue());
 
         JButton runOnly = new JButton("Run", UIUtils.getIconFromResources("actions/run-build.png"));
-        runOnly.addActionListener(e -> generateTestBench(false));
+        runOnly.addActionListener(e -> generateQuickRun(false));
         toolBar.add(runOnly);
 
         JButton runAndOpen = new JButton("Run & open results", UIUtils.getIconFromResources("actions/run-build.png"));
-        runAndOpen.addActionListener(e -> generateTestBench(true));
+        runAndOpen.addActionListener(e -> generateQuickRun(true));
         toolBar.add(runAndOpen);
 
         setupPanel.add(toolBar, BorderLayout.NORTH);
@@ -166,6 +247,15 @@ public class QuickRunSetupUI extends JIPipeProjectWorkbenchPanel {
         }
     }
 
+    private void tryShowSelectionPanel() {
+        if (validateOrShowError()) {
+            removeAll();
+            add(selectionPanel, BorderLayout.CENTER);
+            revalidate();
+            repaint();
+        }
+    }
+
     private void openError(Exception exception) {
         removeAll();
 
@@ -181,7 +271,7 @@ public class QuickRunSetupUI extends JIPipeProjectWorkbenchPanel {
         toolBar.add(Box.createHorizontalGlue());
 
         JButton refreshButton = new JButton("Retry", UIUtils.getIconFromResources("actions/view-refresh.png"));
-        refreshButton.addActionListener(e -> tryShowSetupPanel());
+        refreshButton.addActionListener(e -> tryShowSelectionPanel());
         toolBar.add(refreshButton);
         errorPanel.add(toolBar, BorderLayout.NORTH);
 
@@ -190,12 +280,12 @@ public class QuickRunSetupUI extends JIPipeProjectWorkbenchPanel {
         revalidate();
     }
 
-    private void generateTestBench(boolean showResults) {
+    private void generateQuickRun(boolean showResults) {
 
         JIPipeValidityReport report = new JIPipeValidityReport();
         getProject().reportValidity(report, algorithm);
         if (!report.isValid()) {
-            tryShowSetupPanel();
+            tryShowSelectionPanel();
             return;
         }
 
@@ -219,7 +309,7 @@ public class QuickRunSetupUI extends JIPipeProjectWorkbenchPanel {
     @Subscribe
     public void onWorkerFinished(RunUIWorkerFinishedEvent event) {
         if (event.getRun() == currentQuickRun) {
-            tryShowSetupPanel();
+            tryShowSelectionPanel();
 
             if (showNextResults) {
                 try {

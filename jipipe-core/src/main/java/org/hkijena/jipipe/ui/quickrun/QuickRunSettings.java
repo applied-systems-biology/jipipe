@@ -27,7 +27,7 @@ import java.nio.file.Path;
  * Settings for {@link QuickRun}
  */
 public class QuickRunSettings implements JIPipeParameterCollection {
-    private EventBus eventBus = new EventBus();
+    private final EventBus eventBus = new EventBus();
     private Path outputPath;
     private boolean loadFromCache = true;
     private boolean storeToCache = true;
@@ -40,7 +40,7 @@ public class QuickRunSettings implements JIPipeParameterCollection {
      * Creates a new instance
      */
     public QuickRunSettings() {
-        outputPath = RuntimeSettings.generateTempDirectory("TestBench");
+        outputPath = RuntimeSettings.generateTempDirectory("QuickRun");
     }
 
     @Override
