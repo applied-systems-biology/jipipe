@@ -190,7 +190,7 @@ public class JIPipeProjectWorkbench extends JPanel implements JIPipeWorkbench {
         documentTabPane.addSingletonTab(TAB_INTRODUCTION,
                 "Getting started",
                 UIUtils.getIconFromResources("actions/help-info.png"),
-                new JIPipeInfoUI(this),
+                new WelcomePanel(this),
                 !GeneralUISettings.getInstance().isShowIntroduction() || !showIntroduction);
         documentTabPane.addSingletonTab(TAB_PROJECT_OVERVIEW,
                 "Project overview",

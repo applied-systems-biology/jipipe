@@ -20,13 +20,7 @@ import org.hkijena.jipipe.api.JIPipeProjectTemplate;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.extensions.settings.GeneralUISettings;
 import org.hkijena.jipipe.extensions.settings.ProjectsSettings;
-import org.hkijena.jipipe.ui.components.BackgroundPanel;
-import org.hkijena.jipipe.ui.components.DocumentTabPane;
-import org.hkijena.jipipe.ui.components.FormPanel;
-import org.hkijena.jipipe.ui.components.MarkdownDocument;
-import org.hkijena.jipipe.ui.components.MarkdownReader;
-import org.hkijena.jipipe.ui.components.RecentProjectListCellRenderer;
-import org.hkijena.jipipe.ui.components.TemplateProjectListCellRenderer;
+import org.hkijena.jipipe.ui.components.*;
 import org.hkijena.jipipe.utils.DotSlideshow;
 import org.hkijena.jipipe.utils.ReflectionUtils;
 import org.hkijena.jipipe.utils.RoundedLineBorder;
@@ -47,8 +41,10 @@ import java.util.jar.Attributes;
 /**
  * UI that shows some introduction
  */
-public class JIPipeInfoUI extends JIPipeProjectWorkbenchPanel {
+public class WelcomePanel extends JIPipeProjectWorkbenchPanel {
 
+    private final SearchTextField recentProjectsSearch = new SearchTextField();
+    private final SearchTextField templateSearch = new SearchTextField();
     private final JList<Path> recentProjectsList = new JList<>();
     private final JList<JIPipeProjectTemplate> templateList = new JList<>();
 
@@ -57,7 +53,7 @@ public class JIPipeInfoUI extends JIPipeProjectWorkbenchPanel {
      *
      * @param workbenchUI The workbench UI
      */
-    public JIPipeInfoUI(JIPipeProjectWorkbench workbenchUI) {
+    public WelcomePanel(JIPipeProjectWorkbench workbenchUI) {
         super(workbenchUI);
         initialize();
         refreshRecentProjects();
@@ -68,9 +64,11 @@ public class JIPipeInfoUI extends JIPipeProjectWorkbenchPanel {
     private void refreshTemplateProjects() {
         DefaultListModel<JIPipeProjectTemplate> model = new DefaultListModel<>();
         for (JIPipeProjectTemplate template : JIPipeProjectTemplate.listTemplates()) {
-            model.addElement(template);
+            if(templateSearch.test(template.getMetadata().getName() + " " + template.getMetadata().getTemplateDescription())) {
+                model.addElement(template);
+            }
         }
-        if (model.getSize() == 0) {
+        if (model.getSize() == 0 && templateSearch.getSearchStrings().length == 0) {
             model.addElement(null);
         }
         templateList.setModel(model);
@@ -79,11 +77,11 @@ public class JIPipeInfoUI extends JIPipeProjectWorkbenchPanel {
     private void refreshRecentProjects() {
         DefaultListModel<Path> model = new DefaultListModel<>();
         for (Path path : ProjectsSettings.getInstance().getRecentProjects()) {
-            if (Files.exists(path)) {
+            if (recentProjectsSearch.test(path.toString()) && Files.exists(path)) {
                 model.addElement(path);
             }
         }
-        if (model.getSize() == 0) {
+        if (model.getSize() == 0 && recentProjectsSearch.getSearchStrings().length == 0) {
             model.addElement(null);
         }
         recentProjectsList.setModel(model);
@@ -100,10 +98,6 @@ public class JIPipeInfoUI extends JIPipeProjectWorkbenchPanel {
     private void initContent() {
         if (!GeneralUISettings.getInstance().isShowIntroductionTour())
             return;
-//        MarkdownReader markdownReader = new MarkdownReader(false, MarkdownDocument.fromPluginResource("documentation/introduction.md"));
-//        markdownReader.setBorder(null);
-//        markdownReader.getScrollPane().setBorder(null);
-//        add(markdownReader, BorderLayout.CENTER);
 
         JPanel tourPanel = new JPanel();
         tourPanel.setLayout(new BoxLayout(tourPanel, BoxLayout.Y_AXIS));
@@ -146,36 +140,24 @@ public class JIPipeInfoUI extends JIPipeProjectWorkbenchPanel {
         DocumentTabPane tabPane = new DocumentTabPane();
 
         // Recent projects list
-        recentProjectsList.setCellRenderer(new RecentProjectListCellRenderer());
-        JScrollPane recentProjectsScrollPane = new JScrollPane(recentProjectsList);
-//        recentProjectsScrollPane.setBorder(BorderFactory.createMatteBorder(0, 0, 0, 1, Color.DARK_GRAY));
-        recentProjectsList.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mouseClicked(MouseEvent e) {
-                if (e.getClickCount() == 2) {
-                    Path value = recentProjectsList.getSelectedValue();
-                    if (value != null) {
-                        ((JIPipeProjectWindow) getProjectWorkbench().getWindow()).openProject(value);
-                    }
-                } else {
-                    if (recentProjectsList.getMousePosition().x > recentProjectsList.getWidth() - 50) {
-                        Path value = recentProjectsList.getSelectedValue();
-                        if (value != null) {
-                            ((JIPipeProjectWindow) getProjectWorkbench().getWindow()).openProject(value);
-                        }
-                    }
-                }
-            }
-        });
-        tabPane.addTab("Recent projects",
-                UIUtils.getIconFromResources("actions/view-calendar-time-spent.png"),
-                recentProjectsScrollPane,
-                DocumentTabPane.CloseMode.withoutCloseButton);
+        initRecentProjects(tabPane);
 
         // Template list
+        initTemplateList(tabPane);
+
+        tabPane.setBorder(BorderFactory.createMatteBorder(0, 0, 0, 1, Color.DARK_GRAY));
+
+        if (!GeneralUISettings.getInstance().isShowIntroductionTour())
+            add(tabPane, BorderLayout.CENTER);
+        else
+            add(tabPane, BorderLayout.WEST);
+    }
+
+    private void initTemplateList(DocumentTabPane tabPane) {
+        JPanel panel = new JPanel(new BorderLayout());
+
         templateList.setCellRenderer(new TemplateProjectListCellRenderer());
         JScrollPane templateListScrollPane = new JScrollPane(templateList);
-//        templateListScrollPane.setBorder(BorderFactory.createMatteBorder(0, 0, 0, 1, Color.DARK_GRAY));
         templateList.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
@@ -194,17 +176,53 @@ public class JIPipeInfoUI extends JIPipeProjectWorkbenchPanel {
                 }
             }
         });
+
+        // Init search
+        templateSearch.addActionListener(e -> refreshTemplateProjects());
+
+        panel.add(templateListScrollPane, BorderLayout.CENTER);
+        panel.add(templateSearch, BorderLayout.NORTH);
+
         tabPane.addTab("Example projects & templates",
                 UIUtils.getIconFromResources("actions/graduation-cap.png"),
-                templateListScrollPane,
+                panel,
                 DocumentTabPane.CloseMode.withoutCloseButton);
+    }
 
-        tabPane.setBorder(BorderFactory.createMatteBorder(0, 0, 0, 1, Color.DARK_GRAY));
+    private void initRecentProjects(DocumentTabPane tabPane) {
+        JPanel panel = new JPanel(new BorderLayout());
 
-        if (!GeneralUISettings.getInstance().isShowIntroductionTour())
-            add(tabPane, BorderLayout.CENTER);
-        else
-            add(tabPane, BorderLayout.WEST);
+        recentProjectsList.setCellRenderer(new RecentProjectListCellRenderer());
+        JScrollPane recentProjectsScrollPane = new JScrollPane(recentProjectsList);
+        recentProjectsList.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                if (e.getClickCount() == 2) {
+                    Path value = recentProjectsList.getSelectedValue();
+                    if (value != null) {
+                        ((JIPipeProjectWindow) getProjectWorkbench().getWindow()).openProject(value);
+                    }
+                } else {
+                    if (recentProjectsList.getMousePosition().x > recentProjectsList.getWidth() - 50) {
+                        Path value = recentProjectsList.getSelectedValue();
+                        if (value != null) {
+                            ((JIPipeProjectWindow) getProjectWorkbench().getWindow()).openProject(value);
+                        }
+                    }
+                }
+            }
+        });
+
+        // Init search
+        recentProjectsSearch.addActionListener(e -> refreshRecentProjects());
+
+        panel.add(recentProjectsScrollPane, BorderLayout.CENTER);
+        panel.add(recentProjectsSearch, BorderLayout.NORTH);
+
+        tabPane.addTab("Recent projects",
+                UIUtils.getIconFromResources("actions/view-calendar-time-spent.png"),
+                panel,
+                DocumentTabPane.CloseMode.withoutCloseButton);
     }
 
     @Subscribe
