@@ -11,7 +11,7 @@
  * See the LICENSE file provided with the code for the full license.
  */
 
-package org.hkijena.jipipe.ui;
+package org.hkijena.jipipe.ui.tools;
 
 import com.google.common.eventbus.Subscribe;
 import ij.IJ;
@@ -20,6 +20,9 @@ import org.hkijena.jipipe.api.JIPipeProjectTemplate;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.extensions.settings.GeneralUISettings;
 import org.hkijena.jipipe.extensions.settings.ProjectsSettings;
+import org.hkijena.jipipe.ui.JIPipeProjectWindow;
+import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
+import org.hkijena.jipipe.ui.JIPipeProjectWorkbenchPanel;
 import org.hkijena.jipipe.ui.components.*;
 import org.hkijena.jipipe.utils.DotSlideshow;
 import org.hkijena.jipipe.utils.ReflectionUtils;

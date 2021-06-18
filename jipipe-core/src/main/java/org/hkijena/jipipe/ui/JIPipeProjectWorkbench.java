@@ -23,6 +23,7 @@ import org.hkijena.jipipe.api.JIPipeValidityReport;
 import org.hkijena.jipipe.api.compartments.algorithms.JIPipeProjectCompartment;
 import org.hkijena.jipipe.api.grouping.NodeGroup;
 import org.hkijena.jipipe.api.nodes.JIPipeGraph;
+import org.hkijena.jipipe.api.notifications.JIPipeNotificationInbox;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.extensions.parameters.primitives.HTMLText;
 import org.hkijena.jipipe.extensions.settings.AutoSaveSettings;
@@ -57,6 +58,8 @@ import org.hkijena.jipipe.ui.running.JIPipeRunnerQueueUI;
 import org.hkijena.jipipe.ui.running.RealTimeProjectRunner;
 import org.hkijena.jipipe.ui.settings.JIPipeApplicationSettingsUI;
 import org.hkijena.jipipe.ui.settings.JIPipeProjectSettingsUI;
+import org.hkijena.jipipe.ui.tools.NotificationButton;
+import org.hkijena.jipipe.ui.tools.WelcomePanel;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.jdesktop.swingx.JXStatusBar;
 import org.jdesktop.swingx.plaf.basic.BasicStatusBarUI;
@@ -103,6 +106,8 @@ public class JIPipeProjectWorkbench extends JPanel implements JIPipeWorkbench {
     private RealTimeProjectRunner realTimeProjectRunner;
     private VirtualDataControl virtualDataControl;
     private boolean projectModified;
+    private JIPipeNotificationInbox notificationInbox = new JIPipeNotificationInbox();
+    private NotificationButton notificationButton = new NotificationButton(this);
 
     /**
      * @param window           Parent window
@@ -524,31 +529,16 @@ public class JIPipeProjectWorkbench extends JPanel implements JIPipeWorkbench {
 
         menu.add(Box.createHorizontalGlue());
 
-//        // Virtual control
-//        JToggleButton virtualControlToggle = virtualDataControl.createToggleButton();
-//        UIUtils.makeFlat(virtualControlToggle);
-//        menu.add(virtualControlToggle);
-
         // Real-time runner control
         JToggleButton realtimeToggleButton = realTimeProjectRunner.createToggleButton();
         UIUtils.makeFlat(realtimeToggleButton);
         menu.add(realtimeToggleButton);
 
         // Cache monitor
-//        menu.add(new JIPipeCacheManagerUI(this));
-
         menu.add(new JIPipeCacheManagerUI(this));
 
         // Queue monitor
         menu.add(new JIPipeRunnerQueueUI());
-//        menu.add(Box.createHorizontalStrut(1));
-
-        // "Validate" entry
-//        JButton validateProjectButton = new JButton("Validate", UIUtils.getIconFromResources("actions/checkmark.png"));
-//        validateProjectButton.setToolTipText("Opens a new tab to check parameters and graph for validity.");
-//        validateProjectButton.addActionListener(e -> validateProject(false));
-//        UIUtils.makeFlat(validateProjectButton);
-//        menu.add(validateProjectButton);
 
         // "Run" entry
         JButton runProjectButton = new JButton("Run", UIUtils.getIconFromResources("actions/run-build.png"));
@@ -557,6 +547,9 @@ public class JIPipeProjectWorkbench extends JPanel implements JIPipeWorkbench {
 
         runProjectButton.addActionListener(e -> openRunUI());
         menu.add(runProjectButton);
+
+        // Notification panel
+        menu.add(notificationButton);
 
         // "Help" entry
         JMenu helpMenu = new JMenu("Help");
@@ -805,6 +798,11 @@ public class JIPipeProjectWorkbench extends JPanel implements JIPipeWorkbench {
             this.projectModified = projectModified;
             window.updateTitle();
         }
+    }
+
+    @Override
+    public JIPipeNotificationInbox getNotificationInbox() {
+        return notificationInbox;
     }
 
     public static boolean canAddOrDeleteNodes(JIPipeWorkbench workbench) {

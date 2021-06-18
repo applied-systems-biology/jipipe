@@ -17,6 +17,7 @@ import com.google.common.eventbus.Subscribe;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.JIPipeJsonExtension;
 import org.hkijena.jipipe.api.JIPipeValidityReport;
+import org.hkijena.jipipe.api.notifications.JIPipeNotificationInbox;
 import org.hkijena.jipipe.ui.components.DocumentTabPane;
 import org.hkijena.jipipe.ui.components.RecentJsonExtensionsMenu;
 import org.hkijena.jipipe.ui.components.ReloadableValidityChecker;
@@ -50,6 +51,8 @@ public class JIPipeJsonExtensionWorkbench extends JPanel implements JIPipeWorkbe
     private JLabel statusText;
     private ReloadableValidityChecker validityCheckerPanel;
     private boolean projectModified;
+    private JIPipeNotificationInbox notificationInbox = new JIPipeNotificationInbox();
+
 
     /**
      * @param window           The parent window
@@ -315,5 +318,10 @@ public class JIPipeJsonExtensionWorkbench extends JPanel implements JIPipeWorkbe
     @Override
     public void setProjectModified(boolean projectModified) {
         this.projectModified = projectModified;
+    }
+
+    @Override
+    public JIPipeNotificationInbox getNotificationInbox() {
+        return notificationInbox;
     }
 }

@@ -15,6 +15,7 @@ package org.hkijena.jipipe.ui;
 
 import org.hkijena.jipipe.api.JIPipeProject;
 import org.hkijena.jipipe.api.nodes.JIPipeGraph;
+import org.hkijena.jipipe.api.notifications.JIPipeNotificationInbox;
 import org.hkijena.jipipe.ui.components.DocumentTabPane;
 import org.scijava.Context;
 
@@ -60,6 +61,12 @@ public interface JIPipeWorkbench {
      * @return The tab pane
      */
     DocumentTabPane getDocumentTabPane();
+
+    /**
+     * Allows to send notifications on a workbench-level
+     * @return the notification inbox
+     */
+    JIPipeNotificationInbox getNotificationInbox();
 
     /**
      * Attempts to find a workbench
