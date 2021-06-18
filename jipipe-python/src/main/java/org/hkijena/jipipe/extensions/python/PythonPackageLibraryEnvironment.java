@@ -13,6 +13,8 @@
 
 package org.hkijena.jipipe.extensions.python;
 
+import com.fasterxml.jackson.annotation.JsonGetter;
+import com.fasterxml.jackson.annotation.JsonSetter;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.JIPipeValidityReport;
@@ -50,22 +52,26 @@ public abstract class PythonPackageLibraryEnvironment extends ExternalEnvironmen
     @JIPipeDocumentation(name = "Library directory", description = "The directory that contains the Python packages. Ignored if the Python packages are provided by the Python environment.")
     @JIPipeParameter("library-directory")
     @FilePathParameterSettings(key = FileChooserSettings.KEY_EXTERNAL, pathMode = PathEditor.PathMode.DirectoriesOnly, ioMode = PathEditor.IOMode.Open)
+    @JsonGetter("library-directory")
     public Path getLibraryDirectory() {
         return libraryDirectory;
     }
 
     @JIPipeParameter("library-directory")
+    @JsonSetter("library-directory")
     public void setLibraryDirectory(Path libraryDirectory) {
         this.libraryDirectory = libraryDirectory;
     }
 
     @JIPipeDocumentation(name = "Provided by Python environment", description = "If enabled, the library will be ignored. It is assumed that all packages are provided by the Python environment (Conda/Virtualenv).")
     @JIPipeParameter("provided-by-environment")
+    @JsonGetter("provided-by-environment")
     public boolean isProvidedByEnvironment() {
         return providedByEnvironment;
     }
 
     @JIPipeParameter("provided-by-environment")
+    @JsonSetter("provided-by-environment")
     public void setProvidedByEnvironment(boolean providedByEnvironment) {
         this.providedByEnvironment = providedByEnvironment;
     }
