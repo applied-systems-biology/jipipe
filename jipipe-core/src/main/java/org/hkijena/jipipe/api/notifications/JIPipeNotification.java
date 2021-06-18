@@ -16,6 +16,8 @@ package org.hkijena.jipipe.api.notifications;
 import org.jetbrains.annotations.NotNull;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 /**
@@ -27,6 +29,7 @@ public class JIPipeNotification implements Comparable<JIPipeNotification> {
     private final String id;
     private String heading;
     private String description;
+    private List<JIPipeNotificationAction> actions = new ArrayList<>();
 
     public JIPipeNotification(String id) {
         this.id = id;
@@ -50,6 +53,14 @@ public class JIPipeNotification implements Comparable<JIPipeNotification> {
 
     public LocalDateTime getDateTime() {
         return dateTime;
+    }
+
+    public List<JIPipeNotificationAction> getActions() {
+        return actions;
+    }
+
+    public void setActions(List<JIPipeNotificationAction> actions) {
+        this.actions = actions;
     }
 
     @Override
