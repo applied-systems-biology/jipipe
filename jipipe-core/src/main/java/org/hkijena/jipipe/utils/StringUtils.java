@@ -186,6 +186,15 @@ public class StringUtils {
         while (input.contains("--")) {
             input = input.replace("--", "-");
         }
+        while(input.startsWith("-")) {
+            input = input.substring(1);
+        }
+        while(input.endsWith("-")) {
+            input = input.substring(0, input.length() - 1);
+        }
+        if(input.isEmpty()) {
+            input = "empty";
+        }
         return input;
     }
 
