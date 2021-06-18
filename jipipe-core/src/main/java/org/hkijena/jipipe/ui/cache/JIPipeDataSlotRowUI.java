@@ -43,6 +43,7 @@ import java.util.Objects;
 
 /**
  * UI for a row
+ * TODO: Support for data annotations
  */
 public class JIPipeDataSlotRowUI extends JIPipeWorkbenchPanel {
     private final JIPipeDataSlot slot;

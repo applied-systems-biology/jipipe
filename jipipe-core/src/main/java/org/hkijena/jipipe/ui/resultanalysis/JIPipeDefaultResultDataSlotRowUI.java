@@ -39,6 +39,7 @@ import java.util.Objects;
 /**
  * Provides a standard result slot UI that can be also further extended.
  * Override registerActions() for this
+ * TODO: Support for data annotations
  */
 public class JIPipeDefaultResultDataSlotRowUI extends JIPipeResultDataSlotRowUI {
 

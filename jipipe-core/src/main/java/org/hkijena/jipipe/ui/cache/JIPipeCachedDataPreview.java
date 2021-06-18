@@ -27,6 +27,7 @@ import java.util.concurrent.ExecutionException;
 /**
  * A component that acts as table cell (or other component) that generates a preview of a cached {@link org.hkijena.jipipe.api.data.JIPipeData}
  * Preview generation is put into its own thread. On finishing the thread, the parent component's repaint method is called
+ * TODO: Support for data annotations
  */
 public class JIPipeCachedDataPreview extends JPanel {
     private Component parentComponent;

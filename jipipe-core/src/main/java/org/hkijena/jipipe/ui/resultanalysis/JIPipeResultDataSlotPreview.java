@@ -28,6 +28,7 @@ import java.nio.file.Path;
  * Renders a {@link JIPipeDataSlot} row as table cell.
  * The component should default to a light render workload (e.g. a status text).
  * Run renderPreview() to run any kind of heavy workload
+ * TODO: Support for data annotations
  */
 public abstract class JIPipeResultDataSlotPreview extends JIPipeProjectWorkbenchPanel {
 

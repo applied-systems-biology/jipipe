@@ -59,6 +59,7 @@ import java.util.List;
 
 /**
  * UI that displays a {@link JIPipeDataSlot} that is cached
+ * TODO: Support for data annotations
  */
 public class JIPipeCacheMultiDataSlotTableUI extends JIPipeWorkbenchPanel {
 

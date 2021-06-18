@@ -22,6 +22,7 @@ import java.awt.Component;
 
 /**
  * Renders the column header in merged {@link org.hkijena.jipipe.api.data.JIPipeExportedDataTable} instances
+ * TODO: Support for data annotations
  */
 public class JIPipeMergedDataSlotTableColumnHeaderRenderer implements TableCellRenderer {
     private JIPipeMergedExportedDataTable dataTable;

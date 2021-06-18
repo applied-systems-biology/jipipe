@@ -30,6 +30,7 @@ import java.util.concurrent.ExecutionException;
 /**
  * A {@link JIPipeResultDataSlotPreview} that uses a {@link javax.swing.SwingWorker} to load previews in a separate thread.
  * It will automatically update the table when finished
+ * TODO: Support for data annotations
  */
 public abstract class JIPipeAsyncResultDataPlotPreview extends JIPipeResultDataSlotPreview {
 

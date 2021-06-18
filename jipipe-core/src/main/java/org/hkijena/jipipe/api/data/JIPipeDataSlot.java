@@ -145,6 +145,85 @@ public class JIPipeDataSlot {
     }
 
     /**
+     * Gets a data annotation as {@link JIPipeVirtualData}
+     * @param row the row
+     * @param column the data annotation column
+     * @return the data or null if there is no annotation
+     */
+    public JIPipeVirtualData getVirtualDataAnnotation(int row, String column) {
+        List<JIPipeVirtualData> data = getOrCreateDataAnnotationColumnData(column);
+        return data.get(row);
+    }
+
+    /**
+     * Sets a virtual data annotation
+     * @param row the row
+     * @param column the data annotation column
+     * @param virtualData the data. can be null.
+     */
+    public void setVirtualDataAnnotation(int row, String column, JIPipeVirtualData virtualData) {
+        List<JIPipeVirtualData> data = getOrCreateDataAnnotationColumnData(column);
+        data.set(row, virtualData);
+    }
+
+    /**
+     * Sets a data annotation
+     * @param row the row
+     * @param column the column
+     * @param data the data. Can be null
+     */
+    public void setDataAnnotation(int row, String column, JIPipeData data) {
+        if(data == null)
+            setVirtualDataAnnotation(row, column, null);
+        else
+            setVirtualDataAnnotation(row, column, new JIPipeVirtualData(data));
+    }
+
+    /**
+     * Returns annotations of a row as map
+     * @param row the row
+     * @return map from annotation name to annotation instance. Non-existing annotations are not present.
+     */
+    public Map<String, JIPipeAnnotation> getAnnotationMap(int row) {
+        Map<String, JIPipeAnnotation> result = new HashMap<>();
+        for (JIPipeAnnotation annotation : getAnnotations(row)) {
+            result.put(annotation.getName(), annotation);
+        }
+        return result;
+    }
+
+    /**
+     * Returns a map of all data annotations as {@link JIPipeVirtualData}
+     * @param row the row
+     * @return map from data annotation column to instance. Non-existing annotations are not present.
+     */
+    public Map<String, JIPipeVirtualData> getVirtualDataAnnotationMap(int row) {
+        Map<String, JIPipeVirtualData> result = new HashMap<>();
+        for (String column : getDataAnnotationColumns()) {
+            JIPipeVirtualData virtualData = getVirtualDataAnnotation(row, column);
+            if(virtualData != null)
+                result.put(column, virtualData);
+        }
+        return result;
+    }
+
+    /**
+     * Gets a data annotation
+     * @param row the row
+     * @param column the data annotation column
+     * @param progressInfo the progress info
+     * @param <T> the data type
+     * @return the data or null if there is no annotation
+     */
+    public <T extends JIPipeData> T getDataAnnotation(int row, String column, Class<T> dataClass, JIPipeProgressInfo progressInfo) {
+        JIPipeVirtualData virtualData = getVirtualDataAnnotation(row, column);
+        if(virtualData == null)
+            return null;
+        else
+            return (T) JIPipe.getDataTypes().convert(virtualData.getData(progressInfo), dataClass);
+    }
+
+    /**
      * Gets the list of annotations for a specific data row
      *
      * @param row The row
@@ -493,6 +572,8 @@ public class JIPipeDataSlot {
             data.get(row).getData(saveProgress.resolve("Load virtual data")).saveTo(path, getName(), false, rowProgress);
         }
 
+        // TODO: Save data annotations
+
         JIPipeExportedDataTable dataTable = new JIPipeExportedDataTable(this, basePath, indices);
         try {
             dataTable.saveAsJson(storagePath.resolve("data-table.json"));
@@ -516,6 +597,11 @@ public class JIPipeDataSlot {
         for (int row = 0; row < sourceSlot.getRowCount(); ++row) {
             progressInfo.resolveAndLog("Copying data from slot to slot", row, sourceSlot.getRowCount());
             addData(sourceSlot.getVirtualData(row), sourceSlot.getAnnotations(row), JIPipeAnnotationMergeStrategy.Merge);
+
+            // Copy data annotations
+            for (Map.Entry<String, JIPipeVirtualData> entry : getVirtualDataAnnotationMap(row).entrySet()) {
+                setVirtualDataAnnotation(row, entry.getKey(), entry.getValue());
+            }
         }
     }
 
@@ -631,8 +717,12 @@ public class JIPipeDataSlot {
             if (virtualData.isVirtual()) {
                 virtualData.makeNonVirtual(subProgress.resolveAndLog("Row", row, getRowCount()), removeVirtualDataStorage);
             }
-
-            // TODO: Make data annotation non-virtual
+            for (Map.Entry<String, JIPipeVirtualData> entry : getVirtualDataAnnotationMap(row).entrySet()) {
+                if(entry.getValue().isVirtual()) {
+                    entry.getValue().makeNonVirtual(subProgress.resolveAndLog("Row", row,
+                            getRowCount()).resolveAndLog("Data annotation " + entry.getKey()), removeVirtualDataStorage);
+                }
+            }
         }
     }
 
@@ -648,8 +738,12 @@ public class JIPipeDataSlot {
             if (!virtualData.isVirtual()) {
                 virtualData.makeVirtual(subProgress.resolveAndLog("Row", row, getRowCount()), false);
             }
-
-            // TODO: Make data annotation virtual
+            for (Map.Entry<String, JIPipeVirtualData> entry : getVirtualDataAnnotationMap(row).entrySet()) {
+                if(!entry.getValue().isVirtual()) {
+                    entry.getValue().makeVirtual(subProgress.resolveAndLog("Row", row,
+                            getRowCount()).resolveAndLog("Data annotation " + entry.getKey()), false);
+                }
+            }
         }
     }
 
@@ -709,8 +803,10 @@ public class JIPipeDataSlot {
         JIPipeDataSlot result = new JIPipeDataSlot(getInfo(), getNode());
         for (Integer row : rows) {
             result.addData(getVirtualData(row), getAnnotations(row), JIPipeAnnotationMergeStrategy.OverwriteExisting);
+            for (Map.Entry<String, JIPipeVirtualData> entry : getVirtualDataAnnotationMap(row).entrySet()) {
+                result.setVirtualDataAnnotation(result.getRowCount() - 1, entry.getKey(), entry.getValue());
+            }
         }
-        // TODO: Slice data annotations as well
         return result;
     }
 
