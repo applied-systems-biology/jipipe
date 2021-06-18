@@ -86,8 +86,8 @@ public class JIPipeRun implements JIPipeRunnable {
     private void initializeInternalStoragePaths() {
         for (JIPipeGraphNode algorithm : copiedGraph.getGraphNodes()) {
             JIPipeProjectCompartment compartment = project.getCompartments().get(algorithm.getCompartmentUUIDInGraph());
-            algorithm.setInternalStoragePath(Paths.get(StringUtils.jsonify(compartment.getAliasIdInGraph()))
-                    .resolve(StringUtils.jsonify(copiedGraph.getAliasIdOf(algorithm))));
+            algorithm.setInternalStoragePath(Paths.get(StringUtils.safeJsonify(compartment.getAliasIdInGraph()))
+                    .resolve(StringUtils.safeJsonify(copiedGraph.getAliasIdOf(algorithm))));
         }
     }
 

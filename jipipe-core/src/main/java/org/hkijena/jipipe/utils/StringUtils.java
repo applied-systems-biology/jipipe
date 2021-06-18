@@ -173,6 +173,29 @@ public class StringUtils {
      * @param input the input string
      * @return jsonified string
      */
+    public static String safeJsonify(String input) {
+        if (input == null)
+            return null;
+        char[] arr = input.trim().toLowerCase().toCharArray();
+        for (int i = 0; i < arr.length; i++) {
+            if (!Character.isLetterOrDigit(arr[i]) && arr[i] != '-') {
+                arr[i] = '-';
+            }
+        }
+        input = new String(arr);
+        while (input.contains("--")) {
+            input = input.replace("--", "-");
+        }
+        return input;
+    }
+
+    /**
+     * Removes all spaces, and filesystem-unsafe characters from the string and replaces them with dashes
+     * Duplicate dashes are removed
+     *
+     * @param input the input string
+     * @return jsonified string
+     */
     public static String jsonify(String input) {
         if (input == null)
             return null;

@@ -127,7 +127,7 @@ public class JIPipeGraph implements JIPipeValidatable {
      * @return a unique alias ID for the node
      */
     public String generateAliasIdFor(JIPipeGraphNode node) {
-        String jsonify = StringUtils.jsonify(node.getName());
+        String jsonify = StringUtils.safeJsonify(node.getName());
         // Limit length for filesystem compatibility
         if (jsonify.length() > 30) {
             jsonify = jsonify.substring(0, 31);
@@ -1565,7 +1565,7 @@ public class JIPipeGraph implements JIPipeValidatable {
                 aliasId = null;
             } else {
                 aliasId = nodeAliasIds.getOrDefault(uuid, null);
-                String jsonifiedName = StringUtils.jsonify(node.getName());
+                String jsonifiedName = StringUtils.safeJsonify(node.getName());
                 if (jsonifiedName.length() > 30) {
                     jsonifiedName = jsonifiedName.substring(0, 31);
                 }
