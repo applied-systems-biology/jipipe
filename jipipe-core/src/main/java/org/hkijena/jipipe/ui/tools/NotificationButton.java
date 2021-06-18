@@ -13,21 +13,21 @@
 
 package org.hkijena.jipipe.ui.tools;
 
+import com.google.common.collect.ImmutableList;
 import com.google.common.eventbus.Subscribe;
 import org.hkijena.jipipe.api.notifications.JIPipeNotification;
 import org.hkijena.jipipe.api.notifications.JIPipeNotificationInbox;
+import org.hkijena.jipipe.extensions.settings.NotificationUISettings;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.components.AnimatedIcon;
 import org.hkijena.jipipe.utils.RoundedLineBorder;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
-import java.awt.BorderLayout;
-import java.awt.Dimension;
-import java.util.ArrayList;
+import javax.swing.Timer;
+import java.awt.*;
+import java.util.*;
 import java.util.List;
-import java.util.Set;
-import java.util.TreeSet;
 
 /**
  * UI that monitors the queue
@@ -46,7 +46,7 @@ public class NotificationButton extends JButton {
      */
     public NotificationButton(JIPipeWorkbench workbench) {
         this.workbench = workbench;
-        this.timer = new Timer(2500, e -> showNextNotification());
+        this.timer = new Timer(5000, e -> showNextNotification());
         initialize();
         updateStatus();
 
@@ -65,11 +65,22 @@ public class NotificationButton extends JButton {
         timer.stop();
 
         // Add global and local (JIPipeProjectWorkbench) notifications
-        notificationSet.addAll(JIPipeNotificationInbox.getInstance().getNotifications());
-        notificationSet.addAll(getWorkbench().getNotificationInbox().getNotifications());
+        if(NotificationUISettings.getInstance().isEnableNotifications()) {
+            notificationSet.addAll(JIPipeNotificationInbox.getInstance().getNotifications());
+            notificationSet.addAll(getWorkbench().getNotificationInbox().getNotifications());
+        }
+        if(!NotificationUISettings.getInstance().getBlockedNotifications().isEmpty()) {
+            Set<String> ids = new HashSet<>(NotificationUISettings.getInstance().getBlockedNotifications());
+            for (JIPipeNotification notification : ImmutableList.copyOf(notificationSet)) {
+                if(ids.contains(notification.getId())) {
+                    notificationSet.remove(notification);
+                }
+            }
+        }
 
         headings.clear();
         headings.add("Your action is required");
+        headings.add("Click here");
         for (JIPipeNotification notification : notificationSet) {
             headings.add(notification.getHeading());
         }
@@ -79,6 +90,11 @@ public class NotificationButton extends JButton {
             setVisible(false);
         }
         else {
+            // Set width
+            FontMetrics fontMetrics = getFontMetrics(getFont());
+            int width = notificationSet.stream().map(notification -> fontMetrics.stringWidth(notification.getHeading())).max(Comparator.naturalOrder()).orElse(0);
+            setPreferredSize(new Dimension(width + 100, 32));
+
             setVisible(true);
             setText("Your action is required");
             warningIcon.start();
@@ -92,6 +108,8 @@ public class NotificationButton extends JButton {
         warningIcon = new AnimatedIcon(this, UIUtils.getIconFromResources("emblems/emblem-important.png"),
                 UIUtils.getIconFromResources("emblems/warning.png"),
                 100, 0.05);
+        setIcon(warningIcon);
+        setHorizontalAlignment(LEFT);
     }
 
     public JIPipeWorkbench getWorkbench() {

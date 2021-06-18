@@ -44,6 +44,13 @@ public interface JIPipeJavaExtension extends SciJavaPlugin, JIPipeDependency {
     void register();
 
     /**
+     * Called after registration.
+     */
+    default void postprocess() {
+
+    }
+
+    /**
      * Returns icons that will be displayed in the splash screen.
      * They must have a size of 32x32.
      * There can only be at most 45 icons

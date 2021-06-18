@@ -100,6 +100,7 @@ public class AnimatedIcon implements Icon {
         graphics2D.drawImage(bottomIcon.getImage(), x, y, null);
         graphics2D.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, (float) opacity));
         graphics2D.drawImage(topIcon.getImage(), x, y, null);
+        graphics2D.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 1.0f));
     }
 
     @Override

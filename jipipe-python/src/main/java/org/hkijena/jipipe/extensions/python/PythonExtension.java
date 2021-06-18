@@ -14,6 +14,8 @@
 package org.hkijena.jipipe.extensions.python;
 
 import org.hkijena.jipipe.JIPipeJavaExtension;
+import org.hkijena.jipipe.api.notifications.JIPipeNotification;
+import org.hkijena.jipipe.api.notifications.JIPipeNotificationInbox;
 import org.hkijena.jipipe.extensions.JIPipePrepackagedDefaultJavaExtension;
 import org.hkijena.jipipe.extensions.parameters.primitives.HTMLText;
 import org.hkijena.jipipe.extensions.parameters.primitives.StringList;
@@ -103,6 +105,17 @@ public class PythonExtension extends JIPipePrepackagedDefaultJavaExtension {
         registerNodeType("cpython-script", PythonScriptAlgorithm.class, UIUtils.getIconURLFromResources("apps/python.png"));
         registerNodeType("cpython-script-iterating", IteratingPythonScriptAlgorithm.class, UIUtils.getIconURLFromResources("apps/python.png"));
         registerNodeType("cpython-script-merging", MergingPythonScriptAlgorithm.class, UIUtils.getIconURLFromResources("apps/python.png"));
+    }
+
+    @Override
+    public void postprocess() {
+        if(!PythonExtensionSettings.pythonSettingsAreValid()) {
+            JIPipeNotification notification = new JIPipeNotification(getDependencyId() + ":python-not-configured");
+            notification.setHeading("Python is not configured");
+            notification.setDescription("To make use of Python within JIPipe, you need to either provide JIPipe with an " +
+                    "existing Python installation or let JIPipe install a Python distribution for you.");
+            JIPipeNotificationInbox.getInstance().push(notification);
+        }
     }
 
     @Override

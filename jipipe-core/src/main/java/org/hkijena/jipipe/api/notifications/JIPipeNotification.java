@@ -24,10 +24,12 @@ import java.util.Objects;
 public class JIPipeNotification implements Comparable<JIPipeNotification> {
 
     private final LocalDateTime dateTime = LocalDateTime.now();
+    private final String id;
     private String heading;
     private String description;
 
-    public JIPipeNotification() {
+    public JIPipeNotification(String id) {
+        this.id = id;
     }
 
     public String getHeading() {
@@ -60,16 +62,20 @@ public class JIPipeNotification implements Comparable<JIPipeNotification> {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         JIPipeNotification that = (JIPipeNotification) o;
-        return Objects.equals(heading, that.heading);
+        return Objects.equals(id, that.id);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(heading);
+        return Objects.hash(id);
     }
 
     @Override
     public String toString() {
         return "Notification @ " + getDateTime() + ": " + getHeading();
+    }
+
+    public String getId() {
+        return id;
     }
 }

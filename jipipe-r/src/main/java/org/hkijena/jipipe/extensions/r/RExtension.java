@@ -3,6 +3,8 @@ package org.hkijena.jipipe.extensions.r;
 import org.fife.ui.rsyntaxtextarea.AbstractTokenMakerFactory;
 import org.fife.ui.rsyntaxtextarea.TokenMakerFactory;
 import org.hkijena.jipipe.JIPipeJavaExtension;
+import org.hkijena.jipipe.api.notifications.JIPipeNotification;
+import org.hkijena.jipipe.api.notifications.JIPipeNotificationInbox;
 import org.hkijena.jipipe.extensions.JIPipePrepackagedDefaultJavaExtension;
 import org.hkijena.jipipe.extensions.parameters.primitives.HTMLText;
 import org.hkijena.jipipe.extensions.parameters.primitives.StringList;
@@ -94,5 +96,17 @@ public class RExtension extends JIPipePrepackagedDefaultJavaExtension {
 
         registerEnumParameterType("r-import-dataset:dataset", ImportRDatasetAlgorithm.Dataset.class, "R dataset", "A dataset from the R datasets package");
         registerNodeType("r-import-dataset", ImportRDatasetAlgorithm.class, UIUtils.getIconURLFromResources("apps/rlogo_icon.png"));
+    }
+
+    @Override
+    public void postprocess() {
+        if(!RExtensionSettings.RSettingsAreValid()) {
+            JIPipeNotification notification = new JIPipeNotification(getDependencyId() + ":r-not-configured");
+            notification.setHeading("R is not configured");
+            notification.setDescription("To make use of R within JIPipe, you need to either provide JIPipe with an " +
+                    "existing R installation or let JIPipe install a R distribution for you. Please note that we cannot provide you with an R " +
+                    "setup tool for Linux and Mac.");
+            JIPipeNotificationInbox.getInstance().push(notification);
+        }
     }
 }

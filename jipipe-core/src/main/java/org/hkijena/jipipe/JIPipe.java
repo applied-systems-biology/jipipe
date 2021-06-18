@@ -276,6 +276,15 @@ public class JIPipe extends AbstractService implements JIPipeRegistry {
         // Required as the reload deletes the allowed values
         updateDefaultImporterSettings();
         updateDefaultCacheDisplaySettings();
+
+        // Postprocessing
+        for (JIPipeDependency extension : registeredExtensions) {
+            if(!failedExtensions.contains(extension) && extension instanceof JIPipeJavaExtension) {
+                logService.info("Postprocess: " + extension.getDependencyId());
+                ((JIPipeJavaExtension) extension).postprocess();
+            }
+        }
+
         logService.info("JIPipe loading finished");
         initializing = false;
     }
