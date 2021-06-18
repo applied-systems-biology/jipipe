@@ -56,10 +56,7 @@ public class QuickRun implements JIPipeRunnable, JIPipeValidatable {
 
     private void initialize() {
         JIPipeRunSettings configuration = new JIPipeRunSettings();
-        if (settings.isSaveToDisk())
-            configuration.setOutputPath(settings.getOutputPath().resolve("initial"));
-        else
-            configuration.setOutputPath(settings.getOutputPath());
+        configuration.setOutputPath(settings.getOutputPath());
         configuration.setLoadFromCache(settings.isLoadFromCache());
         configuration.setStoreToCache(settings.isStoreToCache());
         configuration.setNumThreads(settings.getNumThreads());
