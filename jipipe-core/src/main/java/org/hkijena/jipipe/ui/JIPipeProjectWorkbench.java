@@ -449,6 +449,11 @@ public class JIPipeProjectWorkbench extends JPanel implements JIPipeWorkbench {
         openProjectFolderItem.addActionListener(e -> openProjectFolder());
         projectMenu.add(openProjectFolderItem);
 
+        JMenuItem validateProjectItem = new JMenuItem("Validate project", UIUtils.getIconFromResources("actions/checkmark.png"));
+        validateProjectItem.setToolTipText("Checks if the project and the parameters are valid");
+        validateProjectItem.addActionListener(e -> validateProject(false));
+        projectMenu.add(validateProjectItem);
+
         projectMenu.addSeparator();
 
         JMenuItem exitButton = new JMenuItem("Exit", UIUtils.getIconFromResources("actions/exit.png"));
@@ -539,11 +544,11 @@ public class JIPipeProjectWorkbench extends JPanel implements JIPipeWorkbench {
 //        menu.add(Box.createHorizontalStrut(1));
 
         // "Validate" entry
-        JButton validateProjectButton = new JButton("Validate", UIUtils.getIconFromResources("actions/checkmark.png"));
-        validateProjectButton.setToolTipText("Opens a new tab to check parameters and graph for validity.");
-        validateProjectButton.addActionListener(e -> validateProject(false));
-        UIUtils.makeFlat(validateProjectButton);
-        menu.add(validateProjectButton);
+//        JButton validateProjectButton = new JButton("Validate", UIUtils.getIconFromResources("actions/checkmark.png"));
+//        validateProjectButton.setToolTipText("Opens a new tab to check parameters and graph for validity.");
+//        validateProjectButton.addActionListener(e -> validateProject(false));
+//        UIUtils.makeFlat(validateProjectButton);
+//        menu.add(validateProjectButton);
 
         // "Run" entry
         JButton runProjectButton = new JButton("Run", UIUtils.getIconFromResources("actions/run-build.png"));
@@ -554,7 +559,7 @@ public class JIPipeProjectWorkbench extends JPanel implements JIPipeWorkbench {
         menu.add(runProjectButton);
 
         // "Help" entry
-        JMenu helpMenu = new JMenu();
+        JMenu helpMenu = new JMenu("Help");
         helpMenu.setIcon(UIUtils.getIconFromResources("actions/help.png"));
 
         JMenuItem offlineManual = new JMenuItem("Manual", UIUtils.getIconFromResources("actions/help.png"));

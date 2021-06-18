@@ -215,7 +215,7 @@ public class JIPipeJsonExtensionWorkbench extends JPanel implements JIPipeWorkbe
         menu.add(installButton);
 
         // "Help" entry
-        JMenu helpMenu = new JMenu();
+        JMenu helpMenu = new JMenu("Help");
         helpMenu.setIcon(UIUtils.getIconFromResources("actions/help.png"));
         JMenuItem quickHelp = new JMenuItem("Getting started", UIUtils.getIconFromResources("actions/help-info.png"));
         quickHelp.addActionListener(e -> documentTabPane.selectSingletonTab("INTRODUCTION"));
