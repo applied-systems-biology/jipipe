@@ -11,7 +11,7 @@
  * See the LICENSE file provided with the code for the full license.
  */
 
-package org.hkijena.jipipe.ui.tools;
+package org.hkijena.jipipe.ui.compendium;
 
 import com.google.common.eventbus.Subscribe;
 import ij.IJ;

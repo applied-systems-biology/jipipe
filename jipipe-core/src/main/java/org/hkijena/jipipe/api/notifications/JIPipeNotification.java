@@ -25,6 +25,7 @@ import java.util.Objects;
  */
 public class JIPipeNotification implements Comparable<JIPipeNotification> {
 
+    private JIPipeNotificationInbox inbox;
     private final LocalDateTime dateTime = LocalDateTime.now();
     private final String id;
     private String heading;
@@ -63,6 +64,10 @@ public class JIPipeNotification implements Comparable<JIPipeNotification> {
         this.actions = actions;
     }
 
+    public void dismiss() {
+        getInbox().dismiss(this);
+    }
+
     @Override
     public int compareTo(@NotNull JIPipeNotification o) {
         return dateTime.compareTo(o.dateTime);
@@ -88,5 +93,13 @@ public class JIPipeNotification implements Comparable<JIPipeNotification> {
 
     public String getId() {
         return id;
+    }
+
+    public JIPipeNotificationInbox getInbox() {
+        return inbox;
+    }
+
+    public void setInbox(JIPipeNotificationInbox inbox) {
+        this.inbox = inbox;
     }
 }

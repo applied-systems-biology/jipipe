@@ -24,10 +24,7 @@ import org.hkijena.jipipe.ui.parameters.ParameterPanel;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
-import javax.swing.tree.DefaultMutableTreeNode;
-import javax.swing.tree.DefaultTreeModel;
-import javax.swing.tree.TreeCellRenderer;
-import javax.swing.tree.TreePath;
+import javax.swing.tree.*;
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.event.ComponentAdapter;
@@ -45,6 +42,9 @@ import java.util.stream.Collectors;
  */
 public class JIPipeApplicationSettingsUI extends JIPipeWorkbenchPanel {
 
+    private JTree tree = new JTree();
+    private Map<String, TreeNode> nodePathMap = new HashMap<>();
+
     /**
      * Creates a new instance
      *
@@ -57,7 +57,6 @@ public class JIPipeApplicationSettingsUI extends JIPipeWorkbenchPanel {
 
     private void initialize() {
         setLayout(new BorderLayout());
-        JTree tree = new JTree();
         tree.setCellRenderer(new SettingsCategoryNodeRenderer());
         JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, tree, new JPanel());
         splitPane.setDividerSize(3);
@@ -79,6 +78,7 @@ public class JIPipeApplicationSettingsUI extends JIPipeWorkbenchPanel {
             categories.add(0, "General");
         }
         DefaultMutableTreeNode rootNode = new DefaultMutableTreeNode();
+        nodePathMap.put("/", rootNode);
         List<SettingsCategoryNode> nodes = new ArrayList<>();
         for (String category : categories) {
             Icon categoryIcon = null;
@@ -90,9 +90,11 @@ public class JIPipeApplicationSettingsUI extends JIPipeWorkbenchPanel {
             for (JIPipeSettingsRegistry.Sheet sheet : byCategory.get(category).stream().sorted(Comparator.comparing(JIPipeSettingsRegistry.Sheet::getName)).collect(Collectors.toList())) {
                 SettingsCategoryNode subCategoryNode = new SettingsCategoryNode(Collections.singletonList(sheet), sheet.getName(), sheet.getIcon());
                 node.add(subCategoryNode);
+                nodePathMap.put("/" + category + "/" + sheet.getName(), subCategoryNode);
             }
             rootNode.add(node);
             nodes.add(node);
+            nodePathMap.put("/" + category, node);
         }
         tree.setModel(new DefaultTreeModel(rootNode));
         tree.addTreeSelectionListener(e -> {
@@ -116,6 +118,17 @@ public class JIPipeApplicationSettingsUI extends JIPipeWorkbenchPanel {
             tree.getSelectionModel().setSelectionPath(new TreePath(((DefaultTreeModel) tree.getModel()).getPathToRoot(node)));
         }
         UIUtils.expandAllTree(tree);
+    }
+
+    public void selectNode(String path) {
+        TreeNode node = nodePathMap.getOrDefault(path, null);
+        if(node != null) {
+            tree.getSelectionModel().setSelectionPath(new TreePath(((DefaultTreeModel) tree.getModel()).getPathToRoot(node)));
+        }
+    }
+
+    public Map<String, TreeNode> getNodePathMap() {
+        return Collections.unmodifiableMap(nodePathMap);
     }
 
     private static class SettingsCategoryNode extends DefaultMutableTreeNode {

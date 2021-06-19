@@ -42,6 +42,7 @@ public class JIPipeNotificationInbox {
     }
 
     public void push(JIPipeNotification notification) {
+        notification.setInbox(this);
         notifications.add(notification);
         eventBus.post(new UpdatedEvent(this));
     }

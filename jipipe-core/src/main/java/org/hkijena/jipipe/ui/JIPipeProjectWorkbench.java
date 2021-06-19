@@ -58,8 +58,9 @@ import org.hkijena.jipipe.ui.running.JIPipeRunnerQueueUI;
 import org.hkijena.jipipe.ui.running.RealTimeProjectRunner;
 import org.hkijena.jipipe.ui.settings.JIPipeApplicationSettingsUI;
 import org.hkijena.jipipe.ui.settings.JIPipeProjectSettingsUI;
-import org.hkijena.jipipe.ui.tools.NotificationButton;
-import org.hkijena.jipipe.ui.tools.WelcomePanel;
+import org.hkijena.jipipe.ui.notifications.NotificationButton;
+import org.hkijena.jipipe.ui.notifications.WorkbenchNotificationInboxUI;
+import org.hkijena.jipipe.ui.compendium.WelcomePanel;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.jdesktop.swingx.JXStatusBar;
 import org.jdesktop.swingx.plaf.basic.BasicStatusBarUI;
@@ -94,6 +95,7 @@ public class JIPipeProjectWorkbench extends JPanel implements JIPipeWorkbench {
     public static final String TAB_PLUGIN_MANAGER = "PLUGIN_MANAGER";
     public static final String TAB_VALIDITY_CHECK = "VALIDITY_CHECK";
     public static final String TAB_PLUGIN_VALIDITY_CHECK = "PLUGIN_VALIDITY_CHECK";
+    public static final String TAB_NOTIFICATIONS = "NOTIFICATIONS";
     private static final String TAB_PROJECT_OVERVIEW = "PROJECT_OVERVIEW";
     private static final String TAB_LOG = "LOG";
     public DocumentTabPane documentTabPane;
@@ -243,6 +245,11 @@ public class JIPipeProjectWorkbench extends JPanel implements JIPipeWorkbench {
                 "Log viewer",
                 UIUtils.getIconFromResources("actions/show_log.png"),
                 new JIPipeLogViewer(this),
+                true);
+        documentTabPane.addSingletonTab(TAB_NOTIFICATIONS,
+                "Notifications",
+                UIUtils.getIconFromResources("emblems/warning.png"),
+                new WorkbenchNotificationInboxUI(this),
                 true);
         add(documentTabPane, BorderLayout.CENTER);
 

@@ -11,13 +11,14 @@
  * See the LICENSE file provided with the code for the full license.
  */
 
-package org.hkijena.jipipe.ui.tools;
+package org.hkijena.jipipe.ui.notifications;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.eventbus.Subscribe;
 import org.hkijena.jipipe.api.notifications.JIPipeNotification;
 import org.hkijena.jipipe.api.notifications.JIPipeNotificationInbox;
 import org.hkijena.jipipe.extensions.settings.NotificationUISettings;
+import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.components.AnimatedIcon;
 import org.hkijena.jipipe.utils.RoundedLineBorder;
@@ -52,6 +53,7 @@ public class NotificationButton extends JButton {
 
         JIPipeNotificationInbox.getInstance().getEventBus().register(this);
         getWorkbench().getNotificationInbox().getEventBus().register(this);
+        addActionListener(e -> workbench.getDocumentTabPane().selectSingletonTab(JIPipeProjectWorkbench.TAB_NOTIFICATIONS));
     }
 
     private void showNextNotification() {
@@ -79,8 +81,7 @@ public class NotificationButton extends JButton {
         }
 
         headings.clear();
-        headings.add("Your action is required");
-        headings.add("Click here");
+        headings.add(notificationSet.size() == 1 ? "You have one notification" : "You have " + notificationSet.size() + " notifications");
         for (JIPipeNotification notification : notificationSet) {
             headings.add(notification.getHeading());
         }

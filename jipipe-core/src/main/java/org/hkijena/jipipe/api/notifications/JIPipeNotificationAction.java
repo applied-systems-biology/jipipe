@@ -1,18 +1,22 @@
 package org.hkijena.jipipe.api.notifications;
 
+import org.hkijena.jipipe.ui.JIPipeWorkbench;
+
 import javax.swing.*;
+import java.util.function.Consumer;
 
 public class JIPipeNotificationAction implements Runnable {
 
     private String label;
     private String tooltip;
     private Icon icon;
-    private Runnable action;
+    private Consumer<JIPipeWorkbench> action;
+    private boolean dismiss = true;
 
     public JIPipeNotificationAction() {
     }
 
-    public JIPipeNotificationAction(String label, String tooltip, Icon icon, Runnable action) {
+    public JIPipeNotificationAction(String label, String tooltip, Icon icon, Consumer<JIPipeWorkbench> action) {
         this.label = label;
         this.tooltip = tooltip;
         this.icon = icon;
@@ -43,16 +47,24 @@ public class JIPipeNotificationAction implements Runnable {
         this.icon = icon;
     }
 
-    public Runnable getAction() {
+    public Consumer<JIPipeWorkbench> getAction() {
         return action;
     }
 
-    public void setAction(Runnable action) {
+    public void setAction(Consumer<JIPipeWorkbench> action) {
         this.action = action;
     }
 
     @Override
     public void run() {
 
+    }
+
+    public boolean isDismiss() {
+        return dismiss;
+    }
+
+    public void setDismiss(boolean dismiss) {
+        this.dismiss = dismiss;
     }
 }

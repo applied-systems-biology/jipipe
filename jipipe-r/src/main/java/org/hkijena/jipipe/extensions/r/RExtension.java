@@ -4,7 +4,10 @@ import org.fife.ui.rsyntaxtextarea.AbstractTokenMakerFactory;
 import org.fife.ui.rsyntaxtextarea.TokenMakerFactory;
 import org.hkijena.jipipe.JIPipeJavaExtension;
 import org.hkijena.jipipe.api.notifications.JIPipeNotification;
+import org.hkijena.jipipe.api.notifications.JIPipeNotificationAction;
 import org.hkijena.jipipe.api.notifications.JIPipeNotificationInbox;
+import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
+import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
 import org.hkijena.jipipe.extensions.JIPipePrepackagedDefaultJavaExtension;
 import org.hkijena.jipipe.extensions.parameters.primitives.HTMLText;
 import org.hkijena.jipipe.extensions.parameters.primitives.StringList;
@@ -14,6 +17,13 @@ import org.hkijena.jipipe.extensions.r.algorithms.MergingRScriptAlgorithm;
 import org.hkijena.jipipe.extensions.r.installers.REnvInstaller;
 import org.hkijena.jipipe.extensions.r.parameters.RScriptParameter;
 import org.hkijena.jipipe.extensions.r.ui.RTokenMaker;
+import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
+import org.hkijena.jipipe.ui.JIPipeWorkbench;
+import org.hkijena.jipipe.ui.components.DocumentTabPane;
+import org.hkijena.jipipe.ui.running.JIPipeRunExecuterUI;
+import org.hkijena.jipipe.ui.running.JIPipeRunnerQueue;
+import org.hkijena.jipipe.ui.running.JIPipeRunnerQueueUI;
+import org.hkijena.jipipe.ui.settings.JIPipeApplicationSettingsUI;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.scijava.plugin.Plugin;
 
@@ -106,7 +116,29 @@ public class RExtension extends JIPipePrepackagedDefaultJavaExtension {
             notification.setDescription("To make use of R within JIPipe, you need to either provide JIPipe with an " +
                     "existing R installation or let JIPipe install a R distribution for you. Please note that we cannot provide you with an R " +
                     "setup tool for Linux and Mac.");
+            notification.getActions().add(new JIPipeNotificationAction("Install R",
+                    "Installs R (Currently only Windows)",
+                    UIUtils.getIconFromResources("actions/browser-download.png"),
+                    RExtension::installR));
+            notification.getActions().add(new JIPipeNotificationAction("Configure R",
+                    "Opens the applications settings page",
+                    UIUtils.getIconFromResources("actions/configure.png"),
+                    RExtension::configureR));
             JIPipeNotificationInbox.getInstance().push(notification);
         }
+    }
+
+    private static void installR(JIPipeWorkbench workbench) {
+        RExtensionSettings settings = RExtensionSettings.getInstance();
+        JIPipeParameterTree tree = new JIPipeParameterTree(settings);
+        JIPipeParameterAccess parameterAccess = tree.getParameters().get("r-environment");
+        REnvInstaller installer = new REnvInstaller(workbench, parameterAccess);
+        JIPipeRunExecuterUI.runInDialog(workbench.getWindow(), installer);
+    }
+
+    private static void configureR(JIPipeWorkbench workbench) {
+        DocumentTabPane.DocumentTab tab = workbench.getDocumentTabPane().selectSingletonTab(JIPipeProjectWorkbench.TAB_APPLICATION_SETTINGS);
+        JIPipeApplicationSettingsUI applicationSettingsUI = (JIPipeApplicationSettingsUI) tab.getContent();
+        applicationSettingsUI.selectNode("/Extensions/R integration");
     }
 }

@@ -15,7 +15,10 @@ package org.hkijena.jipipe.extensions.python;
 
 import org.hkijena.jipipe.JIPipeJavaExtension;
 import org.hkijena.jipipe.api.notifications.JIPipeNotification;
+import org.hkijena.jipipe.api.notifications.JIPipeNotificationAction;
 import org.hkijena.jipipe.api.notifications.JIPipeNotificationInbox;
+import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
+import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
 import org.hkijena.jipipe.extensions.JIPipePrepackagedDefaultJavaExtension;
 import org.hkijena.jipipe.extensions.parameters.primitives.HTMLText;
 import org.hkijena.jipipe.extensions.parameters.primitives.StringList;
@@ -30,6 +33,12 @@ import org.hkijena.jipipe.extensions.python.installers.MinicondaEnvPythonInstall
 import org.hkijena.jipipe.extensions.python.installers.SelectCondaEnvPythonInstaller;
 import org.hkijena.jipipe.extensions.python.installers.SelectSystemPythonInstaller;
 import org.hkijena.jipipe.extensions.python.installers.SelectVirtualEnvPythonInstaller;
+import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
+import org.hkijena.jipipe.ui.JIPipeWorkbench;
+import org.hkijena.jipipe.ui.components.DocumentTabPane;
+import org.hkijena.jipipe.ui.running.JIPipeRunExecuterUI;
+import org.hkijena.jipipe.ui.running.JIPipeRunnerQueue;
+import org.hkijena.jipipe.ui.settings.JIPipeApplicationSettingsUI;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.scijava.plugin.Plugin;
 
@@ -114,6 +123,18 @@ public class PythonExtension extends JIPipePrepackagedDefaultJavaExtension {
             notification.setHeading("Python is not configured");
             notification.setDescription("To make use of Python within JIPipe, you need to either provide JIPipe with an " +
                     "existing Python installation or let JIPipe install a Python distribution for you.");
+            notification.getActions().add(new JIPipeNotificationAction("Install Miniconda",
+                    "Installs Miniconda 3",
+                    UIUtils.getIconFromResources("actions/browser-download.png"),
+                    PythonExtension::installConda));
+            notification.getActions().add(new JIPipeNotificationAction("Select Conda",
+                    "Selects an existing Conda installation",
+                    UIUtils.getIconFromResources("actions/folder-open.png"),
+                    PythonExtension::selectConda));
+            notification.getActions().add(new JIPipeNotificationAction("Configure Python",
+                    "Opens the applications settings page",
+                    UIUtils.getIconFromResources("actions/configure.png"),
+                    PythonExtension::configurePython));
             JIPipeNotificationInbox.getInstance().push(notification);
         }
     }
@@ -136,5 +157,27 @@ public class PythonExtension extends JIPipePrepackagedDefaultJavaExtension {
     @Override
     public String getDependencyVersion() {
         return "2021.6";
+    }
+
+    private static void installConda(JIPipeWorkbench workbench) {
+        PythonExtensionSettings settings = PythonExtensionSettings.getInstance();
+        JIPipeParameterTree tree = new JIPipeParameterTree(settings);
+        JIPipeParameterAccess parameterAccess = tree.getParameters().get("python-environment");
+        MinicondaEnvPythonInstaller installer = new MinicondaEnvPythonInstaller(workbench, parameterAccess);
+        JIPipeRunExecuterUI.runInDialog(workbench.getWindow(), installer);
+    }
+
+    private static void selectConda(JIPipeWorkbench workbench) {
+        PythonExtensionSettings settings = PythonExtensionSettings.getInstance();
+        JIPipeParameterTree tree = new JIPipeParameterTree(settings);
+        JIPipeParameterAccess parameterAccess = tree.getParameters().get("python-environment");
+        SelectCondaEnvPythonInstaller installer = new SelectCondaEnvPythonInstaller(workbench, parameterAccess);
+        JIPipeRunExecuterUI.runInDialog(workbench.getWindow(), installer);
+    }
+
+    private static void configurePython(JIPipeWorkbench workbench) {
+        DocumentTabPane.DocumentTab tab = workbench.getDocumentTabPane().selectSingletonTab(JIPipeProjectWorkbench.TAB_APPLICATION_SETTINGS);
+        JIPipeApplicationSettingsUI applicationSettingsUI = (JIPipeApplicationSettingsUI) tab.getContent();
+        applicationSettingsUI.selectNode("/Extensions/Python integration");
     }
 }
