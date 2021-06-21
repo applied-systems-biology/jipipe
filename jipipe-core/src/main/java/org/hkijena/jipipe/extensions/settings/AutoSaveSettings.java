@@ -14,6 +14,8 @@
 package org.hkijena.jipipe.extensions.settings;
 
 import com.google.common.eventbus.EventBus;
+import ij.IJ;
+import ij.Prefs;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.parameters.JIPipeContextAction;
@@ -24,16 +26,21 @@ import org.hkijena.jipipe.extensions.parameters.primitives.PathList;
 import org.hkijena.jipipe.ui.JIPipeProjectWindow;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.utils.ResourceUtils;
+import org.hkijena.jipipe.utils.StringUtils;
 
 import javax.swing.*;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 
 public class AutoSaveSettings implements JIPipeParameterCollection {
     public static final String ID = "auto-save";
-    private static final Path DEFAULT_SAVE_PATH = RuntimeSettings.generateTempDirectory("_AutoSave");
     private final EventBus eventBus = new EventBus();
     private final Timer autoSaveTimer;
     private boolean enableAutoSave = true;
@@ -47,17 +54,37 @@ public class AutoSaveSettings implements JIPipeParameterCollection {
         autoSaveTimer.start();
     }
 
+    private Path getDefaultSavePath() {
+        Path imageJDir = Paths.get(Prefs.getImageJDir());
+        if (!Files.isDirectory(imageJDir)) {
+            try {
+                Files.createDirectories(imageJDir);
+            } catch (IOException e) {
+                IJ.handleException(e);
+            }
+        }
+        Path targetDirectory = imageJDir.resolve("jipipe").resolve("backups");
+        if(!Files.isDirectory(targetDirectory)) {
+            try {
+                Files.createDirectories(targetDirectory);
+            } catch (IOException e) {
+                IJ.handleException(e);
+            }
+        }
+        return targetDirectory;
+    }
+
     public void autoSave(JIPipeProjectWindow window) {
         String name = "untitled";
         if (window.getProjectSavePath() != null) {
             name = window.getProjectSavePath().getFileName().toString();
         }
-        Path directory = DEFAULT_SAVE_PATH;
+        Path directory;
         if (savePath.isEnabled()) {
             if (!Files.isDirectory(savePath.getContent())) {
+                directory = savePath.getContent();
                 try {
                     Files.createDirectories(savePath.getContent());
-                    directory = savePath.getContent();
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -65,8 +92,14 @@ public class AutoSaveSettings implements JIPipeParameterCollection {
                 directory = savePath.getContent();
             }
         }
+        else {
+            directory = getDefaultSavePath();
+        }
         try {
-            Path targetFile = Files.createTempFile(directory, "AutoSave_" + name, ".jip");
+            Set<String> existing = Files.list(directory).map(p -> p.getFileName().toString().replace(".jip", "")).collect(Collectors.toSet());
+            String baseName = name + "_" + LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME).replace(':', '-');
+            baseName = StringUtils.makeFilesystemCompatible(StringUtils.makeUniqueString(baseName, "_", existing));
+            Path targetFile = directory.resolve(baseName + ".jip");
             window.getProject().saveProject(targetFile);
             window.getProjectUI().sendStatusBarText("Saved backup to " + targetFile);
             lastSaves.add(0, targetFile);
