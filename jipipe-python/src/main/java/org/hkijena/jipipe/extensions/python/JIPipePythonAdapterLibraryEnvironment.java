@@ -35,7 +35,7 @@ public class JIPipePythonAdapterLibraryEnvironment extends PythonPackageLibraryE
 
     public JIPipePythonAdapterLibraryEnvironment() {
         this.setName("Default");
-        this.setLibraryDirectory(Paths.get("lib-jipipe-py"));
+        this.setLibraryDirectory(Paths.get("jipipe").resolve("lib-jipipe-py"));
     }
 
     public JIPipePythonAdapterLibraryEnvironment(PythonPackageLibraryEnvironment other) {

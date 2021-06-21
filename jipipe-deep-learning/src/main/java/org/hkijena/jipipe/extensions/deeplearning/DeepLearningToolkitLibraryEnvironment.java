@@ -36,7 +36,7 @@ public class DeepLearningToolkitLibraryEnvironment extends PythonPackageLibraryE
 
     public DeepLearningToolkitLibraryEnvironment() {
         this.setName("Default");
-        this.setLibraryDirectory(Paths.get("lib-dltoolkit"));
+        this.setLibraryDirectory(Paths.get("jipipe").resolve("lib-dltoolkit"));
     }
 
     public DeepLearningToolkitLibraryEnvironment(PythonPackageLibraryEnvironment other) {

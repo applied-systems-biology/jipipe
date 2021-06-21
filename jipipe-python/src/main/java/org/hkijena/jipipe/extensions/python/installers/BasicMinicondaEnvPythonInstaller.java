@@ -81,6 +81,13 @@ public class BasicMinicondaEnvPythonInstaller extends ExternalEnvironmentInstall
                 throw new RuntimeException(e);
             }
         }
+        if(!Files.isDirectory(getConfiguration().getInstallationPath().toAbsolutePath())) {
+            try {
+                Files.createDirectories(getConfiguration().getInstallationPath().toAbsolutePath());
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
 
         // Download phase
         progressInfo.log("Acquire setup ...");
@@ -372,7 +379,7 @@ public class BasicMinicondaEnvPythonInstaller extends ExternalEnvironmentInstall
         private String name = "Conda";
 
         public Configuration() {
-            installationPath = Paths.get("miniconda");
+            installationPath = Paths.get("jipipe").resolve("miniconda");
         }
 
         @Override

@@ -17,7 +17,7 @@ public class CellPoseGPUEnvInstaller extends CellPoseEnvInstaller {
     public CellPoseGPUEnvInstaller(JIPipeWorkbench workbench, JIPipeParameterAccess parameterAccess) {
         super(workbench, parameterAccess);
         this.setConfiguration(new Configuration());
-        getConfiguration().setInstallationPath(Paths.get("cellpose-gpu"));
+        getConfiguration().setInstallationPath(Paths.get("jipipe").resolve("cellpose-gpu"));
         getConfiguration().setName("Cellpose (GPU)");
     }
 
