@@ -9,11 +9,13 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
 import org.hkijena.jipipe.extensions.JIPipePrepackagedDefaultJavaExtension;
 import org.hkijena.jipipe.extensions.deeplearning.datatypes.DeepLearningModelData;
 import org.hkijena.jipipe.extensions.deeplearning.nodes.CreateModelAlgorithm;
-import org.hkijena.jipipe.extensions.deeplearning.nodes.FileBasedPredictAlgorithm;
-import org.hkijena.jipipe.extensions.deeplearning.nodes.FileBasedTrainModelAlgorithm;
+import org.hkijena.jipipe.extensions.deeplearning.nodes.FileBasedPredictImageAlgorithm;
+import org.hkijena.jipipe.extensions.deeplearning.nodes.FileBasedTrainClassifierModelAlgorithm;
+import org.hkijena.jipipe.extensions.deeplearning.nodes.FileBasedTrainImageModelAlgorithm;
 import org.hkijena.jipipe.extensions.deeplearning.nodes.ImportModelAlgorithm;
-import org.hkijena.jipipe.extensions.deeplearning.nodes.PredictAlgorithm;
-import org.hkijena.jipipe.extensions.deeplearning.nodes.TrainModelAlgorithm;
+import org.hkijena.jipipe.extensions.deeplearning.nodes.PredictImageAlgorithm;
+import org.hkijena.jipipe.extensions.deeplearning.nodes.TrainClassifierModelAlgorithm;
+import org.hkijena.jipipe.extensions.deeplearning.nodes.TrainImageModelAlgorithm;
 import org.hkijena.jipipe.extensions.parameters.primitives.HTMLText;
 import org.hkijena.jipipe.extensions.parameters.primitives.StringList;
 import org.hkijena.jipipe.extensions.python.PythonEnvironment;
@@ -21,7 +23,6 @@ import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.components.DocumentTabPane;
 import org.hkijena.jipipe.ui.running.JIPipeRunExecuterUI;
-import org.hkijena.jipipe.ui.running.JIPipeRunnerQueue;
 import org.hkijena.jipipe.ui.settings.JIPipeApplicationSettingsUI;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.scijava.plugin.Plugin;
@@ -127,6 +128,10 @@ public class DeepLearningExtension extends JIPipePrepackagedDefaultJavaExtension
                 MonitorLoss.class,
                 "Deep Learning monitor loss",
                 "Monitor loss method to be used");
+        registerEnumParameterType("deep-learning-model-type",
+                DeepLearningModelType.class,
+                "Deep Learning model type",
+                "A model type");
 
         registerDatatype("deep-learning-model",
                 DeepLearningModelData.class,
@@ -139,17 +144,23 @@ public class DeepLearningExtension extends JIPipePrepackagedDefaultJavaExtension
         registerNodeType("import-deep-learning-model",
                 ImportModelAlgorithm.class,
                 UIUtils.getIconURLFromResources("data-types/dl-model.png"));
-        registerNodeType("train-deep-learning-model",
-                TrainModelAlgorithm.class,
+        registerNodeType("deep-learning-train-image-model",
+                TrainImageModelAlgorithm.class,
                 UIUtils.getIconURLFromResources("data-types/dl-model.png"));
-        registerNodeType("deep-learning-predict",
-                PredictAlgorithm.class,
+        registerNodeType("deep-learning-train-classifier-model",
+                TrainClassifierModelAlgorithm.class,
                 UIUtils.getIconURLFromResources("data-types/dl-model.png"));
-        registerNodeType("train-deep-learning-model-file-based",
-                FileBasedTrainModelAlgorithm.class,
+        registerNodeType("deep-learning-predict-image",
+                PredictImageAlgorithm.class,
                 UIUtils.getIconURLFromResources("data-types/dl-model.png"));
-        registerNodeType("deep-learning-predict-file-based",
-                FileBasedPredictAlgorithm.class,
+        registerNodeType("deep-learning-train-image-model-file-based",
+                FileBasedTrainImageModelAlgorithm.class,
+                UIUtils.getIconURLFromResources("data-types/dl-model.png"));
+        registerNodeType("deep-learning-train-classifier-model-file-based",
+                FileBasedTrainClassifierModelAlgorithm.class,
+                UIUtils.getIconURLFromResources("data-types/dl-model.png"));
+        registerNodeType("deep-learning-predict-image-file-based",
+                FileBasedPredictImageAlgorithm.class,
                 UIUtils.getIconURLFromResources("data-types/dl-model.png"));
     }
 

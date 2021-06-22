@@ -20,7 +20,9 @@ import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
+import org.hkijena.jipipe.api.data.JIPipeAnnotation;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
+import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
 import org.hkijena.jipipe.api.nodes.JIPipeColumMatching;
 import org.hkijena.jipipe.api.nodes.JIPipeInputSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeMergingAlgorithm;
@@ -32,16 +34,20 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
+import org.hkijena.jipipe.extensions.deeplearning.DeepLearningModelType;
 import org.hkijena.jipipe.extensions.deeplearning.DeepLearningSettings;
 import org.hkijena.jipipe.extensions.deeplearning.DeepLearningUtils;
 import org.hkijena.jipipe.extensions.deeplearning.OptionalDeepLearningDeviceEnvironment;
 import org.hkijena.jipipe.extensions.deeplearning.configs.DeepLearningTrainingConfiguration;
 import org.hkijena.jipipe.extensions.deeplearning.datatypes.DeepLearningModelData;
+import org.hkijena.jipipe.extensions.expressions.AnnotationQueryExpression;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.transform.ScaleMode;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.transform.TransformScale2DAlgorithm;
+import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.LabeledImagePlusData;
 import org.hkijena.jipipe.extensions.python.OptionalPythonEnvironment;
 import org.hkijena.jipipe.extensions.python.PythonUtils;
+import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
 import org.hkijena.jipipe.utils.JsonUtils;
 import org.hkijena.jipipe.utils.ResourceUtils;
 
@@ -53,12 +59,13 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
-@JIPipeDocumentation(name = "Train model", description = "Trains a Deep Learning model")
+@JIPipeDocumentation(name = "Train model (classified images)", description = "Trains a Deep Learning model with classified images. The image classes are " +
+        "extracted from an annotation column. Please note that the model must be able to be trained with classified images.")
 @JIPipeOrganization(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Deep learning")
-@JIPipeInputSlot(value = LabeledImagePlusData.class, slotName = "Labels", autoCreate = true)
+@JIPipeInputSlot(value = ImagePlusData.class, slotName = "Images", autoCreate = true)
 @JIPipeInputSlot(value = DeepLearningModelData.class, slotName = "Model", autoCreate = true)
 @JIPipeOutputSlot(value = DeepLearningModelData.class, slotName = "Trained model", autoCreate = true)
-public class TrainModelAlgorithm extends JIPipeMergingAlgorithm {
+public class TrainClassifierModelAlgorithm extends JIPipeMergingAlgorithm {
 
     private TransformScale2DAlgorithm scale2DAlgorithm;
     private boolean scaleToModelSize = false;
@@ -66,8 +73,9 @@ public class TrainModelAlgorithm extends JIPipeMergingAlgorithm {
     private OptionalPythonEnvironment overrideEnvironment = new OptionalPythonEnvironment();
     private boolean cleanUpAfterwards = true;
     private OptionalDeepLearningDeviceEnvironment overrideDevices = new OptionalDeepLearningDeviceEnvironment();
+    private AnnotationQueryExpression labelAnnotation = new AnnotationQueryExpression("Label");
 
-    public TrainModelAlgorithm(JIPipeNodeInfo info) {
+    public TrainClassifierModelAlgorithm(JIPipeNodeInfo info) {
         super(info);
         getDataBatchGenerationSettings().setColumnMatching(JIPipeColumMatching.MergeAll);
         registerSubParameter(trainingConfiguration);
@@ -76,12 +84,13 @@ public class TrainModelAlgorithm extends JIPipeMergingAlgorithm {
         registerSubParameter(scale2DAlgorithm);
     }
 
-    public TrainModelAlgorithm(TrainModelAlgorithm other) {
+    public TrainClassifierModelAlgorithm(TrainClassifierModelAlgorithm other) {
         super(other);
         this.trainingConfiguration = new DeepLearningTrainingConfiguration(other.trainingConfiguration);
         this.overrideEnvironment = new OptionalPythonEnvironment(other.overrideEnvironment);
         this.scaleToModelSize = other.scaleToModelSize;
         this.cleanUpAfterwards = other.cleanUpAfterwards;
+        this.labelAnnotation = new AnnotationQueryExpression(other.labelAnnotation);
         registerSubParameter(trainingConfiguration);
         this.scale2DAlgorithm = new TransformScale2DAlgorithm(other.scale2DAlgorithm);
         registerSubParameter(scale2DAlgorithm);
@@ -100,11 +109,36 @@ public class TrainModelAlgorithm extends JIPipeMergingAlgorithm {
         this.overrideDevices = overrideDevices;
     }
 
+    @JIPipeDocumentation(name = "Label annotation", description = "This annotation is used as label for the data. These labels should be non-empty and numeric. " +
+            "If annotations do not comply to this format, use the 'Set annotations' node to set/convert the labels.")
+    @JIPipeParameter("label-annotation")
+    public AnnotationQueryExpression getLabelAnnotation() {
+        return labelAnnotation;
+    }
+
+    @JIPipeParameter("label-annotation")
+    public void setLabelAnnotation(AnnotationQueryExpression labelAnnotation) {
+        this.labelAnnotation = labelAnnotation;
+    }
+
     @Override
     protected void runIteration(JIPipeMergingDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
         JIPipeDataSlot inputModelSlot = getInputSlot("Model");
-        JIPipeDataSlot inputLabelsSlot = getInputSlot("Labels");
+        JIPipeDataSlot inputImagesSlot = getInputSlot("Images");
         int modelCounter = 0;
+        for (Integer modelIndex : dataBatch.getInputSlotRows().get(inputModelSlot)) {
+            JIPipeProgressInfo modelProgress = progressInfo.resolveAndLog("Check model", modelCounter++, dataBatch.getInputSlotRows().get(inputModelSlot).size());
+            DeepLearningModelData inputModel = inputModelSlot.getData(modelIndex, DeepLearningModelData.class, modelProgress);
+
+            if(inputModel.getModelConfiguration().getModelType() != DeepLearningModelType.classification) {
+                throw new UserFriendlyRuntimeException("Model " + inputModel + " is not supported by this node!",
+                        "Unsupported model",
+                        getDisplayName(),
+                        "The input model '" + inputModel + "' is not supported by this node.",
+                        "Use a different predict node.");
+            }
+        }
+        modelCounter = 0;
         for (Integer modelIndex : dataBatch.getInputSlotRows().get(inputModelSlot)) {
             JIPipeProgressInfo modelProgress = progressInfo.resolveAndLog("Model", modelCounter++, dataBatch.getInputSlotRows().get(inputModelSlot).size());
             DeepLearningModelData inputModel = inputModelSlot.getData(modelIndex, DeepLearningModelData.class, modelProgress);
@@ -112,34 +146,45 @@ public class TrainModelAlgorithm extends JIPipeMergingAlgorithm {
             Path workDirectory = getNewScratch();
 
             // Save labels & raw images
-            Path labelsDirectory = workDirectory.resolve("labels");
+            Path labelFile = workDirectory.resolve("labels.csv");
             Path rawsDirectory = workDirectory.resolve("raw");
             try {
-                Files.createDirectories(labelsDirectory);
                 Files.createDirectories(rawsDirectory);
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
-            int imageCounter = 0;
-            Set<Integer> labelRows = dataBatch.getInputSlotRows().get(inputLabelsSlot);
-            for (Integer imageIndex : labelRows) {
-                JIPipeProgressInfo imageProgress = modelProgress.resolveAndLog("Write labels", imageCounter++, labelRows.size());
-                LabeledImagePlusData label = inputLabelsSlot.getData(imageIndex, LabeledImagePlusData.class, imageProgress);
-                Path rawPath = rawsDirectory.resolve(imageCounter + "_img.tif");
-                Path labelPath = labelsDirectory.resolve(imageCounter + "_img.tif");
 
-                ImagePlus rawImage = isScaleToModelSize() ? DeepLearningUtils.scaleToModel(label.getImage(),
+            ResultsTableData labels = new ResultsTableData();
+            labels.addColumn("filename", true);
+            labels.addColumn("label", true);
+
+            int imageCounter = 0;
+            Set<Integer> imageRows = dataBatch.getInputSlotRows().get(inputImagesSlot);
+            for (Integer imageIndex : imageRows) {
+                JIPipeProgressInfo imageProgress = modelProgress.resolveAndLog("Write images", imageCounter++, imageRows.size());
+                ImagePlusData image = inputImagesSlot.getData(imageIndex, ImagePlusData.class, imageProgress);
+                Path rawPath = rawsDirectory.resolve(imageCounter + "_img.tif");
+
+                ImagePlus rawImage = isScaleToModelSize() ? DeepLearningUtils.scaleToModel(image.getImage(),
                         inputModel.getModelConfiguration(),
                         getScale2DAlgorithm(),
-                        modelProgress) : label.getImage();
-                ImagePlus labelImage = isScaleToModelSize() ? DeepLearningUtils.scaleToModel(label.getLabels(),
-                        inputModel.getModelConfiguration(),
-                        getScale2DAlgorithm(),
-                        modelProgress) : label.getLabels();
+                        modelProgress) : image.getImage();
 
                 IJ.saveAsTiff(rawImage, rawPath.toString());
-                IJ.saveAsTiff(labelImage, labelPath.toString());
+
+                // Extract the label annotation + value
+                JIPipeAnnotation annotation = labelAnnotation.queryFirst(inputImagesSlot.getAnnotations(imageIndex));
+                int imageLabel = Integer.parseInt(annotation.getValue());
+
+                // Insert into table
+                labels.addRow();
+                labels.setValueAt(rawPath.getFileName().toString(), labels.getRowCount() - 1, 0);
+                labels.setValueAt(imageLabel, labels.getRowCount() - 1, 1);
             }
+
+            // Save labels
+            modelProgress.log("Saving labels table to " + labelFile);
+            labels.saveAsCSV(labelFile);
 
             // Save model according to standard interface
             inputModel.saveTo(workDirectory, "", false, modelProgress);
@@ -150,7 +195,7 @@ public class TrainModelAlgorithm extends JIPipeMergingAlgorithm {
             trainingConfiguration.setOutputModelPath(workDirectory.resolve("trained_model.hdf5"));
             trainingConfiguration.setOutputModelJsonPath(workDirectory.resolve("trained_model.json"));
             trainingConfiguration.setInputImagesPattern(rawsDirectory + "/*.tif");
-            trainingConfiguration.setInputLabelsPattern(labelsDirectory + "/*.tif");
+            trainingConfiguration.setInputLabelsPattern(labelFile.toString());
             try {
                 JsonUtils.getObjectMapper().writerWithDefaultPrettyPrinter().writeValue(workDirectory.resolve("training-config.json").toFile(), trainingConfiguration);
             } catch (IOException e) {

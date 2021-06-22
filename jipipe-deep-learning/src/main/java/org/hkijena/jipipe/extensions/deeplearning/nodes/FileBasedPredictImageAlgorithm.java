@@ -19,6 +19,7 @@ import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeAnnotation;
 import org.hkijena.jipipe.api.data.JIPipeAnnotationMergeStrategy;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
+import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
 import org.hkijena.jipipe.api.nodes.JIPipeColumMatching;
 import org.hkijena.jipipe.api.nodes.JIPipeInputSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeMergingAlgorithm;
@@ -27,6 +28,7 @@ import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.JIPipeOutputSlot;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
+import org.hkijena.jipipe.extensions.deeplearning.DeepLearningModelType;
 import org.hkijena.jipipe.extensions.deeplearning.DeepLearningSettings;
 import org.hkijena.jipipe.extensions.deeplearning.OptionalDeepLearningDeviceEnvironment;
 import org.hkijena.jipipe.extensions.deeplearning.configs.DeepLearningPredictionConfiguration;
@@ -48,24 +50,24 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
-@JIPipeDocumentation(name = "Predict (File-based)", description = "Applies a prediction via a Deep learning model. This node accepts direct file inputs that can be useful if you " +
-        "want to avoid loading data into JIPipe.")
+@JIPipeDocumentation(name = "Predict (image files)", description = "Applies a prediction via a Deep learning model. This node accepts direct file inputs that can be useful if you " +
+        "want to avoid loading data into JIPipe. The prediction returns an image. Please note that the model needs to be able to predict images.")
 @JIPipeOrganization(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Deep learning")
 @JIPipeInputSlot(value = FileData.class, slotName = "Input", autoCreate = true)
 @JIPipeInputSlot(value = DeepLearningModelData.class, slotName = "Model", autoCreate = true)
 @JIPipeOutputSlot(value = FileData.class, slotName = "Prediction", autoCreate = true)
-public class FileBasedPredictAlgorithm extends JIPipeMergingAlgorithm {
+public class FileBasedPredictImageAlgorithm extends JIPipeMergingAlgorithm {
 
     private OptionalPythonEnvironment overrideEnvironment = new OptionalPythonEnvironment();
     private OptionalDeepLearningDeviceEnvironment overrideDevices = new OptionalDeepLearningDeviceEnvironment();
     private OptionalPathParameter overrideOutputPath = new OptionalPathParameter();
 
-    public FileBasedPredictAlgorithm(JIPipeNodeInfo info) {
+    public FileBasedPredictImageAlgorithm(JIPipeNodeInfo info) {
         super(info);
         getDataBatchGenerationSettings().setColumnMatching(JIPipeColumMatching.MergeAll);
     }
 
-    public FileBasedPredictAlgorithm(FileBasedPredictAlgorithm other) {
+    public FileBasedPredictImageAlgorithm(FileBasedPredictImageAlgorithm other) {
         super(other);
         this.overrideEnvironment = new OptionalPythonEnvironment(other.overrideEnvironment);
         this.overrideDevices = new OptionalDeepLearningDeviceEnvironment(other.overrideDevices);
@@ -101,6 +103,19 @@ public class FileBasedPredictAlgorithm extends JIPipeMergingAlgorithm {
         JIPipeDataSlot inputModelSlot = getInputSlot("Model");
         JIPipeDataSlot inputRawImageSlot = getInputSlot("Input");
         int modelCounter = 0;
+        for (Integer modelIndex : dataBatch.getInputSlotRows().get(inputModelSlot)) {
+            JIPipeProgressInfo modelProgress = progressInfo.resolveAndLog("Check model", modelCounter++, dataBatch.getInputSlotRows().get(inputModelSlot).size());
+            DeepLearningModelData inputModel = inputModelSlot.getData(modelIndex, DeepLearningModelData.class, modelProgress);
+
+            if(inputModel.getModelConfiguration().getModelType() == DeepLearningModelType.classification) {
+                throw new UserFriendlyRuntimeException("Model " + inputModel + " is not supported by this node!",
+                        "Unsupported model",
+                        getDisplayName(),
+                        "The input model '" + inputModel + "' is not supported by this node.",
+                        "Use a different predict node.");
+            }
+        }
+        modelCounter = 0;
         for (Integer modelIndex : dataBatch.getInputSlotRows().get(inputModelSlot)) {
             JIPipeProgressInfo modelProgress = progressInfo.resolveAndLog("Model", modelCounter++, dataBatch.getInputSlotRows().get(inputModelSlot).size());
             DeepLearningModelData inputModel = inputModelSlot.getData(modelIndex, DeepLearningModelData.class, modelProgress);

@@ -25,6 +25,7 @@ import numpy as np
 import tifffile
 from skimage import img_as_float32
 from skimage import io
+import sys
 
 from dltoolbox.utils import load_and_compile_model, sliding_window
 
@@ -64,12 +65,14 @@ def predict(model_config, config, model=None):
         print("[Predict] Image shape is " + str(image.shape))
 
         try:
+            # Todo: Check why this does not work with images != model_img_shape
             print("[Predict] Attempting to predict whole image")
             whole_image = image
             while len(whole_image.shape) < 4:
                 whole_image = np.expand_dims(whole_image, axis=0)
             prediction = model.predict(whole_image, batch_size=1)
         except:
+            print(sys.exc_info()[1])
             print("[Predict] Predicting the whole image failed. Retrying with tiling.")
             ws0 = model_img_shape[0]
             ws1 = model_img_shape[1]
