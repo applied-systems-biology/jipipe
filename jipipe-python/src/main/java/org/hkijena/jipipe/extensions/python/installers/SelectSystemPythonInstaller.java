@@ -9,6 +9,7 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.extensions.expressions.DefaultExpressionParameter;
 import org.hkijena.jipipe.extensions.parameters.primitives.FilePathParameterSettings;
+import org.hkijena.jipipe.extensions.python.OptionalPythonEnvironment;
 import org.hkijena.jipipe.extensions.python.PythonEnvironment;
 import org.hkijena.jipipe.extensions.python.PythonEnvironmentType;
 import org.hkijena.jipipe.extensions.settings.FileChooserSettings;
@@ -93,7 +94,15 @@ public class SelectSystemPythonInstaller extends ExternalEnvironmentInstaller {
         generatedEnvironment.setExecutablePath(configuration.getPythonExecutable());
         generatedEnvironment.setName(configuration.getName());
         if (getParameterAccess() != null) {
-            SwingUtilities.invokeLater(() -> getParameterAccess().set(generatedEnvironment));
+            SwingUtilities.invokeLater(() -> {
+                if(getParameterAccess().getFieldClass().isAssignableFrom(generatedEnvironment.getClass())) {
+                    getParameterAccess().set(generatedEnvironment);
+                }
+                else {
+                    // It's probably an optional
+                    getParameterAccess().set(new OptionalPythonEnvironment(generatedEnvironment));
+                }
+            });
         }
     }
 

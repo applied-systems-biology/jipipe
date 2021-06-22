@@ -15,12 +15,14 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.extensions.parameters.primitives.OptionalPathParameter;
 import org.hkijena.jipipe.extensions.parameters.primitives.StringParameterSettings;
+import org.hkijena.jipipe.extensions.python.OptionalPythonEnvironment;
 import org.hkijena.jipipe.extensions.python.PythonEnvironment;
 import org.hkijena.jipipe.extensions.python.PythonUtils;
 import org.hkijena.jipipe.extensions.settings.RuntimeSettings;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.components.MarkdownDocument;
 import org.hkijena.jipipe.ui.parameters.ParameterPanel;
+import org.hkijena.jipipe.utils.PathUtils;
 import org.hkijena.jipipe.utils.ProcessUtils;
 import org.hkijena.jipipe.utils.WebUtils;
 
@@ -72,18 +74,19 @@ public class BasicMinicondaEnvPythonInstaller extends ExternalEnvironmentInstall
         progressInfo.incrementProgress();
 
         // Cleanup phase
-        if (Files.exists(getConfiguration().getInstallationPath().toAbsolutePath())) {
+        Path installationPath = PathUtils.relativeToImageJToAbsolute(getConfiguration().getInstallationPath());
+        if (Files.exists(installationPath)) {
             progressInfo.log("Deleting old installation");
-            progressInfo.log("Deleting: " + getConfiguration().getInstallationPath().toAbsolutePath());
+            progressInfo.log("Deleting: " + installationPath);
             try {
-                FileUtils.deleteDirectory(getConfiguration().getInstallationPath().toAbsolutePath().toFile());
+                FileUtils.deleteDirectory(installationPath.toFile());
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
         }
-        if(!Files.isDirectory(getConfiguration().getInstallationPath().toAbsolutePath())) {
+        if(!Files.isDirectory(installationPath)) {
             try {
-                Files.createDirectories(getConfiguration().getInstallationPath().toAbsolutePath());
+                Files.createDirectories(installationPath);
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
@@ -120,7 +123,13 @@ public class BasicMinicondaEnvPythonInstaller extends ExternalEnvironmentInstall
         generatedEnvironment = SelectCondaEnvPythonInstaller.createCondaEnvironment(condaConfig);
         if (getParameterAccess() != null) {
             SwingUtilities.invokeLater(() -> {
-                getParameterAccess().set(generatedEnvironment);
+                if(getParameterAccess().getFieldClass().isAssignableFrom(generatedEnvironment.getClass())) {
+                    getParameterAccess().set(generatedEnvironment);
+                }
+                else {
+                    // It's probably an optional
+                    getParameterAccess().set(new OptionalPythonEnvironment(generatedEnvironment));
+                }
             });
         }
     }
