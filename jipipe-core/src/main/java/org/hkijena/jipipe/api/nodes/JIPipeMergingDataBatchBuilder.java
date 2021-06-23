@@ -143,11 +143,11 @@ public class JIPipeMergingDataBatchBuilder {
 
         // Special case: Merge all
         if (getReferenceColumns() == REFERENCE_COLUMN_MERGE_ALL) {
-            return mergeAllSolver(progressInfo);
+            return mergeAllSolver(progressInfo.resolveAndLog("Merge into one batch"));
         }
         // Special case: Split all
         if (getReferenceColumns() == REFERENCE_COLUMN_SPLIT_ALL) {
-            return splitAllSolver(progressInfo);
+            return splitAllSolver(progressInfo.resolveAndLog("Split into batches"));
         }
 
         if(referenceColumns.size() == 1 && annotationMatchingMethod == JIPipeAnnotationMatchingMethod.ExactMatch) {
@@ -267,10 +267,14 @@ public class JIPipeMergingDataBatchBuilder {
      * @return data batches
      */
     private List<JIPipeMergingDataBatch> splitAllSolver(JIPipeProgressInfo progressInfo) {
-        progressInfo.log("Splitting all data batches");
         List<JIPipeMergingDataBatch> split = new ArrayList<>();
         for (JIPipeDataSlot slot : slotList) {
             for (int row = 0; row < slot.getRowCount(); row++) {
+                if(row % 1000 == 0) {
+                    progressInfo.resolveAndLog("Row", row, slot.getRowCount());
+                    if(progressInfo.isCancelled().get())
+                        return null;
+                }
                 JIPipeMergingDataBatch batch = new JIPipeMergingDataBatch(this.node);
                 batch.addData(slot, row);
                 batch.addGlobalAnnotations(slot.getAnnotations(row), getAnnotationMergeStrategy());
@@ -286,13 +290,20 @@ public class JIPipeMergingDataBatchBuilder {
      * @return data batches
      */
     private List<JIPipeMergingDataBatch> mergeAllSolver(JIPipeProgressInfo progressInfo) {
-        progressInfo.log("Merging all batches into one");
         JIPipeMergingDataBatch batch = new JIPipeMergingDataBatch(this.node);
         for (JIPipeDataSlot slot : slotList) {
+            List<JIPipeAnnotation> annotations = new ArrayList<>();
             for (int row = 0; row < slot.getRowCount(); row++) {
+                if(row % 1000 == 0) {
+                    progressInfo.resolveAndLog("Row", row, slot.getRowCount());
+                    if(progressInfo.isCancelled().get())
+                        return null;
+                }
                 batch.addData(slot, row);
-                batch.addGlobalAnnotations(slot.getAnnotations(row), getAnnotationMergeStrategy());
+                annotations.addAll(slot.getAnnotations(row));
             }
+            progressInfo.log("Merging " +annotations.size() + " annotations");
+            batch.addGlobalAnnotations(annotations, getAnnotationMergeStrategy());
         }
         return Arrays.asList(batch);
     }
