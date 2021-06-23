@@ -74,6 +74,7 @@ public class NotificationUI extends JIPipeWorkbenchPanel {
         // Add content
         JTextPane textPane = UIUtils.makeBorderlessReadonlyTextPane(new MarkdownDocument(notification.getDescription()).getRenderedHTML());
         textPane.setOpaque(false);
+        textPane.setBorder(BorderFactory.createEmptyBorder(4,4,4,4));
         add(textPane, BorderLayout.CENTER);
 
         // Action panel

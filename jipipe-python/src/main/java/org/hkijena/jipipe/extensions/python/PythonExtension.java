@@ -37,7 +37,6 @@ import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.components.DocumentTabPane;
 import org.hkijena.jipipe.ui.running.JIPipeRunExecuterUI;
-import org.hkijena.jipipe.ui.running.JIPipeRunnerQueue;
 import org.hkijena.jipipe.ui.settings.JIPipeApplicationSettingsUI;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.scijava.plugin.Plugin;
@@ -134,9 +133,32 @@ public class PythonExtension extends JIPipePrepackagedDefaultJavaExtension {
             notification.getActions().add(new JIPipeNotificationAction("Configure Python",
                     "Opens the applications settings page",
                     UIUtils.getIconFromResources("actions/configure.png"),
-                    PythonExtension::configurePython));
+                    PythonExtension::openSettingsPage));
             JIPipeNotificationInbox.getInstance().push(notification);
         }
+        if(!PythonExtensionSettings.getInstance().getPythonAdapterLibraryEnvironment().isNewestVersion()) {
+            JIPipeNotification notification = new JIPipeNotification(getDependencyId() + ":old-python-adapter");
+            notification.setHeading("Old library version");
+            notification.setDescription("JIPipe has detected that the installed version of the JIPipe Python adapter library is outdated. " +
+                    "Please click the button below to install the newest version.");
+            notification.getActions().add(new JIPipeNotificationAction("Install newest version",
+                    "Installs the newest version of the Python library",
+                    UIUtils.getIconFromResources("actions/run-install.png"),
+                    PythonExtension::installPythonAdapterLibrary));
+            notification.getActions().add(new JIPipeNotificationAction("Configure",
+                    "Opens the applications settings page",
+                    UIUtils.getIconFromResources("actions/configure.png"),
+                    PythonExtension::openSettingsPage));
+            JIPipeNotificationInbox.getInstance().push(notification);
+        }
+    }
+
+    private static void installPythonAdapterLibrary(JIPipeWorkbench workbench) {
+        PythonExtensionSettings settings = PythonExtensionSettings.getInstance();
+        JIPipeParameterTree tree = new JIPipeParameterTree(settings);
+        JIPipeParameterAccess parameterAccess = tree.getParameters().get("python-adapter-library");
+        JIPipePythonAdapterLibraryEnvironmentInstaller installer = new JIPipePythonAdapterLibraryEnvironmentInstaller(workbench, parameterAccess);
+        JIPipeRunExecuterUI.runInDialog(workbench.getWindow(), installer);
     }
 
     @Override
@@ -175,7 +197,7 @@ public class PythonExtension extends JIPipePrepackagedDefaultJavaExtension {
         JIPipeRunExecuterUI.runInDialog(workbench.getWindow(), installer);
     }
 
-    private static void configurePython(JIPipeWorkbench workbench) {
+    private static void openSettingsPage(JIPipeWorkbench workbench) {
         DocumentTabPane.DocumentTab tab = workbench.getDocumentTabPane().selectSingletonTab(JIPipeProjectWorkbench.TAB_APPLICATION_SETTINGS);
         JIPipeApplicationSettingsUI applicationSettingsUI = (JIPipeApplicationSettingsUI) tab.getContent();
         applicationSettingsUI.selectNode("/Extensions/Python integration");

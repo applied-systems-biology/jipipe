@@ -178,9 +178,32 @@ public class DeepLearningExtension extends JIPipePrepackagedDefaultJavaExtension
             notification.getActions().add(new JIPipeNotificationAction("Configure Python",
                     "Opens the applications settings page",
                     UIUtils.getIconFromResources("actions/configure.png"),
-                    DeepLearningExtension::configurePython));
+                    DeepLearningExtension::openSettingsPage));
             JIPipeNotificationInbox.getInstance().push(notification);
         }
+        if(!DeepLearningSettings.getInstance().getDeepLearningToolkit().isNewestVersion()) {
+            JIPipeNotification notification = new JIPipeNotification(getDependencyId() + ":old-dltoolkit");
+            notification.setHeading("Old library version");
+            notification.setDescription("JIPipe has detected that the installed version of the Deep Learning Toolkit library is outdated. " +
+                    "Please click the button below to install the newest version.");
+            notification.getActions().add(new JIPipeNotificationAction("Install newest version",
+                    "Installs the newest version of the Python library",
+                    UIUtils.getIconFromResources("actions/run-install.png"),
+                    DeepLearningExtension::installDeepLearningToolkitLibrary));
+            notification.getActions().add(new JIPipeNotificationAction("Configure",
+                    "Opens the applications settings page",
+                    UIUtils.getIconFromResources("actions/configure.png"),
+                    DeepLearningExtension::openSettingsPage));
+            JIPipeNotificationInbox.getInstance().push(notification);
+        }
+    }
+
+    private static void installDeepLearningToolkitLibrary(JIPipeWorkbench workbench) {
+        DeepLearningSettings settings = DeepLearningSettings.getInstance();
+        JIPipeParameterTree tree = new JIPipeParameterTree(settings);
+        JIPipeParameterAccess parameterAccess = tree.getParameters().get("deep-learning-toolkit");
+        DeepLearningToolkitLibraryEnvironmentInstaller installer = new DeepLearningToolkitLibraryEnvironmentInstaller(workbench, parameterAccess);
+        JIPipeRunExecuterUI.runInDialog(workbench.getWindow(), installer);
     }
 
     private static void installDeepLearningConda(JIPipeWorkbench workbench) {
@@ -191,7 +214,7 @@ public class DeepLearningExtension extends JIPipePrepackagedDefaultJavaExtension
         JIPipeRunExecuterUI.runInDialog(workbench.getWindow(), installer);
     }
 
-    private static void configurePython(JIPipeWorkbench workbench) {
+    private static void openSettingsPage(JIPipeWorkbench workbench) {
         DocumentTabPane.DocumentTab tab = workbench.getDocumentTabPane().selectSingletonTab(JIPipeProjectWorkbench.TAB_APPLICATION_SETTINGS);
         JIPipeApplicationSettingsUI applicationSettingsUI = (JIPipeApplicationSettingsUI) tab.getContent();
         applicationSettingsUI.selectNode("/Extensions/Deep Learning");
