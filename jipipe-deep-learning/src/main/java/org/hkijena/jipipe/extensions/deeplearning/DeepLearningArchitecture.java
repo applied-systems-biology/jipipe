@@ -19,5 +19,6 @@ package org.hkijena.jipipe.extensions.deeplearning;
 public enum DeepLearningArchitecture {
     SegNet,
     VGG16,
-    FCN32
+    FCN32,
+    Xception
 }
