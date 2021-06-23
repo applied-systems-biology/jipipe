@@ -45,6 +45,7 @@ public class DeepLearningModelConfiguration implements JIPipeParameterCollection
     private int numClasses = 2;
     private Path outputModelPath = Paths.get("");
     private Path outputModelJsonPath = Paths.get("");
+    private String loss = "";
 
     public DeepLearningModelConfiguration() {
     }
@@ -67,6 +68,16 @@ public class DeepLearningModelConfiguration implements JIPipeParameterCollection
     @Override
     public EventBus getEventBus() {
         return eventBus;
+    }
+
+    @JsonGetter("loss")
+    public String getLoss() {
+        return loss;
+    }
+
+    @JsonSetter("loss")
+    public void setLoss(String loss) {
+        this.loss = loss;
     }
 
     @JIPipeDocumentation(name = "Architecture", description = "The model architecture")
