@@ -76,7 +76,7 @@ public class AnnotateWithAnnotationTable extends JIPipeParameterSlotAlgorithm {
         return tableMergeSettings;
     }
 
-    private List<JIPipeMergingDataBatch> generateDataBatchesDryRun(List<JIPipeDataSlot> slots) {
+    private List<JIPipeMergingDataBatch> generateDataBatchesDryRun(List<JIPipeDataSlot> slots, JIPipeProgressInfo progressInfo) {
         JIPipeMergingDataBatchBuilder builder = new JIPipeMergingDataBatchBuilder();
         builder.setNode(this);
         builder.setApplyMerging(false);
@@ -86,7 +86,7 @@ public class AnnotateWithAnnotationTable extends JIPipeParameterSlotAlgorithm {
                 tableMergeSettings.getCustomColumns());
         builder.setCustomAnnotationMatching(tableMergeSettings.getCustomAnnotationMatching());
         builder.setAnnotationMatchingMethod(tableMergeSettings.getAnnotationMatchingMethod());
-        List<JIPipeMergingDataBatch> dataBatches = builder.build();
+        List<JIPipeMergingDataBatch> dataBatches = builder.build(progressInfo);
         dataBatches.sort(Comparator.naturalOrder());
         boolean withLimit = tableMergeSettings.getLimit().isEnabled();
         IntegerRange limit = tableMergeSettings.getLimit().getContent();
@@ -125,7 +125,7 @@ public class AnnotateWithAnnotationTable extends JIPipeParameterSlotAlgorithm {
         }
 
         // Group the data by annotations
-        List<JIPipeMergingDataBatch> mergingDataBatches = generateDataBatchesDryRun(Arrays.asList(dataInputSlot, dummy));
+        List<JIPipeMergingDataBatch> mergingDataBatches = generateDataBatchesDryRun(Arrays.asList(dataInputSlot, dummy), progressInfo);
         for (JIPipeMergingDataBatch dataBatch : mergingDataBatches) {
             Set<Integer> dataRows = dataBatch.getInputRows("Data");
             if (dataRows == null)

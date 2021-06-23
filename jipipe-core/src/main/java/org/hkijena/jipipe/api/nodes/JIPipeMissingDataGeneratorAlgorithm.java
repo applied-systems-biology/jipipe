@@ -92,7 +92,7 @@ public abstract class JIPipeMissingDataGeneratorAlgorithm extends JIPipeParamete
     }
 
     @Override
-    public List<JIPipeMergingDataBatch> generateDataBatchesDryRun(List<JIPipeDataSlot> slots) {
+    public List<JIPipeMergingDataBatch> generateDataBatchesDryRun(List<JIPipeDataSlot> slots, JIPipeProgressInfo progressInfo) {
         JIPipeMergingDataBatchBuilder builder = new JIPipeMergingDataBatchBuilder();
         builder.setNode(this);
         builder.setApplyMerging(dataBatchGenerationSettings.isAllowMerging());
@@ -100,7 +100,7 @@ public abstract class JIPipeMissingDataGeneratorAlgorithm extends JIPipeParamete
         builder.setAnnotationMergeStrategy(dataBatchGenerationSettings.getAnnotationMergeStrategy());
         builder.setReferenceColumns(dataBatchGenerationSettings.getDataSetMatching(),
                 dataBatchGenerationSettings.getCustomColumns());
-        List<JIPipeMergingDataBatch> dataBatches = builder.build();
+        List<JIPipeMergingDataBatch> dataBatches = builder.build(progressInfo);
         dataBatches.sort(Comparator.naturalOrder());
         boolean withLimit = dataBatchGenerationSettings.getLimit().isEnabled();
         IntegerRange limit = dataBatchGenerationSettings.getLimit().getContent();
@@ -143,7 +143,7 @@ public abstract class JIPipeMissingDataGeneratorAlgorithm extends JIPipeParamete
                 dataBatches.add(dataBatch);
             }
         } else {
-            dataBatches = generateDataBatchesDryRun(getNonParameterInputSlots());
+            dataBatches = generateDataBatchesDryRun(getNonParameterInputSlots(), progressInfo);
         }
 
         if (dataBatches == null) {

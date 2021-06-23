@@ -159,7 +159,7 @@ public class JIPipeDataSlot {
      * @param rows The set of rows
      * @return Annotations at row
      */
-    public synchronized List<JIPipeAnnotation> getAnnotations(Set<Integer> rows) {
+    public synchronized List<JIPipeAnnotation> getAnnotations(Collection<Integer> rows) {
         List<JIPipeAnnotation> result = new ArrayList<>();
         for (String info : annotationColumns) {
             for (int row : rows) {
@@ -175,12 +175,12 @@ public class JIPipeDataSlot {
      * Returns the annotation of specified type or the alternative value.
      *
      * @param row    data row
-     * @param type   annotation type
+     * @param name   annotation name
      * @param orElse alternative value
      * @return annotation of type 'type' or 'orElse'
      */
-    public JIPipeAnnotation getAnnotationOr(int row, String type, JIPipeAnnotation orElse) {
-        return getAnnotations(row).stream().filter(a -> a != null && Objects.equals(a.getName(), type)).findFirst().orElse(orElse);
+    public JIPipeAnnotation getAnnotationOr(int row, String name, JIPipeAnnotation orElse) {
+        return getAnnotations(row).stream().filter(a -> a != null && Objects.equals(a.getName(), name)).findFirst().orElse(orElse);
     }
 
     /**

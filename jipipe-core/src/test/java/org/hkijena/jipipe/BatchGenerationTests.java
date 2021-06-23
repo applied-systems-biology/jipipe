@@ -50,7 +50,7 @@ public class BatchGenerationTests {
         builder.setAnnotationMergeStrategy(JIPipeAnnotationMergeStrategy.Merge);
         builder.setReferenceColumns(new HashSet<>(Collections.singletonList("C1")));
         builder.setSlots(Collections.singletonList(slot1));
-        List<JIPipeMergingDataBatch> batches = builder.build();
+        List<JIPipeMergingDataBatch> batches = builder.build(new JIPipeProgressInfo());
         assertEquals(3, batches.size());
     }
 
@@ -72,7 +72,7 @@ public class BatchGenerationTests {
         builder.setAnnotationMergeStrategy(JIPipeAnnotationMergeStrategy.Merge);
         builder.setReferenceColumns(new HashSet<>(Collections.singletonList("C1")));
         builder.setSlots(Arrays.asList(slot1, slot2));
-        List<JIPipeMergingDataBatch> batches = builder.build();
+        List<JIPipeMergingDataBatch> batches = builder.build(new JIPipeProgressInfo());
         assertEquals(3, batches.size());
     }
 
@@ -91,7 +91,7 @@ public class BatchGenerationTests {
         builder.setAnnotationMergeStrategy(JIPipeAnnotationMergeStrategy.Merge);
         builder.setReferenceColumns(new HashSet<>(Arrays.asList("C1", "C2")));
         builder.setSlots(Collections.singletonList(slot1));
-        List<JIPipeMergingDataBatch> batches = builder.build();
+        List<JIPipeMergingDataBatch> batches = builder.build(new JIPipeProgressInfo());
         assertEquals(3, batches.size());
     }
 
@@ -116,7 +116,7 @@ public class BatchGenerationTests {
         builder.setAnnotationMergeStrategy(JIPipeAnnotationMergeStrategy.Merge);
         builder.setReferenceColumns(new HashSet<>(Arrays.asList("C1", "C2")));
         builder.setSlots(Arrays.asList(slot1, slot2));
-        List<JIPipeMergingDataBatch> batches = builder.build();
+        List<JIPipeMergingDataBatch> batches = builder.build(new JIPipeProgressInfo());
         assertEquals(3, batches.size());
     }
 

@@ -218,7 +218,7 @@ public class DataBatchAssistantUI extends JIPipeProjectWorkbenchPanel {
         }
         // Generate dry-run
         JIPipeDataBatchAlgorithm batchAlgorithm = (JIPipeDataBatchAlgorithm) batchesNodeCopy;
-        batches = batchAlgorithm.generateDataBatchesDryRun(batchesNodeCopy.getEffectiveInputSlots());
+        batches = batchAlgorithm.generateDataBatchesDryRun(batchesNodeCopy.getEffectiveInputSlots(), new JIPipeProgressInfo());
 
         batchPreviewNumberLabel.setText(batches.size() + " batches");
         batchPreviewMissingLabel.setVisible(false);

@@ -13,8 +13,6 @@
 
 package org.hkijena.jipipe.api.notifications;
 
-import org.jetbrains.annotations.NotNull;
-
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -69,7 +67,7 @@ public class JIPipeNotification implements Comparable<JIPipeNotification> {
     }
 
     @Override
-    public int compareTo(@NotNull JIPipeNotification o) {
+    public int compareTo(JIPipeNotification o) {
         return dateTime.compareTo(o.dateTime);
     }
 
