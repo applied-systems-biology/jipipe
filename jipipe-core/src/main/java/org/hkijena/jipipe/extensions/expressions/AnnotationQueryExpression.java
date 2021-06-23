@@ -27,7 +27,7 @@ public class AnnotationQueryExpression extends DefaultExpressionParameter {
 
     public static final String DOCUMENTATION_DESCRIPTION = "This parameter is an expression that has two modes: " +
             "(1) Selecting an existing annotation by its name, and (2) Matching an existing annotation by boolean operators<br/>" +
-            "<ol><li>Type in the name of the existing annotation. Put the name in double quotes. Example: <pre>\"#Dataset\"</pre></li>" +
+            "<ol><li>Type in the name of the existing annotation. Put the name in double quotes (optional, but recommended). Example: <pre>\"#Dataset\"</pre></li>" +
             "<li>The function iterates through all annotations. It should return TRUE for one of them. You will have 'key' and 'value' available within the expression. Example: <pre>key == \"#Dataset\"</pre></li></ol>";
 
     public AnnotationQueryExpression() {
@@ -60,11 +60,19 @@ public class AnnotationQueryExpression extends DefaultExpressionParameter {
             }
         } catch (Exception e) {
         }
+        try {
+            for (JIPipeAnnotation annotation : annotations) {
+                variableSet.set("key", annotation.getName());
+                variableSet.set("value", annotation.getValue());
+                boolean evaluationResult = test(variableSet);
+                if (evaluationResult)
+                    return annotation;
+            }
+        }
+        catch (Exception e) {
+        }
         for (JIPipeAnnotation annotation : annotations) {
-            variableSet.set("key", annotation.getName());
-            variableSet.set("value", annotation.getValue());
-            boolean evaluationResult = test(variableSet);
-            if (evaluationResult)
+            if (Objects.equals(annotation.getName(), getExpression()))
                 return annotation;
         }
         return null;

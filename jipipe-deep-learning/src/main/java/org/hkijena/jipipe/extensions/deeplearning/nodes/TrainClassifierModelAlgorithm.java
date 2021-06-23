@@ -242,7 +242,7 @@ public class TrainClassifierModelAlgorithm extends JIPipeMergingAlgorithm {
         }
     }
 
-    @JIPipeDocumentation(name = "Training", description = "Use following settings to change the properties of the training")
+    @JIPipeDocumentation(name = "Training", description = "Use following settings to change the properties of the training.\n\n" + AnnotationQueryExpression.DOCUMENTATION_DESCRIPTION)
     @JIPipeParameter(value = "training",
             iconURL = ResourceUtils.RESOURCE_BASE_PATH + "/icons/actions/dl-model.png",
             iconDarkURL = ResourceUtils.RESOURCE_BASE_PATH + "/dark/icons/actions/dl-model.png")
