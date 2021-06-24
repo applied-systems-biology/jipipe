@@ -6,6 +6,12 @@ import javax.swing.*;
  * A user-interface operation on data
  */
 public interface JIPipeDataOperation {
+
+    /**
+     * @return Unique ID of this operation
+     */
+    String getId();
+
     /**
      * @return The name of this operation
      */

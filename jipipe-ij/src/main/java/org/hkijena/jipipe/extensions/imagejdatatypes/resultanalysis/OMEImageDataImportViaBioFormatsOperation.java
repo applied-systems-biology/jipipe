@@ -34,6 +34,11 @@ public class OMEImageDataImportViaBioFormatsOperation implements JIPipeDataImpor
     }
 
     @Override
+    public String getId() {
+        return "jipipe:import-ome-bio-formats";
+    }
+
+    @Override
     public JIPipeData show(JIPipeDataSlot slot, JIPipeExportedDataTable.Row row, Path rowStorageFolder, String compartmentName, String algorithmName, String displayName, JIPipeWorkbench workbench) {
         Path targetFile = PathUtils.findFileByExtensionIn(rowStorageFolder, ".ome.tif");
         IJ.run("Bio-Formats Importer", "open=[" + targetFile + "]");

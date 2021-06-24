@@ -40,6 +40,11 @@ public class OpenInImageJDataDisplay implements JIPipeDataDisplayOperation {
     }
 
     @Override
+    public String getId() {
+        return "jipipe:open-image-in-imagej";
+    }
+
+    @Override
     public String getName() {
         return "Open in ImageJ";
     }

@@ -45,6 +45,11 @@ public class OMEImageDataImportIntoJIPipeOperation implements JIPipeDataImportOp
     }
 
     @Override
+    public String getId() {
+        return "jipipe:import-image-bio-formats";
+    }
+
+    @Override
     public JIPipeData show(JIPipeDataSlot slot, JIPipeExportedDataTable.Row row, Path rowStorageFolder, String compartmentName, String algorithmName, String displayName, JIPipeWorkbench workbench) {
         OMEImageResultImportRun run = new OMEImageResultImportRun(slot, row, rowStorageFolder, compartmentName, algorithmName, displayName, workbench);
         knownRuns.add(run);

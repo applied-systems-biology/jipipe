@@ -365,6 +365,11 @@ public class ROIManagerPlugin extends ImageViewerPanelPlugin {
         updateROIJList();
     }
 
+    public void clearROIs() {
+        rois.clear();
+        updateROIJList();
+    }
+
     public void exportROIs() {
         rois.addToRoiManager(RoiManager.getRoiManager());
     }
