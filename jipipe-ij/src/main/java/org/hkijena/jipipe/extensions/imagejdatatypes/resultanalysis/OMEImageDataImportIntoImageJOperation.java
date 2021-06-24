@@ -46,7 +46,7 @@ public class OMEImageDataImportIntoImageJOperation implements JIPipeDataImportOp
 
     @Override
     public String getId() {
-        return "jipipe:import-image-bio-formats";
+        return "jipipe:import-image-bio-formats-into-imagej";
     }
 
     @Override

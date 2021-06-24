@@ -412,6 +412,20 @@ public class StandardParametersExtension extends JIPipePrepackagedDefaultJavaExt
                 "String selection",
                 "A selection of available strings",
                 null);
+        registerParameterType("data-display-operation-id-enum",
+                DynamicDataDisplayOperationIdEnumParameter.class,
+                null,
+                null,
+                "Data display operation",
+                "A selection of data display operations",
+                null);
+        registerParameterType("data-import-operation-id-enum",
+                DynamicDataImportOperationIdEnumParameter.class,
+                null,
+                null,
+                "Data import operation",
+                "A selection of data import operations",
+                null);
 
         // Enums
         registerEnumParameterType("color-map",
