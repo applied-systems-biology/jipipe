@@ -4,7 +4,7 @@ import ij.ImagePlus;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
-import org.hkijena.jipipe.api.JIPipeValidityReport;
+import org.hkijena.jipipe.api.JIPipeIssueReport;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.nodes.JIPipeDataBatch;
 import org.hkijena.jipipe.api.nodes.JIPipeInputSlot;
@@ -60,10 +60,10 @@ public class DataToPreviewAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     }
 
     @Override
-    public void reportValidity(JIPipeValidityReport report) {
+    public void reportValidity(JIPipeIssueReport report) {
         super.reportValidity(report);
-        report.forCategory("Preview width").checkIfWithin(this, previewWidth, 1, Double.POSITIVE_INFINITY, true, false);
-        report.forCategory("Preview height").checkIfWithin(this, previewHeight, 1, Double.POSITIVE_INFINITY, true, false);
+        report.resolve("Preview width").checkIfWithin(this, previewWidth, 1, Double.POSITIVE_INFINITY, true, false);
+        report.resolve("Preview height").checkIfWithin(this, previewHeight, 1, Double.POSITIVE_INFINITY, true, false);
     }
 
     @JIPipeDocumentation(name = "Preview width", description = "The width of the generated image.")

@@ -18,7 +18,7 @@ import ij.plugin.ZProjector;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
-import org.hkijena.jipipe.api.JIPipeValidityReport;
+import org.hkijena.jipipe.api.JIPipeIssueReport;
 import org.hkijena.jipipe.api.data.JIPipeDataSlotInfo;
 import org.hkijena.jipipe.api.data.JIPipeDefaultMutableSlotConfiguration;
 import org.hkijena.jipipe.api.nodes.JIPipeDataBatch;
@@ -100,9 +100,9 @@ public class ZProjectorAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
 
     @Override
-    public void reportValidity(JIPipeValidityReport report) {
-        report.forCategory("Start slice").checkIfWithin(this, startSlice, -1, Double.POSITIVE_INFINITY, true, true);
-        report.forCategory("Stop slice").checkIfWithin(this, stopSlice, -1, Double.POSITIVE_INFINITY, true, true);
+    public void reportValidity(JIPipeIssueReport report) {
+        report.resolve("Start slice").checkIfWithin(this, startSlice, -1, Double.POSITIVE_INFINITY, true, true);
+        report.resolve("Stop slice").checkIfWithin(this, stopSlice, -1, Double.POSITIVE_INFINITY, true, true);
     }
 
     @JIPipeDocumentation(name = "Method", description = "The function that is applied to each stack of pixels.")

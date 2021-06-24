@@ -14,7 +14,7 @@
 package org.hkijena.jipipe.ui.grapheditor.settings;
 
 import com.google.common.eventbus.Subscribe;
-import org.hkijena.jipipe.api.JIPipeValidityReport;
+import org.hkijena.jipipe.api.JIPipeIssueReport;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.extensions.settings.RuntimeSettings;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
@@ -221,12 +221,12 @@ public class QuickRunSetupUI extends JIPipeProjectWorkbenchPanel {
     }
 
     private boolean validateOrShowError() {
-        JIPipeValidityReport report = new JIPipeValidityReport();
+        JIPipeIssueReport report = new JIPipeIssueReport();
         getProject().reportValidity(report, algorithm);
 
         Set<JIPipeGraphNode> algorithmsWithMissingInput = getProject().getGraph().getDeactivatedAlgorithms(true);
         if (algorithmsWithMissingInput.contains(algorithm)) {
-            report.forCategory("Test Bench").reportIsInvalid(
+            report.resolve("Test Bench").reportIsInvalid(
                     "Selected algorithm is deactivated or missing inputs!",
                     "The selected algorithm would not be executed, as it is deactivated or missing input data. " +
                             "You have to ensure that all input slots are assigned for the selected algorithm and its dependencies.",
@@ -290,7 +290,7 @@ public class QuickRunSetupUI extends JIPipeProjectWorkbenchPanel {
 
     private void generateQuickRun(boolean showResults) {
 
-        JIPipeValidityReport report = new JIPipeValidityReport();
+        JIPipeIssueReport report = new JIPipeIssueReport();
         getProject().reportValidity(report, algorithm);
         if (!report.isValid()) {
             tryShowSelectionPanel();

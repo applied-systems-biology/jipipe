@@ -18,7 +18,7 @@ import ij.plugin.filter.SaltAndPepper;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
-import org.hkijena.jipipe.api.JIPipeValidityReport;
+import org.hkijena.jipipe.api.JIPipeIssueReport;
 import org.hkijena.jipipe.api.nodes.JIPipeDataBatch;
 import org.hkijena.jipipe.api.nodes.JIPipeInputSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
@@ -77,8 +77,8 @@ public class AddSaltAndPepperNoise2DAlgorithm extends JIPipeSimpleIteratingAlgor
 
 
     @Override
-    public void reportValidity(JIPipeValidityReport report) {
-        report.forCategory("Percentage").checkIfWithin(this, percent, 0, 100, true, true);
+    public void reportValidity(JIPipeIssueReport report) {
+        report.resolve("Percentage").checkIfWithin(this, percent, 0, 100, true, true);
     }
 
     @JIPipeDocumentation(name = "Percentage", description = "Percentage of pixels that will be replaced by noise")

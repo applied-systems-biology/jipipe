@@ -19,7 +19,7 @@ import ij.Prefs;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.JIPipeJsonExtension;
 import org.hkijena.jipipe.api.JIPipeProject;
-import org.hkijena.jipipe.api.JIPipeValidityReport;
+import org.hkijena.jipipe.api.JIPipeIssueReport;
 import org.hkijena.jipipe.api.compartments.algorithms.JIPipeProjectCompartment;
 import org.hkijena.jipipe.api.grouping.NodeGroup;
 import org.hkijena.jipipe.api.nodes.JIPipeGraph;
@@ -683,7 +683,7 @@ public class JIPipeProjectWorkbench extends JPanel implements JIPipeWorkbench {
      * Exports the whole graph as pipeline
      */
     private void exportProjectAsAlgorithm() {
-        JIPipeValidityReport report = new JIPipeValidityReport();
+        JIPipeIssueReport report = new JIPipeIssueReport();
         report.report(getProject().getGraph());
         if (!report.isValid()) {
             UIUtils.openValidityReportDialog(this, report, false);

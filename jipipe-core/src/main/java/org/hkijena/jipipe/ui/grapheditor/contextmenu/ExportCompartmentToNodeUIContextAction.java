@@ -14,7 +14,7 @@
 package org.hkijena.jipipe.ui.grapheditor.contextmenu;
 
 import org.hkijena.jipipe.api.JIPipeProject;
-import org.hkijena.jipipe.api.JIPipeValidityReport;
+import org.hkijena.jipipe.api.JIPipeIssueReport;
 import org.hkijena.jipipe.api.compartments.algorithms.JIPipeProjectCompartment;
 import org.hkijena.jipipe.api.grouping.NodeGroup;
 import org.hkijena.jipipe.api.nodes.JIPipeGraph;
@@ -42,10 +42,10 @@ public class ExportCompartmentToNodeUIContextAction implements NodeUIContextActi
         JIPipeProjectWorkbench projectWorkbench = (JIPipeProjectWorkbench) canvasUI.getWorkbench();
         JIPipeProject project = projectWorkbench.getProject();
         final UUID compartmentId = compartment.getProjectCompartmentUUID();
-        JIPipeValidityReport report = new JIPipeValidityReport();
+        JIPipeIssueReport report = new JIPipeIssueReport();
         for (JIPipeGraphNode node : project.getGraph().getGraphNodes()) {
             if (Objects.equals(node.getCompartmentUUIDInGraph(), compartmentId)) {
-                report.forCategory(node.getDisplayName()).report(node);
+                report.resolve(node.getDisplayName()).report(node);
             }
         }
         if (!report.isValid()) {

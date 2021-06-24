@@ -21,7 +21,7 @@ import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeFixedThreadPool;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
-import org.hkijena.jipipe.api.JIPipeValidityReport;
+import org.hkijena.jipipe.api.JIPipeIssueReport;
 import org.hkijena.jipipe.api.data.JIPipeSlotConfiguration;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
@@ -84,9 +84,9 @@ public abstract class JIPipeAlgorithm extends JIPipeGraphNode {
     }
 
     @Override
-    public void reportValidity(JIPipeValidityReport report) {
+    public void reportValidity(JIPipeIssueReport report) {
         if (passThrough && !canPassThrough()) {
-            report.forCategory("Pass through").reportIsInvalid("Pass through is not supported!",
+            report.resolve("Pass through").reportIsInvalid("Pass through is not supported!",
                     "The algorithm reports that it does not support pass through. This is often the case for multi-output algorithms or " +
                             "algorithms that apply a conversion.",
                     "This cannot be changed. Please contact the algorithm author.",

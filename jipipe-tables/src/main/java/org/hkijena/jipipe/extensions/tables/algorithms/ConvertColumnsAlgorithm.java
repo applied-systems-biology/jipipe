@@ -16,7 +16,7 @@ package org.hkijena.jipipe.extensions.tables.algorithms;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
-import org.hkijena.jipipe.api.JIPipeValidityReport;
+import org.hkijena.jipipe.api.JIPipeIssueReport;
 import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
 import org.hkijena.jipipe.api.nodes.JIPipeDataBatch;
 import org.hkijena.jipipe.api.nodes.JIPipeInputSlot;
@@ -105,19 +105,19 @@ public class ConvertColumnsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     }
 
     @Override
-    public void reportValidity(JIPipeValidityReport report) {
-        report.forCategory("Processors").report(processorParameters);
+    public void reportValidity(JIPipeIssueReport report) {
+        report.resolve("Processors").report(processorParameters);
         Set<String> columnNames = new HashSet<>();
         for (ConvertingTableColumnProcessorParameter parameter : processorParameters) {
             if (columnNames.contains(parameter.getOutput())) {
-                report.forCategory("Processors").reportIsInvalid("Duplicate output column: " + parameter.getOutput(),
+                report.resolve("Processors").reportIsInvalid("Duplicate output column: " + parameter.getOutput(),
                         "There should not be multiple output columns with the same name.",
                         "Change the name to a unique non-empty string",
                         this);
                 break;
             }
             if (StringUtils.isNullOrEmpty(parameter.getOutput())) {
-                report.forCategory("Processors").reportIsInvalid("An output column has no name!",
+                report.resolve("Processors").reportIsInvalid("An output column has no name!",
                         "All output columns must have a non-empty name.",
                         "Change the name to a non-empty string",
                         this);

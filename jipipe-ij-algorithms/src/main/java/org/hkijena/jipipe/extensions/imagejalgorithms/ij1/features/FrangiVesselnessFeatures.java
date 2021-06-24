@@ -22,7 +22,7 @@ import mpicbg.imglib.type.numeric.real.FloatType;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
-import org.hkijena.jipipe.api.JIPipeValidityReport;
+import org.hkijena.jipipe.api.JIPipeIssueReport;
 import org.hkijena.jipipe.api.data.JIPipeDefaultMutableSlotConfiguration;
 import org.hkijena.jipipe.api.nodes.JIPipeDataBatch;
 import org.hkijena.jipipe.api.nodes.JIPipeInputSlot;
@@ -183,7 +183,7 @@ public class FrangiVesselnessFeatures extends JIPipeSimpleIteratingAlgorithm {
     }
 
     @Override
-    public void reportValidity(JIPipeValidityReport report) {
+    public void reportValidity(JIPipeIssueReport report) {
         report.checkIfWithin(this, minimumScale, 0, Double.POSITIVE_INFINITY, false, true);
         report.checkIfWithin(this, maximumScale, 0, Double.POSITIVE_INFINITY, false, true);
     }

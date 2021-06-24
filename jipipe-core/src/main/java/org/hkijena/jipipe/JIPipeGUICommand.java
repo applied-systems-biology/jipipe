@@ -14,7 +14,7 @@
 package org.hkijena.jipipe;
 
 import net.imagej.ImageJ;
-import org.hkijena.jipipe.api.JIPipeValidityReport;
+import org.hkijena.jipipe.api.JIPipeIssueReport;
 import org.hkijena.jipipe.extensions.settings.ExtensionSettings;
 import org.hkijena.jipipe.ui.JIPipeProjectWindow;
 import org.hkijena.jipipe.ui.components.SplashScreen;
@@ -83,7 +83,7 @@ public class JIPipeGUICommand implements Command {
             resolveMissingImageJDependencies(issues);
 
             {
-                JIPipeValidityReport report = new JIPipeValidityReport();
+                JIPipeIssueReport report = new JIPipeIssueReport();
                 issues.reportValidity(report);
                 if (!report.isValid()) {
                     UIUtils.openValidityReportDialog(null, report, true);

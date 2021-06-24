@@ -16,7 +16,7 @@ package org.hkijena.jipipe.extensions.tables.algorithms;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
-import org.hkijena.jipipe.api.JIPipeValidityReport;
+import org.hkijena.jipipe.api.JIPipeIssueReport;
 import org.hkijena.jipipe.api.nodes.JIPipeDataBatch;
 import org.hkijena.jipipe.api.nodes.JIPipeInputSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
@@ -128,11 +128,11 @@ public class MeltTableAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     }
 
     @Override
-    public void reportValidity(JIPipeValidityReport report) {
+    public void reportValidity(JIPipeIssueReport report) {
         super.reportValidity(report);
-        report.forCategory("Output value column name").checkNonEmpty(outputValueColumnName, this);
+        report.resolve("Output value column name").checkNonEmpty(outputValueColumnName, this);
         if (outputCategoryColumnName.isEnabled()) {
-            report.forCategory("Output category column name").checkNonEmpty(outputCategoryColumnName.getContent(), this);
+            report.resolve("Output category column name").checkNonEmpty(outputCategoryColumnName.getContent(), this);
         }
     }
 

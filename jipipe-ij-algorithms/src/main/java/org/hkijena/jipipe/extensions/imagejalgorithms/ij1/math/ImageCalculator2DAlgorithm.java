@@ -19,7 +19,7 @@ import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
-import org.hkijena.jipipe.api.JIPipeValidityReport;
+import org.hkijena.jipipe.api.JIPipeIssueReport;
 import org.hkijena.jipipe.api.data.JIPipeDataSlotInfo;
 import org.hkijena.jipipe.api.data.JIPipeDefaultMutableSlotConfiguration;
 import org.hkijena.jipipe.api.nodes.JIPipeDataBatch;
@@ -135,14 +135,14 @@ public class ImageCalculator2DAlgorithm extends JIPipeIteratingAlgorithm {
 
 
     @Override
-    public void reportValidity(JIPipeValidityReport report) {
+    public void reportValidity(JIPipeIssueReport report) {
         Set<Operand> existing = new HashSet<>();
         for (Map.Entry<String, JIPipeParameterAccess> entry : operands.getParameters().entrySet()) {
             Operand operand = entry.getValue().get(Operand.class);
-            report.forCategory("Operands").forCategory(entry.getKey()).checkNonNull(operand, this);
+            report.resolve("Operands").resolve(entry.getKey()).checkNonNull(operand, this);
             if (operand != null) {
                 if (existing.contains(operand))
-                    report.forCategory("Operands").forCategory(entry.getKey()).reportIsInvalid("Duplicate operand assignment!",
+                    report.resolve("Operands").resolve(entry.getKey()).reportIsInvalid("Duplicate operand assignment!",
                             "Operand '" + operand + "' is already assigned.",
                             "Please assign the other operand.",
                             this);

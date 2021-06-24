@@ -5,7 +5,7 @@ import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
-import org.hkijena.jipipe.api.JIPipeValidityReport;
+import org.hkijena.jipipe.api.JIPipeIssueReport;
 import org.hkijena.jipipe.api.data.JIPipeAnnotationMergeStrategy;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataInfo;
@@ -106,13 +106,13 @@ public class IteratingRScriptAlgorithm extends JIPipeIteratingAlgorithm {
     }
 
     @Override
-    public void reportValidity(JIPipeValidityReport report) {
+    public void reportValidity(JIPipeIssueReport report) {
         super.reportValidity(report);
         if (!isPassThrough()) {
             if (overrideEnvironment.isEnabled()) {
-                report.forCategory("Override R environment").report(overrideEnvironment.getContent());
+                report.resolve("Override R environment").report(overrideEnvironment.getContent());
             } else {
-                RExtensionSettings.checkRSettings(report.forCategory("R"));
+                RExtensionSettings.checkRSettings(report.resolve("R"));
             }
         }
     }

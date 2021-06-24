@@ -18,7 +18,7 @@ import gnu.trove.set.TIntSet;
 import gnu.trove.set.hash.TIntHashSet;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
-import org.hkijena.jipipe.api.JIPipeValidityReport;
+import org.hkijena.jipipe.api.JIPipeIssueReport;
 import org.hkijena.jipipe.api.data.JIPipeAnnotationMergeStrategy;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.data.JIPipeSlotConfiguration;
@@ -147,9 +147,9 @@ public abstract class JIPipeParameterlessSimpleIteratingAlgorithm extends JIPipe
     }
 
     @Override
-    public void reportValidity(JIPipeValidityReport report) {
+    public void reportValidity(JIPipeIssueReport report) {
         if (getEffectiveInputSlots().size() > 1) {
-            report.forCategory("Internals").reportIsInvalid(
+            report.resolve("Internals").reportIsInvalid(
                     "Error in source code detected!",
                     "The developer of this algorithm chose the wrong node type. The one that was selected only supports at most one input.",
                     "Please contact the plugin developers and tell them to let algorithm '" + getInfo().getId() + "' inherit from 'JIPipeIteratingAlgorithm' instead.",

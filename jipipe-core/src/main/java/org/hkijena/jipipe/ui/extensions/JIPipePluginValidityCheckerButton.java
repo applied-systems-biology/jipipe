@@ -15,7 +15,7 @@ package org.hkijena.jipipe.ui.extensions;
 
 import com.google.common.eventbus.Subscribe;
 import org.hkijena.jipipe.JIPipe;
-import org.hkijena.jipipe.api.JIPipeValidityReport;
+import org.hkijena.jipipe.api.JIPipeIssueReport;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
@@ -25,7 +25,7 @@ import javax.swing.*;
  */
 public class JIPipePluginValidityCheckerButton extends JButton {
 
-    private JIPipeValidityReport report = new JIPipeValidityReport();
+    private JIPipeIssueReport report = new JIPipeIssueReport();
 
     /**
      * Creates new instance
@@ -39,7 +39,7 @@ public class JIPipePluginValidityCheckerButton extends JButton {
      * Triggers a validity check
      */
     public void recheckValidity() {
-        report.clear();
+        report.clearAll();
         JIPipe.getInstance().reportValidity(report);
 
         if (report.isValid()) {

@@ -24,6 +24,6 @@ public interface JIPipeValidatable {
      *
      * @param report the report to be added to
      */
-    void reportValidity(JIPipeValidityReport report);
+    void reportValidity(JIPipeIssueReport report);
 
 }

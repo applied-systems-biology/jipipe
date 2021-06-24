@@ -3,7 +3,7 @@ package org.hkijena.jipipe.api.environments;
 import com.google.common.eventbus.Subscribe;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeRunnable;
-import org.hkijena.jipipe.api.JIPipeValidityReport;
+import org.hkijena.jipipe.api.JIPipeIssueReport;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTypeInfo;
 import org.hkijena.jipipe.api.registries.JIPipeExternalEnvironmentRegistry;
@@ -125,7 +125,7 @@ public class ExternalEnvironmentParameterEditorUI extends JIPipeParameterEditorU
     }
 
     private void saveAsPreset() {
-        JIPipeValidityReport report = new JIPipeValidityReport();
+        JIPipeIssueReport report = new JIPipeIssueReport();
         ExternalEnvironment parameter = getParameter(ExternalEnvironment.class);
         parameter.reportValidity(report);
 
@@ -198,7 +198,7 @@ public class ExternalEnvironmentParameterEditorUI extends JIPipeParameterEditorU
         nameLabel.setIcon(parameter.getIcon());
         nameLabel.setText(parameter.getName());
         pathLabel.setText(StringUtils.orElse(parameter.getInfo(), "<Nothing set>"));
-        JIPipeValidityReport report = new JIPipeValidityReport();
+        JIPipeIssueReport report = new JIPipeIssueReport();
         parameter.reportValidity(report);
         if (!report.isValid()) {
             pathLabel.setForeground(Color.RED);

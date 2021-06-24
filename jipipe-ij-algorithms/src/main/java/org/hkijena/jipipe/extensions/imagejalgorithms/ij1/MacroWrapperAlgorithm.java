@@ -22,7 +22,7 @@ import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
-import org.hkijena.jipipe.api.JIPipeValidityReport;
+import org.hkijena.jipipe.api.JIPipeIssueReport;
 import org.hkijena.jipipe.api.compat.ImageJDatatypeAdapter;
 import org.hkijena.jipipe.api.data.JIPipeAnnotation;
 import org.hkijena.jipipe.api.data.JIPipeData;
@@ -280,7 +280,7 @@ public class MacroWrapperAlgorithm extends JIPipeIteratingAlgorithm {
     }
 
     @Override
-    public void reportValidity(JIPipeValidityReport report) {
+    public void reportValidity(JIPipeIssueReport report) {
         long roiInputSlotCount = getNonParameterInputSlots().stream().filter(slot -> slot.getAcceptedDataType() == ROIListData.class).count();
         long roiOutputSlotCount = getOutputSlots().stream().filter(slot -> slot.getAcceptedDataType() == ROIListData.class).count();
         long resultsTableInputSlotCount = getNonParameterInputSlots().stream().filter(slot -> slot.getAcceptedDataType() == ResultsTableData.class).count();
@@ -311,7 +311,7 @@ public class MacroWrapperAlgorithm extends JIPipeIteratingAlgorithm {
         }
         for (String key : macroParameters.getParameters().keySet()) {
             if (!MacroUtils.isValidVariableName(key)) {
-                report.forCategory("Macro Parameters").forCategory(key).reportIsInvalid("Invalid name!",
+                report.resolve("Macro Parameters").resolve(key).reportIsInvalid("Invalid name!",
                         "'" + key + "' is an invalid ImageJ macro variable name!",
                         "Please ensure that macro variables are compatible with the ImageJ macro language.",
                         this);

@@ -26,7 +26,7 @@ import org.apache.commons.lang3.reflect.ConstructorUtils;
 import org.hkijena.jipipe.api.JIPipeProject;
 import org.hkijena.jipipe.api.JIPipeRun;
 import org.hkijena.jipipe.api.JIPipeRunSettings;
-import org.hkijena.jipipe.api.JIPipeValidityReport;
+import org.hkijena.jipipe.api.JIPipeIssueReport;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataDisplayOperation;
 import org.hkijena.jipipe.api.data.JIPipeDataImportOperation;
@@ -473,18 +473,18 @@ public class JIPipe extends AbstractService implements JIPipeRegistry {
     }
 
     @Override
-    public void reportValidity(JIPipeValidityReport report) {
-        report.forCategory("Algorithms").report(nodeRegistry);
+    public void reportValidity(JIPipeIssueReport report) {
+        report.resolve("Algorithms").report(nodeRegistry);
         for (JIPipeDependency extension : failedExtensions) {
             if (extension != null) {
-                report.forCategory("Extensions").forCategory(extension.getDependencyId()).reportIsInvalid("Error during loading the extension!",
+                report.resolve("Extensions").resolve(extension.getDependencyId()).reportIsInvalid("Error during loading the extension!",
                         "There was an error while loading the extension. Please refer to the message that you get on restarting JIPipe.",
                         "Please refer to the message that you get on restarting JIPipe.",
                         failedExtensions);
             }
         }
         for (JIPipeDependency extension : registeredExtensions) {
-            report.forCategory("Extensions").forCategory(extension.getDependencyId()).report(extension);
+            report.resolve("Extensions").resolve(extension.getDependencyId()).report(extension);
         }
     }
 
@@ -623,7 +623,7 @@ public class JIPipe extends AbstractService implements JIPipeRegistry {
      * @throws IOException thrown if the file could not be read or the file is corrupt
      */
     public static JIPipeProject loadProject(Path fileName) throws IOException {
-        return loadProject(fileName, new JIPipeValidityReport());
+        return loadProject(fileName, new JIPipeIssueReport());
     }
 
     /**
@@ -634,7 +634,7 @@ public class JIPipe extends AbstractService implements JIPipeRegistry {
      * @return the project
      * @throws IOException thrown if the file could not be read or the file is corrupt
      */
-    public static JIPipeProject loadProject(Path fileName, JIPipeValidityReport report) throws IOException {
+    public static JIPipeProject loadProject(Path fileName, JIPipeIssueReport report) throws IOException {
         return JIPipeProject.loadProject(fileName, report);
     }
 

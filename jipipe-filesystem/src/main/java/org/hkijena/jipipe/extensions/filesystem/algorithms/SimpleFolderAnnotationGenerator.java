@@ -17,7 +17,7 @@ import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeHidden;
 import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
-import org.hkijena.jipipe.api.JIPipeValidityReport;
+import org.hkijena.jipipe.api.JIPipeIssueReport;
 import org.hkijena.jipipe.api.data.JIPipeAnnotation;
 import org.hkijena.jipipe.api.data.JIPipeAnnotationMergeStrategy;
 import org.hkijena.jipipe.api.nodes.JIPipeDataBatch;
@@ -75,8 +75,8 @@ public class SimpleFolderAnnotationGenerator extends JIPipeSimpleIteratingAlgori
     }
 
     @Override
-    public void reportValidity(JIPipeValidityReport report) {
-        report.forCategory("Generated annotation").checkNonEmpty(generatedAnnotation, this);
+    public void reportValidity(JIPipeIssueReport report) {
+        report.resolve("Generated annotation").checkNonEmpty(generatedAnnotation, this);
     }
 
     /**

@@ -17,7 +17,7 @@ import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
-import org.hkijena.jipipe.api.JIPipeValidityReport;
+import org.hkijena.jipipe.api.JIPipeIssueReport;
 import org.hkijena.jipipe.api.data.JIPipeAnnotationMergeStrategy;
 import org.hkijena.jipipe.api.data.JIPipeDefaultMutableSlotConfiguration;
 import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
@@ -121,10 +121,10 @@ public class PlotGeneratorAlgorithm extends JIPipeAlgorithm {
     }
 
     @Override
-    public void reportValidity(JIPipeValidityReport report) {
-        report.forCategory("Plot type").checkNonNull(getPlotType().getInfo(), this);
+    public void reportValidity(JIPipeIssueReport report) {
+        report.resolve("Plot type").checkNonNull(getPlotType().getInfo(), this);
         if (plotTypeParameters != null) {
-            report.forCategory("Plot parameters").report(plotTypeParameters);
+            report.resolve("Plot parameters").report(plotTypeParameters);
         }
     }
 

@@ -58,7 +58,7 @@ public class JIPipeProjectTemplate {
     public JIPipeProject load() throws IOException {
         JsonNode node = JsonUtils.getObjectMapper().readValue(getLocation(), JsonNode.class);
         JIPipeProject project = new JIPipeProject();
-        project.fromJson(node, new JIPipeValidityReport());
+        project.fromJson(node, new JIPipeIssueReport());
         // Apply selected default style
         project.getGraph().attachAdditionalMetadata("jipipe:graph:view-mode", GraphEditorUISettings.getInstance().getDefaultViewMode());
         project.getCompartmentGraph().attachAdditionalMetadata("jipipe:graph:view-mode", GraphEditorUISettings.getInstance().getDefaultViewMode());

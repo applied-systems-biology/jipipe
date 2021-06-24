@@ -3,7 +3,7 @@ package org.hkijena.jipipe.extensions.cellpose;
 import com.google.common.eventbus.EventBus;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeValidityReport;
+import org.hkijena.jipipe.api.JIPipeIssueReport;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.extensions.python.OptionalPythonEnvironment;
@@ -60,7 +60,7 @@ public class CellPoseSettings implements JIPipeParameterCollection {
     public static boolean pythonSettingsAreValid() {
         if (JIPipe.getInstance() != null) {
             CellPoseSettings instance = getInstance();
-            JIPipeValidityReport report = new JIPipeValidityReport();
+            JIPipeIssueReport report = new JIPipeIssueReport();
             instance.getPythonEnvironment().reportValidity(report);
             return report.isValid();
         }
@@ -72,7 +72,7 @@ public class CellPoseSettings implements JIPipeParameterCollection {
      *
      * @param report the report
      */
-    public static void checkPythonSettings(JIPipeValidityReport report) {
+    public static void checkPythonSettings(JIPipeIssueReport report) {
         if (!pythonSettingsAreValid()) {
             report.reportIsInvalid("Python is not configured!",
                     "Project > Application settings > Extensions > Cellpose",

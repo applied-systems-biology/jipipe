@@ -19,7 +19,7 @@ import com.google.common.eventbus.Subscribe;
 import org.hkijena.jipipe.api.JIPipeProjectCache;
 import org.hkijena.jipipe.api.JIPipeProjectCacheState;
 import org.hkijena.jipipe.api.JIPipeRun;
-import org.hkijena.jipipe.api.JIPipeValidityReport;
+import org.hkijena.jipipe.api.JIPipeIssueReport;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeAlgorithm;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
@@ -264,7 +264,7 @@ public class JIPipeAlgorithmCacheBrowserUI extends JIPipeProjectWorkbenchPanel {
         if (Files.exists(nodeStateFile)) {
             try {
                 JsonNode node = JsonUtils.getObjectMapper().readerFor(JsonNode.class).readValue(nodeStateFile.toFile());
-                JIPipeValidityReport report = new JIPipeValidityReport();
+                JIPipeIssueReport report = new JIPipeIssueReport();
                 JIPipeGraphNode stateNode = JIPipeGraphNode.fromJsonNode(node, report);
                 if (!report.isValid()) {
                     UIUtils.openValidityReportDialog(this, report, true);

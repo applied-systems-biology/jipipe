@@ -456,7 +456,7 @@ public class JIPipeRun implements JIPipeRunnable {
      * @return The loaded run
      * @throws IOException Triggered by {@link com.fasterxml.jackson.databind.ObjectMapper}
      */
-    public static JIPipeRun loadFromFolder(Path folder, JIPipeValidityReport report) throws IOException {
+    public static JIPipeRun loadFromFolder(Path folder, JIPipeIssueReport report) throws IOException {
         Path parameterFile = folder.resolve("project.jip");
         JIPipeProject project = JIPipeProject.loadProject(parameterFile, report);
         JIPipeRunSettings configuration = new JIPipeRunSettings();

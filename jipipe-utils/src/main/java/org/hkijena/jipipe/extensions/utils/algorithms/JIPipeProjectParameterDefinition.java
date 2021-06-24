@@ -17,7 +17,7 @@ import ij.IJ;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.api.JIPipeProject;
-import org.hkijena.jipipe.api.JIPipeValidityReport;
+import org.hkijena.jipipe.api.JIPipeIssueReport;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.JIPipeOutputSlot;
 import org.hkijena.jipipe.api.nodes.categories.DataSourceNodeTypeCategory;
@@ -57,7 +57,7 @@ public class JIPipeProjectParameterDefinition extends ParametersDataTableDefinit
         Path projectFile = FileChooserSettings.openFile(workbench.getWindow(), FileChooserSettings.KEY_PROJECT, "Import JIPipe project", UIUtils.EXTENSION_FILTER_JIP);
         if (projectFile != null) {
             try {
-                JIPipeProject project = JIPipeProject.loadProject(projectFile, new JIPipeValidityReport());
+                JIPipeProject project = JIPipeProject.loadProject(projectFile, new JIPipeIssueReport());
                 JIPipeProjectInfoParameters infoParameters = project.getPipelineParameters();
                 getParameterTable().clear();
                 JIPipeParameterTree tree = new JIPipeParameterTree(infoParameters);

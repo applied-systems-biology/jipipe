@@ -19,7 +19,7 @@ import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.JIPipeProject;
 import org.hkijena.jipipe.api.JIPipeRun;
 import org.hkijena.jipipe.api.JIPipeRunSettings;
-import org.hkijena.jipipe.api.JIPipeValidityReport;
+import org.hkijena.jipipe.api.JIPipeIssueReport;
 import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
 import org.hkijena.jipipe.api.nodes.JIPipeDataBatch;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
@@ -72,7 +72,7 @@ public class RunJIPipeProjectAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     @Override
     protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
-        JIPipeValidityReport report = new JIPipeValidityReport();
+        JIPipeIssueReport report = new JIPipeIssueReport();
         JIPipeProject project;
         try {
             project = JIPipeProject.loadProject(projectFile, report);
@@ -86,7 +86,7 @@ public class RunJIPipeProjectAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         if (!ignoreValidation) {
             if (!report.isValid()) {
                 report.print();
-                for (Map.Entry<String, JIPipeValidityReport.Message> entry : report.getMessages().entrySet()) {
+                for (Map.Entry<String, JIPipeIssueReport.Issue> entry : report.getIssues().entries()) {
                     throw new UserFriendlyRuntimeException(entry.getValue().getDetails(),
                             entry.getValue().getUserWhat(),
                             entry.getKey(),
@@ -125,7 +125,7 @@ public class RunJIPipeProjectAlgorithm extends JIPipeSimpleIteratingAlgorithm {
             project.reportValidity(report);
             if (!report.isValid()) {
                 report.print();
-                for (Map.Entry<String, JIPipeValidityReport.Message> entry : report.getMessages().entrySet()) {
+                for (Map.Entry<String, JIPipeIssueReport.Issue> entry : report.getIssues().entries()) {
                     throw new UserFriendlyRuntimeException(entry.getValue().getDetails(),
                             entry.getValue().getUserWhat(),
                             entry.getKey(),

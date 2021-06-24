@@ -16,7 +16,7 @@ package org.hkijena.jipipe.ui.compat;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.google.common.eventbus.Subscribe;
 import org.hkijena.jipipe.JIPipe;
-import org.hkijena.jipipe.api.JIPipeValidityReport;
+import org.hkijena.jipipe.api.JIPipeIssueReport;
 import org.hkijena.jipipe.api.compat.ImageJDatatypeImporter;
 import org.hkijena.jipipe.api.compat.SingleImageJAlgorithmRun;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
@@ -353,7 +353,7 @@ public class RunSingleAlgorithmDialog extends JDialog implements JIPipeWorkbench
     }
 
     private void copyCommand() {
-        JIPipeValidityReport report = new JIPipeValidityReport();
+        JIPipeIssueReport report = new JIPipeIssueReport();
         runSettings.reportValidity(report);
         if (!report.isValid()) {
             UIUtils.openValidityReportDialog(this, report, false);
@@ -367,7 +367,7 @@ public class RunSingleAlgorithmDialog extends JDialog implements JIPipeWorkbench
     }
 
     private void runNow() {
-        JIPipeValidityReport report = new JIPipeValidityReport();
+        JIPipeIssueReport report = new JIPipeIssueReport();
         runSettings.reportValidity(report);
         if (!report.isValid()) {
             UIUtils.openValidityReportDialog(this, report, false);

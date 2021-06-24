@@ -18,7 +18,7 @@ import com.google.common.eventbus.Subscribe;
 import ij.measure.ResultsTable;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeValidatable;
-import org.hkijena.jipipe.api.JIPipeValidityReport;
+import org.hkijena.jipipe.api.JIPipeIssueReport;
 import org.hkijena.jipipe.api.data.JIPipeDataInfo;
 import org.hkijena.jipipe.api.parameters.JIPipeDynamicParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeMutableParameterAccess;
@@ -168,12 +168,12 @@ public class JIPipePlotSeriesBuilder implements JIPipeParameterCollection, JIPip
     }
 
     @Override
-    public void reportValidity(JIPipeValidityReport report) {
+    public void reportValidity(JIPipeIssueReport report) {
         for (Map.Entry<String, JIPipeParameterAccess> entry : columnAssignments.getParameters().entrySet()) {
             JIPipeMutableParameterAccess parameterAccess = (JIPipeMutableParameterAccess) entry.getValue();
             UIPlotDataSeriesColumnEnum parameter = parameterAccess.get(UIPlotDataSeriesColumnEnum.class);
             if (parameter.getValue() == null) {
-                report.forCategory("Data assignments").forCategory(entry.getKey()).reportIsInvalid("No data selected!",
+                report.resolve("Data assignments").resolve(entry.getKey()).reportIsInvalid("No data selected!",
                         "The plot requires that you select a data source.",
                         "Please select a data source.",
                         this);
@@ -187,7 +187,7 @@ public class JIPipePlotSeriesBuilder implements JIPipeParameterCollection, JIPip
                 rows = Math.max(rows, source.getRows());
         }
         if (rows == 0) {
-            report.forCategory("Data assignments").forCategory("Data integrity").reportIsInvalid("Selected data is empty!",
+            report.resolve("Data assignments").resolve("Data integrity").reportIsInvalid("Selected data is empty!",
                     "The plot requires that you select a data source.",
                     "Please select at least one data source with a known row count.",
                     this);

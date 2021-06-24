@@ -25,7 +25,7 @@ import com.google.common.eventbus.Subscribe;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.JIPipeDependency;
 import org.hkijena.jipipe.api.JIPipeValidatable;
-import org.hkijena.jipipe.api.JIPipeValidityReport;
+import org.hkijena.jipipe.api.JIPipeIssueReport;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
@@ -262,9 +262,9 @@ public class JIPipeNodeRegistry implements JIPipeValidatable {
     }
 
     @Override
-    public void reportValidity(JIPipeValidityReport report) {
+    public void reportValidity(JIPipeIssueReport report) {
         for (JIPipeNodeRegistrationTask task : registrationTasks) {
-            report.forCategory("Unregistered algorithms").forCategory(task.toString()).report(task);
+            report.resolve("Unregistered algorithms").resolve(task.toString()).report(task);
         }
     }
 

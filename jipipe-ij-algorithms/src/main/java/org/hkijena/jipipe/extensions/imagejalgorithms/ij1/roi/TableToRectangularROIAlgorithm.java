@@ -18,7 +18,7 @@ import ij.gui.ShapeRoi;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
-import org.hkijena.jipipe.api.JIPipeValidityReport;
+import org.hkijena.jipipe.api.JIPipeIssueReport;
 import org.hkijena.jipipe.api.data.JIPipeDefaultMutableSlotConfiguration;
 import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
 import org.hkijena.jipipe.api.nodes.JIPipeDataBatch;
@@ -84,17 +84,17 @@ public class TableToRectangularROIAlgorithm extends JIPipeSimpleIteratingAlgorit
     }
 
     @Override
-    public void reportValidity(JIPipeValidityReport report) {
+    public void reportValidity(JIPipeIssueReport report) {
         super.reportValidity(report);
-        report.forCategory("Column 'X1'").report(columnX1);
-        report.forCategory("Column 'Y1'").report(columnY1);
+        report.resolve("Column 'X1'").report(columnX1);
+        report.resolve("Column 'Y1'").report(columnY1);
         if (anchor == Anchor.TopLeft || anchor == Anchor.Center) {
-            report.forCategory("Column 'Width'").report(columnWidth);
-            report.forCategory("Column 'Height'").report(columnHeight);
+            report.resolve("Column 'Width'").report(columnWidth);
+            report.resolve("Column 'Height'").report(columnHeight);
         }
         if (anchor == Anchor.TwoPoints) {
-            report.forCategory("Column 'X2'").report(columnX2);
-            report.forCategory("Column 'Y2'").report(columnY2);
+            report.resolve("Column 'X2'").report(columnX2);
+            report.resolve("Column 'Y2'").report(columnY2);
         }
     }
 

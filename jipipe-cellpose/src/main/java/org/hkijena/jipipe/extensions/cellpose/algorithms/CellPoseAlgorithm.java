@@ -7,7 +7,7 @@ import org.apache.commons.io.FileUtils;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
-import org.hkijena.jipipe.api.JIPipeValidityReport;
+import org.hkijena.jipipe.api.JIPipeIssueReport;
 import org.hkijena.jipipe.api.data.JIPipeAnnotation;
 import org.hkijena.jipipe.api.data.JIPipeDataSlotInfo;
 import org.hkijena.jipipe.api.data.JIPipeDefaultMutableSlotConfiguration;
@@ -39,7 +39,6 @@ import org.hkijena.jipipe.extensions.parameters.primitives.OptionalAnnotationNam
 import org.hkijena.jipipe.extensions.parameters.primitives.OptionalDoubleParameter;
 import org.hkijena.jipipe.extensions.python.OptionalPythonEnvironment;
 import org.hkijena.jipipe.extensions.python.PythonUtils;
-import org.hkijena.jipipe.utils.MacroUtils;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -51,7 +50,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 @JIPipeDocumentation(name = "Cellpose", description = "Runs Cellpose on the input image. This node supports both segmentation in 3D and executing " +
@@ -176,13 +174,13 @@ public class CellPoseAlgorithm extends JIPipeMergingAlgorithm {
     }
 
     @Override
-    public void reportValidity(JIPipeValidityReport report) {
+    public void reportValidity(JIPipeIssueReport report) {
         super.reportValidity(report);
         if (!isPassThrough()) {
             if (overrideEnvironment.isEnabled()) {
-                report.forCategory("Override Python environment").report(overrideEnvironment.getContent());
+                report.resolve("Override Python environment").report(overrideEnvironment.getContent());
             } else {
-                CellPoseSettings.checkPythonSettings(report.forCategory("Python"));
+                CellPoseSettings.checkPythonSettings(report.resolve("Python"));
             }
         }
     }

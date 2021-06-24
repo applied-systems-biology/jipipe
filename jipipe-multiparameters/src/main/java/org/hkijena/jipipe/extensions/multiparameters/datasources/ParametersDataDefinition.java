@@ -16,7 +16,7 @@ package org.hkijena.jipipe.extensions.multiparameters.datasources;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
-import org.hkijena.jipipe.api.JIPipeValidityReport;
+import org.hkijena.jipipe.api.JIPipeIssueReport;
 import org.hkijena.jipipe.api.nodes.JIPipeAlgorithm;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.JIPipeOutputSlot;
@@ -71,8 +71,8 @@ public class ParametersDataDefinition extends JIPipeAlgorithm {
     }
 
     @Override
-    public void reportValidity(JIPipeValidityReport report) {
-        report.forCategory("Parameters").report(parameters);
+    public void reportValidity(JIPipeIssueReport report) {
+        report.resolve("Parameters").report(parameters);
     }
 
     @JIPipeDocumentation(name = "Parameters", description = "Following parameters are generated:")
