@@ -13,6 +13,7 @@
 
 package org.hkijena.jipipe.extensions.imagejalgorithms.ij1.roi;
 
+import ij.gui.Roi;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeOrganization;
@@ -21,11 +22,15 @@ import org.hkijena.jipipe.api.nodes.JIPipeDataBatch;
 import org.hkijena.jipipe.api.nodes.JIPipeInputSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.JIPipeOutputSlot;
+import org.hkijena.jipipe.api.nodes.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.nodes.categories.RoiNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeContextAction;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
+import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.extensions.expressions.DefaultExpressionParameter;
 import org.hkijena.jipipe.extensions.expressions.ExpressionParameterSettings;
+import org.hkijena.jipipe.extensions.expressions.ExpressionParameterVariable;
+import org.hkijena.jipipe.extensions.expressions.ExpressionParameterVariableSource;
 import org.hkijena.jipipe.extensions.expressions.ExpressionParameters;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ROIListData;
@@ -34,26 +39,25 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.util.measure.MeasurementExp
 import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.utils.ResourceUtils;
+import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 import static org.hkijena.jipipe.extensions.imagejalgorithms.ij1.roi.ImageRoiProcessorAlgorithm.ROI_PROCESSOR_DESCRIPTION;
 
 /**
  * Wrapper around {@link ij.plugin.frame.RoiManager}
  */
-@JIPipeDocumentation(name = "Filter ROI by statistics", description = "Filters the ROI list elements via statistics." + "\n\n" + ROI_PROCESSOR_DESCRIPTION)
+@JIPipeDocumentation(name = "Filter ROI by name", description = "Filters the ROI list elements by the name and other basic properties.")
 @JIPipeOrganization(nodeTypeCategory = RoiNodeTypeCategory.class, menuPath = "Filter")
-@JIPipeInputSlot(value = ROIListData.class, slotName = "ROI")
-@JIPipeInputSlot(value = ImagePlusData.class, slotName = "Image")
+@JIPipeInputSlot(value = ROIListData.class, slotName = "Input")
 @JIPipeOutputSlot(value = ROIListData.class, slotName = "Output")
-public class FilterRoiByStatisticsAlgorithm extends ImageRoiProcessorAlgorithm {
+public class FilterRoiByNameAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     private DefaultExpressionParameter filters = new DefaultExpressionParameter();
-    private RoiStatisticsAlgorithm roiStatisticsAlgorithm =
-            JIPipe.createNode("ij1-roi-statistics", RoiStatisticsAlgorithm.class);
-    private ImageStatisticsSetParameter measurements = new ImageStatisticsSetParameter();
     private boolean outputEmptyLists = true;
 
     /**
@@ -61,8 +65,8 @@ public class FilterRoiByStatisticsAlgorithm extends ImageRoiProcessorAlgorithm {
      *
      * @param info the info
      */
-    public FilterRoiByStatisticsAlgorithm(JIPipeNodeInfo info) {
-        super(info, ROIListData.class, "Output");
+    public FilterRoiByNameAlgorithm(JIPipeNodeInfo info) {
+        super(info);
     }
 
     /**
@@ -70,67 +74,38 @@ public class FilterRoiByStatisticsAlgorithm extends ImageRoiProcessorAlgorithm {
      *
      * @param other the other
      */
-    public FilterRoiByStatisticsAlgorithm(FilterRoiByStatisticsAlgorithm other) {
+    public FilterRoiByNameAlgorithm(FilterRoiByNameAlgorithm other) {
         super(other);
-        roiStatisticsAlgorithm.setAllSlotsVirtual(false, false, null);
         this.filters = new DefaultExpressionParameter(other.filters);
-        this.measurements = new ImageStatisticsSetParameter(other.measurements);
         this.outputEmptyLists = other.outputEmptyLists;
     }
 
     @Override
-    public void run(JIPipeProgressInfo progressInfo) {
-        roiStatisticsAlgorithm.setAllSlotsVirtual(false, false, null);
-        // Set parameters of ROI statistics algorithm
-        roiStatisticsAlgorithm.setMeasurements(measurements);
-
-        // Continue with run
-        super.run(progressInfo);
-    }
-
-    @Override
     protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
-        ROIListData allROIs = new ROIListData();
-        ResultsTableData allStatistics = new ResultsTableData();
+        ROIListData inputRois = dataBatch.getInputData(getFirstInputSlot(), ROIListData.class, progressInfo);
+        ROIListData outputRois = new ROIListData();
 
-        for (Map.Entry<ImagePlusData, ROIListData> entry : getReferenceImage(dataBatch, progressInfo).entrySet()) {
-            // Obtain statistics
-            roiStatisticsAlgorithm.clearSlotData();
-            roiStatisticsAlgorithm.getInputSlot("ROI").addData(entry.getValue(), progressInfo);
-            if (entry.getKey() == null) {
-                roiStatisticsAlgorithm.setOverrideReferenceImage(false);
-            } else {
-                roiStatisticsAlgorithm.setOverrideReferenceImage(true);
-                roiStatisticsAlgorithm.getInputSlot("Reference").addData(entry.getKey(), progressInfo);
-            }
-            roiStatisticsAlgorithm.run(progressInfo);
-            ResultsTableData statistics = roiStatisticsAlgorithm.getFirstOutputSlot().getData(0, ResultsTableData.class, progressInfo);
-            allROIs.addAll(entry.getValue());
-            allStatistics.addRows(statistics);
-        }
-
-        // Apply filter
-        ROIListData outputData = new ROIListData();
-        ExpressionParameters variableSet = new ExpressionParameters();
-        for (int row = 0; row < allStatistics.getRowCount(); row++) {
-            for (int col = 0; col < allStatistics.getColumnCount(); col++) {
-                variableSet.set(allStatistics.getColumnName(col), allStatistics.getValueAt(row, col));
-            }
-            if (filters.test(variableSet)) {
-                outputData.add(allROIs.get(row));
+        ExpressionParameters parameters = new ExpressionParameters();
+        for (Roi roi : inputRois) {
+            parameters.set("name", StringUtils.nullToEmpty(roi.getName()));
+            parameters.set("x", roi.getBounds().x);
+            parameters.set("y", roi.getBounds().y);
+            parameters.set("width", roi.getBounds().width);
+            parameters.set("height", roi.getBounds().height);
+            if(filters.test(parameters)) {
+                outputRois.add(roi);
             }
         }
 
-        if (!outputData.isEmpty() || outputEmptyLists) {
-            dataBatch.addOutputData(getFirstOutputSlot(), outputData, progressInfo);
+        if(!outputRois.isEmpty() || outputEmptyLists) {
+            dataBatch.addOutputData(getFirstOutputSlot(), outputRois, progressInfo);
         }
     }
 
     @JIPipeParameter("filter")
     @JIPipeDocumentation(name = "Filter", description = "Filtering expression. This is applied per ROI. " +
-            "Click the 'f' button to see all available variables you can test for (note: requires from you to enable the corresponding measurement!)." +
-            "An example for an expression would be 'Area > 200 AND Mean > 10'")
-    @ExpressionParameterSettings(variableSource = MeasurementExpressionParameterVariableSource.class)
+            "Click the 'f' button to see all available variables you can test.")
+    @ExpressionParameterSettings(variableSource = VariableSource.class)
     public DefaultExpressionParameter getFilters() {
         return filters;
     }
@@ -140,22 +115,11 @@ public class FilterRoiByStatisticsAlgorithm extends ImageRoiProcessorAlgorithm {
         this.filters = filters;
     }
 
-    @JIPipeDocumentation(name = "Measurements", description = "The measurements to calculate.")
-    @JIPipeParameter("measurements")
-    public ImageStatisticsSetParameter getMeasurements() {
-        return measurements;
-    }
-
-    @JIPipeParameter("measurements")
-    public void setMeasurements(ImageStatisticsSetParameter measurements) {
-        this.measurements = measurements;
-    }
-
     @JIPipeDocumentation(name = "Load example", description = "Loads example parameters that showcase how to use this algorithm.")
     @JIPipeContextAction(iconURL = ResourceUtils.RESOURCE_BASE_PATH + "/icons/actions/graduation-cap.png", iconDarkURL = ResourceUtils.RESOURCE_BASE_PATH + "/dark/icons/actions/graduation-cap.png")
     public void setToExample(JIPipeWorkbench parent) {
         if (UIUtils.confirmResetParameters(parent, "Load example")) {
-            setFilters(new DefaultExpressionParameter("Area > 100 AND Circ. >= 0.6"));
+            setFilters(new DefaultExpressionParameter("name == \"\""));
         }
     }
 
@@ -168,5 +132,24 @@ public class FilterRoiByStatisticsAlgorithm extends ImageRoiProcessorAlgorithm {
     @JIPipeParameter("output-empty-lists")
     public void setOutputEmptyLists(boolean outputEmptyLists) {
         this.outputEmptyLists = outputEmptyLists;
+    }
+
+    public static class VariableSource implements ExpressionParameterVariableSource {
+
+        public static final Set<ExpressionParameterVariable> VARIABLES;
+
+        static {
+            VARIABLES = new HashSet<>();
+            VARIABLES.add(new ExpressionParameterVariable("Name", "Name of the ROI (can be empty)", "name"));
+            VARIABLES.add(new ExpressionParameterVariable("Bounding box X", "Top-left X coordinate of the bounding box around the ROI", "x"));
+            VARIABLES.add(new ExpressionParameterVariable("Bounding box Y", "Top-left Y coordinate of the bounding box around around the ROI", "y"));
+            VARIABLES.add(new ExpressionParameterVariable("Bounding box width", "Width of the bounding box around around the ROI", "width"));
+            VARIABLES.add(new ExpressionParameterVariable("Bounding box height", "Height of the bounding box around around the ROI", "height"));
+        }
+
+        @Override
+        public Set<ExpressionParameterVariable> getVariables(JIPipeParameterAccess parameterAccess) {
+            return VARIABLES;
+        }
     }
 }
