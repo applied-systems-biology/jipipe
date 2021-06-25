@@ -78,6 +78,32 @@ public class JIPipeMergedExportedDataTable implements TableModel {
         return annotationColumns.size() + dataAnnotationColumns.size() + 5;
     }
 
+    /**
+     * Converts the column index to an annotation column index, or returns -1 if the column is not one
+     * @param columnIndex absolute column index
+     * @return relative annotation column index, or -1
+     */
+    public int toAnnotationColumnIndex(int columnIndex) {
+        if (columnIndex >= getDataAnnotationColumns().size() + 5)
+            return columnIndex - getDataAnnotationColumns().size() - 5;
+        else
+            return -1;
+    }
+
+    /**
+     * Converts the column index to a data annotation column index, or returns -1 if the column is not one
+     * @param columnIndex absolute column index
+     * @return relative data annotation column index, or -1
+     */
+    public int toDataAnnotationColumnIndex(int columnIndex) {
+        if(columnIndex < getDataAnnotationColumns().size() + 5 && (columnIndex - 5) < getDataAnnotationColumns().size()) {
+            return columnIndex - 5;
+        }
+        else {
+            return -1;
+        }
+    }
+
     @Override
     public String getColumnName(int columnIndex) {
         if (columnIndex == 0)
@@ -90,10 +116,10 @@ public class JIPipeMergedExportedDataTable implements TableModel {
             return "Data type";
         else if (columnIndex == 4)
             return "Preview";
-        else if(columnIndex < dataAnnotationColumns.size() + 5)
-            return "$" + dataAnnotationColumns.get(columnIndex - 5);
+        else if(toDataAnnotationColumnIndex(columnIndex) != -1)
+            return "$" + dataAnnotationColumns.get(toDataAnnotationColumnIndex(columnIndex));
         else
-            return annotationColumns.get(columnIndex - 5);
+            return annotationColumns.get(toAnnotationColumnIndex(columnIndex));
     }
 
     @Override
@@ -108,7 +134,7 @@ public class JIPipeMergedExportedDataTable implements TableModel {
             return JIPipeDataInfo.class;
         else if (columnIndex == 4)
             return JIPipeExportedDataTableRow.class;
-        else if (columnIndex < dataAnnotationColumns.size() + 5)
+        else if (toDataAnnotationColumnIndex(columnIndex) != -1)
             return JIPipeExportedDataAnnotation.class;
         else
             return JIPipeAnnotation.class;
@@ -131,12 +157,12 @@ public class JIPipeMergedExportedDataTable implements TableModel {
             return JIPipeDataInfo.getInstance(slotList.get(rowIndex).getAcceptedDataType());
         else if (columnIndex == 4)
             return rowList.get(rowIndex);
-        else if(columnIndex < dataAnnotationColumns.size() - 1) {
-            String annotationColumn = dataAnnotationColumns.get(columnIndex - 5);
+        else if(toDataAnnotationColumnIndex(columnIndex) != -1) {
+            String annotationColumn = dataAnnotationColumns.get(toDataAnnotationColumnIndex(columnIndex));
             return rowList.get(rowIndex).getDataAnnotations().stream().filter(t -> t.nameEquals(annotationColumn)).findFirst().orElse(null);
         }
         else {
-            String annotationColumn = annotationColumns.get(columnIndex - dataAnnotationColumns.size() - 5);
+            String annotationColumn = annotationColumns.get(toAnnotationColumnIndex(columnIndex));
             return rowList.get(rowIndex).getAnnotations().stream().filter(t -> t.nameEquals(annotationColumn)).findFirst().orElse(null);
         }
     }

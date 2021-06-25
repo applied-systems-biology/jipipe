@@ -114,6 +114,48 @@ public class JIPipeMergedDataSlotTable implements TableModel {
             return annotationColumns.size() + dataAnnotationColumns.size() + 4;
     }
 
+    /**
+     * Converts the column index to an annotation column index, or returns -1 if the column is not one
+     * @param columnIndex absolute column index
+     * @return relative annotation column index, or -1
+     */
+    public int toAnnotationColumnIndex(int columnIndex) {
+        if (withCompartmentAndAlgorithm) {
+            if (columnIndex >= getDataAnnotationColumns().size() + 6)
+                return columnIndex - getDataAnnotationColumns().size() - 6;
+            else
+                return -1;
+        }
+        else {
+            if (columnIndex >= getDataAnnotationColumns().size() + 4)
+                return columnIndex - getDataAnnotationColumns().size() - 4;
+            else
+                return -1;
+        }
+    }
+
+    /**
+     * Converts the column index to a data annotation column index, or returns -1 if the column is not one
+     * @param columnIndex absolute column index
+     * @return relative data annotation column index, or -1
+     */
+    public int toDataAnnotationColumnIndex(int columnIndex) {
+        if (withCompartmentAndAlgorithm) {
+            if (columnIndex < getDataAnnotationColumns().size() + 6 && (columnIndex - 6) < getDataAnnotationColumns().size()) {
+                return columnIndex - 6;
+            } else {
+                return -1;
+            }
+        }
+        else {
+            if (columnIndex < getDataAnnotationColumns().size() + 4 && (columnIndex - 4) < getDataAnnotationColumns().size()) {
+                return columnIndex - 4;
+            } else {
+                return -1;
+            }
+        }
+    }
+
     @Override
     public String getColumnName(int columnIndex) {
         if (withCompartmentAndAlgorithm) {

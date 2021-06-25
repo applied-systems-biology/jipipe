@@ -598,6 +598,7 @@ public class JIPipeDataSlot {
             }
 
             Path dataAnnotationStoragePath = storagePath.resolve("_" + i);
+            dummy.setStoragePath(dataAnnotationStoragePath);
             dummy.save(dataAnnotationStoragePath, basePath, dataAnnotationProgress);
         }
 

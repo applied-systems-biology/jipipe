@@ -74,6 +74,7 @@ public class JIPipeExportedDataTable implements TableModel {
                     exportedDataAnnotation.setName(dataAnnotationColumns.get(i));
                     exportedDataAnnotation.setRowStorageFolder(Paths.get("_" + i).resolve("" + row));
                     exportedDataAnnotation.setTrueDataType(JIPipeDataInfo.getInstance(virtualDataAnnotation.getDataClass()).getId());
+                    rowInstance.getDataAnnotations().add(exportedDataAnnotation);
                 }
             }
             rowList.add(rowInstance);
@@ -273,6 +274,32 @@ public class JIPipeExportedDataTable implements TableModel {
         return getAnnotationColumns().size() + getDataAnnotationColumns().size() + 3;
     }
 
+    /**
+     * Converts the column index to an annotation column index, or returns -1 if the column is not one
+     * @param columnIndex absolute column index
+     * @return relative annotation column index, or -1
+     */
+    public int toAnnotationColumnIndex(int columnIndex) {
+        if (columnIndex >= getDataAnnotationColumns().size() + 3)
+            return columnIndex - getDataAnnotationColumns().size() - 3;
+        else
+            return -1;
+    }
+
+    /**
+     * Converts the column index to a data annotation column index, or returns -1 if the column is not one
+     * @param columnIndex absolute column index
+     * @return relative data annotation column index, or -1
+     */
+    public int toDataAnnotationColumnIndex(int columnIndex) {
+        if(columnIndex < getDataAnnotationColumns().size() + 3 && (columnIndex - 3) < getDataAnnotationColumns().size()) {
+            return columnIndex - 3;
+        }
+        else {
+            return -1;
+        }
+    }
+
     @Override
     public String getColumnName(int columnIndex) {
         if (columnIndex == 0)
@@ -281,11 +308,11 @@ public class JIPipeExportedDataTable implements TableModel {
             return "Data type";
         else if (columnIndex == 2) {
             return "Preview";
-        } else if(columnIndex < getDataAnnotationColumns().size() + 3) {
-            return "$" + getDataAnnotationColumns().get(columnIndex - 3);
+        } else if(toDataAnnotationColumnIndex(columnIndex) != -1) {
+            return "$" + getDataAnnotationColumns().get(toDataAnnotationColumnIndex(columnIndex));
         }
         else {
-            return getAnnotationColumns().get(columnIndex - getDataAnnotationColumns().size() - 3);
+            return getAnnotationColumns().get(toAnnotationColumnIndex(columnIndex));
         }
     }
 
@@ -297,7 +324,7 @@ public class JIPipeExportedDataTable implements TableModel {
             return JIPipeDataInfo.class;
         else if (columnIndex == 2)
             return JIPipeExportedDataTableRow.class;
-        else if(columnIndex < getDataAnnotationColumns().size() + 3)
+        else if(toDataAnnotationColumnIndex(columnIndex) != -1)
             return JIPipeExportedDataAnnotation.class;
         else
             return JIPipeAnnotation.class;
@@ -317,12 +344,12 @@ public class JIPipeExportedDataTable implements TableModel {
         } else if (columnIndex == 2) {
             return rowList.get(rowIndex);
         }
-        else if(columnIndex < getDataAnnotationColumns().size() + 3) {
-            String annotationColumn = dataAnnotationColumns.get(columnIndex - 3);
+        else if(toDataAnnotationColumnIndex(columnIndex) != -1) {
+            String annotationColumn = dataAnnotationColumns.get(toDataAnnotationColumnIndex(columnIndex));
             return rowList.get(rowIndex).getDataAnnotations().stream().filter(t -> t.nameEquals(annotationColumn)).findFirst().orElse(null);
         }
         else {
-            String annotationColumn = annotationColumns.get(columnIndex - getDataAnnotationColumns().size() - 3);
+            String annotationColumn = annotationColumns.get(toAnnotationColumnIndex(columnIndex));
             return rowList.get(rowIndex).getAnnotations().stream().filter(t -> t.nameEquals(annotationColumn)).findFirst().orElse(null);
         }
     }

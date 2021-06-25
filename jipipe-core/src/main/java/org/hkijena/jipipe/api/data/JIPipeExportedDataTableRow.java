@@ -3,6 +3,7 @@ package org.hkijena.jipipe.api.data;
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonSetter;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -10,8 +11,8 @@ import java.util.List;
  */
 public class JIPipeExportedDataTableRow {
     private int index;
-    private List<JIPipeAnnotation> annotations;
-    private List<JIPipeExportedDataAnnotation> dataAnnotations;
+    private List<JIPipeAnnotation> annotations = new ArrayList<>();
+    private List<JIPipeExportedDataAnnotation> dataAnnotations = new ArrayList<>();
     private String trueDataType;
 
     /**

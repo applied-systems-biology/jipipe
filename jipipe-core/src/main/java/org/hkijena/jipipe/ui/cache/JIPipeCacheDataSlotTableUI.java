@@ -290,6 +290,32 @@ public class JIPipeCacheDataSlotTableUI extends JIPipeWorkbenchPanel {
             }
         }
 
+        /**
+         * Converts the column index to an annotation column index, or returns -1 if the column is not one
+         * @param columnIndex absolute column index
+         * @return relative annotation column index, or -1
+         */
+        public int toAnnotationColumnIndex(int columnIndex) {
+            if (columnIndex >= slot.getDataAnnotationColumns().size() + 4)
+                return columnIndex - slot.getDataAnnotationColumns().size() - 4;
+            else
+                return -1;
+        }
+
+        /**
+         * Converts the column index to a data annotation column index, or returns -1 if the column is not one
+         * @param columnIndex absolute column index
+         * @return relative data annotation column index, or -1
+         */
+        public int toDataAnnotationColumnIndex(int columnIndex) {
+            if(columnIndex < slot.getDataAnnotationColumns().size() + 4 && (columnIndex - 4) < slot.getDataAnnotationColumns().size()) {
+                return columnIndex - 4;
+            }
+            else {
+                return -1;
+            }
+        }
+
         @Override
         public int getRowCount() {
             return slot.getRowCount();
@@ -310,11 +336,11 @@ public class JIPipeCacheDataSlotTableUI extends JIPipeWorkbenchPanel {
                 return "Preview";
             else if (columnIndex == 3)
                 return "String representation";
-            else if(columnIndex < slot.getDataAnnotationColumns().size() + 4) {
-                return "$" + slot.getDataAnnotationColumns().get(columnIndex - 4);
+            else if(toDataAnnotationColumnIndex(columnIndex) != -1) {
+                return "$" + slot.getDataAnnotationColumns().get(toDataAnnotationColumnIndex(columnIndex));
             }
             else {
-                return slot.getAnnotationColumns().get(columnIndex - slot.getDataAnnotationColumns().size() - 4);
+                return slot.getAnnotationColumns().get(toAnnotationColumnIndex(columnIndex));
             }
         }
 
@@ -328,7 +354,7 @@ public class JIPipeCacheDataSlotTableUI extends JIPipeWorkbenchPanel {
                 return Component.class;
             else if (columnIndex == 3)
                 return String.class;
-            else if(columnIndex < slot.getDataAnnotationColumns().size() + 4)
+            else if(toDataAnnotationColumnIndex(columnIndex) != -1)
                 return Component.class;
             else {
                 return JIPipeAnnotation.class;
@@ -361,12 +387,12 @@ public class JIPipeCacheDataSlotTableUI extends JIPipeWorkbenchPanel {
                 return preview;
             } else if (columnIndex == 3)
                 return "" + slot.getVirtualData(rowIndex).getStringRepresentation();
-            else if(columnIndex < slot.getDataAnnotationColumns().size() + 4) {
+            else if(toDataAnnotationColumnIndex(columnIndex) != -1) {
                 // TODO: Data annotation preview
                 return new JLabel("N/A (TODO)");
             }
             else {
-                return slot.getAnnotation(rowIndex, columnIndex - slot.getDataAnnotationColumns().size() - 4);
+                return slot.getAnnotation(rowIndex, toAnnotationColumnIndex(columnIndex));
             }
         }
 
@@ -439,20 +465,46 @@ public class JIPipeCacheDataSlotTableUI extends JIPipeWorkbenchPanel {
             this.dataTable = dataTable;
         }
 
+        /**
+         * Converts the column index to an annotation column index, or returns -1 if the column is not one
+         * @param columnIndex absolute column index
+         * @return relative annotation column index, or -1
+         */
+        public int toAnnotationColumnIndex(int columnIndex) {
+            if (columnIndex >= dataTable.getDataAnnotationColumns().size() + 4)
+                return columnIndex - dataTable.getDataAnnotationColumns().size() - 4;
+            else
+                return -1;
+        }
+
+        /**
+         * Converts the column index to a data annotation column index, or returns -1 if the column is not one
+         * @param columnIndex absolute column index
+         * @return relative data annotation column index, or -1
+         */
+        public int toDataAnnotationColumnIndex(int columnIndex) {
+            if(columnIndex < dataTable.getDataAnnotationColumns().size() + 4 && (columnIndex - 4) < dataTable.getDataAnnotationColumns().size()) {
+                return columnIndex - 4;
+            }
+            else {
+                return -1;
+            }
+        }
+
         @Override
         public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
             TableCellRenderer defaultRenderer = table.getTableHeader().getDefaultRenderer();
             int modelColumn = table.convertColumnIndexToModel(column);
             if (modelColumn < 4) {
                 return defaultRenderer.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
-            } else if(modelColumn < dataTable.getDataAnnotationColumns().size() + 4) {
-                String info = dataTable.getDataAnnotationColumns().get(modelColumn - - 4);
+            } else if(toDataAnnotationColumnIndex(modelColumn) != -1) {
+                String info = dataTable.getDataAnnotationColumns().get(toDataAnnotationColumnIndex(modelColumn));
                 String html = String.format("<html><table><tr><td><img src=\"%s\"/></td><td>%s</tr>",
                         UIUtils.getIconFromResources("data-types/data-annotation.png"),
                         info);
                 return defaultRenderer.getTableCellRendererComponent(table, html, isSelected, hasFocus, row, column);
             } else {
-                String info = dataTable.getAnnotationColumns().get(modelColumn - dataTable.getAnnotationColumns().size() - 4);
+                String info = dataTable.getAnnotationColumns().get(toAnnotationColumnIndex(modelColumn));
                 String html = String.format("<html><table><tr><td><img src=\"%s\"/></td><td>%s</tr>",
                         UIUtils.getIconFromResources("data-types/annotation.png"),
                         info);
