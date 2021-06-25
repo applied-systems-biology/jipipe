@@ -627,7 +627,7 @@ public class JIPipeDataSlot {
             addData(sourceSlot.getVirtualData(row), sourceSlot.getAnnotations(row), JIPipeAnnotationMergeStrategy.Merge);
 
             // Copy data annotations
-            for (Map.Entry<String, JIPipeVirtualData> entry : getVirtualDataAnnotationMap(row).entrySet()) {
+            for (Map.Entry<String, JIPipeVirtualData> entry : sourceSlot.getVirtualDataAnnotationMap(row).entrySet()) {
                 setVirtualDataAnnotation(row, entry.getKey(), entry.getValue());
             }
         }
