@@ -17,7 +17,7 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.eventbus.EventBus;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeValidityReport;
+import org.hkijena.jipipe.api.JIPipeIssueReport;
 import org.hkijena.jipipe.api.environments.ExternalEnvironment;
 import org.hkijena.jipipe.api.environments.ExternalEnvironmentSettings;
 import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
@@ -102,7 +102,7 @@ public class RExtensionSettings implements ExternalEnvironmentSettings {
      *
      * @param report the report
      */
-    public static void checkRSettings(JIPipeValidityReport report) {
+    public static void checkRSettings(JIPipeIssueReport report) {
         if (!RSettingsAreValid()) {
             report.reportIsInvalid("R is not configured!",
                     "Project > Application settings > Extensions > R  integration",
@@ -120,7 +120,7 @@ public class RExtensionSettings implements ExternalEnvironmentSettings {
     public static boolean RSettingsAreValid() {
         if (JIPipe.getInstance() != null) {
             RExtensionSettings instance = getInstance();
-            JIPipeValidityReport report = new JIPipeValidityReport();
+            JIPipeIssueReport report = new JIPipeIssueReport();
             instance.getEnvironment().reportValidity(report);
             return report.isValid();
         }

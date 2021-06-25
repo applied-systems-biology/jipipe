@@ -14,11 +14,14 @@
 package org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale;
 
 import ij.ImagePlus;
-import ij.process.ImageConverter;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeHeavyData;
 import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
+import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.color.ImagePlusColorData;
+import org.hkijena.jipipe.extensions.imagejdatatypes.util.ConverterWrapperImageSource;
+import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
+import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageSource;
 
 import java.nio.file.Path;
 
@@ -42,24 +45,11 @@ public class ImagePlusGreyscale8UData extends ImagePlusGreyscaleData {
      * @param image wrapped image
      */
     public ImagePlusGreyscale8UData(ImagePlus image) {
-        super(ImagePlusGreyscale8UData.convertIfNeeded(image));
+        super(ImageJUtils.convertToGreyscale8UIfNeeded(image));
     }
 
-    /**
-     * Converts an {@link ImagePlus} to the color space of this data.
-     * Does not guarantee that the input image is copied.
-     *
-     * @param image the image
-     * @return converted image.
-     */
-    public static ImagePlus convertIfNeeded(ImagePlus image) {
-        if (image.getType() != ImagePlus.GRAY8) {
-            image = image.duplicate();
-            ImageConverter.setDoScaling(true);
-            ImageConverter ic = new ImageConverter(image);
-            ic.convertToGray8();
-        }
-        return image;
+    public ImagePlusGreyscale8UData(ImageSource source) {
+        super(new ConverterWrapperImageSource(source, ImageJUtils::convertToGreyscale8UIfNeeded));
     }
 
     public static ImagePlusData importFrom(Path storageFolder) {
@@ -73,6 +63,11 @@ public class ImagePlusGreyscale8UData extends ImagePlusGreyscaleData {
      * @return the converted data
      */
     public static ImagePlusData convertFrom(ImagePlusData data) {
-        return new ImagePlusGreyscale8UData(data.getImage());
+        if(data.hasLoadedImage()) {
+            return new ImagePlusGreyscale8UData(data.getImage());
+        }
+        else {
+            return new ImagePlusGreyscale8UData(data.getImageSource());
+        }
     }
 }

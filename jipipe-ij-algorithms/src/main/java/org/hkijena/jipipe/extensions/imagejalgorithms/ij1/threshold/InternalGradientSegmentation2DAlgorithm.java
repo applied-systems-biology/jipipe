@@ -23,7 +23,7 @@ import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
-import org.hkijena.jipipe.api.JIPipeValidityReport;
+import org.hkijena.jipipe.api.JIPipeIssueReport;
 import org.hkijena.jipipe.api.data.JIPipeDefaultMutableSlotConfiguration;
 import org.hkijena.jipipe.api.nodes.JIPipeDataBatch;
 import org.hkijena.jipipe.api.nodes.JIPipeInputSlot;
@@ -277,8 +277,8 @@ public class InternalGradientSegmentation2DAlgorithm extends JIPipeSimpleIterati
     }
 
     @Override
-    public void reportValidity(JIPipeValidityReport report) {
-        report.forCategory("Auto Threshold Segmenter").report(autoThresholding);
-        report.forCategory("CLAHE Enhancer").report(contrastEnhancer);
+    public void reportValidity(JIPipeIssueReport report) {
+        report.resolve("Auto Threshold Segmenter").report(autoThresholding);
+        report.resolve("CLAHE Enhancer").report(contrastEnhancer);
     }
 }

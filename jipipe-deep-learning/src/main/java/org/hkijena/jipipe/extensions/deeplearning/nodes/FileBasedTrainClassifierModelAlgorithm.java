@@ -17,6 +17,7 @@ import org.apache.commons.io.FileUtils;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
+import org.hkijena.jipipe.api.data.JIPipeAnnotation;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeColumMatching;
 import org.hkijena.jipipe.api.nodes.JIPipeInputSlot;
@@ -30,9 +31,13 @@ import org.hkijena.jipipe.extensions.deeplearning.DeepLearningSettings;
 import org.hkijena.jipipe.extensions.deeplearning.OptionalDeepLearningDeviceEnvironment;
 import org.hkijena.jipipe.extensions.deeplearning.configs.DeepLearningTrainingConfiguration;
 import org.hkijena.jipipe.extensions.deeplearning.datatypes.DeepLearningModelData;
+import org.hkijena.jipipe.extensions.expressions.AnnotationQueryExpression;
+import org.hkijena.jipipe.extensions.filesystem.dataypes.FileData;
+import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.LabeledImageFileData;
 import org.hkijena.jipipe.extensions.python.OptionalPythonEnvironment;
 import org.hkijena.jipipe.extensions.python.PythonUtils;
+import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
 import org.hkijena.jipipe.utils.JsonUtils;
 import org.hkijena.jipipe.utils.PathUtils;
 import org.hkijena.jipipe.utils.ResourceUtils;
@@ -45,30 +50,32 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
-@JIPipeDocumentation(name = "Train model (File-based)", description = "Trains a Deep Learning model. This node accepts direct file inputs that can be useful if you " +
-        "want to avoid loading data into JIPipe.")
+@JIPipeDocumentation(name = "Train model (classified image files)", description = "Trains a Deep Learning model. This node accepts direct file inputs that can be useful if you " +
+        "want to avoid loading data into JIPipe. Please note that the model needs to be able to train on classes. The image classes are extracted from an annotation column.")
 @JIPipeOrganization(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Deep learning")
-@JIPipeInputSlot(value = LabeledImageFileData.class, slotName = "Labels", autoCreate = true)
+@JIPipeInputSlot(value = FileData.class, slotName = "Images", autoCreate = true)
 @JIPipeInputSlot(value = DeepLearningModelData.class, slotName = "Model", autoCreate = true)
 @JIPipeOutputSlot(value = DeepLearningModelData.class, slotName = "Trained model", autoCreate = true)
-public class FileBasedTrainModelAlgorithm extends JIPipeMergingAlgorithm {
+public class FileBasedTrainClassifierModelAlgorithm extends JIPipeMergingAlgorithm {
 
     private DeepLearningTrainingConfiguration trainingConfiguration = new DeepLearningTrainingConfiguration();
     private OptionalPythonEnvironment overrideEnvironment = new OptionalPythonEnvironment();
     private boolean cleanUpAfterwards = true;
     private OptionalDeepLearningDeviceEnvironment overrideDevices = new OptionalDeepLearningDeviceEnvironment();
+    private AnnotationQueryExpression labelAnnotation = new AnnotationQueryExpression("Label");
 
-    public FileBasedTrainModelAlgorithm(JIPipeNodeInfo info) {
+    public FileBasedTrainClassifierModelAlgorithm(JIPipeNodeInfo info) {
         super(info);
         getDataBatchGenerationSettings().setColumnMatching(JIPipeColumMatching.MergeAll);
         registerSubParameter(trainingConfiguration);
     }
 
-    public FileBasedTrainModelAlgorithm(FileBasedTrainModelAlgorithm other) {
+    public FileBasedTrainClassifierModelAlgorithm(FileBasedTrainClassifierModelAlgorithm other) {
         super(other);
         this.trainingConfiguration = new DeepLearningTrainingConfiguration(other.trainingConfiguration);
         this.overrideEnvironment = new OptionalPythonEnvironment(other.overrideEnvironment);
         this.cleanUpAfterwards = other.cleanUpAfterwards;
+        this.labelAnnotation = new AnnotationQueryExpression(other.labelAnnotation);
         registerSubParameter(trainingConfiguration);
         this.overrideDevices = new OptionalDeepLearningDeviceEnvironment(other.overrideDevices);
     }
@@ -88,7 +95,7 @@ public class FileBasedTrainModelAlgorithm extends JIPipeMergingAlgorithm {
     @Override
     protected void runIteration(JIPipeMergingDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
         JIPipeDataSlot inputModelSlot = getInputSlot("Model");
-        JIPipeDataSlot inputLabelsSlot = getInputSlot("Labels");
+        JIPipeDataSlot inputImagesSlot = getInputSlot("Images");
         int modelCounter = 0;
         for (Integer modelIndex : dataBatch.getInputSlotRows().get(inputModelSlot)) {
             JIPipeProgressInfo modelProgress = progressInfo.resolveAndLog("Model", modelCounter++, dataBatch.getInputSlotRows().get(inputModelSlot).size());
@@ -97,25 +104,40 @@ public class FileBasedTrainModelAlgorithm extends JIPipeMergingAlgorithm {
             Path workDirectory = getNewScratch();
 
             // Save labels & raw images
-            Path labelsDirectory = workDirectory.resolve("labels");
+            Path labelFile = workDirectory.resolve("labels.csv");
             Path rawsDirectory = workDirectory.resolve("raw");
             try {
-                Files.createDirectories(labelsDirectory);
                 Files.createDirectories(rawsDirectory);
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
+
+            ResultsTableData labels = new ResultsTableData();
+            labels.addColumn("filename", true);
+            labels.addColumn("label", true);
+
             int imageCounter = 0;
-            Set<Integer> labelRows = dataBatch.getInputSlotRows().get(inputLabelsSlot);
-            for (Integer imageIndex : labelRows) {
-                JIPipeProgressInfo imageProgress = modelProgress.resolveAndLog("Write labels", imageCounter++, labelRows.size());
-                LabeledImageFileData label = inputLabelsSlot.getData(imageIndex, LabeledImageFileData.class, imageProgress);
+            Set<Integer> imageRows = dataBatch.getInputSlotRows().get(inputImagesSlot);
+            for (Integer imageIndex : imageRows) {
+                JIPipeProgressInfo imageProgress = modelProgress.resolveAndLog("Write images", imageCounter++, imageRows.size());
+                FileData label = inputImagesSlot.getData(imageIndex, FileData.class, imageProgress);
                 Path rawPath = rawsDirectory.resolve(imageCounter + "_img.tif");
-                Path labelPath = labelsDirectory.resolve(imageCounter + "_img.tif");
 
                 PathUtils.copyOrLink(label.toPath(), rawPath, imageProgress);
-                PathUtils.copyOrLink(label.labelToPath(), labelPath, imageProgress);
+
+                // Extract the label annotation + value
+                JIPipeAnnotation annotation = labelAnnotation.queryFirst(inputImagesSlot.getAnnotations(imageIndex));
+                int imageLabel = Integer.parseInt(annotation.getValue());
+
+                // Insert into table
+                labels.addRow();
+                labels.setValueAt(rawPath.getFileName().toString(), labels.getRowCount() - 1, 0);
+                labels.setValueAt(imageLabel, labels.getRowCount() - 1, 1);
             }
+
+            // Save labels
+            modelProgress.log("Saving labels table to " + labelFile);
+            labels.saveAsCSV(labelFile);
 
             // Save model according to standard interface
             inputModel.saveTo(workDirectory, "", false, modelProgress);
@@ -126,7 +148,7 @@ public class FileBasedTrainModelAlgorithm extends JIPipeMergingAlgorithm {
             trainingConfiguration.setOutputModelPath(workDirectory.resolve("trained_model.hdf5"));
             trainingConfiguration.setOutputModelJsonPath(workDirectory.resolve("trained_model.json"));
             trainingConfiguration.setInputImagesPattern(rawsDirectory + "/*.tif");
-            trainingConfiguration.setInputLabelsPattern(labelsDirectory + "/*.tif");
+            trainingConfiguration.setInputLabelsPattern(labelFile.toString());
             try {
                 JsonUtils.getObjectMapper().writerWithDefaultPrettyPrinter().writeValue(workDirectory.resolve("training-config.json").toFile(), trainingConfiguration);
             } catch (IOException e) {

@@ -18,8 +18,11 @@ import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeHeavyData;
 import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
+import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.color.ImagePlusColorData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d4.ImagePlus4DData;
-import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleData;
+import org.hkijena.jipipe.extensions.imagejdatatypes.util.ConverterWrapperImageSource;
+import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
+import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageSource;
 
 import java.nio.file.Path;
 
@@ -40,7 +43,11 @@ public class ImagePlus4DGreyscaleData extends ImagePlus4DData {
      * @param image wrapped image
      */
     public ImagePlus4DGreyscaleData(ImagePlus image) {
-        super(ImagePlusGreyscaleData.convertIfNeeded(image));
+        super(ImageJUtils.convertToGreyscaleIfNeeded(image));
+    }
+
+    public ImagePlus4DGreyscaleData(ImageSource source) {
+        super(new ConverterWrapperImageSource(source, ImageJUtils::convertToGreyscaleIfNeeded));
     }
 
     public static ImagePlusData importFrom(Path storageFolder) {
@@ -54,6 +61,11 @@ public class ImagePlus4DGreyscaleData extends ImagePlus4DData {
      * @return the converted data
      */
     public static ImagePlusData convertFrom(ImagePlusData data) {
-        return new ImagePlus4DGreyscaleData(data.getImage());
+        if(data.hasLoadedImage()) {
+            return new ImagePlus4DGreyscaleData(data.getImage());
+        }
+        else {
+            return new ImagePlus4DGreyscaleData(data.getImageSource());
+        }
     }
 }

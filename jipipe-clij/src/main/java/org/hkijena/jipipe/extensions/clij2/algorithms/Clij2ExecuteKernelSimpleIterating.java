@@ -19,7 +19,7 @@ import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
-import org.hkijena.jipipe.api.JIPipeValidityReport;
+import org.hkijena.jipipe.api.JIPipeIssueReport;
 import org.hkijena.jipipe.api.data.JIPipeAnnotation;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.data.JIPipeDataSlotInfo;
@@ -269,13 +269,13 @@ public class Clij2ExecuteKernelSimpleIterating extends JIPipeSimpleIteratingAlgo
     }
 
     @Override
-    public void reportValidity(JIPipeValidityReport report) {
+    public void reportValidity(JIPipeIssueReport report) {
         super.reportValidity(report);
         HashSet<String> parameterNames = new HashSet<>(getInputSlotMap().keySet());
         parameterNames.addAll(getOutputSlotMap().keySet());
         parameterNames.addAll(scriptParameters.getParameters().keySet());
         if (parameterNames.size() != (getInputSlotMap().size() + getOutputSlotMap().size() + scriptParameters.getParameters().size())) {
-            report.forCategory("Kernel").reportIsInvalid("All slots and script parameters must have unique names!",
+            report.resolve("Kernel").reportIsInvalid("All slots and script parameters must have unique names!",
                     "Input and output slots are passed to OpenCL, meaning that you cannot have duplicate input and output parameter and slot names.",
                     "Rename the slots, so they are unique within the whole algorithm. Define new parameters that have a different unique key",
                     this);

@@ -18,7 +18,7 @@ import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.JIPipeDependency;
 import org.hkijena.jipipe.api.JIPipeProject;
 import org.hkijena.jipipe.api.JIPipeValidatable;
-import org.hkijena.jipipe.api.JIPipeValidityReport;
+import org.hkijena.jipipe.api.JIPipeIssueReport;
 
 import java.nio.file.Path;
 import java.util.Set;
@@ -63,7 +63,7 @@ public class JsonExtensionRegistrationTask implements JIPipeValidatable {
     }
 
     @Override
-    public void reportValidity(JIPipeValidityReport report) {
+    public void reportValidity(JIPipeIssueReport report) {
         for (String dependencyId : dependencyIds) {
             if (!registry.getRegisteredExtensionIds().contains(dependencyId)) {
                 report.reportIsInvalid("A dependency is missing!",

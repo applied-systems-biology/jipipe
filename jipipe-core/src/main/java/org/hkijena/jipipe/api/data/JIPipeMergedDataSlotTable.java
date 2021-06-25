@@ -27,6 +27,7 @@ import java.awt.Component;
 import java.awt.Point;
 import java.awt.Rectangle;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -51,6 +52,10 @@ public class JIPipeMergedDataSlotTable implements TableModel {
     public JIPipeMergedDataSlotTable(JTable table, boolean withCompartmentAndAlgorithm) {
         this.table = table;
         this.withCompartmentAndAlgorithm = withCompartmentAndAlgorithm;
+    }
+
+    public List<JIPipeDataSlot> getSlotList() {
+        return Collections.unmodifiableList(slotList);
     }
 
     /**

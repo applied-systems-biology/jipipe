@@ -511,4 +511,12 @@ public class JIPipeMergingDataBatch implements Comparable<JIPipeMergingDataBatch
         }
         return 0;
     }
+
+    /**
+     * Ensures that the specified slot is registered to the data batch
+     * @param slot the slot
+     */
+    public void addEmptySlot(JIPipeDataSlot slot) {
+        inputSlotRows.putIfAbsent(slot, new HashSet<>());
+    }
 }

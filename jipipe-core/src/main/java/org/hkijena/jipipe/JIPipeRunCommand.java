@@ -16,7 +16,7 @@ package org.hkijena.jipipe;
 import org.hkijena.jipipe.api.JIPipeProject;
 import org.hkijena.jipipe.api.JIPipeRun;
 import org.hkijena.jipipe.api.JIPipeRunSettings;
-import org.hkijena.jipipe.api.JIPipeValidityReport;
+import org.hkijena.jipipe.api.JIPipeIssueReport;
 import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
 import org.hkijena.jipipe.extensions.settings.ExtensionSettings;
 import org.hkijena.jipipe.extensions.settings.RuntimeSettings;
@@ -70,7 +70,7 @@ public class JIPipeRunCommand implements Command {
             JIPipe.getInstance().initialize(extensionSettings, issues);
         }
         if (!extensionSettings.isSilent()) {
-            JIPipeValidityReport report = new JIPipeValidityReport();
+            JIPipeIssueReport report = new JIPipeIssueReport();
             issues.reportValidity(report);
             if (!report.isValid()) {
                 if (GraphicsEnvironment.isHeadless()) {
@@ -82,7 +82,7 @@ public class JIPipeRunCommand implements Command {
         }
         JIPipeProject project;
         try {
-            project = JIPipeProject.loadProject(projectFile.toPath(), new JIPipeValidityReport());
+            project = JIPipeProject.loadProject(projectFile.toPath(), new JIPipeIssueReport());
             project.setWorkDirectory(projectFile.toPath().getParent());
 
         } catch (IOException e) {

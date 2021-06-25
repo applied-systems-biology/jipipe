@@ -14,6 +14,11 @@
 package org.hkijena.jipipe.extensions.python;
 
 import org.hkijena.jipipe.JIPipeJavaExtension;
+import org.hkijena.jipipe.api.notifications.JIPipeNotification;
+import org.hkijena.jipipe.api.notifications.JIPipeNotificationAction;
+import org.hkijena.jipipe.api.notifications.JIPipeNotificationInbox;
+import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
+import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
 import org.hkijena.jipipe.extensions.JIPipePrepackagedDefaultJavaExtension;
 import org.hkijena.jipipe.extensions.parameters.primitives.HTMLText;
 import org.hkijena.jipipe.extensions.parameters.primitives.StringList;
@@ -28,6 +33,11 @@ import org.hkijena.jipipe.extensions.python.installers.MinicondaEnvPythonInstall
 import org.hkijena.jipipe.extensions.python.installers.SelectCondaEnvPythonInstaller;
 import org.hkijena.jipipe.extensions.python.installers.SelectSystemPythonInstaller;
 import org.hkijena.jipipe.extensions.python.installers.SelectVirtualEnvPythonInstaller;
+import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
+import org.hkijena.jipipe.ui.JIPipeWorkbench;
+import org.hkijena.jipipe.ui.components.DocumentTabPane;
+import org.hkijena.jipipe.ui.running.JIPipeRunExecuterUI;
+import org.hkijena.jipipe.ui.settings.JIPipeApplicationSettingsUI;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.scijava.plugin.Plugin;
 
@@ -106,6 +116,52 @@ public class PythonExtension extends JIPipePrepackagedDefaultJavaExtension {
     }
 
     @Override
+    public void postprocess() {
+        if(!PythonExtensionSettings.pythonSettingsAreValid()) {
+            JIPipeNotification notification = new JIPipeNotification(getDependencyId() + ":python-not-configured");
+            notification.setHeading("Python is not configured");
+            notification.setDescription("To make use of Python within JIPipe, you need to either provide JIPipe with an " +
+                    "existing Python installation or let JIPipe install a Python distribution for you.");
+            notification.getActions().add(new JIPipeNotificationAction("Install Miniconda",
+                    "Installs Miniconda 3",
+                    UIUtils.getIconFromResources("actions/browser-download.png"),
+                    PythonExtension::installConda));
+            notification.getActions().add(new JIPipeNotificationAction("Select Conda",
+                    "Selects an existing Conda installation",
+                    UIUtils.getIconFromResources("actions/folder-open.png"),
+                    PythonExtension::selectConda));
+            notification.getActions().add(new JIPipeNotificationAction("Configure Python",
+                    "Opens the applications settings page",
+                    UIUtils.getIconFromResources("actions/configure.png"),
+                    PythonExtension::openSettingsPage));
+            JIPipeNotificationInbox.getInstance().push(notification);
+        }
+        if(!PythonExtensionSettings.getInstance().getPythonAdapterLibraryEnvironment().isNewestVersion()) {
+            JIPipeNotification notification = new JIPipeNotification(getDependencyId() + ":old-python-adapter");
+            notification.setHeading("Old library version");
+            notification.setDescription("JIPipe has detected that the installed version of the JIPipe Python adapter library is outdated. " +
+                    "Please click the button below to install the newest version.");
+            notification.getActions().add(new JIPipeNotificationAction("Install newest version",
+                    "Installs the newest version of the Python library",
+                    UIUtils.getIconFromResources("actions/run-install.png"),
+                    PythonExtension::installPythonAdapterLibrary));
+            notification.getActions().add(new JIPipeNotificationAction("Configure",
+                    "Opens the applications settings page",
+                    UIUtils.getIconFromResources("actions/configure.png"),
+                    PythonExtension::openSettingsPage));
+            JIPipeNotificationInbox.getInstance().push(notification);
+        }
+    }
+
+    private static void installPythonAdapterLibrary(JIPipeWorkbench workbench) {
+        PythonExtensionSettings settings = PythonExtensionSettings.getInstance();
+        JIPipeParameterTree tree = new JIPipeParameterTree(settings);
+        JIPipeParameterAccess parameterAccess = tree.getParameters().get("python-adapter-library");
+        JIPipePythonAdapterLibraryEnvironmentInstaller installer = new JIPipePythonAdapterLibraryEnvironmentInstaller(workbench, parameterAccess);
+        JIPipeRunExecuterUI.runInDialog(workbench.getWindow(), installer);
+    }
+
+    @Override
     public List<ImageIcon> getSplashIcons() {
         return Arrays.asList(UIUtils.getIcon32FromResources("apps/python.png"));
     }
@@ -123,5 +179,27 @@ public class PythonExtension extends JIPipePrepackagedDefaultJavaExtension {
     @Override
     public String getDependencyVersion() {
         return "2021.6";
+    }
+
+    private static void installConda(JIPipeWorkbench workbench) {
+        PythonExtensionSettings settings = PythonExtensionSettings.getInstance();
+        JIPipeParameterTree tree = new JIPipeParameterTree(settings);
+        JIPipeParameterAccess parameterAccess = tree.getParameters().get("python-environment");
+        MinicondaEnvPythonInstaller installer = new MinicondaEnvPythonInstaller(workbench, parameterAccess);
+        JIPipeRunExecuterUI.runInDialog(workbench.getWindow(), installer);
+    }
+
+    private static void selectConda(JIPipeWorkbench workbench) {
+        PythonExtensionSettings settings = PythonExtensionSettings.getInstance();
+        JIPipeParameterTree tree = new JIPipeParameterTree(settings);
+        JIPipeParameterAccess parameterAccess = tree.getParameters().get("python-environment");
+        SelectCondaEnvPythonInstaller installer = new SelectCondaEnvPythonInstaller(workbench, parameterAccess);
+        JIPipeRunExecuterUI.runInDialog(workbench.getWindow(), installer);
+    }
+
+    private static void openSettingsPage(JIPipeWorkbench workbench) {
+        DocumentTabPane.DocumentTab tab = workbench.getDocumentTabPane().selectSingletonTab(JIPipeProjectWorkbench.TAB_APPLICATION_SETTINGS);
+        JIPipeApplicationSettingsUI applicationSettingsUI = (JIPipeApplicationSettingsUI) tab.getContent();
+        applicationSettingsUI.selectNode("/Extensions/Python integration");
     }
 }

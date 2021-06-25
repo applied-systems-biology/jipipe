@@ -37,6 +37,11 @@ public class OpenResultsTableInJIPipeTabDataOperation implements JIPipeDataImpor
     }
 
     @Override
+    public String getId() {
+        return "jipipe:open-table-in-jipipe-tab";
+    }
+
+    @Override
     public String getName() {
         return "Open in JIPipe (new tab)";
     }

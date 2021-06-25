@@ -23,7 +23,7 @@ import org.hkijena.jipipe.JIPipeJsonExtension;
 import org.hkijena.jipipe.JIPipeRegistryIssues;
 import org.hkijena.jipipe.api.JIPipeMetadata;
 import org.hkijena.jipipe.api.JIPipeProject;
-import org.hkijena.jipipe.api.JIPipeValidityReport;
+import org.hkijena.jipipe.api.JIPipeIssueReport;
 import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
 import org.hkijena.jipipe.extensions.jsonextensionloader.JsonExtensionLoaderExtension;
 import org.hkijena.jipipe.extensions.parameters.primitives.HTMLText;
@@ -186,7 +186,7 @@ public class JIPipeJsonExtensionWindow extends JFrame {
                     }
 
                     @Override
-                    public void reportValidity(JIPipeValidityReport report) {
+                    public void reportValidity(JIPipeIssueReport report) {
 
                     }
                 });

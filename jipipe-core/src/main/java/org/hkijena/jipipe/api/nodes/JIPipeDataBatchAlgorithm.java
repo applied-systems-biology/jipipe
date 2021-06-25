@@ -13,6 +13,7 @@
 
 package org.hkijena.jipipe.api.nodes;
 
+import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 
@@ -34,7 +35,8 @@ public interface JIPipeDataBatchAlgorithm {
      * This is a dry-run function that should never throw errors
      *
      * @param slots the data slots
+     * @param progressInfo the progress
      * @return the batches
      */
-    List<JIPipeMergingDataBatch> generateDataBatchesDryRun(List<JIPipeDataSlot> slots);
+    List<JIPipeMergingDataBatch> generateDataBatchesDryRun(List<JIPipeDataSlot> slots, JIPipeProgressInfo progressInfo);
 }

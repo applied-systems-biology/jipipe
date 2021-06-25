@@ -22,7 +22,7 @@ import ij.plugin.ChannelArranger;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
-import org.hkijena.jipipe.api.JIPipeValidityReport;
+import org.hkijena.jipipe.api.JIPipeIssueReport;
 import org.hkijena.jipipe.api.nodes.JIPipeDataBatch;
 import org.hkijena.jipipe.api.nodes.JIPipeInputSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
@@ -131,7 +131,7 @@ public class ArrangeChannelsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
 
     @Override
-    public void reportValidity(JIPipeValidityReport report) {
+    public void reportValidity(JIPipeIssueReport report) {
         if (channelReordering.size() > 1) {
             TIntSet generatedTargets = new TIntHashSet();
             IntegerAndIntegerPairParameter max = channelReordering.stream().max(Comparator.comparing(IntegerAndIntegerPairParameter::getKey)).get();
@@ -140,7 +140,7 @@ public class ArrangeChannelsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
                 for (IntegerAndIntegerPairParameter integerAndIntegerPair : channelReordering) {
                     if (integerAndIntegerPair.getValue() == i) {
                         if (generatedTargets.contains(i)) {
-                            report.forCategory("Channel reordering").reportIsInvalid("Duplicate reordering targets!",
+                            report.resolve("Channel reordering").reportIsInvalid("Duplicate reordering targets!",
                                     "The channel " + integerAndIntegerPair.getKey() + " is assigned to channel " + i + ", but it is already assigned.",
                                     "Please check if you have duplicate targets. If you don't have duplicate targets, please note that " +
                                             "channels without instructions are automatically assigned an identity transform. In this case, " +
@@ -155,7 +155,7 @@ public class ArrangeChannelsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         }
         for (IntegerAndIntegerPairParameter renaming : channelReordering) {
             if (renaming.getKey() < 0 | renaming.getValue() < 0) {
-                report.forCategory("Channel reordering").reportIsInvalid("Invalid channel index!",
+                report.resolve("Channel reordering").reportIsInvalid("Invalid channel index!",
                         "A channel index cannot be negative. The first channel index is 0.",
                         "Please update the reordering and remove negative values.",
                         this);

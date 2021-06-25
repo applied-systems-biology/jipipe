@@ -63,4 +63,9 @@ public class ImagePlusDataImportIntoImageJOperation implements JIPipeDataImportO
             data.display(run.getDisplayName(), run.getWorkbench(), new JIPipeResultSlotDataSource(run.getSlot(), run.getRow(), run.getRowStorageFolder()));
         }
     }
+
+    @Override
+    public String getId() {
+        return "jipipe:import-image-into-imagej";
+    }
 }

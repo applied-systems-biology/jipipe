@@ -281,7 +281,7 @@ public class JIPipeProject implements JIPipeValidatable {
     }
 
     @Override
-    public void reportValidity(JIPipeValidityReport report) {
+    public void reportValidity(JIPipeIssueReport report) {
         graph.reportValidity(report);
     }
 
@@ -291,7 +291,7 @@ public class JIPipeProject implements JIPipeValidatable {
      * @param report     the report
      * @param targetNode the target node
      */
-    public void reportValidity(JIPipeValidityReport report, JIPipeGraphNode targetNode) {
+    public void reportValidity(JIPipeIssueReport report, JIPipeGraphNode targetNode) {
         graph.reportValidity(report, targetNode);
     }
 
@@ -421,7 +421,7 @@ public class JIPipeProject implements JIPipeValidatable {
      *
      * @param jsonNode the node
      */
-    public void fromJson(JsonNode jsonNode, JIPipeValidityReport report) throws IOException {
+    public void fromJson(JsonNode jsonNode, JIPipeIssueReport report) throws IOException {
         try {
             isLoading = true;
 
@@ -436,7 +436,7 @@ public class JIPipeProject implements JIPipeValidatable {
                     Class<?> metadataClass = JsonUtils.getObjectMapper().readerFor(Class.class).readValue(metadataEntry.getValue().get("jipipe:type"));
                     if (JIPipeParameterCollection.class.isAssignableFrom(metadataClass)) {
                         JIPipeParameterCollection metadata = (JIPipeParameterCollection) ReflectionUtils.newInstance(metadataClass);
-                        ParameterUtils.deserializeParametersFromJson(metadata, metadataEntry.getValue(), report.forCategory("Metadata"));
+                        ParameterUtils.deserializeParametersFromJson(metadata, metadataEntry.getValue(), report.resolve("Metadata"));
                         additionalMetadata.put(metadataEntry.getKey(), metadata);
                     } else {
                         Object data = JsonUtils.getObjectMapper().readerFor(metadataClass).readValue(metadataEntry.getValue().get("data"));
@@ -450,10 +450,10 @@ public class JIPipeProject implements JIPipeValidatable {
             }
 
             // We must first load the graph, as we can infer compartments later
-            graph.fromJson(jsonNode.get("graph"), new JIPipeValidityReport());
+            graph.fromJson(jsonNode.get("graph"), new JIPipeIssueReport());
 
             // read compartments
-            compartmentGraph.fromJson(jsonNode.get("compartments").get("compartment-graph"), new JIPipeValidityReport());
+            compartmentGraph.fromJson(jsonNode.get("compartments").get("compartment-graph"), new JIPipeIssueReport());
 
             // Fix legacy nodes
             for (Map.Entry<UUID, String> entry : graph.getNodeLegacyCompartmentIDs().entrySet()) {
@@ -500,7 +500,7 @@ public class JIPipeProject implements JIPipeValidatable {
             updateCompartmentVisibility();
 
             // Checking for error
-            JIPipeValidityReport checkNodesReport = report.forCategory("Check nodes");
+            JIPipeIssueReport checkNodesReport = report.resolve("Check nodes");
             for (JIPipeGraphNode graphNode : ImmutableList.copyOf(graph.getGraphNodes())) {
                 UUID compartmentUUIDInGraph = graphNode.getCompartmentUUIDInGraph();
                 if (compartmentUUIDInGraph == null || !compartments.containsKey(compartmentUUIDInGraph)) {
@@ -631,7 +631,7 @@ public class JIPipeProject implements JIPipeValidatable {
      * @return Loaded project
      * @throws IOException Triggered by {@link ObjectMapper}
      */
-    public static JIPipeProject loadProject(Path fileName, JIPipeValidityReport report) throws IOException {
+    public static JIPipeProject loadProject(Path fileName, JIPipeIssueReport report) throws IOException {
         JsonNode jsonData = JsonUtils.getObjectMapper().readValue(fileName.toFile(), JsonNode.class);
         JIPipeProject project = new JIPipeProject();
         project.fromJson(jsonData, report);
@@ -701,7 +701,7 @@ public class JIPipeProject implements JIPipeValidatable {
         public JIPipeProject deserialize(JsonParser jsonParser, DeserializationContext deserializationContext) throws IOException, JsonProcessingException {
             JIPipeProject project = new JIPipeProject();
             JsonNode node = jsonParser.getCodec().readTree(jsonParser);
-            project.fromJson(node, new JIPipeValidityReport());
+            project.fromJson(node, new JIPipeIssueReport());
             return project;
         }
     }

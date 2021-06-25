@@ -14,7 +14,7 @@
 package org.hkijena.jipipe.extensions.parameters.primitives;
 
 import org.hkijena.jipipe.api.JIPipeValidatable;
-import org.hkijena.jipipe.api.JIPipeValidityReport;
+import org.hkijena.jipipe.api.JIPipeIssueReport;
 import org.hkijena.jipipe.api.data.JIPipeAnnotation;
 import org.hkijena.jipipe.utils.ResourceUtils;
 
@@ -37,9 +37,9 @@ public class OptionalAnnotationNameParameter extends OptionalStringParameter imp
     }
 
     @Override
-    public void reportValidity(JIPipeValidityReport report) {
+    public void reportValidity(JIPipeIssueReport report) {
         if (isEnabled()) {
-            report.forCategory("Value").checkNonEmpty(getContent(), this);
+            report.resolve("Value").checkNonEmpty(getContent(), this);
         }
     }
 

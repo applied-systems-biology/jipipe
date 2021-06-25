@@ -910,7 +910,7 @@ URL						= (((https?|f(tp|ile))"://"|"www.")({URLCharacters}{URLEndCharacter})?)
 "memDecompress" |
 "memory.profile" |
 "merge" |
-"message" |
+"issue" |
 "mget" |
 "min" |
 "missing" |

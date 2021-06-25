@@ -13,6 +13,7 @@
 
 package org.hkijena.jipipe.utils;
 
+import ij.Prefs;
 import org.apache.commons.lang3.SystemUtils;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 
@@ -127,5 +128,18 @@ public class PathUtils {
             }
         }
         return null;
+    }
+
+    /**
+     * Converts relative paths to absolute paths, relative to the ImageJ directory
+     * Absolute paths are left unchanged
+     * @param path the path
+     * @return absolute paths
+     */
+    public static Path relativeToImageJToAbsolute(Path path) {
+        if(path.isAbsolute())
+            return path;
+        Path imageJDir = Paths.get(Prefs.getImageJDir());
+        return imageJDir.resolve(path);
     }
 }

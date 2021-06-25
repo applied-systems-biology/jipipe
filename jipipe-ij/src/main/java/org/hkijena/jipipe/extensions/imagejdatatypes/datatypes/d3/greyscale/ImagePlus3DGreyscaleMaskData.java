@@ -18,7 +18,10 @@ import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeHeavyData;
 import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
-import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscale8UData;
+import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.color.ImagePlusColorData;
+import org.hkijena.jipipe.extensions.imagejdatatypes.util.ConverterWrapperImageSource;
+import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
+import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageSource;
 
 import java.nio.file.Path;
 
@@ -39,7 +42,11 @@ public class ImagePlus3DGreyscaleMaskData extends ImagePlus3DGreyscale8UData {
      * @param image wrapped image
      */
     public ImagePlus3DGreyscaleMaskData(ImagePlus image) {
-        super(ImagePlusGreyscale8UData.convertIfNeeded(image));
+        super(ImageJUtils.convertToGreyscale8UIfNeeded(image));
+    }
+
+    public ImagePlus3DGreyscaleMaskData(ImageSource source) {
+        super(new ConverterWrapperImageSource(source, ImageJUtils::convertToGreyscale8UIfNeeded));
     }
 
     public static ImagePlusData importFrom(Path storageFolder) {
@@ -53,6 +60,11 @@ public class ImagePlus3DGreyscaleMaskData extends ImagePlus3DGreyscale8UData {
      * @return the converted data
      */
     public static ImagePlusData convertFrom(ImagePlusData data) {
-        return new ImagePlus3DGreyscaleMaskData(data.getImage());
+        if(data.hasLoadedImage()) {
+            return new ImagePlus3DGreyscaleMaskData(data.getImage());
+        }
+        else {
+            return new ImagePlus3DGreyscaleMaskData(data.getImageSource());
+        }
     }
 }

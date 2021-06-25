@@ -21,8 +21,11 @@ import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.extensions.imagejdatatypes.color.ColorSpace;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.color.ColoredImagePlusData;
+import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.color.ImagePlusColorData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d2.ImagePlus2DData;
+import org.hkijena.jipipe.extensions.imagejdatatypes.util.ConverterWrapperImageSource;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
+import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageSource;
 
 import java.awt.Component;
 import java.nio.file.Path;
@@ -47,11 +50,19 @@ public class ImagePlus2DColorData extends ImagePlus2DData implements ColoredImag
      * @param image wrapped image
      */
     public ImagePlus2DColorData(ImagePlus image) {
-        super(ImagePlus2DColorData.convertIfNeeded(image));
+        super(ImageJUtils.convertToColorRGBIfNeeded(image));
     }
 
     public ImagePlus2DColorData(ImagePlus image, ColorSpace colorSpace) {
-        super(ImagePlus2DColorData.convertIfNeeded(image), colorSpace);
+        super(ImageJUtils.convertToColorRGBIfNeeded(image), colorSpace);
+    }
+
+    public ImagePlus2DColorData(ImageSource source) {
+        super(new ConverterWrapperImageSource(source, ImageJUtils::convertToColorRGBIfNeeded));
+    }
+
+    public ImagePlus2DColorData(ImageSource source, ColorSpace colorSpace) {
+        super(new ConverterWrapperImageSource(source, ImageJUtils::convertToColorRGBIfNeeded), colorSpace);
     }
 
     @Override
@@ -64,24 +75,6 @@ public class ImagePlus2DColorData extends ImagePlus2DData implements ColoredImag
         return super.toString() + " [" + getColorSpace() + " colors]";
     }
 
-    /**
-     * Converts an {@link ImagePlus} to the color space of this data.
-     * Does not guarantee that the input image is copied.
-     *
-     * @param image the image
-     * @return converted image.
-     */
-    public static ImagePlus convertIfNeeded(ImagePlus image) {
-        if (image.getType() != ImagePlus.COLOR_RGB) {
-            String title = image.getTitle();
-            image = image.duplicate();
-            image.setTitle(title);
-            ImageConverter.setDoScaling(true);
-            ImageConverter ic = new ImageConverter(image);
-            ic.convertToRGB();
-        }
-        return image;
-    }
 
     public static ImagePlusData importFrom(Path storageFolder) {
         return new ImagePlus2DColorData(ImagePlusData.importImagePlusFrom(storageFolder));
@@ -95,12 +88,17 @@ public class ImagePlus2DColorData extends ImagePlus2DData implements ColoredImag
      * @return the converted data
      */
     public static ImagePlusData convertFrom(ImagePlusData data) {
-        ImagePlus image = data.getImage();
-        if (image.getType() != ImagePlus.COLOR_RGB) {
-            // This will go through the standard method (greyscale -> RGB -> HSB)
-            return new ImagePlus2DColorData(image);
-        } else {
-            return new ImagePlus2DColorData(image, ((ColoredImagePlusData) data).getColorSpace());
+        if(data.hasLoadedImage()) {
+            ImagePlus image = data.getImage();
+            if (image.getType() != ImagePlus.COLOR_RGB) {
+                // This will go through the standard method (greyscale -> RGB -> HSB)
+                return new ImagePlus2DColorData(image);
+            } else {
+                return new ImagePlus2DColorData(image, ((ColoredImagePlusData) data).getColorSpace());
+            }
+        }
+        else {
+            return new ImagePlus2DColorData(data.getImageSource(), data.getColorSpace());
         }
     }
 }

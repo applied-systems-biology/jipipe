@@ -82,7 +82,10 @@ def build_model(config):
     model = models.Model(inputs=[inputs], outputs=[output])
 
     # compile model
-    model.compile(loss='categorical_crossentropy', optimizer=optimizers.Adam(), metrics=['acc'])
+    if num_classes == 2:
+        model.compile(loss='binary_crossentropy', optimizer=optimizers.Adam(), metrics=['acc'])
+    else:
+        model.compile(loss='categorical_crossentropy', optimizer=optimizers.Adam(), metrics=['acc'])
 
     model.summary()
 

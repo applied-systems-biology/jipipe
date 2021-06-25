@@ -1,17 +1,29 @@
 package org.hkijena.jipipe.extensions.deeplearning;
 
 import org.hkijena.jipipe.JIPipeJavaExtension;
+import org.hkijena.jipipe.api.notifications.JIPipeNotification;
+import org.hkijena.jipipe.api.notifications.JIPipeNotificationAction;
+import org.hkijena.jipipe.api.notifications.JIPipeNotificationInbox;
+import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
+import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
 import org.hkijena.jipipe.extensions.JIPipePrepackagedDefaultJavaExtension;
 import org.hkijena.jipipe.extensions.deeplearning.datatypes.DeepLearningModelData;
 import org.hkijena.jipipe.extensions.deeplearning.nodes.CreateModelAlgorithm;
-import org.hkijena.jipipe.extensions.deeplearning.nodes.FileBasedPredictAlgorithm;
-import org.hkijena.jipipe.extensions.deeplearning.nodes.FileBasedTrainModelAlgorithm;
+import org.hkijena.jipipe.extensions.deeplearning.nodes.FileBasedPredictImageAlgorithm;
+import org.hkijena.jipipe.extensions.deeplearning.nodes.FileBasedTrainClassifierModelAlgorithm;
+import org.hkijena.jipipe.extensions.deeplearning.nodes.FileBasedTrainImageModelAlgorithm;
 import org.hkijena.jipipe.extensions.deeplearning.nodes.ImportModelAlgorithm;
-import org.hkijena.jipipe.extensions.deeplearning.nodes.PredictAlgorithm;
-import org.hkijena.jipipe.extensions.deeplearning.nodes.TrainModelAlgorithm;
+import org.hkijena.jipipe.extensions.deeplearning.nodes.PredictImageAlgorithm;
+import org.hkijena.jipipe.extensions.deeplearning.nodes.TrainClassifierModelAlgorithm;
+import org.hkijena.jipipe.extensions.deeplearning.nodes.TrainImageModelAlgorithm;
 import org.hkijena.jipipe.extensions.parameters.primitives.HTMLText;
 import org.hkijena.jipipe.extensions.parameters.primitives.StringList;
 import org.hkijena.jipipe.extensions.python.PythonEnvironment;
+import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
+import org.hkijena.jipipe.ui.JIPipeWorkbench;
+import org.hkijena.jipipe.ui.components.DocumentTabPane;
+import org.hkijena.jipipe.ui.running.JIPipeRunExecuterUI;
+import org.hkijena.jipipe.ui.settings.JIPipeApplicationSettingsUI;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.scijava.plugin.Plugin;
 
@@ -116,6 +128,10 @@ public class DeepLearningExtension extends JIPipePrepackagedDefaultJavaExtension
                 MonitorLoss.class,
                 "Deep Learning monitor loss",
                 "Monitor loss method to be used");
+        registerEnumParameterType("deep-learning-model-type",
+                DeepLearningModelType.class,
+                "Deep Learning model type",
+                "A model type");
 
         registerDatatype("deep-learning-model",
                 DeepLearningModelData.class,
@@ -128,19 +144,79 @@ public class DeepLearningExtension extends JIPipePrepackagedDefaultJavaExtension
         registerNodeType("import-deep-learning-model",
                 ImportModelAlgorithm.class,
                 UIUtils.getIconURLFromResources("data-types/dl-model.png"));
-        registerNodeType("train-deep-learning-model",
-                TrainModelAlgorithm.class,
+        registerNodeType("deep-learning-train-image-model",
+                TrainImageModelAlgorithm.class,
                 UIUtils.getIconURLFromResources("data-types/dl-model.png"));
-        registerNodeType("deep-learning-predict",
-                PredictAlgorithm.class,
+        registerNodeType("deep-learning-train-classifier-model",
+                TrainClassifierModelAlgorithm.class,
                 UIUtils.getIconURLFromResources("data-types/dl-model.png"));
-        registerNodeType("train-deep-learning-model-file-based",
-                FileBasedTrainModelAlgorithm.class,
+        registerNodeType("deep-learning-predict-image",
+                PredictImageAlgorithm.class,
                 UIUtils.getIconURLFromResources("data-types/dl-model.png"));
-        registerNodeType("deep-learning-predict-file-based",
-                FileBasedPredictAlgorithm.class,
+        registerNodeType("deep-learning-train-image-model-file-based",
+                FileBasedTrainImageModelAlgorithm.class,
+                UIUtils.getIconURLFromResources("data-types/dl-model.png"));
+        registerNodeType("deep-learning-train-classifier-model-file-based",
+                FileBasedTrainClassifierModelAlgorithm.class,
+                UIUtils.getIconURLFromResources("data-types/dl-model.png"));
+        registerNodeType("deep-learning-predict-image-file-based",
+                FileBasedPredictImageAlgorithm.class,
                 UIUtils.getIconURLFromResources("data-types/dl-model.png"));
     }
 
+    @Override
+    public void postprocess() {
+        if(!DeepLearningSettings.pythonSettingsAreValid()) {
+            JIPipeNotification notification = new JIPipeNotification(getDependencyId() + ":python-not-configured");
+            notification.setHeading("Deep learning is not configured");
+            notification.setDescription("You need to setup a Python environment that will be used by JIPipe to apply Deep learning. " +
+                    "Please note that Deep learning is applied via a separate Python environment by default.");
+            notification.getActions().add(new JIPipeNotificationAction("Install Conda environment",
+                    "Installs a Conda environment that contains all necessary dependencies for the Deep Learning toolkit used by JIPipe",
+                    UIUtils.getIconFromResources("actions/browser-download.png"),
+                    DeepLearningExtension::installDeepLearningConda));
+            notification.getActions().add(new JIPipeNotificationAction("Configure Python",
+                    "Opens the applications settings page",
+                    UIUtils.getIconFromResources("actions/configure.png"),
+                    DeepLearningExtension::openSettingsPage));
+            JIPipeNotificationInbox.getInstance().push(notification);
+        }
+        if(!DeepLearningSettings.getInstance().getDeepLearningToolkit().isNewestVersion()) {
+            JIPipeNotification notification = new JIPipeNotification(getDependencyId() + ":old-dltoolkit");
+            notification.setHeading("Old library version");
+            notification.setDescription("JIPipe has detected that the installed version of the Deep Learning Toolkit library is outdated. " +
+                    "Please click the button below to install the newest version.");
+            notification.getActions().add(new JIPipeNotificationAction("Install newest version",
+                    "Installs the newest version of the Python library",
+                    UIUtils.getIconFromResources("actions/run-install.png"),
+                    DeepLearningExtension::installDeepLearningToolkitLibrary));
+            notification.getActions().add(new JIPipeNotificationAction("Configure",
+                    "Opens the applications settings page",
+                    UIUtils.getIconFromResources("actions/configure.png"),
+                    DeepLearningExtension::openSettingsPage));
+            JIPipeNotificationInbox.getInstance().push(notification);
+        }
+    }
 
+    private static void installDeepLearningToolkitLibrary(JIPipeWorkbench workbench) {
+        DeepLearningSettings settings = DeepLearningSettings.getInstance();
+        JIPipeParameterTree tree = new JIPipeParameterTree(settings);
+        JIPipeParameterAccess parameterAccess = tree.getParameters().get("deep-learning-toolkit");
+        DeepLearningToolkitLibraryEnvironmentInstaller installer = new DeepLearningToolkitLibraryEnvironmentInstaller(workbench, parameterAccess);
+        JIPipeRunExecuterUI.runInDialog(workbench.getWindow(), installer);
+    }
+
+    private static void installDeepLearningConda(JIPipeWorkbench workbench) {
+        DeepLearningSettings settings = DeepLearningSettings.getInstance();
+        JIPipeParameterTree tree = new JIPipeParameterTree(settings);
+        JIPipeParameterAccess parameterAccess = tree.getParameters().get("python-environment");
+        DeepLearningToolkitEnvInstaller installer = new DeepLearningToolkitEnvInstaller(workbench, parameterAccess);
+        JIPipeRunExecuterUI.runInDialog(workbench.getWindow(), installer);
+    }
+
+    private static void openSettingsPage(JIPipeWorkbench workbench) {
+        DocumentTabPane.DocumentTab tab = workbench.getDocumentTabPane().selectSingletonTab(JIPipeProjectWorkbench.TAB_APPLICATION_SETTINGS);
+        JIPipeApplicationSettingsUI applicationSettingsUI = (JIPipeApplicationSettingsUI) tab.getContent();
+        applicationSettingsUI.selectNode("/Extensions/Deep Learning");
+    }
 }

@@ -16,7 +16,7 @@ package org.hkijena.jipipe.extensions.python.algorithms;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
-import org.hkijena.jipipe.api.JIPipeValidityReport;
+import org.hkijena.jipipe.api.JIPipeIssueReport;
 import org.hkijena.jipipe.api.data.JIPipeAnnotationMergeStrategy;
 import org.hkijena.jipipe.api.data.JIPipeDataSlotInfo;
 import org.hkijena.jipipe.api.data.JIPipeDefaultMutableSlotConfiguration;
@@ -138,14 +138,14 @@ public class MergingPythonScriptAlgorithm extends JIPipeMergingAlgorithm {
     }
 
     @Override
-    public void reportValidity(JIPipeValidityReport report) {
+    public void reportValidity(JIPipeIssueReport report) {
         super.reportValidity(report);
-        JythonUtils.checkScriptParametersValidity(scriptParameters, report.forCategory("Script parameters"));
+        JythonUtils.checkScriptParametersValidity(scriptParameters, report.resolve("Script parameters"));
         if (!isPassThrough()) {
             if (overrideEnvironment.isEnabled()) {
-                report.forCategory("Override Python environment").report(overrideEnvironment.getContent());
+                report.resolve("Override Python environment").report(overrideEnvironment.getContent());
             } else {
-                PythonExtensionSettings.checkPythonSettings(report.forCategory("Python"));
+                PythonExtensionSettings.checkPythonSettings(report.resolve("Python"));
             }
         }
     }

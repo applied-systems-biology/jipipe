@@ -21,7 +21,11 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.color.ColorSpace;
 import org.hkijena.jipipe.extensions.imagejdatatypes.color.RGBColorSpace;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.color.ColoredImagePlusData;
+import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.color.ImagePlusColorData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.color.ImagePlusColorRGBData;
+import org.hkijena.jipipe.extensions.imagejdatatypes.util.ConverterWrapperImageSource;
+import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
+import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageSource;
 
 import java.nio.file.Path;
 
@@ -47,7 +51,11 @@ public class ImagePlus5DColorRGBData extends ImagePlus5DColorData implements Col
      * @param image wrapped image
      */
     public ImagePlus5DColorRGBData(ImagePlus image) {
-        super(ImagePlusColorRGBData.convertIfNeeded(image));
+        super(ImageJUtils.convertToColorRGBIfNeeded(image));
+    }
+
+    public ImagePlus5DColorRGBData(ImageSource source) {
+        super(new ConverterWrapperImageSource(source, ImageJUtils::convertToColorRGBIfNeeded));
     }
 
     @Override
@@ -66,6 +74,11 @@ public class ImagePlus5DColorRGBData extends ImagePlus5DColorData implements Col
      * @return the converted data
      */
     public static ImagePlusData convertFrom(ImagePlusData data) {
-        return new ImagePlus5DColorRGBData(ImagePlusColorRGBData.convertFrom(data).getImage());
+        if(data.hasLoadedImage()) {
+            return new ImagePlus5DColorRGBData(ImagePlusColorRGBData.convertFrom(data).getImage());
+        }
+        else {
+            return new ImagePlus5DColorRGBData(data.getImageSource());
+        }
     }
 }

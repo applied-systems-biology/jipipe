@@ -689,7 +689,7 @@
     <function>memDecompress</function>
     <function>memory.profile</function>
     <function>merge</function>
-    <function>message</function>
+    <function>issue</function>
     <function>mget</function>
     <function>min</function>
     <function>missing</function>

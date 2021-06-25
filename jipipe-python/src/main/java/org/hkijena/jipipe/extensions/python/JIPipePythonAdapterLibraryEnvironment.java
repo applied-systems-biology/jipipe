@@ -13,17 +13,23 @@
 
 package org.hkijena.jipipe.extensions.python;
 
+import com.google.common.io.Resources;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.extensions.parameters.collections.ListParameter;
+import org.hkijena.jipipe.utils.PathUtils;
 import org.reflections.Reflections;
 import org.reflections.scanners.ResourcesScanner;
 import org.reflections.util.ClasspathHelper;
 import org.reflections.util.ConfigurationBuilder;
 
 import java.io.IOException;
+import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Set;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -35,7 +41,7 @@ public class JIPipePythonAdapterLibraryEnvironment extends PythonPackageLibraryE
 
     public JIPipePythonAdapterLibraryEnvironment() {
         this.setName("Default");
-        this.setLibraryDirectory(Paths.get("lib-jipipe-py"));
+        this.setLibraryDirectory(Paths.get("jipipe").resolve("lib-jipipe-py"));
     }
 
     public JIPipePythonAdapterLibraryEnvironment(PythonPackageLibraryEnvironment other) {
@@ -44,34 +50,12 @@ public class JIPipePythonAdapterLibraryEnvironment extends PythonPackageLibraryE
 
     @Override
     public void install(JIPipeProgressInfo progressInfo) {
-        Reflections reflections = new Reflections(new ConfigurationBuilder()
-                .setUrls(ClasspathHelper.forPackage("org.hkijena.jipipe"))
-                .setScanners(new ResourcesScanner()));
-        Set<String> allResources = reflections.getResources(Pattern.compile(".*"));
-        allResources = allResources.stream().map(s -> {
-            if (!s.startsWith("/"))
-                return "/" + s;
-            else
-                return s;
-        }).collect(Collectors.toSet());
-        String globalFolder = "/org/hkijena/jipipe/extensions/python/lib";
-        Set<String> toInstall = allResources.stream().filter(s -> s.startsWith(globalFolder)).collect(Collectors.toSet());
-        for (String resource : toInstall) {
-            Path targetPath = getLibraryDirectory().resolve(resource.substring(globalFolder.length() + 1));
-            progressInfo.log("Installing " + resource + " to " + targetPath);
-            if (!Files.isDirectory(targetPath.getParent())) {
-                try {
-                    Files.createDirectories(targetPath.getParent());
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
-                }
-            }
-            try {
-                Files.copy(PythonUtils.class.getResourceAsStream(resource), targetPath);
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-        }
+        installFromResources("org.hkijena.jipipe", "/org/hkijena/jipipe/extensions/python/lib", PythonExtension.class, progressInfo);
+    }
+
+    @Override
+    public Map<String, String> getPackagedVersions() {
+        return getPackagedVersionsFromResources("/org/hkijena/jipipe/extensions/python/lib/version.txt", PythonExtension.class);
     }
 
     /**

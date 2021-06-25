@@ -20,7 +20,7 @@ import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.JIPipeDependency;
 import org.hkijena.jipipe.api.JIPipeGraphRunner;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
-import org.hkijena.jipipe.api.JIPipeValidityReport;
+import org.hkijena.jipipe.api.JIPipeIssueReport;
 import org.hkijena.jipipe.api.data.JIPipeAnnotationMergeStrategy;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.data.JIPipeDataSlotInfo;
@@ -173,7 +173,7 @@ public class GraphWrapperAlgorithm extends JIPipeAlgorithm implements JIPipeData
             runWithDataPassThrough(progressInfo);
             return;
         }
-        List<JIPipeMergingDataBatch> dataBatches = generateDataBatchesDryRun(getEffectiveInputSlots());
+        List<JIPipeMergingDataBatch> dataBatches = generateDataBatchesDryRun(getEffectiveInputSlots(), progressInfo);
         for (int i = 0; i < dataBatches.size(); i++) {
             JIPipeProgressInfo batchProgress = progressInfo.resolveAndLog("Data batch", i, dataBatches.size());
             JIPipeMergingDataBatch dataBatch = dataBatches.get(i);
@@ -259,9 +259,9 @@ public class GraphWrapperAlgorithm extends JIPipeAlgorithm implements JIPipeData
     }
 
     @Override
-    public void reportValidity(JIPipeValidityReport report) {
+    public void reportValidity(JIPipeIssueReport report) {
         super.reportValidity(report);
-        report.forCategory("Wrapped graph").report(wrappedGraph);
+        report.resolve("Wrapped graph").report(wrappedGraph);
     }
 
     @Override
@@ -294,7 +294,7 @@ public class GraphWrapperAlgorithm extends JIPipeAlgorithm implements JIPipeData
     }
 
     @Override
-    public List<JIPipeMergingDataBatch> generateDataBatchesDryRun(List<JIPipeDataSlot> slots) {
+    public List<JIPipeMergingDataBatch> generateDataBatchesDryRun(List<JIPipeDataSlot> slots, JIPipeProgressInfo progressInfo) {
         if (iterationMode == IterationMode.PassThrough) {
             JIPipeMergingDataBatch dataBatch = new JIPipeMergingDataBatch(this);
             for (JIPipeDataSlot inputSlot : getEffectiveInputSlots()) {
@@ -313,7 +313,7 @@ public class GraphWrapperAlgorithm extends JIPipeAlgorithm implements JIPipeData
                     batchGenerationSettings.getCustomColumns());
             builder.setCustomAnnotationMatching(batchGenerationSettings.getCustomAnnotationMatching());
             builder.setAnnotationMatchingMethod(batchGenerationSettings.getAnnotationMatchingMethod());
-            List<JIPipeMergingDataBatch> dataBatches = builder.build();
+            List<JIPipeMergingDataBatch> dataBatches = builder.build(progressInfo);
             dataBatches.sort(Comparator.naturalOrder());
             boolean withLimit = batchGenerationSettings.getLimit().isEnabled();
             IntegerRange limit = batchGenerationSettings.getLimit().getContent();
@@ -326,6 +326,9 @@ public class GraphWrapperAlgorithm extends JIPipeAlgorithm implements JIPipeData
                     }
                 }
                 dataBatches = limitedBatches;
+            }
+            if(batchGenerationSettings.isSkipIncompleteDataSets()) {
+                dataBatches.removeIf(JIPipeMergingDataBatch::isIncomplete);
             }
             return dataBatches;
         }

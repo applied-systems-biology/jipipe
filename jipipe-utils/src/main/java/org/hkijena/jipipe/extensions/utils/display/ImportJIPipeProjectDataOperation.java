@@ -37,6 +37,11 @@ public class ImportJIPipeProjectDataOperation implements JIPipeDataImportOperati
     }
 
     @Override
+    public String getId() {
+        return "jipipe:open-analysis-output-in-jipipe";
+    }
+
+    @Override
     public JIPipeData show(JIPipeDataSlot slot, JIPipeExportedDataTable.Row row, Path rowStorageFolder, String compartmentName, String algorithmName, String displayName, JIPipeWorkbench workbench) {
         JIPipeOutputData data = JIPipeOutputData.importFrom(rowStorageFolder);
         JIPipeProjectWindow window = (JIPipeProjectWindow) workbench.getWindow();

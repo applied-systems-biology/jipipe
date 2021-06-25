@@ -22,7 +22,7 @@ import ij.process.ImageProcessor;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
-import org.hkijena.jipipe.api.JIPipeValidityReport;
+import org.hkijena.jipipe.api.JIPipeIssueReport;
 import org.hkijena.jipipe.api.data.JIPipeAnnotation;
 import org.hkijena.jipipe.api.data.JIPipeAnnotationMergeStrategy;
 import org.hkijena.jipipe.api.data.JIPipeDataSlotInfo;
@@ -230,15 +230,15 @@ public class SplitChannelsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     }
 
     @Override
-    public void reportValidity(JIPipeValidityReport report) {
+    public void reportValidity(JIPipeIssueReport report) {
         if (annotateWithChannelIndex && StringUtils.isNullOrEmpty(annotationColumnChannelIndex)) {
-            report.forCategory("Channel index annotation column").reportIsInvalid("Column name is empty!",
+            report.resolve("Channel index annotation column").reportIsInvalid("Column name is empty!",
                     "You enabled adding the channel index as output annotation, but the column name is empty",
                     "Change the column name to a non-empty string",
                     this);
         }
         if (annotateWithSlotName && StringUtils.isNullOrEmpty(annotationColumnSlotName)) {
-            report.forCategory("Slot name annotation column").reportIsInvalid("Column name is empty!",
+            report.resolve("Slot name annotation column").reportIsInvalid("Column name is empty!",
                     "You enabled adding the channel index as output annotation, but the column name is empty",
                     "Change the column name to a non-empty string",
                     this);

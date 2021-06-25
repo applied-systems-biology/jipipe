@@ -30,6 +30,11 @@ public class CacheAwareOpenResultsTableInJIPipeDataOperation implements JIPipeDa
     }
 
     @Override
+    public String getId() {
+        return "jipipe:open-table-in-jipipe-window";
+    }
+
+    @Override
     public String getName() {
         return "Open in JIPipe (new window)";
     }

@@ -14,7 +14,7 @@
 package org.hkijena.jipipe.ui.grapheditor.contextmenu;
 
 import org.hkijena.jipipe.api.JIPipeProject;
-import org.hkijena.jipipe.api.JIPipeValidityReport;
+import org.hkijena.jipipe.api.JIPipeIssueReport;
 import org.hkijena.jipipe.api.grouping.NodeGroup;
 import org.hkijena.jipipe.api.nodes.JIPipeGraph;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
@@ -38,9 +38,9 @@ public class ExportNodeUIContextAction implements NodeUIContextAction {
     @Override
     public void run(JIPipeGraphCanvasUI canvasUI, Set<JIPipeNodeUI> selection) {
         Set<JIPipeGraphNode> algorithms = selection.stream().map(JIPipeNodeUI::getNode).collect(Collectors.toSet());
-        JIPipeValidityReport report = new JIPipeValidityReport();
+        JIPipeIssueReport report = new JIPipeIssueReport();
         for (JIPipeGraphNode algorithm : algorithms) {
-            algorithm.reportValidity(report.forCategory(algorithm.getName()));
+            algorithm.reportValidity(report.resolve(algorithm.getName()));
         }
         if (!report.isValid()) {
             UIUtils.openValidityReportDialog(canvasUI, report, false);

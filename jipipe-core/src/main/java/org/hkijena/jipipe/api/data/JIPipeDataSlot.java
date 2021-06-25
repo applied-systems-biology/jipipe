@@ -20,6 +20,8 @@ import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
 import org.hkijena.jipipe.api.nodes.JIPipeAlgorithm;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.extensions.settings.VirtualDataSettings;
+import org.hkijena.jipipe.extensions.tables.datatypes.AnnotationTableData;
+import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
 import org.hkijena.jipipe.utils.StringUtils;
 
 import java.io.IOException;
@@ -245,7 +247,7 @@ public class JIPipeDataSlot {
      * @param rows The set of rows
      * @return Annotations at row
      */
-    public synchronized List<JIPipeAnnotation> getAnnotations(Set<Integer> rows) {
+    public synchronized List<JIPipeAnnotation> getAnnotations(Collection<Integer> rows) {
         List<JIPipeAnnotation> result = new ArrayList<>();
         for (String info : annotationColumns) {
             for (int row : rows) {
@@ -261,12 +263,12 @@ public class JIPipeDataSlot {
      * Returns the annotation of specified type or the alternative value.
      *
      * @param row    data row
-     * @param type   annotation type
+     * @param name   annotation name
      * @param orElse alternative value
      * @return annotation of type 'type' or 'orElse'
      */
-    public JIPipeAnnotation getAnnotationOr(int row, String type, JIPipeAnnotation orElse) {
-        return getAnnotations(row).stream().filter(a -> a != null && Objects.equals(a.getName(), type)).findFirst().orElse(orElse);
+    public JIPipeAnnotation getAnnotationOr(int row, String name, JIPipeAnnotation orElse) {
+        return getAnnotations(row).stream().filter(a -> a != null && Objects.equals(a.getName(), name)).findFirst().orElse(orElse);
     }
 
     /**
@@ -846,5 +848,29 @@ public class JIPipeDataSlot {
                 null), node);
         slot.addData(data, new JIPipeProgressInfo());
         return slot;
+    }
+
+    /**
+     * Converts the slot into an annotation table
+     * @param withDataAsString if the string representation should be included
+     * @return the table
+     */
+    public AnnotationTableData toAnnotationTable(boolean withDataAsString) {
+        AnnotationTableData output = new AnnotationTableData();
+        int dataColumn = withDataAsString ? output.addColumn(StringUtils.makeUniqueString("String representation", "_", getAnnotationColumns()), true) : -1;
+        int row = 0;
+        for (int sourceRow = 0; sourceRow < getRowCount(); ++sourceRow) {
+            output.addRow();
+            if (dataColumn >= 0)
+                output.setValueAt(getVirtualData(row).getStringRepresentation(), row, dataColumn);
+            for (JIPipeAnnotation annotation : getAnnotations(sourceRow)) {
+                if (annotation != null) {
+                    int col = output.addAnnotationColumn(annotation.getName());
+                    output.setValueAt(annotation.getValue(), row, col);
+                }
+            }
+            ++row;
+        }
+        return output;
     }
 }

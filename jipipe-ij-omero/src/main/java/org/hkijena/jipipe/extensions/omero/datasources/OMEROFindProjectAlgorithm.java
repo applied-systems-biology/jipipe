@@ -25,7 +25,7 @@ import omero.gateway.model.ProjectData;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
-import org.hkijena.jipipe.api.JIPipeValidityReport;
+import org.hkijena.jipipe.api.JIPipeIssueReport;
 import org.hkijena.jipipe.api.data.JIPipeAnnotation;
 import org.hkijena.jipipe.api.data.JIPipeAnnotationMergeStrategy;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
@@ -155,13 +155,13 @@ public class OMEROFindProjectAlgorithm extends JIPipeParameterSlotAlgorithm {
 
 
     @Override
-    public void reportValidity(JIPipeValidityReport report) {
+    public void reportValidity(JIPipeIssueReport report) {
         super.reportValidity(report);
         if (projectNameAnnotation.isEnabled()) {
-            report.forCategory("Annotate with name").checkNonEmpty(projectNameAnnotation.getContent(), this);
+            report.resolve("Annotate with name").checkNonEmpty(projectNameAnnotation.getContent(), this);
         }
         if (tagAnnotation.isEnabled()) {
-            report.forCategory("Annotate with tags").checkNonEmpty(tagAnnotation.getContent(), this);
+            report.resolve("Annotate with tags").checkNonEmpty(tagAnnotation.getContent(), this);
         }
     }
 

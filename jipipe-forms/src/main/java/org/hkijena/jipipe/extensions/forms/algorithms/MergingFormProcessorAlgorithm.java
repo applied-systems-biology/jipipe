@@ -1,5 +1,7 @@
 package org.hkijena.jipipe.extensions.forms.algorithms;
 
+import gnu.trove.set.TIntSet;
+import gnu.trove.set.hash.TIntHashSet;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
@@ -22,6 +24,7 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
 import org.hkijena.jipipe.extensions.forms.datatypes.FormData;
 import org.hkijena.jipipe.extensions.forms.ui.FormsDialog;
+import org.hkijena.jipipe.extensions.parameters.generators.IntegerRange;
 import org.hkijena.jipipe.extensions.parameters.primitives.StringParameterSettings;
 import org.hkijena.jipipe.ui.JIPipeDummyWorkbench;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
@@ -74,7 +77,7 @@ public class MergingFormProcessorAlgorithm extends JIPipeAlgorithm implements JI
             outputDataSlot.addData(dataSlot, progressInfo);
         } else if (!dataSlot.isEmpty()) {
             // Generate data batches and show the user interface
-            List<JIPipeMergingDataBatch> dataBatchList = generateDataBatchesDryRun(getEffectiveInputSlots());
+            List<JIPipeMergingDataBatch> dataBatchList = generateDataBatchesDryRun(getEffectiveInputSlots(), progressInfo);
 
             if (dataBatchList.isEmpty()) {
                 progressInfo.log("No data batches selected (according to limit). Skipping.");
@@ -213,7 +216,7 @@ public class MergingFormProcessorAlgorithm extends JIPipeAlgorithm implements JI
     }
 
     @Override
-    public List<JIPipeMergingDataBatch> generateDataBatchesDryRun(List<JIPipeDataSlot> slots) {
+    public List<JIPipeMergingDataBatch> generateDataBatchesDryRun(List<JIPipeDataSlot> slots, JIPipeProgressInfo progressInfo) {
         JIPipeMergingDataBatchBuilder builder = new JIPipeMergingDataBatchBuilder();
         builder.setNode(this);
         builder.setSlots(slots);
@@ -223,8 +226,23 @@ public class MergingFormProcessorAlgorithm extends JIPipeAlgorithm implements JI
                 dataBatchGenerationSettings.getCustomColumns());
         builder.setCustomAnnotationMatching(dataBatchGenerationSettings.getCustomAnnotationMatching());
         builder.setAnnotationMatchingMethod(dataBatchGenerationSettings.getAnnotationMatchingMethod());
-        List<JIPipeMergingDataBatch> dataBatches = builder.build();
+        List<JIPipeMergingDataBatch> dataBatches = builder.build(progressInfo);
         dataBatches.sort(Comparator.naturalOrder());
+        boolean withLimit = dataBatchGenerationSettings.getLimit().isEnabled();
+        IntegerRange limit = dataBatchGenerationSettings.getLimit().getContent();
+        TIntSet allowedIndices = withLimit ? new TIntHashSet(limit.getIntegers()) : null;
+        if (withLimit) {
+            List<JIPipeMergingDataBatch> limitedBatches = new ArrayList<>();
+            for (int i = 0; i < dataBatches.size(); i++) {
+                if (allowedIndices.contains(i)) {
+                    limitedBatches.add(dataBatches.get(i));
+                }
+            }
+            dataBatches = limitedBatches;
+        }
+        if(dataBatchGenerationSettings.isSkipIncompleteDataSets()) {
+            dataBatches.removeIf(JIPipeMergingDataBatch::isIncomplete);
+        }
         return dataBatches;
     }
 }

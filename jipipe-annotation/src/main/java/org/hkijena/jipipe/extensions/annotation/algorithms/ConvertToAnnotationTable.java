@@ -16,7 +16,7 @@ package org.hkijena.jipipe.extensions.annotation.algorithms;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
-import org.hkijena.jipipe.api.JIPipeValidityReport;
+import org.hkijena.jipipe.api.JIPipeIssueReport;
 import org.hkijena.jipipe.api.data.JIPipeAnnotation;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.nodes.JIPipeColumMatching;
@@ -67,8 +67,8 @@ public class ConvertToAnnotationTable extends JIPipeMergingAlgorithm {
     }
 
     @Override
-    public void reportValidity(JIPipeValidityReport report) {
-        report.forCategory("Add data as string").report(addDataToString);
+    public void reportValidity(JIPipeIssueReport report) {
+        report.resolve("Add data as string").report(addDataToString);
     }
 
     @Override
@@ -82,7 +82,7 @@ public class ConvertToAnnotationTable extends JIPipeMergingAlgorithm {
         for (int sourceRow : inputDataRows) {
             output.addRow();
             if (dataColumn >= 0)
-                output.setValueAt("" + getFirstInputSlot().getData(sourceRow, JIPipeData.class, progressInfo), row, dataColumn);
+                output.setValueAt(getFirstInputSlot().getVirtualData(sourceRow).getStringRepresentation(), row, dataColumn);
             for (JIPipeAnnotation annotation : getFirstInputSlot().getAnnotations(sourceRow)) {
                 if (annotation != null) {
                     int col = output.addAnnotationColumn(annotation.getName());

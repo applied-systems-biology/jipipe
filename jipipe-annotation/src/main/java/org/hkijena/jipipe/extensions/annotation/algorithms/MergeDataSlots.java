@@ -16,7 +16,7 @@ package org.hkijena.jipipe.extensions.annotation.algorithms;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
-import org.hkijena.jipipe.api.JIPipeValidityReport;
+import org.hkijena.jipipe.api.JIPipeIssueReport;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.data.JIPipeDefaultMutableSlotConfiguration;
@@ -60,7 +60,7 @@ public class MergeDataSlots extends JIPipeAlgorithm {
     }
 
     @Override
-    public void reportValidity(JIPipeValidityReport report) {
+    public void reportValidity(JIPipeIssueReport report) {
         if (getOutputSlots().isEmpty()) {
             report.reportIsInvalid("No output slot!",
                     "The result is put into the output slot.",
@@ -69,7 +69,7 @@ public class MergeDataSlots extends JIPipeAlgorithm {
             JIPipeDataSlot outputSlot = getFirstOutputSlot();
             for (JIPipeDataSlot inputSlot : getInputSlots()) {
                 if (!outputSlot.getAcceptedDataType().isAssignableFrom(inputSlot.getAcceptedDataType())) {
-                    report.forCategory("Slots").forCategory(inputSlot.getName())
+                    report.resolve("Slots").resolve(inputSlot.getName())
                             .reportIsInvalid("Input slot is incompatible!",
                                     "Output data must fit to the input data.",
                                     "Please add an output slot that is compatible to the input data.", this);

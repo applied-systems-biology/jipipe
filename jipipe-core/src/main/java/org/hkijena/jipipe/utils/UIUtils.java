@@ -21,7 +21,7 @@ import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
 import org.fife.ui.rsyntaxtextarea.Theme;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
-import org.hkijena.jipipe.api.JIPipeValidityReport;
+import org.hkijena.jipipe.api.JIPipeIssueReport;
 import org.hkijena.jipipe.api.data.JIPipeDataInfo;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
@@ -654,7 +654,7 @@ public class UIUtils {
      * @param report the report
      * @param modal  make the dialog modal
      */
-    public static void openValidityReportDialog(Component parent, JIPipeValidityReport report, boolean modal) {
+    public static void openValidityReportDialog(Component parent, JIPipeIssueReport report, boolean modal) {
         JIPipeValidityReportUI ui = new JIPipeValidityReportUI(false);
         ui.setReport(report);
         JDialog dialog = new JDialog();

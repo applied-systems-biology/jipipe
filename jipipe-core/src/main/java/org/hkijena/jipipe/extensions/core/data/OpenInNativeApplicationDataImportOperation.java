@@ -29,6 +29,11 @@ public class OpenInNativeApplicationDataImportOperation implements JIPipeDataImp
     }
 
     @Override
+    public String getId() {
+        return "jipipe:open-in-native-application-" + String.join("-", extensions);
+    }
+
+    @Override
     public String getName() {
         return name;
     }

@@ -18,7 +18,7 @@ import ij.IJ;
 import net.imagej.ImageJ;
 import org.hkijena.jipipe.api.JIPipeFixedThreadPool;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
-import org.hkijena.jipipe.api.JIPipeValidityReport;
+import org.hkijena.jipipe.api.JIPipeIssueReport;
 import org.hkijena.jipipe.api.compat.SingleImageJAlgorithmRun;
 import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
 import org.hkijena.jipipe.api.nodes.JIPipeAlgorithm;
@@ -78,7 +78,7 @@ public class JIPipeRunAlgorithmCommand extends DynamicCommand implements Initial
             SwingUtilities.invokeLater(() -> SplashScreen.getInstance().hideSplash());
         }
         if (!extensionSettings.isSilent()) {
-            JIPipeValidityReport report = new JIPipeValidityReport();
+            JIPipeIssueReport report = new JIPipeIssueReport();
             issues.reportValidity(report);
             if (!report.isValid()) {
                 if (GraphicsEnvironment.isHeadless()) {
@@ -128,12 +128,12 @@ public class JIPipeRunAlgorithmCommand extends DynamicCommand implements Initial
                         "Please check if the text parameter is valid JSON. You can use a JSON online validator to validate the format. " +
                                 "Also please check if the parameters really fit to the selected algorithm.");
             }
-            JIPipeValidityReport report = new JIPipeValidityReport();
+            JIPipeIssueReport report = new JIPipeIssueReport();
             settings.reportValidity(report);
             if (!report.isValid()) {
                 StringBuilder message = new StringBuilder();
                 message.append("The provided algorithm options are invalid:\n\n");
-                for (Map.Entry<String, JIPipeValidityReport.Message> entry : report.getMessages().entrySet()) {
+                for (Map.Entry<String, JIPipeIssueReport.Issue> entry : report.getIssues().entries()) {
                     message.append(entry.getKey()).append("\t").append(entry.getValue());
                 }
                 cancel(message.toString());

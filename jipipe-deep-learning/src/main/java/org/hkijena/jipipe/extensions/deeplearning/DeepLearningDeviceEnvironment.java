@@ -13,11 +13,13 @@
 
 package org.hkijena.jipipe.extensions.deeplearning;
 
+import com.fasterxml.jackson.annotation.JsonGetter;
+import com.fasterxml.jackson.annotation.JsonSetter;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.BooleanNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeValidityReport;
+import org.hkijena.jipipe.api.JIPipeIssueReport;
 import org.hkijena.jipipe.api.environments.ExternalEnvironment;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.parameters.collections.ListParameter;
@@ -51,7 +53,7 @@ public class DeepLearningDeviceEnvironment extends ExternalEnvironment {
     }
 
     @Override
-    public void reportValidity(JIPipeValidityReport report) {
+    public void reportValidity(JIPipeIssueReport report) {
 
     }
 
@@ -80,44 +82,52 @@ public class DeepLearningDeviceEnvironment extends ExternalEnvironment {
 
     @JIPipeDocumentation(name = "Limit to CPUs", description = "Allows to limit the processing to certain CPU IDs (first ID is 0)")
     @JIPipeParameter("cpu-ids")
+    @JsonGetter("cpu-ids")
     public OptionalIntegerRange getCpuIds() {
         return cpuIds;
     }
 
     @JIPipeParameter("cpu-ids")
+    @JsonSetter("cpu-ids")
     public void setCpuIds(OptionalIntegerRange cpuIds) {
         this.cpuIds = cpuIds;
     }
 
     @JIPipeDocumentation(name = "Limit to GPUs", description = "Allows to limit the processing to certain GPU Ids (first is 0)")
     @JIPipeParameter("gpu-ids")
+    @JsonGetter("gpu-ids")
     public OptionalIntegerRange getGpuIds() {
         return gpuIds;
     }
 
     @JIPipeParameter("gpu-ids")
+    @JsonSetter("gpu-ids")
     public void setGpuIds(OptionalIntegerRange gpuIds) {
         this.gpuIds = gpuIds;
     }
 
     @JIPipeDocumentation(name = "Enable GPU processing", description = "If enabled, the GPU will be utilized to increase the speed of processing")
     @JIPipeParameter("with-gpu")
+    @JsonGetter("with-gpu")
     public boolean isWithGPU() {
         return withGPU;
     }
 
     @JIPipeParameter("with-gpu")
+    @JsonSetter("with-gpu")
     public void setWithGPU(boolean withGPU) {
         this.withGPU = withGPU;
     }
 
     @JIPipeDocumentation(name = "Log device placement", description = "If enabled, the Python library will report about which exact hardware is utilized for each task")
     @JIPipeParameter("log-device-placement")
+    @JsonGetter("log-device-placement")
     public boolean isLogDevicePlacement() {
         return logDevicePlacement;
     }
 
     @JIPipeParameter("log-device-placement")
+    @JsonSetter("log-device-placement")
     public void setLogDevicePlacement(boolean logDevicePlacement) {
         this.logDevicePlacement = logDevicePlacement;
     }

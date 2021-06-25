@@ -24,7 +24,7 @@ import ij.process.ImageProcessor;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
-import org.hkijena.jipipe.api.JIPipeValidityReport;
+import org.hkijena.jipipe.api.JIPipeIssueReport;
 import org.hkijena.jipipe.api.data.JIPipeDataSlotInfo;
 import org.hkijena.jipipe.api.data.JIPipeDefaultMutableSlotConfiguration;
 import org.hkijena.jipipe.api.data.JIPipeSlotType;
@@ -257,14 +257,14 @@ public class MergeChannelsAlgorithm extends JIPipeIteratingAlgorithm {
 
 
     @Override
-    public void reportValidity(JIPipeValidityReport report) {
+    public void reportValidity(JIPipeIssueReport report) {
         Set<ChannelColor> existing = new HashSet<>();
         for (Map.Entry<String, JIPipeParameterAccess> entry : channelColorAssignment.getParameters().entrySet()) {
             ChannelColor color = entry.getValue().get(ChannelColor.class);
-            report.forCategory("Channel colors").forCategory(entry.getKey()).checkNonNull(color, this);
+            report.resolve("Channel colors").resolve(entry.getKey()).checkNonNull(color, this);
             if (color != null) {
                 if (existing.contains(color))
-                    report.forCategory("Channel colors").forCategory(entry.getKey()).reportIsInvalid("Duplicate color assignment!",
+                    report.resolve("Channel colors").resolve(entry.getKey()).reportIsInvalid("Duplicate color assignment!",
                             "Color '" + color + "' is already assigned.",
                             "Please assign another color.",
                             this);

@@ -44,7 +44,7 @@ import java.util.Set;
 public class ExportImageToWebAlgorithm extends JIPipeIteratingAlgorithm {
 
     private final Set<String> existingMetadata = new HashSet<>();
-    private JIPipeDataByMetadataExporter exporter = new JIPipeDataByMetadataExporter();
+    private JIPipeDataByMetadataExporter exporter;
     private Path outputDirectory = Paths.get("exported-data");
     private FileFormat fileFormat = FileFormat.PNG;
     private int movieFrameTime = 100;

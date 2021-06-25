@@ -13,124 +13,111 @@
 
 package org.hkijena.jipipe.api;
 
+import com.google.common.collect.HashMultimap;
+import com.google.common.collect.Multimap;
 import org.apache.commons.lang.builder.ReflectionToStringBuilder;
 import org.apache.commons.lang.builder.ToStringStyle;
 import org.hkijena.jipipe.utils.StringUtils;
 
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 /**
- * Report about the validity of an object
+ * Report about the validity of an object, usually a {@link JIPipeValidatable}
  */
-public class JIPipeValidityReport {
-    private final List<String> categories = new ArrayList<>();
-    private Map<String, Response> responses = new HashMap<>();
-    private Map<String, Message> messages = new HashMap<>();
+public class JIPipeIssueReport {
+    private final List<String> pathComponents = new ArrayList<>();
+    private Multimap<String, Issue> issues = HashMultimap.create();
 
     /**
      * Creates a new report instance
      */
-    public JIPipeValidityReport() {
+    public JIPipeIssueReport() {
     }
 
     /**
-     * Clears the report
+     * Clears all the issues in this report and all related reports
      */
-    public void clear() {
-        responses.clear();
-        messages.clear();
+    public void clearAll() {
+        issues.clear();
     }
 
     /**
-     * Gets the response keys that are invalid
-     *
-     * @return the response keys
+     * Clears issues of the current path
      */
-    public List<String> getInvalidResponses() {
-        List<String> result = new ArrayList<>();
-        for (Map.Entry<String, Response> entry : responses.entrySet()) {
-            if (entry.getValue() == Response.Invalid)
-                result.add(entry.getKey());
-        }
-        return result;
+    public void clearCurrentPath() {
+        issues.removeAll(getPath());
     }
 
-    public Map<String, Message> getMessages() {
-        return Collections.unmodifiableMap(messages);
+    /**
+     * Gets the map of all issues
+     * @return the issues (modifiable)
+     */
+    public Multimap<String, Issue> getIssues() {
+        return issues;
     }
 
+    /**
+     * Returns true if there are no issues
+     * @return if there are no issues
+     */
     public boolean isValid() {
-        return responses.values().stream().allMatch(r -> r == Response.Valid);
+        return issues.isEmpty();
     }
 
-    public List<String> getCategories() {
-        return categories;
+    /**
+     * Returns true if there is at least one issue
+     * @return if there are issues
+     */
+    public boolean isInvalid() {
+        return !issues.isEmpty();
+    }
+
+    /**
+     * Gets the current path components
+     * @return the path components
+     */
+    public List<String> getPathComponents() {
+        return pathComponents;
+    }
+
+    /**
+     * Gets the current path (formatted)
+     * @return the path
+     */
+    public String getPath() {
+        return String.join("/", pathComponents);
     }
 
     /**
      * Returns a report for the specified category
      *
-     * @param category the category
+     * @param pathComponent the category
      * @return the sub-report
      */
-    public JIPipeValidityReport forCategory(String category) {
-        JIPipeValidityReport result = new JIPipeValidityReport();
-        result.categories.addAll(categories);
-        result.categories.add(category);
-        result.responses = responses;
-        result.messages = messages;
+    public JIPipeIssueReport resolve(String pathComponent) {
+        JIPipeIssueReport result = new JIPipeIssueReport();
+        result.pathComponents.addAll(pathComponents);
+        result.pathComponents.add(pathComponent);
+        result.issues = issues;
         return result;
     }
 
     /**
-     * Reports a response
-     *
-     * @param response the response
-     * @param message  the message
+     * Reports an issue
+     * @param issue the issue
      */
-    public void report(Response response, Message message) {
-        String key = String.join("/", categories);
-        responses.put(key, response);
-        messages.put(key, message);
+    public void report(Issue issue) {
+        issues.put(getPath(), issue);
     }
 
     /**
-     * Passes the report to another {@link JIPipeValidatable}
-     *
-     * @param validatable the target
+     * Reports a {@link JIPipeValidatable} into this report
+     * @param validatable the validatable
      */
     public void report(JIPipeValidatable validatable) {
         validatable.reportValidity(this);
-    }
-
-    /**
-     * Reports validity or invalidity
-     *
-     * @param valid   if the report is valid
-     * @param message the message
-     */
-    public void report(boolean valid, Message message) {
-        report(valid ? Response.Valid : Response.Invalid, message);
-    }
-
-    /**
-     * Report that is report is valid
-     */
-    public void reportIsValid() {
-        report(true, null);
-    }
-
-    /**
-     * Reports that this report is invalid
-     *
-     * @param message The message
-     */
-    public void reportIsInvalid(Message message) {
-        report(false, message);
     }
 
     /**
@@ -142,7 +129,7 @@ public class JIPipeValidityReport {
      * @param source the source that triggers the check. passed to details
      */
     public void reportIsInvalid(String what, String why, String how, Object source) {
-        report(false, new Message(what,
+        report(new Issue(what,
                 why,
                 how,
                 source != null ? ReflectionToStringBuilder.toString(source, ToStringStyle.MULTI_LINE_STYLE) : null));
@@ -196,7 +183,7 @@ public class JIPipeValidityReport {
      * Prints messages to the standard error
      */
     public void print() {
-        for (Map.Entry<String, Message> entry : messages.entrySet()) {
+        for (Map.Entry<String, Issue> entry : issues.entries()) {
             System.err.println();
             System.err.println("At " + entry.getKey() + ":");
             System.err.println("\tWhat: " + entry.getValue().getUserWhat());
@@ -207,21 +194,13 @@ public class JIPipeValidityReport {
     }
 
     /**
-     * The response type
-     */
-    public enum Response {
-        Valid,
-        Invalid
-    }
-
-    /**
      * A validity report message
      */
-    public static class Message {
-        private String userWhat;
-        private String userWhy;
-        private String userHow;
-        private String details;
+    public static class Issue {
+        private final String userWhat;
+        private final String userWhy;
+        private final String userHow;
+        private final String details;
 
         /**
          * @param userWhat explanation what happened
@@ -229,7 +208,7 @@ public class JIPipeValidityReport {
          * @param userHow  explanation how to solve the issue
          * @param details  optional details
          */
-        public Message(String userWhat, String userWhy, String userHow, String details) {
+        public Issue(String userWhat, String userWhy, String userHow, String details) {
             this.userWhat = userWhat;
             this.userWhy = userWhy;
             this.userHow = userHow;

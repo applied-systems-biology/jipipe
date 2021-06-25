@@ -31,7 +31,7 @@ import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.JIPipeProject;
 import org.hkijena.jipipe.api.JIPipeRun;
 import org.hkijena.jipipe.api.JIPipeValidatable;
-import org.hkijena.jipipe.api.JIPipeValidityReport;
+import org.hkijena.jipipe.api.JIPipeIssueReport;
 import org.hkijena.jipipe.api.compartments.algorithms.JIPipeProjectCompartment;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
@@ -490,7 +490,7 @@ public abstract class JIPipeGraphNode implements JIPipeValidatable, JIPipeParame
      * @param node   The JSON data to load from
      * @param issues issues during deserializing
      */
-    public void fromJson(JsonNode node, JIPipeValidityReport issues) {
+    public void fromJson(JsonNode node, JIPipeIssueReport issues) {
         if (node.has("jipipe:slot-configuration"))
             slotConfiguration.fromJson(node.get("jipipe:slot-configuration"));
         if (node.has("jipipe:ui-grid-location")) {
@@ -902,6 +902,16 @@ public abstract class JIPipeGraphNode implements JIPipeValidatable, JIPipeParame
     }
 
     /**
+     * Triggered when the parameter UI structure of this algorithm was changed
+     *
+     * @param event generated event
+     */
+    @Subscribe
+    public void onParameterUIChanged(ParameterUIChangedEvent event) {
+        getEventBus().post(event);
+    }
+
+    /**
      * Clears all data slots
      */
     public void clearSlotData() {
@@ -1073,11 +1083,11 @@ public abstract class JIPipeGraphNode implements JIPipeValidatable, JIPipeParame
         return project.getCompartments().getOrDefault(getCompartmentUUIDInGraph(), null);
     }
 
-    public static <T extends JIPipeGraphNode> T fromJsonNode(JsonNode node, JIPipeValidityReport issues) {
+    public static <T extends JIPipeGraphNode> T fromJsonNode(JsonNode node, JIPipeIssueReport issues) {
         String id = node.get("jipipe:node-info-id").asText();
         if (!JIPipe.getNodes().hasNodeInfoWithId(id)) {
             System.err.println("Unable to find node type with ID '" + id + "'. Skipping.");
-            issues.forCategory("Nodes").forCategory(id).reportIsInvalid("Unable to find node type '" + id + "'!",
+            issues.resolve("Nodes").resolve(id).reportIsInvalid("Unable to find node type '" + id + "'!",
                     "The JSON data requested to load a node of type '" + id + "', but it is not known to JIPipe.",
                     "Please check if all extensions are are correctly loaded.",
                     node);
@@ -1085,7 +1095,7 @@ public abstract class JIPipeGraphNode implements JIPipeValidatable, JIPipeParame
         }
         JIPipeNodeInfo info = JIPipe.getNodes().getInfoById(id);
         JIPipeGraphNode algorithm = info.newInstance();
-        algorithm.fromJson(node, issues.forCategory("Nodes").forCategory(id));
+        algorithm.fromJson(node, issues.resolve("Nodes").resolve(id));
         return (T) algorithm;
     }
 

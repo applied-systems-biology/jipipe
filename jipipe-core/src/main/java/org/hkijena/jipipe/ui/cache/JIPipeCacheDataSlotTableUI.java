@@ -90,6 +90,7 @@ public class JIPipeCacheDataSlotTableUI extends JIPipeWorkbenchPanel {
                 }
             }
         });
+        showDataRows(new int[0]);
     }
 
     private void reloadTable() {
@@ -195,7 +196,7 @@ public class JIPipeCacheDataSlotTableUI extends JIPipeWorkbenchPanel {
     private void exportAsCSV() {
         Path path = FileChooserSettings.saveFile(this, FileChooserSettings.KEY_PROJECT, "Export as *.csv", UIUtils.EXTENSION_FILTER_CSV);
         if (path != null) {
-            ResultsTableData tableData = ResultsTableData.fromTableModel(dataTable);
+            ResultsTableData tableData = dataTable.slot.toAnnotationTable(true);
             tableData.saveAsCSV(path);
         }
     }
@@ -209,6 +210,12 @@ public class JIPipeCacheDataSlotTableUI extends JIPipeWorkbenchPanel {
 
     private void showDataRows(int[] selectedRows) {
         rowUIList.clear();
+
+        JLabel infoLabel = new JLabel();
+        infoLabel.setText(slot.getRowCount() + " rows" + (selectedRows.length > 0 ? ", " + selectedRows.length + " selected" : ""));
+        infoLabel.setBorder(BorderFactory.createEmptyBorder(4,4,4,4));
+        rowUIList.addWideToForm(infoLabel, null);
+
         for (int viewRow : selectedRows) {
             int row = table.getRowSorter().convertRowIndexToModel(viewRow);
             String name;

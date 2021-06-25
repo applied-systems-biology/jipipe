@@ -15,6 +15,11 @@ public class DefaultDataDisplayOperation implements JIPipeDataDisplayOperation {
     }
 
     @Override
+    public String getId() {
+        return "jipipe:show";
+    }
+
+    @Override
     public String getName() {
         return "Show";
     }

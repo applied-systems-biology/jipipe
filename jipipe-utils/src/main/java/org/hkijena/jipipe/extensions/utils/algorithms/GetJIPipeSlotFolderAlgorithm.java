@@ -18,7 +18,7 @@ import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.JIPipeProject;
-import org.hkijena.jipipe.api.JIPipeValidityReport;
+import org.hkijena.jipipe.api.JIPipeIssueReport;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeDataBatch;
 import org.hkijena.jipipe.api.nodes.JIPipeInputSlot;
@@ -71,11 +71,11 @@ public class GetJIPipeSlotFolderAlgorithm extends JIPipeSimpleIteratingAlgorithm
     }
 
     @Override
-    public void reportValidity(JIPipeValidityReport report) {
+    public void reportValidity(JIPipeIssueReport report) {
         super.reportValidity(report);
-        report.forCategory("Node ID").checkNonEmpty(nodeId, this);
-        report.forCategory("Slot name").checkNonEmpty(slotName, this);
-        report.forCategory("Compartment ID").checkNonEmpty(compartmentId, this);
+        report.resolve("Node ID").checkNonEmpty(nodeId, this);
+        report.resolve("Slot name").checkNonEmpty(slotName, this);
+        report.resolve("Compartment ID").checkNonEmpty(compartmentId, this);
     }
 
     @JIPipeDocumentation(name = "Node alias ID", description = "The unique identifier of the node that contains the output. You can either use the 'Set output slot' button to auto-configure this value or look up the node ID in the help of the node. " +
@@ -123,7 +123,7 @@ public class GetJIPipeSlotFolderAlgorithm extends JIPipeSimpleIteratingAlgorithm
         Path projectFile = FileChooserSettings.openFile(workbench.getWindow(), FileChooserSettings.KEY_PROJECT, "Import JIPipe project", UIUtils.EXTENSION_FILTER_JIP);
         if (projectFile != null) {
             try {
-                JIPipeProject project = JIPipeProject.loadProject(projectFile, new JIPipeValidityReport());
+                JIPipeProject project = JIPipeProject.loadProject(projectFile, new JIPipeIssueReport());
                 JIPipeProjectOutputTreePanel panel = new JIPipeProjectOutputTreePanel(project);
                 panel.setBorder(BorderFactory.createEtchedBorder());
                 int result = JOptionPane.showOptionDialog(

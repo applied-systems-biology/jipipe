@@ -27,6 +27,7 @@ import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.extensions.settings.FileChooserSettings;
 import org.hkijena.jipipe.extensions.settings.GeneralDataSettings;
+import org.hkijena.jipipe.extensions.tables.datatypes.AnnotationTableData;
 import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
@@ -56,6 +57,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.nio.file.Path;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * UI that displays a {@link JIPipeDataSlot} that is cached
@@ -103,6 +105,7 @@ public class JIPipeCacheMultiDataSlotTableUI extends JIPipeWorkbenchPanel {
                 }
             }
         });
+        showDataRows(new int[0]);
     }
 
     private void reloadTable() {
@@ -209,7 +212,10 @@ public class JIPipeCacheMultiDataSlotTableUI extends JIPipeWorkbenchPanel {
     private void exportAsCSV() {
         Path path = FileChooserSettings.saveFile(this, FileChooserSettings.KEY_PROJECT, "Export as *.csv", UIUtils.EXTENSION_FILTER_CSV);
         if (path != null) {
-            ResultsTableData tableData = ResultsTableData.fromTableModel(multiSlotTable);
+            AnnotationTableData tableData = new AnnotationTableData();
+            for (JIPipeDataSlot slot : multiSlotTable.getSlotList()) {
+                tableData.addRows(slot.toAnnotationTable(true));
+            }
             tableData.saveAsCSV(path);
         }
     }
@@ -225,6 +231,13 @@ public class JIPipeCacheMultiDataSlotTableUI extends JIPipeWorkbenchPanel {
 
     private void showDataRows(int[] selectedRows) {
         rowUIList.clear();
+
+        JLabel infoLabel = new JLabel();
+        int rowCount = slots.stream().mapToInt(JIPipeDataSlot::getRowCount).sum();
+        infoLabel.setText(rowCount + " rows" + (slots.size() > 1 ? " across " + slots.size() + " tables" : "") + (selectedRows.length > 0 ? ", " + selectedRows.length + " selected" : ""));
+        infoLabel.setBorder(BorderFactory.createEmptyBorder(4,4,4,4));
+        rowUIList.addWideToForm(infoLabel, null);
+
         for (int viewRow : selectedRows) {
             int multiRow = table.getRowSorter().convertRowIndexToModel(viewRow);
             JIPipeDataSlot slot = multiSlotTable.getSlot(multiRow);

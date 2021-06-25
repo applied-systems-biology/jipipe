@@ -9,7 +9,7 @@ import com.google.common.eventbus.EventBus;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.JIPipeValidatable;
-import org.hkijena.jipipe.api.JIPipeValidityReport;
+import org.hkijena.jipipe.api.JIPipeIssueReport;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataStorageDocumentation;
 import org.hkijena.jipipe.api.nodes.JIPipeMergingDataBatch;
@@ -96,7 +96,7 @@ public abstract class FormData implements JIPipeData, JIPipeParameterCollection,
      * @param node JSON node
      */
     public void fromJson(JsonNode node) {
-        ParameterUtils.deserializeParametersFromJson(this, node, new JIPipeValidityReport());
+        ParameterUtils.deserializeParametersFromJson(this, node, new JIPipeIssueReport());
     }
 
     /**
@@ -132,12 +132,12 @@ public abstract class FormData implements JIPipeData, JIPipeParameterCollection,
 
     /**
      * A custom copy function that copies the contents from source into this form.
-     * Should never raise exceptions. Use {@link JIPipeValidityReport} to report issues.
+     * Should never raise exceptions. Use {@link JIPipeIssueReport} to report issues.
      *
      * @param source the source data
      * @param report the error report
      */
-    public void customCopy(FormData source, JIPipeValidityReport report) {
+    public void customCopy(FormData source, JIPipeIssueReport report) {
 
     }
 

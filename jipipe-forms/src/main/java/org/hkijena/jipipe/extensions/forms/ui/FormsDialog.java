@@ -1,7 +1,7 @@
 package org.hkijena.jipipe.extensions.forms.ui;
 
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
-import org.hkijena.jipipe.api.JIPipeValidityReport;
+import org.hkijena.jipipe.api.JIPipeIssueReport;
 import org.hkijena.jipipe.api.data.JIPipeAnnotation;
 import org.hkijena.jipipe.api.data.JIPipeAnnotationMergeStrategy;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
@@ -110,7 +110,7 @@ public class FormsDialog extends JFrame {
             return true;
         }
         JIPipeProgressInfo info = new JIPipeProgressInfo();
-        JIPipeValidityReport report = getReportForDataBatch(row, info);
+        JIPipeIssueReport report = getReportForDataBatch(row, info);
         if (!report.isValid()) {
             int result = JOptionPane.showOptionDialog(this,
                     "The current batch has settings that are not fully valid. Do you want to continue, anyways?",
@@ -224,7 +224,7 @@ public class FormsDialog extends JFrame {
         // If invalid, create report
         if (wasVisitedBefore) {
             JIPipeProgressInfo progressInfo = new JIPipeProgressInfo();
-            JIPipeValidityReport report = getReportForDataBatch(selectedRow, progressInfo);
+            JIPipeIssueReport report = getReportForDataBatch(selectedRow, progressInfo);
             if (!report.isValid()) {
                 UserFriendlyErrorUI errorUI = new UserFriendlyErrorUI(null, UserFriendlyErrorUI.WITH_SCROLLING);
                 errorUI.displayErrors(report);
@@ -296,8 +296,8 @@ public class FormsDialog extends JFrame {
                 .ifPresent(documentTab -> tabPane.switchToContent(documentTab.getContent()));
     }
 
-    private JIPipeValidityReport getReportForDataBatch(int selectedRow, JIPipeProgressInfo progressInfo) {
-        JIPipeValidityReport report = new JIPipeValidityReport();
+    private JIPipeIssueReport getReportForDataBatch(int selectedRow, JIPipeProgressInfo progressInfo) {
+        JIPipeIssueReport report = new JIPipeIssueReport();
         JIPipeDataSlot formsForRow = dataBatchForms.get(selectedRow);
         for (int row = 0; row < formsForRow.getRowCount(); row++) {
             FormData formData = formsForRow.getData(row, FormData.class, progressInfo);
@@ -306,7 +306,7 @@ public class FormsDialog extends JFrame {
             if (formData instanceof ParameterFormData) {
                 name = ((ParameterFormData) formData).getName();
             }
-            formData.reportValidity(report.forCategory(tab).forCategory(name + " (#" + row + ")"));
+            formData.reportValidity(report.resolve(tab).resolve(name + " (#" + row + ")"));
         }
         return report;
     }
@@ -315,10 +315,10 @@ public class FormsDialog extends JFrame {
         JIPipeProgressInfo progressInfo = new JIPipeProgressInfo();
         for (int i = 0; i < dataBatchList.size(); i++) {
             if (dataBatchStatuses.get(i) == DataBatchStatus.Visited) {
-                JIPipeValidityReport report = new JIPipeValidityReport();
+                JIPipeIssueReport report = new JIPipeIssueReport();
                 for (int row = 0; row < dataBatchForms.get(i).getRowCount(); row++) {
                     FormData formData = dataBatchForms.get(i).getData(row, FormData.class, progressInfo);
-                    formData.reportValidity(report.forCategory("Form " + row));
+                    formData.reportValidity(report.resolve("Form " + row));
                     if (!report.isValid()) {
                         dataBatchStatuses.set(i, DataBatchStatus.Invalid);
                         break;
@@ -552,7 +552,7 @@ public class FormsDialog extends JFrame {
         }
 
         boolean encounteredImmutable = false;
-        JIPipeValidityReport report = new JIPipeValidityReport();
+        JIPipeIssueReport report = new JIPipeIssueReport();
 
         JIPipeDataSlot forms = dataBatchForms.get(selectedRow);
         JIPipeProgressInfo progressInfo = new JIPipeProgressInfo();
@@ -569,7 +569,7 @@ public class FormsDialog extends JFrame {
                 FormData targetData = dataBatchForms.get(i).getData(row, FormData.class, progressInfo);
                 if (!targetData.isImmutable()) {
                     if (targetData.isUsingCustomCopy())
-                        targetData.customCopy(srcData, report.forCategory("Item " + (i + 1)));
+                        targetData.customCopy(srcData, report.resolve("Item " + (i + 1)));
                     else
                         targetData = (FormData) srcData.duplicate();
                 } else {

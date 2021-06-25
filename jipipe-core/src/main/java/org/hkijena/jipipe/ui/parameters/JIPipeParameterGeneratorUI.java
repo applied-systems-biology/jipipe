@@ -14,7 +14,7 @@
 package org.hkijena.jipipe.ui.parameters;
 
 import org.hkijena.jipipe.api.JIPipeValidatable;
-import org.hkijena.jipipe.api.JIPipeValidityReport;
+import org.hkijena.jipipe.api.JIPipeIssueReport;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.JIPipeWorkbenchPanel;
 import org.hkijena.jipipe.utils.ReflectionUtils;
@@ -97,7 +97,7 @@ public abstract class JIPipeParameterGeneratorUI extends JIPipeWorkbenchPanel im
 
             JButton confirmButton = new JButton("Generate", UIUtils.getIconFromResources("actions/run-build.png"));
             confirmButton.addActionListener(e -> {
-                JIPipeValidityReport report = new JIPipeValidityReport();
+                JIPipeIssueReport report = new JIPipeIssueReport();
                 generatorUI.reportValidity(report);
                 if (!report.isValid()) {
                     UIUtils.openValidityReportDialog(this, report, true);

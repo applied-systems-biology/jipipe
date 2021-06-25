@@ -21,8 +21,11 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.color.ColorSpace;
 import org.hkijena.jipipe.extensions.imagejdatatypes.color.HSBColorSpace;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.color.ColoredImagePlusData;
+import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.color.ImagePlusColorData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.color.ImagePlusColorHSBData;
+import org.hkijena.jipipe.extensions.imagejdatatypes.util.ConverterWrapperImageSource;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
+import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageSource;
 
 import java.awt.Component;
 import java.nio.file.Path;
@@ -49,7 +52,11 @@ public class ImagePlus4DColorHSBData extends ImagePlus4DColorData implements Col
      * @param image wrapped image
      */
     public ImagePlus4DColorHSBData(ImagePlus image) {
-        super(ImagePlusColorHSBData.convertIfNeeded(image));
+        super(ImageJUtils.convertToColorHSBIfNeeded(image));
+    }
+
+    public ImagePlus4DColorHSBData(ImageSource source) {
+        super(new ConverterWrapperImageSource(source, ImageJUtils::convertToColorHSBIfNeeded));
     }
 
     @Override
@@ -73,6 +80,11 @@ public class ImagePlus4DColorHSBData extends ImagePlus4DColorData implements Col
      * @return the converted data
      */
     public static ImagePlusData convertFrom(ImagePlusData data) {
-        return new ImagePlus4DColorHSBData(ImagePlusColorHSBData.convertFrom(data).getImage());
+        if(data.hasLoadedImage()) {
+            return new ImagePlus4DColorHSBData(ImagePlusColorHSBData.convertFrom(data).getImage());
+        }
+        else {
+            return new ImagePlus4DColorHSBData(data.getImageSource());
+        }
     }
 }

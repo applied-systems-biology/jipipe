@@ -2,7 +2,7 @@ package org.hkijena.jipipe.extensions.imagejalgorithms.ij1.forms;
 
 import ij.ImagePlus;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
-import org.hkijena.jipipe.api.JIPipeValidityReport;
+import org.hkijena.jipipe.api.JIPipeIssueReport;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataSource;
 import org.hkijena.jipipe.api.nodes.JIPipeMergingDataBatch;
@@ -52,7 +52,7 @@ public class MaskDrawerFormData extends FormData {
     }
 
     @Override
-    public void customCopy(FormData source, JIPipeValidityReport report) {
+    public void customCopy(FormData source, JIPipeIssueReport report) {
         MaskDrawerFormData sourceData = (MaskDrawerFormData) source;
         ImagePlus sourceMask = sourceData.maskDrawerPlugin.getMask();
         ImagePlus targetMask = maskDrawerPlugin.getMask();
@@ -85,7 +85,7 @@ public class MaskDrawerFormData extends FormData {
     }
 
     @Override
-    public void reportValidity(JIPipeValidityReport report) {
+    public void reportValidity(JIPipeIssueReport report) {
 
     }
 

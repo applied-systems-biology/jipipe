@@ -5,7 +5,7 @@ import com.fasterxml.jackson.annotation.JsonSetter;
 import com.google.common.eventbus.EventBus;
 import org.apache.commons.lang3.SystemUtils;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeValidityReport;
+import org.hkijena.jipipe.api.JIPipeIssueReport;
 import org.hkijena.jipipe.api.environments.ExternalEnvironment;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
@@ -55,9 +55,9 @@ public class REnvironment extends ExternalEnvironment {
     }
 
     @Override
-    public void reportValidity(JIPipeValidityReport report) {
+    public void reportValidity(JIPipeIssueReport report) {
         if (getRExecutablePath() == null || !Files.isRegularFile(getRExecutablePath())) {
-            report.forCategory("Executable").reportIsInvalid(
+            report.resolve("Executable").reportIsInvalid(
                     "R executable does not exist",
                     "You need to provide a R executable",
                     "Provide a R executable",
@@ -65,7 +65,7 @@ public class REnvironment extends ExternalEnvironment {
             );
         }
         if (getRScriptExecutablePath() == null || !Files.isRegularFile(getRScriptExecutablePath())) {
-            report.forCategory("Executable").reportIsInvalid(
+            report.resolve("Executable").reportIsInvalid(
                     "RScript executable does not exist",
                     "You need to provide a RScript executable",
                     "Provide a RScript executable",

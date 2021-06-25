@@ -76,7 +76,7 @@ elif args.operation == "predict":
     dltoolbox.utils.setup_devices(device_config)
 
     import dltoolbox.prediction
-    dltoolbox.prediction.predict(model_config, config)
+    dltoolbox.prediction.predict_data(model_config, config)
 elif args.operation == "evaluate":
     with open(args.config, "r") as f:
         config = json.load(f)
@@ -120,3 +120,8 @@ elif args.operation == "list-devices-json":
 
 else:
     raise AttributeError("Unsupported operation: " + args.operation)
+
+# TODO: probieren ... visualisierungs modul
+# Model visualization
+# from keras.utils.visualize_util import plot
+# plot(autoencoder, to_file='model.png', show_shapes=True)

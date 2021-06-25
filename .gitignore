@@ -24,6 +24,7 @@ target
 /lib-dltoolkit/
 /lib-jipipe-py/
 /r/
+/jipipe/
 /dist/zip/*
 /dist/JIPipe-2021.6.zip
 **/__pycache__/

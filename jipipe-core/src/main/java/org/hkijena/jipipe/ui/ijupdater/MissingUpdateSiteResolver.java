@@ -15,6 +15,7 @@ package org.hkijena.jipipe.ui.ijupdater;
 
 import org.hkijena.jipipe.JIPipeImageJUpdateSiteDependency;
 import org.hkijena.jipipe.JIPipeRegistryIssues;
+import org.hkijena.jipipe.api.notifications.JIPipeNotificationInbox;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.components.DocumentTabPane;
 import org.hkijena.jipipe.ui.components.MarkdownDocument;
@@ -32,6 +33,7 @@ public class MissingUpdateSiteResolver extends JDialog implements JIPipeWorkbenc
 
     private final Context context;
     private final JIPipeRegistryIssues issues;
+    private JIPipeNotificationInbox notificationInbox = new JIPipeNotificationInbox();
 
     public MissingUpdateSiteResolver(Context context, JIPipeRegistryIssues issues) {
         this.context = context;
@@ -127,5 +129,10 @@ public class MissingUpdateSiteResolver extends JDialog implements JIPipeWorkbenc
     @Override
     public DocumentTabPane getDocumentTabPane() {
         return null;
+    }
+
+    @Override
+    public JIPipeNotificationInbox getNotificationInbox() {
+        return notificationInbox;
     }
 }

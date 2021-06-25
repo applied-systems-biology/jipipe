@@ -18,7 +18,7 @@ import ij.process.ImageProcessor;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
-import org.hkijena.jipipe.api.JIPipeValidityReport;
+import org.hkijena.jipipe.api.JIPipeIssueReport;
 import org.hkijena.jipipe.api.data.JIPipeDefaultMutableSlotConfiguration;
 import org.hkijena.jipipe.api.nodes.JIPipeDataBatch;
 import org.hkijena.jipipe.api.nodes.JIPipeInputSlot;
@@ -101,8 +101,8 @@ public class PercentileThreshold8U2DAlgorithm extends JIPipeSimpleIteratingAlgor
 
 
     @Override
-    public void reportValidity(JIPipeValidityReport report) {
-        report.forCategory("Percentile").checkIfWithin(this, percentile, 0, 100, true, true);
+    public void reportValidity(JIPipeIssueReport report) {
+        report.resolve("Percentile").checkIfWithin(this, percentile, 0, 100, true, true);
     }
 
     @JIPipeDocumentation(name = "Percentile", description = "Percentile from 0-100.")

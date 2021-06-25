@@ -12,6 +12,7 @@ import org.hkijena.jipipe.extensions.expressions.DefaultExpressionEvaluator;
 import org.hkijena.jipipe.extensions.expressions.DefaultExpressionParameter;
 import org.hkijena.jipipe.extensions.parameters.pairs.StringQueryExpressionAndStringPairParameter;
 import org.hkijena.jipipe.extensions.parameters.primitives.FilePathParameterSettings;
+import org.hkijena.jipipe.extensions.python.OptionalPythonEnvironment;
 import org.hkijena.jipipe.extensions.python.PythonEnvironment;
 import org.hkijena.jipipe.extensions.python.PythonEnvironmentType;
 import org.hkijena.jipipe.extensions.settings.FileChooserSettings;
@@ -118,7 +119,15 @@ public class SelectVirtualEnvPythonInstaller extends ExternalEnvironmentInstalle
         generatedEnvironment.setArguments(new DefaultExpressionParameter("ARRAY(\"-u\", script_file)"));
         generatedEnvironment.setName(configuration.getName());
         if (getParameterAccess() != null) {
-            SwingUtilities.invokeLater(() -> getParameterAccess().set(generatedEnvironment));
+            SwingUtilities.invokeLater(() -> {
+                if(getParameterAccess().getFieldClass().isAssignableFrom(generatedEnvironment.getClass())) {
+                    getParameterAccess().set(generatedEnvironment);
+                }
+                else {
+                    // It's probably an optional
+                    getParameterAccess().set(new OptionalPythonEnvironment(generatedEnvironment));
+                }
+            });
         }
     }
 

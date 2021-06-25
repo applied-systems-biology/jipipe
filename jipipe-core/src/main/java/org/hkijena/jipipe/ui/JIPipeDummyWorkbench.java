@@ -1,6 +1,7 @@
 package org.hkijena.jipipe.ui;
 
 import org.hkijena.jipipe.JIPipe;
+import org.hkijena.jipipe.api.notifications.JIPipeNotificationInbox;
 import org.hkijena.jipipe.ui.components.DocumentTabPane;
 import org.scijava.Context;
 
@@ -15,6 +16,7 @@ public class JIPipeDummyWorkbench implements JIPipeWorkbench {
 
     private final JFrame frame = new JFrame();
     private final DocumentTabPane tabPane = new DocumentTabPane();
+    private JIPipeNotificationInbox notificationInbox = new JIPipeNotificationInbox();
 
     @Override
     public Window getWindow() {
@@ -47,5 +49,10 @@ public class JIPipeDummyWorkbench implements JIPipeWorkbench {
     @Override
     public DocumentTabPane getDocumentTabPane() {
         return tabPane;
+    }
+
+    @Override
+    public JIPipeNotificationInbox getNotificationInbox() {
+        return notificationInbox;
     }
 }

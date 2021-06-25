@@ -16,7 +16,7 @@ package org.hkijena.jipipe.ui.compat;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.google.common.eventbus.Subscribe;
 import org.hkijena.jipipe.JIPipe;
-import org.hkijena.jipipe.api.JIPipeValidityReport;
+import org.hkijena.jipipe.api.JIPipeIssueReport;
 import org.hkijena.jipipe.api.compat.ImageJDatatypeImporter;
 import org.hkijena.jipipe.api.compat.SingleImageJAlgorithmRun;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
@@ -27,6 +27,7 @@ import org.hkijena.jipipe.api.history.JIPipeGraphHistory;
 import org.hkijena.jipipe.api.nodes.JIPipeGraph;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
+import org.hkijena.jipipe.api.notifications.JIPipeNotificationInbox;
 import org.hkijena.jipipe.extensions.settings.RuntimeSettings;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.components.AddAlgorithmSlotPanel;
@@ -68,6 +69,7 @@ public class RunSingleAlgorithmDialog extends JDialog implements JIPipeWorkbench
     private FormPanel formPanel;
     private int numThreads = RuntimeSettings.getInstance().getDefaultRunThreads();
     private DocumentTabPane tabPane;
+    private JIPipeNotificationInbox notificationInbox = new JIPipeNotificationInbox();
 
     /**
      * @param context SciJava context
@@ -351,7 +353,7 @@ public class RunSingleAlgorithmDialog extends JDialog implements JIPipeWorkbench
     }
 
     private void copyCommand() {
-        JIPipeValidityReport report = new JIPipeValidityReport();
+        JIPipeIssueReport report = new JIPipeIssueReport();
         runSettings.reportValidity(report);
         if (!report.isValid()) {
             UIUtils.openValidityReportDialog(this, report, false);
@@ -365,7 +367,7 @@ public class RunSingleAlgorithmDialog extends JDialog implements JIPipeWorkbench
     }
 
     private void runNow() {
-        JIPipeValidityReport report = new JIPipeValidityReport();
+        JIPipeIssueReport report = new JIPipeIssueReport();
         runSettings.reportValidity(report);
         if (!report.isValid()) {
             UIUtils.openValidityReportDialog(this, report, false);
@@ -434,5 +436,10 @@ public class RunSingleAlgorithmDialog extends JDialog implements JIPipeWorkbench
     @Override
     public DocumentTabPane getDocumentTabPane() {
         return tabPane;
+    }
+
+    @Override
+    public JIPipeNotificationInbox getNotificationInbox() {
+        return notificationInbox;
     }
 }

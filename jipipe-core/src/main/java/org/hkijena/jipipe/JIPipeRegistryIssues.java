@@ -14,7 +14,7 @@
 package org.hkijena.jipipe;
 
 import org.hkijena.jipipe.api.JIPipeValidatable;
-import org.hkijena.jipipe.api.JIPipeValidityReport;
+import org.hkijena.jipipe.api.JIPipeIssueReport;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.scijava.plugin.PluginInfo;
@@ -32,28 +32,28 @@ public class JIPipeRegistryIssues implements JIPipeValidatable {
     private Set<JIPipeNodeInfo> erroneousNodes = new HashSet<>();
 
     @Override
-    public void reportValidity(JIPipeValidityReport report) {
+    public void reportValidity(JIPipeIssueReport report) {
         for (JIPipeImageJUpdateSiteDependency site : missingImageJSites) {
-            report.forCategory("ImageJ dependencies").forCategory("Sites").forCategory(site.getName()).reportIsInvalid("Missing ImageJ site: " + site.getName(),
+            report.resolve("ImageJ dependencies").resolve("Sites").resolve(site.getName()).reportIsInvalid("Missing ImageJ site: " + site.getName(),
                     String.format("An extension requests following ImageJ site to be activated: '%s' (%s)", site.getName(), site.getUrl()),
                     "Please activate the site in the update manager.",
                     this);
         }
         for (PluginInfo<JIPipeJavaExtension> plugin : erroneousPlugins) {
-            report.forCategory("Java Extensions").forCategory(plugin.getIdentifier()).reportIsInvalid("Could not load extension '" + plugin.getIdentifier() + "'",
+            report.resolve("Java Extensions").resolve(plugin.getIdentifier()).reportIsInvalid("Could not load extension '" + plugin.getIdentifier() + "'",
                     "There was an error while loading an extension.",
                     "Please install necessary dependencies via ImageJ. Then restart  ImageJ.",
                     plugin);
         }
         for (JIPipeNodeInfo info : erroneousNodes) {
-            report.forCategory("Node types").forCategory(info.getId())
+            report.resolve("Node types").resolve(info.getId())
                     .reportIsInvalid("Invalid node type '" + info.getName() + "'",
                             "There was an error while loading a node type.",
                             "Please install necessary dependencies via ImageJ. Then restart ImageJ.",
                             info);
         }
         for (Class<? extends JIPipeData> dataType : erroneousDataTypes) {
-            report.forCategory("Data types").forCategory(dataType.getCanonicalName())
+            report.resolve("Data types").resolve(dataType.getCanonicalName())
                     .reportIsInvalid("Invalid data type '" + dataType + "'",
                             "There was an error while loading a data type.",
                             "Please install necessary dependencies via ImageJ. Then restart ImageJ.",

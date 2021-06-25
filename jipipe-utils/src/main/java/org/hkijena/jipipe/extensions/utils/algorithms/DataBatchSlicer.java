@@ -50,7 +50,7 @@ public class DataBatchSlicer extends JIPipeMergingAlgorithm {
     }
 
     @JIPipeDocumentation(name = "Slice range", description = "Only the items within this range are copied into the output. The first index is zero. " +
-            "If a data batch does not contain the requested index, no data is copied.")
+            "If a data batch does not contain the requested index, no data is copied.\n\n" + IntegerRange.DOCUMENTATION_DESCRIPTION)
     @JIPipeParameter("slice-range")
     public IntegerRange getSliceRange() {
         return sliceRange;

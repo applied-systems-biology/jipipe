@@ -17,7 +17,7 @@ import com.google.common.eventbus.Subscribe;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeRun;
 import org.hkijena.jipipe.api.JIPipeRunSettings;
-import org.hkijena.jipipe.api.JIPipeValidityReport;
+import org.hkijena.jipipe.api.JIPipeIssueReport;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeAlgorithm;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
@@ -72,7 +72,7 @@ public class JIPipeRunSettingsUI extends JIPipeProjectWorkbenchPanel {
     private void initialize() {
         setLayout(new BorderLayout(8, 8));
 
-        JIPipeValidityReport report = new JIPipeValidityReport();
+        JIPipeIssueReport report = new JIPipeIssueReport();
         getProjectWorkbench().getProject().reportValidity(report);
         if (report.isValid()) {
             initializeSetupGUI();
@@ -81,7 +81,7 @@ public class JIPipeRunSettingsUI extends JIPipeProjectWorkbenchPanel {
         }
     }
 
-    private void initializeValidityCheckUI(JIPipeValidityReport report) {
+    private void initializeValidityCheckUI(JIPipeIssueReport report) {
         JPanel panel = new JPanel();
         panel.setLayout(new BorderLayout(8, 8));
         JIPipeValidityReportUI reportUI = new JIPipeValidityReportUI(false);
@@ -111,7 +111,7 @@ public class JIPipeRunSettingsUI extends JIPipeProjectWorkbenchPanel {
 
         JButton runButton = new JButton("Retry", UIUtils.getIconFromResources("actions/view-refresh.png"));
         runButton.addActionListener(e -> {
-            report.clear();
+            report.clearAll();
             getProjectWorkbench().getProject().reportValidity(report);
             getProjectWorkbench().sendStatusBarText("Re-validated JIPipe project");
             if (report.isValid())
