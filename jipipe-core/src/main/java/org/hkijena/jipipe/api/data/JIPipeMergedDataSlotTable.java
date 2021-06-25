@@ -42,6 +42,7 @@ public class JIPipeMergedDataSlotTable implements TableModel {
     private ArrayList<JIPipeProjectCompartment> compartmentList = new ArrayList<>();
     private ArrayList<JIPipeGraphNode> algorithmList = new ArrayList<>();
     private List<String> annotationColumns = new ArrayList<>();
+    private List<String> dataAnnotationColumns = new ArrayList<>();
     private ArrayList<JIPipeDataSlot> slotList = new ArrayList<>();
     private ArrayList<Integer> rowList = new ArrayList<>();
     private List<Component> previewCache = new ArrayList<>();
@@ -68,6 +69,10 @@ public class JIPipeMergedDataSlotTable implements TableModel {
         for (String annotationColumn : dataSlot.getAnnotationColumns()) {
             if (!annotationColumns.contains(annotationColumn))
                 annotationColumns.add(annotationColumn);
+        }
+        for (String annotationColumn : dataSlot.getDataAnnotationColumns()) {
+            if (!dataAnnotationColumns.contains(annotationColumn))
+                dataAnnotationColumns.add(annotationColumn);
         }
         JIPipeProjectCompartment compartment = null;
         if (project != null) {
@@ -104,9 +109,9 @@ public class JIPipeMergedDataSlotTable implements TableModel {
     @Override
     public int getColumnCount() {
         if (withCompartmentAndAlgorithm)
-            return annotationColumns.size() + 6;
+            return annotationColumns.size() + dataAnnotationColumns.size() + 6;
         else
-            return annotationColumns.size() + 4;
+            return annotationColumns.size() + dataAnnotationColumns.size() + 4;
     }
 
     @Override
@@ -124,8 +129,10 @@ public class JIPipeMergedDataSlotTable implements TableModel {
                 return "Preview";
             else if (columnIndex == 5)
                 return "String representation";
+            else if(columnIndex < dataAnnotationColumns.size() + 6)
+                return dataAnnotationColumns.get(columnIndex - 6);
             else
-                return annotationColumns.get(columnIndex - 6);
+                return annotationColumns.get(columnIndex - dataAnnotationColumns.size() - 6);
         } else {
             if (columnIndex == 0)
                 return "Index";
@@ -135,8 +142,10 @@ public class JIPipeMergedDataSlotTable implements TableModel {
                 return "Preview";
             else if (columnIndex == 3)
                 return "String representation";
+            else if(columnIndex < dataAnnotationColumns.size() + 4)
+                return dataAnnotationColumns.get(columnIndex - 4);
             else
-                return annotationColumns.get(columnIndex - 4);
+                return annotationColumns.get(columnIndex - dataAnnotationColumns.size() - 4);
         }
     }
 
@@ -155,6 +164,8 @@ public class JIPipeMergedDataSlotTable implements TableModel {
                 return Component.class;
             else if (columnIndex == 5)
                 return String.class;
+            else if(columnIndex < dataAnnotationColumns.size() + 6)
+                return Component.class;
             else
                 return JIPipeAnnotation.class;
         } else {
@@ -166,6 +177,8 @@ public class JIPipeMergedDataSlotTable implements TableModel {
                 return Component.class;
             else if (columnIndex == 3)
                 return String.class;
+            else if(columnIndex < dataAnnotationColumns.size() + 4)
+                return Component.class;
             else
                 return JIPipeAnnotation.class;
         }
@@ -206,8 +219,12 @@ public class JIPipeMergedDataSlotTable implements TableModel {
                 return preview;
             } else if (columnIndex == 5)
                 return "" + slotList.get(rowIndex).getVirtualData(rowList.get(rowIndex)).getStringRepresentation();
+            else if(columnIndex < dataAnnotationColumns.size() - 6) {
+                // TODO: Preview
+                return new JLabel("N/A (TODO)");
+            }
             else {
-                String annotationColumn = annotationColumns.get(columnIndex - 6);
+                String annotationColumn = annotationColumns.get(columnIndex - dataAnnotationColumns.size() - 6);
                 JIPipeDataSlot slot = slotList.get(rowIndex);
                 return slot.getAnnotationOr(rowList.get(rowIndex), annotationColumn, null);
             }
@@ -231,8 +248,12 @@ public class JIPipeMergedDataSlotTable implements TableModel {
                 return preview;
             } else if (columnIndex == 3)
                 return "" + slotList.get(rowIndex).getVirtualData(rowList.get(rowIndex)).getStringRepresentation();
+            else if(columnIndex < dataAnnotationColumns.size() - 4) {
+                // TODO: Preview
+                return new JLabel("N/A (TODO)");
+            }
             else {
-                String annotationColumn = annotationColumns.get(columnIndex - 4);
+                String annotationColumn = annotationColumns.get(columnIndex - dataAnnotationColumns.size() - 4);
                 JIPipeDataSlot slot = slotList.get(rowIndex);
                 return slot.getAnnotationOr(rowList.get(rowIndex), annotationColumn, null);
             }
@@ -259,6 +280,10 @@ public class JIPipeMergedDataSlotTable implements TableModel {
      */
     public List<String> getAnnotationColumns() {
         return annotationColumns;
+    }
+
+    public List<String> getDataAnnotationColumns() {
+        return dataAnnotationColumns;
     }
 
     /**

@@ -306,8 +306,15 @@ public class JIPipeCacheMultiDataSlotTableUI extends JIPipeWorkbenchPanel {
             int spacer = model.isWithCompartmentAndAlgorithm() ? 6 : 4;
             if (modelColumn < spacer) {
                 return defaultRenderer.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
+            }
+            else if(modelColumn < dataTable.getAnnotationColumns().size() + spacer) {
+                String info = dataTable.getDataAnnotationColumns().get(modelColumn - spacer);
+                String html = String.format("<html><table><tr><td><img src=\"%s\"/></td><td>%s</tr>",
+                        UIUtils.getIconFromResources("data-types/data-annotation.png"),
+                        info);
+                return defaultRenderer.getTableCellRendererComponent(table, html, isSelected, hasFocus, row, column);
             } else {
-                String info = dataTable.getAnnotationColumns().get(modelColumn - spacer);
+                String info = dataTable.getAnnotationColumns().get(modelColumn - dataTable.getAnnotationColumns().size() - spacer);
                 String html = String.format("<html><table><tr><td><img src=\"%s\"/></td><td>%s</tr>",
                         UIUtils.getIconFromResources("data-types/annotation.png"),
                         info);

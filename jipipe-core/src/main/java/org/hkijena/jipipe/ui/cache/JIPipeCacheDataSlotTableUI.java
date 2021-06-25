@@ -297,7 +297,7 @@ public class JIPipeCacheDataSlotTableUI extends JIPipeWorkbenchPanel {
 
         @Override
         public int getColumnCount() {
-            return slot.getAnnotationColumns().size() + 4;
+            return slot.getAnnotationColumns().size() + slot.getDataAnnotationColumns().size() + 4;
         }
 
         @Override
@@ -310,8 +310,11 @@ public class JIPipeCacheDataSlotTableUI extends JIPipeWorkbenchPanel {
                 return "Preview";
             else if (columnIndex == 3)
                 return "String representation";
+            else if(columnIndex < slot.getDataAnnotationColumns().size() + 4) {
+                return "$" + slot.getDataAnnotationColumns().get(columnIndex - 4);
+            }
             else {
-                return slot.getAnnotationColumns().get(columnIndex - 4);
+                return slot.getAnnotationColumns().get(columnIndex - slot.getDataAnnotationColumns().size() - 4);
             }
         }
 
@@ -325,6 +328,8 @@ public class JIPipeCacheDataSlotTableUI extends JIPipeWorkbenchPanel {
                 return Component.class;
             else if (columnIndex == 3)
                 return String.class;
+            else if(columnIndex < slot.getDataAnnotationColumns().size() + 4)
+                return Component.class;
             else {
                 return JIPipeAnnotation.class;
             }
@@ -356,8 +361,12 @@ public class JIPipeCacheDataSlotTableUI extends JIPipeWorkbenchPanel {
                 return preview;
             } else if (columnIndex == 3)
                 return "" + slot.getVirtualData(rowIndex).getStringRepresentation();
+            else if(columnIndex < slot.getDataAnnotationColumns().size() + 4) {
+                // TODO: Data annotation preview
+                return new JLabel("N/A (TODO)");
+            }
             else {
-                return slot.getAnnotation(rowIndex, columnIndex - 4);
+                return slot.getAnnotation(rowIndex, columnIndex - slot.getDataAnnotationColumns().size() - 4);
             }
         }
 
@@ -436,8 +445,14 @@ public class JIPipeCacheDataSlotTableUI extends JIPipeWorkbenchPanel {
             int modelColumn = table.convertColumnIndexToModel(column);
             if (modelColumn < 4) {
                 return defaultRenderer.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
+            } else if(modelColumn < dataTable.getDataAnnotationColumns().size() + 4) {
+                String info = dataTable.getDataAnnotationColumns().get(modelColumn - - 4);
+                String html = String.format("<html><table><tr><td><img src=\"%s\"/></td><td>%s</tr>",
+                        UIUtils.getIconFromResources("data-types/data-annotation.png"),
+                        info);
+                return defaultRenderer.getTableCellRendererComponent(table, html, isSelected, hasFocus, row, column);
             } else {
-                String info = dataTable.getAnnotationColumns().get(modelColumn - 4);
+                String info = dataTable.getAnnotationColumns().get(modelColumn - dataTable.getAnnotationColumns().size() - 4);
                 String html = String.format("<html><table><tr><td><img src=\"%s\"/></td><td>%s</tr>",
                         UIUtils.getIconFromResources("data-types/annotation.png"),
                         info);
