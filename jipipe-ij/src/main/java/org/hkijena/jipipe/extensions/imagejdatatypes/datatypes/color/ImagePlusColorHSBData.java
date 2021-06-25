@@ -21,7 +21,9 @@ import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.extensions.imagejdatatypes.color.ColorSpace;
 import org.hkijena.jipipe.extensions.imagejdatatypes.color.HSBColorSpace;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
+import org.hkijena.jipipe.extensions.imagejdatatypes.util.ConverterWrapperImageSource;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
+import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageSource;
 
 import java.awt.Component;
 import java.nio.file.Path;
@@ -51,7 +53,11 @@ public class ImagePlusColorHSBData extends ImagePlusColorData implements Colored
      * @param image wrapped image
      */
     public ImagePlusColorHSBData(ImagePlus image) {
-        super(ImagePlusColorHSBData.convertIfNeeded(image));
+        super(ImageJUtils.convertToColorHSBIfNeeded(image));
+    }
+
+    public ImagePlusColorHSBData(ImageSource source) {
+        super(new ConverterWrapperImageSource(source, ImageJUtils::convertToColorHSBIfNeeded));
     }
 
     @Override
@@ -62,24 +68,6 @@ public class ImagePlusColorHSBData extends ImagePlusColorData implements Colored
     @Override
     public Component preview(int width, int height) {
         return ImageJUtils.generatePreview(this.getImage(), getColorSpace(), width, height);
-    }
-
-    /**
-     * Converts an {@link ImagePlus} to the color space of this data.
-     * Does not guarantee that the input image is copied.
-     *
-     * @param image the image
-     * @return converted image.
-     */
-    public static ImagePlus convertIfNeeded(ImagePlus image) {
-        if (image.getType() != ImagePlus.COLOR_RGB) {
-            // A copy is guaranteed here
-            ImagePlus copy = ImagePlusColorRGBData.convertIfNeeded(image);
-            ImageJUtils.convertRGBToHSB(copy, new JIPipeProgressInfo());
-            return copy;
-        }
-        // ImageJ does not differentiate between color spaces, so we cannot convert. The convertFrom() method will handle this correctly.
-        return image;
     }
 
     public static ImagePlusData importFrom(Path storageFolder) {
@@ -93,16 +81,21 @@ public class ImagePlusColorHSBData extends ImagePlusColorData implements Colored
      * @return the converted data
      */
     public static ImagePlusData convertFrom(ImagePlusData data) {
-        ImagePlus image = data.getImage();
-        if (image.getType() != ImagePlus.COLOR_RGB) {
-            // This will go through the standard method (greyscale -> RGB -> HSB)
-            return new ImagePlusColorHSBData(image);
-        } else if (data instanceof ColoredImagePlusData) {
-            ImagePlus copy = data.getDuplicateImage();
-            COLOR_SPACE.convert(copy, ((ColoredImagePlusData) data).getColorSpace(), new JIPipeProgressInfo());
-            return new ImagePlusColorHSBData(copy);
-        } else {
-            return new ImagePlusColorHSBData(image);
+        if(data.hasLoadedImage()) {
+            ImagePlus image = data.getImage();
+            if (image.getType() != ImagePlus.COLOR_RGB) {
+                // This will go through the standard method (greyscale -> RGB -> HSB)
+                return new ImagePlusColorHSBData(image);
+            } else if (data instanceof ColoredImagePlusData) {
+                ImagePlus copy = data.getDuplicateImage();
+                COLOR_SPACE.convert(copy, ((ColoredImagePlusData) data).getColorSpace(), new JIPipeProgressInfo());
+                return new ImagePlusColorHSBData(copy);
+            } else {
+                return new ImagePlusColorHSBData(image);
+            }
+        }
+        else {
+            return new ImagePlusColorHSBData(data.getImageSource());
         }
     }
 }

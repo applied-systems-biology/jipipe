@@ -23,7 +23,6 @@ import org.hkijena.jipipe.extensions.cellpose.CellPoseSettings;
 import org.hkijena.jipipe.extensions.cellpose.datatypes.CellPoseModelData;
 import org.hkijena.jipipe.extensions.cellpose.datatypes.CellPoseSizeModelData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.LabeledImagePlusData;
-import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.extensions.python.OptionalPythonEnvironment;
 import org.hkijena.jipipe.extensions.python.PythonUtils;
@@ -302,7 +301,7 @@ public class CellPoseTrainingAlgorithm extends JIPipeMergingAlgorithm {
             JIPipeProgressInfo rowProgress = extractProgress.resolveAndLog("Row " + row);
             LabeledImagePlusData masked = getInputSlot("Training data")
                     .getData(row, LabeledImagePlusData.class, rowProgress);
-            ImagePlus image = ImagePlusGreyscaleData.convertIfNeeded(masked.getImage());
+            ImagePlus image = ImageJUtils.convertToGreyscaleIfNeeded(masked.getImage());
             ImagePlus mask = ImageJUtils.getNormalizedMask(image, masked.getLabels());
             dataIs3D |= image.getNDimensions() > 2 && enable3DSegmentation;
 
@@ -312,7 +311,7 @@ public class CellPoseTrainingAlgorithm extends JIPipeMergingAlgorithm {
             JIPipeProgressInfo rowProgress = extractProgress.resolveAndLog("Row " + row);
             LabeledImagePlusData masked = getInputSlot("Test data")
                     .getData(row, LabeledImagePlusData.class, rowProgress);
-            ImagePlus image = ImagePlusGreyscaleData.convertIfNeeded(masked.getImage());
+            ImagePlus image = ImageJUtils.convertToGreyscaleIfNeeded(masked.getImage());
             ImagePlus mask = ImageJUtils.getNormalizedMask(image, masked.getLabels());
             dataIs3D |= image.getNDimensions() > 2 && enable3DSegmentation;
 

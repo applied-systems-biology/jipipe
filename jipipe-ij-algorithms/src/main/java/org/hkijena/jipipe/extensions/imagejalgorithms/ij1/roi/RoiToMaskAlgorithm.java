@@ -31,6 +31,7 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ROIListData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleMaskData;
+import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 
 import static org.hkijena.jipipe.api.nodes.JIPipeIteratingAlgorithm.ITERATING_ALGORITHM_DESCRIPTION;
 
@@ -91,7 +92,7 @@ public class RoiToMaskAlgorithm extends JIPipeIteratingAlgorithm {
 
         ImagePlus result;
         if (drawOver) {
-            result = ImagePlusGreyscaleMaskData.convertIfNeeded(reference.duplicate());
+            result = ImageJUtils.convertToGreyscale8UIfNeeded(reference.duplicate());
             result.setTitle("Reference+ROIs");
         } else {
             result = IJ.createImage("ROIs", "8-bit", sx, sy, sc, sz, st);

@@ -14,11 +14,14 @@
 package org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale;
 
 import ij.ImagePlus;
-import ij.process.ImageConverter;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeHeavyData;
 import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
+import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.color.ImagePlusColorData;
+import org.hkijena.jipipe.extensions.imagejdatatypes.util.ConverterWrapperImageSource;
+import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
+import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageSource;
 
 import java.nio.file.Path;
 
@@ -42,24 +45,11 @@ public class ImagePlusGreyscale16UData extends ImagePlusGreyscaleData {
      * @param image wrapped image
      */
     public ImagePlusGreyscale16UData(ImagePlus image) {
-        super(ImagePlusGreyscale16UData.convertIfNeeded(image));
+        super(ImageJUtils.convertToGrayscale16UIfNeeded(image));
     }
 
-    /**
-     * Converts an {@link ImagePlus} to the color space of this data.
-     * Does not guarantee that the input image is copied.
-     *
-     * @param image the image
-     * @return converted image.
-     */
-    public static ImagePlus convertIfNeeded(ImagePlus image) {
-        if (image.getType() != ImagePlus.GRAY16) {
-            image = image.duplicate();
-            ImageConverter.setDoScaling(true);
-            ImageConverter ic = new ImageConverter(image);
-            ic.convertToGray16();
-        }
-        return image;
+    public ImagePlusGreyscale16UData(ImageSource source) {
+        super(new ConverterWrapperImageSource(source, ImageJUtils::convertToGrayscale16UIfNeeded));
     }
 
     public static ImagePlusData importFrom(Path storageFolder) {
@@ -73,6 +63,11 @@ public class ImagePlusGreyscale16UData extends ImagePlusGreyscaleData {
      * @return the converted data
      */
     public static ImagePlusData convertFrom(ImagePlusData data) {
-        return new ImagePlusGreyscale16UData(data.getImage());
+        if(data.hasLoadedImage()) {
+            return new ImagePlusGreyscale16UData(data.getImage());
+        }
+        else {
+            return new ImagePlusGreyscale16UData(data.getImageSource());
+        }
     }
 }

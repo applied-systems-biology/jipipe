@@ -14,7 +14,6 @@
 package org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.color;
 
 import ij.ImagePlus;
-import ij.process.ImageConverter;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeHeavyData;
 import org.hkijena.jipipe.api.JIPipeOrganization;
@@ -22,7 +21,9 @@ import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.extensions.imagejdatatypes.color.ColorSpace;
 import org.hkijena.jipipe.extensions.imagejdatatypes.color.LABColorSpace;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
+import org.hkijena.jipipe.extensions.imagejdatatypes.util.ConverterWrapperImageSource;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
+import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageSource;
 
 import java.awt.Component;
 import java.nio.file.Path;
@@ -52,7 +53,11 @@ public class ImagePlusColorLABData extends ImagePlusColorData implements Colored
      * @param image wrapped image
      */
     public ImagePlusColorLABData(ImagePlus image) {
-        super(ImagePlusColorLABData.convertIfNeeded(image));
+        super(ImageJUtils.convertToColorLABIfNeeded(image));
+    }
+
+    public ImagePlusColorLABData(ImageSource source) {
+        super(new ConverterWrapperImageSource(source, ImageJUtils::convertToColorLABIfNeeded));
     }
 
     @Override
@@ -63,26 +68,6 @@ public class ImagePlusColorLABData extends ImagePlusColorData implements Colored
     @Override
     public Component preview(int width, int height) {
         return ImageJUtils.generatePreview(this.getImage(), getColorSpace(), width, height);
-    }
-
-    /**
-     * Converts an {@link ImagePlus} to the color space of this data.
-     * Does not guarantee that the input image is copied.
-     *
-     * @param image the image
-     * @return converted image.
-     */
-    public static ImagePlus convertIfNeeded(ImagePlus image) {
-        if (image.getType() != ImagePlus.COLOR_RGB) {
-            String title = image.getTitle();
-            image = image.duplicate();
-            image.setTitle(title);
-            ImageConverter.setDoScaling(true);
-            ImageConverter ic = new ImageConverter(image);
-            ic.convertToRGB();
-            ImageJUtils.convertRGBToLAB(image, new JIPipeProgressInfo());
-        }
-        return image;
     }
 
     public static ImagePlusData importFrom(Path storageFolder) {
@@ -96,16 +81,21 @@ public class ImagePlusColorLABData extends ImagePlusColorData implements Colored
      * @return the converted data
      */
     public static ImagePlusData convertFrom(ImagePlusData data) {
-        ImagePlus image = data.getImage();
-        if (image.getType() != ImagePlus.COLOR_RGB) {
-            // Standard method: Greyscale -> RGB
-            return new ImagePlusColorLABData(data.getImage());
-        } else if (data instanceof ColoredImagePlusData) {
-            ImagePlus copy = data.getDuplicateImage();
-            COLOR_SPACE.convert(copy, ((ColoredImagePlusData) data).getColorSpace(), new JIPipeProgressInfo());
-            return new ImagePlusColorLABData(copy);
-        } else {
-            return new ImagePlusColorLABData(data.getImage());
+        if(data.hasLoadedImage()) {
+            ImagePlus image = data.getImage();
+            if (image.getType() != ImagePlus.COLOR_RGB) {
+                // Standard method: Greyscale -> RGB
+                return new ImagePlusColorLABData(data.getImage());
+            } else if (data instanceof ColoredImagePlusData) {
+                ImagePlus copy = data.getDuplicateImage();
+                COLOR_SPACE.convert(copy, ((ColoredImagePlusData) data).getColorSpace(), new JIPipeProgressInfo());
+                return new ImagePlusColorLABData(copy);
+            } else {
+                return new ImagePlusColorLABData(data.getImage());
+            }
+        }
+        else {
+            return new ImagePlusColorLABData(data.getImageSource());
         }
     }
 }
