@@ -27,6 +27,7 @@ import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.extensions.settings.FileChooserSettings;
 import org.hkijena.jipipe.extensions.settings.GeneralDataSettings;
+import org.hkijena.jipipe.extensions.tables.datatypes.AnnotationTableData;
 import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
@@ -210,7 +211,10 @@ public class JIPipeCacheMultiDataSlotTableUI extends JIPipeWorkbenchPanel {
     private void exportAsCSV() {
         Path path = FileChooserSettings.saveFile(this, FileChooserSettings.KEY_PROJECT, "Export as *.csv", UIUtils.EXTENSION_FILTER_CSV);
         if (path != null) {
-            ResultsTableData tableData = ResultsTableData.fromTableModel(multiSlotTable);
+            AnnotationTableData tableData = new AnnotationTableData();
+            for (JIPipeDataSlot slot : multiSlotTable.getSlotList()) {
+                tableData.addRows(slot.toAnnotationTable(true));
+            }
             tableData.saveAsCSV(path);
         }
     }

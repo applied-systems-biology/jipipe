@@ -18,6 +18,7 @@ import com.fasterxml.jackson.annotation.JsonSetter;
 import ij.measure.ResultsTable;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
+import org.hkijena.jipipe.extensions.tables.datatypes.AnnotationTableData;
 import org.hkijena.jipipe.utils.JsonUtils;
 import org.hkijena.jipipe.utils.StringUtils;
 
@@ -314,6 +315,26 @@ public class JIPipeExportedDataTable implements TableModel {
     @Override
     public void removeTableModelListener(TableModelListener l) {
 
+    }
+
+    /**
+     * Converts the data table into an annotation table
+     * @return the table
+     */
+    public AnnotationTableData toAnnotationTable() {
+        AnnotationTableData output = new AnnotationTableData();
+        int outputRow = 0;
+        for (Row row : getRowList()) {
+            output.addRow();
+            for (JIPipeAnnotation annotation : row.getAnnotations()) {
+                if (annotation != null) {
+                    int col = output.addAnnotationColumn(annotation.getName());
+                    output.setValueAt(annotation.getValue(), outputRow, col);
+                }
+            }
+            ++outputRow;
+        }
+        return output;
     }
 
     /**

@@ -195,7 +195,7 @@ public class JIPipeCacheDataSlotTableUI extends JIPipeWorkbenchPanel {
     private void exportAsCSV() {
         Path path = FileChooserSettings.saveFile(this, FileChooserSettings.KEY_PROJECT, "Export as *.csv", UIUtils.EXTENSION_FILTER_CSV);
         if (path != null) {
-            ResultsTableData tableData = ResultsTableData.fromTableModel(dataTable);
+            ResultsTableData tableData = dataTable.slot.toAnnotationTable(true);
             tableData.saveAsCSV(path);
         }
     }

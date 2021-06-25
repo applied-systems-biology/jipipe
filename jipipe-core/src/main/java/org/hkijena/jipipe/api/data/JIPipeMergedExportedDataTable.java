@@ -21,6 +21,7 @@ import javax.swing.event.TableModelListener;
 import javax.swing.table.TableModel;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 
@@ -34,6 +35,7 @@ public class JIPipeMergedExportedDataTable implements TableModel {
     private ArrayList<JIPipeExportedDataTable.Row> rowList = new ArrayList<>();
     private List<String> annotationColumns = new ArrayList<>();
     private ArrayList<JIPipeDataSlot> slotList = new ArrayList<>();
+    private List<JIPipeExportedDataTable> addedTables = new ArrayList<>();
 
     /**
      * Adds an {@link JIPipeExportedDataTable}
@@ -43,6 +45,7 @@ public class JIPipeMergedExportedDataTable implements TableModel {
      * @param table    The table
      */
     public void add(JIPipeProject project, JIPipeDataSlot dataSlot, JIPipeExportedDataTable table) {
+        addedTables.add(table);
         for (String annotationColumn : table.getAnnotationColumns()) {
             if (!annotationColumns.contains(annotationColumn))
                 annotationColumns.add(annotationColumn);
@@ -161,5 +164,9 @@ public class JIPipeMergedExportedDataTable implements TableModel {
      */
     public List<JIPipeExportedDataTable.Row> getRowList() {
         return rowList;
+    }
+
+    public List<JIPipeExportedDataTable> getAddedTables() {
+        return Collections.unmodifiableList(addedTables);
     }
 }
