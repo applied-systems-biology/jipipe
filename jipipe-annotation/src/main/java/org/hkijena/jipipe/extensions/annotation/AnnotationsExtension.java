@@ -74,7 +74,7 @@ public class AnnotationsExtension extends JIPipePrepackagedDefaultJavaExtension 
         registerNodeType("annotate-remove", RemoveAnnotationAlgorithm.class, UIUtils.getIconURLFromResources("actions/entry-delete.png"));
         registerNodeType("annotate-split-by-annotation", SplitByAnnotation.class, UIUtils.getIconURLFromResources("actions/split.png"));
         registerNodeType("data-to-annotation-table", ConvertToAnnotationTable.class, UIUtils.getIconURLFromResources("data-types/annotation-table.png"));
-        registerNodeType("annotate-with-data", AnnotateWithDataString.class, UIUtils.getIconURLFromResources("data-types/data-type.png"));
+        registerNodeType("annotate-with-data-string", AnnotateWithDataString.class, UIUtils.getIconURLFromResources("data-types/data-type.png"));
         registerNodeType("extract-and-replace-annotation", ExtractAndReplaceAnnotation.class, UIUtils.getIconURLFromResources("actions/edit-find-replace.png"));
         registerNodeType("modify-annotation-script", ModifyAnnotationScript.class, UIUtils.getIconURLFromResources("apps/python.png"));
         registerNodeType("annotate-split-by-annotation-script", SplitByAnnotationScript.class, UIUtils.getIconURLFromResources("apps/python.png"));
@@ -84,6 +84,7 @@ public class AnnotationsExtension extends JIPipePrepackagedDefaultJavaExtension 
         registerNodeType("generate-unique-random-annotation", GenerateRandomUniqueAnnotation.class, UIUtils.getIconURLFromResources("actions/random.png"));
         registerNodeType("remove-array-annotations", RemoveArrayAnnotationsAlgorithm.class, UIUtils.getIconURLFromResources("actions/filter.png"));
         registerNodeType("remove-na-annotation-columns", RemoveNAAnnotationColumnsAlgorithm.class, UIUtils.getIconURLFromResources("actions/filter.png"));
+        registerNodeType("annotate-with-data", AnnotateWithData.class, UIUtils.getIconURLFromResources("actions/database.png"));
     }
 
     @Override
