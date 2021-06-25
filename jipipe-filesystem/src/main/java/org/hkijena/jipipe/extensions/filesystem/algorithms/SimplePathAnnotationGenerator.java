@@ -16,7 +16,7 @@ package org.hkijena.jipipe.extensions.filesystem.algorithms;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
-import org.hkijena.jipipe.api.JIPipeValidityReport;
+import org.hkijena.jipipe.api.JIPipeIssueReport;
 import org.hkijena.jipipe.api.data.JIPipeAnnotation;
 import org.hkijena.jipipe.api.data.JIPipeAnnotationMergeStrategy;
 import org.hkijena.jipipe.api.nodes.JIPipeDataBatch;
@@ -106,8 +106,8 @@ public class SimplePathAnnotationGenerator extends JIPipeSimpleIteratingAlgorith
     }
 
     @Override
-    public void reportValidity(JIPipeValidityReport report) {
-        report.forCategory("Generated annotation").checkNonEmpty(generatedAnnotation, this);
+    public void reportValidity(JIPipeIssueReport report) {
+        report.resolve("Generated annotation").checkNonEmpty(generatedAnnotation, this);
     }
 
     @JIPipeDocumentation(name = "Generated annotation", description = "Select which annotation type is generated for each path")

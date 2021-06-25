@@ -20,6 +20,7 @@ import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.extensions.deeplearning.DeepLearningArchitecture;
+import org.hkijena.jipipe.extensions.deeplearning.DeepLearningModelType;
 import org.hkijena.jipipe.extensions.deeplearning.RegularizationMethod;
 
 import java.nio.file.Path;
@@ -33,6 +34,7 @@ import java.util.List;
 public class DeepLearningModelConfiguration implements JIPipeParameterCollection {
     private final EventBus eventBus = new EventBus();
     private DeepLearningArchitecture architecture = DeepLearningArchitecture.SegNet;
+    private DeepLearningModelType modelType = DeepLearningModelType.segmentation;
     private RegularizationMethod regularizationMethod = RegularizationMethod.GaussianDropout;
     private double regularizationLambda = 0.1;
     private int imageWidth = 256;
@@ -43,6 +45,7 @@ public class DeepLearningModelConfiguration implements JIPipeParameterCollection
     private int numClasses = 2;
     private Path outputModelPath = Paths.get("");
     private Path outputModelJsonPath = Paths.get("");
+    private String loss = "";
 
     public DeepLearningModelConfiguration() {
     }
@@ -59,11 +62,22 @@ public class DeepLearningModelConfiguration implements JIPipeParameterCollection
         this.numClasses = other.numClasses;
         this.outputModelPath = other.outputModelPath;
         this.outputModelJsonPath = other.outputModelJsonPath;
+        this.modelType = other.modelType;
     }
 
     @Override
     public EventBus getEventBus() {
         return eventBus;
+    }
+
+    @JsonGetter("loss")
+    public String getLoss() {
+        return loss;
+    }
+
+    @JsonSetter("loss")
+    public void setLoss(String loss) {
+        this.loss = loss;
     }
 
     @JIPipeDocumentation(name = "Architecture", description = "The model architecture")
@@ -77,6 +91,19 @@ public class DeepLearningModelConfiguration implements JIPipeParameterCollection
     @JsonSetter("architecture")
     public void setArchitecture(DeepLearningArchitecture architecture) {
         this.architecture = architecture;
+    }
+
+    @JIPipeDocumentation(name = "Model type", description = "The type of this model")
+    @JIPipeParameter("model_type")
+    @JsonGetter("model_type")
+    public DeepLearningModelType getModelType() {
+        return modelType;
+    }
+
+    @JIPipeParameter("model_type")
+    @JsonSetter("model_type")
+    public void setModelType(DeepLearningModelType modelType) {
+        this.modelType = modelType;
     }
 
     @JIPipeDocumentation(name = "Regularization method", description = "The regularization method")

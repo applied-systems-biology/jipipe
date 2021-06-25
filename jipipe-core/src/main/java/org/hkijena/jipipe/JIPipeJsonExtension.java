@@ -27,7 +27,7 @@ import com.google.common.eventbus.EventBus;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeMetadata;
 import org.hkijena.jipipe.api.JIPipeValidatable;
-import org.hkijena.jipipe.api.JIPipeValidityReport;
+import org.hkijena.jipipe.api.JIPipeIssueReport;
 import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
 import org.hkijena.jipipe.api.grouping.JsonNodeInfo;
 import org.hkijena.jipipe.api.grouping.JsonNodeRegistrationTask;
@@ -269,26 +269,26 @@ public class JIPipeJsonExtension implements JIPipeParameterCollection, JIPipeDep
     }
 
     @Override
-    public void reportValidity(JIPipeValidityReport report) {
+    public void reportValidity(JIPipeIssueReport report) {
         if (StringUtils.isNullOrEmpty(getDependencyId())) {
-            report.forCategory("ID").reportIsInvalid("The ID is empty!",
+            report.resolve("ID").reportIsInvalid("The ID is empty!",
                     "A JSON extension must be identified with a unique ID to allow JIPipe to find dependencies.",
                     " Please provide a valid ID.",
                     this);
         } else if (!getDependencyId().contains(":")) {
-            report.forCategory("ID").reportIsInvalid("Malformed ID!",
+            report.resolve("ID").reportIsInvalid("Malformed ID!",
                     "The ID should contain some information about the plugin author (organization, ...) to prevent future collisions.",
                     "The ID must have following structure: <Organization>:<Name> e.g. org.hkijena.jipipe:my-plugin",
                     this);
         }
         if (StringUtils.isNullOrEmpty(getDependencyVersion())) {
-            report.forCategory("Version").reportIsInvalid("The version is empty!",
+            report.resolve("Version").reportIsInvalid("The version is empty!",
                     "This allows users of your extension to better get help if issues arise.",
                     "Please provide a valid version number. It has usually following format x.y.z.w",
                     this);
         }
         if (StringUtils.isNullOrEmpty(getMetadata().getName()) || "New project".equals(getMetadata().getName())) {
-            report.forCategory("Name").reportIsInvalid("Invalid name!",
+            report.resolve("Name").reportIsInvalid("Invalid name!",
                     "Your plugin should have a short and meaningful name.",
                     "Please provide a meaningful name for your plugin.",
                     this);
@@ -296,10 +296,10 @@ public class JIPipeJsonExtension implements JIPipeParameterCollection, JIPipeDep
         if (nodeInfos == null)
             deserializeNodeInfos();
         for (JsonNodeInfo info : nodeInfos) {
-            report.forCategory("Algorithms").forCategory(info.getName()).report(info);
+            report.resolve("Algorithms").resolve(info.getName()).report(info);
         }
         if (nodeInfos.size() != nodeInfos.stream().map(JsonNodeInfo::getId).collect(Collectors.toSet()).size()) {
-            report.forCategory("Algorithms").reportIsInvalid("Duplicate IDs found!",
+            report.resolve("Algorithms").reportIsInvalid("Duplicate IDs found!",
                     "Algorithm IDs must be unique",
                     "Please make sure that IDs are unique.",
                     this);

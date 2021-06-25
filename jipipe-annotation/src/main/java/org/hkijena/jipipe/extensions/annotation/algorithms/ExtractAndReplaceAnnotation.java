@@ -16,7 +16,7 @@ package org.hkijena.jipipe.extensions.annotation.algorithms;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
-import org.hkijena.jipipe.api.JIPipeValidityReport;
+import org.hkijena.jipipe.api.JIPipeIssueReport;
 import org.hkijena.jipipe.api.data.JIPipeAnnotation;
 import org.hkijena.jipipe.api.data.JIPipeAnnotationMergeStrategy;
 import org.hkijena.jipipe.api.data.JIPipeData;
@@ -79,12 +79,12 @@ public class ExtractAndReplaceAnnotation extends JIPipeSimpleIteratingAlgorithm 
     }
 
     @Override
-    public void reportValidity(JIPipeValidityReport report) {
-        report.forCategory("Functions").report(functions);
+    public void reportValidity(JIPipeIssueReport report) {
+        report.resolve("Functions").report(functions);
         for (int i = 0; i < functions.size(); i++) {
-            JIPipeValidityReport subReport = report.forCategory("Functions").forCategory("Item #" + (i + 1));
-            subReport.forCategory("Input").checkNonEmpty(functions.get(i).getInput(), this);
-            subReport.forCategory("Output").checkNonEmpty(functions.get(i).getOutput(), this);
+            JIPipeIssueReport subReport = report.resolve("Functions").resolve("Item #" + (i + 1));
+            subReport.resolve("Input").checkNonEmpty(functions.get(i).getInput(), this);
+            subReport.resolve("Output").checkNonEmpty(functions.get(i).getOutput(), this);
         }
     }
 

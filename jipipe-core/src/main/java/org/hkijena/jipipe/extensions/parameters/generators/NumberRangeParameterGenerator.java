@@ -14,7 +14,7 @@
 package org.hkijena.jipipe.extensions.parameters.generators;
 
 import com.google.common.eventbus.EventBus;
-import org.hkijena.jipipe.api.JIPipeValidityReport;
+import org.hkijena.jipipe.api.JIPipeIssueReport;
 import org.hkijena.jipipe.api.parameters.JIPipeDynamicParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeMutableParameterAccess;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
@@ -96,7 +96,7 @@ public class NumberRangeParameterGenerator<T extends Number & Comparable<T>> ext
     }
 
     @Override
-    public void reportValidity(JIPipeValidityReport report) {
+    public void reportValidity(JIPipeIssueReport report) {
         if (getCurrentMin().compareTo(getCurrentMax()) > 0) {
             report.reportIsInvalid("Invalid minimum and maximum values!",
                     "The minimum value must be less or equal to the maximum value.",

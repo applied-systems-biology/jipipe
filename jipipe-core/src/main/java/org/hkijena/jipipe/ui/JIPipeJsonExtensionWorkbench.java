@@ -16,7 +16,8 @@ package org.hkijena.jipipe.ui;
 import com.google.common.eventbus.Subscribe;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.JIPipeJsonExtension;
-import org.hkijena.jipipe.api.JIPipeValidityReport;
+import org.hkijena.jipipe.api.JIPipeIssueReport;
+import org.hkijena.jipipe.api.notifications.JIPipeNotificationInbox;
 import org.hkijena.jipipe.ui.components.DocumentTabPane;
 import org.hkijena.jipipe.ui.components.RecentJsonExtensionsMenu;
 import org.hkijena.jipipe.ui.components.ReloadableValidityChecker;
@@ -50,6 +51,8 @@ public class JIPipeJsonExtensionWorkbench extends JPanel implements JIPipeWorkbe
     private JLabel statusText;
     private ReloadableValidityChecker validityCheckerPanel;
     private boolean projectModified;
+    private JIPipeNotificationInbox notificationInbox = new JIPipeNotificationInbox();
+
 
     /**
      * @param window           The parent window
@@ -215,7 +218,7 @@ public class JIPipeJsonExtensionWorkbench extends JPanel implements JIPipeWorkbe
         menu.add(installButton);
 
         // "Help" entry
-        JMenu helpMenu = new JMenu();
+        JMenu helpMenu = new JMenu("Help");
         helpMenu.setIcon(UIUtils.getIconFromResources("actions/help.png"));
         JMenuItem quickHelp = new JMenuItem("Getting started", UIUtils.getIconFromResources("actions/help-info.png"));
         quickHelp.addActionListener(e -> documentTabPane.selectSingletonTab("INTRODUCTION"));
@@ -238,7 +241,7 @@ public class JIPipeJsonExtensionWorkbench extends JPanel implements JIPipeWorkbe
 
     private void installProject() {
         validityCheckerPanel.recheckValidity();
-        JIPipeValidityReport report = validityCheckerPanel.getReport();
+        JIPipeIssueReport report = validityCheckerPanel.getReport();
         if (!report.isValid()) {
             validateProject();
             if (JOptionPane.showConfirmDialog(this, "The extension builder found potential issues with the extension. Install anyways?",
@@ -315,5 +318,10 @@ public class JIPipeJsonExtensionWorkbench extends JPanel implements JIPipeWorkbe
     @Override
     public void setProjectModified(boolean projectModified) {
         this.projectModified = projectModified;
+    }
+
+    @Override
+    public JIPipeNotificationInbox getNotificationInbox() {
+        return notificationInbox;
     }
 }

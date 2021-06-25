@@ -46,6 +46,11 @@ public class AddROIToActiveJIPipeImageViewerDataDisplay implements JIPipeDataDis
     }
 
     @Override
+    public String getId() {
+        return "jipipe:add-roi-to-active-jipipe-image-viewer";
+    }
+
+    @Override
     public JIPipeData show(JIPipeDataSlot slot, JIPipeExportedDataTable.Row row, Path rowStorageFolder, String compartmentName, String algorithmName, String displayName, JIPipeWorkbench workbench) {
         ROIListData rois = ROIListData.importFrom(rowStorageFolder);
         display(rois, displayName, workbench, new JIPipeResultSlotDataSource(slot, row, rowStorageFolder));

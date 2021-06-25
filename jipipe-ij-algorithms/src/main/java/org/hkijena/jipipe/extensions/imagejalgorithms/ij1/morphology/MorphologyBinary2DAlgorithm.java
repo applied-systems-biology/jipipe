@@ -20,7 +20,7 @@ import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeHidden;
 import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
-import org.hkijena.jipipe.api.JIPipeValidityReport;
+import org.hkijena.jipipe.api.JIPipeIssueReport;
 import org.hkijena.jipipe.api.data.JIPipeDefaultMutableSlotConfiguration;
 import org.hkijena.jipipe.api.nodes.JIPipeDataBatch;
 import org.hkijena.jipipe.api.nodes.JIPipeInputSlot;
@@ -106,8 +106,8 @@ public class MorphologyBinary2DAlgorithm extends JIPipeSimpleIteratingAlgorithm 
 
 
     @Override
-    public void reportValidity(JIPipeValidityReport report) {
-        report.forCategory("Iterations").checkIfWithin(this, iterations, 1, Integer.MAX_VALUE, true, true);
+    public void reportValidity(JIPipeIssueReport report) {
+        report.resolve("Iterations").checkIfWithin(this, iterations, 1, Integer.MAX_VALUE, true, true);
     }
 
     @JIPipeDocumentation(name = "Operation", description = "The morphological operation")

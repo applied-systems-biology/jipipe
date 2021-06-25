@@ -20,9 +20,8 @@ import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
-import org.hkijena.jipipe.api.data.JIPipeAnnotation;
-import org.hkijena.jipipe.api.data.JIPipeAnnotationMergeStrategy;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
+import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
 import org.hkijena.jipipe.api.nodes.JIPipeColumMatching;
 import org.hkijena.jipipe.api.nodes.JIPipeInputSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeMergingAlgorithm;
@@ -34,15 +33,15 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
+import org.hkijena.jipipe.extensions.deeplearning.DeepLearningModelType;
 import org.hkijena.jipipe.extensions.deeplearning.DeepLearningSettings;
 import org.hkijena.jipipe.extensions.deeplearning.DeepLearningUtils;
 import org.hkijena.jipipe.extensions.deeplearning.OptionalDeepLearningDeviceEnvironment;
-import org.hkijena.jipipe.extensions.deeplearning.configs.DeepLearningPredictionConfiguration;
+import org.hkijena.jipipe.extensions.deeplearning.configs.DeepLearningTrainingConfiguration;
 import org.hkijena.jipipe.extensions.deeplearning.datatypes.DeepLearningModelData;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.transform.ScaleMode;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.transform.TransformScale2DAlgorithm;
-import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
-import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscale32FData;
+import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.LabeledImagePlusData;
 import org.hkijena.jipipe.extensions.python.OptionalPythonEnvironment;
 import org.hkijena.jipipe.extensions.python.PythonUtils;
 import org.hkijena.jipipe.utils.JsonUtils;
@@ -56,35 +55,39 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
-@JIPipeDocumentation(name = "Predict", description = "Applies a prediction via a Deep learning model")
+@JIPipeDocumentation(name = "Train model (labeled images)", description = "Trains a Deep Learning model with images. Please note the the model must be able to be trained with labeled images.")
 @JIPipeOrganization(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Deep learning")
-@JIPipeInputSlot(value = ImagePlusData.class, slotName = "Input", autoCreate = true)
+@JIPipeInputSlot(value = LabeledImagePlusData.class, slotName = "Labels", autoCreate = true)
 @JIPipeInputSlot(value = DeepLearningModelData.class, slotName = "Model", autoCreate = true)
-@JIPipeOutputSlot(value = ImagePlusGreyscale32FData.class, slotName = "Prediction", autoCreate = true)
-public class PredictAlgorithm extends JIPipeMergingAlgorithm {
+@JIPipeOutputSlot(value = DeepLearningModelData.class, slotName = "Trained model", autoCreate = true)
+public class TrainImageModelAlgorithm extends JIPipeMergingAlgorithm {
 
     private TransformScale2DAlgorithm scale2DAlgorithm;
-    private boolean cleanUpAfterwards = true;
     private boolean scaleToModelSize = false;
+    private DeepLearningTrainingConfiguration trainingConfiguration = new DeepLearningTrainingConfiguration();
     private OptionalPythonEnvironment overrideEnvironment = new OptionalPythonEnvironment();
+    private boolean cleanUpAfterwards = true;
     private OptionalDeepLearningDeviceEnvironment overrideDevices = new OptionalDeepLearningDeviceEnvironment();
 
-    public PredictAlgorithm(JIPipeNodeInfo info) {
+    public TrainImageModelAlgorithm(JIPipeNodeInfo info) {
         super(info);
         getDataBatchGenerationSettings().setColumnMatching(JIPipeColumMatching.MergeAll);
+        registerSubParameter(trainingConfiguration);
         scale2DAlgorithm = JIPipe.createNode(TransformScale2DAlgorithm.class);
         scale2DAlgorithm.setScaleMode(ScaleMode.Fit);
         registerSubParameter(scale2DAlgorithm);
     }
 
-    public PredictAlgorithm(PredictAlgorithm other) {
+    public TrainImageModelAlgorithm(TrainImageModelAlgorithm other) {
         super(other);
+        this.trainingConfiguration = new DeepLearningTrainingConfiguration(other.trainingConfiguration);
         this.overrideEnvironment = new OptionalPythonEnvironment(other.overrideEnvironment);
-        this.cleanUpAfterwards = other.cleanUpAfterwards;
-        this.scale2DAlgorithm = new TransformScale2DAlgorithm(other.scale2DAlgorithm);
-        this.overrideDevices = new OptionalDeepLearningDeviceEnvironment(other.overrideDevices);
         this.scaleToModelSize = other.scaleToModelSize;
+        this.cleanUpAfterwards = other.cleanUpAfterwards;
+        registerSubParameter(trainingConfiguration);
+        this.scale2DAlgorithm = new TransformScale2DAlgorithm(other.scale2DAlgorithm);
         registerSubParameter(scale2DAlgorithm);
+        this.overrideDevices = new OptionalDeepLearningDeviceEnvironment(other.overrideDevices);
     }
 
     @JIPipeDocumentation(name = "Override device configuration", description = "If enabled, this nodes provides a custom device configuration, " +
@@ -102,49 +105,69 @@ public class PredictAlgorithm extends JIPipeMergingAlgorithm {
     @Override
     protected void runIteration(JIPipeMergingDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
         JIPipeDataSlot inputModelSlot = getInputSlot("Model");
-        JIPipeDataSlot inputRawImageSlot = getInputSlot("Input");
+        JIPipeDataSlot inputLabelsSlot = getInputSlot("Labels");
         int modelCounter = 0;
+        for (Integer modelIndex : dataBatch.getInputSlotRows().get(inputModelSlot)) {
+            JIPipeProgressInfo modelProgress = progressInfo.resolveAndLog("Check model", modelCounter++, dataBatch.getInputSlotRows().get(inputModelSlot).size());
+            DeepLearningModelData inputModel = inputModelSlot.getData(modelIndex, DeepLearningModelData.class, modelProgress);
+
+            if(inputModel.getModelConfiguration().getModelType() == DeepLearningModelType.classification) {
+                throw new UserFriendlyRuntimeException("Model " + inputModel + " is not supported by this node!",
+                        "Unsupported model",
+                        getDisplayName(),
+                        "The input model '" + inputModel + "' is not supported by this node.",
+                        "Use a different predict node.");
+            }
+        }
+        modelCounter = 0;
         for (Integer modelIndex : dataBatch.getInputSlotRows().get(inputModelSlot)) {
             JIPipeProgressInfo modelProgress = progressInfo.resolveAndLog("Model", modelCounter++, dataBatch.getInputSlotRows().get(inputModelSlot).size());
             DeepLearningModelData inputModel = inputModelSlot.getData(modelIndex, DeepLearningModelData.class, modelProgress);
 
             Path workDirectory = getNewScratch();
 
-            Path predictionsDirectory = workDirectory.resolve("predict");
+            // Save labels & raw images
+            Path labelsDirectory = workDirectory.resolve("labels");
             Path rawsDirectory = workDirectory.resolve("raw");
             try {
-                Files.createDirectories(predictionsDirectory);
+                Files.createDirectories(labelsDirectory);
                 Files.createDirectories(rawsDirectory);
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
-            {
-                int imageCounter = 0;
-                Set<Integer> inputRows = dataBatch.getInputSlotRows().get(inputRawImageSlot);
-                for (Integer imageIndex : inputRows) {
-                    JIPipeProgressInfo imageProgress = modelProgress.resolveAndLog("Write inputs", imageCounter++, inputRows.size());
-                    ImagePlusData raw = inputRawImageSlot.getData(imageIndex, ImagePlusData.class, imageProgress);
-                    Path rawPath = rawsDirectory.resolve(imageCounter + "_img.tif");
+            int imageCounter = 0;
+            Set<Integer> labelRows = dataBatch.getInputSlotRows().get(inputLabelsSlot);
+            for (Integer imageIndex : labelRows) {
+                JIPipeProgressInfo imageProgress = modelProgress.resolveAndLog("Write labels", imageCounter++, labelRows.size());
+                LabeledImagePlusData label = inputLabelsSlot.getData(imageIndex, LabeledImagePlusData.class, imageProgress);
+                Path rawPath = rawsDirectory.resolve(imageCounter + "_img.tif");
+                Path labelPath = labelsDirectory.resolve(imageCounter + "_img.tif");
 
-                    ImagePlus rawImage = isScaleToModelSize() ? DeepLearningUtils.scaleToModel(raw.getImage(),
-                            inputModel.getModelConfiguration(),
-                            getScale2DAlgorithm(),
-                            modelProgress) : raw.getImage();
+                ImagePlus rawImage = isScaleToModelSize() ? DeepLearningUtils.scaleToModel(label.getImage(),
+                        inputModel.getModelConfiguration(),
+                        getScale2DAlgorithm(),
+                        modelProgress) : label.getImage();
+                ImagePlus labelImage = isScaleToModelSize() ? DeepLearningUtils.scaleToModel(label.getLabels(),
+                        inputModel.getModelConfiguration(),
+                        getScale2DAlgorithm(),
+                        modelProgress) : label.getLabels();
 
-                    IJ.saveAsTiff(rawImage, rawPath.toString());
-                }
+                IJ.saveAsTiff(rawImage, rawPath.toString());
+                IJ.saveAsTiff(labelImage, labelPath.toString());
             }
 
             // Save model according to standard interface
             inputModel.saveTo(workDirectory, "", false, modelProgress);
 
-            // Generate configuration
-            DeepLearningPredictionConfiguration predictionConfiguration = new DeepLearningPredictionConfiguration();
-            predictionConfiguration.setOutputPath(predictionsDirectory);
-            predictionConfiguration.setInputImagesPattern(rawsDirectory + "/*.tif");
-            predictionConfiguration.setInputModelPath(workDirectory.resolve("model.hdf5"));
+            // Modify and save configurations
+            DeepLearningTrainingConfiguration trainingConfiguration = new DeepLearningTrainingConfiguration(this.trainingConfiguration);
+            trainingConfiguration.setInputModelPath(workDirectory.resolve("model.hdf5"));
+            trainingConfiguration.setOutputModelPath(workDirectory.resolve("trained_model.hdf5"));
+            trainingConfiguration.setOutputModelJsonPath(workDirectory.resolve("trained_model.json"));
+            trainingConfiguration.setInputImagesPattern(rawsDirectory + "/*.tif");
+            trainingConfiguration.setInputLabelsPattern(labelsDirectory + "/*.tif");
             try {
-                JsonUtils.getObjectMapper().writerWithDefaultPrettyPrinter().writeValue(workDirectory.resolve("predict-config.json").toFile(), predictionConfiguration);
+                JsonUtils.getObjectMapper().writerWithDefaultPrettyPrinter().writeValue(workDirectory.resolve("training-config.json").toFile(), trainingConfiguration);
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
@@ -160,9 +183,9 @@ public class PredictAlgorithm extends JIPipeMergingAlgorithm {
             arguments.add("-m");
             arguments.add("dltoolbox");
             arguments.add("--operation");
-            arguments.add("predict");
+            arguments.add("train");
             arguments.add("--config");
-            arguments.add(workDirectory.resolve("predict-config.json").toString());
+            arguments.add(workDirectory.resolve("training-config.json").toString());
             arguments.add("--model-config");
             arguments.add(workDirectory.resolve("model-config.json").toString());
             arguments.add("--device-config");
@@ -174,21 +197,10 @@ public class PredictAlgorithm extends JIPipeMergingAlgorithm {
                             DeepLearningSettings.getInstance().getPythonEnvironment(),
                     Collections.singletonList(DeepLearningSettings.getInstance().getDeepLearningToolkit().getLibraryDirectory().toAbsolutePath()), modelProgress);
 
-            // Fetch images
-            {
-                int imageCounter = 0;
-                Set<Integer> inputRows = dataBatch.getInputSlotRows().get(inputRawImageSlot);
-                for (Integer imageIndex : inputRows) {
-                    JIPipeProgressInfo imageProgress = modelProgress.resolveAndLog("Read outputs", imageCounter++, inputRows.size());
-                    List<JIPipeAnnotation> annotations = inputRawImageSlot.getAnnotations(imageIndex);
-                    Path predictPath = predictionsDirectory.resolve(imageCounter + "_img.tif");
-
-                    ImagePlus image = IJ.openImage(predictPath.toString());
-
-                    // We will restore the original annotations of the results
-                    dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusData(image), annotations, JIPipeAnnotationMergeStrategy.OverwriteExisting, imageProgress);
-                }
-            }
+            DeepLearningModelData modelData = new DeepLearningModelData(workDirectory.resolve("trained_model.hdf5"),
+                    workDirectory.resolve("model-config.json"),
+                    workDirectory.resolve("trained_model.json"));
+            dataBatch.addOutputData(getFirstOutputSlot(), modelData, modelProgress);
 
             if (cleanUpAfterwards) {
                 try {
@@ -198,6 +210,14 @@ public class PredictAlgorithm extends JIPipeMergingAlgorithm {
                 }
             }
         }
+    }
+
+    @JIPipeDocumentation(name = "Training", description = "Use following settings to change the properties of the training")
+    @JIPipeParameter(value = "training",
+            iconURL = ResourceUtils.RESOURCE_BASE_PATH + "/icons/actions/dl-model.png",
+            iconDarkURL = ResourceUtils.RESOURCE_BASE_PATH + "/dark/icons/actions/dl-model.png")
+    public DeepLearningTrainingConfiguration getTrainingConfiguration() {
+        return trainingConfiguration;
     }
 
     @JIPipeDocumentation(name = "Override Python environment", description = "If enabled, a different Python environment is used for this Node. Otherwise " +
@@ -224,6 +244,15 @@ public class PredictAlgorithm extends JIPipeMergingAlgorithm {
         this.cleanUpAfterwards = cleanUpAfterwards;
     }
 
+    @JIPipeDocumentation(name = "Scaling", description = "The following settings determine how the image is scaled in 2D if it does not fit to the size the model is designed for.")
+    @JIPipeParameter(value = "scale-algorithm",
+            collapsed = true,
+            iconURL = ResourceUtils.RESOURCE_BASE_PATH + "/icons/actions/transform-scale.png",
+            iconDarkURL = ResourceUtils.RESOURCE_BASE_PATH + "/dark/icons/actions/transform-scale.png")
+    public TransformScale2DAlgorithm getScale2DAlgorithm() {
+        return scale2DAlgorithm;
+    }
+
     @JIPipeDocumentation(name = "Scale images to model size", description = "If enabled, images are automatically scaled to fit to the model size. Otherwise, " +
             "Keras will apply tiling automatically if you provide images of an unsupported size.")
     @JIPipeParameter("scale-to-model-size")
@@ -235,15 +264,6 @@ public class PredictAlgorithm extends JIPipeMergingAlgorithm {
     public void setScaleToModelSize(boolean scaleToModelSize) {
         this.scaleToModelSize = scaleToModelSize;
         triggerParameterUIChange();
-    }
-
-    @JIPipeDocumentation(name = "Scaling", description = "The following settings determine how the image is scaled in 2D if it does not fit to the size the model is designed for.")
-    @JIPipeParameter(value = "scale-algorithm",
-            collapsed = true,
-            iconURL = ResourceUtils.RESOURCE_BASE_PATH + "/icons/actions/transform-scale.png",
-            iconDarkURL = ResourceUtils.RESOURCE_BASE_PATH + "/dark/icons/actions/transform-scale.png")
-    public TransformScale2DAlgorithm getScale2DAlgorithm() {
-        return scale2DAlgorithm;
     }
 
     @Override

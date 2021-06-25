@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonSetter;
 import com.google.common.eventbus.EventBus;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeValidityReport;
+import org.hkijena.jipipe.api.JIPipeIssueReport;
 import org.hkijena.jipipe.api.environments.ExternalEnvironment;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
@@ -120,9 +120,9 @@ public class PythonEnvironment extends ExternalEnvironment {
     }
 
     @Override
-    public void reportValidity(JIPipeValidityReport report) {
+    public void reportValidity(JIPipeIssueReport report) {
         if (getExecutablePath() == null || !Files.isRegularFile(getExecutablePath())) {
-            report.forCategory("Executable").reportIsInvalid(
+            report.resolve("Executable").reportIsInvalid(
                     "Python executable does not exist",
                     "You need to provide a Python executable",
                     "Provide a Python executable",

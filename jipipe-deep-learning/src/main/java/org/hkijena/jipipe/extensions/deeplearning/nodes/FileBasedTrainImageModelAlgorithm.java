@@ -13,10 +13,7 @@
 
 package org.hkijena.jipipe.extensions.deeplearning.nodes;
 
-import ij.IJ;
-import ij.ImagePlus;
 import org.apache.commons.io.FileUtils;
-import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
@@ -29,20 +26,15 @@ import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.JIPipeOutputSlot;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
-import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
-import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
-import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
 import org.hkijena.jipipe.extensions.deeplearning.DeepLearningSettings;
-import org.hkijena.jipipe.extensions.deeplearning.DeepLearningUtils;
 import org.hkijena.jipipe.extensions.deeplearning.OptionalDeepLearningDeviceEnvironment;
 import org.hkijena.jipipe.extensions.deeplearning.configs.DeepLearningTrainingConfiguration;
 import org.hkijena.jipipe.extensions.deeplearning.datatypes.DeepLearningModelData;
-import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.transform.ScaleMode;
-import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.transform.TransformScale2DAlgorithm;
-import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.LabeledImagePlusData;
+import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.LabeledImageFileData;
 import org.hkijena.jipipe.extensions.python.OptionalPythonEnvironment;
 import org.hkijena.jipipe.extensions.python.PythonUtils;
 import org.hkijena.jipipe.utils.JsonUtils;
+import org.hkijena.jipipe.utils.PathUtils;
 import org.hkijena.jipipe.utils.ResourceUtils;
 
 import java.io.IOException;
@@ -53,38 +45,31 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
-@JIPipeDocumentation(name = "Train model", description = "Trains a Deep Learning model")
+@JIPipeDocumentation(name = "Train model (labeled image files)", description = "Trains a Deep Learning model. This node accepts direct file inputs that can be useful if you " +
+        "want to avoid loading data into JIPipe. Please note that the model needs to be able to train on images.")
 @JIPipeOrganization(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Deep learning")
-@JIPipeInputSlot(value = LabeledImagePlusData.class, slotName = "Labels", autoCreate = true)
+@JIPipeInputSlot(value = LabeledImageFileData.class, slotName = "Labels", autoCreate = true)
 @JIPipeInputSlot(value = DeepLearningModelData.class, slotName = "Model", autoCreate = true)
 @JIPipeOutputSlot(value = DeepLearningModelData.class, slotName = "Trained model", autoCreate = true)
-public class TrainModelAlgorithm extends JIPipeMergingAlgorithm {
+public class FileBasedTrainImageModelAlgorithm extends JIPipeMergingAlgorithm {
 
-    private TransformScale2DAlgorithm scale2DAlgorithm;
-    private boolean scaleToModelSize = false;
     private DeepLearningTrainingConfiguration trainingConfiguration = new DeepLearningTrainingConfiguration();
     private OptionalPythonEnvironment overrideEnvironment = new OptionalPythonEnvironment();
     private boolean cleanUpAfterwards = true;
     private OptionalDeepLearningDeviceEnvironment overrideDevices = new OptionalDeepLearningDeviceEnvironment();
 
-    public TrainModelAlgorithm(JIPipeNodeInfo info) {
+    public FileBasedTrainImageModelAlgorithm(JIPipeNodeInfo info) {
         super(info);
         getDataBatchGenerationSettings().setColumnMatching(JIPipeColumMatching.MergeAll);
         registerSubParameter(trainingConfiguration);
-        scale2DAlgorithm = JIPipe.createNode(TransformScale2DAlgorithm.class);
-        scale2DAlgorithm.setScaleMode(ScaleMode.Fit);
-        registerSubParameter(scale2DAlgorithm);
     }
 
-    public TrainModelAlgorithm(TrainModelAlgorithm other) {
+    public FileBasedTrainImageModelAlgorithm(FileBasedTrainImageModelAlgorithm other) {
         super(other);
         this.trainingConfiguration = new DeepLearningTrainingConfiguration(other.trainingConfiguration);
         this.overrideEnvironment = new OptionalPythonEnvironment(other.overrideEnvironment);
-        this.scaleToModelSize = other.scaleToModelSize;
         this.cleanUpAfterwards = other.cleanUpAfterwards;
         registerSubParameter(trainingConfiguration);
-        this.scale2DAlgorithm = new TransformScale2DAlgorithm(other.scale2DAlgorithm);
-        registerSubParameter(scale2DAlgorithm);
         this.overrideDevices = new OptionalDeepLearningDeviceEnvironment(other.overrideDevices);
     }
 
@@ -124,21 +109,12 @@ public class TrainModelAlgorithm extends JIPipeMergingAlgorithm {
             Set<Integer> labelRows = dataBatch.getInputSlotRows().get(inputLabelsSlot);
             for (Integer imageIndex : labelRows) {
                 JIPipeProgressInfo imageProgress = modelProgress.resolveAndLog("Write labels", imageCounter++, labelRows.size());
-                LabeledImagePlusData label = inputLabelsSlot.getData(imageIndex, LabeledImagePlusData.class, imageProgress);
+                LabeledImageFileData label = inputLabelsSlot.getData(imageIndex, LabeledImageFileData.class, imageProgress);
                 Path rawPath = rawsDirectory.resolve(imageCounter + "_img.tif");
                 Path labelPath = labelsDirectory.resolve(imageCounter + "_img.tif");
 
-                ImagePlus rawImage = isScaleToModelSize() ? DeepLearningUtils.scaleToModel(label.getImage(),
-                        inputModel.getModelConfiguration(),
-                        getScale2DAlgorithm(),
-                        modelProgress) : label.getImage();
-                ImagePlus labelImage = isScaleToModelSize() ? DeepLearningUtils.scaleToModel(label.getLabels(),
-                        inputModel.getModelConfiguration(),
-                        getScale2DAlgorithm(),
-                        modelProgress) : label.getLabels();
-
-                IJ.saveAsTiff(rawImage, rawPath.toString());
-                IJ.saveAsTiff(labelImage, labelPath.toString());
+                PathUtils.copyOrLink(label.toPath(), rawPath, imageProgress);
+                PathUtils.copyOrLink(label.labelToPath(), labelPath, imageProgress);
             }
 
             // Save model according to standard interface
@@ -227,43 +203,5 @@ public class TrainModelAlgorithm extends JIPipeMergingAlgorithm {
     @JIPipeParameter("cleanup-afterwards")
     public void setCleanUpAfterwards(boolean cleanUpAfterwards) {
         this.cleanUpAfterwards = cleanUpAfterwards;
-    }
-
-    @JIPipeDocumentation(name = "Scaling", description = "The following settings determine how the image is scaled in 2D if it does not fit to the size the model is designed for.")
-    @JIPipeParameter(value = "scale-algorithm",
-            collapsed = true,
-            iconURL = ResourceUtils.RESOURCE_BASE_PATH + "/icons/actions/transform-scale.png",
-            iconDarkURL = ResourceUtils.RESOURCE_BASE_PATH + "/dark/icons/actions/transform-scale.png")
-    public TransformScale2DAlgorithm getScale2DAlgorithm() {
-        return scale2DAlgorithm;
-    }
-
-    @JIPipeDocumentation(name = "Scale images to model size", description = "If enabled, images are automatically scaled to fit to the model size. Otherwise, " +
-            "Keras will apply tiling automatically if you provide images of an unsupported size.")
-    @JIPipeParameter("scale-to-model-size")
-    public boolean isScaleToModelSize() {
-        return scaleToModelSize;
-    }
-
-    @JIPipeParameter("scale-to-model-size")
-    public void setScaleToModelSize(boolean scaleToModelSize) {
-        this.scaleToModelSize = scaleToModelSize;
-        triggerParameterUIChange();
-    }
-
-    @Override
-    public boolean isParameterUIVisible(JIPipeParameterTree tree, JIPipeParameterCollection subParameter) {
-        if (!scaleToModelSize && subParameter == getScale2DAlgorithm()) {
-            return false;
-        }
-        return super.isParameterUIVisible(tree, subParameter);
-    }
-
-    @Override
-    public boolean isParameterUIVisible(JIPipeParameterTree tree, JIPipeParameterAccess access) {
-        if ("axis".equals(access.getKey()) && access.getSource() == getScale2DAlgorithm()) {
-            return false;
-        }
-        return super.isParameterUIVisible(tree, access);
     }
 }

@@ -128,7 +128,7 @@ public class FilterRoiByStatisticsAlgorithm extends ImageRoiProcessorAlgorithm {
 
     @JIPipeParameter("filter")
     @JIPipeDocumentation(name = "Filter", description = "Filtering expression. This is applied per ROI. " +
-            "Click the 'X' button to see all available variables you can test for (note: requires from you to enable the corresponding measurement!)." +
+            "Click the 'f' button to see all available variables you can test for (note: requires from you to enable the corresponding measurement!)." +
             "An example for an expression would be 'Area > 200 AND Mean > 10'")
     @ExpressionParameterSettings(variableSource = MeasurementExpressionParameterVariableSource.class)
     public DefaultExpressionParameter getFilters() {

@@ -28,7 +28,7 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.deser.ContextualDeserializer;
 import org.hkijena.jipipe.api.JIPipeValidatable;
-import org.hkijena.jipipe.api.JIPipeValidityReport;
+import org.hkijena.jipipe.api.JIPipeIssueReport;
 import org.hkijena.jipipe.extensions.parameters.pairs.PairParameter;
 import org.hkijena.jipipe.utils.JsonUtils;
 
@@ -73,13 +73,13 @@ public abstract class FunctionParameter<I, P, O> implements JIPipeValidatable {
 
 
     @Override
-    public void reportValidity(JIPipeValidityReport report) {
+    public void reportValidity(JIPipeIssueReport report) {
         if (input instanceof JIPipeValidatable)
-            report.forCategory("Input").report((JIPipeValidatable) input);
+            report.resolve("Input").report((JIPipeValidatable) input);
         if (parameter instanceof JIPipeValidatable)
-            report.forCategory("Parameter").report((JIPipeValidatable) parameter);
+            report.resolve("Parameter").report((JIPipeValidatable) parameter);
         if (output instanceof JIPipeValidatable)
-            report.forCategory("Output").report((JIPipeValidatable) output);
+            report.resolve("Output").report((JIPipeValidatable) output);
     }
 
     public I getInput() {

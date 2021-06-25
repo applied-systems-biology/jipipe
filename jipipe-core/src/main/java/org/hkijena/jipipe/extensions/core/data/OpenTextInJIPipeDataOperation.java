@@ -32,6 +32,11 @@ public class OpenTextInJIPipeDataOperation implements JIPipeDataImportOperation,
     }
 
     @Override
+    public String getId() {
+        return "jipipe:open-text-in-jipipe";
+    }
+
+    @Override
     public String getName() {
         return "Open in JIPipe";
     }

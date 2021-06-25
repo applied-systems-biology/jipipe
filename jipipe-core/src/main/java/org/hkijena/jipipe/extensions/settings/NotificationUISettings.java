@@ -6,6 +6,7 @@ import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.extensions.parameters.primitives.OptionalIntegerParameter;
+import org.hkijena.jipipe.extensions.parameters.primitives.StringList;
 
 public class NotificationUISettings implements JIPipeParameterCollection {
     public static String ID = "notification-ui";
@@ -14,6 +15,8 @@ public class NotificationUISettings implements JIPipeParameterCollection {
     private boolean showRunNotifications = true;
     private boolean showRunOnlyIfInactive = false;
     private OptionalIntegerParameter showAfterMinRuntime = new OptionalIntegerParameter(true, 7);
+    private StringList blockedNotifications = new StringList();
+    private boolean enableNotifications = true;
 
     @JIPipeDocumentation(name = "Show run notifications", description = "If enabled, show notifications when a run is finished. " +
             "Following processes are considered as run: " +
@@ -58,6 +61,30 @@ public class NotificationUISettings implements JIPipeParameterCollection {
     @JIPipeParameter("only-show-run-after-min-runtime")
     public void setShowAfterMinRuntime(OptionalIntegerParameter showAfterMinRuntime) {
         this.showAfterMinRuntime = showAfterMinRuntime;
+    }
+
+    @JIPipeDocumentation(name = "Blocked action notifications", description = "This is a list of action notification Ids that are blocked and will " +
+            "not be shown at the top right.")
+    @JIPipeParameter("blocked-action-notifications")
+    public StringList getBlockedNotifications() {
+        return blockedNotifications;
+    }
+
+    @JIPipeParameter("blocked-action-notifications")
+    public void setBlockedNotifications(StringList blockedNotifications) {
+        this.blockedNotifications = blockedNotifications;
+    }
+
+    @JIPipeDocumentation(name = "Enable action notifications", description = "If enabled, JIPipe will inform you about broken configurations " +
+            "or missing functions at the top right of the window.")
+    @JIPipeParameter("enable-action-notifications")
+    public boolean isEnableNotifications() {
+        return enableNotifications;
+    }
+
+    @JIPipeParameter("enable-action-notifications")
+    public void setEnableNotifications(boolean enableNotifications) {
+        this.enableNotifications = enableNotifications;
     }
 
     @Override

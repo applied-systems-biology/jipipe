@@ -31,6 +31,7 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ROIListData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.color.ImagePlusColorRGBData;
+import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.extensions.parameters.colors.OptionalColorParameter;
 import org.hkijena.jipipe.extensions.parameters.primitives.OptionalDoubleParameter;
 
@@ -138,7 +139,7 @@ public class RoiToRGBAlgorithm extends JIPipeIteratingAlgorithm {
 
         ImagePlus result;
         if (drawOver) {
-            result = ImagePlusColorRGBData.convertIfNeeded(reference.duplicate());
+            result = ImageJUtils.convertToColorRGBIfNeeded(reference.duplicate());
             result.setTitle("Reference+ROIs");
         } else {
             result = IJ.createImage("ROIs", "RGB", sx, sy, sc, sz, st);

@@ -16,7 +16,7 @@ package org.hkijena.jipipe.extensions.parameters.patterns;
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonSetter;
 import org.hkijena.jipipe.api.JIPipeValidatable;
-import org.hkijena.jipipe.api.JIPipeValidityReport;
+import org.hkijena.jipipe.api.JIPipeIssueReport;
 import org.hkijena.jipipe.extensions.parameters.collections.ListParameter;
 
 import java.util.function.Function;
@@ -123,20 +123,20 @@ public class StringPatternExtraction implements Function<String, String>, JIPipe
     }
 
     @Override
-    public void reportValidity(JIPipeValidityReport report) {
+    public void reportValidity(JIPipeIssueReport report) {
         switch (mode) {
             case SplitAndPick:
-                report.forCategory("Split character").checkNonEmpty(splitCharacter, this);
+                report.resolve("Split character").checkNonEmpty(splitCharacter, this);
                 break;
             case SplitAndFind:
-                report.forCategory("Split character").checkNonEmpty(splitCharacter, this);
-                report.forCategory("Selected index").checkIfWithin(this, splitPickedIndex, 0, Double.POSITIVE_INFINITY, true, false);
+                report.resolve("Split character").checkNonEmpty(splitCharacter, this);
+                report.resolve("Selected index").checkIfWithin(this, splitPickedIndex, 0, Double.POSITIVE_INFINITY, true, false);
                 break;
             case Regex:
                 try {
                     Pattern.compile(regexString);
                 } catch (PatternSyntaxException e) {
-                    report.forCategory("RegEx").reportIsInvalid("RegEx syntax is wrong!",
+                    report.resolve("RegEx").reportIsInvalid("RegEx syntax is wrong!",
                             "The regular expression string is wrong.",
                             "Please check the syntax. If you are not familiar with it, you can find plenty of resources online.",
                             this);

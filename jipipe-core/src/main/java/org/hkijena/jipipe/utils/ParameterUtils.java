@@ -16,7 +16,7 @@ package org.hkijena.jipipe.utils;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.google.common.eventbus.Subscribe;
-import org.hkijena.jipipe.api.JIPipeValidityReport;
+import org.hkijena.jipipe.api.JIPipeIssueReport;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterPersistence;
@@ -46,7 +46,7 @@ public class ParameterUtils {
      * @param node   the JSON node
      * @param issues issues during deserialization
      */
-    public static void deserializeParametersFromJson(JIPipeParameterCollection target, JsonNode node, JIPipeValidityReport issues) {
+    public static void deserializeParametersFromJson(JIPipeParameterCollection target, JsonNode node, JIPipeIssueReport issues) {
         AtomicBoolean changedStructure = new AtomicBoolean();
         changedStructure.set(true);
         target.getEventBus().register(new Object() {
@@ -88,7 +88,7 @@ public class ParameterUtils {
                                     v = JsonUtils.getObjectMapper().readerFor(parameterAccess.getFieldClass()).readValue(node.get(key));
                                     parameterAccess.set(v);
                                 } catch (Exception | Error e) {
-                                    issues.forCategory(key).reportIsInvalid("Could not load parameter '" + key + "'!",
+                                    issues.resolve(key).reportIsInvalid("Could not load parameter '" + key + "'!",
                                             "The data might be not compatible with your operating system or from an older or newer JIPipe version.",
                                             "Please check the value of the parameter.",
                                             "In: node.get(key)\n\n" + e);

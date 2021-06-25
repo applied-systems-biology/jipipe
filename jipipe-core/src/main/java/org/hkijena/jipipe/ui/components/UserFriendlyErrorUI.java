@@ -14,7 +14,7 @@
 package org.hkijena.jipipe.ui.components;
 
 import com.google.common.html.HtmlEscapers;
-import org.hkijena.jipipe.api.JIPipeValidityReport;
+import org.hkijena.jipipe.api.JIPipeIssueReport;
 import org.hkijena.jipipe.api.exceptions.UserFriendlyException;
 import org.hkijena.jipipe.utils.ResourceUtils;
 import org.hkijena.jipipe.utils.StringUtils;
@@ -26,10 +26,11 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Displays exceptions in a user-friendly way.
- * Can handle {@link org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException} and {@link org.hkijena.jipipe.api.JIPipeValidityReport}
+ * Can handle {@link org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException} and {@link JIPipeIssueReport}
  */
 public class UserFriendlyErrorUI extends FormPanel {
 
@@ -81,16 +82,15 @@ public class UserFriendlyErrorUI extends FormPanel {
      *
      * @param report the report
      */
-    public void displayErrors(JIPipeValidityReport report) {
-        for (String key : report.getInvalidResponses()) {
-            JIPipeValidityReport.Message message = report.getMessages().get(key);
-            if (message != null) {
-                addEntry(new Entry(message.getUserWhat(),
-                        key,
-                        message.getUserWhy(),
-                        message.getUserHow(),
-                        message.getDetails()));
-            }
+    public void displayErrors(JIPipeIssueReport report) {
+        for (Map.Entry<String, JIPipeIssueReport.Issue> entry : report.getIssues().entries()) {
+            String key = entry.getKey();
+            JIPipeIssueReport.Issue issue = entry.getValue();
+            addEntry(new Entry(issue.getUserWhat(),
+                    key,
+                    issue.getUserWhy(),
+                    issue.getUserHow(),
+                    issue.getDetails()));
         }
     }
 

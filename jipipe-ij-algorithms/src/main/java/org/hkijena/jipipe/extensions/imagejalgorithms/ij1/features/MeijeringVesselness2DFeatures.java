@@ -25,7 +25,7 @@ import imagescience.image.Image;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
-import org.hkijena.jipipe.api.JIPipeValidityReport;
+import org.hkijena.jipipe.api.JIPipeIssueReport;
 import org.hkijena.jipipe.api.data.JIPipeDefaultMutableSlotConfiguration;
 import org.hkijena.jipipe.api.nodes.JIPipeDataBatch;
 import org.hkijena.jipipe.api.nodes.JIPipeInputSlot;
@@ -176,9 +176,9 @@ public class MeijeringVesselness2DFeatures extends JIPipeSimpleIteratingAlgorith
     }
 
     @Override
-    public void reportValidity(JIPipeValidityReport report) {
+    public void reportValidity(JIPipeIssueReport report) {
         if (scales.isEmpty()) {
-            report.forCategory("Scales").reportIsInvalid("No scales provided!",
+            report.resolve("Scales").reportIsInvalid("No scales provided!",
                     "You have to provide a list of scales to test",
                     "Please add at least one entry.",
                     this);

@@ -19,10 +19,11 @@ import ij.Prefs;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.JIPipeJsonExtension;
 import org.hkijena.jipipe.api.JIPipeProject;
-import org.hkijena.jipipe.api.JIPipeValidityReport;
+import org.hkijena.jipipe.api.JIPipeIssueReport;
 import org.hkijena.jipipe.api.compartments.algorithms.JIPipeProjectCompartment;
 import org.hkijena.jipipe.api.grouping.NodeGroup;
 import org.hkijena.jipipe.api.nodes.JIPipeGraph;
+import org.hkijena.jipipe.api.notifications.JIPipeNotificationInbox;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.extensions.parameters.primitives.HTMLText;
 import org.hkijena.jipipe.extensions.settings.AutoSaveSettings;
@@ -57,6 +58,9 @@ import org.hkijena.jipipe.ui.running.JIPipeRunnerQueueUI;
 import org.hkijena.jipipe.ui.running.RealTimeProjectRunner;
 import org.hkijena.jipipe.ui.settings.JIPipeApplicationSettingsUI;
 import org.hkijena.jipipe.ui.settings.JIPipeProjectSettingsUI;
+import org.hkijena.jipipe.ui.notifications.NotificationButton;
+import org.hkijena.jipipe.ui.notifications.WorkbenchNotificationInboxUI;
+import org.hkijena.jipipe.ui.compendium.WelcomePanel;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.jdesktop.swingx.JXStatusBar;
 import org.jdesktop.swingx.plaf.basic.BasicStatusBarUI;
@@ -91,6 +95,7 @@ public class JIPipeProjectWorkbench extends JPanel implements JIPipeWorkbench {
     public static final String TAB_PLUGIN_MANAGER = "PLUGIN_MANAGER";
     public static final String TAB_VALIDITY_CHECK = "VALIDITY_CHECK";
     public static final String TAB_PLUGIN_VALIDITY_CHECK = "PLUGIN_VALIDITY_CHECK";
+    public static final String TAB_NOTIFICATIONS = "NOTIFICATIONS";
     private static final String TAB_PROJECT_OVERVIEW = "PROJECT_OVERVIEW";
     private static final String TAB_LOG = "LOG";
     public DocumentTabPane documentTabPane;
@@ -103,6 +108,8 @@ public class JIPipeProjectWorkbench extends JPanel implements JIPipeWorkbench {
     private RealTimeProjectRunner realTimeProjectRunner;
     private VirtualDataControl virtualDataControl;
     private boolean projectModified;
+    private JIPipeNotificationInbox notificationInbox = new JIPipeNotificationInbox();
+    private NotificationButton notificationButton = new NotificationButton(this);
 
     /**
      * @param window           Parent window
@@ -238,6 +245,11 @@ public class JIPipeProjectWorkbench extends JPanel implements JIPipeWorkbench {
                 "Log viewer",
                 UIUtils.getIconFromResources("actions/show_log.png"),
                 new JIPipeLogViewer(this),
+                true);
+        documentTabPane.addSingletonTab(TAB_NOTIFICATIONS,
+                "Notifications",
+                UIUtils.getIconFromResources("emblems/warning.png"),
+                new WorkbenchNotificationInboxUI(this),
                 true);
         add(documentTabPane, BorderLayout.CENTER);
 
@@ -449,6 +461,11 @@ public class JIPipeProjectWorkbench extends JPanel implements JIPipeWorkbench {
         openProjectFolderItem.addActionListener(e -> openProjectFolder());
         projectMenu.add(openProjectFolderItem);
 
+        JMenuItem validateProjectItem = new JMenuItem("Validate project", UIUtils.getIconFromResources("actions/checkmark.png"));
+        validateProjectItem.setToolTipText("Checks if the project and the parameters are valid");
+        validateProjectItem.addActionListener(e -> validateProject(false));
+        projectMenu.add(validateProjectItem);
+
         projectMenu.addSeparator();
 
         JMenuItem exitButton = new JMenuItem("Exit", UIUtils.getIconFromResources("actions/exit.png"));
@@ -519,31 +536,16 @@ public class JIPipeProjectWorkbench extends JPanel implements JIPipeWorkbench {
 
         menu.add(Box.createHorizontalGlue());
 
-//        // Virtual control
-//        JToggleButton virtualControlToggle = virtualDataControl.createToggleButton();
-//        UIUtils.makeFlat(virtualControlToggle);
-//        menu.add(virtualControlToggle);
-
         // Real-time runner control
         JToggleButton realtimeToggleButton = realTimeProjectRunner.createToggleButton();
         UIUtils.makeFlat(realtimeToggleButton);
         menu.add(realtimeToggleButton);
 
         // Cache monitor
-//        menu.add(new JIPipeCacheManagerUI(this));
-
         menu.add(new JIPipeCacheManagerUI(this));
 
         // Queue monitor
         menu.add(new JIPipeRunnerQueueUI());
-//        menu.add(Box.createHorizontalStrut(1));
-
-        // "Validate" entry
-        JButton validateProjectButton = new JButton("Validate", UIUtils.getIconFromResources("actions/checkmark.png"));
-        validateProjectButton.setToolTipText("Opens a new tab to check parameters and graph for validity.");
-        validateProjectButton.addActionListener(e -> validateProject(false));
-        UIUtils.makeFlat(validateProjectButton);
-        menu.add(validateProjectButton);
 
         // "Run" entry
         JButton runProjectButton = new JButton("Run", UIUtils.getIconFromResources("actions/run-build.png"));
@@ -553,8 +555,11 @@ public class JIPipeProjectWorkbench extends JPanel implements JIPipeWorkbench {
         runProjectButton.addActionListener(e -> openRunUI());
         menu.add(runProjectButton);
 
+        // Notification panel
+        menu.add(notificationButton);
+
         // "Help" entry
-        JMenu helpMenu = new JMenu();
+        JMenu helpMenu = new JMenu("Help");
         helpMenu.setIcon(UIUtils.getIconFromResources("actions/help.png"));
 
         JMenuItem offlineManual = new JMenuItem("Manual", UIUtils.getIconFromResources("actions/help.png"));
@@ -678,7 +683,7 @@ public class JIPipeProjectWorkbench extends JPanel implements JIPipeWorkbench {
      * Exports the whole graph as pipeline
      */
     private void exportProjectAsAlgorithm() {
-        JIPipeValidityReport report = new JIPipeValidityReport();
+        JIPipeIssueReport report = new JIPipeIssueReport();
         report.report(getProject().getGraph());
         if (!report.isValid()) {
             UIUtils.openValidityReportDialog(this, report, false);
@@ -800,6 +805,11 @@ public class JIPipeProjectWorkbench extends JPanel implements JIPipeWorkbench {
             this.projectModified = projectModified;
             window.updateTitle();
         }
+    }
+
+    @Override
+    public JIPipeNotificationInbox getNotificationInbox() {
+        return notificationInbox;
     }
 
     public static boolean canAddOrDeleteNodes(JIPipeWorkbench workbench) {

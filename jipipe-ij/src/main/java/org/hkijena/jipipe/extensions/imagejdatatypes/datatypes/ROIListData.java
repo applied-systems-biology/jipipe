@@ -34,9 +34,12 @@ import ij.process.ImageProcessor;
 import ij.process.LUT;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
+import org.hkijena.jipipe.api.data.JIPipeCacheSlotDataSource;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataSource;
 import org.hkijena.jipipe.api.data.JIPipeDataStorageDocumentation;
+import org.hkijena.jipipe.extensions.imagejdatatypes.display.CachedImagePlusDataViewerWindow;
+import org.hkijena.jipipe.extensions.imagejdatatypes.display.CachedROIListDataViewerWindow;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageSliceIndex;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.RoiOutline;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.measure.ImageStatisticsSetParameter;
@@ -197,64 +200,22 @@ public class ROIListData extends ArrayList<Roi> implements JIPipeData {
 
     @Override
     public void display(String displayName, JIPipeWorkbench workbench, JIPipeDataSource source) {
-        Map<Optional<ImagePlus>, ROIListData> byImage = groupByReferenceImage();
-
-        RoiManager roiManager = null;
-        if (Macro.getOptions() != null && Interpreter.isBatchMode())
-            roiManager = Interpreter.getBatchModeRoiManager();
-        if (roiManager == null) {
-            Frame frame = WindowManager.getFrame("ROI Manager");
-            if (frame == null)
-                IJ.run("ROI Manager...");
-            frame = WindowManager.getFrame("ROI Manager");
-            if (!(frame instanceof RoiManager)) {
-                return;
-            }
-            roiManager = (RoiManager) frame;
-        }
-
-        ImagePlus fallbackImage = WindowManager.getCurrentImage();
-        Margin margin = new Margin();
-        margin.getWidth().ensureExactValue(false);
-        margin.getHeight().ensureExactValue(false);
-
-        if (roiManager.getCount() > 0) {
-            int result = JOptionPane.showOptionDialog(workbench.getWindow(),
-                    "The current ROI manager already contains ROI. What should be done?",
-                    "Show ROI",
-                    JOptionPane.YES_NO_CANCEL_OPTION,
-                    JOptionPane.QUESTION_MESSAGE,
-                    null,
-                    new Object[]{"Add to list", "New list", "Cancel"},
-                    "Add to list");
-            if (result == JOptionPane.NO_OPTION) {
-                roiManager.reset();
-            } else if (result == JOptionPane.CANCEL_OPTION) {
-                return;
-            }
-        }
-
-        for (Map.Entry<Optional<ImagePlus>, ROIListData> entry : byImage.entrySet()) {
-            if (!entry.getKey().isPresent()) {
-                if (fallbackImage == null) {
-                    fallbackImage = entry.getValue().toMask(margin, false, true, 1);
-                    fallbackImage.setTitle("Auto-generated based on ROI");
-                    fallbackImage.show();
-                }
-                for (Roi roi : entry.getValue()) {
-                    roiManager.add(fallbackImage, (Roi) roi.clone(), -1);
-                }
+        if (source instanceof JIPipeCacheSlotDataSource) {
+            CachedROIListDataViewerWindow window = new CachedROIListDataViewerWindow(workbench, (JIPipeCacheSlotDataSource) source, displayName);
+            window.setVisible(true);
+        } else {
+            ImagePlus mask;
+            if (isEmpty()) {
+                mask = IJ.createImage("empty", "8-bit", 128, 128, 1);
             } else {
-                ImagePlus target = entry.getKey().get().duplicate();
-                target.setTitle(entry.getKey().get().getTitle());
-                target.show();
-                for (Roi roi : entry.getValue()) {
-                    roiManager.add(target, (Roi) roi.clone(), -1);
-                }
+                ROIListData copy = new ROIListData(this);
+                copy.flatten();
+                copy.crop(true, false, false, false);
+                mask = copy.toMask(new Margin(), false, true, 1);
+                mask.setLut(LUT.createLutFromColor(Color.RED));
             }
+            mask.show();
         }
-
-        roiManager.runCommand("show all with labels");
     }
 
     /**

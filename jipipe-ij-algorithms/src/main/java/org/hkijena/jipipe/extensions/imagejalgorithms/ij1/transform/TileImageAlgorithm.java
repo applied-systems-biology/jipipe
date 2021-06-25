@@ -21,7 +21,7 @@ import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
-import org.hkijena.jipipe.api.JIPipeValidityReport;
+import org.hkijena.jipipe.api.JIPipeIssueReport;
 import org.hkijena.jipipe.api.data.JIPipeAnnotation;
 import org.hkijena.jipipe.api.data.JIPipeAnnotationMergeStrategy;
 import org.hkijena.jipipe.api.nodes.JIPipeDataBatch;
@@ -126,10 +126,10 @@ public class TileImageAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     }
 
     @Override
-    public void reportValidity(JIPipeValidityReport report) {
+    public void reportValidity(JIPipeIssueReport report) {
         super.reportValidity(report);
-        report.forCategory("Tile width").checkIfWithin(this, tileX, 0, Double.POSITIVE_INFINITY, false, false);
-        report.forCategory("Tile height").checkIfWithin(this, tileY, 0, Double.POSITIVE_INFINITY, false, false);
+        report.resolve("Tile width").checkIfWithin(this, tileX, 0, Double.POSITIVE_INFINITY, false, false);
+        report.resolve("Tile height").checkIfWithin(this, tileY, 0, Double.POSITIVE_INFINITY, false, false);
     }
 
     @JIPipeDocumentation(name = "Annotate with tile X", description = "If true, annotate each tile with its X location (in tile coordinates)")

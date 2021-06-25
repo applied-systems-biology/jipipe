@@ -173,6 +173,38 @@ public class StringUtils {
      * @param input the input string
      * @return jsonified string
      */
+    public static String safeJsonify(String input) {
+        if (input == null)
+            return null;
+        char[] arr = input.trim().toLowerCase().toCharArray();
+        for (int i = 0; i < arr.length; i++) {
+            if (!Character.isLetterOrDigit(arr[i]) && arr[i] != '-') {
+                arr[i] = '-';
+            }
+        }
+        input = new String(arr);
+        while (input.contains("--")) {
+            input = input.replace("--", "-");
+        }
+        while(input.startsWith("-")) {
+            input = input.substring(1);
+        }
+        while(input.endsWith("-")) {
+            input = input.substring(0, input.length() - 1);
+        }
+        if(input.isEmpty()) {
+            input = "empty";
+        }
+        return input;
+    }
+
+    /**
+     * Removes all spaces, and filesystem-unsafe characters from the string and replaces them with dashes
+     * Duplicate dashes are removed
+     *
+     * @param input the input string
+     * @return jsonified string
+     */
     public static String jsonify(String input) {
         if (input == null)
             return null;
@@ -379,5 +411,30 @@ public class StringUtils {
             }
         }
         return sb.toString();
+    }
+
+    /**
+     * Compares two version strings. Only numeric versions are supported
+     * @param version1 the first version
+     * @param version2 the second version
+     * @return -1 if version1 is is less than version. 1 if version2 is less than version1. 0 if equal
+     */
+    public static int compareVersions(String version1, String version2) {
+        int comparisonResult = 0;
+
+        String[] version1Splits = version1.split("\\.");
+        String[] version2Splits = version2.split("\\.");
+        int maxLengthOfVersionSplits = Math.max(version1Splits.length, version2Splits.length);
+
+        for (int i = 0; i < maxLengthOfVersionSplits; i++){
+            Integer v1 = i < version1Splits.length ? Integer.parseInt(version1Splits[i]) : 0;
+            Integer v2 = i < version2Splits.length ? Integer.parseInt(version2Splits[i]) : 0;
+            int compare = v1.compareTo(v2);
+            if (compare != 0) {
+                comparisonResult = compare;
+                break;
+            }
+        }
+        return comparisonResult;
     }
 }

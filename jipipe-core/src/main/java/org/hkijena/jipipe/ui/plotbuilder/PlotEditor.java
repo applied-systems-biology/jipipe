@@ -22,7 +22,7 @@ import ij.measure.ResultsTable;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeValidatable;
-import org.hkijena.jipipe.api.JIPipeValidityReport;
+import org.hkijena.jipipe.api.JIPipeIssueReport;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataInfo;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
@@ -139,13 +139,13 @@ public class PlotEditor extends JIPipeWorkbenchPanel implements JIPipeParameterC
     }
 
     @Override
-    public void reportValidity(JIPipeValidityReport report) {
-        report.forCategory("Plot type").checkNonNull(getPlotType().getInfo(), this);
+    public void reportValidity(JIPipeIssueReport report) {
+        report.resolve("Plot type").checkNonNull(getPlotType().getInfo(), this);
         if (currentPlot != null) {
-            report.forCategory("Plot parameters").report(currentPlot);
+            report.resolve("Plot parameters").report(currentPlot);
         }
         for (int i = 0; i < seriesBuilders.size(); ++i) {
-            report.forCategory("Series").forCategory("Series #" + (i + 1)).report(seriesBuilders.get(i));
+            report.resolve("Series").resolve("Series #" + (i + 1)).report(seriesBuilders.get(i));
         }
 
     }
@@ -254,7 +254,7 @@ public class PlotEditor extends JIPipeWorkbenchPanel implements JIPipeParameterC
         try {
             isRebuilding = true;
 
-            JIPipeValidityReport report = new JIPipeValidityReport();
+            JIPipeIssueReport report = new JIPipeIssueReport();
             this.reportValidity(report);
             if (!report.isValid()) {
                 UserFriendlyErrorUI errorUI = new UserFriendlyErrorUI(null, UserFriendlyErrorUI.WITH_SCROLLING);

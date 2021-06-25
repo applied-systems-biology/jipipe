@@ -138,7 +138,7 @@ public class DefaultExpressionEvaluatorSyntaxTokenMaker extends AbstractTokenMak
                         if (i1 > 0) {
                             addToken(text, s1.substring(0, i1), currentTokenStart, newStartOffset + currentTokenStart);
                         }
-                        addToken(text, s, currentTokenStart + i1, newStartOffset + currentTokenStart);
+                        addToken(text, s, Token.OPERATOR, currentTokenStart + i1, newStartOffset + currentTokenStart + i1);
                         buffer.setLength(0);
                         currentTokenStart = index + 1;
                         break;
@@ -172,9 +172,13 @@ public class DefaultExpressionEvaluatorSyntaxTokenMaker extends AbstractTokenMak
         }
     }
 
-//    @Override
-//    public void addToken(Segment segment, int start, int end, int tokenType, int startOffset) {
-//        System.out.println("ato " + start + "-" + end + " @ " + startOffset);
-//        super.addToken(segment, start, end, tokenType, startOffset);
-//    }
+    private void addToken(Segment segment, String text, int tokenType, int start, int startOffset) {
+        if (text.isEmpty())
+            return;
+        int end = start + text.length() - 1;
+        int shift = 0;
+        for (int i = start; i <= end; i++) {
+            addToken(segment, i, i, tokenType, startOffset + shift++);
+        }
+    }
 }

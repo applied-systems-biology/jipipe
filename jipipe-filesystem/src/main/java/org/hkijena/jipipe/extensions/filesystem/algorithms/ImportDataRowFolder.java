@@ -17,7 +17,7 @@ import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
-import org.hkijena.jipipe.api.JIPipeValidityReport;
+import org.hkijena.jipipe.api.JIPipeIssueReport;
 import org.hkijena.jipipe.api.data.JIPipeAnnotation;
 import org.hkijena.jipipe.api.data.JIPipeAnnotationMergeStrategy;
 import org.hkijena.jipipe.api.data.JIPipeData;
@@ -100,13 +100,13 @@ public class ImportDataRowFolder extends JIPipeSimpleIteratingAlgorithm {
     }
 
     @Override
-    public void reportValidity(JIPipeValidityReport report) {
+    public void reportValidity(JIPipeIssueReport report) {
         super.reportValidity(report);
         if (dataType.getInfo() == null) {
-            report.forCategory("Data type").reportIsInvalid("Please select a data type!", "This node requires you to select a data type that should be imported.",
+            report.resolve("Data type").reportIsInvalid("Please select a data type!", "This node requires you to select a data type that should be imported.",
                     "Please select a data type in the parameters", this);
         } else if (ReflectionUtils.isAbstractOrInterface(dataType.getInfo().getDataClass())) {
-            report.forCategory("Data type").reportIsInvalid("Data type is generic!", "This node requires you to select a data type that does not act as general concept.",
+            report.resolve("Data type").reportIsInvalid("Data type is generic!", "This node requires you to select a data type that does not act as general concept.",
                     "Please select a data type in the parameters", this);
         }
     }

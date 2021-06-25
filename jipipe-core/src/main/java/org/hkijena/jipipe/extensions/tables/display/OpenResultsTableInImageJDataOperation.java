@@ -31,6 +31,12 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 
 public class OpenResultsTableInImageJDataOperation implements JIPipeDataImportOperation, JIPipeDataDisplayOperation {
+
+    @Override
+    public String getId() {
+        return "jipipe:open-table-in-imagej";
+    }
+
     @Override
     public void display(JIPipeData data, String displayName, JIPipeWorkbench workbench, JIPipeDataSource source) {
         ((ResultsTableData) data.duplicate()).getTable().show(displayName);

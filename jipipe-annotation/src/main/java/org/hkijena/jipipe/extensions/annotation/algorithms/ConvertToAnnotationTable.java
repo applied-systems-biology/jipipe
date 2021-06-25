@@ -16,7 +16,7 @@ package org.hkijena.jipipe.extensions.annotation.algorithms;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
-import org.hkijena.jipipe.api.JIPipeValidityReport;
+import org.hkijena.jipipe.api.JIPipeIssueReport;
 import org.hkijena.jipipe.api.data.JIPipeAnnotation;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.nodes.JIPipeColumMatching;
@@ -67,8 +67,8 @@ public class ConvertToAnnotationTable extends JIPipeMergingAlgorithm {
     }
 
     @Override
-    public void reportValidity(JIPipeValidityReport report) {
-        report.forCategory("Add data as string").report(addDataToString);
+    public void reportValidity(JIPipeIssueReport report) {
+        report.resolve("Add data as string").report(addDataToString);
     }
 
     @Override

@@ -20,7 +20,7 @@ import ij.plugin.filter.RankFilters;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
-import org.hkijena.jipipe.api.JIPipeValidityReport;
+import org.hkijena.jipipe.api.JIPipeIssueReport;
 import org.hkijena.jipipe.api.data.JIPipeDefaultMutableSlotConfiguration;
 import org.hkijena.jipipe.api.nodes.JIPipeDataBatch;
 import org.hkijena.jipipe.api.nodes.JIPipeInputSlot;
@@ -103,8 +103,8 @@ public class MorphologyInternalGradient2DAlgorithm extends JIPipeSimpleIterating
 
 
     @Override
-    public void reportValidity(JIPipeValidityReport report) {
-        report.forCategory("Radius").checkIfWithin(this, radius, 0, Double.POSITIVE_INFINITY, false, true);
+    public void reportValidity(JIPipeIssueReport report) {
+        report.resolve("Radius").checkIfWithin(this, radius, 0, Double.POSITIVE_INFINITY, false, true);
     }
 
     @JIPipeDocumentation(name = "Radius", description = "Radius of the local minimum / erosion filter")

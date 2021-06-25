@@ -18,6 +18,7 @@ Adolf-Reichwein-Straße 23, 07745 Jena, Germany
 from dltoolbox.models import SegNet
 from dltoolbox.models import VGG16
 from dltoolbox.models import FCN32
+from dltoolbox.models import Xception
 
 
 def build_model(config):
@@ -38,3 +39,8 @@ def build_model(config):
         VGG16.build_model(config)
     elif config["architecture"] == "FCN32":
         FCN32.build_model(config)
+    elif config["architecture"] == "Xception":
+        Xception.build_model(config)
+
+    else:
+        raise AttributeError("Unsupported model-architecture: " + config["architecture"])

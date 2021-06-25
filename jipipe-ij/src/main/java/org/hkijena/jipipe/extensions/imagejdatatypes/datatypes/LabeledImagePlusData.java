@@ -10,8 +10,8 @@ import org.hkijena.jipipe.api.exceptions.UserFriendlyNullPointerException;
 import org.hkijena.jipipe.extensions.imagejdatatypes.ImageJDataTypesSettings;
 import org.hkijena.jipipe.extensions.imagejdatatypes.color.ColorSpace;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.color.ImagePlusColorRGBData;
-import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleMaskData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
+import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageSource;
 import org.hkijena.jipipe.utils.PathUtils;
 
 import javax.swing.*;
@@ -32,6 +32,7 @@ public class LabeledImagePlusData extends ImagePlusData {
      */
     public static final int DIMENSIONALITY = -1;
 
+    private ImageSource labelSource;
     private ImagePlus labels;
 
     public LabeledImagePlusData(ImagePlus image, ImagePlus labels) {
@@ -50,9 +51,19 @@ public class LabeledImagePlusData extends ImagePlusData {
         }
     }
 
+    public LabeledImagePlusData(ImageSource image, ImageSource labels) {
+        super(image);
+        this.labelSource = labels;
+    }
+
+    public LabeledImagePlusData(ImageSource image, ImageSource labels, ColorSpace colorSpace) {
+        super(image, colorSpace);
+        this.labelSource = labels;
+    }
+
     @Override
     public ImagePlus getViewedImage(boolean duplicate) {
-        if (labels.getBitDepth() == 8) {
+        if (getLabels().getBitDepth() == 8) {
             // Ensure RGB data
             ImagePlus result = new ImagePlusColorRGBData(getImage()).getImage();
             if (result == getImage()) {
@@ -103,7 +114,7 @@ public class LabeledImagePlusData extends ImagePlusData {
      * @return the duplicate
      */
     public ImagePlus getDuplicateLabels() {
-        ImagePlus imp = labels.duplicate();
+        ImagePlus imp = getLabels().duplicate();
         imp.setTitle(getLabels().getTitle());
         return imp;
     }
@@ -117,23 +128,40 @@ public class LabeledImagePlusData extends ImagePlusData {
         super.saveTo(storageFilePath, imageName, forceName, progressInfo);
 
         // Save the mask
-        if (ImageJDataTypesSettings.getInstance().isUseBioFormats() && !(labels.getType() == ImagePlus.COLOR_RGB && ImageJDataTypesSettings.getInstance().isSaveRGBWithImageJ())) {
-            Path outputPath = storageFilePath.resolve(maskName + ".ome.tif");
-            OMEImageData.simpleOMEExport(labels, outputPath);
-        } else {
-            Path outputPath = storageFilePath.resolve(maskName + ".tif");
-            IJ.saveAsTiff(getLabels(), outputPath.toString());
+        if(labels != null) {
+            if (ImageJDataTypesSettings.getInstance().isUseBioFormats() && !(labels.getType() == ImagePlus.COLOR_RGB && ImageJDataTypesSettings.getInstance().isSaveRGBWithImageJ())) {
+                Path outputPath = storageFilePath.resolve(maskName + ".ome.tif");
+                OMEImageData.simpleOMEExport(labels, outputPath);
+            } else {
+                Path outputPath = storageFilePath.resolve(maskName + ".tif");
+                IJ.saveAsTiff(getLabels(), outputPath.toString());
+            }
+        }
+        else {
+            labelSource.saveTo(storageFilePath, maskName, forceName, progressInfo);
         }
     }
 
     @Override
     public JIPipeData duplicate() {
-        return new LabeledImagePlusData(getImage().duplicate(), getLabels().duplicate(), getColorSpace());
+        if(hasLoadedImage()) {
+            return new LabeledImagePlusData(getImage().duplicate(), getLabels().duplicate(), getColorSpace());
+        }
+        else {
+            return new LabeledImagePlusData(getImageSource(), labelSource, getColorSpace());
+        }
+    }
+
+    public ImageSource getLabelSource() {
+        return labelSource;
     }
 
     @Override
     public Component preview(int width, int height) {
-        if (labels.getBitDepth() == 8) {
+        if(!hasLoadedImage()) {
+            return super.preview(width, height);
+        }
+        if (getLabels().getBitDepth() == 8) {
             double factorX = 1.0 * width / getImage().getWidth();
             double factorY = 1.0 * height / getImage().getHeight();
             double factor = Math.max(factorX, factorY);
@@ -141,7 +169,7 @@ public class LabeledImagePlusData extends ImagePlusData {
             int imageWidth = (int) (getImage().getWidth() * factor);
             int imageHeight = (int) (getImage().getHeight() * factor);
             ImagePlus rgbImage = ImageJUtils.channelsToRGB(getImage());
-            rgbImage = ImagePlusColorRGBData.convertIfNeeded(rgbImage);
+            rgbImage = ImageJUtils.convertToColorRGBIfNeeded(rgbImage);
             ImageProcessor resizedImage = rgbImage.getProcessor().resize(imageWidth, imageHeight, smooth);
             ImageProcessor resizedMask = getLabels().getProcessor().resize(imageWidth, imageHeight, smooth);
             int[] imagePixels = (int[]) resizedImage.getPixels();
@@ -169,7 +197,25 @@ public class LabeledImagePlusData extends ImagePlusData {
         }
     }
 
+    public boolean hasLoadedLabels() {
+        return labels != null;
+    }
+
+    @Override
+    public ImagePlus getImage() {
+        if(labels == null)
+            getLabels();
+        return super.getImage();
+    }
+
     public ImagePlus getLabels() {
+        if(labels == null) {
+            labels = labelSource.get();
+            labelSource = null;
+        }
+        // Force load the image
+        if(!hasLoadedImage())
+            getImage();
         return labels;
     }
 
@@ -180,7 +226,7 @@ public class LabeledImagePlusData extends ImagePlusData {
      * @return the converted data
      */
     public static ImagePlusData convertFrom(ImagePlusData data) {
-        ImagePlus greyscale = ImagePlusGreyscaleMaskData.convertIfNeeded(data.getImage());
+        ImagePlus greyscale = ImageJUtils.convertToGreyscale8UIfNeeded(data.getImage());
         // Threshold it into a mask
         ImageJUtils.forEachSlice(greyscale, ip -> {
             for (int i = 0; i < ip.getPixelCount(); i++) {

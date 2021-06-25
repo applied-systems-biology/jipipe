@@ -60,8 +60,8 @@ import java.util.Set;
  */
 public class JIPipeDatatypeRegistry {
     private BiMap<String, Class<? extends JIPipeData>> registeredDataTypes = HashBiMap.create();
-    private Map<String, List<JIPipeDataDisplayOperation>> registeredDisplayOperations = new HashMap<>();
-    private Map<String, List<JIPipeDataImportOperation>> registeredImportOperations = new HashMap<>();
+    private Map<String, Map<String, JIPipeDataDisplayOperation>> registeredDisplayOperations = new HashMap<>();
+    private Map<String, Map<String, JIPipeDataImportOperation>> registeredImportOperations = new HashMap<>();
     private Map<Class<? extends JIPipeData>, URL> iconsURLs = new HashMap<>();
     private Map<Class<? extends JIPipeData>, ImageIcon> iconInstances = new HashMap<>();
     private Map<Class<? extends JIPipeData>, Class<? extends JIPipeResultDataSlotRowUI>> resultUIs = new HashMap<>();
@@ -188,12 +188,14 @@ public class JIPipeDatatypeRegistry {
      * @param operation  the operation
      */
     public void registerImportOperation(String dataTypeId, JIPipeDataImportOperation operation) {
-        List<JIPipeDataImportOperation> existing = registeredImportOperations.getOrDefault(dataTypeId, null);
+        Map<String, JIPipeDataImportOperation> existing = registeredImportOperations.getOrDefault(dataTypeId, null);
         if (existing == null) {
-            existing = new ArrayList<>();
+            existing = new HashMap<>();
             registeredImportOperations.put(dataTypeId, existing);
         }
-        existing.add(operation);
+        if(existing.containsKey(operation.getId()))
+            throw new RuntimeException("Import operation with ID '" + operation.getId() + "' already exists in data type '" + dataTypeId + "'");
+        existing.put(operation.getId(), operation);
     }
 
     /**
@@ -203,12 +205,26 @@ public class JIPipeDatatypeRegistry {
      * @param operation  the operation
      */
     public void registerDisplayOperation(String dataTypeId, JIPipeDataDisplayOperation operation) {
-        List<JIPipeDataDisplayOperation> existing = registeredDisplayOperations.getOrDefault(dataTypeId, null);
+        Map<String, JIPipeDataDisplayOperation> existing = registeredDisplayOperations.getOrDefault(dataTypeId, null);
         if (existing == null) {
-            existing = new ArrayList<>();
+            existing = new HashMap<>();
             registeredDisplayOperations.put(dataTypeId, existing);
         }
-        existing.add(operation);
+        if(existing.containsKey(operation.getId()))
+            throw new RuntimeException("Display operation with ID '" + operation.getId() + "' already exists in data type '" + dataTypeId + "'");
+        existing.put(operation.getId(), operation);
+    }
+
+    public Map<String, JIPipeDataDisplayOperation> getAllRegisteredDisplayOperations(String dataTypeId) {
+        Map<String, JIPipeDataDisplayOperation> result = new HashMap<>(registeredDisplayOperations.getOrDefault(dataTypeId, Collections.emptyMap()));
+        result.putAll(registeredDisplayOperations.getOrDefault("", Collections.emptyMap()));
+        return result;
+    }
+
+    public Map<String, JIPipeDataImportOperation> getAllRegisteredImportOperations(String dataTypeId) {
+        Map<String, JIPipeDataImportOperation> result = new HashMap<>(registeredImportOperations.getOrDefault(dataTypeId, Collections.emptyMap()));
+        result.putAll(registeredImportOperations.getOrDefault("", Collections.emptyMap()));
+        return result;
     }
 
     /**
@@ -217,9 +233,9 @@ public class JIPipeDatatypeRegistry {
      * @param id the id
      * @return list of import operations
      */
-    public List<JIPipeDataImportOperation> getImportOperationsFor(String id) {
-        List<JIPipeDataImportOperation> result = new ArrayList<>(registeredImportOperations.getOrDefault(id, Collections.emptyList()));
-        result.addAll(registeredImportOperations.getOrDefault("", Collections.emptyList()));
+    public List<JIPipeDataImportOperation> getSortedImportOperationsFor(String id) {
+        List<JIPipeDataImportOperation> result = new ArrayList<>(registeredImportOperations.getOrDefault(id, Collections.emptyMap()).values());
+        result.addAll(registeredImportOperations.getOrDefault("", Collections.emptyMap()).values());
         result.sort(Comparator.comparing(JIPipeDataImportOperation::getOrder));
         return result;
     }
@@ -230,9 +246,9 @@ public class JIPipeDatatypeRegistry {
      * @param id the id
      * @return list of import operations
      */
-    public List<JIPipeDataDisplayOperation> getDisplayOperationsFor(String id) {
-        List<JIPipeDataDisplayOperation> result = new ArrayList<>(registeredDisplayOperations.getOrDefault(id, Collections.emptyList()));
-        result.addAll(registeredDisplayOperations.getOrDefault("", Collections.emptyList()));
+    public List<JIPipeDataDisplayOperation> getSortedDisplayOperationsFor(String id) {
+        List<JIPipeDataDisplayOperation> result = new ArrayList<>(registeredDisplayOperations.getOrDefault(id, Collections.emptyMap()).values());
+        result.addAll(registeredDisplayOperations.getOrDefault("", Collections.emptyMap()).values());
         result.sort(Comparator.comparing(JIPipeDataDisplayOperation::getOrder));
         return result;
     }

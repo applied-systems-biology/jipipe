@@ -61,6 +61,11 @@ public class ImportImageJPathDataOperation implements JIPipeDataImportOperation,
     }
 
     @Override
+    public String getId() {
+        return "jipipe:import-image-into-imagej";
+    }
+
+    @Override
     public boolean canShow(JIPipeDataSlot slot, JIPipeExportedDataTable.Row row, Path rowStorageFolder) {
         Path targetPath = getTargetPath(rowStorageFolder);
         if (targetPath == null)

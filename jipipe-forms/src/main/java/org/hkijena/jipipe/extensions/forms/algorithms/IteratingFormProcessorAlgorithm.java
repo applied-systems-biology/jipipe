@@ -91,7 +91,7 @@ public class IteratingFormProcessorAlgorithm extends JIPipeAlgorithm implements 
             }
         } else {
             // Generate data batches and show the user interface
-            List<JIPipeMergingDataBatch> dataBatchList = generateDataBatchesDryRun(getEffectiveInputSlots());
+            List<JIPipeMergingDataBatch> dataBatchList = generateDataBatchesDryRun(getEffectiveInputSlots(), progressInfo);
 
             if (dataBatchList.isEmpty()) {
                 progressInfo.log("No data batches. Skipping.");
@@ -236,7 +236,7 @@ public class IteratingFormProcessorAlgorithm extends JIPipeAlgorithm implements 
     }
 
     @Override
-    public List<JIPipeMergingDataBatch> generateDataBatchesDryRun(List<JIPipeDataSlot> slots) {
+    public List<JIPipeMergingDataBatch> generateDataBatchesDryRun(List<JIPipeDataSlot> slots, JIPipeProgressInfo progressInfo) {
         JIPipeMergingDataBatchBuilder builder = new JIPipeMergingDataBatchBuilder();
         builder.setNode(this);
         builder.setSlots(slots);
@@ -246,7 +246,7 @@ public class IteratingFormProcessorAlgorithm extends JIPipeAlgorithm implements 
                 dataBatchGenerationSettings.getCustomColumns());
         builder.setCustomAnnotationMatching(dataBatchGenerationSettings.getCustomAnnotationMatching());
         builder.setAnnotationMatchingMethod(dataBatchGenerationSettings.getAnnotationMatchingMethod());
-        List<JIPipeMergingDataBatch> dataBatches = builder.build();
+        List<JIPipeMergingDataBatch> dataBatches = builder.build(progressInfo);
         dataBatches.sort(Comparator.naturalOrder());
         return dataBatches;
     }

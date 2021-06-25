@@ -31,6 +31,11 @@ import java.util.Objects;
  */
 public class OpenContainingFolderDataImportOperation implements JIPipeDataImportOperation {
     @Override
+    public String getId() {
+        return "jipipe:open-folder";
+    }
+
+    @Override
     public String getName() {
         return "Open folder";
     }

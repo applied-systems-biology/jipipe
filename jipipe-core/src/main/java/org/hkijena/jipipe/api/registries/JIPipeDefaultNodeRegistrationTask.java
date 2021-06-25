@@ -14,7 +14,7 @@
 package org.hkijena.jipipe.api.registries;
 
 import org.hkijena.jipipe.JIPipe;
-import org.hkijena.jipipe.api.JIPipeValidityReport;
+import org.hkijena.jipipe.api.JIPipeIssueReport;
 import org.hkijena.jipipe.api.data.JIPipeData;
 
 import java.util.HashSet;
@@ -97,24 +97,24 @@ public abstract class JIPipeDefaultNodeRegistrationTask implements JIPipeNodeReg
     }
 
     @Override
-    public void reportValidity(JIPipeValidityReport report) {
+    public void reportValidity(JIPipeIssueReport report) {
         for (String id : dependencyAlgorithmIds) {
             if (!JIPipe.getNodes().hasNodeInfoWithId(id))
-                report.forCategory("Dependency Algorithms").reportIsInvalid("A dependency is missing!",
+                report.resolve("Dependency Algorithms").reportIsInvalid("A dependency is missing!",
                         "Dependency algorithm '" + id + "' is missing!",
                         "Please make sure to install dependency plugins.",
                         this);
         }
         for (String id : dependencyDatatypeIds) {
             if (!JIPipe.getDataTypes().hasDatatypeWithId(id))
-                report.forCategory("Dependency Data types").reportIsInvalid("A dependency is missing!",
+                report.resolve("Dependency Data types").reportIsInvalid("A dependency is missing!",
                         "Dependency data type '" + id + "' is missing!",
                         "Please make sure to install dependency plugins.",
                         this);
         }
         for (Class<? extends JIPipeData> dataClass : dependencyDatatypeClasses) {
             if (!JIPipe.getDataTypes().hasDataType(dataClass))
-                report.forCategory("Dependency Data types").reportIsInvalid("A dependency is missing!",
+                report.resolve("Dependency Data types").reportIsInvalid("A dependency is missing!",
                         "Dependency data type '" + dataClass.getCanonicalName() + "' is missing!",
                         "Please make sure to install dependency plugins.",
                         this);

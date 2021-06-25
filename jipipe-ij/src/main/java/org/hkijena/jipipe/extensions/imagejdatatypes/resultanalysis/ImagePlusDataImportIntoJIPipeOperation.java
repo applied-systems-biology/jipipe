@@ -52,6 +52,11 @@ public class ImagePlusDataImportIntoJIPipeOperation implements JIPipeDataImportO
         return UIUtils.getIconFromResources("apps/jipipe.png");
     }
 
+    @Override
+    public String getId() {
+        return "jipipe:import-image-into-jipipe";
+    }
+
     @Subscribe
     public void onRunFinished(RunUIWorkerFinishedEvent event) {
         if (event.getRun() instanceof ImagePlusResultImportRun) {

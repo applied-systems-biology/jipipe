@@ -24,6 +24,11 @@ import java.nio.file.Path;
 
 public class ROIDataImportIntoImageOperation implements JIPipeDataImportOperation {
 
+    @Override
+    public String getId() {
+        return "jipipe:import-roi-into-roi-manager";
+    }
+
     private Path findROIFile(Path rowStorageFolder) {
         if (rowStorageFolder != null && Files.isDirectory(rowStorageFolder)) {
             Path zipFile = PathUtils.findFileByExtensionIn(rowStorageFolder, ".zip");

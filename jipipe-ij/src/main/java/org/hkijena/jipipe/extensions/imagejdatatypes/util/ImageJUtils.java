@@ -36,7 +36,12 @@ import ij.process.ImageProcessor;
 import ij.process.ImageStatistics;
 import ij.process.LUT;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
+import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
 import org.hkijena.jipipe.extensions.imagejdatatypes.color.ColorSpace;
+import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d2.ImagePlus2DData;
+import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d3.ImagePlus3DData;
+import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d4.ImagePlus4DData;
+import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d5.ImagePlus5DData;
 import org.hkijena.jipipe.extensions.parameters.roi.Anchor;
 import org.hkijena.jipipe.utils.ImageJCalibrationMode;
 
@@ -1186,6 +1191,202 @@ public class ImageJUtils {
             image.setPosition(original.getC(), original.getZ(), original.getT());
         } else {
             image.getProcessor().setLut(null);
+        }
+    }
+
+    /**
+     * Converts an {@link ImagePlus} to the color space of this data.
+     * Does not guarantee that the input image is copied.
+     *
+     * @param image the image
+     * @return converted image.
+     */
+    public static ImagePlus convertToGreyscaleIfNeeded(ImagePlus image) {
+        if (image.getType() != ImagePlus.GRAY8 &&
+                image.getType() != ImagePlus.GRAY16 &&
+                image.getType() != ImagePlus.GRAY32) {
+            image = image.duplicate();
+            ImageConverter.setDoScaling(true);
+            ImageConverter ic = new ImageConverter(image);
+            ic.convertToGray32();
+        }
+        return image;
+    }
+
+    /**
+     * Converts an {@link ImagePlus} to the color space of this data.
+     * Does not guarantee that the input image is copied.
+     *
+     * @param image the image
+     * @return converted image.
+     */
+    public static ImagePlus convertToGreyscale8UIfNeeded(ImagePlus image) {
+        if (image.getType() != ImagePlus.GRAY8) {
+            image = image.duplicate();
+            ImageConverter.setDoScaling(true);
+            ImageConverter ic = new ImageConverter(image);
+            ic.convertToGray8();
+        }
+        return image;
+    }
+
+    /**
+     * Converts an {@link ImagePlus} to the color space of this data.
+     * Does not guarantee that the input image is copied.
+     *
+     * @param image the image
+     * @return converted image.
+     */
+    public static ImagePlus convertToGrayscale32FIfNeeded(ImagePlus image) {
+        if (image.getType() != ImagePlus.GRAY32) {
+            image = image.duplicate();
+            ImageConverter.setDoScaling(true);
+            ImageConverter ic = new ImageConverter(image);
+            ic.convertToGray32();
+        }
+        return image;
+    }
+
+    /**
+     * Converts an {@link ImagePlus} to the color space of this data.
+     * Does not guarantee that the input image is copied.
+     *
+     * @param image the image
+     * @return converted image.
+     */
+    public static ImagePlus convertToGrayscale16UIfNeeded(ImagePlus image) {
+        if (image.getType() != ImagePlus.GRAY16) {
+            image = image.duplicate();
+            ImageConverter.setDoScaling(true);
+            ImageConverter ic = new ImageConverter(image);
+            ic.convertToGray16();
+        }
+        return image;
+    }
+
+    /**
+     * Converts an {@link ImagePlus} to the color space of this data.
+     * Does not guarantee that the input image is copied.
+     *
+     * @param image the image
+     * @return converted image.
+     */
+    public static ImagePlus convertToColorRGBIfNeeded(ImagePlus image) {
+        if (image.getType() != ImagePlus.COLOR_RGB) {
+            String title = image.getTitle();
+            image = image.duplicate();
+            image.setTitle(title);
+            ImageConverter.setDoScaling(true);
+            ImageConverter ic = new ImageConverter(image);
+            ic.convertToRGB();
+        }
+        return image;
+    }
+
+    /**
+     * Converts an {@link ImagePlus} to the color space of this data.
+     * Does not guarantee that the input image is copied.
+     *
+     * @param image the image
+     * @return converted image.
+     */
+    public static ImagePlus convertToColorLABIfNeeded(ImagePlus image) {
+        if (image.getType() != ImagePlus.COLOR_RGB) {
+            String title = image.getTitle();
+            image = image.duplicate();
+            image.setTitle(title);
+            ImageConverter.setDoScaling(true);
+            ImageConverter ic = new ImageConverter(image);
+            ic.convertToRGB();
+            convertRGBToLAB(image, new JIPipeProgressInfo());
+        }
+        return image;
+    }
+
+    /**
+     * Converts an {@link ImagePlus} to the color space of this data.
+     * Does not guarantee that the input image is copied.
+     *
+     * @param image the image
+     * @return converted image.
+     */
+    public static ImagePlus convertToColorHSBIfNeeded(ImagePlus image) {
+        if (image.getType() != ImagePlus.COLOR_RGB) {
+            // A copy is guaranteed here
+            ImagePlus copy = convertToColorRGBIfNeeded(image);
+            convertRGBToHSB(copy, new JIPipeProgressInfo());
+            return copy;
+        }
+        // ImageJ does not differentiate between color spaces, so we cannot convert. The convertFrom() method will handle this correctly.
+        return image;
+    }
+
+    /**
+     * Converts an {@link ImagePlus} to the color space of this data.
+     * If this function encounters a 3-channel 3D image, it will assume that it is an RGB image and convert it
+     * Does not guarantee that the input image is copied.
+     *
+     * @param image the image
+     * @return converted image.
+     */
+    public static ImagePlus convert3ChannelToRGBIfNeeded(ImagePlus image) {
+        image = channelsToRGB(image);
+        return image;
+    }
+
+    public static void assert2DImage(ImagePlus image) {
+        if (image.getNDimensions() > 2) {
+            throw new UserFriendlyRuntimeException(new IllegalArgumentException("Trying to fit higher-dimensional data into " + ImagePlus2DData.DIMENSIONALITY + "D data!"),
+                    "Trying to fit higher-dimensional data into " + ImagePlus2DData.DIMENSIONALITY + "D data!",
+                    "ImageJ integration internals",
+                    image.getNDimensions() + "D data was supplied, but it was requested that it should fit into " + ImagePlus2DData.DIMENSIONALITY + "D data. " +
+                            "This is not trivial. This can be caused by selecting the wrong data slot type or applying a conversion" +
+                            " from N-dimensional data into data with a defined dimensionality.",
+                    "Try to check if the data slots have the correct data types. You can also check the input of the offending algorithm via " +
+                            "the quick run to see if they fit the assumptions. If you cannot find the reason behind this error," +
+                            " try to contact the JIPipe or plugin developers.");
+        }
+    }
+
+    public static void assert3DImage(ImagePlus image) {
+        if (image.getNDimensions() > 3) {
+            throw new UserFriendlyRuntimeException(new IllegalArgumentException("Trying to fit higher-dimensional data into " + ImagePlus3DData.DIMENSIONALITY + "D data!"),
+                    "Trying to fit higher-dimensional data into " + ImagePlus3DData.DIMENSIONALITY + "D data!",
+                    "ImageJ integration internals",
+                    image.getNDimensions() + "D data was supplied, but it was requested that it should fit into " + ImagePlus3DData.DIMENSIONALITY + "D data. " +
+                            "This is not trivial. This can be caused by selecting the wrong data slot type or applying a conversion" +
+                            " from N-dimensional data into data with a defined dimensionality.",
+                    "Try to check if the data slots have the correct data types. You can also check the input of the offending algorithm via " +
+                            "the quick run to see if they fit the assumptions. If you cannot find the reason behind this error," +
+                            " try to contact the JIPipe or plugin developers.");
+        }
+    }
+
+    public static void assert4DImage(ImagePlus image) {
+        if (image.getNDimensions() > 4) {
+            throw new UserFriendlyRuntimeException(new IllegalArgumentException("Trying to fit higher-dimensional data into " + ImagePlus4DData.DIMENSIONALITY + "D data!"),
+                    "Trying to fit higher-dimensional data into " + ImagePlus4DData.DIMENSIONALITY + "D data!",
+                    "ImageJ integration internals",
+                    image.getNDimensions() + "D data was supplied, but it was requested that it should fit into " + ImagePlus4DData.DIMENSIONALITY + "D data. " +
+                            "This is not trivial. This can be caused by selecting the wrong data slot type or applying a conversion" +
+                            " from N-dimensional data into data with a defined dimensionality.",
+                    "Try to check if the data slots have the correct data types. You can also check the input of the offending algorithm via " +
+                            "the quick run to see if they fit the assumptions. If you cannot find the reason behind this error," +
+                            " try to contact the JIPipe or plugin developers.");
+        }
+    }
+
+    public static void assert5DImage(ImagePlus image) {
+        if (image.getNDimensions() > 5) {
+            throw new UserFriendlyRuntimeException(new IllegalArgumentException("Trying to fit higher-dimensional data into " + ImagePlus5DData.DIMENSIONALITY + "D data!"),
+                    "Trying to fit higher-dimensional data into " + ImagePlus5DData.DIMENSIONALITY + "D data!",
+                    "ImageJ integration internals",
+                    image.getNDimensions() + "D data was supplied, but it was requested that it should fit into " + ImagePlus5DData.DIMENSIONALITY + "D data. " +
+                            "This is not trivial. This can be caused by selecting the wrong data slot type or applying a conversion" +
+                            " from N-dimensional data into data with a defined dimensionality.",
+                    "Try to check if the data slots have the correct data types. You can also check the input of the offending algorithm via " +
+                            "the quick run to see if they fit the assumptions. If you cannot find the reason behind this error," +
+                            " try to contact the JIPipe or plugin developers.");
         }
     }
 

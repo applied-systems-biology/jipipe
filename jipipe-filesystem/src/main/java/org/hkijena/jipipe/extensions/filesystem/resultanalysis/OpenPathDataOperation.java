@@ -20,6 +20,11 @@ public class OpenPathDataOperation implements JIPipeDataImportOperation, JIPipeD
     }
 
     @Override
+    public String getId() {
+        return "jipipe:open-path";
+    }
+
+    @Override
     public String getName() {
         return "Open";
     }

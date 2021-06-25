@@ -18,7 +18,7 @@ import com.fasterxml.jackson.annotation.JsonSetter;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 import org.hkijena.jipipe.api.JIPipeValidatable;
-import org.hkijena.jipipe.api.JIPipeValidityReport;
+import org.hkijena.jipipe.api.JIPipeIssueReport;
 import org.hkijena.jipipe.api.grouping.events.ParameterReferencesChangedEvent;
 import org.hkijena.jipipe.api.nodes.JIPipeGraph;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
@@ -144,14 +144,14 @@ public class GraphNodeParameters implements JIPipeValidatable {
     }
 
     @Override
-    public void reportValidity(JIPipeValidityReport report) {
+    public void reportValidity(JIPipeIssueReport report) {
         if (graph != null) {
             JIPipeParameterTree tree = graph.getParameterTree(false);
             for (GraphNodeParameterReferenceGroup parameterReferenceGroup : parameterReferenceGroups) {
-                JIPipeValidityReport group = report.forCategory(parameterReferenceGroup.getName());
+                JIPipeIssueReport group = report.resolve(parameterReferenceGroup.getName());
                 for (GraphNodeParameterReference reference : parameterReferenceGroup.getContent()) {
                     if (reference.resolve(tree) == null) {
-                        group.forCategory(reference.getName(tree)).reportIsInvalid("Could not find parameter!",
+                        group.resolve(reference.getName(tree)).reportIsInvalid("Could not find parameter!",
                                 "There is a an exported parameter referencing the internal ID '" + reference.getPath() + "'. " +
                                         "It could not be found.",
                                 "Please check if you did not delete the node that contains the referenced parameter.",

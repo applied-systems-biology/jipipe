@@ -13,7 +13,7 @@
 
 package org.hkijena.jipipe.utils;
 
-import org.hkijena.jipipe.api.JIPipeValidityReport;
+import org.hkijena.jipipe.api.JIPipeIssueReport;
 import org.hkijena.jipipe.api.parameters.JIPipeCustomParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.extensions.parameters.pairs.IntegerAndIntegerPairParameter;
@@ -53,7 +53,7 @@ public class JythonUtils {
         }
     }
 
-    public static void checkScriptValidity(String code, JIPipeCustomParameterCollection scriptParameters, JIPipeValidityReport report) {
+    public static void checkScriptValidity(String code, JIPipeCustomParameterCollection scriptParameters, JIPipeIssueReport report) {
         try {
             PythonInterpreter pythonInterpreter = new PythonInterpreter();
             JythonUtils.passParametersToPython(pythonInterpreter, scriptParameters);
@@ -72,10 +72,10 @@ public class JythonUtils {
         }
     }
 
-    public static void checkScriptParametersValidity(JIPipeCustomParameterCollection scriptParameters, JIPipeValidityReport report) {
+    public static void checkScriptParametersValidity(JIPipeCustomParameterCollection scriptParameters, JIPipeIssueReport report) {
         for (String key : scriptParameters.getParameters().keySet()) {
             if (!MacroUtils.isValidVariableName(key)) {
-                report.forCategory(key).reportIsInvalid("Invalid name!",
+                report.resolve(key).reportIsInvalid("Invalid name!",
                         "'" + key + "' is an invalid Python variable name!",
                         "Please ensure that script variables are compatible with the Python language.",
                         scriptParameters);

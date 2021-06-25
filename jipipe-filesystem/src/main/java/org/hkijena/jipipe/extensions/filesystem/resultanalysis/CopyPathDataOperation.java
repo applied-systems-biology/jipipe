@@ -24,6 +24,11 @@ public class CopyPathDataOperation implements JIPipeDataImportOperation, JIPipeD
     }
 
     @Override
+    public String getId() {
+        return "jipipe:copy-path";
+    }
+
+    @Override
     public String getName() {
         return "Copy path";
     }

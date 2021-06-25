@@ -23,7 +23,7 @@ import org.hkijena.jipipe.api.JIPipeProject;
 import org.hkijena.jipipe.api.JIPipeProjectMetadata;
 import org.hkijena.jipipe.api.JIPipeProjectTemplate;
 import org.hkijena.jipipe.api.JIPipeRun;
-import org.hkijena.jipipe.api.JIPipeValidityReport;
+import org.hkijena.jipipe.api.JIPipeIssueReport;
 import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
 import org.hkijena.jipipe.extensions.settings.FileChooserSettings;
 import org.hkijena.jipipe.extensions.settings.GeneralUISettings;
@@ -193,7 +193,7 @@ public class JIPipeProjectWindow extends JFrame {
      */
     public void openProject(Path path) {
         if (Files.isRegularFile(path)) {
-            JIPipeValidityReport report = new JIPipeValidityReport();
+            JIPipeIssueReport report = new JIPipeIssueReport();
             try {
                 JsonNode jsonData = JsonUtils.getObjectMapper().readValue(path.toFile(), JsonNode.class);
                 Set<JIPipeDependency> dependencySet = JIPipeProject.loadDependenciesFromJson(jsonData);
@@ -237,7 +237,7 @@ public class JIPipeProjectWindow extends JFrame {
                 UIUtils.openValidityReportDialog(this, report, false);
             }
         } else if (Files.isDirectory(path)) {
-            JIPipeValidityReport report = new JIPipeValidityReport();
+            JIPipeIssueReport report = new JIPipeIssueReport();
             try {
                 Path parameterFilePath = path.resolve("project.jip");
                 JsonNode jsonData = JsonUtils.getObjectMapper().readValue(parameterFilePath.toFile(), JsonNode.class);
@@ -334,7 +334,7 @@ public class JIPipeProjectWindow extends JFrame {
             getProject().saveProject(tempFile);
 
             // Check if the saved project can be loaded
-            JIPipeProject.loadProject(tempFile, new JIPipeValidityReport());
+            JIPipeProject.loadProject(tempFile, new JIPipeIssueReport());
 
             // Overwrite the target file
             if (Files.exists(savePath))

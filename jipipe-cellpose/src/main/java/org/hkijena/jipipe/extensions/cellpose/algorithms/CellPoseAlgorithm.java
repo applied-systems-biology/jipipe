@@ -1,12 +1,13 @@
 package org.hkijena.jipipe.extensions.cellpose.algorithms;
 
+import com.google.common.collect.ImmutableList;
 import ij.IJ;
 import ij.ImagePlus;
 import org.apache.commons.io.FileUtils;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
-import org.hkijena.jipipe.api.JIPipeValidityReport;
+import org.hkijena.jipipe.api.JIPipeIssueReport;
 import org.hkijena.jipipe.api.data.JIPipeAnnotation;
 import org.hkijena.jipipe.api.data.JIPipeDataSlotInfo;
 import org.hkijena.jipipe.api.data.JIPipeDefaultMutableSlotConfiguration;
@@ -38,7 +39,6 @@ import org.hkijena.jipipe.extensions.parameters.primitives.OptionalAnnotationNam
 import org.hkijena.jipipe.extensions.parameters.primitives.OptionalDoubleParameter;
 import org.hkijena.jipipe.extensions.python.OptionalPythonEnvironment;
 import org.hkijena.jipipe.extensions.python.PythonUtils;
-import org.hkijena.jipipe.utils.MacroUtils;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -174,13 +174,13 @@ public class CellPoseAlgorithm extends JIPipeMergingAlgorithm {
     }
 
     @Override
-    public void reportValidity(JIPipeValidityReport report) {
+    public void reportValidity(JIPipeIssueReport report) {
         super.reportValidity(report);
         if (!isPassThrough()) {
             if (overrideEnvironment.isEnabled()) {
-                report.forCategory("Override Python environment").report(overrideEnvironment.getContent());
+                report.resolve("Override Python environment").report(overrideEnvironment.getContent());
             } else {
-                CellPoseSettings.checkPythonSettings(report.forCategory("Python"));
+                CellPoseSettings.checkPythonSettings(report.resolve("Python"));
             }
         }
     }
@@ -188,6 +188,7 @@ public class CellPoseAlgorithm extends JIPipeMergingAlgorithm {
     @Override
     protected void runIteration(JIPipeMergingDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
 
+        ImmutableList<Integer> inputRowList= ImmutableList.copyOf(dataBatch.getInputRows("Input"));
         Path workDirectory = getNewScratch();
 
         // Save models if needed
@@ -226,7 +227,25 @@ public class CellPoseAlgorithm extends JIPipeMergingAlgorithm {
             }
         }
 
-        for (Integer inputRow : dataBatch.getInputRows("Input")) {
+        // Generate code
+        StringBuilder code = new StringBuilder();
+        code.append("from cellpose import models\n");
+        code.append("from cellpose import utils, io\n");
+        code.append("import json\n");
+        code.append("import time\n");
+        code.append("import numpy as np\n\n");
+
+        List<Path> inputImagePaths = new ArrayList<>();
+        List<Path> outputRoiOutlinePaths = new ArrayList<>();
+        List<Path> outputDiameterPaths = new ArrayList<>();
+        List<Path> outputLabelsPaths = new ArrayList<>();
+        List<Path> outputFlowsPaths = new ArrayList<>();
+        List<Path> outputProbabilitiesPaths = new ArrayList<>();
+        List<Path> outputStylesPaths = new ArrayList<>();
+        List<Boolean> dataIs3DList = new ArrayList<>();
+        List<Boolean> enable3DSegmentationList = new ArrayList<>();
+
+        for (Integer inputRow : inputRowList) {
             Path rowWorkDirectory = workDirectory.resolve(inputRow + "");
             try {
                 Files.createDirectories(rowWorkDirectory);
@@ -241,75 +260,101 @@ public class CellPoseAlgorithm extends JIPipeMergingAlgorithm {
             Path outputProbabilities = rowWorkDirectory.resolve("probabilities.tif");
             Path outputStyles = rowWorkDirectory.resolve("styles.tif");
 
+            inputImagePaths.add(inputImagePath);
+            outputRoiOutlinePaths.add(outputRoiOutline);
+            outputDiameterPaths.add(outputDiameters);
+            outputLabelsPaths.add(outputLabels);
+            outputFlowsPaths.add(outputFlows);
+            outputProbabilitiesPaths.add(outputProbabilities);
+            outputStylesPaths.add(outputStyles);
+
             // Save raw image
             progressInfo.log("Saving input image to " + inputImagePath);
 
             ImagePlus img = getInputSlot("Input").getData(inputRow, ImagePlus3DGreyscaleData.class, progressInfo).getImage();
             IJ.saveAs(img, "TIFF", inputImagePath.toString());
 
-            // Generate code
-            StringBuilder code = new StringBuilder();
-            code.append("from cellpose import models\n");
-            code.append("from cellpose import utils, io\n");
-            code.append("import json\n");
-            code.append("import time\n");
-            code.append("import numpy as np\n\n");
+            dataIs3DList.add(img.getNDimensions() > 2);
+            enable3DSegmentationList.add(img.getNDimensions() > 2 && enable3DSegmentation);
 
-            code.append("data_is_3d = ").append(PythonUtils.objectToPython(img.getNDimensions() > 2)).append("\n");
-            code.append("enable_3d_segmentation = ").append(PythonUtils.objectToPython(img.getNDimensions() > 2 && enable3DSegmentation)).append("\n\n");
+        }
 
-            // I we provide a custom model, we need to inject custom code (Why?)
-            if (modelParameters.getModel() == CellPoseModel.Custom) {
-                setupCustomCellposeModel(code, customModelPaths, customSizeModelPath);
-            } else {
-                // We can use the combined Cellpose class
-                setupCombinedCellposeModel(code);
-            }
+        // Write the input/output paths
+        code.append("input_image_paths = ").append(PythonUtils.objectToPython(inputImagePaths)).append("\n");
+        code.append("output_roi_outlines_paths = ").append(PythonUtils.objectToPython(outputRoiOutlinePaths)).append("\n");
+        code.append("output_diameter_paths = ").append(PythonUtils.objectToPython(outputDiameterPaths)).append("\n");
+        code.append("output_labels_paths = ").append(PythonUtils.objectToPython(outputLabelsPaths)).append("\n");
+        code.append("output_flows_paths = ").append(PythonUtils.objectToPython(outputFlowsPaths)).append("\n");
+        code.append("output_probabilities_paths = ").append(PythonUtils.objectToPython(outputProbabilitiesPaths)).append("\n");
+        code.append("output_styles_paths = ").append(PythonUtils.objectToPython(outputStylesPaths)).append("\n");
 
-            code.append("input_file = \"").append(MacroUtils.escapeString(inputImagePath.toString())).append("\"\n");
-            code.append("img = io.imread(input_file)\n");
+        // Write 3D settings
+        code.append("data_is_3d = ").append(PythonUtils.objectToPython(dataIs3DList)).append("\n");
+        code.append("enable_3d_segmentation = ").append(PythonUtils.objectToPython(enable3DSegmentationList)).append("\n");
 
-            // Add split code for 3D data in 2D plane mode
-            code.append("if data_is_3d and not enable_3d_segmentation:\n" +
-                    "    imgs = []\n" +
-                    "    for z in range(img.shape[0]):\n" +
-                    "        imgs.append(img[z,:,:])\n" +
-                    "    img = imgs\n\n");
 
-            setupModelEval(code);
+        // I we provide a custom model, we need to inject custom code (Why?)
+        if (modelParameters.getModel() == CellPoseModel.Custom) {
+            injectCustomCellposeClass(code);
+            setupCustomCellposeModel(code, customModelPaths, customSizeModelPath);
+        } else {
+            // We can use the combined Cellpose class
+            setupCombinedCellposeModel(code);
+        }
 
-            // Re-merge masks
-            if (outputParameters.isOutputROI() || outputParameters.isOutputLabels()) {
-                code.append("if data_is_3d and not enable_3d_segmentation:\n" +
-                        "    masks = np.stack(masks, 0)\n");
-            }
+        code.append("for image_index in range(len(").append("input_image_paths").append(")):\n");
 
-            // Generate ROI output
-            if (outputParameters.isOutputROI()) {
-                setupGenerateOutputROI(outputRoiOutline, code);
-            }
-            if (outputParameters.isOutputLabels()) {
-                setupGenerateOutputLabels(outputLabels, code);
-            }
-            if (outputParameters.isOutputFlows()) {
-                setupGenerateOutputFlows(outputFlows, code);
-            }
-            if (outputParameters.isOutputProbabilities()) {
-                setupGenerateOutputProbabilities(outputProbabilities, code);
-            }
-            if (outputParameters.isOutputStyles()) {
-                setupGenerateOutputStyles(outputStyles, code);
-            }
+        // Load image
+        code.append("    input_file = input_image_paths[image_index]\n");
+        code.append("    img = io.imread(input_file)\n");
+        code.append("    print(\"Read image with index\", image_index, \"shape\", img.shape)\n");
 
-            // Write diameters
-            if (diameterAnnotation.isEnabled()) {
-                code.append(String.format("with open(\"%s\", \"w\") as f:\n", MacroUtils.escapeString(outputDiameters.toString())));
-                code.append("    f.write(str(diams))\n");
-            }
+        // Add split code for 3D data in 2D plane mode
+        code.append("    if data_is_3d[image_index] and not enable_3d_segmentation[image_index]:\n" +
+                "        imgs = []\n" +
+                "        for z in range(img.shape[0]):\n" +
+                "            imgs.append(img[z,:,:])\n" +
+                "        img = imgs\n\n");
 
-            // Run script
-            PythonUtils.runPython(code.toString(), overrideEnvironment.isEnabled() ? overrideEnvironment.getContent() :
-                    CellPoseSettings.getInstance().getPythonEnvironment(), Collections.emptyList(), progressInfo);
+        // Evaluate model
+        setupModelEval(code);
+
+        // Re-merge masks
+        if (outputParameters.isOutputROI() || outputParameters.isOutputLabels()) {
+            code.append("    if data_is_3d[image_index] and not enable_3d_segmentation[image_index]:\n" +
+                    "        masks = np.stack(masks, 0)\n");
+        }
+
+        // Generate ROI output
+        if (outputParameters.isOutputROI()) {
+            setupGenerateOutputROI(code);
+        }
+        if (outputParameters.isOutputLabels()) {
+            setupGenerateOutputLabels(code);
+        }
+        if (outputParameters.isOutputFlows()) {
+            setupGenerateOutputFlows(code);
+        }
+        if (outputParameters.isOutputProbabilities()) {
+            setupGenerateOutputProbabilities(code);
+        }
+        if (outputParameters.isOutputStyles()) {
+            setupGenerateOutputStyles(code);
+        }
+
+        // Write diameters
+        if (diameterAnnotation.isEnabled()) {
+            code.append("    with open(output_diameter_paths[image_index], \"w\") as f:\n");
+            code.append("        f.write(str(diams))\n");
+        }
+
+        // Run script
+        PythonUtils.runPython(code.toString(), overrideEnvironment.isEnabled() ? overrideEnvironment.getContent() :
+                CellPoseSettings.getInstance().getPythonEnvironment(), Collections.emptyList(), progressInfo);
+
+
+        for (int i = 0; i < inputRowList.size(); i++) {
+            int inputRow = inputRowList.get(i);
 
             // Fetch original annotations and write them
             List<JIPipeAnnotation> annotationList = new ArrayList<>(getInputSlot("Input").getAnnotations(inputRow));
@@ -317,7 +362,7 @@ public class CellPoseAlgorithm extends JIPipeMergingAlgorithm {
             // Read diameters
             if (diameterAnnotation.isEnabled()) {
                 try {
-                    String value = new String(Files.readAllBytes(outputDiameters), StandardCharsets.UTF_8);
+                    String value = new String(Files.readAllBytes(outputDiameterPaths.get(i)), StandardCharsets.UTF_8);
                     diameterAnnotation.addAnnotationIfEnabled(annotationList, value);
                 } catch (IOException e) {
                     throw new RuntimeException(e);
@@ -327,11 +372,11 @@ public class CellPoseAlgorithm extends JIPipeMergingAlgorithm {
             // Extract outputs
             CellPoseUtils.extractCellposeOutputs(dataBatch,
                     progressInfo,
-                    outputRoiOutline,
-                    outputLabels,
-                    outputFlows,
-                    outputProbabilities,
-                    outputStyles,
+                    outputRoiOutlinePaths.get(i),
+                    outputLabelsPaths.get(i),
+                    outputFlowsPaths.get(i),
+                    outputProbabilitiesPaths.get(i),
+                    outputStylesPaths.get(i),
                     annotationList,
                     outputParameters);
         }
@@ -346,50 +391,49 @@ public class CellPoseAlgorithm extends JIPipeMergingAlgorithm {
         }
     }
 
-    private void setupGenerateOutputStyles(Path outputStyles, StringBuilder code) {
-        code.append("if data_is_3d and not enable_3d_segmentation:\n" +
-                "    styles = np.stack(styles, 0)\n");
-        code.append("io.imsave(").append(PythonUtils.objectToPython(outputStyles)).append(", styles)\n");
+    private void setupGenerateOutputStyles(StringBuilder code) {
+        code.append("    if data_is_3d[image_index] and not enable_3d_segmentation[image_index]:\n" +
+                "        styles = np.stack(styles, 0)\n");
+        code.append("    io.imsave(").append("output_styles_paths[image_index]").append(", styles)\n");
     }
 
-    private void setupGenerateOutputProbabilities(Path outputProbabilities, StringBuilder code) {
-        code.append("if data_is_3d and not enable_3d_segmentation:\n" +
-                "    probs = np.stack([x[2] for x in flows], 0)\n" +
-                "else:\n" +
-                "    probs = flows[2]\n");
-        code.append("io.imsave(").append(PythonUtils.objectToPython(outputProbabilities)).append(", probs)\n");
+    private void setupGenerateOutputProbabilities(StringBuilder code) {
+        code.append("    if data_is_3d[image_index] and not enable_3d_segmentation[image_index]:\n" +
+                "        probs = np.stack([x[2] for x in flows], 0)\n" +
+                "    else:\n" +
+                "        probs = flows[2]\n");
+        code.append("    io.imsave(").append("output_probabilities_paths[image_index]").append(", probs)\n");
     }
 
-    private void setupGenerateOutputFlows(Path outputFlows, StringBuilder code) {
-        code.append("if data_is_3d and not enable_3d_segmentation:\n" +
-                "    flows_rgb = np.stack([x[0] for x in flows], 0)\n" +
-                "else:\n" +
-                "    flows_rgb = flows[0]\n");
-        code.append("io.imsave(").append(PythonUtils.objectToPython(outputFlows)).append(", flows_rgb)\n");
+    private void setupGenerateOutputFlows(StringBuilder code) {
+        code.append("    if data_is_3d[image_index] and not enable_3d_segmentation[image_index]:\n" +
+                "        flows_rgb = np.stack([x[0] for x in flows], 0)\n" +
+                "    else:\n" +
+                "        flows_rgb = flows[0]\n");
+        code.append("    io.imsave(").append("output_flows_paths[image_index]").append(", flows_rgb)\n");
     }
 
-    private void setupGenerateOutputLabels(Path outputLabels, StringBuilder code) {
-        code.append("if masks.dtype != np.short and masks.dtype != np.uint8:\n" +
-                "    masks = masks.astype(np.float32)\n");
-        code.append("io.imsave(").append(PythonUtils.objectToPython(outputLabels)).append(", masks)\n");
+    private void setupGenerateOutputLabels(StringBuilder code) {
+        code.append("    if masks.dtype != np.short and masks.dtype != np.uint8:\n" +
+                "        masks = masks.astype(np.float32)\n");
+        code.append("    io.imsave(").append("output_labels_paths[image_index]").append(", masks)\n");
     }
 
-    private void setupGenerateOutputROI(Path outputRoiOutline, StringBuilder code) {
-        code.append("roi_list = []\n" +
-                "if masks.ndim == 3:\n" +
-                "    for z in range(masks.shape[0]):\n" +
-                "        coords_list = utils.outlines_list(masks[z,:,:])\n" +
+    private void setupGenerateOutputROI(StringBuilder code) {
+        code.append("    roi_list = []\n" +
+                "    if masks.ndim == 3:\n" +
+                "        for z in range(masks.shape[0]):\n" +
+                "            coords_list = utils.outlines_list(masks[z,:,:])\n" +
+                "            for coords in coords_list:\n" +
+                "                roi = dict(z=z, coords=[ dict(x=int(x[0]), y=int(x[1])) for x in coords ])\n" +
+                "                roi_list.append(roi)\n" +
+                "    else:\n" +
+                "        coords_list = utils.outlines_list(masks)\n" +
                 "        for coords in coords_list:\n" +
-                "            roi = dict(z=z, coords=[ dict(x=int(x[0]), y=int(x[1])) for x in coords ])\n" +
-                "            roi_list.append(roi)\n" +
-                "else:\n" +
-                "    coords_list = utils.outlines_list(masks)\n" +
-                "    for coords in coords_list:\n" +
-                "        roi = dict(coords=[ dict(x=int(x[0]), y=int(x[1])) for x in coords ])\n" +
-                "        roi_list.append(roi)\n");
-        code.append(String.format("with open(\"%s\", \"w\") as f:\n" +
-                        "    json.dump(roi_list, f, indent=4)\n\n",
-                MacroUtils.escapeString(outputRoiOutline.toString())));
+                "            roi = dict(coords=[ dict(x=int(x[0]), y=int(x[1])) for x in coords ])\n" +
+                "            roi_list.append(roi)\n");
+        code.append("    with open(output_roi_outlines_paths[image_index], \"w\") as f:\n" +
+                        "        json.dump(roi_list, f, indent=4)\n\n");
     }
 
     private void setupModelEval(StringBuilder code) {
@@ -397,7 +441,7 @@ public class CellPoseAlgorithm extends JIPipeMergingAlgorithm {
         evalParameterMap.put("x", PythonUtils.rawPythonCode("img"));
         evalParameterMap.put("diameter", getDiameter().isEnabled() ? getDiameter().getContent() : null);
         evalParameterMap.put("channels", PythonUtils.rawPythonCode("[[0, 0]]"));
-        evalParameterMap.put("do_3D", PythonUtils.rawPythonCode("enable_3d_segmentation"));
+        evalParameterMap.put("do_3D", PythonUtils.rawPythonCode("enable_3d_segmentation[image_index]"));
         evalParameterMap.put("normalize", getEnhancementParameters().isNormalize());
         evalParameterMap.put("anisotropy", getEnhancementParameters().getAnisotropy().isEnabled() ?
                 getEnhancementParameters().getAnisotropy().getContent() : null);
@@ -412,7 +456,7 @@ public class CellPoseAlgorithm extends JIPipeMergingAlgorithm {
         evalParameterMap.put("min_size", getThresholdParameters().getMinSize());
         evalParameterMap.put("stitch_threshold", getThresholdParameters().getStitchThreshold());
 
-        code.append(String.format("masks, flows, styles, diams = model.eval(%s)\n",
+        code.append(String.format("    masks, flows, styles, diams = model.eval(%s)\n",
                 PythonUtils.mapToPythonArguments(evalParameterMap)
         ));
     }
@@ -425,15 +469,19 @@ public class CellPoseAlgorithm extends JIPipeMergingAlgorithm {
         code.append(String.format("model = models.Cellpose(%s)\n", PythonUtils.mapToPythonArguments(modelParameterMap)));
     }
 
-    /**
-     * Injects an extended Cellpose runner into Python.
-     * It receives a pretrained model
-     *
-     * @param code                the code
-     * @param customModelPaths    custom model paths
-     * @param customSizeModelPath custom size model path
-     */
     private void setupCustomCellposeModel(StringBuilder code, List<Path> customModelPaths, Path customSizeModelPath) {
+        injectCustomCellposeClass(code);
+        Map<String, Object> modelParameterMap = new HashMap<>();
+        modelParameterMap.put("pretrained_model", customModelPaths.stream().map(Objects::toString).collect(Collectors.toList()));
+        modelParameterMap.put("net_avg", getEnhancementParameters().isNetAverage());
+        modelParameterMap.put("gpu", getModelParameters().isEnableGPU());
+        modelParameterMap.put("diam_mean", getModelParameters().getMeanDiameter());
+        if (customSizeModelPath != null)
+            modelParameterMap.put("pretrained_size", customSizeModelPath.toString());
+        code.append(String.format("model = CellposeCustom(%s)\n", PythonUtils.mapToPythonArguments(modelParameterMap)));
+    }
+
+    private void injectCustomCellposeClass(StringBuilder code) {
         // This is code that allows to embed a custom model
         code.append("\n\nclass CellposeCustom():\n" +
                 "    def __init__(self, gpu=False, pretrained_model=None, diam_mean=None, pretrained_size=None, net_avg=True, device=None, torch=True):\n" +
@@ -526,14 +574,6 @@ public class CellPoseAlgorithm extends JIPipeMergingAlgorithm {
                 "        models_logger.info('>>>> TOTAL TIME %0.2f sec'%(time.time()-tic0))\n" +
                 "    \n" +
                 "        return masks, flows, styles, diams\n\n");
-        Map<String, Object> modelParameterMap = new HashMap<>();
-        modelParameterMap.put("pretrained_model", customModelPaths.stream().map(Objects::toString).collect(Collectors.toList()));
-        modelParameterMap.put("net_avg", getEnhancementParameters().isNetAverage());
-        modelParameterMap.put("gpu", getModelParameters().isEnableGPU());
-        modelParameterMap.put("diam_mean", getModelParameters().getMeanDiameter());
-        if (customSizeModelPath != null)
-            modelParameterMap.put("pretrained_size", customSizeModelPath.toString());
-        code.append(String.format("model = CellposeCustom(%s)\n", PythonUtils.mapToPythonArguments(modelParameterMap)));
     }
 
     @JIPipeDocumentation(name = "Clean up data after processing", description = "If enabled, data is deleted from temporary directories after " +

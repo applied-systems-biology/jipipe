@@ -92,4 +92,9 @@ public class AddROIToJIPipeImageViewerDataDisplay implements JIPipeDataDisplayOp
     public Icon getIcon() {
         return UIUtils.getIconFromResources("apps/jipipe.png");
     }
+
+    @Override
+    public String getId() {
+        return "jipipe:add-roi-to-jipipe-image-viewer";
+    }
 }

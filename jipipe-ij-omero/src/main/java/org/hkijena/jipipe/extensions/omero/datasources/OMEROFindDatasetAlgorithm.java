@@ -24,7 +24,7 @@ import omero.gateway.model.ProjectData;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
-import org.hkijena.jipipe.api.JIPipeValidityReport;
+import org.hkijena.jipipe.api.JIPipeIssueReport;
 import org.hkijena.jipipe.api.data.JIPipeAnnotation;
 import org.hkijena.jipipe.api.data.JIPipeAnnotationMergeStrategy;
 import org.hkijena.jipipe.api.nodes.JIPipeInputSlot;
@@ -154,16 +154,16 @@ public class OMEROFindDatasetAlgorithm extends JIPipeParameterSlotAlgorithm {
     }
 
     @Override
-    public void reportValidity(JIPipeValidityReport report) {
+    public void reportValidity(JIPipeIssueReport report) {
         super.reportValidity(report);
         if (datasetNameAnnotation.isEnabled()) {
-            report.forCategory("Annotate with dataset name").checkNonEmpty(datasetNameAnnotation.getContent(), this);
+            report.resolve("Annotate with dataset name").checkNonEmpty(datasetNameAnnotation.getContent(), this);
         }
         if (projectNameAnnotation.isEnabled()) {
-            report.forCategory("Annotate with project name").checkNonEmpty(projectNameAnnotation.getContent(), this);
+            report.resolve("Annotate with project name").checkNonEmpty(projectNameAnnotation.getContent(), this);
         }
         if (tagAnnotation.isEnabled()) {
-            report.forCategory("Annotate with tags").checkNonEmpty(tagAnnotation.getContent(), this);
+            report.resolve("Annotate with tags").checkNonEmpty(tagAnnotation.getContent(), this);
         }
     }
 

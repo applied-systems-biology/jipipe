@@ -22,6 +22,11 @@ public class OpenPlotInJIPipeDataOperation implements JIPipeDataDisplayOperation
     }
 
     @Override
+    public String getId() {
+        return "jipipe:opne-plot-in-jipipe";
+    }
+
+    @Override
     public JIPipeData show(JIPipeDataSlot slot, JIPipeExportedDataTable.Row row, Path rowStorageFolder, String compartmentName, String algorithmName, String displayName, JIPipeWorkbench workbench) {
         PlotData plotData = PlotData.fromFolder(rowStorageFolder);
         PlotEditor plotBuilderUI = new PlotEditor(workbench);

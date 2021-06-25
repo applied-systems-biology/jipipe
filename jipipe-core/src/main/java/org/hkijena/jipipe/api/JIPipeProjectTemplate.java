@@ -58,7 +58,7 @@ public class JIPipeProjectTemplate {
     public JIPipeProject load() throws IOException {
         JsonNode node = JsonUtils.getObjectMapper().readValue(getLocation(), JsonNode.class);
         JIPipeProject project = new JIPipeProject();
-        project.fromJson(node, new JIPipeValidityReport());
+        project.fromJson(node, new JIPipeIssueReport());
         // Apply selected default style
         project.getGraph().attachAdditionalMetadata("jipipe:graph:view-mode", GraphEditorUISettings.getInstance().getDefaultViewMode());
         project.getCompartmentGraph().attachAdditionalMetadata("jipipe:graph:view-mode", GraphEditorUISettings.getInstance().getDefaultViewMode());
@@ -192,15 +192,15 @@ public class JIPipeProjectTemplate {
                 IJ.handleException(e);
             }
         }
-        Path templatesDir = imageJDir.resolve("jipipe-templates");
+        Path templatesDir = imageJDir.resolve("jipipe").resolve("templates");
         List<JIPipeProjectTemplate> result = new ArrayList<>(availableTemplatesFromResources);
-        if (Files.exists(templatesDir)) {
+        if (Files.isDirectory(templatesDir)) {
             try {
                 for (Path file : Files.list(templatesDir).collect(Collectors.toList())) {
                     try {
                         JIPipeProjectTemplate template = new JIPipeProjectTemplate();
                         template.setStoredAsResource(false);
-                        template.setRelativeLocation(Paths.get("jipipe-templates").resolve(file));
+                        template.setRelativeLocation(templatesDir.resolve(file));
                         result.add(template);
                     } catch (Exception e) {
                         e.printStackTrace();
@@ -208,6 +208,13 @@ public class JIPipeProjectTemplate {
                 }
             } catch (IOException e) {
                 e.printStackTrace();
+            }
+        }
+        else {
+            try {
+                Files.createDirectories(templatesDir);
+            } catch (IOException e) {
+                IJ.handleException(e);
             }
         }
 

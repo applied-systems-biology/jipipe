@@ -10,7 +10,7 @@ plugins, algorithms, or annotation types.
 
 The most common issue is at location `Extensions > jipipe:json-extension-loader > Unregistered JSON extensions`
 and indicates that a JSON extension cannot be loaded because a dependency plugin is missing.
-The ID of this dependency is given in the message.
+The ID of this dependency is given in the issue.
 
 It can happen that dependencies have been renamed or merged with existing plugins - meaning
 that all required contents actually exist. To resolve those issues, open the JSON extension 

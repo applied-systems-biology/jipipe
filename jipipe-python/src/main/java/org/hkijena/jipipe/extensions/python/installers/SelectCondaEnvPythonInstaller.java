@@ -12,6 +12,7 @@ import org.hkijena.jipipe.extensions.expressions.DefaultExpressionParameter;
 import org.hkijena.jipipe.extensions.parameters.primitives.FilePathParameterSettings;
 import org.hkijena.jipipe.extensions.parameters.primitives.OptionalPathParameter;
 import org.hkijena.jipipe.extensions.parameters.primitives.StringParameterSettings;
+import org.hkijena.jipipe.extensions.python.OptionalPythonEnvironment;
 import org.hkijena.jipipe.extensions.python.PythonEnvironment;
 import org.hkijena.jipipe.extensions.python.PythonEnvironmentType;
 import org.hkijena.jipipe.extensions.settings.FileChooserSettings;
@@ -92,7 +93,15 @@ public class SelectCondaEnvPythonInstaller extends ExternalEnvironmentInstaller 
 
         generatedEnvironment = createCondaEnvironment(configuration);
         if (getParameterAccess() != null) {
-            SwingUtilities.invokeLater(() -> getParameterAccess().set(generatedEnvironment));
+            SwingUtilities.invokeLater(() -> {
+                if(getParameterAccess().getFieldClass().isAssignableFrom(generatedEnvironment.getClass())) {
+                    getParameterAccess().set(generatedEnvironment);
+                }
+                else {
+                    // It's probably an optional
+                    getParameterAccess().set(new OptionalPythonEnvironment(generatedEnvironment));
+                }
+            });
         }
     }
 

@@ -86,8 +86,8 @@ public class JIPipeRun implements JIPipeRunnable {
     private void initializeInternalStoragePaths() {
         for (JIPipeGraphNode algorithm : copiedGraph.getGraphNodes()) {
             JIPipeProjectCompartment compartment = project.getCompartments().get(algorithm.getCompartmentUUIDInGraph());
-            algorithm.setInternalStoragePath(Paths.get(StringUtils.jsonify(compartment.getAliasIdInGraph()))
-                    .resolve(StringUtils.jsonify(copiedGraph.getAliasIdOf(algorithm))));
+            algorithm.setInternalStoragePath(Paths.get(StringUtils.safeJsonify(compartment.getAliasIdInGraph()))
+                    .resolve(StringUtils.safeJsonify(copiedGraph.getAliasIdOf(algorithm))));
         }
     }
 
@@ -456,7 +456,7 @@ public class JIPipeRun implements JIPipeRunnable {
      * @return The loaded run
      * @throws IOException Triggered by {@link com.fasterxml.jackson.databind.ObjectMapper}
      */
-    public static JIPipeRun loadFromFolder(Path folder, JIPipeValidityReport report) throws IOException {
+    public static JIPipeRun loadFromFolder(Path folder, JIPipeIssueReport report) throws IOException {
         Path parameterFile = folder.resolve("project.jip");
         JIPipeProject project = JIPipeProject.loadProject(parameterFile, report);
         JIPipeRunSettings configuration = new JIPipeRunSettings();

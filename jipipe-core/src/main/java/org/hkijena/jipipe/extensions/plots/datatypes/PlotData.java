@@ -26,7 +26,7 @@ import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.JIPipeValidatable;
-import org.hkijena.jipipe.api.JIPipeValidityReport;
+import org.hkijena.jipipe.api.JIPipeIssueReport;
 import org.hkijena.jipipe.api.data.JIPipeCacheSlotDataSource;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataInfo;
@@ -345,9 +345,9 @@ public abstract class PlotData implements JIPipeData, JIPipeParameterCollection,
     }
 
     @Override
-    public void reportValidity(JIPipeValidityReport report) {
-        report.forCategory("Export width").checkIfWithin(this, exportWidth, 0, Double.POSITIVE_INFINITY, false, true);
-        report.forCategory("Export height").checkIfWithin(this, exportHeight, 0, Double.POSITIVE_INFINITY, false, true);
+    public void reportValidity(JIPipeIssueReport report) {
+        report.resolve("Export width").checkIfWithin(this, exportWidth, 0, Double.POSITIVE_INFINITY, false, true);
+        report.resolve("Export height").checkIfWithin(this, exportHeight, 0, Double.POSITIVE_INFINITY, false, true);
     }
 
     public List<PlotDataSeries> getSeries() {
@@ -393,14 +393,14 @@ public abstract class PlotData implements JIPipeData, JIPipeParameterCollection,
      * @param node JSON node
      */
     public void fromJson(JsonNode node) {
-        ParameterUtils.deserializeParametersFromJson(this, node, new JIPipeValidityReport());
+        ParameterUtils.deserializeParametersFromJson(this, node, new JIPipeIssueReport());
     }
 
     public static <T extends PlotData> T importFrom(Path storageFilePath, Class<T> klass) {
         try {
             JsonNode node = JsonUtils.getObjectMapper().readerFor(JsonNode.class).readValue(storageFilePath.resolve("plot-metadata.json").toFile());
             PlotData plotData = JsonUtils.getObjectMapper().readerFor(klass).readValue(node);
-            ParameterUtils.deserializeParametersFromJson(plotData, node, new JIPipeValidityReport());
+            ParameterUtils.deserializeParametersFromJson(plotData, node, new JIPipeIssueReport());
             List<Path> seriesFiles = PathUtils.findFilesByExtensionIn(storageFilePath, ".csv").stream()
                     .filter(p -> p.getFileName().toString().matches("series\\d+.csv")).sorted(Comparator.comparing(p -> p.getFileName().toString())).collect(Collectors.toList());
             for (Path seriesFile : seriesFiles) {

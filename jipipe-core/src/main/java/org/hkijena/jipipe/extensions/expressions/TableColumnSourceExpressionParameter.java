@@ -14,7 +14,7 @@
 package org.hkijena.jipipe.extensions.expressions;
 
 import org.hkijena.jipipe.api.JIPipeValidatable;
-import org.hkijena.jipipe.api.JIPipeValidityReport;
+import org.hkijena.jipipe.api.JIPipeIssueReport;
 import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
 import org.hkijena.jipipe.extensions.tables.datatypes.DoubleArrayTableColumn;
 import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
@@ -135,7 +135,7 @@ public class TableColumnSourceExpressionParameter extends DefaultExpressionParam
     }
 
     @Override
-    public void reportValidity(JIPipeValidityReport report) {
+    public void reportValidity(JIPipeIssueReport report) {
         report.checkNonEmpty(getExpression(), this);
     }
 }

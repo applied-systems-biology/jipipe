@@ -18,7 +18,7 @@ import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
-import org.hkijena.jipipe.api.JIPipeValidityReport;
+import org.hkijena.jipipe.api.JIPipeIssueReport;
 import org.hkijena.jipipe.api.data.JIPipeAnnotation;
 import org.hkijena.jipipe.api.nodes.JIPipeDataBatch;
 import org.hkijena.jipipe.api.nodes.JIPipeInputSlot;
@@ -172,9 +172,9 @@ public class FilterRoiByStatisticsScriptAlgorithm extends ImageRoiProcessorAlgor
     }
 
     @Override
-    public void reportValidity(JIPipeValidityReport report) {
-        JythonUtils.checkScriptValidity(code.getCode(getProjectWorkDirectory()), scriptParameters, report.forCategory("Script"));
-        JythonUtils.checkScriptParametersValidity(scriptParameters, report.forCategory("Script parameters"));
+    public void reportValidity(JIPipeIssueReport report) {
+        JythonUtils.checkScriptValidity(code.getCode(getProjectWorkDirectory()), scriptParameters, report.resolve("Script"));
+        JythonUtils.checkScriptParametersValidity(scriptParameters, report.resolve("Script parameters"));
     }
 
     @JIPipeDocumentation(name = "Script", description = " The Python script contains a variable 'roi_list' " +

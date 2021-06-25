@@ -19,7 +19,7 @@ import ij.Menus;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.JIPipeJavaExtension;
 import org.hkijena.jipipe.JIPipeJsonExtension;
-import org.hkijena.jipipe.api.JIPipeValidityReport;
+import org.hkijena.jipipe.api.JIPipeIssueReport;
 import org.hkijena.jipipe.extensions.JIPipePrepackagedDefaultJavaExtension;
 import org.hkijena.jipipe.extensions.parameters.primitives.HTMLText;
 import org.hkijena.jipipe.extensions.parameters.primitives.StringList;
@@ -178,10 +178,10 @@ public class JsonExtensionLoaderExtension extends JIPipePrepackagedDefaultJavaEx
     }
 
     @Override
-    public void reportValidity(JIPipeValidityReport report) {
+    public void reportValidity(JIPipeIssueReport report) {
         super.reportValidity(report);
         for (JsonExtensionRegistrationTask task : registrationTasks) {
-            report.forCategory("Unregistered JSON extensions").report(task);
+            report.resolve("Unregistered JSON extensions").report(task);
         }
     }
 

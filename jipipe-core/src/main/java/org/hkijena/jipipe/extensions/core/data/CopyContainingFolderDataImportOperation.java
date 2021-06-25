@@ -30,6 +30,12 @@ import java.nio.file.Path;
  * Import operation that copies the containing folder path into the clipboard. Is always added to the menu.
  */
 public class CopyContainingFolderDataImportOperation implements JIPipeDataImportOperation {
+
+    @Override
+    public String getId() {
+        return "jipipe:copy-folder-path";
+    }
+
     @Override
     public String getName() {
         return "Copy folder path";

@@ -19,6 +19,7 @@ import org.hkijena.jipipe.extensions.settings.RuntimeSettings;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.components.MarkdownDocument;
 import org.hkijena.jipipe.ui.parameters.ParameterPanel;
+import org.hkijena.jipipe.utils.PathUtils;
 import org.hkijena.jipipe.utils.ProcessUtils;
 import org.hkijena.jipipe.utils.WebUtils;
 
@@ -136,11 +137,11 @@ public class REnvInstaller extends ExternalEnvironmentInstaller {
             }
         };
 
-        progressInfo.log("Installation path: " + configuration.installationPath.toAbsolutePath());
+        progressInfo.log("Installation path: " + PathUtils.relativeToImageJToAbsolute(configuration.installationPath));
         progressInfo.log("If you have issues, please visit this site and install R manually: https://cloud.r-project.org/bin/windows/base/");
         CommandLine commandLine = new CommandLine(installerPath.toFile());
         commandLine.addArgument("/VERYSILENT");
-        commandLine.addArgument("/DIR=" + configuration.installationPath.toAbsolutePath());
+        commandLine.addArgument("/DIR=" + PathUtils.relativeToImageJToAbsolute(configuration.installationPath));
 
         ProcessUtils.ExtendedExecutor executor = new ProcessUtils.ExtendedExecutor(ExecuteWatchdog.INFINITE_TIMEOUT, progressInfo);
         executor.setStreamHandler(new PumpStreamHandler(progressInfoLog, progressInfoLog));

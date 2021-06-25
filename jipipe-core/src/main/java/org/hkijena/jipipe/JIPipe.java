@@ -26,7 +26,7 @@ import org.apache.commons.lang3.reflect.ConstructorUtils;
 import org.hkijena.jipipe.api.JIPipeProject;
 import org.hkijena.jipipe.api.JIPipeRun;
 import org.hkijena.jipipe.api.JIPipeRunSettings;
-import org.hkijena.jipipe.api.JIPipeValidityReport;
+import org.hkijena.jipipe.api.JIPipeIssueReport;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataDisplayOperation;
 import org.hkijena.jipipe.api.data.JIPipeDataImportOperation;
@@ -39,6 +39,8 @@ import org.hkijena.jipipe.api.parameters.JIPipeMutableParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
 import org.hkijena.jipipe.api.registries.*;
+import org.hkijena.jipipe.extensions.parameters.primitives.DynamicDataDisplayOperationIdEnumParameter;
+import org.hkijena.jipipe.extensions.parameters.primitives.DynamicDataImportOperationIdEnumParameter;
 import org.hkijena.jipipe.extensions.parameters.primitives.DynamicStringEnumParameter;
 import org.hkijena.jipipe.extensions.settings.DefaultCacheDisplaySettings;
 import org.hkijena.jipipe.extensions.settings.DefaultResultImporterSettings;
@@ -276,6 +278,15 @@ public class JIPipe extends AbstractService implements JIPipeRegistry {
         // Required as the reload deletes the allowed values
         updateDefaultImporterSettings();
         updateDefaultCacheDisplaySettings();
+
+        // Postprocessing
+        for (JIPipeDependency extension : registeredExtensions) {
+            if(!failedExtensions.contains(extension) && extension instanceof JIPipeJavaExtension) {
+                logService.info("Postprocess: " + extension.getDependencyId());
+                ((JIPipeJavaExtension) extension).postprocess();
+            }
+        }
+
         logService.info("JIPipe loading finished");
         initializing = false;
     }
@@ -291,7 +302,7 @@ public class JIPipe extends AbstractService implements JIPipeRegistry {
         DefaultResultImporterSettings settings = settingsRegistry.getSettings(DefaultResultImporterSettings.ID, DefaultResultImporterSettings.class);
         for (String id : datatypeRegistry.getRegisteredDataTypes().keySet()) {
             JIPipeDataInfo info = JIPipeDataInfo.getInstance(id);
-            JIPipeMutableParameterAccess access = settings.addParameter(id, DynamicStringEnumParameter.class);
+            JIPipeMutableParameterAccess access = settings.addParameter(id, DynamicDataImportOperationIdEnumParameter.class);
             access.setName(info.getName());
             access.setDescription("Defines which importer is used by default when importing the selected data type.");
         }
@@ -304,7 +315,7 @@ public class JIPipe extends AbstractService implements JIPipeRegistry {
         DefaultCacheDisplaySettings settings = settingsRegistry.getSettings(DefaultCacheDisplaySettings.ID, DefaultCacheDisplaySettings.class);
         for (String id : datatypeRegistry.getRegisteredDataTypes().keySet()) {
             JIPipeDataInfo info = JIPipeDataInfo.getInstance(id);
-            JIPipeMutableParameterAccess access = settings.addParameter(id, DynamicStringEnumParameter.class);
+            JIPipeMutableParameterAccess access = settings.addParameter(id, DynamicDataDisplayOperationIdEnumParameter.class);
             access.setName(info.getName());
             access.setDescription("Defines which cache display method is used by default for the type.");
         }
@@ -313,23 +324,26 @@ public class JIPipe extends AbstractService implements JIPipeRegistry {
     private void updateDefaultImporterSettings() {
         DefaultResultImporterSettings settings = settingsRegistry.getSettings(DefaultResultImporterSettings.ID, DefaultResultImporterSettings.class);
         for (String id : datatypeRegistry.getRegisteredDataTypes().keySet()) {
-            List<JIPipeDataImportOperation> operations = datatypeRegistry.getImportOperationsFor(id);
+            List<JIPipeDataImportOperation> operations = datatypeRegistry.getSortedImportOperationsFor(id);
             JIPipeMutableParameterAccess access = (JIPipeMutableParameterAccess) settings.get(id);
-            DynamicStringEnumParameter parameter = access.get(DynamicStringEnumParameter.class);
-            if (parameter == null) {
-                parameter = new DynamicStringEnumParameter();
-                if (!operations.isEmpty()) {
-                    parameter.setValue(operations.get(0).getName());
-                }
+
+            Object currentParameterValue = access.get(Object.class);
+            DynamicDataImportOperationIdEnumParameter parameter;
+            if (currentParameterValue instanceof DynamicDataImportOperationIdEnumParameter) {
+                parameter = (DynamicDataImportOperationIdEnumParameter) currentParameterValue;
             }
+            else {
+                parameter = new DynamicDataImportOperationIdEnumParameter();
+                parameter.setValue("jipipe:show");
+            }
+
             for (JIPipeDataImportOperation operation : operations) {
-                parameter.getAllowedValues().add(operation.getName());
+                parameter.getAllowedValues().add(operation.getId());
             }
-            if (parameter.getValue() == null) {
-                if (!operations.isEmpty()) {
-                    parameter.setValue(operations.get(0).getName());
-                }
+            if (parameter.getValue() == null || !parameter.getAllowedValues().contains(parameter.getValue())) {
+                parameter.setValue("jipipe:show");
             }
+            parameter.setDataTypeId(id);
             access.set(parameter);
         }
     }
@@ -337,23 +351,26 @@ public class JIPipe extends AbstractService implements JIPipeRegistry {
     private void updateDefaultCacheDisplaySettings() {
         DefaultCacheDisplaySettings settings = settingsRegistry.getSettings(DefaultCacheDisplaySettings.ID, DefaultCacheDisplaySettings.class);
         for (String id : datatypeRegistry.getRegisteredDataTypes().keySet()) {
-            List<JIPipeDataDisplayOperation> operations = datatypeRegistry.getDisplayOperationsFor(id);
+            List<JIPipeDataDisplayOperation> operations = datatypeRegistry.getSortedDisplayOperationsFor(id);
             JIPipeMutableParameterAccess access = (JIPipeMutableParameterAccess) settings.get(id);
-            DynamicStringEnumParameter parameter = access.get(DynamicStringEnumParameter.class);
-            if (parameter == null) {
-                parameter = new DynamicStringEnumParameter();
-                if (!operations.isEmpty()) {
-                    parameter.setValue(operations.get(0).getName());
-                }
+
+            Object currentParameterValue = access.get(Object.class);
+            DynamicDataDisplayOperationIdEnumParameter parameter;
+            if (currentParameterValue instanceof DynamicDataDisplayOperationIdEnumParameter) {
+                parameter = (DynamicDataDisplayOperationIdEnumParameter) currentParameterValue;
             }
+            else {
+                parameter = new DynamicDataDisplayOperationIdEnumParameter();
+                parameter.setValue("jipipe:show");
+            }
+
             for (JIPipeDataDisplayOperation operation : operations) {
-                parameter.getAllowedValues().add(operation.getName());
+                parameter.getAllowedValues().add(operation.getId());
             }
-            if (parameter.getValue() == null) {
-                if (!operations.isEmpty()) {
-                    parameter.setValue(operations.get(0).getName());
-                }
+            if (parameter.getValue() == null || !parameter.getAllowedValues().contains(parameter.getValue())) {
+                parameter.setValue("jipipe:show");
             }
+            parameter.setDataTypeId(id);
             access.set(parameter);
         }
     }
@@ -464,18 +481,18 @@ public class JIPipe extends AbstractService implements JIPipeRegistry {
     }
 
     @Override
-    public void reportValidity(JIPipeValidityReport report) {
-        report.forCategory("Algorithms").report(nodeRegistry);
+    public void reportValidity(JIPipeIssueReport report) {
+        report.resolve("Algorithms").report(nodeRegistry);
         for (JIPipeDependency extension : failedExtensions) {
             if (extension != null) {
-                report.forCategory("Extensions").forCategory(extension.getDependencyId()).reportIsInvalid("Error during loading the extension!",
+                report.resolve("Extensions").resolve(extension.getDependencyId()).reportIsInvalid("Error during loading the extension!",
                         "There was an error while loading the extension. Please refer to the message that you get on restarting JIPipe.",
                         "Please refer to the message that you get on restarting JIPipe.",
                         failedExtensions);
             }
         }
         for (JIPipeDependency extension : registeredExtensions) {
-            report.forCategory("Extensions").forCategory(extension.getDependencyId()).report(extension);
+            report.resolve("Extensions").resolve(extension.getDependencyId()).report(extension);
         }
     }
 
@@ -614,7 +631,7 @@ public class JIPipe extends AbstractService implements JIPipeRegistry {
      * @throws IOException thrown if the file could not be read or the file is corrupt
      */
     public static JIPipeProject loadProject(Path fileName) throws IOException {
-        return loadProject(fileName, new JIPipeValidityReport());
+        return loadProject(fileName, new JIPipeIssueReport());
     }
 
     /**
@@ -625,7 +642,7 @@ public class JIPipe extends AbstractService implements JIPipeRegistry {
      * @return the project
      * @throws IOException thrown if the file could not be read or the file is corrupt
      */
-    public static JIPipeProject loadProject(Path fileName, JIPipeValidityReport report) throws IOException {
+    public static JIPipeProject loadProject(Path fileName, JIPipeIssueReport report) throws IOException {
         return JIPipeProject.loadProject(fileName, report);
     }
 

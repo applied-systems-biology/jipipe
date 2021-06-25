@@ -109,7 +109,7 @@ def train_model(model_config, config, model=None):
     if monitor_loss not in ['loss', 'val_loss']:
         monitor_loss = 'val_loss'
 
-    # TODO: callbacks über separaten node definieren in eigenem script
+    # TODO: callbacks über separaten node definieren in eigenem script + Tensorboard erstellen
     # erstelle { min , medium , max } callbacks, um nur einen parameter an dieser Stelle anzugeben
     # tbCallBack = callbacks.TensorBoard(log_dir=log_dir,
     #                                     histogram_freq=0,
@@ -117,8 +117,7 @@ def train_model(model_config, config, model=None):
     #                                     write_images=True)
     earlyStopping = callbacks.EarlyStopping(monitor=monitor_loss,
                                             patience=200, verbose=1, mode='min')
-    # mcp_save = callbacks.ModelCheckpoint(os.path.join(mod_dir, 'mdl_wts.hdf5'),
-    #                                     save_best_only=True, monitor=monitor_loss, mode='min')
+    mcp_save = callbacks.ModelCheckpoint(input_model_path, save_best_only=True, monitor=monitor_loss, mode='min')
     reduce_lr = callbacks.ReduceLROnPlateau(monitor=monitor_loss, factor=0.85,
                                             patience=50, min_lr=0.000001, verbose=1)
 
@@ -136,7 +135,7 @@ def train_model(model_config, config, model=None):
                         epochs=n_epochs,
                         verbose=1,
                         # callbacks=[tbCallBack, earlyStopping, mcp_save, reduce_lr],
-                        callbacks=[earlyStopping, reduce_lr],  # tbCallBack, mcp_save
+                        callbacks=[earlyStopping, mcp_save, reduce_lr],  # tbCallBack
                         validation_data=(x_valid, y_valid),
                         validation_steps=x_valid.shape[0] / batch_size)
 

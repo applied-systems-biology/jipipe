@@ -16,7 +16,7 @@ package org.hkijena.jipipe.extensions.tables.algorithms;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
-import org.hkijena.jipipe.api.JIPipeValidityReport;
+import org.hkijena.jipipe.api.JIPipeIssueReport;
 import org.hkijena.jipipe.api.nodes.JIPipeDataBatch;
 import org.hkijena.jipipe.api.nodes.JIPipeInputSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
@@ -78,11 +78,11 @@ public class RenameTableColumnsAlgorithm extends JIPipeSimpleIteratingAlgorithm 
     }
 
     @Override
-    public void reportValidity(JIPipeValidityReport report) {
-        report.forCategory("Renaming entries").report(renamingEntries);
+    public void reportValidity(JIPipeIssueReport report) {
+        report.resolve("Renaming entries").report(renamingEntries);
         for (int i = 0; i < renamingEntries.size(); i++) {
             if (StringUtils.isNullOrEmpty(renamingEntries.get(i).getValue())) {
-                report.forCategory("Item #" + (i + 1)).reportIsInvalid("Target cannot be empty!",
+                report.resolve("Item #" + (i + 1)).reportIsInvalid("Target cannot be empty!",
                         "You cannot rename a column to an empty name!",
                         "Please change the target to a unique non-empty name.",
                         this);
