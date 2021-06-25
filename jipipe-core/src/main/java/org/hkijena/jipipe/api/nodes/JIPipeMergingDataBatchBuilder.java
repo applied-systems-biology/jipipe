@@ -234,12 +234,17 @@ public class JIPipeMergingDataBatchBuilder {
                     }
                     else {
                         // Add the row into copies of all key batches
-                        for (Integer row : rows) {
-                            for (JIPipeMergingDataBatch dataBatch : keyBatches) {
-                                JIPipeMergingDataBatch copy = new JIPipeMergingDataBatch(dataBatch);
-                                copy.addData(slot, row);
-                                tempKeyBatches.add(copy);
+                        if(!rows.isEmpty()) {
+                            for (Integer row : rows) {
+                                for (JIPipeMergingDataBatch dataBatch : keyBatches) {
+                                    JIPipeMergingDataBatch copy = new JIPipeMergingDataBatch(dataBatch);
+                                    copy.addData(slot, row);
+                                    tempKeyBatches.add(copy);
+                                }
                             }
+                        }
+                        else {
+                            tempKeyBatches.addAll(keyBatches);
                         }
                     }
                     keyBatches.clear();
@@ -256,6 +261,12 @@ public class JIPipeMergingDataBatchBuilder {
                     annotations.addAll(slot.getAnnotations(dataBatch.getInputRows(slot)));
                 }
                 dataBatch.addGlobalAnnotations(annotations, getAnnotationMergeStrategy());
+            }
+        }
+        // Ensure that all slots are known to the data batch builder
+        for (JIPipeMergingDataBatch dataBatch : dataBatches) {
+            for (JIPipeDataSlot slot : slotList) {
+                dataBatch.addEmptySlot(slot);
             }
         }
         return dataBatches;
@@ -276,6 +287,9 @@ public class JIPipeMergingDataBatchBuilder {
                         return null;
                 }
                 JIPipeMergingDataBatch batch = new JIPipeMergingDataBatch(this.node);
+                for (JIPipeDataSlot slot2 : slotList) {
+                    batch.addEmptySlot(slot2);
+                }
                 batch.addData(slot, row);
                 batch.addGlobalAnnotations(slot.getAnnotations(row), getAnnotationMergeStrategy());
                 split.add(batch);
@@ -292,6 +306,7 @@ public class JIPipeMergingDataBatchBuilder {
     private List<JIPipeMergingDataBatch> mergeAllSolver(JIPipeProgressInfo progressInfo) {
         JIPipeMergingDataBatch batch = new JIPipeMergingDataBatch(this.node);
         for (JIPipeDataSlot slot : slotList) {
+            batch.addEmptySlot(slot);
             List<JIPipeAnnotation> annotations = new ArrayList<>();
             for (int row = 0; row < slot.getRowCount(); row++) {
                 if(row % 1000 == 0) {
@@ -478,6 +493,7 @@ public class JIPipeMergingDataBatchBuilder {
                 dataBatch.getInputSlotRows().putIfAbsent(slot, Collections.emptySet());
             }
         }
+
         return result;
     }
 

@@ -327,6 +327,9 @@ public class GraphWrapperAlgorithm extends JIPipeAlgorithm implements JIPipeData
                 }
                 dataBatches = limitedBatches;
             }
+            if(batchGenerationSettings.isSkipIncompleteDataSets()) {
+                dataBatches.removeIf(JIPipeMergingDataBatch::isIncomplete);
+            }
             return dataBatches;
         }
     }

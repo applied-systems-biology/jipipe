@@ -126,6 +126,9 @@ public abstract class JIPipeIteratingAlgorithm extends JIPipeParameterSlotAlgori
             }
             dataBatches = limitedBatches;
         }
+        if(dataBatchGenerationSettings.isSkipIncompleteDataSets()) {
+            dataBatches.removeIf(JIPipeMergingDataBatch::isIncomplete);
+        }
         return dataBatches;
     }
 

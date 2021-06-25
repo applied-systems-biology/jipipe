@@ -1,5 +1,7 @@
 package org.hkijena.jipipe.extensions.forms.algorithms;
 
+import gnu.trove.set.TIntSet;
+import gnu.trove.set.hash.TIntHashSet;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
@@ -22,6 +24,7 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
 import org.hkijena.jipipe.extensions.forms.datatypes.FormData;
 import org.hkijena.jipipe.extensions.forms.ui.FormsDialog;
+import org.hkijena.jipipe.extensions.parameters.generators.IntegerRange;
 import org.hkijena.jipipe.extensions.parameters.primitives.StringParameterSettings;
 import org.hkijena.jipipe.ui.JIPipeDummyWorkbench;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
@@ -225,6 +228,21 @@ public class MergingFormProcessorAlgorithm extends JIPipeAlgorithm implements JI
         builder.setAnnotationMatchingMethod(dataBatchGenerationSettings.getAnnotationMatchingMethod());
         List<JIPipeMergingDataBatch> dataBatches = builder.build(progressInfo);
         dataBatches.sort(Comparator.naturalOrder());
+        boolean withLimit = dataBatchGenerationSettings.getLimit().isEnabled();
+        IntegerRange limit = dataBatchGenerationSettings.getLimit().getContent();
+        TIntSet allowedIndices = withLimit ? new TIntHashSet(limit.getIntegers()) : null;
+        if (withLimit) {
+            List<JIPipeMergingDataBatch> limitedBatches = new ArrayList<>();
+            for (int i = 0; i < dataBatches.size(); i++) {
+                if (allowedIndices.contains(i)) {
+                    limitedBatches.add(dataBatches.get(i));
+                }
+            }
+            dataBatches = limitedBatches;
+        }
+        if(dataBatchGenerationSettings.isSkipIncompleteDataSets()) {
+            dataBatches.removeIf(JIPipeMergingDataBatch::isIncomplete);
+        }
         return dataBatches;
     }
 }
