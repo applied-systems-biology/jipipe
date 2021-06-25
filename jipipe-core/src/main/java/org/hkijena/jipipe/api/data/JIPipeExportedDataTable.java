@@ -26,10 +26,8 @@ import javax.swing.event.TableModelListener;
 import javax.swing.table.TableModel;
 import java.io.IOException;
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.nio.file.Paths;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -41,8 +39,9 @@ public class JIPipeExportedDataTable implements TableModel {
     private String slotName;
     private String internalPath;
     private Class<? extends JIPipeData> acceptedDataType;
-    private List<Row> rowList;
+    private List<JIPipeExportedDataTableRow> rowList;
     private List<String> annotationColumns;
+    private List<String> dataAnnotationColumns;
 
     /**
      * Initializes a new table from a slot
@@ -62,11 +61,21 @@ public class JIPipeExportedDataTable implements TableModel {
         }
         this.acceptedDataType = slot.getAcceptedDataType();
         this.rowList = new ArrayList<>();
+        List<String> dataAnnotationColumns = slot.getDataAnnotationColumns();
         for (int row = 0; row < slot.getRowCount(); ++row) {
-            Row rowInstance = new Row();
-            rowInstance.index = indices.get(row);
-            rowInstance.annotations = slot.getAnnotations(row);
-            rowInstance.trueDataType = JIPipeDataInfo.getInstance(slot.getDataClass(row)).getId();
+            JIPipeExportedDataTableRow rowInstance = new JIPipeExportedDataTableRow();
+            rowInstance.setIndex(indices.get(row));
+            rowInstance.setAnnotations(slot.getAnnotations(row));
+            rowInstance.setTrueDataType(JIPipeDataInfo.getInstance(slot.getDataClass(row)).getId());
+            for (int i = 0; i < dataAnnotationColumns.size(); i++) {
+                JIPipeVirtualData virtualDataAnnotation = slot.getVirtualDataAnnotation(row, dataAnnotationColumns.get(i));
+                if(virtualDataAnnotation != null) {
+                    JIPipeExportedDataAnnotation exportedDataAnnotation = new JIPipeExportedDataAnnotation();
+                    exportedDataAnnotation.setName(dataAnnotationColumns.get(i));
+                    exportedDataAnnotation.setRowStorageFolder(Paths.get("_" + i).resolve("" + row));
+                    exportedDataAnnotation.setTrueDataType(JIPipeDataInfo.getInstance(virtualDataAnnotation.getDataClass()).getId());
+                }
+            }
             rowList.add(rowInstance);
         }
     }
@@ -160,7 +169,7 @@ public class JIPipeExportedDataTable implements TableModel {
      * @return List of rows
      */
     @JsonGetter("rows")
-    public List<Row> getRowList() {
+    public List<JIPipeExportedDataTableRow> getRowList() {
         return rowList;
     }
 
@@ -170,7 +179,7 @@ public class JIPipeExportedDataTable implements TableModel {
      * @param rowList Row list
      */
     @JsonSetter("rows")
-    public void setRowList(List<Row> rowList) {
+    public void setRowList(List<JIPipeExportedDataTableRow> rowList) {
         this.rowList = rowList;
     }
 
@@ -203,16 +212,23 @@ public class JIPipeExportedDataTable implements TableModel {
      */
     public void saveAsCSV(Path fileName) throws IOException {
         ResultsTable table = new ResultsTable();
-        for (Row row : rowList) {
+        for (JIPipeExportedDataTableRow row : rowList) {
             table.incrementCounter();
             table.addValue("jipipe:node-id", nodeId);
             table.addValue("jipipe:slot", slotName);
             table.addValue("jipipe:data-type", JIPipe.getDataTypes().getIdOf(acceptedDataType));
-            table.addValue("jipipe:true-data-type", row.trueDataType);
+            table.addValue("jipipe:true-data-type", row.getTrueDataType());
             table.addValue("jipipe:internal-path", internalPath);
-            table.addValue("jipipe:index", row.index);
+            table.addValue("jipipe:index", row.getIndex());
+            for (String dataAnnotationColumn : getDataAnnotationColumns()) {
+                JIPipeExportedDataAnnotation existing = row.getDataAnnotations().stream().filter(t -> t.nameEquals(dataAnnotationColumn)).findFirst().orElse(null);
+                if (existing != null)
+                    table.addValue(dataAnnotationColumn, existing.getRowStorageFolder().toString() + " [" + existing.getTrueDataType() + "]");
+                else
+                    table.addValue(dataAnnotationColumn, "");
+            }
             for (String annotationColumn : getAnnotationColumns()) {
-                JIPipeAnnotation existing = row.annotations.stream().filter(t -> t.nameEquals(annotationColumn)).findFirst().orElse(null);
+                JIPipeAnnotation existing = row.getAnnotations().stream().filter(t -> t.nameEquals(annotationColumn)).findFirst().orElse(null);
                 if (existing != null)
                     table.addValue(annotationColumn, existing.getValue());
                 else
@@ -222,14 +238,25 @@ public class JIPipeExportedDataTable implements TableModel {
         table.saveAs(fileName.toString());
     }
 
+    public List<String> getDataAnnotationColumns() {
+        if (dataAnnotationColumns == null) {
+            Set<String> registeredAnnotations = new HashSet<>();
+            for (JIPipeExportedDataTableRow row : rowList) {
+                registeredAnnotations.addAll(row.getDataAnnotations().stream().map(JIPipeExportedDataAnnotation::getName).collect(Collectors.toSet()));
+            }
+            dataAnnotationColumns = new ArrayList<>(registeredAnnotations);
+        }
+        return dataAnnotationColumns;
+    }
+
     /**
      * @return Additional columns
      */
     public List<String> getAnnotationColumns() {
         if (annotationColumns == null) {
             Set<String> registeredAnnotations = new HashSet<>();
-            for (Row row : rowList) {
-                registeredAnnotations.addAll(row.annotations.stream().map(JIPipeAnnotation::getName).collect(Collectors.toSet()));
+            for (JIPipeExportedDataTableRow row : rowList) {
+                registeredAnnotations.addAll(row.getAnnotations().stream().map(JIPipeAnnotation::getName).collect(Collectors.toSet()));
             }
             annotationColumns = new ArrayList<>(registeredAnnotations);
         }
@@ -243,7 +270,7 @@ public class JIPipeExportedDataTable implements TableModel {
 
     @Override
     public int getColumnCount() {
-        return getAnnotationColumns().size() + 3;
+        return getAnnotationColumns().size() + getDataAnnotationColumns().size() + 3;
     }
 
     @Override
@@ -254,8 +281,12 @@ public class JIPipeExportedDataTable implements TableModel {
             return "Data type";
         else if (columnIndex == 2) {
             return "Preview";
-        } else
-            return annotationColumns.get(columnIndex - 3);
+        } else if(columnIndex < getDataAnnotationColumns().size() + 3) {
+            return "$" + getDataAnnotationColumns().get(columnIndex - 3);
+        }
+        else {
+            return getAnnotationColumns().get(columnIndex - getDataAnnotationColumns().size() - 3);
+        }
     }
 
     @Override
@@ -265,7 +296,9 @@ public class JIPipeExportedDataTable implements TableModel {
         else if (columnIndex == 1)
             return JIPipeDataInfo.class;
         else if (columnIndex == 2)
-            return Row.class;
+            return JIPipeExportedDataTableRow.class;
+        else if(columnIndex < getDataAnnotationColumns().size() + 3)
+            return JIPipeExportedDataAnnotation.class;
         else
             return JIPipeAnnotation.class;
     }
@@ -281,11 +314,16 @@ public class JIPipeExportedDataTable implements TableModel {
             return rowList.get(rowIndex).getIndex();
         else if (columnIndex == 1) {
             return getDataTypeOf(rowIndex);
-        } else if (columnIndex == 2)
+        } else if (columnIndex == 2) {
             return rowList.get(rowIndex);
+        }
+        else if(columnIndex < getDataAnnotationColumns().size() + 3) {
+            String annotationColumn = dataAnnotationColumns.get(columnIndex - 3);
+            return rowList.get(rowIndex).getDataAnnotations().stream().filter(t -> t.nameEquals(annotationColumn)).findFirst().orElse(null);
+        }
         else {
-            String annotationColumn = annotationColumns.get(columnIndex - 3);
-            return rowList.get(rowIndex).annotations.stream().filter(t -> t.nameEquals(annotationColumn)).findFirst().orElse(null);
+            String annotationColumn = annotationColumns.get(columnIndex - getDataAnnotationColumns().size() - 3);
+            return rowList.get(rowIndex).getAnnotations().stream().filter(t -> t.nameEquals(annotationColumn)).findFirst().orElse(null);
         }
     }
 
@@ -325,7 +363,7 @@ public class JIPipeExportedDataTable implements TableModel {
     public AnnotationTableData toAnnotationTable() {
         AnnotationTableData output = new AnnotationTableData();
         int outputRow = 0;
-        for (Row row : getRowList()) {
+        for (JIPipeExportedDataTableRow row : getRowList()) {
             output.addRow();
             for (JIPipeAnnotation annotation : row.getAnnotations()) {
                 if (annotation != null) {
@@ -354,74 +392,4 @@ public class JIPipeExportedDataTable implements TableModel {
         }
     }
 
-    /**
-     * A row in the table
-     */
-    public static class Row {
-        private int index;
-        private List<JIPipeAnnotation> annotations;
-        private String trueDataType;
-
-        /**
-         * Creates new instance
-         */
-        public Row() {
-        }
-
-        /**
-         * @return Internal location relative to the output folder
-         */
-        @JsonGetter("index")
-        public int getIndex() {
-            return index;
-        }
-
-        /**
-         * Sets the location
-         *
-         * @param index Internal location relative to the output folder
-         */
-        @JsonSetter("index")
-        public void setIndex(int index) {
-            this.index = index;
-        }
-
-        /**
-         * @return Annotations
-         */
-        @JsonGetter("annotations")
-        public List<JIPipeAnnotation> getAnnotations() {
-            return annotations;
-        }
-
-        /**
-         * Sets annotations
-         *
-         * @param annotations List of annotations
-         */
-        @JsonSetter("annotations")
-        public void setAnnotations(List<JIPipeAnnotation> annotations) {
-            this.annotations = annotations;
-        }
-
-        /**
-         * Compatibility function to allow reading tables in an older format
-         *
-         * @param annotations List of annotations
-         */
-        @JsonSetter("traits")
-        public void setTraits(List<JIPipeAnnotation> annotations) {
-            this.annotations = annotations;
-        }
-
-        @JsonGetter("true-data-type")
-        public String getTrueDataType() {
-            return trueDataType;
-        }
-
-        @JsonSetter("true-data-type")
-        public void setTrueDataType(String trueDataType) {
-            this.trueDataType = trueDataType;
-        }
-    }
 }

@@ -14,7 +14,7 @@
 package org.hkijena.jipipe.ui.resultanalysis;
 
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
-import org.hkijena.jipipe.api.data.JIPipeExportedDataTable;
+import org.hkijena.jipipe.api.data.JIPipeExportedDataTableRow;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbenchPanel;
 import org.hkijena.jipipe.utils.UIUtils;
@@ -34,7 +34,7 @@ public abstract class JIPipeResultDataSlotPreview extends JIPipeProjectWorkbench
 
     private final JTable table;
     private final JIPipeDataSlot slot;
-    private final JIPipeExportedDataTable.Row row;
+    private final JIPipeExportedDataTableRow row;
 
     /**
      * Creates a new renderer
@@ -44,7 +44,7 @@ public abstract class JIPipeResultDataSlotPreview extends JIPipeProjectWorkbench
      * @param slot      the data slot
      * @param row       the row
      */
-    public JIPipeResultDataSlotPreview(JIPipeProjectWorkbench workbench, JTable table, JIPipeDataSlot slot, JIPipeExportedDataTable.Row row) {
+    public JIPipeResultDataSlotPreview(JIPipeProjectWorkbench workbench, JTable table, JIPipeDataSlot slot, JIPipeExportedDataTableRow row) {
         super(workbench);
         this.slot = slot;
         this.row = row;
@@ -70,7 +70,7 @@ public abstract class JIPipeResultDataSlotPreview extends JIPipeProjectWorkbench
         return slot;
     }
 
-    public JIPipeExportedDataTable.Row getRow() {
+    public JIPipeExportedDataTableRow getRow() {
         return row;
     }
 
@@ -114,7 +114,7 @@ public abstract class JIPipeResultDataSlotPreview extends JIPipeProjectWorkbench
      * @param row         The data slot row
      * @return The display name
      */
-    public static String getDisplayName(JIPipeProjectWorkbench workbenchUI, JIPipeDataSlot slot, JIPipeExportedDataTable.Row row) {
+    public static String getDisplayName(JIPipeProjectWorkbench workbenchUI, JIPipeDataSlot slot, JIPipeExportedDataTableRow row) {
         return getAlgorithmCompartment(workbenchUI, slot) + "/" + getAlgorithmName(slot) + "/" + slot.getName() + "/" + row.getIndex();
     }
 
@@ -125,7 +125,7 @@ public abstract class JIPipeResultDataSlotPreview extends JIPipeProjectWorkbench
      * @param row  The data slot row
      * @return The row storage folder
      */
-    public static Path getRowStorageFolder(JIPipeDataSlot slot, JIPipeExportedDataTable.Row row) {
+    public static Path getRowStorageFolder(JIPipeDataSlot slot, JIPipeExportedDataTableRow row) {
         return slot.getStoragePath().resolve("" + row.getIndex());
     }
 }

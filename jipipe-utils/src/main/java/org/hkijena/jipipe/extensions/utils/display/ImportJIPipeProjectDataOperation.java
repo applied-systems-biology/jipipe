@@ -13,12 +13,7 @@
 
 package org.hkijena.jipipe.extensions.utils.display;
 
-import org.hkijena.jipipe.api.data.JIPipeData;
-import org.hkijena.jipipe.api.data.JIPipeDataDisplayOperation;
-import org.hkijena.jipipe.api.data.JIPipeDataImportOperation;
-import org.hkijena.jipipe.api.data.JIPipeDataSlot;
-import org.hkijena.jipipe.api.data.JIPipeDataSource;
-import org.hkijena.jipipe.api.data.JIPipeExportedDataTable;
+import org.hkijena.jipipe.api.data.*;
 import org.hkijena.jipipe.extensions.filesystem.dataypes.PathData;
 import org.hkijena.jipipe.extensions.utils.datatypes.JIPipeOutputData;
 import org.hkijena.jipipe.ui.JIPipeProjectWindow;
@@ -42,7 +37,7 @@ public class ImportJIPipeProjectDataOperation implements JIPipeDataImportOperati
     }
 
     @Override
-    public JIPipeData show(JIPipeDataSlot slot, JIPipeExportedDataTable.Row row, Path rowStorageFolder, String compartmentName, String algorithmName, String displayName, JIPipeWorkbench workbench) {
+    public JIPipeData show(JIPipeDataSlot slot, JIPipeExportedDataTableRow row, Path rowStorageFolder, String compartmentName, String algorithmName, String displayName, JIPipeWorkbench workbench) {
         JIPipeOutputData data = JIPipeOutputData.importFrom(rowStorageFolder);
         JIPipeProjectWindow window = (JIPipeProjectWindow) workbench.getWindow();
         window.openProject(data.toPath());

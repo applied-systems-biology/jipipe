@@ -15,7 +15,7 @@ package org.hkijena.jipipe.extensions.filesystem.resultanalysis;
 
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
-import org.hkijena.jipipe.api.data.JIPipeExportedDataTable;
+import org.hkijena.jipipe.api.data.JIPipeExportedDataTableRow;
 import org.hkijena.jipipe.extensions.filesystem.dataypes.PathData;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
 import org.hkijena.jipipe.ui.resultanalysis.JIPipeResultDataSlotPreview;
@@ -41,7 +41,7 @@ public class FilesystemDataSlotPreview extends JIPipeResultDataSlotPreview {
      * @param slot      the data slot
      * @param row       the row
      */
-    public FilesystemDataSlotPreview(JIPipeProjectWorkbench workbench, JTable table, JIPipeDataSlot slot, JIPipeExportedDataTable.Row row) {
+    public FilesystemDataSlotPreview(JIPipeProjectWorkbench workbench, JTable table, JIPipeDataSlot slot, JIPipeExportedDataTableRow row) {
         super(workbench, table, slot, row);
         initialize();
     }
@@ -53,7 +53,7 @@ public class FilesystemDataSlotPreview extends JIPipeResultDataSlotPreview {
     }
 
 
-    private Path findListFile(JIPipeDataSlot slot, JIPipeExportedDataTable.Row row) {
+    private Path findListFile(JIPipeDataSlot slot, JIPipeExportedDataTableRow row) {
         Path rowStorageFolder = getRowStorageFolder(slot, row);
         if (Files.isDirectory(rowStorageFolder)) {
             return PathUtils.findFileByExtensionIn(rowStorageFolder, ".json");

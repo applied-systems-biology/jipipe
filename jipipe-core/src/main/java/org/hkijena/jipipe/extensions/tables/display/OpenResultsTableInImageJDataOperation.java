@@ -14,12 +14,7 @@
 package org.hkijena.jipipe.extensions.tables.display;
 
 import ij.measure.ResultsTable;
-import org.hkijena.jipipe.api.data.JIPipeData;
-import org.hkijena.jipipe.api.data.JIPipeDataDisplayOperation;
-import org.hkijena.jipipe.api.data.JIPipeDataImportOperation;
-import org.hkijena.jipipe.api.data.JIPipeDataSlot;
-import org.hkijena.jipipe.api.data.JIPipeDataSource;
-import org.hkijena.jipipe.api.data.JIPipeExportedDataTable;
+import org.hkijena.jipipe.api.data.*;
 import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.utils.PathUtils;
@@ -63,7 +58,7 @@ public class OpenResultsTableInImageJDataOperation implements JIPipeDataImportOp
     }
 
     @Override
-    public JIPipeData show(JIPipeDataSlot slot, JIPipeExportedDataTable.Row row, Path rowStorageFolder, String compartmentName, String algorithmName, String displayName, JIPipeWorkbench workbench) {
+    public JIPipeData show(JIPipeDataSlot slot, JIPipeExportedDataTableRow row, Path rowStorageFolder, String compartmentName, String algorithmName, String displayName, JIPipeWorkbench workbench) {
         if (rowStorageFolder == null || !Files.isDirectory(rowStorageFolder))
             return null;
         Path csvFile = PathUtils.findFileByExtensionIn(rowStorageFolder, ".csv");

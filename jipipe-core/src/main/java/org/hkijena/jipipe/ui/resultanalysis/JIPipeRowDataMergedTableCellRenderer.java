@@ -15,7 +15,7 @@ package org.hkijena.jipipe.ui.resultanalysis;
 
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
-import org.hkijena.jipipe.api.data.JIPipeExportedDataTable;
+import org.hkijena.jipipe.api.data.JIPipeExportedDataTableRow;
 import org.hkijena.jipipe.api.data.JIPipeMergedExportedDataTable;
 import org.hkijena.jipipe.extensions.settings.GeneralDataSettings;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
@@ -67,7 +67,7 @@ public class JIPipeRowDataMergedTableCellRenderer implements TableCellRenderer {
 
     @Override
     public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
-        if (value instanceof JIPipeExportedDataTable.Row) {
+        if (value instanceof JIPipeExportedDataTableRow) {
             JIPipeMergedExportedDataTable model = (JIPipeMergedExportedDataTable) table.getModel();
             JIPipeDataSlot slot = model.getSlot(table.convertRowIndexToModel(row));
             while (row > previewCache.size() - 1) {
@@ -76,7 +76,7 @@ public class JIPipeRowDataMergedTableCellRenderer implements TableCellRenderer {
             revalidatePreviewCache();
             JIPipeResultDataSlotPreview preview = previewCache.get(row);
             if (preview == null) {
-                preview = JIPipe.getDataTypes().getCellRendererFor(workbenchUI, table, slot, (JIPipeExportedDataTable.Row) value);
+                preview = JIPipe.getDataTypes().getCellRendererFor(workbenchUI, table, slot, (JIPipeExportedDataTableRow) value);
                 previewCache.set(row, preview);
             }
             if (isSelected) {

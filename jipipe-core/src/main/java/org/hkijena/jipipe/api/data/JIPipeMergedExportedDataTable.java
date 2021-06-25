@@ -33,8 +33,9 @@ public class JIPipeMergedExportedDataTable implements TableModel {
 
     private ArrayList<JIPipeProjectCompartment> compartmentList = new ArrayList<>();
     private ArrayList<JIPipeGraphNode> algorithmList = new ArrayList<>();
-    private ArrayList<JIPipeExportedDataTable.Row> rowList = new ArrayList<>();
+    private ArrayList<JIPipeExportedDataTableRow> rowList = new ArrayList<>();
     private List<String> annotationColumns = new ArrayList<>();
+    private List<String> dataAnnotationColumns = new ArrayList<>();
     private ArrayList<JIPipeDataSlot> slotList = new ArrayList<>();
     private List<JIPipeExportedDataTable> addedTables = new ArrayList<>();
 
@@ -51,11 +52,15 @@ public class JIPipeMergedExportedDataTable implements TableModel {
             if (!annotationColumns.contains(annotationColumn))
                 annotationColumns.add(annotationColumn);
         }
+        for (String annotationColumn : table.getDataAnnotationColumns()) {
+            if (!dataAnnotationColumns.contains(annotationColumn))
+                dataAnnotationColumns.add(annotationColumn);
+        }
         UUID compartmentUUID = dataSlot.getNode().getCompartmentUUIDInGraph();
         JIPipeProjectCompartment compartment = project.getCompartments().get(compartmentUUID);
         JIPipeGraphNode algorithm = dataSlot.getNode();
 
-        for (JIPipeExportedDataTable.Row row : table.getRowList()) {
+        for (JIPipeExportedDataTableRow row : table.getRowList()) {
             slotList.add(dataSlot);
             compartmentList.add(compartment);
             algorithmList.add(algorithm);
@@ -70,7 +75,7 @@ public class JIPipeMergedExportedDataTable implements TableModel {
 
     @Override
     public int getColumnCount() {
-        return annotationColumns.size() + 5;
+        return annotationColumns.size() + dataAnnotationColumns.size() + 5;
     }
 
     @Override
@@ -85,6 +90,8 @@ public class JIPipeMergedExportedDataTable implements TableModel {
             return "Data type";
         else if (columnIndex == 4)
             return "Preview";
+        else if(columnIndex < dataAnnotationColumns.size() + 5)
+            return "$" + dataAnnotationColumns.get(columnIndex - 5);
         else
             return annotationColumns.get(columnIndex - 5);
     }
@@ -100,7 +107,9 @@ public class JIPipeMergedExportedDataTable implements TableModel {
         else if (columnIndex == 3)
             return JIPipeDataInfo.class;
         else if (columnIndex == 4)
-            return JIPipeExportedDataTable.Row.class;
+            return JIPipeExportedDataTableRow.class;
+        else if (columnIndex < dataAnnotationColumns.size() + 5)
+            return JIPipeExportedDataAnnotation.class;
         else
             return JIPipeAnnotation.class;
     }
@@ -122,8 +131,12 @@ public class JIPipeMergedExportedDataTable implements TableModel {
             return JIPipeDataInfo.getInstance(slotList.get(rowIndex).getAcceptedDataType());
         else if (columnIndex == 4)
             return rowList.get(rowIndex);
+        else if(columnIndex < dataAnnotationColumns.size() - 1) {
+            String annotationColumn = dataAnnotationColumns.get(columnIndex - 5);
+            return rowList.get(rowIndex).getDataAnnotations().stream().filter(t -> t.nameEquals(annotationColumn)).findFirst().orElse(null);
+        }
         else {
-            String annotationColumn = annotationColumns.get(columnIndex - 5);
+            String annotationColumn = annotationColumns.get(columnIndex - dataAnnotationColumns.size() - 5);
             return rowList.get(rowIndex).getAnnotations().stream().filter(t -> t.nameEquals(annotationColumn)).findFirst().orElse(null);
         }
     }
@@ -141,6 +154,10 @@ public class JIPipeMergedExportedDataTable implements TableModel {
     @Override
     public void removeTableModelListener(TableModelListener l) {
 
+    }
+
+    public List<String> getDataAnnotationColumns() {
+        return dataAnnotationColumns;
     }
 
     /**
@@ -163,7 +180,7 @@ public class JIPipeMergedExportedDataTable implements TableModel {
     /**
      * @return List of rows
      */
-    public List<JIPipeExportedDataTable.Row> getRowList() {
+    public List<JIPipeExportedDataTableRow> getRowList() {
         return rowList;
     }
 

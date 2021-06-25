@@ -17,11 +17,7 @@ import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
-import org.hkijena.jipipe.api.data.JIPipeAnnotation;
-import org.hkijena.jipipe.api.data.JIPipeAnnotationMergeStrategy;
-import org.hkijena.jipipe.api.data.JIPipeData;
-import org.hkijena.jipipe.api.data.JIPipeDataInfo;
-import org.hkijena.jipipe.api.data.JIPipeExportedDataTable;
+import org.hkijena.jipipe.api.data.*;
 import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
 import org.hkijena.jipipe.api.nodes.JIPipeDataBatch;
 import org.hkijena.jipipe.api.nodes.JIPipeInputSlot;
@@ -81,7 +77,7 @@ public class ImportData extends JIPipeSimpleIteratingAlgorithm {
                     "Check if you installed the necessary plugins and extensions.");
         }
 
-        for (JIPipeExportedDataTable.Row row : exportedDataTable.getRowList()) {
+        for (JIPipeExportedDataTableRow row : exportedDataTable.getRowList()) {
             progressInfo.log("Importing data row " + row.getIndex());
             Path storageFolder = dataFolder.resolve("" + row.getIndex());
             List<JIPipeAnnotation> annotationList = ignoreImportedDataAnnotations ? Collections.emptyList() : row.getAnnotations();

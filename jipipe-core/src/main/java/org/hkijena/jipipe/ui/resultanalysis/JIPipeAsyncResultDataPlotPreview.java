@@ -16,7 +16,7 @@ package org.hkijena.jipipe.ui.resultanalysis;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
-import org.hkijena.jipipe.api.data.JIPipeExportedDataTable;
+import org.hkijena.jipipe.api.data.JIPipeExportedDataTableRow;
 import org.hkijena.jipipe.extensions.settings.GeneralDataSettings;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
 import org.hkijena.jipipe.utils.UIUtils;
@@ -44,7 +44,7 @@ public abstract class JIPipeAsyncResultDataPlotPreview extends JIPipeResultDataS
      * @param slot      the data slot
      * @param row       the row
      */
-    public JIPipeAsyncResultDataPlotPreview(JIPipeProjectWorkbench workbench, JTable table, JIPipeDataSlot slot, JIPipeExportedDataTable.Row row) {
+    public JIPipeAsyncResultDataPlotPreview(JIPipeProjectWorkbench workbench, JTable table, JIPipeDataSlot slot, JIPipeExportedDataTableRow row) {
         super(workbench, table, slot, row);
         initialize();
     }

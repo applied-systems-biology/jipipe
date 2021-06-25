@@ -30,7 +30,7 @@ public interface JIPipeDataImportOperation extends JIPipeDataOperation {
      * @param rowStorageFolder the folder the row is storing the data
      * @return if the import is possible
      */
-    default boolean canShow(JIPipeDataSlot slot, JIPipeExportedDataTable.Row row, Path rowStorageFolder) {
+    default boolean canShow(JIPipeDataSlot slot, JIPipeExportedDataTableRow row, Path rowStorageFolder) {
         return true;
     }
 
@@ -46,5 +46,5 @@ public interface JIPipeDataImportOperation extends JIPipeDataOperation {
      * @param workbench        the workbench that issued the command
      * @return the imported data. null if not successful.
      */
-    JIPipeData show(JIPipeDataSlot slot, JIPipeExportedDataTable.Row row, Path rowStorageFolder, String compartmentName, String algorithmName, String displayName, JIPipeWorkbench workbench);
+    JIPipeData show(JIPipeDataSlot slot, JIPipeExportedDataTableRow row, Path rowStorageFolder, String compartmentName, String algorithmName, String displayName, JIPipeWorkbench workbench);
 }

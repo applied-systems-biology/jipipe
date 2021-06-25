@@ -2,6 +2,7 @@ package org.hkijena.jipipe.extensions.core;
 
 import org.hkijena.jipipe.JIPipeJavaExtension;
 import org.hkijena.jipipe.api.data.JIPipeData;
+import org.hkijena.jipipe.api.data.JIPipeEmptyData;
 import org.hkijena.jipipe.api.nodes.JIPipeAnnotationMatchingMethod;
 import org.hkijena.jipipe.api.nodes.categories.AnnotationsNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.categories.DataSourceNodeTypeCategory;
@@ -46,6 +47,11 @@ public class CoreExtension extends JIPipePrepackagedDefaultJavaExtension {
     public void register() {
         registerDatatype("jipipe:data",
                 JIPipeData.class,
+                ResourceUtils.getPluginResource("icons/data-types/data-type.png"),
+                null,
+                null);
+        registerDatatype("jipipe:empty-data",
+                JIPipeEmptyData.class,
                 ResourceUtils.getPluginResource("icons/data-types/data-type.png"),
                 null,
                 null);

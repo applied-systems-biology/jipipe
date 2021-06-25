@@ -20,13 +20,7 @@ import org.apache.commons.lang3.reflect.ConstructorUtils;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.JIPipeDependency;
 import org.hkijena.jipipe.api.JIPipeHidden;
-import org.hkijena.jipipe.api.data.JIPipeData;
-import org.hkijena.jipipe.api.data.JIPipeDataConverter;
-import org.hkijena.jipipe.api.data.JIPipeDataDisplayOperation;
-import org.hkijena.jipipe.api.data.JIPipeDataImportOperation;
-import org.hkijena.jipipe.api.data.JIPipeDataInfo;
-import org.hkijena.jipipe.api.data.JIPipeDataSlot;
-import org.hkijena.jipipe.api.data.JIPipeExportedDataTable;
+import org.hkijena.jipipe.api.data.*;
 import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
 import org.hkijena.jipipe.extensions.settings.GeneralDataSettings;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
@@ -440,12 +434,12 @@ public class JIPipeDatatypeRegistry {
      * @param row         table row
      * @return slot UI
      */
-    public JIPipeResultDataSlotRowUI getUIForResultSlot(JIPipeProjectWorkbench workbenchUI, JIPipeDataSlot slot, JIPipeExportedDataTable.Row row) {
+    public JIPipeResultDataSlotRowUI getUIForResultSlot(JIPipeProjectWorkbench workbenchUI, JIPipeDataSlot slot, JIPipeExportedDataTableRow row) {
         Class<? extends JIPipeData> dataClass = getById(row.getTrueDataType());
         Class<? extends JIPipeResultDataSlotRowUI> uiClass = resultUIs.getOrDefault(dataClass, null);
         if (uiClass != null) {
             try {
-                return ConstructorUtils.getMatchingAccessibleConstructor(uiClass, JIPipeProjectWorkbench.class, JIPipeDataSlot.class, JIPipeExportedDataTable.Row.class)
+                return ConstructorUtils.getMatchingAccessibleConstructor(uiClass, JIPipeProjectWorkbench.class, JIPipeDataSlot.class, JIPipeExportedDataTableRow.class)
                         .newInstance(workbenchUI, slot, row);
             } catch (InstantiationException | IllegalAccessException | InvocationTargetException e) {
                 throw new RuntimeException(e);
@@ -464,7 +458,7 @@ public class JIPipeDatatypeRegistry {
      * @param row       the data row
      * @return cell renderer
      */
-    public JIPipeResultDataSlotPreview getCellRendererFor(JIPipeProjectWorkbench workbench, JTable table, JIPipeDataSlot slot, JIPipeExportedDataTable.Row row) {
+    public JIPipeResultDataSlotPreview getCellRendererFor(JIPipeProjectWorkbench workbench, JTable table, JIPipeDataSlot slot, JIPipeExportedDataTableRow row) {
         Class<? extends JIPipeData> dataClass = getById(row.getTrueDataType());
         if (GeneralDataSettings.getInstance().isGenerateResultPreviews()) {
             Class<? extends JIPipeResultDataSlotPreview> rendererClass = resultTableCellUIs.getOrDefault(dataClass, null);
