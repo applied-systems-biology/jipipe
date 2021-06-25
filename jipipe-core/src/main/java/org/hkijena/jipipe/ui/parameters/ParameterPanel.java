@@ -43,6 +43,7 @@ import java.awt.Dimension;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -100,6 +101,7 @@ public class ParameterPanel extends FormPanel implements Contextual {
     private SearchTextField searchField = new SearchTextField();
     private BiFunction<JIPipeParameterTree, JIPipeParameterAccess, Boolean> customIsParameterVisible;
     private BiFunction<JIPipeParameterTree, JIPipeParameterCollection, Boolean> customIsParameterCollectionVisible;
+    private Map<JIPipeParameterCollection, Boolean> collapseStates = new HashMap<>();
 
     /**
      * @param workbench           SciJava context
@@ -173,6 +175,8 @@ public class ParameterPanel extends FormPanel implements Contextual {
      * Recreates the UI elements. Does not re-traverse the parameters, meaning that the parameter structure is not updated
      */
     public void refreshForm() {
+        int scrollValueBackup = getScrollPane() != null ? getScrollPane().getVerticalScrollBar().getValue() : 0;
+
         clear();
 
         // Create list of filtered-out nodes
@@ -237,17 +241,17 @@ public class ParameterPanel extends FormPanel implements Contextual {
         addVerticalGlue();
 
         if (getScrollPane() != null) {
-            SwingUtilities.invokeLater(() -> getScrollPane().getVerticalScrollBar().setValue(0));
+            SwingUtilities.invokeLater(() -> getScrollPane().getVerticalScrollBar().setValue(scrollValueBackup));
         }
     }
 
-    private void addToForm(JIPipeParameterTree traversed, JIPipeParameterCollection parameterHolder, List<JIPipeParameterAccess> parameterAccesses, Set<JIPipeParameterAccess> hiddenAccesses) {
-        boolean isModifiable = parameterHolder instanceof JIPipeDynamicParameterCollection && ((JIPipeDynamicParameterCollection) parameterHolder).isAllowUserModification();
+    private void addToForm(JIPipeParameterTree traversed, JIPipeParameterCollection parameterCollection, List<JIPipeParameterAccess> parameterAccesses, Set<JIPipeParameterAccess> hiddenAccesses) {
+        boolean isModifiable = parameterCollection instanceof JIPipeDynamicParameterCollection && ((JIPipeDynamicParameterCollection) parameterCollection).isAllowUserModification();
 
         if (!isModifiable && parameterAccesses.isEmpty())
             return;
 
-        JIPipeParameterTree.Node node = traversed.getSourceNode(parameterHolder);
+        JIPipeParameterTree.Node node = traversed.getSourceNode(parameterCollection);
 
         JCheckBox collapseButton = new JCheckBox();
         collapseButton.setToolTipText("Collapse/Show this category");
@@ -261,7 +265,7 @@ public class ParameterPanel extends FormPanel implements Contextual {
         }
 
         if (!noGroupHeaders) {
-            JIPipeDocumentation documentation = traversed.getSourceDocumentation(parameterHolder);
+            JIPipeDocumentation documentation = traversed.getSourceDocumentation(parameterCollection);
             boolean documentationIsEmpty = documentation == null || (StringUtils.isNullOrEmpty(documentation.name()) && StringUtils.isNullOrEmpty(documentation.description()));
             boolean groupHeaderIsEmpty = documentationIsEmpty && !isModifiable && node.getActions().isEmpty();
 
@@ -281,7 +285,7 @@ public class ParameterPanel extends FormPanel implements Contextual {
                         groupIcon = UIUtils.getIconFromResources("actions/configure.png");
                     }
                 }
-                GroupHeaderPanel groupHeaderPanel = new GroupHeaderPanel(traversed.getSourceDocumentationName(parameterHolder),
+                GroupHeaderPanel groupHeaderPanel = new GroupHeaderPanel(traversed.getSourceDocumentationName(parameterCollection),
                         groupIcon, leftComponents);
                 addWideToForm(groupHeaderPanel, null);
 
@@ -301,7 +305,7 @@ public class ParameterPanel extends FormPanel implements Contextual {
 
                 if (isModifiable) {
                     JButton addButton = new JButton("Add parameter", UIUtils.getIconFromResources("actions/list-add.png"));
-                    addButton.addActionListener(e -> addDynamicParameter((JIPipeDynamicParameterCollection) parameterHolder));
+                    addButton.addActionListener(e -> addDynamicParameter((JIPipeDynamicParameterCollection) parameterCollection));
                     addButton.setToolTipText("Add new parameter");
                     UIUtils.makeFlat(addButton);
                     groupHeaderPanel.addColumn(addButton);
@@ -344,11 +348,11 @@ public class ParameterPanel extends FormPanel implements Contextual {
             if (isModifiable) {
                 JButton removeButton = new JButton(UIUtils.getIconFromResources("actions/close-tab.png"));
                 UIUtils.makeBorderlessWithoutMargin(removeButton);
-                removeButton.addActionListener(e -> removeDynamicParameter(parameterAccess.getKey(), (JIPipeDynamicParameterCollection) parameterHolder));
+                removeButton.addActionListener(e -> removeDynamicParameter(parameterAccess.getKey(), (JIPipeDynamicParameterCollection) parameterCollection));
                 labelPanel.add(removeButton, BorderLayout.WEST);
             }
 
-            if (ui.isUILabelEnabled() || parameterHolder instanceof JIPipeDynamicParameterCollection) {
+            if (ui.isUILabelEnabled() || parameterCollection instanceof JIPipeDynamicParameterCollection) {
                 addToForm(ui, labelPanel, generateParameterDocumentation(parameterAccess, traversed));
                 uiComponents.add(labelPanel);
             } else
@@ -356,8 +360,19 @@ public class ParameterPanel extends FormPanel implements Contextual {
         }
 
         if (allowCollapse) {
+
+            // Restore the collapse
+            if(collapseStates.containsKey(parameterCollection)) {
+                collapseButton.setSelected(collapseStates.get(parameterCollection));
+            }
+
             showCollapse(uiComponents, collapseButton.isSelected());
-            collapseButton.addActionListener(e -> showCollapse(uiComponents, collapseButton.isSelected()));
+            collapseButton.addActionListener(e -> {
+                showCollapse(uiComponents, collapseButton.isSelected());
+                collapseStates.put(parameterCollection, collapseButton.isSelected());
+            });
+
+            collapseStates.put(parameterCollection, collapseButton.isSelected());
         }
     }
 
