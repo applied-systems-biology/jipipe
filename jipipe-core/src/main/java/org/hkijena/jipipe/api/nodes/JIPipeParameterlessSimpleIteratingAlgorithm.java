@@ -112,7 +112,7 @@ public abstract class JIPipeParameterlessSimpleIteratingAlgorithm extends JIPipe
                         return;
                     JIPipeProgressInfo slotProgress = progressInfo.resolveAndLog("Data row", i, getFirstInputSlot().getRowCount());
                     JIPipeDataBatch dataBatch = new JIPipeDataBatch(this);
-                    dataBatch.setData(getFirstInputSlot(), i);
+                    dataBatch.setInputData(getFirstInputSlot(), i);
                     dataBatch.addGlobalAnnotations(getFirstInputSlot().getAnnotations(i), JIPipeAnnotationMergeStrategy.Merge);
                     runIteration(dataBatch, slotProgress);
                 }
@@ -127,7 +127,7 @@ public abstract class JIPipeParameterlessSimpleIteratingAlgorithm extends JIPipe
                             return;
                         JIPipeProgressInfo slotProgress = progressInfo.resolveAndLog("Data row", rowIndex, getFirstInputSlot().getRowCount());
                         JIPipeDataBatch dataBatch = new JIPipeDataBatch(this);
-                        dataBatch.setData(getFirstInputSlot(), rowIndex);
+                        dataBatch.setInputData(getFirstInputSlot(), rowIndex);
                         dataBatch.addGlobalAnnotations(getFirstInputSlot().getAnnotations(rowIndex), JIPipeAnnotationMergeStrategy.Merge);
                         runIteration(dataBatch, slotProgress);
                     });
@@ -229,7 +229,7 @@ public abstract class JIPipeParameterlessSimpleIteratingAlgorithm extends JIPipe
             if (withLimit && !allowedIndices.contains(i))
                 continue;
             JIPipeMergingDataBatch dataBatch = new JIPipeMergingDataBatch(this);
-            dataBatch.addData(slot, i);
+            dataBatch.addInputData(slot, i);
             dataBatch.addGlobalAnnotations(slot.getAnnotations(i), JIPipeAnnotationMergeStrategy.Merge);
             batches.add(dataBatch);
         }

@@ -139,7 +139,7 @@ public abstract class JIPipeIteratingMissingDataGeneratorAlgorithm extends JIPip
                 if (progressInfo.isCancelled().get())
                     break;
                 JIPipeMergingDataBatch dataBatch = new JIPipeMergingDataBatch(this);
-                dataBatch.setData(getFirstInputSlot(), row);
+                dataBatch.setInputData(getFirstInputSlot(), row);
                 dataBatch.addGlobalAnnotations(parameterAnnotations, dataBatchGenerationSettings.getAnnotationMergeStrategy());
                 dataBatch.addGlobalAnnotations(getFirstInputSlot().getAnnotations(row), dataBatchGenerationSettings.getAnnotationMergeStrategy());
                 dataBatches.add(dataBatch);

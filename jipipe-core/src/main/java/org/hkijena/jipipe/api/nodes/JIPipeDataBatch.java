@@ -98,7 +98,7 @@ public class JIPipeDataBatch implements Comparable<JIPipeDataBatch> {
      * @param slot the data slot
      * @param row  the row
      */
-    public void setData(JIPipeDataSlot slot, int row) {
+    public void setInputData(JIPipeDataSlot slot, int row) {
         inputSlotRows.put(slot, row);
     }
 
