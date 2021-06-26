@@ -18,13 +18,7 @@ import com.google.common.collect.Multimap;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.*;
 
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Wraps a set of input and output slots that belong together
@@ -34,7 +28,7 @@ public class JIPipeDataBatch implements Comparable<JIPipeDataBatch> {
     private JIPipeGraphNode node;
     private Map<JIPipeDataSlot, Integer> inputSlotRows;
     private Map<String, JIPipeAnnotation> annotations = new HashMap<>();
-    private Multimap<String, JIPipeDataAnnotation> dataAnnotations = HashMultimap.create();
+    private Map<String, JIPipeDataAnnotation> dataAnnotations = new HashMap<>();
 
     /**
      * Creates a new interface
@@ -56,6 +50,7 @@ public class JIPipeDataBatch implements Comparable<JIPipeDataBatch> {
         this.node = other.node;
         this.inputSlotRows = new HashMap<>(other.inputSlotRows);
         this.annotations = new HashMap<>(other.annotations);
+        this.dataAnnotations = new HashMap<>(other.dataAnnotations);
     }
 
     public JIPipeGraphNode getNode() {
@@ -80,6 +75,26 @@ public class JIPipeDataBatch implements Comparable<JIPipeDataBatch> {
      */
     public List<JIPipeAnnotation> getOriginalAnnotations(String slotName) {
         return getOriginalAnnotations(node.getInputSlot(slotName));
+    }
+
+    /**
+     * Gets the original annotations of given slot
+     *
+     * @param slot the slot
+     * @return the annotations
+     */
+    public List<JIPipeDataAnnotation> getOriginalDataAnnotations(JIPipeDataSlot slot) {
+        return slot.getDataAnnotations(inputSlotRows.get(slot));
+    }
+
+    /**
+     * Gets the original annotations of given slot
+     *
+     * @param slotName the slot
+     * @return the annotations
+     */
+    public List<JIPipeDataAnnotation> getOriginalDataAnnotations(String slotName) {
+        return getOriginalDataAnnotations(node.getInputSlot(slotName));
     }
 
     /**
@@ -178,6 +193,21 @@ public class JIPipeDataBatch implements Comparable<JIPipeDataBatch> {
         } else {
             String newValue = strategy.merge(existing.getValue(), annotation.getValue());
             this.annotations.put(annotation.getName(), new JIPipeAnnotation(annotation.getName(), newValue));
+        }
+    }
+
+    /**
+     * Adds an annotation to the annotation list
+     *
+     * @param annotation added annotation. Cannot be null.
+     */
+    public void addGlobalDataAnnotation(JIPipeDataAnnotation annotation, JIPipeDataAnnotationMergeStrategy strategy) {
+        JIPipeDataAnnotation existing = this.dataAnnotations.getOrDefault(annotation.getName(), null);
+        if (existing == null) {
+            this.dataAnnotations.put(annotation.getName(), annotation);
+        } else {
+            annotation = strategy.merge(Arrays.asList(existing, annotation)).get(0);
+            this.dataAnnotations.put(annotation.getName(),annotation);
         }
     }
 
