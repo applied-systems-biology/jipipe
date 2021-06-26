@@ -13,12 +13,10 @@
 
 package org.hkijena.jipipe.api.nodes;
 
+import com.google.common.collect.HashMultimap;
+import com.google.common.collect.Multimap;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
-import org.hkijena.jipipe.api.data.JIPipeAnnotation;
-import org.hkijena.jipipe.api.data.JIPipeAnnotationMergeStrategy;
-import org.hkijena.jipipe.api.data.JIPipeData;
-import org.hkijena.jipipe.api.data.JIPipeDataSlot;
-import org.hkijena.jipipe.api.data.JIPipeDataSlotInfo;
+import org.hkijena.jipipe.api.data.*;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -36,6 +34,7 @@ public class JIPipeDataBatch implements Comparable<JIPipeDataBatch> {
     private JIPipeGraphNode node;
     private Map<JIPipeDataSlot, Integer> inputSlotRows;
     private Map<String, JIPipeAnnotation> annotations = new HashMap<>();
+    private Multimap<String, JIPipeDataAnnotation> dataAnnotations = HashMultimap.create();
 
     /**
      * Creates a new interface

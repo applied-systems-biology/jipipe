@@ -218,19 +218,33 @@ public class JIPipeDataSlot {
     }
 
     /**
+     * Gets the list of all data annotations in the specified row
+     * @param row the row
+     * @return list of data annotations
+     */
+    public List<JIPipeDataAnnotation> getDataAnnotations(int row) {
+        List<JIPipeDataAnnotation> dataAnnotations = new ArrayList<>();
+        for (String dataAnnotationColumn : getDataAnnotationColumns()) {
+            JIPipeVirtualData virtualDataAnnotation = getVirtualDataAnnotation(row, dataAnnotationColumn);
+            if(virtualDataAnnotation != null) {
+                dataAnnotations.add(new JIPipeDataAnnotation(dataAnnotationColumn, virtualDataAnnotation));
+            }
+        }
+        return dataAnnotations;
+    }
+
+    /**
      * Gets a data annotation
      * @param row the row
      * @param column the data annotation column
-     * @param progressInfo the progress info
-     * @param <T> the data type
      * @return the data or null if there is no annotation
      */
-    public <T extends JIPipeData> T getDataAnnotation(int row, String column, Class<T> dataClass, JIPipeProgressInfo progressInfo) {
+    public JIPipeDataAnnotation getDataAnnotation(int row, String column) {
         JIPipeVirtualData virtualData = getVirtualDataAnnotation(row, column);
         if(virtualData == null)
             return null;
         else
-            return (T) JIPipe.getDataTypes().convert(virtualData.getData(progressInfo), dataClass);
+            return new JIPipeDataAnnotation(column, virtualData);
     }
 
     /**
@@ -589,7 +603,7 @@ public class JIPipeDataSlot {
             String dataAnnotationColumn = dataAnnotationColumns.get(i);
             JIPipeDataSlot dummy = new JIPipeDataSlot(new JIPipeDataSlotInfo(JIPipeData.class, getSlotType(), getName() + "_" + dataAnnotationColumn, null), getNode());
             for (int row = 0; row < getRowCount(); row++) {
-                JIPipeData dataAnnotation = getDataAnnotation(row, dataAnnotationColumn, JIPipeData.class, dataAnnotationProgress);
+                JIPipeData dataAnnotation = getDataAnnotation(row, dataAnnotationColumn).getData(JIPipeData.class, dataAnnotationProgress);
                 if (dataAnnotation != null) {
                     dummy.addData(dataAnnotation, dataAnnotationProgress);
                 } else {
