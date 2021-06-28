@@ -902,6 +902,16 @@ public abstract class JIPipeGraphNode implements JIPipeValidatable, JIPipeParame
     }
 
     /**
+     * Triggered when the parameter UI structure of this algorithm was changed
+     *
+     * @param event generated event
+     */
+    @Subscribe
+    public void onParameterUIChanged(ParameterUIChangedEvent event) {
+        getEventBus().post(event);
+    }
+
+    /**
      * Clears all data slots
      */
     public void clearSlotData() {

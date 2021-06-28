@@ -21,6 +21,7 @@ import javax.swing.event.TableModelListener;
 import javax.swing.table.TableModel;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 
@@ -32,9 +33,11 @@ public class JIPipeMergedExportedDataTable implements TableModel {
 
     private ArrayList<JIPipeProjectCompartment> compartmentList = new ArrayList<>();
     private ArrayList<JIPipeGraphNode> algorithmList = new ArrayList<>();
-    private ArrayList<JIPipeExportedDataTable.Row> rowList = new ArrayList<>();
+    private ArrayList<JIPipeExportedDataTableRow> rowList = new ArrayList<>();
     private List<String> annotationColumns = new ArrayList<>();
+    private List<String> dataAnnotationColumns = new ArrayList<>();
     private ArrayList<JIPipeDataSlot> slotList = new ArrayList<>();
+    private List<JIPipeExportedDataTable> addedTables = new ArrayList<>();
 
     /**
      * Adds an {@link JIPipeExportedDataTable}
@@ -44,15 +47,20 @@ public class JIPipeMergedExportedDataTable implements TableModel {
      * @param table    The table
      */
     public void add(JIPipeProject project, JIPipeDataSlot dataSlot, JIPipeExportedDataTable table) {
+        addedTables.add(table);
         for (String annotationColumn : table.getAnnotationColumns()) {
             if (!annotationColumns.contains(annotationColumn))
                 annotationColumns.add(annotationColumn);
+        }
+        for (String annotationColumn : table.getDataAnnotationColumns()) {
+            if (!dataAnnotationColumns.contains(annotationColumn))
+                dataAnnotationColumns.add(annotationColumn);
         }
         UUID compartmentUUID = dataSlot.getNode().getCompartmentUUIDInGraph();
         JIPipeProjectCompartment compartment = project.getCompartments().get(compartmentUUID);
         JIPipeGraphNode algorithm = dataSlot.getNode();
 
-        for (JIPipeExportedDataTable.Row row : table.getRowList()) {
+        for (JIPipeExportedDataTableRow row : table.getRowList()) {
             slotList.add(dataSlot);
             compartmentList.add(compartment);
             algorithmList.add(algorithm);
@@ -67,7 +75,33 @@ public class JIPipeMergedExportedDataTable implements TableModel {
 
     @Override
     public int getColumnCount() {
-        return annotationColumns.size() + 5;
+        return annotationColumns.size() + dataAnnotationColumns.size() + 5;
+    }
+
+    /**
+     * Converts the column index to an annotation column index, or returns -1 if the column is not one
+     * @param columnIndex absolute column index
+     * @return relative annotation column index, or -1
+     */
+    public int toAnnotationColumnIndex(int columnIndex) {
+        if (columnIndex >= getDataAnnotationColumns().size() + 5)
+            return columnIndex - getDataAnnotationColumns().size() - 5;
+        else
+            return -1;
+    }
+
+    /**
+     * Converts the column index to a data annotation column index, or returns -1 if the column is not one
+     * @param columnIndex absolute column index
+     * @return relative data annotation column index, or -1
+     */
+    public int toDataAnnotationColumnIndex(int columnIndex) {
+        if(columnIndex < getDataAnnotationColumns().size() + 5 && (columnIndex - 5) < getDataAnnotationColumns().size()) {
+            return columnIndex - 5;
+        }
+        else {
+            return -1;
+        }
     }
 
     @Override
@@ -82,8 +116,10 @@ public class JIPipeMergedExportedDataTable implements TableModel {
             return "Data type";
         else if (columnIndex == 4)
             return "Preview";
+        else if(toDataAnnotationColumnIndex(columnIndex) != -1)
+            return "$" + dataAnnotationColumns.get(toDataAnnotationColumnIndex(columnIndex));
         else
-            return annotationColumns.get(columnIndex - 5);
+            return annotationColumns.get(toAnnotationColumnIndex(columnIndex));
     }
 
     @Override
@@ -97,7 +133,9 @@ public class JIPipeMergedExportedDataTable implements TableModel {
         else if (columnIndex == 3)
             return JIPipeDataInfo.class;
         else if (columnIndex == 4)
-            return JIPipeExportedDataTable.Row.class;
+            return JIPipeExportedDataTableRow.class;
+        else if (toDataAnnotationColumnIndex(columnIndex) != -1)
+            return JIPipeExportedDataAnnotation.class;
         else
             return JIPipeAnnotation.class;
     }
@@ -119,8 +157,12 @@ public class JIPipeMergedExportedDataTable implements TableModel {
             return JIPipeDataInfo.getInstance(slotList.get(rowIndex).getAcceptedDataType());
         else if (columnIndex == 4)
             return rowList.get(rowIndex);
+        else if(toDataAnnotationColumnIndex(columnIndex) != -1) {
+            String annotationColumn = dataAnnotationColumns.get(toDataAnnotationColumnIndex(columnIndex));
+            return rowList.get(rowIndex).getDataAnnotations().stream().filter(t -> t.nameEquals(annotationColumn)).findFirst().orElse(null);
+        }
         else {
-            String annotationColumn = annotationColumns.get(columnIndex - 5);
+            String annotationColumn = annotationColumns.get(toAnnotationColumnIndex(columnIndex));
             return rowList.get(rowIndex).getAnnotations().stream().filter(t -> t.nameEquals(annotationColumn)).findFirst().orElse(null);
         }
     }
@@ -138,6 +180,10 @@ public class JIPipeMergedExportedDataTable implements TableModel {
     @Override
     public void removeTableModelListener(TableModelListener l) {
 
+    }
+
+    public List<String> getDataAnnotationColumns() {
+        return dataAnnotationColumns;
     }
 
     /**
@@ -160,7 +206,11 @@ public class JIPipeMergedExportedDataTable implements TableModel {
     /**
      * @return List of rows
      */
-    public List<JIPipeExportedDataTable.Row> getRowList() {
+    public List<JIPipeExportedDataTableRow> getRowList() {
         return rowList;
+    }
+
+    public List<JIPipeExportedDataTable> getAddedTables() {
+        return Collections.unmodifiableList(addedTables);
     }
 }

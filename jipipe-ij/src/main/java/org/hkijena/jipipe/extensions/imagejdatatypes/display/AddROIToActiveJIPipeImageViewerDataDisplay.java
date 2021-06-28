@@ -13,13 +13,7 @@
 
 package org.hkijena.jipipe.extensions.imagejdatatypes.display;
 
-import org.hkijena.jipipe.api.data.JIPipeData;
-import org.hkijena.jipipe.api.data.JIPipeDataDisplayOperation;
-import org.hkijena.jipipe.api.data.JIPipeDataImportOperation;
-import org.hkijena.jipipe.api.data.JIPipeDataSlot;
-import org.hkijena.jipipe.api.data.JIPipeDataSource;
-import org.hkijena.jipipe.api.data.JIPipeExportedDataTable;
-import org.hkijena.jipipe.api.data.JIPipeResultSlotDataSource;
+import org.hkijena.jipipe.api.data.*;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ROIListData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.viewer.ImageViewerWindow;
 import org.hkijena.jipipe.extensions.imagejdatatypes.viewer.plugins.ImageViewerPanelPlugin;
@@ -51,7 +45,7 @@ public class AddROIToActiveJIPipeImageViewerDataDisplay implements JIPipeDataDis
     }
 
     @Override
-    public JIPipeData show(JIPipeDataSlot slot, JIPipeExportedDataTable.Row row, Path rowStorageFolder, String compartmentName, String algorithmName, String displayName, JIPipeWorkbench workbench) {
+    public JIPipeData show(JIPipeDataSlot slot, JIPipeExportedDataTableRow row, Path rowStorageFolder, String compartmentName, String algorithmName, String displayName, JIPipeWorkbench workbench) {
         ROIListData rois = ROIListData.importFrom(rowStorageFolder);
         display(rois, displayName, workbench, new JIPipeResultSlotDataSource(slot, row, rowStorageFolder));
         return rois;

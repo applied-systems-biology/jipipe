@@ -444,10 +444,7 @@ public class StandardParametersExtension extends JIPipePrepackagedDefaultJavaExt
                 GraphAutoLayout.class,
                 "Graph auto layout",
                 "Determines which method is used to apply graph auto-layout");
-        registerEnumParameterType("annotation-merge-strategy",
-                JIPipeAnnotationMergeStrategy.class,
-                "Annotation merge strategy",
-                "Determines how annotations are merged.");
+
         registerEnumParameterType("logical-operation",
                 LogicalOperation.class,
                 "Logical operation",

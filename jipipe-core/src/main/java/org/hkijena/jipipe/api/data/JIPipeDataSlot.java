@@ -20,6 +20,7 @@ import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
 import org.hkijena.jipipe.api.nodes.JIPipeAlgorithm;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.extensions.settings.VirtualDataSettings;
+import org.hkijena.jipipe.extensions.tables.datatypes.AnnotationTableData;
 import org.hkijena.jipipe.utils.StringUtils;
 
 import java.io.IOException;
@@ -32,7 +33,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Set;
 
 /**
  * A data slot holds an {@link JIPipeData} instance.
@@ -48,10 +48,14 @@ public class JIPipeDataSlot {
     private boolean uniqueData = true;
     private EventBus eventBus = new EventBus();
 
+    // The main data table
     private ArrayList<JIPipeVirtualData> data = new ArrayList<>();
+
+    // String annotations
     private List<String> annotationColumns = new ArrayList<>();
     private Map<String, ArrayList<JIPipeAnnotation>> annotations = new HashMap<>();
 
+    // Data annotations
     private List<String> dataAnnotationColumns = new ArrayList<>();
     private Map<String, ArrayList<JIPipeVirtualData>> dataAnnotations = new HashMap<>();
 
@@ -69,10 +73,16 @@ public class JIPipeDataSlot {
         this.acceptedDataType = info.getDataClass();
     }
 
+    /**
+     * @return Immutable list of all string annotation columns
+     */
     public List<String> getAnnotationColumns() {
         return Collections.unmodifiableList(annotationColumns);
     }
 
+    /**
+     * @return Immutable list of all data annotation columns
+     */
     public List<String> getDataAnnotationColumns() {
         return Collections.unmodifiableList(dataAnnotationColumns);
     }
@@ -208,19 +218,33 @@ public class JIPipeDataSlot {
     }
 
     /**
+     * Gets the list of all data annotations in the specified row
+     * @param row the row
+     * @return list of data annotations
+     */
+    public List<JIPipeDataAnnotation> getDataAnnotations(int row) {
+        List<JIPipeDataAnnotation> dataAnnotations = new ArrayList<>();
+        for (String dataAnnotationColumn : getDataAnnotationColumns()) {
+            JIPipeVirtualData virtualDataAnnotation = getVirtualDataAnnotation(row, dataAnnotationColumn);
+            if(virtualDataAnnotation != null) {
+                dataAnnotations.add(new JIPipeDataAnnotation(dataAnnotationColumn, virtualDataAnnotation));
+            }
+        }
+        return dataAnnotations;
+    }
+
+    /**
      * Gets a data annotation
      * @param row the row
      * @param column the data annotation column
-     * @param progressInfo the progress info
-     * @param <T> the data type
      * @return the data or null if there is no annotation
      */
-    public <T extends JIPipeData> T getDataAnnotation(int row, String column, Class<T> dataClass, JIPipeProgressInfo progressInfo) {
+    public JIPipeDataAnnotation getDataAnnotation(int row, String column) {
         JIPipeVirtualData virtualData = getVirtualDataAnnotation(row, column);
         if(virtualData == null)
             return null;
         else
-            return (T) JIPipe.getDataTypes().convert(virtualData.getData(progressInfo), dataClass);
+            return new JIPipeDataAnnotation(column, virtualData);
     }
 
     /**
@@ -572,7 +596,25 @@ public class JIPipeDataSlot {
             data.get(row).getData(saveProgress.resolve("Load virtual data")).saveTo(path, getName(), false, rowProgress);
         }
 
-        // TODO: Save data annotations
+        // Save data annotations via dummy slots
+        List<String> dataAnnotationColumns = getDataAnnotationColumns();
+        for (int i = 0; i < dataAnnotationColumns.size(); i++) {
+            JIPipeProgressInfo dataAnnotationProgress = saveProgress.resolveAndLog("Data annotation", i, dataAnnotationColumns.size());
+            String dataAnnotationColumn = dataAnnotationColumns.get(i);
+            JIPipeDataSlot dummy = new JIPipeDataSlot(new JIPipeDataSlotInfo(JIPipeData.class, getSlotType(), getName() + "_" + dataAnnotationColumn, null), getNode());
+            for (int row = 0; row < getRowCount(); row++) {
+                JIPipeData dataAnnotation = getDataAnnotation(row, dataAnnotationColumn).getData(JIPipeData.class, dataAnnotationProgress);
+                if (dataAnnotation != null) {
+                    dummy.addData(dataAnnotation, dataAnnotationProgress);
+                } else {
+                    dummy.addData(new JIPipeEmptyData(), dataAnnotationProgress);
+                }
+            }
+
+            Path dataAnnotationStoragePath = storagePath.resolve("_" + i);
+            dummy.setStoragePath(dataAnnotationStoragePath);
+            dummy.save(dataAnnotationStoragePath, basePath, dataAnnotationProgress);
+        }
 
         JIPipeExportedDataTable dataTable = new JIPipeExportedDataTable(this, basePath, indices);
         try {
@@ -599,7 +641,7 @@ public class JIPipeDataSlot {
             addData(sourceSlot.getVirtualData(row), sourceSlot.getAnnotations(row), JIPipeAnnotationMergeStrategy.Merge);
 
             // Copy data annotations
-            for (Map.Entry<String, JIPipeVirtualData> entry : getVirtualDataAnnotationMap(row).entrySet()) {
+            for (Map.Entry<String, JIPipeVirtualData> entry : sourceSlot.getVirtualDataAnnotationMap(row).entrySet()) {
                 setVirtualDataAnnotation(row, entry.getKey(), entry.getValue());
             }
         }
@@ -822,13 +864,18 @@ public class JIPipeDataSlot {
         JIPipeDataSlot slot = new JIPipeDataSlot(new JIPipeDataSlotInfo(acceptedDataType, JIPipeSlotType.Input, ""), null);
         for (int i = 0; i < dataTable.getRowCount(); i++) {
             JIPipeProgressInfo rowProgress = progressInfo.resolveAndLog("Row", i, dataTable.getRowCount());
-            JIPipeExportedDataTable.Row row = dataTable.getRowList().get(i);
+            JIPipeExportedDataTableRow row = dataTable.getRowList().get(i);
             Path rowStorage = storagePath.resolve("" + row.getIndex());
             Class<? extends JIPipeData> rowDataType = JIPipe.getDataTypes().getById(row.getTrueDataType());
             JIPipeData data = JIPipe.importData(rowStorage, rowDataType);
             slot.addData(data, row.getAnnotations(), JIPipeAnnotationMergeStrategy.OverwriteExisting, rowProgress);
 
-            // TODO: Load data annotations
+            for (JIPipeExportedDataAnnotation dataAnnotation : row.getDataAnnotations()) {
+                Path dataAnnotationRowStorage = storagePath.resolve(dataAnnotation.getRowStorageFolder());
+                Class<? extends JIPipeData> dataAnnotationDataType = JIPipe.getDataTypes().getById(dataAnnotation.getTrueDataType());
+                JIPipeData dataAnnotationData = JIPipe.importData(dataAnnotationRowStorage, dataAnnotationDataType);
+                slot.setDataAnnotation(i, dataAnnotation.getName(), dataAnnotationData);
+            }
         }
         return slot;
     }
@@ -846,5 +893,29 @@ public class JIPipeDataSlot {
                 null), node);
         slot.addData(data, new JIPipeProgressInfo());
         return slot;
+    }
+
+    /**
+     * Converts the slot into an annotation table
+     * @param withDataAsString if the string representation should be included
+     * @return the table
+     */
+    public AnnotationTableData toAnnotationTable(boolean withDataAsString) {
+        AnnotationTableData output = new AnnotationTableData();
+        int dataColumn = withDataAsString ? output.addColumn(StringUtils.makeUniqueString("String representation", "_", getAnnotationColumns()), true) : -1;
+        int row = 0;
+        for (int sourceRow = 0; sourceRow < getRowCount(); ++sourceRow) {
+            output.addRow();
+            if (dataColumn >= 0)
+                output.setValueAt(getVirtualData(row).getStringRepresentation(), row, dataColumn);
+            for (JIPipeAnnotation annotation : getAnnotations(sourceRow)) {
+                if (annotation != null) {
+                    int col = output.addAnnotationColumn(annotation.getName());
+                    output.setValueAt(annotation.getValue(), row, col);
+                }
+            }
+            ++row;
+        }
+        return output;
     }
 }

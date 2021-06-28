@@ -82,7 +82,7 @@ public class SimpleIteratingFormProcessorAlgorithm extends JIPipeAlgorithm imple
                 if (withLimit && !allowedIndices.contains(row))
                     continue;
                 JIPipeMergingDataBatch dataBatch = new JIPipeMergingDataBatch(this);
-                dataBatch.addData(dataSlot, row);
+                dataBatch.addInputData(dataSlot, row);
                 dataBatch.addGlobalAnnotations(dataSlot.getAnnotations(row), JIPipeAnnotationMergeStrategy.Merge);
                 dataBatchList.add(dataBatch);
             }
@@ -234,7 +234,7 @@ public class SimpleIteratingFormProcessorAlgorithm extends JIPipeAlgorithm imple
             if (withLimit && !allowedIndices.contains(i))
                 continue;
             JIPipeMergingDataBatch dataBatch = new JIPipeMergingDataBatch(this);
-            dataBatch.addData(slot, i);
+            dataBatch.addInputData(slot, i);
             dataBatch.addGlobalAnnotations(slot.getAnnotations(i), JIPipeAnnotationMergeStrategy.Merge);
             batches.add(dataBatch);
         }

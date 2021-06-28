@@ -14,7 +14,7 @@
 package org.hkijena.jipipe.ui.resultanalysis;
 
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
-import org.hkijena.jipipe.api.data.JIPipeExportedDataTable;
+import org.hkijena.jipipe.api.data.JIPipeExportedDataTableRow;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbenchPanel;
 
@@ -27,14 +27,14 @@ import java.nio.file.Path;
  */
 public abstract class JIPipeResultDataSlotRowUI extends JIPipeProjectWorkbenchPanel {
     private JIPipeDataSlot slot;
-    private JIPipeExportedDataTable.Row row;
+    private JIPipeExportedDataTableRow row;
 
     /**
      * @param workbenchUI The workbench
      * @param slot        The data slow
      * @param row         The slow row
      */
-    public JIPipeResultDataSlotRowUI(JIPipeProjectWorkbench workbenchUI, JIPipeDataSlot slot, JIPipeExportedDataTable.Row row) {
+    public JIPipeResultDataSlotRowUI(JIPipeProjectWorkbench workbenchUI, JIPipeDataSlot slot, JIPipeExportedDataTableRow row) {
         super(workbenchUI);
         this.slot = slot;
         this.row = row;
@@ -59,7 +59,7 @@ public abstract class JIPipeResultDataSlotRowUI extends JIPipeProjectWorkbenchPa
      *
      * @return the data row that is displayed
      */
-    public JIPipeExportedDataTable.Row getRow() {
+    public JIPipeExportedDataTableRow getRow() {
         return row;
     }
 

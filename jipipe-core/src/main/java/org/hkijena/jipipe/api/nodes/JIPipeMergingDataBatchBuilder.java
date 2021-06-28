@@ -210,7 +210,7 @@ public class JIPipeMergingDataBatchBuilder {
                 JIPipeMergingDataBatch dataBatch = new JIPipeMergingDataBatch(node);
                 for (JIPipeDataSlot slot : slotList) {
                     Multimap<String, Integer> slotMap = matchedRows.get(slot);
-                    dataBatch.addData(slot, slotMap.get(key));
+                    dataBatch.addInputData(slot, slotMap.get(key));
                     dataBatch.addGlobalAnnotations(slot.getAnnotations(slotMap.get(key)), annotationMergeStrategy);
                 }
                 dataBatches.add(dataBatch);
@@ -228,18 +228,23 @@ public class JIPipeMergingDataBatchBuilder {
                         // No data batches -> Create initial batch set
                         for (Integer row : rows) {
                             JIPipeMergingDataBatch dataBatch = new JIPipeMergingDataBatch(node);
-                            dataBatch.addData(slot, row);
+                            dataBatch.addInputData(slot, row);
                             tempKeyBatches.add(dataBatch);
                         }
                     }
                     else {
                         // Add the row into copies of all key batches
-                        for (Integer row : rows) {
-                            for (JIPipeMergingDataBatch dataBatch : keyBatches) {
-                                JIPipeMergingDataBatch copy = new JIPipeMergingDataBatch(dataBatch);
-                                copy.addData(slot, row);
-                                tempKeyBatches.add(copy);
+                        if(!rows.isEmpty()) {
+                            for (Integer row : rows) {
+                                for (JIPipeMergingDataBatch dataBatch : keyBatches) {
+                                    JIPipeMergingDataBatch copy = new JIPipeMergingDataBatch(dataBatch);
+                                    copy.addInputData(slot, row);
+                                    tempKeyBatches.add(copy);
+                                }
                             }
+                        }
+                        else {
+                            tempKeyBatches.addAll(keyBatches);
                         }
                     }
                     keyBatches.clear();
@@ -256,6 +261,12 @@ public class JIPipeMergingDataBatchBuilder {
                     annotations.addAll(slot.getAnnotations(dataBatch.getInputRows(slot)));
                 }
                 dataBatch.addGlobalAnnotations(annotations, getAnnotationMergeStrategy());
+            }
+        }
+        // Ensure that all slots are known to the data batch builder
+        for (JIPipeMergingDataBatch dataBatch : dataBatches) {
+            for (JIPipeDataSlot slot : slotList) {
+                dataBatch.addEmptySlot(slot);
             }
         }
         return dataBatches;
@@ -276,7 +287,10 @@ public class JIPipeMergingDataBatchBuilder {
                         return null;
                 }
                 JIPipeMergingDataBatch batch = new JIPipeMergingDataBatch(this.node);
-                batch.addData(slot, row);
+                for (JIPipeDataSlot slot2 : slotList) {
+                    batch.addEmptySlot(slot2);
+                }
+                batch.addInputData(slot, row);
                 batch.addGlobalAnnotations(slot.getAnnotations(row), getAnnotationMergeStrategy());
                 split.add(batch);
             }
@@ -292,6 +306,7 @@ public class JIPipeMergingDataBatchBuilder {
     private List<JIPipeMergingDataBatch> mergeAllSolver(JIPipeProgressInfo progressInfo) {
         JIPipeMergingDataBatch batch = new JIPipeMergingDataBatch(this.node);
         for (JIPipeDataSlot slot : slotList) {
+            batch.addEmptySlot(slot);
             List<JIPipeAnnotation> annotations = new ArrayList<>();
             for (int row = 0; row < slot.getRowCount(); row++) {
                 if(row % 1000 == 0) {
@@ -299,7 +314,7 @@ public class JIPipeMergingDataBatchBuilder {
                     if(progressInfo.isCancelled().get())
                         return null;
                 }
-                batch.addData(slot, row);
+                batch.addInputData(slot, row);
                 annotations.addAll(slot.getAnnotations(row));
             }
             progressInfo.log("Merging " +annotations.size() + " annotations");
@@ -462,7 +477,7 @@ public class JIPipeMergingDataBatchBuilder {
                     continue;
                 if (rowNode.rows.contains(-1))
                     continue;
-                dataBatch.addData(rowNode.slot, rowNode.rows);
+                dataBatch.addInputData(rowNode.slot, rowNode.rows);
                 for (Integer row : rowNode.rows) {
                     dataBatch.addGlobalAnnotations(rowNode.slot.getAnnotations(row), annotationMergeStrategy);
                 }
@@ -478,6 +493,7 @@ public class JIPipeMergingDataBatchBuilder {
                 dataBatch.getInputSlotRows().putIfAbsent(slot, Collections.emptySet());
             }
         }
+
         return result;
     }
 
@@ -560,7 +576,7 @@ public class JIPipeMergingDataBatchBuilder {
                 if (entry.getValue().size() != 1)
                     return null;
                 int targetRow = entry.getValue().iterator().next();
-                singleBatch.setData(entry.getKey(), targetRow);
+                singleBatch.setInputData(entry.getKey(), targetRow);
                 singleBatch.setAnnotations(batch.getAnnotations());
             }
             result.add(singleBatch);

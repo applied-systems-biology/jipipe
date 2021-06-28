@@ -379,7 +379,7 @@ public class JIPipeDataByMetadataExporter implements JIPipeParameterCollection {
     }
 
     public String generateMetadataString(JIPipeExportedDataTable exportedDataTable, int row, Set<String> existingMetadata) {
-        JIPipeExportedDataTable.Row dataRow = exportedDataTable.getRowList().get(row);
+        JIPipeExportedDataTableRow dataRow = exportedDataTable.getRowList().get(row);
         StringBuilder metadataStringBuilder = new StringBuilder();
         if (mode == Mode.Automatic) {
             if (appendDataTypeAsMetadata) {

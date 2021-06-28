@@ -16,10 +16,7 @@ package org.hkijena.jipipe.ui.resultanalysis;
 import com.google.common.eventbus.Subscribe;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeRun;
-import org.hkijena.jipipe.api.data.JIPipeAnnotation;
-import org.hkijena.jipipe.api.data.JIPipeDataInfo;
-import org.hkijena.jipipe.api.data.JIPipeDataSlot;
-import org.hkijena.jipipe.api.data.JIPipeExportedDataTable;
+import org.hkijena.jipipe.api.data.*;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.extensions.settings.FileChooserSettings;
 import org.hkijena.jipipe.extensions.settings.GeneralDataSettings;
@@ -94,7 +91,7 @@ public class JIPipeResultDataSlotTableUI extends JIPipeProjectWorkbenchPanel {
         table.setDefaultRenderer(Path.class, new JIPipeRowIndexTableCellRenderer());
         table.setDefaultRenderer(JIPipeDataInfo.class, new JIPipeDataInfoCellRenderer());
         previewRenderer = new JIPipeRowDataTableCellRenderer(getProjectWorkbench(), slot, table, scrollPane);
-        table.setDefaultRenderer(JIPipeExportedDataTable.Row.class, previewRenderer);
+        table.setDefaultRenderer(JIPipeExportedDataTableRow.class, previewRenderer);
         table.setDefaultRenderer(JIPipeAnnotation.class, new JIPipeAnnotationTableCellRenderer());
         table.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
 
@@ -162,14 +159,14 @@ public class JIPipeResultDataSlotTableUI extends JIPipeProjectWorkbenchPanel {
     private void exportAsCSV() {
         Path path = FileChooserSettings.saveFile(this, FileChooserSettings.KEY_PROJECT, "Export as *.csv", UIUtils.EXTENSION_FILTER_CSV);
         if (path != null) {
-            ResultsTableData tableData = ResultsTableData.fromTableModel(dataTable);
+            ResultsTableData tableData = dataTable.toAnnotationTable();
             tableData.saveAsCSV(path);
         }
     }
 
     private void handleSlotRowDefaultAction(int selectedRow) {
         int row = table.getRowSorter().convertRowIndexToModel(selectedRow);
-        JIPipeExportedDataTable.Row rowInstance = dataTable.getRowList().get(row);
+        JIPipeExportedDataTableRow rowInstance = dataTable.getRowList().get(row);
         JIPipeResultDataSlotRowUI ui = JIPipe.getDataTypes().getUIForResultSlot(getProjectWorkbench(), slot, rowInstance);
         ui.handleDefaultAction();
     }
@@ -178,7 +175,7 @@ public class JIPipeResultDataSlotTableUI extends JIPipeProjectWorkbenchPanel {
         rowUIList.clear();
         for (int viewRow : selectedRows) {
             int row = table.getRowSorter().convertRowIndexToModel(viewRow);
-            JIPipeExportedDataTable.Row rowInstance = dataTable.getRowList().get(row);
+            JIPipeExportedDataTableRow rowInstance = dataTable.getRowList().get(row);
             JLabel nameLabel = new JLabel("" + rowInstance.getIndex(), JIPipe.getDataTypes().getIconFor(slot.getAcceptedDataType()), JLabel.LEFT);
             nameLabel.setToolTipText(TooltipUtils.getSlotInstanceTooltip(slot));
             JIPipeResultDataSlotRowUI rowUI = JIPipe.getDataTypes().getUIForResultSlot(getProjectWorkbench(), slot, rowInstance);

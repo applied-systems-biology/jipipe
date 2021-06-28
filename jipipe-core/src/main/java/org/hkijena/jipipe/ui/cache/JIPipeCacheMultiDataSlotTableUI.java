@@ -27,6 +27,7 @@ import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.extensions.settings.FileChooserSettings;
 import org.hkijena.jipipe.extensions.settings.GeneralDataSettings;
+import org.hkijena.jipipe.extensions.tables.datatypes.AnnotationTableData;
 import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
@@ -211,7 +212,10 @@ public class JIPipeCacheMultiDataSlotTableUI extends JIPipeWorkbenchPanel {
     private void exportAsCSV() {
         Path path = FileChooserSettings.saveFile(this, FileChooserSettings.KEY_PROJECT, "Export as *.csv", UIUtils.EXTENSION_FILTER_CSV);
         if (path != null) {
-            ResultsTableData tableData = ResultsTableData.fromTableModel(multiSlotTable);
+            AnnotationTableData tableData = new AnnotationTableData();
+            for (JIPipeDataSlot slot : multiSlotTable.getSlotList()) {
+                tableData.addRows(slot.toAnnotationTable(true));
+            }
             tableData.saveAsCSV(path);
         }
     }
@@ -302,8 +306,15 @@ public class JIPipeCacheMultiDataSlotTableUI extends JIPipeWorkbenchPanel {
             int spacer = model.isWithCompartmentAndAlgorithm() ? 6 : 4;
             if (modelColumn < spacer) {
                 return defaultRenderer.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
+            }
+            else if(dataTable.toDataAnnotationColumnIndex(modelColumn) != -1) {
+                String info = dataTable.getDataAnnotationColumns().get(dataTable.toDataAnnotationColumnIndex(modelColumn));
+                String html = String.format("<html><table><tr><td><img src=\"%s\"/></td><td>%s</tr>",
+                        UIUtils.getIconFromResources("data-types/data-annotation.png"),
+                        info);
+                return defaultRenderer.getTableCellRendererComponent(table, html, isSelected, hasFocus, row, column);
             } else {
-                String info = dataTable.getAnnotationColumns().get(modelColumn - spacer);
+                String info = dataTable.getAnnotationColumns().get(dataTable.toAnnotationColumnIndex(modelColumn));
                 String html = String.format("<html><table><tr><td><img src=\"%s\"/></td><td>%s</tr>",
                         UIUtils.getIconFromResources("data-types/annotation.png"),
                         info);

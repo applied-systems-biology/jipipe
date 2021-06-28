@@ -73,7 +73,7 @@ public class JIPipeMergingDataBatch implements Comparable<JIPipeMergingDataBatch
      * @param slot the data slot
      * @param row  the row
      */
-    public void addData(JIPipeDataSlot slot, int row) {
+    public void addInputData(JIPipeDataSlot slot, int row) {
         Set<Integer> rows = inputSlotRows.getOrDefault(slot, null);
         if (rows == null) {
             rows = new HashSet<>();
@@ -88,7 +88,7 @@ public class JIPipeMergingDataBatch implements Comparable<JIPipeMergingDataBatch
      * @param slot      the data slot
      * @param rowsToAdd the rows to add
      */
-    public void addData(JIPipeDataSlot slot, Collection<Integer> rowsToAdd) {
+    public void addInputData(JIPipeDataSlot slot, Collection<Integer> rowsToAdd) {
         Set<Integer> rows = inputSlotRows.getOrDefault(slot, null);
         if (rows == null) {
             rows = new HashSet<>();
@@ -103,7 +103,7 @@ public class JIPipeMergingDataBatch implements Comparable<JIPipeMergingDataBatch
      * @param slot the slot
      * @param row  the row
      */
-    public void setData(JIPipeDataSlot slot, int row) {
+    public void setInputData(JIPipeDataSlot slot, int row) {
         Set<Integer> rows = inputSlotRows.getOrDefault(slot, null);
         if (rows == null) {
             rows = new HashSet<>();
@@ -510,5 +510,13 @@ public class JIPipeMergingDataBatch implements Comparable<JIPipeMergingDataBatch
                 return c;
         }
         return 0;
+    }
+
+    /**
+     * Ensures that the specified slot is registered to the data batch
+     * @param slot the slot
+     */
+    public void addEmptySlot(JIPipeDataSlot slot) {
+        inputSlotRows.putIfAbsent(slot, new HashSet<>());
     }
 }

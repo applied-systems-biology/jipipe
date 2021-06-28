@@ -39,8 +39,15 @@ public class JIPipeMergedDataSlotTableColumnHeaderRenderer implements TableCellR
         TableCellRenderer defaultRenderer = table.getTableHeader().getDefaultRenderer();
         if (column < 5) {
             return defaultRenderer.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
-        } else {
-            String info = dataTable.getAnnotationColumns().get(column - 5);
+        } else if(dataTable.toDataAnnotationColumnIndex(column) != -1) {
+            String info = dataTable.getDataAnnotationColumns().get(dataTable.toDataAnnotationColumnIndex(column));
+            String html = String.format("<html><table><tr><td><img src=\"%s\"/></td><td>%s</tr>",
+                    UIUtils.getIconFromResources("data-types/data-annotation.png"),
+                    info);
+            return defaultRenderer.getTableCellRendererComponent(table, html, isSelected, hasFocus, row, column);
+        }
+        else {
+            String info = dataTable.getAnnotationColumns().get(dataTable.toAnnotationColumnIndex(column));
             String html = String.format("<html><table><tr><td><img src=\"%s\"/></td><td>%s</tr>",
                     UIUtils.getIconFromResources("data-types/annotation.png"),
                     info);

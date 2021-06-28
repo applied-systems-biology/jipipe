@@ -299,7 +299,7 @@ public class GraphWrapperAlgorithm extends JIPipeAlgorithm implements JIPipeData
             JIPipeMergingDataBatch dataBatch = new JIPipeMergingDataBatch(this);
             for (JIPipeDataSlot inputSlot : getEffectiveInputSlots()) {
                 for (int row = 0; row < inputSlot.getRowCount(); row++) {
-                    dataBatch.addData(inputSlot, row);
+                    dataBatch.addInputData(inputSlot, row);
                 }
             }
             return Collections.singletonList(dataBatch);
@@ -326,6 +326,9 @@ public class GraphWrapperAlgorithm extends JIPipeAlgorithm implements JIPipeData
                     }
                 }
                 dataBatches = limitedBatches;
+            }
+            if(batchGenerationSettings.isSkipIncompleteDataSets()) {
+                dataBatches.removeIf(JIPipeMergingDataBatch::isIncomplete);
             }
             return dataBatches;
         }

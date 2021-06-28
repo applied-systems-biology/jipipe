@@ -17,16 +17,12 @@ import com.google.common.eventbus.Subscribe;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeRun;
 import org.hkijena.jipipe.api.compartments.algorithms.JIPipeProjectCompartment;
-import org.hkijena.jipipe.api.data.JIPipeAnnotation;
-import org.hkijena.jipipe.api.data.JIPipeDataInfo;
-import org.hkijena.jipipe.api.data.JIPipeDataSlot;
-import org.hkijena.jipipe.api.data.JIPipeExportedDataTable;
-import org.hkijena.jipipe.api.data.JIPipeMergedExportedDataTable;
+import org.hkijena.jipipe.api.data.*;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.extensions.settings.FileChooserSettings;
 import org.hkijena.jipipe.extensions.settings.GeneralDataSettings;
-import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
+import org.hkijena.jipipe.extensions.tables.datatypes.AnnotationTableData;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbenchPanel;
 import org.hkijena.jipipe.ui.cache.JIPipeDataInfoCellRenderer;
@@ -171,14 +167,17 @@ public class JIPipeMergedResultDataSlotTableUI extends JIPipeProjectWorkbenchPan
     private void exportAsCSV() {
         Path path = FileChooserSettings.saveFile(this, FileChooserSettings.KEY_PROJECT, "Export as *.csv", UIUtils.EXTENSION_FILTER_CSV);
         if (path != null) {
-            ResultsTableData tableData = ResultsTableData.fromTableModel(mergedDataTable);
+            AnnotationTableData tableData = new AnnotationTableData();
+            for (JIPipeExportedDataTable exportedDataTable : mergedDataTable.getAddedTables()) {
+                tableData.addRows(exportedDataTable.toAnnotationTable());
+            }
             tableData.saveAsCSV(path);
         }
     }
 
     private void handleSlotRowDefaultAction(int selectedRow) {
         int row = table.getRowSorter().convertRowIndexToModel(selectedRow);
-        JIPipeExportedDataTable.Row rowInstance = mergedDataTable.getRowList().get(row);
+        JIPipeExportedDataTableRow rowInstance = mergedDataTable.getRowList().get(row);
         JIPipeDataSlot slot = mergedDataTable.getSlot(row);
         JIPipeResultDataSlotRowUI ui = JIPipe.getDataTypes().getUIForResultSlot(getProjectWorkbench(), slot, rowInstance);
         ui.handleDefaultAction();
@@ -188,7 +187,7 @@ public class JIPipeMergedResultDataSlotTableUI extends JIPipeProjectWorkbenchPan
         rowUIList.clear();
         for (int viewRow : selectedRows) {
             int row = table.getRowSorter().convertRowIndexToModel(viewRow);
-            JIPipeExportedDataTable.Row rowInstance = mergedDataTable.getRowList().get(row);
+            JIPipeExportedDataTableRow rowInstance = mergedDataTable.getRowList().get(row);
             JIPipeDataSlot slot = mergedDataTable.getSlot(row);
             JLabel nameLabel = new JLabel("" + rowInstance.getIndex(), JIPipe.getDataTypes().getIconFor(slot.getAcceptedDataType()), JLabel.LEFT);
             nameLabel.setToolTipText(TooltipUtils.getSlotInstanceTooltip(slot));
@@ -208,7 +207,7 @@ public class JIPipeMergedResultDataSlotTableUI extends JIPipeProjectWorkbenchPan
         else
             table.setRowHeight(25);
         previewRenderer = new JIPipeRowDataMergedTableCellRenderer(getProjectWorkbench(), mergedDataTable, scrollPane, table);
-        table.setDefaultRenderer(JIPipeExportedDataTable.Row.class, previewRenderer);
+        table.setDefaultRenderer(JIPipeExportedDataTableRow.class, previewRenderer);
         table.setModel(mergedDataTable);
         refreshTable();
     }

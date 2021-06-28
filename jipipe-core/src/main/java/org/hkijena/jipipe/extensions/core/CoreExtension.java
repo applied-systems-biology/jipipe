@@ -1,7 +1,7 @@
 package org.hkijena.jipipe.extensions.core;
 
 import org.hkijena.jipipe.JIPipeJavaExtension;
-import org.hkijena.jipipe.api.data.JIPipeData;
+import org.hkijena.jipipe.api.data.*;
 import org.hkijena.jipipe.api.nodes.JIPipeAnnotationMatchingMethod;
 import org.hkijena.jipipe.api.nodes.categories.AnnotationsNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.categories.DataSourceNodeTypeCategory;
@@ -49,6 +49,16 @@ public class CoreExtension extends JIPipePrepackagedDefaultJavaExtension {
                 ResourceUtils.getPluginResource("icons/data-types/data-type.png"),
                 null,
                 null);
+        registerDatatype("jipipe:empty-data",
+                JIPipeEmptyData.class,
+                ResourceUtils.getPluginResource("icons/data-types/data-type.png"),
+                null,
+                null);
+        registerDatatype("jipipe:merged-data-annotations",
+                JIPipeMergedDataAnnotationsData.class,
+                ResourceUtils.getPluginResource("icons/data-types/data-table.png"),
+                null,
+                null);
         registerNodeTypeCategory(new InternalNodeTypeCategory());
         registerNodeTypeCategory(new DataSourceNodeTypeCategory());
         registerNodeTypeCategory(new FileSystemNodeTypeCategory());
@@ -68,6 +78,14 @@ public class CoreExtension extends JIPipePrepackagedDefaultJavaExtension {
                 JIPipeAnnotationMatchingMethod.class,
                 "Annotation matching method",
                 "Determines how annotations are matched with each other");
+        registerEnumParameterType("jipipe:annotation-merge-strategy",
+                JIPipeAnnotationMergeStrategy.class,
+                "Annotation merge strategy",
+                "Determines how annotations are merged.");
+        registerEnumParameterType("jipipe:data-annotation-merge-strategy",
+                JIPipeDataAnnotationMergeStrategy.class,
+                "Data annotation merge strategy",
+                "Determines how data annotations are merged.");
         registerEnumParameterType("theme",
                 JIPipeUITheme.class,
                 "Theme",

@@ -20,10 +20,10 @@ import java.nio.file.Path;
  */
 public class JIPipeResultSlotDataSource implements JIPipeDataSource {
     private final JIPipeDataSlot slot;
-    private final JIPipeExportedDataTable.Row row;
+    private final JIPipeExportedDataTableRow row;
     private final Path rowStoragePath;
 
-    public JIPipeResultSlotDataSource(JIPipeDataSlot slot, JIPipeExportedDataTable.Row row, Path rowStoragePath) {
+    public JIPipeResultSlotDataSource(JIPipeDataSlot slot, JIPipeExportedDataTableRow row, Path rowStoragePath) {
         this.slot = slot;
         this.row = row;
         this.rowStoragePath = rowStoragePath;
@@ -33,7 +33,7 @@ public class JIPipeResultSlotDataSource implements JIPipeDataSource {
         return slot;
     }
 
-    public JIPipeExportedDataTable.Row getRow() {
+    public JIPipeExportedDataTableRow getRow() {
         return row;
     }
 

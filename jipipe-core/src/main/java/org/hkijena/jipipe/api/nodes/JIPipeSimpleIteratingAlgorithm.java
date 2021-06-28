@@ -137,7 +137,7 @@ public abstract class JIPipeSimpleIteratingAlgorithm extends JIPipeParameterSlot
                         return;
                     JIPipeProgressInfo slotProgress = progressInfo.resolveAndLog("Data row", i, getFirstInputSlot().getRowCount());
                     JIPipeDataBatch dataBatch = new JIPipeDataBatch(this);
-                    dataBatch.setData(getFirstInputSlot(), i);
+                    dataBatch.setInputData(getFirstInputSlot(), i);
                     dataBatch.addGlobalAnnotations(getFirstInputSlot().getAnnotations(i), JIPipeAnnotationMergeStrategy.Merge);
                     dataBatch.addGlobalAnnotations(parameterAnnotations, JIPipeAnnotationMergeStrategy.Merge);
                     uploadAdaptiveParameters(dataBatch, tree, parameterBackups, progressInfo);
@@ -155,7 +155,7 @@ public abstract class JIPipeSimpleIteratingAlgorithm extends JIPipeParameterSlot
                             return;
                         JIPipeProgressInfo slotProgress = progressInfo.resolveAndLog("Data row", rowIndex, getFirstInputSlot().getRowCount());
                         JIPipeDataBatch dataBatch = new JIPipeDataBatch(this);
-                        dataBatch.setData(getFirstInputSlot(), rowIndex);
+                        dataBatch.setInputData(getFirstInputSlot(), rowIndex);
                         dataBatch.addGlobalAnnotations(getFirstInputSlot().getAnnotations(rowIndex), JIPipeAnnotationMergeStrategy.Merge);
                         dataBatch.addGlobalAnnotations(parameterAnnotations, JIPipeAnnotationMergeStrategy.Merge);
                         uploadAdaptiveParameters(dataBatch, finalTree, parameterBackups, progressInfo);
@@ -322,7 +322,7 @@ public abstract class JIPipeSimpleIteratingAlgorithm extends JIPipeParameterSlot
             if (withLimit && !allowedIndices.contains(i))
                 continue;
             JIPipeMergingDataBatch dataBatch = new JIPipeMergingDataBatch(this);
-            dataBatch.addData(slot, i);
+            dataBatch.addInputData(slot, i);
             dataBatch.addGlobalAnnotations(slot.getAnnotations(i), JIPipeAnnotationMergeStrategy.Merge);
             batches.add(dataBatch);
         }

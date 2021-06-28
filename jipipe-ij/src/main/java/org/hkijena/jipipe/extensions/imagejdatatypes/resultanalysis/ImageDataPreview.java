@@ -14,7 +14,7 @@
 package org.hkijena.jipipe.extensions.imagejdatatypes.resultanalysis;
 
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
-import org.hkijena.jipipe.api.data.JIPipeExportedDataTable;
+import org.hkijena.jipipe.api.data.JIPipeExportedDataTableRow;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
 import org.hkijena.jipipe.ui.resultanalysis.JIPipeAsyncResultDataPlotPreview;
 
@@ -31,7 +31,7 @@ public class ImageDataPreview extends JIPipeAsyncResultDataPlotPreview {
      * @param slot      the data slot
      * @param row       the row
      */
-    public ImageDataPreview(JIPipeProjectWorkbench workbench, JTable table, JIPipeDataSlot slot, JIPipeExportedDataTable.Row row) {
+    public ImageDataPreview(JIPipeProjectWorkbench workbench, JTable table, JIPipeDataSlot slot, JIPipeExportedDataTableRow row) {
         super(workbench, table, slot, row);
     }
 }
