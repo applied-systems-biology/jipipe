@@ -150,15 +150,15 @@ public abstract class JIPipeCacheDataViewerWindow extends JFrame {
         rowInfoLabel.setText((row + 1) + "/" + getDataSource().getSlot().getRowCount());
 
         if (getAlgorithm() != null) {
-            setTitle(getAlgorithm().getName() + "/" + getSlotName() + "/" + row);
+            setTitle(getAlgorithm().getName() + "/" + getSlotName() + "/" + row + (dataSource.getDataAnnotation() != null ? "/$" + dataSource.getDataAnnotation(): ""));
         } else {
-            setTitle(getDisplayName());
+            setTitle(getDisplayName() + (dataSource.getDataAnnotation() != null ? "/$" + dataSource.getDataAnnotation(): ""));
         }
 
         removeDataControls();
         beforeSetRow();
         JIPipeDataSlot slot = dataSource.getSlot();
-        dataSource = new JIPipeCacheSlotDataSource(slot, row);
+        dataSource = new JIPipeCacheSlotDataSource(slot, row, dataSource.getDataAnnotation());
         afterSetRow();
         addDataControls();
 
@@ -167,7 +167,7 @@ public abstract class JIPipeCacheDataViewerWindow extends JFrame {
 
         if (slot != null && slot.getRowCount() > dataSource.getRow()) {
             removeErrorUI();
-            dataSource = new JIPipeCacheSlotDataSource(slot, dataSource.getRow());
+            dataSource = new JIPipeCacheSlotDataSource(slot, dataSource.getRow(), dataSource.getDataAnnotation());
             loadFromDataSource();
         } else {
             lastVirtualData = null;
@@ -261,7 +261,7 @@ public abstract class JIPipeCacheDataViewerWindow extends JFrame {
         JIPipeDataSlot slot = currentCache.getOrDefault(slotName, null);
         if (slot != null && slot.getRowCount() > dataSource.getRow()) {
             removeErrorUI();
-            dataSource = new JIPipeCacheSlotDataSource(slot, dataSource.getRow());
+            dataSource = new JIPipeCacheSlotDataSource(slot, dataSource.getRow(), dataSource.getDataAnnotation());
             loadFromDataSource();
         } else {
             lastVirtualData = null;
@@ -270,11 +270,24 @@ public abstract class JIPipeCacheDataViewerWindow extends JFrame {
     }
 
     private void loadFromDataSource() {
-        JIPipeVirtualData virtualData = dataSource.getSlot().getVirtualData(dataSource.getRow());
-        if (lastVirtualData != null && virtualData == lastVirtualData.get())
-            return;
-        loadData(virtualData, new JIPipeProgressInfo());
-        lastVirtualData = new WeakReference<>(virtualData);
+        if(dataSource.getDataAnnotation() == null) {
+            JIPipeVirtualData virtualData = dataSource.getSlot().getVirtualData(dataSource.getRow());
+            if (lastVirtualData != null && virtualData == lastVirtualData.get())
+                return;
+            loadData(virtualData, new JIPipeProgressInfo());
+            lastVirtualData = new WeakReference<>(virtualData);
+        }
+        else {
+            JIPipeVirtualData virtualData = dataSource.getSlot().getVirtualDataAnnotation(dataSource.getRow(), dataSource.getDataAnnotation());
+            if(virtualData == null) {
+                addErrorUI();
+                return;
+            }
+            if (lastVirtualData != null && virtualData == lastVirtualData.get())
+                return;
+            loadData(virtualData, new JIPipeProgressInfo());
+            lastVirtualData = new WeakReference<>(virtualData);
+        }
     }
 
     @Subscribe

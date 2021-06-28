@@ -18,6 +18,7 @@ import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.JIPipeRunnable;
 import org.hkijena.jipipe.api.data.JIPipeCacheSlotDataSource;
 import org.hkijena.jipipe.api.data.JIPipeData;
+import org.hkijena.jipipe.api.data.JIPipeDataAnnotation;
 import org.hkijena.jipipe.api.data.JIPipeDataDisplayOperation;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.extensions.parameters.primitives.DynamicDataDisplayOperationIdEnumParameter;
@@ -49,6 +50,7 @@ import java.util.Objects;
 public class JIPipeDataSlotRowUI extends JIPipeWorkbenchPanel {
     private final JIPipeDataSlot slot;
     private final int row;
+    private final List<JIPipeDataAnnotation> dataAnnotations;
     private List<JIPipeDataDisplayOperation> displayOperations;
 
     /**
@@ -62,6 +64,7 @@ public class JIPipeDataSlotRowUI extends JIPipeWorkbenchPanel {
         super(workbench);
         this.slot = slot;
         this.row = row;
+        this.dataAnnotations = slot.getDataAnnotations(row);
         Class<? extends JIPipeData> dataClass = slot.getDataClass(row);
         String datatypeId = JIPipe.getInstance().getDatatypeRegistry().getIdOf(dataClass);
         displayOperations = JIPipe.getInstance().getDatatypeRegistry().getSortedDisplayOperationsFor(datatypeId);
@@ -71,6 +74,27 @@ public class JIPipeDataSlotRowUI extends JIPipeWorkbenchPanel {
     private void initialize() {
         setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
         add(Box.createHorizontalGlue());
+
+        if(dataAnnotations.size() > 0) {
+            JButton dataAnnotationButton = new JButton("Data annotations", UIUtils.getIconFromResources("data-types/data-annotation.png"));
+            JPopupMenu menu = UIUtils.addPopupMenuToComponent(dataAnnotationButton);
+
+            for (JIPipeDataAnnotation dataAnnotation : dataAnnotations) {
+                JMenu subMenu = new JMenu(dataAnnotation.getName());
+                subMenu.setIcon(JIPipe.getDataTypes().getIconFor(dataAnnotation.getDataClass()));
+                String datatypeId = JIPipe.getInstance().getDatatypeRegistry().getIdOf(dataAnnotation.getDataClass());
+                List<JIPipeDataDisplayOperation> displayOperations = JIPipe.getInstance().getDatatypeRegistry().getSortedDisplayOperationsFor(datatypeId);
+                for (JIPipeDataDisplayOperation displayOperation : displayOperations) {
+                    JMenuItem item = new JMenuItem(displayOperation.getName(), displayOperation.getIcon());
+                    item.setToolTipText(displayOperation.getDescription());
+                    item.addActionListener(e -> runDisplayOperation(displayOperation, dataAnnotation));
+                    subMenu.add(item);
+                }
+                menu.add(subMenu);
+            }
+
+            add(dataAnnotationButton);
+        }
 
         JButton copyButton = new JButton("Copy string", UIUtils.getIconFromResources("actions/edit-copy.png"));
         copyButton.setToolTipText("Copies the string representation");
@@ -188,6 +212,18 @@ public class JIPipeDataSlotRowUI extends JIPipeWorkbenchPanel {
 
             };
             JIPipeRunExecuterUI.runInDialog(getWorkbench().getWindow(), runnable);
+        }
+    }
+
+    private void runDisplayOperation(JIPipeDataDisplayOperation operation, JIPipeDataAnnotation dataAnnotation) {
+        try (BusyCursor cursor = new BusyCursor(this)) {
+            JIPipeData data = dataAnnotation.getData(JIPipeData.class, new JIPipeProgressInfo());
+            String displayName;
+            if (slot.getNode() != null)
+                displayName = slot.getNode().getName() + "/" + slot.getName() + "/" + row + "/$" + dataAnnotation.getName();
+            else
+                displayName = slot.getName() + "/" + row + "/$" + dataAnnotation.getName();;
+            operation.display(data, displayName, getWorkbench(), new JIPipeCacheSlotDataSource(slot, row, dataAnnotation.getName()));
         }
     }
 

@@ -16,17 +16,41 @@ package org.hkijena.jipipe.api.data;
 public class JIPipeCacheSlotDataSource implements JIPipeDataSource {
     private final JIPipeDataSlot slot;
     private final int row;
+    private final String dataAnnotation;
 
     public JIPipeCacheSlotDataSource(JIPipeDataSlot slot, int row) {
         this.slot = slot;
         this.row = row;
+        this.dataAnnotation = null;
     }
 
+    public JIPipeCacheSlotDataSource(JIPipeDataSlot slot, int row, String dataAnnotation) {
+        this.slot = slot;
+        this.row = row;
+        this.dataAnnotation = dataAnnotation;
+    }
+
+    /**
+     * The data slot where the data is sourced
+     * @return the data slot
+     */
     public JIPipeDataSlot getSlot() {
         return slot;
     }
 
+    /**
+     * The data slot row where the data is sourced
+     * @return the data slot
+     */
     public int getRow() {
         return row;
+    }
+
+    /**
+     * Optional: Data annotation
+     * @return the data annotation or null if the main data is referenced
+     */
+    public String getDataAnnotation() {
+        return dataAnnotation;
     }
 }
