@@ -9,6 +9,8 @@ import org.hkijena.jipipe.JIPipeRegistryIssues;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeAnnotation;
 import org.hkijena.jipipe.api.data.JIPipeAnnotationMergeStrategy;
+import org.hkijena.jipipe.api.data.JIPipeDataAnnotation;
+import org.hkijena.jipipe.api.data.JIPipeDataAnnotationMergeStrategy;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.data.JIPipeDataSlotInfo;
 import org.hkijena.jipipe.api.data.JIPipeSlotType;
@@ -40,6 +42,7 @@ public class JIPipeMergingDataBatchBuilder {
     private Map<String, JIPipeDataSlot> slots = new HashMap<>();
     private Set<String> referenceColumns = new HashSet<>();
     private JIPipeAnnotationMergeStrategy annotationMergeStrategy = JIPipeAnnotationMergeStrategy.Merge;
+    private JIPipeDataAnnotationMergeStrategy dataAnnotationMergeStrategy = JIPipeDataAnnotationMergeStrategy.Merge;
     private boolean applyMerging = true;
     private JIPipeAnnotationMatchingMethod annotationMatchingMethod = JIPipeAnnotationMatchingMethod.ExactMatch;
     private DefaultExpressionParameter customAnnotationMatching = new DefaultExpressionParameter("exact_match_results");
@@ -143,11 +146,11 @@ public class JIPipeMergingDataBatchBuilder {
 
         // Special case: Merge all
         if (getReferenceColumns() == REFERENCE_COLUMN_MERGE_ALL) {
-            return mergeAllSolver(progressInfo.resolveAndLog("Merge into one batch"));
+            return applyMergeAllSolver(progressInfo.resolveAndLog("Merge into one batch"));
         }
         // Special case: Split all
         if (getReferenceColumns() == REFERENCE_COLUMN_SPLIT_ALL) {
-            return splitAllSolver(progressInfo.resolveAndLog("Split into batches"));
+            return applySplitAllSolver(progressInfo.resolveAndLog("Split into batches"));
         }
 
         if(referenceColumns.size() == 1 && annotationMatchingMethod == JIPipeAnnotationMatchingMethod.ExactMatch) {
@@ -212,6 +215,7 @@ public class JIPipeMergingDataBatchBuilder {
                     Multimap<String, Integer> slotMap = matchedRows.get(slot);
                     dataBatch.addInputData(slot, slotMap.get(key));
                     dataBatch.addGlobalAnnotations(slot.getAnnotations(slotMap.get(key)), annotationMergeStrategy);
+                    dataBatch.addGlobalDataAnnotations(slot.getDataAnnotations(slotMap.get(key)), getDataAnnotationMergeStrategy());
                 }
                 dataBatches.add(dataBatch);
             }
@@ -257,10 +261,13 @@ public class JIPipeMergingDataBatchBuilder {
             progressInfo.log("Resolving annotations");
             for (JIPipeMergingDataBatch dataBatch : dataBatches) {
                 List<JIPipeAnnotation> annotations = new ArrayList<>();
+                List<JIPipeDataAnnotation> dataAnnotations = new ArrayList<>();
                 for (JIPipeDataSlot slot : slotList) {
                     annotations.addAll(slot.getAnnotations(dataBatch.getInputRows(slot)));
+                    dataAnnotations.addAll(slot.getDataAnnotations(dataBatch.getInputRows(slot)));
                 }
                 dataBatch.addGlobalAnnotations(annotations, getAnnotationMergeStrategy());
+                dataBatch.addGlobalDataAnnotations(dataAnnotations, getDataAnnotationMergeStrategy());
             }
         }
         // Ensure that all slots are known to the data batch builder
@@ -277,7 +284,7 @@ public class JIPipeMergingDataBatchBuilder {
      * @param progressInfo the progress info
      * @return data batches
      */
-    private List<JIPipeMergingDataBatch> splitAllSolver(JIPipeProgressInfo progressInfo) {
+    private List<JIPipeMergingDataBatch> applySplitAllSolver(JIPipeProgressInfo progressInfo) {
         List<JIPipeMergingDataBatch> split = new ArrayList<>();
         for (JIPipeDataSlot slot : slotList) {
             for (int row = 0; row < slot.getRowCount(); row++) {
@@ -292,6 +299,7 @@ public class JIPipeMergingDataBatchBuilder {
                 }
                 batch.addInputData(slot, row);
                 batch.addGlobalAnnotations(slot.getAnnotations(row), getAnnotationMergeStrategy());
+                batch.addGlobalDataAnnotations(slot.getDataAnnotations(row), getDataAnnotationMergeStrategy());
                 split.add(batch);
             }
         }
@@ -303,11 +311,12 @@ public class JIPipeMergingDataBatchBuilder {
      * @param progressInfo the progress info
      * @return data batches
      */
-    private List<JIPipeMergingDataBatch> mergeAllSolver(JIPipeProgressInfo progressInfo) {
+    private List<JIPipeMergingDataBatch> applyMergeAllSolver(JIPipeProgressInfo progressInfo) {
         JIPipeMergingDataBatch batch = new JIPipeMergingDataBatch(this.node);
         for (JIPipeDataSlot slot : slotList) {
             batch.addEmptySlot(slot);
             List<JIPipeAnnotation> annotations = new ArrayList<>();
+            List<JIPipeDataAnnotation> dataAnnotations = new ArrayList<>();
             for (int row = 0; row < slot.getRowCount(); row++) {
                 if(row % 1000 == 0) {
                     progressInfo.resolveAndLog("Row", row, slot.getRowCount());
@@ -316,9 +325,11 @@ public class JIPipeMergingDataBatchBuilder {
                 }
                 batch.addInputData(slot, row);
                 annotations.addAll(slot.getAnnotations(row));
+                dataAnnotations.addAll(slot.getDataAnnotations(row));
             }
             progressInfo.log("Merging " +annotations.size() + " annotations");
             batch.addGlobalAnnotations(annotations, getAnnotationMergeStrategy());
+            batch.addGlobalDataAnnotations(dataAnnotations, getDataAnnotationMergeStrategy());
         }
         return Arrays.asList(batch);
     }
@@ -480,6 +491,7 @@ public class JIPipeMergingDataBatchBuilder {
                 dataBatch.addInputData(rowNode.slot, rowNode.rows);
                 for (Integer row : rowNode.rows) {
                     dataBatch.addGlobalAnnotations(rowNode.slot.getAnnotations(row), annotationMergeStrategy);
+                    dataBatch.addGlobalDataAnnotations(rowNode.slot.getDataAnnotations(row), dataAnnotationMergeStrategy);
                 }
 
 //                dataBatch.addGlobalAnnotations(rowNode.annotations, annotationMergeStrategy);
@@ -519,6 +531,14 @@ public class JIPipeMergingDataBatchBuilder {
 
     public void setAnnotationMergeStrategy(JIPipeAnnotationMergeStrategy annotationMergeStrategy) {
         this.annotationMergeStrategy = annotationMergeStrategy;
+    }
+
+    public JIPipeDataAnnotationMergeStrategy getDataAnnotationMergeStrategy() {
+        return dataAnnotationMergeStrategy;
+    }
+
+    public void setDataAnnotationMergeStrategy(JIPipeDataAnnotationMergeStrategy dataAnnotationMergeStrategy) {
+        this.dataAnnotationMergeStrategy = dataAnnotationMergeStrategy;
     }
 
     public JIPipeAnnotationMatchingMethod getAnnotationMatchingMethod() {
@@ -577,7 +597,8 @@ public class JIPipeMergingDataBatchBuilder {
                     return null;
                 int targetRow = entry.getValue().iterator().next();
                 singleBatch.setInputData(entry.getKey(), targetRow);
-                singleBatch.setAnnotations(batch.getAnnotations());
+                singleBatch.setGlobalAnnotations(batch.getGlobalAnnotations());
+                singleBatch.setGlobalDataAnnotations(batch.getGlobalDataAnnotations());
             }
             result.add(singleBatch);
         }

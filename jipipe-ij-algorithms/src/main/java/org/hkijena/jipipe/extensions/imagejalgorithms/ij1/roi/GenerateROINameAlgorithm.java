@@ -59,7 +59,7 @@ public class GenerateROINameAlgorithm extends ImageRoiProcessorAlgorithm {
         ROIListData tmp = new ROIListData();
 
         if (includeAnnotations) {
-            for (JIPipeAnnotation value : dataBatch.getAnnotations().values()) {
+            for (JIPipeAnnotation value : dataBatch.getGlobalAnnotations().values()) {
                 parameters.set(value.getName(), value.getValue());
             }
         }

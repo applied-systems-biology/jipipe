@@ -174,7 +174,7 @@ public class PathFormData extends ParameterFormData {
     public void loadData(JIPipeMergingDataBatch dataBatch) {
         if (annotationIOSettings.getInputAnnotation().isEnabled()) {
             JIPipeAnnotation annotation =
-                    dataBatch.getAnnotations().getOrDefault(annotationIOSettings.getInputAnnotation().getContent(),
+                    dataBatch.getGlobalAnnotations().getOrDefault(annotationIOSettings.getInputAnnotation().getContent(),
                             null);
             if (annotation != null) {
                 value = Paths.get(annotation.getValue());
@@ -185,7 +185,7 @@ public class PathFormData extends ParameterFormData {
     @Override
     public void writeData(JIPipeMergingDataBatch dataBatch) {
         if (annotationIOSettings.getOutputAnnotation().isEnabled()) {
-            annotationIOSettings.getAnnotationMergeStrategy().mergeInto(dataBatch.getAnnotations(),
+            annotationIOSettings.getAnnotationMergeStrategy().mergeInto(dataBatch.getGlobalAnnotations(),
                     Collections.singletonList(annotationIOSettings.getOutputAnnotation().createAnnotation(StringUtils.nullToEmpty(value))));
         }
     }

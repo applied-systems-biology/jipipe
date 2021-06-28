@@ -158,7 +158,7 @@ public class IteratingPythonScriptAlgorithm extends JIPipeIteratingAlgorithm {
         PythonUtils.parametersToPython(code, scriptParameters);
 
         // Add annotations
-        PythonUtils.annotationsToPython(code, dataBatch.getAnnotations().values());
+        PythonUtils.annotationsToPython(code, dataBatch.getGlobalAnnotations().values());
 
         Path workDirectory = getNewScratch();
 

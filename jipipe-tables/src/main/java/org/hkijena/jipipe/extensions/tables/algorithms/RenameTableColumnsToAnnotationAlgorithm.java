@@ -69,7 +69,7 @@ public class RenameTableColumnsToAnnotationAlgorithm extends JIPipeSimpleIterati
         ResultsTableData input = (ResultsTableData) dataBatch.getInputData(getFirstInputSlot(), ResultsTableData.class, progressInfo).duplicate();
         for (StringQueryExpressionAndStringQueryPairParameter renamingEntry : renamingEntries) {
             String oldName = renamingEntry.getKey().queryFirst(input.getColumnNames(), new ExpressionParameters());
-            String newName = renamingEntry.getValue().queryFirst(dataBatch.getAnnotations().keySet(), new ExpressionParameters());
+            String newName = renamingEntry.getValue().queryFirst(dataBatch.getGlobalAnnotations().keySet(), new ExpressionParameters());
             if (oldName == null) {
                 if (ignoreMissingColumns)
                     continue;
@@ -89,7 +89,7 @@ public class RenameTableColumnsToAnnotationAlgorithm extends JIPipeSimpleIterati
                                 + "', but the annotation was not found.",
                         "Please check if there is a matching annotation.");
             }
-            newName = dataBatch.getAnnotationOfType(newName).getValue();
+            newName = dataBatch.getGlobalAnnotation(newName).getValue();
             input.renameColumn(oldName, newName);
         }
         dataBatch.addOutputData(getFirstOutputSlot(), input, progressInfo);

@@ -234,6 +234,19 @@ public class JIPipeDataSlot {
     }
 
     /**
+     * Gets the list of all data annotations in the specified row
+     * @param rows the rows
+     * @return list of data annotations
+     */
+    public List<JIPipeDataAnnotation> getDataAnnotations(Collection<Integer> rows) {
+        List<JIPipeDataAnnotation> dataAnnotations = new ArrayList<>();
+        for (Integer row : rows) {
+            dataAnnotations.addAll(getDataAnnotations(row));
+        }
+        return dataAnnotations;
+    }
+
+    /**
      * Gets a data annotation
      * @param row the row
      * @param column the data annotation column

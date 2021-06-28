@@ -232,7 +232,7 @@ public abstract class JIPipeMergingAlgorithm extends JIPipeParameterSlotAlgorith
 
     private void uploadAdaptiveParameters(JIPipeMergingDataBatch dataBatch, JIPipeParameterTree tree, Map<String, Object> parameterBackups, JIPipeProgressInfo progressInfo) {
         ExpressionParameters expressionParameters = new ExpressionParameters();
-        for (JIPipeAnnotation annotation : dataBatch.getAnnotations().values()) {
+        for (JIPipeAnnotation annotation : dataBatch.getGlobalAnnotations().values()) {
             expressionParameters.put(annotation.getName(), annotation.getValue());
         }
         for (StringQueryExpressionAndStringPairParameter overriddenParameter : getAdaptiveParameterSettings().getOverriddenParameters()) {

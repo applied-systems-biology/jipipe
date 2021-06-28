@@ -170,7 +170,7 @@ public class FilterAndMergeRoiByStatisticsScriptAlgorithm extends ImageRoiProces
             roiList.add(roiItemDictionary);
         }
 
-        PyDictionary annotationDict = JIPipeAnnotation.annotationMapToPython(dataBatch.getAnnotations());
+        PyDictionary annotationDict = JIPipeAnnotation.annotationMapToPython(dataBatch.getGlobalAnnotations());
         PyDictionary rowDict = new PyDictionary();
         rowDict.put("annotations", annotationDict);
         rowDict.put("roi_list", roiList);

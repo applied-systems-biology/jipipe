@@ -99,7 +99,7 @@ public class StringFormData extends ParameterFormData {
     public void loadData(JIPipeMergingDataBatch dataBatch) {
         if (annotationIOSettings.getInputAnnotation().isEnabled()) {
             JIPipeAnnotation annotation =
-                    dataBatch.getAnnotations().getOrDefault(annotationIOSettings.getInputAnnotation().getContent(),
+                    dataBatch.getGlobalAnnotations().getOrDefault(annotationIOSettings.getInputAnnotation().getContent(),
                             null);
             if (annotation != null) {
                 value = annotation.getValue();
@@ -110,7 +110,7 @@ public class StringFormData extends ParameterFormData {
     @Override
     public void writeData(JIPipeMergingDataBatch dataBatch) {
         if (annotationIOSettings.getOutputAnnotation().isEnabled()) {
-            annotationIOSettings.getAnnotationMergeStrategy().mergeInto(dataBatch.getAnnotations(),
+            annotationIOSettings.getAnnotationMergeStrategy().mergeInto(dataBatch.getGlobalAnnotations(),
                     Collections.singletonList(annotationIOSettings.getOutputAnnotation().createAnnotation(value)));
         }
     }

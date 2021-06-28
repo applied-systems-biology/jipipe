@@ -116,7 +116,7 @@ public class ModifyTablesScript extends JIPipeSimpleIteratingAlgorithm {
         ResultsTableData inputData = dataBatch.getInputData(getFirstInputSlot(), ResultsTableData.class, progressInfo);
         PyDictionary tableDict = inputData.toPython();
 
-        PyDictionary annotationDict = JIPipeAnnotation.annotationMapToPython(dataBatch.getAnnotations());
+        PyDictionary annotationDict = JIPipeAnnotation.annotationMapToPython(dataBatch.getGlobalAnnotations());
         pythonInterpreter.set("annotations", annotationDict);
         pythonInterpreter.set("table", tableDict);
         pythonInterpreter.set("nrow", inputData.getRowCount());
@@ -124,8 +124,8 @@ public class ModifyTablesScript extends JIPipeSimpleIteratingAlgorithm {
         tableDict = (PyDictionary) pythonInterpreter.get("table");
         annotationDict = (PyDictionary) pythonInterpreter.get("annotations");
 
-        dataBatch.getAnnotations().clear();
-        JIPipeAnnotation.setAnnotationsFromPython(annotationDict, dataBatch.getAnnotations());
+        dataBatch.getGlobalAnnotations().clear();
+        JIPipeAnnotation.setAnnotationsFromPython(annotationDict, dataBatch.getGlobalAnnotations());
 
         dataBatch.addOutputData(getFirstOutputSlot(), ResultsTableData.fromPython(tableDict), progressInfo);
     }

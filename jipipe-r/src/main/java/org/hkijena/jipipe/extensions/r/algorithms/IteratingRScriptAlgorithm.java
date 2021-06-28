@@ -136,7 +136,7 @@ public class IteratingRScriptAlgorithm extends JIPipeIteratingAlgorithm {
         RUtils.parametersToR(code, variables);
 
         // Add annotations
-        RUtils.annotationsToR(code, dataBatch.getAnnotations().values());
+        RUtils.annotationsToR(code, dataBatch.getGlobalAnnotations().values());
 
         Path workDirectory = getNewScratch();
 

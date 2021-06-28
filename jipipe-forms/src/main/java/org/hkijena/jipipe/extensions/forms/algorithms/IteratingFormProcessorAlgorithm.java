@@ -182,14 +182,14 @@ public class IteratingFormProcessorAlgorithm extends JIPipeAlgorithm implements 
                         JIPipeDataSlot outputSlot = getOutputSlot(name);
                         for (int row : dataBatch.getInputSlotRows().get(inputSlot)) {
                             outputSlot.addData(inputSlot.getVirtualData(row),
-                                    new ArrayList<>(dataBatch.getAnnotations().values()),
+                                    new ArrayList<>(dataBatch.getGlobalAnnotations().values()),
                                     JIPipeAnnotationMergeStrategy.OverwriteExisting);
                         }
                     }
                 }
                 for (int row = 0; row < forms.getRowCount(); row++) {
                     List<JIPipeAnnotation> annotations = new ArrayList<>(forms.getAnnotations(row));
-                    annotations.addAll(dataBatch.getAnnotations().values());
+                    annotations.addAll(dataBatch.getGlobalAnnotations().values());
                     formsOutputSlot.addData(forms.getVirtualData(row), annotations, JIPipeAnnotationMergeStrategy.OverwriteExisting);
                 }
             }

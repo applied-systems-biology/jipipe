@@ -160,13 +160,13 @@ public class MergingFormProcessorAlgorithm extends JIPipeAlgorithm implements JI
                 JIPipeDataSlot forms = dataBatchForms.get(i);
                 JIPipeMergingDataBatch dataBatch = dataBatchList.get(i);
                 getFirstOutputSlot().addData(dataBatch.getVirtualInputData(dataSlot).get(0),
-                        new ArrayList<>(dataBatch.getAnnotations().values()),
+                        new ArrayList<>(dataBatch.getGlobalAnnotations().values()),
                         JIPipeAnnotationMergeStrategy.OverwriteExisting);
 
                 // Copy user-modified forms
                 for (int row = 0; row < forms.getRowCount(); row++) {
                     List<JIPipeAnnotation> annotations = new ArrayList<>(forms.getAnnotations(row));
-                    annotations.addAll(dataBatch.getAnnotations().values());
+                    annotations.addAll(dataBatch.getGlobalAnnotations().values());
                     formsOutputSlot.addData(forms.getVirtualData(row), annotations, JIPipeAnnotationMergeStrategy.OverwriteExisting);
                 }
             }

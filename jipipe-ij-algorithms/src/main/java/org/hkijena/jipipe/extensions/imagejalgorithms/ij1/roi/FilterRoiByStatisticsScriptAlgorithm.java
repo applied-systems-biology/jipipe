@@ -147,7 +147,7 @@ public class FilterRoiByStatisticsScriptAlgorithm extends ImageRoiProcessorAlgor
             roiList.add(roiItemDictionary);
         }
 
-        PyDictionary annotationDict = JIPipeAnnotation.annotationMapToPython(dataBatch.getAnnotations());
+        PyDictionary annotationDict = JIPipeAnnotation.annotationMapToPython(dataBatch.getGlobalAnnotations());
         pythonInterpreter.set("annotations", annotationDict);
         pythonInterpreter.set("roi_list", roiList);
         pythonInterpreter.exec(code.getCode(getProjectWorkDirectory()));
@@ -159,8 +159,8 @@ public class FilterRoiByStatisticsScriptAlgorithm extends ImageRoiProcessorAlgor
             Roi roi = (Roi) roiItemDictionary.get("data");
             outputData.add(roi);
         }
-        dataBatch.getAnnotations().clear();
-        JIPipeAnnotation.setAnnotationsFromPython(annotationDict, dataBatch.getAnnotations());
+        dataBatch.getGlobalAnnotations().clear();
+        JIPipeAnnotation.setAnnotationsFromPython(annotationDict, dataBatch.getGlobalAnnotations());
 
         dataBatch.addOutputData(getFirstOutputSlot(), outputData, progressInfo);
     }
