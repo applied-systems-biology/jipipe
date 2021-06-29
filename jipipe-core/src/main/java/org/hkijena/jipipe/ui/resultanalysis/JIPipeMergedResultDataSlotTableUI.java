@@ -48,7 +48,6 @@ import java.util.List;
 
 /**
  * Displays the result of multiple {@link JIPipeDataSlot}
- * TODO: Support data annotations
  */
 public class JIPipeMergedResultDataSlotTableUI extends JIPipeProjectWorkbenchPanel {
 
