@@ -10,6 +10,7 @@ public class JIPipeExportedDataAnnotation {
     private String name;
     private Path rowStorageFolder;
     private String trueDataType;
+    private JIPipeExportedDataTableRow tableRow;
 
     /**
      * This is a relative path pointing to the row storage folder of this data annotation
@@ -52,5 +53,13 @@ public class JIPipeExportedDataAnnotation {
 
     public boolean nameEquals(String name) {
         return Objects.equals(getName(), name);
+    }
+
+    public JIPipeExportedDataTableRow getTableRow() {
+        return tableRow;
+    }
+
+    public void setTableRow(JIPipeExportedDataTableRow tableRow) {
+        this.tableRow = tableRow;
     }
 }

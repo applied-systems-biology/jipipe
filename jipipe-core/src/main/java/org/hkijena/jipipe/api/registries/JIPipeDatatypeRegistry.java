@@ -464,7 +464,12 @@ public class JIPipeDatatypeRegistry {
         if (GeneralDataSettings.getInstance().isGenerateResultPreviews()) {
             Class<? extends JIPipeResultDataSlotPreview> rendererClass = resultTableCellUIs.getOrDefault(dataClass, null);
             if (rendererClass != null) {
-                return (JIPipeResultDataSlotPreview) ReflectionUtils.newInstance(rendererClass, workbench, table, slot, row);
+                try {
+                    return rendererClass.getConstructor(JIPipeProjectWorkbench.class, JTable.class, JIPipeDataSlot.class, JIPipeExportedDataTableRow.class, JIPipeExportedDataAnnotation.class)
+                            .newInstance(workbench, table, slot, row, dataAnnotation);
+                } catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
+                    throw new RuntimeException(e);
+                }
             } else {
                 return new JIPipeDefaultResultDataSlotPreview(workbench, table, slot, row, dataAnnotation);
             }

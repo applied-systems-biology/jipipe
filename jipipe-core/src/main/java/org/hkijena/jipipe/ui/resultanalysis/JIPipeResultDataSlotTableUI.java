@@ -57,6 +57,7 @@ public class JIPipeResultDataSlotTableUI extends JIPipeProjectWorkbenchPanel {
     private FormPanel rowUIList;
     private SearchTextField searchTextField = new SearchTextField();
     private JIPipeRowDataTableCellRenderer previewRenderer;
+    private JIPipeRowDataAnnotationTableCellRenderer dataAnnotationPreviewRenderer;
 
     /**
      * @param workbenchUI the workbench UI
@@ -73,9 +74,9 @@ public class JIPipeResultDataSlotTableUI extends JIPipeProjectWorkbenchPanel {
         GeneralDataSettings.getInstance().getEventBus().register(new Object() {
             @Subscribe
             public void onPreviewSizeChanged(JIPipeParameterCollection.ParameterChangedEvent event) {
-                if (isDisplayable() && "preview-size".equals(event.getKey())) {
-                    reloadTable();
-                }
+            if (isDisplayable() && "preview-size".equals(event.getKey())) {
+                reloadTable();
+            }
             }
         });
     }
@@ -92,7 +93,9 @@ public class JIPipeResultDataSlotTableUI extends JIPipeProjectWorkbenchPanel {
         table.setDefaultRenderer(Path.class, new JIPipeRowIndexTableCellRenderer());
         table.setDefaultRenderer(JIPipeDataInfo.class, new JIPipeDataInfoCellRenderer());
         previewRenderer = new JIPipeRowDataTableCellRenderer(getProjectWorkbench(), slot, table, scrollPane);
+        dataAnnotationPreviewRenderer = new JIPipeRowDataAnnotationTableCellRenderer(getProjectWorkbench(), slot, table, scrollPane);
         table.setDefaultRenderer(JIPipeExportedDataTableRow.class, previewRenderer);
+        table.setDefaultRenderer(JIPipeExportedDataAnnotation.class, dataAnnotationPreviewRenderer);
         table.setDefaultRenderer(JIPipeAnnotation.class, new JIPipeAnnotationTableCellRenderer());
         table.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
 
@@ -211,5 +214,6 @@ public class JIPipeResultDataSlotTableUI extends JIPipeProjectWorkbenchPanel {
         }
 
         SwingUtilities.invokeLater(previewRenderer::updateRenderedPreviews);
+        SwingUtilities.invokeLater(dataAnnotationPreviewRenderer::updateRenderedPreviews);
     }
 }

@@ -16,6 +16,7 @@ package org.hkijena.jipipe.ui.resultanalysis;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
+import org.hkijena.jipipe.api.data.JIPipeEmptyData;
 import org.hkijena.jipipe.api.data.JIPipeExportedDataAnnotation;
 import org.hkijena.jipipe.api.data.JIPipeExportedDataTableRow;
 import org.hkijena.jipipe.extensions.settings.GeneralDataSettings;
@@ -25,13 +26,13 @@ import org.hkijena.jipipe.utils.UIUtils;
 import javax.swing.*;
 import java.awt.BorderLayout;
 import java.awt.Component;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.concurrent.ExecutionException;
 
 /**
  * A {@link JIPipeResultDataSlotPreview} that uses a {@link javax.swing.SwingWorker} to load previews in a separate thread.
  * It will automatically update the table when finished
- * TODO: Support for data annotations
  */
 public abstract class JIPipeAsyncResultDataPlotPreview extends JIPipeResultDataSlotPreview {
 
@@ -83,7 +84,14 @@ public abstract class JIPipeAsyncResultDataPlotPreview extends JIPipeResultDataS
      * @return the data. if null, the widget will display "error"
      */
     protected JIPipeData loadData(Path storageFolder) {
-        return JIPipe.importData(storageFolder, getSlot().getAcceptedDataType());
+        if(getDataAnnotation() == null)
+            return JIPipe.importData(storageFolder, getSlot().getAcceptedDataType());
+        else {
+            if(Files.exists(storageFolder))
+                return JIPipe.importData(storageFolder, JIPipe.getDataTypes().getById(getDataAnnotation().getTrueDataType()));
+            else
+                return new JIPipeEmptyData();
+        }
     }
 
     /**

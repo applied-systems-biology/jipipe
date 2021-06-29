@@ -26,6 +26,11 @@ public class JIPipeEmptyData implements JIPipeData {
 
     }
 
+    @Override
+    public String toString() {
+        return "N/A";
+    }
+
     public static JIPipeEmptyData importFrom(Path storagePath) {
         return new JIPipeEmptyData();
     }

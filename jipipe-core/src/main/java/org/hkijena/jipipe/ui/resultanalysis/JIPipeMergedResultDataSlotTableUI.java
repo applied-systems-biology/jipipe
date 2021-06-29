@@ -60,6 +60,7 @@ public class JIPipeMergedResultDataSlotTableUI extends JIPipeProjectWorkbenchPan
     private SearchTextField searchTextField = new SearchTextField();
     private JScrollPane scrollPane;
     private JIPipeRowDataMergedTableCellRenderer previewRenderer;
+    private JIPipeRowDataAnnotationMergedTableCellRenderer dataAnnotationPreviewRenderer;
 
     /**
      * @param workbenchUI The workbench
@@ -208,7 +209,9 @@ public class JIPipeMergedResultDataSlotTableUI extends JIPipeProjectWorkbenchPan
         else
             table.setRowHeight(25);
         previewRenderer = new JIPipeRowDataMergedTableCellRenderer(getProjectWorkbench(), mergedDataTable, scrollPane, table);
+        dataAnnotationPreviewRenderer = new JIPipeRowDataAnnotationMergedTableCellRenderer(getProjectWorkbench(), mergedDataTable, scrollPane, table);
         table.setDefaultRenderer(JIPipeExportedDataTableRow.class, previewRenderer);
+        table.setDefaultRenderer(JIPipeExportedDataAnnotation.class, dataAnnotationPreviewRenderer);
         table.setModel(mergedDataTable);
         refreshTable();
     }
@@ -230,6 +233,7 @@ public class JIPipeMergedResultDataSlotTableUI extends JIPipeProjectWorkbenchPan
         }
 
         SwingUtilities.invokeLater(previewRenderer::updateRenderedPreviews);
+        SwingUtilities.invokeLater(dataAnnotationPreviewRenderer::updateRenderedPreviews);
     }
 
 }

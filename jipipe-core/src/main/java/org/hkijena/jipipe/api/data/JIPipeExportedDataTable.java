@@ -73,6 +73,7 @@ public class JIPipeExportedDataTable implements TableModel {
                     exportedDataAnnotation.setName(dataAnnotationColumns.get(i));
                     exportedDataAnnotation.setRowStorageFolder(Paths.get("_" + i).resolve("" + row));
                     exportedDataAnnotation.setTrueDataType(JIPipeDataInfo.getInstance(virtualDataAnnotation.getDataClass()).getId());
+                    exportedDataAnnotation.setTableRow(rowInstance);
                     rowInstance.getDataAnnotations().add(exportedDataAnnotation);
                 }
             }
@@ -410,7 +411,13 @@ public class JIPipeExportedDataTable implements TableModel {
      */
     public static JIPipeExportedDataTable loadFromJson(Path fileName) {
         try {
-            return JsonUtils.getObjectMapper().readerFor(JIPipeExportedDataTable.class).readValue(fileName.toFile());
+            JIPipeExportedDataTable result = JsonUtils.getObjectMapper().readerFor(JIPipeExportedDataTable.class).readValue(fileName.toFile());
+            for (JIPipeExportedDataTableRow row : result.getRowList()) {
+                for (JIPipeExportedDataAnnotation dataAnnotation : row.getDataAnnotations()) {
+                    dataAnnotation.setTableRow(row);
+                }
+            }
+            return result;
         } catch (IOException e) {
             throw new UserFriendlyRuntimeException(e, "Unable to load data table from '" + fileName + "'!",
                     "Load JIPipe results", "Either the file is inaccessible, or corrupt.",
