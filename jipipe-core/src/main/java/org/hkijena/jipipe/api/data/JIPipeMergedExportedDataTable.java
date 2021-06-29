@@ -27,7 +27,6 @@ import java.util.UUID;
 
 /**
  * Merges multiple {@link JIPipeExportedDataTable}
- * TODO: Support for data annotations
  */
 public class JIPipeMergedExportedDataTable implements TableModel {
 

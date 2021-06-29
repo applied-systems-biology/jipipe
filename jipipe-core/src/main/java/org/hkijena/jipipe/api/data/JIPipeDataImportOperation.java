@@ -39,12 +39,13 @@ public interface JIPipeDataImportOperation extends JIPipeDataOperation {
      *
      * @param slot             the slot that is associated to the data. please note that the slot does not contain any binary data. it allows you to access the algorithm and graph.
      * @param row              the row in the output table
-     * @param rowStorageFolder the folder the row is storing the data
+     * @param dataAnnotationName Optional name of the data annotation that is referenced instead of the main data. Can be null, in which case the main data is referenced.
+     * @param rowStorageFolder the folder the row is storing the data. For data annotations, this must be the row storage folder of the data annotation.
      * @param compartmentName  the name of the compartment that generated the data
      * @param algorithmName    the name of the algorithm that generated the data
      * @param displayName      a unique identifier for the slot
      * @param workbench        the workbench that issued the command
      * @return the imported data. null if not successful.
      */
-    JIPipeData show(JIPipeDataSlot slot, JIPipeExportedDataTableRow row, Path rowStorageFolder, String compartmentName, String algorithmName, String displayName, JIPipeWorkbench workbench);
+    JIPipeData show(JIPipeDataSlot slot, JIPipeExportedDataTableRow row, String dataAnnotationName, Path rowStorageFolder, String compartmentName, String algorithmName, String displayName, JIPipeWorkbench workbench);
 }

@@ -32,7 +32,6 @@ import java.util.stream.Collectors;
 
 /**
  * Contains all metadata exported from an {@link JIPipeDataSlot}
- * TODO: Support for data annotations
  */
 public class JIPipeExportedDataTable implements TableModel {
     private String nodeId;

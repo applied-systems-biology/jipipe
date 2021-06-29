@@ -31,9 +31,7 @@ import org.hkijena.jipipe.utils.StringUtils;
 import java.util.HashSet;
 import java.util.Set;
 
-/**
- * TODO
- */
+
 @JIPipeDocumentation(name = "Un-Melt table", description = "Moves values located in a value column into separate columns according to a set of categorization columns.")
 @JIPipeOrganization(nodeTypeCategory = TableNodeTypeCategory.class)
 @JIPipeInputSlot(value = ResultsTableData.class, slotName = "Input", autoCreate = true)

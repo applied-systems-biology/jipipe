@@ -47,7 +47,7 @@ public class OMEImageDataImportIntoJIPipeOperation implements JIPipeDataImportOp
     }
 
     @Override
-    public JIPipeData show(JIPipeDataSlot slot, JIPipeExportedDataTableRow row, Path rowStorageFolder, String compartmentName, String algorithmName, String displayName, JIPipeWorkbench workbench) {
+    public JIPipeData show(JIPipeDataSlot slot, JIPipeExportedDataTableRow row, String dataAnnotationName, Path rowStorageFolder, String compartmentName, String algorithmName, String displayName, JIPipeWorkbench workbench) {
         OMEImageResultImportRun run = new OMEImageResultImportRun(slot, row, rowStorageFolder, compartmentName, algorithmName, displayName, workbench);
         knownRuns.add(run);
         JIPipeRunnerQueue.getInstance().enqueue(run);

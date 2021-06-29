@@ -39,7 +39,7 @@ public class ROIDataImportIntoImageOperation implements JIPipeDataImportOperatio
     }
 
     @Override
-    public JIPipeData show(JIPipeDataSlot slot, JIPipeExportedDataTableRow row, Path rowStorageFolder, String compartmentName, String algorithmName, String displayName, JIPipeWorkbench workbench) {
+    public JIPipeData show(JIPipeDataSlot slot, JIPipeExportedDataTableRow row, String dataAnnotationName, Path rowStorageFolder, String compartmentName, String algorithmName, String displayName, JIPipeWorkbench workbench) {
         Path roiFile = findROIFile(rowStorageFolder);
         ROIListData rois = new ROIListData(ROIListData.loadRoiListFromFile(roiFile));
         ImagePlus imp = WindowManager.getCurrentImage();

@@ -45,7 +45,6 @@ import java.util.Objects;
 
 /**
  * UI for a row
- * TODO: Support for data annotations
  */
 public class JIPipeDataSlotRowUI extends JIPipeWorkbenchPanel {
     private final JIPipeDataSlot slot;
@@ -76,7 +75,7 @@ public class JIPipeDataSlotRowUI extends JIPipeWorkbenchPanel {
         add(Box.createHorizontalGlue());
 
         if(dataAnnotations.size() > 0) {
-            JButton dataAnnotationButton = new JButton("Data annotations", UIUtils.getIconFromResources("data-types/data-annotation.png"));
+            JButton dataAnnotationButton = new JButton("Data annotations ...", UIUtils.getIconFromResources("data-types/data-annotation.png"));
             JPopupMenu menu = UIUtils.addPopupMenuToComponent(dataAnnotationButton);
 
             for (JIPipeDataAnnotation dataAnnotation : dataAnnotations) {

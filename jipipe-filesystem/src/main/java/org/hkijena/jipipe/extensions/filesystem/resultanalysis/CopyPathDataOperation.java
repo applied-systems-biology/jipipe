@@ -44,7 +44,7 @@ public class CopyPathDataOperation implements JIPipeDataImportOperation, JIPipeD
     }
 
     @Override
-    public JIPipeData show(JIPipeDataSlot slot, JIPipeExportedDataTableRow row, Path rowStorageFolder, String compartmentName, String algorithmName, String displayName, JIPipeWorkbench workbench) {
+    public JIPipeData show(JIPipeDataSlot slot, JIPipeExportedDataTableRow row, String dataAnnotationName, Path rowStorageFolder, String compartmentName, String algorithmName, String displayName, JIPipeWorkbench workbench) {
         Path listFile = PathUtils.findFileByExtensionIn(rowStorageFolder, ".json");
         if (listFile != null) {
             PathData pathData = PathData.importFrom(rowStorageFolder);

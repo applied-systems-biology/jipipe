@@ -36,7 +36,6 @@ import java.util.Objects;
 /**
  * Provides a standard result slot UI that can be also further extended.
  * Override registerActions() for this
- * TODO: Support for data annotations
  */
 public class JIPipeDefaultResultDataSlotRowUI extends JIPipeResultDataSlotRowUI {
 
@@ -59,6 +58,27 @@ public class JIPipeDefaultResultDataSlotRowUI extends JIPipeResultDataSlotRowUI 
     private void initialize() {
         setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
         add(Box.createHorizontalGlue());
+
+        if(getRow().getDataAnnotations().size() > 0) {
+            JButton dataAnnotationButton = new JButton("Data annotations ...", UIUtils.getIconFromResources("data-types/data-annotation.png"));
+            JPopupMenu menu = UIUtils.addPopupMenuToComponent(dataAnnotationButton);
+
+            for (JIPipeExportedDataAnnotation dataAnnotation : getRow().getDataAnnotations()) {
+                JIPipeDataInfo dataInfo = JIPipeDataInfo.getInstance(dataAnnotation.getTrueDataType());
+                JMenu subMenu = new JMenu(dataAnnotation.getName());
+                subMenu.setIcon(JIPipe.getDataTypes().getIconFor(dataInfo.getDataClass()));
+                List<JIPipeDataImportOperation> importOperations = JIPipe.getInstance().getDatatypeRegistry().getSortedImportOperationsFor(dataInfo.getId());
+                for (JIPipeDataImportOperation importOperation : importOperations) {
+                    JMenuItem item = new JMenuItem(importOperation.getName(), importOperation.getIcon());
+                    item.setToolTipText(importOperation.getDescription());
+                    item.addActionListener(e -> runImportOperation(importOperation, dataAnnotation));
+                    subMenu.add(item);
+                }
+                menu.add(subMenu);
+            }
+
+            add(dataAnnotationButton);
+        }
 
         JButton exportButton = new JButton("Export", UIUtils.getIconFromResources("actions/document-export.png"));
         JPopupMenu exportMenu = UIUtils.addPopupMenuToComponent(exportButton);
@@ -176,9 +196,15 @@ public class JIPipeDefaultResultDataSlotRowUI extends JIPipeResultDataSlotRowUI 
         }
     }
 
+    private void runImportOperation(JIPipeDataImportOperation operation, JIPipeExportedDataAnnotation dataAnnotation) {
+        try (BusyCursor cursor = new BusyCursor(this)) {
+            operation.show(getSlot(), getRow(), dataAnnotation.getName(), getSlot().getStoragePath().resolve(dataAnnotation.getRowStorageFolder()), getAlgorithmCompartmentName(), getAlgorithmName(), getDisplayName(), getWorkbench());
+        }
+    }
+
     private void runImportOperation(JIPipeDataImportOperation operation) {
         try (BusyCursor cursor = new BusyCursor(this)) {
-            operation.show(getSlot(), getRow(), getRowStorageFolder(), getAlgorithmCompartmentName(), getAlgorithmName(), getDisplayName(), getWorkbench());
+            operation.show(getSlot(), getRow(), null, getRowStorageFolder(), getAlgorithmCompartmentName(), getAlgorithmName(), getDisplayName(), getWorkbench());
             if (GeneralDataSettings.getInstance().isAutoSaveLastImporter()) {
                 String dataTypeId = JIPipe.getDataTypes().getIdOf(getSlot().getAcceptedDataType());
                 DynamicDataImportOperationIdEnumParameter parameter = DefaultResultImporterSettings.getInstance().getValue(dataTypeId, DynamicDataImportOperationIdEnumParameter.class);
