@@ -332,9 +332,8 @@ public class JIPipeDefaultMutableSlotConfiguration implements JIPipeMutableSlotC
                     } else if (!inputSlotsSealed) {
                         addSlot(entry.getKey(), slotDefinition, false);
                     }
-                } catch (IOException e) {
-                    throw new UserFriendlyRuntimeException(e, "Unable to read slot from JSON!", "Algorithm slot configuration", "There is essential information missing in the JSON data.",
-                            "Please check if the JSON data is valid.");
+                } catch (Exception e) {
+                    e.printStackTrace();
                 }
             }
             if (!inputSlotsSealed) {
@@ -359,9 +358,8 @@ public class JIPipeDefaultMutableSlotConfiguration implements JIPipeMutableSlotC
                     } else if (!outputSlotsSealed) {
                         addSlot(entry.getKey(), slotDefinition, false);
                     }
-                } catch (IOException e) {
-                    throw new UserFriendlyRuntimeException(e, "Unable to read slot from JSON!", "Algorithm slot configuration", "There is essential information missing in the JSON data.",
-                            "Please check if the JSON data is valid.");
+                } catch (Exception e) {
+                   e.printStackTrace();
                 }
             }
             if (!outputSlotsSealed) {

@@ -6,6 +6,7 @@ import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeAnnotation;
 import org.hkijena.jipipe.api.data.JIPipeAnnotationMergeStrategy;
 import org.hkijena.jipipe.api.data.JIPipeData;
+import org.hkijena.jipipe.api.data.JIPipeDataAnnotationMergeStrategy;
 import org.hkijena.jipipe.api.nodes.JIPipeDataBatch;
 import org.hkijena.jipipe.api.nodes.JIPipeInputSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeMergingAlgorithm;
@@ -43,11 +44,13 @@ public class DataSlicer extends JIPipeParameterSlotAlgorithm {
     @Override
     public void runParameterSet(JIPipeProgressInfo progressInfo, List<JIPipeAnnotation> parameterAnnotations) {
         HashSet<Integer> indices = new HashSet<>(sliceRange.getIntegers());
-        for (int i = 0; i < getFirstInputSlot().getRowCount(); i++) {
-            if (indices.contains(i)) {
-                getFirstOutputSlot().addData(getFirstInputSlot().getVirtualData(i),
-                        getFirstInputSlot().getAnnotations(i),
-                        JIPipeAnnotationMergeStrategy.OverwriteExisting);
+        for (int row = 0; row < getFirstInputSlot().getRowCount(); row++) {
+            if (indices.contains(row)) {
+                getFirstOutputSlot().addData(getFirstInputSlot().getVirtualData(row),
+                        getFirstInputSlot().getAnnotations(row),
+                        JIPipeAnnotationMergeStrategy.OverwriteExisting,
+                        getFirstInputSlot().getDataAnnotations(row),
+                        JIPipeDataAnnotationMergeStrategy.OverwriteExisting);
             }
         }
     }

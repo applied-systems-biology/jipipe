@@ -5,6 +5,7 @@ import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeAnnotationMergeStrategy;
 import org.hkijena.jipipe.api.data.JIPipeData;
+import org.hkijena.jipipe.api.data.JIPipeDataAnnotationMergeStrategy;
 import org.hkijena.jipipe.api.nodes.JIPipeInputSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeMergingAlgorithm;
 import org.hkijena.jipipe.api.nodes.JIPipeMergingDataBatch;
@@ -42,9 +43,12 @@ public class DataBatchSlicer extends JIPipeMergingAlgorithm {
         ArrayList<Integer> rows = new ArrayList<>(dataBatch.getInputRows(getFirstInputSlot()));
         for (int i = 0; i < rows.size(); i++) {
             if (indices.contains(i)) {
-                getFirstOutputSlot().addData(getFirstInputSlot().getVirtualData(i),
-                        getFirstInputSlot().getAnnotations(i),
-                        JIPipeAnnotationMergeStrategy.OverwriteExisting);
+                int row = rows.get(i);
+                getFirstOutputSlot().addData(getFirstInputSlot().getVirtualData(row),
+                        getFirstInputSlot().getAnnotations(row),
+                        JIPipeAnnotationMergeStrategy.OverwriteExisting,
+                        getFirstInputSlot().getDataAnnotations(row),
+                        JIPipeDataAnnotationMergeStrategy.OverwriteExisting);
             }
         }
     }

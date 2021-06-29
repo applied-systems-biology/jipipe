@@ -6,6 +6,7 @@ import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeAnnotation;
 import org.hkijena.jipipe.api.data.JIPipeAnnotationMergeStrategy;
 import org.hkijena.jipipe.api.data.JIPipeData;
+import org.hkijena.jipipe.api.data.JIPipeDataAnnotationMergeStrategy;
 import org.hkijena.jipipe.api.data.JIPipeDataTableData;
 import org.hkijena.jipipe.api.nodes.JIPipeInputSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
@@ -58,7 +59,9 @@ public class ExtractTableAlgorithm extends JIPipeParameterSlotAlgorithm {
                 }
                 getFirstOutputSlot().addData(dataTableData.getDataSlot().getVirtualData(row2),
                         annotations,
-                        mergeStrategy);
+                        mergeStrategy,
+                        dataTableData.getDataSlot().getDataAnnotations(row2),
+                        JIPipeDataAnnotationMergeStrategy.OverwriteExisting);
             }
 
         }

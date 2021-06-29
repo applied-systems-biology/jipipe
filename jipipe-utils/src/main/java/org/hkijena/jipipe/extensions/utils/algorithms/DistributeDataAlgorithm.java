@@ -6,6 +6,7 @@ import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeAnnotation;
 import org.hkijena.jipipe.api.data.JIPipeAnnotationMergeStrategy;
 import org.hkijena.jipipe.api.data.JIPipeData;
+import org.hkijena.jipipe.api.data.JIPipeDataAnnotationMergeStrategy;
 import org.hkijena.jipipe.api.data.JIPipeDataSlotInfo;
 import org.hkijena.jipipe.api.data.JIPipeDefaultMutableSlotConfiguration;
 import org.hkijena.jipipe.api.data.JIPipeSlotType;
@@ -88,7 +89,9 @@ public class DistributeDataAlgorithm extends JIPipeParameterSlotAlgorithm {
             if (available > 0) {
                 getOutputSlot(target).addData(getFirstInputSlot().getVirtualData(row),
                         getFirstInputSlot().getAnnotations(row),
-                        JIPipeAnnotationMergeStrategy.OverwriteExisting);
+                        JIPipeAnnotationMergeStrategy.OverwriteExisting,
+                        getFirstInputSlot().getDataAnnotations(row),
+                        JIPipeDataAnnotationMergeStrategy.OverwriteExisting);
             }
             --available;
             weightMap.put(target, available);

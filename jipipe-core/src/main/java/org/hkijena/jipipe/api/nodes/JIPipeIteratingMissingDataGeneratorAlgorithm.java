@@ -19,6 +19,7 @@ import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeAnnotation;
 import org.hkijena.jipipe.api.data.JIPipeAnnotationMergeStrategy;
+import org.hkijena.jipipe.api.data.JIPipeDataAnnotationMergeStrategy;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.data.JIPipeSlotConfiguration;
 import org.hkijena.jipipe.api.data.JIPipeVirtualData;
@@ -269,7 +270,11 @@ public abstract class JIPipeIteratingMissingDataGeneratorAlgorithm extends JIPip
                     for (int row : rows) {
                         JIPipeVirtualData virtualData = inputSlot.getVirtualData(row);
                         List<JIPipeAnnotation> annotations = inputSlot.getAnnotations(row);
-                        outputSlot.addData(virtualData, annotations, JIPipeAnnotationMergeStrategy.OverwriteExisting);
+                        outputSlot.addData(virtualData,
+                                annotations,
+                                JIPipeAnnotationMergeStrategy.OverwriteExisting,
+                                inputSlot.getDataAnnotations(row),
+                                JIPipeDataAnnotationMergeStrategy.OverwriteExisting);
                     }
                 } else {
                     for (int row : rows) {

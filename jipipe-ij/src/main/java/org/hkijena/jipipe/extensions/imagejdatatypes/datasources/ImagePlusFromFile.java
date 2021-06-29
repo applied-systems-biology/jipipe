@@ -23,6 +23,7 @@ import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.JIPipeIssueReport;
 import org.hkijena.jipipe.api.data.JIPipeAnnotation;
 import org.hkijena.jipipe.api.data.JIPipeAnnotationMergeStrategy;
+import org.hkijena.jipipe.api.data.JIPipeDataAnnotationMergeStrategy;
 import org.hkijena.jipipe.api.data.JIPipeDefaultMutableSlotConfiguration;
 import org.hkijena.jipipe.api.data.JIPipeVirtualData;
 import org.hkijena.jipipe.api.nodes.JIPipeDataBatch;
@@ -126,7 +127,11 @@ public class ImagePlusFromFile extends JIPipeSimpleIteratingAlgorithm {
                 }
             }
             JIPipeVirtualData virtualData = new JIPipeVirtualData(generatedImageType.getInfo().getDataClass(), targetPath, "VIRTUAL: " + fileData.toPath().getFileName());
-            getFirstOutputSlot().addData(virtualData, annotations, JIPipeAnnotationMergeStrategy.Merge);
+            getFirstOutputSlot().addData(virtualData,
+                    annotations,
+                    JIPipeAnnotationMergeStrategy.Merge,
+                    new ArrayList<>(dataBatch.getGlobalDataAnnotations().values()),
+                    JIPipeDataAnnotationMergeStrategy.OverwriteExisting);
         } else {
             ImagePlusData outputData;
             ImagePlus image = readImageFrom(fileData.toPath(), progressInfo);

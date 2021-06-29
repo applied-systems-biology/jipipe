@@ -8,6 +8,7 @@ import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeAnnotation;
 import org.hkijena.jipipe.api.data.JIPipeAnnotationMergeStrategy;
 import org.hkijena.jipipe.api.data.JIPipeData;
+import org.hkijena.jipipe.api.data.JIPipeDataAnnotationMergeStrategy;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
 import org.hkijena.jipipe.api.nodes.JIPipeAlgorithm;
@@ -161,13 +162,19 @@ public class MergingFormProcessorAlgorithm extends JIPipeAlgorithm implements JI
                 JIPipeMergingDataBatch dataBatch = dataBatchList.get(i);
                 getFirstOutputSlot().addData(dataBatch.getVirtualInputData(dataSlot).get(0),
                         new ArrayList<>(dataBatch.getGlobalAnnotations().values()),
-                        JIPipeAnnotationMergeStrategy.OverwriteExisting);
+                        JIPipeAnnotationMergeStrategy.OverwriteExisting,
+                        new ArrayList<>(dataBatch.getGlobalDataAnnotations().values()),
+                        JIPipeDataAnnotationMergeStrategy.OverwriteExisting);
 
                 // Copy user-modified forms
                 for (int row = 0; row < forms.getRowCount(); row++) {
                     List<JIPipeAnnotation> annotations = new ArrayList<>(forms.getAnnotations(row));
                     annotations.addAll(dataBatch.getGlobalAnnotations().values());
-                    formsOutputSlot.addData(forms.getVirtualData(row), annotations, JIPipeAnnotationMergeStrategy.OverwriteExisting);
+                    formsOutputSlot.addData(forms.getVirtualData(row),
+                            annotations,
+                            JIPipeAnnotationMergeStrategy.OverwriteExisting,
+                            forms.getDataAnnotations(row),
+                            JIPipeDataAnnotationMergeStrategy.OverwriteExisting);
                 }
             }
         }

@@ -17,8 +17,8 @@
   },
   "dependencies" : [ {
     "metadata" : {
-      "name" : "Utilities",
-      "description" : "<html><head></head><body>Utility algorithms</body></html>",
+      "name" : "Filesystem types and algorithms",
+      "description" : "<html><head></head><body>Data types and algorithms for interacting with files and folders</body></html>",
       "authors" : [ {
         "first-name" : "Zoltán",
         "last-name" : "Cseresnyés",
@@ -32,7 +32,7 @@
       "license" : "BSD 2-Clause",
       "citation" : ""
     },
-    "id" : "org.hkijena.jipipe:utils",
+    "id" : "org.hkijena.jipipe:filesystem",
     "version" : "2021.6",
     "ij:update-site-dependencies" : [ ],
     "ij:update-site-providers" : [ ]
@@ -59,6 +59,27 @@
     "ij:update-site-providers" : [ ]
   }, {
     "metadata" : {
+      "name" : "Cellpose integration",
+      "description" : "<html><head></head><body>Integrates Cellpose</body></html>",
+      "authors" : [ {
+        "first-name" : "Zoltán",
+        "last-name" : "Cseresnyés",
+        "affiliations" : "Applied Systems Biology, Leibniz Institute for Natural Product Research and Infection Biology – Hans-Knöll-Institute, Jena, Germany"
+      }, {
+        "first-name" : "Ruman",
+        "last-name" : "Gerst",
+        "affiliations" : "Applied Systems Biology, Leibniz Institute for Natural Product Research and Infection Biology – Hans-Knöll-Institute, Jena, Germany\nFaculty of Biological Sciences, Friedrich-Schiller-University Jena, Germany"
+      } ],
+      "website" : "https://www.jipipe.org/",
+      "license" : "BSD 2-Clause",
+      "citation" : ""
+    },
+    "id" : "org.hkijena.jipipe:cellpose",
+    "version" : "2021.6",
+    "ij:update-site-dependencies" : [ ],
+    "ij:update-site-providers" : [ ]
+  }, {
+    "metadata" : {
       "name" : "Compartment management",
       "description" : "<html><head></head><body>Data types required for graph compartment management</body></html>",
       "authors" : [ {
@@ -75,48 +96,6 @@
       "citation" : ""
     },
     "id" : "org.hkijena.jipipe:compartments",
-    "version" : "2021.6",
-    "ij:update-site-dependencies" : [ ],
-    "ij:update-site-providers" : [ ]
-  }, {
-    "metadata" : {
-      "name" : "Annotation data types and algorithms",
-      "description" : "<html><head></head><body>Provides data types and algorithms to modify data annotations</body></html>",
-      "authors" : [ {
-        "first-name" : "Zoltán",
-        "last-name" : "Cseresnyés",
-        "affiliations" : "Applied Systems Biology, Leibniz Institute for Natural Product Research and Infection Biology – Hans-Knöll-Institute, Jena, Germany"
-      }, {
-        "first-name" : "Ruman",
-        "last-name" : "Gerst",
-        "affiliations" : "Applied Systems Biology, Leibniz Institute for Natural Product Research and Infection Biology – Hans-Knöll-Institute, Jena, Germany\nFaculty of Biological Sciences, Friedrich-Schiller-University Jena, Germany"
-      } ],
-      "website" : "https://www.jipipe.org/",
-      "license" : "BSD 2-Clause",
-      "citation" : ""
-    },
-    "id" : "org.hkijena.jipipe:annotations",
-    "version" : "2021.6",
-    "ij:update-site-dependencies" : [ ],
-    "ij:update-site-providers" : [ ]
-  }, {
-    "metadata" : {
-      "name" : "Filesystem types and algorithms",
-      "description" : "<html><head></head><body>Data types and algorithms for interacting with files and folders</body></html>",
-      "authors" : [ {
-        "first-name" : "Zoltán",
-        "last-name" : "Cseresnyés",
-        "affiliations" : "Applied Systems Biology, Leibniz Institute for Natural Product Research and Infection Biology – Hans-Knöll-Institute, Jena, Germany"
-      }, {
-        "first-name" : "Ruman",
-        "last-name" : "Gerst",
-        "affiliations" : "Applied Systems Biology, Leibniz Institute for Natural Product Research and Infection Biology – Hans-Knöll-Institute, Jena, Germany\nFaculty of Biological Sciences, Friedrich-Schiller-University Jena, Germany"
-      } ],
-      "website" : "https://www.jipipe.org/",
-      "license" : "BSD 2-Clause",
-      "citation" : ""
-    },
-    "id" : "org.hkijena.jipipe:filesystem",
     "version" : "2021.6",
     "ij:update-site-dependencies" : [ ],
     "ij:update-site-providers" : [ ]
@@ -143,27 +122,6 @@
     "ij:update-site-providers" : [ ]
   }, {
     "metadata" : {
-      "name" : "Cellpose integration",
-      "description" : "<html><head></head><body>Integrates Cellpose</body></html>",
-      "authors" : [ {
-        "first-name" : "Zoltán",
-        "last-name" : "Cseresnyés",
-        "affiliations" : "Applied Systems Biology, Leibniz Institute for Natural Product Research and Infection Biology – Hans-Knöll-Institute, Jena, Germany"
-      }, {
-        "first-name" : "Ruman",
-        "last-name" : "Gerst",
-        "affiliations" : "Applied Systems Biology, Leibniz Institute for Natural Product Research and Infection Biology – Hans-Knöll-Institute, Jena, Germany\nFaculty of Biological Sciences, Friedrich-Schiller-University Jena, Germany"
-      } ],
-      "website" : "https://www.jipipe.org/",
-      "license" : "BSD 2-Clause",
-      "citation" : ""
-    },
-    "id" : "org.hkijena.jipipe:cellpose",
-    "version" : "2021.6",
-    "ij:update-site-dependencies" : [ ],
-    "ij:update-site-providers" : [ ]
-  }, {
-    "metadata" : {
       "name" : "Core",
       "description" : "<html><head></head><body>Provides core data types</body></html>",
       "authors" : [ {
@@ -180,6 +138,48 @@
       "citation" : ""
     },
     "id" : "org.hkijena.jipipe:core",
+    "version" : "2021.6",
+    "ij:update-site-dependencies" : [ ],
+    "ij:update-site-providers" : [ ]
+  }, {
+    "metadata" : {
+      "name" : "Utilities",
+      "description" : "<html><head></head><body>Utility algorithms</body></html>",
+      "authors" : [ {
+        "first-name" : "Zoltán",
+        "last-name" : "Cseresnyés",
+        "affiliations" : "Applied Systems Biology, Leibniz Institute for Natural Product Research and Infection Biology – Hans-Knöll-Institute, Jena, Germany"
+      }, {
+        "first-name" : "Ruman",
+        "last-name" : "Gerst",
+        "affiliations" : "Applied Systems Biology, Leibniz Institute for Natural Product Research and Infection Biology – Hans-Knöll-Institute, Jena, Germany\nFaculty of Biological Sciences, Friedrich-Schiller-University Jena, Germany"
+      } ],
+      "website" : "https://www.jipipe.org/",
+      "license" : "BSD 2-Clause",
+      "citation" : ""
+    },
+    "id" : "org.hkijena.jipipe:utils",
+    "version" : "2021.6",
+    "ij:update-site-dependencies" : [ ],
+    "ij:update-site-providers" : [ ]
+  }, {
+    "metadata" : {
+      "name" : "Annotation data types and algorithms",
+      "description" : "<html><head></head><body>Provides data types and algorithms to modify data annotations</body></html>",
+      "authors" : [ {
+        "first-name" : "Zoltán",
+        "last-name" : "Cseresnyés",
+        "affiliations" : "Applied Systems Biology, Leibniz Institute for Natural Product Research and Infection Biology – Hans-Knöll-Institute, Jena, Germany"
+      }, {
+        "first-name" : "Ruman",
+        "last-name" : "Gerst",
+        "affiliations" : "Applied Systems Biology, Leibniz Institute for Natural Product Research and Infection Biology – Hans-Knöll-Institute, Jena, Germany\nFaculty of Biological Sciences, Friedrich-Schiller-University Jena, Germany"
+      } ],
+      "website" : "https://www.jipipe.org/",
+      "license" : "BSD 2-Clause",
+      "citation" : ""
+    },
+    "id" : "org.hkijena.jipipe:annotations",
     "version" : "2021.6",
     "ij:update-site-dependencies" : [ ],
     "ij:update-site-providers" : [ ]
@@ -790,113 +790,29 @@
         "jipipe:node:name" : "Label image input folders",
         "jipipe:node:description" : "<html>\n  <head>\n    \n  </head>\n  <body>\n    <p>\n      These folders contain the image files in *.tif format.\n    </p>\n  </body>\n</html>\n"
       },
-      "73076f5e-005e-41a3-9098-64fdbbb28001" : {
-        "jipipe:graph-compartment" : "fb3bfe3a-c9c1-4ec4-908b-3f1b7380a851",
-        "jipipe:alias-id" : "associate-image-and-labels",
-        "jipipe:slot-configuration" : {
-          "input" : {
-            "Image" : {
-              "slot-data-type" : "imagej-imgplus",
-              "slot-type" : "Input",
-              "inherited-slot" : null,
-              "name" : "Image",
-              "custom-name" : null,
-              "is-virtual" : true,
-              "save-outputs" : true,
-              "is-optional" : false,
-              "inheritance-conversions" : { }
-            },
-            "Labels" : {
-              "slot-data-type" : "imagej-imgplus",
-              "slot-type" : "Input",
-              "inherited-slot" : null,
-              "name" : "Labels",
-              "custom-name" : null,
-              "is-virtual" : true,
-              "save-outputs" : true,
-              "is-optional" : false,
-              "inheritance-conversions" : { }
-            }
-          },
-          "output" : {
-            "Compound" : {
-              "slot-data-type" : "imagej-imgplus-masked",
-              "slot-type" : "Output",
-              "inherited-slot" : "",
-              "name" : "Compound",
-              "custom-name" : null,
-              "is-virtual" : false,
-              "save-outputs" : true,
-              "is-optional" : false,
-              "inheritance-conversions" : { }
-            }
-          }
-        },
-        "jipipe:ui-grid-location" : {
-          "fb3bfe3a-c9c1-4ec4-908b-3f1b7380a851" : {
-            "VerticalCompact" : {
-              "x" : 1,
-              "y" : 21
-            }
-          }
-        },
-        "jipipe:node-info-id" : "ij-merge-image-mask",
-        "jipipe:algorithm:enabled" : true,
-        "jipipe:parallelization:enabled" : true,
-        "jipipe:algorithm:pass-through" : false,
-        "jipipe:node:name" : "Associate image and labels",
-        "jipipe:node:description" : "<html><head></head><body></body></html>",
-        "jipipe:adaptive-parameters/attach-parameter-annotations" : true,
-        "jipipe:adaptive-parameters/attach-only-non-default-parameter-annotations" : true,
-        "jipipe:adaptive-parameters/parameter-annotations-prefix" : "",
-        "jipipe:adaptive-parameters/overridden-parameters" : [ ],
-        "jipipe:adaptive-parameters/enabled" : true,
-        "jipipe:adaptive-parameters/parameter-annotations-use-internal-names" : false,
-        "jipipe:parameter-slot-algorithm/has-parameter-slot" : false,
-        "jipipe:parameter-slot-algorithm/attach-parameter-annotations" : true,
-        "jipipe:parameter-slot-algorithm/attach-only-non-default-parameter-annotations" : true,
-        "jipipe:parameter-slot-algorithm/parameter-annotations-prefix" : "",
-        "jipipe:parameter-slot-algorithm/parameter-annotations-use-internal-names" : false,
-        "jipipe:data-batch-generation/annotation-merge-strategy" : "Merge",
-        "jipipe:data-batch-generation/column-matching" : "PrefixHashUnion",
-        "jipipe:data-batch-generation/custom-matched-columns-expression" : {
-          "expression" : ""
-        },
-        "jipipe:data-batch-generation/skip-incomplete" : false,
-        "jipipe:data-batch-generation/custom-annotation-matching" : {
-          "expression" : "exact_match_results"
-        },
-        "jipipe:data-batch-generation/limit" : {
-          "content" : {
-            "value" : "0-9"
-          },
-          "enabled" : false
-        },
-        "jipipe:data-batch-generation/annotation-matching-method" : "ExactMatch"
-      },
       "146c667a-cf78-4975-ad68-782bfd5fbbde" : {
         "jipipe:graph-compartment" : "fb3bfe3a-c9c1-4ec4-908b-3f1b7380a851",
         "jipipe:alias-id" : "cellpose-training",
         "jipipe:slot-configuration" : {
           "input" : {
             "Training data" : {
-              "slot-data-type" : "imagej-imgplus-masked",
+              "slot-data-type" : "imagej-imgplus-3d-greyscale",
               "slot-type" : "Input",
               "inherited-slot" : null,
               "name" : "Training data",
               "custom-name" : null,
-              "is-virtual" : false,
+              "is-virtual" : true,
               "save-outputs" : true,
               "is-optional" : false,
               "inheritance-conversions" : { }
             },
             "Test data" : {
-              "slot-data-type" : "imagej-imgplus-masked",
+              "slot-data-type" : "imagej-imgplus-3d-greyscale",
               "slot-type" : "Input",
               "inherited-slot" : null,
               "name" : "Test data",
               "custom-name" : null,
-              "is-virtual" : false,
+              "is-virtual" : true,
               "save-outputs" : true,
               "is-optional" : true,
               "inheritance-conversions" : { }
@@ -929,6 +845,9 @@
         "enable-3d-segmentation" : true,
         "enable-gpu" : true,
         "jipipe:parallelization:enabled" : true,
+        "label-data-annotation" : {
+          "expression" : "Label"
+        },
         "use-residual-connections" : true,
         "jipipe:algorithm:pass-through" : false,
         "train-size-model" : false,
@@ -964,8 +883,9 @@
         "jipipe:parameter-slot-algorithm/attach-only-non-default-parameter-annotations" : true,
         "jipipe:parameter-slot-algorithm/parameter-annotations-prefix" : "",
         "jipipe:parameter-slot-algorithm/parameter-annotations-use-internal-names" : false,
-        "jipipe:data-batch-generation/annotation-merge-strategy" : "Merge",
         "jipipe:data-batch-generation/column-matching" : "PrefixHashUnion",
+        "jipipe:data-batch-generation/annotation-merge-strategy" : "Merge",
+        "jipipe:data-batch-generation/data-annotation-merge-strategy" : "Merge",
         "jipipe:data-batch-generation/custom-matched-columns-expression" : {
           "expression" : ""
         },
@@ -1000,23 +920,23 @@
           },
           "output" : {
             "Training" : {
-              "slot-data-type" : "imagej-imgplus-masked",
+              "slot-data-type" : "imagej-imgplus",
               "slot-type" : "Output",
               "inherited-slot" : null,
               "name" : "Training",
               "custom-name" : null,
-              "is-virtual" : false,
+              "is-virtual" : true,
               "save-outputs" : true,
               "is-optional" : false,
               "inheritance-conversions" : { }
             },
             "Test" : {
-              "slot-data-type" : "imagej-imgplus-masked",
+              "slot-data-type" : "imagej-imgplus",
               "slot-type" : "Output",
               "inherited-slot" : null,
               "name" : "Test",
               "custom-name" : null,
-              "is-virtual" : false,
+              "is-virtual" : true,
               "save-outputs" : true,
               "is-optional" : false,
               "inheritance-conversions" : { }
@@ -1164,8 +1084,9 @@
         "output-parameters/output-labels" : false,
         "output-parameters/output-flows" : false,
         "output-parameters/output-styles" : false,
-        "jipipe:data-batch-generation/annotation-merge-strategy" : "Merge",
         "jipipe:data-batch-generation/column-matching" : "PrefixHashUnion",
+        "jipipe:data-batch-generation/annotation-merge-strategy" : "Merge",
+        "jipipe:data-batch-generation/data-annotation-merge-strategy" : "Merge",
         "jipipe:data-batch-generation/custom-matched-columns-expression" : {
           "expression" : ""
         },
@@ -1592,8 +1513,98 @@
         "jipipe:parameter-slot-algorithm/attach-only-non-default-parameter-annotations" : true,
         "jipipe:parameter-slot-algorithm/parameter-annotations-prefix" : "",
         "jipipe:parameter-slot-algorithm/parameter-annotations-use-internal-names" : false,
-        "jipipe:data-batch-generation/annotation-merge-strategy" : "Merge",
         "jipipe:data-batch-generation/column-matching" : "PrefixHashUnion",
+        "jipipe:data-batch-generation/annotation-merge-strategy" : "Merge",
+        "jipipe:data-batch-generation/data-annotation-merge-strategy" : "Merge",
+        "jipipe:data-batch-generation/custom-matched-columns-expression" : {
+          "expression" : ""
+        },
+        "jipipe:data-batch-generation/skip-incomplete" : false,
+        "jipipe:data-batch-generation/custom-annotation-matching" : {
+          "expression" : "exact_match_results"
+        },
+        "jipipe:data-batch-generation/limit" : {
+          "content" : {
+            "value" : "0-9"
+          },
+          "enabled" : false
+        },
+        "jipipe:data-batch-generation/annotation-matching-method" : "ExactMatch"
+      },
+      "81603df3-d73b-4776-a4a5-02e3920a1e25" : {
+        "jipipe:graph-compartment" : "fb3bfe3a-c9c1-4ec4-908b-3f1b7380a851",
+        "jipipe:alias-id" : "annotate-with-data",
+        "jipipe:slot-configuration" : {
+          "input" : {
+            "Input" : {
+              "slot-data-type" : "jipipe:data",
+              "slot-type" : "Input",
+              "inherited-slot" : null,
+              "name" : "Input",
+              "custom-name" : null,
+              "is-virtual" : false,
+              "save-outputs" : true,
+              "is-optional" : false,
+              "inheritance-conversions" : { }
+            },
+            "Annotation" : {
+              "slot-data-type" : "jipipe:data",
+              "slot-type" : "Input",
+              "inherited-slot" : null,
+              "name" : "Annotation",
+              "custom-name" : null,
+              "is-virtual" : false,
+              "save-outputs" : true,
+              "is-optional" : false,
+              "inheritance-conversions" : { }
+            }
+          },
+          "output" : {
+            "Output" : {
+              "slot-data-type" : "jipipe:data",
+              "slot-type" : "Output",
+              "inherited-slot" : "Input",
+              "name" : "Output",
+              "custom-name" : null,
+              "is-virtual" : false,
+              "save-outputs" : true,
+              "is-optional" : false,
+              "inheritance-conversions" : { }
+            }
+          }
+        },
+        "jipipe:ui-grid-location" : {
+          "fb3bfe3a-c9c1-4ec4-908b-3f1b7380a851" : {
+            "VerticalCompact" : {
+              "x" : 1,
+              "y" : 21
+            }
+          }
+        },
+        "jipipe:node-info-id" : "annotate-with-data",
+        "annotation-merge-strategy" : "Merge",
+        "jipipe:algorithm:enabled" : true,
+        "merge-label-annotations" : true,
+        "annotation-name" : "Label",
+        "jipipe:parallelization:enabled" : true,
+        "merge-input-annotations" : true,
+        "jipipe:algorithm:pass-through" : false,
+        "jipipe:node:name" : "Annotate with data",
+        "jipipe:node:description" : "<html><head></head><body></body></html>",
+        "jipipe:adaptive-parameters/attach-parameter-annotations" : true,
+        "jipipe:adaptive-parameters/attach-only-non-default-parameter-annotations" : true,
+        "jipipe:adaptive-parameters/parameter-annotations-prefix" : "",
+        "jipipe:adaptive-parameters/overridden-parameters" : [ ],
+        "jipipe:adaptive-parameters/enabled" : true,
+        "jipipe:adaptive-parameters/parameter-annotations-use-internal-names" : false,
+        "jipipe:parameter-slot-algorithm/has-parameter-slot" : false,
+        "jipipe:parameter-slot-algorithm/attach-parameter-annotations" : true,
+        "jipipe:parameter-slot-algorithm/attach-only-non-default-parameter-annotations" : true,
+        "jipipe:parameter-slot-algorithm/parameter-annotations-prefix" : "",
+        "jipipe:parameter-slot-algorithm/parameter-annotations-use-internal-names" : false,
+        "jipipe:data-batch-generation/column-matching" : "PrefixHashUnion",
+        "jipipe:data-batch-generation/annotation-merge-strategy" : "Merge",
+        "jipipe:data-batch-generation/data-annotation-merge-strategy" : "Merge",
         "jipipe:data-batch-generation/custom-matched-columns-expression" : {
           "expression" : ""
         },
@@ -1612,27 +1623,9 @@
     },
     "edges" : [ {
       "source-node" : "c95e9347-6ed1-4140-9644-376b4820a0e2",
-      "target-node" : "a5085fc9-984e-46b9-b533-4e3f9b5acbcb",
+      "target-node" : "81603df3-d73b-4776-a4a5-02e3920a1e25",
       "source-slot" : "Image",
       "target-slot" : "Input",
-      "metadata" : {
-        "ui-hidden" : true,
-        "ui-shape" : "Elbow"
-      }
-    }, {
-      "source-node" : "b5f67a20-14e2-4152-b78b-b4471114740a",
-      "target-node" : "146c667a-cf78-4975-ad68-782bfd5fbbde",
-      "source-slot" : "Test",
-      "target-slot" : "Test data",
-      "metadata" : {
-        "ui-hidden" : false,
-        "ui-shape" : "Elbow"
-      }
-    }, {
-      "source-node" : "2284847b-da25-46a6-aa70-73ceb304f8cf",
-      "target-node" : "73076f5e-005e-41a3-9098-64fdbbb28001",
-      "source-slot" : "Image",
-      "target-slot" : "Labels",
       "metadata" : {
         "ui-hidden" : false,
         "ui-shape" : "Elbow"
@@ -1647,28 +1640,28 @@
         "ui-shape" : "Elbow"
       }
     }, {
-      "source-node" : "c95e9347-6ed1-4140-9644-376b4820a0e2",
-      "target-node" : "73076f5e-005e-41a3-9098-64fdbbb28001",
-      "source-slot" : "Image",
-      "target-slot" : "Image",
+      "source-node" : "50ecd60d-cbd8-4898-9dd7-56aec1b0fc75",
+      "target-node" : "a5085fc9-984e-46b9-b533-4e3f9b5acbcb",
+      "source-slot" : "Comment",
+      "target-slot" : "Size model",
+      "metadata" : {
+        "ui-hidden" : false,
+        "ui-shape" : "Line"
+      }
+    }, {
+      "source-node" : "aeda9f6f-2927-4961-b9de-4404c229c89a",
+      "target-node" : "4f715681-2824-41b5-84fc-d5cefba7c84b",
+      "source-slot" : "Folder paths",
+      "target-slot" : "Paths",
       "metadata" : {
         "ui-hidden" : false,
         "ui-shape" : "Elbow"
       }
     }, {
-      "source-node" : "c95e9347-6ed1-4140-9644-376b4820a0e2",
-      "target-node" : "cb931be4-399c-4e60-b787-c385686cb167",
-      "source-slot" : "Image",
-      "target-slot" : "Image",
-      "metadata" : {
-        "ui-hidden" : true,
-        "ui-shape" : "Elbow"
-      }
-    }, {
-      "source-node" : "ecdf50fe-bee7-4ce1-bafa-b136f4221380",
-      "target-node" : "4ef386cb-0b4e-4079-92d4-d502ed539874",
-      "source-slot" : "Files",
-      "target-slot" : "Paths",
+      "source-node" : "b5f67a20-14e2-4152-b78b-b4471114740a",
+      "target-node" : "146c667a-cf78-4975-ad68-782bfd5fbbde",
+      "source-slot" : "Test",
+      "target-slot" : "Test data",
       "metadata" : {
         "ui-hidden" : false,
         "ui-shape" : "Elbow"
@@ -1683,22 +1676,40 @@
         "ui-shape" : "Elbow"
       }
     }, {
-      "source-node" : "50ecd60d-cbd8-4898-9dd7-56aec1b0fc75",
-      "target-node" : "a5085fc9-984e-46b9-b533-4e3f9b5acbcb",
-      "source-slot" : "Comment",
-      "target-slot" : "Size model",
-      "metadata" : {
-        "ui-hidden" : false,
-        "ui-shape" : "Line"
-      }
-    }, {
-      "source-node" : "4f715681-2824-41b5-84fc-d5cefba7c84b",
-      "target-node" : "ecdf50fe-bee7-4ce1-bafa-b136f4221380",
-      "source-slot" : "Annotated paths",
-      "target-slot" : "Folders",
+      "source-node" : "81603df3-d73b-4776-a4a5-02e3920a1e25",
+      "target-node" : "b5f67a20-14e2-4152-b78b-b4471114740a",
+      "source-slot" : "Output",
+      "target-slot" : "Input",
       "metadata" : {
         "ui-hidden" : false,
         "ui-shape" : "Elbow"
+      }
+    }, {
+      "source-node" : "924a7b53-4d18-4780-ac83-2ae17eed6a7c",
+      "target-node" : "a5085fc9-984e-46b9-b533-4e3f9b5acbcb",
+      "source-slot" : "Output",
+      "target-slot" : "Pretrained model",
+      "metadata" : {
+        "ui-hidden" : false,
+        "ui-shape" : "Elbow"
+      }
+    }, {
+      "source-node" : "c95e9347-6ed1-4140-9644-376b4820a0e2",
+      "target-node" : "cb931be4-399c-4e60-b787-c385686cb167",
+      "source-slot" : "Image",
+      "target-slot" : "Image",
+      "metadata" : {
+        "ui-hidden" : true,
+        "ui-shape" : "Elbow"
+      }
+    }, {
+      "source-node" : "aeda9f6f-2927-4961-b9de-4404c229c89a",
+      "target-node" : "b3889aea-2b3d-45dc-9466-90f3dfb78840",
+      "source-slot" : "Folder paths",
+      "target-slot" : "Comment",
+      "metadata" : {
+        "ui-hidden" : false,
+        "ui-shape" : "Line"
       }
     }, {
       "source-node" : "6af050e4-4ad5-4ed4-80f1-7757318d6b07",
@@ -1707,6 +1718,24 @@
       "target-slot" : "Folders",
       "metadata" : {
         "ui-hidden" : false,
+        "ui-shape" : "Elbow"
+      }
+    }, {
+      "source-node" : "146c667a-cf78-4975-ad68-782bfd5fbbde",
+      "target-node" : "924a7b53-4d18-4780-ac83-2ae17eed6a7c",
+      "source-slot" : "Model",
+      "target-slot" : "Input",
+      "metadata" : {
+        "ui-hidden" : false,
+        "ui-shape" : "Elbow"
+      }
+    }, {
+      "source-node" : "c95e9347-6ed1-4140-9644-376b4820a0e2",
+      "target-node" : "a5085fc9-984e-46b9-b533-4e3f9b5acbcb",
+      "source-slot" : "Image",
+      "target-slot" : "Input",
+      "metadata" : {
+        "ui-hidden" : true,
         "ui-shape" : "Elbow"
       }
     }, {
@@ -1719,13 +1748,22 @@
         "ui-shape" : "Elbow"
       }
     }, {
-      "source-node" : "aeda9f6f-2927-4961-b9de-4404c229c89a",
-      "target-node" : "4f715681-2824-41b5-84fc-d5cefba7c84b",
-      "source-slot" : "Folder paths",
-      "target-slot" : "Paths",
+      "source-node" : "4f715681-2824-41b5-84fc-d5cefba7c84b",
+      "target-node" : "ecdf50fe-bee7-4ce1-bafa-b136f4221380",
+      "source-slot" : "Annotated paths",
+      "target-slot" : "Folders",
       "metadata" : {
         "ui-hidden" : false,
         "ui-shape" : "Elbow"
+      }
+    }, {
+      "source-node" : "b10aa3b3-84bc-4896-9fe1-6211a6d2e98e",
+      "target-node" : "b3889aea-2b3d-45dc-9466-90f3dfb78840",
+      "source-slot" : "Folder paths",
+      "target-slot" : "Comment",
+      "metadata" : {
+        "ui-hidden" : false,
+        "ui-shape" : "Line"
       }
     }, {
       "source-node" : "4ef386cb-0b4e-4079-92d4-d502ed539874",
@@ -1746,55 +1784,28 @@
         "ui-shape" : "Elbow"
       }
     }, {
-      "source-node" : "146c667a-cf78-4975-ad68-782bfd5fbbde",
-      "target-node" : "924a7b53-4d18-4780-ac83-2ae17eed6a7c",
-      "source-slot" : "Model",
-      "target-slot" : "Input",
+      "source-node" : "ecdf50fe-bee7-4ce1-bafa-b136f4221380",
+      "target-node" : "4ef386cb-0b4e-4079-92d4-d502ed539874",
+      "source-slot" : "Files",
+      "target-slot" : "Paths",
       "metadata" : {
         "ui-hidden" : false,
         "ui-shape" : "Elbow"
-      }
-    }, {
-      "source-node" : "73076f5e-005e-41a3-9098-64fdbbb28001",
-      "target-node" : "b5f67a20-14e2-4152-b78b-b4471114740a",
-      "source-slot" : "Compound",
-      "target-slot" : "Input",
-      "metadata" : {
-        "ui-hidden" : false,
-        "ui-shape" : "Elbow"
-      }
-    }, {
-      "source-node" : "b10aa3b3-84bc-4896-9fe1-6211a6d2e98e",
-      "target-node" : "b3889aea-2b3d-45dc-9466-90f3dfb78840",
-      "source-slot" : "Folder paths",
-      "target-slot" : "Comment",
-      "metadata" : {
-        "ui-hidden" : false,
-        "ui-shape" : "Line"
-      }
-    }, {
-      "source-node" : "924a7b53-4d18-4780-ac83-2ae17eed6a7c",
-      "target-node" : "a5085fc9-984e-46b9-b533-4e3f9b5acbcb",
-      "source-slot" : "Output",
-      "target-slot" : "Pretrained model",
-      "metadata" : {
-        "ui-hidden" : false,
-        "ui-shape" : "Elbow"
-      }
-    }, {
-      "source-node" : "aeda9f6f-2927-4961-b9de-4404c229c89a",
-      "target-node" : "b3889aea-2b3d-45dc-9466-90f3dfb78840",
-      "source-slot" : "Folder paths",
-      "target-slot" : "Comment",
-      "metadata" : {
-        "ui-hidden" : false,
-        "ui-shape" : "Line"
       }
     }, {
       "source-node" : "b10aa3b3-84bc-4896-9fe1-6211a6d2e98e",
       "target-node" : "6af050e4-4ad5-4ed4-80f1-7757318d6b07",
       "source-slot" : "Folder paths",
       "target-slot" : "Paths",
+      "metadata" : {
+        "ui-hidden" : false,
+        "ui-shape" : "Elbow"
+      }
+    }, {
+      "source-node" : "2284847b-da25-46a6-aa70-73ceb304f8cf",
+      "target-node" : "81603df3-d73b-4776-a4a5-02e3920a1e25",
+      "source-slot" : "Image",
+      "target-slot" : "Annotation",
       "metadata" : {
         "ui-hidden" : false,
         "ui-shape" : "Elbow"

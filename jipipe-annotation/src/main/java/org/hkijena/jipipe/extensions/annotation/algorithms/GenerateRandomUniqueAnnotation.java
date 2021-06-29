@@ -20,6 +20,7 @@ import org.hkijena.jipipe.api.JIPipeIssueReport;
 import org.hkijena.jipipe.api.data.JIPipeAnnotation;
 import org.hkijena.jipipe.api.data.JIPipeAnnotationMergeStrategy;
 import org.hkijena.jipipe.api.data.JIPipeData;
+import org.hkijena.jipipe.api.data.JIPipeDataAnnotationMergeStrategy;
 import org.hkijena.jipipe.api.nodes.JIPipeInputSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.JIPipeOutputSlot;
@@ -79,7 +80,11 @@ public class GenerateRandomUniqueAnnotation extends JIPipeParameterSlotAlgorithm
             annotations.clear();
             annotations.addAll(getFirstInputSlot().getAnnotations(row));
             annotations.add(new JIPipeAnnotation(generatedAnnotation, "" + (index++)));
-            getFirstOutputSlot().addData(getFirstInputSlot().getVirtualData(row), annotations, annotationMergeStrategy);
+            getFirstOutputSlot().addData(getFirstInputSlot().getVirtualData(row),
+                    annotations,
+                    annotationMergeStrategy,
+                    getFirstInputSlot().getDataAnnotations(row),
+                    JIPipeDataAnnotationMergeStrategy.OverwriteExisting);
         }
     }
 

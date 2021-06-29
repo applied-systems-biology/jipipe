@@ -686,6 +686,34 @@ public class JIPipeDataSlot {
     }
 
     /**
+     * Adds data as virtual data reference
+     *
+     * @param virtualData   the virtual data
+     * @param annotations   the annotations
+     * @param mergeStrategy merge strategy
+     */
+    public void addData(JIPipeVirtualData virtualData, List<JIPipeAnnotation> annotations, JIPipeAnnotationMergeStrategy mergeStrategy, List<JIPipeDataAnnotation> dataAnnotations, JIPipeDataAnnotationMergeStrategy dataAnnotationMergeStrategy) {
+        if (!accepts(virtualData.getDataClass()))
+            throw new IllegalArgumentException("Tried to add data of type " + virtualData.getDataClass() + ", but slot only accepts " + acceptedDataType + ". A converter could not be found.");
+        if (uniqueData) {
+            if (findRowWithAnnotations(annotations) != -1) {
+                uniqueData = false;
+            }
+        }
+        if (!annotations.isEmpty()) {
+            annotations = mergeStrategy.merge(annotations);
+        }
+        data.add(virtualData);
+        for (JIPipeAnnotation annotation : annotations) {
+            List<JIPipeAnnotation> annotationArray = getOrCreateAnnotationColumnData(annotation.getName());
+            annotationArray.set(getRowCount() - 1, annotation);
+        }
+        for (JIPipeDataAnnotation annotation : dataAnnotationMergeStrategy.merge(dataAnnotations)) {
+            setVirtualDataAnnotation(getRowCount() - 1, annotation.getName(), annotation.getVirtualData());
+        }
+    }
+
+    /**
      * Gets the true type of the data at given row
      *
      * @param row the row

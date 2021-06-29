@@ -5,6 +5,7 @@ import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeAnnotationMergeStrategy;
 import org.hkijena.jipipe.api.data.JIPipeData;
+import org.hkijena.jipipe.api.data.JIPipeDataAnnotationMergeStrategy;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.data.JIPipeDataSlotInfo;
 import org.hkijena.jipipe.api.data.JIPipeDataTableData;
@@ -36,7 +37,9 @@ public class MergeDataToTableAlgorithm extends JIPipeMergingAlgorithm {
         for (Integer row : dataBatch.getInputSlotRows().get(getFirstInputSlot())) {
             slot.addData(getFirstInputSlot().getVirtualData(row),
                     getFirstInputSlot().getAnnotations(row),
-                    JIPipeAnnotationMergeStrategy.OverwriteExisting);
+                    JIPipeAnnotationMergeStrategy.OverwriteExisting,
+                    getFirstInputSlot().getDataAnnotations(row),
+                    JIPipeDataAnnotationMergeStrategy.OverwriteExisting);
         }
         dataBatch.addOutputData(getFirstOutputSlot(), new JIPipeDataTableData(slot), progressInfo);
     }

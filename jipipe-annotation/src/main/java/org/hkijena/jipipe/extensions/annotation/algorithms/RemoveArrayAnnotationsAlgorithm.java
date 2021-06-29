@@ -19,6 +19,7 @@ import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeAnnotation;
 import org.hkijena.jipipe.api.data.JIPipeAnnotationMergeStrategy;
 import org.hkijena.jipipe.api.data.JIPipeData;
+import org.hkijena.jipipe.api.data.JIPipeDataAnnotationMergeStrategy;
 import org.hkijena.jipipe.api.nodes.JIPipeInputSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.JIPipeOutputSlot;
@@ -71,7 +72,11 @@ public class RemoveArrayAnnotationsAlgorithm extends JIPipeParameterSlotAlgorith
             for (int row = 0; row < getFirstInputSlot().getRowCount(); row++) {
                 List<JIPipeAnnotation> annotations = getFirstInputSlot().getAnnotations(row);
                 annotations.removeIf(annotation -> annotationNameFilter.test(annotation.getName()) && annotation.isArray());
-                getFirstOutputSlot().addData(getFirstInputSlot().getVirtualData(row), annotations, JIPipeAnnotationMergeStrategy.Merge);
+                getFirstOutputSlot().addData(getFirstInputSlot().getVirtualData(row),
+                        annotations,
+                        JIPipeAnnotationMergeStrategy.Merge,
+                        getFirstInputSlot().getDataAnnotations(row),
+                        JIPipeDataAnnotationMergeStrategy.OverwriteExisting);
             }
         }
     }
