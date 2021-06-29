@@ -184,7 +184,6 @@ public class OMEImageData implements JIPipeData {
         return simpleOMEImport(targetFile);
     }
 
-    @NotNull
     public static OMEImageData simpleOMEImport(Path targetFile) {
         try {
             ImporterOptions importerOptions = new ImporterOptions();

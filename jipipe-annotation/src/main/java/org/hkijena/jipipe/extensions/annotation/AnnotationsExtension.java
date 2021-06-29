@@ -85,6 +85,11 @@ public class AnnotationsExtension extends JIPipePrepackagedDefaultJavaExtension 
         registerNodeType("remove-array-annotations", RemoveArrayAnnotationsAlgorithm.class, UIUtils.getIconURLFromResources("actions/filter.png"));
         registerNodeType("remove-na-annotation-columns", RemoveNAAnnotationColumnsAlgorithm.class, UIUtils.getIconURLFromResources("actions/filter.png"));
         registerNodeType("annotate-with-data", AnnotateWithData.class, UIUtils.getIconURLFromResources("actions/database.png"));
+        registerNodeType("remove-data-annotations", RemoveDataAnnotations.class, UIUtils.getIconURLFromResources("actions/entry-delete.png"));
+        registerNodeType("extract-data-annotation", ExtractDataAnnotation.class, UIUtils.getIconURLFromResources("actions/archive-extract.png"));
+        registerNodeType("convert-data-annotation-to-string-annotation", DataAnnotationToStringAnnotation.class, UIUtils.getIconURLFromResources("actions/tag.png"));
+        registerNodeType("rename-annotation", RenameAnnotation.class, UIUtils.getIconURLFromResources("actions/edit-find-replace.png"));
+        registerNodeType("rename-data-annotation", RenameDataAnnotation.class, UIUtils.getIconURLFromResources("actions/edit-find-replace.png"));
     }
 
     @Override

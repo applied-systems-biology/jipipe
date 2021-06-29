@@ -108,6 +108,7 @@ public abstract class JIPipeIteratingAlgorithm extends JIPipeParameterSlotAlgori
         builder.setApplyMerging(false);
         builder.setSlots(slots);
         builder.setAnnotationMergeStrategy(dataBatchGenerationSettings.getAnnotationMergeStrategy());
+        builder.setDataAnnotationMergeStrategy(dataBatchGenerationSettings.getDataAnnotationMergeStrategy());
         builder.setReferenceColumns(dataBatchGenerationSettings.getColumnMatching(),
                 dataBatchGenerationSettings.getCustomColumns());
         builder.setCustomAnnotationMatching(dataBatchGenerationSettings.getCustomAnnotationMatching());
@@ -173,6 +174,7 @@ public abstract class JIPipeIteratingAlgorithm extends JIPipeParameterSlotAlgori
                 dataBatch.setInputData(getFirstInputSlot(), row);
                 dataBatch.addGlobalAnnotations(parameterAnnotations, dataBatchGenerationSettings.getAnnotationMergeStrategy());
                 dataBatch.addGlobalAnnotations(getFirstInputSlot().getAnnotations(row), dataBatchGenerationSettings.getAnnotationMergeStrategy());
+                dataBatch.addGlobalDataAnnotations(getFirstInputSlot().getDataAnnotations(row), dataBatchGenerationSettings.getDataAnnotationMergeStrategy());
                 uploadAdaptiveParameters(dataBatch, tree, parameterBackups, progressInfo);
                 dataBatches.add(dataBatch);
             }

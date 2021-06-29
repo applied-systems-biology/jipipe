@@ -16,6 +16,7 @@ package org.hkijena.jipipe.api.nodes;
 import com.google.common.eventbus.EventBus;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.data.JIPipeAnnotationMergeStrategy;
+import org.hkijena.jipipe.api.data.JIPipeDataAnnotationMergeStrategy;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
@@ -37,6 +38,7 @@ public class JIPipeMergingAlgorithmDataBatchGenerationSettings implements JIPipe
     private OptionalIntegerRange limit = new OptionalIntegerRange(new IntegerRange("0-9"), false);
     private JIPipeAnnotationMatchingMethod annotationMatchingMethod = JIPipeAnnotationMatchingMethod.ExactMatch;
     private DefaultExpressionParameter customAnnotationMatching = new DefaultExpressionParameter("exact_match_results");
+    private JIPipeDataAnnotationMergeStrategy dataAnnotationMergeStrategy = JIPipeDataAnnotationMergeStrategy.Merge;
 
     public JIPipeMergingAlgorithmDataBatchGenerationSettings() {
     }
@@ -49,6 +51,7 @@ public class JIPipeMergingAlgorithmDataBatchGenerationSettings implements JIPipe
         this.limit = new OptionalIntegerRange(other.limit);
         this.annotationMatchingMethod = other.annotationMatchingMethod;
         this.customAnnotationMatching = new DefaultExpressionParameter(other.customAnnotationMatching);
+        this.dataAnnotationMergeStrategy = other.dataAnnotationMergeStrategy;
     }
 
     @JIPipeDocumentation(name = "Annotation matching method", description = "Allows to customize when two annotation sets are considered as equal. " +
@@ -149,6 +152,17 @@ public class JIPipeMergingAlgorithmDataBatchGenerationSettings implements JIPipe
     @JIPipeParameter("annotation-merge-strategy")
     public void setAnnotationMergeStrategy(JIPipeAnnotationMergeStrategy annotationMergeStrategy) {
         this.annotationMergeStrategy = annotationMergeStrategy;
+    }
+
+    @JIPipeDocumentation(name = "Merge same data annotation values", description = "Determines which strategy is applied if different values for the same data annotation columns are encountered.")
+    @JIPipeParameter("data-annotation-merge-strategy")
+    public JIPipeDataAnnotationMergeStrategy getDataAnnotationMergeStrategy() {
+        return dataAnnotationMergeStrategy;
+    }
+
+    @JIPipeParameter("data-annotation-merge-strategy")
+    public void setDataAnnotationMergeStrategy(JIPipeDataAnnotationMergeStrategy dataAnnotationMergeStrategy) {
+        this.dataAnnotationMergeStrategy = dataAnnotationMergeStrategy;
     }
 
     @JIPipeDocumentation(name = "Limit", description = "Limits which data batches are generated. The first index is zero.\n" + IntegerRange.DOCUMENTATION_DESCRIPTION)

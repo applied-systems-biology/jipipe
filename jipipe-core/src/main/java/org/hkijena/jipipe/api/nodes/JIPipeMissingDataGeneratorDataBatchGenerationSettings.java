@@ -16,6 +16,7 @@ package org.hkijena.jipipe.api.nodes;
 import com.google.common.eventbus.EventBus;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.data.JIPipeAnnotationMergeStrategy;
+import org.hkijena.jipipe.api.data.JIPipeDataAnnotationMergeStrategy;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.extensions.expressions.StringQueryExpression;
@@ -34,6 +35,7 @@ public class JIPipeMissingDataGeneratorDataBatchGenerationSettings implements JI
     private OptionalIntegerRange limit = new OptionalIntegerRange(new IntegerRange("0-9"), false);
     private boolean allowMerging = false;
     private JIPipeAnnotationMergeStrategy annotationMergeStrategy = JIPipeAnnotationMergeStrategy.Merge;
+    private JIPipeDataAnnotationMergeStrategy dataAnnotationMergeStrategy = JIPipeDataAnnotationMergeStrategy.Merge;
 
     public JIPipeMissingDataGeneratorDataBatchGenerationSettings() {
     }
@@ -44,6 +46,7 @@ public class JIPipeMissingDataGeneratorDataBatchGenerationSettings implements JI
         this.limit = new OptionalIntegerRange(other.limit);
         this.allowMerging = other.allowMerging;
         this.annotationMergeStrategy = other.annotationMergeStrategy;
+        this.dataAnnotationMergeStrategy = other.dataAnnotationMergeStrategy;
     }
 
     @Override
@@ -114,5 +117,16 @@ public class JIPipeMissingDataGeneratorDataBatchGenerationSettings implements JI
     @JIPipeParameter("annotation-merge-strategy")
     public void setAnnotationMergeStrategy(JIPipeAnnotationMergeStrategy annotationMergeStrategy) {
         this.annotationMergeStrategy = annotationMergeStrategy;
+    }
+
+    @JIPipeDocumentation(name = "Merge same data annotation values", description = "Determines which strategy is applied if different values for the same data annotation columns are encountered.")
+    @JIPipeParameter("data-annotation-merge-strategy")
+    public JIPipeDataAnnotationMergeStrategy getDataAnnotationMergeStrategy() {
+        return dataAnnotationMergeStrategy;
+    }
+
+    @JIPipeParameter("data-annotation-merge-strategy")
+    public void setDataAnnotationMergeStrategy(JIPipeDataAnnotationMergeStrategy dataAnnotationMergeStrategy) {
+        this.dataAnnotationMergeStrategy = dataAnnotationMergeStrategy;
     }
 }
