@@ -37,7 +37,7 @@ public class PlotDataSlotPreview extends JIPipeAsyncResultDataPlotPreview {
      * @param row       the row
      */
     public PlotDataSlotPreview(JIPipeProjectWorkbench workbench, JTable table, JIPipeDataSlot slot, JIPipeExportedDataTableRow row) {
-        super(workbench, table, slot, row);
+        super(workbench, table, slot, row, dataAnnotation);
         initialize();
     }
 

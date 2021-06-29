@@ -14,6 +14,7 @@
 package org.hkijena.jipipe.ui.resultanalysis;
 
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
+import org.hkijena.jipipe.api.data.JIPipeExportedDataAnnotation;
 import org.hkijena.jipipe.api.data.JIPipeExportedDataTableRow;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
 
@@ -26,14 +27,14 @@ import java.awt.BorderLayout;
 public class JIPipeDefaultResultDataSlotPreview extends JIPipeResultDataSlotPreview {
     /**
      * Creates a new renderer
-     *
-     * @param workbench the workbench
+     *  @param workbench the workbench
      * @param table     the table where the data is rendered in
      * @param slot      the data slot
      * @param row       the row
+     * @param dataAnnotation the data annotation (optional)
      */
-    public JIPipeDefaultResultDataSlotPreview(JIPipeProjectWorkbench workbench, JTable table, JIPipeDataSlot slot, JIPipeExportedDataTableRow row) {
-        super(workbench, table, slot, row);
+    public JIPipeDefaultResultDataSlotPreview(JIPipeProjectWorkbench workbench, JTable table, JIPipeDataSlot slot, JIPipeExportedDataTableRow row, JIPipeExportedDataAnnotation dataAnnotation) {
+        super(workbench, table, slot, row, dataAnnotation);
         initialize();
     }
 

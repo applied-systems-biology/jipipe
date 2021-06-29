@@ -46,6 +46,7 @@ import java.util.Collections;
 
 /**
  * UI that displays the {@link JIPipeExportedDataTable} of an {@link JIPipeDataSlot}
+ * TODO: Support data annotations
  */
 public class JIPipeResultDataSlotTableUI extends JIPipeProjectWorkbenchPanel {
 

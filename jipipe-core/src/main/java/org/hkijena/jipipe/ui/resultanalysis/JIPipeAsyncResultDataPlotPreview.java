@@ -16,6 +16,7 @@ package org.hkijena.jipipe.ui.resultanalysis;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
+import org.hkijena.jipipe.api.data.JIPipeExportedDataAnnotation;
 import org.hkijena.jipipe.api.data.JIPipeExportedDataTableRow;
 import org.hkijena.jipipe.extensions.settings.GeneralDataSettings;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
@@ -38,14 +39,14 @@ public abstract class JIPipeAsyncResultDataPlotPreview extends JIPipeResultDataS
 
     /**
      * Creates a new renderer
-     *
-     * @param workbench the workbench
+     *  @param workbench the workbench
      * @param table     the table where the data is rendered in
      * @param slot      the data slot
      * @param row       the row
+     * @param dataAnnotation the data annotation (Optional)
      */
-    public JIPipeAsyncResultDataPlotPreview(JIPipeProjectWorkbench workbench, JTable table, JIPipeDataSlot slot, JIPipeExportedDataTableRow row) {
-        super(workbench, table, slot, row);
+    public JIPipeAsyncResultDataPlotPreview(JIPipeProjectWorkbench workbench, JTable table, JIPipeDataSlot slot, JIPipeExportedDataTableRow row, JIPipeExportedDataAnnotation dataAnnotation) {
+        super(workbench, table, slot, row, dataAnnotation);
         initialize();
     }
 
@@ -57,7 +58,7 @@ public abstract class JIPipeAsyncResultDataPlotPreview extends JIPipeResultDataS
     @Override
     public void renderPreview() {
         if (worker == null) {
-            worker = new Worker(this, getRowStorageFolder(getSlot(), getRow()));
+            worker = new Worker(this, getRowStorageFolder(getSlot(), getRow(), getDataAnnotation()));
             worker.execute();
         }
     }

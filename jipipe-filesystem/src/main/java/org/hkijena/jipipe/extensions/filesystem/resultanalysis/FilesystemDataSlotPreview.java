@@ -42,7 +42,7 @@ public class FilesystemDataSlotPreview extends JIPipeResultDataSlotPreview {
      * @param row       the row
      */
     public FilesystemDataSlotPreview(JIPipeProjectWorkbench workbench, JTable table, JIPipeDataSlot slot, JIPipeExportedDataTableRow row) {
-        super(workbench, table, slot, row);
+        super(workbench, table, slot, row, dataAnnotationName);
         initialize();
     }
 
@@ -54,7 +54,7 @@ public class FilesystemDataSlotPreview extends JIPipeResultDataSlotPreview {
 
 
     private Path findListFile(JIPipeDataSlot slot, JIPipeExportedDataTableRow row) {
-        Path rowStorageFolder = getRowStorageFolder(slot, row);
+        Path rowStorageFolder = getRowStorageFolder(slot, row, dataAnnotationName);
         if (Files.isDirectory(rowStorageFolder)) {
             return PathUtils.findFileByExtensionIn(rowStorageFolder, ".json");
         }
@@ -68,7 +68,7 @@ public class FilesystemDataSlotPreview extends JIPipeResultDataSlotPreview {
         label.setIcon(JIPipe.getDataTypes().getIconFor(getSlot().getAcceptedDataType()));
         Path listFile = findListFile(getSlot(), getRow());
         if (listFile != null) {
-            PathData pathData = PathData.importFrom(getRowStorageFolder(getSlot(), getRow()));
+            PathData pathData = PathData.importFrom(getRowStorageFolder(getSlot(), getRow(), dataAnnotationName));
             label.setText(pathData.getPath() + "");
         } else {
             label.setText("<Not found>");

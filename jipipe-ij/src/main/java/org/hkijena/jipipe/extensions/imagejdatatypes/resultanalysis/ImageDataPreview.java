@@ -32,6 +32,6 @@ public class ImageDataPreview extends JIPipeAsyncResultDataPlotPreview {
      * @param row       the row
      */
     public ImageDataPreview(JIPipeProjectWorkbench workbench, JTable table, JIPipeDataSlot slot, JIPipeExportedDataTableRow row) {
-        super(workbench, table, slot, row);
+        super(workbench, table, slot, row, dataAnnotation);
     }
 }

@@ -14,6 +14,7 @@
 package org.hkijena.jipipe.ui.resultanalysis;
 
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
+import org.hkijena.jipipe.api.data.JIPipeExportedDataAnnotation;
 import org.hkijena.jipipe.api.data.JIPipeExportedDataTableRow;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbenchPanel;
@@ -28,26 +29,27 @@ import java.nio.file.Path;
  * Renders a {@link JIPipeDataSlot} row as table cell.
  * The component should default to a light render workload (e.g. a status text).
  * Run renderPreview() to run any kind of heavy workload
- * TODO: Support for data annotations
  */
 public abstract class JIPipeResultDataSlotPreview extends JIPipeProjectWorkbenchPanel {
 
     private final JTable table;
     private final JIPipeDataSlot slot;
     private final JIPipeExportedDataTableRow row;
+    private final JIPipeExportedDataAnnotation dataAnnotation;
 
     /**
      * Creates a new renderer
-     *
-     * @param workbench the workbench
+     *  @param workbench the workbench
      * @param table     the table where the data is rendered in
      * @param slot      the data slot
      * @param row       the row
+     * @param dataAnnotation optional data annotation. if null, the main data is referenced
      */
-    public JIPipeResultDataSlotPreview(JIPipeProjectWorkbench workbench, JTable table, JIPipeDataSlot slot, JIPipeExportedDataTableRow row) {
+    public JIPipeResultDataSlotPreview(JIPipeProjectWorkbench workbench, JTable table, JIPipeDataSlot slot, JIPipeExportedDataTableRow row, JIPipeExportedDataAnnotation dataAnnotation) {
         super(workbench);
         this.slot = slot;
         this.row = row;
+        this.dataAnnotation = dataAnnotation;
         setLayout(new BorderLayout());
         setOpaque(false);
         this.table = table;
@@ -86,6 +88,14 @@ public abstract class JIPipeResultDataSlotPreview extends JIPipeProjectWorkbench
     }
 
     /**
+     * The data annotation (optional)
+     * @return data annotation or null if the main data is referenced
+     */
+    public JIPipeExportedDataAnnotation getDataAnnotation() {
+        return dataAnnotation;
+    }
+
+    /**
      * Returns the compartment name of the algorithm that generated the data
      *
      * @param workbenchUI The workbench
@@ -102,7 +112,7 @@ public abstract class JIPipeResultDataSlotPreview extends JIPipeProjectWorkbench
      * @param slot The data slot
      * @return The algorithm name
      */
-    public static String getAlgorithmName(JIPipeDataSlot slot) {
+    public static String getNodeName(JIPipeDataSlot slot) {
         return slot.getNode().getName();
     }
 
@@ -112,10 +122,11 @@ public abstract class JIPipeResultDataSlotPreview extends JIPipeProjectWorkbench
      * @param workbenchUI The workbench UI
      * @param slot        The data slot
      * @param row         The data slot row
+     * @param dataAnnotation optional data annotation
      * @return The display name
      */
-    public static String getDisplayName(JIPipeProjectWorkbench workbenchUI, JIPipeDataSlot slot, JIPipeExportedDataTableRow row) {
-        return getAlgorithmCompartment(workbenchUI, slot) + "/" + getAlgorithmName(slot) + "/" + slot.getName() + "/" + row.getIndex();
+    public static String getDisplayName(JIPipeProjectWorkbench workbenchUI, JIPipeDataSlot slot, JIPipeExportedDataTableRow row, JIPipeExportedDataAnnotation dataAnnotation) {
+        return getAlgorithmCompartment(workbenchUI, slot) + "/" + getNodeName(slot) + "/" + slot.getName() + "/" + row.getIndex() + (dataAnnotation != null ? "/$" + dataAnnotation.getName() : "");
     }
 
     /**
@@ -123,9 +134,13 @@ public abstract class JIPipeResultDataSlotPreview extends JIPipeProjectWorkbench
      *
      * @param slot The data slot
      * @param row  The data slot row
+     * @param dataAnnotation optional data annotation name
      * @return The row storage folder
      */
-    public static Path getRowStorageFolder(JIPipeDataSlot slot, JIPipeExportedDataTableRow row) {
-        return slot.getStoragePath().resolve("" + row.getIndex());
+    public static Path getRowStorageFolder(JIPipeDataSlot slot, JIPipeExportedDataTableRow row, JIPipeExportedDataAnnotation dataAnnotation) {
+        if(dataAnnotation == null)
+            return slot.getStoragePath().resolve("" + row.getIndex());
+        else
+            return slot.getStoragePath().resolve(dataAnnotation.getRowStorageFolder());
     }
 }

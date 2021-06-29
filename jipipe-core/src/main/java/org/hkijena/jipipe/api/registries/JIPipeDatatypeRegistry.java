@@ -456,19 +456,20 @@ public class JIPipeDatatypeRegistry {
      * @param table     the table that owns the renderer
      * @param slot      the slot
      * @param row       the data row
+     * @param dataAnnotation the data annotation (optional)
      * @return cell renderer
      */
-    public JIPipeResultDataSlotPreview getCellRendererFor(JIPipeProjectWorkbench workbench, JTable table, JIPipeDataSlot slot, JIPipeExportedDataTableRow row) {
+    public JIPipeResultDataSlotPreview getCellRendererFor(JIPipeProjectWorkbench workbench, JTable table, JIPipeDataSlot slot, JIPipeExportedDataTableRow row, JIPipeExportedDataAnnotation dataAnnotation) {
         Class<? extends JIPipeData> dataClass = getById(row.getTrueDataType());
         if (GeneralDataSettings.getInstance().isGenerateResultPreviews()) {
             Class<? extends JIPipeResultDataSlotPreview> rendererClass = resultTableCellUIs.getOrDefault(dataClass, null);
             if (rendererClass != null) {
                 return (JIPipeResultDataSlotPreview) ReflectionUtils.newInstance(rendererClass, workbench, table, slot, row);
             } else {
-                return new JIPipeDefaultResultDataSlotPreview(workbench, table, slot, row);
+                return new JIPipeDefaultResultDataSlotPreview(workbench, table, slot, row, dataAnnotation);
             }
         } else {
-            return new JIPipeDefaultResultDataSlotPreview(workbench, table, slot, row);
+            return new JIPipeDefaultResultDataSlotPreview(workbench, table, slot, row, dataAnnotation);
         }
     }
 

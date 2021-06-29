@@ -76,7 +76,7 @@ public class JIPipeRowDataMergedTableCellRenderer implements TableCellRenderer {
             revalidatePreviewCache();
             JIPipeResultDataSlotPreview preview = previewCache.get(row);
             if (preview == null) {
-                preview = JIPipe.getDataTypes().getCellRendererFor(workbenchUI, table, slot, (JIPipeExportedDataTableRow) value);
+                preview = JIPipe.getDataTypes().getCellRendererFor(workbenchUI, table, slot, (JIPipeExportedDataTableRow) value, null);
                 previewCache.set(row, preview);
             }
             if (isSelected) {
