@@ -15,6 +15,7 @@ package org.hkijena.jipipe.extensions.filesystem.resultanalysis;
 
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
+import org.hkijena.jipipe.api.data.JIPipeExportedDataAnnotation;
 import org.hkijena.jipipe.api.data.JIPipeExportedDataTableRow;
 import org.hkijena.jipipe.extensions.filesystem.dataypes.PathData;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
@@ -35,14 +36,14 @@ public class FilesystemDataSlotPreview extends JIPipeResultDataSlotPreview {
 
     /**
      * Creates a new renderer
-     *
-     * @param workbench the workbench
+     *  @param workbench the workbench
      * @param table     the table where the data is rendered in
      * @param slot      the data slot
      * @param row       the row
+     * @param dataAnnotation optional data annotation
      */
-    public FilesystemDataSlotPreview(JIPipeProjectWorkbench workbench, JTable table, JIPipeDataSlot slot, JIPipeExportedDataTableRow row) {
-        super(workbench, table, slot, row, dataAnnotationName);
+    public FilesystemDataSlotPreview(JIPipeProjectWorkbench workbench, JTable table, JIPipeDataSlot slot, JIPipeExportedDataTableRow row, JIPipeExportedDataAnnotation dataAnnotation) {
+        super(workbench, table, slot, row, dataAnnotation);
         initialize();
     }
 
@@ -54,7 +55,7 @@ public class FilesystemDataSlotPreview extends JIPipeResultDataSlotPreview {
 
 
     private Path findListFile(JIPipeDataSlot slot, JIPipeExportedDataTableRow row) {
-        Path rowStorageFolder = getRowStorageFolder(slot, row, dataAnnotationName);
+        Path rowStorageFolder = getRowStorageFolder(slot, row, getDataAnnotation());
         if (Files.isDirectory(rowStorageFolder)) {
             return PathUtils.findFileByExtensionIn(rowStorageFolder, ".json");
         }
@@ -68,7 +69,7 @@ public class FilesystemDataSlotPreview extends JIPipeResultDataSlotPreview {
         label.setIcon(JIPipe.getDataTypes().getIconFor(getSlot().getAcceptedDataType()));
         Path listFile = findListFile(getSlot(), getRow());
         if (listFile != null) {
-            PathData pathData = PathData.importFrom(getRowStorageFolder(getSlot(), getRow(), dataAnnotationName));
+            PathData pathData = PathData.importFrom(getRowStorageFolder(getSlot(), getRow(), getDataAnnotation()));
             label.setText(pathData.getPath() + "");
         } else {
             label.setText("<Not found>");

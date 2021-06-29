@@ -11,14 +11,20 @@
  * See the LICENSE file provided with the code for the full license.
  */
 
-package org.hkijena.jipipe.api.data;
+package org.hkijena.jipipe.ui.cache;
 
 import org.hkijena.jipipe.api.JIPipeProject;
 import org.hkijena.jipipe.api.compartments.algorithms.JIPipeProjectCompartment;
+import org.hkijena.jipipe.api.data.JIPipeAnnotation;
+import org.hkijena.jipipe.api.data.JIPipeDataAnnotation;
+import org.hkijena.jipipe.api.data.JIPipeDataInfo;
+import org.hkijena.jipipe.api.data.JIPipeDataSlot;
+import org.hkijena.jipipe.api.data.JIPipeExportedDataTable;
 import org.hkijena.jipipe.api.nodes.JIPipeEmptyNodeInfo;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.extensions.settings.GeneralDataSettings;
 import org.hkijena.jipipe.ui.cache.JIPipeCachedDataPreview;
+import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
 import javax.swing.event.TableModelListener;
@@ -28,14 +34,16 @@ import java.awt.Point;
 import java.awt.Rectangle;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Merges multiple {@link JIPipeDataSlot}
  * Please not the previews are initialized with deferred rendering.
  * You will need to set a scroll pane to. Then the rendering will work.
  */
-public class JIPipeMergedDataSlotTable implements TableModel {
+public class JIPipeMergedDataSlotTableModel implements TableModel {
 
     private final JTable table;
     private final GeneralDataSettings dataSettings = GeneralDataSettings.getInstance();
@@ -46,11 +54,12 @@ public class JIPipeMergedDataSlotTable implements TableModel {
     private ArrayList<JIPipeDataSlot> slotList = new ArrayList<>();
     private ArrayList<Integer> rowList = new ArrayList<>();
     private List<Component> previewCache = new ArrayList<>();
+    private Map<String, List<Component>> dataAnnotationPreviewCache = new HashMap<>();
     private int previewCacheSize = GeneralDataSettings.getInstance().getPreviewSize();
     private JScrollPane scrollPane;
     private boolean withCompartmentAndAlgorithm;
 
-    public JIPipeMergedDataSlotTable(JTable table, boolean withCompartmentAndAlgorithm) {
+    public JIPipeMergedDataSlotTableModel(JTable table, boolean withCompartmentAndAlgorithm) {
         this.table = table;
         this.withCompartmentAndAlgorithm = withCompartmentAndAlgorithm;
     }
@@ -90,12 +99,27 @@ public class JIPipeMergedDataSlotTable implements TableModel {
             rowList.add(i);
             previewCache.add(null);
         }
+        for (String dataAnnotationColumn : dataSlot.getDataAnnotationColumns()) {
+            List<Component> dataAnnotationPreviews = dataAnnotationPreviewCache.getOrDefault(dataAnnotationColumn, null);
+            if(dataAnnotationPreviews == null) {
+                dataAnnotationPreviews = new ArrayList<>();
+                dataAnnotationPreviewCache.put(dataAnnotationColumn, dataAnnotationPreviews);
+            }
+            for (int i = 0; i < dataSlot.getRowCount(); ++i) {
+                dataAnnotationPreviews.add(null);
+            }
+        }
     }
 
     private void revalidatePreviewCache() {
         if (dataSettings.getPreviewSize() != previewCacheSize) {
             for (int i = 0; i < previewCache.size(); i++) {
                 previewCache.set(i, null);
+            }
+            for (List<Component> componentList : dataAnnotationPreviewCache.values()) {
+                for (int i = 0; i < componentList.size(); i++) {
+                    componentList.set(i, null);
+                }
             }
             previewCacheSize = dataSettings.getPreviewSize();
         }
@@ -247,23 +271,11 @@ public class JIPipeMergedDataSlotTable implements TableModel {
             else if (columnIndex == 3)
                 return JIPipeDataInfo.getInstance(slotList.get(rowIndex).getDataClass(rowList.get(rowIndex)));
             else if (columnIndex == 4) {
-                revalidatePreviewCache();
-                Component preview = previewCache.get(rowIndex);
-                if (preview == null) {
-                    if (GeneralDataSettings.getInstance().isGenerateCachePreviews()) {
-                        preview = new JIPipeCachedDataPreview(table, slotList.get(rowIndex).getVirtualData(rowList.get(rowIndex)), true);
-                        previewCache.set(rowIndex, preview);
-                    } else {
-                        preview = new JLabel("N/A");
-                        previewCache.set(rowIndex, preview);
-                    }
-                }
-                return preview;
+                return getMainDataPreviewComponent(rowIndex);
             } else if (columnIndex == 5)
                 return "" + slotList.get(rowIndex).getVirtualData(rowList.get(rowIndex)).getStringRepresentation();
             else if(toDataAnnotationColumnIndex(columnIndex) != -1) {
-                // TODO: Preview
-                return new JLabel("N/A (TODO)");
+                return getDataAnnotationPreviewComponent(rowIndex, columnIndex);
             }
             else {
                 String annotationColumn = annotationColumns.get(toAnnotationColumnIndex(columnIndex));
@@ -276,23 +288,11 @@ public class JIPipeMergedDataSlotTable implements TableModel {
             else if (columnIndex == 1)
                 return JIPipeDataInfo.getInstance(slotList.get(rowIndex).getDataClass(rowList.get(rowIndex)));
             else if (columnIndex == 2) {
-                revalidatePreviewCache();
-                Component preview = previewCache.get(rowIndex);
-                if (preview == null) {
-                    if (GeneralDataSettings.getInstance().isGenerateCachePreviews()) {
-                        preview = new JIPipeCachedDataPreview(table, slotList.get(rowIndex).getVirtualData(rowList.get(rowIndex)), true);
-                        previewCache.set(rowIndex, preview);
-                    } else {
-                        preview = new JLabel("N/A");
-                        previewCache.set(rowIndex, preview);
-                    }
-                }
-                return preview;
+                return getMainDataPreviewComponent(rowIndex);
             } else if (columnIndex == 3)
                 return "" + slotList.get(rowIndex).getVirtualData(rowList.get(rowIndex)).getStringRepresentation();
             else if(toDataAnnotationColumnIndex(columnIndex) != -1) {
-                // TODO: Preview
-                return new JLabel("N/A (TODO)");
+                return getDataAnnotationPreviewComponent(rowIndex, columnIndex);
             }
             else {
                 String annotationColumn = annotationColumns.get(toAnnotationColumnIndex(columnIndex));
@@ -300,6 +300,38 @@ public class JIPipeMergedDataSlotTable implements TableModel {
                 return slot.getAnnotationOr(rowList.get(rowIndex), annotationColumn, null);
             }
         }
+    }
+
+    private Component getDataAnnotationPreviewComponent(int rowIndex, int columnIndex) {
+        revalidatePreviewCache();
+        String dataAnnotationName = dataAnnotationColumns.get(toDataAnnotationColumnIndex(columnIndex));
+        Component preview = dataAnnotationPreviewCache.get(dataAnnotationName).get(rowIndex);
+        if (preview == null) {
+            JIPipeDataAnnotation dataAnnotation = slotList.get(rowIndex).getDataAnnotation(rowList.get(rowIndex), dataAnnotationName);
+            if (dataAnnotation != null && GeneralDataSettings.getInstance().isGenerateCachePreviews()) {
+                preview = new JIPipeCachedDataPreview(table, dataAnnotation.getVirtualData(), true);
+                dataAnnotationPreviewCache.get(dataAnnotationName).set(rowIndex, preview);
+            } else {
+                preview = new JLabel("N/A");
+                dataAnnotationPreviewCache.get(dataAnnotationName).set(rowIndex, preview);
+            }
+        }
+        return preview;
+    }
+
+    private Object getMainDataPreviewComponent(int rowIndex) {
+        revalidatePreviewCache();
+        Component preview = previewCache.get(rowIndex);
+        if (preview == null) {
+            if (GeneralDataSettings.getInstance().isGenerateCachePreviews()) {
+                preview = new JIPipeCachedDataPreview(table, slotList.get(rowIndex).getVirtualData(rowList.get(rowIndex)), true);
+                previewCache.set(rowIndex, preview);
+            } else {
+                preview = new JLabel("N/A");
+                previewCache.set(rowIndex, preview);
+            }
+        }
+        return preview;
     }
 
     @Override
@@ -379,17 +411,29 @@ public class JIPipeMergedDataSlotTable implements TableModel {
         for (int row = 0; row < previewCache.size(); row++) {
             Component component = previewCache.get(row);
             if (component instanceof JIPipeCachedDataPreview) {
-                if (((JIPipeCachedDataPreview) component).isRenderedOrRendering())
-                    continue;
-                // We assume view column = 0
-                Rectangle rect = table.getCellRect(row, 0, true);
-                Point pt = viewport.getViewPosition();
-                rect.setLocation(rect.x - pt.x, rect.y - pt.y);
-                boolean overlaps = new Rectangle(viewport.getExtentSize()).intersects(rect);
-                if (overlaps) {
-                    ((JIPipeCachedDataPreview) component).renderPreview();
+                updateRenderedPreviewComponent(viewport, row, (JIPipeCachedDataPreview) component);
+            }
+        }
+        for (List<Component> componentList : dataAnnotationPreviewCache.values()) {
+            for (int row = 0; row < componentList.size(); row++) {
+                Component component = componentList.get(row);
+                if (component instanceof JIPipeCachedDataPreview) {
+                    updateRenderedPreviewComponent(viewport, row, (JIPipeCachedDataPreview) component);
                 }
             }
+        }
+    }
+
+    private void updateRenderedPreviewComponent(JViewport viewport, int row, JIPipeCachedDataPreview component) {
+        if (component.isRenderedOrRendering())
+            return;
+        // We assume view column = 0
+        Rectangle rect = table.getCellRect(row, 0, true);
+        Point pt = viewport.getViewPosition();
+        rect.setLocation(rect.x - pt.x, rect.y - pt.y);
+        boolean overlaps = new Rectangle(viewport.getExtentSize()).intersects(rect);
+        if (overlaps) {
+            component.renderPreview();
         }
     }
 }

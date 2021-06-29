@@ -39,25 +39,18 @@ import org.hkijena.jipipe.utils.UIUtils;
 import org.jdesktop.swingx.JXTable;
 
 import javax.swing.*;
-import javax.swing.event.TableModelListener;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
 import javax.swing.table.TableColumnModel;
-import javax.swing.table.TableModel;
 import java.awt.BorderLayout;
 import java.awt.Component;
-import java.awt.Point;
-import java.awt.Rectangle;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.nio.file.Path;
-import java.util.ArrayList;
 import java.util.Collections;
-import java.util.List;
 
 /**
  * UI that displays a {@link JIPipeDataSlot} that is cached
- * TODO: Support for data annotations
  */
 public class JIPipeCacheDataSlotTableUI extends JIPipeWorkbenchPanel {
 
@@ -65,7 +58,7 @@ public class JIPipeCacheDataSlotTableUI extends JIPipeWorkbenchPanel {
     private JXTable table;
     private FormPanel rowUIList;
     private SearchTextField searchTextField = new SearchTextField();
-    private DataSlotTableModel dataTable;
+    private JIPipeDataSlotTableModel dataTable;
     private JScrollPane scrollPane;
 
     /**
@@ -94,7 +87,7 @@ public class JIPipeCacheDataSlotTableUI extends JIPipeWorkbenchPanel {
     }
 
     private void reloadTable() {
-        dataTable = new DataSlotTableModel(table, slot);
+        dataTable = new JIPipeDataSlotTableModel(table, slot);
         table.setModel(dataTable);
         dataTable.setScrollPane(scrollPane);
         if (GeneralDataSettings.getInstance().isGenerateCachePreviews())
@@ -196,7 +189,7 @@ public class JIPipeCacheDataSlotTableUI extends JIPipeWorkbenchPanel {
     private void exportAsCSV() {
         Path path = FileChooserSettings.saveFile(this, FileChooserSettings.KEY_PROJECT, "Export as *.csv", UIUtils.EXTENSION_FILTER_CSV);
         if (path != null) {
-            ResultsTableData tableData = dataTable.slot.toAnnotationTable(true);
+            ResultsTableData tableData = dataTable.getSlot().toAnnotationTable(true);
             tableData.saveAsCSV(path);
         }
     }
@@ -256,202 +249,7 @@ public class JIPipeCacheDataSlotTableUI extends JIPipeWorkbenchPanel {
 
 
     /**
-     * Wraps around a {@link JIPipeDataSlot} to display a "toString" column
-     */
-    public static class DataSlotTableModel implements TableModel {
-
-        private final JTable table;
-        private final JIPipeDataSlot slot;
-        private final GeneralDataSettings dataSettings = GeneralDataSettings.getInstance();
-        private List<Component> previewCache = new ArrayList<>();
-        private int previewCacheSize = GeneralDataSettings.getInstance().getPreviewSize();
-        private JScrollPane scrollPane;
-
-        /**
-         * Creates a new instance
-         *
-         * @param table the table
-         * @param slot  the wrapped slot
-         */
-        public DataSlotTableModel(JTable table, JIPipeDataSlot slot) {
-            this.table = table;
-            this.slot = slot;
-            for (int i = 0; i < slot.getRowCount(); i++) {
-                previewCache.add(null);
-            }
-        }
-
-        private void revalidatePreviewCache() {
-            if (dataSettings.getPreviewSize() != previewCacheSize) {
-                for (int i = 0; i < previewCache.size(); i++) {
-                    previewCache.set(i, null);
-                }
-                previewCacheSize = dataSettings.getPreviewSize();
-            }
-        }
-
-        /**
-         * Converts the column index to an annotation column index, or returns -1 if the column is not one
-         * @param columnIndex absolute column index
-         * @return relative annotation column index, or -1
-         */
-        public int toAnnotationColumnIndex(int columnIndex) {
-            if (columnIndex >= slot.getDataAnnotationColumns().size() + 4)
-                return columnIndex - slot.getDataAnnotationColumns().size() - 4;
-            else
-                return -1;
-        }
-
-        /**
-         * Converts the column index to a data annotation column index, or returns -1 if the column is not one
-         * @param columnIndex absolute column index
-         * @return relative data annotation column index, or -1
-         */
-        public int toDataAnnotationColumnIndex(int columnIndex) {
-            if(columnIndex < slot.getDataAnnotationColumns().size() + 4 && (columnIndex - 4) < slot.getDataAnnotationColumns().size()) {
-                return columnIndex - 4;
-            }
-            else {
-                return -1;
-            }
-        }
-
-        @Override
-        public int getRowCount() {
-            return slot.getRowCount();
-        }
-
-        @Override
-        public int getColumnCount() {
-            return slot.getAnnotationColumns().size() + slot.getDataAnnotationColumns().size() + 4;
-        }
-
-        @Override
-        public String getColumnName(int columnIndex) {
-            if (columnIndex == 0)
-                return "Index";
-            else if (columnIndex == 1)
-                return "Type";
-            else if (columnIndex == 2)
-                return "Preview";
-            else if (columnIndex == 3)
-                return "String representation";
-            else if(toDataAnnotationColumnIndex(columnIndex) != -1) {
-                return "$" + slot.getDataAnnotationColumns().get(toDataAnnotationColumnIndex(columnIndex));
-            }
-            else {
-                return slot.getAnnotationColumns().get(toAnnotationColumnIndex(columnIndex));
-            }
-        }
-
-        @Override
-        public Class<?> getColumnClass(int columnIndex) {
-            if (columnIndex == 0)
-                return Integer.class;
-            else if (columnIndex == 1)
-                return JIPipeDataInfo.class;
-            else if (columnIndex == 2)
-                return Component.class;
-            else if (columnIndex == 3)
-                return String.class;
-            else if(toDataAnnotationColumnIndex(columnIndex) != -1)
-                return Component.class;
-            else {
-                return JIPipeAnnotation.class;
-            }
-        }
-
-        @Override
-        public boolean isCellEditable(int rowIndex, int columnIndex) {
-            return false;
-        }
-
-        @Override
-        public Object getValueAt(int rowIndex, int columnIndex) {
-            if (columnIndex == 0)
-                return rowIndex;
-            else if (columnIndex == 1)
-                return JIPipeDataInfo.getInstance(slot.getDataClass(rowIndex));
-            else if (columnIndex == 2) {
-                revalidatePreviewCache();
-                Component preview = previewCache.get(rowIndex);
-                if (preview == null) {
-                    if (GeneralDataSettings.getInstance().isGenerateCachePreviews()) {
-                        preview = new JIPipeCachedDataPreview(table, slot.getVirtualData(rowIndex), true);
-                        previewCache.set(rowIndex, preview);
-                    } else {
-                        preview = new JLabel("N/A");
-                        previewCache.set(rowIndex, preview);
-                    }
-                }
-                return preview;
-            } else if (columnIndex == 3)
-                return "" + slot.getVirtualData(rowIndex).getStringRepresentation();
-            else if(toDataAnnotationColumnIndex(columnIndex) != -1) {
-                // TODO: Data annotation preview
-                return new JLabel("N/A (TODO)");
-            }
-            else {
-                return slot.getAnnotation(rowIndex, toAnnotationColumnIndex(columnIndex));
-            }
-        }
-
-        @Override
-        public void setValueAt(Object aValue, int rowIndex, int columnIndex) {
-
-        }
-
-        @Override
-        public void addTableModelListener(TableModelListener l) {
-
-        }
-
-        @Override
-        public void removeTableModelListener(TableModelListener l) {
-
-        }
-
-        public JScrollPane getScrollPane() {
-            return scrollPane;
-        }
-
-        public void setScrollPane(JScrollPane scrollPane) {
-            this.scrollPane = scrollPane;
-            initializeDeferredPreviewRendering();
-        }
-
-        /**
-         * Adds some listeners to the scroll pane so we can
-         */
-        private void initializeDeferredPreviewRendering() {
-            this.scrollPane.getVerticalScrollBar().addAdjustmentListener(e -> {
-                updateRenderedPreviews();
-            });
-            updateRenderedPreviews();
-        }
-
-        public void updateRenderedPreviews() {
-            JViewport viewport = scrollPane.getViewport();
-            for (int row = 0; row < previewCache.size(); row++) {
-                Component component = previewCache.get(row);
-                if (component instanceof JIPipeCachedDataPreview) {
-                    if (((JIPipeCachedDataPreview) component).isRenderedOrRendering())
-                        continue;
-                    // We assume view column = 0
-                    Rectangle rect = table.getCellRect(row, 0, true);
-                    Point pt = viewport.getViewPosition();
-                    rect.setLocation(rect.x - pt.x, rect.y - pt.y);
-                    boolean overlaps = new Rectangle(viewport.getExtentSize()).intersects(rect);
-                    if (overlaps) {
-                        ((JIPipeCachedDataPreview) component).renderPreview();
-                    }
-                }
-            }
-        }
-    }
-
-    /**
-     * Renders the column header of {@link DataSlotTableModel}
+     * Renders the column header of {@link JIPipeDataSlotTableModel}
      */
     public static class WrapperColumnHeaderRenderer implements TableCellRenderer {
         private final JIPipeDataSlot dataTable;

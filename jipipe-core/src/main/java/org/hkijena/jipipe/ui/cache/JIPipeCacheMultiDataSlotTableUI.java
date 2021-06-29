@@ -22,13 +22,11 @@ import org.hkijena.jipipe.api.data.JIPipeAnnotation;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataInfo;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
-import org.hkijena.jipipe.api.data.JIPipeMergedDataSlotTable;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.extensions.settings.FileChooserSettings;
 import org.hkijena.jipipe.extensions.settings.GeneralDataSettings;
 import org.hkijena.jipipe.extensions.tables.datatypes.AnnotationTableData;
-import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.JIPipeWorkbenchPanel;
@@ -57,17 +55,15 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.nio.file.Path;
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * UI that displays a {@link JIPipeDataSlot} that is cached
- * TODO: Support for data annotations
  */
 public class JIPipeCacheMultiDataSlotTableUI extends JIPipeWorkbenchPanel {
 
     private final List<JIPipeDataSlot> slots;
     private final boolean withCompartmentAndAlgorithm;
-    private JIPipeMergedDataSlotTable multiSlotTable;
+    private JIPipeMergedDataSlotTableModel multiSlotTable;
     private JXTable table;
     private FormPanel rowUIList;
     private SearchTextField searchTextField = new SearchTextField();
@@ -82,7 +78,7 @@ public class JIPipeCacheMultiDataSlotTableUI extends JIPipeWorkbenchPanel {
         this.slots = slots;
         this.withCompartmentAndAlgorithm = withCompartmentAndAlgorithm;
         table = new JXTable();
-        this.multiSlotTable = new JIPipeMergedDataSlotTable(table, withCompartmentAndAlgorithm);
+        this.multiSlotTable = new JIPipeMergedDataSlotTableModel(table, withCompartmentAndAlgorithm);
         JIPipeProject project = null;
         if (getWorkbench() instanceof JIPipeProjectWorkbench) {
             project = ((JIPipeProjectWorkbench) getWorkbench()).getProject();
@@ -287,20 +283,20 @@ public class JIPipeCacheMultiDataSlotTableUI extends JIPipeWorkbenchPanel {
      * Renders the column header
      */
     public static class MultiDataSlotTableColumnRenderer implements TableCellRenderer {
-        private final JIPipeMergedDataSlotTable dataTable;
+        private final JIPipeMergedDataSlotTableModel dataTable;
 
         /**
          * Creates a new instance
          *
          * @param dataTable The table
          */
-        public MultiDataSlotTableColumnRenderer(JIPipeMergedDataSlotTable dataTable) {
+        public MultiDataSlotTableColumnRenderer(JIPipeMergedDataSlotTableModel dataTable) {
             this.dataTable = dataTable;
         }
 
         @Override
         public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
-            JIPipeMergedDataSlotTable model = (JIPipeMergedDataSlotTable) table.getModel();
+            JIPipeMergedDataSlotTableModel model = (JIPipeMergedDataSlotTableModel) table.getModel();
             TableCellRenderer defaultRenderer = table.getTableHeader().getDefaultRenderer();
             int modelColumn = table.convertColumnIndexToModel(column);
             int spacer = model.isWithCompartmentAndAlgorithm() ? 6 : 4;
