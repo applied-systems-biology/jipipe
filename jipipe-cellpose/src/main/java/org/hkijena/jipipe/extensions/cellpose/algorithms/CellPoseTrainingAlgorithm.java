@@ -22,7 +22,9 @@ import org.hkijena.jipipe.extensions.cellpose.CellPosePretrainedModel;
 import org.hkijena.jipipe.extensions.cellpose.CellPoseSettings;
 import org.hkijena.jipipe.extensions.cellpose.datatypes.CellPoseModelData;
 import org.hkijena.jipipe.extensions.cellpose.datatypes.CellPoseSizeModelData;
-import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.LabeledImagePlusData;
+import org.hkijena.jipipe.extensions.expressions.DataAnnotationQueryExpression;
+import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d3.greyscale.ImagePlus3DGreyscaleData;
+import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d3.greyscale.ImagePlus3DGreyscaleMaskData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.extensions.python.OptionalPythonEnvironment;
 import org.hkijena.jipipe.extensions.python.PythonUtils;
@@ -41,9 +43,10 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 @JIPipeDocumentation(name = "Cellpose training", description = "Trains a model with Cellpose. You start from an existing model or train from scratch. " +
-        "Incoming images are automatically converted to greyscale. Only 2D or 3D images are supported.")
-@JIPipeInputSlot(value = LabeledImagePlusData.class, slotName = "Training data", autoCreate = true)
-@JIPipeInputSlot(value = LabeledImagePlusData.class, slotName = "Test data", autoCreate = true, optional = true)
+        "Incoming images are automatically converted to greyscale. Only 2D or 3D images are supported. For this node to work, you need to annotate a label data column to each raw data input. " +
+        "To do this, you can use the node 'Annotate with data'.")
+@JIPipeInputSlot(value = ImagePlus3DGreyscaleData.class, slotName = "Training data", autoCreate = true)
+@JIPipeInputSlot(value = ImagePlus3DGreyscaleData.class, slotName = "Test data", autoCreate = true, optional = true)
 @JIPipeInputSlot(value = CellPoseModelData.class)
 @JIPipeOutputSlot(value = CellPoseModelData.class, slotName = "Model", autoCreate = true)
 @JIPipeOrganization(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Deep learning")
@@ -62,6 +65,7 @@ public class CellPoseTrainingAlgorithm extends JIPipeMergingAlgorithm {
     private double diameter = 30;
     private boolean trainSizeModel = false;
     private OptionalPythonEnvironment overrideEnvironment = new OptionalPythonEnvironment();
+    private DataAnnotationQueryExpression labelDataAnnotation = new DataAnnotationQueryExpression("Label");
 
     public CellPoseTrainingAlgorithm(JIPipeNodeInfo info) {
         super(info);
@@ -83,6 +87,7 @@ public class CellPoseTrainingAlgorithm extends JIPipeMergingAlgorithm {
         this.diameter = other.diameter;
         this.overrideEnvironment = new OptionalPythonEnvironment(other.overrideEnvironment);
         this.trainSizeModel = other.trainSizeModel;
+        this.labelDataAnnotation = new DataAnnotationQueryExpression(other.labelDataAnnotation);
         updateSlots();
     }
 
@@ -232,6 +237,18 @@ public class CellPoseTrainingAlgorithm extends JIPipeMergingAlgorithm {
         this.enable3DSegmentation = enable3DSegmentation;
     }
 
+    @JIPipeDocumentation(name = "Label data annotation", description = "Determines which data annotation contains the labels. Please ensure that " +
+            "the appropriate label data is annotated to the raw input data.\n\n" + DataAnnotationQueryExpression.DOCUMENTATION_DESCRIPTION)
+    @JIPipeParameter("label-data-annotation")
+    public DataAnnotationQueryExpression getLabelDataAnnotation() {
+        return labelDataAnnotation;
+    }
+
+    @JIPipeParameter("label-data-annotation")
+    public void setLabelDataAnnotation(DataAnnotationQueryExpression labelDataAnnotation) {
+        this.labelDataAnnotation = labelDataAnnotation;
+    }
+
     @JIPipeDocumentation(name = "With GPU", description = "Utilize a GPU if available. Please note that you need to setup Cellpose " +
             "to allow usage of your GPU. Also ensure that enough memory is available.")
     @JIPipeParameter("enable-gpu")
@@ -299,23 +316,24 @@ public class CellPoseTrainingAlgorithm extends JIPipeMergingAlgorithm {
         AtomicInteger imageCounter = new AtomicInteger(0);
         for (Integer row : dataBatch.getInputRows("Training data")) {
             JIPipeProgressInfo rowProgress = extractProgress.resolveAndLog("Row " + row);
-            LabeledImagePlusData masked = getInputSlot("Training data")
-                    .getData(row, LabeledImagePlusData.class, rowProgress);
-            ImagePlus image = ImageJUtils.convertToGreyscaleIfNeeded(masked.getImage());
-            ImagePlus mask = ImageJUtils.getNormalizedMask(image, masked.getLabels());
-            dataIs3D |= image.getNDimensions() > 2 && enable3DSegmentation;
+            ImagePlus raw = getInputSlot("Training data")
+                    .getData(row, ImagePlus3DGreyscaleData.class, rowProgress).getImage();
+            ImagePlus mask = labelDataAnnotation.queryFirst(getInputSlot("Training data").getDataAnnotations(row))
+                    .getData(ImagePlus3DGreyscaleMaskData.class, progressInfo).getImage();
+            mask = ImageJUtils.getNormalizedMask(raw, mask);
+            dataIs3D |= raw.getNDimensions() > 2 && enable3DSegmentation;
 
-            saveImagesToPath(trainingDir, imageCounter, rowProgress, image, mask);
+            saveImagesToPath(trainingDir, imageCounter, rowProgress, raw, mask);
         }
         for (Integer row : dataBatch.getInputRows("Test data")) {
             JIPipeProgressInfo rowProgress = extractProgress.resolveAndLog("Row " + row);
-            LabeledImagePlusData masked = getInputSlot("Test data")
-                    .getData(row, LabeledImagePlusData.class, rowProgress);
-            ImagePlus image = ImageJUtils.convertToGreyscaleIfNeeded(masked.getImage());
-            ImagePlus mask = ImageJUtils.getNormalizedMask(image, masked.getLabels());
-            dataIs3D |= image.getNDimensions() > 2 && enable3DSegmentation;
+            ImagePlus raw = getInputSlot("Test data")
+                    .getData(row, ImagePlus3DGreyscaleData.class, rowProgress).getImage();
+            ImagePlus mask = labelDataAnnotation.queryFirst(getInputSlot("Test data").getDataAnnotations(row))
+                    .getData(ImagePlus3DGreyscaleMaskData.class, progressInfo).getImage();
+            mask = ImageJUtils.getNormalizedMask(raw, mask);
 
-            saveImagesToPath(testDir, imageCounter, rowProgress, image, mask);
+            saveImagesToPath(testDir, imageCounter, rowProgress, raw, mask);
         }
 
         // Extract model if custom

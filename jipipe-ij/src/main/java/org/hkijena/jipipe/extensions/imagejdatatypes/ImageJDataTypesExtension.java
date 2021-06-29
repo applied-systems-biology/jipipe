@@ -37,8 +37,6 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.datasources.ImagePlusFromFi
 import org.hkijena.jipipe.extensions.imagejdatatypes.datasources.ROIDataFromFile;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datasources.ResultsTableFromFile;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
-import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.LabeledImageFileData;
-import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.LabeledImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.OMEImageData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ROIListData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.color.ImagePlusColorData;
@@ -295,22 +293,6 @@ public class ImageJDataTypesExtension extends JIPipePrepackagedDefaultJavaExtens
                 new OpenInImageJDataDisplay(),
                 new OMEImageDataImportViaBioFormatsOperation(),
                 new OMEImageDataImportIntoJIPipeOperation());
-        registerDatatype("imagej-imgplus-masked",
-                LabeledImagePlusData.class,
-                UIUtils.getIconURLFromResources("data-types/labeled-image.png"),
-                null,
-                null,
-                new ImagePlusDataImportIntoJIPipeOperation(),
-                new ImagePlusDataImportIntoImageJOperation(),
-                new OpenInImageJDataDisplay(),
-                new OMEImageDataImportViaBioFormatsOperation());
-        registerDatatype("imagej-labeled-image-file",
-                LabeledImageFileData.class,
-                UIUtils.getIconURLFromResources("data-types/labeled-image-file.png"),
-                null,
-                null,
-                new OpenPathDataOperation(),
-                new CopyPathDataOperation());
         registerImageJDataAdapter(new OMEImageDataImageJAdapter(), ImagePlusDataImporterUI.class);
         registerImageDataType("imagej-imgplus", ImagePlusData.class, "icons/data-types/imgplus.png");
         registerImageDataType("imagej-imgplus-greyscale", ImagePlusGreyscaleData.class, "icons/data-types/imgplus-greyscale.png");

@@ -59,6 +59,13 @@ public class ExpressionExtension extends JIPipePrepackagedDefaultJavaExtension {
                 "Annotation query expression",
                 "An expression that is used to filter annotations",
                 DefaultExpressionParameterEditorUI.class);
+        registerParameterType("data-annotation-query-expression",
+                DataAnnotationQueryExpression.class,
+                null,
+                null,
+                "Data annotation query expression",
+                "An expression that is used to filter annotations",
+                DefaultExpressionParameterEditorUI.class);
         registerParameterType("string-query-expression",
                 StringQueryExpression.class,
                 null,

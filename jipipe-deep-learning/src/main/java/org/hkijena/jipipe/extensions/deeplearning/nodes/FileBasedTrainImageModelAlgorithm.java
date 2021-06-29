@@ -30,7 +30,9 @@ import org.hkijena.jipipe.extensions.deeplearning.DeepLearningSettings;
 import org.hkijena.jipipe.extensions.deeplearning.OptionalDeepLearningDeviceEnvironment;
 import org.hkijena.jipipe.extensions.deeplearning.configs.DeepLearningTrainingConfiguration;
 import org.hkijena.jipipe.extensions.deeplearning.datatypes.DeepLearningModelData;
-import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.LabeledImageFileData;
+import org.hkijena.jipipe.extensions.expressions.DataAnnotationQueryExpression;
+import org.hkijena.jipipe.extensions.filesystem.dataypes.FileData;
+import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.python.OptionalPythonEnvironment;
 import org.hkijena.jipipe.extensions.python.PythonUtils;
 import org.hkijena.jipipe.utils.JsonUtils;
@@ -46,9 +48,10 @@ import java.util.List;
 import java.util.Set;
 
 @JIPipeDocumentation(name = "Train model (labeled image files)", description = "Trains a Deep Learning model. This node accepts direct file inputs that can be useful if you " +
-        "want to avoid loading data into JIPipe. Please note that the model needs to be able to train on images.")
+        "want to avoid loading data into JIPipe. Please note that the model needs to be able to train on images. For this node to work, you need to annotate a label data column (of a file data type) to each raw data input. " +
+        "To do this, you can use the node 'Annotate with data'.")
 @JIPipeOrganization(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Deep learning")
-@JIPipeInputSlot(value = LabeledImageFileData.class, slotName = "Labels", autoCreate = true)
+@JIPipeInputSlot(value = FileData.class, slotName = "Labels", autoCreate = true)
 @JIPipeInputSlot(value = DeepLearningModelData.class, slotName = "Model", autoCreate = true)
 @JIPipeOutputSlot(value = DeepLearningModelData.class, slotName = "Trained model", autoCreate = true)
 public class FileBasedTrainImageModelAlgorithm extends JIPipeMergingAlgorithm {
@@ -57,6 +60,7 @@ public class FileBasedTrainImageModelAlgorithm extends JIPipeMergingAlgorithm {
     private OptionalPythonEnvironment overrideEnvironment = new OptionalPythonEnvironment();
     private boolean cleanUpAfterwards = true;
     private OptionalDeepLearningDeviceEnvironment overrideDevices = new OptionalDeepLearningDeviceEnvironment();
+    private DataAnnotationQueryExpression labelDataAnnotation = new DataAnnotationQueryExpression("Label");
 
     public FileBasedTrainImageModelAlgorithm(JIPipeNodeInfo info) {
         super(info);
@@ -85,6 +89,18 @@ public class FileBasedTrainImageModelAlgorithm extends JIPipeMergingAlgorithm {
         this.overrideDevices = overrideDevices;
     }
 
+    @JIPipeDocumentation(name = "Label data annotation", description = "Determines which data annotation contains the labels. Please ensure that " +
+            "the appropriate label data (file or path data) is annotated to the raw input data.\n\n" + DataAnnotationQueryExpression.DOCUMENTATION_DESCRIPTION)
+    @JIPipeParameter("label-data-annotation")
+    public DataAnnotationQueryExpression getLabelDataAnnotation() {
+        return labelDataAnnotation;
+    }
+
+    @JIPipeParameter("label-data-annotation")
+    public void setLabelDataAnnotation(DataAnnotationQueryExpression labelDataAnnotation) {
+        this.labelDataAnnotation = labelDataAnnotation;
+    }
+
     @Override
     protected void runIteration(JIPipeMergingDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
         JIPipeDataSlot inputModelSlot = getInputSlot("Model");
@@ -109,12 +125,13 @@ public class FileBasedTrainImageModelAlgorithm extends JIPipeMergingAlgorithm {
             Set<Integer> labelRows = dataBatch.getInputSlotRows().get(inputLabelsSlot);
             for (Integer imageIndex : labelRows) {
                 JIPipeProgressInfo imageProgress = modelProgress.resolveAndLog("Write labels", imageCounter++, labelRows.size());
-                LabeledImageFileData label = inputLabelsSlot.getData(imageIndex, LabeledImageFileData.class, imageProgress);
+                FileData raw = inputLabelsSlot.getData(imageIndex, FileData.class, imageProgress);
+                FileData label = labelDataAnnotation.queryFirst(inputLabelsSlot.getDataAnnotations(imageIndex)).getData(FileData.class, progressInfo);
                 Path rawPath = rawsDirectory.resolve(imageCounter + "_img.tif");
                 Path labelPath = labelsDirectory.resolve(imageCounter + "_img.tif");
 
-                PathUtils.copyOrLink(label.toPath(), rawPath, imageProgress);
-                PathUtils.copyOrLink(label.labelToPath(), labelPath, imageProgress);
+                PathUtils.copyOrLink(raw.toPath(), rawPath, imageProgress);
+                PathUtils.copyOrLink(label.toPath(), labelPath, imageProgress);
             }
 
             // Save model according to standard interface
