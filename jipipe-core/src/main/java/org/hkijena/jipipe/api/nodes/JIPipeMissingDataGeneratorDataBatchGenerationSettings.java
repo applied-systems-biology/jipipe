@@ -35,7 +35,7 @@ public class JIPipeMissingDataGeneratorDataBatchGenerationSettings implements JI
     private OptionalIntegerRange limit = new OptionalIntegerRange(new IntegerRange("0-9"), false);
     private boolean allowMerging = false;
     private JIPipeAnnotationMergeStrategy annotationMergeStrategy = JIPipeAnnotationMergeStrategy.Merge;
-    private JIPipeDataAnnotationMergeStrategy dataAnnotationMergeStrategy = JIPipeDataAnnotationMergeStrategy.Merge;
+    private JIPipeDataAnnotationMergeStrategy dataAnnotationMergeStrategy = JIPipeDataAnnotationMergeStrategy.MergeTables;
 
     public JIPipeMissingDataGeneratorDataBatchGenerationSettings() {
     }

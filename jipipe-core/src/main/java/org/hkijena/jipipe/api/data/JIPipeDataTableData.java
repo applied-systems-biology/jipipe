@@ -25,9 +25,9 @@ public class JIPipeDataTableData implements JIPipeData {
     @Override
     public void saveTo(Path storageFilePath, String name, boolean forceName, JIPipeProgressInfo progressInfo) {
         if (forceName) {
-            dataSlot.saveToStoragePath(storageFilePath.resolve(name), progressInfo);
+            dataSlot.save(storageFilePath.resolve(name), null, progressInfo);
         } else {
-            dataSlot.saveToStoragePath(storageFilePath, progressInfo);
+            dataSlot.save(storageFilePath, null, progressInfo);
         }
     }
 

@@ -140,7 +140,7 @@ public abstract class JIPipeSimpleIteratingAlgorithm extends JIPipeParameterSlot
                     JIPipeDataBatch dataBatch = new JIPipeDataBatch(this);
                     dataBatch.setInputData(getFirstInputSlot(), i);
                     dataBatch.addGlobalAnnotations(getFirstInputSlot().getAnnotations(i), JIPipeAnnotationMergeStrategy.Merge);
-                    dataBatch.addGlobalDataAnnotations(getFirstInputSlot().getDataAnnotations(i), JIPipeDataAnnotationMergeStrategy.Merge);
+                    dataBatch.addGlobalDataAnnotations(getFirstInputSlot().getDataAnnotations(i), JIPipeDataAnnotationMergeStrategy.MergeTables);
                     dataBatch.addGlobalAnnotations(parameterAnnotations, JIPipeAnnotationMergeStrategy.Merge);
                     uploadAdaptiveParameters(dataBatch, tree, parameterBackups, progressInfo);
                     runIteration(dataBatch, slotProgress);
@@ -159,7 +159,7 @@ public abstract class JIPipeSimpleIteratingAlgorithm extends JIPipeParameterSlot
                         JIPipeDataBatch dataBatch = new JIPipeDataBatch(this);
                         dataBatch.setInputData(getFirstInputSlot(), rowIndex);
                         dataBatch.addGlobalAnnotations(getFirstInputSlot().getAnnotations(rowIndex), JIPipeAnnotationMergeStrategy.Merge);
-                        dataBatch.addGlobalDataAnnotations(getFirstInputSlot().getDataAnnotations(rowIndex), JIPipeDataAnnotationMergeStrategy.Merge);
+                        dataBatch.addGlobalDataAnnotations(getFirstInputSlot().getDataAnnotations(rowIndex), JIPipeDataAnnotationMergeStrategy.MergeTables);
                         dataBatch.addGlobalAnnotations(parameterAnnotations, JIPipeAnnotationMergeStrategy.Merge);
                         uploadAdaptiveParameters(dataBatch, finalTree, parameterBackups, progressInfo);
                         runIteration(dataBatch, slotProgress);

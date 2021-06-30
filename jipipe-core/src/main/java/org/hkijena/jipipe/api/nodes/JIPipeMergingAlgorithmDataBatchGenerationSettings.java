@@ -38,7 +38,7 @@ public class JIPipeMergingAlgorithmDataBatchGenerationSettings implements JIPipe
     private OptionalIntegerRange limit = new OptionalIntegerRange(new IntegerRange("0-9"), false);
     private JIPipeAnnotationMatchingMethod annotationMatchingMethod = JIPipeAnnotationMatchingMethod.ExactMatch;
     private DefaultExpressionParameter customAnnotationMatching = new DefaultExpressionParameter("exact_match_results");
-    private JIPipeDataAnnotationMergeStrategy dataAnnotationMergeStrategy = JIPipeDataAnnotationMergeStrategy.Merge;
+    private JIPipeDataAnnotationMergeStrategy dataAnnotationMergeStrategy = JIPipeDataAnnotationMergeStrategy.MergeTables;
 
     public JIPipeMergingAlgorithmDataBatchGenerationSettings() {
     }

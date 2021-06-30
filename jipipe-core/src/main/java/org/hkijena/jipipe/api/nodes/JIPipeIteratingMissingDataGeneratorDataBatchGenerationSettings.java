@@ -39,7 +39,7 @@ public class JIPipeIteratingMissingDataGeneratorDataBatchGenerationSettings impl
     private OptionalIntegerRange limit = new OptionalIntegerRange(new IntegerRange("0-9"), false);
     private JIPipeAnnotationMergeStrategy annotationMergeStrategy = JIPipeAnnotationMergeStrategy.Merge;
     private JIPipeAnnotationMatchingMethod annotationMatchingMethod = JIPipeAnnotationMatchingMethod.ExactMatch;
-    private JIPipeDataAnnotationMergeStrategy dataAnnotationMergeStrategy = JIPipeDataAnnotationMergeStrategy.Merge;
+    private JIPipeDataAnnotationMergeStrategy dataAnnotationMergeStrategy = JIPipeDataAnnotationMergeStrategy.MergeTables;
     private DefaultExpressionParameter customAnnotationMatching = new DefaultExpressionParameter("exact_match_results");
 
     public JIPipeIteratingMissingDataGeneratorDataBatchGenerationSettings() {

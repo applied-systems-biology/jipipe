@@ -42,7 +42,7 @@ public class JIPipeMergingDataBatchBuilder {
     private Map<String, JIPipeDataSlot> slots = new HashMap<>();
     private Set<String> referenceColumns = new HashSet<>();
     private JIPipeAnnotationMergeStrategy annotationMergeStrategy = JIPipeAnnotationMergeStrategy.Merge;
-    private JIPipeDataAnnotationMergeStrategy dataAnnotationMergeStrategy = JIPipeDataAnnotationMergeStrategy.Merge;
+    private JIPipeDataAnnotationMergeStrategy dataAnnotationMergeStrategy = JIPipeDataAnnotationMergeStrategy.MergeTables;
     private boolean applyMerging = true;
     private JIPipeAnnotationMatchingMethod annotationMatchingMethod = JIPipeAnnotationMatchingMethod.ExactMatch;
     private DefaultExpressionParameter customAnnotationMatching = new DefaultExpressionParameter("exact_match_results");

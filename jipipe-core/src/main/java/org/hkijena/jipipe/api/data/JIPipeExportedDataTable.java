@@ -49,7 +49,7 @@ public class JIPipeExportedDataTable implements TableModel {
      * @param indices output path index for each slot row
      */
     public JIPipeExportedDataTable(JIPipeDataSlot slot, Path basePath, List<Integer> indices) {
-        this.nodeId = slot.getNode().getInfo().getId();
+        this.nodeId = slot.getNode() != null ? slot.getNode().getInfo().getId() : "";
         this.slotName = slot.getName();
         if (basePath != null) {
             this.internalPath = basePath.relativize(slot.getStoragePath()).toString();

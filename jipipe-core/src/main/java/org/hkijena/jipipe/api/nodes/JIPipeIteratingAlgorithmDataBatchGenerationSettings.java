@@ -38,7 +38,7 @@ public class JIPipeIteratingAlgorithmDataBatchGenerationSettings implements JIPi
     private boolean skipIncompleteDataSets = false;
     private StringQueryExpression customColumns = new StringQueryExpression();
     private JIPipeAnnotationMergeStrategy annotationMergeStrategy = JIPipeAnnotationMergeStrategy.Merge;
-    private JIPipeDataAnnotationMergeStrategy dataAnnotationMergeStrategy = JIPipeDataAnnotationMergeStrategy.Merge;
+    private JIPipeDataAnnotationMergeStrategy dataAnnotationMergeStrategy = JIPipeDataAnnotationMergeStrategy.MergeTables;
     private OptionalIntegerRange limit = new OptionalIntegerRange(new IntegerRange("0-9"), false);
     private JIPipeAnnotationMatchingMethod annotationMatchingMethod = JIPipeAnnotationMatchingMethod.ExactMatch;
     private DefaultExpressionParameter customAnnotationMatching = new DefaultExpressionParameter("exact_match_results");

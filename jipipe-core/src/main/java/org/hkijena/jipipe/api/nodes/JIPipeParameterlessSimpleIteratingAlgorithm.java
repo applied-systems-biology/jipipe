@@ -232,7 +232,7 @@ public abstract class JIPipeParameterlessSimpleIteratingAlgorithm extends JIPipe
             JIPipeMergingDataBatch dataBatch = new JIPipeMergingDataBatch(this);
             dataBatch.addInputData(slot, i);
             dataBatch.addGlobalAnnotations(slot.getAnnotations(i), JIPipeAnnotationMergeStrategy.Merge);
-            dataBatch.addGlobalDataAnnotations(slot.getDataAnnotations(i), JIPipeDataAnnotationMergeStrategy.Merge);
+            dataBatch.addGlobalDataAnnotations(slot.getDataAnnotations(i), JIPipeDataAnnotationMergeStrategy.MergeTables);
             batches.add(dataBatch);
         }
         return batches;
