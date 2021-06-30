@@ -38,11 +38,14 @@ import org.hkijena.jipipe.extensions.filesystem.dataypes.FileData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.OMEImageData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
+import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageSource;
 import org.hkijena.jipipe.extensions.parameters.editors.JIPipeDataParameterSettings;
 import org.hkijena.jipipe.extensions.parameters.primitives.OptionalAnnotationNameParameter;
 import org.hkijena.jipipe.extensions.parameters.references.JIPipeDataInfoRef;
 import org.hkijena.jipipe.extensions.settings.VirtualDataSettings;
+import org.hkijena.jipipe.utils.UIUtils;
 
+import javax.swing.*;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -62,6 +65,7 @@ public class ImagePlusFromFile extends JIPipeSimpleIteratingAlgorithm {
     private JIPipeDataInfoRef generatedImageType = new JIPipeDataInfoRef("imagej-imgplus");
     private OptionalAnnotationNameParameter titleAnnotation = new OptionalAnnotationNameParameter();
     private boolean removeLut = false;
+    private boolean deferLoading = false;
 
     /**
      * @param info algorithm info
@@ -86,6 +90,7 @@ public class ImagePlusFromFile extends JIPipeSimpleIteratingAlgorithm {
         setGeneratedImageType(new JIPipeDataInfoRef(other.generatedImageType));
         this.titleAnnotation = new OptionalAnnotationNameParameter(other.titleAnnotation);
         this.removeLut = other.removeLut;
+        this.deferLoading = other.deferLoading;
     }
 
     @JIPipeDocumentation(name = "Remove LUT", description = "If enabled, remove the LUT information if present")
@@ -97,6 +102,18 @@ public class ImagePlusFromFile extends JIPipeSimpleIteratingAlgorithm {
     @JIPipeParameter("remove-lut")
     public void setRemoveLut(boolean removeLut) {
         this.removeLut = removeLut;
+    }
+
+    @JIPipeDocumentation(name = "Defer image import", description = "If enabled, the generated output data is provided with the input image path, but the image is not loaded " +
+            "until it is used. You must ensure that the image path is not deleted. If enabled, the title annotation will be the image file name.")
+    @JIPipeParameter("defer-loading")
+    public boolean isDeferLoading() {
+        return deferLoading;
+    }
+
+    @JIPipeParameter("defer-loading")
+    public void setDeferLoading(boolean deferLoading) {
+        this.deferLoading = deferLoading;
     }
 
     @Override
@@ -132,7 +149,16 @@ public class ImagePlusFromFile extends JIPipeSimpleIteratingAlgorithm {
                     JIPipeAnnotationMergeStrategy.Merge,
                     new ArrayList<>(dataBatch.getGlobalDataAnnotations().values()),
                     JIPipeDataAnnotationMergeStrategy.OverwriteExisting);
-        } else {
+        } else if(deferLoading) {
+            ImagePlusData outputData =  (ImagePlusData) JIPipe.createData(generatedImageType.getInfo().getDataClass(),
+                    new ImagePlusFromFileImageSource(fileData.toPath(), removeLut));
+            List<JIPipeAnnotation> annotations = new ArrayList<>();
+            if (titleAnnotation.isEnabled()) {
+                annotations.add(new JIPipeAnnotation(titleAnnotation.getContent(), fileData.toPath().getFileName().toString()));
+            }
+            dataBatch.addOutputData(getFirstOutputSlot(), outputData, annotations, JIPipeAnnotationMergeStrategy.Merge, progressInfo);
+        }
+        else {
             ImagePlusData outputData;
             ImagePlus image = readImageFrom(fileData.toPath(), progressInfo);
             if (removeLut) {
