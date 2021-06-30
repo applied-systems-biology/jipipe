@@ -159,17 +159,26 @@ public class TrainImageModelAlgorithm extends JIPipeMergingAlgorithm {
                 Path rawPath = rawsDirectory.resolve(imageCounter + "_img.tif");
                 Path labelPath = labelsDirectory.resolve(imageCounter + "_img.tif");
 
-                ImagePlus rawImage = isScaleToModelSize() ? DeepLearningUtils.scaleToModel(raw.getImage(),
-                        inputModel.getModelConfiguration(),
-                        getScale2DAlgorithm(),
-                        modelProgress) : raw.getImage();
-                ImagePlus labelImage = isScaleToModelSize() ? DeepLearningUtils.scaleToModel(label.getImage(),
-                        inputModel.getModelConfiguration(),
-                        getScale2DAlgorithm(),
-                        modelProgress) : label.getImage();
-
-                IJ.saveAsTiff(rawImage, rawPath.toString());
-                IJ.saveAsTiff(labelImage, labelPath.toString());
+                if(raw.hasLoadedImage() || isScaleToModelSize()) {
+                    ImagePlus rawImage = isScaleToModelSize() ? DeepLearningUtils.scaleToModel(raw.getImage(),
+                            inputModel.getModelConfiguration(),
+                            getScale2DAlgorithm(),
+                            imageProgress) : raw.getImage();
+                    IJ.saveAsTiff(rawImage, rawPath.toString());
+                }
+                else {
+                    raw.saveTo(rawsDirectory, imageCounter + "_img", true, imageProgress);
+                }
+                if(label.hasLoadedImage() || isScaleToModelSize()) {
+                    ImagePlus labelImage = isScaleToModelSize() ? DeepLearningUtils.scaleToModel(label.getImage(),
+                            inputModel.getModelConfiguration(),
+                            getScale2DAlgorithm(),
+                            imageProgress) : label.getImage();
+                    IJ.saveAsTiff(labelImage, labelPath.toString());
+                }
+                else {
+                    label.saveTo(labelsDirectory, imageCounter + "_img", true, imageProgress);
+                }
             }
 
             // Save model according to standard interface

@@ -43,6 +43,7 @@ import org.hkijena.jipipe.extensions.deeplearning.configs.DeepLearningPrediction
 import org.hkijena.jipipe.extensions.deeplearning.datatypes.DeepLearningModelData;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.transform.ScaleMode;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.transform.TransformScale2DAlgorithm;
+import org.hkijena.jipipe.extensions.imagejdatatypes.datasources.ImagePlusFromFileImageSource;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscale32FData;
 import org.hkijena.jipipe.extensions.python.OptionalPythonEnvironment;
@@ -67,6 +68,7 @@ public class PredictImageAlgorithm extends JIPipeMergingAlgorithm {
 
     private TransformScale2DAlgorithm scale2DAlgorithm;
     private boolean cleanUpAfterwards = true;
+    private boolean deferImageLoading = false;
     private boolean scaleToModelSize = false;
     private OptionalPythonEnvironment overrideEnvironment = new OptionalPythonEnvironment();
     private OptionalDeepLearningDeviceEnvironment overrideDevices = new OptionalDeepLearningDeviceEnvironment();
@@ -86,6 +88,7 @@ public class PredictImageAlgorithm extends JIPipeMergingAlgorithm {
         this.scale2DAlgorithm = new TransformScale2DAlgorithm(other.scale2DAlgorithm);
         this.overrideDevices = new OptionalDeepLearningDeviceEnvironment(other.overrideDevices);
         this.scaleToModelSize = other.scaleToModelSize;
+        this.deferImageLoading = other.deferImageLoading;
         registerSubParameter(scale2DAlgorithm);
     }
 
@@ -99,6 +102,18 @@ public class PredictImageAlgorithm extends JIPipeMergingAlgorithm {
     @JIPipeParameter("override-devices")
     public void setOverrideDevices(OptionalDeepLearningDeviceEnvironment overrideDevices) {
         this.overrideDevices = overrideDevices;
+    }
+
+    @JIPipeDocumentation(name = "Defer importing outputs", description = "If enabled, output images are not imported back, but only supplied with the generated file name. " +
+            "The image is only loaded on accessing the data. Disables 'Clean up afterwards'.")
+    @JIPipeParameter("defer-image-loaded")
+    public boolean isDeferImageLoading() {
+        return deferImageLoading;
+    }
+
+    @JIPipeParameter("defer-image-loaded")
+    public void setDeferImageLoading(boolean deferImageLoading) {
+        this.deferImageLoading = deferImageLoading;
     }
 
     @Override
@@ -139,14 +154,20 @@ public class PredictImageAlgorithm extends JIPipeMergingAlgorithm {
                 for (Integer imageIndex : inputRows) {
                     JIPipeProgressInfo imageProgress = modelProgress.resolveAndLog("Write inputs", imageCounter++, inputRows.size());
                     ImagePlusData raw = inputRawImageSlot.getData(imageIndex, ImagePlusData.class, imageProgress);
-                    Path rawPath = rawsDirectory.resolve(imageCounter + "_img.tif");
 
-                    ImagePlus rawImage = isScaleToModelSize() ? DeepLearningUtils.scaleToModel(raw.getImage(),
-                            inputModel.getModelConfiguration(),
-                            getScale2DAlgorithm(),
-                            modelProgress) : raw.getImage();
+                    if(raw.hasLoadedImage() || isScaleToModelSize()) {
+                        Path rawPath = rawsDirectory.resolve(imageCounter + "_img.tif");
 
-                    IJ.saveAsTiff(rawImage, rawPath.toString());
+                        ImagePlus rawImage = isScaleToModelSize() ? DeepLearningUtils.scaleToModel(raw.getImage(),
+                                inputModel.getModelConfiguration(),
+                                getScale2DAlgorithm(),
+                                modelProgress) : raw.getImage();
+
+                        IJ.saveAsTiff(rawImage, rawPath.toString());
+                    }
+                    else {
+                        raw.saveTo(rawsDirectory, imageCounter + "_img", true, imageProgress);
+                    }
                 }
             }
 
@@ -198,14 +219,23 @@ public class PredictImageAlgorithm extends JIPipeMergingAlgorithm {
                     List<JIPipeAnnotation> annotations = inputRawImageSlot.getAnnotations(imageIndex);
                     Path predictPath = predictionsDirectory.resolve(imageCounter + "_img.tif");
 
-                    ImagePlus image = IJ.openImage(predictPath.toString());
+                    if(!deferImageLoading) {
+                        ImagePlus image = IJ.openImage(predictPath.toString());
 
-                    // We will restore the original annotations of the results
-                    dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusData(image), annotations, JIPipeAnnotationMergeStrategy.OverwriteExisting, imageProgress);
+                        // We will restore the original annotations of the results
+                        dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusData(image), annotations, JIPipeAnnotationMergeStrategy.OverwriteExisting, imageProgress);
+                    }
+                    else {
+                        dataBatch.addOutputData(getFirstOutputSlot(),
+                                new ImagePlusData(new ImagePlusFromFileImageSource(predictPath, false)),
+                                annotations,
+                                JIPipeAnnotationMergeStrategy.OverwriteExisting,
+                                imageProgress);
+                    }
                 }
             }
 
-            if (cleanUpAfterwards) {
+            if (cleanUpAfterwards && !deferImageLoading) {
                 try {
                     FileUtils.deleteDirectory(workDirectory.toFile());
                 } catch (IOException e) {

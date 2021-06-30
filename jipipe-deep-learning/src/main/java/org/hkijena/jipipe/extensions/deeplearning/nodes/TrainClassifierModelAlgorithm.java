@@ -164,12 +164,17 @@ public class TrainClassifierModelAlgorithm extends JIPipeMergingAlgorithm {
                 ImagePlusData image = inputImagesSlot.getData(imageIndex, ImagePlusData.class, imageProgress);
                 Path rawPath = rawsDirectory.resolve(imageCounter + "_img.tif");
 
-                ImagePlus rawImage = isScaleToModelSize() ? DeepLearningUtils.scaleToModel(image.getImage(),
-                        inputModel.getModelConfiguration(),
-                        getScale2DAlgorithm(),
-                        modelProgress) : image.getImage();
+                if(image.hasLoadedImage() || isScaleToModelSize()) {
+                    ImagePlus rawImage = isScaleToModelSize() ? DeepLearningUtils.scaleToModel(image.getImage(),
+                            inputModel.getModelConfiguration(),
+                            getScale2DAlgorithm(),
+                            modelProgress) : image.getImage();
 
-                IJ.saveAsTiff(rawImage, rawPath.toString());
+                    IJ.saveAsTiff(rawImage, rawPath.toString());
+                }
+                else {
+                    image.saveTo(rawsDirectory, imageCounter + "_img", true, imageProgress);
+                }
 
                 // Extract the label annotation + value
                 JIPipeAnnotation annotation = labelAnnotation.queryFirst(inputImagesSlot.getAnnotations(imageIndex));
