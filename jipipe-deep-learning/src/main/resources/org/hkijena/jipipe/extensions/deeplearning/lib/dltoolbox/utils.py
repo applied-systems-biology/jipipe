@@ -11,7 +11,7 @@ Adolf-Reichwein-Straße 23, 07745 Jena, Germany
 """
 
 import os
-
+from skimage import img_as_float32
 import keras
 
 from dltoolbox.models.metrics import *
@@ -64,6 +64,9 @@ def load_and_compile_model(model_config, model_path, model=None) -> keras.Model:
                 # TODO: diese compilation hier abhängig von dem model machen
                 pass
 
+        else:
+            raise AttributeError("Unsupported model_type: " + model_type)
+
     return model
 
 
@@ -102,8 +105,11 @@ def setup_devices(config=None):
     else:
         gpus = tf.config.list_physical_devices('GPU')
         visible_gpus = []
-        for id in gpu_config:
-            visible_gpus.append(gpus[id])
+        try:
+            for id in gpu_config:
+                visible_gpus.append(gpus[id])
+        except:
+            print('[setup_devices] please specify <all> or set the desired gpus in a list (e.g. [0,1])')
 
         tf.config.set_visible_devices(visible_gpus, device_type="GPU")
 
@@ -137,8 +143,23 @@ def preprocessing(img, mode):
     Returns:
     """
 
+    print("[utils.preprocessing] preprocess image with mode: <{0}>".format(mode))
+
     if mode == 'zero_one':
-        return np.array(img) / 255.
+        return img_as_float32(img) / 255.
     elif mode == 'minus_one_to_one':
-        return np.array(img) / 127.5 - 1.
-    raise AttributeError("Could not find valid normalization mode - {zero_one, minus_one_to_one}")
+        return img_as_float32(img) / (127.5 - 1.)
+    else:
+        raise AttributeError("Could not find valid normalization mode - {zero_one, minus_one_to_one}")
+
+    # denominator = tf.constant(img, dtype=tf.float32)
+    # if mode == 'zero_one':
+    #     divisor = tf.constant(255., dtype=tf.float32)
+    # elif mode == 'minus_one_to_one':
+    #     divisor = tf.constant(127.5 - 1., dtype=tf.float32)
+    # else:
+    #     raise AttributeError("Could not find valid normalization mode - {zero_one, minus_one_to_one}")
+    #
+    # result = tf.constant(tf.truediv(denominator, divisor), dtype=tf.float32) #.numpy()
+    #
+    # return result

@@ -17,238 +17,141 @@ Adolf-Reichwein-Straße 23, 07745 Jena, Germany
 Script to predict a network
 """
 
+
+import numpy as np
+import math
+import os
+from pathlib import Path
+import tifffile
+from skimage import img_as_float32
+from skimage import io
+import sys
 from dltoolbox import utils
 
 
-# import json
-# from glob import glob
-# import time
-# from datetime import datetime
-# import cv2
-import numpy as np
-# import skimage
-# from scipy import ndimage
-# import tifffile as tif
-# import matplotlib.pyplot as plt
-# import matplotlib as mpl
-# import matplotlib.image as mpimg
-# import pandas as pd
+def predict_samples(model_config, config, model=None):
+    """
+    Predicts a model with some input data
+    Args:
+        config: the config for this prediction
+        model_config: the model config
+        model: An existing model (optional)
 
+    Returns: Prediction results (list of predictions, list of input files)
 
-### predict a whole sample ###
-# """
-# CAUTION: savePath should NOT contain the file ending (e.g. .tif / .png)
-# """
-#
-#
-# def predict_sample(model, img_origin, savePath, save_probMap_image, verbose=0):
-#     winW, winH = config['img_size'][0], config['img_size'][0]
-#     windowStep = config['img_size'][0]
-#     mythresh = config["segmentation_threshold"][0]
-#
-#     # create an empty image with the size of the original one, if choosen
-#     if model.output_shape[-1] == 3:
-#         img_prediction = np.zeros(img_origin.shape)
-#     else:
-#         img_prediction = np.zeros(img_origin.shape[:2])
-#     img_prediction_thresholded = np.zeros(img_prediction.shape)
-#
-#     # TODO: das hier testen: ein großes Bild wird mit einem mal predicted:
-#     # muss im format (batches, x, y, channel) sein
-#     try:
-#         img_origin = np.expand_dims(img_origin, axis=0)
-#         img_prediction = model.predict(img_origin, batch_size=1)
-#         print('predict whole sample')
-#     except:
-#
-#         print('predict sample via sliding-window operation')
-#
-#         start_time = datetime.now()
-#
-#         # iterate about each window
-#         for (row, col, window) in utils.sliding_window(img_origin, stepSize=windowStep, windowSize=(winW, winH)):
-#
-#             y1, y2 = col, col + windowStep
-#             x1, x2 = row, row + windowStep
-#
-#             # check if all values in the window equal
-#             if len(np.unique(window)) == 1:
-#                 continue
-#
-#             # padding if window has not the required shape (e.g. 256²), necessary for NN
-#             if window.shape[0] != winH or window.shape[1] != winW:
-#                 window = utils.batchPadding(window, winW, int(np.max(window)))
-#
-#             # normalize between [ 0, 1 ]
-#             window = utils.preprocessing(window)
-#
-#             # check if the underlying cut-out is a 'batch'
-#             if len(window.shape) == 3:
-#                 window = np.expand_dims(window, axis=0)
-#
-#             # y_predict = model.predict_on_batch( np.array( [window] ) )
-#             y_predict = model.predict_on_batch([window])
-#
-#             # segment image by binarize it with specified threshold and place it in corresponding big image
-#             y_binarized = y_predict > mythresh
-#             y_binarized = np.squeeze(y_binarized)
-#
-#             tmp_shape = img_prediction_thresholded[y1:y2, x1:x2].shape
-#             img_prediction_thresholded[y1:y2, x1:x2] = y_binarized[:tmp_shape[0], :tmp_shape[1]]
-#
-#             # plot image for (1) verbose activated (2) a positive segmentation and (3) 'medium' variance for the input image
-#             if verbose > 1 and np.max(y_predict) > mythresh and ndimage.variance(window) > 10:
-#                 # plot segmentation just for black-white images
-#                 fig, ax_arr = plt.subplots(1, 2, sharex=True, sharey=True, figsize=(15, 12))
-#                 ax1, ax2 = ax_arr.ravel()
-#
-#                 ax1.imshow(np.squeeze(window))
-#                 ax1.contour(y_binarized.astype(np.uint8), colors='green', linewidths=2)
-#                 ax1.set_title("Origin image", fontsize=15)
-#
-#                 ax2.imshow(np.squeeze(y_predict[0]), cmap="gray")
-#                 ax2.set_title("Network-prediction", fontsize=15)
-#                 plt.show()
-#
-#                 print("PREDICTION: [prediction- shape/min/mean/max: {} / {:3.4f} / {:3.4f} / {:3.4f}]"
-#                       .format(y_predict[0].shape, np.min(y_predict[0]), np.mean(y_predict[0]), np.max(y_predict[0])))
-#
-#             # build the whole img_prediction image to give a probability-prediciton of the model about the whole image
-#             y_predict = np.squeeze(y_predict)
-#
-#             # cut-out the prediction-image if necessary (img_prediction[ y1:y2 , x1:x2 ] is at the frame border)
-#             cutout_shape = img_prediction[y1:y2, x1:x2].shape
-#             if cutout_shape != np.squeeze(y_predict).shape:
-#                 y_predict = y_predict[:cutout_shape[0], :cutout_shape[1]]
-#                 # print('cut-out the prediction', cutout_shape, y_predict.shape)
-#
-#             if len(y_predict.shape) == 3:
-#                 img_prediction[y1:y2, x1:x2, :] = y_predict
-#             else:
-#                 img_prediction[y1:y2, x1:x2] = np.squeeze(y_predict)
-#
-#             if verbose > 1:
-#                 print('coordinate (x/y):', x1, y1)
-#
-#         img_prediction_thresholded = img_prediction_thresholded.astype(np.uint8) * 255
-#
-#         # save the whole (thresholded) image with all the annotations
-#         if savePath is None:
-#             print('skip storing of a whole prediction image')
-#         else:
-#             tif.imsave(savePath + '_threshold.tif', img_prediction_thresholded)
-#             print('save thresholded-image to:', savePath + '_threshold.tif')
-#
-#             if save_probMap_image:
-#                 tif.imsave(savePath + '.tif', img_prediction)
-#                 print('save prediction-image to:', savePath + '_probMap.tif')
-#
-#         time_elapsed = datetime.now() - start_time
-#         print('\nFinish prediciton in (hh:mm:ss.ms) {}'.format(time_elapsed))
-#
-#     if verbose > 0:
-#         print('[INFO] finish create empty prediction image:', img_prediction.shape, img_prediction_thresholded.shape)
-#
-#     return img_prediction_thresholded
+    """
 
+    input_dir = config['input_dir']
+    output_dir = config['output_dir']
+    input_model_path = config["input_model_path"] if "input_model_path" in config else model_config['output_model_path']
+    model_img_shape = tuple(model_config["image_shape"])
 
-def perform_collected_evaluation(path_models, path_all_files_origin, path_all_files_true, verbose=1):
-    df_k_fold_abbrevations = pd.read_csv(os.path.join(path_models, 'k_fold_abbrevations.csv'), index_col=0)
+    # Load the model
+    model = utils.load_and_compile_model(model_config, input_model_path, model)
 
-    print('test-data-table:\n', df_k_fold_abbrevations)
+    # Load the raw images
+    X = io.imread_collection(input_dir)
+    print('[Predict] Images to predict:', len(X))
 
-    path_k_models = np.sort([x for x in glob(os.path.join(path_models, "*/*")) if os.path.isdir(x)])
-    print(f'\n{len(path_k_models)} available models:\n', path_k_models)
+    results = []
 
-    df_scores_all = pd.DataFrame(
-        columns=['Accuracy', 'Precision', 'Recall', 'F-1', 'TruePositive', 'FalsePositive', 'FalseNegative',
-                 'TrueNegative', 'dice-loss', 'entropy-loss'])
+    for (image, file_name) in zip(X, X.files):
+        print("[Predict] " + str(file_name))
 
-    # iterate about all test-data-k-folds per model
-    for idx, row in df_k_fold_abbrevations.iterrows():
+        # # TODO: tmp - später löschen
+        # if file_name == "/asbdata/Philipp/FungIdent/image_data/human/SilverGomori_staining/tif_original/Aspergillus_S09-15-4_Gomori_original.tif":
+        #     print('skip ...')
+        #     continue
 
-        # (0) check if there are enough models for each test-data-permutation
-        if idx + 1 > len(path_k_models):
-            print(
-                f'\n\tABORT EVALUATION: number of iteration ({idx + 1}) > number of available models ({len(path_k_models)})')
-            break
+        img_x0 = image.shape[0]
+        img_x1 = image.shape[1]
 
-        # (1) load the corresponding model and config file to the test data set
-        path_single_model = glob(os.path.join(path_k_models[idx], '*.hdf5'))[0]
-        print(f'\nmodel-id: {idx}\tmodel-path: {path_single_model}')
+        # TODO: testen:
+        # img_c = image.shape[2]
 
-        path_single_config = glob(os.path.join(path_k_models[idx], 'mdl_hyperparameter.json'))[0]
-        print(f'model-id: {idx}\tconfig-path: {path_single_config}')
+        print("[Predict] Image shape is " + str(image.shape))
 
-        # (2) build the model
-        model = SegNet.MySegNet(modelName='FatTissueSegmentation',
-                                create_new_model=path_single_model,
-                                config_path=path_single_config,
-                                verbose=1)
+        # Preprocessing (normalization)
+        image = utils.preprocessing(image, mode=config['normalization'])
 
-        # iterate about each single test sample
-        for abbrevation in row:
+        try:
+            # Todo: Check why this does not work with images != model_img_shape
+            # TODO: testen: ein großes Bild wird mit einem mal predicted:
 
-            if type(abbrevation) == np.float and math.isnan(abbrevation):
-                print('CAUTION: continue - could not find abbreviaton:', abbrevation)
-                continue
+            # Load the model
+            # model = load_and_compile_model(model_config, input_model_path, model)
 
-            # (3) load the original image
-            orig_path = [x for x in path_all_files_origin if abbrevation in x][0]
-            true_path = [x for x in path_all_files_true if abbrevation in x][0]
+            print("[Predict] Attempting to predict whole image")
+            whole_image = image
+            while len(whole_image.shape) < 4:
+                whole_image = np.expand_dims(whole_image, axis=0)
+            prediction = model.predict(whole_image, batch_size=1)
+        except:
+            print(sys.exc_info()[1])
+            print("[Predict] Predicting the whole image failed. Retrying with tiling.")
+            ws0 = model_img_shape[0]
+            ws1 = model_img_shape[1]
+            print("[Predict] Window size is " + str((ws0, ws1)))
 
-            try:
-                img_orig = tif.imread(orig_path)
-            except:
-                img_orig = cv2.imread(orig_path)
-            print('\norig_path:\t', orig_path.split('/')[-2:], 'orig-shape:\t', img_orig.shape)
-            try:
-                img_true = tif.imread(true_path, )
-            except:
-                img_true = cv2.imread(true_path, 0)
+            # First pad the image to something perfectly tiling
+            if img_x0 % ws0 != 0 or img_x1 % ws1 != 0:
+                print("[Predict] Padding is required with image of shape " + str(image.shape) +
+                      " and window size " + str([ws0, ws1]))
+                pad_width = [(0, int(math.ceil(1.0 * img_x0 / ws0) * ws0) - img_x0),
+                             (0, int(math.ceil(1.0 * img_x1 / ws1) * ws1) - img_x1)]
+                while len(pad_width) < len(image.shape):
+                    pad_width.append((0, 0))
+                print("[Predict] Padding with " + str(pad_width))
+                img_padded = np.pad(image, pad_width=pad_width)
+                print("[Predict] Padded image has shape " + str(img_padded.shape))
+            else:
+                print("[Predict] No padding required with image of shape " + str(image.shape) +
+                      " and window size " + str([ws0, ws1]))
+                img_padded = image
 
-                # if label image is not a binary image: binarize it:
-            if len(np.unique(img_true)) != 2:
-                print('BEFORE: binarize label image - number of different intensities:', len(np.unique(img_true)))
-                img_true = binarizeAnnotation(img_true, use_otsu=True, convertToGray=True)
-                print('AFTER: binarize label image - number of different intensities:', len(np.unique(img_true)))
+            prediction = None
+            for (window_x0, window_x1, img_window) in utils.sliding_window(img_padded,
+                                                                   step_size=(ws0, ws1),
+                                                                   window_size=(ws0, ws1)):
+                print("[Predict] Predicting window " + str((window_x0, window_x1, ws0, ws1))
+                      + " in image " + str(img_padded.shape))
+                img_window_expanded = img_window
 
-            print('true_path:\t', true_path.split('/')[-2:], 'orig-shape:\t', img_true.shape, img_true.dtype)
-            # print('true_path:\t', true_path.split('/')[-2:])
+                while len(img_window_expanded.shape) < 4:
+                    img_window_expanded = np.expand_dims(img_window_expanded, axis=0)
 
-            # plt.imshow(img_true)
-            # plt.show()
+                window_prediction = img_as_float32(model.predict_on_batch([img_window_expanded]))
+                window_prediction = np.squeeze(window_prediction)
 
-            # (4) on-the-fly prediction with the corresponding model and then evaluated
-            img_pred = model.predict_sample(img_origin=img_orig, savePath=None, save_probMap_image=0, verbose=0)
-            print(
-                f'img_pred-shape: {img_pred.shape}\timg_pred.min(): {img_pred.min()}\timg_pred.max(): {img_pred.max()}')
+                new_x0 = min(ws0, img_x0 - window_x0)
+                new_x1 = min(ws1, img_x1 - window_x1)
+                if new_x0 != ws0 or new_x1 != ws1:
+                    window_prediction = window_prediction[0:new_x0, 0:new_x1]
 
-            # (5) save thresholded image
-            path_img_thresh = os.path.join('/asbdata/Philipp/FungIdent/image_data/cross_validation/',
-                                           path_k_models[idx].split('/')[2], path_k_models[idx].split('/')[3],
-                                           path_k_models[idx].split('/')[4])
-            if not os.path.exists(path_img_thresh):
-                os.makedirs(path_img_thresh)
-                print('\tcreate mod_dir:', path_img_thresh)
+                if prediction is None:
+                    # Generate output image
+                    prediction_shape = list(window_prediction.shape)
+                    prediction_shape[0] = img_x0
+                    prediction_shape[1] = img_x1
+                    print("[Predict] Initializing output image with shape " + str(prediction_shape))
+                    prediction = np.zeros(prediction_shape, dtype=np.float32)
 
-            path_img_thresh = os.path.join(path_img_thresh, orig_path.split('/')[-1])
-            # tif.imsave(path_img_thresh, img_pred)
-            cv2.imwrite(path_img_thresh, img_pred)
-            print('\tsave img_pred to:\t', path_img_thresh.split('/')[-5:])
+                # Add window into output
+                prediction[window_x0:window_x0 + window_prediction.shape[0],
+                    window_x1:window_x1 + window_prediction.shape[1]] = window_prediction
 
-            # (6) evaluate the predicted sample with the specified annotation image
-            # df_scores_single = perform_single_evaluation(true_path, '', verbose=1, img_pred=img_pred)
-            df_scores_single = perform_single_evaluation(img_true, '', verbose=1, img_pred=img_pred,
-                                                         img_true_path=true_path)
+        # Postprocessing
+        prediction = np.squeeze(prediction)
+        prediction = img_as_float32(prediction)
 
-            # (7) append the scores with a collections of all scores
-            df_scores_all = df_scores_all.append(df_scores_single)
+        if output_dir:
+            predicted_file_name = Path(output_dir) / os.path.basename(file_name)
+            print("[Predict] Saving prediction result to " + str(predicted_file_name))
+            if str(file_name).endswith(".tif") or str(file_name).endswith(".tiff"):
+                tifffile.imsave(predicted_file_name, prediction)
+            else:
+                io.imsave(predicted_file_name, prediction)
 
-            # store the dataframe with all evaluations after each iteration
-            path_df_single = os.path.join(path_models, 'eval_model_{0}_{1}.csv'.format(idx, abbrevation))
-            df_scores_all.to_csv(path_df_single)
-            print('\tsave df_single to:\t', path_df_single)
+        results.append(prediction)
 
-    print('\nFinish the whole evaluation with the following scores:\n\n', df_scores_all)
-    return df_scores_all
+    return results, X.files

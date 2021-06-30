@@ -18,16 +18,22 @@ Adolf-Reichwein-Straße 23, 07745 Jena, Germany
 from dltoolbox.evaluation import evaluate
 
 
-def evaluate_model(model_config, config):
+def evaluate_data(config, model=None):
     """
-    Evaluate the data according to its pre-trained model
+    Evaluate the predicted data according to its labels
     Args:
-        model_config: The model parameters
         config: The evaluation settings
+        model: The model. If None, it is loaded from the model config or config
 
     Returns: None
 
     """
 
-    evaluate. # eval(model_config=model_config, config=config)
-    
+    print("Perform evaluation method: " + config["evaluation_method"])
+
+    if config['evaluation_method'] == "plot_probabilities":
+        evaluate.plot_probabilities(config=config)
+    elif config['evaluation_method'] == "treshold_predictions":
+        evaluate.treshold_predictions(config=config)
+    else:
+        raise AttributeError("Unsupported evaluation method: " + config["evaluation_method"])

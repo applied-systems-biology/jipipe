@@ -23,6 +23,7 @@ from skimage import io
 from keras.preprocessing.image import ImageDataGenerator
 from keras import callbacks
 from dltoolbox.utils import load_and_compile_model
+from dltoolbox.evaluation import evaluate
 
 
 def train_model(model_config, config, model=None):
@@ -129,42 +130,24 @@ def train_model(model_config, config, model=None):
     # fits the model on batches with real-time data augmentation:
     print('Start training ...')
 
-    # Warning: THIS FUNCTION IS DEPRECATED. It will be removed in a future version. Instructions for updating: Please use Model.fit, which supports generators.
-    model.fit_generator(train_generator,
+    model.fit(train_generator,
                         steps_per_epoch=steps_epoch,
                         epochs=n_epochs,
                         verbose=1,
-                        # callbacks=[tbCallBack, earlyStopping, mcp_save, reduce_lr],
                         callbacks=[earlyStopping, mcp_save, reduce_lr],  # tbCallBack
                         validation_data=(x_valid, y_valid),
                         validation_steps=x_valid.shape[0] / batch_size)
 
-    # Use model.fit for tensorflow > v2.1.0 
-    # history = model.fit(
-    #     x=train_generator,
-    #     #y=train_label_generator,
-    #     batch_size=batch_size,
-    #     epochs=n_epochs,
-    #     verbose=1,
-    #     callbacks=[earlyStopping, reduce_lr], # tbCallBack, mcp_save
-    #     validation_split=0.0,
-    #     validation_data=(x_valid, y_valid),
-    #     shuffle=True,
-    #     class_weight=None,
-    #     sample_weight=None,
-    #     initial_epoch=0,
-    #     steps_per_epoch=steps_epoch,
-    #     validation_steps=None,
-    #     #validation_batch_size=None,
-    #     validation_freq=1,
-    #     max_queue_size=10#,
-    #     #workers=1#,
-    #     #use_multiprocessing=False#,
-    # )
 
     if output_model_path:
         model.save(output_model_path)
         print('[Train model] Saved trained model to:', output_model_path)
+
+        figure_path = output_model_path.split('/')[:-1]
+        figure_path = '/'.join(figure_path)
+        evaluate.plot_history(history=history, path=figure_path, model=model)
+        print('[Train model] Saved training history plots to:', figure_path)
+
 
     if output_model_json_path:
         model_json = model.to_json()

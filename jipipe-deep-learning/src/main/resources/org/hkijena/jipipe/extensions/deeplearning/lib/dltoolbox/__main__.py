@@ -80,8 +80,6 @@ elif args.operation == "predict":
 elif args.operation == "evaluate":
     with open(args.config, "r") as f:
         config = json.load(f)
-    with open(args.model_config, "r") as f:
-        model_config = json.load(f)
     if args.device_config:
         with(open(args.device_config), "r") as f:
             device_config = json.load(f)
@@ -92,7 +90,7 @@ elif args.operation == "evaluate":
     dltoolbox.utils.setup_devices(device_config)
 
     import dltoolbox.evaluation
-    dltoolbox.evaluation.evaluate_model(model_config, config)
+    dltoolbox.evaluation.evaluate_data(config)
 elif args.operation == "list-devices":
     import tensorflow as tf
 

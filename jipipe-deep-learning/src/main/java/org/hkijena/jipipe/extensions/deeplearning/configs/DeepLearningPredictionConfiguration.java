@@ -15,6 +15,7 @@ package org.hkijena.jipipe.extensions.deeplearning.configs;
 
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonSetter;
+import org.hkijena.jipipe.extensions.deeplearning.DeepLearningPredictionType;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -23,6 +24,7 @@ public class DeepLearningPredictionConfiguration {
     private String inputImagesPattern = "raw/*.tif";
     private Path outputPath = Paths.get("");
     private Path inputModelPath = Paths.get("");
+    private DeepLearningPredictionType predictionType = DeepLearningPredictionType.standard;
 
     @JsonGetter("input_dir")
     public String getInputImagesPattern() {
@@ -52,5 +54,15 @@ public class DeepLearningPredictionConfiguration {
     @JsonSetter("input_model_path")
     public void setInputModelPath(Path inputModelPath) {
         this.inputModelPath = inputModelPath;
+    }
+
+    @JsonGetter("prediction_type")
+    public DeepLearningPredictionType getPredictionType() {
+        return predictionType;
+    }
+
+    @JsonSetter("prediction_type")
+    public void setPredictionType(DeepLearningPredictionType predictionType) {
+        this.predictionType = predictionType;
     }
 }
