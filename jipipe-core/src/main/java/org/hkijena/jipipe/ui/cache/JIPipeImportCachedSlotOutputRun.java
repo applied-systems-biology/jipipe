@@ -109,6 +109,12 @@ public class JIPipeImportCachedSlotOutputRun implements JIPipeRunnable {
             JIPipeDataInfo trueDataType = exportedDataTable.getDataTypeOf(row.getIndex());
             JIPipeData data = JIPipe.importData(storageFolder, trueDataType.getDataClass());
             tempSlot.addData(data, annotationList, JIPipeAnnotationMergeStrategy.OverwriteExisting, slotProgressInfo);
+
+            for (JIPipeExportedDataAnnotation dataAnnotation : row.getDataAnnotations()) {
+                JIPipeDataInfo dataAnnotationDataTypeInfo = JIPipeDataInfo.getInstance(dataAnnotation.getTrueDataType());
+                JIPipeData dataAnnotationData = JIPipe.importData(dataFolder.resolve(dataAnnotation.getRowStorageFolder()), dataAnnotationDataTypeInfo.getDataClass());
+                tempSlot.setDataAnnotation(tempSlot.getRowCount() - 1, dataAnnotation.getName(), dataAnnotationData);
+            }
         }
     }
 }
