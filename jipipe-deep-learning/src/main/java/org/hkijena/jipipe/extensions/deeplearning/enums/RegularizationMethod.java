@@ -11,16 +11,10 @@
  * See the LICENSE file provided with the code for the full license.
  */
 
-package org.hkijena.jipipe.extensions.deeplearning;
+package org.hkijena.jipipe.extensions.deeplearning.enums;
 
-import org.apache.commons.lang.WordUtils;
-
-public enum DeepLearningModelType {
-    segmentation,
-    classification;
-
-    @Override
-    public String toString() {
-        return WordUtils.capitalize(name());
-    }
+public enum RegularizationMethod {
+    Dropout,
+    GaussianDropout,
+    GaussianNoise
 }

@@ -11,10 +11,9 @@
  * See the LICENSE file provided with the code for the full license.
  */
 
-package org.hkijena.jipipe.extensions.deeplearning;
+package org.hkijena.jipipe.extensions.deeplearning.enums;
 
-public enum RegularizationMethod {
-    Dropout,
-    GaussianDropout,
-    GaussianNoise
+public enum MonitorLoss {
+    val_loss,
+    loss
 }

@@ -34,7 +34,7 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
-import org.hkijena.jipipe.extensions.deeplearning.DeepLearningModelType;
+import org.hkijena.jipipe.extensions.deeplearning.enums.DeepLearningModelType;
 import org.hkijena.jipipe.extensions.deeplearning.DeepLearningSettings;
 import org.hkijena.jipipe.extensions.deeplearning.DeepLearningUtils;
 import org.hkijena.jipipe.extensions.deeplearning.OptionalDeepLearningDeviceEnvironment;

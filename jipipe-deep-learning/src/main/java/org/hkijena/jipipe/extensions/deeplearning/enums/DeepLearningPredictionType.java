@@ -1,4 +1,4 @@
-package org.hkijena.jipipe.extensions.deeplearning;
+package org.hkijena.jipipe.extensions.deeplearning.enums;
 
 public enum DeepLearningPredictionType {
     standard,

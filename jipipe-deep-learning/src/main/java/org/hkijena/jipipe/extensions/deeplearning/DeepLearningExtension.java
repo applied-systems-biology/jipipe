@@ -8,6 +8,7 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
 import org.hkijena.jipipe.extensions.JIPipePrepackagedDefaultJavaExtension;
 import org.hkijena.jipipe.extensions.deeplearning.datatypes.DeepLearningModelData;
+import org.hkijena.jipipe.extensions.deeplearning.enums.*;
 import org.hkijena.jipipe.extensions.deeplearning.nodes.CreateModelAlgorithm;
 import org.hkijena.jipipe.extensions.deeplearning.nodes.ImportModelAlgorithm;
 import org.hkijena.jipipe.extensions.deeplearning.nodes.PredictImageAlgorithm;
@@ -129,6 +130,10 @@ public class DeepLearningExtension extends JIPipePrepackagedDefaultJavaExtension
                 DeepLearningModelType.class,
                 "Deep Learning model type",
                 "A model type");
+        registerEnumParameterType("deep-learning-preprocessing-type",
+                DeepLearningPreprocessingType.class,
+                "Deep Leaning preprocessing type",
+                "Preprocessing methods");
 
         registerDatatype("deep-learning-model",
                 DeepLearningModelData.class,

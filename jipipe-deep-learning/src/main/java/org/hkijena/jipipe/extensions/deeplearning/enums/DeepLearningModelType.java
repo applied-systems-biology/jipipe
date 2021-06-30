@@ -11,9 +11,16 @@
  * See the LICENSE file provided with the code for the full license.
  */
 
-package org.hkijena.jipipe.extensions.deeplearning;
+package org.hkijena.jipipe.extensions.deeplearning.enums;
 
-public enum MonitorLoss {
-    val_loss,
-    loss
+import org.apache.commons.lang.WordUtils;
+
+public enum DeepLearningModelType {
+    segmentation,
+    classification;
+
+    @Override
+    public String toString() {
+        return WordUtils.capitalize(name());
+    }
 }

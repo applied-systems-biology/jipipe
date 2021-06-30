@@ -19,9 +19,9 @@ import com.google.common.eventbus.EventBus;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
-import org.hkijena.jipipe.extensions.deeplearning.DeepLearningArchitecture;
-import org.hkijena.jipipe.extensions.deeplearning.DeepLearningModelType;
-import org.hkijena.jipipe.extensions.deeplearning.RegularizationMethod;
+import org.hkijena.jipipe.extensions.deeplearning.enums.DeepLearningArchitecture;
+import org.hkijena.jipipe.extensions.deeplearning.enums.DeepLearningModelType;
+import org.hkijena.jipipe.extensions.deeplearning.enums.RegularizationMethod;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;

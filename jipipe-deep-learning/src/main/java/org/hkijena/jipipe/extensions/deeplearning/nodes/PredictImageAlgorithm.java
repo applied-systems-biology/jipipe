@@ -35,12 +35,13 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
-import org.hkijena.jipipe.extensions.deeplearning.DeepLearningModelType;
+import org.hkijena.jipipe.extensions.deeplearning.enums.DeepLearningModelType;
 import org.hkijena.jipipe.extensions.deeplearning.DeepLearningSettings;
 import org.hkijena.jipipe.extensions.deeplearning.DeepLearningUtils;
 import org.hkijena.jipipe.extensions.deeplearning.OptionalDeepLearningDeviceEnvironment;
 import org.hkijena.jipipe.extensions.deeplearning.configs.DeepLearningPredictionConfiguration;
 import org.hkijena.jipipe.extensions.deeplearning.datatypes.DeepLearningModelData;
+import org.hkijena.jipipe.extensions.deeplearning.enums.DeepLearningPreprocessingType;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.transform.ScaleMode;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.transform.TransformScale2DAlgorithm;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datasources.ImagePlusFromFileImageSource;
@@ -72,6 +73,7 @@ public class PredictImageAlgorithm extends JIPipeMergingAlgorithm {
     private boolean scaleToModelSize = false;
     private OptionalPythonEnvironment overrideEnvironment = new OptionalPythonEnvironment();
     private OptionalDeepLearningDeviceEnvironment overrideDevices = new OptionalDeepLearningDeviceEnvironment();
+    private DeepLearningPreprocessingType normalization = DeepLearningPreprocessingType.zero_one;
 
     public PredictImageAlgorithm(JIPipeNodeInfo info) {
         super(info);
@@ -89,7 +91,19 @@ public class PredictImageAlgorithm extends JIPipeMergingAlgorithm {
         this.overrideDevices = new OptionalDeepLearningDeviceEnvironment(other.overrideDevices);
         this.scaleToModelSize = other.scaleToModelSize;
         this.deferImageLoading = other.deferImageLoading;
+        this.normalization = other.normalization;
         registerSubParameter(scale2DAlgorithm);
+    }
+
+    @JIPipeDocumentation(name = "Normalization", description = "The normalization method used for preprocessing the images.")
+    @JIPipeParameter("normalization")
+    public DeepLearningPreprocessingType getNormalization() {
+        return normalization;
+    }
+
+    @JIPipeParameter("normalization")
+    public void setNormalization(DeepLearningPreprocessingType normalization) {
+        this.normalization = normalization;
     }
 
     @JIPipeDocumentation(name = "Override device configuration", description = "If enabled, this nodes provides a custom device configuration, " +
@@ -179,6 +193,7 @@ public class PredictImageAlgorithm extends JIPipeMergingAlgorithm {
             predictionConfiguration.setOutputPath(predictionsDirectory);
             predictionConfiguration.setInputImagesPattern(rawsDirectory + "/*.tif");
             predictionConfiguration.setInputModelPath(workDirectory.resolve("model.hdf5"));
+            predictionConfiguration.setNormalization(normalization);
             try {
                 JsonUtils.getObjectMapper().writerWithDefaultPrettyPrinter().writeValue(workDirectory.resolve("predict-config.json").toFile(), predictionConfiguration);
             } catch (IOException e) {
