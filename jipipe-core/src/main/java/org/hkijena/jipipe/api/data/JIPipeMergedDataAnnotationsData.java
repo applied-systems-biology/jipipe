@@ -3,6 +3,8 @@ package org.hkijena.jipipe.api.data;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 
+import javax.swing.*;
+import java.awt.*;
 import java.nio.file.Path;
 
 @JIPipeDocumentation(name = "Merged data annotations", description = "A table of data")
@@ -21,5 +23,10 @@ public class JIPipeMergedDataAnnotationsData extends JIPipeDataTableData {
     public static JIPipeDataTableData importFrom(Path storagePath) {
         JIPipeDataSlot slot = JIPipeDataSlot.loadFromStoragePath(storagePath, new JIPipeProgressInfo());
         return new JIPipeDataTableData(slot);
+    }
+
+    @Override
+    public Component preview(int width, int height) {
+        return new JLabel(toString());
     }
 }
