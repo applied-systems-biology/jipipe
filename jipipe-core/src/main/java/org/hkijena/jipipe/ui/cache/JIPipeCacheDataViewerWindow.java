@@ -292,8 +292,7 @@ public abstract class JIPipeCacheDataViewerWindow extends JFrame {
 
     @Subscribe
     public void onCacheUpdated(JIPipeProjectCache.ModifiedEvent event) {
-        Window window = SwingUtilities.getWindowAncestor(this);
-        if (window == null || !window.isVisible())
+        if (!isVisible())
             return;
         if (!isDisplayable())
             return;
