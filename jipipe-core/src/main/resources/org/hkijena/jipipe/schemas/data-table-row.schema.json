@@ -29,6 +29,15 @@
         "$ref": "https://www.jipipe.org/schemas/annotation.schema.json"
       }
     },
+    "data-annotations": {
+      "$id": "#/properties/data-annotations",
+      "type": "array",
+      "title": "Data annotation list",
+      "description": "Data annotations attached to the data row",
+      "items": {
+        "$ref": "https://www.jipipe.org/schemas/data-annotation.schema.json"
+      }
+    },
     "true-data-type": {
       "$id": "#/properties/true-data-type",
       "type": "string",
