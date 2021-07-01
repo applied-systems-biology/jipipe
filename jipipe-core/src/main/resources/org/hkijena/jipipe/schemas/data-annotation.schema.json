@@ -6,7 +6,8 @@
   "description": "A data annotation",
   "required": [
     "name",
-    "value"
+    "true-data-type",
+    "row-storage-folder"
   ],
   "properties": {
     "name": {
