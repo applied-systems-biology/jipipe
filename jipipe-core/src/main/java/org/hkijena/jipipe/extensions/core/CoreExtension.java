@@ -119,6 +119,6 @@ public class CoreExtension extends JIPipePrepackagedDefaultJavaExtension {
 
     @Override
     public String getDependencyVersion() {
-        return "2021.6";
+        return "2021.7";
     }
 }

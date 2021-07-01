@@ -5,11 +5,11 @@
     <parent>
         <artifactId>pom-jipipe</artifactId>
         <groupId>org.hkijena</groupId>
-        <version>2021.6</version>
+        <version>2021.7</version>
     </parent>
 
     <artifactId>jipipe-cellpose</artifactId>
-    <version>2021.6</version>
+    <version>2021.7</version>
 
     <name>jipipe-cellpose</name>
     <description>JIPipe CellPose Integration</description>
@@ -78,17 +78,17 @@
             <dependency>
                 <groupId>org.hkijena</groupId>
                 <artifactId>jipipe-core</artifactId>
-                <version>2021.6</version>
+                <version>2021.7</version>
             </dependency>
             <dependency>
                 <groupId>org.hkijena</groupId>
                 <artifactId>jipipe-ij</artifactId>
-                <version>2021.6</version>
+                <version>2021.7</version>
             </dependency>
             <dependency>
                 <groupId>org.hkijena</groupId>
                 <artifactId>jipipe-python</artifactId>
-                <version>2021.6</version>
+                <version>2021.7</version>
             </dependency>
         </dependencies>
     </dependencyManagement>

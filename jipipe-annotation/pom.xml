@@ -5,11 +5,11 @@
     <parent>
         <artifactId>pom-jipipe</artifactId>
         <groupId>org.hkijena</groupId>
-        <version>2021.6</version>
+        <version>2021.7</version>
     </parent>
 
     <artifactId>jipipe-annotation</artifactId>
-    <version>2021.6</version>
+    <version>2021.7</version>
 
     <name>jipipe-annotation</name>
     <description>JIPipe Annotation Processing</description>
@@ -78,7 +78,7 @@
             <dependency>
                 <groupId>org.hkijena</groupId>
                 <artifactId>jipipe-core</artifactId>
-                <version>2021.6</version>
+                <version>2021.7</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
