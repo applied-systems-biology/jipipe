@@ -394,6 +394,11 @@ public class JIPipeProjectWorkbench extends JPanel implements JIPipeWorkbench {
         restoreMenuItem.addActionListener(e -> AutoSaveSettings.getInstance().openRestoreMenu(this));
         projectMenu.add(restoreMenuItem);
 
+        JMenuItem cleanBackupsItem = new JMenuItem("Remove duplicate backups ...", UIUtils.getIconFromResources("actions/clear-brush.png"));
+        cleanBackupsItem.setToolTipText("Removes duplicate or missing backup files");
+        cleanBackupsItem.addActionListener(e -> AutoSaveSettings.getInstance().removeDuplicateBackups(this));
+        projectMenu.add(cleanBackupsItem);
+
         projectMenu.addSeparator();
 
         // "Save project" entry

@@ -25,6 +25,7 @@ import org.hkijena.jipipe.extensions.parameters.primitives.OptionalPathParameter
 import org.hkijena.jipipe.extensions.parameters.primitives.PathList;
 import org.hkijena.jipipe.ui.JIPipeProjectWindow;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
+import org.hkijena.jipipe.ui.running.JIPipeRunExecuterUI;
 import org.hkijena.jipipe.utils.PathUtils;
 import org.hkijena.jipipe.utils.ResourceUtils;
 import org.hkijena.jipipe.utils.StringUtils;
@@ -186,6 +187,12 @@ public class AutoSaveSettings implements JIPipeParameterCollection {
     @JIPipeParameter("save-path")
     public void setSavePath(OptionalPathParameter savePath) {
         this.savePath = savePath;
+    }
+
+    @JIPipeDocumentation(name = "Remove duplicate backups", description = "Removes all duplicate backups")
+    @JIPipeContextAction(iconURL = ResourceUtils.RESOURCE_BASE_PATH + "/icons/actions/clear-brush.png", iconDarkURL = ResourceUtils.RESOURCE_BASE_PATH + "/dark/icons/actions/clear-brush.png")
+    public void removeDuplicateBackups(JIPipeWorkbench workbench) {
+        JIPipeRunExecuterUI.runInDialog(workbench.getWindow(), new CleanBackupsRun(workbench));
     }
 
     @JIPipeDocumentation(name = "Restore backup", description = "Restores a backup from the list below")
