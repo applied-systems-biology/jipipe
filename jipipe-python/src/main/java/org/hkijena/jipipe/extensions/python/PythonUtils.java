@@ -30,6 +30,7 @@ import org.hkijena.jipipe.extensions.parameters.primitives.IntegerList;
 import org.hkijena.jipipe.extensions.parameters.primitives.StringList;
 import org.hkijena.jipipe.extensions.settings.RuntimeSettings;
 import org.hkijena.jipipe.utils.MacroUtils;
+import org.hkijena.jipipe.utils.PathUtils;
 import org.hkijena.jipipe.utils.ProcessUtils;
 import org.hkijena.jipipe.utils.StringUtils;
 
@@ -491,15 +492,17 @@ public class PythonUtils {
         progressInfo.log("Cleaning up ...");
         for (Map.Entry<String, Path> entry : inputSlotPaths.entrySet()) {
             try {
-                FileUtils.deleteDirectory(entry.getValue().toFile());
-            } catch (IOException e) {
+                PathUtils.deleteDirectoryRecursively(entry.getValue(),
+                        progressInfo.resolve("Cleanup"));
+            } catch (Exception e) {
                 e.printStackTrace();
             }
         }
         for (Map.Entry<String, Path> entry : outputSlotPaths.entrySet()) {
             try {
-                FileUtils.deleteDirectory(entry.getValue().toFile());
-            } catch (IOException e) {
+                PathUtils.deleteDirectoryRecursively(entry.getValue(),
+                        progressInfo.resolve("Cleanup"));
+            } catch (Exception e) {
                 e.printStackTrace();
             }
         }

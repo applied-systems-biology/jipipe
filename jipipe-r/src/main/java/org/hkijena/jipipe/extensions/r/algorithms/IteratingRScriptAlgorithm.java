@@ -31,6 +31,7 @@ import org.hkijena.jipipe.extensions.r.parameters.RScriptParameter;
 import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.utils.ParameterUtils;
+import org.hkijena.jipipe.utils.PathUtils;
 import org.hkijena.jipipe.utils.ResourceUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 
@@ -196,21 +197,7 @@ public class IteratingRScriptAlgorithm extends JIPipeIteratingAlgorithm {
 
         // Clean up
         if (cleanUpAfterwards) {
-            progressInfo.log("Cleaning up ...");
-            for (Map.Entry<String, Path> entry : inputSlotPaths.entrySet()) {
-                try {
-                    FileUtils.deleteDirectory(entry.getValue().toFile());
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-            for (Map.Entry<String, Path> entry : outputSlotPaths.entrySet()) {
-                try {
-                    FileUtils.deleteDirectory(entry.getValue().toFile());
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
+            PathUtils.deleteDirectoryRecursively(workDirectory, progressInfo.resolve("Cleanup"));
         }
     }
 

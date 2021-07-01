@@ -444,11 +444,7 @@ public class CellPoseTrainingAlgorithm extends JIPipeMergingAlgorithm {
         }
 
         if (cleanUpAfterwards) {
-            try {
-                FileUtils.deleteDirectory(workDirectory.toFile());
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+            PathUtils.deleteDirectoryRecursively(workDirectory, progressInfo.resolve("Cleanup"));
         }
     }
 

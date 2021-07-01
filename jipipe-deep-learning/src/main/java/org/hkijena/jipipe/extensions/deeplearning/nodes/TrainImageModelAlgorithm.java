@@ -46,6 +46,7 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.python.OptionalPythonEnvironment;
 import org.hkijena.jipipe.extensions.python.PythonUtils;
 import org.hkijena.jipipe.utils.JsonUtils;
+import org.hkijena.jipipe.utils.PathUtils;
 import org.hkijena.jipipe.utils.ResourceUtils;
 
 import java.io.IOException;
@@ -228,11 +229,7 @@ public class TrainImageModelAlgorithm extends JIPipeMergingAlgorithm {
             dataBatch.addOutputData(getFirstOutputSlot(), modelData, modelProgress);
 
             if (cleanUpAfterwards) {
-                try {
-                    FileUtils.deleteDirectory(workDirectory.toFile());
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
+                PathUtils.deleteDirectoryRecursively(workDirectory, progressInfo.resolve("Cleanup"));
             }
         }
     }

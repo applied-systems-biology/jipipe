@@ -50,6 +50,7 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePl
 import org.hkijena.jipipe.extensions.python.OptionalPythonEnvironment;
 import org.hkijena.jipipe.extensions.python.PythonUtils;
 import org.hkijena.jipipe.utils.JsonUtils;
+import org.hkijena.jipipe.utils.PathUtils;
 import org.hkijena.jipipe.utils.ResourceUtils;
 
 import java.io.IOException;
@@ -251,11 +252,7 @@ public class PredictImageAlgorithm extends JIPipeMergingAlgorithm {
             }
 
             if (cleanUpAfterwards && !deferImageLoading) {
-                try {
-                    FileUtils.deleteDirectory(workDirectory.toFile());
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
+                PathUtils.deleteDirectoryRecursively(workDirectory, progressInfo.resolve("Cleanup"));
             }
         }
     }

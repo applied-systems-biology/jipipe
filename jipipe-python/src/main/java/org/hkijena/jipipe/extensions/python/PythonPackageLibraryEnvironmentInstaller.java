@@ -25,6 +25,7 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.components.MarkdownDocument;
 import org.hkijena.jipipe.ui.parameters.ParameterPanel;
+import org.hkijena.jipipe.utils.PathUtils;
 
 import javax.swing.*;
 import java.io.IOException;
@@ -86,11 +87,8 @@ public abstract class PythonPackageLibraryEnvironmentInstaller<T extends PythonP
 
         environment.setLibraryDirectory(getConfiguration().getInstallationPath());
         if (Files.exists(getConfiguration().getInstallationPath())) {
-            try {
-                FileUtils.deleteDirectory(getConfiguration().getInstallationPath().toFile());
-            } catch (IOException e) {
-                throw new RuntimeException();
-            }
+            PathUtils.deleteDirectoryRecursively(getConfiguration().getInstallationPath(),
+                    progressInfo.resolve("Cleanup"));
         }
         environment.install(getProgressInfo());
     }

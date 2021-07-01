@@ -22,9 +22,8 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
+import java.nio.file.*;
+import java.nio.file.attribute.BasicFileAttributes;
 import java.security.DigestInputStream;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -39,6 +38,39 @@ import java.util.stream.Collectors;
 public class PathUtils {
     private PathUtils() {
 
+    }
+
+    public static void deleteDirectoryRecursively(Path path, JIPipeProgressInfo progressInfo) {
+        FileVisitor<Path> visitor = new SimpleFileVisitor<Path>() {
+            @Override
+            public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
+                progressInfo.log("Delete: " + file.toString());
+                Files.delete(file);
+                return FileVisitResult.CONTINUE;
+            }
+
+            @Override
+            public FileVisitResult visitFileFailed(Path file, IOException exc) throws IOException {
+                progressInfo.log("Delete: " + file.toString());
+                Files.delete(file);
+                return FileVisitResult.CONTINUE;
+            }
+
+            @Override
+            public FileVisitResult postVisitDirectory(Path dir, IOException exc) throws IOException {
+                if (exc != null) {
+                    throw exc;
+                }
+                progressInfo.log("Delete: " + dir.toString());
+                Files.delete(dir);
+                return FileVisitResult.CONTINUE;
+            }
+        };
+        try {
+            Files.walkFileTree(path, visitor);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     /**

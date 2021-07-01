@@ -24,6 +24,7 @@ public class DeepLearningToolkitEnvInstaller extends BasicMinicondaEnvPythonInst
     public DeepLearningToolkitEnvInstaller(JIPipeWorkbench workbench, JIPipeParameterAccess parameterAccess) {
         super(workbench, parameterAccess);
         setConfiguration(new Configuration());
+//        getConfiguration().setCondaDownloadURL(getLatestPy37Download());
         getConfiguration().setInstallationPath(Paths.get("jipipe").resolve("deep-learning-toolkit"));
         getConfiguration().setName("Deep Learning Toolkit");
     }
@@ -35,6 +36,8 @@ public class DeepLearningToolkitEnvInstaller extends BasicMinicondaEnvPythonInst
 
     @Override
     protected void postprocessInstall() {
+        super.postprocessInstall();
+
         // We need to create the environment
         Path environmentDefinitionPath = createEnvironment();
         Configuration configuration = (Configuration) getConfiguration();

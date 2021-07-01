@@ -30,6 +30,7 @@ import org.hkijena.jipipe.extensions.deeplearning.datatypes.DeepLearningModelDat
 import org.hkijena.jipipe.extensions.python.OptionalPythonEnvironment;
 import org.hkijena.jipipe.extensions.python.PythonUtils;
 import org.hkijena.jipipe.utils.JsonUtils;
+import org.hkijena.jipipe.utils.PathUtils;
 import org.hkijena.jipipe.utils.ResourceUtils;
 
 import java.io.IOException;
@@ -128,11 +129,7 @@ public class CreateModelAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         dataBatch.addOutputData(getFirstOutputSlot(), modelData, progressInfo);
 
         if (cleanUpAfterwards) {
-            try {
-                FileUtils.deleteDirectory(workDirectory.toFile());
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+            PathUtils.deleteDirectoryRecursively(workDirectory, progressInfo.resolve("Cleanup"));
         }
     }
 

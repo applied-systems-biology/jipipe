@@ -39,6 +39,7 @@ import org.hkijena.jipipe.extensions.parameters.primitives.OptionalAnnotationNam
 import org.hkijena.jipipe.extensions.parameters.primitives.OptionalDoubleParameter;
 import org.hkijena.jipipe.extensions.python.OptionalPythonEnvironment;
 import org.hkijena.jipipe.extensions.python.PythonUtils;
+import org.hkijena.jipipe.utils.PathUtils;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -383,11 +384,7 @@ public class CellPoseAlgorithm extends JIPipeMergingAlgorithm {
 
         // Cleanup
         if (cleanUpAfterwards) {
-            try {
-                FileUtils.deleteDirectory(workDirectory.toFile());
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+            PathUtils.deleteDirectoryRecursively(workDirectory, progressInfo.resolve("Cleanup"));
         }
     }
 

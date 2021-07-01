@@ -14,6 +14,7 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.extensions.parameters.primitives.OptionalPathParameter;
+import org.hkijena.jipipe.extensions.parameters.primitives.OptionalStringParameter;
 import org.hkijena.jipipe.extensions.parameters.primitives.StringParameterSettings;
 import org.hkijena.jipipe.extensions.python.OptionalPythonEnvironment;
 import org.hkijena.jipipe.extensions.python.PythonEnvironment;
@@ -78,11 +79,7 @@ public class BasicMinicondaEnvPythonInstaller extends ExternalEnvironmentInstall
         if (Files.exists(installationPath)) {
             progressInfo.log("Deleting old installation");
             progressInfo.log("Deleting: " + installationPath);
-            try {
-                FileUtils.deleteDirectory(installationPath.toFile());
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
+            PathUtils.deleteDirectoryRecursively(installationPath, progressInfo.resolve("Delete old installation"));
         }
         if(!Files.isDirectory(installationPath)) {
             try {
@@ -172,6 +169,9 @@ public class BasicMinicondaEnvPythonInstaller extends ExternalEnvironmentInstall
      * Applies postprocessing for the installation
      */
     protected void postprocessInstall() {
+        if(getConfiguration().getForcePythonVersion().isEnabled()) {
+            runConda("install", "--yes", "python=" + getConfiguration().getForcePythonVersion().getContent());
+        }
     }
 
     /**
@@ -379,12 +379,28 @@ public class BasicMinicondaEnvPythonInstaller extends ExternalEnvironmentInstall
         }
     }
 
+    /**
+     * Gets the latest download link for Miniconda
+     *
+     * @return the download URL
+     */
+    public static String getLatestPy37Download() {
+        if (SystemUtils.IS_OS_WINDOWS) {
+            return "https://repo.anaconda.com/miniconda/Miniconda3-py37_4.8.2-Windows-x86_64.exe";
+        } else if (SystemUtils.IS_OS_MAC) {
+            return "https://repo.anaconda.com/miniconda/Miniconda3-py37_4.8.2-MacOSX-x86_64.sh";
+        } else {
+            return "https://repo.anaconda.com/miniconda/Miniconda3-py37_4.8.2-Linux-x86_64.sh";
+        }
+    }
+
     public static class Configuration implements JIPipeParameterCollection {
 
         private final EventBus eventBus = new EventBus();
         private String condaDownloadURL = getLatestDownload();
         private Path installationPath;
         private OptionalPathParameter customInstallerPath = new OptionalPathParameter();
+        private OptionalStringParameter forcePythonVersion = new OptionalStringParameter("3.7", false);
         private String name = "Conda";
 
         public Configuration() {
@@ -429,6 +445,17 @@ public class BasicMinicondaEnvPythonInstaller extends ExternalEnvironmentInstall
         @JIPipeParameter("custom-installer-path")
         public void setCustomInstallerPath(OptionalPathParameter customInstallerPath) {
             this.customInstallerPath = customInstallerPath;
+        }
+
+        @JIPipeDocumentation(name = "Specific Python version", description = "Allows to specify the Python version of the environment")
+        @JIPipeParameter("force-python-version")
+        public OptionalStringParameter getForcePythonVersion() {
+            return forcePythonVersion;
+        }
+
+        @JIPipeParameter("force-python-version")
+        public void setForcePythonVersion(OptionalStringParameter forcePythonVersion) {
+            this.forcePythonVersion = forcePythonVersion;
         }
 
         @JIPipeDocumentation(name = "Name", description = "Name of the created environment")

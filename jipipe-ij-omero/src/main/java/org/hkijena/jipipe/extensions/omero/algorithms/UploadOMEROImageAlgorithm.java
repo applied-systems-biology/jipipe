@@ -109,8 +109,8 @@ public class UploadOMEROImageAlgorithm extends JIPipeMergingAlgorithm {
                 uploadImages(targetPath, annotations, dataset.getDatasetId(), progressInfo);
             }
             try {
-                FileUtils.deleteDirectory(targetPath.toFile());
-            } catch (IOException e) {
+                PathUtils.deleteDirectoryRecursively(targetPath, progressInfo.resolve("Cleanup"));
+            } catch (Exception e) {
                 e.printStackTrace();
             }
         }

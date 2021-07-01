@@ -80,7 +80,8 @@ public class ProcessUtils {
     }
 
     /**
-     * Queries standard output with a timeout
+     * Queries standard output with a timeout.
+     * Does not listen to cancellation signals
      *
      * @param executable
      * @param progressInfo
@@ -91,7 +92,7 @@ public class ProcessUtils {
         CommandLine commandLine = new CommandLine(executable.toFile());
         commandLine.addArguments(args);
         progressInfo.log("Running " + executable + " " + String.join(" ", args));
-        ProcessUtils.ExtendedExecutor executor = new ProcessUtils.ExtendedExecutor(5000, progressInfo);
+        DefaultExecutor executor = new DefaultExecutor();
 
         // Capture stdout
         ByteArrayOutputStream standardOutputStream = new ByteArrayOutputStream();
@@ -132,6 +133,7 @@ public class ProcessUtils {
                     if (!StringUtils.isNullOrEmpty(psOutput)) {
                         psOutput = psOutput.trim();
                         DefaultDirectedGraph<Long, DefaultEdge> graph = new DefaultDirectedGraph<>(DefaultEdge.class);
+                        graph.addVertex(pid);
                         for (String line : psOutput.split("\n")) {
                             String line_ = line.trim();
                             if (line_.startsWith("P"))
@@ -149,11 +151,16 @@ public class ProcessUtils {
                         }
 
                         // List all children
-                        BreadthFirstIterator<Long, DefaultEdge> breadthFirstIterator = new BreadthFirstIterator<>(graph, pid);
-                        while (breadthFirstIterator.hasNext()) {
-                            long toKill = breadthFirstIterator.next();
-                            progressInfo.log("Killing orphaned PID " + toKill);
-                            queryFast(Paths.get(killPath), progressInfo, "-9", toKill + "");
+                        try {
+                            BreadthFirstIterator<Long, DefaultEdge> breadthFirstIterator = new BreadthFirstIterator<>(graph, pid);
+                            while (breadthFirstIterator.hasNext()) {
+                                long toKill = breadthFirstIterator.next();
+                                progressInfo.log("Killing orphaned PID " + toKill);
+                                queryFast(Paths.get(killPath), progressInfo, "-9", toKill + "");
+                            }
+                        }
+                        catch (Exception e) {
+                            e.printStackTrace();
                         }
                     }
                 } else {

@@ -17,6 +17,7 @@ import org.apache.commons.io.FileUtils;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.extensions.settings.VirtualDataSettings;
+import org.hkijena.jipipe.utils.PathUtils;
 
 import java.io.IOException;
 import java.lang.ref.WeakReference;
@@ -65,8 +66,8 @@ public class JIPipeVirtualData {
 
         if (virtualStoragePath != null && virtualStoragePath.getPath() != null) {
             try {
-                FileUtils.deleteDirectory(virtualStoragePath.getPath().toFile());
-            } catch (IOException e) {
+                PathUtils.deleteDirectoryRecursively(virtualStoragePath.getPath(), new JIPipeProgressInfo());
+            } catch (Exception e) {
                 e.printStackTrace();
             }
         }
@@ -118,8 +119,8 @@ public class JIPipeVirtualData {
 
             if (removeVirtualDataStorage && virtualStoragePath != null && virtualStoragePath.getPath() != null) {
                 try {
-                    FileUtils.deleteDirectory(virtualStoragePath.getPath().toFile());
-                } catch (IOException e) {
+                    PathUtils.deleteDirectoryRecursively(virtualStoragePath.getPath(), new JIPipeProgressInfo());
+                } catch (Exception e) {
                     e.printStackTrace();
                 }
                 virtualStoragePath.setPath(null);
