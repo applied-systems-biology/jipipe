@@ -25,6 +25,7 @@ import org.hkijena.jipipe.extensions.parameters.primitives.OptionalPathParameter
 import org.hkijena.jipipe.extensions.parameters.primitives.PathList;
 import org.hkijena.jipipe.ui.JIPipeProjectWindow;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
+import org.hkijena.jipipe.utils.PathUtils;
 import org.hkijena.jipipe.utils.ResourceUtils;
 import org.hkijena.jipipe.utils.StringUtils;
 
@@ -35,6 +36,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -47,6 +49,7 @@ public class AutoSaveSettings implements JIPipeParameterCollection {
     private int autoSaveDelay = 3;
     private PathList lastSaves = new PathList();
     private OptionalPathParameter savePath = new OptionalPathParameter();
+    private Set<String> savedBackupHashes = new HashSet<>();
 
     public AutoSaveSettings() {
         autoSaveTimer = new Timer(autoSaveDelay * 60 * 1000, e -> autoSaveAll());
@@ -101,6 +104,15 @@ public class AutoSaveSettings implements JIPipeParameterCollection {
             baseName = StringUtils.makeFilesystemCompatible(StringUtils.makeUniqueString(baseName, "_", existing));
             Path targetFile = directory.resolve(baseName + ".jip");
             window.getProject().saveProject(targetFile);
+
+            // Calculate the SHA1
+            String sha1 = PathUtils.computeFileSHA1(targetFile.toFile());
+            if(this.savedBackupHashes.contains(sha1)) {
+                Files.delete(targetFile);
+                return;
+            }
+
+            savedBackupHashes.add(sha1);
             window.getProjectUI().sendStatusBarText("Saved backup to " + targetFile);
             lastSaves.add(0, targetFile);
             getEventBus().post(new ParameterChangedEvent(this, "last-saves"));

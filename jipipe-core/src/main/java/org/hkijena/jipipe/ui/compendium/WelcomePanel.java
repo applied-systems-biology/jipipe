@@ -80,7 +80,7 @@ public class WelcomePanel extends JIPipeProjectWorkbenchPanel {
     private void refreshRecentProjects() {
         DefaultListModel<Path> model = new DefaultListModel<>();
         for (Path path : ProjectsSettings.getInstance().getRecentProjects()) {
-            if (recentProjectsSearch.test(path.toString()) && Files.exists(path)) {
+            if (recentProjectsSearch.test(path.toString())) {
                 model.addElement(path);
             }
         }

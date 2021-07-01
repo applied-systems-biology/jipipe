@@ -17,10 +17,17 @@ import ij.Prefs;
 import org.apache.commons.lang3.SystemUtils;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 
+import javax.xml.bind.annotation.adapters.HexBinaryAdapter;
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.security.DigestInputStream;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -32,6 +39,36 @@ import java.util.stream.Collectors;
 public class PathUtils {
     private PathUtils() {
 
+    }
+
+    /**
+     * Computes the SHA1 of a file
+     * @param file the file
+     * @return the SHA1
+     * @throws IOException exception
+     */
+    public static String computeFileSHA1( File file ) throws IOException
+    {
+        String sha1 = null;
+        MessageDigest digest;
+        try
+        {
+            digest = MessageDigest.getInstance( "SHA-1" );
+        }
+        catch ( NoSuchAlgorithmException e1 )
+        {
+            throw new IOException( "Impossible to get SHA-1 digester", e1 );
+        }
+        try (InputStream input = new FileInputStream( file );
+             DigestInputStream digestStream = new DigestInputStream( input, digest ) )
+        {
+            while(digestStream.read() != -1){
+                // read file stream without buffer
+            }
+            MessageDigest msgDigest = digestStream.getMessageDigest();
+            sha1 = new HexBinaryAdapter().marshal( msgDigest.digest() );
+        }
+        return sha1;
     }
 
     public static void copyOrLink(Path source, Path target, JIPipeProgressInfo progressInfo) {

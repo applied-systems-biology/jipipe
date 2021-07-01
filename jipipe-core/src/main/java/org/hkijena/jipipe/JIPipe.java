@@ -42,9 +42,11 @@ import org.hkijena.jipipe.api.registries.*;
 import org.hkijena.jipipe.extensions.parameters.primitives.DynamicDataDisplayOperationIdEnumParameter;
 import org.hkijena.jipipe.extensions.parameters.primitives.DynamicDataImportOperationIdEnumParameter;
 import org.hkijena.jipipe.extensions.parameters.primitives.DynamicStringEnumParameter;
+import org.hkijena.jipipe.extensions.settings.AutoSaveSettings;
 import org.hkijena.jipipe.extensions.settings.DefaultCacheDisplaySettings;
 import org.hkijena.jipipe.extensions.settings.DefaultResultImporterSettings;
 import org.hkijena.jipipe.extensions.settings.ExtensionSettings;
+import org.hkijena.jipipe.extensions.settings.ProjectsSettings;
 import org.hkijena.jipipe.ui.ijupdater.IJProgressAdapter;
 import org.hkijena.jipipe.ui.ijupdater.JIPipeImageJPluginManager;
 import org.hkijena.jipipe.ui.registries.JIPipeCustomMenuRegistry;
@@ -64,6 +66,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.net.Authenticator;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -285,6 +288,22 @@ public class JIPipe extends AbstractService implements JIPipeRegistry {
                 logService.info("Postprocess: " + extension.getDependencyId());
                 ((JIPipeJavaExtension) extension).postprocess();
             }
+        }
+
+        // Check recent projects and backups
+        logService.info("Checking recent projects ...");
+        ProjectsSettings projectsSettings = ProjectsSettings.getInstance();
+        List<Path> invalidRecentProjects = projectsSettings.getRecentProjects().stream().filter(path -> !Files.exists(path)).collect(Collectors.toList());
+        if(!invalidRecentProjects.isEmpty()) {
+            projectsSettings.getRecentProjects().removeAll(invalidRecentProjects);
+        }
+
+        // Check the backups
+        logService.info("Checking backups ...");
+        AutoSaveSettings autoSaveSettings = AutoSaveSettings.getInstance();
+        List<Path> invalidBackups = autoSaveSettings.getLastSaves().stream().filter(path -> !Files.exists(path)).collect(Collectors.toList());
+        if(!invalidBackups.isEmpty()) {
+            autoSaveSettings.getLastSaves().removeAll(invalidBackups);
         }
 
         logService.info("JIPipe loading finished");
