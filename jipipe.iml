@@ -26,9 +26,9 @@
       <excludeFolder url="file://$MODULE_DIR$/dist/.idea" />
       <excludeFolder url="file://$MODULE_DIR$/lib-dltoolkit" />
       <excludeFolder url="file://$MODULE_DIR$/lib-jipipe-py" />
-      <excludeFolder url="file://$MODULE_DIR$/target" />
       <excludeFolder url="file://$MODULE_DIR$/jipipe" />
       <excludeFolder url="file://$MODULE_DIR$/dist" />
+      <excludeFolder url="file://$MODULE_DIR$/target" />
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
