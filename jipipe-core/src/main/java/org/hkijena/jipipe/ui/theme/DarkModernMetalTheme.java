@@ -199,7 +199,7 @@ public class DarkModernMetalTheme extends DefaultMetalTheme {
                 "ScrollBar.thumbHighlight", TRANSPARENT,
                 "ScrollBar.thumbShadow", TRANSPARENT,
                 "ScrollBar.trackHighlight", TRANSPARENT,
-                "ScrollBar.thumb", new Color(0x31363b),
+                "ScrollBar.thumb", new Color(0x6f7275),
                 "ScrollBar.width", 12,
 
                 "Slider.altTrackColor", new ColorUIResource(0xD2E2EF),
