@@ -49,12 +49,7 @@ public class DarkModernMetalTheme extends DefaultMetalTheme {
     public static final ColorUIResource PRIMARY6 =
             new ColorUIResource(0xaa87de);
     public static final Color DARK_GRAY = new ColorUIResource(0x2f2f2f);
-    public static final Color MEDIUM_GRAY = new ColorUIResource(0x333333);
     public static final Color GRAY = new ColorUIResource(0x212121);
-    public static final Color LIGHT_GRAY = new ColorUIResource(0x2f2f2f);
-    public static final Color LIGHTEST_GRAY = new ColorUIResource(0x888888);
-    public static final Color TEXTAREA_BACKGROUND = new ColorUIResource(0x121212);
-    public static final Color SUBCONTROL_BACKGROUND = new ColorUIResource(0x121212);
     public static final ColorUIResource CONTROL_TEXT_COLOR =
             new ColorUIResource(0xeeeeee);
     public static final ColorUIResource INACTIVE_CONTROL_TEXT_COLOR =
@@ -63,11 +58,9 @@ public class DarkModernMetalTheme extends DefaultMetalTheme {
             new ColorUIResource(0x999999);
     public static final ColorUIResource OCEAN_BLACK =
             new ColorUIResource(0xeeeeee);
-    public static final ColorUIResource OCEAN_DROP =
-            new ColorUIResource(0x65a4e3);
     private static final Border NO_BORDER = BorderFactory.createEmptyBorder();
     private static final Border BUTTON_BORDER = BorderFactory.createCompoundBorder(BorderFactory.createEmptyBorder(1, 1, 1, 1),
-            BorderFactory.createCompoundBorder(new RoundedLineBorder(PRIMARY3, 1, 2),
+            BorderFactory.createCompoundBorder(new RoundedLineBorder(new Color(0x5f6265), 1, 2),
                     BorderFactory.createEmptyBorder(3, 3, 3, 3)));
     private static final Border INVISIBLE_BORDER = BorderFactory.createEmptyBorder(5, 5, 5, 5);
     static ColorUIResource BLACK = new ColorUIResource(0x222222);
@@ -86,21 +79,6 @@ public class DarkModernMetalTheme extends DefaultMetalTheme {
      */
     public void addCustomEntriesToTable(UIDefaults table) {
         Object focusBorder = new BorderUIResource.LineBorderUIResource(getPrimary1());
-        // .30 0 DDE8F3 white secondary2
-//        List<Object> buttonGradient = Arrays.asList(
-//                new Object[] {.3f, 0f,
-//                        new ColorUIResource(0xDDE8F3), getWhite(), getSecondary2() });
-//        List<Object> menuBarGradient = Arrays.asList(new Object[] {
-//                new Float(1f), new Float(0f),
-//                getWhite(), dadada,
-//                new ColorUIResource(dadada) });
-        // Other possible properties that aren't defined:
-        //
-        // Used when generating the disabled Icons, provides the region to
-        // constrain grays to.
-        // Button.disabledGrayRange -> Object[] of Integers giving min/max
-        // InternalFrame.inactiveTitleGradient -> Gradient when the
-        //   internal frame is inactive.
         Object directoryIcon = UIUtils.getIconFromResources("places/folder-blue.png");
         Object fileIcon = UIUtils.getIconFromResources("mimetypes/application-x-kgeo.png");
         List<Object> sliderGradient = Arrays.asList(new Object[]{
@@ -108,30 +86,32 @@ public class DarkModernMetalTheme extends DefaultMetalTheme {
                 PRIMARY4, getWhite(), new ColorUIResource(SECONDARY2)});
 
         Object[] defaults = new Object[]{
-                "Button.background", LIGHT_GRAY,
+                "Button.background", new Color(0x30353a),
                 "Button.rollover", Boolean.TRUE,
-                "Button.toolBarBorderBackground", INACTIVE_CONTROL_TEXT_COLOR,
-                "Button.disabledToolBarBorderBackground", GRAY,
+                "Button.toolBarBorderBackground", new Color(0x5f6265),
+                "Button.disabledToolBarBorderBackground", new Color(0x5f6265),
                 "Button.rolloverIconType", "ocean",
                 "Button.border", BUTTON_BORDER,
-                "Button.focus", PRIMARY1,
-                "ScrollPane.border", NO_BORDER,
-                "Button.borderColor", PRIMARY3,
+                "Button.focus", new Color(0x65a4e3),
+                "ScrollPane.border", BorderFactory.createEmptyBorder(),
+                "Button.borderColor", new Color(0x5f6265),
 
-                "ComboBox.background", TEXTAREA_BACKGROUND,
-                "ComboBox.buttonBackground", TEXTAREA_BACKGROUND,
-                "ComboBox.disabledBackground", TEXTAREA_BACKGROUND,
+                "ComboBox.background", new Color(0x1b1e20),
+                "ComboBox.buttonBackground", new Color(0x1b1e20),
+                "ComboBox.buttonHighlight", new Color(0x1b1e20),
+                "ComboBox.buttonDarkShadow", new Color(0x1b1e20),
+                "ComboBox.disabledBackground", new Color(0x1b1e20),
 
-                "Separator.foreground", GRAY,
-                "Separator.background", PRIMARY4,
-                "Separator.highlight", PRIMARY4,
+                "Separator.foreground", new Color(0x5f6265),
+                "Separator.background", new Color(0x5f6265),
+                "Separator.highlight", new Color(0x5f6265),
                 "Separator.shadow", false,
 
-                "controlHighlight", PRIMARY4,
+                "controlHighlight", new Color(0x5f6265),
 
                 "CheckBox.rollover", Boolean.TRUE,
-                "CheckBoxMenuItem.background", BLACK,
-                "CheckBox.icon", new CheckBoxIcon(SUBCONTROL_BACKGROUND),
+                "CheckBoxMenuItem.background", new Color(0x2a2e32),
+                "CheckBox.icon", new CheckBoxIcon(new Color(0x2a2e32)),
 
                 // home2
                 "FileChooser.homeFolderIcon",
@@ -158,20 +138,20 @@ public class DarkModernMetalTheme extends DefaultMetalTheme {
                 "Label.disabledForeground", getInactiveControlTextColor(),
 
                 "Menu.opaque", Boolean.FALSE,
-                "MenuItem.acceleratorForeground", PRIMARY6,
+                "MenuItem.acceleratorForeground", new Color(0xaa87de),
 
-                "PopupMenu.border", BorderFactory.createLineBorder(MEDIUM_GRAY, 1, false),
+                "PopupMenu.border", BorderFactory.createLineBorder(new Color(0x5f6265), 1, true),
 
-                "MenuBar.background", LIGHT_GRAY,
-                "MenuBar.borderColor", GRAY,
-                "MenuItem.selectionBackground", PRIMARY5,
-                "MenuItem.selectionForeground", BLACK,
+                "MenuBar.background", new Color(0x31363b),
+                "MenuBar.borderColor", new Color(0x5f6265),
+                "MenuItem.selectionBackground", new Color(0x65a4e3),
+                "MenuItem.selectionForeground", new Color(0xfcfcfc),
                 "MenuItem.borderPainted", false,
-                "Menu.selectionBackground", PRIMARY5,
-                "Menu.selectionForeground", BLACK,
+                "Menu.selectionBackground", new Color(0x65a4e3),
+                "Menu.selectionForeground", new Color(0xfcfcfc),
                 "Menu.borderPainted", false,
 
-                "InternalFrame.activeTitleBackground", LIGHT_GRAY,
+                "InternalFrame.activeTitleBackground", new Color(0x31363b),
                 // close2
                 "InternalFrame.closeIcon",
                 UIUtils.getIconFromResources("actions/close-tab.png"),
@@ -204,22 +184,22 @@ public class DarkModernMetalTheme extends DefaultMetalTheme {
                 "OptionPane.warningIcon",
                 UIUtils.getIcon32FromResources("dialog-warning.png"),
 
-                "RadioButton.background", LIGHT_GRAY,
+                "RadioButton.background", new Color(0x2a2e32),
                 "RadioButton.rollover", Boolean.TRUE,
 
-                "Spinner.arrowButtonBorder", BorderFactory.createMatteBorder(0, 1, 0, 0, PRIMARY3),
+                "Spinner.arrowButtonBorder", BorderFactory.createMatteBorder(0, 1, 0, 0, new Color(0x5f6265)),
                 "Spinner.arrowButtonInsets", new Insets(2, 2, 2, 2),
                 "Spinner.arrowButtonSize", new Dimension(16, 16),
-                "Spinner.background", TEXTAREA_BACKGROUND,
+                "Spinner.background", new Color(0x1b1e20),
                 "Spinner.border", INVISIBLE_BORDER,
 
-                "RadioButtonMenuItem.background", LIGHT_GRAY,
+                "RadioButtonMenuItem.background", new Color(0x26292d),
 
-                "ScrollBar.background", SUBCONTROL_BACKGROUND,
+                "ScrollBar.background", new Color(0x1b1e20),
                 "ScrollBar.thumbHighlight", TRANSPARENT,
                 "ScrollBar.thumbShadow", TRANSPARENT,
                 "ScrollBar.trackHighlight", TRANSPARENT,
-                "ScrollBar.thumb", LIGHTEST_GRAY,
+                "ScrollBar.thumb", new Color(0x31363b),
                 "ScrollBar.width", 12,
 
                 "Slider.altTrackColor", new ColorUIResource(0xD2E2EF),
@@ -227,83 +207,82 @@ public class DarkModernMetalTheme extends DefaultMetalTheme {
                 "Slider.focusGradient", sliderGradient,
 
                 "SplitPane.oneTouchButtonsOpaque", Boolean.FALSE,
-                "SplitPane.dividerFocusColor", PRIMARY4,
+                "SplitPane.dividerFocusColor", new Color(0x2a2e32),
                 "SplitPane.border", BorderFactory.createEmptyBorder(),
-                "SplitPane.highlight", PRIMARY4,
+                "SplitPane.highlight", new Color(0x2a2e32),
 
-                "TabbedPane.highlight", PRIMARY4,
-                "TabbedPane.light", PRIMARY4,
-                "TabbedPane.selectHighlight", PRIMARY4,
-                "TabbedPane.borderHightlightColor", LIGHT_GRAY,
-                "TabbedPane.contentAreaColor", PRIMARY4,
+                "TabbedPane.highlight", new Color(0x26292c),
+                "TabbedPane.light", new Color(0x26292c),
+                "TabbedPane.selectHighlight", new Color(0x26292d),
+                "TabbedPane.borderHightlightColor", new Color(0x5f6265),
+                "TabbedPane.contentAreaColor", new Color(0x26292d),
                 "TabbedPane.contentBorderInsets", new Insets(2, 2, 3, 3),
-                "TabbedPane.selected", BLACK,
-                "TabbedPane.tabAreaBackground", LIGHT_GRAY,
+                "TabbedPane.selected", new Color(0x26292d),
+                "TabbedPane.tabAreaBackground", new Color(0x26292d),
                 "TabbedPane.tabAreaInsets", new Insets(2, 2, 0, 6),
-                "TabbedPane.unselectedBackground", SECONDARY3,
+                "TabbedPane.unselectedBackground", new Color(0x26292c),
 
                 "Table.focusCellHighlightBorder", focusBorder,
-                "Table.gridColor", SECONDARY1,
-                "TableHeader.focusCellBackground", PRIMARY4,
-                "TableHeader.cellBorder", PRIMARY4,
+                "Table.gridColor", new Color(0x1b1e20),
+                "TableHeader.focusCellBackground", new Color(0x1b1e20),
+                "TableHeader.cellBorder", new Color(0x1b1e20),
 
-                "ToggleButton.background", LIGHT_GRAY,
+                "ToggleButton.background", new Color(0x31363b),
                 "ToggleButton.border", BUTTON_BORDER,
-                "ToggleButton.select", PRIMARY5,
+                "ToggleButton.select", new Color(0x65a4e3),
 
-                "TextField.inactiveForeground", PRIMARY1,
-                "TextField.background", TEXTAREA_BACKGROUND,
+                "TextField.inactiveForeground", new Color(0x1b1e20),
+                "TextField.background", new Color(0x1b1e20),
                 "TextField.border", NO_BORDER,
 
-                "TextArea.background", TEXTAREA_BACKGROUND,
+                "TextArea.background", new Color(0x1b1e20),
 
-                "TextPane.background", TEXTAREA_BACKGROUND,
-                "TextPane.foreground", CONTROL_TEXT_COLOR,
+                "TextPane.background", new Color(0x1b1e20),
+                "TextPane.foreground", new Color(0xfcfcfc),
 
-                "PasswordField.background", TEXTAREA_BACKGROUND,
-                "PasswordField.foreground", CONTROL_TEXT_COLOR,
+                "PasswordField.background", new Color(0x1b1e20),
+                "PasswordField.foreground", new Color(0xfcfcfc),
 
-//                "ToolBar.borderColor", GRAY2,
-                "ToolBar.border", BorderFactory.createMatteBorder(0, 0, 1, 0, GRAY),
+                "ToolBar.border", BorderFactory.createMatteBorder(0, 0, 1, 0, new Color(0x5f6265)),
                 "ToolBar.isRollover", Boolean.TRUE,
 
-                "ToolTip.background", BLACK,
-                "ToolTip.backgroundInactive", BLACK,
-                "ToolTip.border", BorderFactory.createLineBorder(DARK_GRAY),
-                "ToolTip.borderInactive", BorderFactory.createLineBorder(DARK_GRAY),
-                "ToolTip.foreground", CONTROL_TEXT_COLOR,
-                "ToolTip.foregroundInactive", CONTROL_TEXT_COLOR,
+                "ToolTip.background", new Color(0x31363b),
+                "ToolTip.backgroundInactive", new Color(0x31363b),
+                "ToolTip.border", new RoundedLineBorder(new Color(0xfcfcfc), 1, 3),
+                "ToolTip.borderInactive", new RoundedLineBorder(new Color(0xfcfcfc), 1, 3),
+                "ToolTip.foreground", new Color(0xfcfcfc),
+                "ToolTip.foregroundInactive", new Color(0xfcfcfc),
 
                 "Tree.closedIcon", directoryIcon,
 
-                "Tree.background", SUBCONTROL_BACKGROUND,
+                "Tree.background", new Color(0x1b1e20),
                 "Tree.collapsedIcon", UIUtils.getIcon8FromResources("tree-expand.png"),
                 "Tree.expandedIcon", UIUtils.getIcon8FromResources("tree-shrink.png"),
                 "Tree.leafIcon", fileIcon,
                 "Tree.openIcon", directoryIcon,
-                "Tree.selectionBorderColor", getPrimary1(),
-                "Tree.dropLineColor", getPrimary1(),
-                "Table.dropLineColor", getPrimary1(),
-                "Table.dropLineShortColor", OCEAN_BLACK,
-                "Table.background", SUBCONTROL_BACKGROUND,
-                "TableHeader.background", Color.BLACK,
+                "Tree.selectionBorderColor", new Color(0x65a4e3),
+                "Tree.dropLineColor", new Color(0x65a4e3),
+                "Table.dropLineColor", new Color(0x65a4e3),
+                "Table.dropLineShortColor", new Color(0x1b1e20),
+                "Table.background", new Color(0x1b1e20),
+                "TableHeader.background", new Color(0x1b1e20),
 
-                "Table.dropCellBackground", OCEAN_DROP,
-                "Tree.dropCellBackground", OCEAN_DROP,
-                "List.dropCellBackground", OCEAN_DROP,
-                "List.dropLineColor", getPrimary1(),
+                "Table.dropCellBackground", new Color(0x1b1e20),
+                "Tree.dropCellBackground", new Color(0x1b1e20),
+                "List.dropCellBackground", new Color(0x1b1e20),
+                "List.dropLineColor", new Color(0x65a4e3),
 
-                "ProgressBar.background", BLACK,
-                "ProgressBar.foreground", PRIMARY5,
-                "ProgressBar.border", new RoundedLineBorder(MEDIUM_GRAY, 1, 2),
+                "ProgressBar.background", new Color(0xfcfcfc),
+                "ProgressBar.foreground", new Color(0x65a4e3),
+                "ProgressBar.border", new RoundedLineBorder(new Color(0x5f6265), 1, 2),
 
-                "List.background", SUBCONTROL_BACKGROUND,
-                "List.selectionBackground", PRIMARY1,
-                "EditorPane.background", TEXTAREA_BACKGROUND,
-                "FormattedTextField.background", TEXTAREA_BACKGROUND,
+                "List.background", new Color(0x1b1e20),
+                "List.selectionBackground", new Color(0x65a4e3),
+                "EditorPane.background", new Color(0x1b1e20),
+                "FormattedTextField.background", new Color(0x1b1e20),
 
-                "TabbedPane.tabAreaBackground", SUBCONTROL_BACKGROUND,
-                "Panel.background", MEDIUM_GRAY
+                "TabbedPane.tabAreaBackground", new Color(0x1b1e20),
+                "Panel.background", new Color(0x2a2e32)
         };
         table.putDefaults(defaults);
     }
