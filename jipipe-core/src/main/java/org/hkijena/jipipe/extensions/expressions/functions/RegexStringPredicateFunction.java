@@ -17,14 +17,16 @@ import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.extensions.expressions.ExpressionFunction;
 import org.hkijena.jipipe.extensions.expressions.ExpressionParameters;
 import org.hkijena.jipipe.extensions.expressions.ParameterInfo;
+import org.hkijena.jipipe.utils.StringUtils;
 
 import java.util.List;
 
-@JIPipeDocumentation(name = "String matches (Regex)", description = "Tests if the left operand matches the pattern described within the right operand.")
+@JIPipeDocumentation(name = "String matches (Regex)", description = "Tests if the left operand matches the pattern described within the right operand. " +
+        "There can be multiple right operands; in such case, the function returns true if any matches.")
 public class RegexStringPredicateFunction extends ExpressionFunction {
 
     public RegexStringPredicateFunction() {
-        super("STRING_MATCHES_REGEX", 2);
+        super("STRING_MATCHES_REGEX", 2, Integer.MAX_VALUE);
     }
 
     @Override
@@ -35,15 +37,19 @@ public class RegexStringPredicateFunction extends ExpressionFunction {
             case 1:
                 return new ParameterInfo("pattern", "The pattern to search in the text", String.class);
             default:
-                return null;
+                return new ParameterInfo("pattern " + (index + 1), "The pattern to search in the text", String.class);
         }
     }
 
     @Override
     public Object evaluate(List<Object> parameters, ExpressionParameters variables) {
         String text = "" + parameters.get(0);
-        String pattern = "" + parameters.get(1);
-        return text.matches(pattern);
+        for (int i = 1; i < parameters.size(); i++) {
+            String pattern = "" + parameters.get(i);
+            if(text.matches(pattern))
+                return true;
+        }
+        return false;
     }
 
     @Override

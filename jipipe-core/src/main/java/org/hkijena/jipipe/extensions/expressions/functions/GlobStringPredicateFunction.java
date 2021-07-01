@@ -21,11 +21,12 @@ import org.hkijena.jipipe.utils.StringUtils;
 
 import java.util.List;
 
-@JIPipeDocumentation(name = "String matches (Glob)", description = "Tests if the left operand matches the pattern described within the right operand.")
+@JIPipeDocumentation(name = "String matches (Glob)", description = "Tests if the left operand matches the pattern described within the right operand. " +
+        "There can be multiple right operands; in such case, the function returns true if any matches.")
 public class GlobStringPredicateFunction extends ExpressionFunction {
 
     public GlobStringPredicateFunction() {
-        super("STRING_MATCHES_GLOB", 2);
+        super("STRING_MATCHES_GLOB", 2, Integer.MAX_VALUE);
     }
 
     @Override
@@ -36,16 +37,20 @@ public class GlobStringPredicateFunction extends ExpressionFunction {
             case 1:
                 return new ParameterInfo("pattern", "The pattern to search in the text", String.class);
             default:
-                return null;
+                return new ParameterInfo("pattern " + (index + 1), "The pattern to search in the text", String.class);
         }
     }
 
     @Override
     public Object evaluate(List<Object> parameters, ExpressionParameters variables) {
         String text = "" + parameters.get(0);
-        String pattern = "" + parameters.get(1);
-        pattern = StringUtils.convertGlobToRegex(pattern);
-        return text.matches(pattern);
+        for (int i = 1; i < parameters.size(); i++) {
+            String pattern = "" + parameters.get(i);
+            pattern = StringUtils.convertGlobToRegex(pattern);
+            if(text.matches(pattern))
+                return true;
+        }
+        return false;
     }
 
     @Override

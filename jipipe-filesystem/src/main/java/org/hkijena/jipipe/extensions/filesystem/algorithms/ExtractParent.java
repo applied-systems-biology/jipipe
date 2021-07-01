@@ -32,7 +32,7 @@ import java.nio.file.Path;
 /**
  * Applies subfolder navigation to each input folder
  */
-@JIPipeDocumentation(name = "Parent", description = "Extracts the parent folder of each path")
+@JIPipeDocumentation(name = "Get parent directory", description = "Extracts the parent folder of each path")
 @JIPipeOrganization(menuPath = "Extract", nodeTypeCategory = FileSystemNodeTypeCategory.class)
 
 
