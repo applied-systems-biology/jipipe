@@ -898,6 +898,9 @@ public abstract class JIPipeGraphNode implements JIPipeValidatable, JIPipeParame
      */
     @Subscribe
     public void onParameterStructureChanged(ParameterStructureChangedEvent event) {
+        if(event.getVisitors().contains(this))
+            return;
+        event.getVisitors().add(this);
         getEventBus().post(event);
     }
 
@@ -908,6 +911,9 @@ public abstract class JIPipeGraphNode implements JIPipeValidatable, JIPipeParame
      */
     @Subscribe
     public void onParameterUIChanged(ParameterUIChangedEvent event) {
+        if(event.getVisitors().contains(this))
+            return;
+        event.getVisitors().add(this);
         getEventBus().post(event);
     }
 

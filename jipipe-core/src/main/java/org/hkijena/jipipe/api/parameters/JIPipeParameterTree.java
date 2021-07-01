@@ -308,6 +308,9 @@ public class JIPipeParameterTree implements JIPipeParameterCollection, JIPipeCus
      */
     @Subscribe
     public void onParameterStructureChanged(ParameterStructureChangedEvent event) {
+        if(event.getVisitors().contains(this))
+            return;
+        event.getVisitors().add(this);
         eventBus.post(event);
     }
 
@@ -319,6 +322,9 @@ public class JIPipeParameterTree implements JIPipeParameterCollection, JIPipeCus
      */
     @Subscribe
     public void onParameterUIChanged(ParameterUIChangedEvent event) {
+        if(event.getVisitors().contains(this))
+            return;
+        event.getVisitors().add(this);
         eventBus.post(event);
     }
 
@@ -330,6 +336,9 @@ public class JIPipeParameterTree implements JIPipeParameterCollection, JIPipeCus
      */
     @Subscribe
     public void onParameterChangedEvent(ParameterChangedEvent event) {
+        if(event.getVisitors().contains(this))
+            return;
+        event.getVisitors().add(this);
         eventBus.post(event);
     }
 

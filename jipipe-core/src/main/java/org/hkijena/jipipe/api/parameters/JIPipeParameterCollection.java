@@ -15,6 +15,9 @@ package org.hkijena.jipipe.api.parameters;
 
 import com.google.common.eventbus.EventBus;
 
+import java.util.HashSet;
+import java.util.Set;
+
 /**
  * Interfaced for a parameterized object
  */
@@ -86,6 +89,7 @@ public interface JIPipeParameterCollection {
     class ParameterChangedEvent {
         private final Object source;
         private final String key;
+        private final Set<Object> visitors = new HashSet<>();
 
         /**
          * @param source event source
@@ -103,6 +107,10 @@ public interface JIPipeParameterCollection {
         public String getKey() {
             return key;
         }
+
+        public Set<Object> getVisitors() {
+            return visitors;
+        }
     }
 
     /**
@@ -112,6 +120,7 @@ public interface JIPipeParameterCollection {
      */
     class ParameterStructureChangedEvent {
         private final JIPipeParameterCollection source;
+        private final Set<Object> visitors = new HashSet<>();
 
         /**
          * @param source event source
@@ -123,6 +132,10 @@ public interface JIPipeParameterCollection {
         public JIPipeParameterCollection getSource() {
             return source;
         }
+
+        public Set<Object> getVisitors() {
+            return visitors;
+        }
     }
 
     /**
@@ -130,6 +143,7 @@ public interface JIPipeParameterCollection {
      */
     class ParameterUIChangedEvent {
         private final JIPipeParameterCollection source;
+        private final Set<Object> visitors = new HashSet<>();
 
         /**
          * @param source event source
@@ -140,6 +154,10 @@ public interface JIPipeParameterCollection {
 
         public JIPipeParameterCollection getSource() {
             return source;
+        }
+
+        public Set<Object> getVisitors() {
+            return visitors;
         }
     }
 }

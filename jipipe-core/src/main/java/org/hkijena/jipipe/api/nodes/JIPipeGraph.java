@@ -806,6 +806,9 @@ public class JIPipeGraph implements JIPipeValidatable {
      */
     @Subscribe
     public void onParameterStructureChanged(JIPipeParameterCollection.ParameterStructureChangedEvent event) {
+        if(event.getVisitors().contains(this))
+            return;
+        event.getVisitors().add(this);
         eventBus.post(event);
     }
 
