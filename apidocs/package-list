@@ -14,9 +14,9 @@ org.hkijena.jipipe.api.grouping.parameters
 org.hkijena.jipipe.api.history
 org.hkijena.jipipe.api.nodes
 org.hkijena.jipipe.api.nodes.categories
+org.hkijena.jipipe.api.notifications
 org.hkijena.jipipe.api.parameters
 org.hkijena.jipipe.api.registries
-org.hkijena.jipipe.api.testbench
 org.hkijena.jipipe.extensions
 org.hkijena.jipipe.extensions.annotation
 org.hkijena.jipipe.extensions.annotation.algorithms
@@ -75,7 +75,6 @@ org.hkijena.jipipe.extensions.imagejalgorithms.ij1.forms
 org.hkijena.jipipe.extensions.imagejalgorithms.ij1.generate
 org.hkijena.jipipe.extensions.imagejalgorithms.ij1.io
 org.hkijena.jipipe.extensions.imagejalgorithms.ij1.lut
-org.hkijena.jipipe.extensions.imagejalgorithms.ij1.mask
 org.hkijena.jipipe.extensions.imagejalgorithms.ij1.math
 org.hkijena.jipipe.extensions.imagejalgorithms.ij1.misc
 org.hkijena.jipipe.extensions.imagejalgorithms.ij1.morphology
@@ -208,15 +207,16 @@ org.hkijena.jipipe.ui.grapheditor.layout
 org.hkijena.jipipe.ui.grapheditor.settings
 org.hkijena.jipipe.ui.grouping
 org.hkijena.jipipe.ui.ijupdater
+org.hkijena.jipipe.ui.notifications
 org.hkijena.jipipe.ui.parameters
 org.hkijena.jipipe.ui.plotbuilder
 org.hkijena.jipipe.ui.project
+org.hkijena.jipipe.ui.quickrun
 org.hkijena.jipipe.ui.registries
 org.hkijena.jipipe.ui.resultanalysis
 org.hkijena.jipipe.ui.running
 org.hkijena.jipipe.ui.settings
-org.hkijena.jipipe.ui.tableanalyzer
-org.hkijena.jipipe.ui.testbench
+org.hkijena.jipipe.ui.tableeditor
 org.hkijena.jipipe.ui.texteditor
 org.hkijena.jipipe.ui.theme
 org.hkijena.jipipe.utils

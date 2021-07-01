@@ -1,0 +1,32 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema",
+  "$id": "https://www.jipipe.org/schemas/annotation.schema.json",
+  "type": "object",
+  "title": "Data annotation",
+  "description": "A data annotation",
+  "required": [
+    "name",
+    "true-data-type",
+    "row-storage-folder"
+  ],
+  "properties": {
+    "name": {
+      "$id": "#/properties/name",
+      "type": "string",
+      "title": "Annotation name",
+      "description": "Name of the annotation"
+    },
+    "true-data-type": {
+      "$id": "#/properties/true-data-type",
+      "type": "string",
+      "title": "Data type",
+      "description": "Data type ID of the stored data annotation"
+    },
+    "row-storage-folder": {
+      "$id": "#/properties/row-storage-folder",
+      "type": "string",
+      "title": "Relative storage path",
+      "description": "Relative path to the current data table containing the data annotation data row"
+    }
+  }
+}
