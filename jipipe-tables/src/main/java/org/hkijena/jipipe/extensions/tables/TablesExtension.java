@@ -166,6 +166,7 @@ public class TablesExtension extends JIPipePrepackagedDefaultJavaExtension {
         registerNodeType("table-column-to-numeric", ColumnToNumericAlgorithm.class, UIUtils.getIconURLFromResources("actions/insert-math-expression.png"));
         registerNodeType("table-process-columns", ProcessColumnsAlgorithm.class, UIUtils.getIconURLFromResources("actions/insert-math-expression.png"));
         registerNodeType("table-melt", MeltTableAlgorithm.class, UIUtils.getIconURLFromResources("actions/insert-math-expression.png"));
+        registerNodeType("table-annotate-with-properties", AnnotateByTablePropertiesAlgorithm.class, UIUtils.getIconURLFromResources("actions/tag.png"));
     }
 
     private void registerParameters() {
@@ -480,6 +481,21 @@ public class TablesExtension extends JIPipePrepackagedDefaultJavaExtension {
                 "Sum",
                 "sum",
                 "Calculates the sum of all values. String values are converted to numbers or zero.");
+        registerTableColumnOperationAndExpressionFunction("integrate-get-first",
+                new GetFirstIntegratingColumnOperation(),
+                "Get first",
+                "first",
+                "Gets the first item if there multiple rows");
+        registerTableColumnOperationAndExpressionFunction("integrate-get-last",
+                new GetLastIntegratingColumnOperation(),
+                "Get last",
+                "last",
+                "Gets the last item if there multiple rows");
+        registerTableColumnOperationAndExpressionFunction("integrate-merge",
+                new MergeToJsonIntegratingColumnOperation(),
+                "Merge",
+                "merge",
+                "If there are multiple rows, merge them into a JSON string. Otherwise returns the value.");
     }
 }
 
