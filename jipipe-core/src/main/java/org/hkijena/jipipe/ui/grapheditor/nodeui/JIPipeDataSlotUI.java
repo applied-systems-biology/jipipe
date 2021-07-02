@@ -11,7 +11,7 @@
  * See the LICENSE file provided with the code for the full license.
  */
 
-package org.hkijena.jipipe.ui.grapheditor;
+package org.hkijena.jipipe.ui.grapheditor.nodeui;
 
 import com.google.common.eventbus.Subscribe;
 import org.hkijena.jipipe.JIPipe;
@@ -32,6 +32,8 @@ import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.JIPipeWorkbenchPanel;
 import org.hkijena.jipipe.ui.components.EditAlgorithmSlotPanel;
+import org.hkijena.jipipe.ui.grapheditor.JIPipeGraphCanvasUI;
+import org.hkijena.jipipe.ui.grapheditor.JIPipeGraphViewMode;
 import org.hkijena.jipipe.ui.grapheditor.algorithmfinder.AlgorithmFinderSuccessEvent;
 import org.hkijena.jipipe.ui.grapheditor.algorithmfinder.JIPipeAlgorithmSourceFinderUI;
 import org.hkijena.jipipe.ui.grapheditor.algorithmfinder.JIPipeAlgorithmTargetFinderUI;
@@ -784,4 +786,5 @@ public abstract class JIPipeDataSlotUI extends JIPipeWorkbenchPanel {
         return compartment;
     }
 
+    public abstract boolean needsRecalculateGridSize();
 }

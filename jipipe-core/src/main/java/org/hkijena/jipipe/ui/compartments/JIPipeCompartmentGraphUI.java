@@ -34,7 +34,7 @@ import org.hkijena.jipipe.ui.grapheditor.JIPipeCompartmentGraphDragAndDropBehavi
 import org.hkijena.jipipe.ui.grapheditor.JIPipeGraphCanvasUI;
 import org.hkijena.jipipe.ui.grapheditor.JIPipeGraphEditorMinimap;
 import org.hkijena.jipipe.ui.grapheditor.JIPipeGraphEditorUI;
-import org.hkijena.jipipe.ui.grapheditor.JIPipeNodeUI;
+import org.hkijena.jipipe.ui.grapheditor.nodeui.JIPipeNodeUI;
 import org.hkijena.jipipe.ui.grapheditor.contextmenu.DeleteCompartmentUIContextAction;
 import org.hkijena.jipipe.ui.grapheditor.contextmenu.ExportCompartmentAsJsonNodeUIContextAction;
 import org.hkijena.jipipe.ui.grapheditor.contextmenu.ExportCompartmentToNodeUIContextAction;

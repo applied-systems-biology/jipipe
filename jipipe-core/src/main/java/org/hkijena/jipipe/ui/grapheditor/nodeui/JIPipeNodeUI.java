@@ -11,7 +11,7 @@
  * See the LICENSE file provided with the code for the full license.
  */
 
-package org.hkijena.jipipe.ui.grapheditor;
+package org.hkijena.jipipe.ui.grapheditor.nodeui;
 
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
@@ -27,6 +27,8 @@ import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.JIPipeWorkbenchPanel;
 import org.hkijena.jipipe.ui.components.AddAlgorithmSlotPanel;
 import org.hkijena.jipipe.ui.components.ZoomIcon;
+import org.hkijena.jipipe.ui.grapheditor.JIPipeGraphCanvasUI;
+import org.hkijena.jipipe.ui.grapheditor.JIPipeGraphViewMode;
 import org.hkijena.jipipe.ui.grapheditor.contextmenu.NodeUIContextAction;
 import org.hkijena.jipipe.ui.grapheditor.contextmenu.RunAndShowIntermediateResultsNodeUIContextAction;
 import org.hkijena.jipipe.ui.grapheditor.contextmenu.RunAndShowResultsNodeUIContextAction;
@@ -200,6 +202,8 @@ public abstract class JIPipeNodeUI extends JIPipeWorkbenchPanel {
             updateActivationStatus();
         }
     }
+
+    public abstract boolean needsRecalculateGridSize();
 
     /**
      * Calculates the size in grid coordinates

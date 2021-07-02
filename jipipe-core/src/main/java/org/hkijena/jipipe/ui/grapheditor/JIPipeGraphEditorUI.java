@@ -30,6 +30,7 @@ import org.hkijena.jipipe.ui.components.ColorIcon;
 import org.hkijena.jipipe.ui.components.SearchBox;
 import org.hkijena.jipipe.ui.components.ZoomViewPort;
 import org.hkijena.jipipe.ui.extension.GraphEditorToolBarButtonExtension;
+import org.hkijena.jipipe.ui.grapheditor.nodeui.JIPipeNodeUI;
 import org.hkijena.jipipe.ui.grapheditor.contextmenu.NodeUIContextAction;
 import org.hkijena.jipipe.utils.CopyImageToClipboard;
 import org.hkijena.jipipe.utils.StringUtils;

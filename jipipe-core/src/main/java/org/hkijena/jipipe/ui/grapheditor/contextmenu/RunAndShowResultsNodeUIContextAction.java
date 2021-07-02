@@ -16,7 +16,7 @@ package org.hkijena.jipipe.ui.grapheditor.contextmenu;
 import org.hkijena.jipipe.api.JIPipeGraphType;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.ui.grapheditor.JIPipeGraphCanvasUI;
-import org.hkijena.jipipe.ui.grapheditor.JIPipeNodeUI;
+import org.hkijena.jipipe.ui.grapheditor.nodeui.JIPipeNodeUI;
 import org.hkijena.jipipe.ui.grapheditor.actions.RunAndShowResultsAction;
 import org.hkijena.jipipe.utils.UIUtils;
 

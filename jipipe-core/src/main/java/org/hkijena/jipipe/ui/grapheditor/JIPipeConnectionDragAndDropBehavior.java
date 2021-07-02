@@ -7,6 +7,7 @@ import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.data.JIPipeSlotType;
 import org.hkijena.jipipe.api.nodes.JIPipeGraph;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
+import org.hkijena.jipipe.ui.grapheditor.nodeui.JIPipeDataSlotUI;
 import org.hkijena.jipipe.utils.JsonUtils;
 
 import java.awt.Component;

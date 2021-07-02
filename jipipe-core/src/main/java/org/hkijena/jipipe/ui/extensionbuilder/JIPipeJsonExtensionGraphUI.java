@@ -22,7 +22,7 @@ import org.hkijena.jipipe.ui.grapheditor.JIPipeGraphCompartmentDragAndDropBehavi
 import org.hkijena.jipipe.ui.grapheditor.JIPipeGraphCompartmentUI;
 import org.hkijena.jipipe.ui.grapheditor.JIPipeGraphEditorMinimap;
 import org.hkijena.jipipe.ui.grapheditor.JIPipeGraphEditorUI;
-import org.hkijena.jipipe.ui.grapheditor.JIPipeNodeUI;
+import org.hkijena.jipipe.ui.grapheditor.nodeui.JIPipeNodeUI;
 import org.hkijena.jipipe.ui.grapheditor.contextmenu.*;
 import org.hkijena.jipipe.ui.grapheditor.contextmenu.clipboard.AlgorithmGraphCopyNodeUIContextAction;
 import org.hkijena.jipipe.ui.grapheditor.contextmenu.clipboard.AlgorithmGraphCutNodeUIContextAction;

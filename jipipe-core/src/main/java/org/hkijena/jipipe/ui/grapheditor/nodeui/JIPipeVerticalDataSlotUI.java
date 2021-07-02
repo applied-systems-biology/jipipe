@@ -11,7 +11,7 @@
  * See the LICENSE file provided with the code for the full license.
  */
 
-package org.hkijena.jipipe.ui.grapheditor;
+package org.hkijena.jipipe.ui.grapheditor.nodeui;
 
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.compartments.algorithms.JIPipeCompartmentOutput;
@@ -23,6 +23,8 @@ import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.cache.JIPipeDataSlotCacheManagerUI;
 import org.hkijena.jipipe.ui.components.ZoomIcon;
 import org.hkijena.jipipe.ui.components.ZoomLabel;
+import org.hkijena.jipipe.ui.grapheditor.JIPipeConnectionDragAndDropBehavior;
+import org.hkijena.jipipe.ui.grapheditor.JIPipeGraphViewMode;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.TooltipUtils;
 import org.hkijena.jipipe.utils.UIUtils;
@@ -47,6 +49,9 @@ public class JIPipeVerticalDataSlotUI extends JIPipeDataSlotUI {
     private JLabel noSaveLabel;
     private JLabel virtualLabel;
     private JIPipeDataSlotCacheManagerUI cacheManagerUI;
+
+    private String cachedGridSizeDisplayName;
+    private Dimension cachedGridSize;
 
     /**
      * Creates a new UI
@@ -182,16 +187,26 @@ public class JIPipeVerticalDataSlotUI extends JIPipeDataSlotUI {
     }
 
     @Override
+    public boolean needsRecalculateGridSize() {
+        return !Objects.equals(cachedGridSizeDisplayName, getDisplayedName()) || cachedGridSize == null;
+    }
+
+    @Override
     public Dimension calculateGridSize() {
-        // First calculate the width caused by the label width
-        FontRenderContext frc = new FontRenderContext(null, false, false);
-        TextLayout layout = new TextLayout(getDisplayedName(), getFont(), frc);
-        double w = layout.getBounds().getWidth();
-        int labelWidth = (int) Math.ceil(w / JIPipeGraphViewMode.Vertical.getGridWidth())
-                * JIPipeGraphViewMode.Vertical.getGridWidth();
-        int width = labelWidth + 75;
-        Point inGrid = JIPipeGraphViewMode.Vertical.realLocationToGrid(new Point(width, JIPipeGraphViewMode.Vertical.getGridHeight()), 1.0);
-        return new Dimension(inGrid.x, inGrid.y);
+        if(needsRecalculateGridSize()) {
+            // First calculate the width caused by the label width
+            FontRenderContext frc = new FontRenderContext(null, false, false);
+            TextLayout layout = new TextLayout(getDisplayedName(), getFont(), frc);
+            double w = layout.getBounds().getWidth();
+            int labelWidth = (int) Math.ceil(w / JIPipeGraphViewMode.Vertical.getGridWidth())
+                    * JIPipeGraphViewMode.Vertical.getGridWidth();
+            int width = labelWidth + 75;
+            Point inGrid = JIPipeGraphViewMode.Vertical.realLocationToGrid(new Point(width, JIPipeGraphViewMode.Vertical.getGridHeight()), 1.0);
+
+            cachedGridSize = new Dimension(inGrid.x, inGrid.y);
+            cachedGridSizeDisplayName = getDisplayedName();
+        }
+        return cachedGridSize;
     }
 
     public boolean isCompact() {

@@ -1,7 +1,7 @@
 package org.hkijena.jipipe.extensions.utils.contextmenu;
 
 import org.hkijena.jipipe.ui.grapheditor.JIPipeGraphCanvasUI;
-import org.hkijena.jipipe.ui.grapheditor.JIPipeNodeUI;
+import org.hkijena.jipipe.ui.grapheditor.nodeui.JIPipeNodeUI;
 import org.hkijena.jipipe.ui.grapheditor.contextmenu.NodeUIContextAction;
 import org.hkijena.jipipe.ui.parameters.ParameterExplorerWindow;
 import org.hkijena.jipipe.utils.UIUtils;
