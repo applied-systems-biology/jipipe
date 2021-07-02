@@ -18,6 +18,7 @@ import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeCacheSlotDataSource;
 import org.hkijena.jipipe.api.data.JIPipeVirtualData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
+import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.OMEImageData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.viewer.ImageViewerPanel;
 import org.hkijena.jipipe.extensions.imagejdatatypes.viewer.plugins.AnimationSpeedPlugin;
 import org.hkijena.jipipe.extensions.imagejdatatypes.viewer.plugins.CalibrationPlugin;
@@ -40,10 +41,11 @@ public class CachedImagePlusDataViewerWindow extends JIPipeCacheDataViewerWindow
     private final JLabel errorLabel = new JLabel(UIUtils.getIconFromResources("emblems/no-data.png"));
     private ImageViewerPanel imageViewerPanel;
 
-    public CachedImagePlusDataViewerWindow(JIPipeWorkbench workbench, JIPipeCacheSlotDataSource dataSource, String displayName) {
+    public CachedImagePlusDataViewerWindow(JIPipeWorkbench workbench, JIPipeCacheSlotDataSource dataSource, String displayName, boolean deferLoadingData) {
         super(workbench, dataSource, displayName);
         initialize();
-        reloadDisplayedData();
+        if(!deferLoadingData)
+            reloadDisplayedData();
     }
 
     private void initialize() {
@@ -96,10 +98,21 @@ public class CachedImagePlusDataViewerWindow extends JIPipeCacheDataViewerWindow
 
     @Override
     protected void loadData(JIPipeVirtualData virtualData, JIPipeProgressInfo progressInfo) {
-        ImagePlusData data = (ImagePlusData) virtualData.getData(progressInfo);
-        imageViewerPanel.getCanvas().setError(null);
-        ImagePlus image = data.getViewedImage(true);
-        image.setTitle(data.getImage().getTitle());
+        ImagePlus image;
+        if(ImagePlusData.class.isAssignableFrom(virtualData.getDataClass())) {
+            ImagePlusData data = (ImagePlusData) virtualData.getData(progressInfo);
+            imageViewerPanel.getCanvas().setError(null);
+            image = data.getViewedImage(true);
+        }
+        else if(OMEImageData.class.isAssignableFrom(virtualData.getDataClass())) {
+            OMEImageData data = (OMEImageData) virtualData.getData(progressInfo);
+            imageViewerPanel.getCanvas().setError(null);
+            image = data.getDuplicateImage();
+        }
+        else {
+            throw new UnsupportedOperationException();
+        }
+        image.setTitle(image.getTitle());
         boolean fitImage = imageViewerPanel.getImage() == null;
         imageViewerPanel.setImage(image);
         if (fitImage)
