@@ -28,14 +28,17 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.registries.JIPipeExpressionRegistry;
 import org.hkijena.jipipe.extensions.expressions.ExpressionParameters;
 import org.hkijena.jipipe.extensions.tables.ColumnOperation;
+import org.hkijena.jipipe.extensions.tables.datatypes.RelabeledTableColumn;
 import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
 import org.hkijena.jipipe.extensions.tables.datatypes.TableColumn;
 import org.hkijena.jipipe.extensions.tables.parameters.collections.IntegratingTableColumnProcessorParameterList;
 import org.hkijena.jipipe.extensions.tables.parameters.processors.IntegratingTableColumnProcessorParameter;
 import org.hkijena.jipipe.utils.StringUtils;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -73,7 +76,7 @@ public class IntegrateColumnsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     @Override
     protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
         ResultsTableData input = dataBatch.getInputData(getFirstInputSlot(), ResultsTableData.class, progressInfo);
-        Map<String, TableColumn> resultColumns = new HashMap<>();
+        List<TableColumn> resultColumns = new ArrayList<>();
         for (IntegratingTableColumnProcessorParameter processor : processorParameters) {
             String sourceColumn = processor.getInput().queryFirst(input.getColumnNames(), new ExpressionParameters());
             if (sourceColumn == null) {
@@ -86,7 +89,7 @@ public class IntegrateColumnsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
             TableColumn sourceColumnData = input.getColumnReference(input.getColumnIndex(sourceColumn));
             ColumnOperation columnOperation = ((JIPipeExpressionRegistry.ColumnOperationEntry) processor.getParameter().getValue()).getOperation();
             TableColumn resultColumn = columnOperation.apply(sourceColumnData);
-            resultColumns.put(processor.getOutput(), resultColumn);
+            resultColumns.add(new RelabeledTableColumn(resultColumn, processor.getOutput()));
         }
 
         // Combine into one table

@@ -29,6 +29,7 @@ import org.hkijena.jipipe.extensions.expressions.ExpressionParameterSettings;
 import org.hkijena.jipipe.extensions.expressions.ExpressionParameters;
 import org.hkijena.jipipe.extensions.expressions.TableColumnValuesExpressionParameterVariableSource;
 import org.hkijena.jipipe.extensions.tables.datatypes.DoubleArrayTableColumn;
+import org.hkijena.jipipe.extensions.tables.datatypes.RelabeledTableColumn;
 import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
 import org.hkijena.jipipe.extensions.tables.datatypes.StringArrayTableColumn;
 import org.hkijena.jipipe.extensions.tables.datatypes.TableColumn;
@@ -55,7 +56,7 @@ import java.util.Set;
 public class ProcessColumnsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     private ExpressionTableColumnProcessorParameterList processorParameters = new ExpressionTableColumnProcessorParameterList();
-    private boolean append = true;
+    private boolean append = false;
 
     /**
      * Creates a new instance
@@ -81,8 +82,13 @@ public class ProcessColumnsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     @Override
     protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
         ResultsTableData input = dataBatch.getInputData(getFirstInputSlot(), ResultsTableData.class, progressInfo);
-        Map<String, TableColumn> resultColumns = new HashMap<>();
+        List<TableColumn> resultColumns = new ArrayList<>();
         ExpressionParameters expressionParameters = new ExpressionParameters();
+        if (append) {
+            for (String columnName : input.getColumnNames()) {
+                resultColumns.add(input.getColumnReference(input.getColumnIndex(columnName)));
+            }
+        }
         for (ExpressionTableColumnProcessorParameter processor : processorParameters) {
             String sourceColumn = processor.getInput().queryFirst(input.getColumnNames(), new ExpressionParameters());
             if (sourceColumn == null) {
@@ -127,14 +133,7 @@ public class ProcessColumnsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
             } else {
                 resultColumn = new StringArrayTableColumn(new String[]{StringUtils.nullToEmpty(result)}, processor.getOutput());
             }
-            resultColumns.put(processor.getOutput(), resultColumn);
-        }
-        if (append) {
-            for (String columnName : input.getColumnNames()) {
-                if (!resultColumns.containsKey(columnName)) {
-                    resultColumns.put(columnName, input.getColumnReference(input.getColumnIndex(columnName)));
-                }
-            }
+            resultColumns.add(new RelabeledTableColumn(resultColumn, processor.getOutput()));
         }
 
         // Combine into one table

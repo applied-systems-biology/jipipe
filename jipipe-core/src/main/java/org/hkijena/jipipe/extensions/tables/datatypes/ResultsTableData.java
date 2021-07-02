@@ -98,7 +98,7 @@ public class ResultsTableData implements JIPipeData, TableModel {
      * @param columns the columns
      */
     public ResultsTableData(Collection<TableColumn> columns) {
-        Map<String, TableColumn> map = new HashMap<>();
+        Map<String, TableColumn> map = new LinkedHashMap<>();
         for (TableColumn column : columns) {
             map.put(column.getLabel(), column);
         }
