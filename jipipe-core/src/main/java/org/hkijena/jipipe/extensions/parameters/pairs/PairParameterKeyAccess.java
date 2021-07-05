@@ -61,6 +61,11 @@ public class PairParameterKeyAccess<K, V> implements JIPipeParameterAccess {
     }
 
     @Override
+    public boolean isImportant() {
+        return false;
+    }
+
+    @Override
     public <T extends Annotation> T getAnnotationOfType(Class<T> klass) {
         return getParent().getAnnotationOfType(klass);
     }

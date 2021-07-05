@@ -36,6 +36,7 @@ public class JIPipeReflectionParameterAccess implements JIPipeParameterAccess {
     private JIPipeParameterCollection source;
     private String shortKey;
     private int uiOrder;
+    private boolean important;
     private JIPipeParameterPersistence persistence;
 
     @Override
@@ -184,5 +185,14 @@ public class JIPipeReflectionParameterAccess implements JIPipeParameterAccess {
 
     public void setPersistence(JIPipeParameterPersistence persistence) {
         this.persistence = persistence;
+    }
+
+    @Override
+    public boolean isImportant() {
+        return important;
+    }
+
+    public void setImportant(boolean important) {
+        this.important = important;
     }
 }

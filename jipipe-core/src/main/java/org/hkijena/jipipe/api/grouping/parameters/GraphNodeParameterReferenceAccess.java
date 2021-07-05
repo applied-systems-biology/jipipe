@@ -72,6 +72,11 @@ public class GraphNodeParameterReferenceAccess implements JIPipeParameterAccess 
     }
 
     @Override
+    public boolean isImportant() {
+        return false;
+    }
+
+    @Override
     public <T extends Annotation> T getAnnotationOfType(Class<T> klass) {
         return target.getAnnotationOfType(klass);
     }

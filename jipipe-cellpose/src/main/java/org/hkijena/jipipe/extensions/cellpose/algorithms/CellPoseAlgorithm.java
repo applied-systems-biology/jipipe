@@ -116,7 +116,7 @@ public class CellPoseAlgorithm extends JIPipeSingleIterationAlgorithm {
 
     @JIPipeDocumentation(name = "Enable 3D segmentation", description = "If enabled, Cellpose will segment in 3D. Otherwise, " +
             "any 3D image will be processed per-slice. Please note that 3D segmentation requires large amounts of memory.")
-    @JIPipeParameter("enable-3d-segmentation")
+    @JIPipeParameter(value = "enable-3d-segmentation", important = true)
     public boolean isEnable3DSegmentation() {
         return enable3DSegmentation;
     }
@@ -593,9 +593,9 @@ public class CellPoseAlgorithm extends JIPipeSingleIterationAlgorithm {
         this.diameterAnnotation = diameterAnnotation;
     }
 
-    @JIPipeDocumentation(name = "Diameter", description = "If enabled, Cellpose will use the provided average diameter to find objects. " +
+    @JIPipeDocumentation(name = "Average object diameter", description = "If enabled, Cellpose will use the provided average diameter to find objects. " +
             "Otherwise, Cellpose will estimate the diameter by itself.")
-    @JIPipeParameter("diameter")
+    @JIPipeParameter(value = "diameter", important = true)
     public OptionalDoubleParameter getDiameter() {
         return diameter;
     }

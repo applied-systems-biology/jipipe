@@ -44,6 +44,7 @@ public class JIPipeMutableParameterAccess implements JIPipeParameterAccess {
     private String name;
     private String description;
     private boolean hidden;
+    private boolean important;
     private Class<?> fieldClass;
     private Object value;
     private double priority = Priority.NORMAL;
@@ -107,6 +108,15 @@ public class JIPipeMutableParameterAccess implements JIPipeParameterAccess {
         this.value = other.value;
         this.priority = other.priority;
         this.persistence = other.persistence;
+    }
+
+    @Override
+    public boolean isImportant() {
+        return important;
+    }
+
+    public void setImportant(boolean important) {
+        this.important = important;
     }
 
     @Override

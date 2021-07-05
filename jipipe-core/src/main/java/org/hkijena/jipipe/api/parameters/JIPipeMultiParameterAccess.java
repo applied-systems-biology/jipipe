@@ -40,6 +40,11 @@ public class JIPipeMultiParameterAccess implements JIPipeParameterAccess {
     }
 
     @Override
+    public boolean isImportant() {
+        return getFirstAccess().isImportant();
+    }
+
+    @Override
     public <T extends Annotation> T getAnnotationOfType(Class<T> klass) {
         return getFirstAccess().getAnnotationOfType(klass);
     }

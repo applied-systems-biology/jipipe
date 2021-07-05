@@ -43,6 +43,7 @@ public class JIPipeManualParameterAccess implements JIPipeParameterAccess {
     private double priority;
     private String shortKey;
     private int uiOrder;
+    private boolean important;
 
     private JIPipeManualParameterAccess() {
 
@@ -120,6 +121,11 @@ public class JIPipeManualParameterAccess implements JIPipeParameterAccess {
     @Override
     public int getUIOrder() {
         return uiOrder;
+    }
+
+    @Override
+    public boolean isImportant() {
+        return important;
     }
 
     /**
@@ -222,6 +228,16 @@ public class JIPipeManualParameterAccess implements JIPipeParameterAccess {
          */
         public Builder setHidden(boolean hidden) {
             access.hidden = hidden;
+            return this;
+        }
+
+        /**
+         * Allows to make the parameter important (only for UI)
+         * @param important if the parameter should be highlighted in the UI
+         * @return this
+         */
+        public Builder setImportant(boolean important) {
+            access.important = important;
             return this;
         }
 

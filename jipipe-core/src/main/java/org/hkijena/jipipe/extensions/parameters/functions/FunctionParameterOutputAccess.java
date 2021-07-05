@@ -56,6 +56,11 @@ public class FunctionParameterOutputAccess<I, P, O> implements JIPipeParameterAc
     }
 
     @Override
+    public boolean isImportant() {
+        return false;
+    }
+
+    @Override
     public <T extends Annotation> T getAnnotationOfType(Class<T> klass) {
         return parent.getAnnotationOfType(klass);
     }

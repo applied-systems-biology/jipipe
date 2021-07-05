@@ -256,6 +256,7 @@ public class JIPipeParameterTree implements JIPipeParameterCollection, JIPipeCus
                 parameterAccess.setHidden(pair.isHidden());
                 parameterAccess.setPriority(pair.getPriority());
                 parameterAccess.setPersistence(pair.getPersistence());
+                parameterAccess.setImportant(pair.isImportant());
 
                 addParameter(entry.getKey(), parameterAccess, parent);
             }
@@ -547,6 +548,14 @@ public class JIPipeParameterTree implements JIPipeParameterCollection, JIPipeCus
 
         public Class<?> getFieldClass() {
             return getter != null ? getter.getReturnType() : null;
+        }
+
+        public boolean isImportant() {
+            JIPipeParameter getterAnnotation = getter.getAnnotation(JIPipeParameter.class);
+            if (setter == null)
+                return getterAnnotation.important();
+            JIPipeParameter setterAnnotation = setter.getAnnotation(JIPipeParameter.class);
+            return getterAnnotation.important() || setterAnnotation.important();
         }
 
         public boolean isHidden() {

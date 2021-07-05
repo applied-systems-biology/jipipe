@@ -209,7 +209,7 @@ public class CellPoseTrainingAlgorithm extends JIPipeSingleIterationAlgorithm {
             "<li><b>Custom</b>: You need to rescale all your images that structures have a diameter appropriate for the model.</li>" +
             "<li><b>None</b>: This will train from scratch. You can freely set the diameter. You also can set the diameter to 0 to disable scaling.</li>" +
             "</ul>")
-    @JIPipeParameter("diameter")
+    @JIPipeParameter(value = "diameter", important = true)
     public double getDiameter() {
         return diameter;
     }
@@ -245,7 +245,7 @@ public class CellPoseTrainingAlgorithm extends JIPipeSingleIterationAlgorithm {
 
     @JIPipeDocumentation(name = "Enable 3D segmentation", description = "If enabled, Cellpose will train in 3D. " +
             "Otherwise, JIPipe will prepare the data by splitting 3D data into planes.")
-    @JIPipeParameter("enable-3d-segmentation")
+    @JIPipeParameter(value = "enable-3d-segmentation", important = true)
     public boolean isEnable3DSegmentation() {
         return enable3DSegmentation;
     }

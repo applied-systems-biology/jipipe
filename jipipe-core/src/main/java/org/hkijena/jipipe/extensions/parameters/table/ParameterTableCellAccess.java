@@ -64,6 +64,11 @@ public class ParameterTableCellAccess implements JIPipeParameterAccess {
     }
 
     @Override
+    public boolean isImportant() {
+        return false;
+    }
+
+    @Override
     public <T extends Annotation> T getAnnotationOfType(Class<T> klass) {
         return null;
     }

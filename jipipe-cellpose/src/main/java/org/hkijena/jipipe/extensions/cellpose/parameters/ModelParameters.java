@@ -3,7 +3,9 @@ package org.hkijena.jipipe.extensions.cellpose.parameters;
 import com.google.common.eventbus.EventBus;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
+import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
+import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
 import org.hkijena.jipipe.extensions.cellpose.CellPoseModel;
 
 public class ModelParameters implements JIPipeParameterCollection {
@@ -43,6 +45,15 @@ public class ModelParameters implements JIPipeParameterCollection {
     @JIPipeParameter("model")
     public void setModel(CellPoseModel model) {
         this.model = model;
+        triggerParameterUIChange();
+    }
+
+    @Override
+    public boolean isParameterUIVisible(JIPipeParameterTree tree, JIPipeParameterAccess access) {
+        if(access.getSource() == this && "mean-diameter".equals(access.getKey())) {
+            return model == CellPoseModel.Custom;
+        }
+        return JIPipeParameterCollection.super.isParameterUIVisible(tree, access);
     }
 
     @JIPipeDocumentation(name = "Mean diameter", description = "Mean diameter of the model. Only necessary if you are using a " +

@@ -245,13 +245,13 @@ public class ParameterPanel extends FormPanel implements Contextual {
         }
     }
 
-    private void addToForm(JIPipeParameterTree traversed, JIPipeParameterCollection parameterCollection, List<JIPipeParameterAccess> parameterAccesses, Set<JIPipeParameterAccess> hiddenAccesses) {
+    private void addToForm(JIPipeParameterTree tree, JIPipeParameterCollection parameterCollection, List<JIPipeParameterAccess> parameterAccesses, Set<JIPipeParameterAccess> hiddenAccesses) {
         boolean isModifiable = parameterCollection instanceof JIPipeDynamicParameterCollection && ((JIPipeDynamicParameterCollection) parameterCollection).isAllowUserModification();
 
         if (!isModifiable && parameterAccesses.isEmpty())
             return;
 
-        JIPipeParameterTree.Node node = traversed.getSourceNode(parameterCollection);
+        JIPipeParameterTree.Node node = tree.getSourceNode(parameterCollection);
 
         JCheckBox collapseButton = new JCheckBox();
         collapseButton.setToolTipText("Collapse/Show this category");
@@ -265,7 +265,7 @@ public class ParameterPanel extends FormPanel implements Contextual {
         }
 
         if (!noGroupHeaders) {
-            JIPipeDocumentation documentation = traversed.getSourceDocumentation(parameterCollection);
+            JIPipeDocumentation documentation = tree.getSourceDocumentation(parameterCollection);
             boolean documentationIsEmpty = documentation == null || (StringUtils.isNullOrEmpty(documentation.name()) && StringUtils.isNullOrEmpty(documentation.description()));
             boolean groupHeaderIsEmpty = documentationIsEmpty && !isModifiable && node.getActions().isEmpty();
 
@@ -285,7 +285,7 @@ public class ParameterPanel extends FormPanel implements Contextual {
                         groupIcon = UIUtils.getIconFromResources("actions/configure.png");
                     }
                 }
-                GroupHeaderPanel groupHeaderPanel = new GroupHeaderPanel(traversed.getSourceDocumentationName(parameterCollection),
+                GroupHeaderPanel groupHeaderPanel = new GroupHeaderPanel(tree.getSourceDocumentationName(parameterCollection),
                         groupIcon, leftComponents);
                 addWideToForm(groupHeaderPanel, null);
 
@@ -343,6 +343,8 @@ public class ParameterPanel extends FormPanel implements Contextual {
             JPanel labelPanel = new JPanel(new BorderLayout());
             if (ui.isUILabelEnabled()) {
                 JLabel label = new JLabel(parameterAccess.getName());
+                if(parameterAccess.isImportant())
+                    label.setIcon(UIUtils.getIconFromResources("emblems/important.png"));
                 labelPanel.add(label, BorderLayout.CENTER);
             }
             if (isModifiable) {
@@ -353,10 +355,10 @@ public class ParameterPanel extends FormPanel implements Contextual {
             }
 
             if (ui.isUILabelEnabled() || parameterCollection instanceof JIPipeDynamicParameterCollection) {
-                addToForm(ui, labelPanel, generateParameterDocumentation(parameterAccess, traversed));
+                addToForm(ui, labelPanel, generateParameterDocumentation(parameterAccess, tree));
                 uiComponents.add(labelPanel);
             } else
-                addToForm(ui, generateParameterDocumentation(parameterAccess, traversed));
+                addToForm(ui, generateParameterDocumentation(parameterAccess, tree));
         }
 
         if (allowCollapse) {

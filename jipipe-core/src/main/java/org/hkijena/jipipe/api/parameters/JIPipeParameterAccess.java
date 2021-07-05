@@ -51,6 +51,12 @@ public interface JIPipeParameterAccess {
     boolean isHidden();
 
     /**
+     * Returns true if the parameter should be marked in the UI as important
+     * @return if the parameter is important
+     */
+    boolean isImportant();
+
+    /**
      * Finds an annotation for this parameter
      *
      * @param klass Annotation class

@@ -66,6 +66,11 @@ public class ListParameterItemParameterAccess<T> implements JIPipeParameterAcces
     }
 
     @Override
+    public boolean isImportant() {
+        return false;
+    }
+
+    @Override
     public <T extends Annotation> T getAnnotationOfType(Class<T> klass) {
         return parent.getAnnotationOfType(klass);
     }

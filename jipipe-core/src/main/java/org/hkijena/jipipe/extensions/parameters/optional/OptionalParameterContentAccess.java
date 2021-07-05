@@ -62,6 +62,11 @@ public class OptionalParameterContentAccess<T> implements JIPipeParameterAccess 
     }
 
     @Override
+    public boolean isImportant() {
+        return false;
+    }
+
+    @Override
     public <U extends Annotation> U getAnnotationOfType(Class<U> klass) {
         return parent.getAnnotationOfType(klass);
     }
@@ -101,6 +106,8 @@ public class OptionalParameterContentAccess<T> implements JIPipeParameterAccess 
     public int getUIOrder() {
         return 0;
     }
+
+
 
     public JIPipeParameterAccess getParent() {
         return parent;
