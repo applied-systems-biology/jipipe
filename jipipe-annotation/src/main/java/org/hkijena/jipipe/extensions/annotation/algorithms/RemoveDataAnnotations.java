@@ -38,14 +38,14 @@ public class RemoveDataAnnotations extends JIPipeSimpleIteratingAlgorithm {
 
     public RemoveDataAnnotations(RemoveDataAnnotations other) {
         super(other);
-        other.nameFilter = new StringQueryExpression(other.nameFilter);
+        nameFilter = new StringQueryExpression(other.nameFilter);
     }
 
     @Override
     protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
-        for (String name : ImmutableList.copyOf(dataBatch.getGlobalAnnotations().keySet())) {
+        for (String name : ImmutableList.copyOf(dataBatch.getGlobalDataAnnotations().keySet())) {
             if(nameFilter.test(name)) {
-                dataBatch.getGlobalAnnotations().remove(name);
+                dataBatch.getGlobalDataAnnotations().remove(name);
             }
         }
         dataBatch.addOutputData(getFirstOutputSlot(), dataBatch.getInputData(getFirstInputSlot(), JIPipeData.class, progressInfo), progressInfo);

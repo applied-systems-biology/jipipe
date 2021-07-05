@@ -1,5 +1,6 @@
 package org.hkijena.jipipe.api.data;
 
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 
 public class JIPipeDataAnnotation {
@@ -29,7 +30,7 @@ public class JIPipeDataAnnotation {
     }
 
     public <T extends JIPipeData> T getData(Class<T> klass, JIPipeProgressInfo progressInfo) {
-        return (T)virtualData.getData(progressInfo);
+        return (T) JIPipe.getDataTypes().convert(virtualData.getData(progressInfo), klass);
     }
 
     @Override
