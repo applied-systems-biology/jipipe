@@ -5,7 +5,6 @@ import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.data.JIPipeVirtualData;
 import org.hkijena.jipipe.api.nodes.JIPipeMergingDataBatch;
 import org.hkijena.jipipe.ui.cache.JIPipeCachedDataPreview;
-import org.jetbrains.annotations.Nls;
 
 import javax.swing.*;
 import javax.swing.event.TableModelListener;
@@ -76,7 +75,6 @@ public class DataBatchTableModel implements TableModel {
         return 1 + inputSlotNames.size() + annotationColumns.size();
     }
 
-    @Nls
     @Override
     public String getColumnName(int columnIndex) {
         if (columnIndex == 0) {

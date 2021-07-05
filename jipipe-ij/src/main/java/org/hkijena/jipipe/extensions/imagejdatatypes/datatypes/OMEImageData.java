@@ -66,7 +66,6 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.parameters.OMEExporterSetti
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ROIHandler;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.utils.PathUtils;
-import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
 import java.awt.Component;

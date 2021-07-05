@@ -3,7 +3,6 @@ package org.hkijena.jipipe.extensions.nodetoolboxtool;
 import org.hkijena.jipipe.api.nodes.JIPipeGraph;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.utils.JsonUtils;
-import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
 import java.awt.datatransfer.DataFlavor;
@@ -17,7 +16,6 @@ public class NodeToolBoxTransferHandler extends TransferHandler {
         return COPY;
     }
 
-    @Nullable
     @Override
     protected Transferable createTransferable(JComponent c) {
         if (c instanceof JList) {

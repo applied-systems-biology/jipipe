@@ -29,7 +29,6 @@ import org.hkijena.jipipe.extensions.expressions.StringQueryExpression;
 import org.hkijena.jipipe.extensions.parameters.primitives.StringParameterSettings;
 import org.hkijena.jipipe.utils.ResourceUtils;
 import org.hkijena.jipipe.utils.StringUtils;
-import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -315,7 +314,6 @@ public class JIPipeDataByMetadataExporter implements JIPipeParameterCollection {
      * @param existingMetadata existing strings
      * @return the string
      */
-    @Nullable
     public String generateMetadataString(JIPipeDataSlot dataSlot, int row, Set<String> existingMetadata) {
         StringBuilder metadataStringBuilder = new StringBuilder();
         if (mode == Mode.Automatic) {
