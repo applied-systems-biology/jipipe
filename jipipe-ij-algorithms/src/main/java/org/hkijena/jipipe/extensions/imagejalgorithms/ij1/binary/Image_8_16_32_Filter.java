@@ -18,7 +18,7 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePl
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscale8UData;
 import org.hkijena.jipipe.utils.ClassFilter;
 
-public class LabelClassFilter implements ClassFilter {
+public class Image_8_16_32_Filter implements ClassFilter {
     @Override
     public boolean test(Class<?> klass) {
         return klass == ImagePlusGreyscale16UData.class || klass == ImagePlusGreyscale8UData.class || klass == ImagePlusGreyscale32FData.class;

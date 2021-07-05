@@ -299,7 +299,7 @@ public class ResultsTableData implements JIPipeData, TableModel {
                 TableColumn inputColumn = getColumnReference(getColumnIndex(operation.getSourceColumnName()));
                 TableColumn outputColumn = operation.getOperation().apply(inputColumn);
                 if (outputColumn.isNumeric()) {
-                    result.setValueAt(outputColumn.getDataAsDouble(0), 0, result.addColumn(operation.getTargetColumnName(), false));
+                    result.setValueAt(outputColumn.getRowAsDouble(0), 0, result.addColumn(operation.getTargetColumnName(), false));
                 } else {
                     result.setValueAt(outputColumn.getRowAsString(0), 0, result.addColumn(operation.getTargetColumnName(), true));
                 }

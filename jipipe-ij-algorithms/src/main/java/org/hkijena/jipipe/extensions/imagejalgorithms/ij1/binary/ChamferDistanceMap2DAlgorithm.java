@@ -14,7 +14,10 @@
 package org.hkijena.jipipe.extensions.imagejalgorithms.ij1.binary;
 
 import ij.ImagePlus;
+import ij.ImageStack;
+import ij.process.ImageProcessor;
 import inra.ijpb.binary.BinaryImages;
+import inra.ijpb.binary.ChamferWeights;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeOrganization;
@@ -27,31 +30,30 @@ import org.hkijena.jipipe.api.nodes.JIPipeOutputSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
-import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.Neighborhood2D;
-import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d3.greyscale.ImagePlus3DGreyscaleMaskData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscale16UData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscale32FData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleMaskData;
+import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.extensions.parameters.editors.JIPipeDataParameterSettings;
 import org.hkijena.jipipe.extensions.parameters.references.JIPipeDataInfoRef;
 
-@JIPipeDocumentation(name = "Connected components labeling 3D", description = "Applies a connected components labeling on a mask. Each connected component is assigned a unique value in the output label image. " +
-        "If the image is non-binary, the connected components are generated per-input value. If 3D data is supplied, the connected components are extracted in 3D.")
-@JIPipeOrganization(menuPath = "Binary", nodeTypeCategory = ImagesNodeTypeCategory.class)
-@JIPipeInputSlot(value = ImagePlus3DGreyscaleMaskData.class, slotName = "Input", autoCreate = true)
+@JIPipeDocumentation(name = "Chamfer Distance Map 2D", description = "Computes the distance map from a binary image. If higher-dimensional data is provided, the filter is applied to each 2D slice.")
+@JIPipeOrganization(menuPath = "Math", nodeTypeCategory = ImagesNodeTypeCategory.class)
+@JIPipeInputSlot(value = ImagePlusGreyscaleMaskData.class, slotName = "Input", autoCreate = true)
 @JIPipeOutputSlot(value = ImagePlusGreyscaleData.class, slotName = "Output", autoCreate = true)
-public class ConnectedComponentsLabeling3DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
+public class ChamferDistanceMap2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
-    private Neighborhood2D connectivity = Neighborhood2D.EightConnected;
-    private JIPipeDataInfoRef outputType = new JIPipeDataInfoRef(ImagePlusGreyscale16UData.class);
+    private ChamferWeights chamferWeights = ChamferWeights.BORGEFORS;
+    private boolean normalize = true;
+    private JIPipeDataInfoRef outputType = new JIPipeDataInfoRef(ImagePlusGreyscale32FData.class);
 
     /**
      * Instantiates a new node type.
      *
      * @param info the info
      */
-    public ConnectedComponentsLabeling3DAlgorithm(JIPipeNodeInfo info) {
+    public ChamferDistanceMap2DAlgorithm(JIPipeNodeInfo info) {
         super(info);
         updateSlots();
     }
@@ -61,24 +63,36 @@ public class ConnectedComponentsLabeling3DAlgorithm extends JIPipeSimpleIteratin
      *
      * @param other the other
      */
-    public ConnectedComponentsLabeling3DAlgorithm(ConnectedComponentsLabeling3DAlgorithm other) {
+    public ChamferDistanceMap2DAlgorithm(ChamferDistanceMap2DAlgorithm other) {
         super(other);
-        this.connectivity = other.connectivity;
+        this.chamferWeights = other.chamferWeights;
+        this.normalize = other.normalize;
         this.outputType = new JIPipeDataInfoRef(other.outputType);
     }
 
-    @JIPipeDocumentation(name = "Connectivity", description = "Determines the neighborhood around each pixel that is checked for connectivity")
-    @JIPipeParameter("connectivity")
-    public Neighborhood2D getConnectivity() {
-        return connectivity;
+    @JIPipeDocumentation(name = "Chamfer weights", description = "Determines the Chamfer weights for this distance transform")
+    @JIPipeParameter("chamfer-weights")
+    public ChamferWeights getChamferWeights() {
+        return chamferWeights;
     }
 
-    @JIPipeParameter("connectivity")
-    public void setConnectivity(Neighborhood2D connectivity) {
-        this.connectivity = connectivity;
+    @JIPipeParameter("chamfer-weights")
+    public void setChamferWeights(ChamferWeights chamferWeights) {
+        this.chamferWeights = chamferWeights;
     }
 
-    @JIPipeDocumentation(name = "Output type", description = "Determines the output label type. You can choose between an 8-bit, 16-bit, and 32-bit label.")
+    @JIPipeDocumentation(name = "Normalize weights", description = "Indicates whether the resulting distance map should be normalized (divide distances by the first chamfer weight)")
+    @JIPipeParameter("normalize")
+    public boolean isNormalize() {
+        return normalize;
+    }
+
+    @JIPipeParameter("normalize")
+    public void setNormalize(boolean normalize) {
+        this.normalize = normalize;
+    }
+
+    @JIPipeDocumentation(name = "Output type", description = "Determines the output type. You can choose between an  16-bit or 32-bit.")
     @JIPipeParameter("output-type")
     @JIPipeDataParameterSettings(dataClassFilter = Image_8_16_32_Filter.class)
     public JIPipeDataInfoRef getOutputType() {
@@ -99,16 +113,25 @@ public class ConnectedComponentsLabeling3DAlgorithm extends JIPipeSimpleIteratin
     @Override
     protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
         ImagePlus inputImage = dataBatch.getInputData(getFirstInputSlot(), ImagePlusGreyscaleMaskData.class, progressInfo).getImage();
+        ImageStack stack = new ImageStack(inputImage.getWidth(), inputImage.getHeight(), inputImage.getStackSize());
 
         int bitDepth;
         if(outputType.getInfo().getDataClass() == ImagePlusGreyscale32FData.class)
             bitDepth = 32;
-        else if(outputType.getInfo().getDataClass() == ImagePlusGreyscale16UData.class)
-            bitDepth = 16;
         else
-            bitDepth = 8;
+            bitDepth = 16;
 
-        ImagePlus outputImage = BinaryImages.componentsLabeling(inputImage, connectivity.getNativeValue(), bitDepth);
+        ImageJUtils.forEachIndexedZCTSlice(inputImage, (ip, index) -> {
+            ImageProcessor processor;
+
+            if(bitDepth == 16)
+                processor= BinaryImages.distanceMap(ip, chamferWeights.getShortWeights(), normalize);
+            else
+                processor= BinaryImages.distanceMap(ip, chamferWeights.getFloatWeights(), normalize);
+
+            stack.setProcessor(processor, index.zeroSliceIndexToOneStackIndex(inputImage));
+        }, progressInfo);
+        ImagePlus outputImage = new ImagePlus("CDM", stack);
         outputImage.setDimensions(inputImage.getNChannels(), inputImage.getNSlices(), inputImage.getNFrames());
         dataBatch.addOutputData(getFirstOutputSlot(), JIPipe.createData(outputType.getInfo().getDataClass(), outputImage), progressInfo);
     }

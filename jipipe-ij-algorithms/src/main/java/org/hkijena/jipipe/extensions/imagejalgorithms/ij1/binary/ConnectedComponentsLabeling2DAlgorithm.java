@@ -82,7 +82,7 @@ public class ConnectedComponentsLabeling2DAlgorithm extends JIPipeSimpleIteratin
 
     @JIPipeDocumentation(name = "Output type", description = "Determines the output label type. You can choose between an 8-bit, 16-bit, and 32-bit label.")
     @JIPipeParameter("output-type")
-    @JIPipeDataParameterSettings(dataClassFilter = LabelClassFilter.class)
+    @JIPipeDataParameterSettings(dataClassFilter = Image_8_16_32_Filter.class)
     public JIPipeDataInfoRef getOutputType() {
         return outputType;
     }

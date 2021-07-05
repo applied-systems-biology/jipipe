@@ -15,6 +15,8 @@ package org.hkijena.jipipe.extensions.imagejalgorithms;
 
 import com.google.common.collect.ImmutableMap;
 import ij.process.AutoThresholder;
+import inra.ijpb.binary.ChamferWeights;
+import inra.ijpb.binary.ChamferWeights3D;
 import inra.ijpb.morphology.Morphology;
 import inra.ijpb.morphology.Strel;
 import org.hkijena.jipipe.JIPipeImageJUpdateSiteDependency;
@@ -30,12 +32,7 @@ import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.analyze.FindParticles2
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.analyze.ImageStatisticsAlgorithm;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.analyze.ImageStatisticsExpressionAlgorithm;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.background.RollingBallBackgroundEstimator2DAlgorithm;
-import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.binary.BitwiseLogicalOperationAlgorithm;
-import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.binary.ConnectedComponentsLabeling2DAlgorithm;
-import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.binary.ConnectedComponentsLabeling3DAlgorithm;
-import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.binary.DistanceTransformWatershed2DAlgorithm;
-import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.binary.UltimateErodedPoints2DAlgorithm;
-import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.binary.Voronoi2DAlgorithm;
+import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.binary.*;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.blur.BoxFilter2DAlgorithm;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.blur.BoxFilter3DAlgorithm;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.blur.GaussianBlur2DAlgorithm;
@@ -584,6 +581,7 @@ public class ImageJAlgorithmsExtension extends JIPipePrepackagedDefaultJavaExten
         registerNodeType("ij1-binary-bitwise", BitwiseLogicalOperationAlgorithm.class, UIUtils.getIconURLFromResources("actions/object-tweak-paint.png"));
         registerNodeType("ij1-binary-connected-component-labeling-2d", ConnectedComponentsLabeling2DAlgorithm.class, UIUtils.getIconURLFromResources("actions/object-tweak-jitter-color.png"));
         registerNodeType("ij1-binary-connected-component-labeling-3d", ConnectedComponentsLabeling3DAlgorithm.class, UIUtils.getIconURLFromResources("actions/object-tweak-jitter-color.png"));
+        registerNodeType("ij1-binary-binarize", BinarizeAlgorithm.class, UIUtils.getIconURLFromResources("actions/segment.png"));
     }
 
     private void registerMorphologyAlgorithms() {
@@ -629,6 +627,12 @@ public class ImageJAlgorithmsExtension extends JIPipePrepackagedDefaultJavaExten
         registerNodeType("ij1-math-generate-missing-from-expression", GenerateMissingImageFromMathExpression2D.class, UIUtils.getIconURLFromResources("actions/insert-math-expression.png"));
         registerNodeType("ij1-math-generate-missing-zero-image", GenerateMissingZeroImage.class, UIUtils.getIconURLFromResources("actions/add.png"));
         registerNodeType("ij1-generate-zero-image", GenerateZeroImage.class, UIUtils.getIconURLFromResources("data-types/imgplus.png"));
+
+        registerNodeType("ij-math-chamfer-distance-map-2d", ChamferDistanceMap2DAlgorithm.class, UIUtils.getIconURLFromResources("actions/insert-math-expression.png"));
+        registerNodeType("ij-math-chamfer-distance-map-3d", ChamferDistanceMap3DAlgorithm.class, UIUtils.getIconURLFromResources("actions/insert-math-expression.png"));
+
+        registerEnumParameterType("ij-math-chamfer-distance-map-2d:weights", ChamferWeights.class, "Chamfer weights (2D)", "Predefined weights for the Chamfer distance map");
+        registerEnumParameterType("ij-math-chamfer-distance-map-23:weights", ChamferWeights3D.class, "Chamfer weights (3D)", "Predefined weights for the Chamfer distance map");
 
         registerEnumParameterType("ij1-math-math2d:transformation", ApplyMath2DAlgorithm.Transformation.class,
                 "Transformation", "Available transformations");
