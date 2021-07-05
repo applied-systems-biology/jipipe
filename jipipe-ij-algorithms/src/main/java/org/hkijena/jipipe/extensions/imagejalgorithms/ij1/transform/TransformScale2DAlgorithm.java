@@ -51,7 +51,6 @@ public class TransformScale2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     private InterpolationMethod interpolationMethod = InterpolationMethod.Bilinear;
     private OptionalIntModificationParameter xAxis = new OptionalIntModificationParameter();
     private OptionalIntModificationParameter yAxis = new OptionalIntModificationParameter();
-    private boolean useAveraging = true;
     private ScaleMode scaleMode = ScaleMode.Stretch;
     private Anchor anchor = Anchor.CenterCenter;
     private Color background = Color.BLACK;
@@ -81,7 +80,6 @@ public class TransformScale2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         this.interpolationMethod = other.interpolationMethod;
         this.xAxis = new OptionalIntModificationParameter(other.xAxis);
         this.yAxis = new OptionalIntModificationParameter(other.yAxis);
-        this.useAveraging = other.useAveraging;
         this.scaleMode = other.scaleMode;
         this.anchor = other.anchor;
         this.background = other.background;
@@ -117,14 +115,14 @@ public class TransformScale2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
             int finalSx = sx;
             int finalSy = sy;
             ImageJUtils.forEachIndexedZCTSlice(img, (imp, index) -> {
-                ImageProcessor resized = scaleProcessor(imp, finalSx, finalSy, interpolationMethod, useAveraging, scaleMode, anchor, background);
+                ImageProcessor resized = scaleProcessor(imp, finalSx, finalSy, interpolationMethod, interpolationMethod != InterpolationMethod.None, scaleMode, anchor, background);
                 result.setProcessor(resized, index.zeroSliceIndexToOneStackIndex(img));
             }, progressInfo);
             ImagePlusData resized = new ImagePlusData(new ImagePlus("Resized", result));
             resized.getImage().setDimensions(img.getNChannels(), img.getNSlices(), img.getNFrames());
             dataBatch.addOutputData(getFirstOutputSlot(), resized, progressInfo);
         } else {
-            ImageProcessor resized = scaleProcessor(img.getProcessor(), sx, sy, interpolationMethod, useAveraging, scaleMode, anchor, background);
+            ImageProcessor resized = scaleProcessor(img.getProcessor(), sx, sy, interpolationMethod, interpolationMethod != InterpolationMethod.None, scaleMode, anchor, background);
             ImagePlus result = new ImagePlus("Resized", resized);
             dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusData(result), progressInfo);
         }
@@ -196,20 +194,6 @@ public class TransformScale2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     @JIPipeParameter("scale-mode")
     public void setScaleMode(ScaleMode scaleMode) {
         this.scaleMode = scaleMode;
-    }
-
-    @JIPipeDocumentation(name = "Use averaging", description = "True means that the averaging occurs to avoid " +
-            "aliasing artifacts; the kernel shape for averaging is determined by " +
-            "the interpolationMethod. False if subsampling without any averaging " +
-            "should be used on downsizing. Has no effect on upsizing.")
-    @JIPipeParameter("use-averaging")
-    public boolean isUseAveraging() {
-        return useAveraging;
-    }
-
-    @JIPipeParameter("use-averaging")
-    public void setUseAveraging(boolean useAveraging) {
-        this.useAveraging = useAveraging;
     }
 
     public static ImageProcessor scaleProcessor(ImageProcessor imp, int width, int height, InterpolationMethod interpolationMethod, boolean useAveraging, ScaleMode scaleMode, Anchor location, Color background) {

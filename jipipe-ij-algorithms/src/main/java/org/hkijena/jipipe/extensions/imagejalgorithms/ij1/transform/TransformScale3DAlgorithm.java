@@ -45,7 +45,6 @@ public class TransformScale3DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     private OptionalIntModificationParameter xAxis = new OptionalIntModificationParameter();
     private OptionalIntModificationParameter yAxis = new OptionalIntModificationParameter();
     private OptionalIntModificationParameter zAxis = new OptionalIntModificationParameter();
-    private boolean useAveraging = true;
     private TransformScale2DAlgorithm scale2DAlgorithm =
             JIPipe.createNode("ij1-transform-scale2d", TransformScale2DAlgorithm.class);
 
@@ -78,7 +77,6 @@ public class TransformScale3DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         this.xAxis = new OptionalIntModificationParameter(other.xAxis);
         this.yAxis = new OptionalIntModificationParameter(other.yAxis);
         this.zAxis = new OptionalIntModificationParameter(other.zAxis);
-        this.useAveraging = other.useAveraging;
     }
 
     @Override
@@ -177,19 +175,5 @@ public class TransformScale3DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     @JIPipeParameter("z-axis")
     public void setzAxis(OptionalIntModificationParameter zAxis) {
         this.zAxis = zAxis;
-    }
-
-    @JIPipeDocumentation(name = "Use averaging", description = "True means that the averaging occurs to avoid " +
-            "aliasing artifacts; the kernel shape for averaging is determined by " +
-            "the interpolationMethod. False if subsampling without any averaging " +
-            "should be used on downsizing. Has no effect on upsizing.")
-    @JIPipeParameter("use-averaging")
-    public boolean isUseAveraging() {
-        return useAveraging;
-    }
-
-    @JIPipeParameter("use-averaging")
-    public void setUseAveraging(boolean useAveraging) {
-        this.useAveraging = useAveraging;
     }
 }
