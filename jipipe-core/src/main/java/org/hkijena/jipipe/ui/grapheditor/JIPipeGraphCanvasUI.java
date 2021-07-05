@@ -295,6 +295,7 @@ public class JIPipeGraphCanvasUI extends JIPipeWorkbenchPanel implements MouseMo
                     addToSelection(selected);
                 }
             }
+            scheduledSelection.clear();
         }
     }
 
