@@ -507,8 +507,14 @@ public class ParameterPanel extends FormPanel implements Contextual {
     public static MarkdownDocument generateParameterDocumentation(JIPipeParameterAccess access, JIPipeParameterTree tree) {
         StringBuilder markdownString = new StringBuilder();
         markdownString.append("# ").append(access.getName()).append("\n\n");
-        markdownString.append("<table><tr>");
-        markdownString.append("<td><img src=\"").append(ResourceUtils.getPluginResource("icons/actions/dialog-xml-editor.png")).append("\" /></td>");
+        markdownString.append("<table>");
+
+        if(access.isImportant()) {
+            markdownString.append("<tr><td><img src=\"").append(ResourceUtils.getPluginResource("icons/emblems/important.png")).append("\" /></td>");
+            markdownString.append("<td><strong>Important parameter</strong>: The developer marked this parameter as especially important</td></tr>\n\n");
+        }
+
+        markdownString.append("<tr><td><img src=\"").append(ResourceUtils.getPluginResource("icons/actions/dialog-xml-editor.png")).append("\" /></td>");
         markdownString.append("<td><strong>Unique identifier</strong>: <code>");
         markdownString.append(HtmlEscapers.htmlEscaper().escape(tree != null ? tree.getUniqueKey(access) : access.getKey())).append("</code></td></tr>\n\n");
 

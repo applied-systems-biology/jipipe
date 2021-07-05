@@ -158,8 +158,14 @@ public class JIPipeAlgorithmCompendiumUI extends JIPipeCompendiumUI<JIPipeNodeIn
 
     private void generateParameterDocumentation(JIPipeParameterAccess access, StringBuilder builder) {
         builder.append("### ").append(access.getName()).append("\n\n");
-        builder.append("<table><tr>");
-        builder.append("<td><img src=\"").append(ResourceUtils.getPluginResource("icons/actions/dialog-xml-editor.png")).append("\" /></td>");
+        builder.append("<table>");
+
+        if(access.isImportant()) {
+            builder.append("<tr><td><img src=\"").append(ResourceUtils.getPluginResource("icons/emblems/important.png")).append("\" /></td>");
+            builder.append("<td><strong>Important parameter</strong>: The developer marked this parameter as especially important</td></tr>\n\n");
+        }
+
+        builder.append("<tr><td><img src=\"").append(ResourceUtils.getPluginResource("icons/actions/dialog-xml-editor.png")).append("\" /></td>");
         builder.append("<td><strong>Unique identifier</strong>: <code>");
         builder.append(HtmlEscapers.htmlEscaper().escape(access.getKey())).append("</code></td></tr>\n\n");
 
