@@ -159,7 +159,7 @@ public class CannyEdgeDetectorAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         ImageStack resultStack = new ImageStack(img.getWidth(), img.getHeight(), img.getStackSize());
         ImageJUtils.forEachIndexedZCTSlice(img, (ip, index) -> {
             ImageProcessor threshold = process(new ImagePlus("Slice", ip));
-            resultStack.setProcessor(threshold, index.getStackIndex(img));
+            resultStack.setProcessor(threshold, index.zeroSliceIndexToOneStackIndex(img));
         }, progressInfo);
 
         ImagePlus resultImage = new ImagePlus("Canny", resultStack);

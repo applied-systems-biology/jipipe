@@ -160,7 +160,7 @@ public class FindParticles2D extends JIPipeSimpleIteratingAlgorithm {
                 // Override for "Slice"
                 if (statisticsParameters.getValues().contains(Measurement.StackPosition)) {
                     for (int i = 0; i < table.getCounter(); i++) {
-                        table.setValue("Slice", i, index.getStackIndex(inputData.getImage()));
+                        table.setValue("Slice", i, index.zeroSliceIndexToOneStackIndex(inputData.getImage()));
                         table.setValue("SliceZ", i, index.getZ());
                         table.setValue("SliceC", i, index.getC());
                         table.setValue("SliceT", i, index.getT());
@@ -205,7 +205,7 @@ public class FindParticles2D extends JIPipeSimpleIteratingAlgorithm {
                 // Override for "Slice"
                 if (statisticsParameters.getValues().contains(Measurement.StackPosition)) {
                     for (int i = 0; i < table.getCounter(); i++) {
-                        table.setValue("Slice", i, index.getStackIndex(inputData.getImage()));
+                        table.setValue("Slice", i, index.zeroSliceIndexToOneStackIndex(inputData.getImage()));
                         table.setValue("SliceZ", i, index.getZ());
                         table.setValue("SliceC", i, index.getC());
                         table.setValue("SliceT", i, index.getT());

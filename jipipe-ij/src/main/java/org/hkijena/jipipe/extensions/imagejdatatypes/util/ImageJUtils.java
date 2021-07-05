@@ -293,7 +293,7 @@ public class ImageJUtils {
                 int c = Math.min(mask.getNChannels() - 1, index.getC());
                 int t = Math.min(mask.getNFrames() - 1, index.getT());
                 ImageProcessor maskProcessor = ImageJUtils.getSliceZero(mask, z, c, t);
-                stack.setProcessor(maskProcessor, getStackIndexZero(c, z, z, img));
+                stack.setProcessor(maskProcessor, zeroSliceIndexToOneStackIndex(c, z, z, img));
             }, new JIPipeProgressInfo());
             ImagePlus newMask = new ImagePlus(mask.getTitle(), stack);
             newMask.setDimensions(img.getNChannels(), img.getNSlices(), img.getNFrames());
@@ -436,8 +436,8 @@ public class ImageJUtils {
      * @param imagePlus reference image
      * @return one-based stack index
      */
-    public static int getStackIndex(int channel, int slice, int frame, ImagePlus imagePlus) {
-        return getStackIndex(channel, slice, frame, imagePlus.getNChannels(), imagePlus.getNSlices(), imagePlus.getNFrames());
+    public static int oneSliceIndexToOneStackIndex(int channel, int slice, int frame, ImagePlus imagePlus) {
+        return oneSliceIndexToOneStackIndex(channel, slice, frame, imagePlus.getNChannels(), imagePlus.getNSlices(), imagePlus.getNFrames());
     }
 
     /**
@@ -449,8 +449,8 @@ public class ImageJUtils {
      * @param imagePlus reference image
      * @return one-based stack index
      */
-    public static int getStackIndexZero(int channel, int slice, int frame, ImagePlus imagePlus) {
-        return getStackIndex(channel, slice, frame, imagePlus.getNChannels(), imagePlus.getNSlices(), imagePlus.getNFrames());
+    public static int zeroSliceIndexToOneStackIndex(int channel, int slice, int frame, ImagePlus imagePlus) {
+        return oneSliceIndexToOneStackIndex(channel, slice, frame, imagePlus.getNChannels(), imagePlus.getNSlices(), imagePlus.getNFrames());
     }
 
     /**
@@ -534,7 +534,7 @@ public class ImageJUtils {
      * @param nFrames   number of frames
      * @return one-based stack index
      */
-    public static int getStackIndex(int channel, int slice, int frame, int nChannels, int nSlices, int nFrames) {
+    public static int oneSliceIndexToOneStackIndex(int channel, int slice, int frame, int nChannels, int nSlices, int nFrames) {
         if (channel < 1) {
             throw new IndexOutOfBoundsException("Channel < 1");
         }
@@ -567,8 +567,8 @@ public class ImageJUtils {
      * @param nFrames   number of frames
      * @return one-based stack index
      */
-    public static int getStackIndexZero(int channel, int slice, int frame, int nChannels, int nSlices, int nFrames) {
-        return getStackIndex(channel + 1, slice + 1, frame + 1, nChannels, nSlices, nFrames);
+    public static int zeroSliceIndexToOneStackIndex(int channel, int slice, int frame, int nChannels, int nSlices, int nFrames) {
+        return oneSliceIndexToOneStackIndex(channel + 1, slice + 1, frame + 1, nChannels, nSlices, nFrames);
     }
 
     /**
@@ -608,7 +608,7 @@ public class ImageJUtils {
             int t = mappingT.get(entry.getKey().getT()) + 1;
             int z = mappingZ.get(entry.getKey().getZ()) + 1;
             int c = mappingC.get(entry.getKey().getC()) + 1;
-            int index = getStackIndex(c, z, t, distinctC.size(), distinctZ.size(), distinctT.size()) - 1;
+            int index = oneSliceIndexToOneStackIndex(c, z, t, distinctC.size(), distinctZ.size(), distinctT.size()) - 1;
             array[index] = entry.getValue();
         }
 

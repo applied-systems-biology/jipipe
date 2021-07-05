@@ -269,7 +269,7 @@ public class ImageStatisticsAlgorithm extends JIPipeIteratingAlgorithm {
             case InsideMask: {
                 ImagePlus mask = dataBatch.getInputData("Mask", ImagePlusData.class, progressInfo).getImage();
                 if (mask.getStackSize() > 1) {
-                    return mask.getStack().getProcessor(sliceIndex.getStackIndex(mask));
+                    return mask.getStack().getProcessor(sliceIndex.zeroSliceIndexToOneStackIndex(mask));
                 } else {
                     return mask.getProcessor();
                 }
@@ -278,7 +278,7 @@ public class ImageStatisticsAlgorithm extends JIPipeIteratingAlgorithm {
                 ImagePlus mask = dataBatch.getInputData("Mask", ImagePlusData.class, progressInfo).getImage();
                 ImageProcessor processor;
                 if (mask.getStackSize() > 1) {
-                    processor = mask.getStack().getProcessor(sliceIndex.getStackIndex(mask)).duplicate();
+                    processor = mask.getStack().getProcessor(sliceIndex.zeroSliceIndexToOneStackIndex(mask)).duplicate();
                 } else {
                     processor = mask.getProcessor().duplicate();
                 }

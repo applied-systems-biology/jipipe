@@ -3,7 +3,9 @@ package org.hkijena.jipipe.extensions.cellpose.algorithms;
 import ij.IJ;
 import ij.ImagePlus;
 import ij.process.ImageProcessor;
+import inra.ijpb.binary.BinaryImages;
 import org.apache.commons.io.FileUtils;
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
@@ -23,9 +25,15 @@ import org.hkijena.jipipe.extensions.cellpose.CellPoseSettings;
 import org.hkijena.jipipe.extensions.cellpose.datatypes.CellPoseModelData;
 import org.hkijena.jipipe.extensions.cellpose.datatypes.CellPoseSizeModelData;
 import org.hkijena.jipipe.extensions.expressions.DataAnnotationQueryExpression;
+import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.Neighborhood2D;
+import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.binary.ConnectedComponentsLabeling2DAlgorithm;
+import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.binary.ConnectedComponentsLabeling3DAlgorithm;
+import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d3.greyscale.ImagePlus3DGreyscale16UData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d3.greyscale.ImagePlus3DGreyscaleData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d3.greyscale.ImagePlus3DGreyscaleMaskData;
+import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscale16UData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
+import org.hkijena.jipipe.extensions.parameters.references.JIPipeDataInfoRef;
 import org.hkijena.jipipe.extensions.python.OptionalPythonEnvironment;
 import org.hkijena.jipipe.extensions.python.PythonUtils;
 import org.hkijena.jipipe.utils.ParameterUtils;
@@ -43,8 +51,8 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 @JIPipeDocumentation(name = "Cellpose training", description = "Trains a model with Cellpose. You start from an existing model or train from scratch. " +
-        "Incoming images are automatically converted to greyscale. Only 2D or 3D images are supported. For this node to work, you need to annotate a label data column to each raw data input. " +
-        "To do this, you can use the node 'Annotate with data'.")
+        "Incoming images are automatically converted to greyscale. Only 2D or 3D images are supported. For this node to work, you need to annotate a greyscale 16-bit or 8-bit label image column to each raw data input. " +
+        "To do this, you can use the node 'Annotate with data'. By default, JIPipe will ensure that all connected components of this image are assigned a unique component. You can disable this feature via the parameters.")
 @JIPipeInputSlot(value = ImagePlus3DGreyscaleData.class, slotName = "Training data", autoCreate = true)
 @JIPipeInputSlot(value = ImagePlus3DGreyscaleData.class, slotName = "Test data", autoCreate = true, optional = true)
 @JIPipeInputSlot(value = CellPoseModelData.class)
@@ -66,6 +74,7 @@ public class CellPoseTrainingAlgorithm extends JIPipeMergingAlgorithm {
     private boolean trainSizeModel = false;
     private OptionalPythonEnvironment overrideEnvironment = new OptionalPythonEnvironment();
     private DataAnnotationQueryExpression labelDataAnnotation = new DataAnnotationQueryExpression("Label");
+    private boolean generateConnectedComponents = true;
 
     public CellPoseTrainingAlgorithm(JIPipeNodeInfo info) {
         super(info);
@@ -88,6 +97,7 @@ public class CellPoseTrainingAlgorithm extends JIPipeMergingAlgorithm {
         this.overrideEnvironment = new OptionalPythonEnvironment(other.overrideEnvironment);
         this.trainSizeModel = other.trainSizeModel;
         this.labelDataAnnotation = new DataAnnotationQueryExpression(other.labelDataAnnotation);
+        this.generateConnectedComponents = other.generateConnectedComponents;
         updateSlots();
     }
 
@@ -114,6 +124,18 @@ public class CellPoseTrainingAlgorithm extends JIPipeMergingAlgorithm {
                 slotConfiguration.addSlot("Size model", new JIPipeDataSlotInfo(CellPoseSizeModelData.class, JIPipeSlotType.Output, null), false);
             }
         }
+    }
+
+    @JIPipeDocumentation(name = "Generate connected components", description = "If enabled, JIPipe will apply a connected component labeling to the annotated masks. If disabled, Cellpose is provided with " +
+            "the labels as-is, which might result in issues with the training.")
+    @JIPipeParameter("generate-connected-components")
+    public boolean isGenerateConnectedComponents() {
+        return generateConnectedComponents;
+    }
+
+    @JIPipeParameter("generate-connected-components")
+    public void setGenerateConnectedComponents(boolean generateConnectedComponents) {
+        this.generateConnectedComponents = generateConnectedComponents;
     }
 
     @JIPipeDocumentation(name = "Train size model", description = "If enabled, also train a size model")
@@ -319,8 +341,10 @@ public class CellPoseTrainingAlgorithm extends JIPipeMergingAlgorithm {
             ImagePlus raw = getInputSlot("Training data")
                     .getData(row, ImagePlus3DGreyscaleData.class, rowProgress).getImage();
             ImagePlus mask = labelDataAnnotation.queryFirst(getInputSlot("Training data").getDataAnnotations(row))
-                    .getData(ImagePlus3DGreyscaleMaskData.class, progressInfo).getImage();
+                    .getData(ImagePlus3DGreyscale16UData.class, progressInfo).getImage();
             mask = ImageJUtils.getNormalizedMask(raw, mask);
+            if(generateConnectedComponents)
+                mask = applyConnectedComponents(mask, rowProgress.resolveAndLog("Connected components"));
             dataIs3D |= raw.getNDimensions() > 2 && enable3DSegmentation;
 
             saveImagesToPath(trainingDir, imageCounter, rowProgress, raw, mask);
@@ -330,7 +354,9 @@ public class CellPoseTrainingAlgorithm extends JIPipeMergingAlgorithm {
             ImagePlus raw = getInputSlot("Test data")
                     .getData(row, ImagePlus3DGreyscaleData.class, rowProgress).getImage();
             ImagePlus mask = labelDataAnnotation.queryFirst(getInputSlot("Test data").getDataAnnotations(row))
-                    .getData(ImagePlus3DGreyscaleMaskData.class, progressInfo).getImage();
+                    .getData(ImagePlus3DGreyscale16UData.class, progressInfo).getImage();
+            if(generateConnectedComponents)
+                mask = applyConnectedComponents(mask, rowProgress.resolveAndLog("Connected components"));
             mask = ImageJUtils.getNormalizedMask(raw, mask);
 
             saveImagesToPath(testDir, imageCounter, rowProgress, raw, mask);
@@ -445,6 +471,26 @@ public class CellPoseTrainingAlgorithm extends JIPipeMergingAlgorithm {
 
         if (cleanUpAfterwards) {
             PathUtils.deleteDirectoryRecursively(workDirectory, progressInfo.resolve("Cleanup"));
+        }
+    }
+
+    private ImagePlus applyConnectedComponents(ImagePlus mask, JIPipeProgressInfo progressInfo) {
+        progressInfo.log("Apply MorphoLibJ connected components labeling (8-connectivity, 16-bit) to " + mask);
+        if(enable3DSegmentation) {
+            ConnectedComponentsLabeling3DAlgorithm algorithm = JIPipe.createNode(ConnectedComponentsLabeling3DAlgorithm.class);
+            algorithm.setConnectivity(Neighborhood2D.EightConnected);
+            algorithm.setOutputType(new JIPipeDataInfoRef(ImagePlusGreyscale16UData.class));
+            algorithm.getFirstInputSlot().addData(new ImagePlus3DGreyscaleMaskData(mask), progressInfo);
+            algorithm.run(progressInfo);
+            return algorithm.getFirstOutputSlot().getData(0, ImagePlusGreyscale16UData.class, progressInfo).getImage();
+        }
+        else {
+            ConnectedComponentsLabeling2DAlgorithm algorithm = JIPipe.createNode(ConnectedComponentsLabeling2DAlgorithm.class);
+            algorithm.setConnectivity(Neighborhood2D.EightConnected);
+            algorithm.setOutputType(new JIPipeDataInfoRef(ImagePlusGreyscale16UData.class));
+            algorithm.getFirstInputSlot().addData(new ImagePlus3DGreyscaleMaskData(mask), progressInfo);
+            algorithm.run(progressInfo);
+            return algorithm.getFirstOutputSlot().getData(0, ImagePlusGreyscale16UData.class, progressInfo).getImage();
         }
     }
 

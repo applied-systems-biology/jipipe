@@ -79,7 +79,7 @@ public class StackCombinerAlgorithm extends JIPipeIteratingAlgorithm {
         ImageStack stack = new ImageStack(target.getWidth(), target.getHeight(), src.getStackSize() + target.getStackSize());
         copyOriginalImage(progressInfo, target, nChannels, nFrames, nSlices, stack);
         ImageJUtils.forEachIndexedZCTSlice(src, (ip, index) -> {
-            int targetIndex = ImageJUtils.getStackIndex(index.getC() + 1,
+            int targetIndex = ImageJUtils.oneSliceIndexToOneStackIndex(index.getC() + 1,
                     index.getZ() + 1,
                     index.getT() + target.getNFrames() + 1,
                     nChannels,
@@ -113,7 +113,7 @@ public class StackCombinerAlgorithm extends JIPipeIteratingAlgorithm {
         ImageStack stack = new ImageStack(target.getWidth(), target.getHeight(), src.getStackSize() + target.getStackSize());
         copyOriginalImage(progressInfo, target, nChannels, nFrames, nSlices, stack);
         ImageJUtils.forEachIndexedZCTSlice(src, (ip, index) -> {
-            int targetIndex = ImageJUtils.getStackIndex(index.getC() + 1,
+            int targetIndex = ImageJUtils.oneSliceIndexToOneStackIndex(index.getC() + 1,
                     index.getZ() + target.getNSlices() + 1,
                     index.getT() + 1,
                     nChannels,
@@ -147,7 +147,7 @@ public class StackCombinerAlgorithm extends JIPipeIteratingAlgorithm {
         ImageStack stack = new ImageStack(target.getWidth(), target.getHeight(), src.getStackSize() + target.getStackSize());
         copyOriginalImage(progressInfo, target, nChannels, nFrames, nSlices, stack);
         ImageJUtils.forEachIndexedZCTSlice(src, (ip, index) -> {
-            int targetIndex = ImageJUtils.getStackIndex(index.getC() + target.getNChannels() + 1,
+            int targetIndex = ImageJUtils.oneSliceIndexToOneStackIndex(index.getC() + target.getNChannels() + 1,
                     index.getZ() + 1,
                     index.getT() + 1,
                     nChannels,
@@ -162,7 +162,7 @@ public class StackCombinerAlgorithm extends JIPipeIteratingAlgorithm {
 
     private void copyOriginalImage(JIPipeProgressInfo progressInfo, ImagePlus target, int nChannels, int nFrames, int nSlices, ImageStack stack) {
         ImageJUtils.forEachIndexedZCTSlice(target, (ip, index) -> {
-            int targetIndex = ImageJUtils.getStackIndex(index.getC() + 1,
+            int targetIndex = ImageJUtils.oneSliceIndexToOneStackIndex(index.getC() + 1,
                     index.getZ() + 1,
                     index.getT() + 1,
                     nChannels,

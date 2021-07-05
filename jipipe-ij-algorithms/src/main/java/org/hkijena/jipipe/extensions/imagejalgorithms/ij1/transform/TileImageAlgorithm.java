@@ -100,7 +100,7 @@ public class TileImageAlgorithm extends JIPipeSimpleIteratingAlgorithm {
                     ip.setRoi(roi);
                     ImageProcessor crop = ip.crop();
                     ip.setRoi((Roi) null);
-                    tileStack.setProcessor(crop, index.getStackIndex(finalImg));
+                    tileStack.setProcessor(crop, index.zeroSliceIndexToOneStackIndex(finalImg));
                 }, tileProgress);
 
                 ImagePlus tileImage = new ImagePlus("Tile " + x + ", " + y, tileStack);

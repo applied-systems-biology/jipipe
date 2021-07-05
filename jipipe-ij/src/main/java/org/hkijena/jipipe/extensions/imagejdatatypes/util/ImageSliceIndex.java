@@ -109,47 +109,47 @@ public class ImageSliceIndex {
     }
 
     /**
-     * Interprets this index as zero-based index and returns the appropriate stack index
-     *
-     * @param imagePlus the reference image
-     * @return the one-based stack index
-     */
-    public int getStackIndexOne(ImagePlus imagePlus) {
-        return ImageJUtils.getStackIndex(c, z, t, imagePlus);
-    }
-
-    /**
      * Interprets this index as one-based index and returns the appropriate stack index
      *
      * @param imagePlus the reference image
      * @return the one-based stack index
      */
-    public int getStackIndex(ImagePlus imagePlus) {
-        return ImageJUtils.getStackIndex(c + 1, z + 1, t + 1, imagePlus);
+    public int oneSliceIndexToOneStackIndex(ImagePlus imagePlus) {
+        return ImageJUtils.oneSliceIndexToOneStackIndex(c, z, t, imagePlus);
     }
 
     /**
-     * Interprets this index as zero-based index and returns the appropriate stack index
+     * Converts this zero-based index into a one-based index and returns a one-based stack index
+     *
+     * @param imagePlus the reference image
+     * @return the one-based stack index
+     */
+    public int zeroSliceIndexToOneStackIndex(ImagePlus imagePlus) {
+        return ImageJUtils.oneSliceIndexToOneStackIndex(c + 1, z + 1, t + 1, imagePlus);
+    }
+
+    /**
+     * Interprets this index as one-based index and returns the appropriate stack index
      *
      * @param nChannels number of channels
      * @param nSlices   number of slices
      * @param nFrames   number of frames
      * @return the one-based stack index
      */
-    public int getStackIndexOne(int nChannels, int nSlices, int nFrames) {
-        return ImageJUtils.getStackIndex(c, z, t, nChannels, nSlices, nFrames);
+    public int oneSliceIndexToOneStackIndex(int nChannels, int nSlices, int nFrames) {
+        return ImageJUtils.oneSliceIndexToOneStackIndex(c, z, t, nChannels, nSlices, nFrames);
     }
 
     /**
-     * Interprets this index as zero-based index and returns the appropriate stack index
+     * Converts this zero-based index into a one-based index and returns a one-based stack index
      *
      * @param nChannels number of channels
      * @param nSlices   number of slices
      * @param nFrames   number of frames
      * @return the one-based stack index
      */
-    public int getStackIndex(int nChannels, int nSlices, int nFrames) {
-        return ImageJUtils.getStackIndex(c + 1, z + 1, t + 1, nChannels, nSlices, nFrames);
+    public int zeroSliceIndexToOneStackIndex(int nChannels, int nSlices, int nFrames) {
+        return ImageJUtils.oneSliceIndexToOneStackIndex(c + 1, z + 1, t + 1, nChannels, nSlices, nFrames);
     }
 
     public ImageSliceIndex zeroToOne() {

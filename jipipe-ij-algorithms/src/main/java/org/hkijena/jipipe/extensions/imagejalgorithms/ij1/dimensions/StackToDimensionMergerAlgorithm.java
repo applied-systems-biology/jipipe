@@ -156,7 +156,7 @@ public class StackToDimensionMergerAlgorithm extends JIPipeIteratingAlgorithm {
                 JIPipeProgressInfo slotProgress = progressInfo.resolveAndLog("Slot", i, inputImages.size());
                 final int z = i;
                 ImageJUtils.forEachIndexedZCTSlice(inputImages.get(i), (ip, index) -> {
-                    int targetStackIndex = ImageJUtils.getStackIndexZero(index.getC(), z, index.getT(), numC, inputImages.size(), numT);
+                    int targetStackIndex = ImageJUtils.zeroSliceIndexToOneStackIndex(index.getC(), z, index.getT(), numC, inputImages.size(), numT);
                     stack.setProcessor(ip, targetStackIndex);
                 }, slotProgress);
             }
@@ -177,7 +177,7 @@ public class StackToDimensionMergerAlgorithm extends JIPipeIteratingAlgorithm {
                 final int c = i;
                 int finalI = i;
                 ImageJUtils.forEachIndexedZCTSlice(inputImages.get(i), (ip, index) -> {
-                    int targetStackIndex = ImageJUtils.getStackIndexZero(c, index.getZ(), index.getT(), inputImages.size(), numZ, numT);
+                    int targetStackIndex = ImageJUtils.zeroSliceIndexToOneStackIndex(c, index.getZ(), index.getT(), inputImages.size(), numZ, numT);
                     System.out.println(finalI + "# " + index + " -> " + targetStackIndex + " in " + (inputImages.size() * numZ * numT));
                     stack.setProcessor(ip, targetStackIndex);
                 }, slotProgress);
@@ -198,7 +198,7 @@ public class StackToDimensionMergerAlgorithm extends JIPipeIteratingAlgorithm {
                 JIPipeProgressInfo slotProgress = progressInfo.resolveAndLog("Slot", i, inputImages.size());
                 final int t = i;
                 ImageJUtils.forEachIndexedZCTSlice(inputImages.get(i), (ip, index) -> {
-                    int targetStackIndex = ImageJUtils.getStackIndexZero(index.getC(), index.getZ(), t, numC, numZ, inputImages.size());
+                    int targetStackIndex = ImageJUtils.zeroSliceIndexToOneStackIndex(index.getC(), index.getZ(), t, numC, numZ, inputImages.size());
                     stack.setProcessor(ip, targetStackIndex);
                 }, slotProgress);
             }

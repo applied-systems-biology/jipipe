@@ -17,6 +17,9 @@ public enum Neighborhood2D {
     FourConnected,
     EightConnected;
 
+    public int getNativeValue() {
+        return this == FourConnected ? 4 : 8;
+    }
 
     @Override
     public String toString() {

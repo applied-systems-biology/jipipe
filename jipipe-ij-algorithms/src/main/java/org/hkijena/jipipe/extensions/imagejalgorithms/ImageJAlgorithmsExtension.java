@@ -31,6 +31,8 @@ import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.analyze.ImageStatistic
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.analyze.ImageStatisticsExpressionAlgorithm;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.background.RollingBallBackgroundEstimator2DAlgorithm;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.binary.BitwiseLogicalOperationAlgorithm;
+import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.binary.ConnectedComponentsLabeling2DAlgorithm;
+import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.binary.ConnectedComponentsLabeling3DAlgorithm;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.binary.DistanceTransformWatershed2DAlgorithm;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.binary.UltimateErodedPoints2DAlgorithm;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.binary.Voronoi2DAlgorithm;
@@ -580,6 +582,8 @@ public class ImageJAlgorithmsExtension extends JIPipePrepackagedDefaultJavaExten
         registerNodeType("ij1-binary-voronoi2d", Voronoi2DAlgorithm.class, UIUtils.getIconURLFromResources("actions/insert-math-expression.png"));
         registerNodeType("ij1-binary-uep2d", UltimateErodedPoints2DAlgorithm.class, UIUtils.getIconURLFromResources("actions/insert-math-expression.png"));
         registerNodeType("ij1-binary-bitwise", BitwiseLogicalOperationAlgorithm.class, UIUtils.getIconURLFromResources("actions/object-tweak-paint.png"));
+        registerNodeType("ij1-binary-connected-component-labeling-2d", ConnectedComponentsLabeling2DAlgorithm.class, UIUtils.getIconURLFromResources("actions/object-tweak-jitter-color.png"));
+        registerNodeType("ij1-binary-connected-component-labeling-3d", ConnectedComponentsLabeling3DAlgorithm.class, UIUtils.getIconURLFromResources("actions/object-tweak-jitter-color.png"));
     }
 
     private void registerMorphologyAlgorithms() {

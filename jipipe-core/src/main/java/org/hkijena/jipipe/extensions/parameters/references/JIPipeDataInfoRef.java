@@ -25,6 +25,7 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import org.hkijena.jipipe.api.JIPipeValidatable;
 import org.hkijena.jipipe.api.JIPipeIssueReport;
+import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataInfo;
 
 import java.io.IOException;
@@ -71,6 +72,10 @@ public class JIPipeDataInfoRef implements JIPipeValidatable {
         if (other != null) {
             this.info = other.info;
         }
+    }
+
+    public JIPipeDataInfoRef(Class<? extends JIPipeData> klass) {
+        this(JIPipeDataInfo.getInstance(klass));
     }
 
     public JIPipeDataInfo getInfo() {

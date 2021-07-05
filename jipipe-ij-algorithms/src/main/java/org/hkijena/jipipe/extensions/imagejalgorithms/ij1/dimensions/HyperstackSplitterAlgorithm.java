@@ -70,7 +70,7 @@ public class HyperstackSplitterAlgorithm extends JIPipeSimpleIteratingAlgorithm 
                 ImageJUtils.forEachIndexedZCTSlice(img, (ip, index) -> {
                     if (index.getC() != finalC)
                         return;
-                    int stackIndex = ImageJUtils.getStackIndex(1, index.getZ() + 1, index.getT() + 1, 1, img.getNSlices(), img.getNFrames());
+                    int stackIndex = ImageJUtils.oneSliceIndexToOneStackIndex(1, index.getZ() + 1, index.getT() + 1, 1, img.getNSlices(), img.getNFrames());
                     stack.setProcessor(ip, stackIndex);
                 }, stackProgressInfo);
                 ImagePlus stackOutput = new ImagePlus(img.getTitle(), stack);
@@ -97,7 +97,7 @@ public class HyperstackSplitterAlgorithm extends JIPipeSimpleIteratingAlgorithm 
                 ImageJUtils.forEachIndexedZCTSlice(img, (ip, index) -> {
                     if (index.getZ() != finalZ)
                         return;
-                    int stackIndex = ImageJUtils.getStackIndex(1 + index.getC(), 1, index.getT() + 1, img.getNChannels(), 1, img.getNFrames());
+                    int stackIndex = ImageJUtils.oneSliceIndexToOneStackIndex(1 + index.getC(), 1, index.getT() + 1, img.getNChannels(), 1, img.getNFrames());
                     stack.setProcessor(ip, stackIndex);
                 }, stackProgressInfo);
                 ImagePlus stackOutput = new ImagePlus(img.getTitle(), stack);
@@ -124,7 +124,7 @@ public class HyperstackSplitterAlgorithm extends JIPipeSimpleIteratingAlgorithm 
                 ImageJUtils.forEachIndexedZCTSlice(img, (ip, index) -> {
                     if (index.getT() != finalT)
                         return;
-                    int stackIndex = ImageJUtils.getStackIndex(1 + index.getC(), 1 + index.getZ(), 1, img.getNChannels(), img.getNSlices(), 1);
+                    int stackIndex = ImageJUtils.oneSliceIndexToOneStackIndex(1 + index.getC(), 1 + index.getZ(), 1, img.getNChannels(), img.getNSlices(), 1);
                     stack.setProcessor(ip, stackIndex);
                 }, stackProgressInfo);
                 ImagePlus stackOutput = new ImagePlus(img.getTitle(), stack);
