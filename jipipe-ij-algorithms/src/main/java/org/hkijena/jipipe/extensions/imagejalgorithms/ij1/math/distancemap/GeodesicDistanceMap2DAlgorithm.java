@@ -11,7 +11,7 @@
  * See the LICENSE file provided with the code for the full license.
  */
 
-package org.hkijena.jipipe.extensions.imagejalgorithms.ij1.binary;
+package org.hkijena.jipipe.extensions.imagejalgorithms.ij1.math.distancemap;
 
 import ij.ImagePlus;
 import ij.ImageStack;
@@ -25,12 +25,13 @@ import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.JIPipeDataBatch;
 import org.hkijena.jipipe.api.nodes.JIPipeGraph;
 import org.hkijena.jipipe.api.nodes.JIPipeInputSlot;
+import org.hkijena.jipipe.api.nodes.JIPipeIteratingAlgorithm;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.JIPipeOutputSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
-import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscale16UData;
+import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.binary.Image_8_16_32_Filter;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscale32FData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleMaskData;
@@ -38,11 +39,12 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.extensions.parameters.editors.JIPipeDataParameterSettings;
 import org.hkijena.jipipe.extensions.parameters.references.JIPipeDataInfoRef;
 
-@JIPipeDocumentation(name = "Chamfer Distance Map 2D", description = "Computes the distance map from a binary image. If higher-dimensional data is provided, the filter is applied to each 2D slice.")
-@JIPipeOrganization(menuPath = "Math", nodeTypeCategory = ImagesNodeTypeCategory.class)
-@JIPipeInputSlot(value = ImagePlusGreyscaleMaskData.class, slotName = "Input", autoCreate = true)
+@JIPipeDocumentation(name = "Geodesic Distance Map 2D", description = "Computes the geodesic distance map from a binary image. If higher-dimensional data is provided, the filter is applied to each 2D slice.")
+@JIPipeOrganization(menuPath = "Math\nDistance map", nodeTypeCategory = ImagesNodeTypeCategory.class)
+@JIPipeInputSlot(value = ImagePlusGreyscaleMaskData.class, slotName = "Marker", autoCreate = true)
+@JIPipeInputSlot(value = ImagePlusGreyscaleMaskData.class, slotName = "Mask", autoCreate = true)
 @JIPipeOutputSlot(value = ImagePlusGreyscaleData.class, slotName = "Output", autoCreate = true)
-public class ChamferDistanceMap2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
+public class GeodesicDistanceMap2DAlgorithm extends JIPipeIteratingAlgorithm {
 
     private ChamferWeights chamferWeights = ChamferWeights.BORGEFORS;
     private boolean normalize = true;
@@ -53,7 +55,7 @@ public class ChamferDistanceMap2DAlgorithm extends JIPipeSimpleIteratingAlgorith
      *
      * @param info the info
      */
-    public ChamferDistanceMap2DAlgorithm(JIPipeNodeInfo info) {
+    public GeodesicDistanceMap2DAlgorithm(JIPipeNodeInfo info) {
         super(info);
         updateSlots();
     }
@@ -63,7 +65,7 @@ public class ChamferDistanceMap2DAlgorithm extends JIPipeSimpleIteratingAlgorith
      *
      * @param other the other
      */
-    public ChamferDistanceMap2DAlgorithm(ChamferDistanceMap2DAlgorithm other) {
+    public GeodesicDistanceMap2DAlgorithm(GeodesicDistanceMap2DAlgorithm other) {
         super(other);
         this.chamferWeights = other.chamferWeights;
         this.normalize = other.normalize;
@@ -112,8 +114,10 @@ public class ChamferDistanceMap2DAlgorithm extends JIPipeSimpleIteratingAlgorith
 
     @Override
     protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
-        ImagePlus inputImage = dataBatch.getInputData(getFirstInputSlot(), ImagePlusGreyscaleMaskData.class, progressInfo).getImage();
-        ImageStack stack = new ImageStack(inputImage.getWidth(), inputImage.getHeight(), inputImage.getStackSize());
+        ImagePlus markerImage = dataBatch.getInputData(getInputSlot("Marker"), ImagePlusGreyscaleMaskData.class, progressInfo).getImage();
+        ImagePlus maskImage = dataBatch.getInputData(getInputSlot("Mask"), ImagePlusGreyscaleMaskData.class, progressInfo).getImage();
+
+        ImageStack stack = new ImageStack(markerImage.getWidth(), markerImage.getHeight(), markerImage.getStackSize());
 
         int bitDepth;
         if(outputType.getInfo().getDataClass() == ImagePlusGreyscale32FData.class)
@@ -121,18 +125,19 @@ public class ChamferDistanceMap2DAlgorithm extends JIPipeSimpleIteratingAlgorith
         else
             bitDepth = 16;
 
-        ImageJUtils.forEachIndexedZCTSlice(inputImage, (ip, index) -> {
+        ImageJUtils.forEachIndexedZCTSlice(markerImage, (ipMarker, index) -> {
+            ImageProcessor ipMask = ImageJUtils.getSliceZero(maskImage, index);
             ImageProcessor processor;
 
             if(bitDepth == 16)
-                processor= BinaryImages.distanceMap(ip, chamferWeights.getShortWeights(), normalize);
+                processor= BinaryImages.geodesicDistanceMap(ipMarker, ipMask, chamferWeights.getShortWeights(), normalize);
             else
-                processor= BinaryImages.distanceMap(ip, chamferWeights.getFloatWeights(), normalize);
+                processor= BinaryImages.geodesicDistanceMap(ipMarker, ipMask, chamferWeights.getFloatWeights(), normalize);
 
-            stack.setProcessor(processor, index.zeroSliceIndexToOneStackIndex(inputImage));
+            stack.setProcessor(processor, index.zeroSliceIndexToOneStackIndex(markerImage));
         }, progressInfo);
-        ImagePlus outputImage = new ImagePlus("CDM", stack);
-        outputImage.setDimensions(inputImage.getNChannels(), inputImage.getNSlices(), inputImage.getNFrames());
+        ImagePlus outputImage = new ImagePlus("GDM", stack);
+        outputImage.setDimensions(markerImage.getNChannels(), markerImage.getNSlices(), markerImage.getNFrames());
         dataBatch.addOutputData(getFirstOutputSlot(), JIPipe.createData(outputType.getInfo().getDataClass(), outputImage), progressInfo);
     }
 }

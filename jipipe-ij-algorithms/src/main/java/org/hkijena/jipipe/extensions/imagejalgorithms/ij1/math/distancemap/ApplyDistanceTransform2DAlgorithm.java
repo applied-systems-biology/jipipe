@@ -11,7 +11,7 @@
  * See the LICENSE file provided with the code for the full license.
  */
 
-package org.hkijena.jipipe.extensions.imagejalgorithms.ij1.math;
+package org.hkijena.jipipe.extensions.imagejalgorithms.ij1.math.distancemap;
 
 import ij.ImagePlus;
 import ij.plugin.filter.EDM;
@@ -35,7 +35,7 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
  */
 @JIPipeDocumentation(name = "Euclidean distance transform 2D", description = "Applies a euclidean distance transform on binary images." +
         "If higher-dimensional data is provided, the filter is applied to each 2D slice.")
-@JIPipeOrganization(menuPath = "Math", nodeTypeCategory = ImagesNodeTypeCategory.class)
+@JIPipeOrganization(menuPath = "Math\nDistance map", nodeTypeCategory = ImagesNodeTypeCategory.class)
 @JIPipeInputSlot(value = ImagePlusGreyscaleMaskData.class, slotName = "Input")
 @JIPipeOutputSlot(value = ImagePlusGreyscale8UData.class, slotName = "Output")
 public class ApplyDistanceTransform2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
