@@ -24,12 +24,7 @@ import org.hkijena.jipipe.api.data.JIPipeAnnotation;
 import org.hkijena.jipipe.api.data.JIPipeAnnotationMergeStrategy;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
-import org.hkijena.jipipe.api.nodes.JIPipeColumMatching;
-import org.hkijena.jipipe.api.nodes.JIPipeInputSlot;
-import org.hkijena.jipipe.api.nodes.JIPipeMergingAlgorithm;
-import org.hkijena.jipipe.api.nodes.JIPipeMergingDataBatch;
-import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
-import org.hkijena.jipipe.api.nodes.JIPipeOutputSlot;
+import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
@@ -66,7 +61,7 @@ import java.util.Set;
 @JIPipeInputSlot(value = ImagePlusData.class, slotName = "Input", autoCreate = true)
 @JIPipeInputSlot(value = DeepLearningModelData.class, slotName = "Model", autoCreate = true)
 @JIPipeOutputSlot(value = ImagePlusGreyscale32FData.class, slotName = "Prediction", autoCreate = true)
-public class PredictImageAlgorithm extends JIPipeMergingAlgorithm {
+public class PredictImageAlgorithm extends JIPipeSingleIterationAlgorithm {
 
     private TransformScale2DAlgorithm scale2DAlgorithm;
     private boolean cleanUpAfterwards = true;
@@ -78,7 +73,6 @@ public class PredictImageAlgorithm extends JIPipeMergingAlgorithm {
 
     public PredictImageAlgorithm(JIPipeNodeInfo info) {
         super(info);
-        getDataBatchGenerationSettings().setColumnMatching(JIPipeColumMatching.MergeAll);
         scale2DAlgorithm = JIPipe.createNode(TransformScale2DAlgorithm.class);
         scale2DAlgorithm.setScaleMode(ScaleMode.Fit);
         registerSubParameter(scale2DAlgorithm);

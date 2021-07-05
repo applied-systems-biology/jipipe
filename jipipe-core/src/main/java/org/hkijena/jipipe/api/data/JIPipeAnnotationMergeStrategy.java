@@ -19,7 +19,8 @@ public enum JIPipeAnnotationMergeStrategy {
     SkipExisting,
     OverwriteExisting,
     Merge,
-    MergeLists;
+    MergeLists,
+    Discard;
 
     /**
      * Ensures that a list of annotations has unique names. Merges according to the strategy if needed.
@@ -28,6 +29,9 @@ public enum JIPipeAnnotationMergeStrategy {
      * @return annotations without duplicate names.
      */
     public List<JIPipeAnnotation> merge(Collection<JIPipeAnnotation> annotations) {
+        if(this == Discard) {
+            return new ArrayList<>();
+        }
         Map<String, String> map = new HashMap<>();
         for (JIPipeAnnotation annotation : annotations) {
             map.put(annotation.getName(), merge(map.getOrDefault(annotation.getName(), ""), annotation.getValue()));
@@ -41,11 +45,16 @@ public enum JIPipeAnnotationMergeStrategy {
 
     /**
      * Ensures that a list of annotations has unique names. Merges according to the strategy if needed.
+     * If the mode is Discard, removes all annotations
      *
      * @param target      the target list
      * @param annotations input annotations. can have duplicate names.
      */
     public void mergeInto(Map<String, JIPipeAnnotation> target, Collection<JIPipeAnnotation> annotations) {
+        if(this == Discard) {
+            target.clear();
+            return;
+        }
         Map<String, String> map = new HashMap<>();
         for (Map.Entry<String, JIPipeAnnotation> entry : target.entrySet()) {
             if (entry.getValue() != null) {
@@ -75,6 +84,8 @@ public enum JIPipeAnnotationMergeStrategy {
                 return newValue;
         } else if (this == OverwriteExisting) {
             return newValue;
+        } else if(this == Discard) {
+            return ""; // Empty = Discard
         } else {
             List<String> components = new ArrayList<>(Arrays.asList(extractMergedAnnotations(existingValue)));
             if (this == MergeLists) {
@@ -114,6 +125,8 @@ public enum JIPipeAnnotationMergeStrategy {
                 return "Skip existing";
             case OverwriteExisting:
                 return "Overwrite existing";
+            case Discard:
+                return "Discard annotations";
             default:
                 return super.toString();
         }

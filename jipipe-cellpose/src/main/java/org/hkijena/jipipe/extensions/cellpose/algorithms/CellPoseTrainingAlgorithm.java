@@ -13,11 +13,7 @@ import org.hkijena.jipipe.api.data.JIPipeDataSlotInfo;
 import org.hkijena.jipipe.api.data.JIPipeDefaultMutableSlotConfiguration;
 import org.hkijena.jipipe.api.data.JIPipeSlotType;
 import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
-import org.hkijena.jipipe.api.nodes.JIPipeInputSlot;
-import org.hkijena.jipipe.api.nodes.JIPipeMergingAlgorithm;
-import org.hkijena.jipipe.api.nodes.JIPipeMergingDataBatch;
-import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
-import org.hkijena.jipipe.api.nodes.JIPipeOutputSlot;
+import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.cellpose.CellPosePretrainedModel;
@@ -58,7 +54,7 @@ import java.util.stream.Collectors;
 @JIPipeInputSlot(value = CellPoseModelData.class)
 @JIPipeOutputSlot(value = CellPoseModelData.class, slotName = "Model", autoCreate = true)
 @JIPipeOrganization(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Deep learning")
-public class CellPoseTrainingAlgorithm extends JIPipeMergingAlgorithm {
+public class CellPoseTrainingAlgorithm extends JIPipeSingleIterationAlgorithm {
 
     private boolean enableGPU = true;
     private CellPosePretrainedModel pretrainedModel = CellPosePretrainedModel.Cytoplasm;

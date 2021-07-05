@@ -10,7 +10,8 @@ public enum JIPipeDataAnnotationMergeStrategy {
     Merge,
     MergeTables,
     SkipExisting,
-    OverwriteExisting;
+    OverwriteExisting,
+    Discard;
 
     /**
      * Ensures that a list of annotations has unique names. Merges according to the strategy if needed.
@@ -87,6 +88,9 @@ public enum JIPipeDataAnnotationMergeStrategy {
             }
             return result;
         }
+        else if(this == Discard) {
+            return new ArrayList<>();
+        }
         else {
             throw new UnsupportedOperationException();
         }
@@ -97,10 +101,14 @@ public enum JIPipeDataAnnotationMergeStrategy {
         switch (this) {
             case Merge:
                 return "Merge";
+            case MergeTables:
+                return "Merge tables";
             case SkipExisting:
                 return "Skip existing";
             case OverwriteExisting:
                 return "Overwrite existing";
+            case Discard:
+                return "Discard annotations";
             default:
                 return super.toString();
         }

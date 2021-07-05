@@ -22,12 +22,7 @@ import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
-import org.hkijena.jipipe.api.nodes.JIPipeColumMatching;
-import org.hkijena.jipipe.api.nodes.JIPipeInputSlot;
-import org.hkijena.jipipe.api.nodes.JIPipeMergingAlgorithm;
-import org.hkijena.jipipe.api.nodes.JIPipeMergingDataBatch;
-import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
-import org.hkijena.jipipe.api.nodes.JIPipeOutputSlot;
+import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
@@ -62,7 +57,7 @@ import java.util.Set;
 @JIPipeInputSlot(value = ImagePlusData.class, slotName = "Labels", autoCreate = true)
 @JIPipeInputSlot(value = DeepLearningModelData.class, slotName = "Model", autoCreate = true)
 @JIPipeOutputSlot(value = DeepLearningModelData.class, slotName = "Trained model", autoCreate = true)
-public class TrainImageModelAlgorithm extends JIPipeMergingAlgorithm {
+public class TrainImageModelAlgorithm extends JIPipeSingleIterationAlgorithm {
 
     private TransformScale2DAlgorithm scale2DAlgorithm;
     private boolean scaleToModelSize = false;
@@ -74,7 +69,6 @@ public class TrainImageModelAlgorithm extends JIPipeMergingAlgorithm {
 
     public TrainImageModelAlgorithm(JIPipeNodeInfo info) {
         super(info);
-        getDataBatchGenerationSettings().setColumnMatching(JIPipeColumMatching.MergeAll);
         registerSubParameter(trainingConfiguration);
         scale2DAlgorithm = JIPipe.createNode(TransformScale2DAlgorithm.class);
         scale2DAlgorithm.setScaleMode(ScaleMode.Fit);
