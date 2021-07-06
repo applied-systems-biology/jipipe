@@ -14,14 +14,16 @@
 package org.hkijena.jipipe.extensions.imagejalgorithms.ij1.generate;
 
 import ij.ImagePlus;
+import ij.ImageStack;
 import ij.process.ByteProcessor;
 import ij.process.ImageProcessor;
 import inra.ijpb.morphology.Morphology;
 import inra.ijpb.morphology.Strel;
+import inra.ijpb.morphology.Strel3D;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.JIPipeIssueReport;
 import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
-import org.hkijena.jipipe.api.JIPipeIssueReport;
 import org.hkijena.jipipe.api.data.JIPipeDefaultMutableSlotConfiguration;
 import org.hkijena.jipipe.api.nodes.JIPipeDataBatch;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
@@ -31,16 +33,17 @@ import org.hkijena.jipipe.api.nodes.categories.DataSourceNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d2.greyscale.ImagePlus2DGreyscaleMaskData;
+import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d3.greyscale.ImagePlus3DGreyscaleMaskData;
 
 /**
- * Wrapper around {@link ij.process.ImageProcessor}
+ * Wrapper around {@link ImageProcessor}
  */
-@JIPipeDocumentation(name = "Generate structure element", description = "Generates a structure element that is consistent with the ones used by the 2D morphological operation.")
+@JIPipeDocumentation(name = "Generate structure element", description = "Generates a structure element that is consistent with the ones used by the 3D morphological operation.")
 @JIPipeOrganization(nodeTypeCategory = DataSourceNodeTypeCategory.class)
 @JIPipeOutputSlot(value = ImagePlusData.class, slotName = "Kernel")
-public class GenerateStructureElementAlgorithm extends JIPipeSimpleIteratingAlgorithm {
+public class GenerateStructureElement3DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
-    private Strel.Shape element = Strel.Shape.DISK;
+    private Strel3D.Shape element = Strel3D.Shape.BALL;
     private int radius = 1;
 
     /**
@@ -48,7 +51,7 @@ public class GenerateStructureElementAlgorithm extends JIPipeSimpleIteratingAlgo
      *
      * @param info the info
      */
-    public GenerateStructureElementAlgorithm(JIPipeNodeInfo info) {
+    public GenerateStructureElement3DAlgorithm(JIPipeNodeInfo info) {
         super(info, JIPipeDefaultMutableSlotConfiguration.builder()
                 .addOutputSlot("Kernel", ImagePlus2DGreyscaleMaskData.class, null).seal().build());
     }
@@ -58,7 +61,7 @@ public class GenerateStructureElementAlgorithm extends JIPipeSimpleIteratingAlgo
      *
      * @param other the other
      */
-    public GenerateStructureElementAlgorithm(GenerateStructureElementAlgorithm other) {
+    public GenerateStructureElement3DAlgorithm(GenerateStructureElement3DAlgorithm other) {
         super(other);
         this.radius = other.radius;
         this.element = other.element;
@@ -72,19 +75,26 @@ public class GenerateStructureElementAlgorithm extends JIPipeSimpleIteratingAlgo
     @Override
     protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
         // Size of the strel image (little bit larger than strel)
-        Strel strel = element.fromRadius(radius);
+        Strel3D strel = element.fromRadius(radius);
         int[] dim = strel.getSize();
         int width = dim[0] + 20;
         int height = dim[1] + 20;
+        int depth = dim[2] + 20;
 
         // Creates strel image by dilating a point
+        ImageStack strelImageStack = new ImageStack(width, height, depth);
         ImageProcessor strelImage = new ByteProcessor(width, height);
         strelImage.set(width / 2, height / 2, 255);
-        strelImage = Morphology.dilation(strelImage, strel);
+
+        for (int i = 0; i < depth; i++) {
+            strelImageStack.setProcessor(new ByteProcessor(width, height), i + 1);
+        }
+        strelImageStack.setProcessor(strelImage, depth / 2);
+        strelImageStack = Morphology.dilation(strelImageStack, strel);
 
         // Display strel image
-        ImagePlus strelDisplay = new ImagePlus("Structuring Element", strelImage);
-        dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlus2DGreyscaleMaskData(strelDisplay), progressInfo);
+        ImagePlus strelDisplay = new ImagePlus("Structuring Element", strelImageStack);
+        dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlus3DGreyscaleMaskData(strelDisplay), progressInfo);
     }
 
 
@@ -106,12 +116,12 @@ public class GenerateStructureElementAlgorithm extends JIPipeSimpleIteratingAlgo
 
     @JIPipeDocumentation(name = "Kernel", description = "The filter kernel.")
     @JIPipeParameter("element")
-    public Strel.Shape getElement() {
+    public Strel3D.Shape getElement() {
         return element;
     }
 
     @JIPipeParameter("element")
-    public void setElement(Strel.Shape element) {
+    public void setElement(Strel3D.Shape element) {
         this.element = element;
     }
 }

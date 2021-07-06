@@ -3,7 +3,6 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/ij-updater-cli/ij-updater-cli.iml" filepath="$PROJECT_DIR$/ij-updater-cli/ij-updater-cli.iml" />
-      <module fileurl="file://$PROJECT_DIR$/jipipe.iml" filepath="$PROJECT_DIR$/jipipe.iml" />
       <module fileurl="file://$PROJECT_DIR$/jipipe-annotation/jipipe-annotation.iml" filepath="$PROJECT_DIR$/jipipe-annotation/jipipe-annotation.iml" />
       <module fileurl="file://$PROJECT_DIR$/jipipe-cellpose/jipipe-cellpose.iml" filepath="$PROJECT_DIR$/jipipe-cellpose/jipipe-cellpose.iml" />
       <module fileurl="file://$PROJECT_DIR$/jipipe-clij/jipipe-clij.iml" filepath="$PROJECT_DIR$/jipipe-clij/jipipe-clij.iml" />
@@ -12,7 +11,6 @@
       <module fileurl="file://$PROJECT_DIR$/jipipe-filesystem/jipipe-filesystem.iml" filepath="$PROJECT_DIR$/jipipe-filesystem/jipipe-filesystem.iml" />
       <module fileurl="file://$PROJECT_DIR$/jipipe-forms/jipipe-forms.iml" filepath="$PROJECT_DIR$/jipipe-forms/jipipe-forms.iml" />
       <module fileurl="file://$PROJECT_DIR$/jipipe-ij/jipipe-ij.iml" filepath="$PROJECT_DIR$/jipipe-ij/jipipe-ij.iml" />
-      <module fileurl="file://$PROJECT_DIR$/jipipe-ij-algorithms/jipipe-ij-algorithms.iml" filepath="$PROJECT_DIR$/jipipe-ij-algorithms/jipipe-ij-algorithms.iml" />
       <module fileurl="file://$PROJECT_DIR$/jipipe-ij-multi-template-matching/jipipe-ij-multi-template-matching.iml" filepath="$PROJECT_DIR$/jipipe-ij-multi-template-matching/jipipe-ij-multi-template-matching.iml" />
       <module fileurl="file://$PROJECT_DIR$/jipipe-ij-omero/jipipe-ij-omero.iml" filepath="$PROJECT_DIR$/jipipe-ij-omero/jipipe-ij-omero.iml" />
       <module fileurl="file://$PROJECT_DIR$/jipipe-installer-linux/jipipe-installer-linux.iml" filepath="$PROJECT_DIR$/jipipe-installer-linux/jipipe-installer-linux.iml" />
@@ -25,6 +23,7 @@
       <module fileurl="file://$PROJECT_DIR$/jipipe-strings/jipipe-strings.iml" filepath="$PROJECT_DIR$/jipipe-strings/jipipe-strings.iml" />
       <module fileurl="file://$PROJECT_DIR$/jipipe-tables/jipipe-tables.iml" filepath="$PROJECT_DIR$/jipipe-tables/jipipe-tables.iml" />
       <module fileurl="file://$PROJECT_DIR$/jipipe-utils/jipipe-utils.iml" filepath="$PROJECT_DIR$/jipipe-utils/jipipe-utils.iml" />
+      <module fileurl="file://$PROJECT_DIR$/pom-jipipe.iml" filepath="$PROJECT_DIR$/pom-jipipe.iml" />
     </modules>
   </component>
 </project>
