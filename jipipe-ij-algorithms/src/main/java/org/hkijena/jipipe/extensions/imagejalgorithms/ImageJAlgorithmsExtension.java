@@ -75,12 +75,7 @@ import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.io.ROIFromGUI;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.io.ROIToGUI;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.io.ResultsTableFromGUI;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.io.ResultsTableToGUI;
-import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.labels.GetLabelBoundariesAlgorithm;
-import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.labels.KeepLabelsAlgorithm;
-import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.labels.LabelsToRGBAlgorithm;
-import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.labels.MergeLabelsAlgorithm;
-import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.labels.RemoveBorderLabelsAlgorithm;
-import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.labels.ReplaceLabelsAlgorithm;
+import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.labels.*;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.lut.LUTInverterAlgorithm;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.lut.RemoveLUTAlgorithm;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.lut.SetLUTFromColorAlgorithm;
@@ -322,7 +317,14 @@ public class ImageJAlgorithmsExtension extends JIPipePrepackagedDefaultJavaExten
         registerNodeType("ij1-labels-remove-border-labels", RemoveBorderLabelsAlgorithm.class, UIUtils.getIconURLFromResources("actions/filter.png"));
         registerNodeType("ij1-labels-replace-labels", ReplaceLabelsAlgorithm.class, UIUtils.getIconURLFromResources("actions/edit.png"));
         registerNodeType("ij1-labels-merge-labels", MergeLabelsAlgorithm.class, UIUtils.getIconURLFromResources("actions/merge.png"));
-        registerNodeType("ij1-labels-filter-labels", KeepLabelsAlgorithm.class, UIUtils.getIconURLFromResources("actions/filter.png"));
+        registerNodeType("ij1-labels-filter-labels-by-id", FilterLabelsByIdAlgorithm.class, UIUtils.getIconURLFromResources("actions/filter.png"));
+        registerNodeType("ij1-labels-filter-filter-by-expression-2d", FilterLabelsByExpression2DAlgorithm.class, UIUtils.getIconURLFromResources("actions/filter.png"));
+        registerNodeType("ij1-labels-filter-filter-by-expression-3d", FilterLabelsByExpression3DAlgorithm.class, UIUtils.getIconURLFromResources("actions/filter.png"));
+        registerNodeType("ij1-labels-crop-labels", CropLabelsAlgorithm.class, UIUtils.getIconURLFromResources("actions/image-crop.png"));
+        registerNodeType("ij1-labels-remap", RemapLabelsAlgorithm.class, UIUtils.getIconURLFromResources("actions/object-visible.png"));
+        registerNodeType("ij1-labels-expand-labels", ExpandLabelsAlgorithm.class, UIUtils.getIconURLFromResources("actions/object-tweak-push.png"));
+        registerNodeType("ij1-labels-remove-largest-label", RemoveLargestLabelAlgorithm.class, UIUtils.getIconURLFromResources("actions/filter.png"));
+        registerNodeType("ij1-labels-keep-largest-label", KeepLargestLabelAlgorithm.class, UIUtils.getIconURLFromResources("actions/filter.png"));
     }
 
     private void registerConverterAlgorithms() {

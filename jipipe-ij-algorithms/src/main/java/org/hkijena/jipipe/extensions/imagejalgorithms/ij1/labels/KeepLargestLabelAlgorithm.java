@@ -13,7 +13,6 @@
 
 package org.hkijena.jipipe.extensions.imagejalgorithms.ij1.labels;
 
-import com.google.common.primitives.Ints;
 import ij.ImagePlus;
 import inra.ijpb.label.LabelImages;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
@@ -27,49 +26,20 @@ import org.hkijena.jipipe.api.nodes.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleData;
-import org.hkijena.jipipe.extensions.parameters.generators.IntegerRange;
-import org.hkijena.jipipe.extensions.parameters.primitives.BooleanParameterSettings;
 
-@JIPipeDocumentation(name = "Filter labels", description = "Allows to keep only a specific set of labels.")
+@JIPipeDocumentation(name = "Keep largest label", description = "Keep only the largest label")
 @JIPipeOrganization(menuPath = "Labels", nodeTypeCategory = ImagesNodeTypeCategory.class)
 @JIPipeInputSlot(value = ImagePlusGreyscaleData.class, slotName = "Input", autoCreate = true)
 @JIPipeOutputSlot(value = ImagePlusGreyscaleData.class, slotName = "Output", autoCreate = true)
-public class KeepLabelsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
+public class KeepLargestLabelAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
-    private IntegerRange values = new IntegerRange();
-    private boolean keepValues = true;
 
-    public KeepLabelsAlgorithm(JIPipeNodeInfo info) {
+    public KeepLargestLabelAlgorithm(JIPipeNodeInfo info) {
         super(info);
     }
 
-    public KeepLabelsAlgorithm(KeepLabelsAlgorithm other) {
+    public KeepLargestLabelAlgorithm(KeepLargestLabelAlgorithm other) {
         super(other);
-        this.values = new IntegerRange(other.values);
-        this.keepValues = other.keepValues;
-    }
-
-    @JIPipeDocumentation(name = "Label values", description = "The label values to be kept/to be removed")
-    @JIPipeParameter(value = "values", important = true)
-    public IntegerRange getValues() {
-        return values;
-    }
-
-    @JIPipeParameter("values")
-    public void setValues(IntegerRange values) {
-        this.values = values;
-    }
-
-    @JIPipeDocumentation(name = "Mode", description = "Determines if labels are removed or kept.")
-    @BooleanParameterSettings(comboBoxStyle = true, trueLabel = "Keep labels", falseLabel = "Remove labels")
-    @JIPipeParameter("keep-values")
-    public boolean isKeepValues() {
-        return keepValues;
-    }
-
-    @JIPipeParameter("keep-values")
-    public void setKeepValues(boolean keepValues) {
-        this.keepValues = keepValues;
     }
 
     @Override
@@ -77,12 +47,7 @@ public class KeepLabelsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         ImagePlus inputImage = dataBatch.getInputData(getFirstInputSlot(), ImagePlusGreyscaleData.class, progressInfo).getImage();
         ImagePlus outputImage = inputImage.duplicate();
         outputImage.setTitle(inputImage.getTitle());
-        if(keepValues) {
-            LabelImages.keepLabels(outputImage, Ints.toArray(values.getIntegers()));
-        }
-        else {
-            LabelImages.replaceLabels(outputImage, Ints.toArray(values.getIntegers()), 0);
-        }
+        LabelImages.keepLargestLabel(outputImage);
         outputImage.setDimensions(inputImage.getNChannels(), inputImage.getNSlices(), inputImage.getNFrames());
         dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusGreyscaleData(outputImage), progressInfo);
     }
