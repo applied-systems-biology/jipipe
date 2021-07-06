@@ -298,7 +298,7 @@
     <orderEntry type="library" scope="RUNTIME" name="Maven: sc.fiji:legacy-imglib1:1.1.9" level="project" />
     <orderEntry type="library" name="Maven: edu.mines:mines-jtk:20151125" level="project" />
     <orderEntry type="library" name="Maven: gov.nist.math:jama:1.0.3" level="project" />
-    <orderEntry type="library" scope="RUNTIME" name="Maven: fr.inra.ijpb:MorphoLibJ_:1.4.2.1" level="project" />
+    <orderEntry type="library" scope="RUNTIME" name="Maven: fr.inra.ijpb:MorphoLibJ_:1.4.3-SNAPSHOT" level="project" />
     <orderEntry type="library" scope="RUNTIME" name="Maven: sc.fiji:FeatureJ_:2.0.0" level="project" />
     <orderEntry type="library" scope="RUNTIME" name="Maven: sc.fiji:MTrackJ_:1.5.4" level="project" />
     <orderEntry type="library" scope="RUNTIME" name="Maven: sc.fiji:RandomJ_:2.0.0" level="project" />

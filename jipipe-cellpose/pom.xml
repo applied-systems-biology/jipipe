@@ -95,6 +95,11 @@
                 <artifactId>jipipe-python</artifactId>
                 <version>2021.7</version>
             </dependency>
+            <dependency>
+                <groupId>fr.inra.ijpb</groupId>
+                <artifactId>MorphoLibJ_</artifactId>
+                <version>1.4.3-SNAPSHOT</version>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 

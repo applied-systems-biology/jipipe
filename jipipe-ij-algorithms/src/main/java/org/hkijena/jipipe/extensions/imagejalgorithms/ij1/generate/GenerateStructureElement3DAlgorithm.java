@@ -38,7 +38,7 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d3.greyscale.Imag
 /**
  * Wrapper around {@link ImageProcessor}
  */
-@JIPipeDocumentation(name = "Generate structure element", description = "Generates a structure element that is consistent with the ones used by the 3D morphological operation.")
+@JIPipeDocumentation(name = "Generate structure element (3D)", description = "Generates a structure element that is consistent with the ones used by the 3D morphological operation.")
 @JIPipeOrganization(nodeTypeCategory = DataSourceNodeTypeCategory.class)
 @JIPipeOutputSlot(value = ImagePlusData.class, slotName = "Kernel")
 public class GenerateStructureElement3DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
@@ -53,7 +53,7 @@ public class GenerateStructureElement3DAlgorithm extends JIPipeSimpleIteratingAl
      */
     public GenerateStructureElement3DAlgorithm(JIPipeNodeInfo info) {
         super(info, JIPipeDefaultMutableSlotConfiguration.builder()
-                .addOutputSlot("Kernel", ImagePlus2DGreyscaleMaskData.class, null).seal().build());
+                .addOutputSlot("Kernel", ImagePlus3DGreyscaleMaskData.class, null).seal().build());
     }
 
     /**
