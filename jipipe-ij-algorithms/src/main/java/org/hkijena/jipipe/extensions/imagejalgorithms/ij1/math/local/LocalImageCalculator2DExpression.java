@@ -1,4 +1,4 @@
-package org.hkijena.jipipe.extensions.imagejalgorithms.ij1.math;
+package org.hkijena.jipipe.extensions.imagejalgorithms.ij1.math.local;
 
 import ij.IJ;
 import ij.ImagePlus;

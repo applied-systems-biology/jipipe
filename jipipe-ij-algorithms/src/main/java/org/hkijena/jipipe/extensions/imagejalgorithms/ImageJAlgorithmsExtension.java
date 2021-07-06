@@ -30,6 +30,7 @@ import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.HyperstackDimensionPai
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.InterpolationMethod;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.MacroWrapperAlgorithm;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.Neighborhood2D;
+import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.Neighborhood3D;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.analyze.FindParticles2D;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.analyze.ImageStatisticsAlgorithm;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.analyze.ImageStatisticsExpressionAlgorithm;
@@ -87,6 +88,7 @@ import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.math.distancemap.Chamf
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.math.distancemap.ChamferDistanceMap3DAlgorithm;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.math.distancemap.GeodesicDistanceMap2DAlgorithm;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.math.distancemap.LabelChamferDistanceMap3DAlgorithm;
+import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.math.local.*;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.misc.DataToPreviewAlgorithm;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.misc.ExportImageToWebAlgorithm;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.morphology.Morphology2DAlgorithm;
@@ -410,6 +412,10 @@ public class ImageJAlgorithmsExtension extends JIPipePrepackagedDefaultJavaExten
                 Neighborhood2D.class,
                 "2D neighborhood",
                 "A 2D neighborhood");
+        registerEnumParameterType("ij1-neighborhood-3d",
+                Neighborhood3D.class,
+                "3D neighborhood",
+                "A 3D neighborhood");
         registerEnumParameterType("ij1-roi-target", ImageROITargetArea.class,
                 "Target area", "Defines an area where an algorithm is applied");
         registerEnumParameterType("ij1-source-wrap-mode",
@@ -658,6 +664,11 @@ public class ImageJAlgorithmsExtension extends JIPipePrepackagedDefaultJavaExten
         registerNodeType("ij1-math-imagecalculator2d-expression", ImageCalculator2DExpression.class, UIUtils.getIconURLFromResources("actions/calculator.png"));
         registerNodeType("ij1-math-hessian2d", Hessian2DAlgorithm.class, UIUtils.getIconURLFromResources("actions/insert-math-expression.png"));
         registerNodeType("ij1-math-divide-by-maximum", DivideByMaximumAlgorithm.class, UIUtils.getIconURLFromResources("actions/insert-math-expression.png"));
+
+        registerNodeType("ij1-binary-regional-minima-2d", RegionalMinima2DAlgorithm.class, UIUtils.getIconURLFromResources("actions/insert-math-expression.png"));
+        registerNodeType("ij1-binary-regional-maxima-2d", RegionalMaxima2DAlgorithm.class, UIUtils.getIconURLFromResources("actions/insert-math-expression.png"));
+        registerNodeType("ij1-binary-regional-minima-3d", RegionalMinima3DAlgorithm.class, UIUtils.getIconURLFromResources("actions/insert-math-expression.png"));
+        registerNodeType("ij1-binary-regional-maxima-3d", RegionalMaxima3DAlgorithm.class, UIUtils.getIconURLFromResources("actions/insert-math-expression.png"));
 
         registerNodeType("ij1-math-generate-from-expression", GenerateFromMathExpression2D.class, UIUtils.getIconURLFromResources("actions/insert-math-expression.png"));
         registerNodeType("ij1-math-generate-vector-from-expression", GenerateVectorFromMathExpression.class, UIUtils.getIconURLFromResources("actions/insert-math-expression.png"));

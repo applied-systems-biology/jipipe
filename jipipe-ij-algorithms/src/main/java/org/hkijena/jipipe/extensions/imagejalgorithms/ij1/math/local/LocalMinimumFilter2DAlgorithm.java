@@ -11,11 +11,9 @@
  * See the LICENSE file provided with the code for the full license.
  */
 
-package org.hkijena.jipipe.extensions.imagejalgorithms.ij1.math;
+package org.hkijena.jipipe.extensions.imagejalgorithms.ij1.math.local;
 
 import ij.ImagePlus;
-import ij.ImageStack;
-import ij.plugin.Filters3D;
 import ij.plugin.filter.RankFilters;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeOrganization;
@@ -30,30 +28,29 @@ import org.hkijena.jipipe.api.nodes.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
+import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 
 import static org.hkijena.jipipe.extensions.imagejalgorithms.ImageJAlgorithmsExtension.REMOVE_MASK_QUALIFIER;
 
 /**
  * Wrapper around {@link RankFilters}
  */
-@JIPipeDocumentation(name = "Local variance 3D", description = "Calculates the local variance around each pixel. " +
+@JIPipeDocumentation(name = "Local minimum 2D", description = "Calculates the local minimum around each pixel. This is also referred as greyscale erosion. " +
         "If a multi-channel image is provided, the operation is applied to each channel. " +
-        "If higher-dimensional data is provided, the filter is applied to each 3D slice.")
+        "If higher-dimensional data is provided, the filter is applied to each 2D slice.")
 @JIPipeOrganization(menuPath = "Math\nLocal", nodeTypeCategory = ImagesNodeTypeCategory.class)
 @JIPipeInputSlot(value = ImagePlusData.class, slotName = "Input")
 @JIPipeOutputSlot(value = ImagePlusData.class, slotName = "Output")
-public class LocalVarianceFilter3DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
+public class LocalMinimumFilter2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
-    private float radiusX = 2;
-    private float radiusY = -1;
-    private float radiusZ = -1;
+    private double radius = 1;
 
     /**
      * Instantiates a new node type.
      *
      * @param info the info
      */
-    public LocalVarianceFilter3DAlgorithm(JIPipeNodeInfo info) {
+    public LocalMinimumFilter2DAlgorithm(JIPipeNodeInfo info) {
         super(info, JIPipeDefaultMutableSlotConfiguration.builder().addInputSlot("Input", ImagePlusData.class)
                 .addOutputSlot("Output", ImagePlusData.class, "Input", REMOVE_MASK_QUALIFIER)
                 .allowOutputSlotInheritance(true)
@@ -66,11 +63,9 @@ public class LocalVarianceFilter3DAlgorithm extends JIPipeSimpleIteratingAlgorit
      *
      * @param other the other
      */
-    public LocalVarianceFilter3DAlgorithm(LocalVarianceFilter3DAlgorithm other) {
+    public LocalMinimumFilter2DAlgorithm(LocalMinimumFilter2DAlgorithm other) {
         super(other);
-        this.radiusX = other.radiusX;
-        this.radiusY = other.radiusY;
-        this.radiusZ = other.radiusZ;
+        this.radius = other.radius;
     }
 
     @Override
@@ -82,52 +77,30 @@ public class LocalVarianceFilter3DAlgorithm extends JIPipeSimpleIteratingAlgorit
     protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
         ImagePlusData inputData = dataBatch.getInputData(getFirstInputSlot(), ImagePlusData.class, progressInfo);
         ImagePlus img = inputData.getDuplicateImage();
-        ImageStack filtered = Filters3D.filter(img.getStack(), Filters3D.VAR, radiusX, radiusY <= 0 ? radiusX : radiusY, radiusZ <= 0 ? radiusX : radiusZ);
-        ImagePlus result = new ImagePlus("Output", filtered);
-        dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusData(result), progressInfo);
+        RankFilters rankFilters = new RankFilters();
+        ImageJUtils.forEachSlice(img, ip -> rankFilters.rank(ip, radius, RankFilters.MIN), progressInfo);
+        dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusData(img), progressInfo);
     }
 
 
     @Override
     public void reportValidity(JIPipeIssueReport report) {
-        report.resolve("Radius (X)").checkIfWithin(this, radiusX, 0, Double.POSITIVE_INFINITY, false, true);
+        report.resolve("Radius").checkIfWithin(this, radius, 0, Double.POSITIVE_INFINITY, false, true);
     }
 
-    @JIPipeDocumentation(name = "Radius (X)", description = "Filter radius (pixels) in X direction. See ImageJ>Process>Filters>Show Circular Masks for a reference.")
-    @JIPipeParameter("radius-x")
-    public float getRadiusX() {
-        return radiusX;
+    @JIPipeDocumentation(name = "Radius", description = "Radius of the filter kernel. See ImageJ>Process>Filters>Show Circular Masks for a reference.")
+    @JIPipeParameter("radius")
+    public double getRadius() {
+        return radius;
     }
 
-    @JIPipeParameter("radius-x")
-    public void setRadiusX(float radiusX) {
-        this.radiusX = radiusX;
+    @JIPipeParameter("radius")
+    public boolean setRadius(double radius) {
+        if (radius <= 0) {
+            return false;
+        }
+        this.radius = radius;
 
-    }
-
-    @JIPipeDocumentation(name = "Radius (Y)", description = "Filter radius (pixels) in Y direction." +
-            " If zero or less, radius in X direction is automatically used instead. See ImageJ>Process>Filters>Show Circular Masks for a reference.")
-    @JIPipeParameter("radius-y")
-    public float getRadiusY() {
-        return radiusY;
-    }
-
-    @JIPipeParameter("radius-y")
-    public void setRadiusY(float radiusY) {
-        this.radiusY = radiusY;
-
-    }
-
-    @JIPipeDocumentation(name = "Radius (Z)", description = "Filter radius (pixels) in Z direction." +
-            " If zero or less, radius in X direction is automatically used instead. See ImageJ>Process>Filters>Show Circular Masks for a reference.")
-    @JIPipeParameter("radius-z")
-    public float getRadiusZ() {
-        return radiusZ;
-    }
-
-    @JIPipeParameter("radius-z")
-    public void setRadiusZ(float radiusZ) {
-        this.radiusZ = radiusZ;
-
+        return true;
     }
 }

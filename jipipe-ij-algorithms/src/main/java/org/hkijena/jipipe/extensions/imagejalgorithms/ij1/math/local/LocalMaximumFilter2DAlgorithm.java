@@ -11,7 +11,7 @@
  * See the LICENSE file provided with the code for the full license.
  */
 
-package org.hkijena.jipipe.extensions.imagejalgorithms.ij1.math;
+package org.hkijena.jipipe.extensions.imagejalgorithms.ij1.math.local;
 
 import ij.ImagePlus;
 import ij.plugin.filter.RankFilters;

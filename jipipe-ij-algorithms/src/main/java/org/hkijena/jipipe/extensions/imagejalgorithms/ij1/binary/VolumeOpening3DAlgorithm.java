@@ -74,6 +74,6 @@ public class VolumeOpening3DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         ImagePlus inputImage = dataBatch.getInputData(getFirstInputSlot(), ImagePlusGreyscaleMaskData.class, progressInfo).getImage();
         ImagePlus outputImage = BinaryImages.sizeOpening(inputImage, minPixels);
 
-        dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlus2DGreyscaleMaskData(outputImage), progressInfo);
+        dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusGreyscaleMaskData(outputImage), progressInfo);
     }
 }

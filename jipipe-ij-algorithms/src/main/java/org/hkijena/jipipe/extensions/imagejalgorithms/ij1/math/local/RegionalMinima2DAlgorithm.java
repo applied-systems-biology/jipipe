@@ -11,14 +11,12 @@
  * See the LICENSE file provided with the code for the full license.
  */
 
-package org.hkijena.jipipe.extensions.imagejalgorithms.ij1.binary;
+package org.hkijena.jipipe.extensions.imagejalgorithms.ij1.math.local;
 
 import ij.ImagePlus;
 import ij.ImageStack;
 import ij.process.ImageProcessor;
-import inra.ijpb.binary.BinaryImages;
-import inra.ijpb.measure.region2d.Convexity;
-import org.hkijena.jipipe.JIPipe;
+import inra.ijpb.morphology.MinimaAndMaxima;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
@@ -28,28 +26,27 @@ import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.JIPipeOutputSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
-import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.threshold.ManualThreshold8U2DAlgorithm;
-import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d2.greyscale.ImagePlus2DGreyscaleMaskData;
-import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscale16UData;
-import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscale32FData;
-import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscale8UData;
+import org.hkijena.jipipe.api.parameters.JIPipeParameter;
+import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.Neighborhood2D;
+import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleMaskData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
-import org.hkijena.jipipe.extensions.parameters.ranges.IntNumberRangeParameter;
 
-@JIPipeDocumentation(name = "Convexify", description = "Converts a 2D mask image into its convex hull. " +
+@JIPipeDocumentation(name = "Regional minima 2D", description = "Returns the regions that have a constant intensity value and are surrounded by higher intensity values. " +
         "If higher-dimensional data is provided, the filter is applied to each 2D slice.")
-@JIPipeOrganization(menuPath = "Binary", nodeTypeCategory = ImagesNodeTypeCategory.class)
-@JIPipeInputSlot(value = ImagePlusGreyscaleMaskData.class, slotName = "Input", autoCreate = true)
+@JIPipeOrganization(menuPath = "Math\nLocal", nodeTypeCategory = ImagesNodeTypeCategory.class)
+@JIPipeInputSlot(value = ImagePlusGreyscaleData.class, slotName = "Input", autoCreate = true)
 @JIPipeOutputSlot(value = ImagePlusGreyscaleMaskData.class, slotName = "Output", autoCreate = true)
-public class ConvexifyAlgorithm extends JIPipeSimpleIteratingAlgorithm {
+public class RegionalMinima2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
+
+    private Neighborhood2D connectivity = Neighborhood2D.EightConnected;
 
     /**
      * Instantiates a new node type.
      *
      * @param info the info
      */
-    public ConvexifyAlgorithm(JIPipeNodeInfo info) {
+    public RegionalMinima2DAlgorithm(JIPipeNodeInfo info) {
         super(info);
     }
 
@@ -58,19 +55,31 @@ public class ConvexifyAlgorithm extends JIPipeSimpleIteratingAlgorithm {
      *
      * @param other the other
      */
-    public ConvexifyAlgorithm(ConvexifyAlgorithm other) {
+    public RegionalMinima2DAlgorithm(RegionalMinima2DAlgorithm other) {
         super(other);
+        this.connectivity = other.connectivity;
+    }
+
+    @JIPipeDocumentation(name = "Connectivity", description = "Determines the neighborhood around each pixel that is checked for connectivity")
+    @JIPipeParameter("connectivity")
+    public Neighborhood2D getConnectivity() {
+        return connectivity;
+    }
+
+    @JIPipeParameter("connectivity")
+    public void setConnectivity(Neighborhood2D connectivity) {
+        this.connectivity = connectivity;
     }
 
     @Override
     protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
-        ImagePlus inputImage = dataBatch.getInputData(getFirstInputSlot(), ImagePlusGreyscaleMaskData.class, progressInfo).getImage();
+        ImagePlus inputImage = dataBatch.getInputData(getFirstInputSlot(), ImagePlusGreyscaleData.class, progressInfo).getImage();
         ImageStack stack = new ImageStack(inputImage.getWidth(), inputImage.getHeight(), inputImage.getStackSize());
         ImageJUtils.forEachIndexedZCTSlice(inputImage, (ip, index) -> {
-            ImageProcessor convexify = Convexity.convexify(ip);
-            stack.setProcessor(convexify, index.zeroSliceIndexToOneStackIndex(inputImage));
+            ImageProcessor resultProcessor = MinimaAndMaxima.regionalMinima(ip, connectivity.getNativeValue());
+            stack.setProcessor(resultProcessor, index.zeroSliceIndexToOneStackIndex(inputImage));
         }, progressInfo);
-        ImagePlus outputImage = new ImagePlus("Convexify", stack);
+        ImagePlus outputImage = new ImagePlus("Regional minima", stack);
         outputImage.setDimensions(inputImage.getNChannels(), inputImage.getNSlices(), inputImage.getNFrames());
         dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusGreyscaleMaskData(outputImage), progressInfo);
     }
