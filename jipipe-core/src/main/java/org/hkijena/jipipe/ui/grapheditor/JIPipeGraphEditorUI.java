@@ -669,7 +669,7 @@ public abstract class JIPipeGraphEditorUI extends JIPipeWorkbenchPanel implement
             int y = e.getY() - scrollPane.getVerticalScrollBar().getValue();
             int dx = x - panningOffset.x;
             int dy = y - panningOffset.y;
-            if (graphUISettings.isSwitchPanningDirection()) {
+            if (!graphUISettings.isSwitchPanningDirection()) {
                 dx = -dx;
                 dy = -dy;
             }
