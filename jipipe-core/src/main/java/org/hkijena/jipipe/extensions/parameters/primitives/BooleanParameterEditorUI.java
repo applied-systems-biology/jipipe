@@ -19,6 +19,7 @@ import org.hkijena.jipipe.ui.parameters.JIPipeParameterEditorUI;
 
 import javax.swing.*;
 import java.awt.BorderLayout;
+import java.awt.Component;
 
 /**
  * Parameter editor for boolean data
@@ -26,6 +27,8 @@ import java.awt.BorderLayout;
 public class BooleanParameterEditorUI extends JIPipeParameterEditorUI {
 
     private JCheckBox checkBox;
+    private JComboBox<Boolean> comboBox;
+    private boolean isInComboBoxMode;
     private boolean skipNextReload = false;
     private boolean isReloading = false;
 
@@ -40,7 +43,7 @@ public class BooleanParameterEditorUI extends JIPipeParameterEditorUI {
 
     @Override
     public boolean isUILabelEnabled() {
-        return false;
+        return isInComboBoxMode;
     }
 
     @Override
@@ -54,7 +57,14 @@ public class BooleanParameterEditorUI extends JIPipeParameterEditorUI {
         boolean booleanValue = false;
         if (value != null)
             booleanValue = (boolean) value;
-        checkBox.setSelected(booleanValue);
+
+        if(!isInComboBoxMode) {
+            checkBox.setSelected(booleanValue);
+        }
+        else {
+            comboBox.setSelectedItem(booleanValue);
+        }
+
         isReloading = false;
     }
 
@@ -64,14 +74,71 @@ public class BooleanParameterEditorUI extends JIPipeParameterEditorUI {
         boolean booleanValue = false;
         if (value != null)
             booleanValue = (boolean) value;
+
+        comboBox = new JComboBox<>(new Boolean[]{true, false});
+        comboBox.addActionListener(e -> {
+            if(!isReloading) {
+                skipNextReload = true;
+                setParameter(comboBox.getSelectedItem(), false);
+            }
+        });
+
         checkBox = new JCheckBox(getParameterAccess().getName());
-        checkBox.setSelected(booleanValue);
-        add(checkBox, BorderLayout.CENTER);
         checkBox.addActionListener(e -> {
             if (!isReloading) {
                 skipNextReload = true;
                 setParameter(checkBox.isSelected(), false);
             }
         });
+
+        BooleanParameterSettings settings = getParameterAccess().getAnnotationOfType(BooleanParameterSettings.class);
+        if(settings == null || !settings.comboBoxStyle()) {
+            isInComboBoxMode = false;
+            checkBox.setSelected(booleanValue);
+            add(checkBox, BorderLayout.CENTER);
+        }
+        else {
+            isInComboBoxMode = true;
+            isReloading = true;
+            comboBox.setSelectedItem(booleanValue);
+            isReloading = false;
+            add(comboBox, BorderLayout.CENTER);
+        }
+
+        updateComboBoxDisplay();
+    }
+
+    private void updateComboBoxDisplay() {
+        BooleanParameterSettings settings = getParameterAccess().getAnnotationOfType(BooleanParameterSettings.class);
+        if(settings != null) {
+            comboBox.setRenderer(new BooleanComboBoxItemRenderer(settings.trueLabel(), settings.falseLabel()));
+        }
+    }
+
+    public static class BooleanComboBoxItemRenderer extends JLabel implements ListCellRenderer<Boolean> {
+
+        private final String trueLabel;
+        private final String falseLabel;
+
+        public BooleanComboBoxItemRenderer(String trueLabel, String falseLabel) {
+            setOpaque(true);
+            setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
+            this.trueLabel = trueLabel;
+            this.falseLabel = falseLabel;
+        }
+
+        @Override
+        public Component getListCellRendererComponent(JList<? extends Boolean> list, Boolean value, int index, boolean isSelected, boolean cellHasFocus) {
+            if(value)
+                setText(trueLabel);
+            else
+                setText(falseLabel);
+            if (isSelected) {
+                setBackground(UIManager.getColor("List.selectionBackground"));
+            } else {
+                setBackground(UIManager.getColor("List.background"));
+            }
+            return this;
+        }
     }
 }

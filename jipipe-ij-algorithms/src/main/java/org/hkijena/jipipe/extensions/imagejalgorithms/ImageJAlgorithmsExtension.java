@@ -19,6 +19,7 @@ import inra.ijpb.binary.ChamferWeights;
 import inra.ijpb.binary.ChamferWeights3D;
 import inra.ijpb.morphology.Morphology;
 import inra.ijpb.morphology.Strel;
+import inra.ijpb.util.ColorMaps;
 import org.hkijena.jipipe.JIPipeImageJUpdateSiteDependency;
 import org.hkijena.jipipe.JIPipeJavaExtension;
 import org.hkijena.jipipe.api.data.JIPipeData;
@@ -74,6 +75,12 @@ import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.io.ROIFromGUI;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.io.ROIToGUI;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.io.ResultsTableFromGUI;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.io.ResultsTableToGUI;
+import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.labels.GetLabelBoundariesAlgorithm;
+import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.labels.KeepLabelsAlgorithm;
+import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.labels.LabelsToRGBAlgorithm;
+import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.labels.MergeLabelsAlgorithm;
+import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.labels.RemoveBorderLabelsAlgorithm;
+import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.labels.ReplaceLabelsAlgorithm;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.lut.LUTInverterAlgorithm;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.lut.RemoveLUTAlgorithm;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.lut.SetLUTFromColorAlgorithm;
@@ -82,6 +89,7 @@ import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.math.distancemap.Apply
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.math.distancemap.ChamferDistanceMap2DAlgorithm;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.math.distancemap.ChamferDistanceMap3DAlgorithm;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.math.distancemap.GeodesicDistanceMap2DAlgorithm;
+import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.math.distancemap.LabelChamferDistanceMap3DAlgorithm;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.misc.DataToPreviewAlgorithm;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.misc.ExportImageToWebAlgorithm;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.morphology.Morphology2DAlgorithm;
@@ -287,6 +295,7 @@ public class ImageJAlgorithmsExtension extends JIPipePrepackagedDefaultJavaExten
         registerOpticalFlowAlgorithms();
         registerFormAlgorithms();
         registerConverterAlgorithms();
+        registerLabelAlgorithms();
 
         registerEnumParameterType("ij1-export-image-to-web:file-format", ExportImageToWebAlgorithm.FileFormat.class, "File format", "Exported file format.");
         registerNodeType("iji-export-image-to-web", ExportImageToWebAlgorithm.class, UIUtils.getIconURLFromResources("actions/document-export.png"));
@@ -303,6 +312,17 @@ public class ImageJAlgorithmsExtension extends JIPipePrepackagedDefaultJavaExten
         registerGlobalParameters();
 
 //        registerIJ2Algorithms();
+    }
+
+    private void registerLabelAlgorithms() {
+        registerEnumParameterType("ij1-label-color-maps:common-label-maps", ColorMaps.CommonLabelMaps.class, "Color map", "A color map for labels");
+
+        registerNodeType("ij1-labels-to-rgb", LabelsToRGBAlgorithm.class, UIUtils.getIconURLFromResources("actions/colormanagement.png"));
+        registerNodeType("ij1-labels-get-label-boundaries", GetLabelBoundariesAlgorithm.class, UIUtils.getIconURLFromResources("actions/object-stroke.png"));
+        registerNodeType("ij1-labels-remove-border-labels", RemoveBorderLabelsAlgorithm.class, UIUtils.getIconURLFromResources("actions/filter.png"));
+        registerNodeType("ij1-labels-replace-labels", ReplaceLabelsAlgorithm.class, UIUtils.getIconURLFromResources("actions/edit.png"));
+        registerNodeType("ij1-labels-merge-labels", MergeLabelsAlgorithm.class, UIUtils.getIconURLFromResources("actions/merge.png"));
+        registerNodeType("ij1-labels-filter-labels", KeepLabelsAlgorithm.class, UIUtils.getIconURLFromResources("actions/filter.png"));
     }
 
     private void registerConverterAlgorithms() {
@@ -639,6 +659,7 @@ public class ImageJAlgorithmsExtension extends JIPipePrepackagedDefaultJavaExten
 
         registerNodeType("ij-math-chamfer-distance-map-2d", ChamferDistanceMap2DAlgorithm.class, UIUtils.getIconURLFromResources("actions/insert-math-expression.png"));
         registerNodeType("ij-math-chamfer-distance-map-3d", ChamferDistanceMap3DAlgorithm.class, UIUtils.getIconURLFromResources("actions/insert-math-expression.png"));
+        registerNodeType("ij-math-label-chamfer-distance-map-3d", LabelChamferDistanceMap3DAlgorithm.class, UIUtils.getIconURLFromResources("actions/insert-math-expression.png"));
         registerNodeType("ij-math-geodesic-distance-map-2d", GeodesicDistanceMap2DAlgorithm.class, UIUtils.getIconURLFromResources("actions/insert-math-expression.png"));
 
         registerEnumParameterType("ij-math-chamfer-distance-map-2d:weights", ChamferWeights.class, "Chamfer weights (2D)", "Predefined weights for the Chamfer distance map");

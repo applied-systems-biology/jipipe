@@ -10,6 +10,7 @@ import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.ui.grapheditor.nodeui.JIPipeDataSlotUI;
 import org.hkijena.jipipe.utils.JsonUtils;
 
+import javax.swing.*;
 import java.awt.Component;
 import java.awt.Cursor;
 import java.awt.datatransfer.DataFlavor;
@@ -138,6 +139,10 @@ public class JIPipeConnectionDragAndDropBehavior implements DropTargetListener, 
         if (dge.getTriggerEvent() instanceof MouseEvent) {
             if (((MouseEvent) dge.getTriggerEvent()).getButton() != MouseEvent.BUTTON1)
                 return;
+//            if (dge.getTriggerEvent().isControlDown() || dge.getTriggerEvent().isShiftDown()) {
+//                slotUI.getGraphUI().dispatchEvent(SwingUtilities.convertMouseEvent(dge.getTriggerEvent().getComponent(), (MouseEvent) dge.getTriggerEvent(), slotUI.getGraphUI()));
+//                return;
+//            }
         }
         ObjectNode node = JsonUtils.getObjectMapper().getNodeFactory().objectNode();
         node.put("node", slotUI.getSlot().getNode().getUUIDInGraph().toString());

@@ -48,14 +48,7 @@ import org.hkijena.jipipe.extensions.parameters.matrix.Matrix2DFloat;
 import org.hkijena.jipipe.extensions.parameters.matrix.Matrix2DParameterEditorUI;
 import org.hkijena.jipipe.extensions.parameters.optional.OptionalParameter;
 import org.hkijena.jipipe.extensions.parameters.optional.OptionalParameterEditorUI;
-import org.hkijena.jipipe.extensions.parameters.pairs.DoubleAndDoublePairParameter;
-import org.hkijena.jipipe.extensions.parameters.pairs.IntegerAndIntegerPairParameter;
-import org.hkijena.jipipe.extensions.parameters.pairs.PairParameter;
-import org.hkijena.jipipe.extensions.parameters.pairs.PairParameterEditorUI;
-import org.hkijena.jipipe.extensions.parameters.pairs.StringAndStringPairParameter;
-import org.hkijena.jipipe.extensions.parameters.pairs.StringQueryExpressionAndSortOrderPairParameter;
-import org.hkijena.jipipe.extensions.parameters.pairs.StringQueryExpressionAndStringPairParameter;
-import org.hkijena.jipipe.extensions.parameters.pairs.StringQueryExpressionAndStringQueryPairParameter;
+import org.hkijena.jipipe.extensions.parameters.pairs.*;
 import org.hkijena.jipipe.extensions.parameters.patterns.StringPatternExtraction;
 import org.hkijena.jipipe.extensions.parameters.patterns.StringPatternExtractionParameterEditorUI;
 import org.hkijena.jipipe.extensions.parameters.primitives.*;
@@ -520,6 +513,17 @@ public class StandardParametersExtension extends JIPipePrepackagedDefaultJavaExt
                         "encased with (brackets). [from] and [to] can be in inverse order, generating numbers in inverse order. Spaces are ignored. " +
                         "Example: 0-10;5;3-(-1)",
                 IntegerRangeParameterEditorUI.class);
+        registerParameterType("integer-range:int:pair",
+                IntRangeAndIntegerPairParameter.class,
+                IntRangeAndIntegerPairParameter.List.class,
+                null,
+                null,
+                "Integer range to integer pair",
+                "Describes a range of whole numbers via a string. The string must have following format: " +
+                        "[range];[range];... with range being an integer or [from]-[to]. [from] and [to] are inclusive borders. Negative numbers must be " +
+                        "encased with (brackets). [from] and [to] can be in inverse order, generating numbers in inverse order. Spaces are ignored. " +
+                        "Example: 0-10;5;3-(-1)",
+                null);
     }
 
     private void registerJIPipeTypes() {
