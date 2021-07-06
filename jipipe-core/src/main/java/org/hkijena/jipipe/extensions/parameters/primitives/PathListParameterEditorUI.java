@@ -138,7 +138,7 @@ public class PathListParameterEditorUI extends JIPipeParameterEditorUI {
 
     private void addEntry() {
         PathList parameter = getParameter(PathList.class);
-        String key = FileChooserSettings.KEY_PARAMETER;
+        FileChooserSettings.LastDirectoryKey key = FileChooserSettings.LastDirectoryKey.Parameters;
         FilePathParameterSettings annotation = getParameterAccess().getAnnotationOfType(FilePathParameterSettings.class);
         if (annotation != null) {
             key = annotation.key();

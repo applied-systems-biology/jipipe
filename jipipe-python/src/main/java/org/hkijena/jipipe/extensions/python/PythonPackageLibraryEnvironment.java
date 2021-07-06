@@ -67,7 +67,7 @@ public abstract class PythonPackageLibraryEnvironment extends ExternalEnvironmen
 
     @JIPipeDocumentation(name = "Library directory", description = "The directory that contains the Python packages. Ignored if the Python packages are provided by the Python environment.")
     @JIPipeParameter("library-directory")
-    @FilePathParameterSettings(key = FileChooserSettings.KEY_EXTERNAL, pathMode = PathEditor.PathMode.DirectoriesOnly, ioMode = PathEditor.IOMode.Open)
+    @FilePathParameterSettings(key = FileChooserSettings.LastDirectoryKey.External, pathMode = PathEditor.PathMode.DirectoriesOnly, ioMode = PathEditor.IOMode.Open)
     @JsonGetter("library-directory")
     public Path getLibraryDirectory() {
         return libraryDirectory;

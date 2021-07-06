@@ -144,7 +144,7 @@ public class JIPipeDataSlotRowUI extends JIPipeWorkbenchPanel {
     }
 
     private void exportAsFolder() {
-        Path path = FileChooserSettings.saveDirectory(getWorkbench().getWindow(), FileChooserSettings.KEY_DATA, "Export " + slot.getNode().getName() + "/" + slot.getName() + "/" + row);
+        Path path = FileChooserSettings.saveDirectory(getWorkbench().getWindow(), FileChooserSettings.LastDirectoryKey.Data, "Export " + slot.getNode().getName() + "/" + slot.getName() + "/" + row);
         if (path != null) {
             try {
                 Files.createDirectories(path);
@@ -182,7 +182,7 @@ public class JIPipeDataSlotRowUI extends JIPipeWorkbenchPanel {
     }
 
     private void exportToFolder() {
-        Path path = FileChooserSettings.saveFile(getWorkbench().getWindow(), FileChooserSettings.KEY_DATA, "Export " + slot.getNode().getName() + "/" + slot.getName() + "/" + row);
+        Path path = FileChooserSettings.saveFile(getWorkbench().getWindow(), FileChooserSettings.LastDirectoryKey.Data, "Export " + slot.getNode().getName() + "/" + slot.getName() + "/" + row);
         if (path != null) {
             JIPipeRunnable runnable = new JIPipeRunnable() {
                 private JIPipeProgressInfo progressInfo = new JIPipeProgressInfo();

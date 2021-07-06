@@ -48,7 +48,7 @@ public class ScreenshotWholeGraphToolSVG extends MenuExtension {
         JIPipeGraphCanvasUI canvasUI = new JIPipeGraphCanvasUI(workbench, workbench.getProject().getGraph(), null);
         canvasUI.autoLayoutAll();
         SVGGraphics2D screenshot = canvasUI.createScreenshotSVG();
-        Path file = FileChooserSettings.saveFile(this, FileChooserSettings.KEY_PARAMETER, "Export full graph as *.svg", UIUtils.EXTENSION_FILTER_SVG);
+        Path file = FileChooserSettings.saveFile(this, FileChooserSettings.LastDirectoryKey.Parameters, "Export full graph as *.svg", UIUtils.EXTENSION_FILTER_SVG);
         if (file != null) {
             try {
                 SVGUtils.writeToSVG(file.toFile(), screenshot.getSVGElement());

@@ -41,22 +41,6 @@ import java.util.stream.Collectors;
  */
 public class FileChooserSettings implements JIPipeParameterCollection {
 
-    /**
-     * Path key for project locations
-     */
-    public static final String KEY_PROJECT = "Projects";
-    /**
-     * Path key for data
-     */
-    public static final String KEY_DATA = "Data";
-    /**
-     * Path key for any parameter
-     */
-    public static final String KEY_PARAMETER = "Parameters";
-    /**
-     * Path key for some external/utility file
-     */
-    public static final String KEY_EXTERNAL = "External";
     public static String ID = "file-chooser";
     private EventBus eventBus = new EventBus();
     private boolean useNativeChooser = false;
@@ -65,6 +49,13 @@ public class FileChooserSettings implements JIPipeParameterCollection {
     private Path lastDataDirectory;
     private Path lastExternalDirectory;
     private boolean addFileExtension = true;
+
+    public enum LastDirectoryKey {
+        Projects,
+        Data,
+        Parameters,
+        External
+    }
 
     @Override
     public EventBus getEventBus() {
@@ -90,15 +81,17 @@ public class FileChooserSettings implements JIPipeParameterCollection {
      * @param key the key
      * @return the last path or Paths.get() (home directory)
      */
-    public Path getLastDirectoryBy(String key) {
-        if (KEY_PROJECT.equals(key))
-            return getLastProjectsDirectory();
-        else if (KEY_DATA.equals(key))
-            return getLastDataDirectory();
-        else if (KEY_EXTERNAL.equals(key))
-            return getLastExternalDirectory();
-        else
-            return getLastParametersDirectory();
+    public Path getLastDirectoryBy(LastDirectoryKey key) {
+        switch (key) {
+            case Data:
+                return getLastDataDirectory();
+            case External:
+                return getLastExternalDirectory();
+            case Projects:
+                return getLastProjectsDirectory();
+            default:
+                return getLastParametersDirectory();
+        }
     }
 
     /**
@@ -107,17 +100,23 @@ public class FileChooserSettings implements JIPipeParameterCollection {
      * @param key           the key
      * @param lastDirectory directory or file
      */
-    public void setLastDirectoryBy(String key, Path lastDirectory) {
+    public void setLastDirectoryBy(LastDirectoryKey key, Path lastDirectory) {
         if (Files.isRegularFile(lastDirectory))
             lastDirectory = lastDirectory.getParent();
-        if (KEY_PROJECT.equals(key))
-            setLastProjectsDirectory(lastDirectory);
-        else if (KEY_DATA.equals(key))
-            setLastDataDirectory(lastDirectory);
-        else if (KEY_EXTERNAL.equals(key))
-            setLastExternalDirectory(lastDirectory);
-        else
-            setLastParametersDirectory(lastDirectory);
+        switch (key) {
+            case Projects:
+                setLastProjectsDirectory(lastDirectory);
+                break;
+            case External:
+                setLastExternalDirectory(lastDirectory);
+                break;
+            case Data:
+                setLastDataDirectory(lastDirectory);
+                break;
+            default:
+                setLastParametersDirectory(lastDirectory);
+                break;
+        }
     }
 
     @JIPipeDocumentation(name = "Last external directory", description = "The file chooser will open in this folder when selecting external utilities.")
@@ -215,7 +214,7 @@ public class FileChooserSettings implements JIPipeParameterCollection {
      * @param extensionFilters optional extension filters. the first one is chosen automatically
      * @return selected file or null if dialog was cancelled
      */
-    public static Path openFile(Component parent, String key, String title, FileNameExtensionFilter... extensionFilters) {
+    public static Path openFile(Component parent, LastDirectoryKey key, String title, FileNameExtensionFilter... extensionFilters) {
         FileChooserSettings instance = getInstance();
         Path currentPath = instance.getLastDirectoryBy(key);
         if (instance.useNativeChooser) {
@@ -261,7 +260,7 @@ public class FileChooserSettings implements JIPipeParameterCollection {
      * @param extensionFilters extension filters. the first one is chosen automatically
      * @return selected file or null if dialog was cancelled
      */
-    public static Path saveFile(Component parent, String key, String title, FileNameExtensionFilter... extensionFilters) {
+    public static Path saveFile(Component parent, LastDirectoryKey key, String title, FileNameExtensionFilter... extensionFilters) {
         FileChooserSettings instance = getInstance();
         Path currentPath = instance.getLastDirectoryBy(key);
         if (instance.useNativeChooser) {
@@ -336,7 +335,7 @@ public class FileChooserSettings implements JIPipeParameterCollection {
      * @param title  dialog title
      * @return selected file or null if dialog was cancelled
      */
-    public static Path openPath(Component parent, String key, String title) {
+    public static Path openPath(Component parent, LastDirectoryKey key, String title) {
         FileChooserSettings instance = getInstance();
         Path currentPath = instance.getLastDirectoryBy(key);
         JFileChooser fileChooser = new JFileChooser(currentPath.toFile());
@@ -359,7 +358,7 @@ public class FileChooserSettings implements JIPipeParameterCollection {
      * @param title  dialog title
      * @return selected file or null if dialog was cancelled
      */
-    public static Path savePath(Component parent, String key, String title) {
+    public static Path savePath(Component parent, LastDirectoryKey key, String title) {
         FileChooserSettings instance = getInstance();
         Path currentPath = instance.getLastDirectoryBy(key);
         JFileChooser fileChooser = new JFileChooser(currentPath.toFile());
@@ -382,7 +381,7 @@ public class FileChooserSettings implements JIPipeParameterCollection {
      * @param title  dialog title
      * @return selected directory or null if dialog was cancelled
      */
-    public static Path openDirectory(Component parent, String key, String title) {
+    public static Path openDirectory(Component parent, LastDirectoryKey key, String title) {
         FileChooserSettings instance = getInstance();
         Path currentPath = instance.getLastDirectoryBy(key);
         JFileChooser fileChooser = new JFileChooser(currentPath.toFile());
@@ -405,7 +404,7 @@ public class FileChooserSettings implements JIPipeParameterCollection {
      * @param title  dialog title
      * @return selected directory or null if dialog was cancelled
      */
-    public static Path saveDirectory(Component parent, String key, String title) {
+    public static Path saveDirectory(Component parent, LastDirectoryKey key, String title) {
         FileChooserSettings instance = getInstance();
         Path currentPath = instance.getLastDirectoryBy(key);
         JFileChooser fileChooser = new JFileChooser(currentPath.toFile());
@@ -428,7 +427,7 @@ public class FileChooserSettings implements JIPipeParameterCollection {
      * @param title  dialog title
      * @return selected list of files. Is empty if dialog was cancelled.
      */
-    public static List<Path> openFiles(Component parent, String key, String title) {
+    public static List<Path> openFiles(Component parent, LastDirectoryKey key, String title) {
         FileChooserSettings instance = getInstance();
         Path currentPath = instance.getLastDirectoryBy(key);
         if (instance.useNativeChooser) {
@@ -465,7 +464,7 @@ public class FileChooserSettings implements JIPipeParameterCollection {
      * @param title  dialog title
      * @return selected list of files. Is empty if dialog was cancelled.
      */
-    public static List<Path> openDirectories(Component parent, String key, String title) {
+    public static List<Path> openDirectories(Component parent, LastDirectoryKey key, String title) {
         FileChooserSettings instance = getInstance();
         Path currentPath = instance.getLastDirectoryBy(key);
         JFileChooser fileChooser = new JFileChooser(currentPath.toFile());
@@ -490,7 +489,7 @@ public class FileChooserSettings implements JIPipeParameterCollection {
      * @param title  dialog title
      * @return selected list of files. Is empty if dialog was cancelled.
      */
-    public static List<Path> openPaths(Component parent, String key, String title) {
+    public static List<Path> openPaths(Component parent, LastDirectoryKey key, String title) {
         FileChooserSettings instance = getInstance();
         Path currentPath = instance.getLastDirectoryBy(key);
         JFileChooser fileChooser = new JFileChooser(currentPath.toFile());
@@ -518,7 +517,7 @@ public class FileChooserSettings implements JIPipeParameterCollection {
      * @param extensionFilters passed if a file is opened/saved
      * @return selected path of provided pathMode or null if dialog was cancelled
      */
-    public static Path selectSingle(Component parent, String key, String title, PathEditor.IOMode ioMode, PathEditor.PathMode pathMode, FileNameExtensionFilter... extensionFilters) {
+    public static Path selectSingle(Component parent, LastDirectoryKey key, String title, PathEditor.IOMode ioMode, PathEditor.PathMode pathMode, FileNameExtensionFilter... extensionFilters) {
         Path selected;
         if (ioMode == PathEditor.IOMode.Open) {
             switch (pathMode) {
@@ -563,7 +562,7 @@ public class FileChooserSettings implements JIPipeParameterCollection {
      * @param pathMode which types of paths are returned
      * @return selected paths of provided pathMode or empty list if dialog was cancelled
      */
-    public static List<Path> selectMulti(Component parent, String key, String title, PathEditor.IOMode ioMode, PathEditor.PathMode pathMode) {
+    public static List<Path> selectMulti(Component parent, LastDirectoryKey key, String title, PathEditor.IOMode ioMode, PathEditor.PathMode pathMode) {
         List<Path> selected;
         if (ioMode == PathEditor.IOMode.Open) {
             switch (pathMode) {

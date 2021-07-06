@@ -184,8 +184,8 @@ public class ScriptParameterEditorUI extends JIPipeParameterEditorUI {
                                 }
 
                                 @Override
-                                public String key() {
-                                    return FileChooserSettings.KEY_PROJECT;
+                                public FileChooserSettings.LastDirectoryKey key() {
+                                    return FileChooserSettings.LastDirectoryKey.Projects;
                                 }
                             }).build();
                     JIPipeParameterEditorUI pathEditor = JIPipe.getInstance().getParameterTypeRegistry().createEditorFor(getWorkbench(), access);

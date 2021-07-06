@@ -142,8 +142,8 @@ public class PathFormData extends ParameterFormData {
                     }
 
                     @Override
-                    public String key() {
-                        return FileChooserSettings.KEY_PARAMETER;
+                    public FileChooserSettings.LastDirectoryKey key() {
+                        return FileChooserSettings.LastDirectoryKey.Parameters;
                     }
                 })
                 .build();

@@ -135,7 +135,7 @@ public class SelectCondaEnvPythonInstaller extends ExternalEnvironmentInstaller 
         }
 
         @JIPipeDocumentation(name = "Conda executable", description = "The conda executable. Located in the Miniconda/Anaconda folder. On Windows it is inside the Scripts directory.")
-        @FilePathParameterSettings(ioMode = PathEditor.IOMode.Open, pathMode = PathEditor.PathMode.FilesOnly, key = FileChooserSettings.KEY_EXTERNAL)
+        @FilePathParameterSettings(ioMode = PathEditor.IOMode.Open, pathMode = PathEditor.PathMode.FilesOnly, key = FileChooserSettings.LastDirectoryKey.External)
         @JIPipeParameter("conda-executable")
         public Path getCondaExecutable() {
             return condaExecutable;
@@ -160,7 +160,7 @@ public class SelectCondaEnvPythonInstaller extends ExternalEnvironmentInstaller 
 
         @JIPipeDocumentation(name = "Override environment path", description = "Alternative to using an environment name. You can provide " +
                 "the environment directory here.")
-        @FilePathParameterSettings(ioMode = PathEditor.IOMode.Open, pathMode = PathEditor.PathMode.DirectoriesOnly, key = FileChooserSettings.KEY_EXTERNAL)
+        @FilePathParameterSettings(ioMode = PathEditor.IOMode.Open, pathMode = PathEditor.PathMode.DirectoriesOnly, key = FileChooserSettings.LastDirectoryKey.External)
         @JIPipeParameter("override-environment")
         public OptionalPathParameter getOverrideEnvironment() {
             return overrideEnvironment;

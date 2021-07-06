@@ -296,7 +296,7 @@ public class JIPipeProjectWindow extends JFrame {
      * Opens a file chooser where the user can select a project file
      */
     public void openProject() {
-        Path file = FileChooserSettings.openFile(this, FileChooserSettings.KEY_PROJECT, "Open JIPipe project (*.jip)", UIUtils.EXTENSION_FILTER_JIP);
+        Path file = FileChooserSettings.openFile(this, FileChooserSettings.LastDirectoryKey.Projects, "Open JIPipe project (*.jip)", UIUtils.EXTENSION_FILTER_JIP);
         if (file != null) {
             openProject(file);
         }
@@ -306,7 +306,7 @@ public class JIPipeProjectWindow extends JFrame {
      * Opens a file chooser where the user can select a result folder
      */
     public void openProjectAndOutput() {
-        Path file = FileChooserSettings.openDirectory(this, FileChooserSettings.KEY_PROJECT, "Open JIPipe output folder");
+        Path file = FileChooserSettings.openDirectory(this, FileChooserSettings.LastDirectoryKey.Projects, "Open JIPipe output folder");
         if (file != null) {
             openProject(file);
         }
@@ -322,7 +322,7 @@ public class JIPipeProjectWindow extends JFrame {
         if (avoidDialog && projectSavePath != null)
             savePath = projectSavePath;
         if (savePath == null) {
-            savePath = FileChooserSettings.saveFile(this, FileChooserSettings.KEY_PROJECT, "Save JIPipe project (*.jip)", UIUtils.EXTENSION_FILTER_JIP);
+            savePath = FileChooserSettings.saveFile(this, FileChooserSettings.LastDirectoryKey.Projects, "Save JIPipe project (*.jip)", UIUtils.EXTENSION_FILTER_JIP);
             if (savePath == null)
                 return;
         }
@@ -410,7 +410,7 @@ public class JIPipeProjectWindow extends JFrame {
      * Saves the project and cache
      */
     public void saveProjectAndCache() {
-        Path directory = FileChooserSettings.saveDirectory(this, FileChooserSettings.KEY_PROJECT, "Save project and cache");
+        Path directory = FileChooserSettings.saveDirectory(this, FileChooserSettings.LastDirectoryKey.Projects, "Save project and cache");
         if (directory == null)
             return;
         try {

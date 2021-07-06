@@ -166,7 +166,7 @@ public class JIPipeMergedResultDataSlotTableUI extends JIPipeProjectWorkbenchPan
     }
 
     private void exportAsCSV() {
-        Path path = FileChooserSettings.saveFile(this, FileChooserSettings.KEY_PROJECT, "Export as *.csv", UIUtils.EXTENSION_FILTER_CSV);
+        Path path = FileChooserSettings.saveFile(this, FileChooserSettings.LastDirectoryKey.Projects, "Export as *.csv", UIUtils.EXTENSION_FILTER_CSV);
         if (path != null) {
             AnnotationTableData tableData = new AnnotationTableData();
             for (JIPipeExportedDataTable exportedDataTable : mergedDataTable.getAddedTables()) {

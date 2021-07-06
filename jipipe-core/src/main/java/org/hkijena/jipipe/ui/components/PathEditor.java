@@ -45,7 +45,7 @@ public class PathEditor extends JPanel {
     private Set<ActionListener> listeners = new HashSet<>();
     private JButton generateRandomButton;
     private List<FileNameExtensionFilter> extensionFilters = new ArrayList<>();
-    private String directoryKey = FileChooserSettings.KEY_PARAMETER;
+    private FileChooserSettings.LastDirectoryKey directoryKey = FileChooserSettings.LastDirectoryKey.Parameters;
 
     /**
      * Creates a new file selection that opens a file
@@ -239,11 +239,11 @@ public class PathEditor extends JPanel {
         }
     }
 
-    public String getDirectoryKey() {
+    public FileChooserSettings.LastDirectoryKey getDirectoryKey() {
         return directoryKey;
     }
 
-    public void setDirectoryKey(String directoryKey) {
+    public void setDirectoryKey(FileChooserSettings.LastDirectoryKey directoryKey) {
         this.directoryKey = directoryKey;
     }
 

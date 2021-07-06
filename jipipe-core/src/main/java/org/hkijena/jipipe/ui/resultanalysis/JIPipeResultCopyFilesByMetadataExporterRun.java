@@ -74,7 +74,7 @@ public class JIPipeResultCopyFilesByMetadataExporterRun extends JIPipeWorkbenchP
      * @return if setup was confirmed
      */
     public boolean setup() {
-        outputPath = FileChooserSettings.openDirectory(this, FileChooserSettings.KEY_DATA, "Export data as files");
+        outputPath = FileChooserSettings.openDirectory(this, FileChooserSettings.LastDirectoryKey.Data, "Export data as files");
         if (outputPath == null)
             return false;
 

@@ -126,7 +126,7 @@ public class MarkdownReader extends JPanel {
 
             JMenuItem saveMarkdown = new JMenuItem("as Markdown (*.md)", UIUtils.getIconFromResources("mimetypes/text-markdown.png"));
             saveMarkdown.addActionListener(e -> {
-                Path selectedPath = FileChooserSettings.saveFile(this, FileChooserSettings.KEY_PROJECT, "Save as Markdown (*.md)", UIUtils.EXTENSION_FILTER_MD);
+                Path selectedPath = FileChooserSettings.saveFile(this, FileChooserSettings.LastDirectoryKey.Projects, "Save as Markdown (*.md)", UIUtils.EXTENSION_FILTER_MD);
                 if (selectedPath != null) {
                     try {
                         Files.write(selectedPath, document.getMarkdown().getBytes(Charsets.UTF_8));
@@ -139,7 +139,7 @@ public class MarkdownReader extends JPanel {
 
             JMenuItem saveHTML = new JMenuItem("as HTML (*.html)", UIUtils.getIconFromResources("mimetypes/text-html.png"));
             saveHTML.addActionListener(e -> {
-                Path selectedPath = FileChooserSettings.saveFile(this, FileChooserSettings.KEY_PROJECT, "Save as HTML (*.html)", UIUtils.EXTENSION_FILTER_HTML);
+                Path selectedPath = FileChooserSettings.saveFile(this, FileChooserSettings.LastDirectoryKey.Projects, "Save as HTML (*.html)", UIUtils.EXTENSION_FILTER_HTML);
                 if (selectedPath != null) {
                     try {
                         Files.write(selectedPath, toHTML().getBytes(Charsets.UTF_8));
@@ -152,7 +152,7 @@ public class MarkdownReader extends JPanel {
 
             JMenuItem savePDF = new JMenuItem("as PDF (*.pdf)", UIUtils.getIconFromResources("mimetypes/application-pdf.png"));
             savePDF.addActionListener(e -> {
-                Path selectedPath = FileChooserSettings.saveFile(this, FileChooserSettings.KEY_PROJECT, "Save as Portable Document Format (*.pdf)", UIUtils.EXTENSION_FILTER_PDF);
+                Path selectedPath = FileChooserSettings.saveFile(this, FileChooserSettings.LastDirectoryKey.Projects, "Save as Portable Document Format (*.pdf)", UIUtils.EXTENSION_FILTER_PDF);
                 if (selectedPath != null) {
                     PdfConverterExtension.exportToPdf(selectedPath.toString(), toHTML(), "", OPTIONS);
                 }

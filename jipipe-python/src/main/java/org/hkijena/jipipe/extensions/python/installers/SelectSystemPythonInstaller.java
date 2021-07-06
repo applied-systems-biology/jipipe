@@ -119,7 +119,7 @@ public class SelectSystemPythonInstaller extends ExternalEnvironmentInstaller {
         @JIPipeDocumentation(name = "Python executable", description = "The executable of the system Python. " +
                 "On Windows this is usually %appdata%\\..\\Local\\Programs\\Python\\PythonXX\\python.exe (XX is the Python version). " +
                 "On Linux, Python is located in /usr/local/bin/python")
-        @FilePathParameterSettings(ioMode = PathEditor.IOMode.Open, pathMode = PathEditor.PathMode.FilesOnly, key = FileChooserSettings.KEY_EXTERNAL)
+        @FilePathParameterSettings(ioMode = PathEditor.IOMode.Open, pathMode = PathEditor.PathMode.FilesOnly, key = FileChooserSettings.LastDirectoryKey.External)
         @JIPipeParameter("python-executable")
         public Path getPythonExecutable() {
             return pythonExecutable;
