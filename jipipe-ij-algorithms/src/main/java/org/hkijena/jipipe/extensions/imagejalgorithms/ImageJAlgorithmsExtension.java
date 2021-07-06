@@ -19,7 +19,7 @@ import inra.ijpb.binary.ChamferWeights;
 import inra.ijpb.binary.ChamferWeights3D;
 import inra.ijpb.morphology.Morphology;
 import inra.ijpb.morphology.Strel;
-import inra.ijpb.util.ColorMaps;
+import inra.ijpb.color.ColorMaps;
 import org.hkijena.jipipe.JIPipeImageJUpdateSiteDependency;
 import org.hkijena.jipipe.JIPipeJavaExtension;
 import org.hkijena.jipipe.api.data.JIPipeData;
@@ -325,6 +325,7 @@ public class ImageJAlgorithmsExtension extends JIPipePrepackagedDefaultJavaExten
         registerNodeType("ij1-labels-expand-labels", ExpandLabelsAlgorithm.class, UIUtils.getIconURLFromResources("actions/object-tweak-push.png"));
         registerNodeType("ij1-labels-remove-largest-label", RemoveLargestLabelAlgorithm.class, UIUtils.getIconURLFromResources("actions/filter.png"));
         registerNodeType("ij1-labels-keep-largest-label", KeepLargestLabelAlgorithm.class, UIUtils.getIconURLFromResources("actions/filter.png"));
+        registerNodeType("ij1-labels-dilate-labels", DilateLabelsAlgorithm.class, UIUtils.getIconURLFromResources("actions/morphology.png"));
     }
 
     private void registerConverterAlgorithms() {

@@ -15,7 +15,6 @@ package org.hkijena.jipipe.extensions.imagejalgorithms.ij1.labels;
 
 import ij.ImagePlus;
 import inra.ijpb.label.LabelImages;
-import inra.ijpb.plugins.ExpandLabelsPlugin;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
@@ -27,34 +26,33 @@ import org.hkijena.jipipe.api.nodes.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleData;
-import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleMaskData;
 
-@JIPipeDocumentation(name = "Expand labels", description = "Adds space between labels to make them more easily distinguishable")
+@JIPipeDocumentation(name = "Dilate labels", description = "Applies a constrained dilation of labels without unwanted growing/shrinking bordering regions (dilation only over the background)")
 @JIPipeOrganization(menuPath = "Labels", nodeTypeCategory = ImagesNodeTypeCategory.class)
 @JIPipeInputSlot(value = ImagePlusGreyscaleData.class, slotName = "Input", autoCreate = true)
 @JIPipeOutputSlot(value = ImagePlusGreyscaleData.class, slotName = "Output", autoCreate = true)
-public class ExpandLabelsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
+public class DilateLabelsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
-    private float ratio = 20;
+    private double maxRadius = 5;
 
-    public ExpandLabelsAlgorithm(JIPipeNodeInfo info) {
+    public DilateLabelsAlgorithm(JIPipeNodeInfo info) {
         super(info);
     }
 
-    public ExpandLabelsAlgorithm(ExpandLabelsAlgorithm other) {
+    public DilateLabelsAlgorithm(DilateLabelsAlgorithm other) {
         super(other);
-        this.ratio = other.ratio;
+        this.maxRadius = other.maxRadius;
     }
 
-    @JIPipeDocumentation(name = "Coefficient (%)", description = "Determines by how much % the label centers are shifted")
-    @JIPipeParameter("ratio")
-    public float getRatio() {
-        return ratio;
+    @JIPipeDocumentation(name = "Maximum radius", description = "The maximum radius of the dilation")
+    @JIPipeParameter("max-radius")
+    public double getMaxRadius() {
+        return maxRadius;
     }
 
-    @JIPipeParameter("ratio")
-    public void setRatio(float ratio) {
-        this.ratio = ratio;
+    @JIPipeParameter("max-radius")
+    public void setMaxRadius(double maxRadius) {
+        this.maxRadius = maxRadius;
     }
 
     @Override
@@ -62,10 +60,10 @@ public class ExpandLabelsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         ImagePlus inputImage = dataBatch.getInputData(getFirstInputSlot(), ImagePlusGreyscaleData.class, progressInfo).getImage();
        ImagePlus outputImage;
        if(inputImage.getStackSize() == 1) {
-           outputImage = new ImagePlus("Boundaries", ExpandLabelsPlugin.expandLabels(inputImage.getProcessor(), ratio));
+           outputImage = new ImagePlus("Dilated", LabelImages.dilateLabels(inputImage.getProcessor(), maxRadius));
        }
        else {
-           outputImage = new ImagePlus("Boundaries",  ExpandLabelsPlugin.expandLabels(inputImage.getStack(), ratio));
+           outputImage = new ImagePlus("Dilated",  LabelImages.dilateLabels(inputImage.getStack(), maxRadius));
        }
         outputImage.setDimensions(inputImage.getNChannels(), inputImage.getNSlices(), inputImage.getNFrames());
         dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusGreyscaleData(outputImage), progressInfo);
