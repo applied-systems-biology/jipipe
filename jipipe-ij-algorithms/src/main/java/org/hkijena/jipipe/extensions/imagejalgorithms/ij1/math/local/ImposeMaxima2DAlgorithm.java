@@ -20,35 +20,28 @@ import inra.ijpb.morphology.MinimaAndMaxima;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
-import org.hkijena.jipipe.api.nodes.JIPipeDataBatch;
-import org.hkijena.jipipe.api.nodes.JIPipeInputSlot;
-import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
-import org.hkijena.jipipe.api.nodes.JIPipeOutputSlot;
-import org.hkijena.jipipe.api.nodes.JIPipeSimpleIteratingAlgorithm;
+import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.Neighborhood2D;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d2.greyscale.ImagePlus2DGreyscaleMaskData;
-import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscale8UData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleMaskData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 
-@JIPipeDocumentation(name = "Regional maxima 2D", description = "Returns the regions that have a constant intensity value and are surrounded by lower intensity values. " +
-        "If higher-dimensional data is provided, the filter is applied to each 2D slice.")
+@JIPipeDocumentation(name = "Impose maxima 2D", description = "Repeatedly dilate the input image until regional maxima fit the maxima mask.")
 @JIPipeOrganization(menuPath = "Math\nLocal", nodeTypeCategory = ImagesNodeTypeCategory.class)
 @JIPipeInputSlot(value = ImagePlusGreyscaleData.class, slotName = "Input", autoCreate = true)
-@JIPipeOutputSlot(value = ImagePlusGreyscaleMaskData.class, slotName = "Output", autoCreate = true)
-public class RegionalMaxima2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
-
-    private Neighborhood2D connectivity = Neighborhood2D.EightConnected;
+@JIPipeInputSlot(value = ImagePlusGreyscaleMaskData.class, slotName = "Maxima", autoCreate = true)
+@JIPipeOutputSlot(value = ImagePlusGreyscaleData.class, slotName = "Output", autoCreate = true)
+public class ImposeMaxima2DAlgorithm extends JIPipeIteratingAlgorithm {
 
     /**
      * Instantiates a new node type.
      *
      * @param info the info
      */
-    public RegionalMaxima2DAlgorithm(JIPipeNodeInfo info) {
+    public ImposeMaxima2DAlgorithm(JIPipeNodeInfo info) {
         super(info);
     }
 
@@ -57,32 +50,23 @@ public class RegionalMaxima2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
      *
      * @param other the other
      */
-    public RegionalMaxima2DAlgorithm(RegionalMaxima2DAlgorithm other) {
+    public ImposeMaxima2DAlgorithm(ImposeMaxima2DAlgorithm other) {
         super(other);
-        this.connectivity = other.connectivity;
-    }
-
-    @JIPipeDocumentation(name = "Connectivity", description = "Determines the neighborhood around each pixel that is checked for connectivity")
-    @JIPipeParameter("connectivity")
-    public Neighborhood2D getConnectivity() {
-        return connectivity;
-    }
-
-    @JIPipeParameter("connectivity")
-    public void setConnectivity(Neighborhood2D connectivity) {
-        this.connectivity = connectivity;
     }
 
     @Override
     protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
-        ImagePlus inputImage = dataBatch.getInputData(getFirstInputSlot(), ImagePlusGreyscaleData.class, progressInfo).getImage();
+        ImagePlus inputImage = dataBatch.getInputData("Input", ImagePlusGreyscaleData.class, progressInfo).getImage();
+        ImagePlus maximaImage = dataBatch.getInputData("Maxima", ImagePlusGreyscaleMaskData.class, progressInfo).getImage();
+
         ImageStack stack = new ImageStack(inputImage.getWidth(), inputImage.getHeight(), inputImage.getStackSize());
         ImageJUtils.forEachIndexedZCTSlice(inputImage, (ip, index) -> {
-            ImageProcessor resultProcessor = MinimaAndMaxima.regionalMaxima(ip, connectivity.getNativeValue());
+            ImageProcessor maximaSlice = ImageJUtils.getSliceZero(maximaImage, index);
+            ImageProcessor resultProcessor = MinimaAndMaxima.imposeMaxima(ip, maximaSlice);
             stack.setProcessor(resultProcessor, index.zeroSliceIndexToOneStackIndex(inputImage));
         }, progressInfo);
-        ImagePlus outputImage = new ImagePlus("Regional maxima", stack);
+        ImagePlus outputImage = new ImagePlus("Imposed maxima", stack);
         outputImage.setDimensions(inputImage.getNChannels(), inputImage.getNSlices(), inputImage.getNFrames());
-        dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusGreyscaleMaskData(outputImage), progressInfo);
+        dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusGreyscaleData(outputImage), progressInfo);
     }
 }
