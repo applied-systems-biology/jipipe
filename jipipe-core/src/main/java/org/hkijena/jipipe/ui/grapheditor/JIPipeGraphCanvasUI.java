@@ -295,6 +295,7 @@ public class JIPipeGraphCanvasUI extends JIPipeWorkbenchPanel implements MouseMo
                     addToSelection(selected);
                 }
             }
+            scheduledSelection.clear();
         }
     }
 
@@ -758,7 +759,10 @@ public class JIPipeGraphCanvasUI extends JIPipeWorkbenchPanel implements MouseMo
                 JIPipeNodeUI ui = pickComponent(mouseEvent);
                 if (ui != null) {
                     if (mouseEvent.isShiftDown()) {
-                        addToSelection(ui);
+                        if(getSelection().contains(ui))
+                            removeFromSelection(ui);
+                        else
+                            addToSelection(ui);
                     } else {
                         if (selection.isEmpty() || selection.size() == 1) {
                             selectOnly(ui);
