@@ -74,7 +74,7 @@ public class GraphEditorUISettings implements JIPipeParameterCollection {
 
     }
 
-    @JIPipeDocumentation(name = "Switch panning direction by default",
+    @JIPipeDocumentation(name = "Switch panning direction",
             description = "Changes the direction how panning (middle mouse button) affects the view.")
     @JIPipeParameter("switch-panning-direction")
     public boolean isSwitchPanningDirection() {
