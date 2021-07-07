@@ -301,7 +301,10 @@ public class TrainClassifierModelAlgorithm extends JIPipeSingleIterationAlgorith
 
     @Override
     public boolean isParameterUIVisible(JIPipeParameterTree tree, JIPipeParameterAccess access) {
-        if ("axis".equals(access.getKey()) && access.getSource() == getScale2DAlgorithm()) {
+        if ("x-axis".equals(access.getKey()) && access.getSource() == getScale2DAlgorithm()) {
+            return false;
+        }
+        if ("y-axis".equals(access.getKey()) && access.getSource() == getScale2DAlgorithm()) {
             return false;
         }
         return super.isParameterUIVisible(tree, access);
