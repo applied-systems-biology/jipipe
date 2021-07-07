@@ -14,6 +14,7 @@
 package org.hkijena.jipipe.ui.theme;
 
 import org.hkijena.jipipe.utils.CheckBoxIcon;
+import org.hkijena.jipipe.utils.CheckBoxMenuItemIcon;
 import org.hkijena.jipipe.utils.RoundedLineBorder;
 import org.hkijena.jipipe.utils.UIUtils;
 
@@ -143,6 +144,11 @@ public class ModernMetalTheme extends DefaultMetalTheme {
                 "MenuItem.selectionBackground", PRIMARY5,
                 "MenuItem.selectionForeground", WHITE,
                 "MenuItem.borderPainted", false,
+                "CheckBoxMenuItem.background", LIGHT_GRAY,
+                "CheckBoxMenuItem.selectionBackground", PRIMARY5,
+                "CheckBoxMenuItem.selectionForeground", WHITE,
+                "CheckBoxMenuItem.borderPainted", false,
+                "CheckBoxMenuItem.checkIcon", new CheckBoxMenuItemIcon(WHITE),
                 "Menu.selectionBackground", PRIMARY5,
                 "Menu.selectionForeground", WHITE,
                 "Menu.borderPainted", false,

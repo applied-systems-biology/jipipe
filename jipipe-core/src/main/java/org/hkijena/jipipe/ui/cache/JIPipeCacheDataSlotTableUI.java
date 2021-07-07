@@ -179,7 +179,7 @@ public class JIPipeCacheDataSlotTableUI extends JIPipeWorkbenchPanel {
     }
 
     private void exportAsJIPipeSlot() {
-        Path path = FileChooserSettings.openDirectory(this, FileChooserSettings.KEY_DATA, "Export data as JIPipe output slot");
+        Path path = FileChooserSettings.openDirectory(this, FileChooserSettings.LastDirectoryKey.Data, "Export data as JIPipe output slot");
         if (path != null) {
             JIPipeCachedSlotToOutputExporterRun run = new JIPipeCachedSlotToOutputExporterRun(getWorkbench(), path, Collections.singletonList(slot), false);
             JIPipeRunnerQueue.getInstance().enqueue(run);
@@ -187,7 +187,7 @@ public class JIPipeCacheDataSlotTableUI extends JIPipeWorkbenchPanel {
     }
 
     private void exportAsCSV() {
-        Path path = FileChooserSettings.saveFile(this, FileChooserSettings.KEY_PROJECT, "Export as *.csv", UIUtils.EXTENSION_FILTER_CSV);
+        Path path = FileChooserSettings.saveFile(this, FileChooserSettings.LastDirectoryKey.Projects, "Export as *.csv", UIUtils.EXTENSION_FILTER_CSV);
         if (path != null) {
             ResultsTableData tableData = dataTable.getSlot().toAnnotationTable(true);
             tableData.saveAsCSV(path);

@@ -145,7 +145,7 @@ public class PlotReader extends JPanel {
             default:
                 throw new UnsupportedOperationException();
         }
-        Path path = FileChooserSettings.saveFile(this, FileChooserSettings.KEY_DATA, "Export plot as " + fileFormat, filter);
+        Path path = FileChooserSettings.saveFile(this, FileChooserSettings.LastDirectoryKey.Data, "Export plot as " + fileFormat, filter);
         Dimension size;
         if (currentSize) {
             size = getSize();

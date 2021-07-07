@@ -135,7 +135,7 @@ public class MouseMaskDrawerTool extends MaskDrawerTool {
 
     private void importMask() {
         Path selectedFile = FileChooserSettings.openFile(getViewerPanel(),
-                FileChooserSettings.KEY_DATA,
+                FileChooserSettings.LastDirectoryKey.Data,
                 "Import mask",
                 UIUtils.EXTENSION_FILTER_TIFF);
         if (selectedFile != null) {
@@ -168,7 +168,7 @@ public class MouseMaskDrawerTool extends MaskDrawerTool {
 
     private void exportMask() {
         Path selectedFile = FileChooserSettings.saveFile(getViewerPanel(),
-                FileChooserSettings.KEY_DATA,
+                FileChooserSettings.LastDirectoryKey.Data,
                 "Export mask",
                 UIUtils.EXTENSION_FILTER_TIFF);
         if (selectedFile != null) {

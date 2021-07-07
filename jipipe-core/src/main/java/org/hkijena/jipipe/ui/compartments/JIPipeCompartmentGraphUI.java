@@ -217,7 +217,7 @@ public class JIPipeCompartmentGraphUI extends JIPipeGraphEditorUI {
         if (!JIPipeProjectWorkbench.canAddOrDeleteNodes(getWorkbench()))
             return;
         Path selectedPath = FileChooserSettings.openFile(this,
-                FileChooserSettings.KEY_PROJECT,
+                FileChooserSettings.LastDirectoryKey.Projects,
                 "Open JIPipe graph compartment (*.jipc)",
                 UIUtils.EXTENSION_FILTER_JIPC);
         if (selectedPath != null) {

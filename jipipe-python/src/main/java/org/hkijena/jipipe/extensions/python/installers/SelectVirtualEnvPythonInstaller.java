@@ -142,7 +142,7 @@ public class SelectVirtualEnvPythonInstaller extends ExternalEnvironmentInstalle
         }
 
         @JIPipeDocumentation(name = "Virtual environment directory", description = "The directory of the virtual environment. It usually contains a file pyvenv.cfg.")
-        @FilePathParameterSettings(ioMode = PathEditor.IOMode.Open, pathMode = PathEditor.PathMode.DirectoriesOnly, key = FileChooserSettings.KEY_EXTERNAL)
+        @FilePathParameterSettings(ioMode = PathEditor.IOMode.Open, pathMode = PathEditor.PathMode.DirectoriesOnly, key = FileChooserSettings.LastDirectoryKey.External)
         @JIPipeParameter("venv-dir")
         public Path getVirtualEnvDirectory() {
             return virtualEnvDirectory;

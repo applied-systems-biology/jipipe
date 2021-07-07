@@ -45,5 +45,5 @@ public @interface FilePathParameterSettings {
     /**
      * @return The key for the starting location
      */
-    String key() default FileChooserSettings.KEY_PARAMETER;
+    FileChooserSettings.LastDirectoryKey key() default FileChooserSettings.LastDirectoryKey.Parameters;
 }

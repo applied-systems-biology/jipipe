@@ -242,7 +242,7 @@ public class JIPipeAlgorithmCacheBrowserUI extends JIPipeProjectWorkbenchPanel {
             // Choose the newest state
             exportedState = stateMap.keySet().stream().max(Comparator.naturalOrder()).get();
         }
-        Path outputFolder = FileChooserSettings.saveDirectory(this, FileChooserSettings.KEY_DATA, "Export cache");
+        Path outputFolder = FileChooserSettings.saveDirectory(this, FileChooserSettings.LastDirectoryKey.Data, "Export cache");
         if (outputFolder != null) {
             // Save the node's state to a file
             Path nodeStateFile = outputFolder.resolve("node.json");
@@ -259,7 +259,7 @@ public class JIPipeAlgorithmCacheBrowserUI extends JIPipeProjectWorkbenchPanel {
     }
 
     private void importCache() {
-        Path inputFolder = FileChooserSettings.openDirectory(this, FileChooserSettings.KEY_DATA, "Import cache");
+        Path inputFolder = FileChooserSettings.openDirectory(this, FileChooserSettings.LastDirectoryKey.Data, "Import cache");
         Path nodeStateFile = inputFolder.resolve("node.json");
         if (Files.exists(nodeStateFile)) {
             try {

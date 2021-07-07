@@ -124,7 +124,7 @@ public class JIPipeDefaultResultDataSlotRowUI extends JIPipeResultDataSlotRowUI 
     }
 
     private void exportAsFolder() {
-        Path path = FileChooserSettings.saveDirectory(getWorkbench().getWindow(), FileChooserSettings.KEY_DATA, "Export " + getDisplayName());
+        Path path = FileChooserSettings.saveDirectory(getWorkbench().getWindow(), FileChooserSettings.LastDirectoryKey.Data, "Export " + getDisplayName());
         if (path != null) {
             try {
                 Files.createDirectories(path);
@@ -163,7 +163,7 @@ public class JIPipeDefaultResultDataSlotRowUI extends JIPipeResultDataSlotRowUI 
     }
 
     private void exportToFolder() {
-        Path path = FileChooserSettings.saveFile(getWorkbench().getWindow(), FileChooserSettings.KEY_DATA, "Export " + getDisplayName());
+        Path path = FileChooserSettings.saveFile(getWorkbench().getWindow(), FileChooserSettings.LastDirectoryKey.Data, "Export " + getDisplayName());
         if (path != null) {
             JIPipeRunnable runnable = new JIPipeRunnable() {
                 private JIPipeProgressInfo progressInfo = new JIPipeProgressInfo();

@@ -329,7 +329,7 @@ public class TableEditor extends JIPipeWorkbenchPanel {
     }
 
     private void importFromCSV() {
-        Path fileName = FileChooserSettings.openFile(this, FileChooserSettings.KEY_PROJECT, "Open CSV table (*.csv)", UIUtils.EXTENSION_FILTER_CSV);
+        Path fileName = FileChooserSettings.openFile(this, FileChooserSettings.LastDirectoryKey.Projects, "Open CSV table (*.csv)", UIUtils.EXTENSION_FILTER_CSV);
         if (fileName != null) {
             try {
                 ResultsTableData tableData = ResultsTableData.fromCSV(fileName);
@@ -676,7 +676,7 @@ public class TableEditor extends JIPipeWorkbenchPanel {
     }
 
     private void exportTableAsCSV() {
-        Path selectedPath = FileChooserSettings.saveFile(this, FileChooserSettings.KEY_PROJECT, "Export CSV table (*.csv)", UIUtils.EXTENSION_FILTER_CSV);
+        Path selectedPath = FileChooserSettings.saveFile(this, FileChooserSettings.LastDirectoryKey.Projects, "Export CSV table (*.csv)", UIUtils.EXTENSION_FILTER_CSV);
         if (selectedPath != null) {
             try (BufferedOutputStream writer = new BufferedOutputStream(new FileOutputStream(selectedPath.toFile()))) {
                 String[] rowBuffer = new String[tableModel.getColumnCount()];

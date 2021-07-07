@@ -997,6 +997,8 @@ public class JIPipeGraphCanvasUI extends JIPipeWorkbenchPanel implements MouseMo
                 false,
                 false,
                 false,
+                false,
+                Color.LIGHT_GRAY,
                 scale,
                 viewX,
                 viewY);
@@ -1013,13 +1015,13 @@ public class JIPipeGraphCanvasUI extends JIPipeWorkbenchPanel implements MouseMo
         graphics.setColor(Color.LIGHT_GRAY);
         if (getCompartment() != null && settings.isDrawOutsideEdges())
             paintOutsideEdges(g, false, 1, 0, 0);
-        paintEdges(g, STROKE_DEFAULT, STROKE_COMMENT, false, false, false, 1, 0, 0);
+        paintEdges(g, STROKE_DEFAULT, STROKE_COMMENT, false, false, false, true, Color.LIGHT_GRAY, 1, 0, 0);
 
         g.setStroke(STROKE_HIGHLIGHT);
         if (getCompartment() != null && settings.isDrawOutsideEdges())
             paintOutsideEdges(g, true, 1, 0, 0);
         if (!selection.isEmpty())
-            paintEdges(g, STROKE_HIGHLIGHT, STROKE_COMMENT_HIGHLIGHT, true, true, settings.isColorSelectedNodeEdges(), 1, 0, 0);
+            paintEdges(g, STROKE_HIGHLIGHT, STROKE_COMMENT_HIGHLIGHT, true, true, settings.isColorSelectedNodeEdges(), false, Color.LIGHT_GRAY, 1, 0, 0);
 
         // Draw selections
         g.setStroke(STROKE_SELECTION);
@@ -1164,7 +1166,7 @@ public class JIPipeGraphCanvasUI extends JIPipeWorkbenchPanel implements MouseMo
         }
     }
 
-    private void paintEdges(Graphics2D g, Stroke stroke, Stroke strokeComment, boolean onlySelected, boolean withHidden, boolean multicolor, double scale, int viewX, int viewY) {
+    private void paintEdges(Graphics2D g, Stroke stroke, Stroke strokeComment, boolean onlySelected, boolean withHidden, boolean multicolor, boolean fade, Color baseColor, double scale, int viewX, int viewY) {
         int multiColorMax = 1;
         Set<Map.Entry<JIPipeDataSlot, JIPipeDataSlot>> slotEdges = graph.getSlotEdges();
         if (multicolor) {
@@ -1206,21 +1208,21 @@ public class JIPipeGraphCanvasUI extends JIPipeWorkbenchPanel implements MouseMo
             // Hidden edges
             if (!withHidden) {
                 if (edge.isUiHidden()) {
-                    paintHiddenSlotEdge(g, source, target, multicolor, multiColorIndex, multiColorMax);
+                    paintHiddenSlotEdge(g, source, target, multicolor, baseColor, fade, multiColorIndex, multiColorMax);
                     continue;
                 }
             }
             if (source.getNode() instanceof JIPipeCommentNode || target.getNode() instanceof JIPipeCommentNode) {
-                paintSlotEdge(g, strokeComment, source, target, sourceUI, targetUI, edge.getUiShape(), multicolor, multiColorIndex, multiColorMax, scale, viewX, viewY);
+                paintSlotEdge(g, strokeComment, source, target, sourceUI, targetUI, edge.getUiShape(), multicolor, multiColorIndex, multiColorMax, baseColor, fade, scale, viewX, viewY);
             } else {
-                paintSlotEdge(g, stroke, source, target, sourceUI, targetUI, edge.getUiShape(), multicolor, multiColorIndex, multiColorMax, scale, viewX, viewY);
+                paintSlotEdge(g, stroke, source, target, sourceUI, targetUI, edge.getUiShape(), multicolor, multiColorIndex, multiColorMax, baseColor, fade, scale, viewX, viewY);
             }
 
             ++multiColorIndex;
         }
     }
 
-    private void paintHiddenSlotEdge(Graphics2D g, JIPipeDataSlot source, JIPipeDataSlot target, boolean multicolor, int multiColorIndex, int multiColorMax) {
+    private void paintHiddenSlotEdge(Graphics2D g, JIPipeDataSlot source, JIPipeDataSlot target, boolean multicolor, Color baseColor, boolean fade, int multiColorIndex, int multiColorMax) {
         JIPipeNodeUI sourceUI = nodeUIs.getOrDefault(source.getNode(), null);
         JIPipeNodeUI targetUI = nodeUIs.getOrDefault(target.getNode(), null);
 
@@ -1228,7 +1230,7 @@ public class JIPipeGraphCanvasUI extends JIPipeWorkbenchPanel implements MouseMo
             return;
 
         g.setStroke(STROKE_DEFAULT);
-        g.setColor(getEdgeColor(source, target, multicolor, multiColorIndex, multiColorMax));
+        g.setColor(getEdgeColor(source, target, multicolor, multiColorIndex, multiColorMax, baseColor, fade));
 
         PointRange sourcePoint;
         PointRange targetPoint;
@@ -1284,18 +1286,37 @@ public class JIPipeGraphCanvasUI extends JIPipeWorkbenchPanel implements MouseMo
         }
     }
 
-    private Color getEdgeColor(JIPipeDataSlot source, JIPipeDataSlot target, boolean multicolor, int multiColorIndex, int multiColorMax) {
-        if (source.getNode() instanceof JIPipeCommentNode || target.getNode() instanceof JIPipeCommentNode)
-            return COMMENT_EDGE_COLOR;
-        if (multicolor) {
-            return Color.getHSBColor(1.0f * multiColorIndex / multiColorMax, 0.45f, 0.65f);
+    private Color getEdgeColor(JIPipeDataSlot source, JIPipeDataSlot target, boolean multicolor, int multiColorIndex, int multiColorMax, Color baseColor, boolean fade) {
+        Color result;
+        if (source.getNode() instanceof JIPipeCommentNode || target.getNode() instanceof JIPipeCommentNode) {
+            result = COMMENT_EDGE_COLOR;
         }
-        if (JIPipeDatatypeRegistry.isTriviallyConvertible(source.getAcceptedDataType(), target.getAcceptedDataType()))
-            return Color.DARK_GRAY;
-        else if (JIPipe.getDataTypes().isConvertible(source.getAcceptedDataType(), target.getAcceptedDataType()))
-            return Color.BLUE;
-        else
-            return Color.RED;
+        else if (multicolor) {
+            result = Color.getHSBColor(1.0f * multiColorIndex / multiColorMax, 0.45f, 0.65f);
+        }
+        else {
+            if (JIPipeDatatypeRegistry.isTriviallyConvertible(source.getAcceptedDataType(), target.getAcceptedDataType()))
+                result = Color.DARK_GRAY;
+            else if (JIPipe.getDataTypes().isConvertible(source.getAcceptedDataType(), target.getAcceptedDataType()))
+                result = Color.BLUE;
+            else
+                result = Color.RED;
+        }
+        // Generate fading color
+//        if(fade && getScrollPane() != null) {
+//            JIPipeNodeUI sourceUI = nodeUIs.getOrDefault(source.getNode(), null);
+//            JIPipeNodeUI targetUI = nodeUIs.getOrDefault(target.getNode(), null);
+//            if(sourceUI != null && targetUI != null) {
+//                boolean visibleSource = getScrollPane().getViewport().getViewRect().intersects(sourceUI.getBounds());
+//                boolean visibleTarget = getScrollPane().getViewport().getViewRect().intersects(targetUI.getBounds());
+//                if (!visibleSource && !visibleTarget) {
+//                    result = new Color(result.getRed(), result.getGreen(), result.getBlue(), 80);
+//                } else if (!visibleSource || !visibleTarget) {
+//                    result = new Color(result.getRed(), result.getGreen(), result.getBlue(), 128);
+//                }
+//            }
+//        }
+        return result;
     }
 
     private void paintSlotEdge(Graphics2D g,
@@ -1308,7 +1329,7 @@ public class JIPipeGraphCanvasUI extends JIPipeWorkbenchPanel implements MouseMo
                                boolean multicolor,
                                int multiColorIndex,
                                int multiColorMax,
-                               double scale,
+                               Color baseColor, boolean fade, double scale,
                                int viewX,
                                int viewY) {
 
@@ -1316,7 +1337,7 @@ public class JIPipeGraphCanvasUI extends JIPipeWorkbenchPanel implements MouseMo
             return;
 
         g.setStroke(stroke);
-        g.setColor(getEdgeColor(source, target, multicolor, multiColorIndex, multiColorMax));
+        g.setColor(getEdgeColor(source, target, multicolor, multiColorIndex, multiColorMax, baseColor, fade));
 
         PointRange sourcePoint;
         PointRange targetPoint;

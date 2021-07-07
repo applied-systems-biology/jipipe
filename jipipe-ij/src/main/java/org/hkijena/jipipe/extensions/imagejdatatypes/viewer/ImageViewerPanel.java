@@ -345,7 +345,7 @@ public class ImageViewerPanel extends JPanel {
     }
 
     private void saveRawImage() {
-        Path path = FileChooserSettings.saveFile(this, FileChooserSettings.KEY_DATA, "Save as *.tif", UIUtils.EXTENSION_FILTER_TIFF);
+        Path path = FileChooserSettings.saveFile(this, FileChooserSettings.LastDirectoryKey.Data, "Save as *.tif", UIUtils.EXTENSION_FILTER_TIFF);
         if (path != null) {
             JIPipeRunExecuterUI.runInDialog(this, new ImageViewerPanelRawImageExporterRun(getImage(), path));
         }
@@ -383,7 +383,7 @@ public class ImageViewerPanel extends JPanel {
             JOptionPane.showMessageDialog(this, "No image loaded.", "Error", JOptionPane.ERROR_MESSAGE);
             return;
         }
-        Path targetFile = FileChooserSettings.saveFile(this, FileChooserSettings.KEY_DATA, "Export current slice", UIUtils.EXTENSION_FILTER_PNG, UIUtils.EXTENSION_FILTER_JPEG, UIUtils.EXTENSION_FILTER_BMP);
+        Path targetFile = FileChooserSettings.saveFile(this, FileChooserSettings.LastDirectoryKey.Data, "Export current slice", UIUtils.EXTENSION_FILTER_PNG, UIUtils.EXTENSION_FILTER_JPEG, UIUtils.EXTENSION_FILTER_BMP);
         if (targetFile != null) {
             String format = "PNG";
             if (UIUtils.EXTENSION_FILTER_BMP.accept(targetFile.toFile()))

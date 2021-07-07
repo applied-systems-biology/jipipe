@@ -74,6 +74,7 @@ public abstract class JIPipeGraphEditorUI extends JIPipeWorkbenchPanel implement
     public static final KeyStroke KEY_STROKE_ZOOM_IN = KeyStroke.getKeyStroke(KeyEvent.VK_ADD, InputEvent.CTRL_MASK, false);
     public static final KeyStroke KEY_STROKE_ZOOM_OUT = KeyStroke.getKeyStroke(KeyEvent.VK_SUBTRACT, InputEvent.CTRL_MASK, false);
     public static final KeyStroke KEY_STROKE_ZOOM_RESET = KeyStroke.getKeyStroke(KeyEvent.VK_NUMPAD0, InputEvent.CTRL_MASK, false);
+    private final GraphEditorUISettings graphUISettings;
 
     protected JMenuBar menuBar = new JMenuBar();
     private JIPipeGraphCanvasUI canvasUI;
@@ -84,7 +85,6 @@ public abstract class JIPipeGraphEditorUI extends JIPipeWorkbenchPanel implement
     private Point panningOffset = null;
     private Point panningScrollbarOffset = null;
     private boolean isPanning = false;
-    private JToggleButton switchPanningDirectionButton;
 
     private Set<JIPipeNodeInfo> addableAlgorithms = new HashSet<>();
     private SearchBox<Object> navigator = new SearchBox<>();
@@ -98,6 +98,7 @@ public abstract class JIPipeGraphEditorUI extends JIPipeWorkbenchPanel implement
         super(workbenchUI);
         this.algorithmGraph = algorithmGraph;
         this.canvasUI = new JIPipeGraphCanvasUI(getWorkbench(), algorithmGraph, compartment);
+        this.graphUISettings = GraphEditorUISettings.getInstance();
         initialize();
         reloadMenuBar();
         JIPipe.getNodes().getEventBus().register(this);
@@ -105,6 +106,10 @@ public abstract class JIPipeGraphEditorUI extends JIPipeWorkbenchPanel implement
         updateNavigation();
         initializeHotkeys();
         SwingUtilities.invokeLater(canvasUI::crop);
+    }
+
+    public GraphEditorUISettings getGraphUISettings() {
+        return graphUISettings;
     }
 
     private void initializeHotkeys() {
@@ -259,14 +264,33 @@ public abstract class JIPipeGraphEditorUI extends JIPipeWorkbenchPanel implement
 
         initializeViewModeMenu(menuBar);
 
-        JButton autoLayoutButton = new JButton(UIUtils.getIconFromResources("actions/distribute-unclump.png"));
-        autoLayoutButton.setToolTipText("<html>Auto-layout all nodes<br><i>Ctrl-Shift-L</i></html>");
-        UIUtils.makeFlat25x25(autoLayoutButton);
-        autoLayoutButton.addActionListener(e -> {
-            canvasUI.getGraphHistory().addSnapshotBefore(new MoveNodesGraphHistorySnapshot(canvasUI.getGraph(), "Auto-layout all nodes"));
-            canvasUI.autoLayoutAll();
+        JButton layoutButton = new JButton(UIUtils.getIconFromResources("actions/view-multiple-objects.png"));
+        UIUtils.makeFlat25x25(layoutButton);
+        layoutButton.setToolTipText("Additional layout tools");
+        menuBar.add(layoutButton);
+
+        JPopupMenu layoutMenu = new JPopupMenu();
+        UIUtils.addReloadablePopupMenuToComponent(layoutButton, layoutMenu, () -> {
+            layoutMenu.removeAll();
+            JMenuItem autoLayoutItem = new JMenuItem("Auto-layout all nodes", UIUtils.getIconFromResources("actions/distribute-unclump.png"));
+            autoLayoutItem.addActionListener(e -> {
+                canvasUI.getGraphHistory().addSnapshotBefore(new MoveNodesGraphHistorySnapshot(canvasUI.getGraph(), "Auto-layout all nodes"));
+                canvasUI.autoLayoutAll();
+            });
+            autoLayoutItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_L, KeyEvent.CTRL_MASK | KeyEvent.SHIFT_MASK));
+            layoutMenu.add(autoLayoutItem);
+
+            JCheckBoxMenuItem layoutHelperItem = new JCheckBoxMenuItem("Layout helper" ,
+                    UIUtils.getIconFromResources("actions/connector-avoid.png"),
+                    GraphEditorUISettings.getInstance().isEnableLayoutHelper());
+            layoutHelperItem.setToolTipText("Auto-layout layout on making data slot connections");
+            canvasUI.setLayoutHelperEnabled(GraphEditorUISettings.getInstance().isEnableLayoutHelper());
+            layoutHelperItem.addActionListener(e -> {
+                canvasUI.setLayoutHelperEnabled(layoutHelperItem.isSelected());
+                GraphEditorUISettings.getInstance().setEnableLayoutHelper(layoutHelperItem.isSelected());
+            });
+            layoutMenu.add(layoutHelperItem);
         });
-        menuBar.add(autoLayoutButton);
 
         JButton centerViewButton = new JButton(UIUtils.getIconFromResources("actions/view-restore.png"));
         centerViewButton.setToolTipText("Center view to nodes");
@@ -276,28 +300,6 @@ public abstract class JIPipeGraphEditorUI extends JIPipeWorkbenchPanel implement
             canvasUI.crop();
         });
         menuBar.add(centerViewButton);
-
-        menuBar.add(new JSeparator(JSeparator.VERTICAL));
-
-        switchPanningDirectionButton = new JToggleButton(UIUtils.getIconFromResources("devices/input-mouse.png"),
-                GraphEditorUISettings.getInstance().isSwitchPanningDirection());
-        switchPanningDirectionButton.setToolTipText("Reverse panning direction");
-        UIUtils.makeFlat25x25(switchPanningDirectionButton);
-        switchPanningDirectionButton.setToolTipText("Changes the direction how panning (middle mouse button) affects the view.");
-        switchPanningDirectionButton.addActionListener(e -> GraphEditorUISettings.getInstance().setSwitchPanningDirection(switchPanningDirectionButton.isSelected()));
-        menuBar.add(switchPanningDirectionButton);
-
-        JToggleButton layoutHelperButton;
-        layoutHelperButton = new JToggleButton(UIUtils.getIconFromResources("actions/connector-avoid.png"),
-                GraphEditorUISettings.getInstance().isEnableLayoutHelper());
-        UIUtils.makeFlat25x25(layoutHelperButton);
-        layoutHelperButton.setToolTipText("Auto-layout layout on making data slot connections");
-        canvasUI.setLayoutHelperEnabled(GraphEditorUISettings.getInstance().isEnableLayoutHelper());
-        layoutHelperButton.addActionListener(e -> {
-            canvasUI.setLayoutHelperEnabled(layoutHelperButton.isSelected());
-            GraphEditorUISettings.getInstance().setEnableLayoutHelper(layoutHelperButton.isSelected());
-        });
-        menuBar.add(layoutHelperButton);
 
         menuBar.add(new JSeparator(JSeparator.VERTICAL));
 
@@ -469,7 +471,7 @@ public abstract class JIPipeGraphEditorUI extends JIPipeWorkbenchPanel implement
 
     private void createScreenshotSVG() {
         SVGGraphics2D screenshot = canvasUI.createScreenshotSVG();
-        Path selectedPath = FileChooserSettings.saveFile(this, FileChooserSettings.KEY_PROJECT, "Export graph as SVG (*.svg)", UIUtils.EXTENSION_FILTER_SVG);
+        Path selectedPath = FileChooserSettings.saveFile(this, FileChooserSettings.LastDirectoryKey.Projects, "Export graph as SVG (*.svg)", UIUtils.EXTENSION_FILTER_SVG);
         if (selectedPath != null) {
             try {
                 SVGUtils.writeToSVG(selectedPath.toFile(), screenshot.getSVGElement());
@@ -482,7 +484,7 @@ public abstract class JIPipeGraphEditorUI extends JIPipeWorkbenchPanel implement
 
     private void createScreenshotPNG() {
         BufferedImage screenshot = canvasUI.createScreenshotPNG();
-        Path selectedPath = FileChooserSettings.saveFile(this, FileChooserSettings.KEY_PROJECT, "Export graph as PNG (*.png)", UIUtils.EXTENSION_FILTER_PNG);
+        Path selectedPath = FileChooserSettings.saveFile(this, FileChooserSettings.LastDirectoryKey.Projects, "Export graph as PNG (*.png)", UIUtils.EXTENSION_FILTER_PNG);
         if (selectedPath != null) {
             try {
                 ImageIO.write(screenshot, "PNG", selectedPath.toFile());
@@ -667,7 +669,7 @@ public abstract class JIPipeGraphEditorUI extends JIPipeWorkbenchPanel implement
             int y = e.getY() - scrollPane.getVerticalScrollBar().getValue();
             int dx = x - panningOffset.x;
             int dy = y - panningOffset.y;
-            if (!switchPanningDirectionButton.isSelected()) {
+            if (!graphUISettings.isSwitchPanningDirection()) {
                 dx = -dx;
                 dy = -dy;
             }
