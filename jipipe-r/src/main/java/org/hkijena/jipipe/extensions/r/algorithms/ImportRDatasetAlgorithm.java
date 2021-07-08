@@ -73,12 +73,8 @@ public class ImportRDatasetAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         RUtils.runR(code,
                 overrideEnvironment.isEnabled() ? overrideEnvironment.getContent() : RExtensionSettings.getInstance().getEnvironment(),
                 progressInfo);
-        try {
-            ResultsTableData resultsTableData = ResultsTableData.fromCSV(tempFile);
-            dataBatch.addOutputData(getFirstOutputSlot(), resultsTableData, progressInfo);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        ResultsTableData resultsTableData = ResultsTableData.fromCSV(tempFile);
+        dataBatch.addOutputData(getFirstOutputSlot(), resultsTableData, progressInfo);
     }
 
     @JIPipeDocumentation(name = "Dataset", description = "Determines which data set should be imported")

@@ -1170,10 +1170,13 @@ public class ResultsTableData implements JIPipeData, TableModel {
      *
      * @param file the file
      * @return the table
-     * @throws IOException thrown by {@link ResultsTable}
      */
-    public static ResultsTableData fromCSV(Path file) throws IOException {
-        return new ResultsTableData(ResultsTable.open(file.toString()));
+    public static ResultsTableData fromCSV(Path file){
+        try {
+            return new ResultsTableData(ResultsTable.open(file.toString()));
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     /**

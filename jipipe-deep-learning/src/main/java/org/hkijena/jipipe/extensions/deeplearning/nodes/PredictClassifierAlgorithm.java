@@ -47,6 +47,7 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscale32FData;
 import org.hkijena.jipipe.extensions.python.OptionalPythonEnvironment;
 import org.hkijena.jipipe.extensions.python.PythonUtils;
+import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
 import org.hkijena.jipipe.utils.JsonUtils;
 import org.hkijena.jipipe.utils.PathUtils;
 import org.hkijena.jipipe.utils.ResourceUtils;
@@ -59,12 +60,13 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
-@JIPipeDocumentation(name = "Predict (images)", description = "Applies a prediction via a Deep learning model. The prediction returns an image. Please note that the model needs to be able to predict images.")
+@JIPipeDocumentation(name = "Predict (classified images)", description = "Applies a prediction via a Deep learning model. The prediction returns classified images. " +
+        "Please note that the model needs to be able to classify images.")
 @JIPipeOrganization(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Deep learning")
 @JIPipeInputSlot(value = ImagePlusData.class, slotName = "Input", autoCreate = true)
 @JIPipeInputSlot(value = DeepLearningModelData.class, slotName = "Model", autoCreate = true)
-@JIPipeOutputSlot(value = ImagePlusGreyscale32FData.class, slotName = "Prediction", autoCreate = true)
-public class PredictImageAlgorithm extends JIPipeSingleIterationAlgorithm {
+@JIPipeOutputSlot(value = ResultsTableData.class, slotName = "Prediction", autoCreate = true)
+public class PredictClassifierAlgorithm extends JIPipeSingleIterationAlgorithm {
 
     private TransformScale2DAlgorithm scale2DAlgorithm;
     private boolean cleanUpAfterwards = true;
@@ -74,14 +76,14 @@ public class PredictImageAlgorithm extends JIPipeSingleIterationAlgorithm {
     private OptionalDeepLearningDeviceEnvironment overrideDevices = new OptionalDeepLearningDeviceEnvironment();
     private DeepLearningPreprocessingType normalization = DeepLearningPreprocessingType.zero_one;
 
-    public PredictImageAlgorithm(JIPipeNodeInfo info) {
+    public PredictClassifierAlgorithm(JIPipeNodeInfo info) {
         super(info);
         scale2DAlgorithm = JIPipe.createNode(TransformScale2DAlgorithm.class);
         scale2DAlgorithm.setScaleMode(ScaleMode.Fit);
         registerSubParameter(scale2DAlgorithm);
     }
 
-    public PredictImageAlgorithm(PredictImageAlgorithm other) {
+    public PredictClassifierAlgorithm(PredictClassifierAlgorithm other) {
         super(other);
         this.overrideEnvironment = new OptionalPythonEnvironment(other.overrideEnvironment);
         this.cleanUpAfterwards = other.cleanUpAfterwards;
@@ -137,7 +139,7 @@ public class PredictImageAlgorithm extends JIPipeSingleIterationAlgorithm {
             JIPipeProgressInfo modelProgress = progressInfo.resolveAndLog("Check model", modelCounter++, dataBatch.getInputSlotRows().get(inputModelSlot).size());
             DeepLearningModelData inputModel = inputModelSlot.getData(modelIndex, DeepLearningModelData.class, modelProgress);
 
-            if (inputModel.getModelConfiguration().getModelType() != DeepLearningModelType.segmentation) {
+            if (inputModel.getModelConfiguration().getModelType() != DeepLearningModelType.classification) {
                 throw new UserFriendlyRuntimeException("Model " + inputModel + " is not supported by this node!",
                         "Unsupported model",
                         getDisplayName(),
@@ -222,29 +224,11 @@ public class PredictImageAlgorithm extends JIPipeSingleIterationAlgorithm {
                             DeepLearningSettings.getInstance().getPythonEnvironment(),
                     Collections.singletonList(DeepLearningSettings.getInstance().getDeepLearningToolkit().getLibraryDirectory().toAbsolutePath()), modelProgress);
 
-            // Fetch images
-            {
-                int imageCounter = 0;
-                Set<Integer> inputRows = dataBatch.getInputSlotRows().get(inputRawImageSlot);
-                for (Integer imageIndex : inputRows) {
-                    JIPipeProgressInfo imageProgress = modelProgress.resolveAndLog("Read outputs", imageCounter++, inputRows.size());
-                    List<JIPipeAnnotation> annotations = inputRawImageSlot.getAnnotations(imageIndex);
-                    Path predictPath = predictionsDirectory.resolve(imageCounter + "_img.tif");
+            // Fetch prediction result
+            Path predictionResultTableFile = PathUtils.findFileByExtensionIn(predictionsDirectory, ".csv");
+            ResultsTableData predictionResult = ResultsTableData.fromCSV(predictionResultTableFile);
 
-                    if (!deferImageLoading) {
-                        ImagePlus image = IJ.openImage(predictPath.toString());
-
-                        // We will restore the original annotations of the results
-                        dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusData(image), annotations, JIPipeAnnotationMergeStrategy.OverwriteExisting, imageProgress);
-                    } else {
-                        dataBatch.addOutputData(getFirstOutputSlot(),
-                                new ImagePlusData(new ImagePlusFromFileImageSource(predictPath, false)),
-                                annotations,
-                                JIPipeAnnotationMergeStrategy.OverwriteExisting,
-                                imageProgress);
-                    }
-                }
-            }
+            dataBatch.addOutputData(getFirstOutputSlot(), predictionResult, progressInfo);
 
             if (cleanUpAfterwards && !deferImageLoading) {
                 PathUtils.deleteDirectoryRecursively(workDirectory, progressInfo.resolve("Cleanup"));

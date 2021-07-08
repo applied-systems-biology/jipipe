@@ -15,6 +15,7 @@ import org.hkijena.jipipe.extensions.deeplearning.enums.MonitorLoss;
 import org.hkijena.jipipe.extensions.deeplearning.enums.RegularizationMethod;
 import org.hkijena.jipipe.extensions.deeplearning.nodes.CreateModelAlgorithm;
 import org.hkijena.jipipe.extensions.deeplearning.nodes.ImportModelAlgorithm;
+import org.hkijena.jipipe.extensions.deeplearning.nodes.PredictClassifierAlgorithm;
 import org.hkijena.jipipe.extensions.deeplearning.nodes.PredictImageAlgorithm;
 import org.hkijena.jipipe.extensions.deeplearning.nodes.TrainClassifierModelAlgorithm;
 import org.hkijena.jipipe.extensions.deeplearning.nodes.TrainImageModelAlgorithm;
@@ -158,6 +159,9 @@ public class DeepLearningExtension extends JIPipePrepackagedDefaultJavaExtension
                 UIUtils.getIconURLFromResources("data-types/dl-model.png"));
         registerNodeType("deep-learning-predict-image",
                 PredictImageAlgorithm.class,
+                UIUtils.getIconURLFromResources("data-types/dl-model.png"));
+        registerNodeType("deep-learning-predict-classifier",
+                PredictClassifierAlgorithm.class,
                 UIUtils.getIconURLFromResources("data-types/dl-model.png"));
     }
 
