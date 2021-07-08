@@ -23,11 +23,11 @@ from glob import glob
 import math
 from sklearn.model_selection import train_test_split
 from skimage import io
+from pathlib import Path
 import tensorflow as tf
 from keras.preprocessing.image import ImageDataGenerator
 from keras import callbacks
-from dltoolbox.utils import load_and_compile_model
-from dltoolbox.utils import preprocessing
+from dltoolbox import utils
 from dltoolbox.evaluation import evaluate
 
 
@@ -53,8 +53,9 @@ def train_model(model_config, config, model=None):
     input_model_path = config["input_model_path"] if "input_model_path" in config else model_config['output_model_path']
     output_model_path = config['output_model_path']
     output_model_json_path = config['output_model_json_path']
+    augment_factor = config['augmentation_factor']
 
-    model = load_and_compile_model(model_config, input_model_path, model)
+    model = utils.load_and_compile_model(model_config, input_model_path, model)
 
     # read all filenames from input files and the corresponding labels table
     X_filenames = np.sort(glob(input_dir))
@@ -107,14 +108,77 @@ def train_model(model_config, config, model=None):
     while len(x_valid.shape) < 4:
         x_valid = np.expand_dims(np.array(x_valid), axis=-1)
 
-    print('[Train model] Train data:', x_train.shape, y_train.shape)
-    print('[Train model] Validation data:', x_valid.shape, y_valid.shape)
+    print('[Train model] Train data:\t', x_train.shape, y_train.shape)
+    print('[Train model] Validation data:\t', x_valid.shape, y_valid.shape)
 
     # preprocessing: function that will be applied on each input image
     print('[Train model] image intensity min-max-range before preprocessing:', x_train.min(), x_train.max())
-    x_train = preprocessing(x_train, mode='zero_one')
-    x_valid = preprocessing(x_valid, mode='zero_one')
+    x_train = utils.preprocessing(x_train, mode='zero_one')
+    x_valid = utils.preprocessing(x_valid, mode='zero_one')
     print('[Train model] image intensity min-max-range after preprocessing:', x_train.min(), x_train.max())
+
+    """
+        augment dataset with Elastic deformation [Simard2003] with a certain probability:
+
+        Alternative:
+        add one line in front of every model with augmentation operator:
+
+            img_augmentation = Sequential(
+            [
+                preprocessing.RandomRotation(factor=0.15),
+                preprocessing.RandomTranslation(height_factor=0.1, width_factor=0.1),
+                preprocessing.RandomFlip(),
+                preprocessing.RandomContrast(factor=0.1),
+            ],
+            name="img_augmentation",
+            )
+
+            x = img_augmentation(inputs)    
+
+        """
+    if augment_factor > 1:
+
+        # calculate augmentation probability per sample via: augment_factor = 4 => 1 - (1/augment_factor) = 0.75
+        augmentation_probability = 1 - (1 / augment_factor)
+        seed = 42
+
+        # augment the training input and label images
+        for idx, x_tmp in enumerate(x_train):
+            x_tmp = np.squeeze(x_tmp)
+
+            # if random value is within the probability-range: augment the actual image by elastic transformation
+            if np.random.random() < augmentation_probability:
+                x_train_transformed = utils.elastic_transform(x_tmp, seed=seed)
+                y_tmp = np.expand_dims(y_train[idx], axis=0)
+
+                # transform to required format: (batch, x, y, c)
+                x_train_transformed = np.expand_dims(np.expand_dims(x_train_transformed, axis=-1), axis=0)
+
+                x_train = np.concatenate((x_train, x_train_transformed), axis=0)
+                y_train = np.concatenate((y_train, y_tmp), axis=0)
+
+                # print(x_train_transformed.shape, y_tmp.shape, y_tmp)
+                # print(x_train.shape, y_train.shape)
+
+        # augment the validation input and label images
+        for idx, x_tmp in enumerate(x_valid):
+            x_tmp = np.squeeze(x_tmp)
+
+            # if random value is within the probability-range: augment the actual image by elastic transformation
+            if np.random.random() < augmentation_probability:
+                x_valid_transformed = utils.elastic_transform(x_tmp, seed=seed)
+                y_tmp = np.expand_dims(y_valid[idx], axis=0)
+
+                # transform to required format: (batch, x, y, c)
+                x_valid_transformed = np.expand_dims(np.expand_dims(x_valid_transformed, axis=-1), axis=0)
+
+                x_valid = np.concatenate((x_valid, x_valid_transformed), axis=0)
+                y_valid = np.concatenate((y_valid, y_tmp), axis=0)
+
+        print(
+            f'[Train model] Augment dataset with probability per sample: {augmentation_probability} after elastic transformation with seed: {seed}')
+        print('[Train model] Train data:\t', x_train.shape, y_train.shape)
+        print('[Train model] Validation data:\t', x_valid.shape, y_valid.shape)
 
     ### define the ImageDataGenerator to perform the data augmentation
     datagen = ImageDataGenerator(
@@ -179,5 +243,10 @@ def train_model(model_config, config, model=None):
         with open(output_model_json_path, "w") as f:
             f.write(model_json)
         print('[Train model] Saved trained model JSON to:', output_model_json_path)
+
+        config_save_path = Path(output_model_json_path) / 'training_config.json'
+        with open(config_save_path, "w") as f:
+            f.write(config)
+        print('[Train model] Save training config file JSON to:', config_save_path)
 
     return model

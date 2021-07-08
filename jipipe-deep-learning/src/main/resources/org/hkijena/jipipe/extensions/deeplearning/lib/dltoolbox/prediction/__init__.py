@@ -17,7 +17,8 @@ Adolf-Reichwein-Straße 23, 07745 Jena, Germany
 Script to predict a network
 """
 
-from dltoolbox.prediction import predict_samples
+from dltoolbox.prediction import predict_unet
+from dltoolbox.prediction import predict_classifier
 from dltoolbox.prediction import predict_cross_validation
 
 
@@ -32,9 +33,12 @@ def predict_data(model_config, config, model=None):
 
     """
 
-    if config['prediction_type'] == "standard":
-        print("[Predict] standard prediction procedure with specified samples")
-        predict_samples.predict_samples(model_config=model_config, config=config, model=model)
+    if config['prediction_type'] == "standard" and model_config['model_type'] == "segmentation":
+        print("[Predict] standard prediction procedure with specified samples via unet")
+        predict_unet.predict_samples(model_config=model_config, config=config, model=model)
+    elif config['prediction_type'] == "standard" and model_config['model_type'] == "classification":
+        print("[Predict] standard prediction procedure with specified samples via classifier")
+        predict_classifier.predict_samples(model_config=model_config, config=config, model=model)
     elif config['prediction_type'] == "cross-validation":
         print("[Predict] cross-validation prediction procedure with information table")
         predict_cross_validation.predict_cross_validation(model_config=model_config, config=config, model=model)

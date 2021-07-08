@@ -35,5 +35,7 @@ def evaluate_data(config, model=None):
         evaluate.plot_probabilities(config=config)
     elif config['evaluation_method'] == "treshold_predictions":
         evaluate.treshold_predictions(config=config)
+    elif config['evaluation_method'] == "evaluate":
+        evaluate.evaluate_samples(config=config)
     else:
         raise AttributeError("Unsupported evaluation method: " + config["evaluation_method"])

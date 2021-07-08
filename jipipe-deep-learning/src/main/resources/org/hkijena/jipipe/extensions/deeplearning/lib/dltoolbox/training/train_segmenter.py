@@ -17,12 +17,15 @@ Adolf-Reichwein-Straße 23, 07745 Jena, Germany
 Script to train a segmentation network
 """
 
+import os
 import numpy as np
 from sklearn.model_selection import train_test_split
-from skimage import io
-from keras.preprocessing.image import ImageDataGenerator
+from skimage import io, img_as_ubyte
+from pathlib import Path
+from tensorflow.keras.preprocessing.image import ImageDataGenerator
 from keras import callbacks
-from dltoolbox.utils import load_and_compile_model
+# from tensorflow.keras import callbacks
+from dltoolbox import utils
 from dltoolbox.evaluation import evaluate
 
 
@@ -48,8 +51,9 @@ def train_model(model_config, config, model=None):
     input_model_path = config["input_model_path"] if "input_model_path" in config else model_config['output_model_path']
     output_model_path = config['output_model_path']
     output_model_json_path = config['output_model_json_path']
+    augment_factor = config['augmentation_factor']
 
-    model = load_and_compile_model(model_config, input_model_path, model)
+    model = utils.load_and_compile_model(model_config, input_model_path, model)
 
     # validate input and label images
     X = io.imread_collection(input_dir)
@@ -69,20 +73,90 @@ def train_model(model_config, config, model=None):
     x_train, x_valid = np.array(x_train), np.array(x_valid)
     y_train, y_valid = np.array(y_train), np.array(y_valid)
 
-    # TODO: Hier ein Validitätsvergleich durchführen, ob input/output = input/output von Model
+    # if necessary: add <channel> - dimension
+    while len(x_train.shape) < 4:
+        x_train = np.expand_dims(np.array(x_train), axis=-1)
+    while len(x_valid.shape) < 4:
+        x_valid = np.expand_dims(np.array(x_valid), axis=-1)
+
     while len(y_train.shape) < 4:
         y_train = np.expand_dims(np.array(y_train), axis=-1)
     while len(y_valid.shape) < 4:
         y_valid = np.expand_dims(np.array(y_valid), axis=-1)
 
-    print('[Train model] Train data:', x_train.shape, y_train.shape)
-    print('[Train model] Validation data:', x_valid.shape, y_valid.shape)
+    print('[Train model] Train data:\t', x_train.shape, y_train.shape)
+    print('[Train model] Validation data:\t', x_valid.shape, y_valid.shape)
 
-    # TODO: geometrical transformation implementieren mit folgendem parameter:
-    # preprocessing_function: function that will be applied on each input. 
-    # The function will run after the image is resized and augmented. 
-    # The function should take one argument: one image (Numpy tensor with rank 3), 
-    # and should output a Numpy tensor with the same shape.
+    # Preprocessing (normalization)
+    x_train = utils.preprocessing(x_train, mode=config['normalization'])
+    x_valid = utils.preprocessing(x_valid, mode=config['normalization'])
+
+    """
+    augment dataset with Elastic deformation [Simard2003] with a certain probability:
+    
+    Alternative:
+    add one line in front of every model with augmentation operator:
+    
+        img_augmentation = Sequential(
+        [
+            preprocessing.RandomRotation(factor=0.15),
+            preprocessing.RandomTranslation(height_factor=0.1, width_factor=0.1),
+            preprocessing.RandomFlip(),
+            preprocessing.RandomContrast(factor=0.1),
+        ],
+        name="img_augmentation",
+        )
+        
+        x = img_augmentation(inputs)    
+    
+    """
+    if augment_factor > 1:
+
+        # calculate augmentation probability per sample via: augment_factor = 4 => 1 - (1/augment_factor) = 0.75
+        augmentation_probability = 1 - (1/augment_factor)
+        seed = 42
+
+        # augment the training input and label images
+        for idx, x_tmp in enumerate(x_train):
+            x_tmp = np.squeeze(x_tmp)
+
+            # if random value is within the probability-range: augment the actual image by elastic transformation
+            if np.random.random() < augmentation_probability:
+
+                x_train_transformed = utils.elastic_transform(x_tmp, seed=seed)
+                y_train_transformed = utils.elastic_transform(np.squeeze(y_train[idx]), seed=seed)
+
+                # transform to required format: (batch, x, y, c)
+                x_train_transformed = np.expand_dims(np.expand_dims(x_train_transformed, axis=-1), axis=0)
+                y_train_transformed = np.expand_dims(np.expand_dims(y_train_transformed, axis=-1), axis=0)
+
+                x_train = np.concatenate((x_train, x_train_transformed), axis=0)
+                y_train = np.concatenate((y_train, y_train_transformed), axis=0)
+
+        # augment the validation input and label images
+        for idx, x_tmp in enumerate(x_valid):
+            x_tmp = np.squeeze(x_tmp)
+
+            # if random value is within the probability-range: augment the actual image by elastic transformation
+            if np.random.random() < augmentation_probability:
+
+                x_valid_transformed = utils.elastic_transform(x_tmp, seed=seed)
+                y_valid_transformed = utils.elastic_transform(np.squeeze(y_valid[idx]), seed=seed)
+
+                # transform to required format: (batch, x, y, c)
+                x_valid_transformed = np.expand_dims(np.expand_dims(x_valid_transformed, axis=-1), axis=0)
+                y_valid_transformed = np.expand_dims(np.expand_dims(y_valid_transformed, axis=-1), axis=0)
+
+                x_valid = np.concatenate((x_valid, x_valid_transformed), axis=0)
+                y_valid = np.concatenate((y_valid, y_valid_transformed), axis=0)
+
+        print(f'[Train model] Augment dataset with probability per sample: {augmentation_probability} after elastic transformation with seed: {seed}')
+        print('[Train model] Train data:\t', x_train.shape, y_train.shape)
+        print('[Train model] Validation data:\t', x_valid.shape, y_valid.shape)
+
+    # ensure that all label intensities are {0,1}
+    y_train = img_as_ubyte((y_train > 0) / np.max(y_train))
+    y_valid = img_as_ubyte((y_valid > 0) / np.max(y_valid))
 
     data_gen_args = dict(
         rotation_range=120,
@@ -110,31 +184,38 @@ def train_model(model_config, config, model=None):
     if monitor_loss not in ['loss', 'val_loss']:
         monitor_loss = 'val_loss'
 
-    # TODO: callbacks über separaten node definieren in eigenem script + Tensorboard erstellen
-    # erstelle { min , medium , max } callbacks, um nur einen parameter an dieser Stelle anzugeben
-    # tbCallBack = callbacks.TensorBoard(log_dir=log_dir,
-    #                                     histogram_freq=0,
-    #                                     write_graph=False,
-    #                                     write_images=True)
+    if not os.path.exists(config['log_dir']):
+        os.makedirs(config['log_dir'])
+        print('[Evaluate] create directory folder for log:', config['log_dir'])
+
+    # TODO: callbacks über separaten node/skript definieren in eigenem script + Tensorboard erstellen
+    # TODO: tensorboard callback zum laufen bringen
+    tbCallBack = callbacks.TensorBoard(log_dir=config['log_dir'],
+                                        histogram_freq=0,
+                                        write_graph=False,
+                                        write_images=True)
     earlyStopping = callbacks.EarlyStopping(monitor=monitor_loss,
                                             patience=200, verbose=1, mode='min')
     mcp_save = callbacks.ModelCheckpoint(input_model_path, save_best_only=True, monitor=monitor_loss, mode='min')
     reduce_lr = callbacks.ReduceLROnPlateau(monitor=monitor_loss, factor=0.85,
                                             patience=50, min_lr=0.000001, verbose=1)
+    csv_logger = callbacks.CSVLogger(os.path.join(config['log_dir'], 'training.log'), separator=',', append=False)
+    history = callbacks.History()
+
 
     steps_epoch = x_train.shape[0] / batch_size
     print('[Train model] Number of steps per epoch-original:', steps_epoch)
-    steps_epoch = int(steps_epoch * config['augmentation_factor'])
+    steps_epoch = int(steps_epoch * augment_factor)
     print('[Train model] Steps per epoch-augmented:', steps_epoch)
 
     # fits the model on batches with real-time data augmentation:
     print('Start training ...')
 
-    model.fit(train_generator,
+    model.fit_generator(train_generator,
                         steps_per_epoch=steps_epoch,
                         epochs=n_epochs,
                         verbose=1,
-                        callbacks=[earlyStopping, mcp_save, reduce_lr],  # tbCallBack
+                        callbacks=[earlyStopping, mcp_save, reduce_lr, csv_logger, history], #tbCallBack
                         validation_data=(x_valid, y_valid),
                         validation_steps=x_valid.shape[0] / batch_size)
 
@@ -154,5 +235,10 @@ def train_model(model_config, config, model=None):
         with open(output_model_json_path, "w") as f:
             f.write(model_json)
         print('[Train model] Saved trained model JSON to:', output_model_json_path)
+
+        config_save_path = Path(output_model_json_path) / 'training_config.json'
+        with open(config_save_path, "w") as f:
+            f.write(config)
+        print('[Train model] Save training config file JSON to:', config_save_path)
 
     return model

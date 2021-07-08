@@ -56,12 +56,7 @@ def predict_samples(model_config, config, model=None):
     results = []
 
     for (image, file_name) in zip(X, X.files):
-        print("[Predict] " + str(file_name))
-
-        # # TODO: tmp - später löschen
-        # if file_name == "/asbdata/Philipp/FungIdent/image_data/human/SilverGomori_staining/tif_original/Aspergillus_S09-15-4_Gomori_original.tif":
-        #     print('skip ...')
-        #     continue
+        print("[Predict] read image from path: " + str(file_name))
 
         img_x0 = image.shape[0]
         img_x1 = image.shape[1]
@@ -102,6 +97,7 @@ def predict_samples(model_config, config, model=None):
                 while len(pad_width) < len(image.shape):
                     pad_width.append((0, 0))
                 print("[Predict] Padding with " + str(pad_width))
+                # TODO : padding mit tensorflow testen
                 img_padded = np.pad(image, pad_width=pad_width)
                 print("[Predict] Padded image has shape " + str(img_padded.shape))
             else:
