@@ -5,7 +5,6 @@ import org.apache.commons.exec.CommandLine;
 import org.apache.commons.exec.ExecuteWatchdog;
 import org.apache.commons.exec.LogOutputStream;
 import org.apache.commons.exec.PumpStreamHandler;
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.SystemUtils;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
@@ -81,7 +80,7 @@ public class BasicMinicondaEnvPythonInstaller extends ExternalEnvironmentInstall
             progressInfo.log("Deleting: " + installationPath);
             PathUtils.deleteDirectoryRecursively(installationPath, progressInfo.resolve("Delete old installation"));
         }
-        if(!Files.isDirectory(installationPath)) {
+        if (!Files.isDirectory(installationPath)) {
             try {
                 Files.createDirectories(installationPath);
             } catch (IOException e) {
@@ -120,10 +119,9 @@ public class BasicMinicondaEnvPythonInstaller extends ExternalEnvironmentInstall
         generatedEnvironment = SelectCondaEnvPythonInstaller.createCondaEnvironment(condaConfig);
         if (getParameterAccess() != null) {
             SwingUtilities.invokeLater(() -> {
-                if(getParameterAccess().getFieldClass().isAssignableFrom(generatedEnvironment.getClass())) {
+                if (getParameterAccess().getFieldClass().isAssignableFrom(generatedEnvironment.getClass())) {
                     getParameterAccess().set(generatedEnvironment);
-                }
-                else {
+                } else {
                     // It's probably an optional
                     getParameterAccess().set(new OptionalPythonEnvironment(generatedEnvironment));
                 }
@@ -169,7 +167,7 @@ public class BasicMinicondaEnvPythonInstaller extends ExternalEnvironmentInstall
      * Applies postprocessing for the installation
      */
     protected void postprocessInstall() {
-        if(getConfiguration().getForcePythonVersion().isEnabled()) {
+        if (getConfiguration().getForcePythonVersion().isEnabled()) {
             runConda("install", "--yes", "python=" + getConfiguration().getForcePythonVersion().getContent());
         }
     }

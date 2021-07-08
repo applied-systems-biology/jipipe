@@ -15,7 +15,6 @@ package org.hkijena.jipipe.extensions.deeplearning.nodes;
 
 import ij.IJ;
 import ij.ImagePlus;
-import org.apache.commons.io.FileUtils;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeOrganization;
@@ -24,18 +23,22 @@ import org.hkijena.jipipe.api.data.JIPipeAnnotation;
 import org.hkijena.jipipe.api.data.JIPipeAnnotationMergeStrategy;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
-import org.hkijena.jipipe.api.nodes.*;
+import org.hkijena.jipipe.api.nodes.JIPipeInputSlot;
+import org.hkijena.jipipe.api.nodes.JIPipeMergingDataBatch;
+import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
+import org.hkijena.jipipe.api.nodes.JIPipeOutputSlot;
+import org.hkijena.jipipe.api.nodes.JIPipeSingleIterationAlgorithm;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
-import org.hkijena.jipipe.extensions.deeplearning.enums.DeepLearningModelType;
 import org.hkijena.jipipe.extensions.deeplearning.DeepLearningSettings;
 import org.hkijena.jipipe.extensions.deeplearning.DeepLearningUtils;
 import org.hkijena.jipipe.extensions.deeplearning.OptionalDeepLearningDeviceEnvironment;
 import org.hkijena.jipipe.extensions.deeplearning.configs.DeepLearningPredictionConfiguration;
 import org.hkijena.jipipe.extensions.deeplearning.datatypes.DeepLearningModelData;
+import org.hkijena.jipipe.extensions.deeplearning.enums.DeepLearningModelType;
 import org.hkijena.jipipe.extensions.deeplearning.enums.DeepLearningPreprocessingType;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.transform.ScaleMode;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.transform.TransformScale2DAlgorithm;
@@ -134,7 +137,7 @@ public class PredictImageAlgorithm extends JIPipeSingleIterationAlgorithm {
             JIPipeProgressInfo modelProgress = progressInfo.resolveAndLog("Check model", modelCounter++, dataBatch.getInputSlotRows().get(inputModelSlot).size());
             DeepLearningModelData inputModel = inputModelSlot.getData(modelIndex, DeepLearningModelData.class, modelProgress);
 
-            if(inputModel.getModelConfiguration().getModelType() == DeepLearningModelType.classification) {
+            if (inputModel.getModelConfiguration().getModelType() == DeepLearningModelType.classification) {
                 throw new UserFriendlyRuntimeException("Model " + inputModel + " is not supported by this node!",
                         "Unsupported model",
                         getDisplayName(),
@@ -164,7 +167,7 @@ public class PredictImageAlgorithm extends JIPipeSingleIterationAlgorithm {
                     JIPipeProgressInfo imageProgress = modelProgress.resolveAndLog("Write inputs", imageCounter++, inputRows.size());
                     ImagePlusData raw = inputRawImageSlot.getData(imageIndex, ImagePlusData.class, imageProgress);
 
-                    if(raw.hasLoadedImage() || isScaleToModelSize()) {
+                    if (raw.hasLoadedImage() || isScaleToModelSize()) {
                         Path rawPath = rawsDirectory.resolve(imageCounter + "_img.tif");
 
                         ImagePlus rawImage = isScaleToModelSize() ? DeepLearningUtils.scaleToModel(raw.getImage(),
@@ -173,8 +176,7 @@ public class PredictImageAlgorithm extends JIPipeSingleIterationAlgorithm {
                                 modelProgress) : raw.getImage();
 
                         IJ.saveAsTiff(rawImage, rawPath.toString());
-                    }
-                    else {
+                    } else {
                         raw.saveTo(rawsDirectory, imageCounter + "_img", true, imageProgress);
                     }
                 }
@@ -229,13 +231,12 @@ public class PredictImageAlgorithm extends JIPipeSingleIterationAlgorithm {
                     List<JIPipeAnnotation> annotations = inputRawImageSlot.getAnnotations(imageIndex);
                     Path predictPath = predictionsDirectory.resolve(imageCounter + "_img.tif");
 
-                    if(!deferImageLoading) {
+                    if (!deferImageLoading) {
                         ImagePlus image = IJ.openImage(predictPath.toString());
 
                         // We will restore the original annotations of the results
                         dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusData(image), annotations, JIPipeAnnotationMergeStrategy.OverwriteExisting, imageProgress);
-                    }
-                    else {
+                    } else {
                         dataBatch.addOutputData(getFirstOutputSlot(),
                                 new ImagePlusData(new ImagePlusFromFileImageSource(predictPath, false)),
                                 annotations,

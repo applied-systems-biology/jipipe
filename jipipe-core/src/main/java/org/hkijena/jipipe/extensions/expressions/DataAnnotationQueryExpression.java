@@ -13,7 +13,6 @@
 
 package org.hkijena.jipipe.extensions.expressions;
 
-import org.hkijena.jipipe.api.data.JIPipeAnnotation;
 import org.hkijena.jipipe.api.data.JIPipeDataAnnotation;
 import org.hkijena.jipipe.api.data.JIPipeDataInfo;
 
@@ -71,8 +70,7 @@ public class DataAnnotationQueryExpression extends DefaultExpressionParameter {
                 if (evaluationResult)
                     return annotation;
             }
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
         }
         for (JIPipeDataAnnotation annotation : annotations) {
             if (Objects.equals(annotation.getName(), getExpression()))

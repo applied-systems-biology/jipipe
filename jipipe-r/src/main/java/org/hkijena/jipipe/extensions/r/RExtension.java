@@ -21,8 +21,6 @@ import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.components.DocumentTabPane;
 import org.hkijena.jipipe.ui.running.JIPipeRunExecuterUI;
-import org.hkijena.jipipe.ui.running.JIPipeRunnerQueue;
-import org.hkijena.jipipe.ui.running.JIPipeRunnerQueueUI;
 import org.hkijena.jipipe.ui.settings.JIPipeApplicationSettingsUI;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.scijava.plugin.Plugin;
@@ -110,7 +108,7 @@ public class RExtension extends JIPipePrepackagedDefaultJavaExtension {
 
     @Override
     public void postprocess() {
-        if(!RExtensionSettings.RSettingsAreValid()) {
+        if (!RExtensionSettings.RSettingsAreValid()) {
             JIPipeNotification notification = new JIPipeNotification(getDependencyId() + ":r-not-configured");
             notification.setHeading("R is not configured");
             notification.setDescription("To make use of R within JIPipe, you need to either provide JIPipe with an " +

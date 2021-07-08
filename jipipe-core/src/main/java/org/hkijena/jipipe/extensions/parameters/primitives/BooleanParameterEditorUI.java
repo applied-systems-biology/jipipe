@@ -58,10 +58,9 @@ public class BooleanParameterEditorUI extends JIPipeParameterEditorUI {
         if (value != null)
             booleanValue = (boolean) value;
 
-        if(!isInComboBoxMode) {
+        if (!isInComboBoxMode) {
             checkBox.setSelected(booleanValue);
-        }
-        else {
+        } else {
             comboBox.setSelectedItem(booleanValue);
         }
 
@@ -77,7 +76,7 @@ public class BooleanParameterEditorUI extends JIPipeParameterEditorUI {
 
         comboBox = new JComboBox<>(new Boolean[]{true, false});
         comboBox.addActionListener(e -> {
-            if(!isReloading) {
+            if (!isReloading) {
                 skipNextReload = true;
                 setParameter(comboBox.getSelectedItem(), false);
             }
@@ -92,12 +91,11 @@ public class BooleanParameterEditorUI extends JIPipeParameterEditorUI {
         });
 
         BooleanParameterSettings settings = getParameterAccess().getAnnotationOfType(BooleanParameterSettings.class);
-        if(settings == null || !settings.comboBoxStyle()) {
+        if (settings == null || !settings.comboBoxStyle()) {
             isInComboBoxMode = false;
             checkBox.setSelected(booleanValue);
             add(checkBox, BorderLayout.CENTER);
-        }
-        else {
+        } else {
             isInComboBoxMode = true;
             isReloading = true;
             comboBox.setSelectedItem(booleanValue);
@@ -110,7 +108,7 @@ public class BooleanParameterEditorUI extends JIPipeParameterEditorUI {
 
     private void updateComboBoxDisplay() {
         BooleanParameterSettings settings = getParameterAccess().getAnnotationOfType(BooleanParameterSettings.class);
-        if(settings != null) {
+        if (settings != null) {
             comboBox.setRenderer(new BooleanComboBoxItemRenderer(settings.trueLabel(), settings.falseLabel()));
         }
     }
@@ -129,7 +127,7 @@ public class BooleanParameterEditorUI extends JIPipeParameterEditorUI {
 
         @Override
         public Component getListCellRendererComponent(JList<? extends Boolean> list, Boolean value, int index, boolean isSelected, boolean cellHasFocus) {
-            if(value)
+            if (value)
                 setText(trueLabel);
             else
                 setText(falseLabel);

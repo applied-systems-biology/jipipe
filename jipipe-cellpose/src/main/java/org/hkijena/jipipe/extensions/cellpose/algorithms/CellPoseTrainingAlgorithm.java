@@ -3,8 +3,6 @@ package org.hkijena.jipipe.extensions.cellpose.algorithms;
 import ij.IJ;
 import ij.ImagePlus;
 import ij.process.ImageProcessor;
-import inra.ijpb.binary.BinaryImages;
-import org.apache.commons.io.FileUtils;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeOrganization;
@@ -13,7 +11,11 @@ import org.hkijena.jipipe.api.data.JIPipeDataSlotInfo;
 import org.hkijena.jipipe.api.data.JIPipeDefaultMutableSlotConfiguration;
 import org.hkijena.jipipe.api.data.JIPipeSlotType;
 import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
-import org.hkijena.jipipe.api.nodes.*;
+import org.hkijena.jipipe.api.nodes.JIPipeInputSlot;
+import org.hkijena.jipipe.api.nodes.JIPipeMergingDataBatch;
+import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
+import org.hkijena.jipipe.api.nodes.JIPipeOutputSlot;
+import org.hkijena.jipipe.api.nodes.JIPipeSingleIterationAlgorithm;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.cellpose.CellPosePretrainedModel;
@@ -339,7 +341,7 @@ public class CellPoseTrainingAlgorithm extends JIPipeSingleIterationAlgorithm {
             ImagePlus mask = labelDataAnnotation.queryFirst(getInputSlot("Training data").getDataAnnotations(row))
                     .getData(ImagePlus3DGreyscale16UData.class, progressInfo).getImage();
             mask = ImageJUtils.getNormalizedMask(raw, mask);
-            if(generateConnectedComponents)
+            if (generateConnectedComponents)
                 mask = applyConnectedComponents(mask, rowProgress.resolveAndLog("Connected components"));
             dataIs3D |= raw.getNDimensions() > 2 && enable3DSegmentation;
 
@@ -351,7 +353,7 @@ public class CellPoseTrainingAlgorithm extends JIPipeSingleIterationAlgorithm {
                     .getData(row, ImagePlus3DGreyscaleData.class, rowProgress).getImage();
             ImagePlus mask = labelDataAnnotation.queryFirst(getInputSlot("Test data").getDataAnnotations(row))
                     .getData(ImagePlus3DGreyscale16UData.class, progressInfo).getImage();
-            if(generateConnectedComponents)
+            if (generateConnectedComponents)
                 mask = applyConnectedComponents(mask, rowProgress.resolveAndLog("Connected components"));
             mask = ImageJUtils.getNormalizedMask(raw, mask);
 
@@ -472,15 +474,14 @@ public class CellPoseTrainingAlgorithm extends JIPipeSingleIterationAlgorithm {
 
     private ImagePlus applyConnectedComponents(ImagePlus mask, JIPipeProgressInfo progressInfo) {
         progressInfo.log("Apply MorphoLibJ connected components labeling (8-connectivity, 16-bit) to " + mask);
-        if(enable3DSegmentation) {
+        if (enable3DSegmentation) {
             ConnectedComponentsLabeling3DAlgorithm algorithm = JIPipe.createNode(ConnectedComponentsLabeling3DAlgorithm.class);
             algorithm.setConnectivity(Neighborhood2D.EightConnected);
             algorithm.setOutputType(new JIPipeDataInfoRef(ImagePlusGreyscale16UData.class));
             algorithm.getFirstInputSlot().addData(new ImagePlus3DGreyscaleMaskData(mask), progressInfo);
             algorithm.run(progressInfo);
             return algorithm.getFirstOutputSlot().getData(0, ImagePlusGreyscale16UData.class, progressInfo).getImage();
-        }
-        else {
+        } else {
             ConnectedComponentsLabeling2DAlgorithm algorithm = JIPipe.createNode(ConnectedComponentsLabeling2DAlgorithm.class);
             algorithm.setConnectivity(Neighborhood2D.EightConnected);
             algorithm.setOutputType(new JIPipeDataInfoRef(ImagePlusGreyscale16UData.class));

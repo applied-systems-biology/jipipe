@@ -108,7 +108,6 @@ public class OptionalParameterContentAccess<T> implements JIPipeParameterAccess 
     }
 
 
-
     public JIPipeParameterAccess getParent() {
         return parent;
     }

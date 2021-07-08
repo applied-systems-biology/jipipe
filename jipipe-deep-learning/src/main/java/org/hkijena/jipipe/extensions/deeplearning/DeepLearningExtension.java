@@ -8,7 +8,11 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
 import org.hkijena.jipipe.extensions.JIPipePrepackagedDefaultJavaExtension;
 import org.hkijena.jipipe.extensions.deeplearning.datatypes.DeepLearningModelData;
-import org.hkijena.jipipe.extensions.deeplearning.enums.*;
+import org.hkijena.jipipe.extensions.deeplearning.enums.DeepLearningArchitecture;
+import org.hkijena.jipipe.extensions.deeplearning.enums.DeepLearningModelType;
+import org.hkijena.jipipe.extensions.deeplearning.enums.DeepLearningPreprocessingType;
+import org.hkijena.jipipe.extensions.deeplearning.enums.MonitorLoss;
+import org.hkijena.jipipe.extensions.deeplearning.enums.RegularizationMethod;
 import org.hkijena.jipipe.extensions.deeplearning.nodes.CreateModelAlgorithm;
 import org.hkijena.jipipe.extensions.deeplearning.nodes.ImportModelAlgorithm;
 import org.hkijena.jipipe.extensions.deeplearning.nodes.PredictImageAlgorithm;
@@ -159,7 +163,7 @@ public class DeepLearningExtension extends JIPipePrepackagedDefaultJavaExtension
 
     @Override
     public void postprocess() {
-        if(!DeepLearningSettings.pythonSettingsAreValid()) {
+        if (!DeepLearningSettings.pythonSettingsAreValid()) {
             JIPipeNotification notification = new JIPipeNotification(getDependencyId() + ":python-not-configured");
             notification.setHeading("Deep learning is not configured");
             notification.setDescription("You need to setup a Python environment that will be used by JIPipe to apply Deep learning. " +
@@ -174,7 +178,7 @@ public class DeepLearningExtension extends JIPipePrepackagedDefaultJavaExtension
                     DeepLearningExtension::openSettingsPage));
             JIPipeNotificationInbox.getInstance().push(notification);
         }
-        if(!DeepLearningSettings.getInstance().getDeepLearningToolkit().isNewestVersion()) {
+        if (!DeepLearningSettings.getInstance().getDeepLearningToolkit().isNewestVersion()) {
             JIPipeNotification notification = new JIPipeNotification(getDependencyId() + ":old-dltoolkit");
             notification.setHeading("Old library version");
             notification.setDescription("JIPipe has detected that the installed version of the Deep Learning Toolkit library is outdated. " +

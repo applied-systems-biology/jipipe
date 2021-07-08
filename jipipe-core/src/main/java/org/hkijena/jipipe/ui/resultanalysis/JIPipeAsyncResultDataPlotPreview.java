@@ -40,10 +40,11 @@ public abstract class JIPipeAsyncResultDataPlotPreview extends JIPipeResultDataS
 
     /**
      * Creates a new renderer
-     *  @param workbench the workbench
-     * @param table     the table where the data is rendered in
-     * @param slot      the data slot
-     * @param row       the row
+     *
+     * @param workbench      the workbench
+     * @param table          the table where the data is rendered in
+     * @param slot           the data slot
+     * @param row            the row
      * @param dataAnnotation the data annotation (Optional)
      */
     public JIPipeAsyncResultDataPlotPreview(JIPipeProjectWorkbench workbench, JTable table, JIPipeDataSlot slot, JIPipeExportedDataTableRow row, JIPipeExportedDataAnnotation dataAnnotation) {
@@ -84,10 +85,10 @@ public abstract class JIPipeAsyncResultDataPlotPreview extends JIPipeResultDataS
      * @return the data. if null, the widget will display "error"
      */
     protected JIPipeData loadData(Path storageFolder) {
-        if(getDataAnnotation() == null)
+        if (getDataAnnotation() == null)
             return JIPipe.importData(storageFolder, getSlot().getAcceptedDataType());
         else {
-            if(Files.exists(storageFolder))
+            if (Files.exists(storageFolder))
                 return JIPipe.importData(storageFolder, JIPipe.getDataTypes().getById(getDataAnnotation().getTrueDataType()));
             else
                 return new JIPipeEmptyData();

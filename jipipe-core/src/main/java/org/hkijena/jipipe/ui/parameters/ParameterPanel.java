@@ -343,7 +343,7 @@ public class ParameterPanel extends FormPanel implements Contextual {
             JPanel labelPanel = new JPanel(new BorderLayout());
             if (ui.isUILabelEnabled()) {
                 JLabel label = new JLabel(parameterAccess.getName());
-                if(parameterAccess.isImportant())
+                if (parameterAccess.isImportant())
                     label.setIcon(UIUtils.getIconFromResources("emblems/important.png"));
                 labelPanel.add(label, BorderLayout.CENTER);
             }
@@ -364,7 +364,7 @@ public class ParameterPanel extends FormPanel implements Contextual {
         if (allowCollapse) {
 
             // Restore the collapse
-            if(collapseStates.containsKey(parameterCollection)) {
+            if (collapseStates.containsKey(parameterCollection)) {
                 collapseButton.setSelected(collapseStates.get(parameterCollection));
             }
 
@@ -509,7 +509,7 @@ public class ParameterPanel extends FormPanel implements Contextual {
         markdownString.append("# ").append(access.getName()).append("\n\n");
         markdownString.append("<table>");
 
-        if(access.isImportant()) {
+        if (access.isImportant()) {
             markdownString.append("<tr><td><img src=\"").append(ResourceUtils.getPluginResource("icons/emblems/important.png")).append("\" /></td>");
             markdownString.append("<td><strong>Important parameter</strong>: The developer marked this parameter as especially important</td></tr>\n\n");
         }

@@ -27,11 +27,11 @@ import com.google.common.eventbus.Subscribe;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.JIPipeDependency;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.JIPipeIssueReport;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.JIPipeProject;
 import org.hkijena.jipipe.api.JIPipeRun;
 import org.hkijena.jipipe.api.JIPipeValidatable;
-import org.hkijena.jipipe.api.JIPipeIssueReport;
 import org.hkijena.jipipe.api.compartments.algorithms.JIPipeProjectCompartment;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
@@ -898,7 +898,7 @@ public abstract class JIPipeGraphNode implements JIPipeValidatable, JIPipeParame
      */
     @Subscribe
     public void onParameterStructureChanged(ParameterStructureChangedEvent event) {
-        if(event.getVisitors().contains(this))
+        if (event.getVisitors().contains(this))
             return;
         event.getVisitors().add(this);
         getEventBus().post(event);
@@ -911,7 +911,7 @@ public abstract class JIPipeGraphNode implements JIPipeValidatable, JIPipeParame
      */
     @Subscribe
     public void onParameterUIChanged(ParameterUIChangedEvent event) {
-        if(event.getVisitors().contains(this))
+        if (event.getVisitors().contains(this))
             return;
         event.getVisitors().add(this);
         getEventBus().post(event);

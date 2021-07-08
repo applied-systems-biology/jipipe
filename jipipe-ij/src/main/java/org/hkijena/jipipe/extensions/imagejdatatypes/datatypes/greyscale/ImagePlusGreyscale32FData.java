@@ -18,7 +18,6 @@ import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeHeavyData;
 import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
-import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.color.ImagePlusColorData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ConverterWrapperImageSource;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageSource;
@@ -63,10 +62,9 @@ public class ImagePlusGreyscale32FData extends ImagePlusGreyscaleData {
      * @return the converted data
      */
     public static ImagePlusData convertFrom(ImagePlusData data) {
-        if(data.hasLoadedImage()) {
+        if (data.hasLoadedImage()) {
             return new ImagePlusGreyscale32FData(data.getImage());
-        }
-        else {
+        } else {
             return new ImagePlusGreyscale32FData(data.getImageSource());
         }
     }

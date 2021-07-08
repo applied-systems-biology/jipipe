@@ -35,12 +35,16 @@ import org.hkijena.jipipe.ui.parameters.ParameterPanel;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
-import javax.swing.Timer;
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
-import java.util.*;
+import java.util.ArrayDeque;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * A tool that assists the user in configuring batch generation for
@@ -216,7 +220,7 @@ public class DataBatchAssistantUI extends JIPipeProjectWorkbenchPanel {
         // Generate dry-run
         JIPipeDataBatchAlgorithm batchAlgorithm = (JIPipeDataBatchAlgorithm) batchesNodeCopy;
         batches = batchAlgorithm.generateDataBatchesDryRun(batchesNodeCopy.getEffectiveInputSlots(), new JIPipeProgressInfo());
-        if(batches == null)
+        if (batches == null)
             batches = Collections.emptyList();
 
         batchPreviewNumberLabel.setText(batches.size() + " batches");

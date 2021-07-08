@@ -18,7 +18,6 @@ import org.hkijena.jipipe.api.JIPipeProgressInfo;
 
 import javax.swing.*;
 import java.nio.file.Path;
-import java.util.function.Function;
 import java.util.function.Supplier;
 
 /**
@@ -37,10 +36,11 @@ public interface ImageSource extends Supplier<ImagePlus> {
 
     /**
      * Saves the data stored by this source according to the JIPipe standard format ({@link org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData}
+     *
      * @param storageFilePath the storage file path
-     * @param name the name
-     * @param forceName if the name should be forced
-     * @param progressInfo progress info
+     * @param name            the name
+     * @param forceName       if the name should be forced
+     * @param progressInfo    progress info
      */
     void saveTo(Path storageFilePath, String name, boolean forceName, JIPipeProgressInfo progressInfo);
 }

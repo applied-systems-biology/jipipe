@@ -5,11 +5,12 @@ import org.hkijena.jipipe.api.notifications.JIPipeNotificationAction;
 import org.hkijena.jipipe.extensions.settings.NotificationUISettings;
 import org.hkijena.jipipe.ui.JIPipeWorkbenchPanel;
 import org.hkijena.jipipe.ui.components.MarkdownDocument;
-import org.hkijena.jipipe.ui.components.MarkdownReader;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
-import java.awt.*;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Font;
 
 public class NotificationUI extends JIPipeWorkbenchPanel {
 
@@ -19,7 +20,7 @@ public class NotificationUI extends JIPipeWorkbenchPanel {
     private final boolean dismissed;
 
     /**
-     * @param inboxUI the workbench
+     * @param inboxUI      the workbench
      * @param notification
      * @param blocked
      * @param dismissed
@@ -48,21 +49,20 @@ public class NotificationUI extends JIPipeWorkbenchPanel {
         headerPanel.add(Box.createHorizontalGlue());
         add(headerPanel, BorderLayout.NORTH);
 
-        if(this.blocked) {
+        if (this.blocked) {
             JButton unblockButton = new JButton("Unblock", UIUtils.getIconFromResources("actions/eye.png"));
             UIUtils.makeBorderlessWithoutMargin(unblockButton);
             unblockButton.setToolTipText("Unblocks this type of notification");
             unblockButton.addActionListener(e -> unblock());
             headerPanel.add(unblockButton);
-        }
-        else {
+        } else {
             JButton blockButton = new JButton(UIUtils.getIconFromResources("actions/eye-slash.png"));
             UIUtils.makeFlat25x25(blockButton);
             blockButton.setToolTipText("Blocks this type of notification");
             blockButton.addActionListener(e -> block());
             headerPanel.add(blockButton);
 
-            if(!dismissed) {
+            if (!dismissed) {
                 JButton dismissButton = new JButton(UIUtils.getIconFromResources("actions/close-tab.png"));
                 UIUtils.makeFlat25x25(dismissButton);
                 dismissButton.setToolTipText("Dismisses this notification");
@@ -74,12 +74,12 @@ public class NotificationUI extends JIPipeWorkbenchPanel {
         // Add content
         JTextPane textPane = UIUtils.makeBorderlessReadonlyTextPane(new MarkdownDocument(notification.getDescription()).getRenderedHTML());
         textPane.setOpaque(false);
-        textPane.setBorder(BorderFactory.createEmptyBorder(4,4,4,4));
+        textPane.setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
         add(textPane, BorderLayout.CENTER);
 
         // Action panel
         JPanel actionPanel = new JPanel();
-        actionPanel.setBorder(BorderFactory.createEmptyBorder(8,4,4,4));
+        actionPanel.setBorder(BorderFactory.createEmptyBorder(8, 4, 4, 4));
         actionPanel.setLayout(new BoxLayout(actionPanel, BoxLayout.X_AXIS));
 
         actionPanel.add(Box.createHorizontalGlue());
@@ -88,7 +88,7 @@ public class NotificationUI extends JIPipeWorkbenchPanel {
             actionButton.setToolTipText(action.getTooltip());
             actionButton.addActionListener(e -> {
                 action.getAction().accept(getWorkbench());
-                if(action.isDismiss())
+                if (action.isDismiss())
                     dismiss();
             });
             actionPanel.add(actionButton);
@@ -98,7 +98,7 @@ public class NotificationUI extends JIPipeWorkbenchPanel {
     }
 
     private void block() {
-        if(JOptionPane.showConfirmDialog(getWorkbench().getWindow(), "Do you really want to block all future notifications of " +
+        if (JOptionPane.showConfirmDialog(getWorkbench().getWindow(), "Do you really want to block all future notifications of " +
                 "the type '" + notification.getHeading() + "'?", "Block notification", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
             NotificationUISettings.getInstance().getBlockedNotifications().add(notification.getId());
             NotificationUISettings.getInstance().triggerParameterChange("blocked-action-notifications");

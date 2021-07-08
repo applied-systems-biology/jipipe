@@ -160,7 +160,7 @@ public class JIPipeAlgorithmCompendiumUI extends JIPipeCompendiumUI<JIPipeNodeIn
         builder.append("### ").append(access.getName()).append("\n\n");
         builder.append("<table>");
 
-        if(access.isImportant()) {
+        if (access.isImportant()) {
             builder.append("<tr><td><img src=\"").append(ResourceUtils.getPluginResource("icons/emblems/important.png")).append("\" /></td>");
             builder.append("<td><strong>Important parameter</strong>: The developer marked this parameter as especially important</td></tr>\n\n");
         }

@@ -15,6 +15,7 @@ public class JIPipeExportedDataAnnotation {
     /**
      * This is a relative path pointing to the row storage folder of this data annotation
      * The path is relative to the storage path of the parent data table
+     *
      * @return the row storage path
      */
     @JsonGetter("row-storage-folder")

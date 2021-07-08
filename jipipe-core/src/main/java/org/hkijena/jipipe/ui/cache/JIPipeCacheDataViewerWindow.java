@@ -31,7 +31,6 @@ import org.hkijena.jipipe.utils.UIUtils;
 import javax.swing.*;
 import java.awt.BorderLayout;
 import java.awt.Container;
-import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
@@ -150,9 +149,9 @@ public abstract class JIPipeCacheDataViewerWindow extends JFrame {
         rowInfoLabel.setText((row + 1) + "/" + getDataSource().getSlot().getRowCount());
 
         if (getAlgorithm() != null) {
-            setTitle(getAlgorithm().getName() + "/" + getSlotName() + "/" + row + (dataSource.getDataAnnotation() != null ? "/$" + dataSource.getDataAnnotation(): ""));
+            setTitle(getAlgorithm().getName() + "/" + getSlotName() + "/" + row + (dataSource.getDataAnnotation() != null ? "/$" + dataSource.getDataAnnotation() : ""));
         } else {
-            setTitle(getDisplayName() + (dataSource.getDataAnnotation() != null ? "/$" + dataSource.getDataAnnotation(): ""));
+            setTitle(getDisplayName() + (dataSource.getDataAnnotation() != null ? "/$" + dataSource.getDataAnnotation() : ""));
         }
 
         removeDataControls();
@@ -270,16 +269,15 @@ public abstract class JIPipeCacheDataViewerWindow extends JFrame {
     }
 
     private void loadFromDataSource() {
-        if(dataSource.getDataAnnotation() == null) {
+        if (dataSource.getDataAnnotation() == null) {
             JIPipeVirtualData virtualData = dataSource.getSlot().getVirtualData(dataSource.getRow());
             if (lastVirtualData != null && virtualData == lastVirtualData.get())
                 return;
             loadData(virtualData, new JIPipeProgressInfo());
             lastVirtualData = new WeakReference<>(virtualData);
-        }
-        else {
+        } else {
             JIPipeVirtualData virtualData = dataSource.getSlot().getVirtualDataAnnotation(dataSource.getRow(), dataSource.getDataAnnotation());
-            if(virtualData == null) {
+            if (virtualData == null) {
                 addErrorUI();
                 return;
             }

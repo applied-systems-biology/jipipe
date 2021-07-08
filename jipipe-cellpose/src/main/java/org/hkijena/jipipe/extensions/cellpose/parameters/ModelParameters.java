@@ -50,7 +50,7 @@ public class ModelParameters implements JIPipeParameterCollection {
 
     @Override
     public boolean isParameterUIVisible(JIPipeParameterTree tree, JIPipeParameterAccess access) {
-        if(access.getSource() == this && "mean-diameter".equals(access.getKey())) {
+        if (access.getSource() == this && "mean-diameter".equals(access.getKey())) {
             return model == CellPoseModel.Custom;
         }
         return JIPipeParameterCollection.super.isParameterUIVisible(tree, access);

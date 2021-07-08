@@ -19,7 +19,6 @@ import ij.process.ImageProcessor;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeCacheSlotDataSource;
 import org.hkijena.jipipe.api.data.JIPipeVirtualData;
-import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ROIListData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.viewer.ImageViewerPanel;
 import org.hkijena.jipipe.extensions.imagejdatatypes.viewer.plugins.AnimationSpeedPlugin;
@@ -105,18 +104,17 @@ public class CachedROIListDataViewerWindow extends JIPipeCacheDataViewerWindow {
         int width;
         int height;
 
-        if(data.isEmpty()) {
+        if (data.isEmpty()) {
             width = 128;
             height = 128;
-        }
-        else {
+        } else {
             Rectangle bounds = data.getBounds();
             width = bounds.x + bounds.width;
             height = bounds.y + bounds.height;
         }
 
         imageViewerPanel.getCanvas().setError(null);
-        ImagePlus image = IJ.createImage("empty", "8-bit", width,height, 1);
+        ImagePlus image = IJ.createImage("empty", "8-bit", width, height, 1);
         ImageProcessor processor = image.getProcessor();
         processor.setColor(0);
         processor.fill();

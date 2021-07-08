@@ -22,7 +22,6 @@ import org.hkijena.jipipe.api.data.JIPipeDataAnnotation;
 import org.hkijena.jipipe.api.data.JIPipeDataDisplayOperation;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.extensions.parameters.primitives.DynamicDataDisplayOperationIdEnumParameter;
-import org.hkijena.jipipe.extensions.parameters.primitives.DynamicStringEnumParameter;
 import org.hkijena.jipipe.extensions.settings.DefaultCacheDisplaySettings;
 import org.hkijena.jipipe.extensions.settings.DefaultResultImporterSettings;
 import org.hkijena.jipipe.extensions.settings.FileChooserSettings;
@@ -74,7 +73,7 @@ public class JIPipeDataSlotRowUI extends JIPipeWorkbenchPanel {
         setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
         add(Box.createHorizontalGlue());
 
-        if(dataAnnotations.size() > 0) {
+        if (dataAnnotations.size() > 0) {
             JButton dataAnnotationButton = new JButton("Data annotations ...", UIUtils.getIconFromResources("data-types/data-annotation.png"));
             JPopupMenu menu = UIUtils.addPopupMenuToComponent(dataAnnotationButton);
 
@@ -221,7 +220,8 @@ public class JIPipeDataSlotRowUI extends JIPipeWorkbenchPanel {
             if (slot.getNode() != null)
                 displayName = slot.getNode().getName() + "/" + slot.getName() + "/" + row + "/$" + dataAnnotation.getName();
             else
-                displayName = slot.getName() + "/" + row + "/$" + dataAnnotation.getName();;
+                displayName = slot.getName() + "/" + row + "/$" + dataAnnotation.getName();
+            ;
             operation.display(data, displayName, getWorkbench(), new JIPipeCacheSlotDataSource(slot, row, dataAnnotation.getName()));
         }
     }
@@ -261,7 +261,7 @@ public class JIPipeDataSlotRowUI extends JIPipeWorkbenchPanel {
                     }
                 }
             }
-            if(result == null) {
+            if (result == null) {
                 result = JIPipe.getDataTypes().getAllRegisteredDisplayOperations(dataTypeId).get("jipipe:show");
             }
             return result;

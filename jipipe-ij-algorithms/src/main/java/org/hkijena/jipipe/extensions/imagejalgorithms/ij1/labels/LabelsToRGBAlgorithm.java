@@ -98,32 +98,22 @@ public class LabelsToRGBAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         this.shuffleLut = shuffleLut;
     }
 
-    private static int computeMaxLabel(ImagePlus imagePlus)
-    {
-        if (imagePlus.getImageStackSize() == 1)
-        {
+    private static int computeMaxLabel(ImagePlus imagePlus) {
+        if (imagePlus.getImageStackSize() == 1) {
             return computeMaxLabel(imagePlus.getProcessor());
-        }
-        else
-        {
+        } else {
             return computeMaxLabel(imagePlus.getStack());
         }
     }
 
-    private static int computeMaxLabel(ImageProcessor image)
-    {
+    private static int computeMaxLabel(ImageProcessor image) {
         int labelMax = 0;
-        if (image instanceof FloatProcessor)
-        {
-            for (int i = 0; i < image.getPixelCount(); i++)
-            {
+        if (image instanceof FloatProcessor) {
+            for (int i = 0; i < image.getPixelCount(); i++) {
                 labelMax = Math.max(labelMax, (int) image.getf(i));
             }
-        }
-        else
-        {
-            for (int i = 0; i < image.getPixelCount(); i++)
-            {
+        } else {
+            for (int i = 0; i < image.getPixelCount(); i++) {
                 labelMax = Math.max(labelMax, image.get(i));
             }
         }
@@ -131,11 +121,9 @@ public class LabelsToRGBAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         return labelMax;
     }
 
-    private static int computeMaxLabel(ImageStack image)
-    {
+    private static int computeMaxLabel(ImageStack image) {
         int labelMax = 0;
-        for (int i = 1; i <= image.getSize(); i++)
-        {
+        for (int i = 1; i <= image.getSize(); i++) {
             ImageProcessor slice = image.getProcessor(i);
             labelMax = Math.max(labelMax, computeMaxLabel(slice));
         }

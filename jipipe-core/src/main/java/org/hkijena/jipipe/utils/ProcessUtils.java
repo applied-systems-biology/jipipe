@@ -158,8 +158,7 @@ public class ProcessUtils {
                                 progressInfo.log("Killing orphaned PID " + toKill);
                                 queryFast(Paths.get(killPath), progressInfo, "-9", toKill + "");
                             }
-                        }
-                        catch (Exception e) {
+                        } catch (Exception e) {
                             e.printStackTrace();
                         }
                     }

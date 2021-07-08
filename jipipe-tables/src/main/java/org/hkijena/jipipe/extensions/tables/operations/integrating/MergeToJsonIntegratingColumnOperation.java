@@ -20,7 +20,6 @@ import org.hkijena.jipipe.extensions.tables.datatypes.TableColumn;
 import org.hkijena.jipipe.utils.JsonUtils;
 
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 /**
@@ -31,25 +30,23 @@ public class MergeToJsonIntegratingColumnOperation implements IntegratingColumnO
     public TableColumn apply(TableColumn column) {
         Set<Object> values = new HashSet<>();
         for (int i = 0; i < column.getRows(); i++) {
-            if(column.isNumeric())
+            if (column.isNumeric())
                 values.add(column.getRowAsDouble(i));
             else
                 values.add(column.getRowAsString(i));
         }
-        if(values.size() > 0) {
+        if (values.size() > 0) {
             return new StringArrayTableColumn(new String[]{JsonUtils.toJsonString(values)}, column.getLabel());
-        }
-        else if(!values.isEmpty()){
-            if(column.isNumeric())
-                return new DoubleArrayTableColumn(new double[] { column.getRowAsDouble(0) }, column.getLabel());
+        } else if (!values.isEmpty()) {
+            if (column.isNumeric())
+                return new DoubleArrayTableColumn(new double[]{column.getRowAsDouble(0)}, column.getLabel());
             else
-                return new StringArrayTableColumn(new String[] { column.getRowAsString(0) }, column.getLabel());
-        }
-        else{
-            if(column.isNumeric())
-                return new DoubleArrayTableColumn(new double[] { 0 }, column.getLabel());
+                return new StringArrayTableColumn(new String[]{column.getRowAsString(0)}, column.getLabel());
+        } else {
+            if (column.isNumeric())
+                return new DoubleArrayTableColumn(new double[]{0}, column.getLabel());
             else
-                return new StringArrayTableColumn(new String[] { "" }, column.getLabel());
+                return new StringArrayTableColumn(new String[]{""}, column.getLabel());
         }
     }
 }

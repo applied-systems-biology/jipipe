@@ -15,8 +15,6 @@ package org.hkijena.jipipe.extensions.imagejalgorithms.ij1.labels;
 
 import gnu.trove.list.array.TIntArrayList;
 import ij.ImagePlus;
-import ij.ImageStack;
-import ij.process.ImageProcessor;
 import inra.ijpb.label.LabelImages;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeOrganization;
@@ -35,8 +33,6 @@ import org.hkijena.jipipe.extensions.expressions.ExpressionParameterVariable;
 import org.hkijena.jipipe.extensions.expressions.ExpressionParameterVariableSource;
 import org.hkijena.jipipe.extensions.expressions.ExpressionParameters;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d3.greyscale.ImagePlus3DGreyscaleData;
-import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleData;
-import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -69,7 +65,7 @@ public class FilterLabelsByExpression3DAlgorithm extends JIPipeSimpleIteratingAl
         for (int i = 0; i < allLabels.length; i++) {
             parameters.set("id", allLabels[i]);
             parameters.set("num_pixels", numPixels[i]);
-            if(expression.test(parameters)) {
+            if (expression.test(parameters)) {
                 keptLabels.add(allLabels[i]);
             }
         }

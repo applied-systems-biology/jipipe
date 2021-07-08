@@ -104,9 +104,9 @@ public class ConnectedComponentsLabeling2DAlgorithm extends JIPipeSimpleIteratin
         ImageStack stack = new ImageStack(inputImage.getWidth(), inputImage.getHeight(), inputImage.getStackSize());
 
         int bitDepth;
-        if(outputType.getInfo().getDataClass() == ImagePlusGreyscale32FData.class)
+        if (outputType.getInfo().getDataClass() == ImagePlusGreyscale32FData.class)
             bitDepth = 32;
-        else if(outputType.getInfo().getDataClass() == ImagePlusGreyscale16UData.class)
+        else if (outputType.getInfo().getDataClass() == ImagePlusGreyscale16UData.class)
             bitDepth = 16;
         else
             bitDepth = 8;

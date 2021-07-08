@@ -130,7 +130,7 @@ public class JIPipeMergingDataBatch implements Comparable<JIPipeMergingDataBatch
             this.dataAnnotations.put(annotation.getName(), annotation);
         } else {
             annotation = strategy.merge(Arrays.asList(existing, annotation)).get(0);
-            this.dataAnnotations.put(annotation.getName(),annotation);
+            this.dataAnnotations.put(annotation.getName(), annotation);
         }
     }
 
@@ -326,6 +326,7 @@ public class JIPipeMergingDataBatch implements Comparable<JIPipeMergingDataBatch
 
     /**
      * Returns a global annotation
+     *
      * @param name name of the annotation
      * @return the annotation instance or null if there is no such annotation
      */
@@ -335,6 +336,7 @@ public class JIPipeMergingDataBatch implements Comparable<JIPipeMergingDataBatch
 
     /**
      * Returns a global annotation
+     *
      * @param name name of the annotation
      * @return the annotation instance or null if there is no such annotation
      */
@@ -648,6 +650,7 @@ public class JIPipeMergingDataBatch implements Comparable<JIPipeMergingDataBatch
 
     /**
      * Ensures that the specified slot is registered to the data batch
+     *
      * @param slot the slot
      */
     public void addEmptySlot(JIPipeDataSlot slot) {

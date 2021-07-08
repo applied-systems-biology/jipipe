@@ -23,7 +23,14 @@ import org.hkijena.jipipe.extensions.settings.ProjectsSettings;
 import org.hkijena.jipipe.ui.JIPipeProjectWindow;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbenchPanel;
-import org.hkijena.jipipe.ui.components.*;
+import org.hkijena.jipipe.ui.components.BackgroundPanel;
+import org.hkijena.jipipe.ui.components.DocumentTabPane;
+import org.hkijena.jipipe.ui.components.FormPanel;
+import org.hkijena.jipipe.ui.components.MarkdownDocument;
+import org.hkijena.jipipe.ui.components.MarkdownReader;
+import org.hkijena.jipipe.ui.components.RecentProjectListCellRenderer;
+import org.hkijena.jipipe.ui.components.SearchTextField;
+import org.hkijena.jipipe.ui.components.TemplateProjectListCellRenderer;
 import org.hkijena.jipipe.utils.DotSlideshow;
 import org.hkijena.jipipe.utils.ReflectionUtils;
 import org.hkijena.jipipe.utils.RoundedLineBorder;
@@ -36,7 +43,6 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.jar.Attributes;
@@ -67,7 +73,7 @@ public class WelcomePanel extends JIPipeProjectWorkbenchPanel {
     private void refreshTemplateProjects() {
         DefaultListModel<JIPipeProjectTemplate> model = new DefaultListModel<>();
         for (JIPipeProjectTemplate template : JIPipeProjectTemplate.listTemplates()) {
-            if(templateSearch.test(template.getMetadata().getName() + " " + template.getMetadata().getTemplateDescription())) {
+            if (templateSearch.test(template.getMetadata().getName() + " " + template.getMetadata().getTemplateDescription())) {
                 model.addElement(template);
             }
         }

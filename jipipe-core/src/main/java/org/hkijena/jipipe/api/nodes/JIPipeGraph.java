@@ -32,9 +32,9 @@ import com.google.common.eventbus.Subscribe;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.JIPipeDependency;
 import org.hkijena.jipipe.api.JIPipeGraphType;
+import org.hkijena.jipipe.api.JIPipeIssueReport;
 import org.hkijena.jipipe.api.JIPipeProject;
 import org.hkijena.jipipe.api.JIPipeValidatable;
-import org.hkijena.jipipe.api.JIPipeIssueReport;
 import org.hkijena.jipipe.api.compartments.algorithms.JIPipeProjectCompartment;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
@@ -806,7 +806,7 @@ public class JIPipeGraph implements JIPipeValidatable {
      */
     @Subscribe
     public void onParameterStructureChanged(JIPipeParameterCollection.ParameterStructureChangedEvent event) {
-        if(event.getVisitors().contains(this))
+        if (event.getVisitors().contains(this))
             return;
         event.getVisitors().add(this);
         eventBus.post(event);

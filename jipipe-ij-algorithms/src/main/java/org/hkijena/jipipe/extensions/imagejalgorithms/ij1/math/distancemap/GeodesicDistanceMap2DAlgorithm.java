@@ -28,7 +28,6 @@ import org.hkijena.jipipe.api.nodes.JIPipeInputSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeIteratingAlgorithm;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.JIPipeOutputSlot;
-import org.hkijena.jipipe.api.nodes.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.binary.Image_8_16_32_Filter;
@@ -120,7 +119,7 @@ public class GeodesicDistanceMap2DAlgorithm extends JIPipeIteratingAlgorithm {
         ImageStack stack = new ImageStack(markerImage.getWidth(), markerImage.getHeight(), markerImage.getStackSize());
 
         int bitDepth;
-        if(outputType.getInfo().getDataClass() == ImagePlusGreyscale32FData.class)
+        if (outputType.getInfo().getDataClass() == ImagePlusGreyscale32FData.class)
             bitDepth = 32;
         else
             bitDepth = 16;
@@ -129,10 +128,10 @@ public class GeodesicDistanceMap2DAlgorithm extends JIPipeIteratingAlgorithm {
             ImageProcessor ipMask = ImageJUtils.getSliceZero(maskImage, index);
             ImageProcessor processor;
 
-            if(bitDepth == 16)
-                processor= BinaryImages.geodesicDistanceMap(ipMarker, ipMask, chamferWeights.getShortWeights(), normalize);
+            if (bitDepth == 16)
+                processor = BinaryImages.geodesicDistanceMap(ipMarker, ipMask, chamferWeights.getShortWeights(), normalize);
             else
-                processor= BinaryImages.geodesicDistanceMap(ipMarker, ipMask, chamferWeights.getFloatWeights(), normalize);
+                processor = BinaryImages.geodesicDistanceMap(ipMarker, ipMask, chamferWeights.getFloatWeights(), normalize);
 
             stack.setProcessor(processor, index.zeroSliceIndexToOneStackIndex(markerImage));
         }, progressInfo);

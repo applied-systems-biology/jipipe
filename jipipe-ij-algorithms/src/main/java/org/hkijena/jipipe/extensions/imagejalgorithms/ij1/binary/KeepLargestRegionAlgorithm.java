@@ -14,9 +14,7 @@
 package org.hkijena.jipipe.extensions.imagejalgorithms.ij1.binary;
 
 import ij.ImagePlus;
-import ij.process.ImageProcessor;
 import inra.ijpb.binary.BinaryImages;
-import inra.ijpb.measure.region2d.Convexity;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;

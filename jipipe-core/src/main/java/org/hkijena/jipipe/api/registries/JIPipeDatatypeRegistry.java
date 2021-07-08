@@ -20,7 +20,14 @@ import org.apache.commons.lang3.reflect.ConstructorUtils;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.JIPipeDependency;
 import org.hkijena.jipipe.api.JIPipeHidden;
-import org.hkijena.jipipe.api.data.*;
+import org.hkijena.jipipe.api.data.JIPipeData;
+import org.hkijena.jipipe.api.data.JIPipeDataConverter;
+import org.hkijena.jipipe.api.data.JIPipeDataDisplayOperation;
+import org.hkijena.jipipe.api.data.JIPipeDataImportOperation;
+import org.hkijena.jipipe.api.data.JIPipeDataInfo;
+import org.hkijena.jipipe.api.data.JIPipeDataSlot;
+import org.hkijena.jipipe.api.data.JIPipeExportedDataAnnotation;
+import org.hkijena.jipipe.api.data.JIPipeExportedDataTableRow;
 import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
 import org.hkijena.jipipe.extensions.settings.GeneralDataSettings;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
@@ -28,7 +35,6 @@ import org.hkijena.jipipe.ui.resultanalysis.JIPipeDefaultResultDataSlotPreview;
 import org.hkijena.jipipe.ui.resultanalysis.JIPipeDefaultResultDataSlotRowUI;
 import org.hkijena.jipipe.ui.resultanalysis.JIPipeResultDataSlotPreview;
 import org.hkijena.jipipe.ui.resultanalysis.JIPipeResultDataSlotRowUI;
-import org.hkijena.jipipe.utils.ReflectionUtils;
 import org.hkijena.jipipe.utils.ResourceUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.jgrapht.Graph;
@@ -187,7 +193,7 @@ public class JIPipeDatatypeRegistry {
             existing = new HashMap<>();
             registeredImportOperations.put(dataTypeId, existing);
         }
-        if(existing.containsKey(operation.getId()))
+        if (existing.containsKey(operation.getId()))
             throw new RuntimeException("Import operation with ID '" + operation.getId() + "' already exists in data type '" + dataTypeId + "'");
         existing.put(operation.getId(), operation);
     }
@@ -204,7 +210,7 @@ public class JIPipeDatatypeRegistry {
             existing = new HashMap<>();
             registeredDisplayOperations.put(dataTypeId, existing);
         }
-        if(existing.containsKey(operation.getId()))
+        if (existing.containsKey(operation.getId()))
             throw new RuntimeException("Display operation with ID '" + operation.getId() + "' already exists in data type '" + dataTypeId + "'");
         existing.put(operation.getId(), operation);
     }
@@ -452,10 +458,10 @@ public class JIPipeDatatypeRegistry {
     /**
      * Returns a cell renderer for dataslot result table
      *
-     * @param workbench the workbench
-     * @param table     the table that owns the renderer
-     * @param slot      the slot
-     * @param row       the data row
+     * @param workbench      the workbench
+     * @param table          the table that owns the renderer
+     * @param slot           the slot
+     * @param row            the data row
      * @param dataAnnotation the data annotation (optional)
      * @return cell renderer
      */

@@ -1,6 +1,5 @@
 package org.hkijena.jipipe.extensions.annotation.algorithms;
 
-import com.google.common.collect.ImmutableList;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
@@ -10,7 +9,6 @@ import org.hkijena.jipipe.api.data.JIPipeDataAnnotationMergeStrategy;
 import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
 import org.hkijena.jipipe.api.nodes.JIPipeDataBatch;
 import org.hkijena.jipipe.api.nodes.JIPipeInputSlot;
-import org.hkijena.jipipe.api.nodes.JIPipeIteratingAlgorithm;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.JIPipeOutputSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeSimpleIteratingAlgorithm;
@@ -48,25 +46,25 @@ public class ExtractDataAnnotation extends JIPipeSimpleIteratingAlgorithm {
     @Override
     protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
         String targetedAnnotationName = annotationNameQuery.queryFirst(dataBatch.getGlobalDataAnnotations().keySet(), new ExpressionParameters());
-        if(targetedAnnotationName == null) {
-            if(ignoreMissingAnnotations)
+        if (targetedAnnotationName == null) {
+            if (ignoreMissingAnnotations)
                 return;
             throw new UserFriendlyRuntimeException("Could not find data annotation matching '" + annotationNameQuery.getExpression() + "'",
                     "Could not find data annotation!",
                     getDisplayName(),
                     "The node tried to find a data annotation that matches the expression '" + annotationNameQuery.getExpression() + "', but none did match. Following were available: " +
-                    String.join(", ", dataBatch.getGlobalAnnotations().keySet()),
+                            String.join(", ", dataBatch.getGlobalAnnotations().keySet()),
                     "Check if the expression is correct or enable 'Ignore missing annotations'");
         }
         JIPipeDataAnnotation dataAnnotation = dataBatch.getGlobalDataAnnotation(targetedAnnotationName);
-        if(!keepOtherDataAnnotations) {
+        if (!keepOtherDataAnnotations) {
             dataBatch.getGlobalAnnotations().clear();
             dataBatch.addGlobalDataAnnotation(dataAnnotation, JIPipeDataAnnotationMergeStrategy.OverwriteExisting);
         }
-        if(!keepCurrentAnnotation) {
+        if (!keepCurrentAnnotation) {
             dataBatch.removeGlobalDataAnnotation(targetedAnnotationName);
         }
-        if(annotateWithCurrentData.isEnabled()) {
+        if (annotateWithCurrentData.isEnabled()) {
             dataBatch.addGlobalDataAnnotation(new JIPipeDataAnnotation(annotateWithCurrentData.getContent(), dataBatch.getInputData(getFirstInputSlot(), JIPipeData.class, progressInfo)),
                     JIPipeDataAnnotationMergeStrategy.OverwriteExisting);
         }

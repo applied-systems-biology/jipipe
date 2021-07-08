@@ -141,7 +141,7 @@ public abstract class JIPipeMergingAlgorithm extends JIPipeParameterSlotAlgorith
             }
             dataBatches = limitedBatches;
         }
-        if(dataBatchGenerationSettings.isSkipIncompleteDataSets()) {
+        if (dataBatchGenerationSettings.isSkipIncompleteDataSets()) {
             dataBatches.removeIf(JIPipeMergingDataBatch::isIncomplete);
         }
         return dataBatches;

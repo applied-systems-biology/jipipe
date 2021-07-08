@@ -248,7 +248,7 @@ public class MergingFormProcessorAlgorithm extends JIPipeAlgorithm implements JI
             }
             dataBatches = limitedBatches;
         }
-        if(dataBatchGenerationSettings.isSkipIncompleteDataSets()) {
+        if (dataBatchGenerationSettings.isSkipIncompleteDataSets()) {
             dataBatches.removeIf(JIPipeMergingDataBatch::isIncomplete);
         }
         return dataBatches;

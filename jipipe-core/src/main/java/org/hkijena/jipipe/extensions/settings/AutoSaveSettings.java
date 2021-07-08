@@ -68,7 +68,7 @@ public class AutoSaveSettings implements JIPipeParameterCollection {
             }
         }
         Path targetDirectory = imageJDir.resolve("jipipe").resolve("backups");
-        if(!Files.isDirectory(targetDirectory)) {
+        if (!Files.isDirectory(targetDirectory)) {
             try {
                 Files.createDirectories(targetDirectory);
             } catch (IOException e) {
@@ -95,8 +95,7 @@ public class AutoSaveSettings implements JIPipeParameterCollection {
             } else {
                 directory = savePath.getContent();
             }
-        }
-        else {
+        } else {
             directory = getDefaultSavePath();
         }
         try {
@@ -108,7 +107,7 @@ public class AutoSaveSettings implements JIPipeParameterCollection {
 
             // Calculate the SHA1
             String sha1 = PathUtils.computeFileSHA1(targetFile.toFile());
-            if(this.savedBackupHashes.contains(sha1)) {
+            if (this.savedBackupHashes.contains(sha1)) {
                 Files.delete(targetFile);
                 return;
             }
@@ -194,7 +193,7 @@ public class AutoSaveSettings implements JIPipeParameterCollection {
     public void removeDuplicateBackups(JIPipeWorkbench workbench) {
         int timeEstimate = (int) Math.ceil(getLastSaves().size() * 30.0 / 1000.0 / 60.0);
         String timeEstimateString = timeEstimate == 1 ? timeEstimate + " minute" : timeEstimate + " minutes";
-        if(JOptionPane.showConfirmDialog(workbench.getWindow(), "Do you really want to remove duplicate backups?\nThis will only affect backups and not your actual project files. " +
+        if (JOptionPane.showConfirmDialog(workbench.getWindow(), "Do you really want to remove duplicate backups?\nThis will only affect backups and not your actual project files. " +
                 "The operation will take approximately "
                 + timeEstimateString + ".", "Remove duplicate backups", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
             JIPipeRunExecuterUI.runInDialog(workbench.getWindow(), new CleanBackupsRun(workbench));

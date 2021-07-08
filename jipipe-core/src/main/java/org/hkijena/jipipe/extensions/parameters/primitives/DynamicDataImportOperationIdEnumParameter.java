@@ -69,9 +69,9 @@ public class DynamicDataImportOperationIdEnumParameter extends DynamicEnumParame
 
     @Override
     public String renderLabel(String value) {
-        if(JIPipe.getInstance() != null && dataTypeId != null) {
+        if (JIPipe.getInstance() != null && dataTypeId != null) {
             JIPipeDataImportOperation operation = JIPipe.getDataTypes().getAllRegisteredImportOperations(dataTypeId).getOrDefault(value, null);
-            if(operation != null)
+            if (operation != null)
                 return operation.getName();
         }
         return super.renderLabel(value);
@@ -79,9 +79,9 @@ public class DynamicDataImportOperationIdEnumParameter extends DynamicEnumParame
 
     @Override
     public String renderTooltip(String value) {
-        if(JIPipe.getInstance() != null && dataTypeId != null) {
+        if (JIPipe.getInstance() != null && dataTypeId != null) {
             JIPipeDataImportOperation operation = JIPipe.getDataTypes().getAllRegisteredImportOperations(dataTypeId).getOrDefault(value, null);
-            if(operation != null)
+            if (operation != null)
                 return operation.getDescription();
         }
         return super.renderTooltip(value);
@@ -89,9 +89,9 @@ public class DynamicDataImportOperationIdEnumParameter extends DynamicEnumParame
 
     @Override
     public Icon renderIcon(String value) {
-        if(JIPipe.getInstance() != null && dataTypeId != null) {
+        if (JIPipe.getInstance() != null && dataTypeId != null) {
             JIPipeDataImportOperation operation = JIPipe.getDataTypes().getAllRegisteredImportOperations(dataTypeId).getOrDefault(value, null);
-            if(operation != null)
+            if (operation != null)
                 return operation.getIcon();
         }
         return super.renderIcon(value);

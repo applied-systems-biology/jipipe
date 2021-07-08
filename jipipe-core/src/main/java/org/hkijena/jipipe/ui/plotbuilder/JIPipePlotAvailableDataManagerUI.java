@@ -47,7 +47,7 @@ public class JIPipePlotAvailableDataManagerUI extends JIPipeWorkbenchPanel {
     private JPopupMenu importPopupMenu;
 
     /**
-     * @param workbench     the workbench
+     * @param workbench  the workbench
      * @param plotEditor the plot builder
      */
     public JIPipePlotAvailableDataManagerUI(JIPipeWorkbench workbench, PlotEditor plotEditor) {

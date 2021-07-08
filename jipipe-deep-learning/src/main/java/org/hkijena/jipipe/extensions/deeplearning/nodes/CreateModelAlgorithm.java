@@ -13,7 +13,6 @@
 
 package org.hkijena.jipipe.extensions.deeplearning.nodes;
 
-import org.apache.commons.io.FileUtils;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;

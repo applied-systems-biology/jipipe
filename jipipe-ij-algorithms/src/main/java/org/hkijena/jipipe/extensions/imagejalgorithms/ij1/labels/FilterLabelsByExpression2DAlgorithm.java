@@ -13,7 +13,6 @@
 
 package org.hkijena.jipipe.extensions.imagejalgorithms.ij1.labels;
 
-import com.google.common.primitives.Ints;
 import gnu.trove.list.array.TIntArrayList;
 import ij.ImagePlus;
 import ij.ImageStack;
@@ -64,7 +63,7 @@ public class FilterLabelsByExpression2DAlgorithm extends JIPipeSimpleIteratingAl
         ImagePlus inputImage = dataBatch.getInputData(getFirstInputSlot(), ImagePlusGreyscaleData.class, progressInfo).getImage();
         ImageStack stack = new ImageStack(inputImage.getWidth(), inputImage.getHeight(), inputImage.getStackSize());
 
-        ImageJUtils.forEachIndexedZCTSlice(inputImage, (ip, index ) -> {
+        ImageJUtils.forEachIndexedZCTSlice(inputImage, (ip, index) -> {
             int[] allLabels = LabelImages.findAllLabels(ip);
             int[] numPixels = LabelImages.pixelCount(ip, allLabels);
             TIntArrayList keptLabels = new TIntArrayList();
@@ -72,7 +71,7 @@ public class FilterLabelsByExpression2DAlgorithm extends JIPipeSimpleIteratingAl
             for (int i = 0; i < allLabels.length; i++) {
                 parameters.set("id", allLabels[i]);
                 parameters.set("num_pixels", numPixels[i]);
-                if(expression.test(parameters)) {
+                if (expression.test(parameters)) {
                     keptLabels.add(allLabels[i]);
                 }
             }

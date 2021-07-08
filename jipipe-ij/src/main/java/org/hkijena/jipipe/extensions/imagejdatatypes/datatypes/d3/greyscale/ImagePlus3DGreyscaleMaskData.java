@@ -18,7 +18,6 @@ import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeHeavyData;
 import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
-import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.color.ImagePlusColorData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ConverterWrapperImageSource;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageSource;
@@ -60,10 +59,9 @@ public class ImagePlus3DGreyscaleMaskData extends ImagePlus3DGreyscale8UData {
      * @return the converted data
      */
     public static ImagePlusData convertFrom(ImagePlusData data) {
-        if(data.hasLoadedImage()) {
+        if (data.hasLoadedImage()) {
             return new ImagePlus3DGreyscaleMaskData(data.getImage());
-        }
-        else {
+        } else {
             return new ImagePlus3DGreyscaleMaskData(data.getImageSource());
         }
     }

@@ -15,25 +15,28 @@ package org.hkijena.jipipe.extensions.deeplearning.nodes;
 
 import ij.IJ;
 import ij.ImagePlus;
-import org.apache.commons.io.FileUtils;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
-import org.hkijena.jipipe.api.nodes.*;
+import org.hkijena.jipipe.api.nodes.JIPipeInputSlot;
+import org.hkijena.jipipe.api.nodes.JIPipeMergingDataBatch;
+import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
+import org.hkijena.jipipe.api.nodes.JIPipeOutputSlot;
+import org.hkijena.jipipe.api.nodes.JIPipeSingleIterationAlgorithm;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
-import org.hkijena.jipipe.extensions.deeplearning.enums.DeepLearningModelType;
 import org.hkijena.jipipe.extensions.deeplearning.DeepLearningSettings;
 import org.hkijena.jipipe.extensions.deeplearning.DeepLearningUtils;
 import org.hkijena.jipipe.extensions.deeplearning.OptionalDeepLearningDeviceEnvironment;
 import org.hkijena.jipipe.extensions.deeplearning.configs.DeepLearningTrainingConfiguration;
 import org.hkijena.jipipe.extensions.deeplearning.datatypes.DeepLearningModelData;
+import org.hkijena.jipipe.extensions.deeplearning.enums.DeepLearningModelType;
 import org.hkijena.jipipe.extensions.expressions.DataAnnotationQueryExpression;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.transform.ScaleMode;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.transform.TransformScale2DAlgorithm;
@@ -121,7 +124,7 @@ public class TrainImageModelAlgorithm extends JIPipeSingleIterationAlgorithm {
             JIPipeProgressInfo modelProgress = progressInfo.resolveAndLog("Check model", modelCounter++, dataBatch.getInputSlotRows().get(inputModelSlot).size());
             DeepLearningModelData inputModel = inputModelSlot.getData(modelIndex, DeepLearningModelData.class, modelProgress);
 
-            if(inputModel.getModelConfiguration().getModelType() == DeepLearningModelType.classification) {
+            if (inputModel.getModelConfiguration().getModelType() == DeepLearningModelType.classification) {
                 throw new UserFriendlyRuntimeException("Model " + inputModel + " is not supported by this node!",
                         "Unsupported model",
                         getDisplayName(),
@@ -154,24 +157,22 @@ public class TrainImageModelAlgorithm extends JIPipeSingleIterationAlgorithm {
                 Path rawPath = rawsDirectory.resolve(imageCounter + "_img.tif");
                 Path labelPath = labelsDirectory.resolve(imageCounter + "_img.tif");
 
-                if(raw.hasLoadedImage() || isScaleToModelSize()) {
+                if (raw.hasLoadedImage() || isScaleToModelSize()) {
                     ImagePlus rawImage = isScaleToModelSize() ? DeepLearningUtils.scaleToModel(raw.getImage(),
                             inputModel.getModelConfiguration(),
                             getScale2DAlgorithm(),
                             imageProgress) : raw.getImage();
                     IJ.saveAsTiff(rawImage, rawPath.toString());
-                }
-                else {
+                } else {
                     raw.saveTo(rawsDirectory, imageCounter + "_img", true, imageProgress);
                 }
-                if(label.hasLoadedImage() || isScaleToModelSize()) {
+                if (label.hasLoadedImage() || isScaleToModelSize()) {
                     ImagePlus labelImage = isScaleToModelSize() ? DeepLearningUtils.scaleToModel(label.getImage(),
                             inputModel.getModelConfiguration(),
                             getScale2DAlgorithm(),
                             imageProgress) : label.getImage();
                     IJ.saveAsTiff(labelImage, labelPath.toString());
-                }
-                else {
+                } else {
                     label.saveTo(labelsDirectory, imageCounter + "_img", true, imageProgress);
                 }
             }

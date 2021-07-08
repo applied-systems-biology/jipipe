@@ -117,7 +117,7 @@ public class PythonExtension extends JIPipePrepackagedDefaultJavaExtension {
 
     @Override
     public void postprocess() {
-        if(!PythonExtensionSettings.pythonSettingsAreValid()) {
+        if (!PythonExtensionSettings.pythonSettingsAreValid()) {
             JIPipeNotification notification = new JIPipeNotification(getDependencyId() + ":python-not-configured");
             notification.setHeading("Python is not configured");
             notification.setDescription("To make use of Python within JIPipe, you need to either provide JIPipe with an " +
@@ -136,7 +136,7 @@ public class PythonExtension extends JIPipePrepackagedDefaultJavaExtension {
                     PythonExtension::openSettingsPage));
             JIPipeNotificationInbox.getInstance().push(notification);
         }
-        if(!PythonExtensionSettings.getInstance().getPythonAdapterLibraryEnvironment().isNewestVersion()) {
+        if (!PythonExtensionSettings.getInstance().getPythonAdapterLibraryEnvironment().isNewestVersion()) {
             JIPipeNotification notification = new JIPipeNotification(getDependencyId() + ":old-python-adapter");
             notification.setHeading("Old library version");
             notification.setDescription("JIPipe has detected that the installed version of the JIPipe Python adapter library is outdated. " +
@@ -151,14 +151,6 @@ public class PythonExtension extends JIPipePrepackagedDefaultJavaExtension {
                     PythonExtension::openSettingsPage));
             JIPipeNotificationInbox.getInstance().push(notification);
         }
-    }
-
-    private static void installPythonAdapterLibrary(JIPipeWorkbench workbench) {
-        PythonExtensionSettings settings = PythonExtensionSettings.getInstance();
-        JIPipeParameterTree tree = new JIPipeParameterTree(settings);
-        JIPipeParameterAccess parameterAccess = tree.getParameters().get("python-adapter-library");
-        JIPipePythonAdapterLibraryEnvironmentInstaller installer = new JIPipePythonAdapterLibraryEnvironmentInstaller(workbench, parameterAccess);
-        JIPipeRunExecuterUI.runInDialog(workbench.getWindow(), installer);
     }
 
     @Override
@@ -179,6 +171,14 @@ public class PythonExtension extends JIPipePrepackagedDefaultJavaExtension {
     @Override
     public String getDependencyVersion() {
         return "2021.7";
+    }
+
+    private static void installPythonAdapterLibrary(JIPipeWorkbench workbench) {
+        PythonExtensionSettings settings = PythonExtensionSettings.getInstance();
+        JIPipeParameterTree tree = new JIPipeParameterTree(settings);
+        JIPipeParameterAccess parameterAccess = tree.getParameters().get("python-adapter-library");
+        JIPipePythonAdapterLibraryEnvironmentInstaller installer = new JIPipePythonAdapterLibraryEnvironmentInstaller(workbench, parameterAccess);
+        JIPipeRunExecuterUI.runInDialog(workbench.getWindow(), installer);
     }
 
     private static void installConda(JIPipeWorkbench workbench) {

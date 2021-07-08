@@ -13,7 +13,6 @@
 
 package org.hkijena.jipipe.extensions.imagejalgorithms.ij1.labels;
 
-import com.google.common.primitives.Ints;
 import gnu.trove.set.hash.TIntHashSet;
 import ij.ImagePlus;
 import inra.ijpb.label.LabelImages;
@@ -30,9 +29,7 @@ import org.hkijena.jipipe.api.nodes.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleData;
-import org.hkijena.jipipe.extensions.parameters.generators.IntegerRange;
 import org.hkijena.jipipe.extensions.parameters.generators.OptionalIntegerRange;
-import org.hkijena.jipipe.extensions.parameters.primitives.BooleanParameterSettings;
 import org.hkijena.jipipe.extensions.parameters.primitives.OptionalAnnotationNameParameter;
 
 import java.util.ArrayList;
@@ -59,7 +56,7 @@ public class CropLabelsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         this.labelIdAnnotation = new OptionalAnnotationNameParameter(other.labelIdAnnotation);
     }
 
-    @JIPipeDocumentation(name = "Limit label IDs",description = "Allows to determine which label IDs should be extracted")
+    @JIPipeDocumentation(name = "Limit label IDs", description = "Allows to determine which label IDs should be extracted")
     @JIPipeParameter("label-id-limit")
     public OptionalIntegerRange getLabelIdLimit() {
         return labelIdLimit;
@@ -96,17 +93,16 @@ public class CropLabelsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
         ImagePlus inputImage = dataBatch.getInputData(getFirstInputSlot(), ImagePlusGreyscaleData.class, progressInfo).getImage();
         TIntHashSet knownLabels = new TIntHashSet(LabelImages.findAllLabels(inputImage));
-        if(labelIdLimit.isEnabled()) {
+        if (labelIdLimit.isEnabled()) {
             for (Integer i : labelIdLimit.getContent().getIntegers()) {
-                if(!knownLabels.contains(i))
+                if (!knownLabels.contains(i))
                     continue;
                 ImagePlus cropped = LabelImages.cropLabel(inputImage, i, border);
                 List<JIPipeAnnotation> annotations = new ArrayList<>();
                 labelIdAnnotation.addAnnotationIfEnabled(annotations, "" + i);
                 dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusGreyscaleData(cropped), annotations, JIPipeAnnotationMergeStrategy.OverwriteExisting, progressInfo);
             }
-        }
-        else {
+        } else {
             for (int i : knownLabels.toArray()) {
                 ImagePlus cropped = LabelImages.cropLabel(inputImage, i, border);
                 List<JIPipeAnnotation> annotations = new ArrayList<>();

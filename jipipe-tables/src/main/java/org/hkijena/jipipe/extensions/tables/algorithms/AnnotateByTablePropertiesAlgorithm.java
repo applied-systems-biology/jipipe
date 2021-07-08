@@ -5,7 +5,11 @@ import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeAnnotation;
 import org.hkijena.jipipe.api.data.JIPipeAnnotationMergeStrategy;
-import org.hkijena.jipipe.api.nodes.*;
+import org.hkijena.jipipe.api.nodes.JIPipeDataBatch;
+import org.hkijena.jipipe.api.nodes.JIPipeInputSlot;
+import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
+import org.hkijena.jipipe.api.nodes.JIPipeOutputSlot;
+import org.hkijena.jipipe.api.nodes.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.nodes.categories.AnnotationsNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.parameters.primitives.OptionalAnnotationNameParameter;
@@ -46,7 +50,7 @@ public class AnnotateByTablePropertiesAlgorithm extends JIPipeSimpleIteratingAlg
 
         rowCountAnnotation.addAnnotationIfEnabled(annotationList, "" + data.getRowCount());
         columnCountAnnotation.addAnnotationIfEnabled(annotationList, "" + data.getColumnCount());
-        if(columnNamesAnnotation.isEnabled())
+        if (columnNamesAnnotation.isEnabled())
             columnNamesAnnotation.addAnnotationIfEnabled(annotationList, JsonUtils.toJsonString(data.getColumnNames()));
 
         dataBatch.addOutputData(getFirstOutputSlot(), data, annotationList, annotationMergeStrategy, progressInfo);

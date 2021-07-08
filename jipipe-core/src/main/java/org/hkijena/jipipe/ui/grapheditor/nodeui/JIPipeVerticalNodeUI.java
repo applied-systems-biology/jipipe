@@ -229,12 +229,12 @@ public class JIPipeVerticalNodeUI extends JIPipeNodeUI {
 
     @Override
     public boolean needsRecalculateGridSize() {
-        if(cachedGridSize == null)
+        if (cachedGridSize == null)
             return true;
-        if(!Objects.equals(cachedGridSizeNodeName, getNode().getName()))
+        if (!Objects.equals(cachedGridSizeNodeName, getNode().getName()))
             return true;
         for (JIPipeDataSlotUI ui : slotUIList) {
-            if(ui.needsRecalculateGridSize())
+            if (ui.needsRecalculateGridSize())
                 return true;
         }
         return false;
@@ -242,7 +242,7 @@ public class JIPipeVerticalNodeUI extends JIPipeNodeUI {
 
     @Override
     public Dimension calculateGridSize() {
-        if(needsRecalculateGridSize()) {
+        if (needsRecalculateGridSize()) {
             JIPipeGraphViewMode graphViewMode = compact ? JIPipeGraphViewMode.VerticalCompact : JIPipeGraphViewMode.Vertical;
             FontRenderContext frc = new FontRenderContext(null, false, false);
             double width = 0;

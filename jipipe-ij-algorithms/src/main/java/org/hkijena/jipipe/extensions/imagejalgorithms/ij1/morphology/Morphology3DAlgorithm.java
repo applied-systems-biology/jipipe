@@ -17,9 +17,7 @@ import ij.ImagePlus;
 import ij.ImageStack;
 import ij.process.ImageProcessor;
 import inra.ijpb.morphology.Morphology;
-import inra.ijpb.morphology.Strel;
 import inra.ijpb.morphology.Strel3D;
-import inra.ijpb.plugins.MorphologicalFilter3DPlugin;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeIssueReport;
 import org.hkijena.jipipe.api.JIPipeOrganization;
@@ -34,7 +32,6 @@ import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleMaskData;
-import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 
 /**
  * Wrapper around {@link ImageProcessor}
@@ -92,8 +89,7 @@ public class Morphology3DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusData(result), progressInfo);
     }
 
-    public ImagePlus process(ImagePlus image, Morphology.Operation op, Strel3D strel)
-    {
+    public ImagePlus process(ImagePlus image, Morphology.Operation op, Strel3D strel) {
         // Check validity of parameters
         if (image == null)
             return null;

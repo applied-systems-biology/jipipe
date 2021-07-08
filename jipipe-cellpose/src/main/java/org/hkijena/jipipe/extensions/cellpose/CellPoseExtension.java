@@ -87,7 +87,7 @@ public class CellPoseExtension extends JIPipePrepackagedDefaultJavaExtension {
 
     @Override
     public void postprocess() {
-        if(!CellPoseSettings.pythonSettingsAreValid()) {
+        if (!CellPoseSettings.pythonSettingsAreValid()) {
             JIPipeNotification notification = new JIPipeNotification(getDependencyId() + ":python-not-configured");
             notification.setHeading("Cellpose is not configured");
             notification.setDescription("You need to setup a Python environment that contains Cellpose.");

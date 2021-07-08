@@ -32,6 +32,7 @@ public class JIPipeCacheSlotDataSource implements JIPipeDataSource {
 
     /**
      * The data slot where the data is sourced
+     *
      * @return the data slot
      */
     public JIPipeDataSlot getSlot() {
@@ -40,6 +41,7 @@ public class JIPipeCacheSlotDataSource implements JIPipeDataSource {
 
     /**
      * The data slot row where the data is sourced
+     *
      * @return the data slot
      */
     public int getRow() {
@@ -48,6 +50,7 @@ public class JIPipeCacheSlotDataSource implements JIPipeDataSource {
 
     /**
      * Optional: Data annotation
+     *
      * @return the data annotation or null if the main data is referenced
      */
     public String getDataAnnotation() {

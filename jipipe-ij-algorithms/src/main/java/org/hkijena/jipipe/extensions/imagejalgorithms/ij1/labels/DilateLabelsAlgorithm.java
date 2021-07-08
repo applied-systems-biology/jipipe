@@ -58,13 +58,12 @@ public class DilateLabelsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     @Override
     protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
         ImagePlus inputImage = dataBatch.getInputData(getFirstInputSlot(), ImagePlusGreyscaleData.class, progressInfo).getImage();
-       ImagePlus outputImage;
-       if(inputImage.getStackSize() == 1) {
-           outputImage = new ImagePlus("Dilated", LabelImages.dilateLabels(inputImage.getProcessor(), maxRadius));
-       }
-       else {
-           outputImage = new ImagePlus("Dilated",  LabelImages.dilateLabels(inputImage.getStack(), maxRadius));
-       }
+        ImagePlus outputImage;
+        if (inputImage.getStackSize() == 1) {
+            outputImage = new ImagePlus("Dilated", LabelImages.dilateLabels(inputImage.getProcessor(), maxRadius));
+        } else {
+            outputImage = new ImagePlus("Dilated", LabelImages.dilateLabels(inputImage.getStack(), maxRadius));
+        }
         outputImage.setDimensions(inputImage.getNChannels(), inputImage.getNSlices(), inputImage.getNFrames());
         dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusGreyscaleData(outputImage), progressInfo);
     }

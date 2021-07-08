@@ -44,7 +44,7 @@ public class CachedImagePlusDataViewerWindow extends JIPipeCacheDataViewerWindow
     public CachedImagePlusDataViewerWindow(JIPipeWorkbench workbench, JIPipeCacheSlotDataSource dataSource, String displayName, boolean deferLoadingData) {
         super(workbench, dataSource, displayName);
         initialize();
-        if(!deferLoadingData)
+        if (!deferLoadingData)
             reloadDisplayedData();
     }
 
@@ -99,17 +99,15 @@ public class CachedImagePlusDataViewerWindow extends JIPipeCacheDataViewerWindow
     @Override
     protected void loadData(JIPipeVirtualData virtualData, JIPipeProgressInfo progressInfo) {
         ImagePlus image;
-        if(ImagePlusData.class.isAssignableFrom(virtualData.getDataClass())) {
+        if (ImagePlusData.class.isAssignableFrom(virtualData.getDataClass())) {
             ImagePlusData data = (ImagePlusData) virtualData.getData(progressInfo);
             imageViewerPanel.getCanvas().setError(null);
             image = data.getViewedImage(true);
-        }
-        else if(OMEImageData.class.isAssignableFrom(virtualData.getDataClass())) {
+        } else if (OMEImageData.class.isAssignableFrom(virtualData.getDataClass())) {
             OMEImageData data = (OMEImageData) virtualData.getData(progressInfo);
             imageViewerPanel.getCanvas().setError(null);
             image = data.getDuplicateImage();
-        }
-        else {
+        } else {
             throw new UnsupportedOperationException();
         }
         image.setTitle(image.getTitle());

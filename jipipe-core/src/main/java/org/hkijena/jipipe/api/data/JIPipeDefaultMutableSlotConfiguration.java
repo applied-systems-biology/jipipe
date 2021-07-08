@@ -359,7 +359,7 @@ public class JIPipeDefaultMutableSlotConfiguration implements JIPipeMutableSlotC
                         addSlot(entry.getKey(), slotDefinition, false);
                     }
                 } catch (Exception e) {
-                   e.printStackTrace();
+                    e.printStackTrace();
                 }
             }
             if (!outputSlotsSealed) {

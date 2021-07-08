@@ -209,8 +209,7 @@ public class JIPipeProjectTemplate {
             } catch (IOException e) {
                 e.printStackTrace();
             }
-        }
-        else {
+        } else {
             try {
                 Files.createDirectories(templatesDir);
             } catch (IOException e) {

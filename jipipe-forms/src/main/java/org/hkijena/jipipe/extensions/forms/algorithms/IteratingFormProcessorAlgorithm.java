@@ -271,7 +271,7 @@ public class IteratingFormProcessorAlgorithm extends JIPipeAlgorithm implements 
             }
             dataBatches = limitedBatches;
         }
-        if(dataBatchGenerationSettings.isSkipIncompleteDataSets()) {
+        if (dataBatchGenerationSettings.isSkipIncompleteDataSets()) {
             dataBatches.removeIf(JIPipeMergingDataBatch::isIncomplete);
         }
         return dataBatches;

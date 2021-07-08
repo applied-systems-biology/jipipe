@@ -77,6 +77,7 @@ public class ImagePlusData implements JIPipeData, ColoredImagePlusData {
 
     /**
      * Initializes this {@link ImagePlusData} with an image source, meaning that the image data is not loaded until necessary
+     *
      * @param imageSource the image source
      */
     public ImagePlusData(ImageSource imageSource) {
@@ -85,8 +86,9 @@ public class ImagePlusData implements JIPipeData, ColoredImagePlusData {
 
     /**
      * Initializes this {@link ImagePlusData} with an image source, meaning that the image data is not loaded until necessary
+     *
      * @param imageSource the image source
-     * @param colorSpace the color space. please not that it is ignored if the image is greyscale
+     * @param colorSpace  the color space. please not that it is ignored if the image is greyscale
      */
     public ImagePlusData(ImageSource imageSource, ColorSpace colorSpace) {
         this.imageSource = imageSource;
@@ -116,7 +118,7 @@ public class ImagePlusData implements JIPipeData, ColoredImagePlusData {
      * @return the image
      */
     public ImagePlus getImage() {
-        if(image == null) {
+        if (image == null) {
             image = imageSource.get();
             imageSource = null;
         }
@@ -138,7 +140,7 @@ public class ImagePlusData implements JIPipeData, ColoredImagePlusData {
 
     @Override
     public void saveTo(Path storageFilePath, String name, boolean forceName, JIPipeProgressInfo progressInfo) {
-        if(image != null) {
+        if (image != null) {
             if (ImageJDataTypesSettings.getInstance().isUseBioFormats() && !(image.getType() == ImagePlus.COLOR_RGB && ImageJDataTypesSettings.getInstance().isSaveRGBWithImageJ())) {
                 Path outputPath = storageFilePath.resolve(name + ".ome.tif");
                 OMEImageData.simpleOMEExport(image, outputPath);
@@ -146,20 +148,18 @@ public class ImagePlusData implements JIPipeData, ColoredImagePlusData {
                 Path outputPath = storageFilePath.resolve(name + ".tif");
                 IJ.saveAsTiff(image, outputPath.toString());
             }
-        }
-        else {
+        } else {
             imageSource.saveTo(storageFilePath, name, forceName, progressInfo);
         }
     }
 
     @Override
     public JIPipeData duplicate() {
-        if(image != null) {
+        if (image != null) {
             ImagePlus imp = image.duplicate();
             imp.setTitle(getImage().getTitle());
             return JIPipe.createData(getClass(), imp, colorSpace);
-        }
-        else {
+        } else {
             return JIPipe.createData(getClass(), imageSource, colorSpace);
         }
     }
@@ -196,7 +196,7 @@ public class ImagePlusData implements JIPipeData, ColoredImagePlusData {
 
     @Override
     public Component preview(int width, int height) {
-        if(image != null) {
+        if (image != null) {
             double factorX = 1.0 * width / image.getWidth();
             double factorY = 1.0 * height / image.getHeight();
             double factor = Math.max(factorX, factorY);
@@ -207,15 +207,14 @@ public class ImagePlusData implements JIPipeData, ColoredImagePlusData {
             ImageProcessor resized = rgbImage.getProcessor().resize(imageWidth, imageHeight, smooth);
             BufferedImage bufferedImage = resized.getBufferedImage();
             return new JLabel(new ImageIcon(bufferedImage));
-        }
-        else {
+        } else {
             return new JLabel(imageSource.getLabel(), imageSource.getIcon(), JLabel.LEFT);
         }
     }
 
     @Override
     public String toString() {
-        if(image != null)
+        if (image != null)
             return JIPipeDataInfo.getInstance(getClass()).getName() + " (" + image + ")";
         else
             return JIPipeDataInfo.getInstance(getClass()).getName() + " (" + imageSource.getLabel() + ")";
@@ -224,6 +223,14 @@ public class ImagePlusData implements JIPipeData, ColoredImagePlusData {
     @Override
     public ColorSpace getColorSpace() {
         return colorSpace;
+    }
+
+    public ImageSource getImageSource() {
+        return imageSource;
+    }
+
+    public boolean hasLoadedImage() {
+        return image != null;
     }
 
     public static ImagePlus importImagePlusFrom(Path storageFilePath) {
@@ -242,14 +249,6 @@ public class ImagePlusData implements JIPipeData, ColoredImagePlusData {
         } else {
             return IJ.openImage(targetFile.toString());
         }
-    }
-
-    public ImageSource getImageSource() {
-        return imageSource;
-    }
-
-    public boolean hasLoadedImage() {
-        return image != null;
     }
 
     public static ImagePlusData importFrom(Path storageFilePath) {
@@ -277,7 +276,7 @@ public class ImagePlusData implements JIPipeData, ColoredImagePlusData {
      * @return the converted data
      */
     public static ImagePlusData convertFrom(ImagePlusData data) {
-        if(data.hasLoadedImage())
+        if (data.hasLoadedImage())
             return new ImagePlusData(data.getImage(), data.getColorSpace());
         else
             return new ImagePlusData(data.getImageSource(), data.getColorSpace());

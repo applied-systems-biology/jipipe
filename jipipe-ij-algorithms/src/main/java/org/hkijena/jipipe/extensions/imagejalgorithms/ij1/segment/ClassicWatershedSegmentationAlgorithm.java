@@ -18,7 +18,6 @@ import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.Neighborhood2D3D;
 import org.hkijena.jipipe.extensions.imagejalgorithms.utils.ImageJUtils2;
 import org.hkijena.jipipe.extensions.imagejalgorithms.utils.ImageROITargetArea;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d3.greyscale.ImagePlus3DGreyscaleData;
-import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d3.greyscale.ImagePlus3DGreyscaleMaskData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.extensions.parameters.primitives.OptionalDoubleParameter;
 
@@ -54,16 +53,14 @@ public class ClassicWatershedSegmentationAlgorithm extends JIPipeIteratingAlgori
     protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
         ImagePlus inputImage = dataBatch.getInputData("Image", ImagePlus3DGreyscaleData.class, progressInfo).getImage();
         double hMin, hMax;
-        if(customHMin.isEnabled()) {
+        if (customHMin.isEnabled()) {
             hMin = customHMin.getContent();
-        }
-        else {
+        } else {
             hMin = 0;
         }
-        if(customHMax.isEnabled()) {
+        if (customHMax.isEnabled()) {
             hMax = customHMax.getContent();
-        }
-        else {
+        } else {
             switch (inputImage.getBitDepth()) {
                 case 8:
                     hMax = 255;
@@ -76,14 +73,13 @@ public class ClassicWatershedSegmentationAlgorithm extends JIPipeIteratingAlgori
                     break;
             }
         }
-        if(applyPerSlice) {
+        if (applyPerSlice) {
             ImagePlus resultImage = ImageJUtils.generateForEachIndexedZCTSlice(inputImage, (ip, index) -> {
                 ImageProcessor mask = ImageJUtils2.getMaskProcessorFromMaskOrROI(targetArea, dataBatch, index, progressInfo);
                 return Watershed.computeWatershed(new ImagePlus("raw", ip), new ImagePlus("mask", mask), connectivity.getNativeValue2D(), hMin, hMax).getProcessor();
             }, progressInfo);
             dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlus3DGreyscaleData(resultImage), progressInfo);
-        }
-        else {
+        } else {
             ImagePlus mask = ImageJUtils2.getMaskFromMaskOrROI(targetArea, dataBatch, "Input", progressInfo);
             ImagePlus resultImage = Watershed.computeWatershed(inputImage, mask, inputImage.getStackSize() == 1 ? connectivity.getNativeValue2D() : connectivity.getNativeValue3D(), hMin, hMax);
             dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlus3DGreyscaleData(resultImage), progressInfo);

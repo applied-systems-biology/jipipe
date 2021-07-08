@@ -17,7 +17,6 @@ import com.google.common.collect.ImmutableList;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
-import org.hkijena.jipipe.api.data.JIPipeAnnotation;
 import org.hkijena.jipipe.api.data.JIPipeAnnotationMergeStrategy;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataAnnotation;
@@ -73,7 +72,7 @@ public class RenameDataAnnotation extends JIPipeSimpleIteratingAlgorithm {
         List<JIPipeDataAnnotation> annotations = new ArrayList<>();
         for (JIPipeDataAnnotation annotation : ImmutableList.copyOf(dataBatch.getGlobalDataAnnotations().values())) {
             for (StringQueryExpressionAndStringPairParameter renamingItem : renamingItems) {
-                if(renamingItem.getKey().test(annotation.getName())) {
+                if (renamingItem.getKey().test(annotation.getName())) {
                     annotations.add(new JIPipeDataAnnotation(renamingItem.getValue(), annotation.getVirtualData()));
                     dataBatch.getGlobalAnnotations().remove(annotation.getName());
                 }

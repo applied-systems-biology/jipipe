@@ -79,12 +79,12 @@ public class RelabeledTableColumn implements TableColumn {
         return tableColumn.isUserRemovable();
     }
 
-    public void setLabel(String label) {
-        this.label = label;
-    }
-
     @Override
     public String getLabel() {
         return label;
+    }
+
+    public void setLabel(String label) {
+        this.label = label;
     }
 }

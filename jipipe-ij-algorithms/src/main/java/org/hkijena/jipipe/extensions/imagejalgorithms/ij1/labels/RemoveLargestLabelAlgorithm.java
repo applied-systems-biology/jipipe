@@ -15,7 +15,6 @@ package org.hkijena.jipipe.extensions.imagejalgorithms.ij1.labels;
 
 import ij.ImagePlus;
 import inra.ijpb.label.LabelImages;
-import inra.ijpb.plugins.ExpandLabelsPlugin;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;

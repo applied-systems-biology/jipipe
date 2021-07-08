@@ -17,8 +17,8 @@ import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonSetter;
 import com.google.common.io.Resources;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.JIPipeIssueReport;
+import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.environments.ExternalEnvironment;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.parameters.primitives.FilePathParameterSettings;
@@ -148,17 +148,18 @@ public abstract class PythonPackageLibraryEnvironment extends ExternalEnvironmen
      * Returns true if the currently installed library is the newest version
      * Only auto-installed (resource-based) installations are tested
      * Returns true if needsInstall() returns true (as the newest lib will be installed anyways)
+     *
      * @return if the newest version is installed
      */
     public boolean isNewestVersion() {
-        if(needsInstall())
+        if (needsInstall())
             return true;
         Map<String, String> installedVersions = getInstalledVersions();
         Map<String, String> packagedVersions = getPackagedVersions();
 
         for (Map.Entry<String, String> entry : packagedVersions.entrySet()) {
             String installedVersion = installedVersions.getOrDefault(entry.getKey(), "0");
-            if(StringUtils.compareVersions(installedVersion, entry.getValue()) < 0)
+            if (StringUtils.compareVersions(installedVersion, entry.getValue()) < 0)
                 return false;
         }
         return true;
@@ -168,13 +169,14 @@ public abstract class PythonPackageLibraryEnvironment extends ExternalEnvironmen
      * Gets the installed versions of packages
      * Returns an empty map if the version file could not be found or the environment is not installed
      * Returns an empty map if the library is provided by the environment
+     *
      * @return package to version map
      */
     public Map<String, String> getInstalledVersions() {
-        if(needsInstall())
+        if (needsInstall())
             return Collections.emptyMap();
         Path versionsFile = getAbsoluteLibraryDirectory().resolve("version.txt");
-        if(Files.exists(versionsFile)) {
+        if (Files.exists(versionsFile)) {
             try {
                 Map<String, String> result = new HashMap<>();
                 for (String line : Files.readAllLines(versionsFile)) {
@@ -186,14 +188,14 @@ public abstract class PythonPackageLibraryEnvironment extends ExternalEnvironmen
                 e.printStackTrace();
                 return Collections.emptyMap();
             }
-        }
-        else {
+        } else {
             return Collections.emptyMap();
         }
     }
 
     /**
      * Gets the packaged versions of the installed libraries
+     *
      * @return package to version map
      */
     public abstract Map<String, String> getPackagedVersions();
@@ -205,7 +207,8 @@ public abstract class PythonPackageLibraryEnvironment extends ExternalEnvironmen
 
     /**
      * Gets the packaged versions from resources
-     * @param resourcePath the resource path
+     *
+     * @param resourcePath   the resource path
      * @param resourceLoader the resource loader
      * @return packaged versions
      */
@@ -226,8 +229,9 @@ public abstract class PythonPackageLibraryEnvironment extends ExternalEnvironmen
 
     /**
      * Installs the library from resources into the target directory
-     * @param javaPackage the java package (for the resource search)
-     * @param globalFolder the folder that contains the library
+     *
+     * @param javaPackage    the java package (for the resource search)
+     * @param globalFolder   the folder that contains the library
      * @param resourceLoader the resource loader
      */
     protected void installFromResources(String javaPackage, String globalFolder, Class<?> resourceLoader, JIPipeProgressInfo progressInfo) {

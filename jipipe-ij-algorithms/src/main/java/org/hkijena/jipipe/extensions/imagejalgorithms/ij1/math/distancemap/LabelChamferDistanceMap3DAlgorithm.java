@@ -15,7 +15,6 @@ package org.hkijena.jipipe.extensions.imagejalgorithms.ij1.math.distancemap;
 
 import ij.ImagePlus;
 import ij.ImageStack;
-import inra.ijpb.binary.BinaryImages;
 import inra.ijpb.binary.ChamferWeights3D;
 import inra.ijpb.label.LabelImages;
 import org.hkijena.jipipe.JIPipe;
@@ -32,7 +31,6 @@ import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.binary.Image_8_16_32_Filter;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d3.greyscale.ImagePlus3DGreyscaleData;
-import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d3.greyscale.ImagePlus3DGreyscaleMaskData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscale32FData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleData;
 import org.hkijena.jipipe.extensions.parameters.editors.JIPipeDataParameterSettings;
@@ -115,17 +113,17 @@ public class LabelChamferDistanceMap3DAlgorithm extends JIPipeSimpleIteratingAlg
         ImagePlus inputImage = dataBatch.getInputData(getFirstInputSlot(), ImagePlus3DGreyscaleData.class, progressInfo).getImage();
 
         int bitDepth;
-        if(outputType.getInfo().getDataClass() == ImagePlusGreyscale32FData.class)
+        if (outputType.getInfo().getDataClass() == ImagePlusGreyscale32FData.class)
             bitDepth = 32;
         else
             bitDepth = 16;
 
         ImageStack outputImage;
 
-        if(bitDepth == 16)
-            outputImage= LabelImages.distanceMap(inputImage.getStack(), chamferWeights.getShortWeights(), normalize);
+        if (bitDepth == 16)
+            outputImage = LabelImages.distanceMap(inputImage.getStack(), chamferWeights.getShortWeights(), normalize);
         else
-            outputImage= LabelImages.distanceMap(inputImage.getStack(), chamferWeights.getFloatWeights(), normalize);
+            outputImage = LabelImages.distanceMap(inputImage.getStack(), chamferWeights.getFloatWeights(), normalize);
 
         dataBatch.addOutputData(getFirstOutputSlot(), JIPipe.createData(outputType.getInfo().getDataClass(), new ImagePlus("CDM", outputImage)), progressInfo);
     }

@@ -156,7 +156,8 @@ public class JIPipeDataSlot {
 
     /**
      * Gets a data annotation as {@link JIPipeVirtualData}
-     * @param row the row
+     *
+     * @param row    the row
      * @param column the data annotation column
      * @return the data or null if there is no annotation
      */
@@ -167,8 +168,9 @@ public class JIPipeDataSlot {
 
     /**
      * Sets a virtual data annotation
-     * @param row the row
-     * @param column the data annotation column
+     *
+     * @param row         the row
+     * @param column      the data annotation column
      * @param virtualData the data. can be null.
      */
     public void setVirtualDataAnnotation(int row, String column, JIPipeVirtualData virtualData) {
@@ -178,12 +180,13 @@ public class JIPipeDataSlot {
 
     /**
      * Sets a data annotation
-     * @param row the row
+     *
+     * @param row    the row
      * @param column the column
-     * @param data the data. Can be null
+     * @param data   the data. Can be null
      */
     public void setDataAnnotation(int row, String column, JIPipeData data) {
-        if(data == null)
+        if (data == null)
             setVirtualDataAnnotation(row, column, null);
         else
             setVirtualDataAnnotation(row, column, new JIPipeVirtualData(data));
@@ -191,6 +194,7 @@ public class JIPipeDataSlot {
 
     /**
      * Returns annotations of a row as map
+     *
      * @param row the row
      * @return map from annotation name to annotation instance. Non-existing annotations are not present.
      */
@@ -204,6 +208,7 @@ public class JIPipeDataSlot {
 
     /**
      * Returns a map of all data annotations as {@link JIPipeVirtualData}
+     *
      * @param row the row
      * @return map from data annotation column to instance. Non-existing annotations are not present.
      */
@@ -211,7 +216,7 @@ public class JIPipeDataSlot {
         Map<String, JIPipeVirtualData> result = new HashMap<>();
         for (String column : getDataAnnotationColumns()) {
             JIPipeVirtualData virtualData = getVirtualDataAnnotation(row, column);
-            if(virtualData != null)
+            if (virtualData != null)
                 result.put(column, virtualData);
         }
         return result;
@@ -219,6 +224,7 @@ public class JIPipeDataSlot {
 
     /**
      * Gets the list of all data annotations in the specified row
+     *
      * @param row the row
      * @return list of data annotations
      */
@@ -226,7 +232,7 @@ public class JIPipeDataSlot {
         List<JIPipeDataAnnotation> dataAnnotations = new ArrayList<>();
         for (String dataAnnotationColumn : getDataAnnotationColumns()) {
             JIPipeVirtualData virtualDataAnnotation = getVirtualDataAnnotation(row, dataAnnotationColumn);
-            if(virtualDataAnnotation != null) {
+            if (virtualDataAnnotation != null) {
                 dataAnnotations.add(new JIPipeDataAnnotation(dataAnnotationColumn, virtualDataAnnotation));
             }
         }
@@ -235,6 +241,7 @@ public class JIPipeDataSlot {
 
     /**
      * Gets the list of all data annotations in the specified row
+     *
      * @param rows the rows
      * @return list of data annotations
      */
@@ -248,13 +255,14 @@ public class JIPipeDataSlot {
 
     /**
      * Gets a data annotation
-     * @param row the row
+     *
+     * @param row    the row
      * @param column the data annotation column
      * @return the data or null if there is no annotation
      */
     public JIPipeDataAnnotation getDataAnnotation(int row, String column) {
         JIPipeVirtualData virtualData = getVirtualDataAnnotation(row, column);
-        if(virtualData == null)
+        if (virtualData == null)
             return null;
         else
             return new JIPipeDataAnnotation(column, virtualData);
@@ -801,7 +809,7 @@ public class JIPipeDataSlot {
                 virtualData.makeNonVirtual(subProgress.resolveAndLog("Row", row, getRowCount()), removeVirtualDataStorage);
             }
             for (Map.Entry<String, JIPipeVirtualData> entry : getVirtualDataAnnotationMap(row).entrySet()) {
-                if(entry.getValue().isVirtual()) {
+                if (entry.getValue().isVirtual()) {
                     entry.getValue().makeNonVirtual(subProgress.resolveAndLog("Row", row,
                             getRowCount()).resolveAndLog("Data annotation " + entry.getKey()), removeVirtualDataStorage);
                 }
@@ -822,7 +830,7 @@ public class JIPipeDataSlot {
                 virtualData.makeVirtual(subProgress.resolveAndLog("Row", row, getRowCount()), false);
             }
             for (Map.Entry<String, JIPipeVirtualData> entry : getVirtualDataAnnotationMap(row).entrySet()) {
-                if(!entry.getValue().isVirtual()) {
+                if (!entry.getValue().isVirtual()) {
                     entry.getValue().makeVirtual(subProgress.resolveAndLog("Row", row,
                             getRowCount()).resolveAndLog("Data annotation " + entry.getKey()), false);
                 }
@@ -847,7 +855,8 @@ public class JIPipeDataSlot {
 
     /**
      * Gets an annotation at a specific index
-     * @param row the data row
+     *
+     * @param row    the data row
      * @param column the column
      * @return the annotation
      */
@@ -894,6 +903,31 @@ public class JIPipeDataSlot {
     }
 
     /**
+     * Converts the slot into an annotation table
+     *
+     * @param withDataAsString if the string representation should be included
+     * @return the table
+     */
+    public AnnotationTableData toAnnotationTable(boolean withDataAsString) {
+        AnnotationTableData output = new AnnotationTableData();
+        int dataColumn = withDataAsString ? output.addColumn(StringUtils.makeUniqueString("String representation", "_", getAnnotationColumns()), true) : -1;
+        int row = 0;
+        for (int sourceRow = 0; sourceRow < getRowCount(); ++sourceRow) {
+            output.addRow();
+            if (dataColumn >= 0)
+                output.setValueAt(getVirtualData(row).getStringRepresentation(), row, dataColumn);
+            for (JIPipeAnnotation annotation : getAnnotations(sourceRow)) {
+                if (annotation != null) {
+                    int col = output.addAnnotationColumn(annotation.getName());
+                    output.setValueAt(annotation.getValue(), row, col);
+                }
+            }
+            ++row;
+        }
+        return output;
+    }
+
+    /**
      * Loads this slot from a storage path
      *
      * @param storagePath the storage path
@@ -934,29 +968,5 @@ public class JIPipeDataSlot {
                 null), node);
         slot.addData(data, new JIPipeProgressInfo());
         return slot;
-    }
-
-    /**
-     * Converts the slot into an annotation table
-     * @param withDataAsString if the string representation should be included
-     * @return the table
-     */
-    public AnnotationTableData toAnnotationTable(boolean withDataAsString) {
-        AnnotationTableData output = new AnnotationTableData();
-        int dataColumn = withDataAsString ? output.addColumn(StringUtils.makeUniqueString("String representation", "_", getAnnotationColumns()), true) : -1;
-        int row = 0;
-        for (int sourceRow = 0; sourceRow < getRowCount(); ++sourceRow) {
-            output.addRow();
-            if (dataColumn >= 0)
-                output.setValueAt(getVirtualData(row).getStringRepresentation(), row, dataColumn);
-            for (JIPipeAnnotation annotation : getAnnotations(sourceRow)) {
-                if (annotation != null) {
-                    int col = output.addAnnotationColumn(annotation.getName());
-                    output.setValueAt(annotation.getValue(), row, col);
-                }
-            }
-            ++row;
-        }
-        return output;
     }
 }

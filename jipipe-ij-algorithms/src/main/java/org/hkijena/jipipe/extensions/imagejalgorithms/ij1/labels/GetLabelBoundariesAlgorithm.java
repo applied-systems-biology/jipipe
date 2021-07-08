@@ -14,11 +14,7 @@
 package org.hkijena.jipipe.extensions.imagejalgorithms.ij1.labels;
 
 import ij.ImagePlus;
-import ij.ImageStack;
-import ij.process.FloatProcessor;
-import ij.process.ImageProcessor;
 import inra.ijpb.label.LabelImages;
-import inra.ijpb.util.ColorMaps;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
@@ -28,12 +24,8 @@ import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.JIPipeOutputSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
-import org.hkijena.jipipe.api.parameters.JIPipeParameter;
-import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.color.ImagePlusColorRGBData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleMaskData;
-
-import java.awt.Color;
 
 @JIPipeDocumentation(name = "Get label boundaries", description = "Creates a mask that is 255 at the boundary between two labels and background.")
 @JIPipeOrganization(menuPath = "Labels", nodeTypeCategory = ImagesNodeTypeCategory.class)
@@ -52,13 +44,12 @@ public class GetLabelBoundariesAlgorithm extends JIPipeSimpleIteratingAlgorithm 
     @Override
     protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
         ImagePlus inputImage = dataBatch.getInputData(getFirstInputSlot(), ImagePlusGreyscaleData.class, progressInfo).getImage();
-       ImagePlus outputImage;
-       if(inputImage.getStackSize() == 1) {
-           outputImage = new ImagePlus("Boundaries", LabelImages.labelBoundaries(inputImage.getProcessor()));
-       }
-       else {
-           outputImage = new ImagePlus("Boundaries", LabelImages.labelBoundaries(inputImage.getStack()));
-       }
+        ImagePlus outputImage;
+        if (inputImage.getStackSize() == 1) {
+            outputImage = new ImagePlus("Boundaries", LabelImages.labelBoundaries(inputImage.getProcessor()));
+        } else {
+            outputImage = new ImagePlus("Boundaries", LabelImages.labelBoundaries(inputImage.getStack()));
+        }
         outputImage.setDimensions(inputImage.getNChannels(), inputImage.getNSlices(), inputImage.getNFrames());
         dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusGreyscaleMaskData(outputImage), progressInfo);
     }

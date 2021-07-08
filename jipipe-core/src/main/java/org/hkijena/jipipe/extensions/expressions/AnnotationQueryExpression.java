@@ -68,8 +68,7 @@ public class AnnotationQueryExpression extends DefaultExpressionParameter {
                 if (evaluationResult)
                     return annotation;
             }
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
         }
         for (JIPipeAnnotation annotation : annotations) {
             if (Objects.equals(annotation.getName(), getExpression()))

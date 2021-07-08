@@ -25,7 +25,6 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.data.JIPipeDataDisplayOperation;
-import org.hkijena.jipipe.api.data.JIPipeDataImportOperation;
 
 import javax.swing.*;
 import java.io.IOException;
@@ -70,9 +69,9 @@ public class DynamicDataDisplayOperationIdEnumParameter extends DynamicEnumParam
 
     @Override
     public String renderLabel(String value) {
-        if(JIPipe.getInstance() != null && dataTypeId != null) {
+        if (JIPipe.getInstance() != null && dataTypeId != null) {
             JIPipeDataDisplayOperation operation = JIPipe.getDataTypes().getAllRegisteredDisplayOperations(dataTypeId).getOrDefault(value, null);
-            if(operation != null)
+            if (operation != null)
                 return operation.getName();
         }
         return super.renderLabel(value);
@@ -80,9 +79,9 @@ public class DynamicDataDisplayOperationIdEnumParameter extends DynamicEnumParam
 
     @Override
     public String renderTooltip(String value) {
-        if(JIPipe.getInstance() != null  && dataTypeId != null) {
+        if (JIPipe.getInstance() != null && dataTypeId != null) {
             JIPipeDataDisplayOperation operation = JIPipe.getDataTypes().getAllRegisteredDisplayOperations(dataTypeId).getOrDefault(value, null);
-            if(operation != null)
+            if (operation != null)
                 return operation.getDescription();
         }
         return super.renderTooltip(value);
@@ -90,9 +89,9 @@ public class DynamicDataDisplayOperationIdEnumParameter extends DynamicEnumParam
 
     @Override
     public Icon renderIcon(String value) {
-        if(JIPipe.getInstance() != null && dataTypeId != null) {
+        if (JIPipe.getInstance() != null && dataTypeId != null) {
             JIPipeDataDisplayOperation operation = JIPipe.getDataTypes().getAllRegisteredDisplayOperations(dataTypeId).getOrDefault(value, null);
-            if(operation != null)
+            if (operation != null)
                 return operation.getIcon();
         }
         return super.renderIcon(value);

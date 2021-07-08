@@ -27,10 +27,11 @@ import java.awt.BorderLayout;
 public class JIPipeDefaultResultDataSlotPreview extends JIPipeResultDataSlotPreview {
     /**
      * Creates a new renderer
-     *  @param workbench the workbench
-     * @param table     the table where the data is rendered in
-     * @param slot      the data slot
-     * @param row       the row
+     *
+     * @param workbench      the workbench
+     * @param table          the table where the data is rendered in
+     * @param slot           the data slot
+     * @param row            the row
      * @param dataAnnotation the data annotation (optional)
      */
     public JIPipeDefaultResultDataSlotPreview(JIPipeProjectWorkbench workbench, JTable table, JIPipeDataSlot slot, JIPipeExportedDataTableRow row, JIPipeExportedDataAnnotation dataAnnotation) {

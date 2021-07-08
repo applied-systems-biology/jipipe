@@ -95,10 +95,9 @@ public class SelectSystemPythonInstaller extends ExternalEnvironmentInstaller {
         generatedEnvironment.setName(configuration.getName());
         if (getParameterAccess() != null) {
             SwingUtilities.invokeLater(() -> {
-                if(getParameterAccess().getFieldClass().isAssignableFrom(generatedEnvironment.getClass())) {
+                if (getParameterAccess().getFieldClass().isAssignableFrom(generatedEnvironment.getClass())) {
                     getParameterAccess().set(generatedEnvironment);
-                }
-                else {
+                } else {
                     // It's probably an optional
                     getParameterAccess().set(new OptionalPythonEnvironment(generatedEnvironment));
                 }

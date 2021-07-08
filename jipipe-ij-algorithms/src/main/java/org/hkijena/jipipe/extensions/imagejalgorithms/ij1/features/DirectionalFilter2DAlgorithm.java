@@ -15,7 +15,6 @@ import org.hkijena.jipipe.api.nodes.JIPipeOutputSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
-import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d2.greyscale.ImagePlus2DGreyscaleData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 
@@ -28,10 +27,10 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 @JIPipeOutputSlot(value = ImagePlusGreyscaleData.class, slotName = "Output", autoCreate = true)
 public class DirectionalFilter2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
-    private DirectionalFilter.Operation operation = DirectionalFilter.Operation.OPENING;
-    private DirectionalFilter.Type type = DirectionalFilter.Type.MAX;
     int lineLength = 20;
     int nDirections = 32;
+    private DirectionalFilter.Operation operation = DirectionalFilter.Operation.OPENING;
+    private DirectionalFilter.Type type = DirectionalFilter.Type.MAX;
 
     public DirectionalFilter2DAlgorithm(JIPipeNodeInfo info) {
         super(info);

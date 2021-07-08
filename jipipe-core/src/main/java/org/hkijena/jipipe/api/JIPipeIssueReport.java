@@ -52,6 +52,7 @@ public class JIPipeIssueReport {
 
     /**
      * Gets the map of all issues
+     *
      * @return the issues (modifiable)
      */
     public Multimap<String, Issue> getIssues() {
@@ -60,6 +61,7 @@ public class JIPipeIssueReport {
 
     /**
      * Returns true if there are no issues
+     *
      * @return if there are no issues
      */
     public boolean isValid() {
@@ -68,6 +70,7 @@ public class JIPipeIssueReport {
 
     /**
      * Returns true if there is at least one issue
+     *
      * @return if there are issues
      */
     public boolean isInvalid() {
@@ -76,6 +79,7 @@ public class JIPipeIssueReport {
 
     /**
      * Gets the current path components
+     *
      * @return the path components
      */
     public List<String> getPathComponents() {
@@ -84,6 +88,7 @@ public class JIPipeIssueReport {
 
     /**
      * Gets the current path (formatted)
+     *
      * @return the path
      */
     public String getPath() {
@@ -106,6 +111,7 @@ public class JIPipeIssueReport {
 
     /**
      * Reports an issue
+     *
      * @param issue the issue
      */
     public void report(Issue issue) {
@@ -114,6 +120,7 @@ public class JIPipeIssueReport {
 
     /**
      * Reports a {@link JIPipeValidatable} into this report
+     *
      * @param validatable the validatable
      */
     public void report(JIPipeValidatable validatable) {

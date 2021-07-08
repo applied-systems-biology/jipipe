@@ -2,8 +2,6 @@ package org.hkijena.jipipe.extensions.imagejalgorithms.ij1.morphology;
 
 import ij.ImagePlus;
 import ij.ImageStack;
-import ij.process.ImageProcessor;
-import inra.ijpb.morphology.Reconstruction;
 import inra.ijpb.morphology.Reconstruction3D;
 import org.hkijena.jipipe.api.JIPipeCitation;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
@@ -19,8 +17,6 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.Neighborhood2D;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d3.greyscale.ImagePlus3DGreyscaleData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d3.greyscale.ImagePlus3DGreyscaleMaskData;
-import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleData;
-import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleMaskData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.extensions.parameters.primitives.BooleanParameterSettings;
 
@@ -80,7 +76,7 @@ public class MorphologicalReconstruction3DAlgorithm extends JIPipeIteratingAlgor
         if (applyDilation)
             resultImage = Reconstruction3D.reconstructByDilation(markerImage.getImageStack(), maskImage.getImageStack(), connectivity.getNativeValue());
         else
-            resultImage =  Reconstruction3D.reconstructByErosion(markerImage.getImageStack(), maskImage.getImageStack(), connectivity.getNativeValue());
+            resultImage = Reconstruction3D.reconstructByErosion(markerImage.getImageStack(), maskImage.getImageStack(), connectivity.getNativeValue());
 
         dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlus3DGreyscaleData(new ImagePlus("Reconstructed", resultImage)), progressInfo);
     }

@@ -24,7 +24,11 @@ import org.hkijena.jipipe.ui.parameters.ParameterPanel;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
-import javax.swing.tree.*;
+import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.DefaultTreeModel;
+import javax.swing.tree.TreeCellRenderer;
+import javax.swing.tree.TreeNode;
+import javax.swing.tree.TreePath;
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.event.ComponentAdapter;
@@ -122,7 +126,7 @@ public class JIPipeApplicationSettingsUI extends JIPipeWorkbenchPanel {
 
     public void selectNode(String path) {
         TreeNode node = nodePathMap.getOrDefault(path, null);
-        if(node != null) {
+        if (node != null) {
             tree.getSelectionModel().setSelectionPath(new TreePath(((DefaultTreeModel) tree.getModel()).getPathToRoot(node)));
         }
     }

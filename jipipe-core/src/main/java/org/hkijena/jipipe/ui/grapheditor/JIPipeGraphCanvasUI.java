@@ -35,13 +35,13 @@ import org.hkijena.jipipe.ui.JIPipeWorkbenchPanel;
 import org.hkijena.jipipe.ui.components.ZoomViewPort;
 import org.hkijena.jipipe.ui.grapheditor.actions.JIPipeNodeUIAction;
 import org.hkijena.jipipe.ui.grapheditor.actions.OpenContextMenuAction;
+import org.hkijena.jipipe.ui.grapheditor.contextmenu.NodeUIContextAction;
+import org.hkijena.jipipe.ui.grapheditor.layout.MSTGraphAutoLayoutMethod;
+import org.hkijena.jipipe.ui.grapheditor.layout.SugiyamaGraphAutoLayoutMethod;
 import org.hkijena.jipipe.ui.grapheditor.nodeui.JIPipeDataSlotUI;
 import org.hkijena.jipipe.ui.grapheditor.nodeui.JIPipeHorizontalNodeUI;
 import org.hkijena.jipipe.ui.grapheditor.nodeui.JIPipeNodeUI;
 import org.hkijena.jipipe.ui.grapheditor.nodeui.JIPipeVerticalNodeUI;
-import org.hkijena.jipipe.ui.grapheditor.contextmenu.NodeUIContextAction;
-import org.hkijena.jipipe.ui.grapheditor.layout.MSTGraphAutoLayoutMethod;
-import org.hkijena.jipipe.ui.grapheditor.layout.SugiyamaGraphAutoLayoutMethod;
 import org.hkijena.jipipe.utils.PointRange;
 import org.hkijena.jipipe.utils.ScreenImage;
 import org.hkijena.jipipe.utils.ScreenImageSVG;
@@ -759,7 +759,7 @@ public class JIPipeGraphCanvasUI extends JIPipeWorkbenchPanel implements MouseMo
                 JIPipeNodeUI ui = pickComponent(mouseEvent);
                 if (ui != null) {
                     if (mouseEvent.isShiftDown()) {
-                        if(getSelection().contains(ui))
+                        if (getSelection().contains(ui))
                             removeFromSelection(ui);
                         else
                             addToSelection(ui);
@@ -1290,11 +1290,9 @@ public class JIPipeGraphCanvasUI extends JIPipeWorkbenchPanel implements MouseMo
         Color result;
         if (source.getNode() instanceof JIPipeCommentNode || target.getNode() instanceof JIPipeCommentNode) {
             result = COMMENT_EDGE_COLOR;
-        }
-        else if (multicolor) {
+        } else if (multicolor) {
             result = Color.getHSBColor(1.0f * multiColorIndex / multiColorMax, 0.45f, 0.65f);
-        }
-        else {
+        } else {
             if (JIPipeDatatypeRegistry.isTriviallyConvertible(source.getAcceptedDataType(), target.getAcceptedDataType()))
                 result = Color.DARK_GRAY;
             else if (JIPipe.getDataTypes().isConvertible(source.getAcceptedDataType(), target.getAcceptedDataType()))

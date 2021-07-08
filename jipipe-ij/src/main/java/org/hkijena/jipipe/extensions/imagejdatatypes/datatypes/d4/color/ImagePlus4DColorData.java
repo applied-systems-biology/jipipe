@@ -14,14 +14,12 @@
 package org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d4.color;
 
 import ij.ImagePlus;
-import ij.process.ImageConverter;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeHeavyData;
 import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.extensions.imagejdatatypes.color.ColorSpace;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.color.ColoredImagePlusData;
-import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.color.ImagePlusColorData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d4.ImagePlus4DData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ConverterWrapperImageSource;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
@@ -87,7 +85,7 @@ public class ImagePlus4DColorData extends ImagePlus4DData implements ColoredImag
      * @return the converted data
      */
     public static ImagePlusData convertFrom(ImagePlusData data) {
-        if(data.hasLoadedImage()) {
+        if (data.hasLoadedImage()) {
             ImagePlus image = data.getImage();
             if (image.getType() != ImagePlus.COLOR_RGB) {
                 // This will go through the standard method (greyscale -> RGB -> HSB)
@@ -95,8 +93,7 @@ public class ImagePlus4DColorData extends ImagePlus4DData implements ColoredImag
             } else {
                 return new ImagePlus4DColorData(image, ((ColoredImagePlusData) data).getColorSpace());
             }
-        }
-        else {
+        } else {
             return new ImagePlus4DColorData(data.getImageSource(), data.getColorSpace());
         }
     }

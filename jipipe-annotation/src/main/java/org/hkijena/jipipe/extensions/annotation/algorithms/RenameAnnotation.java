@@ -15,7 +15,6 @@ package org.hkijena.jipipe.extensions.annotation.algorithms;
 
 import com.google.common.collect.ImmutableList;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeIssueReport;
 import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeAnnotation;
@@ -29,9 +28,6 @@ import org.hkijena.jipipe.api.nodes.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.nodes.categories.AnnotationsNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.parameters.pairs.StringQueryExpressionAndStringPairParameter;
-import org.hkijena.jipipe.extensions.parameters.primitives.StringParameterSettings;
-import org.hkijena.jipipe.utils.ResourceUtils;
-import org.hkijena.jipipe.utils.StringUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -74,7 +70,7 @@ public class RenameAnnotation extends JIPipeSimpleIteratingAlgorithm {
         List<JIPipeAnnotation> annotations = new ArrayList<>();
         for (JIPipeAnnotation annotation : ImmutableList.copyOf(dataBatch.getGlobalAnnotations().values())) {
             for (StringQueryExpressionAndStringPairParameter renamingItem : renamingItems) {
-                if(renamingItem.getKey().test(annotation.getName())) {
+                if (renamingItem.getKey().test(annotation.getName())) {
                     annotations.add(new JIPipeAnnotation(renamingItem.getValue(), annotation.getValue()));
                     dataBatch.getGlobalAnnotations().remove(annotation.getName());
                 }

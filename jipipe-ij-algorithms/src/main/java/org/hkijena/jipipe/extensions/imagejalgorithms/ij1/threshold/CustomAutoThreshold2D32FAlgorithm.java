@@ -56,7 +56,6 @@ import java.util.List;
 import java.util.Set;
 
 import static org.hkijena.jipipe.extensions.imagejalgorithms.ImageJAlgorithmsExtension.ADD_MASK_QUALIFIER;
-import static org.hkijena.jipipe.extensions.imagejalgorithms.utils.ImageJUtils2.getMaskProcessorFromMaskOrROI;
 
 /**
  * Thresholding node that thresholds via an auto threshold

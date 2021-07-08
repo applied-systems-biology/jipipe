@@ -100,7 +100,7 @@ public class AnnotateWithAnnotationTable extends JIPipeParameterSlotAlgorithm {
             }
             dataBatches = limitedBatches;
         }
-        if(tableMergeSettings.isSkipIncompleteDataSets()) {
+        if (tableMergeSettings.isSkipIncompleteDataSets()) {
             dataBatches.removeIf(JIPipeMergingDataBatch::isIncomplete);
         }
         return dataBatches;

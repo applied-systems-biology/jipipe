@@ -274,7 +274,7 @@ public abstract class JIPipeDataSlotUI extends JIPipeWorkbenchPanel {
         relabelButton.addActionListener(e -> relabelSlot());
         assignButtonMenu.add(relabelButton);
 
-        if((slot.isInput() && nodeUI.getNode().getInputSlots().size() > 1) || (slot.isOutput() && nodeUI.getNode().getOutputSlots().size() > 1)) {
+        if ((slot.isInput() && nodeUI.getNode().getInputSlots().size() > 1) || (slot.isOutput() && nodeUI.getNode().getOutputSlots().size() > 1)) {
             JMenuItem moveUpButton = new JMenuItem(getGraphUI().getViewMode() == JIPipeGraphViewMode.Horizontal ? "Move up" : "Move to the left",
                     getGraphUI().getViewMode() == JIPipeGraphViewMode.Horizontal ? UIUtils.getIconFromResources("actions/up.png") : UIUtils.getIconFromResources("actions/go-left.png"));
             moveUpButton.setToolTipText("Reorders the slots");

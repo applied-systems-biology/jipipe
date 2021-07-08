@@ -19,8 +19,8 @@ import gnu.trove.set.hash.TIntHashSet;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.JIPipeDependency;
 import org.hkijena.jipipe.api.JIPipeGraphRunner;
-import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.JIPipeIssueReport;
+import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeAnnotationMergeStrategy;
 import org.hkijena.jipipe.api.data.JIPipeDataAnnotationMergeStrategy;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
@@ -332,7 +332,7 @@ public class GraphWrapperAlgorithm extends JIPipeAlgorithm implements JIPipeData
                 }
                 dataBatches = limitedBatches;
             }
-            if(batchGenerationSettings.isSkipIncompleteDataSets()) {
+            if (batchGenerationSettings.isSkipIncompleteDataSets()) {
                 dataBatches.removeIf(JIPipeMergingDataBatch::isIncomplete);
             }
             return dataBatches;

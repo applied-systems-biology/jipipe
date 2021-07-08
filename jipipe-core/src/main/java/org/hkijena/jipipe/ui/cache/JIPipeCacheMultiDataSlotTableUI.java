@@ -231,7 +231,7 @@ public class JIPipeCacheMultiDataSlotTableUI extends JIPipeWorkbenchPanel {
         JLabel infoLabel = new JLabel();
         int rowCount = slots.stream().mapToInt(JIPipeDataSlot::getRowCount).sum();
         infoLabel.setText(rowCount + " rows" + (slots.size() > 1 ? " across " + slots.size() + " tables" : "") + (selectedRows.length > 0 ? ", " + selectedRows.length + " selected" : ""));
-        infoLabel.setBorder(BorderFactory.createEmptyBorder(4,4,4,4));
+        infoLabel.setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
         rowUIList.addWideToForm(infoLabel, null);
 
         for (int viewRow : selectedRows) {
@@ -302,8 +302,7 @@ public class JIPipeCacheMultiDataSlotTableUI extends JIPipeWorkbenchPanel {
             int spacer = model.isWithCompartmentAndAlgorithm() ? 6 : 4;
             if (modelColumn < spacer) {
                 return defaultRenderer.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
-            }
-            else if(dataTable.toDataAnnotationColumnIndex(modelColumn) != -1) {
+            } else if (dataTable.toDataAnnotationColumnIndex(modelColumn) != -1) {
                 String info = dataTable.getDataAnnotationColumns().get(dataTable.toDataAnnotationColumnIndex(modelColumn));
                 String html = String.format("<html><table><tr><td><img src=\"%s\"/></td><td>%s</tr>",
                         UIUtils.getIconFromResources("data-types/data-annotation.png"),

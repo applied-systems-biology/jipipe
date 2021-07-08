@@ -21,14 +21,17 @@ import org.hkijena.jipipe.extensions.settings.NotificationUISettings;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.components.AnimatedIcon;
-import org.hkijena.jipipe.utils.RoundedLineBorder;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
-import javax.swing.Timer;
-import java.awt.*;
-import java.util.*;
+import java.awt.Dimension;
+import java.awt.FontMetrics;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
 
 /**
  * UI that monitors the queue
@@ -36,8 +39,8 @@ import java.util.List;
 public class NotificationButton extends JButton {
 
     private final JIPipeWorkbench workbench;
-    private AnimatedIcon warningIcon;
     private final Timer timer;
+    private AnimatedIcon warningIcon;
     private Set<JIPipeNotification> notificationSet = new TreeSet<>();
     private List<String> headings = new ArrayList<>();
     private int currentHeading;
@@ -67,14 +70,14 @@ public class NotificationButton extends JButton {
         timer.stop();
 
         // Add global and local (JIPipeProjectWorkbench) notifications
-        if(NotificationUISettings.getInstance().isEnableNotifications()) {
+        if (NotificationUISettings.getInstance().isEnableNotifications()) {
             notificationSet.addAll(JIPipeNotificationInbox.getInstance().getNotifications());
             notificationSet.addAll(getWorkbench().getNotificationInbox().getNotifications());
         }
-        if(!NotificationUISettings.getInstance().getBlockedNotifications().isEmpty()) {
+        if (!NotificationUISettings.getInstance().getBlockedNotifications().isEmpty()) {
             Set<String> ids = new HashSet<>(NotificationUISettings.getInstance().getBlockedNotifications());
             for (JIPipeNotification notification : ImmutableList.copyOf(notificationSet)) {
-                if(ids.contains(notification.getId())) {
+                if (ids.contains(notification.getId())) {
                     notificationSet.remove(notification);
                 }
             }
@@ -87,10 +90,9 @@ public class NotificationButton extends JButton {
         }
         currentHeading = 0;
 
-        if(notificationSet.isEmpty()) {
+        if (notificationSet.isEmpty()) {
             setVisible(false);
-        }
-        else {
+        } else {
             // Set width
             FontMetrics fontMetrics = getFontMetrics(getFont());
             int width = notificationSet.stream().map(notification -> fontMetrics.stringWidth(notification.getHeading())).max(Comparator.naturalOrder()).orElse(0);

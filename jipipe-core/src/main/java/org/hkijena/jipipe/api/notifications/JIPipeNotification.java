@@ -23,9 +23,9 @@ import java.util.Objects;
  */
 public class JIPipeNotification implements Comparable<JIPipeNotification> {
 
-    private JIPipeNotificationInbox inbox;
     private final LocalDateTime dateTime = LocalDateTime.now();
     private final String id;
+    private JIPipeNotificationInbox inbox;
     private String heading;
     private String description;
     private List<JIPipeNotificationAction> actions = new ArrayList<>();

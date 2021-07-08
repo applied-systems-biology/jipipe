@@ -3,17 +3,20 @@ package org.hkijena.jipipe.extensions.cellpose.algorithms;
 import com.google.common.collect.ImmutableList;
 import ij.IJ;
 import ij.ImagePlus;
-import org.apache.commons.io.FileUtils;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.JIPipeIssueReport;
 import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
-import org.hkijena.jipipe.api.JIPipeIssueReport;
 import org.hkijena.jipipe.api.data.JIPipeAnnotation;
 import org.hkijena.jipipe.api.data.JIPipeDataSlotInfo;
 import org.hkijena.jipipe.api.data.JIPipeDefaultMutableSlotConfiguration;
 import org.hkijena.jipipe.api.data.JIPipeSlotType;
 import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
-import org.hkijena.jipipe.api.nodes.*;
+import org.hkijena.jipipe.api.nodes.JIPipeInputSlot;
+import org.hkijena.jipipe.api.nodes.JIPipeMergingDataBatch;
+import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
+import org.hkijena.jipipe.api.nodes.JIPipeOutputSlot;
+import org.hkijena.jipipe.api.nodes.JIPipeSingleIterationAlgorithm;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.cellpose.CellPoseModel;
@@ -185,7 +188,7 @@ public class CellPoseAlgorithm extends JIPipeSingleIterationAlgorithm {
     @Override
     protected void runIteration(JIPipeMergingDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
 
-        ImmutableList<Integer> inputRowList= ImmutableList.copyOf(dataBatch.getInputRows("Input"));
+        ImmutableList<Integer> inputRowList = ImmutableList.copyOf(dataBatch.getInputRows("Input"));
         Path workDirectory = getNewScratch();
 
         // Save models if needed
@@ -426,7 +429,7 @@ public class CellPoseAlgorithm extends JIPipeSingleIterationAlgorithm {
                 "            roi = dict(coords=[ dict(x=int(x[0]), y=int(x[1])) for x in coords ])\n" +
                 "            roi_list.append(roi)\n");
         code.append("    with open(output_roi_outlines_paths[image_index], \"w\") as f:\n" +
-                        "        json.dump(roi_list, f, indent=4)\n\n");
+                "        json.dump(roi_list, f, indent=4)\n\n");
     }
 
     private void setupModelEval(StringBuilder code) {

@@ -130,8 +130,7 @@ public class CleanBackupsRun implements JIPipeRunnable {
             if (workbench != null) {
                 workbench.sendStatusBarText("Deleted " + toDelete.size() + " duplicate/missing backups");
             }
-        }
-        finally {
+        } finally {
             try {
                 SwingUtilities.invokeAndWait(() -> settings.setEnableAutoSave(isEnabledBackup));
             } catch (InterruptedException | InvocationTargetException e) {

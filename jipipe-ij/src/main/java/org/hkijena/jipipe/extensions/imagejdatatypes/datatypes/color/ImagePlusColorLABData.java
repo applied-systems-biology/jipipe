@@ -81,7 +81,7 @@ public class ImagePlusColorLABData extends ImagePlusColorData implements Colored
      * @return the converted data
      */
     public static ImagePlusData convertFrom(ImagePlusData data) {
-        if(data.hasLoadedImage()) {
+        if (data.hasLoadedImage()) {
             ImagePlus image = data.getImage();
             if (image.getType() != ImagePlus.COLOR_RGB) {
                 // Standard method: Greyscale -> RGB
@@ -93,8 +93,7 @@ public class ImagePlusColorLABData extends ImagePlusColorData implements Colored
             } else {
                 return new ImagePlusColorLABData(data.getImage());
             }
-        }
-        else {
+        } else {
             return new ImagePlusColorLABData(data.getImageSource());
         }
     }

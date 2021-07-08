@@ -13,7 +13,6 @@
 
 package org.hkijena.jipipe.extensions.imagejalgorithms.ij1.labels;
 
-import com.google.common.primitives.Ints;
 import ij.ImagePlus;
 import inra.ijpb.label.LabelImages;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
@@ -24,13 +23,9 @@ import org.hkijena.jipipe.api.nodes.JIPipeInputSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeIteratingAlgorithm;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.JIPipeOutputSlot;
-import org.hkijena.jipipe.api.nodes.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
-import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ROIListData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleData;
-import org.hkijena.jipipe.extensions.parameters.pairs.IntRangeAndIntegerPairParameter;
-import org.hkijena.jipipe.extensions.parameters.pairs.PairParameterSettings;
 
 @JIPipeDocumentation(name = "Merge label inside ROI", description = "Sets all labels inside the specified ROI to the same value.")
 @JIPipeOrganization(menuPath = "Labels", nodeTypeCategory = ImagesNodeTypeCategory.class)
@@ -51,11 +46,11 @@ public class MergeLabelsAlgorithm extends JIPipeIteratingAlgorithm {
     protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
         ImagePlus inputImage = dataBatch.getInputData("Labels", ImagePlusGreyscaleData.class, progressInfo).getImage();
         ROIListData rois = dataBatch.getInputData("ROI", ROIListData.class, progressInfo);
-        if(rois.isEmpty()) {
+        if (rois.isEmpty()) {
             dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusGreyscaleData(inputImage), progressInfo);
             return;
         }
-        if(rois.size() > 1) {
+        if (rois.size() > 1) {
             rois = new ROIListData(rois);
             rois.logicalOr();
         }

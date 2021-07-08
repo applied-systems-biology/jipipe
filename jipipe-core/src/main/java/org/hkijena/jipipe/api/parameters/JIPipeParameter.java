@@ -103,6 +103,7 @@ public @interface JIPipeParameter {
 
     /**
      * Marks the parameter as important, which will add an icon to the parameter UI
+     *
      * @return if the parameter is important
      */
     boolean important() default false;

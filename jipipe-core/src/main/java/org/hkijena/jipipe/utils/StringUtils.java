@@ -186,13 +186,13 @@ public class StringUtils {
         while (input.contains("--")) {
             input = input.replace("--", "-");
         }
-        while(input.startsWith("-")) {
+        while (input.startsWith("-")) {
             input = input.substring(1);
         }
-        while(input.endsWith("-")) {
+        while (input.endsWith("-")) {
             input = input.substring(0, input.length() - 1);
         }
-        if(input.isEmpty()) {
+        if (input.isEmpty()) {
             input = "empty";
         }
         return input;
@@ -415,6 +415,7 @@ public class StringUtils {
 
     /**
      * Compares two version strings. Only numeric versions are supported
+     *
      * @param version1 the first version
      * @param version2 the second version
      * @return -1 if version1 is is less than version. 1 if version2 is less than version1. 0 if equal
@@ -426,7 +427,7 @@ public class StringUtils {
         String[] version2Splits = version2.split("\\.");
         int maxLengthOfVersionSplits = Math.max(version1Splits.length, version2Splits.length);
 
-        for (int i = 0; i < maxLengthOfVersionSplits; i++){
+        for (int i = 0; i < maxLengthOfVersionSplits; i++) {
             Integer v1 = i < version1Splits.length ? Integer.parseInt(version1Splits[i]) : 0;
             Integer v2 = i < version2Splits.length ? Integer.parseInt(version2Splits[i]) : 0;
             int compare = v1.compareTo(v2);

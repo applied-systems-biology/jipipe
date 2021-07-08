@@ -27,7 +27,10 @@ import javax.swing.table.TableModel;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
@@ -68,7 +71,7 @@ public class JIPipeExportedDataTable implements TableModel {
             rowInstance.setTrueDataType(JIPipeDataInfo.getInstance(slot.getDataClass(row)).getId());
             for (int i = 0; i < dataAnnotationColumns.size(); i++) {
                 JIPipeVirtualData virtualDataAnnotation = slot.getVirtualDataAnnotation(row, dataAnnotationColumns.get(i));
-                if(virtualDataAnnotation != null) {
+                if (virtualDataAnnotation != null) {
                     JIPipeExportedDataAnnotation exportedDataAnnotation = new JIPipeExportedDataAnnotation();
                     exportedDataAnnotation.setName(dataAnnotationColumns.get(i));
                     exportedDataAnnotation.setRowStorageFolder(Paths.get("_" + i).resolve("" + row));
@@ -276,6 +279,7 @@ public class JIPipeExportedDataTable implements TableModel {
 
     /**
      * Converts the column index to an annotation column index, or returns -1 if the column is not one
+     *
      * @param columnIndex absolute column index
      * @return relative annotation column index, or -1
      */
@@ -288,14 +292,14 @@ public class JIPipeExportedDataTable implements TableModel {
 
     /**
      * Converts the column index to a data annotation column index, or returns -1 if the column is not one
+     *
      * @param columnIndex absolute column index
      * @return relative data annotation column index, or -1
      */
     public int toDataAnnotationColumnIndex(int columnIndex) {
-        if(columnIndex < getDataAnnotationColumns().size() + 3 && (columnIndex - 3) < getDataAnnotationColumns().size()) {
+        if (columnIndex < getDataAnnotationColumns().size() + 3 && (columnIndex - 3) < getDataAnnotationColumns().size()) {
             return columnIndex - 3;
-        }
-        else {
+        } else {
             return -1;
         }
     }
@@ -308,10 +312,9 @@ public class JIPipeExportedDataTable implements TableModel {
             return "Data type";
         else if (columnIndex == 2) {
             return "Preview";
-        } else if(toDataAnnotationColumnIndex(columnIndex) != -1) {
+        } else if (toDataAnnotationColumnIndex(columnIndex) != -1) {
             return "$" + getDataAnnotationColumns().get(toDataAnnotationColumnIndex(columnIndex));
-        }
-        else {
+        } else {
             return getAnnotationColumns().get(toAnnotationColumnIndex(columnIndex));
         }
     }
@@ -324,7 +327,7 @@ public class JIPipeExportedDataTable implements TableModel {
             return JIPipeDataInfo.class;
         else if (columnIndex == 2)
             return JIPipeExportedDataTableRow.class;
-        else if(toDataAnnotationColumnIndex(columnIndex) != -1)
+        else if (toDataAnnotationColumnIndex(columnIndex) != -1)
             return JIPipeExportedDataAnnotation.class;
         else
             return JIPipeAnnotation.class;
@@ -343,12 +346,10 @@ public class JIPipeExportedDataTable implements TableModel {
             return getDataTypeOf(rowIndex);
         } else if (columnIndex == 2) {
             return rowList.get(rowIndex);
-        }
-        else if(toDataAnnotationColumnIndex(columnIndex) != -1) {
+        } else if (toDataAnnotationColumnIndex(columnIndex) != -1) {
             String annotationColumn = dataAnnotationColumns.get(toDataAnnotationColumnIndex(columnIndex));
             return rowList.get(rowIndex).getDataAnnotations().stream().filter(t -> t.nameEquals(annotationColumn)).findFirst().orElse(null);
-        }
-        else {
+        } else {
             String annotationColumn = annotationColumns.get(toAnnotationColumnIndex(columnIndex));
             return rowList.get(rowIndex).getAnnotations().stream().filter(t -> t.nameEquals(annotationColumn)).findFirst().orElse(null);
         }
@@ -385,6 +386,7 @@ public class JIPipeExportedDataTable implements TableModel {
 
     /**
      * Converts the data table into an annotation table
+     *
      * @return the table
      */
     public AnnotationTableData toAnnotationTable() {

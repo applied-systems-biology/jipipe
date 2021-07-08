@@ -193,7 +193,7 @@ public class JIPipeVerticalDataSlotUI extends JIPipeDataSlotUI {
 
     @Override
     public Dimension calculateGridSize() {
-        if(needsRecalculateGridSize()) {
+        if (needsRecalculateGridSize()) {
             // First calculate the width caused by the label width
             FontRenderContext frc = new FontRenderContext(null, false, false);
             TextLayout layout = new TextLayout(getDisplayedName(), getFont(), frc);

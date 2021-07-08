@@ -34,7 +34,7 @@ public interface JIPipeDataBatchAlgorithm {
      * Generates data batches.
      * This is a dry-run function that should never throw errors
      *
-     * @param slots the data slots
+     * @param slots        the data slots
      * @param progressInfo the progress
      * @return the batches
      */

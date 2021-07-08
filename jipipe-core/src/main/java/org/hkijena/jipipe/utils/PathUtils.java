@@ -22,7 +22,12 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.file.*;
+import java.nio.file.FileVisitResult;
+import java.nio.file.FileVisitor;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.security.DigestInputStream;
 import java.security.MessageDigest;
@@ -75,30 +80,26 @@ public class PathUtils {
 
     /**
      * Computes the SHA1 of a file
+     *
      * @param file the file
      * @return the SHA1
      * @throws IOException exception
      */
-    public static String computeFileSHA1( File file ) throws IOException
-    {
+    public static String computeFileSHA1(File file) throws IOException {
         String sha1 = null;
         MessageDigest digest;
-        try
-        {
-            digest = MessageDigest.getInstance( "SHA-1" );
+        try {
+            digest = MessageDigest.getInstance("SHA-1");
+        } catch (NoSuchAlgorithmException e1) {
+            throw new IOException("Impossible to get SHA-1 digester", e1);
         }
-        catch ( NoSuchAlgorithmException e1 )
-        {
-            throw new IOException( "Impossible to get SHA-1 digester", e1 );
-        }
-        try (InputStream input = new FileInputStream( file );
-             DigestInputStream digestStream = new DigestInputStream( input, digest ) )
-        {
-            while(digestStream.read() != -1){
+        try (InputStream input = new FileInputStream(file);
+             DigestInputStream digestStream = new DigestInputStream(input, digest)) {
+            while (digestStream.read() != -1) {
                 // read file stream without buffer
             }
             MessageDigest msgDigest = digestStream.getMessageDigest();
-            sha1 = new HexBinaryAdapter().marshal( msgDigest.digest() );
+            sha1 = new HexBinaryAdapter().marshal(msgDigest.digest());
         }
         return sha1;
     }
@@ -202,11 +203,12 @@ public class PathUtils {
     /**
      * Converts relative paths to absolute paths, relative to the ImageJ directory
      * Absolute paths are left unchanged
+     *
      * @param path the path
      * @return absolute paths
      */
     public static Path relativeToImageJToAbsolute(Path path) {
-        if(path.isAbsolute())
+        if (path.isAbsolute())
             return path;
         Path imageJDir = Paths.get(Prefs.getImageJDir());
         return imageJDir.resolve(path);

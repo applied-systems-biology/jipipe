@@ -79,6 +79,7 @@ public class JIPipeMergedExportedDataTable implements TableModel {
 
     /**
      * Converts the column index to an annotation column index, or returns -1 if the column is not one
+     *
      * @param columnIndex absolute column index
      * @return relative annotation column index, or -1
      */
@@ -91,14 +92,14 @@ public class JIPipeMergedExportedDataTable implements TableModel {
 
     /**
      * Converts the column index to a data annotation column index, or returns -1 if the column is not one
+     *
      * @param columnIndex absolute column index
      * @return relative data annotation column index, or -1
      */
     public int toDataAnnotationColumnIndex(int columnIndex) {
-        if(columnIndex < getDataAnnotationColumns().size() + 5 && (columnIndex - 5) < getDataAnnotationColumns().size()) {
+        if (columnIndex < getDataAnnotationColumns().size() + 5 && (columnIndex - 5) < getDataAnnotationColumns().size()) {
             return columnIndex - 5;
-        }
-        else {
+        } else {
             return -1;
         }
     }
@@ -115,7 +116,7 @@ public class JIPipeMergedExportedDataTable implements TableModel {
             return "Data type";
         else if (columnIndex == 4)
             return "Preview";
-        else if(toDataAnnotationColumnIndex(columnIndex) != -1)
+        else if (toDataAnnotationColumnIndex(columnIndex) != -1)
             return "$" + dataAnnotationColumns.get(toDataAnnotationColumnIndex(columnIndex));
         else
             return annotationColumns.get(toAnnotationColumnIndex(columnIndex));
@@ -156,11 +157,10 @@ public class JIPipeMergedExportedDataTable implements TableModel {
             return JIPipeDataInfo.getInstance(slotList.get(rowIndex).getAcceptedDataType());
         else if (columnIndex == 4)
             return rowList.get(rowIndex);
-        else if(toDataAnnotationColumnIndex(columnIndex) != -1) {
+        else if (toDataAnnotationColumnIndex(columnIndex) != -1) {
             String annotationColumn = dataAnnotationColumns.get(toDataAnnotationColumnIndex(columnIndex));
             return rowList.get(rowIndex).getDataAnnotations().stream().filter(t -> t.nameEquals(annotationColumn)).findFirst().orElse(null);
-        }
-        else {
+        } else {
             String annotationColumn = annotationColumns.get(toAnnotationColumnIndex(columnIndex));
             return rowList.get(rowIndex).getAnnotations().stream().filter(t -> t.nameEquals(annotationColumn)).findFirst().orElse(null);
         }

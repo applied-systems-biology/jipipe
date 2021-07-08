@@ -47,7 +47,7 @@ public class GlobStringPredicateFunction extends ExpressionFunction {
         for (int i = 1; i < parameters.size(); i++) {
             String pattern = "" + parameters.get(i);
             pattern = StringUtils.convertGlobToRegex(pattern);
-            if(text.matches(pattern))
+            if (text.matches(pattern))
                 return true;
         }
         return false;

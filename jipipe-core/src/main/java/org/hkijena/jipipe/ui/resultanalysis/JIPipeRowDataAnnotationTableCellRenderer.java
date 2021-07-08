@@ -17,7 +17,6 @@ import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.data.JIPipeExportedDataAnnotation;
 import org.hkijena.jipipe.api.data.JIPipeExportedDataTable;
-import org.hkijena.jipipe.api.data.JIPipeExportedDataTableRow;
 import org.hkijena.jipipe.extensions.settings.GeneralDataSettings;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
 
@@ -73,7 +72,7 @@ public class JIPipeRowDataAnnotationTableCellRenderer implements TableCellRender
 
     private JIPipeResultDataSlotPreview getPreviewComponent(int row, JIPipeExportedDataAnnotation annotation) {
         List<JIPipeResultDataSlotPreview> previews = previewCache.getOrDefault(annotation.getName(), null);
-        if(previews == null) {
+        if (previews == null) {
             previews = new ArrayList<>();
             previewCache.put(annotation.getName(), previews);
         }
@@ -113,7 +112,7 @@ public class JIPipeRowDataAnnotationTableCellRenderer implements TableCellRender
         for (List<JIPipeResultDataSlotPreview> previews : previewCache.values()) {
             for (int row = 0; row < previews.size(); row++) {
                 JIPipeResultDataSlotPreview component = previews.get(row);
-                if(component == null)
+                if (component == null)
                     continue;
                 // We assume view column = 0
                 Rectangle rect = table.getCellRect(row, 0, true);

@@ -36,10 +36,11 @@ public class FilesystemDataSlotPreview extends JIPipeResultDataSlotPreview {
 
     /**
      * Creates a new renderer
-     *  @param workbench the workbench
-     * @param table     the table where the data is rendered in
-     * @param slot      the data slot
-     * @param row       the row
+     *
+     * @param workbench      the workbench
+     * @param table          the table where the data is rendered in
+     * @param slot           the data slot
+     * @param row            the row
      * @param dataAnnotation optional data annotation
      */
     public FilesystemDataSlotPreview(JIPipeProjectWorkbench workbench, JTable table, JIPipeDataSlot slot, JIPipeExportedDataTableRow row, JIPipeExportedDataAnnotation dataAnnotation) {

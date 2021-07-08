@@ -14,7 +14,6 @@
 package org.hkijena.jipipe.extensions.imagejalgorithms.ij1.labels;
 
 import ij.ImagePlus;
-import inra.ijpb.label.LabelImages;
 import inra.ijpb.plugins.ExpandLabelsPlugin;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeOrganization;
@@ -27,7 +26,6 @@ import org.hkijena.jipipe.api.nodes.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleData;
-import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleMaskData;
 
 @JIPipeDocumentation(name = "Expand labels", description = "Adds space between labels to make them more easily distinguishable")
 @JIPipeOrganization(menuPath = "Labels", nodeTypeCategory = ImagesNodeTypeCategory.class)
@@ -60,13 +58,12 @@ public class ExpandLabelsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     @Override
     protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
         ImagePlus inputImage = dataBatch.getInputData(getFirstInputSlot(), ImagePlusGreyscaleData.class, progressInfo).getImage();
-       ImagePlus outputImage;
-       if(inputImage.getStackSize() == 1) {
-           outputImage = new ImagePlus("Boundaries", ExpandLabelsPlugin.expandLabels(inputImage.getProcessor(), ratio));
-       }
-       else {
-           outputImage = new ImagePlus("Boundaries",  ExpandLabelsPlugin.expandLabels(inputImage.getStack(), ratio));
-       }
+        ImagePlus outputImage;
+        if (inputImage.getStackSize() == 1) {
+            outputImage = new ImagePlus("Boundaries", ExpandLabelsPlugin.expandLabels(inputImage.getProcessor(), ratio));
+        } else {
+            outputImage = new ImagePlus("Boundaries", ExpandLabelsPlugin.expandLabels(inputImage.getStack(), ratio));
+        }
         outputImage.setDimensions(inputImage.getNChannels(), inputImage.getNSlices(), inputImage.getNFrames());
         dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusGreyscaleData(outputImage), progressInfo);
     }

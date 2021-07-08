@@ -7,7 +7,11 @@ import org.hkijena.jipipe.api.data.JIPipeAnnotation;
 import org.hkijena.jipipe.api.data.JIPipeAnnotationMergeStrategy;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
-import org.hkijena.jipipe.api.nodes.*;
+import org.hkijena.jipipe.api.nodes.JIPipeDataBatch;
+import org.hkijena.jipipe.api.nodes.JIPipeInputSlot;
+import org.hkijena.jipipe.api.nodes.JIPipeIteratingAlgorithm;
+import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
+import org.hkijena.jipipe.api.nodes.JIPipeOutputSlot;
 import org.hkijena.jipipe.api.nodes.categories.AnnotationsNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.parameters.primitives.StringParameterSettings;
@@ -48,9 +52,9 @@ public class AnnotateWithData extends JIPipeIteratingAlgorithm {
         int annotationRow = dataBatch.getInputSlotRows().get(inputAnnotationSlot);
 
         List<JIPipeAnnotation> annotationList = new ArrayList<>();
-        if(mergeInputAnnotations)
+        if (mergeInputAnnotations)
             annotationList.addAll(inputDataSlot.getAnnotations(dataRow));
-        if(mergeLabelAnnotations)
+        if (mergeLabelAnnotations)
             annotationList.addAll(inputAnnotationSlot.getAnnotations(annotationRow));
 
         getFirstOutputSlot().addData(inputDataSlot.getVirtualData(dataRow),

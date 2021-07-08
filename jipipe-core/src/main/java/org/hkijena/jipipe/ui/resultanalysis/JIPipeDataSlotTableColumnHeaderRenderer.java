@@ -41,13 +41,13 @@ public class JIPipeDataSlotTableColumnHeaderRenderer implements TableCellRendere
         int modelColumn = table.convertColumnIndexToModel(column);
         if (modelColumn < 3) {
             return defaultRenderer.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
-        } else if(dataTable.toDataAnnotationColumnIndex(modelColumn) != -1) {
+        } else if (dataTable.toDataAnnotationColumnIndex(modelColumn) != -1) {
             String info = dataTable.getDataAnnotationColumns().get(dataTable.toDataAnnotationColumnIndex(modelColumn));
             String html = String.format("<html><table><tr><td><img src=\"%s\"/></td><td>%s</tr>",
                     UIUtils.getIconFromResources("data-types/data-annotation.png"),
                     info);
             return defaultRenderer.getTableCellRendererComponent(table, html, isSelected, hasFocus, row, column);
-        }else {
+        } else {
             String info = dataTable.getAnnotationColumns().get(dataTable.toAnnotationColumnIndex(modelColumn));
             String html = String.format("<html><table><tr><td><img src=\"%s\"/></td><td>%s</tr>",
                     UIUtils.getIconFromResources("data-types/annotation.png"),

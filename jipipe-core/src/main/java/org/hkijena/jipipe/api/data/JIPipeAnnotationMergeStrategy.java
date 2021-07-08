@@ -29,7 +29,7 @@ public enum JIPipeAnnotationMergeStrategy {
      * @return annotations without duplicate names.
      */
     public List<JIPipeAnnotation> merge(Collection<JIPipeAnnotation> annotations) {
-        if(this == Discard) {
+        if (this == Discard) {
             return new ArrayList<>();
         }
         Map<String, String> map = new HashMap<>();
@@ -51,7 +51,7 @@ public enum JIPipeAnnotationMergeStrategy {
      * @param annotations input annotations. can have duplicate names.
      */
     public void mergeInto(Map<String, JIPipeAnnotation> target, Collection<JIPipeAnnotation> annotations) {
-        if(this == Discard) {
+        if (this == Discard) {
             target.clear();
             return;
         }
@@ -84,7 +84,7 @@ public enum JIPipeAnnotationMergeStrategy {
                 return newValue;
         } else if (this == OverwriteExisting) {
             return newValue;
-        } else if(this == Discard) {
+        } else if (this == Discard) {
             return ""; // Empty = Discard
         } else {
             List<String> components = new ArrayList<>(Arrays.asList(extractMergedAnnotations(existingValue)));

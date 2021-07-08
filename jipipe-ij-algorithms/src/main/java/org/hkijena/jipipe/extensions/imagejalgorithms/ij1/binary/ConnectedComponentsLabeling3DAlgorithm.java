@@ -101,9 +101,9 @@ public class ConnectedComponentsLabeling3DAlgorithm extends JIPipeSimpleIteratin
         ImagePlus inputImage = dataBatch.getInputData(getFirstInputSlot(), ImagePlusGreyscaleMaskData.class, progressInfo).getImage();
 
         int bitDepth;
-        if(outputType.getInfo().getDataClass() == ImagePlusGreyscale32FData.class)
+        if (outputType.getInfo().getDataClass() == ImagePlusGreyscale32FData.class)
             bitDepth = 32;
-        else if(outputType.getInfo().getDataClass() == ImagePlusGreyscale16UData.class)
+        else if (outputType.getInfo().getDataClass() == ImagePlusGreyscale16UData.class)
             bitDepth = 16;
         else
             bitDepth = 8;

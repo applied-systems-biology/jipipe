@@ -113,17 +113,17 @@ public class ChamferDistanceMap3DAlgorithm extends JIPipeSimpleIteratingAlgorith
         ImagePlus inputImage = dataBatch.getInputData(getFirstInputSlot(), ImagePlus3DGreyscaleMaskData.class, progressInfo).getImage();
 
         int bitDepth;
-        if(outputType.getInfo().getDataClass() == ImagePlusGreyscale32FData.class)
+        if (outputType.getInfo().getDataClass() == ImagePlusGreyscale32FData.class)
             bitDepth = 32;
         else
             bitDepth = 16;
 
         ImageStack outputImage;
 
-        if(bitDepth == 16)
-            outputImage= BinaryImages.distanceMap(inputImage.getStack(), chamferWeights.getShortWeights(), normalize);
+        if (bitDepth == 16)
+            outputImage = BinaryImages.distanceMap(inputImage.getStack(), chamferWeights.getShortWeights(), normalize);
         else
-            outputImage= BinaryImages.distanceMap(inputImage.getStack(), chamferWeights.getFloatWeights(), normalize);
+            outputImage = BinaryImages.distanceMap(inputImage.getStack(), chamferWeights.getFloatWeights(), normalize);
 
         dataBatch.addOutputData(getFirstOutputSlot(), JIPipe.createData(outputType.getInfo().getDataClass(), new ImagePlus("CDM", outputImage)), progressInfo);
     }

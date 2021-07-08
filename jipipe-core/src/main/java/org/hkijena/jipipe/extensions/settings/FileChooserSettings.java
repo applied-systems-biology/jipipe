@@ -50,13 +50,6 @@ public class FileChooserSettings implements JIPipeParameterCollection {
     private Path lastExternalDirectory;
     private boolean addFileExtension = true;
 
-    public enum LastDirectoryKey {
-        Projects,
-        Data,
-        Parameters,
-        External
-    }
-
     @Override
     public EventBus getEventBus() {
         return eventBus;
@@ -604,6 +597,13 @@ public class FileChooserSettings implements JIPipeParameterCollection {
 
     public static FileChooserSettings getInstance() {
         return JIPipe.getSettings().getSettings(ID, FileChooserSettings.class);
+    }
+
+    public enum LastDirectoryKey {
+        Projects,
+        Data,
+        Parameters,
+        External
     }
 
 }

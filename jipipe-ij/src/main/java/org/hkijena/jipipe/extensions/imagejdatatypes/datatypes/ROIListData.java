@@ -16,15 +16,12 @@ package org.hkijena.jipipe.extensions.imagejdatatypes.datatypes;
 import com.google.common.collect.ImmutableList;
 import ij.IJ;
 import ij.ImagePlus;
-import ij.Macro;
-import ij.WindowManager;
 import ij.gui.PointRoi;
 import ij.gui.PolygonRoi;
 import ij.gui.Roi;
 import ij.gui.ShapeRoi;
 import ij.io.RoiDecoder;
 import ij.io.RoiEncoder;
-import ij.macro.Interpreter;
 import ij.measure.ResultsTable;
 import ij.plugin.filter.Analyzer;
 import ij.plugin.filter.Filler;
@@ -38,9 +35,7 @@ import org.hkijena.jipipe.api.data.JIPipeCacheSlotDataSource;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataSource;
 import org.hkijena.jipipe.api.data.JIPipeDataStorageDocumentation;
-import org.hkijena.jipipe.extensions.imagejdatatypes.display.CachedImagePlusDataViewerWindow;
 import org.hkijena.jipipe.extensions.imagejdatatypes.display.CachedROIListDataViewerWindow;
-import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageSliceIndex;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.RoiOutline;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.measure.ImageStatisticsSetParameter;
@@ -51,10 +46,8 @@ import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.utils.ColorUtils;
 import org.hkijena.jipipe.utils.PathUtils;
 
-import javax.swing.*;
 import java.awt.Color;
 import java.awt.Component;
-import java.awt.Frame;
 import java.awt.Point;
 import java.awt.Rectangle;
 import java.io.BufferedOutputStream;
@@ -364,10 +357,11 @@ public class ROIListData extends ArrayList<Roi> implements JIPipeData {
 
     /**
      * Converts this ROI list into a mask that has the same size as the reference image
-     * @param reference the reference image
+     *
+     * @param reference         the reference image
      * @param drawFilledOutline fill the ROI
-     * @param drawOutline draw the ROI outlines
-     * @param lineThickness the ROI line thickness
+     * @param drawOutline       draw the ROI outlines
+     * @param lineThickness     the ROI line thickness
      * @return the mask
      */
     public ImagePlus toMask(ImagePlus reference, boolean drawFilledOutline, boolean drawOutline, int lineThickness) {
@@ -382,18 +376,19 @@ public class ROIListData extends ArrayList<Roi> implements JIPipeData {
 
     /**
      * Converts this ROI list into a mask that has the same size as the reference image
+     *
      * @param drawFilledOutline fill the ROI
-     * @param drawOutline draw the ROI outlines
-     * @param lineThickness the ROI line thickness
-     * @param width output image width
-     * @param height output image height
-     * @param numSlices output image Z slices
-     * @param numChannels output image channel slices
-     * @param numFrames output image frame slices
+     * @param drawOutline       draw the ROI outlines
+     * @param lineThickness     the ROI line thickness
+     * @param width             output image width
+     * @param height            output image height
+     * @param numSlices         output image Z slices
+     * @param numChannels       output image channel slices
+     * @param numFrames         output image frame slices
      * @return the mask
      */
     public ImagePlus toMask(boolean drawFilledOutline, boolean drawOutline, int lineThickness, int width, int height, int numSlices, int numChannels, int numFrames) {
-        ImagePlus result  = IJ.createImage("ROIs", "8-bit", width, height, numChannels, numSlices, numFrames);
+        ImagePlus result = IJ.createImage("ROIs", "8-bit", width, height, numChannels, numSlices, numFrames);
         for (int z = 0; z < numSlices; z++) {
             for (int c = 0; c < numChannels; c++) {
                 for (int t = 0; t < numFrames; t++) {

@@ -13,11 +13,15 @@ import org.hkijena.jipipe.ui.components.MarkdownReader;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
-import java.awt.*;
+import java.awt.BorderLayout;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
 
 public class WorkbenchNotificationInboxUI extends JIPipeWorkbenchPanel {
 
@@ -44,7 +48,7 @@ public class WorkbenchNotificationInboxUI extends JIPipeWorkbenchPanel {
         hiddenNotificationsPanel.clear();
 
         Set<JIPipeNotification> notificationSet = new TreeSet<>();
-        if(NotificationUISettings.getInstance().isEnableNotifications()) {
+        if (NotificationUISettings.getInstance().isEnableNotifications()) {
             notificationSet.addAll(JIPipeNotificationInbox.getInstance().getNotifications());
             notificationSet.addAll(getWorkbench().getNotificationInbox().getNotifications());
         }
@@ -52,14 +56,13 @@ public class WorkbenchNotificationInboxUI extends JIPipeWorkbenchPanel {
         Set<String> blockedIds = new HashSet<>(NotificationUISettings.getInstance().getBlockedNotifications());
 
         for (JIPipeNotification notification : notificationSet) {
-            if(blockedIds.contains(notification.getId())) {
+            if (blockedIds.contains(notification.getId())) {
                 hiddenNotificationsPanel.addWideToForm(new NotificationUI(this,
                                 notification,
                                 true,
                                 false),
                         null);
-            }
-            else {
+            } else {
                 notificationsPanel.addWideToForm(new NotificationUI(this,
                                 notification,
                                 false,

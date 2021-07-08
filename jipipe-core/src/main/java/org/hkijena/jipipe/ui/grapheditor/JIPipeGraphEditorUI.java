@@ -30,8 +30,8 @@ import org.hkijena.jipipe.ui.components.ColorIcon;
 import org.hkijena.jipipe.ui.components.SearchBox;
 import org.hkijena.jipipe.ui.components.ZoomViewPort;
 import org.hkijena.jipipe.ui.extension.GraphEditorToolBarButtonExtension;
-import org.hkijena.jipipe.ui.grapheditor.nodeui.JIPipeNodeUI;
 import org.hkijena.jipipe.ui.grapheditor.contextmenu.NodeUIContextAction;
+import org.hkijena.jipipe.ui.grapheditor.nodeui.JIPipeNodeUI;
 import org.hkijena.jipipe.utils.CopyImageToClipboard;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
@@ -280,7 +280,7 @@ public abstract class JIPipeGraphEditorUI extends JIPipeWorkbenchPanel implement
             autoLayoutItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_L, KeyEvent.CTRL_MASK | KeyEvent.SHIFT_MASK));
             layoutMenu.add(autoLayoutItem);
 
-            JCheckBoxMenuItem layoutHelperItem = new JCheckBoxMenuItem("Layout helper" ,
+            JCheckBoxMenuItem layoutHelperItem = new JCheckBoxMenuItem("Layout helper",
                     UIUtils.getIconFromResources("actions/connector-avoid.png"),
                     GraphEditorUISettings.getInstance().isEnableLayoutHelper());
             layoutHelperItem.setToolTipText("Auto-layout layout on making data slot connections");

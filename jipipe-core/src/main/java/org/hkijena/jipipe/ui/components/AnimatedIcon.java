@@ -19,7 +19,6 @@ import java.awt.Component;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
-import java.awt.geom.AffineTransform;
 
 public class AnimatedIcon implements Icon {
 
@@ -71,11 +70,10 @@ public class AnimatedIcon implements Icon {
 
     private void updateIcon() {
         opacity = opacity + opacityStep;
-        if(opacity >= 1) {
+        if (opacity >= 1) {
             opacity = 1;
             opacityStep = -opacityStep;
-        }
-        else if(opacity <= 0) {
+        } else if (opacity <= 0) {
             opacity = 0;
             opacityStep = -opacityStep;
         }

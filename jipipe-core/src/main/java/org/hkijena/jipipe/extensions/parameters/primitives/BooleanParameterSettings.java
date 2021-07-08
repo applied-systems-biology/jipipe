@@ -20,6 +20,7 @@ import java.lang.annotation.RetentionPolicy;
 public @interface BooleanParameterSettings {
     /**
      * If enabled, the boolean parameter is shown as combo box
+     *
      * @return if the boolean parameter is shown as combo box
      */
     boolean comboBoxStyle() default false;

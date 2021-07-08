@@ -116,7 +116,7 @@ public class ChamferDistanceMap2DAlgorithm extends JIPipeSimpleIteratingAlgorith
         ImageStack stack = new ImageStack(inputImage.getWidth(), inputImage.getHeight(), inputImage.getStackSize());
 
         int bitDepth;
-        if(outputType.getInfo().getDataClass() == ImagePlusGreyscale32FData.class)
+        if (outputType.getInfo().getDataClass() == ImagePlusGreyscale32FData.class)
             bitDepth = 32;
         else
             bitDepth = 16;
@@ -124,10 +124,10 @@ public class ChamferDistanceMap2DAlgorithm extends JIPipeSimpleIteratingAlgorith
         ImageJUtils.forEachIndexedZCTSlice(inputImage, (ip, index) -> {
             ImageProcessor processor;
 
-            if(bitDepth == 16)
-                processor= BinaryImages.distanceMap(ip, chamferWeights.getShortWeights(), normalize);
+            if (bitDepth == 16)
+                processor = BinaryImages.distanceMap(ip, chamferWeights.getShortWeights(), normalize);
             else
-                processor= BinaryImages.distanceMap(ip, chamferWeights.getFloatWeights(), normalize);
+                processor = BinaryImages.distanceMap(ip, chamferWeights.getFloatWeights(), normalize);
 
             stack.setProcessor(processor, index.zeroSliceIndexToOneStackIndex(inputImage));
         }, progressInfo);

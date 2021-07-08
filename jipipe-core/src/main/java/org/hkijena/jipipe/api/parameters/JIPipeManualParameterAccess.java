@@ -233,6 +233,7 @@ public class JIPipeManualParameterAccess implements JIPipeParameterAccess {
 
         /**
          * Allows to make the parameter important (only for UI)
+         *
          * @param important if the parameter should be highlighted in the UI
          * @return this
          */

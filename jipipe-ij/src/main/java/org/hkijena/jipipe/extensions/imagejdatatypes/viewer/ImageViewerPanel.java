@@ -105,7 +105,7 @@ public class ImageViewerPanel extends JPanel {
 
     public <T extends ImageViewerPanelPlugin> T getPlugin(Class<?> klass) {
         for (ImageViewerPanelPlugin plugin : plugins) {
-            if(klass.isAssignableFrom(plugin.getClass()))
+            if (klass.isAssignableFrom(plugin.getClass()))
                 return (T) plugin;
         }
         return null;

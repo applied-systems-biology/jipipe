@@ -23,10 +23,10 @@ import net.imagej.updater.util.AvailableSites;
 import net.imagej.updater.util.Progress;
 import net.imagej.updater.util.UpdaterUtil;
 import org.apache.commons.lang3.reflect.ConstructorUtils;
+import org.hkijena.jipipe.api.JIPipeIssueReport;
 import org.hkijena.jipipe.api.JIPipeProject;
 import org.hkijena.jipipe.api.JIPipeRun;
 import org.hkijena.jipipe.api.JIPipeRunSettings;
-import org.hkijena.jipipe.api.JIPipeIssueReport;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataDisplayOperation;
 import org.hkijena.jipipe.api.data.JIPipeDataImportOperation;
@@ -41,7 +41,6 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
 import org.hkijena.jipipe.api.registries.*;
 import org.hkijena.jipipe.extensions.parameters.primitives.DynamicDataDisplayOperationIdEnumParameter;
 import org.hkijena.jipipe.extensions.parameters.primitives.DynamicDataImportOperationIdEnumParameter;
-import org.hkijena.jipipe.extensions.parameters.primitives.DynamicStringEnumParameter;
 import org.hkijena.jipipe.extensions.settings.AutoSaveSettings;
 import org.hkijena.jipipe.extensions.settings.DefaultCacheDisplaySettings;
 import org.hkijena.jipipe.extensions.settings.DefaultResultImporterSettings;
@@ -284,7 +283,7 @@ public class JIPipe extends AbstractService implements JIPipeRegistry {
 
         // Postprocessing
         for (JIPipeDependency extension : registeredExtensions) {
-            if(!failedExtensions.contains(extension) && extension instanceof JIPipeJavaExtension) {
+            if (!failedExtensions.contains(extension) && extension instanceof JIPipeJavaExtension) {
                 logService.info("Postprocess: " + extension.getDependencyId());
                 ((JIPipeJavaExtension) extension).postprocess();
             }
@@ -294,7 +293,7 @@ public class JIPipe extends AbstractService implements JIPipeRegistry {
         logService.info("Checking recent projects ...");
         ProjectsSettings projectsSettings = ProjectsSettings.getInstance();
         List<Path> invalidRecentProjects = projectsSettings.getRecentProjects().stream().filter(path -> !Files.exists(path)).collect(Collectors.toList());
-        if(!invalidRecentProjects.isEmpty()) {
+        if (!invalidRecentProjects.isEmpty()) {
             projectsSettings.getRecentProjects().removeAll(invalidRecentProjects);
         }
 
@@ -302,7 +301,7 @@ public class JIPipe extends AbstractService implements JIPipeRegistry {
         logService.info("Checking backups ...");
         AutoSaveSettings autoSaveSettings = AutoSaveSettings.getInstance();
         List<Path> invalidBackups = autoSaveSettings.getLastSaves().stream().filter(path -> !Files.exists(path)).collect(Collectors.toList());
-        if(!invalidBackups.isEmpty()) {
+        if (!invalidBackups.isEmpty()) {
             autoSaveSettings.getLastSaves().removeAll(invalidBackups);
         }
 
@@ -350,8 +349,7 @@ public class JIPipe extends AbstractService implements JIPipeRegistry {
             DynamicDataImportOperationIdEnumParameter parameter;
             if (currentParameterValue instanceof DynamicDataImportOperationIdEnumParameter) {
                 parameter = (DynamicDataImportOperationIdEnumParameter) currentParameterValue;
-            }
-            else {
+            } else {
                 parameter = new DynamicDataImportOperationIdEnumParameter();
                 parameter.setValue("jipipe:show");
             }
@@ -377,8 +375,7 @@ public class JIPipe extends AbstractService implements JIPipeRegistry {
             DynamicDataDisplayOperationIdEnumParameter parameter;
             if (currentParameterValue instanceof DynamicDataDisplayOperationIdEnumParameter) {
                 parameter = (DynamicDataDisplayOperationIdEnumParameter) currentParameterValue;
-            }
-            else {
+            } else {
                 parameter = new DynamicDataDisplayOperationIdEnumParameter();
                 parameter.setValue("jipipe:show");
             }

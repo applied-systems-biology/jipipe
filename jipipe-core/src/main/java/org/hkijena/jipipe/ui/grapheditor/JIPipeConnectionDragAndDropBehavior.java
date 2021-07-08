@@ -10,7 +10,6 @@ import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.ui.grapheditor.nodeui.JIPipeDataSlotUI;
 import org.hkijena.jipipe.utils.JsonUtils;
 
-import javax.swing.*;
 import java.awt.Component;
 import java.awt.Cursor;
 import java.awt.datatransfer.DataFlavor;

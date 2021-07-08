@@ -14,7 +14,6 @@
 package org.hkijena.jipipe.extensions.python;
 
 import com.google.common.eventbus.EventBus;
-import org.apache.commons.io.FileUtils;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.environments.ExternalEnvironment;
@@ -28,7 +27,6 @@ import org.hkijena.jipipe.ui.parameters.ParameterPanel;
 import org.hkijena.jipipe.utils.PathUtils;
 
 import javax.swing.*;
-import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;

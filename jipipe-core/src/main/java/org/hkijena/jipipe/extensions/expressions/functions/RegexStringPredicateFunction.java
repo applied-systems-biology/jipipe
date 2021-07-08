@@ -17,7 +17,6 @@ import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.extensions.expressions.ExpressionFunction;
 import org.hkijena.jipipe.extensions.expressions.ExpressionParameters;
 import org.hkijena.jipipe.extensions.expressions.ParameterInfo;
-import org.hkijena.jipipe.utils.StringUtils;
 
 import java.util.List;
 
@@ -46,7 +45,7 @@ public class RegexStringPredicateFunction extends ExpressionFunction {
         String text = "" + parameters.get(0);
         for (int i = 1; i < parameters.size(); i++) {
             String pattern = "" + parameters.get(i);
-            if(text.matches(pattern))
+            if (text.matches(pattern))
                 return true;
         }
         return false;

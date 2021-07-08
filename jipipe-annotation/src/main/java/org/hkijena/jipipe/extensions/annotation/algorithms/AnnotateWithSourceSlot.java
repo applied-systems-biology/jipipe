@@ -76,14 +76,12 @@ public class AnnotateWithSourceSlot extends JIPipeSimpleIteratingAlgorithm {
 
             String annotationValue;
             Set<JIPipeDataSlot> sourceSlots = getGraph().getSourceSlots(getFirstInputSlot());
-            if(sourceSlots.isEmpty()) {
+            if (sourceSlots.isEmpty()) {
                 annotationValue = "";
-            }
-            else if(sourceSlots.size() == 1) {
+            } else if (sourceSlots.size() == 1) {
                 JIPipeDataSlot sourceSlot = sourceSlots.iterator().next();
                 annotationValue = StringUtils.orElse(sourceSlot.getInfo().getCustomName(), sourceSlot.getName());
-            }
-            else {
+            } else {
                 annotationValue = JsonUtils.toJsonString(sourceSlots.stream().map(sourceSlot ->
                         StringUtils.orElse(sourceSlot.getInfo().getCustomName(), sourceSlot.getName())).collect(Collectors.toList()));
             }

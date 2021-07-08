@@ -24,13 +24,12 @@ import org.hkijena.jipipe.extensions.tables.datatypes.TableColumn;
 public class GetFirstIntegratingColumnOperation implements IntegratingColumnOperation {
     @Override
     public TableColumn apply(TableColumn column) {
-       if(column.isNumeric()) {
-           double value = column.getRows() > 0 ? column.getRowAsDouble(0) : 0;
-           return new DoubleArrayTableColumn(new double[]{value}, column.getLabel());
-       }
-       else {
-           String value = column.getRows() > 0 ? column.getRowAsString(0) : "";
-           return new StringArrayTableColumn(new String[]{value}, column.getLabel());
-       }
+        if (column.isNumeric()) {
+            double value = column.getRows() > 0 ? column.getRowAsDouble(0) : 0;
+            return new DoubleArrayTableColumn(new double[]{value}, column.getLabel());
+        } else {
+            String value = column.getRows() > 0 ? column.getRowAsString(0) : "";
+            return new StringArrayTableColumn(new String[]{value}, column.getLabel());
+        }
     }
 }

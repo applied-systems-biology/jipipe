@@ -84,7 +84,7 @@ public class ImagePlusColorData extends ImagePlusData implements ColoredImagePlu
      * @return the converted data
      */
     public static ImagePlusData convertFrom(ImagePlusData data) {
-        if(data.hasLoadedImage()) {
+        if (data.hasLoadedImage()) {
             ImagePlus image = data.getImage();
             if (image.getType() != ImagePlus.COLOR_RGB) {
                 // This will go through the standard method (greyscale -> RGB -> HSB)
@@ -92,8 +92,7 @@ public class ImagePlusColorData extends ImagePlusData implements ColoredImagePlu
             } else {
                 return new ImagePlusColorData(image, ((ColoredImagePlusData) data).getColorSpace());
             }
-        }
-        else {
+        } else {
             return new ImagePlusColorData(data.getImageSource(), data.getColorSpace());
         }
     }

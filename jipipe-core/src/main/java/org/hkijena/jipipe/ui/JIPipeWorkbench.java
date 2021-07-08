@@ -64,6 +64,7 @@ public interface JIPipeWorkbench {
 
     /**
      * Allows to send notifications on a workbench-level
+     *
      * @return the notification inbox
      */
     JIPipeNotificationInbox getNotificationInbox();

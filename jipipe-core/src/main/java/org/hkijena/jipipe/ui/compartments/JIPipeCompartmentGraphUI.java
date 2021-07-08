@@ -34,7 +34,6 @@ import org.hkijena.jipipe.ui.grapheditor.JIPipeCompartmentGraphDragAndDropBehavi
 import org.hkijena.jipipe.ui.grapheditor.JIPipeGraphCanvasUI;
 import org.hkijena.jipipe.ui.grapheditor.JIPipeGraphEditorMinimap;
 import org.hkijena.jipipe.ui.grapheditor.JIPipeGraphEditorUI;
-import org.hkijena.jipipe.ui.grapheditor.nodeui.JIPipeNodeUI;
 import org.hkijena.jipipe.ui.grapheditor.contextmenu.DeleteCompartmentUIContextAction;
 import org.hkijena.jipipe.ui.grapheditor.contextmenu.ExportCompartmentAsJsonNodeUIContextAction;
 import org.hkijena.jipipe.ui.grapheditor.contextmenu.ExportCompartmentToNodeUIContextAction;
@@ -46,6 +45,7 @@ import org.hkijena.jipipe.ui.grapheditor.contextmenu.SetNodeHotkeyContextAction;
 import org.hkijena.jipipe.ui.grapheditor.contextmenu.clipboard.GraphCompartmentCopyNodeUIContextAction;
 import org.hkijena.jipipe.ui.grapheditor.contextmenu.clipboard.GraphCompartmentCutNodeUIContextAction;
 import org.hkijena.jipipe.ui.grapheditor.contextmenu.clipboard.GraphCompartmentPasteNodeUIContextAction;
+import org.hkijena.jipipe.ui.grapheditor.nodeui.JIPipeNodeUI;
 import org.hkijena.jipipe.ui.grapheditor.settings.JIPipeMultiAlgorithmSelectionPanelUI;
 import org.hkijena.jipipe.ui.grapheditor.settings.JIPipeSingleAlgorithmSelectionPanelUI;
 import org.hkijena.jipipe.utils.JsonUtils;

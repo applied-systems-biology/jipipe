@@ -153,7 +153,7 @@ public class JIPipeMergingDataBatchBuilder {
             return applySplitAllSolver(progressInfo.resolveAndLog("Split into batches"));
         }
 
-        if(referenceColumns.size() == 1 && annotationMatchingMethod == JIPipeAnnotationMatchingMethod.ExactMatch) {
+        if (referenceColumns.size() == 1 && annotationMatchingMethod == JIPipeAnnotationMatchingMethod.ExactMatch) {
             return applyDictionarySolver(progressInfo.resolveAndLog("Dictionary solver"));
         }
 
@@ -164,6 +164,7 @@ public class JIPipeMergingDataBatchBuilder {
     /**
      * The dictionary solver expects exactly one reference column and uses a dictionary for managing this structure
      * It cannot handle custom equality
+     *
      * @param progressInfo the progress info
      * @return data batches
      */
@@ -185,11 +186,11 @@ public class JIPipeMergingDataBatchBuilder {
             }
             matchedRows.put(slot, slotMap);
         }
-        if(progressInfo.isCancelled().get())
+        if (progressInfo.isCancelled().get())
             return null;
 
         // Apply "empty" to all other keys if we have any other ones
-        if(allKeys.contains("") && allKeys.size() > 1) {
+        if (allKeys.contains("") && allKeys.size() > 1) {
             for (Map.Entry<JIPipeDataSlot, Multimap<String, Integer>> entry : matchedRows.entrySet()) {
 
                 // Add empty into all other ones
@@ -207,7 +208,7 @@ public class JIPipeMergingDataBatchBuilder {
         }
 
         List<JIPipeMergingDataBatch> dataBatches = new ArrayList<>();
-        if(applyMerging) {
+        if (applyMerging) {
             // We are done. Directly convert to data batches
             for (String key : allKeys) {
                 JIPipeMergingDataBatch dataBatch = new JIPipeMergingDataBatch(node);
@@ -219,8 +220,7 @@ public class JIPipeMergingDataBatchBuilder {
                 }
                 dataBatches.add(dataBatch);
             }
-        }
-        else {
+        } else {
             // Split apart into single batches
             progressInfo.log("Splitting batches");
             for (String key : allKeys) {
@@ -228,17 +228,16 @@ public class JIPipeMergingDataBatchBuilder {
                 List<JIPipeMergingDataBatch> tempKeyBatches = new ArrayList<>();
                 for (JIPipeDataSlot slot : slotList) {
                     Collection<Integer> rows = matchedRows.get(slot).get(key);
-                    if(keyBatches.isEmpty()) {
+                    if (keyBatches.isEmpty()) {
                         // No data batches -> Create initial batch set
                         for (Integer row : rows) {
                             JIPipeMergingDataBatch dataBatch = new JIPipeMergingDataBatch(node);
                             dataBatch.addInputData(slot, row);
                             tempKeyBatches.add(dataBatch);
                         }
-                    }
-                    else {
+                    } else {
                         // Add the row into copies of all key batches
-                        if(!rows.isEmpty()) {
+                        if (!rows.isEmpty()) {
                             for (Integer row : rows) {
                                 for (JIPipeMergingDataBatch dataBatch : keyBatches) {
                                     JIPipeMergingDataBatch copy = new JIPipeMergingDataBatch(dataBatch);
@@ -246,8 +245,7 @@ public class JIPipeMergingDataBatchBuilder {
                                     tempKeyBatches.add(copy);
                                 }
                             }
-                        }
-                        else {
+                        } else {
                             tempKeyBatches.addAll(keyBatches);
                         }
                     }
@@ -281,6 +279,7 @@ public class JIPipeMergingDataBatchBuilder {
 
     /**
      * Special case solver that splits all data batches
+     *
      * @param progressInfo the progress info
      * @return data batches
      */
@@ -288,9 +287,9 @@ public class JIPipeMergingDataBatchBuilder {
         List<JIPipeMergingDataBatch> split = new ArrayList<>();
         for (JIPipeDataSlot slot : slotList) {
             for (int row = 0; row < slot.getRowCount(); row++) {
-                if(row % 1000 == 0) {
+                if (row % 1000 == 0) {
                     progressInfo.resolveAndLog("Row", row, slot.getRowCount());
-                    if(progressInfo.isCancelled().get())
+                    if (progressInfo.isCancelled().get())
                         return null;
                 }
                 JIPipeMergingDataBatch batch = new JIPipeMergingDataBatch(this.node);
@@ -308,6 +307,7 @@ public class JIPipeMergingDataBatchBuilder {
 
     /**
      * Special case solver that merges all data into one batch
+     *
      * @param progressInfo the progress info
      * @return data batches
      */
@@ -318,16 +318,16 @@ public class JIPipeMergingDataBatchBuilder {
             List<JIPipeAnnotation> annotations = new ArrayList<>();
             List<JIPipeDataAnnotation> dataAnnotations = new ArrayList<>();
             for (int row = 0; row < slot.getRowCount(); row++) {
-                if(row % 1000 == 0) {
+                if (row % 1000 == 0) {
                     progressInfo.resolveAndLog("Row", row, slot.getRowCount());
-                    if(progressInfo.isCancelled().get())
+                    if (progressInfo.isCancelled().get())
                         return null;
                 }
                 batch.addInputData(slot, row);
                 annotations.addAll(slot.getAnnotations(row));
                 dataAnnotations.addAll(slot.getDataAnnotations(row));
             }
-            progressInfo.log("Merging " +annotations.size() + " annotations");
+            progressInfo.log("Merging " + annotations.size() + " annotations");
             batch.addGlobalAnnotations(annotations, getAnnotationMergeStrategy());
             batch.addGlobalDataAnnotations(dataAnnotations, getDataAnnotationMergeStrategy());
         }
@@ -372,7 +372,7 @@ public class JIPipeMergingDataBatchBuilder {
                 rowNodesBySlot.put(slot, rowNode);
             }
 
-            if(progressInfo.isCancelled().get())
+            if (progressInfo.isCancelled().get())
                 return null;
             if (applyMerging) {
                 progressInfo.log("Partitioning");
@@ -391,7 +391,7 @@ public class JIPipeMergingDataBatchBuilder {
         }
 
         // Connect compatible rows
-        if(progressInfo.isCancelled().get())
+        if (progressInfo.isCancelled().get())
             return null;
         progressInfo.log("Connecting compatible layers");
         for (int layer = 1; layer < slotList.size(); layer++) {
@@ -413,7 +413,7 @@ public class JIPipeMergingDataBatchBuilder {
         graph.addVertex(sink);
 
         // Trivial connections (first and last layer)
-        if(progressInfo.isCancelled().get())
+        if (progressInfo.isCancelled().get())
             return null;
         progressInfo.log("Inserting trivial connections");
         for (RowNode rowNode : rowNodesBySlot.get(slotList.get(0))) {
@@ -424,7 +424,7 @@ public class JIPipeMergingDataBatchBuilder {
         }
 
         // Add orphaned connections to source/sink
-        if(progressInfo.isCancelled().get())
+        if (progressInfo.isCancelled().get())
             return null;
         progressInfo.log("Connecting orphaned nodes");
         for (int i = 0; i < slotList.size(); i++) {
@@ -469,7 +469,7 @@ public class JIPipeMergingDataBatchBuilder {
 //        dotExporter.exportGraph(graph, new File("flowgraph.dot"));
 
 
-        if(progressInfo.isCancelled().get())
+        if (progressInfo.isCancelled().get())
             return null;
         progressInfo.log("Getting all paths");
         List<JIPipeMergingDataBatch> result = new ArrayList<>();
@@ -477,7 +477,7 @@ public class JIPipeMergingDataBatchBuilder {
         List<GraphPath<RowNode, DefaultEdge>> allPaths = directedPaths.getAllPaths(source, sink, false, Integer.MAX_VALUE);
         progressInfo.log("Found " + allPaths.size() + " paths");
 
-        if(progressInfo.isCancelled().get())
+        if (progressInfo.isCancelled().get())
             return null;
 
         progressInfo.log("Generating data batches");

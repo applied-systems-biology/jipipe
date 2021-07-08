@@ -9,7 +9,6 @@ import org.hkijena.jipipe.api.data.JIPipeAnnotationMergeStrategy;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.nodes.JIPipeDataBatch;
 import org.hkijena.jipipe.api.nodes.JIPipeInputSlot;
-import org.hkijena.jipipe.api.nodes.JIPipeIteratingAlgorithm;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.JIPipeOutputSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeSimpleIteratingAlgorithm;
@@ -45,9 +44,9 @@ public class DataAnnotationToStringAnnotation extends JIPipeSimpleIteratingAlgor
     protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
         List<JIPipeAnnotation> annotationList = new ArrayList<>();
         for (String name : ImmutableList.copyOf(dataBatch.getGlobalDataAnnotations().keySet())) {
-            if(nameFilter.test(name)) {
+            if (nameFilter.test(name)) {
                 annotationList.add(new JIPipeAnnotation(name, dataBatch.getGlobalDataAnnotation(name).getVirtualData().getStringRepresentation()));
-                if(!keepDataAnnotations)
+                if (!keepDataAnnotations)
                     dataBatch.getGlobalAnnotations().remove(name);
             }
         }

@@ -31,7 +31,6 @@ import omero.gateway.model.ImageData;
 import omero.gateway.model.MapAnnotationData;
 import omero.model.NamedValue;
 import omero.model.Pixels;
-import org.apache.commons.io.FileUtils;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
@@ -60,7 +59,6 @@ import org.hkijena.jipipe.extensions.omero.util.OMEROUploadToJIPipeLogger;
 import org.hkijena.jipipe.extensions.omero.util.OMEROUtils;
 import org.hkijena.jipipe.utils.PathUtils;
 
-import java.io.IOException;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;

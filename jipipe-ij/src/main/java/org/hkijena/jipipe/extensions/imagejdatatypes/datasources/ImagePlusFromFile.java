@@ -18,9 +18,9 @@ import ij.ImagePlus;
 import org.apache.commons.lang3.SystemUtils;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.JIPipeIssueReport;
 import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
-import org.hkijena.jipipe.api.JIPipeIssueReport;
 import org.hkijena.jipipe.api.data.JIPipeAnnotation;
 import org.hkijena.jipipe.api.data.JIPipeAnnotationMergeStrategy;
 import org.hkijena.jipipe.api.data.JIPipeDataAnnotationMergeStrategy;
@@ -38,14 +38,11 @@ import org.hkijena.jipipe.extensions.filesystem.dataypes.FileData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.OMEImageData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
-import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageSource;
 import org.hkijena.jipipe.extensions.parameters.editors.JIPipeDataParameterSettings;
 import org.hkijena.jipipe.extensions.parameters.primitives.OptionalAnnotationNameParameter;
 import org.hkijena.jipipe.extensions.parameters.references.JIPipeDataInfoRef;
 import org.hkijena.jipipe.extensions.settings.VirtualDataSettings;
-import org.hkijena.jipipe.utils.UIUtils;
 
-import javax.swing.*;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -149,16 +146,15 @@ public class ImagePlusFromFile extends JIPipeSimpleIteratingAlgorithm {
                     JIPipeAnnotationMergeStrategy.Merge,
                     new ArrayList<>(dataBatch.getGlobalDataAnnotations().values()),
                     JIPipeDataAnnotationMergeStrategy.OverwriteExisting);
-        } else if(deferLoading) {
-            ImagePlusData outputData =  (ImagePlusData) JIPipe.createData(generatedImageType.getInfo().getDataClass(),
+        } else if (deferLoading) {
+            ImagePlusData outputData = (ImagePlusData) JIPipe.createData(generatedImageType.getInfo().getDataClass(),
                     new ImagePlusFromFileImageSource(fileData.toPath(), removeLut));
             List<JIPipeAnnotation> annotations = new ArrayList<>();
             if (titleAnnotation.isEnabled()) {
                 annotations.add(new JIPipeAnnotation(titleAnnotation.getContent(), fileData.toPath().getFileName().toString()));
             }
             dataBatch.addOutputData(getFirstOutputSlot(), outputData, annotations, JIPipeAnnotationMergeStrategy.Merge, progressInfo);
-        }
-        else {
+        } else {
             ImagePlusData outputData;
             ImagePlus image = readImageFrom(fileData.toPath(), progressInfo);
             if (removeLut) {
