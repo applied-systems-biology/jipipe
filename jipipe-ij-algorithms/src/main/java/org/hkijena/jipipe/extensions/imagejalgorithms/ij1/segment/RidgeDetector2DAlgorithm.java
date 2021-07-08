@@ -71,8 +71,21 @@ public class RidgeDetector2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         super(info);
     }
 
-    public RidgeDetector2DAlgorithm(JIPipeSimpleIteratingAlgorithm other) {
+    public RidgeDetector2DAlgorithm(RidgeDetector2DAlgorithm other) {
         super(other);
+        this.sigma = other.sigma;
+        this.lowerThreshold = other.lowerThreshold;
+        this.upperThreshold = other.upperThreshold;
+        this.darkLine = other.darkLine;
+        this.lineWidth = new OptionalDoubleParameter(other.lineWidth);
+        this.contrastHigh = new OptionalDoubleParameter(other.contrastHigh);
+        this.contrastLow = new OptionalDoubleParameter(other.contrastLow);
+        this.minLength = other.minLength;
+        this.maxLength = other.maxLength;
+        this.doCorrectPosition = other.doCorrectPosition;
+        this.doEstimateWidth = other.doEstimateWidth;
+        this.doExtendLine = other.doExtendLine;
+        this.overlapResolution = other.overlapResolution;
     }
 
     @Override
@@ -243,7 +256,7 @@ public class RidgeDetector2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     }
 
     @JIPipeDocumentation(name = "Sigma", description = "Determines the sigma for the derivatives. It depends on the line width.")
-    @JIPipeParameter(value = "sigma", important = true)
+    @JIPipeParameter(value = "sigma", important = true, uiOrder = -18)
     public double getSigma() {
         return sigma;
     }
@@ -254,7 +267,7 @@ public class RidgeDetector2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     }
 
     @JIPipeDocumentation(name = "Lower threshold", description = "Line points with a response smaller as this threshold are rejected")
-    @JIPipeParameter(value = "lower-threshold", important = true)
+    @JIPipeParameter(value = "lower-threshold", important = true, uiOrder = -20)
     public double getLowerThreshold() {
         return lowerThreshold;
     }
@@ -265,7 +278,7 @@ public class RidgeDetector2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     }
 
     @JIPipeDocumentation(name = "Upper threshold", description = "Line points with a response larger as this threshold are accepted")
-    @JIPipeParameter(value = "upper-threshold", important = true)
+    @JIPipeParameter(value = "upper-threshold", important = true, uiOrder = -19)
     public double getUpperThreshold() {
         return upperThreshold;
     }
