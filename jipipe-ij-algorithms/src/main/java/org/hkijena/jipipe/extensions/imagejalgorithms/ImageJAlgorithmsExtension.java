@@ -14,6 +14,7 @@
 package org.hkijena.jipipe.extensions.imagejalgorithms;
 
 import com.google.common.collect.ImmutableMap;
+import de.biomedical_imaging.ij.steger.OverlapOption;
 import ij.process.AutoThresholder;
 import inra.ijpb.binary.ChamferWeights;
 import inra.ijpb.binary.ChamferWeights3D;
@@ -111,6 +112,7 @@ import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.opticalflow.MSEGaussia
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.opticalflow.PMCCBlockFlowAlgorithm;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.roi.*;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.segment.ClassicWatershedSegmentationAlgorithm;
+import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.segment.RidgeDetector2DAlgorithm;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.segment.SeededWatershedSegmentationAlgorithm;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.sharpen.LaplacianSharpen2DAlgorithm;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.statistics.GreyscalePixelsGenerator;
@@ -254,6 +256,7 @@ public class ImageJAlgorithmsExtension extends JIPipePrepackagedDefaultJavaExten
                 "Bioinformatics (Oxford Univ Press) 32(22): 3532-3534, PMID 27412086, doi:10.1093/bioinformatics/btw413");
         result.add("Eliceiri K. V., Berthold M. R., Goldberg I. G., Ibanez L., Manjunath B. S., Martone M. E., Murphy R. F., Peng H., Plant A. L., Roysam B., Stuurmann N.," +
                 " Swedlow J.R., Tomancak P., Carpenter A. E. (2012) Biological Imaging Software Tools Nature Methods 9(7), 697-710");
+        result.add("Steger, C., 1998. An unbiased detector of curvilinear structures. IEEE Transactions on Pattern Analysis and Machine Intelligence, 20(2), pp.113–125.");
         result.add("FeatureJ by Erik Meijering. http://imagescience.org/meijering/software/featurej/");
         result.add("MTrackJ by Erik Meijering. https://imagescience.org/meijering/software/mtrackj/");
         result.add("RandomJ by Erik Meijering. https://imagescience.org/meijering/software/randomj/");
@@ -326,6 +329,8 @@ public class ImageJAlgorithmsExtension extends JIPipePrepackagedDefaultJavaExten
     private void registerSegmentationAlgorithms() {
         registerNodeType("ij1-segment-classic-watershed", ClassicWatershedSegmentationAlgorithm.class, UIUtils.getIconURLFromResources("actions/view-object-histogram-linear.png"));
         registerNodeType("ij1-segment-seeded-watershed", SeededWatershedSegmentationAlgorithm.class, UIUtils.getIconURLFromResources("actions/view-object-histogram-linear.png"));
+        registerNodeType("ij1-segment-ridge-detector-2d", RidgeDetector2DAlgorithm.class, UIUtils.getIconURLFromResources("actions/draw-geometry-mirror.png"));
+        registerEnumParameterType("ij1-segment-ridge-detector-2d:overlap-resolver", OverlapOption.class, "Overlap detector", "Method for overlap detection");
     }
 
     private void registerLabelAlgorithms() {

@@ -150,6 +150,11 @@
                 <artifactId>Threshold_Colour</artifactId>
                 <version>2.0.1</version>
             </dependency>
+            <dependency>
+                <groupId>de.biomedical-imaging.imagej</groupId>
+                <artifactId>ij_ridge_detect</artifactId>
+                <version>1.4.1</version>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 
@@ -213,6 +218,10 @@
         <dependency>
             <groupId>sc.fiji</groupId>
             <artifactId>Threshold_Colour</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>de.biomedical-imaging.imagej</groupId>
+            <artifactId>ij_ridge_detect</artifactId>
         </dependency>
     </dependencies>
 
