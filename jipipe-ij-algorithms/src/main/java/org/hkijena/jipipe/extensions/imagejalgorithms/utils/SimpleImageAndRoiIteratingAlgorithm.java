@@ -5,17 +5,13 @@ import ij.process.ImageProcessor;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeData;
-import org.hkijena.jipipe.api.data.JIPipeDataSlotInfo;
 import org.hkijena.jipipe.api.data.JIPipeDefaultMutableSlotConfiguration;
-import org.hkijena.jipipe.api.data.JIPipeMutableSlotConfiguration;
-import org.hkijena.jipipe.api.data.JIPipeSlotType;
 import org.hkijena.jipipe.api.nodes.JIPipeDataBatch;
 import org.hkijena.jipipe.api.nodes.JIPipeIteratingAlgorithm;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ROIListData;
-import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleMaskData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageSliceIndex;
 
 import java.util.Map;
@@ -37,13 +33,13 @@ public abstract class SimpleImageAndRoiIteratingAlgorithm extends JIPipeIteratin
                 .addOutputSlot("Output", outputClass, outputInheritance, inheritanceConversions)
                 .seal()
                 .build());
-        updateRoiSlot();
+        ImageJUtils2.updateROIOrMaskSlot(targetArea, getSlotConfiguration());
     }
 
     public SimpleImageAndRoiIteratingAlgorithm(SimpleImageAndRoiIteratingAlgorithm other) {
         super(other);
         this.targetArea = other.targetArea;
-        updateRoiSlot();
+        ImageJUtils2.updateROIOrMaskSlot(targetArea, getSlotConfiguration());
     }
 
     @JIPipeDocumentation(name = "Only apply to ...", description = "Determines where the algorithm is applied to.")
@@ -55,20 +51,20 @@ public abstract class SimpleImageAndRoiIteratingAlgorithm extends JIPipeIteratin
     @JIPipeParameter("roi:target-area")
     public void setTargetArea(ImageROITargetArea targetArea) {
         this.targetArea = targetArea;
-        updateRoiSlot();
+        ImageJUtils2.updateROIOrMaskSlot(targetArea, getSlotConfiguration());
     }
 
     public ImageProcessor getMask(JIPipeDataBatch dataBatch, ImageSliceIndex sliceIndex, JIPipeProgressInfo progressInfo) {
         switch (targetArea) {
             case WholeImage: {
                 ImagePlusData img = dataBatch.getInputData("Input", ImagePlusData.class, progressInfo);
-                return ImageROITargetArea.createWhiteMask(img.getImage());
+                return ImageROITargetArea.createWhiteMaskProcessor(img.getImage());
             }
             case InsideRoi: {
                 ROIListData rois = dataBatch.getInputData("ROI", ROIListData.class, progressInfo);
                 ImagePlusData img = dataBatch.getInputData("Input", ImagePlusData.class, progressInfo);
                 if (rois.isEmpty()) {
-                    return ImageROITargetArea.createWhiteMask(img.getImage());
+                    return ImageROITargetArea.createWhiteMaskProcessor(img.getImage());
                 } else {
                     return rois.getMaskForSlice(img.getImage().getWidth(), img.getImage().getHeight(),
                             false, true, 0, sliceIndex).getProcessor();
@@ -78,7 +74,7 @@ public abstract class SimpleImageAndRoiIteratingAlgorithm extends JIPipeIteratin
                 ROIListData rois = dataBatch.getInputData("ROI", ROIListData.class, progressInfo);
                 ImagePlusData img = dataBatch.getInputData("Input", ImagePlusData.class, progressInfo);
                 if (rois.isEmpty()) {
-                    return ImageROITargetArea.createWhiteMask(img.getImage());
+                    return ImageROITargetArea.createWhiteMaskProcessor(img.getImage());
                 } else {
                     ImageProcessor processor = rois.getMaskForSlice(img.getImage().getWidth(), img.getImage().getHeight(),
                             false, true, 0, sliceIndex).getProcessor();
@@ -107,32 +103,6 @@ public abstract class SimpleImageAndRoiIteratingAlgorithm extends JIPipeIteratin
             }
         }
         throw new UnsupportedOperationException();
-    }
-
-    private void updateRoiSlot() {
-        JIPipeMutableSlotConfiguration slotConfiguration = (JIPipeMutableSlotConfiguration) getSlotConfiguration();
-        if (targetArea == ImageROITargetArea.WholeImage) {
-            if (slotConfiguration.getInputSlots().containsKey("ROI")) {
-                slotConfiguration.removeInputSlot("ROI", false);
-            }
-            if (slotConfiguration.getInputSlots().containsKey("Mask")) {
-                slotConfiguration.removeInputSlot("Mask", false);
-            }
-        } else if (targetArea == ImageROITargetArea.InsideRoi || targetArea == ImageROITargetArea.OutsideRoi) {
-            if (!slotConfiguration.getInputSlots().containsKey("ROI")) {
-                slotConfiguration.addSlot("ROI", new JIPipeDataSlotInfo(ROIListData.class, JIPipeSlotType.Input, "ROI"), false);
-            }
-            if (slotConfiguration.getInputSlots().containsKey("Mask")) {
-                slotConfiguration.removeInputSlot("Mask", false);
-            }
-        } else if (targetArea == ImageROITargetArea.InsideMask || targetArea == ImageROITargetArea.OutsideMask) {
-            if (slotConfiguration.getInputSlots().containsKey("ROI")) {
-                slotConfiguration.removeInputSlot("ROI", false);
-            }
-            if (!slotConfiguration.getInputSlots().containsKey("Mask")) {
-                slotConfiguration.addSlot("Mask", new JIPipeDataSlotInfo(ImagePlusGreyscaleMaskData.class, JIPipeSlotType.Input, "Mask"), false);
-            }
-        }
     }
 
 }

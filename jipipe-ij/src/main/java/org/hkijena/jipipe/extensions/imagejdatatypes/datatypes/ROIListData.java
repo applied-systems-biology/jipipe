@@ -40,6 +40,7 @@ import org.hkijena.jipipe.api.data.JIPipeDataSource;
 import org.hkijena.jipipe.api.data.JIPipeDataStorageDocumentation;
 import org.hkijena.jipipe.extensions.imagejdatatypes.display.CachedImagePlusDataViewerWindow;
 import org.hkijena.jipipe.extensions.imagejdatatypes.display.CachedROIListDataViewerWindow;
+import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageSliceIndex;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.RoiOutline;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.measure.ImageStatisticsSetParameter;
@@ -358,6 +359,67 @@ public class ROIListData extends ArrayList<Roi> implements JIPipeData {
 
         ImagePlus result = IJ.createImage("ROIs", "8-bit", width, height, sc, sz, st);
         drawMask(drawOutline, drawFilledOutline, lineThickness, result);
+        return result;
+    }
+
+    /**
+     * Converts this ROI list into a mask that has the same size as the reference image
+     * @param reference the reference image
+     * @param drawFilledOutline fill the ROI
+     * @param drawOutline draw the ROI outlines
+     * @param lineThickness the ROI line thickness
+     * @return the mask
+     */
+    public ImagePlus toMask(ImagePlus reference, boolean drawFilledOutline, boolean drawOutline, int lineThickness) {
+        int sx = reference.getWidth();
+        int sy = reference.getHeight();
+        int sz = reference.getNSlices();
+        int sc = reference.getNChannels();
+        int st = reference.getNFrames();
+
+        return toMask(drawFilledOutline, drawOutline, lineThickness, sx, sy, sz, sc, st);
+    }
+
+    /**
+     * Converts this ROI list into a mask that has the same size as the reference image
+     * @param drawFilledOutline fill the ROI
+     * @param drawOutline draw the ROI outlines
+     * @param lineThickness the ROI line thickness
+     * @param width output image width
+     * @param height output image height
+     * @param numSlices output image Z slices
+     * @param numChannels output image channel slices
+     * @param numFrames output image frame slices
+     * @return the mask
+     */
+    public ImagePlus toMask(boolean drawFilledOutline, boolean drawOutline, int lineThickness, int width, int height, int numSlices, int numChannels, int numFrames) {
+        ImagePlus result  = IJ.createImage("ROIs", "8-bit", width, height, numChannels, numSlices, numFrames);
+        for (int z = 0; z < numSlices; z++) {
+            for (int c = 0; c < numChannels; c++) {
+                for (int t = 0; t < numFrames; t++) {
+                    int stackIndex = result.getStackIndex(c + 1, z + 1, t + 1);
+                    ImageProcessor processor = result.getStack().getProcessor(stackIndex);
+                    processor.setLineWidth(lineThickness);
+                    processor.setColor(255);
+
+                    for (Roi roi : this) {
+                        int rz = roi.getZPosition();
+                        int rc = roi.getCPosition();
+                        int rt = roi.getTPosition();
+                        if (rz != 0 && rz != (z + 1))
+                            continue;
+                        if (rc != 0 && rc != (c + 1))
+                            continue;
+                        if (rt != 0 && rt != (t + 1))
+                            continue;
+                        if (drawFilledOutline)
+                            processor.fill(roi);
+                        if (drawOutline)
+                            roi.drawPixels(processor);
+                    }
+                }
+            }
+        }
         return result;
     }
 

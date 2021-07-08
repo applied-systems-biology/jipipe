@@ -26,10 +26,7 @@ import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeAnnotation;
 import org.hkijena.jipipe.api.data.JIPipeAnnotationMergeStrategy;
-import org.hkijena.jipipe.api.data.JIPipeDataSlotInfo;
 import org.hkijena.jipipe.api.data.JIPipeDefaultMutableSlotConfiguration;
-import org.hkijena.jipipe.api.data.JIPipeMutableSlotConfiguration;
-import org.hkijena.jipipe.api.data.JIPipeSlotType;
 import org.hkijena.jipipe.api.nodes.JIPipeDataBatch;
 import org.hkijena.jipipe.api.nodes.JIPipeInputSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeIteratingAlgorithm;
@@ -43,13 +40,13 @@ import org.hkijena.jipipe.extensions.expressions.ExpressionParameterSettings;
 import org.hkijena.jipipe.extensions.expressions.ExpressionParameterVariable;
 import org.hkijena.jipipe.extensions.expressions.ExpressionParameterVariableSource;
 import org.hkijena.jipipe.extensions.expressions.ExpressionParameters;
+import org.hkijena.jipipe.extensions.imagejalgorithms.utils.ImageJUtils2;
 import org.hkijena.jipipe.extensions.imagejalgorithms.utils.ImageROITargetArea;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ROIListData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscale16UData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleMaskData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
-import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageSliceIndex;
 import org.hkijena.jipipe.extensions.parameters.primitives.OptionalAnnotationNameParameter;
 
 import java.util.ArrayList;
@@ -58,6 +55,7 @@ import java.util.List;
 import java.util.Set;
 
 import static org.hkijena.jipipe.extensions.imagejalgorithms.ImageJAlgorithmsExtension.ADD_MASK_QUALIFIER;
+import static org.hkijena.jipipe.extensions.imagejalgorithms.utils.ImageJUtils2.getMaskProcessorFromMaskOrROI;
 
 /**
  * Thresholding node that thresholds via an auto threshold
@@ -88,7 +86,7 @@ public class CustomAutoThreshold2D16UAlgorithm extends JIPipeIteratingAlgorithm 
                 .allowOutputSlotInheritance(true)
                 .seal()
                 .build());
-        updateRoiSlot();
+        ImageJUtils2.updateROIOrMaskSlot(sourceArea, getSlotConfiguration());
     }
 
     /**
@@ -105,7 +103,7 @@ public class CustomAutoThreshold2D16UAlgorithm extends JIPipeIteratingAlgorithm 
         this.sourceArea = other.sourceArea;
         this.thresholdAnnotationStrategy = other.thresholdAnnotationStrategy;
         this.accessPixels = other.accessPixels;
-        updateRoiSlot();
+        ImageJUtils2.updateROIOrMaskSlot(sourceArea, getSlotConfiguration());
     }
 
     @Override
@@ -165,7 +163,8 @@ public class CustomAutoThreshold2D16UAlgorithm extends JIPipeIteratingAlgorithm 
         List<Integer> thresholds = new ArrayList<>();
         TShortArrayList pixels = new TShortArrayList(inputImage.getWidth() * inputImage.getHeight());
         ImageJUtils.forEachIndexedZCTSlice(inputImage, (ip, index) -> {
-            ImageProcessor mask = getMask(inputImage.getWidth(),
+            ImageProcessor mask = ImageJUtils2.getMaskProcessorFromMaskOrROI(sourceArea,
+                    inputImage.getWidth(),
                     inputImage.getHeight(),
                     finalRoiInput,
                     finalMaskInput,
@@ -205,7 +204,8 @@ public class CustomAutoThreshold2D16UAlgorithm extends JIPipeIteratingAlgorithm 
         TShortArrayList pixels = new TShortArrayList(inputImage.getWidth() * inputImage.getHeight() *
                 inputImage.getNFrames() * inputImage.getNChannels() * inputImage.getNSlices());
         ImageJUtils.forEachIndexedZCTSlice(inputImage, (ip, index) -> {
-            ImageProcessor mask = getMask(inputImage.getWidth(),
+            ImageProcessor mask = ImageJUtils2.getMaskProcessorFromMaskOrROI(sourceArea,
+                    inputImage.getWidth(),
                     inputImage.getHeight(),
                     finalRoiInput,
                     finalMaskInput,
@@ -237,7 +237,8 @@ public class CustomAutoThreshold2D16UAlgorithm extends JIPipeIteratingAlgorithm 
         List<Integer> thresholds = new ArrayList<>();
         TShortArrayList pixels = new TShortArrayList(inputImage.getWidth() * inputImage.getHeight());
         ImageJUtils.forEachIndexedZCTSlice(inputImage, (ip, index) -> {
-            ImageProcessor mask = getMask(inputImage.getWidth(),
+            ImageProcessor mask = ImageJUtils2.getMaskProcessorFromMaskOrROI(sourceArea,
+                    inputImage.getWidth(),
                     inputImage.getHeight(),
                     finalRoiInput,
                     finalMaskInput,
@@ -389,7 +390,7 @@ public class CustomAutoThreshold2D16UAlgorithm extends JIPipeIteratingAlgorithm 
     @JIPipeParameter("source-area")
     public void setSourceArea(ImageROITargetArea sourceArea) {
         this.sourceArea = sourceArea;
-        updateRoiSlot();
+        ImageJUtils2.updateROIOrMaskSlot(sourceArea, getSlotConfiguration());
     }
 
     @JIPipeDocumentation(name = "Pixels are available as variables", description = "If enabled, the list of all pixels that are considered for the statistics are available as variable 'pixels'. " +
@@ -402,76 +403,6 @@ public class CustomAutoThreshold2D16UAlgorithm extends JIPipeIteratingAlgorithm 
     @JIPipeParameter("access-pixels")
     public void setAccessPixels(boolean accessPixels) {
         this.accessPixels = accessPixels;
-    }
-
-    private ImageProcessor getMask(int width, int height, ROIListData rois, ImagePlus mask, ImageSliceIndex sliceIndex) {
-        switch (sourceArea) {
-            case WholeImage: {
-                return null;
-            }
-            case InsideRoi: {
-                if (rois.isEmpty()) {
-                    return null;
-                } else {
-                    return rois.getMaskForSlice(width, height,
-                            false, true, 0, sliceIndex).getProcessor();
-                }
-            }
-            case OutsideRoi: {
-                if (rois.isEmpty()) {
-                    return null;
-                } else {
-                    ImageProcessor processor = rois.getMaskForSlice(width, height,
-                            false, true, 0, sliceIndex).getProcessor();
-                    processor.invert();
-                    return processor;
-                }
-            }
-            case InsideMask: {
-                if (mask.getStackSize() > 1) {
-                    return mask.getStack().getProcessor(sliceIndex.zeroSliceIndexToOneStackIndex(mask));
-                } else {
-                    return mask.getProcessor();
-                }
-            }
-            case OutsideMask: {
-                ImageProcessor processor;
-                if (mask.getStackSize() > 1) {
-                    processor = mask.getStack().getProcessor(sliceIndex.zeroSliceIndexToOneStackIndex(mask)).duplicate();
-                } else {
-                    processor = mask.getProcessor().duplicate();
-                }
-                processor.invert();
-                return processor;
-            }
-        }
-        throw new UnsupportedOperationException();
-    }
-
-    private void updateRoiSlot() {
-        JIPipeMutableSlotConfiguration slotConfiguration = (JIPipeMutableSlotConfiguration) getSlotConfiguration();
-        if (sourceArea == ImageROITargetArea.WholeImage) {
-            if (slotConfiguration.getInputSlots().containsKey("ROI")) {
-                slotConfiguration.removeInputSlot("ROI", false);
-            }
-            if (slotConfiguration.getInputSlots().containsKey("Mask")) {
-                slotConfiguration.removeInputSlot("Mask", false);
-            }
-        } else if (sourceArea == ImageROITargetArea.InsideRoi || sourceArea == ImageROITargetArea.OutsideRoi) {
-            if (!slotConfiguration.getInputSlots().containsKey("ROI")) {
-                slotConfiguration.addSlot("ROI", new JIPipeDataSlotInfo(ROIListData.class, JIPipeSlotType.Input, "ROI"), false);
-            }
-            if (slotConfiguration.getInputSlots().containsKey("Mask")) {
-                slotConfiguration.removeInputSlot("Mask", false);
-            }
-        } else if (sourceArea == ImageROITargetArea.InsideMask || sourceArea == ImageROITargetArea.OutsideMask) {
-            if (slotConfiguration.getInputSlots().containsKey("ROI")) {
-                slotConfiguration.removeInputSlot("ROI", false);
-            }
-            if (!slotConfiguration.getInputSlots().containsKey("Mask")) {
-                slotConfiguration.addSlot("Mask", new JIPipeDataSlotInfo(ImagePlusGreyscaleMaskData.class, JIPipeSlotType.Input, "Mask"), false);
-            }
-        }
     }
 
     public static class VariableSource implements ExpressionParameterVariableSource {

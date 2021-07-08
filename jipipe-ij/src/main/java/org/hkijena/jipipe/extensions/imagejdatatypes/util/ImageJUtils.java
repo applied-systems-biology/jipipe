@@ -66,6 +66,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.BiConsumer;
+import java.util.function.BiFunction;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
@@ -666,6 +667,37 @@ public class ImageJUtils {
             }
         } else {
             function.accept(img.getProcessor(), new ImageSliceIndex(0, 0, 0));
+        }
+    }
+
+    /**
+     * Runs the function for each Z, C, and T slice.
+     *
+     * @param img          the image
+     * @param function     the function. The indices are ZERO-based. Should return the result slice for this index
+     * @param progressInfo the progress
+     */
+    public static ImagePlus generateForEachIndexedZCTSlice(ImagePlus img, BiFunction<ImageProcessor, ImageSliceIndex, ImageProcessor> function, JIPipeProgressInfo progressInfo) {
+        if (img.isStack()) {
+            ImageStack stack = new ImageStack(img.getWidth(), img.getHeight(), img.getStackSize());
+            int iterationIndex = 0;
+            for (int t = 0; t < img.getNFrames(); t++) {
+                for (int z = 0; z < img.getNSlices(); z++) {
+                    for (int c = 0; c < img.getNChannels(); c++) {
+                        if (progressInfo.isCancelled().get())
+                            return null;
+                        int index = img.getStackIndex(c + 1, z + 1, t + 1);
+                        progressInfo.resolveAndLog("Slice", iterationIndex++, img.getStackSize()).log("z=" + z + ", c=" + c + ", t=" + t);
+                        ImageProcessor processor = img.getImageStack().getProcessor(index);
+                        ImageProcessor resultProcessor = function.apply(processor, new ImageSliceIndex(z, c, t));
+                        stack.setProcessor(resultProcessor, index);
+                    }
+                }
+            }
+            return new ImagePlus(img.getTitle(), stack);
+        } else {
+            ImageProcessor processor = function.apply(img.getProcessor(), new ImageSliceIndex(0, 0, 0));
+            return new ImagePlus(img.getTitle(), processor);
         }
     }
 

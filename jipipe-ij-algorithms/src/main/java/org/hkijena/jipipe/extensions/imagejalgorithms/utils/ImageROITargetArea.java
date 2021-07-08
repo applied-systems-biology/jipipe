@@ -1,9 +1,12 @@
 package org.hkijena.jipipe.extensions.imagejalgorithms.utils;
 
+import ij.IJ;
 import ij.ImagePlus;
 import ij.process.ByteProcessor;
 import ij.process.ImageProcessor;
+import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ROIListData;
+import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 
 
 public enum ImageROITargetArea {
@@ -24,11 +27,11 @@ public enum ImageROITargetArea {
     public ImageProcessor getMask(ImagePlus inputImage, ROIListData rois, ImagePlus mask) {
         switch (this) {
             case WholeImage: {
-                return createWhiteMask(inputImage);
+                return createWhiteMaskProcessor(inputImage);
             }
             case InsideRoi: {
                 if (rois.isEmpty()) {
-                    return createWhiteMask(inputImage);
+                    return createWhiteMaskProcessor(inputImage);
                 } else {
                     return rois.toMask(inputImage.getWidth(), inputImage.getHeight(),
                             false, true, 0).getProcessor();
@@ -36,7 +39,7 @@ public enum ImageROITargetArea {
             }
             case OutsideRoi: {
                 if (rois.isEmpty()) {
-                    return createWhiteMask(inputImage);
+                    return createWhiteMaskProcessor(inputImage);
                 } else {
                     ImageProcessor processor = rois.toMask(inputImage.getWidth(), inputImage.getHeight(),
                             false, true, 0).getProcessor();
@@ -73,11 +76,22 @@ public enum ImageROITargetArea {
         throw new UnsupportedOperationException();
     }
 
-    public static ByteProcessor createWhiteMask(ImagePlus img) {
+    public static ByteProcessor createWhiteMaskProcessor(ImagePlus img) {
         ByteProcessor processor = new ByteProcessor(img.getWidth(), img.getHeight());
         processor.setValue(255);
         processor.setRoi(0, 0, processor.getWidth(), processor.getHeight());
         processor.fill();
         return processor;
+    }
+
+    public static ImagePlus createWhiteMask(ImagePlus img) {
+        ImagePlus result = IJ.createImage(img.getTitle(), img.getWidth(), img.getHeight(), img.getStackSize(), 8);
+        result.setDimensions(img.getNChannels(), img.getNSlices(), img.getNFrames());
+        ImageJUtils.forEachIndexedZCTSlice(result, (processor, index) -> {
+            processor.setValue(255);
+            processor.setRoi(0, 0, processor.getWidth(), processor.getHeight());
+            processor.fill();
+        }, new JIPipeProgressInfo());
+        return result;
     }
 }

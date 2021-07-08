@@ -38,7 +38,7 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
  */
 @JIPipeDocumentation(name = "Difference of Gaussian 2D", description = "Applies Gaussian blur to the input image twice with different sigma values resulting in two images which are then subtracted from each other. " +
         "If higher-dimensional data is provided, the filter is applied to each 2D slice.")
-@JIPipeOrganization(menuPath = "Blur", nodeTypeCategory = ImagesNodeTypeCategory.class)
+@JIPipeOrganization(menuPath = "Features", nodeTypeCategory = ImagesNodeTypeCategory.class)
 @JIPipeInputSlot(value = ImagePlusGreyscale32FData.class, slotName = "Input", autoCreate = true)
 @JIPipeOutputSlot(value = ImagePlusGreyscale32FData.class, slotName = "Output", autoCreate = true)
 public class DifferenceOfGaussian2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {

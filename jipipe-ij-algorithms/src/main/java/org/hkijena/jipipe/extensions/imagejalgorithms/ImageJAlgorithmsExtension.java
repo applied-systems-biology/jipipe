@@ -21,6 +21,7 @@ import inra.ijpb.morphology.Morphology;
 import inra.ijpb.morphology.Strel;
 import inra.ijpb.color.ColorMaps;
 import inra.ijpb.morphology.Strel3D;
+import inra.ijpb.morphology.directional.DirectionalFilter;
 import org.hkijena.jipipe.JIPipeImageJUpdateSiteDependency;
 import org.hkijena.jipipe.JIPipeJavaExtension;
 import org.hkijena.jipipe.api.data.JIPipeData;
@@ -30,6 +31,7 @@ import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.HyperstackDimensionPai
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.InterpolationMethod;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.MacroWrapperAlgorithm;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.Neighborhood2D;
+import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.Neighborhood2D3D;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.Neighborhood3D;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.analyze.FindParticles2D;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.analyze.ImageStatisticsAlgorithm;
@@ -57,6 +59,7 @@ import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.edge.CannyEdgeDetector
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.edge.LaplacianEdgeDetectorAlgorithm;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.edge.SobelEdgeDetectorAlgorithm;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.features.DifferenceOfGaussian2DAlgorithm;
+import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.features.DirectionalFilter2DAlgorithm;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.features.FrangiVesselnessFeatures;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.features.LaplacianOfGaussian2DAlgorithm;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.features.LocalMaxima2DAlgorithm;
@@ -91,6 +94,8 @@ import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.math.distancemap.Label
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.math.local.*;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.misc.DataToPreviewAlgorithm;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.misc.ExportImageToWebAlgorithm;
+import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.morphology.MorphologicalReconstruction2DAlgorithm;
+import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.morphology.MorphologicalReconstruction3DAlgorithm;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.morphology.Morphology2DAlgorithm;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.morphology.Morphology3DAlgorithm;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.morphology.MorphologyBinary2DAlgorithm;
@@ -105,6 +110,8 @@ import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.opticalflow.MSEBlockFl
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.opticalflow.MSEGaussianFlowAlgorithm;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.opticalflow.PMCCBlockFlowAlgorithm;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.roi.*;
+import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.segment.ClassicWatershedSegmentationAlgorithm;
+import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.segment.SeededWatershedSegmentationAlgorithm;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.sharpen.LaplacianSharpen2DAlgorithm;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.statistics.GreyscalePixelsGenerator;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.statistics.HistogramGenerator;
@@ -296,6 +303,7 @@ public class ImageJAlgorithmsExtension extends JIPipePrepackagedDefaultJavaExten
         registerFormAlgorithms();
         registerConverterAlgorithms();
         registerLabelAlgorithms();
+        registerSegmentationAlgorithms();
 
         registerEnumParameterType("ij1-export-image-to-web:file-format", ExportImageToWebAlgorithm.FileFormat.class, "File format", "Exported file format.");
         registerNodeType("iji-export-image-to-web", ExportImageToWebAlgorithm.class, UIUtils.getIconURLFromResources("actions/document-export.png"));
@@ -313,6 +321,11 @@ public class ImageJAlgorithmsExtension extends JIPipePrepackagedDefaultJavaExten
         registerGlobalParameters();
 
 //        registerIJ2Algorithms();
+    }
+
+    private void registerSegmentationAlgorithms() {
+        registerNodeType("ij1-segment-classic-watershed", ClassicWatershedSegmentationAlgorithm.class, UIUtils.getIconURLFromResources("actions/view-object-histogram-linear.png"));
+        registerNodeType("ij1-segment-seeded-watershed", SeededWatershedSegmentationAlgorithm.class, UIUtils.getIconURLFromResources("actions/view-object-histogram-linear.png"));
     }
 
     private void registerLabelAlgorithms() {
@@ -416,6 +429,10 @@ public class ImageJAlgorithmsExtension extends JIPipePrepackagedDefaultJavaExten
                 Neighborhood3D.class,
                 "3D neighborhood",
                 "A 3D neighborhood");
+        registerEnumParameterType("ij1-neighborhood-2d-3d",
+                Neighborhood2D3D.class,
+                "2D/3D neighborhood",
+                "A 2D/3D neighborhood");
         registerEnumParameterType("ij1-roi-target", ImageROITargetArea.class,
                 "Target area", "Defines an area where an algorithm is applied");
         registerEnumParameterType("ij1-source-wrap-mode",
@@ -633,7 +650,8 @@ public class ImageJAlgorithmsExtension extends JIPipePrepackagedDefaultJavaExten
         registerNodeType("ij1-morph-binary-fillholes2d", MorphologyFillHoles2DAlgorithm.class, UIUtils.getIconURLFromResources("actions/object-fill.png"));
         registerNodeType("ij1-morph-binary-outline2d", MorphologyOutline2DAlgorithm.class, UIUtils.getIconURLFromResources("actions/draw-connector.png"));
         registerNodeType("ij1-morph-binary-skeletonize2d", MorphologySkeletonize2DAlgorithm.class, UIUtils.getIconURLFromResources("actions/object-to-path.png"));
-//        registerNodeType("ij1-morph-greyscale-internalgradient2d", MorphologyInternalGradient2DAlgorithm.class, UIUtils.getIconURLFromResources("actions/insert-math-expression.png"));
+        registerNodeType("ij1-morph-reconstruct-2d", MorphologicalReconstruction2DAlgorithm.class, UIUtils.getIconURLFromResources("actions/insert-math-expression.png"));
+        registerNodeType("ij1-morph-reconstruct-3d", MorphologicalReconstruction3DAlgorithm.class, UIUtils.getIconURLFromResources("actions/insert-math-expression.png"));
 
         registerEnumParameterType("ij1-morph-binary-operation2d:operation", MorphologyBinary2DAlgorithm.Operation.class,
                 "Operation", "Available operations");
@@ -710,11 +728,16 @@ public class ImageJAlgorithmsExtension extends JIPipePrepackagedDefaultJavaExten
         registerNodeType("ij1-feature-maxima-local-2d", LocalMaxima2DAlgorithm.class, UIUtils.getIconURLFromResources("actions/insert-math-expression.png"));
         registerNodeType("ij1-feature-difference-of-gaussian", DifferenceOfGaussian2DAlgorithm.class, UIUtils.getIconURLFromResources("actions/insert-math-expression.png"));
         registerNodeType("ij1-feature-laplacian-of-gaussian", LaplacianOfGaussian2DAlgorithm.class, UIUtils.getIconURLFromResources("actions/insert-math-expression.png"));
+        registerNodeType("ij1-feature-directional-filter-2d", DirectionalFilter2DAlgorithm.class, UIUtils.getIconURLFromResources("actions/object-tweak-rotate.png"));
 
         registerEnumParameterType("ij1-feature-vesselness-frangi:slicing-mode", FrangiVesselnessFeatures.SlicingMode.class,
                 "Slicing mode", "Available slicing modes");
         registerEnumParameterType("ij1-feature-maxima-local-2d:output-type", LocalMaxima2DAlgorithm.OutputType.class,
                 "Output type", "Available output types");
+        registerEnumParameterType("ij1-feature-directional-filter:operation", DirectionalFilter.Operation.class,
+                "Directional filter operation", "Available operations");
+        registerEnumParameterType("ij1-feature-directional-filter:type", DirectionalFilter.Type.class,
+                "Directional filter types", "Available types");
     }
 
     private void registerContrastAlgorithms() {
