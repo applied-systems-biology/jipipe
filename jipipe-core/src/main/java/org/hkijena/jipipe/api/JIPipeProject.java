@@ -53,6 +53,8 @@ import org.hkijena.jipipe.utils.StringUtils;
 
 import java.awt.Point;
 import java.io.IOException;
+import java.io.OutputStream;
+import java.io.Writer;
 import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -138,6 +140,28 @@ public class JIPipeProject implements JIPipeValidatable {
     public void saveProject(Path fileName) throws IOException {
         ObjectMapper mapper = JsonUtils.getObjectMapper();
         mapper.writerWithDefaultPrettyPrinter().writeValue(fileName.toFile(), this);
+    }
+
+    /**
+     * Saves the project
+     *
+     * @param writer Target writer
+     * @throws IOException Triggered by {@link ObjectMapper}
+     */
+    public void saveProject(Writer writer) throws IOException {
+        ObjectMapper mapper = JsonUtils.getObjectMapper();
+        mapper.writerWithDefaultPrettyPrinter().writeValue(writer, this);
+    }
+
+    /**
+     * Saves the project
+     *
+     * @param outputStream Target writer
+     * @throws IOException Triggered by {@link ObjectMapper}
+     */
+    public void saveProject(OutputStream outputStream) throws IOException {
+        ObjectMapper mapper = JsonUtils.getObjectMapper();
+        mapper.writerWithDefaultPrettyPrinter().writeValue(outputStream, this);
     }
 
     public JIPipeProjectCache getCache() {
