@@ -191,11 +191,10 @@ public class AutoSaveSettings implements JIPipeParameterCollection {
     @JIPipeDocumentation(name = "Remove duplicate backups", description = "Removes all duplicate backups")
     @JIPipeContextAction(iconURL = ResourceUtils.RESOURCE_BASE_PATH + "/icons/actions/clear-brush.png", iconDarkURL = ResourceUtils.RESOURCE_BASE_PATH + "/dark/icons/actions/clear-brush.png")
     public void removeDuplicateBackups(JIPipeWorkbench workbench) {
-        int timeEstimate = (int) Math.ceil(getLastSaves().size() * 30.0 / 1000.0 / 60.0);
-        String timeEstimateString = timeEstimate == 1 ? timeEstimate + " minute" : timeEstimate + " minutes";
-        if (JOptionPane.showConfirmDialog(workbench.getWindow(), "Do you really want to remove duplicate backups?\nThis will only affect backups and not your actual project files. " +
-                "The operation will take approximately "
-                + timeEstimateString + ".", "Remove duplicate backups", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
+        if (JOptionPane.showConfirmDialog(workbench.getWindow(),
+                "Do you really want to remove duplicate backups?\nThis will only affect backups and not your actual project files." ,
+                "Remove duplicate backups",
+                JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
             JIPipeRunExecuterUI.runInDialog(workbench.getWindow(), new CleanBackupsRun(workbench));
         }
     }
