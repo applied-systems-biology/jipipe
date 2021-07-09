@@ -535,6 +535,10 @@ public class JIPipeProjectWorkbench extends JPanel implements JIPipeWorkbench {
         openLogsButton.addActionListener(e -> documentTabPane.selectSingletonTab(TAB_LOG));
         toolsMenu.add(openLogsButton);
 
+        JMenuItem openNotificationsButton = new JMenuItem("Notifications", UIUtils.getIconFromResources("actions/preferences-desktop-notification.png"));
+        openNotificationsButton.addActionListener(e -> documentTabPane.selectSingletonTab(TAB_NOTIFICATIONS));
+        toolsMenu.add(openNotificationsButton);
+
         UIUtils.installMenuExtension(this, toolsMenu, MenuTarget.ProjectToolsMenu, false);
         if (toolsMenu.getItemCount() > 0)
             menu.add(toolsMenu);

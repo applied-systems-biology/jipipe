@@ -14,6 +14,7 @@ import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.util.ArrayList;
@@ -55,6 +56,7 @@ public class WorkbenchNotificationInboxUI extends JIPipeWorkbenchPanel {
 
         Set<String> blockedIds = new HashSet<>(NotificationUISettings.getInstance().getBlockedNotifications());
 
+        boolean hasNotifications = false;
         for (JIPipeNotification notification : notificationSet) {
             if (blockedIds.contains(notification.getId())) {
                 hiddenNotificationsPanel.addWideToForm(new NotificationUI(this,
@@ -68,6 +70,7 @@ public class WorkbenchNotificationInboxUI extends JIPipeWorkbenchPanel {
                                 false,
                                 false),
                         null);
+                hasNotifications = true;
             }
         }
         for (JIPipeNotification notification : dismissedNotifications) {
@@ -76,6 +79,23 @@ public class WorkbenchNotificationInboxUI extends JIPipeWorkbenchPanel {
                             false,
                             true),
                     null);
+        }
+
+        if(!hasNotifications) {
+            JPanel noNotificationPanel = new JPanel(new BorderLayout());
+            noNotificationPanel.setLayout(new BorderLayout());
+            noNotificationPanel.setBorder(BorderFactory.createLineBorder(Color.GRAY, 1, true));
+
+            JLabel label = new JLabel("No notifications", UIUtils.getIcon64FromResources("check-circle-green.png"), JLabel.LEFT);
+            label.setFont(label.getFont().deriveFont(26.0f));
+            label.setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
+            noNotificationPanel.add(label, BorderLayout.CENTER);
+
+            JLabel infoLabel = new JLabel("There are no notifications. You can close this tab.");
+            infoLabel.setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
+            noNotificationPanel.add(infoLabel, BorderLayout.SOUTH);
+
+            notificationsPanel.addWideToForm(noNotificationPanel, null);
         }
 
         notificationsPanel.addVerticalGlue();
