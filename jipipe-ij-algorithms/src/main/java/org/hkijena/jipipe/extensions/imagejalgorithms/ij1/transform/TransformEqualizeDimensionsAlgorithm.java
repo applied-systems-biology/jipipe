@@ -1,92 +1,89 @@
 package org.hkijena.jipipe.extensions.imagejalgorithms.ij1.transform;
 
 import ij.ImagePlus;
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.JIPipeDataBatch;
 import org.hkijena.jipipe.api.nodes.JIPipeInputSlot;
+import org.hkijena.jipipe.api.nodes.JIPipeIteratingAlgorithm;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.JIPipeOutputSlot;
-import org.hkijena.jipipe.api.nodes.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
-import org.hkijena.jipipe.extensions.expressions.DefaultExpressionParameter;
-import org.hkijena.jipipe.extensions.expressions.ExpressionVariables;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
-import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImagePlusPropertiesExpressionParameterVariableSource;
 import org.hkijena.jipipe.extensions.parameters.primitives.BooleanParameterSettings;
 
-@JIPipeDocumentation(name = "Equalize dimensions", description = "Sets the exact hyperstack dimensions of the incoming images. If you provide " +
-        "a lower size, planes will be removed. If you provide a larger dimension, planes are either set to black or copied from the slices with the highest index.")
+@JIPipeDocumentation(name = "Equalize hyperstack dimensions", description = "Makes the input image have the same dimensions as the reference image. You can choose to make them equal in width/height, and " +
+        "hyperstack dimensions (Z, C, T)")
 @JIPipeOrganization(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Transform")
 @JIPipeInputSlot(value = ImagePlusData.class, slotName = "Input", autoCreate = true)
+@JIPipeInputSlot(value = ImagePlusData.class, slotName = "Reference", autoCreate = true)
 @JIPipeOutputSlot(value = ImagePlusData.class, slotName = "Output", autoCreate = true, inheritedSlot = "Input")
-public class TransformEqualizeDimensionsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
+public class TransformEqualizeDimensionsAlgorithm extends JIPipeIteratingAlgorithm {
 
-    private DefaultExpressionParameter zAxis = new DefaultExpressionParameter("num_z");
-    private DefaultExpressionParameter cAxis = new DefaultExpressionParameter("num_c");
-    private DefaultExpressionParameter tAxis = new DefaultExpressionParameter("num_t");
+
+    private boolean equalWidthAndHeight = false;
+    private boolean equalHyperstackDimensions = true;
     private boolean copySlices = true;
+    private TransformScale2DAlgorithm scale2DAlgorithm;
 
     public TransformEqualizeDimensionsAlgorithm(JIPipeNodeInfo info) {
         super(info);
+        scale2DAlgorithm = JIPipe.createNode(TransformScale2DAlgorithm.class);
+        registerSubParameter(scale2DAlgorithm);
     }
 
     public TransformEqualizeDimensionsAlgorithm(TransformEqualizeDimensionsAlgorithm other) {
         super(other);
-        this.zAxis = new DefaultExpressionParameter(other.zAxis);
-        this.cAxis = new DefaultExpressionParameter(other.cAxis);
-        this.tAxis = new DefaultExpressionParameter(other.tAxis);
+        this.equalHyperstackDimensions = other.equalHyperstackDimensions;
+        this.equalWidthAndHeight = other.equalWidthAndHeight;
         this.copySlices = other.copySlices;
+        this.scale2DAlgorithm = new TransformScale2DAlgorithm(other.scale2DAlgorithm);
+        registerSubParameter(scale2DAlgorithm);
     }
 
     @Override
     protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
-        ImagePlus image = dataBatch.getInputData(getFirstInputSlot(), ImagePlusData.class, progressInfo).getImage();
-        ExpressionVariables variables = new ExpressionVariables();
-        ImagePlusPropertiesExpressionParameterVariableSource.extractValues(variables, image);
+        ImagePlus image = dataBatch.getInputData("Input", ImagePlusData.class, progressInfo).getImage();
+        ImagePlus referenceImage = dataBatch.getInputData("Reference", ImagePlusData.class, progressInfo).getImage();
 
-        int z = (int) zAxis.evaluateToNumber(variables);
-        int c = (int) cAxis.evaluateToNumber(variables);
-        int t = (int) tAxis.evaluateToNumber(variables);
+        if(equalWidthAndHeight) {
+            scale2DAlgorithm.clearSlotData();
+            scale2DAlgorithm.getFirstInputSlot().addData(new ImagePlusData(image), progressInfo);
+            scale2DAlgorithm.run(progressInfo.resolve("2D scaling"));
+            image = scale2DAlgorithm.getFirstOutputSlot().getData(0, ImagePlusData.class, progressInfo).getImage();
+            scale2DAlgorithm.clearSlotData();
+        }
+        if(equalHyperstackDimensions) {
+            image = ImageJUtils.ensureEqualSize(image, referenceImage, copySlices);
+        }
 
-        ImagePlus outputImage = ImageJUtils.ensureSize(image, c, z, t, copySlices);
-        dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusData(outputImage), progressInfo);
+        dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusData(image), progressInfo);
     }
 
-    @JIPipeDocumentation(name = "Z axis", description = "Expression that returns the size of the Z axis")
-    @JIPipeParameter(value = "z-axis", uiOrder = -50)
-    public DefaultExpressionParameter getzAxis() {
-        return zAxis;
+    @JIPipeDocumentation(name = "Equalize width and height", description = "If enabled, the width and height are equalized")
+    @JIPipeParameter("equal-width-and-height")
+    public boolean isEqualWidthAndHeight() {
+        return equalWidthAndHeight;
     }
 
-    @JIPipeParameter("z-axis")
-    public void setzAxis(DefaultExpressionParameter zAxis) {
-        this.zAxis = zAxis;
+    @JIPipeParameter("equal-width-and-height")
+    public void setEqualWidthAndHeight(boolean equalWidthAndHeight) {
+        this.equalWidthAndHeight = equalWidthAndHeight;
     }
 
-    @JIPipeDocumentation(name = "C axis", description = "Expression that returns the size of the channel axis")
-    @JIPipeParameter(value = "c-axis", uiOrder = -49)
-    public DefaultExpressionParameter getcAxis() {
-        return cAxis;
+    @JIPipeDocumentation(name = "Equalize hyperstack dimensions", description = "If enabled, the hyperstack dimensions are equalized")
+    @JIPipeParameter("equal-hyperstack-dimensions")
+    public boolean isEqualHyperstackDimensions() {
+        return equalHyperstackDimensions;
     }
 
-    @JIPipeParameter("c-axis")
-    public void setcAxis(DefaultExpressionParameter cAxis) {
-        this.cAxis = cAxis;
-    }
-
-    @JIPipeDocumentation(name = "T axis", description = "Expression that returns the size of the time axis")
-    @JIPipeParameter(value = "t-axis", uiOrder = -48)
-    public DefaultExpressionParameter gettAxis() {
-        return tAxis;
-    }
-
-    @JIPipeParameter("t-axis")
-    public void settAxis(DefaultExpressionParameter tAxis) {
-        this.tAxis = tAxis;
+    @JIPipeParameter("equal-hyperstack-dimensions")
+    public void setEqualHyperstackDimensions(boolean equalHyperstackDimensions) {
+        this.equalHyperstackDimensions = equalHyperstackDimensions;
     }
 
     @JIPipeDocumentation(name = "Newly generated slices", description = "Determines how new slices are generated, if needed. You can either repeat the last available slice or make new slices zero/black.")
@@ -99,5 +96,11 @@ public class TransformEqualizeDimensionsAlgorithm extends JIPipeSimpleIteratingA
     @JIPipeParameter("copy-slices")
     public void setCopySlices(boolean copySlices) {
         this.copySlices = copySlices;
+    }
+
+    @JIPipeDocumentation(name = "Scaling", description = "The following settings determine how the image is scaled if it is not perfectly tileable.")
+    @JIPipeParameter(value = "scale-algorithm")
+    public TransformScale2DAlgorithm getScale2DAlgorithm() {
+        return scale2DAlgorithm;
     }
 }

@@ -294,6 +294,10 @@ public class ImageJUtils {
                 }
                 else {
                     if (index.getZ() < target.getNSlices() && index.getC() < target.getNChannels() && index.getT() < target.getNFrames()) {
+                        ImageProcessor processor = ImageJUtils.getSliceZero(target, index);
+                        stack.setProcessor(processor, index.zeroSliceIndexToOneStackIndex(reference));
+                    }
+                    else {
                         ImageProcessor processor;
                         switch (target.getBitDepth()) {
                             case 8:
@@ -345,10 +349,14 @@ public class ImageJUtils {
                             int c_ = Math.min(target.getNChannels() - 1, c);
                             int t_ = Math.min(target.getNFrames() - 1, t);
                             ImageProcessor processor = ImageJUtils.getSliceZero(target, c_, z_, t_);
-                            stack.setProcessor(processor, zeroSliceIndexToOneStackIndex(c_, z_, t_, nChannels, nSlices, nFrames));
+                            stack.setProcessor(processor, zeroSliceIndexToOneStackIndex(c, z, t, nChannels, nSlices, nFrames));
                         }
                         else {
                             if (z < target.getNSlices() && c < target.getNChannels() && t < target.getNFrames()) {
+                                ImageProcessor processor = ImageJUtils.getSliceZero(target, c, z, t);
+                                stack.setProcessor(processor, zeroSliceIndexToOneStackIndex(c, z, t, nChannels, nSlices, nFrames));
+                            }
+                            else {
                                 ImageProcessor processor;
                                 switch (target.getBitDepth()) {
                                     case 8:
