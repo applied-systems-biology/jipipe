@@ -77,6 +77,11 @@ public class JIPipeGraphCanvasUI extends JIPipeWorkbenchPanel implements MouseMo
     public static final Stroke STROKE_COMMENT_HIGHLIGHT = new BasicStroke(4, BasicStroke.CAP_ROUND, BasicStroke.JOIN_BEVEL, 0, new float[]{8}, 0);
     private static final Color COMMENT_EDGE_COLOR = new Color(194, 141, 0);
 
+    public static final Color SHADOW_BASE_COLOR = Color.BLACK;
+    public static final int SHADOW_BASE_OPACITY = 30;
+    public static final int SHADOW_WIDTH = 5;
+    public static final int SHADOW_SHIFT = 2;
+
     private final ImageIcon cursorImage = UIUtils.getIconFromResources("actions/target.png");
     private final JIPipeGraph graph;
     private final BiMap<JIPipeGraphNode, JIPipeNodeUI> nodeUIs = HashBiMap.create();
@@ -1011,6 +1016,19 @@ public class JIPipeGraphCanvasUI extends JIPipeWorkbenchPanel implements MouseMo
         Graphics2D g = (Graphics2D) graphics;
         g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
+        // Paint node UI shadows
+//        for (JIPipeNodeUI ui : nodeUIs.values()) {
+//            for (int i = 0; i < SHADOW_WIDTH; i++) {
+//                g.setColor(new Color(SHADOW_BASE_COLOR.getRed(), SHADOW_BASE_COLOR.getGreen(), SHADOW_BASE_COLOR.getBlue(),
+//                        (int)((1.0 * SHADOW_BASE_OPACITY / SHADOW_WIDTH) * (SHADOW_WIDTH - i))));
+//                g.drawRect(ui.getX() - i + SHADOW_SHIFT,
+//                        ui.getY() - i + SHADOW_SHIFT,
+//                        ui.getWidth() + 2 * i - SHADOW_SHIFT,
+//                        ui.getHeight() + 2 * i - SHADOW_SHIFT);
+//            }
+//        }
+
+
         g.setStroke(STROKE_DEFAULT);
         graphics.setColor(Color.LIGHT_GRAY);
         if (getCompartment() != null && settings.isDrawOutsideEdges())
@@ -1530,11 +1548,19 @@ public class JIPipeGraphCanvasUI extends JIPipeWorkbenchPanel implements MouseMo
     }
 
     private void drawElbowEdge_(Graphics2D g, int a0, int b0, int a1, int b1, double scale, int viewX, int viewY) {
+        int x1, y1, x2, y2;
         if (viewMode == JIPipeGraphViewMode.Horizontal) {
-            g.drawLine((int) (a0 * scale) + viewX, (int) (b0 * scale) + viewY, (int) (a1 * scale) + viewX, (int) (b1 * scale) + viewY);
+            x1 = (int) (a0 * scale) + viewX;
+            y1 = (int) (b0 * scale) + viewY;
+            x2 = (int) (a1 * scale) + viewX;
+            y2 = (int) (b1 * scale) + viewY;
         } else {
-            g.drawLine((int) (b0 * scale) + viewX, (int) (a0 * scale) + viewY, (int) (b1 * scale) + viewX, (int) (a1 * scale) + viewY);
+            x1 = (int) (b0 * scale) + viewX;
+            y1 = (int) (a0 * scale) + viewY;
+            x2 = (int) (b1 * scale) + viewX;
+            y2 = (int) (a1 * scale) + viewY;
         }
+        g.drawLine(x1, y1, x2, y2);
     }
 
     /**
