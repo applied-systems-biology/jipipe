@@ -384,6 +384,13 @@ public class StandardParametersExtension extends JIPipePrepackagedDefaultJavaExt
                 "Optional annotation name",
                 "An optional annotation name",
                 null);
+        registerParameterType("optional-data-annotation-name",
+                OptionalDataAnnotationNameParameter.class,
+                null,
+                null,
+                "Optional data annotation name",
+                "An optional data annotation name",
+                null);
         registerParameterType("optional-integer-range",
                 OptionalIntegerRange.class,
                 null,

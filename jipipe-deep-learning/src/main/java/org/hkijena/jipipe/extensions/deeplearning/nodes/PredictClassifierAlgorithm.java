@@ -19,6 +19,10 @@ import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
+import org.hkijena.jipipe.api.data.JIPipeAnnotation;
+import org.hkijena.jipipe.api.data.JIPipeAnnotationMergeStrategy;
+import org.hkijena.jipipe.api.data.JIPipeDataAnnotation;
+import org.hkijena.jipipe.api.data.JIPipeDataAnnotationMergeStrategy;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
 import org.hkijena.jipipe.api.nodes.JIPipeInputSlot;
@@ -41,6 +45,8 @@ import org.hkijena.jipipe.extensions.deeplearning.enums.DeepLearningPreprocessin
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.transform.ScaleMode;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.transform.TransformScale2DAlgorithm;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
+import org.hkijena.jipipe.extensions.parameters.primitives.OptionalAnnotationNameParameter;
+import org.hkijena.jipipe.extensions.parameters.primitives.OptionalDataAnnotationNameParameter;
 import org.hkijena.jipipe.extensions.python.OptionalPythonEnvironment;
 import org.hkijena.jipipe.extensions.python.PythonUtils;
 import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
@@ -51,9 +57,12 @@ import org.hkijena.jipipe.utils.ResourceUtils;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 @JIPipeDocumentation(name = "Predict (classified images)", description = "Applies a prediction via a Deep learning model. The prediction returns classified images. " +
@@ -61,16 +70,17 @@ import java.util.Set;
 @JIPipeOrganization(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Deep learning")
 @JIPipeInputSlot(value = ImagePlusData.class, slotName = "Input", autoCreate = true)
 @JIPipeInputSlot(value = DeepLearningModelData.class, slotName = "Model", autoCreate = true)
-@JIPipeOutputSlot(value = ResultsTableData.class, slotName = "Prediction", autoCreate = true)
+@JIPipeOutputSlot(value = ImagePlusData.class, slotName = "Prediction", autoCreate = true)
 public class PredictClassifierAlgorithm extends JIPipeSingleIterationAlgorithm {
 
     private TransformScale2DAlgorithm scale2DAlgorithm;
     private boolean cleanUpAfterwards = true;
-    private boolean deferImageLoading = false;
     private boolean scaleToModelSize = true;
     private OptionalPythonEnvironment overrideEnvironment = new OptionalPythonEnvironment();
     private OptionalDeepLearningDeviceEnvironment overrideDevices = new OptionalDeepLearningDeviceEnvironment();
     private DeepLearningPreprocessingType normalization = DeepLearningPreprocessingType.zero_one;
+    private OptionalAnnotationNameParameter predictedLabelsAnnotation = new OptionalAnnotationNameParameter("Predicted class", true);
+    private OptionalDataAnnotationNameParameter labelProbabilitiesAnnotation = new OptionalDataAnnotationNameParameter("Label probabilities", true);
 
     public PredictClassifierAlgorithm(JIPipeNodeInfo info) {
         super(info);
@@ -86,8 +96,9 @@ public class PredictClassifierAlgorithm extends JIPipeSingleIterationAlgorithm {
         this.scale2DAlgorithm = new TransformScale2DAlgorithm(other.scale2DAlgorithm);
         this.overrideDevices = new OptionalDeepLearningDeviceEnvironment(other.overrideDevices);
         this.scaleToModelSize = other.scaleToModelSize;
-        this.deferImageLoading = other.deferImageLoading;
         this.normalization = other.normalization;
+        this.predictedLabelsAnnotation = new OptionalAnnotationNameParameter(other.predictedLabelsAnnotation);
+        this.labelProbabilitiesAnnotation = new OptionalDataAnnotationNameParameter(other.labelProbabilitiesAnnotation);
         registerSubParameter(scale2DAlgorithm);
     }
 
@@ -114,16 +125,26 @@ public class PredictClassifierAlgorithm extends JIPipeSingleIterationAlgorithm {
         this.overrideDevices = overrideDevices;
     }
 
-    @JIPipeDocumentation(name = "Defer importing outputs", description = "If enabled, output images are not imported back, but only supplied with the generated file name. " +
-            "The image is only loaded on accessing the data. Disables 'Clean up afterwards'.")
-    @JIPipeParameter("defer-image-loaded")
-    public boolean isDeferImageLoading() {
-        return deferImageLoading;
+    @JIPipeDocumentation(name = "Predicted labels annotation", description = "If enabled, the incoming images are annotated with the best (highest probability) predicted label.")
+    @JIPipeParameter("predicted-labels-annotation")
+    public OptionalAnnotationNameParameter getPredictedLabelsAnnotation() {
+        return predictedLabelsAnnotation;
     }
 
-    @JIPipeParameter("defer-image-loaded")
-    public void setDeferImageLoading(boolean deferImageLoading) {
-        this.deferImageLoading = deferImageLoading;
+    @JIPipeParameter("predicted-labels-annotation")
+    public void setPredictedLabelsAnnotation(OptionalAnnotationNameParameter predictedLabelsAnnotation) {
+        this.predictedLabelsAnnotation = predictedLabelsAnnotation;
+    }
+
+    @JIPipeDocumentation(name = "Label probabilities annotation", description = "If enabled, the output will be annotated with a table of the label probabilities")
+    @JIPipeParameter("label-probabilities-annotation")
+    public OptionalDataAnnotationNameParameter getLabelProbabilitiesAnnotation() {
+        return labelProbabilitiesAnnotation;
+    }
+
+    @JIPipeParameter("label-probabilities-annotation")
+    public void setLabelProbabilitiesAnnotation(OptionalDataAnnotationNameParameter labelProbabilitiesAnnotation) {
+        this.labelProbabilitiesAnnotation = labelProbabilitiesAnnotation;
     }
 
     @Override
@@ -158,6 +179,8 @@ public class PredictClassifierAlgorithm extends JIPipeSingleIterationAlgorithm {
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
+
+            Map<String, Integer> inputDataToRowMapping = new HashMap<>();
             {
                 int imageCounter = 0;
                 Set<Integer> inputRows = dataBatch.getInputSlotRows().get(inputRawImageSlot);
@@ -176,8 +199,10 @@ public class PredictClassifierAlgorithm extends JIPipeSingleIterationAlgorithm {
                                 modelProgress) : raw.getImage();
 
                         IJ.saveAsTiff(rawImage, rawPath.toString());
+                        inputDataToRowMapping.put(rawPath.toString(), imageIndex);
                     } else {
                         raw.saveTo(rawsDirectory, imageCounter + "_img", true, imageProgress);
+                        inputDataToRowMapping.put(rawsDirectory.resolve(imageCounter + "_img").toString(), imageIndex);
                     }
                 }
             }
@@ -226,9 +251,49 @@ public class PredictClassifierAlgorithm extends JIPipeSingleIterationAlgorithm {
             Path predictionResultTableFile = PathUtils.findFileByExtensionIn(predictionsDirectory, ".csv");
             ResultsTableData predictionResult = ResultsTableData.fromCSV(predictionResultTableFile);
 
-            dataBatch.addOutputData(getFirstOutputSlot(), predictionResult, progressInfo);
+            for (int row = 0; row < predictionResult.getRowCount(); row++) {
+                String inputImagePath = predictionResult.getValueAsString(row, "sample");
+                int inputRow = inputDataToRowMapping.get(inputImagePath);
 
-            if (cleanUpAfterwards && !deferImageLoading) {
+                double bestClassProbability = -1;
+                int bestClass = -1;
+
+                ResultsTableData rowMetadata = new ResultsTableData();
+                rowMetadata.addRow();
+                for (JIPipeAnnotation annotation : getInputSlot("Input").getAnnotations(inputRow)) {
+                    rowMetadata.setValueAt(annotation.getValue(), 0, annotation.getName());
+                }
+                for (int i = 0; i < inputModel.getModelConfiguration().getNumClasses(); i++) {
+                    String columnName = "probability_class_" + i;
+                    double probability;
+                    if(predictionResult.getColumnNames().contains(columnName)) {
+                        probability = predictionResult.getValueAsDouble(row, columnName);
+                    }
+                    else {
+                        probability = 0;
+                    }
+                    rowMetadata.setValueAt(probability, 0, "probability_class_" + i);
+                    if(probability > bestClassProbability) {
+                        bestClassProbability = probability;
+                        bestClass = i;
+                    }
+                }
+
+                List<JIPipeAnnotation> annotations = new ArrayList<>(getInputSlot("Input").getAnnotations(inputRow));
+                List<JIPipeDataAnnotation> dataAnnotations = new ArrayList<>();
+
+                predictedLabelsAnnotation.addAnnotationIfEnabled(annotations, "" + bestClass);
+                labelProbabilitiesAnnotation.addAnnotationIfEnabled(dataAnnotations, rowMetadata);
+
+                dataBatch.addOutputData(getFirstOutputSlot(),
+                        getInputSlot("Input").getVirtualData(inputRow),
+                        annotations,
+                        JIPipeAnnotationMergeStrategy.OverwriteExisting,
+                        dataAnnotations,
+                        JIPipeDataAnnotationMergeStrategy.OverwriteExisting);
+            }
+
+            if (cleanUpAfterwards) {
                 PathUtils.deleteDirectoryRecursively(workDirectory, progressInfo.resolve("Cleanup"));
             }
         }

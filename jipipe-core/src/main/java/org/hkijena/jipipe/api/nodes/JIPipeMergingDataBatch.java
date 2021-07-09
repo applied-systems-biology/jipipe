@@ -418,6 +418,20 @@ public class JIPipeMergingDataBatch implements Comparable<JIPipeMergingDataBatch
         addOutputData(node.getOutputSlot(slotName), data, additionalAnnotations, annotationMergeStrategy);
     }
 
+    public void addOutputData(JIPipeDataSlot slot, JIPipeVirtualData data, List<JIPipeAnnotation> additionalAnnotations, JIPipeAnnotationMergeStrategy annotationMergeStrategy, List<JIPipeDataAnnotation> additionalDataAnnotations, JIPipeDataAnnotationMergeStrategy dataAnnotationMergeStrategy) {
+        addOutputData(slot, data, additionalAnnotations, annotationMergeStrategy);
+        Multimap<String, JIPipeDataAnnotation> localDataAnnotations = HashMultimap.create();
+        for (Map.Entry<String, JIPipeDataAnnotation> entry : dataAnnotations.entrySet()) {
+            localDataAnnotations.put(entry.getKey(), entry.getValue());
+        }
+        for (JIPipeDataAnnotation dataAnnotation : additionalDataAnnotations) {
+            localDataAnnotations.put(dataAnnotation.getName(), dataAnnotation);
+        }
+        for (String name : localDataAnnotations.keySet()) {
+            slot.setVirtualDataAnnotation(slot.getRowCount() - 1, name, dataAnnotationMergeStrategy.merge(localDataAnnotations.get(name)).iterator().next().getVirtualData());
+        }
+    }
+
     /**
      * Writes output data into the provided slot
      * Please note that annotations that are added to all annotations should be set up till this point
@@ -656,4 +670,6 @@ public class JIPipeMergingDataBatch implements Comparable<JIPipeMergingDataBatch
     public void addEmptySlot(JIPipeDataSlot slot) {
         inputSlotRows.putIfAbsent(slot, new HashSet<>());
     }
+
+
 }
