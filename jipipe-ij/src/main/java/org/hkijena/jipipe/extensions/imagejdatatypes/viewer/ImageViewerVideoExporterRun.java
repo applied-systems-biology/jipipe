@@ -73,8 +73,7 @@ public class ImageViewerVideoExporterRun implements JIPipeRunnable {
                     return;
                 progressInfo.incrementProgress();
                 subProgress.log("z = " + z);
-                generatedStack.addSlice(new ColorProcessor(viewerPanel.generateSlice(z,
-                        referencePosition.getC(),
+                generatedStack.addSlice(new ColorProcessor(viewerPanel.generateSlice(referencePosition.getC(), z,
                         referencePosition.getT(),
                         true,
                         true).getBufferedImage()));
@@ -87,8 +86,7 @@ public class ImageViewerVideoExporterRun implements JIPipeRunnable {
                     return;
                 progressInfo.incrementProgress();
                 subProgress.log("c = " + c);
-                generatedStack.addSlice(new ColorProcessor(viewerPanel.generateSlice(referencePosition.getZ(),
-                        c,
+                generatedStack.addSlice(new ColorProcessor(viewerPanel.generateSlice(c, referencePosition.getZ(),
                         referencePosition.getT(),
                         true,
                         true).getBufferedImage()));
@@ -101,8 +99,7 @@ public class ImageViewerVideoExporterRun implements JIPipeRunnable {
                     return;
                 progressInfo.incrementProgress();
                 subProgress.log("t = " + t);
-                generatedStack.addSlice(new ColorProcessor(viewerPanel.generateSlice(referencePosition.getZ(),
-                        referencePosition.getC(),
+                generatedStack.addSlice(new ColorProcessor(viewerPanel.generateSlice(referencePosition.getC(), referencePosition.getZ(),
                         t,
                         true,
                         true).getBufferedImage()));

@@ -88,7 +88,7 @@ public class LUTManagerPlugin extends GeneralImageViewerPanelPlugin {
     }
 
     @Override
-    public ImageProcessor draw(int z, int c, int t, ImageProcessor processor) {
+    public ImageProcessor draw(int c, int z, int t, ImageProcessor processor) {
         if (!(processor instanceof ColorProcessor)) {
             if (c <= lutEditors.size() - 1) {
                 processor.setLut(lutEditors.get(c).getLUT());
@@ -99,7 +99,7 @@ public class LUTManagerPlugin extends GeneralImageViewerPanelPlugin {
         // Recalibrate again
         for (ImageViewerPanelPlugin plugin : getViewerPanel().getPlugins()) {
             if (plugin instanceof CalibrationPlugin) {
-                plugin.beforeDraw(z, c, t);
+                plugin.beforeDraw(c, z, t);
             }
         }
 
@@ -108,7 +108,7 @@ public class LUTManagerPlugin extends GeneralImageViewerPanelPlugin {
 
 
     @Override
-    public void beforeDraw(int z, int c, int t) {
+    public void beforeDraw(int c, int z, int t) {
 //        if(getCurrentImage().getType() != ImagePlus.COLOR_RGB) {
 //            if (getCurrentImage() instanceof CompositeImage) {
 //                CompositeImage image = (CompositeImage) getCurrentImage();

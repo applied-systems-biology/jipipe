@@ -23,7 +23,7 @@ public class PixelInfoPlugin extends GeneralImageViewerPanelPlugin {
     }
 
     @Override
-    public ImageProcessor draw(int z, int c, int t, ImageProcessor processor) {
+    public ImageProcessor draw(int c, int z, int t, ImageProcessor processor) {
         return processor;
     }
 

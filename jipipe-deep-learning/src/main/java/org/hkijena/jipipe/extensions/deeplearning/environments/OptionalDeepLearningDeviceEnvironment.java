@@ -11,7 +11,7 @@
  * See the LICENSE file provided with the code for the full license.
  */
 
-package org.hkijena.jipipe.extensions.deeplearning;
+package org.hkijena.jipipe.extensions.deeplearning.environments;
 
 import org.hkijena.jipipe.extensions.parameters.optional.OptionalParameter;
 

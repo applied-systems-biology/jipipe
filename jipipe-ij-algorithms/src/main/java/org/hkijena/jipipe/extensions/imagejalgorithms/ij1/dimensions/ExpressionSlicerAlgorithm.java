@@ -138,7 +138,7 @@ public class ExpressionSlicerAlgorithm extends JIPipeSimpleIteratingAlgorithm {
                         int sz = wrapNumber(indices.getZ().get(z), img.getNSlices());
                         int sc = wrapNumber(indices.getC().get(c), img.getNChannels());
                         int st = wrapNumber(indices.getT().get(t), img.getNFrames());
-                        ImageProcessor processor = ImageJUtils.getSliceZero(img, sz, sc, st).duplicate();
+                        ImageProcessor processor = ImageJUtils.getSliceZero(img, sc, sz, st).duplicate();
                         stack.setProcessor(processor, img.getStackIndex(c + 1, z + 1, t + 1));
 
                         annotateZ.addAnnotationIfEnabled(annotations, sz + "");

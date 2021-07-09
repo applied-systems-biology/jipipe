@@ -54,7 +54,7 @@ public class CalibrationPlugin extends GeneralImageViewerPanelPlugin {
     }
 
     @Override
-    public ImageProcessor draw(int z, int c, int t, ImageProcessor processor) {
+    public ImageProcessor draw(int c, int z, int t, ImageProcessor processor) {
         return processor;
     }
 
@@ -65,7 +65,7 @@ public class CalibrationPlugin extends GeneralImageViewerPanelPlugin {
     }
 
     @Override
-    public void beforeDraw(int z, int c, int t) {
+    public void beforeDraw(int c, int z, int t) {
         displayRangeCalibrationControl.applyCalibration(false);
     }
 

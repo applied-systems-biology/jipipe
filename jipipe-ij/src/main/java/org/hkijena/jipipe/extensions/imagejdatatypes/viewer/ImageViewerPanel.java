@@ -629,7 +629,7 @@ public class ImageViewerPanel extends JPanel {
      * @return the slice position. Zero-based indices
      */
     public ImageSliceIndex getCurrentSlicePosition() {
-        return new ImageSliceIndex(stackSlider.getValue() - 1, channelSlider.getValue() - 1, frameSlider.getValue() - 1);
+        return new ImageSliceIndex(channelSlider.getValue() - 1, stackSlider.getValue() - 1, frameSlider.getValue() - 1);
     }
 
     public void refreshImageInfo() {
@@ -720,15 +720,15 @@ public class ImageViewerPanel extends JPanel {
         }
     }
 
-    public ImageProcessor generateSlice(int z, int c, int t, boolean withRotation, boolean withPostprocessing) {
+    public ImageProcessor generateSlice(int c, int z, int t, boolean withRotation, boolean withPostprocessing) {
         image.setPosition(c + 1, z + 1, t + 1);
         for (ImageViewerPanelPlugin plugin : plugins) {
-            plugin.beforeDraw(z, c, t);
+            plugin.beforeDraw(c, z, t);
         }
 //        System.out.println(Arrays.stream(image.getLuts()).map(Object::toString).collect(Collectors.joining(" ")));
         ImageProcessor processor = image.getProcessor();
         for (ImageViewerPanelPlugin plugin : plugins) {
-            processor = plugin.draw(z, c, t, processor);
+            processor = plugin.draw(c, z, t, processor);
         }
         if (withRotation && rotation != 0) {
             if (rotation == 90)
@@ -743,7 +743,7 @@ public class ImageViewerPanel extends JPanel {
         if (withPostprocessing) {
             BufferedImage image = processor.getBufferedImage();
             for (ImageViewerPanelPlugin plugin : getPlugins()) {
-                plugin.postprocessDrawForExport(image, new ImageSliceIndex(z, c, t));
+                plugin.postprocessDrawForExport(image, new ImageSliceIndex(c, z, t));
             }
             processor = new ColorProcessor(image);
         }
@@ -752,8 +752,7 @@ public class ImageViewerPanel extends JPanel {
 
     public void uploadSliceToCanvas() {
         if (image != null) {
-            ImageProcessor processor = generateSlice(stackSlider.getValue() - 1,
-                    channelSlider.getValue() - 1,
+            ImageProcessor processor = generateSlice(channelSlider.getValue() - 1, stackSlider.getValue() - 1,
                     frameSlider.getValue() - 1,
                     true, false);
             if (processor == null) {

@@ -102,7 +102,7 @@ public class ImageStatisticsExpressionAlgorithm extends JIPipeIteratingAlgorithm
         for (int z = 0; z < img.getNSlices(); z++) {
             for (int c = 0; c < img.getNChannels(); c++) {
                 for (int t = 0; t < img.getNFrames(); t++) {
-                    ImageSliceIndex index = new ImageSliceIndex(z, c, t);
+                    ImageSliceIndex index = new ImageSliceIndex(c, z, t);
                     allIndices.add(index);
                 }
             }

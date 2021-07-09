@@ -70,7 +70,7 @@ public class MorphologicalReconstruction3DAlgorithm extends JIPipeIteratingAlgor
     protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
         ImagePlus markerImage = dataBatch.getInputData("Marker", ImagePlus3DGreyscaleData.class, progressInfo).getImage();
         ImagePlus maskImage = dataBatch.getInputData("Mask", ImagePlus3DGreyscaleMaskData.class, progressInfo).getImage();
-        maskImage = ImageJUtils.getNormalizedMask(markerImage, maskImage);
+        maskImage = ImageJUtils.ensureEqualSize(maskImage, markerImage, true);
 
         ImageStack resultImage;
         if (applyDilation)

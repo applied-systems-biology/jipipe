@@ -34,7 +34,7 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
 import org.hkijena.jipipe.extensions.deeplearning.DeepLearningSettings;
 import org.hkijena.jipipe.extensions.deeplearning.DeepLearningUtils;
-import org.hkijena.jipipe.extensions.deeplearning.OptionalDeepLearningDeviceEnvironment;
+import org.hkijena.jipipe.extensions.deeplearning.environments.OptionalDeepLearningDeviceEnvironment;
 import org.hkijena.jipipe.extensions.deeplearning.configs.DeepLearningTrainingConfiguration;
 import org.hkijena.jipipe.extensions.deeplearning.datatypes.DeepLearningModelData;
 import org.hkijena.jipipe.extensions.deeplearning.enums.DeepLearningModelType;
@@ -166,7 +166,8 @@ public class TrainClassifierModelAlgorithm extends JIPipeSingleIterationAlgorith
                     ImagePlus rawImage = isScaleToModelSize() ? DeepLearningUtils.scaleToModel(image.getImage(),
                             inputModel.getModelConfiguration(),
                             getScale2DAlgorithm(),
-                            modelProgress) : image.getImage();
+                            true,
+                            true, modelProgress) : image.getImage();
 
                     IJ.saveAsTiff(rawImage, rawPath.toString());
                 } else {

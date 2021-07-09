@@ -19,8 +19,6 @@ import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
-import org.hkijena.jipipe.api.data.JIPipeAnnotation;
-import org.hkijena.jipipe.api.data.JIPipeAnnotationMergeStrategy;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
 import org.hkijena.jipipe.api.nodes.JIPipeInputSlot;
@@ -35,16 +33,14 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
 import org.hkijena.jipipe.extensions.deeplearning.DeepLearningSettings;
 import org.hkijena.jipipe.extensions.deeplearning.DeepLearningUtils;
-import org.hkijena.jipipe.extensions.deeplearning.OptionalDeepLearningDeviceEnvironment;
+import org.hkijena.jipipe.extensions.deeplearning.environments.OptionalDeepLearningDeviceEnvironment;
 import org.hkijena.jipipe.extensions.deeplearning.configs.DeepLearningPredictionConfiguration;
 import org.hkijena.jipipe.extensions.deeplearning.datatypes.DeepLearningModelData;
 import org.hkijena.jipipe.extensions.deeplearning.enums.DeepLearningModelType;
 import org.hkijena.jipipe.extensions.deeplearning.enums.DeepLearningPreprocessingType;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.transform.ScaleMode;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.transform.TransformScale2DAlgorithm;
-import org.hkijena.jipipe.extensions.imagejdatatypes.datasources.ImagePlusFromFileImageSource;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
-import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscale32FData;
 import org.hkijena.jipipe.extensions.python.OptionalPythonEnvironment;
 import org.hkijena.jipipe.extensions.python.PythonUtils;
 import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
@@ -71,7 +67,7 @@ public class PredictClassifierAlgorithm extends JIPipeSingleIterationAlgorithm {
     private TransformScale2DAlgorithm scale2DAlgorithm;
     private boolean cleanUpAfterwards = true;
     private boolean deferImageLoading = false;
-    private boolean scaleToModelSize = false;
+    private boolean scaleToModelSize = true;
     private OptionalPythonEnvironment overrideEnvironment = new OptionalPythonEnvironment();
     private OptionalDeepLearningDeviceEnvironment overrideDevices = new OptionalDeepLearningDeviceEnvironment();
     private DeepLearningPreprocessingType normalization = DeepLearningPreprocessingType.zero_one;
@@ -175,6 +171,8 @@ public class PredictClassifierAlgorithm extends JIPipeSingleIterationAlgorithm {
                         ImagePlus rawImage = isScaleToModelSize() ? DeepLearningUtils.scaleToModel(raw.getImage(),
                                 inputModel.getModelConfiguration(),
                                 getScale2DAlgorithm(),
+                                true,
+                                true,
                                 modelProgress) : raw.getImage();
 
                         IJ.saveAsTiff(rawImage, rawPath.toString());

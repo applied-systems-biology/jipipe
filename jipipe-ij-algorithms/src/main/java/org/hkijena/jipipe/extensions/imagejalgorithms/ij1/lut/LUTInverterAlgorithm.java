@@ -57,7 +57,7 @@ public class LUTInverterAlgorithm extends JIPipeSimpleIteratingAlgorithm {
             data = (ImagePlusData) data.duplicate();
         ImagePlus image = data.getImage();
         if (applyToAllPlanes && image.isStack()) {
-            ImageSliceIndex original = new ImageSliceIndex(image.getZ(), image.getC(), image.getT());
+            ImageSliceIndex original = new ImageSliceIndex(image.getC(), image.getZ(), image.getT());
             for (int z = 0; z < image.getNSlices(); z++) {
                 for (int c = 0; c < image.getNChannels(); c++) {
                     for (int t = 0; t < image.getNFrames(); t++) {

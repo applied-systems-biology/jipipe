@@ -202,10 +202,10 @@ public class ROIManagerPlugin extends ImageViewerPanelPlugin {
     }
 
     @Override
-    public ImageProcessor draw(int z, int c, int t, ImageProcessor processor) {
+    public ImageProcessor draw(int c, int z, int t, ImageProcessor processor) {
         if (!rois.isEmpty()) {
             processor = new ColorProcessor(processor.getBufferedImage());
-            rois.draw(processor, new ImageSliceIndex(z, c, t),
+            rois.draw(processor, new ImageSliceIndex(c, z, t),
                     roiSeeThroughZ,
                     roiSeeThroughC,
                     roiSeeThroughT,

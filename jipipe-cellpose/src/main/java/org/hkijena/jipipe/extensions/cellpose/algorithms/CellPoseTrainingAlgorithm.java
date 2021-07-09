@@ -340,7 +340,7 @@ public class CellPoseTrainingAlgorithm extends JIPipeSingleIterationAlgorithm {
                     .getData(row, ImagePlus3DGreyscaleData.class, rowProgress).getImage();
             ImagePlus mask = labelDataAnnotation.queryFirst(getInputSlot("Training data").getDataAnnotations(row))
                     .getData(ImagePlus3DGreyscale16UData.class, progressInfo).getImage();
-            mask = ImageJUtils.getNormalizedMask(raw, mask);
+            mask = ImageJUtils.ensureEqualSize(mask, raw, true);
             if (generateConnectedComponents)
                 mask = applyConnectedComponents(mask, rowProgress.resolveAndLog("Connected components"));
             dataIs3D |= raw.getNDimensions() > 2 && enable3DSegmentation;
@@ -355,7 +355,7 @@ public class CellPoseTrainingAlgorithm extends JIPipeSingleIterationAlgorithm {
                     .getData(ImagePlus3DGreyscale16UData.class, progressInfo).getImage();
             if (generateConnectedComponents)
                 mask = applyConnectedComponents(mask, rowProgress.resolveAndLog("Connected components"));
-            mask = ImageJUtils.getNormalizedMask(raw, mask);
+            mask = ImageJUtils.ensureEqualSize(mask, raw, true);
 
             saveImagesToPath(testDir, imageCounter, rowProgress, raw, mask);
         }

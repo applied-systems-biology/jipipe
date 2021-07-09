@@ -30,12 +30,11 @@ public class ImageSliceIndex {
 
     /**
      * Initializes a slice index
-     *
+     *  @param c channel
      * @param z Z-index
-     * @param c channel
      * @param t frame
      */
-    public ImageSliceIndex(int z, int c, int t) {
+    public ImageSliceIndex(int c, int z, int t) {
         this.z = z;
         this.c = c;
         this.t = t;
@@ -167,6 +166,6 @@ public class ImageSliceIndex {
      * @return result
      */
     public ImageSliceIndex add(int zct) {
-        return new ImageSliceIndex(z + zct, c + zct, t + zct);
+        return new ImageSliceIndex(c + zct, z + zct, t + zct);
     }
 }

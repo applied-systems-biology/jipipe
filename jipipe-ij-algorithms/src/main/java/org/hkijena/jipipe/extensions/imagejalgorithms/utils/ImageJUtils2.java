@@ -161,13 +161,13 @@ public class ImageJUtils2 {
                     ImageJUtils.forEachIndexedZCTSlice(mask, (ip, index) -> {
                         ip.invert();
                     }, progressInfo.resolve("Invert mask"));
-                    return ImageJUtils.getNormalizedMask(img.getImage(), mask);
+                    return ImageJUtils.ensureEqualSize(mask, img.getImage(), true);
                 }
             }
             case InsideMask: {
                 ImagePlusData img = dataBatch.getInputData(imageSlotName, ImagePlusData.class, progressInfo);
                 ImagePlus mask = dataBatch.getInputData("Mask", ImagePlusData.class, progressInfo).getImage();
-                return ImageJUtils.getNormalizedMask(img.getImage(), mask);
+                return ImageJUtils.ensureEqualSize(mask, img.getImage(), true);
             }
             case OutsideMask: {
                 ImagePlusData img = dataBatch.getInputData(imageSlotName, ImagePlusData.class, progressInfo);
@@ -175,7 +175,7 @@ public class ImageJUtils2 {
                 ImageJUtils.forEachIndexedZCTSlice(mask, (ip, index) -> {
                     ip.invert();
                 }, progressInfo.resolve("Invert mask"));
-                return ImageJUtils.getNormalizedMask(img.getImage(), mask);
+                return ImageJUtils.ensureEqualSize(mask, img.getImage(), true);
             }
         }
         throw new UnsupportedOperationException();

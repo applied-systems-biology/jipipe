@@ -186,7 +186,7 @@ public class MaskDrawerPlugin extends ImageViewerPanelPlugin {
         int z = Math.min(index.getZ(), mask.getNSlices() - 1);
         int c = Math.min(index.getC(), mask.getNChannels() - 1);
         int t = Math.min(index.getT(), mask.getNFrames() - 1);
-        currentMaskSlice = ImageJUtils.getSliceZero(mask, z, c, t);
+        currentMaskSlice = ImageJUtils.getSliceZero(mask, c, z, t);
         recalculateMaskPreview();
     }
 

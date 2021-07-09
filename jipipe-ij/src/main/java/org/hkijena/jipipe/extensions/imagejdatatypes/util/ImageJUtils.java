@@ -27,14 +27,7 @@ import ij.WindowManager;
 import ij.gui.PolygonRoi;
 import ij.plugin.PlugIn;
 import ij.plugin.filter.AVI_Writer;
-import ij.process.Blitter;
-import ij.process.ByteProcessor;
-import ij.process.ColorProcessor;
-import ij.process.ColorSpaceConverter;
-import ij.process.ImageConverter;
-import ij.process.ImageProcessor;
-import ij.process.ImageStatistics;
-import ij.process.LUT;
+import ij.process.*;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
 import org.hkijena.jipipe.extensions.imagejdatatypes.color.ColorSpace;
@@ -265,7 +258,7 @@ public class ImageJUtils {
      * @param img the image
      * @return the processor
      */
-    public static ImageProcessor getSliceZero(ImagePlus img, int z, int c, int t) {
+    public static ImageProcessor getSliceZero(ImagePlus img, int c, int z, int t) {
         if (img.isStack()) {
             return img.getStack().getProcessor(img.getStackIndex(c + 1, z + 1, t + 1));
         } else {
@@ -276,28 +269,111 @@ public class ImageJUtils {
     }
 
     /**
-     * Returns a mask with the same size as the image
+     * Applies copy-scaling to ensure that the target image has the same size as the reference image
+     * Will silently drop slices that are outside the range of the reference image
      *
-     * @param img  the image
-     * @param mask the mask
-     * @return the mask (a new mask if they have the same size, otherwise a new object)
+     * @param target the target image
+     * @param reference  the image
+     * @param copySlices if slices should be copied. otherwise, empty (black) slices are created
+     * @return image that has the same size as the reference. returns the same target if the size matches
      */
-    public static ImagePlus getNormalizedMask(ImagePlus img, ImagePlus mask) {
-        if (imagesHaveSameSize(img, mask))
-            return mask;
-        if (img.getStackSize() == 1) {
-            return new ImagePlus(mask.getTitle(), mask.getProcessor());
+    public static ImagePlus ensureEqualSize(ImagePlus target, ImagePlus reference, boolean copySlices) {
+        if (imagesHaveSameSize(reference, target))
+            return target;
+        if (reference.getStackSize() == 1) {
+            return new ImagePlus(target.getTitle(), target.getProcessor());
         } else {
-            ImageStack stack = new ImageStack(img.getWidth(), img.getHeight(), img.getNChannels() * img.getNFrames() * img.getNSlices());
-            forEachIndexedZCTSlice(img, (ip, index) -> {
-                int z = Math.min(mask.getNSlices() - 1, index.getZ());
-                int c = Math.min(mask.getNChannels() - 1, index.getC());
-                int t = Math.min(mask.getNFrames() - 1, index.getT());
-                ImageProcessor maskProcessor = ImageJUtils.getSliceZero(mask, z, c, t);
-                stack.setProcessor(maskProcessor, zeroSliceIndexToOneStackIndex(c, z, z, img));
+            ImageStack stack = new ImageStack(reference.getWidth(), reference.getHeight(), reference.getNChannels() * reference.getNFrames() * reference.getNSlices());
+            forEachIndexedZCTSlice(reference, (ip, index) -> {
+                if(copySlices) {
+                    int z = Math.min(target.getNSlices() - 1, index.getZ());
+                    int c = Math.min(target.getNChannels() - 1, index.getC());
+                    int t = Math.min(target.getNFrames() - 1, index.getT());
+                    ImageProcessor processor = ImageJUtils.getSliceZero(target, c, z, t);
+                    stack.setProcessor(processor, zeroSliceIndexToOneStackIndex(z, c, t, reference));
+                }
+                else {
+                    if (index.getZ() < target.getNSlices() && index.getC() < target.getNChannels() && index.getT() < target.getNFrames()) {
+                        ImageProcessor processor;
+                        switch (target.getBitDepth()) {
+                            case 8:
+                                processor = new ByteProcessor(target.getWidth(), target.getHeight());
+                                break;
+                            case 16:
+                                processor = new ShortProcessor(target.getWidth(), target.getHeight());
+                                break;
+                            case 24:
+                                processor = new ColorProcessor(target.getWidth(), target.getHeight());
+                                break;
+                            case 32:
+                                processor = new FloatProcessor(target.getWidth(), target.getHeight());
+                                break;
+                            default:
+                                throw new UnsupportedOperationException();
+                        }
+                        stack.setProcessor(processor, index.zeroSliceIndexToOneStackIndex(reference));
+                    }
+                }
             }, new JIPipeProgressInfo());
-            ImagePlus newMask = new ImagePlus(mask.getTitle(), stack);
-            newMask.setDimensions(img.getNChannels(), img.getNSlices(), img.getNFrames());
+            ImagePlus newMask = new ImagePlus(target.getTitle(), stack);
+            newMask.setDimensions(reference.getNChannels(), reference.getNSlices(), reference.getNFrames());
+            return newMask;
+        }
+    }
+
+    /**
+     * Returns an image that has the specified size by copying
+     * @param target the target image
+     * @param nChannels number of channels
+     * @param nSlices number of slices
+     * @param nFrames number of frames
+     * @param copySlices if slices should be copied. otherwise, empty (black) slices are created
+     * @return image that has the specified size. returns the same target if the size matches
+     */
+    public static ImagePlus ensureSize(ImagePlus target, int nChannels, int nSlices, int nFrames, boolean copySlices) {
+        if (target.getNChannels() == nChannels && target.getNSlices() == nSlices && target.getNFrames() == nFrames)
+            return target;
+        if (nChannels * nSlices * nFrames == 1) {
+            return new ImagePlus(target.getTitle(), target.getProcessor());
+        } else {
+            ImageStack stack = new ImageStack(target.getWidth(), target.getHeight(), nChannels * nSlices * nFrames);
+            for (int z = 0; z < nSlices; z++) {
+                for (int c = 0; c < nChannels; c++) {
+                    for (int t = 0; t < nFrames; t++) {
+                        if(copySlices) {
+                            int z_ = Math.min(target.getNSlices() - 1, z);
+                            int c_ = Math.min(target.getNChannels() - 1, c);
+                            int t_ = Math.min(target.getNFrames() - 1, t);
+                            ImageProcessor processor = ImageJUtils.getSliceZero(target, c_, z_, t_);
+                            stack.setProcessor(processor, zeroSliceIndexToOneStackIndex(c_, z_, t_, nChannels, nSlices, nFrames));
+                        }
+                        else {
+                            if (z < target.getNSlices() && c < target.getNChannels() && t < target.getNFrames()) {
+                                ImageProcessor processor;
+                                switch (target.getBitDepth()) {
+                                    case 8:
+                                        processor = new ByteProcessor(target.getWidth(), target.getHeight());
+                                        break;
+                                    case 16:
+                                        processor = new ShortProcessor(target.getWidth(), target.getHeight());
+                                        break;
+                                    case 24:
+                                        processor = new ColorProcessor(target.getWidth(), target.getHeight());
+                                        break;
+                                    case 32:
+                                        processor = new FloatProcessor(target.getWidth(), target.getHeight());
+                                        break;
+                                    default:
+                                        throw new UnsupportedOperationException();
+                                }
+                                stack.setProcessor(processor, zeroSliceIndexToOneStackIndex(c, z, t, nChannels, nSlices, nFrames));
+                            }
+                        }
+                    }
+                }
+            }
+            ImagePlus newMask = new ImagePlus(target.getTitle(), stack);
+            newMask.setDimensions(nChannels, nSlices, nFrames);
             return newMask;
         }
     }
@@ -661,7 +737,7 @@ public class ImageJUtils {
                         int index = img.getStackIndex(c + 1, z + 1, t + 1);
                         progressInfo.resolveAndLog("Slice", iterationIndex++, img.getStackSize()).log("z=" + z + ", c=" + c + ", t=" + t);
                         ImageProcessor processor = img.getImageStack().getProcessor(index);
-                        function.accept(processor, new ImageSliceIndex(z, c, t));
+                        function.accept(processor, new ImageSliceIndex(c, z, t));
                     }
                 }
             }
@@ -689,7 +765,7 @@ public class ImageJUtils {
                         int index = img.getStackIndex(c + 1, z + 1, t + 1);
                         progressInfo.resolveAndLog("Slice", iterationIndex++, img.getStackSize()).log("z=" + z + ", c=" + c + ", t=" + t);
                         ImageProcessor processor = img.getImageStack().getProcessor(index);
-                        ImageProcessor resultProcessor = function.apply(processor, new ImageSliceIndex(z, c, t));
+                        ImageProcessor resultProcessor = function.apply(processor, new ImageSliceIndex(c, z, t));
                         stack.setProcessor(resultProcessor, index);
                     }
                 }
@@ -721,7 +797,7 @@ public class ImageJUtils {
                     progressInfo.resolveAndLog("Slice", iterationIndex++, img.getStackSize()).log("z=" + z + ", c=" + c + ", t=" + t);
                     channels.put(c, img.getStack().getProcessor(img.getStackIndex(c + 1, z + 1, t + 1)));
                 }
-                function.accept(channels, new ImageSliceIndex(z, -1, t));
+                function.accept(channels, new ImageSliceIndex(-1, z, t));
             }
         }
     }
@@ -1171,7 +1247,7 @@ public class ImageJUtils {
                     return;
                 progressInfo.incrementProgress();
                 subProgress.log("z = " + z);
-                ImageProcessor ip = ImageJUtils.getSliceZero(image, z, 0, 0);
+                ImageProcessor ip = ImageJUtils.getSliceZero(image, 0, z, 0);
                 generatedStack.addSlice(new ColorProcessor(ip.getBufferedImage()));
             }
         } else if (followedDimension == HyperstackDimension.Channel) {
@@ -1182,7 +1258,7 @@ public class ImageJUtils {
                     return;
                 progressInfo.incrementProgress();
                 subProgress.log("c = " + c);
-                ImageProcessor ip = ImageJUtils.getSliceZero(image, 0, c, 0);
+                ImageProcessor ip = ImageJUtils.getSliceZero(image, c, 0, 0);
                 generatedStack.addSlice(new ColorProcessor(ip.getBufferedImage()));
             }
         } else if (followedDimension == HyperstackDimension.Frame) {
@@ -1211,7 +1287,7 @@ public class ImageJUtils {
 
     public static void removeLUT(ImagePlus image, boolean applyToAllPlanes) {
         if (applyToAllPlanes && image.isStack()) {
-            ImageSliceIndex original = new ImageSliceIndex(image.getZ(), image.getC(), image.getT());
+            ImageSliceIndex original = new ImageSliceIndex(image.getC(), image.getZ(), image.getT());
             for (int z = 0; z < image.getNSlices(); z++) {
                 for (int c = 0; c < image.getNChannels(); c++) {
                     for (int t = 0; t < image.getNFrames(); t++) {

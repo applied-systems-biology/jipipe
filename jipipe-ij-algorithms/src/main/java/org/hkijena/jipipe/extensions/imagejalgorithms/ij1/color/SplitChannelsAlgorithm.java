@@ -170,7 +170,7 @@ public class SplitChannelsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
                 }
             }
             for (Map.Entry<Integer, ImageProcessor> entry : decomposed.entrySet()) {
-                decomposedSlices.put(new ImageSliceIndex(sliceIndex.getZ(), entry.getKey(), sliceIndex.getT()), entry.getValue());
+                decomposedSlices.put(new ImageSliceIndex(entry.getKey(), sliceIndex.getZ(), sliceIndex.getT()), entry.getValue());
             }
         }, progressInfo);
         int nChannels = decomposedSlices.keySet().stream().map(ImageSliceIndex::getC).max(Comparator.naturalOrder()).orElse(-1) + 1;

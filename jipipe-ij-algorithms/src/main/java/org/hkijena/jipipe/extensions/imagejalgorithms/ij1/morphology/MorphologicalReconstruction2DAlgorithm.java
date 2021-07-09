@@ -70,7 +70,7 @@ public class MorphologicalReconstruction2DAlgorithm extends JIPipeIteratingAlgor
     protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
         ImagePlus markerImage = dataBatch.getInputData("Marker", ImagePlusGreyscaleData.class, progressInfo).getImage();
         ImagePlus maskImage = dataBatch.getInputData("Mask", ImagePlusGreyscaleMaskData.class, progressInfo).getImage();
-        maskImage = ImageJUtils.getNormalizedMask(markerImage, maskImage);
+        maskImage = ImageJUtils.ensureEqualSize(maskImage, markerImage, true);
 
         ImagePlus finalMaskImage = maskImage;
         ImagePlus resultImage = ImageJUtils.generateForEachIndexedZCTSlice(markerImage, (markerProcessor, index) -> {

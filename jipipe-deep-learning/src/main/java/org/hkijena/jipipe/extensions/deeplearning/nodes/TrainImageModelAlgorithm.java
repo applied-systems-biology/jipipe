@@ -33,7 +33,7 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
 import org.hkijena.jipipe.extensions.deeplearning.DeepLearningSettings;
 import org.hkijena.jipipe.extensions.deeplearning.DeepLearningUtils;
-import org.hkijena.jipipe.extensions.deeplearning.OptionalDeepLearningDeviceEnvironment;
+import org.hkijena.jipipe.extensions.deeplearning.environments.OptionalDeepLearningDeviceEnvironment;
 import org.hkijena.jipipe.extensions.deeplearning.configs.DeepLearningTrainingConfiguration;
 import org.hkijena.jipipe.extensions.deeplearning.datatypes.DeepLearningModelData;
 import org.hkijena.jipipe.extensions.deeplearning.enums.DeepLearningModelType;
@@ -63,7 +63,7 @@ import java.util.Set;
 public class TrainImageModelAlgorithm extends JIPipeSingleIterationAlgorithm {
 
     private TransformScale2DAlgorithm scale2DAlgorithm;
-    private boolean scaleToModelSize = false;
+    private boolean scaleToModelSize = true;
     private DeepLearningTrainingConfiguration trainingConfiguration = new DeepLearningTrainingConfiguration();
     private OptionalPythonEnvironment overrideEnvironment = new OptionalPythonEnvironment();
     private boolean cleanUpAfterwards = true;
@@ -161,6 +161,8 @@ public class TrainImageModelAlgorithm extends JIPipeSingleIterationAlgorithm {
                     ImagePlus rawImage = isScaleToModelSize() ? DeepLearningUtils.scaleToModel(raw.getImage(),
                             inputModel.getModelConfiguration(),
                             getScale2DAlgorithm(),
+                            true,
+                            true,
                             imageProgress) : raw.getImage();
                     IJ.saveAsTiff(rawImage, rawPath.toString());
                 } else {
@@ -170,7 +172,8 @@ public class TrainImageModelAlgorithm extends JIPipeSingleIterationAlgorithm {
                     ImagePlus labelImage = isScaleToModelSize() ? DeepLearningUtils.scaleToModel(label.getImage(),
                             inputModel.getModelConfiguration(),
                             getScale2DAlgorithm(),
-                            imageProgress) : label.getImage();
+                            true,
+                            true, imageProgress) : label.getImage();
                     IJ.saveAsTiff(labelImage, labelPath.toString());
                 } else {
                     label.saveTo(labelsDirectory, imageCounter + "_img", true, imageProgress);

@@ -52,13 +52,13 @@ public abstract class ImageViewerPanelPlugin {
     /**
      * Draws the image in the processor
      *
-     * @param z         z position
      * @param c         c position
+     * @param z         z position
      * @param t         t position
      * @param processor the processor
      * @return the modified processor
      */
-    public ImageProcessor draw(int z, int c, int t, ImageProcessor processor) {
+    public ImageProcessor draw(int c, int z, int t, ImageProcessor processor) {
         return processor;
     }
 
@@ -71,12 +71,11 @@ public abstract class ImageViewerPanelPlugin {
 
     /**
      * Called before draw is called
-     *
+     *  @param c c position
      * @param z z position
-     * @param c c position
      * @param t t position
      */
-    public void beforeDraw(int z, int c, int t) {
+    public void beforeDraw(int c, int z, int t) {
 
     }
 
