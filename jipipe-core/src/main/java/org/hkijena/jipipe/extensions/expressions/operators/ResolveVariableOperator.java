@@ -15,7 +15,7 @@ package org.hkijena.jipipe.extensions.expressions.operators;
 
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.extensions.expressions.ExpressionOperator;
-import org.hkijena.jipipe.extensions.expressions.ExpressionParameters;
+import org.hkijena.jipipe.extensions.expressions.ExpressionVariables;
 import org.hkijena.jipipe.extensions.expressions.ParameterInfo;
 
 import java.util.Iterator;
@@ -29,7 +29,7 @@ public class ResolveVariableOperator extends ExpressionOperator {
     @Override
     public Object evaluate(Iterator<Object> operands, Object evaluationContext) {
         String right = operands.next() + "";
-        return ((ExpressionParameters) evaluationContext).get(right);
+        return ((ExpressionVariables) evaluationContext).get(right);
     }
 
     @Override

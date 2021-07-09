@@ -38,7 +38,7 @@ public abstract class ExpressionEvaluator extends AbstractEvaluator<Object> {
      * @param expression the expression
      * @param variables  set of variables to use
      */
-    public boolean test(String expression, ExpressionParameters variables) {
+    public boolean test(String expression, ExpressionVariables variables) {
         Object result = evaluate(expression, variables);
         if (result instanceof Boolean) {
             return (boolean) result;

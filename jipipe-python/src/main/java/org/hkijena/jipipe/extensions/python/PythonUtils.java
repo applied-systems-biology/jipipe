@@ -21,7 +21,7 @@ import org.hkijena.jipipe.api.nodes.JIPipeMergingDataBatch;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
-import org.hkijena.jipipe.extensions.expressions.ExpressionParameters;
+import org.hkijena.jipipe.extensions.expressions.ExpressionVariables;
 import org.hkijena.jipipe.extensions.parameters.generators.IntegerRange;
 import org.hkijena.jipipe.extensions.parameters.pairs.StringQueryExpressionAndStringPairParameter;
 import org.hkijena.jipipe.extensions.parameters.primitives.DoubleList;
@@ -317,7 +317,7 @@ public class PythonUtils {
         CommandLine commandLine = new CommandLine(pythonExecutable.toFile());
 
         Map<String, String> environmentVariables = new HashMap<>();
-        ExpressionParameters existingEnvironmentVariables = new ExpressionParameters();
+        ExpressionVariables existingEnvironmentVariables = new ExpressionVariables();
         for (Map.Entry<String, String> entry : System.getenv().entrySet()) {
             existingEnvironmentVariables.put(entry.getKey(), entry.getValue());
             environmentVariables.put(entry.getKey(), entry.getValue());
@@ -331,7 +331,7 @@ public class PythonUtils {
             progressInfo.log("Setting environment variable " + entry.getKey() + "=" + entry.getValue());
         }
 
-        ExpressionParameters parameters = new ExpressionParameters();
+        ExpressionVariables parameters = new ExpressionVariables();
         parameters.set("script_file", scriptFile.toString());
         parameters.set("python_executable", environment.getExecutablePath().toString());
         Object evaluationResult = environment.getArguments().evaluate(parameters);
@@ -381,7 +381,7 @@ public class PythonUtils {
         CommandLine commandLine = new CommandLine(pythonExecutable.toFile());
 
         Map<String, String> environmentVariables = new HashMap<>();
-        ExpressionParameters existingEnvironmentVariables = new ExpressionParameters();
+        ExpressionVariables existingEnvironmentVariables = new ExpressionVariables();
         for (Map.Entry<String, String> entry : System.getenv().entrySet()) {
             existingEnvironmentVariables.put(entry.getKey(), entry.getValue());
             environmentVariables.put(entry.getKey(), entry.getValue());
@@ -395,7 +395,7 @@ public class PythonUtils {
             progressInfo.log("Setting environment variable " + entry.getKey() + "=" + entry.getValue());
         }
 
-        ExpressionParameters parameters = new ExpressionParameters();
+        ExpressionVariables parameters = new ExpressionVariables();
         parameters.set("script_file", "");
         parameters.set("python_executable", environment.getExecutablePath().toString());
         Object evaluationResult = environment.getArguments().evaluate(parameters);

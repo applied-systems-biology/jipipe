@@ -24,7 +24,7 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
 import org.hkijena.jipipe.extensions.expressions.ExpressionParameterSettings;
 import org.hkijena.jipipe.extensions.expressions.ExpressionParameterVariable;
 import org.hkijena.jipipe.extensions.expressions.ExpressionParameterVariableSource;
-import org.hkijena.jipipe.extensions.expressions.ExpressionParameters;
+import org.hkijena.jipipe.extensions.expressions.ExpressionVariables;
 import org.hkijena.jipipe.extensions.expressions.StringQueryExpression;
 import org.hkijena.jipipe.extensions.parameters.primitives.StringParameterSettings;
 import org.hkijena.jipipe.utils.ResourceUtils;
@@ -350,7 +350,7 @@ public class JIPipeDataByMetadataExporter implements JIPipeParameterCollection {
                 }
             }
         } else {
-            ExpressionParameters parameters = new ExpressionParameters();
+            ExpressionVariables parameters = new ExpressionVariables();
             for (int col = 0; col < dataSlot.getAnnotationColumns().size(); col++) {
                 String metadataKey = dataSlot.getAnnotationColumns().get(col);
                 JIPipeAnnotation metadataValue = dataSlot.getAnnotationOr(row, metadataKey, null);
@@ -403,7 +403,7 @@ public class JIPipeDataByMetadataExporter implements JIPipeParameterCollection {
                 metadataStringBuilder.append(metadataValue.getValue());
             }
         } else {
-            ExpressionParameters parameters = new ExpressionParameters();
+            ExpressionVariables parameters = new ExpressionVariables();
             for (JIPipeAnnotation annotation : dataRow.getAnnotations()) {
                 parameters.put(annotation.getName(), annotation.getValue());
             }

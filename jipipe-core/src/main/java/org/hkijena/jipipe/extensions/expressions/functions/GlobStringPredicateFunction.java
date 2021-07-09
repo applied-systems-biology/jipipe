@@ -15,7 +15,7 @@ package org.hkijena.jipipe.extensions.expressions.functions;
 
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.extensions.expressions.ExpressionFunction;
-import org.hkijena.jipipe.extensions.expressions.ExpressionParameters;
+import org.hkijena.jipipe.extensions.expressions.ExpressionVariables;
 import org.hkijena.jipipe.extensions.expressions.ParameterInfo;
 import org.hkijena.jipipe.utils.StringUtils;
 
@@ -42,7 +42,7 @@ public class GlobStringPredicateFunction extends ExpressionFunction {
     }
 
     @Override
-    public Object evaluate(List<Object> parameters, ExpressionParameters variables) {
+    public Object evaluate(List<Object> parameters, ExpressionVariables variables) {
         String text = "" + parameters.get(0);
         for (int i = 1; i < parameters.size(); i++) {
             String pattern = "" + parameters.get(i);

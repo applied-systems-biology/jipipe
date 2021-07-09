@@ -36,7 +36,7 @@ public class NumericFunctionExpression extends DefaultExpressionParameter {
     }
 
     public double apply(double x) {
-        ExpressionParameters parameters = new ExpressionParameters();
+        ExpressionVariables parameters = new ExpressionVariables();
         parameters.set("x", x);
         return ((Number) evaluate(parameters)).doubleValue();
     }

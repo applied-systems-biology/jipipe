@@ -25,7 +25,7 @@ import org.hkijena.jipipe.api.nodes.JIPipeOutputSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.nodes.categories.TableNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
-import org.hkijena.jipipe.extensions.expressions.ExpressionParameters;
+import org.hkijena.jipipe.extensions.expressions.ExpressionVariables;
 import org.hkijena.jipipe.extensions.parameters.pairs.PairParameterSettings;
 import org.hkijena.jipipe.extensions.parameters.pairs.StringQueryExpressionAndStringQueryPairParameter;
 import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
@@ -68,8 +68,8 @@ public class RenameTableColumnsToAnnotationAlgorithm extends JIPipeSimpleIterati
     protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
         ResultsTableData input = (ResultsTableData) dataBatch.getInputData(getFirstInputSlot(), ResultsTableData.class, progressInfo).duplicate();
         for (StringQueryExpressionAndStringQueryPairParameter renamingEntry : renamingEntries) {
-            String oldName = renamingEntry.getKey().queryFirst(input.getColumnNames(), new ExpressionParameters());
-            String newName = renamingEntry.getValue().queryFirst(dataBatch.getGlobalAnnotations().keySet(), new ExpressionParameters());
+            String oldName = renamingEntry.getKey().queryFirst(input.getColumnNames(), new ExpressionVariables());
+            String newName = renamingEntry.getValue().queryFirst(dataBatch.getGlobalAnnotations().keySet(), new ExpressionVariables());
             if (oldName == null) {
                 if (ignoreMissingColumns)
                     continue;

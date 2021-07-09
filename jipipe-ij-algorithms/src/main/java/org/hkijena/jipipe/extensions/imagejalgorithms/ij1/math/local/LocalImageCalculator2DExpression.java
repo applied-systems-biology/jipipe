@@ -18,7 +18,7 @@ import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.expressions.DefaultExpressionParameter;
 import org.hkijena.jipipe.extensions.expressions.ExpressionParameterSettings;
-import org.hkijena.jipipe.extensions.expressions.ExpressionParameters;
+import org.hkijena.jipipe.extensions.expressions.ExpressionVariables;
 import org.hkijena.jipipe.extensions.imagejalgorithms.utils.SourceWrapMode;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscale32FData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
@@ -87,7 +87,7 @@ public class LocalImageCalculator2DExpression extends JIPipeIteratingAlgorithm {
             }
         }
 
-        ExpressionParameters parameters = new ExpressionParameters();
+        ExpressionVariables parameters = new ExpressionVariables();
         parameters.set("width", width);
         parameters.set("height", height);
         parameters.set("num_z", nZ);

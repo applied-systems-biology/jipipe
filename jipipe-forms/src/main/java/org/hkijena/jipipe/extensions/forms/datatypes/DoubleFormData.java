@@ -13,7 +13,7 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
 import org.hkijena.jipipe.api.parameters.JIPipeReflectionParameterAccess;
 import org.hkijena.jipipe.extensions.expressions.DefaultExpressionParameter;
 import org.hkijena.jipipe.extensions.expressions.ExpressionParameterSettings;
-import org.hkijena.jipipe.extensions.expressions.ExpressionParameters;
+import org.hkijena.jipipe.extensions.expressions.ExpressionVariables;
 import org.hkijena.jipipe.extensions.expressions.NumberQueryExpressionVariableSource;
 import org.hkijena.jipipe.extensions.expressions.StringQueryExpression;
 import org.hkijena.jipipe.extensions.forms.utils.SingleAnnotationIOSettings;
@@ -88,7 +88,7 @@ public class DoubleFormData extends ParameterFormData {
 
     @Override
     public void reportValidity(JIPipeIssueReport report) {
-        ExpressionParameters variableSet = new ExpressionParameters();
+        ExpressionVariables variableSet = new ExpressionVariables();
         variableSet.set("value", value);
         if (!validationExpression.test(variableSet)) {
             report.reportIsInvalid("Invalid value!",

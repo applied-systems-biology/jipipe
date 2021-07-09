@@ -28,8 +28,12 @@ import org.hkijena.jipipe.api.nodes.JIPipeOutputSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
+import org.hkijena.jipipe.extensions.expressions.ExpressionParameterSettings;
+import org.hkijena.jipipe.extensions.expressions.ExpressionVariables;
+import org.hkijena.jipipe.extensions.expressions.OptionalDefaultExpressionParameter;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.InterpolationMethod;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
+import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImagePlusPropertiesExpressionParameterVariableSource;
 import org.hkijena.jipipe.extensions.parameters.roi.OptionalIntModificationParameter;
 
 /**
@@ -42,9 +46,10 @@ import org.hkijena.jipipe.extensions.parameters.roi.OptionalIntModificationParam
 public class TransformScale3DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     private InterpolationMethod interpolationMethod = InterpolationMethod.Bilinear;
-    private OptionalIntModificationParameter xAxis = new OptionalIntModificationParameter();
-    private OptionalIntModificationParameter yAxis = new OptionalIntModificationParameter();
-    private OptionalIntModificationParameter zAxis = new OptionalIntModificationParameter();
+    private OptionalDefaultExpressionParameter xAxis = new OptionalDefaultExpressionParameter(true, "width");
+    private OptionalDefaultExpressionParameter yAxis = new OptionalDefaultExpressionParameter(true, "height");
+    private OptionalDefaultExpressionParameter zAxis = new OptionalDefaultExpressionParameter(true, "MAX(num_z, num_c, num_t)");
+
     private TransformScale2DAlgorithm scale2DAlgorithm =
             JIPipe.createNode("ij1-transform-scale2d", TransformScale2DAlgorithm.class);
 
@@ -74,9 +79,9 @@ public class TransformScale3DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         super(other);
         scale2DAlgorithm.setAllSlotsVirtual(false, false, null);
         this.interpolationMethod = other.interpolationMethod;
-        this.xAxis = new OptionalIntModificationParameter(other.xAxis);
-        this.yAxis = new OptionalIntModificationParameter(other.yAxis);
-        this.zAxis = new OptionalIntModificationParameter(other.zAxis);
+        this.xAxis = new OptionalDefaultExpressionParameter(other.xAxis);
+        this.yAxis = new OptionalDefaultExpressionParameter(other.yAxis);
+        this.zAxis = new OptionalDefaultExpressionParameter(other.zAxis);
     }
 
     @Override
@@ -92,15 +97,19 @@ public class TransformScale3DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         // Scale in 2D if needed
         int sx = img.getWidth();
         int sy = img.getHeight();
+
+        ExpressionVariables variables = new ExpressionVariables();
+        ImagePlusPropertiesExpressionParameterVariableSource.extractValues(variables, img);
+
         if (xAxis.isEnabled() && yAxis.isEnabled()) {
-            sx = (int) xAxis.getContent().apply(sx);
-            sy = (int) yAxis.getContent().apply(sy);
+            sx = (int) xAxis.getContent().evaluateToNumber(variables);
+            sy = (int) yAxis.getContent().evaluateToNumber(variables);
         } else if (xAxis.isEnabled()) {
-            sx = (int) xAxis.getContent().apply(sx);
+            sx = (int) xAxis.getContent().evaluateToNumber(variables);
             double fac = (double) sx / img.getWidth();
             sy = (int) (sy * fac);
         } else if (yAxis.isEnabled()) {
-            sy = (int) yAxis.getContent().apply(sy);
+            sy = (int) yAxis.getContent().evaluateToNumber(variables);
             double fac = (double) sy / img.getHeight();
             sx = (int) (sx * fac);
         }
@@ -118,7 +127,7 @@ public class TransformScale3DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         if (img.getStackSize() > 1) {
             int sz = img.getStackSize();
             if (zAxis.isEnabled()) {
-                sz = (int) zAxis.getContent().apply(sz);
+                sz = (int) zAxis.getContent().evaluateToNumber(variables);
             } else {
                 double fac = Math.min((double) sx / img.getWidth(), (double) sy / img.getHeight());
                 sz = (int) (sz * fac);
@@ -146,34 +155,37 @@ public class TransformScale3DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     @JIPipeDocumentation(name = "X axis", description = "How the X axis should be scaled")
     @JIPipeParameter("x-axis")
-    public OptionalIntModificationParameter getxAxis() {
+    @ExpressionParameterSettings(variableSource = ImagePlusPropertiesExpressionParameterVariableSource.class)
+    public OptionalDefaultExpressionParameter getxAxis() {
         return xAxis;
     }
 
     @JIPipeParameter("x-axis")
-    public void setxAxis(OptionalIntModificationParameter xAxis) {
+    public void setxAxis(OptionalDefaultExpressionParameter xAxis) {
         this.xAxis = xAxis;
     }
 
     @JIPipeDocumentation(name = "Y axis", description = "How the Y axis should be scaled")
     @JIPipeParameter("y-axis")
-    public OptionalIntModificationParameter getyAxis() {
+    @ExpressionParameterSettings(variableSource = ImagePlusPropertiesExpressionParameterVariableSource.class)
+    public OptionalDefaultExpressionParameter getyAxis() {
         return yAxis;
     }
 
     @JIPipeParameter("y-axis")
-    public void setyAxis(OptionalIntModificationParameter yAxis) {
+    public void setyAxis(OptionalDefaultExpressionParameter yAxis) {
         this.yAxis = yAxis;
     }
 
     @JIPipeDocumentation(name = "Z axis", description = "How the Z axis should be scaled")
     @JIPipeParameter("z-axis")
-    public OptionalIntModificationParameter getzAxis() {
+    @ExpressionParameterSettings(variableSource = ImagePlusPropertiesExpressionParameterVariableSource.class)
+    public OptionalDefaultExpressionParameter getzAxis() {
         return zAxis;
     }
 
     @JIPipeParameter("z-axis")
-    public void setzAxis(OptionalIntModificationParameter zAxis) {
+    public void setzAxis(OptionalDefaultExpressionParameter zAxis) {
         this.zAxis = zAxis;
     }
 }

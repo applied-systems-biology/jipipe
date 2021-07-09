@@ -15,6 +15,7 @@ package org.hkijena.jipipe.extensions.expressions;
 
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonSetter;
+import org.hkijena.jipipe.utils.StringUtils;
 
 /**
  * A parameter that contains an expression.
@@ -58,8 +59,30 @@ public abstract class ExpressionParameter {
      * @param variables the variables
      * @return the result
      */
-    public boolean test(ExpressionParameters variables) {
+    public boolean test(ExpressionVariables variables) {
         return getEvaluator().test(expression, variables);
+    }
+
+    /**
+     * Runs the expression and returns the numeric result. If no number is returned, an error is thrown.
+     *
+     * @param variables the variables
+     * @return the result
+     */
+    public double evaluateToNumber(ExpressionVariables variables) {
+        Object result = evaluate(variables);
+        return ((Number)result).doubleValue();
+    }
+
+    /**
+     * Runs the expression and returns the string result.
+     *
+     * @param variables the variables
+     * @return the result
+     */
+    public String evaluateToString(ExpressionVariables variables) {
+        Object result = evaluate(variables);
+        return StringUtils.nullToEmpty(result);
     }
 
     /**
@@ -68,7 +91,7 @@ public abstract class ExpressionParameter {
      * @param variables the variables
      * @return the result
      */
-    public Object evaluate(ExpressionParameters variables) {
+    public Object evaluate(ExpressionVariables variables) {
         return getEvaluator().evaluate(expression, variables);
     }
 

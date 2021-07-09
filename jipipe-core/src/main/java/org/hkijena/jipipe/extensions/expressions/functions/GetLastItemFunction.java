@@ -3,7 +3,7 @@ package org.hkijena.jipipe.extensions.expressions.functions;
 import com.google.common.collect.ImmutableList;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.extensions.expressions.ExpressionFunction;
-import org.hkijena.jipipe.extensions.expressions.ExpressionParameters;
+import org.hkijena.jipipe.extensions.expressions.ExpressionVariables;
 import org.hkijena.jipipe.extensions.expressions.ParameterInfo;
 
 import java.util.Collection;
@@ -29,7 +29,7 @@ public class GetLastItemFunction extends ExpressionFunction {
     }
 
     @Override
-    public Object evaluate(List<Object> parameters, ExpressionParameters variables) {
+    public Object evaluate(List<Object> parameters, ExpressionVariables variables) {
         Object target = parameters.get(0);
         int n = parameters.size() > 1 ? ((Number) parameters.get(1)).intValue() : 0;
         if (target instanceof List) {

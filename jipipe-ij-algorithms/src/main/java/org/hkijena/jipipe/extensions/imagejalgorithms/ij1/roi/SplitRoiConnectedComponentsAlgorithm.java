@@ -34,7 +34,7 @@ import org.hkijena.jipipe.extensions.expressions.DefaultExpressionParameter;
 import org.hkijena.jipipe.extensions.expressions.ExpressionParameterSettings;
 import org.hkijena.jipipe.extensions.expressions.ExpressionParameterVariable;
 import org.hkijena.jipipe.extensions.expressions.ExpressionParameterVariableSource;
-import org.hkijena.jipipe.extensions.expressions.ExpressionParameters;
+import org.hkijena.jipipe.extensions.expressions.ExpressionVariables;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ROIListData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.measure.ImageStatisticsSetParameter;
@@ -103,7 +103,7 @@ public class SplitRoiConnectedComponentsAlgorithm extends ImageRoiProcessorAlgor
 
         boolean withFiltering = !StringUtils.isNullOrEmpty(overlapFilter.getExpression());
         ROIListData temp = new ROIListData();
-        ExpressionParameters variableSet = new ExpressionParameters();
+        ExpressionVariables variableSet = new ExpressionVariables();
         ResultsTableData measurements = null;
         ImagePlus referenceImage = null;
         if (withFiltering) {
@@ -199,7 +199,7 @@ public class SplitRoiConnectedComponentsAlgorithm extends ImageRoiProcessorAlgor
         }
 
         if (!StringUtils.isNullOrEmpty(graphPostprocessing.getExpression())) {
-            ExpressionParameters postprocessingVariableSet = new ExpressionParameters();
+            ExpressionVariables postprocessingVariableSet = new ExpressionVariables();
             postprocessingVariableSet.set("KEEP", "KEEP");
             postprocessingVariableSet.set("ISOLATE", "ISOLATE");
             postprocessingVariableSet.set("REMOVE", "REMOVE");
@@ -327,7 +327,7 @@ public class SplitRoiConnectedComponentsAlgorithm extends ImageRoiProcessorAlgor
         return false;
     }
 
-    private void putMeasurementsIntoVariable(ResultsTableData inputMeasurements, int first, int second, ImagePlus referenceImage, ExpressionParameters variableSet, Roi overlap, ROIListData temp, Roi roi1, Roi roi2) {
+    private void putMeasurementsIntoVariable(ResultsTableData inputMeasurements, int first, int second, ImagePlus referenceImage, ExpressionVariables variableSet, Roi overlap, ROIListData temp, Roi roi1, Roi roi2) {
 
         variableSet.set("First.z", roi1.getZPosition());
         variableSet.set("First.c", roi1.getCPosition());

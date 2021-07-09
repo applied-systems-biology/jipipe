@@ -15,7 +15,7 @@ package org.hkijena.jipipe.extensions.expressions.functions;
 
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.extensions.expressions.ExpressionFunction;
-import org.hkijena.jipipe.extensions.expressions.ExpressionParameters;
+import org.hkijena.jipipe.extensions.expressions.ExpressionVariables;
 
 import java.util.List;
 import java.util.Map;
@@ -28,7 +28,7 @@ public class GetMapKeysFunction extends ExpressionFunction {
     }
 
     @Override
-    public Object evaluate(List<Object> parameters, ExpressionParameters variables) {
+    public Object evaluate(List<Object> parameters, ExpressionVariables variables) {
         Map<?, ?> map = (Map<?, ?>) parameters.get(0);
         return map.keySet();
     }

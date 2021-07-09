@@ -5,8 +5,8 @@ import java.util.HashMap;
 /**
  * Object that carries variables for expressions
  */
-public class ExpressionParameters extends HashMap<String, Object> {
-    public ExpressionParameters() {
+public class ExpressionVariables extends HashMap<String, Object> {
+    public ExpressionVariables() {
     }
 
     /**

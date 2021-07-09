@@ -4,7 +4,7 @@ import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
 import org.hkijena.jipipe.extensions.expressions.DefaultExpressionParameter;
 import org.hkijena.jipipe.extensions.expressions.ExpressionFunction;
-import org.hkijena.jipipe.extensions.expressions.ExpressionParameters;
+import org.hkijena.jipipe.extensions.expressions.ExpressionVariables;
 import org.hkijena.jipipe.extensions.expressions.ParameterInfo;
 
 import java.util.Collection;
@@ -20,8 +20,8 @@ public class FirstIndexOfFunction extends ExpressionFunction {
     }
 
     @Override
-    public Object evaluate(List<Object> parameters, ExpressionParameters variables) {
-        ExpressionParameters localVariables = new ExpressionParameters();
+    public Object evaluate(List<Object> parameters, ExpressionVariables variables) {
+        ExpressionVariables localVariables = new ExpressionVariables();
         for (Map.Entry<String, Object> entry : variables.entrySet()) {
             localVariables.put(entry.getKey(), entry.getValue());
         }

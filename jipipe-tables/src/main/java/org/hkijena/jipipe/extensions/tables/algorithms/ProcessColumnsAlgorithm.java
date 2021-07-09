@@ -26,7 +26,7 @@ import org.hkijena.jipipe.api.nodes.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.nodes.categories.TableNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.expressions.ExpressionParameterSettings;
-import org.hkijena.jipipe.extensions.expressions.ExpressionParameters;
+import org.hkijena.jipipe.extensions.expressions.ExpressionVariables;
 import org.hkijena.jipipe.extensions.expressions.TableColumnValuesExpressionParameterVariableSource;
 import org.hkijena.jipipe.extensions.tables.datatypes.DoubleArrayTableColumn;
 import org.hkijena.jipipe.extensions.tables.datatypes.RelabeledTableColumn;
@@ -81,14 +81,14 @@ public class ProcessColumnsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
         ResultsTableData input = dataBatch.getInputData(getFirstInputSlot(), ResultsTableData.class, progressInfo);
         List<TableColumn> resultColumns = new ArrayList<>();
-        ExpressionParameters expressionParameters = new ExpressionParameters();
+        ExpressionVariables expressionVariables = new ExpressionVariables();
         if (append) {
             for (String columnName : input.getColumnNames()) {
                 resultColumns.add(input.getColumnReference(input.getColumnIndex(columnName)));
             }
         }
         for (ExpressionTableColumnProcessorParameter processor : processorParameters) {
-            String sourceColumn = processor.getInput().queryFirst(input.getColumnNames(), new ExpressionParameters());
+            String sourceColumn = processor.getInput().queryFirst(input.getColumnNames(), new ExpressionVariables());
             if (sourceColumn == null) {
                 throw new UserFriendlyRuntimeException(new NullPointerException(),
                         "Unable to find column matching " + processor.getInput(),
@@ -101,12 +101,12 @@ public class ProcessColumnsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
             for (int i = 0; i < input.getRowCount(); i++) {
                 values.add(input.getValueAt(i, columnIndex));
             }
-            expressionParameters.set("column", columnIndex);
-            expressionParameters.set("column_name", sourceColumn);
-            expressionParameters.set("num_rows", input.getRowCount());
-            expressionParameters.set("num_cols", input.getColumnCount());
-            expressionParameters.set("values", values);
-            Object result = processor.getParameter().evaluate(expressionParameters);
+            expressionVariables.set("column", columnIndex);
+            expressionVariables.set("column_name", sourceColumn);
+            expressionVariables.set("num_rows", input.getRowCount());
+            expressionVariables.set("num_cols", input.getColumnCount());
+            expressionVariables.set("values", values);
+            Object result = processor.getParameter().evaluate(expressionVariables);
             TableColumn resultColumn;
             if (result instanceof Number) {
                 resultColumn = new DoubleArrayTableColumn(new double[]{((Number) result).doubleValue()}, processor.getOutput());

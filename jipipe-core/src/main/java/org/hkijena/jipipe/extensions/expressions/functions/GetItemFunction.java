@@ -2,7 +2,7 @@ package org.hkijena.jipipe.extensions.expressions.functions;
 
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.extensions.expressions.ExpressionFunction;
-import org.hkijena.jipipe.extensions.expressions.ExpressionParameters;
+import org.hkijena.jipipe.extensions.expressions.ExpressionVariables;
 import org.hkijena.jipipe.extensions.expressions.ParameterInfo;
 
 import java.util.List;
@@ -29,7 +29,7 @@ public class GetItemFunction extends ExpressionFunction {
     }
 
     @Override
-    public Object evaluate(List<Object> parameters, ExpressionParameters variables) {
+    public Object evaluate(List<Object> parameters, ExpressionVariables variables) {
         Object target = parameters.get(0);
         Object index = parameters.get(1);
         if (target instanceof List) {

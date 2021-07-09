@@ -187,7 +187,7 @@ public class DefaultExpressionEvaluator extends ExpressionEvaluator {
 
     @Override
     public Object evaluate(String expression, Object evaluationContext) {
-        ExpressionParameters expressionParameters = (ExpressionParameters) evaluationContext;
+        ExpressionVariables expressionVariables = (ExpressionVariables) evaluationContext;
         try {
             if (expression.trim().isEmpty())
                 return true;
@@ -196,7 +196,7 @@ public class DefaultExpressionEvaluator extends ExpressionEvaluator {
             throw new UserFriendlyRuntimeException(e,
                     "Error while evaluating expression",
                     "Expression: " + expression,
-                    "The expression could not be evaluated. Available variables are " + expressionParameters.entrySet().stream()
+                    "The expression could not be evaluated. Available variables are " + expressionVariables.entrySet().stream()
                             .map(kv -> kv.getKey() + "=" + kv.getValue()).collect(Collectors.joining(" ")),
                     "Please check if the expression is correct.");
         }
@@ -205,7 +205,7 @@ public class DefaultExpressionEvaluator extends ExpressionEvaluator {
     @Override
     protected Object evaluate(Function function, Iterator<Object> arguments, Object evaluationContext) {
         if (function instanceof ExpressionFunction) {
-            return ((ExpressionFunction) function).evaluate(ImmutableList.copyOf(arguments), (ExpressionParameters) evaluationContext);
+            return ((ExpressionFunction) function).evaluate(ImmutableList.copyOf(arguments), (ExpressionVariables) evaluationContext);
         } else {
             throw new UnsupportedOperationException();
         }
@@ -282,7 +282,7 @@ public class DefaultExpressionEvaluator extends ExpressionEvaluator {
 
     @Override
     protected Object toValue(String literal, Object evaluationContext) {
-        ExpressionParameters variableSet = (ExpressionParameters) evaluationContext;
+        ExpressionVariables variableSet = (ExpressionVariables) evaluationContext;
         if (NumberUtils.isCreatable(literal))
             return NumberUtils.createDouble(literal);
         else if (literal.length() >= 2 && literal.startsWith("\"") && literal.endsWith("\""))

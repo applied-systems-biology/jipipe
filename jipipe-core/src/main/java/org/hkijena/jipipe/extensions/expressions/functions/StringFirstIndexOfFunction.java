@@ -15,7 +15,7 @@ package org.hkijena.jipipe.extensions.expressions.functions;
 
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.extensions.expressions.ExpressionFunction;
-import org.hkijena.jipipe.extensions.expressions.ExpressionParameters;
+import org.hkijena.jipipe.extensions.expressions.ExpressionVariables;
 import org.hkijena.jipipe.extensions.expressions.ParameterInfo;
 
 import java.util.List;
@@ -41,7 +41,7 @@ public class StringFirstIndexOfFunction extends ExpressionFunction {
     }
 
     @Override
-    public Object evaluate(List<Object> parameters, ExpressionParameters variables) {
+    public Object evaluate(List<Object> parameters, ExpressionVariables variables) {
         String text = "" + parameters.get(0);
         String pattern = "" + parameters.get(1);
         return text.indexOf(pattern);

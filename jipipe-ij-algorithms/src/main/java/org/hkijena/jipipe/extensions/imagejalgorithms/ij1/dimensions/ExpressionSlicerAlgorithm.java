@@ -21,7 +21,7 @@ import org.hkijena.jipipe.extensions.expressions.DefaultExpressionParameter;
 import org.hkijena.jipipe.extensions.expressions.ExpressionParameterSettings;
 import org.hkijena.jipipe.extensions.expressions.ExpressionParameterVariable;
 import org.hkijena.jipipe.extensions.expressions.ExpressionParameterVariableSource;
-import org.hkijena.jipipe.extensions.expressions.ExpressionParameters;
+import org.hkijena.jipipe.extensions.expressions.ExpressionVariables;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageSliceIndices;
@@ -82,7 +82,7 @@ public class ExpressionSlicerAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
         // Collect indices
         List<ImageSliceIndices> imageSliceIndicesList = new ArrayList<>();
-        ExpressionParameters parameters = new ExpressionParameters();
+        ExpressionVariables parameters = new ExpressionVariables();
         parameters.set("width", img.getWidth());
         parameters.set("height", img.getHeight());
         parameters.set("size_z", img.getNSlices());
@@ -161,7 +161,7 @@ public class ExpressionSlicerAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         return x % w;
     }
 
-    private void extractZ(ExpressionParameters parameters, ImageSliceIndices indices) {
+    private void extractZ(ExpressionVariables parameters, ImageSliceIndices indices) {
         Object result = expressionZ.evaluate(parameters);
         if (result instanceof Number)
             indices.getZ().add(((Number) result).intValue());
@@ -172,7 +172,7 @@ public class ExpressionSlicerAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         }
     }
 
-    private void extractC(ExpressionParameters parameters, ImageSliceIndices indices) {
+    private void extractC(ExpressionVariables parameters, ImageSliceIndices indices) {
         Object result = expressionC.evaluate(parameters);
         if (result instanceof Number)
             indices.getC().add(((Number) result).intValue());
@@ -183,7 +183,7 @@ public class ExpressionSlicerAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         }
     }
 
-    private void extractT(ExpressionParameters parameters, ImageSliceIndices indices) {
+    private void extractT(ExpressionVariables parameters, ImageSliceIndices indices) {
         Object result = expressionT.evaluate(parameters);
         if (result instanceof Number)
             indices.getT().add(((Number) result).intValue());

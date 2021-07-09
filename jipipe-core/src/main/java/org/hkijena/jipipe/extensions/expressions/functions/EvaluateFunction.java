@@ -4,7 +4,7 @@ import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
 import org.hkijena.jipipe.extensions.expressions.DefaultExpressionParameter;
 import org.hkijena.jipipe.extensions.expressions.ExpressionFunction;
-import org.hkijena.jipipe.extensions.expressions.ExpressionParameters;
+import org.hkijena.jipipe.extensions.expressions.ExpressionVariables;
 import org.hkijena.jipipe.extensions.expressions.ParameterInfo;
 import org.hkijena.jipipe.utils.StringUtils;
 
@@ -29,11 +29,11 @@ public class EvaluateFunction extends ExpressionFunction {
     }
 
     @Override
-    public Object evaluate(List<Object> parameters, ExpressionParameters variables) {
-        ExpressionParameters localVariables;
+    public Object evaluate(List<Object> parameters, ExpressionVariables variables) {
+        ExpressionVariables localVariables;
 
         if (parameters.size() > 1) {
-            localVariables = new ExpressionParameters();
+            localVariables = new ExpressionVariables();
             for (Map.Entry<String, Object> entry : variables.entrySet()) {
                 localVariables.put(entry.getKey(), entry.getValue());
             }
@@ -50,7 +50,7 @@ public class EvaluateFunction extends ExpressionFunction {
         return DefaultExpressionParameter.getEvaluatorInstance().evaluate(StringUtils.nullToEmpty(parameters.get(0)), localVariables);
     }
 
-    public static void parseVariableAssignment(ExpressionParameters source, ExpressionParameters target, String assignment) {
+    public static void parseVariableAssignment(ExpressionVariables source, ExpressionVariables target, String assignment) {
         int separatorIndex = assignment.indexOf('=');
         if (separatorIndex < 0) {
             throw new UserFriendlyRuntimeException("Variable assignment '" + assignment + "' is invalid: Missing '='.",

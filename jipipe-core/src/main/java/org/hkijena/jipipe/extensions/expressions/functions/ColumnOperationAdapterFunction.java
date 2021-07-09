@@ -14,7 +14,7 @@
 package org.hkijena.jipipe.extensions.expressions.functions;
 
 import org.hkijena.jipipe.extensions.expressions.ExpressionFunction;
-import org.hkijena.jipipe.extensions.expressions.ExpressionParameters;
+import org.hkijena.jipipe.extensions.expressions.ExpressionVariables;
 import org.hkijena.jipipe.extensions.expressions.ParameterInfo;
 import org.hkijena.jipipe.extensions.tables.ColumnOperation;
 import org.hkijena.jipipe.extensions.tables.IntegratingColumnOperation;
@@ -56,7 +56,7 @@ public class ColumnOperationAdapterFunction extends ExpressionFunction {
     }
 
     @Override
-    public Object evaluate(List<Object> parameters, ExpressionParameters variables) {
+    public Object evaluate(List<Object> parameters, ExpressionVariables variables) {
         if (parameters.stream().anyMatch(o -> o instanceof Collection)) {
             // Requires parameter expansion
             List<Object> unExpanded = parameters;

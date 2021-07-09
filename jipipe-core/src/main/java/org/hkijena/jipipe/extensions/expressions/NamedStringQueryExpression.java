@@ -41,7 +41,7 @@ public class NamedStringQueryExpression extends PairParameter<String, StringQuer
      * @return if queried
      */
     public boolean test(String key, String value) {
-        ExpressionParameters variableSet = new ExpressionParameters();
+        ExpressionVariables variableSet = new ExpressionVariables();
         variableSet.set("key", key);
         variableSet.set("value", value);
         return getValue().test(variableSet);
@@ -72,7 +72,7 @@ public class NamedStringQueryExpression extends PairParameter<String, StringQuer
             for (NamedStringQueryExpression expression : this) {
                 expressionMap.put(expression.getKey(), expression.getValue());
             }
-            ExpressionParameters variableSet = new ExpressionParameters();
+            ExpressionVariables variableSet = new ExpressionVariables();
             for (Map.Entry<String, String> entry : input.entrySet()) {
                 variableSet.set("key", entry.getKey());
                 variableSet.set("value", entry.getValue());

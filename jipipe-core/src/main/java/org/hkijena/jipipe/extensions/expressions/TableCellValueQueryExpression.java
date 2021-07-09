@@ -46,7 +46,7 @@ public class TableCellValueQueryExpression extends DefaultExpressionParameter {
     public boolean test(ResultsTableData tableData, int row, int col) {
         if ("true".equals(getExpression()) || getExpression().trim().isEmpty())
             return true;
-        ExpressionParameters variableSet = new ExpressionParameters();
+        ExpressionVariables variableSet = new ExpressionVariables();
         variableSet.set("row", row);
         variableSet.set("column", col);
         variableSet.set("column_name", tableData.getColumnName(col));

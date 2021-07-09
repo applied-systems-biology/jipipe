@@ -54,7 +54,7 @@ public class TableColumnSourceExpressionParameter extends DefaultExpressionParam
      * @return the column
      */
     public TableColumn pickColumn(ResultsTableData table) {
-        ExpressionParameters variableSet = new ExpressionParameters();
+        ExpressionVariables variableSet = new ExpressionVariables();
         variableSet.set("num_rows", table.getRowCount());
         variableSet.set("num_cols", table.getColumnCount());
 

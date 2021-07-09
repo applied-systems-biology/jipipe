@@ -24,7 +24,7 @@ import org.hkijena.jipipe.api.nodes.JIPipeOutputSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.nodes.categories.FileSystemNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
-import org.hkijena.jipipe.extensions.expressions.ExpressionParameters;
+import org.hkijena.jipipe.extensions.expressions.ExpressionVariables;
 import org.hkijena.jipipe.extensions.expressions.PathQueryExpression;
 import org.hkijena.jipipe.extensions.filesystem.dataypes.FileData;
 import org.hkijena.jipipe.extensions.filesystem.dataypes.FolderData;
@@ -83,9 +83,9 @@ public class ListSubfolders extends JIPipeSimpleIteratingAlgorithm {
     protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
 
         // Expression parameters from annotations
-        ExpressionParameters expressionParameters = new ExpressionParameters();
+        ExpressionVariables expressionVariables = new ExpressionVariables();
         for (JIPipeAnnotation annotation : dataBatch.getGlobalAnnotations().values()) {
-            expressionParameters.set(annotation.getName(), annotation.getValue());
+            expressionVariables.set(annotation.getName(), annotation.getValue());
         }
 
         FolderData inputFolder = dataBatch.getInputData(getFirstInputSlot(), FolderData.class, progressInfo);
@@ -105,7 +105,7 @@ public class ListSubfolders extends JIPipeSimpleIteratingAlgorithm {
             } else
                 stream = Files.list(inputPath).filter(Files::isDirectory);
             for (Path file : stream.collect(Collectors.toList())) {
-                if (filters.test(file, expressionParameters)) {
+                if (filters.test(file, expressionVariables)) {
                     dataBatch.addOutputData(getFirstOutputSlot(), new FileData(file), progressInfo);
                 }
             }

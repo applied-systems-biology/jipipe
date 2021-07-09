@@ -283,7 +283,7 @@ public class ImageJUtils {
         if (reference.getStackSize() == 1) {
             return new ImagePlus(target.getTitle(), target.getProcessor());
         } else {
-            ImageStack stack = new ImageStack(reference.getWidth(), reference.getHeight(), reference.getNChannels() * reference.getNFrames() * reference.getNSlices());
+            ImageStack stack = new ImageStack(target.getWidth(), target.getHeight(), reference.getNChannels() * reference.getNFrames() * reference.getNSlices());
             forEachIndexedZCTSlice(reference, (ip, index) -> {
                 if(copySlices) {
                     int z = Math.min(target.getNSlices() - 1, index.getZ());

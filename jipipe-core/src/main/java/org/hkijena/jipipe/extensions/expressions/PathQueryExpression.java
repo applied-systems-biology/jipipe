@@ -41,13 +41,13 @@ public class PathQueryExpression extends DefaultExpressionParameter implements P
      * Queries a string out of the list
      *
      * @param strings              existing annotations for the data
-     * @param expressionParameters expression parameters
+     * @param expressionVariables expression parameters
      * @return the annotation that matches the query or null if none matches
      */
-    public Path queryFirst(Collection<Path> strings, ExpressionParameters expressionParameters) {
+    public Path queryFirst(Collection<Path> strings, ExpressionVariables expressionVariables) {
         for (Path string : strings) {
-            PathFilterExpressionParameterVariableSource.buildFor(string, expressionParameters);
-            if (test(expressionParameters))
+            PathFilterExpressionParameterVariableSource.buildFor(string, expressionVariables);
+            if (test(expressionVariables))
                 return string;
         }
         return null;
@@ -57,14 +57,14 @@ public class PathQueryExpression extends DefaultExpressionParameter implements P
      * Generates an annotation value
      *
      * @param strings              existing annotations for the data
-     * @param expressionParameters expression parameters
+     * @param expressionVariables expression parameters
      * @return the annotation that matches the query or null if none matches
      */
-    public java.util.List<Path> queryAll(Collection<Path> strings, ExpressionParameters expressionParameters) {
+    public java.util.List<Path> queryAll(Collection<Path> strings, ExpressionVariables expressionVariables) {
         java.util.List<Path> result = new ArrayList<>();
         for (Path string : strings) {
-            PathFilterExpressionParameterVariableSource.buildFor(string, expressionParameters);
-            if (test(expressionParameters))
+            PathFilterExpressionParameterVariableSource.buildFor(string, expressionVariables);
+            if (test(expressionVariables))
                 result.add(string);
         }
         return result;
@@ -78,7 +78,7 @@ public class PathQueryExpression extends DefaultExpressionParameter implements P
      */
     @Override
     public boolean test(Path string) {
-        return test(string, new ExpressionParameters());
+        return test(string, new ExpressionVariables());
     }
 
     /**
@@ -87,26 +87,26 @@ public class PathQueryExpression extends DefaultExpressionParameter implements P
      * @param string the string
      * @return if the query matches
      */
-    public boolean test(Path string, ExpressionParameters expressionParameters) {
+    public boolean test(Path string, ExpressionVariables expressionVariables) {
         if ("true".equals(getExpression()) || getExpression().trim().isEmpty())
             return true;
-        PathFilterExpressionParameterVariableSource.buildFor(string, expressionParameters);
-        return test(expressionParameters);
+        PathFilterExpressionParameterVariableSource.buildFor(string, expressionVariables);
+        return test(expressionVariables);
     }
 
     /**
      * Returns true of one of the strings matches the query.
      *
      * @param strings              the strings
-     * @param expressionParameters
+     * @param expressionVariables
      * @return if one string matches
      */
-    public boolean testAnyOf(Collection<Path> strings, ExpressionParameters expressionParameters) {
+    public boolean testAnyOf(Collection<Path> strings, ExpressionVariables expressionVariables) {
         if ("true".equals(getExpression()) || getExpression().trim().isEmpty())
             return true;
         for (Path string : strings) {
-            PathFilterExpressionParameterVariableSource.buildFor(string, expressionParameters);
-            if (test(expressionParameters))
+            PathFilterExpressionParameterVariableSource.buildFor(string, expressionVariables);
+            if (test(expressionVariables))
                 return true;
         }
         return false;

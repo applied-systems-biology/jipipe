@@ -27,7 +27,7 @@ import org.hkijena.jipipe.api.nodes.categories.DataSourceNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.expressions.DefaultExpressionParameter;
 import org.hkijena.jipipe.extensions.expressions.ExpressionParameterSettings;
-import org.hkijena.jipipe.extensions.expressions.ExpressionParameters;
+import org.hkijena.jipipe.extensions.expressions.ExpressionVariables;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.HyperstackDimension;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
@@ -87,7 +87,7 @@ public class GenerateVectorFromMathExpression extends JIPipeSimpleIteratingAlgor
     @Override
     protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
         ImagePlus img = IJ.createHyperStack("Generated", width, height, sizeC, sizeZ, sizeT, 32);
-        ExpressionParameters variableSet = new ExpressionParameters();
+        ExpressionVariables variableSet = new ExpressionVariables();
         variableSet.set("width", width);
         variableSet.set("height", height);
         variableSet.set("num_z", sizeZ);
@@ -185,7 +185,7 @@ public class GenerateVectorFromMathExpression extends JIPipeSimpleIteratingAlgor
         dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusData(img), progressInfo);
     }
 
-    private void generateAndWriteVectorResults(ExpressionParameters variableSet, List<ImageProcessor> resultProcessors, int y, int x) {
+    private void generateAndWriteVectorResults(ExpressionVariables variableSet, List<ImageProcessor> resultProcessors, int y, int x) {
         Object expressionResult = function.evaluate(variableSet);
         int outputVectorSize = resultProcessors.size();
         if (expressionResult instanceof List) {

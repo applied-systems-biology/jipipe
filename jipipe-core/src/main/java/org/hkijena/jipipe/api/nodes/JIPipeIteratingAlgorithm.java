@@ -27,7 +27,7 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
-import org.hkijena.jipipe.extensions.expressions.ExpressionParameters;
+import org.hkijena.jipipe.extensions.expressions.ExpressionVariables;
 import org.hkijena.jipipe.extensions.parameters.generators.IntegerRange;
 import org.hkijena.jipipe.extensions.parameters.pairs.StringQueryExpressionAndStringPairParameter;
 import org.hkijena.jipipe.utils.JsonUtils;
@@ -251,9 +251,9 @@ public abstract class JIPipeIteratingAlgorithm extends JIPipeParameterSlotAlgori
     }
 
     private void uploadAdaptiveParameters(JIPipeDataBatch dataBatch, JIPipeParameterTree tree, Map<String, Object> parameterBackups, JIPipeProgressInfo progressInfo) {
-        ExpressionParameters expressionParameters = new ExpressionParameters();
+        ExpressionVariables expressionVariables = new ExpressionVariables();
         for (JIPipeAnnotation annotation : dataBatch.getGlobalAnnotations().values()) {
-            expressionParameters.put(annotation.getName(), annotation.getValue());
+            expressionVariables.put(annotation.getName(), annotation.getValue());
         }
         for (StringQueryExpressionAndStringPairParameter overriddenParameter : getAdaptiveParameterSettings().getOverriddenParameters()) {
             String key = overriddenParameter.getValue();
@@ -263,8 +263,8 @@ public abstract class JIPipeIteratingAlgorithm extends JIPipeParameterSlotAlgori
                 continue;
             }
             Object oldValue = parameterBackups.get(key);
-            expressionParameters.put("default", oldValue);
-            Object newValue = overriddenParameter.getKey().evaluate(expressionParameters);
+            expressionVariables.put("default", oldValue);
+            Object newValue = overriddenParameter.getKey().evaluate(expressionVariables);
             if (Objects.equals(newValue, oldValue)) {
                 // No changes
                 if (getAdaptiveParameterSettings().isAttachParameterAnnotations() && !getAdaptiveParameterSettings().isAttachOnlyNonDefaultParameterAnnotations()) {

@@ -17,7 +17,7 @@ import com.google.common.collect.ImmutableSet;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.extensions.expressions.ExpressionParameterVariable;
 import org.hkijena.jipipe.extensions.expressions.ExpressionParameterVariableSource;
-import org.hkijena.jipipe.extensions.expressions.ExpressionParameters;
+import org.hkijena.jipipe.extensions.expressions.ExpressionVariables;
 
 import java.nio.file.Path;
 import java.util.Set;
@@ -41,7 +41,7 @@ public class PathFilterExpressionParameterVariableSource implements ExpressionPa
         return VARIABLES;
     }
 
-    public static void buildFor(Path path, ExpressionParameters result) {
+    public static void buildFor(Path path, ExpressionVariables result) {
         result.set("path", path.toString());
         result.set("absolute_path", path.toAbsolutePath().toString());
         result.set("name", path.getFileName().toString());

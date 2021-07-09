@@ -45,12 +45,12 @@ public class StringQueryExpression extends DefaultExpressionParameter implements
     /**
      * Attempts to run the expression. If this fails, the expression itself is returned.
      *
-     * @param expressionParameters expression parameters
+     * @param expressionVariables expression parameters
      * @return expression result or the expression itself
      */
-    public String generate(ExpressionParameters expressionParameters) {
+    public String generate(ExpressionVariables expressionVariables) {
         try {
-            Object evaluationResult = evaluate(expressionParameters);
+            Object evaluationResult = evaluate(expressionVariables);
             return StringUtils.nullToEmpty(evaluationResult);
         } catch (Exception e) {
         }
@@ -61,12 +61,12 @@ public class StringQueryExpression extends DefaultExpressionParameter implements
      * Queries a string out of the list
      *
      * @param strings              existing annotations for the data
-     * @param expressionParameters expression parameters
+     * @param expressionVariables expression parameters
      * @return the annotation that matches the query or null if none matches
      */
-    public String queryFirst(Collection<String> strings, ExpressionParameters expressionParameters) {
+    public String queryFirst(Collection<String> strings, ExpressionVariables expressionVariables) {
         try {
-            Object evaluationResult = evaluate(expressionParameters);
+            Object evaluationResult = evaluate(expressionVariables);
             if (evaluationResult instanceof String) {
                 String key = (String) evaluationResult;
                 if (strings.contains(key))
@@ -76,8 +76,8 @@ public class StringQueryExpression extends DefaultExpressionParameter implements
         }
         for (String string : strings) {
             try {
-                expressionParameters.set("value", string);
-                Object evaluationResult = evaluate(expressionParameters);
+                expressionVariables.set("value", string);
+                Object evaluationResult = evaluate(expressionVariables);
                 if (evaluationResult instanceof Boolean && (boolean) evaluationResult)
                     return string;
             } catch (Exception e) {
@@ -92,13 +92,13 @@ public class StringQueryExpression extends DefaultExpressionParameter implements
      * Generates an annotation value
      *
      * @param strings              existing annotations for the data
-     * @param expressionParameters expression parameters
+     * @param expressionVariables expression parameters
      * @return the annotation that matches the query or null if none matches
      */
-    public java.util.List<String> queryAll(Collection<String> strings, ExpressionParameters expressionParameters) {
+    public java.util.List<String> queryAll(Collection<String> strings, ExpressionVariables expressionVariables) {
         java.util.List<String> result = new ArrayList<>();
         try {
-            Object evaluationResult = evaluate(expressionParameters);
+            Object evaluationResult = evaluate(expressionVariables);
             if (evaluationResult instanceof String) {
                 String key = (String) evaluationResult;
                 if (strings.contains(key))
@@ -110,8 +110,8 @@ public class StringQueryExpression extends DefaultExpressionParameter implements
             return result;
         for (String string : strings) {
             try {
-                expressionParameters.set("value", string);
-                Object evaluationResult = evaluate(expressionParameters);
+                expressionVariables.set("value", string);
+                Object evaluationResult = evaluate(expressionVariables);
                 if (evaluationResult instanceof Boolean && (boolean) evaluationResult)
                     result.add(string);
             } catch (Exception e) {
@@ -130,7 +130,7 @@ public class StringQueryExpression extends DefaultExpressionParameter implements
      */
     @Override
     public boolean test(String string) {
-        return test(string, new ExpressionParameters());
+        return test(string, new ExpressionVariables());
     }
 
     /**
@@ -139,12 +139,12 @@ public class StringQueryExpression extends DefaultExpressionParameter implements
      * @param string the string
      * @return if the query matches
      */
-    public boolean test(String string, ExpressionParameters expressionParameters) {
+    public boolean test(String string, ExpressionVariables expressionVariables) {
         if ("true".equals(getExpression()) || getExpression().trim().isEmpty())
             return true;
-        expressionParameters.set("value", string);
+        expressionVariables.set("value", string);
         try {
-            Object evaluationResult = evaluate(expressionParameters);
+            Object evaluationResult = evaluate(expressionVariables);
             if (evaluationResult instanceof String) {
                 String key = (String) evaluationResult;
                 if (Objects.equals(key, string))
@@ -166,7 +166,7 @@ public class StringQueryExpression extends DefaultExpressionParameter implements
     public boolean testAnyOf(Collection<String> strings) {
         if ("true".equals(getExpression()) || getExpression().trim().isEmpty())
             return true;
-        ExpressionParameters variableSet = new ExpressionParameters();
+        ExpressionVariables variableSet = new ExpressionVariables();
         for (String string : strings) {
             try {
                 variableSet.set("value", string);

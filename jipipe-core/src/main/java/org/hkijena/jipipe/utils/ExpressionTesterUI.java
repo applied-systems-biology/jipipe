@@ -26,7 +26,7 @@ import org.hkijena.jipipe.extensions.expressions.DefaultExpressionParameter;
 import org.hkijena.jipipe.extensions.expressions.DefaultExpressionParameterEditorUI;
 import org.hkijena.jipipe.extensions.expressions.ExpressionFunction;
 import org.hkijena.jipipe.extensions.expressions.ExpressionOperatorEntry;
-import org.hkijena.jipipe.extensions.expressions.ExpressionParameters;
+import org.hkijena.jipipe.extensions.expressions.ExpressionVariables;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.JIPipeWorkbenchPanel;
 import org.hkijena.jipipe.ui.components.MarkdownDocument;
@@ -130,7 +130,7 @@ public class ExpressionTesterUI extends JIPipeWorkbenchPanel {
         resultOutput.append("<td><pre>").append(HtmlEscapers.htmlEscaper().escape(expressionToEvaluate)).append("</pre></td></tr>");
         Object result;
         try {
-            result = evaluator.evaluate(expressionToEvaluate, new ExpressionParameters());
+            result = evaluator.evaluate(expressionToEvaluate, new ExpressionVariables());
             if (result instanceof Collection) {
                 List<Object> values = new ArrayList<>();
                 for (Object item : (Collection<?>) result) {

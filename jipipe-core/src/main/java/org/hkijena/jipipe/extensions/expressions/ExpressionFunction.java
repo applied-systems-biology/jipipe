@@ -36,7 +36,7 @@ public abstract class ExpressionFunction extends Function {
      * @param variables  the set of current variables
      * @return the result
      */
-    public abstract Object evaluate(List<Object> parameters, ExpressionParameters variables);
+    public abstract Object evaluate(List<Object> parameters, ExpressionVariables variables);
 
     /**
      * Returns info about the parameter at index

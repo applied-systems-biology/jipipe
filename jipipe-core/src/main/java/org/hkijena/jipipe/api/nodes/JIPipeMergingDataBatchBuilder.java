@@ -15,7 +15,7 @@ import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.data.JIPipeDataSlotInfo;
 import org.hkijena.jipipe.api.data.JIPipeSlotType;
 import org.hkijena.jipipe.extensions.expressions.DefaultExpressionParameter;
-import org.hkijena.jipipe.extensions.expressions.ExpressionParameters;
+import org.hkijena.jipipe.extensions.expressions.ExpressionVariables;
 import org.hkijena.jipipe.extensions.expressions.StringQueryExpression;
 import org.hkijena.jipipe.extensions.settings.ExtensionSettings;
 import org.hkijena.jipipe.extensions.strings.StringData;
@@ -117,7 +117,7 @@ public class JIPipeMergingDataBatchBuilder {
         for (JIPipeDataSlot slot : slots.values()) {
             result.addAll(slot.getAnnotationColumns());
         }
-        return new HashSet<>(expression.queryAll(result, new ExpressionParameters()));
+        return new HashSet<>(expression.queryAll(result, new ExpressionVariables()));
     }
 
     public Set<String> getInputAnnotationColumnIntersection(String prefix) {
@@ -641,11 +641,11 @@ public class JIPipeMergingDataBatchBuilder {
             if (annotationMatchingMethod == JIPipeAnnotationMatchingMethod.ExactMatch) {
                 return exactMatchResults;
             } else {
-                ExpressionParameters expressionParameters = new ExpressionParameters();
-                expressionParameters.put("annotations", annotations);
-                expressionParameters.put("other_annotations", otherNode.annotations);
-                expressionParameters.put("exact_match_results", exactMatchResults);
-                return customAnnotationMatching.test(expressionParameters);
+                ExpressionVariables expressionVariables = new ExpressionVariables();
+                expressionVariables.put("annotations", annotations);
+                expressionVariables.put("other_annotations", otherNode.annotations);
+                expressionVariables.put("exact_match_results", exactMatchResults);
+                return customAnnotationMatching.test(expressionVariables);
             }
         }
 

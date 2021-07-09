@@ -26,7 +26,7 @@ import org.hkijena.jipipe.api.nodes.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.nodes.categories.FileSystemNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeContextAction;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
-import org.hkijena.jipipe.extensions.expressions.ExpressionParameters;
+import org.hkijena.jipipe.extensions.expressions.ExpressionVariables;
 import org.hkijena.jipipe.extensions.expressions.PathQueryExpression;
 import org.hkijena.jipipe.extensions.filesystem.dataypes.PathData;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
@@ -80,9 +80,9 @@ public class FilterPaths extends JIPipeSimpleIteratingAlgorithm {
     @Override
     protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
         // Expression parameters from annotations
-        ExpressionParameters expressionParameters = new ExpressionParameters();
+        ExpressionVariables expressionVariables = new ExpressionVariables();
         for (JIPipeAnnotation annotation : dataBatch.getGlobalAnnotations().values()) {
-            expressionParameters.set(annotation.getName(), annotation.getValue());
+            expressionVariables.set(annotation.getName(), annotation.getValue());
         }
 
         PathData inputData = dataBatch.getInputData(getFirstInputSlot(), PathData.class, progressInfo);
@@ -90,7 +90,7 @@ public class FilterPaths extends JIPipeSimpleIteratingAlgorithm {
         Path inputPath = inputData.toPath();
         if (!canOutput(inputPath))
             return;
-        if (filters.test(inputPath, expressionParameters)) {
+        if (filters.test(inputPath, expressionVariables)) {
             dataBatch.addOutputData(firstOutputSlot, inputData, progressInfo);
         }
     }

@@ -45,6 +45,10 @@ public class ExpressionExtension extends JIPipePrepackagedDefaultJavaExtension {
                 "A mathematical or conditional logic expression",
                 DefaultExpressionParameterEditorUI.class);
         registerParameterEditor(DefaultExpressionParameter.class, DefaultExpressionParameterEditorUI.class);
+        registerParameterType("optional-expression",
+                OptionalDefaultExpressionParameter.class,
+                "Optional expression",
+                "A mathematical or conditional logic expression");
         registerParameterType("table-column-source",
                 TableColumnSourceExpressionParameter.class,
                 TableColumnSourceExpressionParameter::new,
