@@ -44,6 +44,19 @@ public class GraphEditorUISettings implements JIPipeParameterCollection {
     private boolean showRunNodeButton = true;
     private boolean showSettingsNodeButton = false;
     private boolean accurateMiniMap = false;
+    private boolean drawNodeShadows = true;
+
+    @JIPipeDocumentation(name = "Draw node shadows", description = "If enabled, shadows are drawn for nodes as visual guide. " +
+            "If you have issues with the performance, you should disable this setting.")
+    @JIPipeParameter("draw-node-shadows")
+    public boolean isDrawNodeShadows() {
+        return drawNodeShadows;
+    }
+
+    @JIPipeParameter("draw-node-shadows")
+    public void setDrawNodeShadows(boolean drawNodeShadows) {
+        this.drawNodeShadows = drawNodeShadows;
+    }
 
     @JIPipeDocumentation(name = "Accurate minimap", description = "If enabled, the minimap shows a screenshot of the whole graph. " +
             "Please note that this is slower than the standard overview map. To apply this setting, you must re-open the graph or reload the project.")

@@ -32,6 +32,7 @@ import org.hkijena.jipipe.extensions.core.nodes.JIPipeCommentNode;
 import org.hkijena.jipipe.extensions.settings.GraphEditorUISettings;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.JIPipeWorkbenchPanel;
+import org.hkijena.jipipe.ui.components.DropShadowRenderer;
 import org.hkijena.jipipe.ui.components.ZoomViewPort;
 import org.hkijena.jipipe.ui.grapheditor.actions.JIPipeNodeUIAction;
 import org.hkijena.jipipe.ui.grapheditor.actions.OpenContextMenuAction;
@@ -67,6 +68,14 @@ import java.util.stream.Collectors;
  */
 public class JIPipeGraphCanvasUI extends JIPipeWorkbenchPanel implements MouseMotionListener, MouseListener, MouseWheelListener, ZoomViewPort {
 
+    public static final DropShadowRenderer DROP_SHADOW_BORDER = new DropShadowRenderer(Color.BLACK,
+            5,
+            0.3f,
+            12,
+            true,
+            true,
+            true,
+            true);
     public static final Stroke STROKE_UNIT = new BasicStroke(1);
     public static final Stroke STROKE_UNIT_COMMENT = new BasicStroke(1, BasicStroke.CAP_ROUND, BasicStroke.JOIN_BEVEL, 0, new float[]{1}, 0);
     public static final Stroke STROKE_DEFAULT = new BasicStroke(2);
@@ -77,10 +86,10 @@ public class JIPipeGraphCanvasUI extends JIPipeWorkbenchPanel implements MouseMo
     public static final Stroke STROKE_COMMENT_HIGHLIGHT = new BasicStroke(4, BasicStroke.CAP_ROUND, BasicStroke.JOIN_BEVEL, 0, new float[]{8}, 0);
     private static final Color COMMENT_EDGE_COLOR = new Color(194, 141, 0);
 
-    public static final Color SHADOW_BASE_COLOR = Color.BLACK;
-    public static final int SHADOW_BASE_OPACITY = 30;
-    public static final int SHADOW_WIDTH = 5;
-    public static final int SHADOW_SHIFT = 2;
+//    public static final Color SHADOW_BASE_COLOR = Color.BLACK;
+//    public static final int SHADOW_BASE_OPACITY = 30;
+//    public static final int SHADOW_WIDTH = 5;
+//    public static final int SHADOW_SHIFT = 2;
 
     private final ImageIcon cursorImage = UIUtils.getIconFromResources("actions/target.png");
     private final JIPipeGraph graph;
@@ -1027,7 +1036,11 @@ public class JIPipeGraphCanvasUI extends JIPipeWorkbenchPanel implements MouseMo
 //                        ui.getHeight() + 2 * i - SHADOW_SHIFT);
 //            }
 //        }
-
+        if(settings.isDrawNodeShadows()) {
+            for (JIPipeNodeUI ui : nodeUIs.values()) {
+                DROP_SHADOW_BORDER.paint(g, ui.getX() - 3, ui.getY() - 3, ui.getWidth() + 8, ui.getHeight() + 8);
+            }
+        }
 
         g.setStroke(STROKE_DEFAULT);
         graphics.setColor(Color.LIGHT_GRAY);
