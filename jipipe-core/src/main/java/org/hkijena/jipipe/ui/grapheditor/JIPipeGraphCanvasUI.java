@@ -684,7 +684,7 @@ public class JIPipeGraphCanvasUI extends JIPipeWorkbenchPanel implements MouseMo
         }
 //        if (getParent() != null)
 //            getParent().revalidate();
-//        repaint();
+        repaint();
     }
 
     /**
@@ -1523,13 +1523,13 @@ public class JIPipeGraphCanvasUI extends JIPipeWorkbenchPanel implements MouseMo
         TIntArrayList xCoords = new TIntArrayList(8);
         TIntArrayList yCoords = new TIntArrayList(8);
 
+        addElbowPolygonCoordinate(a0, b0, scale, viewX, viewY, xCoords, yCoords);
+
         // Target point is above the source. We have to navigate around it
         if (sourceA > targetA) {
             // Add some space in major direction
             a1 += buffer;
-            addElbowPolygonCoordinate(a0, b0, a1, b1, scale, viewX, viewY, xCoords, yCoords);
-            a0 = a1;
-            b0 = b1;
+            addElbowPolygonCoordinate(a1, b1, scale, viewX, viewY, xCoords, yCoords);
 
             // Go left or right
             if (targetB <= b1) {
@@ -1537,56 +1537,42 @@ public class JIPipeGraphCanvasUI extends JIPipeWorkbenchPanel implements MouseMo
             } else {
                 b1 = componentEndB + buffer;
             }
-            addElbowPolygonCoordinate(a0, b0, a1, b1, scale, viewX, viewY, xCoords, yCoords);
-            a0 = a1;
-            b0 = b1;
+            addElbowPolygonCoordinate(a1, b1, scale, viewX, viewY, xCoords, yCoords);
 
             // Go to target height
             a1 = Math.max(0, targetA - buffer);
-            addElbowPolygonCoordinate(a0, b0, a1, b1, scale, viewX, viewY, xCoords, yCoords);
-            a0 = a1;
-            b0 = b1;
+            addElbowPolygonCoordinate(a1, b1, scale, viewX, viewY, xCoords, yCoords);
         } else if (sourceB != targetB) {
             // Add some space in major direction
             int dA = targetA - sourceA;
             a1 = Math.min(sourceA + buffer, sourceA + dA / 2);
-            addElbowPolygonCoordinate(a0, b0, a1, b1, scale, viewX, viewY, xCoords, yCoords);
-            a0 = a1;
-            b0 = b1;
+            addElbowPolygonCoordinate(a1, b1, scale, viewX, viewY, xCoords, yCoords);
         }
 
         // Target point X is shifted
         if (b1 != targetB) {
             b1 = targetB;
-            addElbowPolygonCoordinate(a0, b0, a1, b1, scale, viewX, viewY, xCoords, yCoords);
-            a0 = a1;
-            b0 = b1;
+            addElbowPolygonCoordinate(a1, b1, scale, viewX, viewY, xCoords, yCoords);
         }
 
         // Go to end point
         a1 = targetA;
-        addElbowPolygonCoordinate(a0, b0, a1, b1, scale, viewX, viewY, xCoords, yCoords);
+        addElbowPolygonCoordinate(a1, b1, scale, viewX, viewY, xCoords, yCoords);
 
         // Draw the polygon
         g.drawPolyline(xCoords.toArray(), yCoords.toArray(), xCoords.size());
     }
 
-    private void addElbowPolygonCoordinate(int a0, int b0, int a1, int b1, double scale, int viewX, int viewY, TIntList xCoords, TIntList yCoords) {
-        int x1, y1, x2, y2;
+    private void addElbowPolygonCoordinate(int a1, int b1, double scale, int viewX, int viewY, TIntList xCoords, TIntList yCoords) {
+        int x2, y2;
         if (viewMode == JIPipeGraphViewMode.Horizontal) {
-            x1 = (int) (a0 * scale) + viewX;
-            y1 = (int) (b0 * scale) + viewY;
             x2 = (int) (a1 * scale) + viewX;
             y2 = (int) (b1 * scale) + viewY;
         } else {
-            x1 = (int) (b0 * scale) + viewX;
-            y1 = (int) (a0 * scale) + viewY;
             x2 = (int) (b1 * scale) + viewX;
             y2 = (int) (a1 * scale) + viewY;
         }
-        xCoords.add(x1);
         xCoords.add(x2);
-        yCoords.add(y1);
         yCoords.add(y2);
     }
 
