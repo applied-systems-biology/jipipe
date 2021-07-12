@@ -16,9 +16,10 @@ package org.hkijena.jipipe.extensions.parameters.primitives;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.extensions.settings.FileChooserSettings;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
-import org.hkijena.jipipe.ui.components.PathEditor;
 import org.hkijena.jipipe.ui.components.PathListCellRenderer;
 import org.hkijena.jipipe.ui.parameters.JIPipeParameterEditorUI;
+import org.hkijena.jipipe.utils.PathIOMode;
+import org.hkijena.jipipe.utils.PathType;
 import org.hkijena.jipipe.utils.RoundedLineBorder;
 import org.hkijena.jipipe.utils.UIUtils;
 
@@ -38,8 +39,8 @@ public class PathListParameterEditorUI extends JIPipeParameterEditorUI {
     private final JLabel emptyLabel = new JLabel("<html><strong>This list is empty</strong><br/>Click 'Add' to add items.</html>",
             UIUtils.getIcon32FromResources("info.png"), JLabel.LEFT);
     private JList<Path> listPanel;
-    private PathEditor.IOMode ioMode = PathEditor.IOMode.Open;
-    private PathEditor.PathMode pathMode = PathEditor.PathMode.FilesOnly;
+    private PathIOMode ioMode = PathIOMode.Open;
+    private PathType pathMode = PathType.FilesOnly;
 
     /**
      * @param workbench       workbench
@@ -53,7 +54,7 @@ public class PathListParameterEditorUI extends JIPipeParameterEditorUI {
     }
 
     private void initializeFileSelection() {
-        FilePathParameterSettings settings = getParameterAccess().getAnnotationOfType(FilePathParameterSettings.class);
+        PathParameterSettings settings = getParameterAccess().getAnnotationOfType(PathParameterSettings.class);
         if (settings != null) {
             ioMode = settings.ioMode();
             pathMode = settings.pathMode();
@@ -139,7 +140,7 @@ public class PathListParameterEditorUI extends JIPipeParameterEditorUI {
     private void addEntry() {
         PathList parameter = getParameter(PathList.class);
         FileChooserSettings.LastDirectoryKey key = FileChooserSettings.LastDirectoryKey.Parameters;
-        FilePathParameterSettings annotation = getParameterAccess().getAnnotationOfType(FilePathParameterSettings.class);
+        PathParameterSettings annotation = getParameterAccess().getAnnotationOfType(PathParameterSettings.class);
         if (annotation != null) {
             key = annotation.key();
         }

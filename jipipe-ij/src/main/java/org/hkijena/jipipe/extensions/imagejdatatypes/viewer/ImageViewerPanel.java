@@ -41,6 +41,8 @@ import org.hkijena.jipipe.ui.components.FormPanel;
 import org.hkijena.jipipe.ui.components.PathEditor;
 import org.hkijena.jipipe.ui.running.JIPipeRunExecuterUI;
 import org.hkijena.jipipe.utils.CopyImageToClipboard;
+import org.hkijena.jipipe.utils.PathIOMode;
+import org.hkijena.jipipe.utils.PathType;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 
@@ -417,7 +419,7 @@ public class ImageViewerPanel extends JPanel {
 
     public void exportAllSlicesToPNG() {
         FormPanel formPanel = new FormPanel(null, FormPanel.NONE);
-        PathEditor exportPathEditor = new PathEditor(PathEditor.IOMode.Open, PathEditor.PathMode.DirectoriesOnly);
+        PathEditor exportPathEditor = new PathEditor(PathIOMode.Open, PathType.DirectoriesOnly);
         exportPathEditor.setPath(FileChooserSettings.getInstance().getLastDataDirectory());
         formPanel.addToForm(exportPathEditor, new JLabel("Target directory"), null);
 
@@ -448,7 +450,7 @@ public class ImageViewerPanel extends JPanel {
 
     public void exportVideo() {
         FormPanel formPanel = new FormPanel(null, FormPanel.NONE);
-        PathEditor exportPathEditor = new PathEditor(PathEditor.IOMode.Save, PathEditor.PathMode.FilesOnly);
+        PathEditor exportPathEditor = new PathEditor(PathIOMode.Save, PathType.FilesOnly);
         exportPathEditor.setPath(FileChooserSettings.getInstance().getLastDataDirectory());
         formPanel.addToForm(exportPathEditor, new JLabel("Exported file"), null);
 

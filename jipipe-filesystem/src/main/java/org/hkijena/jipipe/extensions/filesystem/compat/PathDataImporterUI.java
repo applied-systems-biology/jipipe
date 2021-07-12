@@ -16,6 +16,8 @@ package org.hkijena.jipipe.extensions.filesystem.compat;
 import org.hkijena.jipipe.api.compat.ImageJDatatypeImporter;
 import org.hkijena.jipipe.ui.compat.ImageJDatatypeImporterUI;
 import org.hkijena.jipipe.ui.components.PathEditor;
+import org.hkijena.jipipe.utils.PathIOMode;
+import org.hkijena.jipipe.utils.PathType;
 
 import java.awt.BorderLayout;
 
@@ -36,7 +38,7 @@ public class PathDataImporterUI extends ImageJDatatypeImporterUI {
 
     private void initialize() {
         setLayout(new BorderLayout());
-        pathEditor = new PathEditor(PathEditor.IOMode.Open, PathEditor.PathMode.FilesAndDirectories);
+        pathEditor = new PathEditor(PathIOMode.Open, PathType.FilesAndDirectories);
         pathEditor.addActionListener(e -> getImporter().setParameters("" + pathEditor.getPath()));
         add(pathEditor, BorderLayout.CENTER);
     }

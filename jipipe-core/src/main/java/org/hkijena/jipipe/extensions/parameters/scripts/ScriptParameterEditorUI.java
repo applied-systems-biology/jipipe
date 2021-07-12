@@ -17,14 +17,15 @@ import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.parameters.JIPipeDummyParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeManualParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
-import org.hkijena.jipipe.extensions.parameters.primitives.FilePathParameterSettings;
+import org.hkijena.jipipe.extensions.parameters.primitives.PathParameterSettings;
 import org.hkijena.jipipe.extensions.settings.FileChooserSettings;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.components.DocumentChangeListener;
 import org.hkijena.jipipe.ui.components.DocumentTabPane;
 import org.hkijena.jipipe.ui.components.FormPanel;
-import org.hkijena.jipipe.ui.components.PathEditor;
 import org.hkijena.jipipe.ui.parameters.JIPipeParameterEditorUI;
+import org.hkijena.jipipe.utils.PathIOMode;
+import org.hkijena.jipipe.utils.PathType;
 import org.hkijena.jipipe.utils.ReflectionUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.scijava.ui.swing.script.EditorPane;
@@ -162,20 +163,20 @@ public class ScriptParameterEditorUI extends JIPipeParameterEditorUI {
                             .setSetter((Object p) -> code.getExternalScriptFile().setContent((Path) p))
                             .setSource(new JIPipeDummyParameterCollection())
                             .setKey("external-path")
-                            .addAnnotation(new FilePathParameterSettings() {
+                            .addAnnotation(new PathParameterSettings() {
                                 @Override
                                 public Class<? extends Annotation> annotationType() {
-                                    return FilePathParameterSettings.class;
+                                    return PathParameterSettings.class;
                                 }
 
                                 @Override
-                                public PathEditor.IOMode ioMode() {
-                                    return PathEditor.IOMode.Open;
+                                public PathIOMode ioMode() {
+                                    return PathIOMode.Open;
                                 }
 
                                 @Override
-                                public PathEditor.PathMode pathMode() {
-                                    return PathEditor.PathMode.FilesOnly;
+                                public PathType pathMode() {
+                                    return PathType.FilesOnly;
                                 }
 
                                 @Override

@@ -17,9 +17,10 @@ import com.google.common.eventbus.EventBus;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
-import org.hkijena.jipipe.extensions.parameters.primitives.FilePathParameterSettings;
+import org.hkijena.jipipe.extensions.parameters.primitives.PathParameterSettings;
 import org.hkijena.jipipe.extensions.settings.RuntimeSettings;
-import org.hkijena.jipipe.ui.components.PathEditor;
+import org.hkijena.jipipe.utils.PathIOMode;
+import org.hkijena.jipipe.utils.PathType;
 
 import java.nio.file.Path;
 
@@ -52,7 +53,7 @@ public class QuickRunSettings implements JIPipeParameterCollection {
             "By default, this is a temporary directory. But for some cases, the result data might be too large for a temporary directory. " +
             "In this case, please select a directory that can hold the data.")
     @JIPipeParameter(value = "output-path", uiOrder = -999)
-    @FilePathParameterSettings(ioMode = PathEditor.IOMode.Save, pathMode = PathEditor.PathMode.DirectoriesOnly)
+    @PathParameterSettings(ioMode = PathIOMode.Save, pathMode = PathType.DirectoriesOnly)
     public Path getOutputPath() {
         return outputPath;
     }

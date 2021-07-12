@@ -8,15 +8,16 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.extensions.expressions.DefaultExpressionParameter;
-import org.hkijena.jipipe.extensions.parameters.primitives.FilePathParameterSettings;
+import org.hkijena.jipipe.extensions.parameters.primitives.PathParameterSettings;
 import org.hkijena.jipipe.extensions.python.OptionalPythonEnvironment;
 import org.hkijena.jipipe.extensions.python.PythonEnvironment;
 import org.hkijena.jipipe.extensions.python.PythonEnvironmentType;
 import org.hkijena.jipipe.extensions.settings.FileChooserSettings;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.components.MarkdownDocument;
-import org.hkijena.jipipe.ui.components.PathEditor;
 import org.hkijena.jipipe.ui.parameters.ParameterPanel;
+import org.hkijena.jipipe.utils.PathIOMode;
+import org.hkijena.jipipe.utils.PathType;
 
 import javax.swing.*;
 import java.nio.file.Path;
@@ -118,7 +119,7 @@ public class SelectSystemPythonInstaller extends ExternalEnvironmentInstaller {
         @JIPipeDocumentation(name = "Python executable", description = "The executable of the system Python. " +
                 "On Windows this is usually %appdata%\\..\\Local\\Programs\\Python\\PythonXX\\python.exe (XX is the Python version). " +
                 "On Linux, Python is located in /usr/local/bin/python")
-        @FilePathParameterSettings(ioMode = PathEditor.IOMode.Open, pathMode = PathEditor.PathMode.FilesOnly, key = FileChooserSettings.LastDirectoryKey.External)
+        @PathParameterSettings(ioMode = PathIOMode.Open, pathMode = PathType.FilesOnly, key = FileChooserSettings.LastDirectoryKey.External)
         @JIPipeParameter("python-executable")
         public Path getPythonExecutable() {
             return pythonExecutable;

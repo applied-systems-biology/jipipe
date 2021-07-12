@@ -32,12 +32,13 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
 import org.hkijena.jipipe.extensions.multiparameters.datatypes.ParametersData;
-import org.hkijena.jipipe.extensions.parameters.primitives.FilePathParameterSettings;
+import org.hkijena.jipipe.extensions.parameters.primitives.PathParameterSettings;
 import org.hkijena.jipipe.extensions.parameters.primitives.OptionalIntegerParameter;
 import org.hkijena.jipipe.extensions.settings.RuntimeSettings;
 import org.hkijena.jipipe.extensions.utils.datatypes.JIPipeOutputData;
-import org.hkijena.jipipe.ui.components.PathEditor;
 import org.hkijena.jipipe.ui.settings.JIPipeProjectInfoParameters;
+import org.hkijena.jipipe.utils.PathIOMode;
+import org.hkijena.jipipe.utils.PathType;
 
 import java.io.IOException;
 import java.nio.file.Path;
@@ -159,7 +160,7 @@ public class RunJIPipeProjectAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     }
 
     @JIPipeDocumentation(name = "Project file", description = "The project file")
-    @FilePathParameterSettings(pathMode = PathEditor.PathMode.FilesOnly, ioMode = PathEditor.IOMode.Open, extensions = {"jip"})
+    @PathParameterSettings(pathMode = PathType.FilesOnly, ioMode = PathIOMode.Open, extensions = {"jip"})
     @JIPipeParameter("project-file")
     public Path getProjectFile() {
         return projectFile;

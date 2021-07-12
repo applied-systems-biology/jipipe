@@ -25,8 +25,9 @@ import org.hkijena.jipipe.api.nodes.categories.DataSourceNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.filesystem.FilesystemExtensionSettings;
 import org.hkijena.jipipe.extensions.filesystem.dataypes.FileData;
-import org.hkijena.jipipe.extensions.parameters.primitives.FilePathParameterSettings;
-import org.hkijena.jipipe.ui.components.PathEditor;
+import org.hkijena.jipipe.extensions.parameters.primitives.PathParameterSettings;
+import org.hkijena.jipipe.utils.PathIOMode;
+import org.hkijena.jipipe.utils.PathType;
 import org.hkijena.jipipe.utils.PathUtils;
 
 import java.nio.file.Files;
@@ -76,7 +77,7 @@ public class FileDataSource extends JIPipeAlgorithm {
      */
     @JIPipeParameter("file-name")
     @JIPipeDocumentation(name = "File name")
-    @FilePathParameterSettings(ioMode = PathEditor.IOMode.Open, pathMode = PathEditor.PathMode.FilesOnly)
+    @PathParameterSettings(ioMode = PathIOMode.Open, pathMode = PathType.FilesOnly)
     public Path getFileName() {
         return fileName;
     }

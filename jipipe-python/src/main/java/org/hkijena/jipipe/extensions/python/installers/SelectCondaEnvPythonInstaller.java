@@ -9,7 +9,7 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.extensions.expressions.DefaultExpressionEvaluator;
 import org.hkijena.jipipe.extensions.expressions.DefaultExpressionParameter;
-import org.hkijena.jipipe.extensions.parameters.primitives.FilePathParameterSettings;
+import org.hkijena.jipipe.extensions.parameters.primitives.PathParameterSettings;
 import org.hkijena.jipipe.extensions.parameters.primitives.OptionalPathParameter;
 import org.hkijena.jipipe.extensions.parameters.primitives.StringParameterSettings;
 import org.hkijena.jipipe.extensions.python.OptionalPythonEnvironment;
@@ -18,8 +18,9 @@ import org.hkijena.jipipe.extensions.python.PythonEnvironmentType;
 import org.hkijena.jipipe.extensions.settings.FileChooserSettings;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.components.MarkdownDocument;
-import org.hkijena.jipipe.ui.components.PathEditor;
 import org.hkijena.jipipe.ui.parameters.ParameterPanel;
+import org.hkijena.jipipe.utils.PathIOMode;
+import org.hkijena.jipipe.utils.PathType;
 
 import javax.swing.*;
 import java.nio.file.Path;
@@ -134,7 +135,7 @@ public class SelectCondaEnvPythonInstaller extends ExternalEnvironmentInstaller 
         }
 
         @JIPipeDocumentation(name = "Conda executable", description = "The conda executable. Located in the Miniconda/Anaconda folder. On Windows it is inside the Scripts directory.")
-        @FilePathParameterSettings(ioMode = PathEditor.IOMode.Open, pathMode = PathEditor.PathMode.FilesOnly, key = FileChooserSettings.LastDirectoryKey.External)
+        @PathParameterSettings(ioMode = PathIOMode.Open, pathMode = PathType.FilesOnly, key = FileChooserSettings.LastDirectoryKey.External)
         @JIPipeParameter("conda-executable")
         public Path getCondaExecutable() {
             return condaExecutable;
@@ -159,7 +160,7 @@ public class SelectCondaEnvPythonInstaller extends ExternalEnvironmentInstaller 
 
         @JIPipeDocumentation(name = "Override environment path", description = "Alternative to using an environment name. You can provide " +
                 "the environment directory here.")
-        @FilePathParameterSettings(ioMode = PathEditor.IOMode.Open, pathMode = PathEditor.PathMode.DirectoriesOnly, key = FileChooserSettings.LastDirectoryKey.External)
+        @PathParameterSettings(ioMode = PathIOMode.Open, pathMode = PathType.DirectoriesOnly, key = FileChooserSettings.LastDirectoryKey.External)
         @JIPipeParameter("override-environment")
         public OptionalPathParameter getOverrideEnvironment() {
             return overrideEnvironment;

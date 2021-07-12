@@ -14,7 +14,8 @@
 package org.hkijena.jipipe.extensions.parameters.primitives;
 
 import org.hkijena.jipipe.extensions.settings.FileChooserSettings;
-import org.hkijena.jipipe.ui.components.PathEditor;
+import org.hkijena.jipipe.utils.PathIOMode;
+import org.hkijena.jipipe.utils.PathType;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -26,16 +27,16 @@ import java.lang.annotation.Target;
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.METHOD)
-public @interface FilePathParameterSettings {
+public @interface PathParameterSettings {
     /**
      * @return If the path is an input or an output
      */
-    PathEditor.IOMode ioMode();
+    PathIOMode ioMode();
 
     /**
      * @return If the path should be a file, directory or anything
      */
-    PathEditor.PathMode pathMode();
+    PathType pathMode();
 
     /**
      * @return File extensions that should be preferred. Only the extension (without period)

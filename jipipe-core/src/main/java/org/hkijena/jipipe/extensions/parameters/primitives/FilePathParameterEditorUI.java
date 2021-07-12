@@ -18,6 +18,8 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.components.PathEditor;
 import org.hkijena.jipipe.ui.parameters.JIPipeParameterEditorUI;
+import org.hkijena.jipipe.utils.PathIOMode;
+import org.hkijena.jipipe.utils.PathType;
 
 import java.awt.BorderLayout;
 import java.nio.file.Path;
@@ -51,8 +53,8 @@ public class FilePathParameterEditorUI extends JIPipeParameterEditorUI {
 
     private void initialize() {
         setLayout(new BorderLayout());
-        pathEditor = new PathEditor(PathEditor.IOMode.Open, PathEditor.PathMode.FilesOnly);
-        FilePathParameterSettings settings = getParameterAccess().getAnnotationOfType(FilePathParameterSettings.class);
+        pathEditor = new PathEditor(PathIOMode.Open, PathType.FilesOnly);
+        PathParameterSettings settings = getParameterAccess().getAnnotationOfType(PathParameterSettings.class);
         if (settings != null) {
             pathEditor.setIoMode(settings.ioMode());
             pathEditor.setPathMode(settings.pathMode());

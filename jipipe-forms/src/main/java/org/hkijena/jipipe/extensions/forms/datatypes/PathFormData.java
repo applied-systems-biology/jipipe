@@ -10,11 +10,12 @@ import org.hkijena.jipipe.api.parameters.JIPipeManualParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.expressions.StringQueryExpression;
 import org.hkijena.jipipe.extensions.forms.utils.SingleAnnotationIOSettings;
-import org.hkijena.jipipe.extensions.parameters.primitives.FilePathParameterSettings;
+import org.hkijena.jipipe.extensions.parameters.primitives.PathParameterSettings;
 import org.hkijena.jipipe.extensions.parameters.primitives.StringList;
 import org.hkijena.jipipe.extensions.settings.FileChooserSettings;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
-import org.hkijena.jipipe.ui.components.PathEditor;
+import org.hkijena.jipipe.utils.PathIOMode;
+import org.hkijena.jipipe.utils.PathType;
 import org.hkijena.jipipe.utils.StringUtils;
 
 import java.awt.Component;
@@ -29,8 +30,8 @@ public class PathFormData extends ParameterFormData {
     private Path value = Paths.get("");
     private StringQueryExpression validationExpression = new StringQueryExpression("value != \"\"");
     private SingleAnnotationIOSettings annotationIOSettings = new SingleAnnotationIOSettings();
-    private PathEditor.PathMode pathType = PathEditor.PathMode.FilesAndDirectories;
-    private PathEditor.IOMode ioMode = PathEditor.IOMode.Open;
+    private PathType pathType = PathType.FilesAndDirectories;
+    private PathIOMode ioMode = PathIOMode.Open;
     private StringList extensions = new StringList();
 
     public PathFormData() {
@@ -50,7 +51,7 @@ public class PathFormData extends ParameterFormData {
 
     @JIPipeDocumentation(name = "Initial value", description = "The initial string value")
     @JIPipeParameter("initial-value")
-    @FilePathParameterSettings(pathMode = PathEditor.PathMode.FilesAndDirectories, ioMode = PathEditor.IOMode.Open)
+    @PathParameterSettings(pathMode = PathType.FilesAndDirectories, ioMode = PathIOMode.Open)
     public Path getValue() {
         return value;
     }
@@ -81,23 +82,23 @@ public class PathFormData extends ParameterFormData {
 
     @JIPipeDocumentation(name = "Path type", description = "Allows to restrict the path type.")
     @JIPipeParameter("path-type")
-    public PathEditor.PathMode getPathType() {
+    public PathType getPathType() {
         return pathType;
     }
 
     @JIPipeParameter("path-type")
-    public void setPathType(PathEditor.PathMode pathType) {
+    public void setPathType(PathType pathType) {
         this.pathType = pathType;
     }
 
     @JIPipeDocumentation(name = "Path I/O mode", description = "Decides if the user sees an open or save dialog.")
     @JIPipeParameter("io-mode")
-    public PathEditor.IOMode getIoMode() {
+    public PathIOMode getIoMode() {
         return ioMode;
     }
 
     @JIPipeParameter("io-mode")
-    public void setIoMode(PathEditor.IOMode ioMode) {
+    public void setIoMode(PathIOMode ioMode) {
         this.ioMode = ioMode;
     }
 
@@ -120,19 +121,19 @@ public class PathFormData extends ParameterFormData {
                 .setSetter(this::setValue)
                 .setFieldClass(Path.class)
                 .setSource(this)
-                .addAnnotation(new FilePathParameterSettings() {
+                .addAnnotation(new PathParameterSettings() {
                     @Override
                     public Class<? extends Annotation> annotationType() {
-                        return FilePathParameterSettings.class;
+                        return PathParameterSettings.class;
                     }
 
                     @Override
-                    public PathEditor.IOMode ioMode() {
+                    public PathIOMode ioMode() {
                         return ioMode;
                     }
 
                     @Override
-                    public PathEditor.PathMode pathMode() {
+                    public PathType pathMode() {
                         return pathType;
                     }
 

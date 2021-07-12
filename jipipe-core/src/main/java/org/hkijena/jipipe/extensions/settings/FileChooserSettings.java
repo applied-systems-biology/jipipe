@@ -18,7 +18,8 @@ import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
-import org.hkijena.jipipe.ui.components.PathEditor;
+import org.hkijena.jipipe.utils.PathIOMode;
+import org.hkijena.jipipe.utils.PathType;
 
 import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
@@ -510,9 +511,9 @@ public class FileChooserSettings implements JIPipeParameterCollection {
      * @param extensionFilters passed if a file is opened/saved
      * @return selected path of provided pathMode or null if dialog was cancelled
      */
-    public static Path selectSingle(Component parent, LastDirectoryKey key, String title, PathEditor.IOMode ioMode, PathEditor.PathMode pathMode, FileNameExtensionFilter... extensionFilters) {
+    public static Path selectSingle(Component parent, LastDirectoryKey key, String title, PathIOMode ioMode, PathType pathMode, FileNameExtensionFilter... extensionFilters) {
         Path selected;
-        if (ioMode == PathEditor.IOMode.Open) {
+        if (ioMode == PathIOMode.Open) {
             switch (pathMode) {
                 case FilesOnly:
                     selected = FileChooserSettings.openFile(parent, key, title, extensionFilters);
@@ -555,9 +556,9 @@ public class FileChooserSettings implements JIPipeParameterCollection {
      * @param pathMode which types of paths are returned
      * @return selected paths of provided pathMode or empty list if dialog was cancelled
      */
-    public static List<Path> selectMulti(Component parent, LastDirectoryKey key, String title, PathEditor.IOMode ioMode, PathEditor.PathMode pathMode) {
+    public static List<Path> selectMulti(Component parent, LastDirectoryKey key, String title, PathIOMode ioMode, PathType pathMode) {
         List<Path> selected;
-        if (ioMode == PathEditor.IOMode.Open) {
+        if (ioMode == PathIOMode.Open) {
             switch (pathMode) {
                 case FilesOnly:
                     selected = FileChooserSettings.openFiles(parent, key, title);

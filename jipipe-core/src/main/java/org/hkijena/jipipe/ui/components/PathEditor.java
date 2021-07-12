@@ -15,6 +15,8 @@ package org.hkijena.jipipe.ui.components;
 
 import org.hkijena.jipipe.extensions.settings.FileChooserSettings;
 import org.hkijena.jipipe.extensions.settings.RuntimeSettings;
+import org.hkijena.jipipe.utils.PathIOMode;
+import org.hkijena.jipipe.utils.PathType;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 
@@ -40,8 +42,8 @@ import java.util.Set;
 public class PathEditor extends JPanel {
 
     private JTextField pathEdit;
-    private IOMode ioMode;
-    private PathMode pathMode;
+    private PathIOMode ioMode;
+    private PathType pathMode;
     private Set<ActionListener> listeners = new HashSet<>();
     private JButton generateRandomButton;
     private List<FileNameExtensionFilter> extensionFilters = new ArrayList<>();
@@ -51,16 +53,16 @@ public class PathEditor extends JPanel {
      * Creates a new file selection that opens a file
      */
     public PathEditor() {
-        setPathMode(PathMode.FilesOnly);
+        setPathMode(PathType.FilesOnly);
         initialize();
-        setIoMode(IOMode.Open);
+        setIoMode(PathIOMode.Open);
     }
 
     /**
      * @param ioMode   If a path is opened or saved
      * @param pathMode If the path is a file, directory or anything
      */
-    public PathEditor(IOMode ioMode, PathMode pathMode) {
+    public PathEditor(PathIOMode ioMode, PathType pathMode) {
         setPathMode(pathMode);
         initialize();
         setIoMode(ioMode);
@@ -137,7 +139,7 @@ public class PathEditor extends JPanel {
     }
 
     private void generateRandom() {
-        if (pathMode == PathMode.DirectoriesOnly) {
+        if (pathMode == PathType.DirectoriesOnly) {
             setPath(RuntimeSettings.generateTempDirectory("JIPipe"));
         } else {
             setPath(RuntimeSettings.generateTempFile("JIPipe", null));
@@ -185,20 +187,20 @@ public class PathEditor extends JPanel {
         listeners.remove(listener);
     }
 
-    public IOMode getIoMode() {
+    public PathIOMode getIoMode() {
         return ioMode;
     }
 
-    public void setIoMode(IOMode ioMode) {
+    public void setIoMode(PathIOMode ioMode) {
         this.ioMode = ioMode;
-        generateRandomButton.setVisible(ioMode == IOMode.Save);
+        generateRandomButton.setVisible(ioMode == PathIOMode.Save);
     }
 
-    public PathMode getPathMode() {
+    public PathType getPathMode() {
         return pathMode;
     }
 
-    public void setPathMode(PathMode pathMode) {
+    public void setPathMode(PathType pathMode) {
         this.pathMode = pathMode;
     }
 
@@ -247,34 +249,4 @@ public class PathEditor extends JPanel {
         this.directoryKey = directoryKey;
     }
 
-    /**
-     * Determines if a path is opened or saved
-     */
-    public enum IOMode {
-        Open,
-        Save
-    }
-
-    /**
-     * Determines the type of selected path
-     */
-    public enum PathMode {
-        FilesOnly,
-        DirectoriesOnly,
-        FilesAndDirectories;
-
-
-        @Override
-        public String toString() {
-            switch (this) {
-                case FilesOnly:
-                    return "Only files";
-                case DirectoriesOnly:
-                    return "Only directories";
-                case FilesAndDirectories:
-                    return "Files or directories";
-            }
-            throw new UnsupportedOperationException();
-        }
-    }
 }

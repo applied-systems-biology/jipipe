@@ -14,6 +14,8 @@
 package org.hkijena.jipipe.ui.components;
 
 import org.hkijena.jipipe.extensions.settings.FileChooserSettings;
+import org.hkijena.jipipe.utils.PathIOMode;
+import org.hkijena.jipipe.utils.PathType;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.jfree.chart.ChartUtils;
 import org.jfree.chart.JFreeChart;
@@ -59,7 +61,7 @@ public class PlotExporterDialog extends JDialog {
                     insets = UIUtils.UI_PADDING;
                 }
             });
-            pathEditor = new PathEditor(PathEditor.IOMode.Save, PathEditor.PathMode.FilesOnly);
+            pathEditor = new PathEditor(PathIOMode.Save, PathType.FilesOnly);
             add(pathEditor, new GridBagConstraints() {
                 {
                     gridx = 1;

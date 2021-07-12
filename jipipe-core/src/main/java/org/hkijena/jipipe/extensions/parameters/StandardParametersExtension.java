@@ -71,10 +71,11 @@ import org.hkijena.jipipe.extensions.parameters.util.JIPipeAuthorMetadataParamet
 import org.hkijena.jipipe.extensions.parameters.util.JIPipeParameterCollectionParameterEditorUI;
 import org.hkijena.jipipe.extensions.parameters.util.LogicalOperation;
 import org.hkijena.jipipe.extensions.parameters.util.SortOrder;
-import org.hkijena.jipipe.ui.components.PathEditor;
 import org.hkijena.jipipe.ui.grapheditor.JIPipeGraphViewMode;
 import org.hkijena.jipipe.ui.grapheditor.layout.GraphAutoLayout;
 import org.hkijena.jipipe.utils.JsonUtils;
+import org.hkijena.jipipe.utils.PathIOMode;
+import org.hkijena.jipipe.utils.PathType;
 import org.scijava.Priority;
 import org.scijava.plugin.Plugin;
 
@@ -615,11 +616,11 @@ public class StandardParametersExtension extends JIPipePrepackagedDefaultJavaExt
                 "A formatted text",
                 HTMLTextParameterEditorUI.class);
         registerEnumParameterType("path-io-mode",
-                PathEditor.IOMode.class,
+                PathIOMode.class,
                 "Path I/O mode",
                 "If a path should be opened or saved.");
         registerEnumParameterType("path-type",
-                PathEditor.PathMode.class,
+                PathType.class,
                 "Path type",
                 "Type of filesystem path.");
     }

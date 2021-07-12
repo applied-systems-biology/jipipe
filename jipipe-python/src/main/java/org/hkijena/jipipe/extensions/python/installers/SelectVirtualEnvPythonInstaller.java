@@ -11,15 +11,16 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.extensions.expressions.DefaultExpressionEvaluator;
 import org.hkijena.jipipe.extensions.expressions.DefaultExpressionParameter;
 import org.hkijena.jipipe.extensions.parameters.pairs.StringQueryExpressionAndStringPairParameter;
-import org.hkijena.jipipe.extensions.parameters.primitives.FilePathParameterSettings;
+import org.hkijena.jipipe.extensions.parameters.primitives.PathParameterSettings;
 import org.hkijena.jipipe.extensions.python.OptionalPythonEnvironment;
 import org.hkijena.jipipe.extensions.python.PythonEnvironment;
 import org.hkijena.jipipe.extensions.python.PythonEnvironmentType;
 import org.hkijena.jipipe.extensions.settings.FileChooserSettings;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.components.MarkdownDocument;
-import org.hkijena.jipipe.ui.components.PathEditor;
 import org.hkijena.jipipe.ui.parameters.ParameterPanel;
+import org.hkijena.jipipe.utils.PathIOMode;
+import org.hkijena.jipipe.utils.PathType;
 
 import javax.swing.*;
 import java.nio.file.Path;
@@ -141,7 +142,7 @@ public class SelectVirtualEnvPythonInstaller extends ExternalEnvironmentInstalle
         }
 
         @JIPipeDocumentation(name = "Virtual environment directory", description = "The directory of the virtual environment. It usually contains a file pyvenv.cfg.")
-        @FilePathParameterSettings(ioMode = PathEditor.IOMode.Open, pathMode = PathEditor.PathMode.DirectoriesOnly, key = FileChooserSettings.LastDirectoryKey.External)
+        @PathParameterSettings(ioMode = PathIOMode.Open, pathMode = PathType.DirectoriesOnly, key = FileChooserSettings.LastDirectoryKey.External)
         @JIPipeParameter("venv-dir")
         public Path getVirtualEnvDirectory() {
             return virtualEnvDirectory;

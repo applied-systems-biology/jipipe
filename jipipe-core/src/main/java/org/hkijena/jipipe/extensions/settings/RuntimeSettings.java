@@ -18,9 +18,10 @@ import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
-import org.hkijena.jipipe.extensions.parameters.primitives.FilePathParameterSettings;
+import org.hkijena.jipipe.extensions.parameters.primitives.PathParameterSettings;
 import org.hkijena.jipipe.extensions.parameters.primitives.OptionalPathParameter;
-import org.hkijena.jipipe.ui.components.PathEditor;
+import org.hkijena.jipipe.utils.PathIOMode;
+import org.hkijena.jipipe.utils.PathType;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -83,7 +84,7 @@ public class RuntimeSettings implements JIPipeParameterCollection {
             "must be placed into a directory. This defaults to your system's temporary directory. If there are issues with space, " +
             "you can provide an alternative path.")
     @JIPipeParameter("temp-directory")
-    @FilePathParameterSettings(pathMode = PathEditor.PathMode.DirectoriesOnly, ioMode = PathEditor.IOMode.Open)
+    @PathParameterSettings(pathMode = PathType.DirectoriesOnly, ioMode = PathIOMode.Open)
     public OptionalPathParameter getTempDirectory() {
         return tempDirectory;
     }

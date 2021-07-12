@@ -15,6 +15,8 @@ package org.hkijena.jipipe.ui.tableeditor;
 
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
 import org.hkijena.jipipe.ui.components.PathEditor;
+import org.hkijena.jipipe.utils.PathIOMode;
+import org.hkijena.jipipe.utils.PathType;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
@@ -51,7 +53,7 @@ public class JIPipeTableImporterDialog extends JDialog {
                     insets = UIUtils.UI_PADDING;
                 }
             });
-            pathEditor = new PathEditor(PathEditor.IOMode.Open, PathEditor.PathMode.FilesOnly);
+            pathEditor = new PathEditor(PathIOMode.Open, PathType.FilesOnly);
             add(pathEditor, new GridBagConstraints() {
                 {
                     gridx = 1;

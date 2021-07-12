@@ -25,8 +25,9 @@ import org.hkijena.jipipe.api.nodes.categories.DataSourceNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.filesystem.FilesystemExtensionSettings;
 import org.hkijena.jipipe.extensions.filesystem.dataypes.FolderData;
-import org.hkijena.jipipe.extensions.parameters.primitives.FilePathParameterSettings;
-import org.hkijena.jipipe.ui.components.PathEditor;
+import org.hkijena.jipipe.extensions.parameters.primitives.PathParameterSettings;
+import org.hkijena.jipipe.utils.PathIOMode;
+import org.hkijena.jipipe.utils.PathType;
 import org.hkijena.jipipe.utils.PathUtils;
 
 import java.nio.file.Files;
@@ -76,7 +77,7 @@ public class FolderDataSource extends JIPipeAlgorithm {
      */
     @JIPipeParameter("folder-path")
     @JIPipeDocumentation(name = "Folder path")
-    @FilePathParameterSettings(ioMode = PathEditor.IOMode.Open, pathMode = PathEditor.PathMode.DirectoriesOnly)
+    @PathParameterSettings(ioMode = PathIOMode.Open, pathMode = PathType.DirectoriesOnly)
     public Path getFolderPath() {
         return folderPath;
     }

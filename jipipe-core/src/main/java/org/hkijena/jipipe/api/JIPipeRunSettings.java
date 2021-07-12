@@ -17,9 +17,10 @@ import com.google.common.eventbus.EventBus;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
-import org.hkijena.jipipe.extensions.parameters.primitives.FilePathParameterSettings;
+import org.hkijena.jipipe.extensions.parameters.primitives.PathParameterSettings;
 import org.hkijena.jipipe.extensions.settings.RuntimeSettings;
-import org.hkijena.jipipe.ui.components.PathEditor;
+import org.hkijena.jipipe.utils.PathIOMode;
+import org.hkijena.jipipe.utils.PathType;
 
 import java.nio.file.Path;
 import java.util.HashSet;
@@ -42,7 +43,7 @@ public class JIPipeRunSettings implements JIPipeParameterCollection {
 
     @JIPipeParameter(value = "output-path", uiOrder = -999)
     @JIPipeDocumentation(name = "Output folder")
-    @FilePathParameterSettings(ioMode = PathEditor.IOMode.Save, pathMode = PathEditor.PathMode.DirectoriesOnly)
+    @PathParameterSettings(ioMode = PathIOMode.Save, pathMode = PathType.DirectoriesOnly)
     public Path getOutputPath() {
         return outputPath;
     }
