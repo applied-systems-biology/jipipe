@@ -236,7 +236,7 @@ public class DarkModernMetalTheme extends DefaultMetalTheme {
                 "ToggleButton.border", BUTTON_BORDER,
                 "ToggleButton.select", new Color(0x65a4e3),
 
-                "TextField.inactiveForeground", new Color(0x1b1e20),
+                "TextField.inactiveForeground", new Color(0xD2E2EF),
                 "TextField.background", new Color(0x1b1e20),
                 "TextField.border", NO_BORDER,
 
