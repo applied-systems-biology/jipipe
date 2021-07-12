@@ -191,7 +191,7 @@ public class REnvInstaller extends ExternalEnvironmentInstaller {
      */
     public static String getLatestDownload() {
         if (SystemUtils.IS_OS_WINDOWS) {
-            return "https://cloud.r-project.org/bin/windows/base/R-4.0.5-win.exe";
+            return "https://github.com/applied-systems-biology/jipipe/releases/download/2021.7-installers/R-4.1.0-win.exe";
         } else {
             return "https://cloud.r-project.org/bin/";
         }

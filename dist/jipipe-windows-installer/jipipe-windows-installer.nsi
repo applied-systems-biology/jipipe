@@ -108,7 +108,7 @@ Section "Common files (Required)" SEC01
   inetc::get "https://maven.scijava.org/service/local/repositories/sonatype/content/com/fasterxml/jackson/core/jackson-databind/2.11.0/jackson-databind-2.11.0.jar" "$INSTDIR\Fiji.app\jars\jackson-databind-2.11.0.jar"
   inetc::get "https://maven.scijava.org/service/local/repositories/sonatype/content/com/fasterxml/jackson/core/jackson-core/2.11.0/jackson-core-2.11.0.jar" "$INSTDIR\Fiji.app\jars\jackson-core-2.11.0.jar"
   inetc::get "https://maven.scijava.org/service/local/repositories/sonatype/content/com/fasterxml/jackson/core/jackson-annotations/2.11.0/jackson-annotations-2.11.0.jar" "$INSTDIR\Fiji.app\jars\jackson-annotations-2.11.0.jar"
-  inetc::get "https://maven.scijava.org/service/local/repositories/central/content/org/jgrapht/jgrapht-core/1.3.1/jgrapht-core-1.4.0.jar" "$INSTDIR\Fiji.app\jars\jgrapht-core-1.4.0.jar"
+  inetc::get "https://maven.scijava.org/service/local/repositories/central/content/org/jgrapht/jgrapht-core/1.4.0/jgrapht-core-1.4.0.jar" "$INSTDIR\Fiji.app\jars\jgrapht-core-1.4.0.jar"
   inetc::get "https://maven.scijava.org/service/local/repositories/central/content/org/nibor/autolink/autolink/0.10.0/autolink-0.10.0.jar" "$INSTDIR\Fiji.app\jars\autolink-0.10.0.jar"
   inetc::get "https://maven.scijava.org/service/local/repositories/central/content/org/apache/pdfbox/fontbox/2.0.4/fontbox-2.0.4.jar" "$INSTDIR\Fiji.app\jars\fontbox-2.0.4.jar"
   inetc::get "https://maven.scijava.org/service/local/repositories/central/content/com/openhtmltopdf/openhtmltopdf-jsoup-dom-converter/1.0.0/openhtmltopdf-jsoup-dom-converter-1.0.0.jar" "$INSTDIR\Fiji.app\jars\openhtmltopdf-jsoup-dom-converter-1.0.0.jar"
