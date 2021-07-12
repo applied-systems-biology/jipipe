@@ -45,6 +45,19 @@ public class GraphEditorUISettings implements JIPipeParameterCollection {
     private boolean showSettingsNodeButton = false;
     private boolean accurateMiniMap = false;
     private boolean drawNodeShadows = true;
+    private boolean drawImprovedEdges = true;
+
+    @JIPipeDocumentation(name = "Improve edge drawing", description = "If enabled, edges are drawn with outlines to make them easier distinguishable. " +
+            "If you have issues with the performance, you should disable this setting.")
+    @JIPipeParameter("draw-improved-edges")
+    public boolean isDrawImprovedEdges() {
+        return drawImprovedEdges;
+    }
+
+    @JIPipeParameter("draw-improved-edges")
+    public void setDrawImprovedEdges(boolean drawImprovedEdges) {
+        this.drawImprovedEdges = drawImprovedEdges;
+    }
 
     @JIPipeDocumentation(name = "Draw node shadows", description = "If enabled, shadows are drawn for nodes as visual guide. " +
             "If you have issues with the performance, you should disable this setting.")
