@@ -71,11 +71,6 @@ public class JIPipeCachedDataDisplayCacheControl {
 
         JPopupMenu menu = UIUtils.addPopupMenuToComponent(updateCacheButton);
 
-        cacheAwareToggle = new JCheckBoxMenuItem("Keep up-to-date");
-        cacheAwareToggle.setToolTipText("Keep up-to-date with cache.");
-        cacheAwareToggle.setSelected(true);
-        menu.add(cacheAwareToggle);
-
         JMenuItem updateCacheItem = new JMenuItem("Update cache", UIUtils.getIconFromResources("actions/database.png"));
         updateCacheButton.setToolTipText("Updates the node that contains this viewed data. Intermediate results are discarded.");
         updateCacheItem.addActionListener(e -> runUpdateCache());
@@ -85,6 +80,13 @@ public class JIPipeCachedDataDisplayCacheControl {
         updateCacheButton.setToolTipText("Updates the node that contains this viewed data. Intermediate results are also cached.");
         cacheIntermediateResultsItem.addActionListener(e -> runCacheIntermediateResults());
         menu.add(cacheIntermediateResultsItem);
+
+        menu.addSeparator();
+
+        cacheAwareToggle = new JCheckBoxMenuItem("Keep up-to-date");
+        cacheAwareToggle.setToolTipText("Keep up-to-date with cache.");
+        cacheAwareToggle.setSelected(true);
+        menu.add(cacheAwareToggle);
 
         runnerQueue = new JIPipeRunnerQueueUI();
     }

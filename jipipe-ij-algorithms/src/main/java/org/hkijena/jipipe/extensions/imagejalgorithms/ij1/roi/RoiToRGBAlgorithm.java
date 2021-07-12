@@ -33,6 +33,7 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ROIListData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.color.ImagePlusColorRGBData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.extensions.parameters.colors.OptionalColorParameter;
+import org.hkijena.jipipe.extensions.parameters.primitives.NumberParameterSettings;
 import org.hkijena.jipipe.extensions.parameters.primitives.OptionalDoubleParameter;
 
 import java.awt.Color;
@@ -221,6 +222,7 @@ public class RoiToRGBAlgorithm extends JIPipeIteratingAlgorithm {
 
     @JIPipeDocumentation(name = "Opacity", description = "Opacity of the added ROI and labels. If zero, they are not visible. If set to one, they are fully visible.")
     @JIPipeParameter("opacity")
+    @NumberParameterSettings(step = 0.1)
     public double getOpacity() {
         return opacity;
     }

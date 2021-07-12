@@ -33,6 +33,7 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ROIListData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleMaskData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
+import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageSliceIndex;
 import org.hkijena.jipipe.extensions.parameters.primitives.OptionalDoubleParameter;
 
 import java.awt.Polygon;
@@ -100,8 +101,8 @@ public class RidgeDetector2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
             double upperThreshold_ = upperThreshold;
             LineDetector lineDetector = new LineDetector();
             Lines lines = lineDetector.detectLines(ip, sigma_, upperThreshold_, lowerThreshold_, minLength, maxLength, darkLine, doCorrectPosition, doEstimateWidth, doExtendLine, overlapResolution);
-            extractLines(outputLines, lines);
-            extractJunctions(outputJunctions, lineDetector);
+            extractLines(outputLines, lines, index);
+            extractJunctions(outputJunctions, lineDetector, index);
             return extractMask(ip.getWidth(), ip.getHeight(), lines);
         }, progressInfo);
 
@@ -161,16 +162,17 @@ public class RidgeDetector2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         return ip;
     }
 
-    private void extractJunctions(ROIListData outputJunctions, LineDetector lineDetector) {
+    private void extractJunctions(ROIListData outputJunctions, LineDetector lineDetector, ImageSliceIndex index) {
         for (Junction j : lineDetector.getJunctions()) {
             PointRoi pr = new PointRoi(j.getX() + 0.5, j.getY() + 0.5);
             pr.setName("JP-C" + j.getLine1().getID() + "-C" + j.getLine2().getID());
             pr.setPosition(j.getLine1().getFrame());
+            pr.setPosition(index.getC() + 1, index.getZ() + 1, index.getT() + 1);
             outputJunctions.add(pr);
         }
     }
 
-    private void extractLines(ROIListData outputLines, Lines lines) {
+    private void extractLines(ROIListData outputLines, Lines lines, ImageSliceIndex index) {
         for (Line c : lines) {
             float[] x = c.getXCoordinates();
             for (int j = 0; j < x.length; j++) {
@@ -185,6 +187,7 @@ public class RidgeDetector2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
             Roi r = new PolygonRoi(p, Roi.FREELINE);
             r.setPosition(c.getFrame());
             r.setName("C" + c.getID());
+            r.setPosition(index.getC() + 1, index.getZ() + 1, index.getT() + 1);
             outputLines.add(r);
         }
     }
