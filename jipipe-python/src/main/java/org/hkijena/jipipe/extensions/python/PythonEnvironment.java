@@ -16,6 +16,7 @@ import org.hkijena.jipipe.extensions.parameters.collections.ListParameter;
 import org.hkijena.jipipe.extensions.parameters.pairs.PairParameterSettings;
 import org.hkijena.jipipe.extensions.parameters.pairs.StringQueryExpressionAndStringPairParameter;
 import org.hkijena.jipipe.utils.EnvironmentVariablesSource;
+import org.hkijena.jipipe.utils.PathUtils;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 
@@ -100,6 +101,10 @@ public class PythonEnvironment extends ExternalEnvironment {
         this.executablePath = executablePath;
     }
 
+    public Path getAbsoluteExecutablePath() {
+        return PathUtils.relativeToImageJToAbsolute(getExecutablePath());
+    }
+
     @JIPipeDocumentation(name = "Environment variables", description = "These variables are provided to the Python executable. Existing environment " +
             "variables are available as variables")
     @JIPipeParameter("environment-variables")
@@ -121,7 +126,7 @@ public class PythonEnvironment extends ExternalEnvironment {
 
     @Override
     public void reportValidity(JIPipeIssueReport report) {
-        if (getExecutablePath() == null || !Files.isRegularFile(getExecutablePath())) {
+        if (getExecutablePath() == null || !Files.isRegularFile(getAbsoluteExecutablePath())) {
             report.resolve("Executable").reportIsInvalid(
                     "Python executable does not exist",
                     "You need to provide a Python executable",

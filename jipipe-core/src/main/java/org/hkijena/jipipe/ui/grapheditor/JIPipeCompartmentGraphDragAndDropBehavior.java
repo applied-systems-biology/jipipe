@@ -73,7 +73,7 @@ public class JIPipeCompartmentGraphDragAndDropBehavior implements JIPipeGraphDra
 //        } catch (Throwable t) {
 //            t.printStackTrace();
 //        }
-        if (GraphEditorUISettings.getInstance().isNotifyInvalidDragAndDrop()) {
+        if (canvas.getCurrentConnectionDragSource() == null && GraphEditorUISettings.getInstance().isNotifyInvalidDragAndDrop()) {
             String message = "<html>You probably wanted to drop some data into this graph.<br/>" +
                     "This is not possible, as the <strong>Compartment Graph</strong> only organizes your project into " +
                     "multiple sections.<br/><br/>Please double-click a node inside this graph to edit the pipeline.</html>";

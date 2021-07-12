@@ -13,6 +13,7 @@ public class OptionalPythonEnvironment extends OptionalParameter<PythonEnvironme
 
     public OptionalPythonEnvironment(PythonEnvironment environment) {
         super(PythonEnvironment.class);
+        setEnabled(true);
         setContent(environment);
     }
 
