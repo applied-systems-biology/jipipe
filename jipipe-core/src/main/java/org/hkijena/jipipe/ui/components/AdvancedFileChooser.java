@@ -6,6 +6,7 @@ import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.extensions.settings.FileChooserSettings;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
+import sun.awt.shell.ShellFolder;
 import sun.swing.FilePane;
 
 import javax.accessibility.AccessibleContext;
@@ -75,7 +76,7 @@ public class AdvancedFileChooser extends JPanel implements PropertyChangeListene
         setLayout(new BorderLayout());
 
         JPanel contentPanel = new JPanel(new BorderLayout());
-        linkPanel = new FormPanel(null, FormPanel.NONE);
+        linkPanel = new FormPanel(null, FormPanel.WITH_SCROLLING);
 
         JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT,
                 linkPanel,
@@ -435,22 +436,46 @@ public class AdvancedFileChooser extends JPanel implements PropertyChangeListene
 
         // Standard places
         addLinkCategory("Places");
-        addLink("Home", UIUtils.getIconFromResources("places/user-home.png"), fileSystemView.getHomeDirectory().toPath());
-        for (File root : fileSystemView.getRoots()) {
+        if(!SystemUtils.IS_OS_WINDOWS) {
+            addLink("Home", UIUtils.getIconFromResources("places/user-home.png"), fileSystemView.getHomeDirectory());
+        }
+        else {
+            addLink("Home", UIUtils.getIconFromResources("places/user-home.png"),
+                    fileSystemView.getHomeDirectory().toPath().getParent().toFile());
+        }
+        boolean useShellFolder = FilePane.usesShellFolder(fileChooserComponent);
+
+        File[] baseFolders = (useShellFolder)
+                ? (File[]) ShellFolder.get("fileChooserComboBoxFolders")
+                : fileSystemView.getRoots();
+
+        for (File root : baseFolders) {
             if(!SystemUtils.IS_OS_WINDOWS) {
                 String name;
                 if(root.toString().equals("/"))
                     name = "Root";
                 else
                     name = root.getName();
-                addLink(name, UIUtils.getIconFromResources("places/folder-root.png"), root.toPath());
+                addLink(name, UIUtils.getIconFromResources("places/folder-root.png"), root);
             }
             else {
-                addLink(root.getName(), UIUtils.getIconFromResources("devices/drive-harddisk.png"), root.toPath());
+                Icon icon;
+                if (fileSystemView.isFloppyDrive(root)) {
+                    icon = UIUtils.getIconFromResources("devices/media-floppy.png");
+                } else if (fileSystemView.isDrive(root)) {
+                    icon = UIUtils.getIconFromResources("devices/drive-harddisk.png");
+                } else if (fileSystemView.isComputerNode(root)) {
+                    continue;
+                } else {
+                    continue;
+                }
+                if(root.toPath().getParent() != null)
+                    continue;
+                addLink(root.toString(), icon, root);
             }
         }
         addLink("ImageJ", UIUtils.getIconFromResources("apps/imagej.png"),
-                Paths.get(Prefs.getImageJDir() != null ? Prefs.getImageJDir() : "").toAbsolutePath());
+                Paths.get(Prefs.getImageJDir() != null ? Prefs.getImageJDir() : "").toAbsolutePath().toFile());
 
         if(JIPipe.isInstantiated() && !JIPipe.getInstance().isInitializing()) {
             FileChooserSettings settings = FileChooserSettings.getInstance();
@@ -468,7 +493,7 @@ public class AdvancedFileChooser extends JPanel implements PropertyChangeListene
                 String name = renderPathLabel(path);
                 addLink(name,
                         UIUtils.getIconFromResources("places/folder-recent.png"),
-                        path);
+                        path.toFile());
             }
 
             // Bookmarks
@@ -479,7 +504,7 @@ public class AdvancedFileChooser extends JPanel implements PropertyChangeListene
                     String name = renderPathLabel(path);
                     addLink(name,
                             UIUtils.getIconFromResources("actions/bookmark.png"),
-                            path);
+                            path.toFile());
                 }
             }
         }
@@ -505,12 +530,12 @@ public class AdvancedFileChooser extends JPanel implements PropertyChangeListene
         linkPanel.addGroupHeader(label, null);
     }
 
-    public void addLink(String label, Icon icon, Path target) {
+    public void addLink(String label, Icon icon, File target) {
         JButton button = new JButton(label, icon);
-        button.setToolTipText(target.toAbsolutePath().toString());
+        button.setToolTipText(target.toString());
         button.setHorizontalAlignment(SwingConstants.LEFT);
         button.addActionListener(e -> {
-            fileChooserComponent.setCurrentDirectory(target.toFile());
+            fileChooserComponent.setCurrentDirectory(target);
         });
         button.setIconTextGap(12);
         button.setBorder(BorderFactory.createEmptyBorder(4,8,4,8));
