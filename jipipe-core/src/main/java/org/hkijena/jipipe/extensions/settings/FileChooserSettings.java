@@ -18,6 +18,8 @@ import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
+import org.hkijena.jipipe.extensions.parameters.primitives.PathList;
+import org.hkijena.jipipe.ui.components.AdvancedFileChooser;
 import org.hkijena.jipipe.utils.PathIOMode;
 import org.hkijena.jipipe.utils.PathType;
 
@@ -44,29 +46,44 @@ public class FileChooserSettings implements JIPipeParameterCollection {
 
     public static String ID = "file-chooser";
     private EventBus eventBus = new EventBus();
-    private boolean useNativeChooser = false;
+    private FileChooserType fileChooserType = FileChooserType.Advanced;
     private Path lastProjectsDirectory;
     private Path lastParametersDirectory;
     private Path lastDataDirectory;
     private Path lastExternalDirectory;
     private boolean addFileExtension = true;
+    private PathList bookmarks = new PathList();
 
     @Override
     public EventBus getEventBus() {
         return eventBus;
     }
 
-    @JIPipeDocumentation(name = "Use native file chooser", description = "If enabled, JIPipe will use the system-specific file chooser instead of the one provided by Java. " +
-            "If you have any issues, disable this setting. Please note that there is no native dialog available for all selectable path types. " +
-            "In such cases, JIPipe will fall back to the Java file dialogs.")
-    @JIPipeParameter("use-native-chooser")
-    public boolean isUseNativeChooser() {
-        return useNativeChooser;
+    @JIPipeDocumentation(name = "Bookmarks", description = "Bookmarks used by the advanced file dialog")
+    @JIPipeParameter("bookmarks")
+    public PathList getBookmarks() {
+        return bookmarks;
     }
 
-    @JIPipeParameter("use-native-chooser")
-    public void setUseNativeChooser(boolean useNativeChooser) {
-        this.useNativeChooser = useNativeChooser;
+    @JIPipeParameter("bookmarks")
+    public void setBookmarks(PathList bookmarks) {
+        this.bookmarks = bookmarks;
+    }
+
+    @JIPipeDocumentation(name = "File dialog design", description = "Determines which file dialog type is used within JIPipe. " +
+            "<ul>" +
+            "<li>Advanced: A dialog that extends Java's standard dialog by modern features.</li>" +
+            "<li>Standard: The standard platform-independent file dialog provided by Java.</li>" +
+            "<li>Native: Use the operating system's native dialog (GTK on Linux). Can cause issues depending on the operating system.</li>" +
+            "</ul>")
+    @JIPipeParameter("file-chooser-type")
+    public FileChooserType getFileChooserType() {
+        return fileChooserType;
+    }
+
+    @JIPipeParameter("file-chooser-type")
+    public void setFileChooserType(FileChooserType fileChooserType) {
+        this.fileChooserType = fileChooserType;
     }
 
     /**
@@ -211,7 +228,7 @@ public class FileChooserSettings implements JIPipeParameterCollection {
     public static Path openFile(Component parent, LastDirectoryKey key, String title, FileNameExtensionFilter... extensionFilters) {
         FileChooserSettings instance = getInstance();
         Path currentPath = instance.getLastDirectoryBy(key);
-        if (instance.useNativeChooser) {
+        if (instance.fileChooserType == FileChooserType.Native) {
             FileDialog dialog = createFileDialog(parent, title, FileDialog.LOAD);
             dialog.setTitle(title);
             dialog.setDirectory(currentPath.toString());
@@ -225,8 +242,26 @@ public class FileChooserSettings implements JIPipeParameterCollection {
             } else {
                 return null;
             }
-        } else {
+        } else if(instance.fileChooserType == FileChooserType.Standard) {
             JFileChooser fileChooser = new JFileChooser(currentPath.toFile());
+            fileChooser.setDialogTitle(title);
+            fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
+            if (extensionFilters.length > 0) {
+                for (FileNameExtensionFilter extensionFilter : extensionFilters) {
+                    fileChooser.addChoosableFileFilter(extensionFilter);
+                }
+                fileChooser.setFileFilter(extensionFilters[0]);
+            }
+            if (fileChooser.showOpenDialog(parent) == JFileChooser.APPROVE_OPTION) {
+                Path path = fileChooser.getSelectedFile().toPath();
+                instance.setLastDirectoryBy(key, path.getParent());
+                return path;
+            } else {
+                return null;
+            }
+        }
+        else {
+            AdvancedFileChooser fileChooser = new AdvancedFileChooser(currentPath.toFile());
             fileChooser.setDialogTitle(title);
             fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
             if (extensionFilters.length > 0) {
@@ -257,7 +292,7 @@ public class FileChooserSettings implements JIPipeParameterCollection {
     public static Path saveFile(Component parent, LastDirectoryKey key, String title, FileNameExtensionFilter... extensionFilters) {
         FileChooserSettings instance = getInstance();
         Path currentPath = instance.getLastDirectoryBy(key);
-        if (instance.useNativeChooser) {
+        if (instance.fileChooserType == FileChooserType.Native) {
             FileDialog dialog = createFileDialog(parent, title, FileDialog.SAVE);
             dialog.setTitle(title);
             dialog.setDirectory(currentPath.toString());
@@ -288,8 +323,39 @@ public class FileChooserSettings implements JIPipeParameterCollection {
             } else {
                 return null;
             }
-        } else {
+        }else if(instance.fileChooserType == FileChooserType.Standard) {
             JFileChooser fileChooser = new JFileChooser(currentPath.toFile());
+            fileChooser.setDialogTitle(title);
+            fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
+            if (extensionFilters.length > 0) {
+                for (FileNameExtensionFilter extensionFilter : extensionFilters) {
+                    fileChooser.addChoosableFileFilter(extensionFilter);
+                }
+                fileChooser.setFileFilter(extensionFilters[0]);
+            }
+            if (fileChooser.showSaveDialog(parent) == JFileChooser.APPROVE_OPTION) {
+                Path path = fileChooser.getSelectedFile().toPath();
+                instance.setLastDirectoryBy(key, path.getParent());
+                if (getInstance().isAddFileExtension() && extensionFilters.length > 0 && fileChooser.getFileFilter() instanceof FileNameExtensionFilter) {
+                    FileNameExtensionFilter fileNameExtensionFilter = (FileNameExtensionFilter) fileChooser.getFileFilter();
+                    boolean found = false;
+                    for (String extension : fileNameExtensionFilter.getExtensions()) {
+                        if (path.toString().toLowerCase().endsWith(extension)) {
+                            found = true;
+                            break;
+                        }
+                    }
+                    if (!found) {
+                        path = path.getParent().resolve(path.getFileName() + "." + fileNameExtensionFilter.getExtensions()[0]);
+                    }
+                }
+                return path;
+            } else {
+                return null;
+            }
+        }
+        else {
+            AdvancedFileChooser fileChooser = new AdvancedFileChooser(currentPath.toFile());
             fileChooser.setDialogTitle(title);
             fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
             if (extensionFilters.length > 0) {
@@ -332,15 +398,29 @@ public class FileChooserSettings implements JIPipeParameterCollection {
     public static Path openPath(Component parent, LastDirectoryKey key, String title) {
         FileChooserSettings instance = getInstance();
         Path currentPath = instance.getLastDirectoryBy(key);
-        JFileChooser fileChooser = new JFileChooser(currentPath.toFile());
-        fileChooser.setDialogTitle(title);
-        fileChooser.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
-        if (fileChooser.showOpenDialog(parent) == JFileChooser.APPROVE_OPTION) {
-            Path path = fileChooser.getSelectedFile().toPath();
-            instance.setLastDirectoryBy(key, path);
-            return path;
-        } else {
-            return null;
+        if(instance.getFileChooserType() == FileChooserType.Standard) {
+            JFileChooser fileChooser = new JFileChooser(currentPath.toFile());
+            fileChooser.setDialogTitle(title);
+            fileChooser.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
+            if (fileChooser.showOpenDialog(parent) == JFileChooser.APPROVE_OPTION) {
+                Path path = fileChooser.getSelectedFile().toPath();
+                instance.setLastDirectoryBy(key, path);
+                return path;
+            } else {
+                return null;
+            }
+        }
+        else {
+            AdvancedFileChooser fileChooser = new AdvancedFileChooser(currentPath.toFile());
+            fileChooser.setDialogTitle(title);
+            fileChooser.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
+            if (fileChooser.showOpenDialog(parent) == JFileChooser.APPROVE_OPTION) {
+                Path path = fileChooser.getSelectedFile().toPath();
+                instance.setLastDirectoryBy(key, path);
+                return path;
+            } else {
+                return null;
+            }
         }
     }
 
@@ -355,15 +435,29 @@ public class FileChooserSettings implements JIPipeParameterCollection {
     public static Path savePath(Component parent, LastDirectoryKey key, String title) {
         FileChooserSettings instance = getInstance();
         Path currentPath = instance.getLastDirectoryBy(key);
-        JFileChooser fileChooser = new JFileChooser(currentPath.toFile());
-        fileChooser.setDialogTitle(title);
-        fileChooser.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
-        if (fileChooser.showSaveDialog(parent) == JFileChooser.APPROVE_OPTION) {
-            Path path = fileChooser.getSelectedFile().toPath();
-            instance.setLastDirectoryBy(key, path);
-            return path;
-        } else {
-            return null;
+        if(instance.getFileChooserType() == FileChooserType.Standard) {
+            JFileChooser fileChooser = new JFileChooser(currentPath.toFile());
+            fileChooser.setDialogTitle(title);
+            fileChooser.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
+            if (fileChooser.showSaveDialog(parent) == JFileChooser.APPROVE_OPTION) {
+                Path path = fileChooser.getSelectedFile().toPath();
+                instance.setLastDirectoryBy(key, path);
+                return path;
+            } else {
+                return null;
+            }
+        }
+        else {
+            AdvancedFileChooser fileChooser = new AdvancedFileChooser(currentPath.toFile());
+            fileChooser.setDialogTitle(title);
+            fileChooser.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
+            if (fileChooser.showSaveDialog(parent) == JFileChooser.APPROVE_OPTION) {
+                Path path = fileChooser.getSelectedFile().toPath();
+                instance.setLastDirectoryBy(key, path);
+                return path;
+            } else {
+                return null;
+            }
         }
     }
 
@@ -378,15 +472,29 @@ public class FileChooserSettings implements JIPipeParameterCollection {
     public static Path openDirectory(Component parent, LastDirectoryKey key, String title) {
         FileChooserSettings instance = getInstance();
         Path currentPath = instance.getLastDirectoryBy(key);
-        JFileChooser fileChooser = new JFileChooser(currentPath.toFile());
-        fileChooser.setDialogTitle(title);
-        fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-        if (fileChooser.showOpenDialog(parent) == JFileChooser.APPROVE_OPTION) {
-            Path path = fileChooser.getSelectedFile().toPath();
-            instance.setLastDirectoryBy(key, path);
-            return path;
-        } else {
-            return null;
+        if(instance.getFileChooserType() == FileChooserType.Standard) {
+            JFileChooser fileChooser = new JFileChooser(currentPath.toFile());
+            fileChooser.setDialogTitle(title);
+            fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+            if (fileChooser.showOpenDialog(parent) == JFileChooser.APPROVE_OPTION) {
+                Path path = fileChooser.getSelectedFile().toPath();
+                instance.setLastDirectoryBy(key, path);
+                return path;
+            } else {
+                return null;
+            }
+        }
+        else {
+            AdvancedFileChooser fileChooser = new AdvancedFileChooser(currentPath.toFile());
+            fileChooser.setDialogTitle(title);
+            fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+            if (fileChooser.showOpenDialog(parent) == JFileChooser.APPROVE_OPTION) {
+                Path path = fileChooser.getSelectedFile().toPath();
+                instance.setLastDirectoryBy(key, path);
+                return path;
+            } else {
+                return null;
+            }
         }
     }
 
@@ -401,15 +509,29 @@ public class FileChooserSettings implements JIPipeParameterCollection {
     public static Path saveDirectory(Component parent, LastDirectoryKey key, String title) {
         FileChooserSettings instance = getInstance();
         Path currentPath = instance.getLastDirectoryBy(key);
-        JFileChooser fileChooser = new JFileChooser(currentPath.toFile());
-        fileChooser.setDialogTitle(title);
-        fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-        if (fileChooser.showSaveDialog(parent) == JFileChooser.APPROVE_OPTION) {
-            Path path = fileChooser.getSelectedFile().toPath();
-            instance.setLastDirectoryBy(key, path);
-            return path;
-        } else {
-            return null;
+        if(instance.getFileChooserType() == FileChooserType.Standard) {
+            JFileChooser fileChooser = new JFileChooser(currentPath.toFile());
+            fileChooser.setDialogTitle(title);
+            fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+            if (fileChooser.showSaveDialog(parent) == JFileChooser.APPROVE_OPTION) {
+                Path path = fileChooser.getSelectedFile().toPath();
+                instance.setLastDirectoryBy(key, path);
+                return path;
+            } else {
+                return null;
+            }
+        }
+        else {
+            AdvancedFileChooser fileChooser = new AdvancedFileChooser(currentPath.toFile());
+            fileChooser.setDialogTitle(title);
+            fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+            if (fileChooser.showSaveDialog(parent) == JFileChooser.APPROVE_OPTION) {
+                Path path = fileChooser.getSelectedFile().toPath();
+                instance.setLastDirectoryBy(key, path);
+                return path;
+            } else {
+                return null;
+            }
         }
     }
 
@@ -424,7 +546,7 @@ public class FileChooserSettings implements JIPipeParameterCollection {
     public static List<Path> openFiles(Component parent, LastDirectoryKey key, String title) {
         FileChooserSettings instance = getInstance();
         Path currentPath = instance.getLastDirectoryBy(key);
-        if (instance.useNativeChooser) {
+        if(instance.getFileChooserType() == FileChooserType.Native) {
             FileDialog dialog = createFileDialog(parent, title, FileDialog.LOAD);
             dialog.setTitle(title);
             dialog.setDirectory(currentPath.toString());
@@ -435,8 +557,21 @@ public class FileChooserSettings implements JIPipeParameterCollection {
                 instance.setLastDirectoryBy(key, files[0].toPath().getParent());
             }
             return Arrays.stream(files).map(File::toPath).collect(Collectors.toList());
-        } else {
+        } else  if(instance.getFileChooserType() == FileChooserType.Standard) {
             JFileChooser fileChooser = new JFileChooser(currentPath.toFile());
+            fileChooser.setDialogTitle(title);
+            fileChooser.setMultiSelectionEnabled(true);
+            if (fileChooser.showOpenDialog(parent) == JFileChooser.APPROVE_OPTION) {
+                if (fileChooser.getSelectedFile() != null) {
+                    instance.setLastDirectoryBy(key, fileChooser.getSelectedFile().toPath().getParent());
+                }
+                return Arrays.stream(fileChooser.getSelectedFiles()).map(File::toPath).collect(Collectors.toList());
+            } else {
+                return Collections.emptyList();
+            }
+        }
+        else {
+            AdvancedFileChooser fileChooser = new AdvancedFileChooser(currentPath.toFile());
             fileChooser.setDialogTitle(title);
             fileChooser.setMultiSelectionEnabled(true);
             if (fileChooser.showOpenDialog(parent) == JFileChooser.APPROVE_OPTION) {
@@ -461,17 +596,33 @@ public class FileChooserSettings implements JIPipeParameterCollection {
     public static List<Path> openDirectories(Component parent, LastDirectoryKey key, String title) {
         FileChooserSettings instance = getInstance();
         Path currentPath = instance.getLastDirectoryBy(key);
-        JFileChooser fileChooser = new JFileChooser(currentPath.toFile());
-        fileChooser.setDialogTitle(title);
-        fileChooser.setMultiSelectionEnabled(true);
-        fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-        if (fileChooser.showOpenDialog(parent) == JFileChooser.APPROVE_OPTION) {
-            if (fileChooser.getSelectedFile() != null) {
-                instance.setLastDirectoryBy(key, fileChooser.getSelectedFile().toPath());
+        if(instance.getFileChooserType() == FileChooserType.Standard) {
+            JFileChooser fileChooser = new JFileChooser(currentPath.toFile());
+            fileChooser.setDialogTitle(title);
+            fileChooser.setMultiSelectionEnabled(true);
+            fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+            if (fileChooser.showOpenDialog(parent) == JFileChooser.APPROVE_OPTION) {
+                if (fileChooser.getSelectedFile() != null) {
+                    instance.setLastDirectoryBy(key, fileChooser.getSelectedFile().toPath());
+                }
+                return Arrays.stream(fileChooser.getSelectedFiles()).map(File::toPath).collect(Collectors.toList());
+            } else {
+                return Collections.emptyList();
             }
-            return Arrays.stream(fileChooser.getSelectedFiles()).map(File::toPath).collect(Collectors.toList());
-        } else {
-            return Collections.emptyList();
+        }
+        else {
+            AdvancedFileChooser fileChooser = new AdvancedFileChooser(currentPath.toFile());
+            fileChooser.setDialogTitle(title);
+            fileChooser.setMultiSelectionEnabled(true);
+            fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+            if (fileChooser.showOpenDialog(parent) == JFileChooser.APPROVE_OPTION) {
+                if (fileChooser.getSelectedFile() != null) {
+                    instance.setLastDirectoryBy(key, fileChooser.getSelectedFile().toPath());
+                }
+                return Arrays.stream(fileChooser.getSelectedFiles()).map(File::toPath).collect(Collectors.toList());
+            } else {
+                return Collections.emptyList();
+            }
         }
     }
 
@@ -486,17 +637,33 @@ public class FileChooserSettings implements JIPipeParameterCollection {
     public static List<Path> openPaths(Component parent, LastDirectoryKey key, String title) {
         FileChooserSettings instance = getInstance();
         Path currentPath = instance.getLastDirectoryBy(key);
-        JFileChooser fileChooser = new JFileChooser(currentPath.toFile());
-        fileChooser.setDialogTitle(title);
-        fileChooser.setMultiSelectionEnabled(true);
-        fileChooser.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
-        if (fileChooser.showOpenDialog(parent) == JFileChooser.APPROVE_OPTION) {
-            if (fileChooser.getSelectedFile() != null) {
-                instance.setLastDirectoryBy(key, fileChooser.getSelectedFile().toPath());
+        if(instance.getFileChooserType() == FileChooserType.Standard) {
+            JFileChooser fileChooser = new JFileChooser(currentPath.toFile());
+            fileChooser.setDialogTitle(title);
+            fileChooser.setMultiSelectionEnabled(true);
+            fileChooser.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
+            if (fileChooser.showOpenDialog(parent) == JFileChooser.APPROVE_OPTION) {
+                if (fileChooser.getSelectedFile() != null) {
+                    instance.setLastDirectoryBy(key, fileChooser.getSelectedFile().toPath());
+                }
+                return Arrays.stream(fileChooser.getSelectedFiles()).map(File::toPath).collect(Collectors.toList());
+            } else {
+                return Collections.emptyList();
             }
-            return Arrays.stream(fileChooser.getSelectedFiles()).map(File::toPath).collect(Collectors.toList());
-        } else {
-            return Collections.emptyList();
+        }
+        else {
+            AdvancedFileChooser fileChooser = new AdvancedFileChooser(currentPath.toFile());
+            fileChooser.setDialogTitle(title);
+            fileChooser.setMultiSelectionEnabled(true);
+            fileChooser.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
+            if (fileChooser.showOpenDialog(parent) == JFileChooser.APPROVE_OPTION) {
+                if (fileChooser.getSelectedFile() != null) {
+                    instance.setLastDirectoryBy(key, fileChooser.getSelectedFile().toPath());
+                }
+                return Arrays.stream(fileChooser.getSelectedFiles()).map(File::toPath).collect(Collectors.toList());
+            } else {
+                return Collections.emptyList();
+            }
         }
     }
 
@@ -598,6 +765,12 @@ public class FileChooserSettings implements JIPipeParameterCollection {
 
     public static FileChooserSettings getInstance() {
         return JIPipe.getSettings().getSettings(ID, FileChooserSettings.class);
+    }
+
+    public enum FileChooserType {
+        Advanced,
+        Standard,
+        Native
     }
 
     public enum LastDirectoryKey {

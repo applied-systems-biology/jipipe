@@ -352,6 +352,43 @@ public class UIUtils {
     }
 
     /**
+     * Adds an existing popup menu to a button
+     * Adds a function that is run before the popup is shown
+     *
+     * @param target         target button
+     * @param popupMenu      the popup menu
+     * @param reloadFunction the function that is run before showing the popup
+     * @return the popup menu
+     */
+    public static JPopupMenu addReloadableRightClickPopupMenuToComponent(AbstractButton target, JPopupMenu popupMenu, Runnable reloadFunction) {
+        target.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent mouseEvent) {
+                super.mouseClicked(mouseEvent);
+                if(mouseEvent.getButton() == MouseEvent.BUTTON3) {
+                    reloadFunction.run();
+                    popupMenu.revalidate();
+                    popupMenu.show(mouseEvent.getComponent(), mouseEvent.getX(), mouseEvent.getY());
+                }
+            }
+        });
+        target.addActionListener(e -> {
+            try {
+                if (target.isDisplayable() && MouseInfo.getPointerInfo().getLocation().x < target.getLocationOnScreen().x
+                        || MouseInfo.getPointerInfo().getLocation().x > target.getLocationOnScreen().x + target.getWidth()
+                        || MouseInfo.getPointerInfo().getLocation().y < target.getLocationOnScreen().y
+                        || MouseInfo.getPointerInfo().getLocation().y > target.getLocationOnScreen().y + target.getHeight()) {
+                    reloadFunction.run();
+                    popupMenu.revalidate();
+                    popupMenu.show(target, 0, target.getHeight());
+                }
+            } catch (IllegalComponentStateException e1) {
+            }
+        });
+        return popupMenu;
+    }
+
+    /**
      * Returns an icon from JIPipe resources
      *
      * @param iconName relative to the icons/ plugin resource

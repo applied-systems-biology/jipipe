@@ -95,6 +95,10 @@ public class StandardSettingsExtension extends JIPipePrepackagedDefaultJavaExten
                 "UI",
                 null,
                 new ImageViewerUISettings());
+        registerEnumParameterType("settings:" + FileChooserSettings.ID + ":file-chooser-type",
+                FileChooserSettings.FileChooserType.class,
+                "File chooser type",
+                "Type of file chooser");
         registerSettingsSheet(FileChooserSettings.ID,
                 "File chooser",
                 UIUtils.getIconFromResources("actions/quickopen-file.png"),
