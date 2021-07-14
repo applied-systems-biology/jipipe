@@ -284,8 +284,8 @@ public class ImageViewerPanelCanvas extends JPanel implements MouseListener, Mou
             w = getWidth();
             h = getHeight();
         }
-        contentX = Math.max(-w, Math.min(w, contentX));
-        contentY = Math.max(-h, Math.min(h, contentY));
+        contentX = Math.max(-w + 10, contentX);
+        contentY = Math.max(-h + 10, contentY);
 //        if (contentX < 0) {
 //            int d = -contentX;
 //            contentX = 0;
