@@ -38,8 +38,8 @@ import org.hkijena.jipipe.extensions.deeplearning.DeepLearningUtils;
 import org.hkijena.jipipe.extensions.deeplearning.environments.OptionalDeepLearningDeviceEnvironment;
 import org.hkijena.jipipe.extensions.deeplearning.configs.DeepLearningPredictionConfiguration;
 import org.hkijena.jipipe.extensions.deeplearning.datatypes.DeepLearningModelData;
-import org.hkijena.jipipe.extensions.deeplearning.enums.DeepLearningModelType;
-import org.hkijena.jipipe.extensions.deeplearning.enums.DeepLearningPreprocessingType;
+import org.hkijena.jipipe.extensions.deeplearning.enums.ModelType;
+import org.hkijena.jipipe.extensions.deeplearning.enums.NormalizationMethod;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.transform.ScaleMode;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.transform.TransformScale2DAlgorithm;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datasources.ImagePlusFromFileImageSource;
@@ -72,7 +72,7 @@ public class PredictImageAlgorithm extends JIPipeSingleIterationAlgorithm {
     private boolean scaleToModelSize = true;
     private OptionalPythonEnvironment overrideEnvironment = new OptionalPythonEnvironment();
     private OptionalDeepLearningDeviceEnvironment overrideDevices = new OptionalDeepLearningDeviceEnvironment();
-    private DeepLearningPreprocessingType normalization = DeepLearningPreprocessingType.zero_one;
+    private NormalizationMethod normalization = NormalizationMethod.zero_one;
 
     public PredictImageAlgorithm(JIPipeNodeInfo info) {
         super(info);
@@ -95,12 +95,12 @@ public class PredictImageAlgorithm extends JIPipeSingleIterationAlgorithm {
 
     @JIPipeDocumentation(name = "Normalization", description = "The normalization method used for preprocessing the images.")
     @JIPipeParameter("normalization")
-    public DeepLearningPreprocessingType getNormalization() {
+    public NormalizationMethod getNormalization() {
         return normalization;
     }
 
     @JIPipeParameter("normalization")
-    public void setNormalization(DeepLearningPreprocessingType normalization) {
+    public void setNormalization(NormalizationMethod normalization) {
         this.normalization = normalization;
     }
 
@@ -137,7 +137,7 @@ public class PredictImageAlgorithm extends JIPipeSingleIterationAlgorithm {
             JIPipeProgressInfo modelProgress = progressInfo.resolveAndLog("Check model", modelCounter++, dataBatch.getInputSlotRows().get(inputModelSlot).size());
             DeepLearningModelData inputModel = inputModelSlot.getData(modelIndex, DeepLearningModelData.class, modelProgress);
 
-            if (inputModel.getModelConfiguration().getModelType() != DeepLearningModelType.segmentation) {
+            if (inputModel.getModelConfiguration().getModelType() != ModelType.segmentation) {
                 throw new UserFriendlyRuntimeException("Model " + inputModel + " is not supported by this node!",
                         "Unsupported model",
                         getDisplayName(),

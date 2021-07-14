@@ -8,9 +8,9 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
 import org.hkijena.jipipe.extensions.JIPipePrepackagedDefaultJavaExtension;
 import org.hkijena.jipipe.extensions.deeplearning.datatypes.DeepLearningModelData;
-import org.hkijena.jipipe.extensions.deeplearning.enums.DeepLearningArchitecture;
-import org.hkijena.jipipe.extensions.deeplearning.enums.DeepLearningModelType;
-import org.hkijena.jipipe.extensions.deeplearning.enums.DeepLearningPreprocessingType;
+import org.hkijena.jipipe.extensions.deeplearning.enums.NetworkArchitecture;
+import org.hkijena.jipipe.extensions.deeplearning.enums.ModelType;
+import org.hkijena.jipipe.extensions.deeplearning.enums.NormalizationMethod;
 import org.hkijena.jipipe.extensions.deeplearning.enums.MonitorLoss;
 import org.hkijena.jipipe.extensions.deeplearning.enums.RegularizationMethod;
 import org.hkijena.jipipe.extensions.deeplearning.environments.DeepLearningDeviceEnvironment;
@@ -125,7 +125,7 @@ public class DeepLearningExtension extends JIPipePrepackagedDefaultJavaExtension
                 DeepLearningToolkitEnvInstaller.class,
                 UIUtils.getIconFromResources("data-types/dl-model.png"));
         registerEnumParameterType("deep-learning-architecture",
-                DeepLearningArchitecture.class,
+                NetworkArchitecture.class,
                 "Deep Learning architecture",
                 "Architecture to be used");
         registerEnumParameterType("deep-learning-regularization-method",
@@ -137,11 +137,11 @@ public class DeepLearningExtension extends JIPipePrepackagedDefaultJavaExtension
                 "Deep Learning monitor loss",
                 "Monitor loss method to be used");
         registerEnumParameterType("deep-learning-model-type",
-                DeepLearningModelType.class,
+                ModelType.class,
                 "Deep Learning model type",
                 "A model type");
         registerEnumParameterType("deep-learning-preprocessing-type",
-                DeepLearningPreprocessingType.class,
+                NormalizationMethod.class,
                 "Deep Leaning preprocessing type",
                 "Preprocessing methods");
 

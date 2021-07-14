@@ -15,8 +15,8 @@ package org.hkijena.jipipe.extensions.deeplearning.configs;
 
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonSetter;
-import org.hkijena.jipipe.extensions.deeplearning.enums.DeepLearningPredictionType;
-import org.hkijena.jipipe.extensions.deeplearning.enums.DeepLearningPreprocessingType;
+import org.hkijena.jipipe.extensions.deeplearning.enums.PredictionType;
+import org.hkijena.jipipe.extensions.deeplearning.enums.NormalizationMethod;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -25,8 +25,8 @@ public class DeepLearningPredictionConfiguration {
     private String inputImagesPattern = "raw/*.tif";
     private Path outputPath = Paths.get("");
     private Path inputModelPath = Paths.get("");
-    private DeepLearningPredictionType predictionType = DeepLearningPredictionType.standard;
-    private DeepLearningPreprocessingType normalization = DeepLearningPreprocessingType.zero_one;
+    private PredictionType predictionType = PredictionType.standard;
+    private NormalizationMethod normalization = NormalizationMethod.zero_one;
 
     @JsonGetter("input_dir")
     public String getInputImagesPattern() {
@@ -59,22 +59,22 @@ public class DeepLearningPredictionConfiguration {
     }
 
     @JsonGetter("prediction_type")
-    public DeepLearningPredictionType getPredictionType() {
+    public PredictionType getPredictionType() {
         return predictionType;
     }
 
     @JsonSetter("prediction_type")
-    public void setPredictionType(DeepLearningPredictionType predictionType) {
+    public void setPredictionType(PredictionType predictionType) {
         this.predictionType = predictionType;
     }
 
     @JsonGetter("normalization")
-    public DeepLearningPreprocessingType getNormalization() {
+    public NormalizationMethod getNormalization() {
         return normalization;
     }
 
     @JsonSetter("normalization")
-    public void setNormalization(DeepLearningPreprocessingType normalization) {
+    public void setNormalization(NormalizationMethod normalization) {
         this.normalization = normalization;
     }
 }

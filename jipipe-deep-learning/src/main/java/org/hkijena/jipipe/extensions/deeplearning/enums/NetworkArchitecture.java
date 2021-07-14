@@ -16,7 +16,7 @@ package org.hkijena.jipipe.extensions.deeplearning.enums;
 /**
  * Available architectures
  */
-public enum DeepLearningArchitecture {
+public enum NetworkArchitecture {
     SegNet,
     VGG16,
     FCN32,

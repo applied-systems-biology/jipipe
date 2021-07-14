@@ -19,8 +19,8 @@ import com.google.common.eventbus.EventBus;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
-import org.hkijena.jipipe.extensions.deeplearning.enums.DeepLearningArchitecture;
-import org.hkijena.jipipe.extensions.deeplearning.enums.DeepLearningModelType;
+import org.hkijena.jipipe.extensions.deeplearning.enums.NetworkArchitecture;
+import org.hkijena.jipipe.extensions.deeplearning.enums.ModelType;
 import org.hkijena.jipipe.extensions.deeplearning.enums.RegularizationMethod;
 
 import java.nio.file.Path;
@@ -33,8 +33,8 @@ import java.util.List;
  */
 public class DeepLearningModelConfiguration implements JIPipeParameterCollection {
     private final EventBus eventBus = new EventBus();
-    private DeepLearningArchitecture architecture = DeepLearningArchitecture.SegNet;
-    private DeepLearningModelType modelType = DeepLearningModelType.segmentation;
+    private NetworkArchitecture architecture = NetworkArchitecture.SegNet;
+    private ModelType modelType = ModelType.segmentation;
     private RegularizationMethod regularizationMethod = RegularizationMethod.GaussianDropout;
     private double regularizationLambda = 0.1;
     private int imageWidth = 256;
@@ -83,26 +83,26 @@ public class DeepLearningModelConfiguration implements JIPipeParameterCollection
     @JIPipeDocumentation(name = "Architecture", description = "The model architecture")
     @JIPipeParameter("architecture")
     @JsonGetter("architecture")
-    public DeepLearningArchitecture getArchitecture() {
+    public NetworkArchitecture getArchitecture() {
         return architecture;
     }
 
     @JIPipeParameter("architecture")
     @JsonSetter("architecture")
-    public void setArchitecture(DeepLearningArchitecture architecture) {
+    public void setArchitecture(NetworkArchitecture architecture) {
         this.architecture = architecture;
     }
 
     @JIPipeDocumentation(name = "Model type", description = "The type of this model")
     @JIPipeParameter("model_type")
     @JsonGetter("model_type")
-    public DeepLearningModelType getModelType() {
+    public ModelType getModelType() {
         return modelType;
     }
 
     @JIPipeParameter("model_type")
     @JsonSetter("model_type")
-    public void setModelType(DeepLearningModelType modelType) {
+    public void setModelType(ModelType modelType) {
         this.modelType = modelType;
     }
 

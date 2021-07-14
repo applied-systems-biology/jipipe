@@ -40,8 +40,8 @@ import org.hkijena.jipipe.extensions.deeplearning.DeepLearningUtils;
 import org.hkijena.jipipe.extensions.deeplearning.environments.OptionalDeepLearningDeviceEnvironment;
 import org.hkijena.jipipe.extensions.deeplearning.configs.DeepLearningPredictionConfiguration;
 import org.hkijena.jipipe.extensions.deeplearning.datatypes.DeepLearningModelData;
-import org.hkijena.jipipe.extensions.deeplearning.enums.DeepLearningModelType;
-import org.hkijena.jipipe.extensions.deeplearning.enums.DeepLearningPreprocessingType;
+import org.hkijena.jipipe.extensions.deeplearning.enums.ModelType;
+import org.hkijena.jipipe.extensions.deeplearning.enums.NormalizationMethod;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.transform.ScaleMode;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.transform.TransformScale2DAlgorithm;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
@@ -57,7 +57,6 @@ import org.hkijena.jipipe.utils.ResourceUtils;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -78,7 +77,7 @@ public class PredictClassifierAlgorithm extends JIPipeSingleIterationAlgorithm {
     private boolean scaleToModelSize = true;
     private OptionalPythonEnvironment overrideEnvironment = new OptionalPythonEnvironment();
     private OptionalDeepLearningDeviceEnvironment overrideDevices = new OptionalDeepLearningDeviceEnvironment();
-    private DeepLearningPreprocessingType normalization = DeepLearningPreprocessingType.zero_one;
+    private NormalizationMethod normalization = NormalizationMethod.zero_one;
     private OptionalAnnotationNameParameter predictedLabelsAnnotation = new OptionalAnnotationNameParameter("Predicted class", true);
     private OptionalDataAnnotationNameParameter labelProbabilitiesAnnotation = new OptionalDataAnnotationNameParameter("Label probabilities", true);
 
@@ -104,12 +103,12 @@ public class PredictClassifierAlgorithm extends JIPipeSingleIterationAlgorithm {
 
     @JIPipeDocumentation(name = "Normalization", description = "The normalization method used for preprocessing the images.")
     @JIPipeParameter("normalization")
-    public DeepLearningPreprocessingType getNormalization() {
+    public NormalizationMethod getNormalization() {
         return normalization;
     }
 
     @JIPipeParameter("normalization")
-    public void setNormalization(DeepLearningPreprocessingType normalization) {
+    public void setNormalization(NormalizationMethod normalization) {
         this.normalization = normalization;
     }
 
@@ -156,7 +155,7 @@ public class PredictClassifierAlgorithm extends JIPipeSingleIterationAlgorithm {
             JIPipeProgressInfo modelProgress = progressInfo.resolveAndLog("Check model", modelCounter++, dataBatch.getInputSlotRows().get(inputModelSlot).size());
             DeepLearningModelData inputModel = inputModelSlot.getData(modelIndex, DeepLearningModelData.class, modelProgress);
 
-            if (inputModel.getModelConfiguration().getModelType() != DeepLearningModelType.classification) {
+            if (inputModel.getModelConfiguration().getModelType() != ModelType.classification) {
                 throw new UserFriendlyRuntimeException("Model " + inputModel + " is not supported by this node!",
                         "Unsupported model",
                         getDisplayName(),

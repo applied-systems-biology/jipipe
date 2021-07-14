@@ -15,7 +15,7 @@ package org.hkijena.jipipe.extensions.deeplearning.enums;
 
 import org.apache.commons.lang.WordUtils;
 
-public enum DeepLearningModelType {
+public enum ModelType {
     segmentation,
     classification;
 

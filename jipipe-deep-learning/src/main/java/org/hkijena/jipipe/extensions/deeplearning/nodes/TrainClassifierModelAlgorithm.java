@@ -34,10 +34,11 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
 import org.hkijena.jipipe.extensions.deeplearning.DeepLearningSettings;
 import org.hkijena.jipipe.extensions.deeplearning.DeepLearningUtils;
+import org.hkijena.jipipe.extensions.deeplearning.enums.NormalizationMethod;
 import org.hkijena.jipipe.extensions.deeplearning.environments.OptionalDeepLearningDeviceEnvironment;
 import org.hkijena.jipipe.extensions.deeplearning.configs.DeepLearningTrainingConfiguration;
 import org.hkijena.jipipe.extensions.deeplearning.datatypes.DeepLearningModelData;
-import org.hkijena.jipipe.extensions.deeplearning.enums.DeepLearningModelType;
+import org.hkijena.jipipe.extensions.deeplearning.enums.ModelType;
 import org.hkijena.jipipe.extensions.expressions.AnnotationQueryExpression;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.transform.ScaleMode;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.transform.TransformScale2DAlgorithm;
@@ -72,6 +73,7 @@ public class TrainClassifierModelAlgorithm extends JIPipeSingleIterationAlgorith
     private boolean cleanUpAfterwards = true;
     private OptionalDeepLearningDeviceEnvironment overrideDevices = new OptionalDeepLearningDeviceEnvironment();
     private AnnotationQueryExpression labelAnnotation = new AnnotationQueryExpression("Label");
+    private NormalizationMethod normalization = NormalizationMethod.zero_one;
 
     public TrainClassifierModelAlgorithm(JIPipeNodeInfo info) {
         super(info);
@@ -88,10 +90,22 @@ public class TrainClassifierModelAlgorithm extends JIPipeSingleIterationAlgorith
         this.scaleToModelSize = other.scaleToModelSize;
         this.cleanUpAfterwards = other.cleanUpAfterwards;
         this.labelAnnotation = new AnnotationQueryExpression(other.labelAnnotation);
+        this.normalization = other.normalization;
         registerSubParameter(trainingConfiguration);
         this.scale2DAlgorithm = new TransformScale2DAlgorithm(other.scale2DAlgorithm);
         registerSubParameter(scale2DAlgorithm);
         this.overrideDevices = new OptionalDeepLearningDeviceEnvironment(other.overrideDevices);
+    }
+
+    @JIPipeDocumentation(name = "Normalization", description = "The normalization method used for preprocessing the images.")
+    @JIPipeParameter("normalization")
+    public NormalizationMethod getNormalization() {
+        return normalization;
+    }
+
+    @JIPipeParameter("normalization")
+    public void setNormalization(NormalizationMethod normalization) {
+        this.normalization = normalization;
     }
 
     @JIPipeDocumentation(name = "Override device configuration", description = "If enabled, this nodes provides a custom device configuration, " +
@@ -127,7 +141,7 @@ public class TrainClassifierModelAlgorithm extends JIPipeSingleIterationAlgorith
             JIPipeProgressInfo modelProgress = progressInfo.resolveAndLog("Check model", modelCounter++, dataBatch.getInputSlotRows().get(inputModelSlot).size());
             DeepLearningModelData inputModel = inputModelSlot.getData(modelIndex, DeepLearningModelData.class, modelProgress);
 
-            if (inputModel.getModelConfiguration().getModelType() != DeepLearningModelType.classification) {
+            if (inputModel.getModelConfiguration().getModelType() != ModelType.classification) {
                 throw new UserFriendlyRuntimeException("Model " + inputModel + " is not supported by this node!",
                         "Unsupported model",
                         getDisplayName(),
@@ -198,6 +212,7 @@ public class TrainClassifierModelAlgorithm extends JIPipeSingleIterationAlgorith
             trainingConfiguration.setOutputModelJsonPath(workDirectory.resolve("trained_model.json"));
             trainingConfiguration.setInputImagesPattern(rawsDirectory + "/*.tif");
             trainingConfiguration.setInputLabelsPattern(labelFile.toString());
+            trainingConfiguration.setNormalization(normalization);
             try {
                 JsonUtils.getObjectMapper().writerWithDefaultPrettyPrinter().writeValue(workDirectory.resolve("training-config.json").toFile(), trainingConfiguration);
             } catch (IOException e) {

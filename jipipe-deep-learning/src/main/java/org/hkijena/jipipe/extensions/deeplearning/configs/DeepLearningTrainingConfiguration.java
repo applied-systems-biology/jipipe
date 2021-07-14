@@ -20,6 +20,7 @@ import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.extensions.deeplearning.enums.MonitorLoss;
+import org.hkijena.jipipe.extensions.deeplearning.enums.NormalizationMethod;
 import org.hkijena.jipipe.extensions.parameters.primitives.NumberParameterSettings;
 
 import java.nio.file.Path;
@@ -38,6 +39,7 @@ public class DeepLearningTrainingConfiguration implements JIPipeParameterCollect
     private MonitorLoss monitorLoss = MonitorLoss.val_loss;
     private double validationSplit = 0.85;
     private int augmentationFactor = 5;
+    private NormalizationMethod normalization = NormalizationMethod.zero_one;
 
     public DeepLearningTrainingConfiguration() {
     }
@@ -54,6 +56,17 @@ public class DeepLearningTrainingConfiguration implements JIPipeParameterCollect
         this.monitorLoss = other.monitorLoss;
         this.validationSplit = other.validationSplit;
         this.augmentationFactor = other.augmentationFactor;
+        this.normalization = other.normalization;
+    }
+
+    @JsonGetter("normalization")
+    public NormalizationMethod getNormalization() {
+        return normalization;
+    }
+
+    @JsonSetter("normalization")
+    public void setNormalization(NormalizationMethod normalization) {
+        this.normalization = normalization;
     }
 
     @Override
