@@ -306,14 +306,31 @@ public class AdvancedFileChooser extends JPanel implements PropertyChangeListene
         actionToolbar.add(goUpButton);
 
         actionToolbar.addSeparator();
+
         bookmarkToggle = new JToggleButton("Bookmark", UIUtils.getIconFromResources("actions/bookmark.png"));
-        bookmarkToggle.setBorder(BorderFactory.createEmptyBorder(3, 3, 3, 3));
+        bookmarkToggle.setBorder(BorderFactory.createEmptyBorder(8, 3, 8, 3));
         bookmarkToggle.addActionListener(e -> {
             toggleBookmark(fileChooserComponent.getCurrentDirectory(), bookmarkToggle.isSelected());
         });
         actionToolbar.add(bookmarkToggle);
 
+        if (!UIManager.getBoolean("FileChooser.readOnly")) {
+            FilePane filePane = ((FileChooserComponentUI)fileChooserComponent.getUI()).getFilePane();
+            JButton newFolderButton = new JButton();
+            newFolderButton.setAction(filePane.getNewFolderAction());
+            newFolderButton.setText("New folder");
+            newFolderButton.setIcon(UIUtils.getIconFromResources("actions/folder-new.png"));
+            newFolderButton.setBorder(BorderFactory.createEmptyBorder(8,3,8,3));
+            actionToolbar.add(newFolderButton);
+        }
+
         actionToolbar.add(Box.createHorizontalGlue());
+
+        JButton refreshButton = new JButton(UIUtils.getIconFromResources("actions/view-refresh.png"));
+        refreshButton.setToolTipText("Refresh");
+        refreshButton.addActionListener(e -> fileChooserComponent.rescanCurrentDirectory());
+        refreshButton.setBorder(BorderFactory.createEmptyBorder(8,8,8,8));
+        actionToolbar.add(refreshButton);
 
         // View button group
         FilePane filePane = ((FileChooserComponentUI)fileChooserComponent.getUI()).getFilePane();
