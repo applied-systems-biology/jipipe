@@ -17,6 +17,7 @@ import ij.ImagePlus;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeHeavyData;
 import org.hkijena.jipipe.api.JIPipeOrganization;
+import org.hkijena.jipipe.extensions.imagejdatatypes.color.ColorSpace;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d2.ImagePlus2DData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ConverterWrapperImageSource;
@@ -38,15 +39,20 @@ public class ImagePlus2DGreyscaleData extends ImagePlus2DData {
      */
     public static final int DIMENSIONALITY = 2;
 
-    /**
-     * @param image wrapped image
-     */
     public ImagePlus2DGreyscaleData(ImagePlus image) {
         super(ImageJUtils.convertToGreyscaleIfNeeded(image));
     }
 
     public ImagePlus2DGreyscaleData(ImageSource source) {
         super(new ConverterWrapperImageSource(source, ImageJUtils::convertToGreyscaleIfNeeded));
+    }
+
+    public ImagePlus2DGreyscaleData(ImagePlus image, ColorSpace colorSpace) {
+        super(ImageJUtils.convertToGreyscaleIfNeeded(image), colorSpace);
+    }
+
+    public ImagePlus2DGreyscaleData(ImageSource source, ColorSpace colorSpace) {
+        super(new ConverterWrapperImageSource(source, ImageJUtils::convertToGreyscaleIfNeeded), colorSpace);
     }
 
     public static ImagePlusData importFrom(Path storageFolder) {
