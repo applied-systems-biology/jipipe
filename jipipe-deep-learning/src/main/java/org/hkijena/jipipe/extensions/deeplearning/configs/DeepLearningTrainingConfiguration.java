@@ -31,6 +31,7 @@ public class DeepLearningTrainingConfiguration implements JIPipeParameterCollect
     private Path inputModelPath = Paths.get("");
     private Path outputModelPath = Paths.get("");
     private Path outputModelJsonPath = Paths.get("");
+    private Path logDir = Paths.get("");
     private String inputImagesPattern = "raw/*.tif";
     private String inputLabelsPattern = "labels/*.tif";
     private int maxEpochs = 1000;
@@ -57,6 +58,17 @@ public class DeepLearningTrainingConfiguration implements JIPipeParameterCollect
         this.validationSplit = other.validationSplit;
         this.augmentationFactor = other.augmentationFactor;
         this.normalization = other.normalization;
+        this.logDir = other.logDir;
+    }
+
+    @JsonGetter("log_dir")
+    public Path getLogDir() {
+        return logDir;
+    }
+
+    @JsonSetter("log_dir")
+    public void setLogDir(Path logDir) {
+        this.logDir = logDir;
     }
 
     @JsonGetter("normalization")
