@@ -19,6 +19,8 @@ import org.hkijena.jipipe.api.nodes.JIPipeOutputSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeSingleIterationAlgorithm;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
+import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
+import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
 import org.hkijena.jipipe.extensions.cellpose.CellPoseModel;
 import org.hkijena.jipipe.extensions.cellpose.CellPoseSettings;
 import org.hkijena.jipipe.extensions.cellpose.CellPoseUtils;
@@ -636,6 +638,15 @@ public class CellPoseAlgorithm extends JIPipeSingleIterationAlgorithm {
     @JIPipeParameter(value = "output-parameters", collapsed = true)
     public OutputParameters getOutputParameters() {
         return outputParameters;
+    }
+
+    @Override
+    public boolean isParameterUIVisible(JIPipeParameterTree tree, JIPipeParameterAccess access) {
+        if(access.getSource() == modelParameters && "mean-diameter".equals(access.getKey())) {
+            // This is never needed
+            return false;
+        }
+        return super.isParameterUIVisible(tree, access);
     }
 
     private void updateOutputSlots() {
