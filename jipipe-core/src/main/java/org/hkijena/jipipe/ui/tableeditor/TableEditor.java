@@ -723,6 +723,7 @@ public class TableEditor extends JIPipeWorkbenchPanel {
             });
         }
         updateSelectionStatistics();
+        SwingUtilities.invokeLater(this::autoSizeColumns);
     }
 
     /**
