@@ -95,8 +95,6 @@ def train_model(model_config, config, model=None):
     print('[Train model] Train data:\t', x_train.shape, y_train.shape)
     print('[Train model] Validation data:\t', x_valid.shape, y_valid.shape)
 
-    return
-
     """
     augment dataset with Elastic deformation [Simard2003] with a certain probability:
     

@@ -41,6 +41,7 @@ public class DeepLearningTrainingConfiguration implements JIPipeParameterCollect
     private double validationSplit = 0.85;
     private int augmentationFactor = 5;
     private NormalizationMethod normalization = NormalizationMethod.zero_one;
+    private boolean useElasticTransform = true;
 
     public DeepLearningTrainingConfiguration() {
     }
@@ -59,6 +60,20 @@ public class DeepLearningTrainingConfiguration implements JIPipeParameterCollect
         this.augmentationFactor = other.augmentationFactor;
         this.normalization = other.normalization;
         this.logDir = other.logDir;
+        this.useElasticTransform = other.useElasticTransform;
+    }
+
+    @JIPipeDocumentation(name = "Use elastic transform", description = "If enabled, the augmentation will use elastic transforms")
+    @JIPipeParameter("use-use_elastic_transformation")
+    @JsonGetter("use_elastic_transformation")
+    public boolean isUseElasticTransform() {
+        return useElasticTransform;
+    }
+
+    @JIPipeParameter("use-use_elastic_transformation")
+    @JsonSetter("use_elastic_transformation")
+    public void setUseElasticTransform(boolean useElasticTransform) {
+        this.useElasticTransform = useElasticTransform;
     }
 
     @JsonGetter("log_dir")
@@ -71,11 +86,14 @@ public class DeepLearningTrainingConfiguration implements JIPipeParameterCollect
         this.logDir = logDir;
     }
 
+    @JIPipeDocumentation(name = "Normalization", description = "The normalization method that should be used")
+    @JIPipeParameter("normalization")
     @JsonGetter("normalization")
     public NormalizationMethod getNormalization() {
         return normalization;
     }
 
+    @JIPipeParameter("normalization")
     @JsonSetter("normalization")
     public void setNormalization(NormalizationMethod normalization) {
         this.normalization = normalization;
