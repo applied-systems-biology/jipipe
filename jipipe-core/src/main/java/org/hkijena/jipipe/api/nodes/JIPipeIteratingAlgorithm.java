@@ -156,7 +156,7 @@ public abstract class JIPipeIteratingAlgorithm extends JIPipeParameterSlotAlgori
 
         // Special case: No input slots
         if (getEffectiveInputSlotCount() == 0) {
-            if (progressInfo.isCancelled().get())
+            if (progressInfo.isCancelled())
                 return;
             final int row = 0;
             JIPipeProgressInfo slotProgress = progressInfo.resolveAndLog("Data row", row, 1);
@@ -173,7 +173,7 @@ public abstract class JIPipeIteratingAlgorithm extends JIPipeParameterSlotAlgori
 
             dataBatches = new ArrayList<>();
             for (int row = 0; row < getFirstInputSlot().getRowCount(); row++) {
-                if (progressInfo.isCancelled().get())
+                if (progressInfo.isCancelled())
                     break;
                 if (withLimit && !allowedIndices.contains(row))
                     continue;
@@ -194,7 +194,7 @@ public abstract class JIPipeIteratingAlgorithm extends JIPipeParameterSlotAlgori
                 mergingDataBatches.removeIf(JIPipeMergingDataBatch::isIncomplete);
             } else {
                 for (JIPipeMergingDataBatch batch : mergingDataBatches) {
-                    if (progressInfo.isCancelled().get())
+                    if (progressInfo.isCancelled())
                         break;
                     if (batch.isIncomplete()) {
                         throw new UserFriendlyRuntimeException("Incomplete data set found!",
@@ -225,7 +225,7 @@ public abstract class JIPipeIteratingAlgorithm extends JIPipeParameterSlotAlgori
 
         if (!supportsParallelization() || !isParallelizationEnabled() || getThreadPool() == null || getThreadPool().getMaxThreads() <= 1) {
             for (int i = 0; i < dataBatches.size(); i++) {
-                if (progressInfo.isCancelled().get())
+                if (progressInfo.isCancelled())
                     return;
                 JIPipeProgressInfo slotProgress = progressInfo.resolveAndLog("Data row", i, dataBatches.size());
                 uploadAdaptiveParameters(dataBatches.get(i), tree, parameterBackups, progressInfo);
@@ -237,7 +237,7 @@ public abstract class JIPipeIteratingAlgorithm extends JIPipeParameterSlotAlgori
                 int rowIndex = i;
                 JIPipeParameterTree finalTree = tree;
                 tasks.add(() -> {
-                    if (progressInfo.isCancelled().get())
+                    if (progressInfo.isCancelled())
                         return;
                     JIPipeProgressInfo slotProgress = progressInfo.resolveAndLog("Data row", rowIndex, dataBatches.size());
                     uploadAdaptiveParameters(dataBatches.get(rowIndex), finalTree, parameterBackups, progressInfo);

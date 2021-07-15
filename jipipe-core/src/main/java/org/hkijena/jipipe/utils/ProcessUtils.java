@@ -344,7 +344,7 @@ public class ProcessUtils {
                         wait(500);
                     } catch (final InterruptedException e) {
                     }
-                    isWaiting = !progressInfo.isCancelled().get();
+                    isWaiting = !progressInfo.isCancelled();
                 }
             }
 

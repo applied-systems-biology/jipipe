@@ -135,7 +135,7 @@ public abstract class JIPipeMissingDataGeneratorAlgorithm extends JIPipeParamete
         } else if (getEffectiveInputSlotCount() == 1) {
             dataBatches = new ArrayList<>();
             for (int row = 0; row < getFirstInputSlot().getRowCount(); row++) {
-                if (progressInfo.isCancelled().get())
+                if (progressInfo.isCancelled())
                     break;
                 JIPipeMergingDataBatch dataBatch = new JIPipeMergingDataBatch(this);
                 dataBatch.setInputData(getFirstInputSlot(), row);
@@ -158,7 +158,7 @@ public abstract class JIPipeMissingDataGeneratorAlgorithm extends JIPipeParamete
 
         if (!supportsParallelization() || !isParallelizationEnabled() || getThreadPool() == null || getThreadPool().getMaxThreads() <= 1) {
             for (int i = 0; i < dataBatches.size(); i++) {
-                if (progressInfo.isCancelled().get())
+                if (progressInfo.isCancelled())
                     return;
                 JIPipeProgressInfo slotProgress = progressInfo.resolveAndLog("Data row", i, dataBatches.size());
                 runIteration(dataBatches.get(i), slotProgress);
@@ -168,7 +168,7 @@ public abstract class JIPipeMissingDataGeneratorAlgorithm extends JIPipeParamete
             for (int i = 0; i < getFirstInputSlot().getRowCount(); i++) {
                 int rowIndex = i;
                 tasks.add(() -> {
-                    if (progressInfo.isCancelled().get())
+                    if (progressInfo.isCancelled())
                         return;
                     JIPipeProgressInfo slotProgress = progressInfo.resolveAndLog("Data row", rowIndex, dataBatches.size());
                     runIteration(dataBatches.get(rowIndex), slotProgress);

@@ -107,7 +107,7 @@ public class REnvInstaller extends ExternalEnvironmentInstaller {
             installerPath = configuration.getCustomInstallerPath().getContent();
         else
             installerPath = downloadMiniconda(progressInfo.resolveAndLog("Download R"));
-        if (progressInfo.isCancelled().get())
+        if (progressInfo.isCancelled())
             return;
 
         progressInfo.incrementProgress();

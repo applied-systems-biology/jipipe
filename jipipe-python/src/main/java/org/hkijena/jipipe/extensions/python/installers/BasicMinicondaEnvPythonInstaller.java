@@ -69,7 +69,7 @@ public class BasicMinicondaEnvPythonInstaller extends ExternalEnvironmentInstall
 
         // Config phase
         if (!configure()) return;
-        if (progressInfo.isCancelled().get())
+        if (progressInfo.isCancelled())
             return;
         progressInfo.incrementProgress();
 
@@ -91,28 +91,28 @@ public class BasicMinicondaEnvPythonInstaller extends ExternalEnvironmentInstall
         // Download phase
         progressInfo.log("Acquire setup ...");
         Path installerPath = download();
-        if (progressInfo.isCancelled().get())
+        if (progressInfo.isCancelled())
             return;
         progressInfo.incrementProgress();
 
         // Install phase
         progressInfo.log("Install ...");
         install(installerPath);
-        if (progressInfo.isCancelled().get())
+        if (progressInfo.isCancelled())
             return;
         progressInfo.incrementProgress();
 
         // Postprocess phase
         progressInfo.log("Postprocess install ...");
         postprocessInstall();
-        if (progressInfo.isCancelled().get())
+        if (progressInfo.isCancelled())
             return;
         progressInfo.incrementProgress();
 
         // Generate phase
         progressInfo.log("Generating config ...");
         SelectCondaEnvPythonInstaller.Configuration condaConfig = generateCondaConfig();
-        if (progressInfo.isCancelled().get())
+        if (progressInfo.isCancelled())
             return;
         progressInfo.incrementProgress();
 

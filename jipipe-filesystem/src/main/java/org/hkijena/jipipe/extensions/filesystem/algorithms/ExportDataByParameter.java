@@ -77,7 +77,7 @@ public class ExportDataByParameter extends JIPipeAlgorithm {
 
         if (splitByInputSlots) {
             for (JIPipeDataSlot inputSlot : getInputSlots()) {
-                if (progressInfo.isCancelled().get())
+                if (progressInfo.isCancelled())
                     return;
                 exporter.writeToFolder(Collections.singletonList(inputSlot), outputPath.resolve(StringUtils.makeFilesystemCompatible(inputSlot.getName())), progressInfo.resolve("Slot '" + inputSlot.getName() + "'"));
                 getFirstOutputSlot().addData(new FolderData(outputPath.resolve(inputSlot.getName())), progressInfo);

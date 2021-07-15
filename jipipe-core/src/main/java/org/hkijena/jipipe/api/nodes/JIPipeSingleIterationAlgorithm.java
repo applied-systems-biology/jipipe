@@ -131,7 +131,7 @@ public abstract class JIPipeSingleIterationAlgorithm extends JIPipeParameterSlot
 
         // Special case: No input slots
         if (getEffectiveInputSlotCount() == 0) {
-            if (progressInfo.isCancelled().get())
+            if (progressInfo.isCancelled())
                 return;
             final int row = 0;
             JIPipeProgressInfo slotProgress = progressInfo.resolveAndLog("Data row", row, 1);
@@ -149,7 +149,7 @@ public abstract class JIPipeSingleIterationAlgorithm extends JIPipeParameterSlot
 
         // There should be only one batch, but we iterate anyways
         for (int i = 0; i < dataBatches.size(); i++) {
-            if (progressInfo.isCancelled().get())
+            if (progressInfo.isCancelled())
                 return;
             JIPipeProgressInfo slotProgress = progressInfo.resolveAndLog("Data row", i, dataBatches.size());
             uploadAdaptiveParameters(dataBatches.get(i), tree, parameterBackups, progressInfo);

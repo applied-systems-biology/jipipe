@@ -260,7 +260,7 @@ public class JIPipeRun implements JIPipeRunnable {
 
         progressInfo.setMaxProgress(traversedSlots.size());
         for (int index = 0; index < traversedSlots.size(); ++index) {
-            if (progressInfo.isCancelled().get())
+            if (progressInfo.isCancelled())
                 throw new UserFriendlyRuntimeException("Execution was cancelled",
                         "You cancelled the execution of the algorithm pipeline.",
                         "Pipeline run", "You clicked 'Cancel'.",
@@ -313,7 +313,7 @@ public class JIPipeRun implements JIPipeRunnable {
         // Will also run any postprocessor
         List<JIPipeGraphNode> additionalAlgorithms = new ArrayList<>();
         for (JIPipeGraphNode node : copiedGraph.getGraphNodes()) {
-            if (progressInfo.isCancelled().get())
+            if (progressInfo.isCancelled())
                 break;
             if (!executedAlgorithms.contains(node) && !unExecutableAlgorithms.contains(node)) {
                 additionalAlgorithms.add(node);
@@ -321,7 +321,7 @@ public class JIPipeRun implements JIPipeRunnable {
         }
         progressInfo.setMaxProgress(progressInfo.getProgress() + additionalAlgorithms.size());
         for (int index = 0; index < additionalAlgorithms.size(); index++) {
-            if (progressInfo.isCancelled().get())
+            if (progressInfo.isCancelled())
                 break;
             JIPipeGraphNode node = additionalAlgorithms.get(index);
             int absoluteIndex = index + preprocessorNodes.size() + traversedSlots.size() - 1;

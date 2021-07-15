@@ -66,8 +66,12 @@ public class JIPipeProgressInfo {
         this.maxProgress.set(maxProgress);
     }
 
-    public AtomicBoolean isCancelled() {
-        return cancelled;
+    public boolean isCancelled() {
+        return cancelled.get();
+    }
+
+    public void cancel() {
+        cancelled.set(true);
     }
 
     public synchronized StringBuilder getLog() {

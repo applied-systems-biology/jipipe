@@ -157,7 +157,7 @@ public class RoiToRGBAlgorithm extends JIPipeIteratingAlgorithm {
                     ImageProcessor processor = result.getStack().getProcessor(stackIndex);
                     for (Roi roi : inputData) {
 
-                        if (progressInfo.isCancelled().get())
+                        if (progressInfo.isCancelled())
                             return;
 
                         int rz = roi.getZPosition();

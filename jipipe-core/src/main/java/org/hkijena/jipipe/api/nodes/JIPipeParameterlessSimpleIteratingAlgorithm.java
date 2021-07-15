@@ -109,7 +109,7 @@ public abstract class JIPipeParameterlessSimpleIteratingAlgorithm extends JIPipe
                 for (int i = 0; i < getFirstInputSlot().getRowCount(); i++) {
                     if (withLimit && !allowedIndices.contains(i))
                         continue;
-                    if (progressInfo.isCancelled().get())
+                    if (progressInfo.isCancelled())
                         return;
                     JIPipeProgressInfo slotProgress = progressInfo.resolveAndLog("Data row", i, getFirstInputSlot().getRowCount());
                     JIPipeDataBatch dataBatch = new JIPipeDataBatch(this);
@@ -124,7 +124,7 @@ public abstract class JIPipeParameterlessSimpleIteratingAlgorithm extends JIPipe
                         continue;
                     int rowIndex = i;
                     tasks.add(() -> {
-                        if (progressInfo.isCancelled().get())
+                        if (progressInfo.isCancelled())
                             return;
                         JIPipeProgressInfo slotProgress = progressInfo.resolveAndLog("Data row", rowIndex, getFirstInputSlot().getRowCount());
                         JIPipeDataBatch dataBatch = new JIPipeDataBatch(this);

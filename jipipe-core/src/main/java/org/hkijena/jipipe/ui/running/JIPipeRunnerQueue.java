@@ -106,7 +106,7 @@ public class JIPipeRunnerQueue {
         JIPipeRunWorker worker = findWorkerOf(run);
         if (worker != null) {
             if (currentlyRunningWorker == worker) {
-                worker.getRun().getProgressInfo().isCancelled().set(true);
+                worker.getRun().getProgressInfo().cancel();
                 worker.cancel(true);
             } else {
                 queue.remove(worker);

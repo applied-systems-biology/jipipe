@@ -67,7 +67,7 @@ public class ImageViewerStackExporterRun implements JIPipeRunnable {
         for (int c = 0; c < image.getNChannels(); c++) {
             for (int t = 0; t < image.getNFrames(); t++) {
                 for (int z = 0; z < image.getNSlices(); z++) {
-                    if (progressInfo.isCancelled().get())
+                    if (progressInfo.isCancelled())
                         return;
                     String fileName = String.format("%sc%d_t%d_z%d.%s", StringUtils.isNullOrEmpty(baseName) ? "" : baseName + "_", c, t, z, formatName.toLowerCase());
                     progressInfo.incrementProgress();

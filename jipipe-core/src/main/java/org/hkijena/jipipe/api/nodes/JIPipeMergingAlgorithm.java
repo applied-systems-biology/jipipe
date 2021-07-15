@@ -162,7 +162,7 @@ public abstract class JIPipeMergingAlgorithm extends JIPipeParameterSlotAlgorith
 
         // Special case: No input slots
         if (getEffectiveInputSlotCount() == 0) {
-            if (progressInfo.isCancelled().get())
+            if (progressInfo.isCancelled())
                 return;
             final int row = 0;
             JIPipeProgressInfo slotProgress = progressInfo.resolveAndLog("Data row", row, 1);
@@ -198,7 +198,7 @@ public abstract class JIPipeMergingAlgorithm extends JIPipeParameterSlotAlgorith
 
         if (!supportsParallelization() || !isParallelizationEnabled() || getThreadPool() == null || getThreadPool().getMaxThreads() <= 1) {
             for (int i = 0; i < dataBatches.size(); i++) {
-                if (progressInfo.isCancelled().get())
+                if (progressInfo.isCancelled())
                     return;
                 JIPipeProgressInfo slotProgress = progressInfo.resolveAndLog("Data row", i, dataBatches.size());
                 uploadAdaptiveParameters(dataBatches.get(i), tree, parameterBackups, progressInfo);
@@ -210,7 +210,7 @@ public abstract class JIPipeMergingAlgorithm extends JIPipeParameterSlotAlgorith
                 int rowIndex = i;
                 JIPipeParameterTree finalTree = tree;
                 tasks.add(() -> {
-                    if (progressInfo.isCancelled().get())
+                    if (progressInfo.isCancelled())
                         return;
                     JIPipeProgressInfo slotProgress = progressInfo.resolveAndLog("Data row", rowIndex, dataBatches.size());
                     JIPipeMergingDataBatch dataBatch = dataBatches.get(rowIndex);

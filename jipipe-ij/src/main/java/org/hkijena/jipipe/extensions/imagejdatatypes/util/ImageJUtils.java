@@ -716,7 +716,7 @@ public class ImageJUtils {
     public static void forEachIndexedSlice(ImagePlus img, BiConsumer<ImageProcessor, Integer> function, JIPipeProgressInfo progressInfo) {
         if (img.isStack()) {
             for (int i = 0; i < img.getStack().size(); ++i) {
-                if (progressInfo.isCancelled().get())
+                if (progressInfo.isCancelled())
                     return;
                 ImageProcessor ip = img.getStack().getProcessor(i + 1);
                 progressInfo.resolveAndLog("Slice", i, img.getStackSize());
@@ -740,7 +740,7 @@ public class ImageJUtils {
             for (int t = 0; t < img.getNFrames(); t++) {
                 for (int z = 0; z < img.getNSlices(); z++) {
                     for (int c = 0; c < img.getNChannels(); c++) {
-                        if (progressInfo.isCancelled().get())
+                        if (progressInfo.isCancelled())
                             return;
                         int index = img.getStackIndex(c + 1, z + 1, t + 1);
                         progressInfo.resolveAndLog("Slice", iterationIndex++, img.getStackSize()).log("z=" + z + ", c=" + c + ", t=" + t);
@@ -768,7 +768,7 @@ public class ImageJUtils {
             for (int t = 0; t < img.getNFrames(); t++) {
                 for (int z = 0; z < img.getNSlices(); z++) {
                     for (int c = 0; c < img.getNChannels(); c++) {
-                        if (progressInfo.isCancelled().get())
+                        if (progressInfo.isCancelled())
                             return null;
                         int index = img.getStackIndex(c + 1, z + 1, t + 1);
                         progressInfo.resolveAndLog("Slice", iterationIndex++, img.getStackSize()).log("z=" + z + ", c=" + c + ", t=" + t);
@@ -800,7 +800,7 @@ public class ImageJUtils {
             for (int z = 0; z < img.getNSlices(); z++) {
                 Map<Integer, ImageProcessor> channels = new HashMap<>();
                 for (int c = 0; c < img.getNChannels(); c++) {
-                    if (progressInfo.isCancelled().get())
+                    if (progressInfo.isCancelled())
                         return;
                     progressInfo.resolveAndLog("Slice", iterationIndex++, img.getStackSize()).log("z=" + z + ", c=" + c + ", t=" + t);
                     channels.put(c, img.getStack().getProcessor(img.getStackIndex(c + 1, z + 1, t + 1)));
@@ -1251,7 +1251,7 @@ public class ImageJUtils {
             progressInfo.setMaxProgress(image.getNSlices());
             JIPipeProgressInfo subProgress = progressInfo.resolve("Generating RGB stack");
             for (int z = 0; z < image.getNSlices(); z++) {
-                if (progressInfo.isCancelled().get())
+                if (progressInfo.isCancelled())
                     return;
                 progressInfo.incrementProgress();
                 subProgress.log("z = " + z);
@@ -1262,7 +1262,7 @@ public class ImageJUtils {
             progressInfo.setMaxProgress(image.getNChannels());
             JIPipeProgressInfo subProgress = progressInfo.resolve("Generating RGB stack");
             for (int c = 0; c < image.getNChannels(); c++) {
-                if (progressInfo.isCancelled().get())
+                if (progressInfo.isCancelled())
                     return;
                 progressInfo.incrementProgress();
                 subProgress.log("c = " + c);
@@ -1273,7 +1273,7 @@ public class ImageJUtils {
             progressInfo.setMaxProgress(image.getNFrames());
             JIPipeProgressInfo subProgress = progressInfo.resolve("Generating RGB stack");
             for (int t = 0; t < image.getNFrames(); t++) {
-                if (progressInfo.isCancelled().get())
+                if (progressInfo.isCancelled())
                     return;
                 progressInfo.incrementProgress();
                 subProgress.log("t = " + t);

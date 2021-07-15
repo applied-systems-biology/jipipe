@@ -186,7 +186,7 @@ public class JIPipeMergingDataBatchBuilder {
             }
             matchedRows.put(slot, slotMap);
         }
-        if (progressInfo.isCancelled().get())
+        if (progressInfo.isCancelled())
             return null;
 
         // Apply "empty" to all other keys if we have any other ones
@@ -289,7 +289,7 @@ public class JIPipeMergingDataBatchBuilder {
             for (int row = 0; row < slot.getRowCount(); row++) {
                 if (row % 1000 == 0) {
                     progressInfo.resolveAndLog("Row", row, slot.getRowCount());
-                    if (progressInfo.isCancelled().get())
+                    if (progressInfo.isCancelled())
                         return null;
                 }
                 JIPipeMergingDataBatch batch = new JIPipeMergingDataBatch(this.node);
@@ -320,7 +320,7 @@ public class JIPipeMergingDataBatchBuilder {
             for (int row = 0; row < slot.getRowCount(); row++) {
                 if (row % 1000 == 0) {
                     progressInfo.resolveAndLog("Row", row, slot.getRowCount());
-                    if (progressInfo.isCancelled().get())
+                    if (progressInfo.isCancelled())
                         return null;
                 }
                 batch.addInputData(slot, row);
@@ -372,7 +372,7 @@ public class JIPipeMergingDataBatchBuilder {
                 rowNodesBySlot.put(slot, rowNode);
             }
 
-            if (progressInfo.isCancelled().get())
+            if (progressInfo.isCancelled())
                 return null;
             if (applyMerging) {
                 progressInfo.log("Partitioning");
@@ -391,7 +391,7 @@ public class JIPipeMergingDataBatchBuilder {
         }
 
         // Connect compatible rows
-        if (progressInfo.isCancelled().get())
+        if (progressInfo.isCancelled())
             return null;
         progressInfo.log("Connecting compatible layers");
         for (int layer = 1; layer < slotList.size(); layer++) {
@@ -413,7 +413,7 @@ public class JIPipeMergingDataBatchBuilder {
         graph.addVertex(sink);
 
         // Trivial connections (first and last layer)
-        if (progressInfo.isCancelled().get())
+        if (progressInfo.isCancelled())
             return null;
         progressInfo.log("Inserting trivial connections");
         for (RowNode rowNode : rowNodesBySlot.get(slotList.get(0))) {
@@ -424,7 +424,7 @@ public class JIPipeMergingDataBatchBuilder {
         }
 
         // Add orphaned connections to source/sink
-        if (progressInfo.isCancelled().get())
+        if (progressInfo.isCancelled())
             return null;
         progressInfo.log("Connecting orphaned nodes");
         for (int i = 0; i < slotList.size(); i++) {
@@ -469,7 +469,7 @@ public class JIPipeMergingDataBatchBuilder {
 //        dotExporter.exportGraph(graph, new File("flowgraph.dot"));
 
 
-        if (progressInfo.isCancelled().get())
+        if (progressInfo.isCancelled())
             return null;
         progressInfo.log("Getting all paths");
         List<JIPipeMergingDataBatch> result = new ArrayList<>();
@@ -477,7 +477,7 @@ public class JIPipeMergingDataBatchBuilder {
         List<GraphPath<RowNode, DefaultEdge>> allPaths = directedPaths.getAllPaths(source, sink, false, Integer.MAX_VALUE);
         progressInfo.log("Found " + allPaths.size() + " paths");
 
-        if (progressInfo.isCancelled().get())
+        if (progressInfo.isCancelled())
             return null;
 
         progressInfo.log("Generating data batches");

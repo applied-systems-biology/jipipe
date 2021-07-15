@@ -249,7 +249,7 @@ public class JIPipeDataByMetadataExporter implements JIPipeParameterCollection {
         }
         Set<String> existingMetadata = new HashSet<>();
         for (JIPipeDataSlot dataSlot : dataSlotList) {
-            if (progressInfo.isCancelled().get())
+            if (progressInfo.isCancelled())
                 return;
             writeToFolder(dataSlot, outputPath, progressInfo, existingMetadata);
         }
@@ -274,7 +274,7 @@ public class JIPipeDataByMetadataExporter implements JIPipeParameterCollection {
      */
     public void writeToFolder(JIPipeDataSlot dataSlot, Path outputPath, JIPipeProgressInfo progressInfo, Set<String> existingMetadata) {
         for (int row = 0; row < dataSlot.getRowCount(); row++) {
-            if (progressInfo.isCancelled().get())
+            if (progressInfo.isCancelled())
                 return;
             writeToFolder(dataSlot, row, outputPath, progressInfo, existingMetadata);
         }

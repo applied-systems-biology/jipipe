@@ -69,7 +69,7 @@ public class ImageViewerVideoExporterRun implements JIPipeRunnable {
             progressInfo.setMaxProgress(image.getNSlices());
             JIPipeProgressInfo subProgress = progressInfo.resolve("Generating RGB stack");
             for (int z = 0; z < image.getNSlices(); z++) {
-                if (progressInfo.isCancelled().get())
+                if (progressInfo.isCancelled())
                     return;
                 progressInfo.incrementProgress();
                 subProgress.log("z = " + z);
@@ -82,7 +82,7 @@ public class ImageViewerVideoExporterRun implements JIPipeRunnable {
             progressInfo.setMaxProgress(image.getNChannels());
             JIPipeProgressInfo subProgress = progressInfo.resolve("Generating RGB stack");
             for (int c = 0; c < image.getNChannels(); c++) {
-                if (progressInfo.isCancelled().get())
+                if (progressInfo.isCancelled())
                     return;
                 progressInfo.incrementProgress();
                 subProgress.log("c = " + c);
@@ -95,7 +95,7 @@ public class ImageViewerVideoExporterRun implements JIPipeRunnable {
             progressInfo.setMaxProgress(image.getNFrames());
             JIPipeProgressInfo subProgress = progressInfo.resolve("Generating RGB stack");
             for (int t = 0; t < image.getNFrames(); t++) {
-                if (progressInfo.isCancelled().get())
+                if (progressInfo.isCancelled())
                     return;
                 progressInfo.incrementProgress();
                 subProgress.log("t = " + t);

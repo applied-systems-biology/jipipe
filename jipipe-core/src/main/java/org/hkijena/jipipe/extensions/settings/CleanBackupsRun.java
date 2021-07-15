@@ -73,7 +73,7 @@ public class CleanBackupsRun implements JIPipeRunnable {
             getProgressInfo().setProgress(0, lastSaves.size());
 
             for (Path lastSave : lastSaves) {
-                if (getProgressInfo().isCancelled().get())
+                if (getProgressInfo().isCancelled())
                     return;
                 JIPipeProgressInfo hashProgress = getProgressInfo().resolveAndLog("Generate SHA1 hash for " + lastSave);
                 if (!Files.exists(lastSave)) {
@@ -90,7 +90,7 @@ public class CleanBackupsRun implements JIPipeRunnable {
                 getProgressInfo().incrementProgress();
             }
 
-            if (getProgressInfo().isCancelled().get())
+            if (getProgressInfo().isCancelled())
                 return;
 
             for (String sha1 : hashes.keySet()) {
@@ -110,11 +110,11 @@ public class CleanBackupsRun implements JIPipeRunnable {
                 }
             }
 
-            if (getProgressInfo().isCancelled().get())
+            if (getProgressInfo().isCancelled())
                 return;
 
             for (Path path : toDelete) {
-                if (getProgressInfo().isCancelled().get())
+                if (getProgressInfo().isCancelled())
                     return;
                 progressInfo.log("Deleting: " + path);
                 try {

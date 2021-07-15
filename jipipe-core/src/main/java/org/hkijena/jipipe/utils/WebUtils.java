@@ -66,7 +66,7 @@ public class WebUtils {
                 long total = 0;
                 try (OutputStream output = new FileOutputStream(outputFile.toFile())) {
                     while ((n = input.read(buffer)) != -1) {
-                        if (progressInfo.isCancelled().get())
+                        if (progressInfo.isCancelled())
                             return;
                         total += n;
                         output.write(buffer, 0, n);
@@ -80,7 +80,7 @@ public class WebUtils {
                                 message = "Downloaded " + df.format(total / 1024.0 / 1024.0) + " MB / " + df.format(contentLength / 1024.0 / 1024.0) + " MB";
                             }
                             progressInfo.log(message);
-                            if (progressInfo.isCancelled().get())
+                            if (progressInfo.isCancelled())
                                 return;
                         }
                     }

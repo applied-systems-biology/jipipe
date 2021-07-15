@@ -71,7 +71,7 @@ public class DrawMaskAlgorithm extends JIPipeIteratingMissingDataGeneratorAlgori
         } else if (getEffectiveInputSlotCount() == 1) {
             dataBatches = new ArrayList<>();
             for (int row = 0; row < getFirstInputSlot().getRowCount(); row++) {
-                if (progressInfo.isCancelled().get())
+                if (progressInfo.isCancelled())
                     break;
                 JIPipeMergingDataBatch dataBatch = new JIPipeMergingDataBatch(this);
                 dataBatch.setInputData(getFirstInputSlot(), row);
