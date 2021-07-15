@@ -45,6 +45,22 @@ public class PathUtils {
 
     }
 
+    public static Path resolveAndMakeSubDirectory(Path directory, String name) {
+        return resolveAndMakeSubDirectory(directory, Paths.get(name));
+    }
+
+    public static Path resolveAndMakeSubDirectory(Path directory, Path name) {
+        Path result = directory.resolve(name);
+        if(!Files.exists(result)) {
+            try {
+                Files.createDirectories(result);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
+        return result;
+    }
+
     public static void deleteDirectoryRecursively(Path path, JIPipeProgressInfo progressInfo) {
         FileVisitor<Path> visitor = new SimpleFileVisitor<Path>() {
             @Override

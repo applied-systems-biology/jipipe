@@ -210,6 +210,7 @@ public class TrainClassifierModelAlgorithm extends JIPipeSingleIterationAlgorith
             trainingConfiguration.setInputModelPath(workDirectory.resolve("model.hdf5"));
             trainingConfiguration.setOutputModelPath(workDirectory.resolve("trained_model.hdf5"));
             trainingConfiguration.setOutputModelJsonPath(workDirectory.resolve("trained_model.json"));
+            trainingConfiguration.setLogDir(PathUtils.resolveAndMakeSubDirectory(workDirectory, "logs"));
             trainingConfiguration.setInputImagesPattern(rawsDirectory + "/*.tif");
             trainingConfiguration.setInputLabelsPattern(labelFile.toString());
             trainingConfiguration.setNormalization(normalization);
