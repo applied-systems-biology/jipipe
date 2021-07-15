@@ -534,6 +534,10 @@ public abstract class JIPipeDataSlotUI extends JIPipeWorkbenchPanel {
                 dialog.dispose();
             }
         });
+//        Point slotLocation = new Point(getNodeUI().getSlotLocation(getSlot()).min);
+//        slotLocation.x += getNodeUI().getX();
+//        slotLocation.y += getNodeUI().getY();
+//        getNodeUI().getGraphUI().setGraphEditCursor(slotLocation);
 
         dialog.setVisible(true);
     }
@@ -644,6 +648,18 @@ public abstract class JIPipeDataSlotUI extends JIPipeWorkbenchPanel {
                 dialog.dispose();
             }
         });
+        if(getNodeUI().getGraphUI().isLayoutHelperEnabled()) {
+            Point cursorLocation = new Point();
+            if (getNodeUI().getGraphUI().getViewMode() == JIPipeGraphViewMode.Horizontal) {
+                cursorLocation.x = getNodeUI().getRightX() + getNodeUI().getGraphUI().getViewMode().getGridWidth();
+                cursorLocation.y = getNodeUI().getY();
+            } else {
+                cursorLocation.x = getNodeUI().getX();
+                cursorLocation.y = getNodeUI().getBottomY() + getNodeUI().getGraphUI().getViewMode().getGridHeight();
+            }
+            getNodeUI().getGraphUI().setGraphEditCursor(cursorLocation);
+            getNodeUI().getGraphUI().repaint();
+        }
 
         dialog.setVisible(true);
     }
