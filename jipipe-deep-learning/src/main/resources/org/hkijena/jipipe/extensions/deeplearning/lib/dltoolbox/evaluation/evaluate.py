@@ -45,8 +45,8 @@ def plot_history(history, path, model):
 
     # Plot training & validation loss values
     figure = plt.figure(figsize=(12, 10))
-    plt.plot(history.history[model.metrics_names[0]], linewidth=3)
-    plt.plot(history.history[f'val_{model.metrics_names[0]}'], linewidth=3)
+    plt.plot(history.history[model.metrics_names[0]], linewidth=2)
+    plt.plot(history.history[f'val_{model.metrics_names[0]}'], linewidth=2)
     plt.title(f'Model {model.metrics_names[0]}')
     plt.ylabel(f'{model.metrics_names[0]}')
     plt.xlabel('epoch')
@@ -58,8 +58,8 @@ def plot_history(history, path, model):
     if len(model.metrics_names) > 1:
         # Plot training & validation accuracy values
         figure = plt.figure(figsize=(12, 10))
-        plt.plot(history.history[model.metrics_names[1]], linewidth=3)
-        plt.plot(history.history[f'val_{model.metrics_names[1]}'], linewidth=3)
+        plt.plot(history.history[model.metrics_names[1]], linewidth=2)
+        plt.plot(history.history[f'val_{model.metrics_names[1]}'], linewidth=2)
         plt.title(f'Model {model.metrics_names[1]}')
         plt.ylabel(f'{model.metrics_names[1]}')
         plt.xlabel('epoch')
@@ -231,9 +231,9 @@ def evaluate_samples(config):
         # if label image is not a binary image -> binarize it
         num_unique_true_values = len(np.unique(image_true))
 
-        if num_unique_true_values != 2:
-            print(f'[Evaluate] binarize label image because of non-binary unique intensities: {num_unique_true_values}')
-            image_true = utils.binarizeAnnotation(image_true, use_otsu=True, convertToGray=True)
+        # if num_unique_true_values != 2: TODO: das hier löschen wenn binärbilder vorhanden
+        #     print(f'[Evaluate] binarize label image because of non-binary unique intensities: {num_unique_true_values}')
+        #     image_true = utils.binarizeAnnotation(image_true, use_otsu=True, convertToGray=True)
 
         # transfer all values to {0, 1}
         image_true = img_as_float32(image_true / np.max(image_true))

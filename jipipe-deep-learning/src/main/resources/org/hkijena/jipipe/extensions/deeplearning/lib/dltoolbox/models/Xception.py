@@ -19,15 +19,18 @@ Script to create a Xception model
 
 # copied from:
 # https://raw.githubusercontent.com/yanchummar/xception-keras/master/xception_model.py
+# alternative:
+"""
+tf.keras.applications.xception.Xception(
+    include_top=True, weights='imagenet', input_tensor=None,
+    input_shape=None, pooling=None, classes=1000,
+    classifier_activation='softmax'
+)
+"""
 
 from keras import layers
 from keras import models
 from keras import optimizers
-
-# from keras.applications.imagenet_utils import _obtain_input_shape
-# from keras.utils.data_utils import get_file
-
-# WEIGHTS_PATH = 'https://github.com/fchollet/deep-learning-models/releases/download/v0.4/xception_weights_tf_dim_ordering_tf_kernels.h5'
 
 
 def build_model(config):

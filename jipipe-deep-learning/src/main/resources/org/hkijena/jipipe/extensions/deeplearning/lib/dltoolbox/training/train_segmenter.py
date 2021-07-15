@@ -20,7 +20,7 @@ Script to train a segmentation network
 import os
 import numpy as np
 from sklearn.model_selection import train_test_split
-from skimage import io, img_as_ubyte
+from skimage import io
 from pathlib import Path
 from tensorflow.keras.preprocessing.image import ImageDataGenerator
 from keras import callbacks
@@ -55,9 +55,19 @@ def train_model(model_config, config, model=None):
 
     model = utils.load_and_compile_model(model_config, input_model_path, model)
 
-    # validate input and label images
-    X = io.imread_collection(input_dir)
-    Y = io.imread_collection(label_dir)
+    # Check for tif images
+    input_is_tifffile = utils.check_for_tif_files(input_dir)
+    label_is_tifffile = utils.check_for_tif_files(label_dir)
+
+    # validate input and label images, depending on tif-files
+    if input_is_tifffile:
+        X = io.imread_collection(input_dir, plugin='tifffile')
+    else:
+        X = io.imread_collection(input_dir)
+    if label_is_tifffile:
+        Y = io.imread_collection(label_dir, plugin='tifffile')
+    else:
+        Y = io.imread_collection(label_dir)
 
     print('[Train model] Input-images:', len(X), ', Label-images:', len(Y))
 
@@ -69,27 +79,33 @@ def train_model(model_config, config, model=None):
                                                           shuffle=True,
                                                           random_state=42)
 
+    # validate input data
+    x_train = utils.validate_image_shape(model.input_shape, images=x_train)
+    x_valid = utils.validate_image_shape(model.input_shape, images=x_valid)
+
+    # validate label data
+    y_train = utils.validate_image_shape(model.output_shape, images=y_train)
+    y_valid = utils.validate_image_shape(model.output_shape, images=y_valid)
+
     # transfer to numpy required arrays input: (height,width,3) -> (height,width,1)
-    x_train, x_valid = np.array(x_train), np.array(x_valid)
-    y_train, y_valid = np.array(y_train), np.array(y_valid)
+    # x_train, x_valid = np.array(x_train), np.array(x_valid)
+    # y_train, y_valid = np.array(y_train), np.array(y_valid)
 
     # if necessary: add <channel> - dimension
-    while len(x_train.shape) < 4:
-        x_train = np.expand_dims(np.array(x_train), axis=-1)
-    while len(x_valid.shape) < 4:
-        x_valid = np.expand_dims(np.array(x_valid), axis=-1)
-
-    while len(y_train.shape) < 4:
-        y_train = np.expand_dims(np.array(y_train), axis=-1)
-    while len(y_valid.shape) < 4:
-        y_valid = np.expand_dims(np.array(y_valid), axis=-1)
+    # while len(x_train.shape) < 4:
+    #     x_train = np.expand_dims(np.array(x_train), axis=-1)
+    # while len(x_valid.shape) < 4:
+    #     x_valid = np.expand_dims(np.array(x_valid), axis=-1)
+    #
+    # while len(y_train.shape) < 4:
+    #     y_train = np.expand_dims(np.array(y_train), axis=-1)
+    # while len(y_valid.shape) < 4:
+    #     y_valid = np.expand_dims(np.array(y_valid), axis=-1)
 
     print('[Train model] Train data:\t', x_train.shape, y_train.shape)
     print('[Train model] Validation data:\t', x_valid.shape, y_valid.shape)
 
-    # Preprocessing (normalization)
-    x_train = utils.preprocessing(x_train, mode=config['normalization'])
-    x_valid = utils.preprocessing(x_valid, mode=config['normalization'])
+    return
 
     """
     augment dataset with Elastic deformation [Simard2003] with a certain probability:
@@ -106,14 +122,14 @@ def train_model(model_config, config, model=None):
         ],
         name="img_augmentation",
         )
-        
-        x = img_augmentation(inputs)    
     
+    x = img_augmentation(inputs)    
+
     """
-    if augment_factor > 1:
+    if config['use_elastic_transformation'] and  augment_factor > 1:
 
         # calculate augmentation probability per sample via: augment_factor = 4 => 1 - (1/augment_factor) = 0.75
-        augmentation_probability = 1 - (1/augment_factor)
+        augmentation_probability = (1 - (1/augment_factor)) / 2
         seed = 42
 
         # augment the training input and label images
@@ -154,9 +170,20 @@ def train_model(model_config, config, model=None):
         print('[Train model] Train data:\t', x_train.shape, y_train.shape)
         print('[Train model] Validation data:\t', x_valid.shape, y_valid.shape)
 
-    # ensure that all label intensities are {0,1}
-    y_train = img_as_ubyte((y_train > 0) / np.max(y_train))
-    y_valid = img_as_ubyte((y_valid > 0) / np.max(y_valid))
+    else:
+        print('[Train model] Do NOT use elastic transformation')
+
+    # Preprocessing of the input data (normalization)
+    x_train = utils.preprocessing(x_train, mode=config['normalization'])
+    x_valid = utils.preprocessing(x_valid, mode=config['normalization'])
+
+    # Preprocessing for the label data (normalization)
+    y_train = y_train / y_train.max()
+    y_valid = y_valid / y_valid.max()
+
+    # print(x_train.min(), x_train.max(), x_valid.min(), x_valid.max())
+    # print(y_train.min(), y_train.max(), y_valid.min(), y_valid.max())
+    # return
 
     data_gen_args = dict(
         rotation_range=120,
@@ -164,7 +191,8 @@ def train_model(model_config, config, model=None):
         height_shift_range=0.1,
         zoom_range=0.2,
         horizontal_flip=True,
-        vertical_flip=True)
+        vertical_flip=True
+    )
 
     train_image_datagen = ImageDataGenerator(**data_gen_args)
     train_label_datagen = ImageDataGenerator(**data_gen_args)
@@ -216,9 +244,7 @@ def train_model(model_config, config, model=None):
                         epochs=n_epochs,
                         verbose=1,
                         callbacks=[earlyStopping, mcp_save, reduce_lr, csv_logger, history], #tbCallBack
-                        validation_data=(x_valid, y_valid),
-                        validation_steps=x_valid.shape[0] / batch_size)
-
+                        validation_data=(x_valid, y_valid))
 
     if output_model_path:
         model.save(output_model_path)
@@ -236,7 +262,8 @@ def train_model(model_config, config, model=None):
             f.write(model_json)
         print('[Train model] Saved trained model JSON to:', output_model_json_path)
 
-        config_save_path = Path(output_model_json_path) / 'training_config.json'
+        config_save_path = output_model_json_path.replace(os.path.basename(output_model_json_path), '')
+        config_save_path = os.path.join(config_save_path, 'training_config.json')
         with open(config_save_path, "w") as f:
             f.write(config)
         print('[Train model] Save training config file JSON to:', config_save_path)

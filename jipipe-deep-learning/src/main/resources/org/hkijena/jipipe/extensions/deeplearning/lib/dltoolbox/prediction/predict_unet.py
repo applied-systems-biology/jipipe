@@ -53,6 +53,10 @@ def predict_samples(model_config, config, model=None):
     X = io.imread_collection(input_dir)
     print('[Predict] Images to predict:', len(X))
 
+    if not os.path.exists(output_dir):
+        os.makedirs(output_dir)
+        print('[Predict] create directory folder for predicted images:', output_dir)
+
     results = []
 
     for (image, file_name) in zip(X, X.files):
@@ -76,11 +80,17 @@ def predict_samples(model_config, config, model=None):
             # Load the model
             # model = load_and_compile_model(model_config, input_model_path, model)
 
-            print("[Predict] Attempting to predict whole image")
             whole_image = image
-            while len(whole_image.shape) < 4:
+
+            if len(whole_image.shape) == 3:
                 whole_image = np.expand_dims(whole_image, axis=0)
+            elif len(whole_image.shape) == 2:
+                whole_image = np.expand_dims(np.expand_dims(whole_image, axis=-1), axis=0)
+
             prediction = model.predict(whole_image, batch_size=1)
+
+            print("[Predict] Attempting to predict whole image accomplished on image size:", prediction.shape)
+
         except:
             print(sys.exc_info()[1])
             print("[Predict] Predicting the whole image failed. Retrying with tiling.")

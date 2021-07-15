@@ -11,6 +11,9 @@ Adolf-Reichwein-Straße 23, 07745 Jena, Germany
 """
 
 import os
+from glob import glob
+
+import numpy as np
 from skimage import img_as_float32, img_as_ubyte
 from skimage import filters
 import keras
@@ -151,9 +154,9 @@ def preprocessing(img, mode):
     print("[utils.preprocessing] preprocess image with mode: <{0}>".format(mode))
 
     if mode == 'zero_one':
-        return img_as_float32(img) / 255.
+        return img_as_float32(img / 255.)
     elif mode == 'minus_one_to_one':
-        return img_as_float32(img) / (127.5 - 1.)
+        return img_as_float32(img / (127.5 - 1.))
     else:
         raise AttributeError("Could not find valid normalization mode - {zero_one, minus_one_to_one}")
 
@@ -254,3 +257,90 @@ def elastic_transform(image, alpha=None, sigma=None, seed=None):
         output = img_as_ubyte((output > 0) * 255)
 
     return output
+
+
+def check_for_tif_files(image_dir):
+    """
+    Check if images in a specified directory are tif(f) images or not
+    Args:
+        image_dir: directory path where the images are located
+
+    Returns: True that imags are tif-files - False if not
+
+    """
+
+    image_paths = glob(image_dir)
+
+    # extract only filenames
+    image_paths = [os.path.basename(file) for file in image_paths]
+
+    is_tifffile = []
+
+    # check for ending
+    for file in image_paths:
+        if file.endswith('.tif') or file.endswith('.tiff'):
+            is_tifffile.append(True)
+        else:
+            is_tifffile.append(False)
+
+    # distinguish for tif-file(s)
+    if np.count_nonzero(is_tifffile) > 0:
+        return True
+    else:
+        return False
+
+
+def validate_image_shape(model_shape, images):
+    """
+    Validate between model and input shape. Expand dimensions in loaded image if necessary
+
+    Args:
+        model_shape: should shape of the model (input or output)
+        images: images load from directory
+
+    Returns: image array in the required shape
+
+    """
+
+    # Read meta data (works only on tif files)
+    # from PIL import Image
+    # from PIL.TiffTags import TAGS
+    #
+    # with Image.open(input_dir_0) as img:
+    #     #print(img.tag)
+    #     meta_dict = {TAGS[key]: img.tag[key] for key in img.tag.keys()}
+    # print(meta_dict)
+    # print(meta_dict['ImageWidth'])
+
+    # Apply own function to imread-collection
+    # def imread_convert(f):
+    #     return imread(f).astype(np.uint8)
+    #
+    # ic = ImageCollection('/tmp/*.png', load_func=imread_convert)
+
+    images_unique_shapes = [img.shape for img in images]
+    images_unique_shapes = list(set(images_unique_shapes))
+
+    if len(images_unique_shapes) != 1:
+        print('[validate_image_shape] CAUTION: shape of images have not all the same shape:', images_unique_shapes)
+
+    image_shape = images_unique_shapes[0]
+
+    if image_shape != model_shape[1:]:
+        print(f'[validate_image_shape] CAUTION: image shape <{image_shape}> != from model shape <{model_shape[1:]}>')
+
+    images_arr = np.array(images)
+
+    # Image and model shape match (including batch-dimension)
+    if len(images_arr.shape) == len(model_shape):
+        return images_arr
+
+    # Transfer to numpy required array with an additional channel dimension: (height,width) -> (height,width,1)
+    if len(images_arr.shape) == 3:
+        images_arr = np.expand_dims(images_arr, axis=-1)
+
+        if images_arr.shape[1:] != model_shape[1:]:
+            print(
+                f'[validate_image_shape] WARNING: image shape <{images_arr.shape[1:]}> != from model shape <{model_shape[1:]}>')
+
+    return images_arr
