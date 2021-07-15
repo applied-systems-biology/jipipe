@@ -166,10 +166,17 @@ public abstract class JIPipeIteratingAlgorithm extends JIPipeParameterSlotAlgori
             runIteration(dataBatch, slotProgress);
             return;
         } else if (getEffectiveInputSlotCount() == 1) {
+
+            boolean withLimit = dataBatchGenerationSettings.getLimit().isEnabled();
+            IntegerRange limit = dataBatchGenerationSettings.getLimit().getContent();
+            TIntSet allowedIndices = withLimit ? new TIntHashSet(limit.getIntegers()) : null;
+
             dataBatches = new ArrayList<>();
             for (int row = 0; row < getFirstInputSlot().getRowCount(); row++) {
                 if (progressInfo.isCancelled().get())
                     break;
+                if (withLimit && !allowedIndices.contains(row))
+                    continue;
                 JIPipeDataBatch dataBatch = new JIPipeDataBatch(this);
                 dataBatch.setInputData(getFirstInputSlot(), row);
                 dataBatch.addGlobalAnnotations(parameterAnnotations, dataBatchGenerationSettings.getAnnotationMergeStrategy());
