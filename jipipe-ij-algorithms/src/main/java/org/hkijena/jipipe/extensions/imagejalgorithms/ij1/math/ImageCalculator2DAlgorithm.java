@@ -220,6 +220,19 @@ public class ImageCalculator2DAlgorithm extends JIPipeIteratingAlgorithm {
      */
     public enum Operand {
         LeftOperand,
-        RightOperand
+        RightOperand;
+
+
+        @Override
+        public String toString() {
+            switch (this) {
+                case LeftOperand:
+                    return "Left operand ([x] OP y)";
+                case RightOperand:
+                    return "Right operand (x OP [y])";
+                default:
+                    return super.toString();
+            }
+        }
     }
 }
