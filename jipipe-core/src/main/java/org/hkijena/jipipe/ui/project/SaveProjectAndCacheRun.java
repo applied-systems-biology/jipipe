@@ -19,8 +19,10 @@ import org.hkijena.jipipe.api.JIPipeProjectCacheQuery;
 import org.hkijena.jipipe.api.JIPipeRunnable;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
+import org.hkijena.jipipe.extensions.settings.ProjectsSettings;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.cache.JIPipeCachedSlotToOutputExporterRun;
+import org.hkijena.jipipe.utils.PathUtils;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -57,9 +59,13 @@ public class SaveProjectAndCacheRun implements JIPipeRunnable {
 
     @Override
     public void run() {
+        if(Files.isDirectory(outputPath)) {
+            PathUtils.deleteDirectoryRecursively(outputPath, getProgressInfo().resolve("Delete existing files"));
+        }
         try {
             Files.createDirectories(outputPath);
             project.saveProject(outputPath.resolve("project.jip"));
+            ProjectsSettings.getInstance().addRecentProject(outputPath);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

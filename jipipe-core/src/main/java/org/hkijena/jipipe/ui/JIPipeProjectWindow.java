@@ -415,7 +415,12 @@ public class JIPipeProjectWindow extends JFrame {
             return;
         try {
             if (Files.exists(directory) && Files.list(directory).count() > 0) {
-                if (JOptionPane.showConfirmDialog(this, "The selected directory " + directory + " is not empty. This can lead to problems. " +
+                if (JOptionPane.showConfirmDialog(this, "The selected directory " + directory + " is not empty. The contents will be deleted before writing the outputs. " +
+                        "Continue anyways?", "Save project and cache", JOptionPane.YES_NO_OPTION) == JOptionPane.NO_OPTION)
+                    return;
+            }
+            if (Files.exists(directory) && Files.list(directory).count() > 0 && !Files.exists(directory.resolve("project.jip"))) {
+                if (JOptionPane.showConfirmDialog(this, "The selected directory " + directory + " does not look like an old output. Please note that the directory will be deleted!" +
                         "Continue anyways?", "Save project and cache", JOptionPane.YES_NO_OPTION) == JOptionPane.NO_OPTION)
                     return;
             }
