@@ -96,13 +96,11 @@ public class DeepLearningModelData implements JIPipeData {
 
     @Override
     public String toString() {
-        return String.format("%s model [%dx%d Z%d C%d T%d -> %d-%s]  (%d MB)",
+        return String.format("%s model [%dx%d C%d -> %d-%s]  (%d MB)",
                 modelConfiguration.getArchitecture(),
                 modelConfiguration.getImageWidth(),
                 modelConfiguration.getImageHeight(),
-                modelConfiguration.getImageDepth(),
                 modelConfiguration.getImageChannels(),
-                modelConfiguration.getImageFrames(),
                 modelConfiguration.getNumClasses(),
                 modelConfiguration.getModelType().toString(),
                 modelData.length / 1024 / 1024);

@@ -394,13 +394,24 @@ public class JIPipeDataBatch implements Comparable<JIPipeDataBatch> {
     public JIPipeDataSlot toDummySlot(JIPipeDataSlotInfo info, JIPipeGraphNode node, JIPipeDataSlot sourceSlot) {
         JIPipeDataSlot dummy = new JIPipeDataSlot(info, node);
         ArrayList<JIPipeAnnotation> annotations = new ArrayList<>(getGlobalAnnotations().values());
-        for (int row = 0; row < sourceSlot.getRowCount(); row++) {
-            dummy.addData(sourceSlot.getVirtualData(row), annotations, JIPipeAnnotationMergeStrategy.Merge);
-            for (Map.Entry<String, JIPipeDataAnnotation> entry : dataAnnotations.entrySet()) {
-                dummy.setVirtualDataAnnotation(dummy.getRowCount() - 1, entry.getKey(), entry.getValue().getVirtualData());
-            }
+        dummy.addData(sourceSlot.getVirtualData( getInputRow(sourceSlot.getName())), annotations, JIPipeAnnotationMergeStrategy.Merge);
+        for (Map.Entry<String, JIPipeDataAnnotation> entry : dataAnnotations.entrySet()) {
+            dummy.setVirtualDataAnnotation(dummy.getRowCount() - 1, entry.getKey(), entry.getValue().getVirtualData());
         }
         return dummy;
+    }
+
+    public int getInputRow(String slot) {
+        for (Map.Entry<JIPipeDataSlot, Integer> entry : getInputSlotRows().entrySet()) {
+            if(slot.equals(entry.getKey().getName())) {
+                return entry.getValue();
+            }
+        }
+        return -1;
+    }
+
+    public int getInputRow(JIPipeDataSlot slot) {
+        return getInputSlotRows().getOrDefault(slot, -1);
     }
 
     @Override

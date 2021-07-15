@@ -254,7 +254,12 @@ public class JIPipeMergingDataBatch implements Comparable<JIPipeMergingDataBatch
      * @return the row indices that belong to this data interface
      */
     public Set<Integer> getInputRows(String slot) {
-        return getInputRows(node.getInputSlot(slot));
+        for (Map.Entry<JIPipeDataSlot, Set<Integer>> entry : getInputSlotRows().entrySet()) {
+            if(slot.equals(entry.getKey().getName())) {
+                return entry.getValue();
+            }
+        }
+        return null;
     }
 
     /**
@@ -266,8 +271,6 @@ public class JIPipeMergingDataBatch implements Comparable<JIPipeMergingDataBatch
     public Set<Integer> getInputRows(JIPipeDataSlot slot) {
         if (slot.getNode() != node)
             throw new IllegalArgumentException("The provided slot does not belong to the data interface algorithm!");
-        if (!slot.isInput())
-            throw new IllegalArgumentException("Slot is not an input slot!");
         return inputSlotRows.getOrDefault(slot, Collections.emptySet());
     }
 
@@ -635,7 +638,7 @@ public class JIPipeMergingDataBatch implements Comparable<JIPipeMergingDataBatch
     public JIPipeDataSlot toDummySlot(JIPipeDataSlotInfo info, JIPipeGraphNode node, JIPipeDataSlot sourceSlot) {
         JIPipeDataSlot dummy = new JIPipeDataSlot(info, node);
         ArrayList<JIPipeAnnotation> annotations = new ArrayList<>(getGlobalAnnotations().values());
-        for (int row = 0; row < sourceSlot.getRowCount(); row++) {
+        for (int row : getInputRows(sourceSlot.getName())) {
             dummy.addData(sourceSlot.getVirtualData(row), annotations, JIPipeAnnotationMergeStrategy.Merge);
             for (Map.Entry<String, JIPipeDataAnnotation> entry : dataAnnotations.entrySet()) {
                 dummy.setVirtualDataAnnotation(dummy.getRowCount() - 1, entry.getKey(), entry.getValue().getVirtualData());

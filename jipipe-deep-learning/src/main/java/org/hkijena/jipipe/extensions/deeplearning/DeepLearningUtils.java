@@ -35,6 +35,6 @@ public class DeepLearningUtils {
             scale2DAlgorithm.run(progressInfo);
             image = scale2DAlgorithm.getFirstOutputSlot().getData(0, ImagePlusData.class, progressInfo).getImage();
         }
-        return ImageJUtils.ensureSize(image, modelConfiguration.getImageChannels(), modelConfiguration.getImageDepth(), modelConfiguration.getImageFrames(), copySlices);
+        return ImageJUtils.ensureSize(image, modelConfiguration.getImageChannels(), 1, 1, copySlices);
     }
 }

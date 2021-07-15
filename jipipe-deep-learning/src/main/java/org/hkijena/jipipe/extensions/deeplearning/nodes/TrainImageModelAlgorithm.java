@@ -42,6 +42,7 @@ import org.hkijena.jipipe.extensions.expressions.DataAnnotationQueryExpression;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.transform.ScaleMode;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.transform.TransformScale2DAlgorithm;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
+import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d3.greyscale.ImagePlus3DGreyscaleData;
 import org.hkijena.jipipe.extensions.python.OptionalPythonEnvironment;
 import org.hkijena.jipipe.extensions.python.PythonUtils;
 import org.hkijena.jipipe.utils.JsonUtils;
@@ -58,7 +59,7 @@ import java.util.Set;
 
 @JIPipeDocumentation(name = "Train model (labeled images)", description = "Trains a Deep Learning model with images. Please note the the model must be able to be trained with labeled images.")
 @JIPipeOrganization(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Deep learning")
-@JIPipeInputSlot(value = ImagePlusData.class, slotName = "Labels", autoCreate = true)
+@JIPipeInputSlot(value = ImagePlus3DGreyscaleData.class, slotName = "Labels", autoCreate = true)
 @JIPipeInputSlot(value = DeepLearningModelData.class, slotName = "Model", autoCreate = true)
 @JIPipeOutputSlot(value = DeepLearningModelData.class, slotName = "Trained model", autoCreate = true)
 public class TrainImageModelAlgorithm extends JIPipeSingleIterationAlgorithm {
@@ -166,8 +167,8 @@ public class TrainImageModelAlgorithm extends JIPipeSingleIterationAlgorithm {
             Set<Integer> labelRows = dataBatch.getInputSlotRows().get(inputLabelsSlot);
             for (Integer imageIndex : labelRows) {
                 JIPipeProgressInfo imageProgress = modelProgress.resolveAndLog("Write labels", imageCounter++, labelRows.size());
-                ImagePlusData raw = inputLabelsSlot.getData(imageIndex, ImagePlusData.class, imageProgress);
-                ImagePlusData label = labelDataAnnotation.queryFirst(inputLabelsSlot.getDataAnnotations(imageIndex)).getData(ImagePlusData.class, progressInfo);
+                ImagePlusData raw = inputLabelsSlot.getData(imageIndex, ImagePlus3DGreyscaleData.class, imageProgress);
+                ImagePlusData label = labelDataAnnotation.queryFirst(inputLabelsSlot.getDataAnnotations(imageIndex)).getData(ImagePlus3DGreyscaleData.class, progressInfo);
                 Path rawPath = rawsDirectory.resolve(imageCounter + "_img.tif");
                 Path labelPath = labelsDirectory.resolve(imageCounter + "_img.tif");
 

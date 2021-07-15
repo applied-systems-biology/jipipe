@@ -44,6 +44,8 @@ import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.transform.ScaleMode;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.transform.TransformScale2DAlgorithm;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datasources.ImagePlusFromFileImageSource;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
+import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d3.greyscale.ImagePlus3DGreyscale32FData;
+import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d3.greyscale.ImagePlus3DGreyscaleData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscale32FData;
 import org.hkijena.jipipe.extensions.python.OptionalPythonEnvironment;
 import org.hkijena.jipipe.extensions.python.PythonUtils;
@@ -61,9 +63,9 @@ import java.util.Set;
 
 @JIPipeDocumentation(name = "Predict (images)", description = "Applies a prediction via a Deep learning model. The prediction returns an image. Please note that the model needs to be able to predict images.")
 @JIPipeOrganization(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Deep learning")
-@JIPipeInputSlot(value = ImagePlusData.class, slotName = "Input", autoCreate = true)
+@JIPipeInputSlot(value = ImagePlus3DGreyscaleData.class, slotName = "Input", autoCreate = true)
 @JIPipeInputSlot(value = DeepLearningModelData.class, slotName = "Model", autoCreate = true)
-@JIPipeOutputSlot(value = ImagePlusGreyscale32FData.class, slotName = "Prediction", autoCreate = true)
+@JIPipeOutputSlot(value = ImagePlus3DGreyscale32FData.class, slotName = "Prediction", autoCreate = true)
 public class PredictImageAlgorithm extends JIPipeSingleIterationAlgorithm {
 
     private TransformScale2DAlgorithm scale2DAlgorithm;
@@ -165,7 +167,7 @@ public class PredictImageAlgorithm extends JIPipeSingleIterationAlgorithm {
                 Set<Integer> inputRows = dataBatch.getInputSlotRows().get(inputRawImageSlot);
                 for (Integer imageIndex : inputRows) {
                     JIPipeProgressInfo imageProgress = modelProgress.resolveAndLog("Write inputs", imageCounter++, inputRows.size());
-                    ImagePlusData raw = inputRawImageSlot.getData(imageIndex, ImagePlusData.class, imageProgress);
+                    ImagePlusData raw = inputRawImageSlot.getData(imageIndex, ImagePlus3DGreyscaleData.class, imageProgress);
 
                     if (raw.hasLoadedImage() || isScaleToModelSize()) {
                         Path rawPath = rawsDirectory.resolve(imageCounter + "_img.tif");

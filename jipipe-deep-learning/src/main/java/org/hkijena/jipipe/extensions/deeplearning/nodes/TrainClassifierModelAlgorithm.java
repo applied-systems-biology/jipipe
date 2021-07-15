@@ -43,6 +43,7 @@ import org.hkijena.jipipe.extensions.expressions.AnnotationQueryExpression;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.transform.ScaleMode;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.transform.TransformScale2DAlgorithm;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
+import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d3.greyscale.ImagePlus3DGreyscaleData;
 import org.hkijena.jipipe.extensions.python.OptionalPythonEnvironment;
 import org.hkijena.jipipe.extensions.python.PythonUtils;
 import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
@@ -61,7 +62,7 @@ import java.util.Set;
 @JIPipeDocumentation(name = "Train model (classified images)", description = "Trains a Deep Learning model with classified images. The image classes are " +
         "extracted from an annotation column. Please note that the model must be able to be trained with classified images.")
 @JIPipeOrganization(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Deep learning")
-@JIPipeInputSlot(value = ImagePlusData.class, slotName = "Images", autoCreate = true)
+@JIPipeInputSlot(value = ImagePlus3DGreyscaleData.class, slotName = "Images", autoCreate = true)
 @JIPipeInputSlot(value = DeepLearningModelData.class, slotName = "Model", autoCreate = true)
 @JIPipeOutputSlot(value = DeepLearningModelData.class, slotName = "Trained model", autoCreate = true)
 public class TrainClassifierModelAlgorithm extends JIPipeSingleIterationAlgorithm {
@@ -173,7 +174,7 @@ public class TrainClassifierModelAlgorithm extends JIPipeSingleIterationAlgorith
             Set<Integer> imageRows = dataBatch.getInputSlotRows().get(inputImagesSlot);
             for (Integer imageIndex : imageRows) {
                 JIPipeProgressInfo imageProgress = modelProgress.resolveAndLog("Write images", imageCounter++, imageRows.size());
-                ImagePlusData image = inputImagesSlot.getData(imageIndex, ImagePlusData.class, imageProgress);
+                ImagePlusData image = inputImagesSlot.getData(imageIndex, ImagePlus3DGreyscaleData.class, imageProgress);
                 Path rawPath = rawsDirectory.resolve(imageCounter + "_img.tif");
 
                 if (image.hasLoadedImage() || isScaleToModelSize()) {
