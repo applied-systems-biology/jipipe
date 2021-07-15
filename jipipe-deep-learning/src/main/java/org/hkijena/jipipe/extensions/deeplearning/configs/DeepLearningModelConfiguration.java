@@ -39,9 +39,7 @@ public class DeepLearningModelConfiguration implements JIPipeParameterCollection
     private double regularizationLambda = 0.1;
     private int imageWidth = 256;
     private int imageHeight = 256;
-    private int imageChannels = 1;
-    private int imageDepth = 3;
-    private int imageFrames = 1;
+    private int imageChannels = 3;
     private int numClasses = 2;
     private Path outputModelPath = Paths.get("");
     private Path outputModelJsonPath = Paths.get("");
@@ -57,8 +55,6 @@ public class DeepLearningModelConfiguration implements JIPipeParameterCollection
         this.imageWidth = other.imageWidth;
         this.imageHeight = other.imageHeight;
         this.imageChannels = other.imageChannels;
-        this.imageDepth = other.imageDepth;
-        this.imageFrames = other.imageFrames;
         this.numClasses = other.numClasses;
         this.outputModelPath = other.outputModelPath;
         this.outputModelJsonPath = other.outputModelJsonPath;
@@ -165,38 +161,38 @@ public class DeepLearningModelConfiguration implements JIPipeParameterCollection
         this.imageChannels = imageChannels;
     }
 
-    @JIPipeDocumentation(name = "Image depth", description = "The number of Z slices in the image")
-    @JIPipeParameter("image-depth")
-    public int getImageDepth() {
-        return imageDepth;
-    }
-
-    @JIPipeParameter("image-depth")
-    public void setImageDepth(int imageDepth) {
-        this.imageDepth = imageDepth;
-    }
-
-    @JIPipeDocumentation(name = "Image frames", description = "The number of frame slices in the image")
-    @JIPipeParameter("image-frames")
-    public int getImageFrames() {
-        return imageFrames;
-    }
-
-    @JIPipeParameter("image-frames")
-    public void setImageFrames(int imageFrames) {
-        this.imageFrames = imageFrames;
-    }
+//    @JIPipeDocumentation(name = "Image depth", description = "The number of Z slices in the image")
+//    @JIPipeParameter("image-depth")
+//    public int getImageDepth() {
+//        return imageDepth;
+//    }
+//
+//    @JIPipeParameter("image-depth")
+//    public void setImageDepth(int imageDepth) {
+//        this.imageDepth = imageDepth;
+//    }
+//
+//    @JIPipeDocumentation(name = "Image frames", description = "The number of frame slices in the image")
+//    @JIPipeParameter("image-frames")
+//    public int getImageFrames() {
+//        return imageFrames;
+//    }
+//
+//    @JIPipeParameter("image-frames")
+//    public void setImageFrames(int imageFrames) {
+//        this.imageFrames = imageFrames;
+//    }
 
     public int getImageDimensions() {
         int dimensions = 1;
         if (getImageHeight() > 1)
             ++dimensions;
-        if (getImageDepth() > 1)
-            ++dimensions;
+//        if (getImageDepth() > 1)
+//            ++dimensions;
         if (getImageChannels() > 1)
             ++dimensions;
-        if (getImageFrames() > 1)
-            ++dimensions;
+//        if (getImageFrames() > 1)
+//            ++dimensions;
         return dimensions;
     }
 
@@ -207,12 +203,12 @@ public class DeepLearningModelConfiguration implements JIPipeParameterCollection
         shape.add(getImageWidth());
         if (getImageHeight() > 1)
             shape.add(getImageHeight());
-        if (getImageDepth() > 1)
-            shape.add(getImageDepth());
+//        if (getImageDepth() > 1)
+//            shape.add(getImageDepth());
         if (getImageChannels() > 1)
             shape.add(getImageChannels());
-        if (getImageFrames() > 1)
-            shape.add(getImageFrames());
+//        if (getImageFrames() > 1)
+//            shape.add(getImageFrames());
         return shape;
     }
 
@@ -221,12 +217,12 @@ public class DeepLearningModelConfiguration implements JIPipeParameterCollection
         setImageWidth(shape.get(0));
         if (shape.size() > 1)
             setImageHeight(shape.get(1));
-        if (shape.size() > 2)
-            setImageDepth(shape.get(2));
+//        if (shape.size() > 2)
+//            setImageDepth(shape.get(2));
         if (shape.size() > 3)
             setImageChannels(shape.get(3));
-        if (shape.size() > 4)
-            setImageFrames(shape.get(4));
+//        if (shape.size() > 4)
+//            setImageFrames(shape.get(4));
     }
 
     @JIPipeDocumentation(name = "Number of classes", description = "The number of classes")
