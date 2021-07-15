@@ -83,7 +83,7 @@ def train_model(model_config, config, model=None):
                 break
 
     # read the matching input images and label values
-    X = io.imread_collection(X_paths)
+    X = utils.imread_collection(X_paths)
 
     print('[Train model] Input-images:', len(X), ', Label-values:', len(Y))
     print('[Train model] unique label values:', np.unique(Y, return_counts=True))

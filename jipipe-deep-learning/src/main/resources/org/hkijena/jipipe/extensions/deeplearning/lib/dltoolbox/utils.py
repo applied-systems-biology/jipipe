@@ -16,6 +16,7 @@ from glob import glob
 import numpy as np
 from skimage import img_as_float32, img_as_ubyte
 from skimage import filters
+from skimage import io
 import keras
 import cv2
 from scipy.ndimage.interpolation import map_coordinates
@@ -23,6 +24,25 @@ from scipy.ndimage.filters import gaussian_filter
 import tensorflow as tf
 
 from dltoolbox.models.metrics import *
+
+
+def imread_collection(pattern, load_func=io.imread, **kwargs):
+    """
+    Custom version of skimage imread_collection that correctly handles TIFF files
+    Args:
+        load_func: function used for loading an image. the first argument will be the image path (default: skimage.io.imread)
+        pattern: glob pattern
+
+    Returns: list of loaded images
+
+    """
+    files = glob(pattern)
+    files.sort()
+    imgs = []
+    for file in files:
+        print("[I/O] Reading", file, "...")
+        imgs.append(load_func(file, **kwargs))
+    return imgs
 
 
 def load_and_compile_model(model_config, model_path, model=None) -> keras.Model:

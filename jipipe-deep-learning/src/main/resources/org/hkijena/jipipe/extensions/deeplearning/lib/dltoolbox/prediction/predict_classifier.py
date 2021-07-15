@@ -49,7 +49,7 @@ def predict_samples(model_config, config, model=None):
     model = utils.load_and_compile_model(model_config, input_model_path, model)
 
     # Load the raw images
-    X = io.imread_collection(input_dir)
+    X = utils.imread_collection(input_dir)
     print('[Predict] Images to predict:', len(X))
 
     results = []

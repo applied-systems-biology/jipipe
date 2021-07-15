@@ -55,19 +55,9 @@ def train_model(model_config, config, model=None):
 
     model = utils.load_and_compile_model(model_config, input_model_path, model)
 
-    # Check for tif images
-    input_is_tifffile = utils.check_for_tif_files(input_dir)
-    label_is_tifffile = utils.check_for_tif_files(label_dir)
-
-    # validate input and label images, depending on tif-files
-    if input_is_tifffile:
-        X = io.imread_collection(input_dir, plugin='tifffile')
-    else:
-        X = io.imread_collection(input_dir)
-    if label_is_tifffile:
-        Y = io.imread_collection(label_dir, plugin='tifffile')
-    else:
-        Y = io.imread_collection(label_dir)
+    # validate input and label images,
+    X = utils.imread_collection(input_dir)
+    Y = utils.imread_collection(label_dir)
 
     print('[Train model] Input-images:', len(X), ', Label-images:', len(Y))
 
