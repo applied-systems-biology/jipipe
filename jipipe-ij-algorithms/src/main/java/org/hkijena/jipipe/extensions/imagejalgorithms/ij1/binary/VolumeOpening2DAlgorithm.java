@@ -81,7 +81,7 @@ public class VolumeOpening2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         }, progressInfo);
         ImagePlus outputImage = new ImagePlus("AreaOpening-" + minPixels, stack);
         outputImage.setDimensions(inputImage.getNChannels(), inputImage.getNSlices(), inputImage.getNFrames());
-
+        outputImage.copyScale(inputImage);
         dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlus2DGreyscaleMaskData(outputImage), progressInfo);
     }
 }

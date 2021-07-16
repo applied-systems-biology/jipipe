@@ -104,7 +104,7 @@ public class LocalMaxima2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
         ImagePlus resultImage = new ImagePlus("Output", resultStack);
         resultImage.setDimensions(img.getNChannels(), img.getNSlices(), img.getNFrames());
-
+        resultImage.copyScale(img);
         dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusData(resultImage), progressInfo);
     }
 

@@ -72,6 +72,8 @@ public class RegionalMaxima3DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
         ImagePlus inputImage = dataBatch.getInputData(getFirstInputSlot(), ImagePlusGreyscaleData.class, progressInfo).getImage();
         ImageStack resultStack = MinimaAndMaxima3D.regionalMaxima(inputImage.getStack(), connectivity.getNativeValue());
-        dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusGreyscaleMaskData(new ImagePlus("Regional maxima", resultStack)), progressInfo);
+        ImagePlus outputImage = new ImagePlus("Regional maxima", resultStack);
+        outputImage.copyScale(inputImage);
+        dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusGreyscaleMaskData(outputImage), progressInfo);
     }
 }

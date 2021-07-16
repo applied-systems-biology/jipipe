@@ -64,6 +64,7 @@ public class ConvexifyAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         }, progressInfo);
         ImagePlus outputImage = new ImagePlus("Convexify", stack);
         outputImage.setDimensions(inputImage.getNChannels(), inputImage.getNSlices(), inputImage.getNFrames());
+        outputImage.copyScale(inputImage);
         dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusGreyscaleMaskData(outputImage), progressInfo);
     }
 }

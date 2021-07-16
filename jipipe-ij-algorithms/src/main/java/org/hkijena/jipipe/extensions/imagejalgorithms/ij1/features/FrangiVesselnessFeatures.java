@@ -137,6 +137,7 @@ public class FrangiVesselnessFeatures extends JIPipeSimpleIteratingAlgorithm {
             }, progressInfo);
             result = new ImagePlus("Vesselness", stack);
             result.setDimensions(img.getNChannels(), img.getNSlices(), img.getNFrames());
+            result.copyScale(img);
         } else {
             throw new UnsupportedOperationException("Not implemented: " + slicingMode);
         }

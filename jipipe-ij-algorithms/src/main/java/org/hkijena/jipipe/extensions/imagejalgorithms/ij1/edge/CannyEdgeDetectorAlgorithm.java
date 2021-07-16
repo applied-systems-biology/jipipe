@@ -164,7 +164,7 @@ public class CannyEdgeDetectorAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
         ImagePlus resultImage = new ImagePlus("Canny", resultStack);
         resultImage.setDimensions(img.getNChannels(), img.getNSlices(), img.getNFrames());
-
+        resultImage.copyScale(img);
         dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusData(resultImage), progressInfo);
     }
 

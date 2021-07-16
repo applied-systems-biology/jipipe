@@ -132,10 +132,12 @@ public class TransformScale2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
             }, progressInfo);
             ImagePlusData resized = new ImagePlusData(new ImagePlus("Resized", result));
             resized.getImage().setDimensions(img.getNChannels(), img.getNSlices(), img.getNFrames());
+            resized.getImage().copyScale(img);
             dataBatch.addOutputData(getFirstOutputSlot(), resized, progressInfo);
         } else {
             ImageProcessor resized = scaleProcessor(img.getProcessor(), sx, sy, interpolationMethod, interpolationMethod != InterpolationMethod.None, scaleMode, anchor, background);
             ImagePlus result = new ImagePlus("Resized", resized);
+            result.copyScale(img);
             dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusData(result), progressInfo);
         }
 

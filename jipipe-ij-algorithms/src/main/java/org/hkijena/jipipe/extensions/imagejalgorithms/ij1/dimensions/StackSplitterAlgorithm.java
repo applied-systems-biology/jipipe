@@ -148,6 +148,7 @@ public class StackSplitterAlgorithm extends JIPipeSimpleIteratingAlgorithm {
                 String index = "slice=" + sliceIndices.stream().map(i -> "" + i).collect(Collectors.joining(","));
                 annotations.add(new JIPipeAnnotation(annotationType, index));
             }
+            result.copyScale(img);
             dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusData(result), annotations, JIPipeAnnotationMergeStrategy.Merge, progressInfo);
         }
     }

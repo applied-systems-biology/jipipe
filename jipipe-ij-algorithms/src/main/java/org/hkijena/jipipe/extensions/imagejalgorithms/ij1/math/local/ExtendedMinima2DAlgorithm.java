@@ -96,6 +96,7 @@ public class ExtendedMinima2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         }, progressInfo);
         ImagePlus outputImage = new ImagePlus("Regional maxima", stack);
         outputImage.setDimensions(inputImage.getNChannels(), inputImage.getNSlices(), inputImage.getNFrames());
+        outputImage.copyScale(inputImage);
         dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusGreyscaleMaskData(outputImage), progressInfo);
     }
 }

@@ -117,6 +117,7 @@ public class ConnectedComponentsLabeling2DAlgorithm extends JIPipeSimpleIteratin
         }, progressInfo);
         ImagePlus outputImage = new ImagePlus("Connected components", stack);
         outputImage.setDimensions(inputImage.getNChannels(), inputImage.getNSlices(), inputImage.getNFrames());
+        outputImage.copyScale(inputImage);
         dataBatch.addOutputData(getFirstOutputSlot(), JIPipe.createData(outputType.getInfo().getDataClass(), outputImage), progressInfo);
     }
 }

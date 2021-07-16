@@ -71,7 +71,9 @@ public class CropToRoiAlgorithm extends JIPipeIteratingAlgorithm {
                 ip.setRoi(bounds);
                 ImageProcessor cropped = ip.crop();
                 ip.resetRoi();
-                dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusData(new ImagePlus("Cropped " + bounds, cropped)), progressInfo);
+                ImagePlus resultImage = new ImagePlus("Cropped " + bounds, cropped);
+                resultImage.copyScale(input);
+                dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusData(resultImage), progressInfo);
             } else {
                 dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusData(input), progressInfo);
             }

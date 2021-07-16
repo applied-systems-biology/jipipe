@@ -65,6 +65,7 @@ public class ExpandLabelsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
             outputImage = new ImagePlus("Boundaries", ExpandLabelsPlugin.expandLabels(inputImage.getStack(), ratio));
         }
         outputImage.setDimensions(inputImage.getNChannels(), inputImage.getNSlices(), inputImage.getNFrames());
+        outputImage.copyScale(inputImage);
         dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusGreyscaleData(outputImage), progressInfo);
     }
 }

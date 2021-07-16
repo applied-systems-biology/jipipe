@@ -99,6 +99,7 @@ public class ExtractFromROIAlgorithm extends JIPipeIteratingAlgorithm {
                         processor.setRoi((Roi) null);
                     }
                     ImagePlus resultImage = new ImagePlus(image.getImage().getTitle() + " cropped", resultProcessor);
+                    resultImage.copyScale(image.getImage());
                     List<JIPipeAnnotation> annotations = new ArrayList<>();
                     Rectangle bounds = roi.getBounds();
                     Point coords = xyAnchor.getRectangleCoordinates(bounds);

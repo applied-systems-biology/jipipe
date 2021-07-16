@@ -58,10 +58,12 @@ public class SeededWatershedSegmentationAlgorithm extends JIPipeIteratingAlgorit
                 ImageProcessor seeds = ImageJUtils.getSliceZero(seedImage, index);
                 return Watershed.computeWatershed(new ImagePlus("raw", ip), new ImagePlus("marker", seeds), new ImagePlus("mask", mask), connectivity.getNativeValue2D(), getDams).getProcessor();
             }, progressInfo);
+            resultImage.copyScale(inputImage);
             dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlus3DGreyscaleData(resultImage), progressInfo);
         } else {
             ImagePlus mask = ImageJUtils2.getMaskFromMaskOrROI(targetArea, dataBatch, "Input", progressInfo);
             ImagePlus resultImage = Watershed.computeWatershed(inputImage, seedImage, mask, inputImage.getStackSize() == 1 ? connectivity.getNativeValue2D() : connectivity.getNativeValue3D(), getDams);
+            resultImage.copyScale(inputImage);
             dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlus3DGreyscaleData(resultImage), progressInfo);
         }
     }

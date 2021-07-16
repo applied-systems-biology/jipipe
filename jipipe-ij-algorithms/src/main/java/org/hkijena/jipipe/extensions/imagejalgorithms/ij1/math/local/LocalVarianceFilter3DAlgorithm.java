@@ -84,6 +84,7 @@ public class LocalVarianceFilter3DAlgorithm extends JIPipeSimpleIteratingAlgorit
         ImagePlus img = inputData.getDuplicateImage();
         ImageStack filtered = Filters3D.filter(img.getStack(), Filters3D.VAR, radiusX, radiusY <= 0 ? radiusX : radiusY, radiusZ <= 0 ? radiusX : radiusZ);
         ImagePlus result = new ImagePlus("Output", filtered);
+        result.copyScale(img);
         dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusData(result), progressInfo);
     }
 

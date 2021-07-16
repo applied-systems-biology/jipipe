@@ -98,6 +98,7 @@ public class Morphology2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         }, progressInfo);
         ImagePlus result = new ImagePlus(operation.toString(), outputStack);
         result.setDimensions(img.getNChannels(), img.getNSlices(), img.getNFrames());
+        result.copyScale(img);
         dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusData(result), progressInfo);
     }
 

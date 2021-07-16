@@ -68,6 +68,7 @@ public class ImposeMaxima2DAlgorithm extends JIPipeIteratingAlgorithm {
         }, progressInfo);
         ImagePlus outputImage = new ImagePlus("Imposed maxima", stack);
         outputImage.setDimensions(inputImage.getNChannels(), inputImage.getNSlices(), inputImage.getNFrames());
+        outputImage.copyScale(inputImage);
         dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusGreyscaleData(outputImage), progressInfo);
     }
 }

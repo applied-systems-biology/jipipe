@@ -137,6 +137,7 @@ public class GeodesicDistanceMap2DAlgorithm extends JIPipeIteratingAlgorithm {
         }, progressInfo);
         ImagePlus outputImage = new ImagePlus("GDM", stack);
         outputImage.setDimensions(markerImage.getNChannels(), markerImage.getNSlices(), markerImage.getNFrames());
+        outputImage.copyScale(markerImage);
         dataBatch.addOutputData(getFirstOutputSlot(), JIPipe.createData(outputType.getInfo().getDataClass(), outputImage), progressInfo);
     }
 }

@@ -59,6 +59,8 @@ public class ImposeMaxima3DAlgorithm extends JIPipeIteratingAlgorithm {
         ImagePlus maximaImage = dataBatch.getInputData("Maxima", ImagePlus3DGreyscaleMaskData.class, progressInfo).getImage();
 
         ImageStack resultStack = MinimaAndMaxima3D.imposeMaxima(inputImage.getStack(), maximaImage.getStack());
-        dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlus3DGreyscaleData(new ImagePlus("Imposed maxima", resultStack)), progressInfo);
+        ImagePlus outputImage = new ImagePlus("Imposed maxima", resultStack);
+        outputImage.copyScale(inputImage);
+        dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlus3DGreyscaleData(outputImage), progressInfo);
     }
 }

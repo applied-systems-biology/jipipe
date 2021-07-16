@@ -93,8 +93,10 @@ public class StackTo2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
             annotationT.addAnnotationIfEnabled(annotationList, "" + index.getT());
             annotationC.addAnnotationIfEnabled(annotationList, "" + index.getC());
             annotationZ.addAnnotationIfEnabled(annotationList, "" + index.getZ());
+            ImagePlus resultImage = new ImagePlus("slice=" + index, ip);
+            resultImage.copyScale(img);
             dataBatch.addOutputData(getFirstOutputSlot(),
-                    new ImagePlus2DData(new ImagePlus("slice=" + index, ip)),
+                    new ImagePlus2DData(resultImage),
                     annotationList,
                     JIPipeAnnotationMergeStrategy.OverwriteExisting,
                     progressInfo);

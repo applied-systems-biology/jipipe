@@ -125,6 +125,8 @@ public class LabelChamferDistanceMap3DAlgorithm extends JIPipeSimpleIteratingAlg
         else
             outputImage = LabelImages.distanceMap(inputImage.getStack(), chamferWeights.getFloatWeights(), normalize);
 
-        dataBatch.addOutputData(getFirstOutputSlot(), JIPipe.createData(outputType.getInfo().getDataClass(), new ImagePlus("CDM", outputImage)), progressInfo);
+        ImagePlus outputImagePlus = new ImagePlus("CDM", outputImage);
+        outputImagePlus.copyScale(inputImage);
+        dataBatch.addOutputData(getFirstOutputSlot(), JIPipe.createData(outputType.getInfo().getDataClass(), outputImagePlus), progressInfo);
     }
 }

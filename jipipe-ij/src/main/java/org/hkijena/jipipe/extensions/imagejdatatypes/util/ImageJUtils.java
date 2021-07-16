@@ -778,10 +778,15 @@ public class ImageJUtils {
                     }
                 }
             }
-            return new ImagePlus(img.getTitle(), stack);
+            ImagePlus resultImage = new ImagePlus(img.getTitle(), stack);
+            resultImage.setDimensions(img.getNChannels(), img.getNSlices(), img.getNFrames());
+            resultImage.copyScale(img);
+            return resultImage;
         } else {
             ImageProcessor processor = function.apply(img.getProcessor(), new ImageSliceIndex(0, 0, 0));
-            return new ImagePlus(img.getTitle(), processor);
+            ImagePlus resultImage = new ImagePlus(img.getTitle(), processor);
+            resultImage.copyScale(img);
+            return resultImage;
         }
     }
 
@@ -926,6 +931,7 @@ public class ImageJUtils {
         }
         ImagePlus result = new ImagePlus(image.getTitle() + "_split", stack);
         result.setDimensions(nChannels, image.getNSlices(), image.getNFrames());
+        result.copyScale(image);
         return result;
     }
 
@@ -965,7 +971,10 @@ public class ImageJUtils {
                     stack.setProcessor(processor, newPosition + 1);
                 }
             }
-            return new ImagePlus(image.getTitle() + "_RGB", stack);
+            ImagePlus resultImage = new ImagePlus(image.getTitle() + "_RGB", stack);
+            resultImage.setDimensions(1, image.getNSlices(), image.getNFrames());
+            resultImage.copyScale(image);
+            return resultImage;
         }
         return image;
     }
@@ -1172,9 +1181,13 @@ public class ImageJUtils {
                 break;
         }
         if (imp.isStack()) {
-            return new ImagePlus(imp.getTitle() + "_Expanded", expandImageStackCanvas(imp.getImageStack(), backgroundColor, newWidth, newHeight, xOff, yOff));
+            ImagePlus resultImage = new ImagePlus(imp.getTitle() + "_Expanded", expandImageStackCanvas(imp.getImageStack(), backgroundColor, newWidth, newHeight, xOff, yOff));
+            resultImage.copyScale(imp);
+            return resultImage;
         } else {
-            return new ImagePlus(imp.getTitle() + "_Expanded", expandImageProcessorCanvas(imp.getProcessor(), backgroundColor, newWidth, newHeight, xOff, yOff));
+            ImagePlus resultImage = new ImagePlus(imp.getTitle() + "_Expanded", expandImageProcessorCanvas(imp.getProcessor(), backgroundColor, newWidth, newHeight, xOff, yOff));
+            resultImage.copyScale(imp);
+            return resultImage;
         }
     }
 

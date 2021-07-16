@@ -115,9 +115,15 @@ public class CanvasEqualizer implements JIPipeParameterCollection {
             }
 
             if (imp.isStack()) {
-                result.add(new ImagePlus(imp.getTitle() + "_Expanded", expandStack(imp.getStack(), wNew, hNew, xOff, yOff)));
+                ImagePlus resultImage = new ImagePlus(imp.getTitle() + "_Expanded", expandStack(imp.getStack(), wNew, hNew, xOff, yOff));
+                resultImage.setDimensions(imp.getNChannels(), imp.getNSlices(), imp.getNFrames());
+                resultImage.copyScale(imp);
+                result.add(resultImage);
             } else {
-                result.add(new ImagePlus(imp.getTitle() + "_Expanded", expandImage(imp.getProcessor(), wNew, hNew, xOff, yOff)));
+                ImagePlus resultImage = new ImagePlus(imp.getTitle() + "_Expanded", expandImage(imp.getProcessor(), wNew, hNew, xOff, yOff));
+                resultImage.setDimensions(imp.getNChannels(), imp.getNSlices(), imp.getNFrames());
+                resultImage.copyScale(imp);
+                result.add(resultImage);
             }
         }
         return result;

@@ -126,6 +126,7 @@ public class CreateStackAlgorithm extends JIPipeMergingAlgorithm {
         } else if (outputDimension == HyperstackDimension.Frame) {
             resultImage.setDimensions(1, 1, resultImage.getNSlices());
         }
+        resultImage.copyScale(firstSlice);
         dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusData(resultImage), progressInfo);
     }
 

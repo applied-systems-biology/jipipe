@@ -89,6 +89,7 @@ public class StackCombinerAlgorithm extends JIPipeIteratingAlgorithm {
         }, progressInfo.resolve("Copying second image"));
         ImagePlus resultImage = new ImagePlus("Combined", stack);
         resultImage.setDimensions(nChannels, nSlices, nFrames);
+        resultImage.copyScale(src);
         dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusData(resultImage), progressInfo);
     }
 
@@ -123,6 +124,7 @@ public class StackCombinerAlgorithm extends JIPipeIteratingAlgorithm {
         }, progressInfo.resolve("Copying second image"));
         ImagePlus resultImage = new ImagePlus("Combined", stack);
         resultImage.setDimensions(nChannels, nSlices, nFrames);
+        resultImage.copyScale(src);
         dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusData(resultImage), progressInfo);
     }
 
@@ -157,6 +159,7 @@ public class StackCombinerAlgorithm extends JIPipeIteratingAlgorithm {
         }, progressInfo.resolve("Copying second image"));
         ImagePlus resultImage = new ImagePlus("Combined", stack);
         resultImage.setDimensions(nChannels, nSlices, nFrames);
+        resultImage.copyScale(src);
         dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusData(resultImage), progressInfo);
     }
 

@@ -51,6 +51,7 @@ public class GetLabelBoundariesAlgorithm extends JIPipeSimpleIteratingAlgorithm 
             outputImage = new ImagePlus("Boundaries", LabelImages.labelBoundaries(inputImage.getStack()));
         }
         outputImage.setDimensions(inputImage.getNChannels(), inputImage.getNSlices(), inputImage.getNFrames());
+        outputImage.copyScale(inputImage);
         dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusGreyscaleMaskData(outputImage), progressInfo);
     }
 }

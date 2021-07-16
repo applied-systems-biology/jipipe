@@ -121,9 +121,15 @@ public class TransformEqualCanvasSize2DAlgorithm extends JIPipeMergingAlgorithm 
             }
 
             if (imp.isStack()) {
-                dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusData(new ImagePlus("Expanded", expandStack(imp.getStack(), wNew, hNew, xOff, yOff))), progressInfo);
+                ImagePlus resultImage = new ImagePlus("Expanded", expandStack(imp.getStack(), wNew, hNew, xOff, yOff));
+                resultImage.setDimensions(imp.getNChannels(), imp.getNSlices(), imp.getNFrames());
+                resultImage.copyScale(imp);
+                dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusData(resultImage), progressInfo);
             } else {
-                dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusData(new ImagePlus("Expanded", expandImage(imp.getProcessor(), wNew, hNew, xOff, yOff))), progressInfo);
+                ImagePlus resultImage = new ImagePlus("Expanded", expandImage(imp.getProcessor(), wNew, hNew, xOff, yOff));
+                resultImage.setDimensions(imp.getNChannels(), imp.getNSlices(), imp.getNFrames());
+                resultImage.copyScale(imp);
+                dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusData(resultImage), progressInfo);
             }
         }
     }

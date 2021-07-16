@@ -104,6 +104,8 @@ public class TileImageAlgorithm extends JIPipeSimpleIteratingAlgorithm {
                 }, tileProgress);
 
                 ImagePlus tileImage = new ImagePlus("Tile " + x + ", " + y, tileStack);
+                tileImage.setDimensions(img.getNChannels(), img.getNSlices(), img.getNFrames());
+                tileImage.copyScale(img);
                 List<JIPipeAnnotation> annotations = new ArrayList<>();
                 tileXAnnotation.addAnnotationIfEnabled(annotations, x + "");
                 tileYAnnotation.addAnnotationIfEnabled(annotations, y + "");

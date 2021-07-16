@@ -124,7 +124,8 @@ public class ChamferDistanceMap3DAlgorithm extends JIPipeSimpleIteratingAlgorith
             outputImage = BinaryImages.distanceMap(inputImage.getStack(), chamferWeights.getShortWeights(), normalize);
         else
             outputImage = BinaryImages.distanceMap(inputImage.getStack(), chamferWeights.getFloatWeights(), normalize);
-
-        dataBatch.addOutputData(getFirstOutputSlot(), JIPipe.createData(outputType.getInfo().getDataClass(), new ImagePlus("CDM", outputImage)), progressInfo);
+        ImagePlus outputImagePlus = new ImagePlus("CDM", outputImage);
+        outputImagePlus.copyScale(inputImage);
+        dataBatch.addOutputData(getFirstOutputSlot(), JIPipe.createData(outputType.getInfo().getDataClass(), outputImagePlus), progressInfo);
     }
 }

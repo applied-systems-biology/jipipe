@@ -83,6 +83,8 @@ public class MedianBlurFilter3DAlgorithm extends JIPipeSimpleIteratingAlgorithm 
         ImagePlus img = inputData.getDuplicateImage();
         ImageStack filtered = Filters3D.filter(img.getStack(), Filters3D.MEDIAN, radiusX, radiusY <= 0 ? radiusX : radiusY, radiusZ <= 0 ? radiusX : radiusZ);
         ImagePlus result = new ImagePlus("Output", filtered);
+        result.setDimensions(img.getNChannels(), img.getNSlices(), img.getNFrames());
+        result.copyAttributes(img);
         dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusData(result), progressInfo);
     }
 

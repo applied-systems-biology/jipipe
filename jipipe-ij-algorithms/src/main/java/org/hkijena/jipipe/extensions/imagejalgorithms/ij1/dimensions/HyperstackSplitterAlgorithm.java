@@ -75,6 +75,7 @@ public class HyperstackSplitterAlgorithm extends JIPipeSimpleIteratingAlgorithm 
                 }, stackProgressInfo);
                 ImagePlus stackOutput = new ImagePlus(img.getTitle(), stack);
                 stackOutput.setDimensions(1, img.getNSlices(), img.getNFrames());
+                stackOutput.copyScale(img);
 
                 List<JIPipeAnnotation> annotationList = new ArrayList<>();
                 targetDimensionAnnotation.addAnnotationIfEnabled(annotationList, c + "");
@@ -102,6 +103,7 @@ public class HyperstackSplitterAlgorithm extends JIPipeSimpleIteratingAlgorithm 
                 }, stackProgressInfo);
                 ImagePlus stackOutput = new ImagePlus(img.getTitle(), stack);
                 stackOutput.setDimensions(img.getNChannels(), 1, img.getNFrames());
+                stackOutput.copyScale(img);
 
                 List<JIPipeAnnotation> annotationList = new ArrayList<>();
                 targetDimensionAnnotation.addAnnotationIfEnabled(annotationList, z + "");
@@ -129,6 +131,7 @@ public class HyperstackSplitterAlgorithm extends JIPipeSimpleIteratingAlgorithm 
                 }, stackProgressInfo);
                 ImagePlus stackOutput = new ImagePlus(img.getTitle(), stack);
                 stackOutput.setDimensions(img.getNChannels(), img.getNSlices(), 1);
+                stackOutput.copyScale(img);
 
                 List<JIPipeAnnotation> annotationList = new ArrayList<>();
                 targetDimensionAnnotation.addAnnotationIfEnabled(annotationList, t + "");

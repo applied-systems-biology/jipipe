@@ -94,10 +94,12 @@ public class CLAHEContrastEnhancer extends JIPipeSimpleIteratingAlgorithm {
             }, progressInfo);
             ImagePlus result = new ImagePlus("CLAHE", stack);
             result.setDimensions(inputData.getImage().getNChannels(), inputData.getImage().getNSlices(), inputData.getImage().getNFrames());
+            result.copyScale(inputData.getImage());
             dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusData(result), progressInfo);
         } else {
             ImagePlus result = inputData.getDuplicateImage();
             clahe.run(result, blockRadius, bins, maxSlope, null, true);
+            result.copyScale(inputData.getImage());
             dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusData(result), progressInfo);
         }
     }

@@ -193,6 +193,8 @@ public class FastHoughSegmentation2DAlgorithm extends JIPipeSimpleIteratingAlgor
 
 //        DisplayRangeCalibrationAlgorithm.calibrate(mask, CalibrationMode.AutomaticImageJ, 0,0);
 //        DisplayRangeCalibrationAlgorithm.calibrate(hough, CalibrationMode.AutomaticImageJ, 0,0);
+        mask.copyScale(img);
+        hough.copyScale(img);
 
         dataBatch.addOutputData("Mask", new ImagePlusGreyscaleMaskData(mask), progressInfo);
         dataBatch.addOutputData("Accumulator", new ImagePlusGreyscaleData(hough), progressInfo);

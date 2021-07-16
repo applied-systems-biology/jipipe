@@ -113,7 +113,7 @@ public class MeijeringVesselness2DFeatures extends JIPipeSimpleIteratingAlgorith
         }, progressInfo);
         ImagePlus result = new ImagePlus("Vesselness", stack);
         result.setDimensions(img.getNChannels(), img.getNSlices(), img.getNFrames());
-
+        result.copyScale(img);
         dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusData(result), progressInfo);
     }
 

@@ -78,6 +78,8 @@ public class MorphologicalReconstruction3DAlgorithm extends JIPipeIteratingAlgor
         else
             resultImage = Reconstruction3D.reconstructByErosion(markerImage.getImageStack(), maskImage.getImageStack(), connectivity.getNativeValue());
 
-        dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlus3DGreyscaleData(new ImagePlus("Reconstructed", resultImage)), progressInfo);
+        ImagePlus outputImage = new ImagePlus("Reconstructed", resultImage);
+        outputImage.copyScale(markerImage);
+        dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlus3DGreyscaleData(outputImage), progressInfo);
     }
 }
