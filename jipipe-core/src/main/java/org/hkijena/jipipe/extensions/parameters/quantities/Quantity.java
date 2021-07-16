@@ -31,7 +31,7 @@ public class Quantity {
 
     @Override
     public String toString() {
-        return value + " " + unit;
+        return (value + " " + unit).trim();
     }
 
     @JsonGetter("value")
@@ -72,10 +72,15 @@ public class Quantity {
      */
     public static Quantity parse(String string) {
         Matcher matcher = PARSE_QUANTITY_PATTERN.matcher(string);
-        String valueString = matcher.group(1);
-        String unitString = matcher.groupCount() > 2 ? matcher.group(2) : "";
-        valueString = valueString.replace(',', '.').replace(" ", "");
-        unitString = unitString.replace(" ", "");
-        return new Quantity(NumberUtils.createDouble(valueString), unitString);
+        if (matcher.find()) {
+            String valueString = matcher.group(1);
+            String unitString = matcher.groupCount() >= 2 ? matcher.group(2) : "";
+            valueString = valueString.replace(',', '.').replace(" ", "");
+            unitString = unitString.replace(" ", "");
+            return new Quantity(NumberUtils.createDouble(valueString), unitString);
+        }
+        else {
+            return null;
+        }
     }
 }
