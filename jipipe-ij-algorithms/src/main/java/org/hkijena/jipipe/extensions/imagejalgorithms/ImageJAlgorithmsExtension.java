@@ -47,6 +47,8 @@ import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.blur.MedianBlurFilter2
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.blur.MedianBlurFilter3DAlgorithm;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.blur.MedianBlurGreyscale8U2DAlgorithm;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.blur.MedianBlurRGB2DAlgorithm;
+import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.calibration.SetPhysicalDimensionsAlgorithm;
+import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.calibration.SetPhysicalDimensionsByExpressionsAlgorithm;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.color.*;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.contrast.CLAHEContrastEnhancer;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.contrast.HistogramContrastEnhancerAlgorithm;
@@ -307,6 +309,7 @@ public class ImageJAlgorithmsExtension extends JIPipePrepackagedDefaultJavaExten
         registerConverterAlgorithms();
         registerLabelAlgorithms();
         registerSegmentationAlgorithms();
+        registerCalibrationAlgorithms();
 
         registerEnumParameterType("ij1-export-image-to-web:file-format", ExportImageToWebAlgorithm.FileFormat.class, "File format", "Exported file format.");
         registerNodeType("iji-export-image-to-web", ExportImageToWebAlgorithm.class, UIUtils.getIconURLFromResources("actions/document-export.png"));
@@ -324,6 +327,11 @@ public class ImageJAlgorithmsExtension extends JIPipePrepackagedDefaultJavaExten
         registerGlobalParameters();
 
 //        registerIJ2Algorithms();
+    }
+
+    private void registerCalibrationAlgorithms() {
+        registerNodeType("ij1-calibration-set-physical-dimensions", SetPhysicalDimensionsAlgorithm.class, UIUtils.getIconURLFromResources("actions/draw-geometry-show-measuring-info.png"));
+        registerNodeType("ij1-calibration-set-physical-dimensions-from-expressions", SetPhysicalDimensionsByExpressionsAlgorithm.class, UIUtils.getIconURLFromResources("actions/draw-geometry-show-measuring-info.png"));
     }
 
     private void registerSegmentationAlgorithms() {

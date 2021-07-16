@@ -51,6 +51,9 @@ import org.hkijena.jipipe.extensions.parameters.pairs.*;
 import org.hkijena.jipipe.extensions.parameters.patterns.StringPatternExtraction;
 import org.hkijena.jipipe.extensions.parameters.patterns.StringPatternExtractionParameterEditorUI;
 import org.hkijena.jipipe.extensions.parameters.primitives.*;
+import org.hkijena.jipipe.extensions.parameters.quantities.OptionalQuantity;
+import org.hkijena.jipipe.extensions.parameters.quantities.Quantity;
+import org.hkijena.jipipe.extensions.parameters.quantities.QuantityParameterEditorUI;
 import org.hkijena.jipipe.extensions.parameters.ranges.FloatNumberRangeParameter;
 import org.hkijena.jipipe.extensions.parameters.ranges.IntNumberRangeParameter;
 import org.hkijena.jipipe.extensions.parameters.ranges.NumberRangeParameter;
@@ -149,9 +152,15 @@ public class StandardParametersExtension extends JIPipePrepackagedDefaultJavaExt
         registerPatternParameters();
         registerScriptParameters();
         registerRangeParameters();
+        registerQuantityParameters();
 
         registerMenuExtension(ParameterTesterMenuExtension.class);
         registerMenuExtension(ExpressionTesterMenuExtension.class);
+    }
+
+    private void registerQuantityParameters() {
+        registerParameterType("quantity", Quantity.class, "Quantity", "A value with a unit", QuantityParameterEditorUI.class);
+        registerParameterType("optional-quantity", OptionalQuantity.class, "Optional quantity", "A value with a unit");
     }
 
     private void registerRangeParameters() {

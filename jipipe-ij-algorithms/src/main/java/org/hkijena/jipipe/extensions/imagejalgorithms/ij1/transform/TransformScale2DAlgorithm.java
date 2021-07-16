@@ -103,7 +103,7 @@ public class TransformScale2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         int sy = img.getHeight();
 
         ExpressionVariables variables = new ExpressionVariables();
-        ImagePlusPropertiesExpressionParameterVariableSource.extractValues(variables, img);
+        ImagePlusPropertiesExpressionParameterVariableSource.extractValues(variables, img, dataBatch.getGlobalAnnotations().values());
 
         if (xAxis.isEnabled() && yAxis.isEnabled()) {
             variables.set("x", sx);

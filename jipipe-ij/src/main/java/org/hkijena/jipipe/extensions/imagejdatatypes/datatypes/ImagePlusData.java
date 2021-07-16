@@ -171,7 +171,7 @@ public class ImagePlusData implements JIPipeData, ColoredImagePlusData {
      */
     public ImagePlus getDuplicateImage() {
         ImagePlus imp = getImage().duplicate();
-        imp.setTitle(getImage().getTitle());
+        imp.copyAttributes(getImage());
         return imp;
     }
 

@@ -14,6 +14,7 @@
 package org.hkijena.jipipe.extensions.imagejdatatypes.algorithms;
 
 import ij.ImagePlus;
+import ij.measure.Calibration;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeIssueReport;
 import org.hkijena.jipipe.api.JIPipeOrganization;
@@ -30,6 +31,7 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.color.ColoredImagePlusData;
 import org.hkijena.jipipe.extensions.parameters.primitives.OptionalAnnotationNameParameter;
+import org.hkijena.jipipe.utils.StringUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -53,6 +55,11 @@ public class ImagePropertiesToAnnotationAlgorithm extends JIPipeSimpleIteratingA
     private OptionalAnnotationNameParameter imageTypeAnnotation = new OptionalAnnotationNameParameter();
     private OptionalAnnotationNameParameter bitDepthAnnotation = new OptionalAnnotationNameParameter();
     private OptionalAnnotationNameParameter colorSpaceAnnotation = new OptionalAnnotationNameParameter();
+    private OptionalAnnotationNameParameter physicalDimensionXAnnotation = new OptionalAnnotationNameParameter();
+    private OptionalAnnotationNameParameter physicalDimensionYAnnotation = new OptionalAnnotationNameParameter();
+    private OptionalAnnotationNameParameter physicalDimensionZAnnotation = new OptionalAnnotationNameParameter();
+    private OptionalAnnotationNameParameter physicalDimensionTAnnotation = new OptionalAnnotationNameParameter();
+    private OptionalAnnotationNameParameter physicalDimensionValueAnnotation = new OptionalAnnotationNameParameter();
 
     /**
      * Creates a new instance
@@ -71,6 +78,11 @@ public class ImagePropertiesToAnnotationAlgorithm extends JIPipeSimpleIteratingA
         imageTypeAnnotation.setContent("Image type");
         bitDepthAnnotation.setContent("Image bit depth");
         colorSpaceAnnotation.setContent("Color space");
+        physicalDimensionXAnnotation.setContent("Physical dimension (X)");
+        physicalDimensionYAnnotation.setContent("Physical dimension (Y)");
+        physicalDimensionZAnnotation.setContent("Physical dimension (Z)");
+        physicalDimensionTAnnotation.setContent("Physical dimension (Time)");
+        physicalDimensionValueAnnotation.setContent("Physical dimension (Value)");
     }
 
     /**
@@ -90,6 +102,11 @@ public class ImagePropertiesToAnnotationAlgorithm extends JIPipeSimpleIteratingA
         this.imageTypeAnnotation = new OptionalAnnotationNameParameter(other.imageTypeAnnotation);
         this.bitDepthAnnotation = new OptionalAnnotationNameParameter(other.bitDepthAnnotation);
         this.colorSpaceAnnotation = new OptionalAnnotationNameParameter(other.colorSpaceAnnotation);
+        this.physicalDimensionXAnnotation = new OptionalAnnotationNameParameter(other.physicalDimensionXAnnotation);
+        this.physicalDimensionYAnnotation = new OptionalAnnotationNameParameter(other.physicalDimensionYAnnotation);
+        this.physicalDimensionZAnnotation = new OptionalAnnotationNameParameter(other.physicalDimensionZAnnotation);
+        this.physicalDimensionTAnnotation = new OptionalAnnotationNameParameter(other.physicalDimensionTAnnotation);
+        this.physicalDimensionValueAnnotation = new OptionalAnnotationNameParameter(other.physicalDimensionValueAnnotation);
     }
 
     @Override
@@ -143,6 +160,54 @@ public class ImagePropertiesToAnnotationAlgorithm extends JIPipeSimpleIteratingA
         if (getFramesSizeAnnotation().isEnabled()) {
             annotations.add(new JIPipeAnnotation(getFramesSizeAnnotation().getContent(), "" + inputData.getImage().getNFrames()));
         }
+        if(physicalDimensionXAnnotation.isEnabled()) {
+            Calibration calibration = inputData.getImage().getCalibration();
+            double value = 0;
+            String unit = "";
+            if(calibration != null) {
+                value = calibration.getX(1);
+                unit = calibration.getXUnit();
+            }
+            physicalDimensionXAnnotation.addAnnotationIfEnabled(annotations, value + (!unit.isEmpty() ? " " + unit : ""));
+        }
+        if(physicalDimensionYAnnotation.isEnabled()) {
+            Calibration calibration = inputData.getImage().getCalibration();
+            double value = 0;
+            String unit = "";
+            if(calibration != null) {
+                value = calibration.getY(1);
+                unit = calibration.getYUnit();
+            }
+            physicalDimensionYAnnotation.addAnnotationIfEnabled(annotations, value + (!unit.isEmpty() ? " " + unit : ""));
+        }
+        if(physicalDimensionZAnnotation.isEnabled()) {
+            Calibration calibration = inputData.getImage().getCalibration();
+            double value = 0;
+            String unit = "";
+            if(calibration != null) {
+                value = calibration.getZ(1);
+                unit = calibration.getZUnit();
+            }
+            physicalDimensionZAnnotation.addAnnotationIfEnabled(annotations, value + (!unit.isEmpty() ? " " + unit : ""));
+        }
+        if(physicalDimensionTAnnotation.isEnabled()) {
+            Calibration calibration = inputData.getImage().getCalibration();
+            double value = 1;
+            String unit = "";
+            if(calibration != null) {
+                unit = calibration.getTimeUnit();
+            }
+            physicalDimensionTAnnotation.addAnnotationIfEnabled(annotations, value + (!unit.isEmpty() ? " " + unit : ""));
+        }
+        if(physicalDimensionValueAnnotation.isEnabled()) {
+            Calibration calibration = inputData.getImage().getCalibration();
+            double value = 1;
+            String unit = "";
+            if(calibration != null) {
+                unit = calibration.getValueUnit();
+            }
+            physicalDimensionValueAnnotation.addAnnotationIfEnabled(annotations, value + (!unit.isEmpty() ? " " + unit : ""));
+        }
         if (getImageTypeAnnotation().isEnabled()) {
             String type;
             switch (inputData.getImage().getType()) {
@@ -183,6 +248,61 @@ public class ImagePropertiesToAnnotationAlgorithm extends JIPipeSimpleIteratingA
         }
 
         dataBatch.addOutputData(getFirstOutputSlot(), inputData, annotations, JIPipeAnnotationMergeStrategy.Merge, progressInfo);
+    }
+
+    @JIPipeDocumentation(name = "Annotate with physical dimension (X)", description = "If enabled, the physical size of one pixel (including the unit) is annotated the the image.")
+    @JIPipeParameter("physical-dimension-x-annotation")
+    public OptionalAnnotationNameParameter getPhysicalDimensionXAnnotation() {
+        return physicalDimensionXAnnotation;
+    }
+
+    @JIPipeParameter("physical-dimension-x-annotation")
+    public void setPhysicalDimensionXAnnotation(OptionalAnnotationNameParameter physicalDimensionXAnnotation) {
+        this.physicalDimensionXAnnotation = physicalDimensionXAnnotation;
+    }
+
+    @JIPipeDocumentation(name = "Annotate with physical dimension (Y)", description = "If enabled, the physical size of one pixel (including the unit) is annotated the the image.")
+    @JIPipeParameter("physical-dimension-y-annotation")
+    public OptionalAnnotationNameParameter getPhysicalDimensionYAnnotation() {
+        return physicalDimensionYAnnotation;
+    }
+    @JIPipeParameter("physical-dimension-y-annotation")
+
+    public void setPhysicalDimensionYAnnotation(OptionalAnnotationNameParameter physicalDimensionYAnnotation) {
+        this.physicalDimensionYAnnotation = physicalDimensionYAnnotation;
+    }
+
+    @JIPipeDocumentation(name = "Annotate with physical dimension (Z)", description = "If enabled, the physical size of one pixel (including the unit) is annotated the the image.")
+    @JIPipeParameter("physical-dimension-z-annotation")
+    public OptionalAnnotationNameParameter getPhysicalDimensionZAnnotation() {
+        return physicalDimensionZAnnotation;
+    }
+
+    @JIPipeParameter("physical-dimension-z-annotation")
+    public void setPhysicalDimensionZAnnotation(OptionalAnnotationNameParameter physicalDimensionZAnnotation) {
+        this.physicalDimensionZAnnotation = physicalDimensionZAnnotation;
+    }
+
+    @JIPipeDocumentation(name = "Annotate with physical dimension (Time)", description = "If enabled, the time unit for multi-frame images is annotated the the image.")
+    @JIPipeParameter("physical-dimension-t-annotation")
+    public OptionalAnnotationNameParameter getPhysicalDimensionTAnnotation() {
+        return physicalDimensionTAnnotation;
+    }
+
+    @JIPipeParameter("physical-dimension-t-annotation")
+    public void setPhysicalDimensionTAnnotation(OptionalAnnotationNameParameter physicalDimensionTAnnotation) {
+        this.physicalDimensionTAnnotation = physicalDimensionTAnnotation;
+    }
+
+    @JIPipeDocumentation(name = "Annotate with physical dimension (Value)", description = "If enabled, the physical size of greyscale pixel values is annotated the the image.")
+    @JIPipeParameter("physical-dimension-value-annotation")
+    public OptionalAnnotationNameParameter getPhysicalDimensionValueAnnotation() {
+        return physicalDimensionValueAnnotation;
+    }
+
+    @JIPipeParameter("physical-dimension-value-annotation")
+    public void setPhysicalDimensionValueAnnotation(OptionalAnnotationNameParameter physicalDimensionValueAnnotation) {
+        this.physicalDimensionValueAnnotation = physicalDimensionValueAnnotation;
     }
 
     @JIPipeDocumentation(name = "Annotate with title", description = "If enabled, an annotation with provided name is created. The annotation " +
