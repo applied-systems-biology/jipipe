@@ -6,6 +6,7 @@ import org.hkijena.jipipe.api.data.JIPipeDataInfo;
 import org.hkijena.jipipe.api.nodes.JIPipeInputSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.JIPipeOutputSlot;
+import org.hkijena.jipipe.api.nodes.categories.InternalNodeTypeCategory;
 import org.hkijena.jipipe.ui.components.AlwaysOnTopToggle;
 import org.hkijena.jipipe.ui.components.JIPipeNodeInfoListCellRenderer;
 import org.hkijena.jipipe.ui.components.MarkdownDocument;
@@ -79,6 +80,9 @@ public class NodeToolBox extends JPanel {
         List<JIPipeNodeInfo> infos = getFilteredAndSortedInfos();
         DefaultListModel<JIPipeNodeInfo> model = new DefaultListModel<>();
         for (JIPipeNodeInfo info : infos) {
+            if(info.isHidden() ||info.getCategory() == null ||info.getCategory() instanceof InternalNodeTypeCategory) {
+                continue;
+            }
             model.addElement(info);
         }
         algorithmList.setModel(model);
