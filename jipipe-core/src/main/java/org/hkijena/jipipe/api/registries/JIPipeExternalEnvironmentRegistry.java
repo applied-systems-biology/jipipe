@@ -7,6 +7,7 @@ import org.hkijena.jipipe.api.environments.ExternalEnvironment;
 import org.hkijena.jipipe.api.environments.ExternalEnvironmentInstaller;
 import org.hkijena.jipipe.api.environments.ExternalEnvironmentSettings;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
+import org.hkijena.jipipe.utils.DocumentationUtils;
 
 import javax.swing.*;
 import java.util.ArrayList;
@@ -108,7 +109,7 @@ public class JIPipeExternalEnvironmentRegistry {
             JIPipeDocumentation documentation = installerClass.getAnnotation(JIPipeDocumentation.class);
             if (documentation != null) {
                 name = documentation.name();
-                description = documentation.description();
+                description = DocumentationUtils.getDocumentationDescription(documentation);
             } else {
                 name = installerClass.getName();
                 description = "";

@@ -29,6 +29,7 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTypeInfo;
 import org.hkijena.jipipe.ui.components.JIPipeNodeInfoListCellRenderer;
 import org.hkijena.jipipe.ui.components.MarkdownDocument;
+import org.hkijena.jipipe.utils.DocumentationUtils;
 import org.hkijena.jipipe.utils.ResourceUtils;
 import org.hkijena.jipipe.utils.StringUtils;
 
@@ -119,7 +120,7 @@ public class JIPipeAlgorithmCompendiumUI extends JIPipeCompendiumUI<JIPipeNodeIn
             builder.append("## ").append(traversed.getSourceDocumentationName(subParameters)).append("\n\n");
             JIPipeDocumentation documentation = traversed.getSourceDocumentation(subParameters);
             if (documentation != null) {
-                builder.append(documentation.description()).append("\n\n");
+                builder.append(DocumentationUtils.getDocumentationDescription(documentation)).append("\n\n");
             }
             for (JIPipeParameterAccess parameterAccess : groupedBySource.get(subParameters)) {
                 if (!algorithm.isParameterUIVisible(traversed, parameterAccess))

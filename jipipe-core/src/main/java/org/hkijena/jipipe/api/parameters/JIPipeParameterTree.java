@@ -21,6 +21,7 @@ import org.hkijena.jipipe.api.JIPipeDefaultDocumentation;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.extensions.parameters.primitives.HTMLText;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
+import org.hkijena.jipipe.utils.DocumentationUtils;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.scijava.Priority;
@@ -275,7 +276,7 @@ public class JIPipeParameterTree implements JIPipeParameterCollection, JIPipeCus
                     Node childNode = add(subParameters, entry.getKey(), parent);
                     if (pair.getDocumentation() != null) {
                         childNode.setName(pair.getDocumentation().name());
-                        childNode.setDescription(new HTMLText(pair.getDocumentation().description()));
+                        childNode.setDescription(new HTMLText(DocumentationUtils.getDocumentationDescription(pair.getDocumentation())));
                     } else
                         childNode.setName(entry.getKey());
 
@@ -501,7 +502,7 @@ public class JIPipeParameterTree implements JIPipeParameterCollection, JIPipeCus
     public void setSourceDocumentation(JIPipeParameterCollection source, JIPipeDefaultDocumentation documentation) {
         Node node = nodeMap.get(source);
         node.setName(documentation.name());
-        node.setDescription(new HTMLText(documentation.description()));
+        node.setDescription(new HTMLText(DocumentationUtils.getDocumentationDescription(documentation)));
     }
 
     /**

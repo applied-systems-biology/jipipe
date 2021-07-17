@@ -15,6 +15,7 @@ package org.hkijena.jipipe.api.parameters;
 
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
+import org.hkijena.jipipe.utils.DocumentationUtils;
 import org.hkijena.jipipe.utils.StringUtils;
 
 import java.lang.annotation.Annotation;
@@ -58,7 +59,7 @@ public class JIPipeReflectionParameterAccess implements JIPipeParameterAccess {
     @Override
     public String getDescription() {
         if (getDocumentation() != null)
-            return getDocumentation().description();
+            return DocumentationUtils.getDocumentationDescription(getDocumentation());
         return null;
     }
 

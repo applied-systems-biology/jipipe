@@ -20,6 +20,7 @@ import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.extensions.parameters.primitives.HTMLText;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
+import org.hkijena.jipipe.utils.DocumentationUtils;
 import org.hkijena.jipipe.utils.StringUtils;
 
 import java.awt.Component;
@@ -107,7 +108,7 @@ public interface JIPipeData {
     static String getDescriptionOf(Class<? extends JIPipeData> klass) {
         JIPipeDocumentation[] annotations = klass.getAnnotationsByType(JIPipeDocumentation.class);
         if (annotations.length > 0) {
-            return annotations[0].description();
+            return DocumentationUtils.getDocumentationDescription(annotations[0]);
         } else {
             return null;
         }

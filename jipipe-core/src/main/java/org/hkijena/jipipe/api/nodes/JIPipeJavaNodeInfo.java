@@ -27,6 +27,7 @@ import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
 import org.hkijena.jipipe.api.nodes.categories.InternalNodeTypeCategory;
 import org.hkijena.jipipe.extensions.parameters.primitives.HTMLText;
+import org.hkijena.jipipe.utils.DocumentationUtils;
 import org.hkijena.jipipe.utils.ReflectionUtils;
 
 import java.io.IOException;
@@ -124,7 +125,7 @@ public class JIPipeJavaNodeInfo extends JIPipeMutableNodeInfo {
     public static HTMLText getDescriptionOf(Class<? extends JIPipeGraphNode> klass) {
         JIPipeDocumentation[] annotations = klass.getAnnotationsByType(JIPipeDocumentation.class);
         if (annotations.length > 0) {
-            String rawDescription = annotations[0].description();
+            String rawDescription = DocumentationUtils.getDocumentationDescription(annotations[0]);
             return new HTMLText(rawDescription.replace("\n", "<br/>"));
         } else {
             return null;

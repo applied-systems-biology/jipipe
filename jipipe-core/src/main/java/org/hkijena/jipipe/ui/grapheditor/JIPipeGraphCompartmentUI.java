@@ -46,6 +46,7 @@ import org.hkijena.jipipe.ui.grapheditor.nodeui.JIPipeNodeUI;
 import org.hkijena.jipipe.ui.grapheditor.settings.JIPipeMultiAlgorithmSelectionPanelUI;
 import org.hkijena.jipipe.ui.grapheditor.settings.JIPipeSingleAlgorithmSelectionPanelUI;
 import org.hkijena.jipipe.ui.grouping.JIPipeNodeGroupUI;
+import org.hkijena.jipipe.utils.DocumentationUtils;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.TooltipUtils;
 import org.hkijena.jipipe.utils.UIUtils;
@@ -128,7 +129,11 @@ public class JIPipeGraphCompartmentUI extends JIPipeGraphEditorUI {
                     }
                     Icon icon = new ImageIcon(iconURL);
 
-                    NodeContextActionWrapperUIContextAction action = new NodeContextActionWrapperUIContextAction(info, documentationAnnotation.name(), documentationAnnotation.description(), icon, method);
+                    NodeContextActionWrapperUIContextAction action = new NodeContextActionWrapperUIContextAction(info,
+                            documentationAnnotation.name(),
+                            DocumentationUtils.getDocumentationDescription(documentationAnnotation),
+                            icon,
+                            method);
                     nodeSpecificContextActions.add(action);
                 }
             }

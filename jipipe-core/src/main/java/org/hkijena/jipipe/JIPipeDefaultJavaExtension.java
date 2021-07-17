@@ -52,6 +52,7 @@ import org.hkijena.jipipe.ui.parameters.JIPipeParameterEditorUI;
 import org.hkijena.jipipe.ui.parameters.JIPipeParameterGeneratorUI;
 import org.hkijena.jipipe.ui.resultanalysis.JIPipeResultDataSlotPreview;
 import org.hkijena.jipipe.ui.resultanalysis.JIPipeResultDataSlotRowUI;
+import org.hkijena.jipipe.utils.DocumentationUtils;
 import org.hkijena.jipipe.utils.ReflectionUtils;
 import org.scijava.service.AbstractService;
 
@@ -505,7 +506,8 @@ public abstract class JIPipeDefaultJavaExtension extends AbstractService impleme
      */
     public void registerExpressionFunction(ExpressionFunction function) {
         JIPipeDocumentation documentation = function.getClass().getAnnotation(JIPipeDocumentation.class);
-        registry.getExpressionRegistry().registerExpressionFunction(function, documentation.name(), documentation.description());
+        registry.getExpressionRegistry().registerExpressionFunction(function, documentation.name(),
+                DocumentationUtils.getDocumentationDescription(documentation));
     }
 
     /**

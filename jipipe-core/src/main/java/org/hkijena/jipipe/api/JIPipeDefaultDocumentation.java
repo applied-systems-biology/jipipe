@@ -21,16 +21,22 @@ import java.lang.annotation.Annotation;
 public class JIPipeDefaultDocumentation implements JIPipeDocumentation {
     private final String name;
     private final String description;
+    private final String descriptionResourceURL;
+    private final Class<?> descriptionResourceClass;
 
-    /**
-     * Creates a new instance
-     *
-     * @param name        The name
-     * @param description The description
-     */
+
     public JIPipeDefaultDocumentation(String name, String description) {
         this.name = name;
         this.description = description;
+        this.descriptionResourceURL = null;
+        this.descriptionResourceClass = null;
+    }
+
+    public JIPipeDefaultDocumentation(String name, String descriptionResourceURL, Class<?> descriptionResourceClass) {
+        this.name = name;
+        this.description = null;
+        this.descriptionResourceURL = descriptionResourceURL;
+        this.descriptionResourceClass = descriptionResourceClass;
     }
 
     @Override
@@ -41,6 +47,16 @@ public class JIPipeDefaultDocumentation implements JIPipeDocumentation {
     @Override
     public String description() {
         return this.description;
+    }
+
+    @Override
+    public String descriptionResourceURL() {
+        return this.descriptionResourceURL;
+    }
+
+    @Override
+    public Class<?> descriptionResourceClass() {
+        return this.descriptionResourceClass;
     }
 
     @Override

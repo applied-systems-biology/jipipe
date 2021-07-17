@@ -15,6 +15,7 @@ package org.hkijena.jipipe.extensions.expressions;
 
 import com.fathzer.soft.javaluator.Operator;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.utils.DocumentationUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -32,7 +33,7 @@ public class ExpressionOperatorEntry {
         JIPipeDocumentation documentation = operator.getClass().getAnnotation(JIPipeDocumentation.class);
         if (documentation != null) {
             name = documentation.name();
-            description = documentation.description();
+            description = DocumentationUtils.getDocumentationDescription(documentation);
         } else {
             name = "Undefined";
             description = "";

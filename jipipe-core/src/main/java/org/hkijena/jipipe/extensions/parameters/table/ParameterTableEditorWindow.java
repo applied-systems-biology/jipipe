@@ -17,6 +17,7 @@ import org.hkijena.jipipe.ui.components.ParameterTreeUI;
 import org.hkijena.jipipe.ui.parameters.JIPipeParameterEditorUI;
 import org.hkijena.jipipe.ui.parameters.JIPipeParameterGeneratorUI;
 import org.hkijena.jipipe.ui.parameters.ParameterPanel;
+import org.hkijena.jipipe.utils.DocumentationUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.jdesktop.swingx.JXTable;
 
@@ -220,7 +221,7 @@ public class ParameterTableEditorWindow extends JFrame {
                 .getGeneratorsFor(parameterTable.getColumn(selectedColumn).getFieldClass())) {
             JIPipeDocumentation documentation = JIPipe.getParameterTypes().getGeneratorDocumentationFor(generator);
             JMenuItem generateRowItem = new JMenuItem(documentation.name());
-            generateRowItem.setToolTipText(documentation.description());
+            generateRowItem.setToolTipText(DocumentationUtils.getDocumentationDescription(documentation));
             generateRowItem.setIcon(UIUtils.getIconFromResources("actions/list-add.png"));
             generateRowItem.addActionListener(e -> generateNewRows(selectedColumn, generator));
             generateMenu.add(generateRowItem);
@@ -232,7 +233,7 @@ public class ParameterTableEditorWindow extends JFrame {
                 .getGeneratorsFor(parameterTable.getColumn(selectedColumn).getFieldClass())) {
             JIPipeDocumentation documentation = JIPipe.getParameterTypes().getGeneratorDocumentationFor(generator);
             JMenuItem generateRowItem = new JMenuItem(documentation.name());
-            generateRowItem.setToolTipText(documentation.description());
+            generateRowItem.setToolTipText(DocumentationUtils.getDocumentationDescription(documentation));
             generateRowItem.setIcon(UIUtils.getIconFromResources("actions/list-add.png"));
             generateRowItem.addActionListener(e -> generateAndReplaceRows(selectedColumn, generator));
             generateMenu.add(generateRowItem);

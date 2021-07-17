@@ -30,6 +30,7 @@ import org.hkijena.jipipe.ui.components.AddDynamicParameterPanel;
 import org.hkijena.jipipe.ui.components.FormPanel;
 import org.hkijena.jipipe.ui.components.MarkdownDocument;
 import org.hkijena.jipipe.ui.components.SearchTextField;
+import org.hkijena.jipipe.utils.DocumentationUtils;
 import org.hkijena.jipipe.utils.ResourceUtils;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
@@ -266,7 +267,8 @@ public class ParameterPanel extends FormPanel implements Contextual {
 
         if (!noGroupHeaders) {
             JIPipeDocumentation documentation = tree.getSourceDocumentation(parameterCollection);
-            boolean documentationIsEmpty = documentation == null || (StringUtils.isNullOrEmpty(documentation.name()) && StringUtils.isNullOrEmpty(documentation.description()));
+            boolean documentationIsEmpty = documentation == null || (StringUtils.isNullOrEmpty(documentation.name())
+                    && StringUtils.isNullOrEmpty(DocumentationUtils.getDocumentationDescription(documentation)));
             boolean groupHeaderIsEmpty = documentationIsEmpty && !isModifiable && node.getActions().isEmpty();
 
             if (!noEmptyGroupHeaders || !groupHeaderIsEmpty) {
@@ -289,15 +291,15 @@ public class ParameterPanel extends FormPanel implements Contextual {
                         groupIcon, leftComponents);
                 addWideToForm(groupHeaderPanel, null);
 
-                if (documentation != null && !StringUtils.isNullOrEmpty(documentation.description())) {
+                if (documentation != null && !StringUtils.isNullOrEmpty(DocumentationUtils.getDocumentationDescription(documentation))) {
                     groupHeaderPanel.getDescriptionArea().setVisible(true);
-                    groupHeaderPanel.getDescriptionArea().setText(documentation.description());
+                    groupHeaderPanel.getDescriptionArea().setText(DocumentationUtils.getDocumentationDescription(documentation));
                 }
 
                 for (JIPipeParameterTree.ContextAction action : node.getActions()) {
                     Icon icon = action.getIconURL() != null ? new ImageIcon(action.getIconURL()) : null;
                     JButton actionButton = new JButton(action.getDocumentation().name(), icon);
-                    actionButton.setToolTipText(action.getDocumentation().description());
+                    actionButton.setToolTipText(DocumentationUtils.getDocumentationDescription(action.getDocumentation()));
                     actionButton.addActionListener(e -> action.accept(workbench));
                     UIUtils.makeFlat(actionButton);
                     groupHeaderPanel.addColumn(actionButton);
