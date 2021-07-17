@@ -89,6 +89,14 @@ public abstract class PythonPackageLibraryEnvironmentInstaller<T extends PythonP
                     progressInfo.resolve("Cleanup"));
         }
         environment.install(getProgressInfo());
+
+        if (getParameterAccess() != null) {
+            SwingUtilities.invokeLater(() -> {
+                if (getParameterAccess().getFieldClass().isAssignableFrom(environment.getClass())) {
+                    getParameterAccess().set(environment);
+                }
+            });
+        }
     }
 
     /**
