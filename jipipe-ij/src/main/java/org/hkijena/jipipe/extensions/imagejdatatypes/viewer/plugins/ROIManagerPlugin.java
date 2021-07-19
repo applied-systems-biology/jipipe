@@ -52,6 +52,9 @@ public class ROIManagerPlugin extends ImageViewerPanelPlugin {
             rois.remove(roi);
         }
         if(getCurrentImage().getOverlay() != null) {
+            if(getCurrentImage().getRoi() != null) {
+                rois.add(getCurrentImage().getRoi());
+            }
             for (Roi roi : getCurrentImage().getOverlay()) {
                 rois.add(roi);
                 overlayRois.add(roi);
