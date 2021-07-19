@@ -106,6 +106,7 @@ public abstract class JIPipeGraphEditorUI extends JIPipeWorkbenchPanel implement
         updateNavigation();
         initializeHotkeys();
         SwingUtilities.invokeLater(canvasUI::crop);
+        canvasUI.setLayoutHelperEnabled(graphUISettings.isEnableLayoutHelper());
     }
 
     public GraphEditorUISettings getGraphUISettings() {
