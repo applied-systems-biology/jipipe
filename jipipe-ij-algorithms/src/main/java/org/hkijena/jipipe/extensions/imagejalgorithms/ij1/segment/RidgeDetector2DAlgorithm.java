@@ -1,15 +1,11 @@
 package org.hkijena.jipipe.extensions.imagejalgorithms.ij1.segment;
 
 import de.biomedical_imaging.ij.steger.Junction;
-import de.biomedical_imaging.ij.steger.Junctions;
 import de.biomedical_imaging.ij.steger.Line;
 import de.biomedical_imaging.ij.steger.LineDetector;
 import de.biomedical_imaging.ij.steger.Lines;
 import de.biomedical_imaging.ij.steger.OverlapOption;
-import ij.CompositeImage;
-import ij.IJ;
 import ij.ImagePlus;
-import ij.ImageStack;
 import ij.gui.PointRoi;
 import ij.gui.PolygonRoi;
 import ij.gui.Roi;
@@ -34,7 +30,6 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePl
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleMaskData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageSliceIndex;
-import org.hkijena.jipipe.extensions.parameters.primitives.OptionalDoubleParameter;
 
 import java.awt.Polygon;
 
@@ -55,9 +50,12 @@ public class RidgeDetector2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     private boolean darkLine = false;
 
     // Estimator parameters
-    private OptionalDoubleParameter lineWidth = new OptionalDoubleParameter(3.5, false);
-    private OptionalDoubleParameter contrastHigh = new OptionalDoubleParameter(230, false);
-    private OptionalDoubleParameter contrastLow = new OptionalDoubleParameter(87, false);
+    private boolean estimateSigma = false;
+    private boolean estimateLowThreshold = false;
+    private boolean estimateHighThreshold = false;
+    private double lineWidth = 3.5;
+    private double contrastHigh = 230;
+    private double contrastLow = 87;
 
     private double minLength = 0;
     private double maxLength = 0;
@@ -78,9 +76,12 @@ public class RidgeDetector2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         this.lowerThreshold = other.lowerThreshold;
         this.upperThreshold = other.upperThreshold;
         this.darkLine = other.darkLine;
-        this.lineWidth = new OptionalDoubleParameter(other.lineWidth);
-        this.contrastHigh = new OptionalDoubleParameter(other.contrastHigh);
-        this.contrastLow = new OptionalDoubleParameter(other.contrastLow);
+        this.lineWidth = other.lineWidth;
+        this.contrastHigh = other.contrastHigh;
+        this.contrastLow = other.contrastLow;
+        this.estimateSigma = other.estimateSigma;
+        this.estimateLowThreshold = other.estimateLowThreshold;
+        this.estimateHighThreshold = other.estimateHighThreshold;
         this.minLength = other.minLength;
         this.maxLength = other.maxLength;
         this.doCorrectPosition = other.doCorrectPosition;
@@ -99,6 +100,27 @@ public class RidgeDetector2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
             double sigma_ = sigma;
             double lowerThreshold_ = lowerThreshold;
             double upperThreshold_ = upperThreshold;
+            if(estimateSigma) {
+                sigma_ = lineWidth / (2 * Math.sqrt(3)) + 0.5;
+            }
+            if(estimateLowThreshold) {
+                double clow = contrastLow;
+                if (darkLine) {
+                    clow = 255 - contrastLow;
+                }
+                lowerThreshold_ = Math.floor(Math.abs(-2 * clow * (lineWidth / 2.0)
+                        / (Math.sqrt(2 * Math.PI) * sigma_ * sigma_ * sigma_)
+                        * Math.exp(-((lineWidth / 2.0) * (lineWidth / 2.0)) / (2 * sigma_ * sigma_))));
+            }
+            if(estimateHighThreshold) {
+                double chigh = contrastHigh;
+                if (darkLine) {
+                    chigh = 255 - contrastHigh;
+                }
+                upperThreshold_ = Math.floor(Math.abs(-2 * chigh * (lineWidth / 2.0)
+                        / (Math.sqrt(2 * Math.PI) * sigma_ * sigma_ * sigma_)
+                        * Math.exp(-((lineWidth / 2.0) * (lineWidth / 2.0)) / (2 * sigma_ * sigma_))));
+            }
             LineDetector lineDetector = new LineDetector();
             Lines lines = lineDetector.detectLines(ip, sigma_, upperThreshold_, lowerThreshold_, minLength, maxLength, darkLine, doCorrectPosition, doEstimateWidth, doExtendLine, overlapResolution);
             extractLines(outputLines, lines, index);
@@ -304,50 +326,97 @@ public class RidgeDetector2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     @JIPipeDocumentation(name = "Line width", description = "The line diameter in pixels. It estimates the 'Sigma' parameter.")
     @JIPipeParameter(value = "line-width", important = true)
-    public OptionalDoubleParameter getLineWidth() {
+    public double getLineWidth() {
         return lineWidth;
     }
 
     @JIPipeParameter("line-width")
-    public void setLineWidth(OptionalDoubleParameter lineWidth) {
+    public void setLineWidth(double lineWidth) {
         this.lineWidth = lineWidth;
         triggerParameterUIChange();
     }
 
     @JIPipeDocumentation(name = "High contrast", description = "Highest grayscale value of the line. It estimates the mandatory parameter 'Upper threshold'")
     @JIPipeParameter(value = "high-contrast", important = true)
-    public OptionalDoubleParameter getContrastHigh() {
+    public double getContrastHigh() {
         return contrastHigh;
     }
 
     @JIPipeParameter("high-contrast")
-    public void setContrastHigh(OptionalDoubleParameter contrastHigh) {
+    public void setContrastHigh(double contrastHigh) {
         this.contrastHigh = contrastHigh;
         triggerParameterUIChange();
     }
 
     @JIPipeDocumentation(name = "Low contrast", description = "Lowest grayscale value of the line. It estimates the mandatory parameter 'Lower threshold'")
     @JIPipeParameter(value = "low-contrast", important = true)
-    public OptionalDoubleParameter getContrastLow() {
+    public double getContrastLow() {
         return contrastLow;
     }
 
     @JIPipeParameter("low-contrast")
-    public void setContrastLow(OptionalDoubleParameter contrastLow) {
+    public void setContrastLow(double contrastLow) {
         this.contrastLow = contrastLow;
+        triggerParameterUIChange();
+    }
+
+    @JIPipeDocumentation(name = "Estimate sigma", description = "If enabled, 'Sigma' will be estimated by the 'Line width' parameter. The formula is SIGMA = LINE_WIDTH / (2 * SQRT(3)) + 0.5")
+    @JIPipeParameter("estimate-sigma")
+    public boolean isEstimateSigma() {
+        return estimateSigma;
+    }
+
+    @JIPipeParameter("estimate-sigma")
+    public void setEstimateSigma(boolean estimateSigma) {
+        this.estimateSigma = estimateSigma;
+        triggerParameterUIChange();
+    }
+
+    @JIPipeDocumentation(name = "Estimate low threshold", description = "If enabled, the lower threshold will be estimated by the contrast parameters. " +
+            "The formula is FLOOR(ABS(-2 * CONTRAST_LOW * (LINE_WIDTH / 2.0) / (SQRT(2 * PI) * POW(SIGMA, 3)) * EXP(-((LINE_WIDTH / 2.0) * (LINE_WIDTH / 2.0)) / (2 * SIGMA * SIGMA))))")
+    @JIPipeParameter("estimate-low-threshold")
+    public boolean isEstimateLowThreshold() {
+        return estimateLowThreshold;
+    }
+
+    @JIPipeParameter("estimate-low-threshold")
+    public void setEstimateLowThreshold(boolean estimateLowThreshold) {
+        this.estimateLowThreshold = estimateLowThreshold;
+        triggerParameterUIChange();
+    }
+
+    @JIPipeDocumentation(name = "Estimate high threshold", description = "If enabled, the lower and higher threshold will be estimated by the contrast parameters. " +
+            "The formula is FLOOR(ABS(-2 * CONTRAST_HIGH * (LINE_WIDTH / 2.0) / (SQRT(2 * PI) * POW(SIGMA, 3)) * EXP(-((LINE_WIDTH / 2.0) * (LINE_WIDTH / 2.0)) / (2 * SIGMA * SIGMA))))")
+    @JIPipeParameter("estimate-high-threshold")
+    public boolean isEstimateHighThreshold() {
+        return estimateHighThreshold;
+    }
+
+    @JIPipeParameter("estimate-high-threshold")
+    public void setEstimateHighThreshold(boolean estimateHighThreshold) {
+        this.estimateHighThreshold = estimateHighThreshold;
         triggerParameterUIChange();
     }
 
     @Override
     public boolean isParameterUIVisible(JIPipeParameterTree tree, JIPipeParameterAccess access) {
         if(access.getSource() == this) {
-            if("sigma".equals(access.getKey()) && lineWidth.isEnabled()) {
+            if("sigma".equals(access.getKey()) && estimateSigma) {
                 return false;
             }
-            if("lower-threshold".equals(access.getKey()) && contrastLow.isEnabled()) {
+            if("lower-threshold".equals(access.getKey()) && estimateLowThreshold) {
                 return false;
             }
-            if("upper-threshold".equals(access.getKey()) && contrastHigh.isEnabled()) {
+            if("upper-threshold".equals(access.getKey()) && estimateHighThreshold) {
+                return false;
+            }
+            if("low-contrast".equals(access.getKey()) && !estimateLowThreshold) {
+                return false;
+            }
+            if("high-contrast".equals(access.getKey()) && !estimateHighThreshold) {
+                return false;
+            }
+            if("line-width".equals(access.getKey()) && !estimateLowThreshold && !estimateHighThreshold && !estimateSigma) {
                 return false;
             }
         }
