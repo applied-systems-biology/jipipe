@@ -27,6 +27,7 @@ import java.util.stream.Collectors;
 public class ROIManagerPlugin extends ImageViewerPanelPlugin {
     private final ImageViewerPanel viewerPanel;
     private ROIListData rois = new ROIListData();
+    private ROIListData overlayRois = new ROIListData();
     private JList<Roi> roiJList = new JList<>();
     private JLabel roiInfoLabel = new JLabel();
     private boolean roiSeeThroughZ = false;
@@ -43,8 +44,19 @@ public class ROIManagerPlugin extends ImageViewerPanelPlugin {
         initialize();
     }
 
+
+
     @Override
     public void onImageChanged() {
+        for (Roi roi : overlayRois) {
+            rois.remove(roi);
+        }
+        if(getCurrentImage().getOverlay() != null) {
+            for (Roi roi : getCurrentImage().getOverlay()) {
+                rois.add(roi);
+                overlayRois.add(roi);
+            }
+        }
         updateROIJList();
     }
 

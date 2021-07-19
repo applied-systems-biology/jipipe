@@ -1519,6 +1519,10 @@ public class ImageJUtils {
         }
     }
 
+    public static void removeOverlay(ImagePlus image) {
+        image.setOverlay(null);
+    }
+
     public static class GradientStop implements Comparable<GradientStop> {
         private final Color color;
         private final float fraction;

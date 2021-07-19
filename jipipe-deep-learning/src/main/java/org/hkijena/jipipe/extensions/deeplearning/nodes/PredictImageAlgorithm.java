@@ -46,7 +46,6 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.datasources.ImagePlusFromFi
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d3.greyscale.ImagePlus3DGreyscale32FData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d3.greyscale.ImagePlus3DGreyscaleData;
-import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscale32FData;
 import org.hkijena.jipipe.extensions.python.OptionalPythonEnvironment;
 import org.hkijena.jipipe.extensions.python.PythonUtils;
 import org.hkijena.jipipe.utils.JsonUtils;
@@ -242,7 +241,7 @@ public class PredictImageAlgorithm extends JIPipeSingleIterationAlgorithm {
                         dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusData(image), annotations, JIPipeAnnotationMergeStrategy.OverwriteExisting, imageProgress);
                     } else {
                         dataBatch.addOutputData(getFirstOutputSlot(),
-                                new ImagePlusData(new ImagePlusFromFileImageSource(predictPath, false)),
+                                new ImagePlusData(new ImagePlusFromFileImageSource(predictPath, false, false)),
                                 annotations,
                                 JIPipeAnnotationMergeStrategy.OverwriteExisting,
                                 imageProgress);

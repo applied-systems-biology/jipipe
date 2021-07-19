@@ -28,10 +28,12 @@ public class ImagePlusFromFileImageSource implements ImageSource {
 
     private final Path path;
     private final boolean removeLUT;
+    private final boolean removeOverlay;
 
-    public ImagePlusFromFileImageSource(Path path, boolean removeLUT) {
+    public ImagePlusFromFileImageSource(Path path, boolean removeLUT, boolean removeOverlay) {
         this.path = path;
         this.removeLUT = removeLUT;
+        this.removeOverlay = removeOverlay;
     }
 
     @Override
@@ -58,6 +60,9 @@ public class ImagePlusFromFileImageSource implements ImageSource {
         ImagePlus image = ImagePlusFromFile.readImageFrom(path, new JIPipeProgressInfo());
         if (removeLUT) {
             ImageJUtils.removeLUT(image, true);
+        }
+        if(removeOverlay) {
+            ImageJUtils.removeOverlay(image);
         }
         return image;
     }

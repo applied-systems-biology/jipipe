@@ -63,6 +63,7 @@ public class ImagePlusFromFile extends JIPipeSimpleIteratingAlgorithm {
     private OptionalAnnotationNameParameter titleAnnotation = new OptionalAnnotationNameParameter();
     private boolean removeLut = false;
     private boolean deferLoading = false;
+    private boolean removeOverlay = false;
 
     /**
      * @param info algorithm info
@@ -87,7 +88,19 @@ public class ImagePlusFromFile extends JIPipeSimpleIteratingAlgorithm {
         setGeneratedImageType(new JIPipeDataInfoRef(other.generatedImageType));
         this.titleAnnotation = new OptionalAnnotationNameParameter(other.titleAnnotation);
         this.removeLut = other.removeLut;
+        this.removeOverlay = other.removeOverlay;
         this.deferLoading = other.deferLoading;
+    }
+
+    @JIPipeDocumentation(name = "Remove overlays", description = "If enabled, remove overlay ROIs from the imported image")
+    @JIPipeParameter("remove-overlay")
+    public boolean isRemoveOverlay() {
+        return removeOverlay;
+    }
+
+    @JIPipeParameter("remove-overlay")
+    public void setRemoveOverlay(boolean removeOverlay) {
+        this.removeOverlay = removeOverlay;
     }
 
     @JIPipeDocumentation(name = "Remove LUT", description = "If enabled, remove the LUT information if present")
@@ -148,7 +161,7 @@ public class ImagePlusFromFile extends JIPipeSimpleIteratingAlgorithm {
                     JIPipeDataAnnotationMergeStrategy.OverwriteExisting);
         } else if (deferLoading) {
             ImagePlusData outputData = (ImagePlusData) JIPipe.createData(generatedImageType.getInfo().getDataClass(),
-                    new ImagePlusFromFileImageSource(fileData.toPath(), removeLut));
+                    new ImagePlusFromFileImageSource(fileData.toPath(), removeLut, removeOverlay));
             List<JIPipeAnnotation> annotations = new ArrayList<>();
             if (titleAnnotation.isEnabled()) {
                 annotations.add(new JIPipeAnnotation(titleAnnotation.getContent(), fileData.toPath().getFileName().toString()));
@@ -159,6 +172,9 @@ public class ImagePlusFromFile extends JIPipeSimpleIteratingAlgorithm {
             ImagePlus image = readImageFrom(fileData.toPath(), progressInfo);
             if (removeLut) {
                 ImageJUtils.removeLUT(image, true);
+            }
+            if(removeOverlay) {
+                ImageJUtils.removeOverlay(image);
             }
             outputData = (ImagePlusData) JIPipe.createData(generatedImageType.getInfo().getDataClass(), image);
             List<JIPipeAnnotation> annotations = new ArrayList<>();
