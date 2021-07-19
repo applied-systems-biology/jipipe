@@ -46,6 +46,6 @@ public class LongPrimitiveParameterTypeInfo implements JIPipeParameterTypeInfo {
 
     @Override
     public String getDescription() {
-        return "An integral number ranging from " + Long.MIN_VALUE + " to " + Long.MAX_VALUE;
+        return "An integral number (maximum allowed range is " + Long.MIN_VALUE + " to " + Long.MAX_VALUE + ")";
     }
 }
