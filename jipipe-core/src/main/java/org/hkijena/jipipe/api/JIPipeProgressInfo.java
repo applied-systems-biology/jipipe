@@ -182,6 +182,114 @@ public class JIPipeProgressInfo {
     }
 
     /**
+     * Applies a for-each operation where the progress is logged
+     * @param text the text
+     * @param collection the iterated collection
+     * @param function the function executed for each item in the collection
+     */
+    public void resolveAndLogForEach(String text, int[] collection, Consumer<Integer> function) {
+        int size = collection.length;
+        int current = 0;
+        for (int item : collection) {
+            if(isCancelled())
+                return;
+            ++current;
+            log(text + " " + (current + 1) + "/" + size);
+            function.accept(item);
+        }
+    }
+
+    /**
+     * Applies a for-each operation where the progress is logged
+     * @param text the text
+     * @param collection the iterated collection
+     * @param function the function executed for each item in the collection
+     */
+    public void resolveAndLogForEach(String text, byte[] collection, Consumer<Byte> function) {
+        int size = collection.length;
+        int current = 0;
+        for (byte item : collection) {
+            if(isCancelled())
+                return;
+            ++current;
+            log(text + " " + (current + 1) + "/" + size);
+            function.accept(item);
+        }
+    }
+
+    /**
+     * Applies a for-each operation where the progress is logged
+     * @param text the text
+     * @param collection the iterated collection
+     * @param function the function executed for each item in the collection
+     */
+    public void resolveAndLogForEach(String text, long[] collection, Consumer<Long> function) {
+        int size = collection.length;
+        int current = 0;
+        for (long item : collection) {
+            if(isCancelled())
+                return;
+            ++current;
+            log(text + " " + (current + 1) + "/" + size);
+            function.accept(item);
+        }
+    }
+
+    /**
+     * Applies a for-each operation where the progress is logged
+     * @param text the text
+     * @param collection the iterated collection
+     * @param function the function executed for each item in the collection
+     */
+    public void resolveAndLogForEach(String text, short[] collection, Consumer<Short> function) {
+        int size = collection.length;
+        int current = 0;
+        for (short item : collection) {
+            if(isCancelled())
+                return;
+            ++current;
+            log(text + " " + (current + 1) + "/" + size);
+            function.accept(item);
+        }
+    }
+
+    /**
+     * Applies a for-each operation where the progress is logged
+     * @param text the text
+     * @param collection the iterated collection
+     * @param function the function executed for each item in the collection
+     */
+    public void resolveAndLogForEach(String text, float[] collection, Consumer<Float> function) {
+        int size = collection.length;
+        int current = 0;
+        for (float item : collection) {
+            if(isCancelled())
+                return;
+            ++current;
+            log(text + " " + (current + 1) + "/" + size);
+            function.accept(item);
+        }
+    }
+
+    /**
+     * Applies a for-each operation where the progress is logged
+     * @param text the text
+     * @param collection the iterated collection
+     * @param function the function executed for each item in the collection
+     */
+    public void resolveAndLogForEach(String text, double[] collection, Consumer<Double> function) {
+        int size = collection.length;
+        int current = 0;
+        for (double item : collection) {
+            if(isCancelled())
+                return;
+            ++current;
+            log(text + " " + (current + 1) + "/" + size);
+            function.accept(item);
+        }
+    }
+
+    /**
      * Sets the progress and max progress
      * @param count the progress
      * @param total the max progress
