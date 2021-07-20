@@ -49,6 +49,14 @@ public class JsonUtils {
         return objectMapper;
     }
 
+    public static void saveToFile(Object obj, Path targetFile) {
+        try {
+            objectMapper.writeValue(targetFile.toFile(), obj);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     public static <T> T readFromString(String json, Class<T> klass) {
         try {
             return objectMapper.readerFor(klass).readValue(json);
