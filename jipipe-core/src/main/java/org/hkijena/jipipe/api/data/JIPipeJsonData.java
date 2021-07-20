@@ -36,8 +36,8 @@ public abstract class JIPipeJsonData implements JIPipeData {
         return (JIPipeData) ReflectionUtils.newInstance(getClass(), this);
     }
 
-    public static JIPipeData importFrom(Path storagePath, Class<?> klass) {
+    public static <T extends JIPipeData> T importFrom(Path storagePath, Class<T> klass) {
         Path targetFile = PathUtils.findFileByExtensionIn(storagePath, ".json");
-        return (JIPipeData) JsonUtils.readFromFile(targetFile, klass);
+        return JsonUtils.readFromFile(targetFile, klass);
     }
 }
