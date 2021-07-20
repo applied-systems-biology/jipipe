@@ -67,6 +67,10 @@ public interface JIPipeMutableSlotConfiguration extends JIPipeSlotConfiguration 
 
     JIPipeDataSlotInfo addSlot(String name, JIPipeDataSlotInfo definition, boolean user);
 
+    default JIPipeDataSlotInfo addSlot(JIPipeDataSlotInfo definition, boolean user) {
+        return addSlot(definition.getName(), definition, user);
+    }
+
     void moveDown(String name, JIPipeSlotType slotType);
 
     void moveUp(String name, JIPipeSlotType slotType);
