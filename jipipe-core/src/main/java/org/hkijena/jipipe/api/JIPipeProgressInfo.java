@@ -163,6 +163,25 @@ public class JIPipeProgressInfo {
     }
 
     /**
+     * Applies a for-each operation where the progress is logged
+     * @param text the text
+     * @param collection the iterated collection
+     * @param function the function executed for each item in the collection
+     * @param <T> collection contents
+     */
+    public <T> void resolveAndLogForEach(String text, T[] collection, Consumer<T> function) {
+        int size = collection.length;
+        int current = 0;
+        for (T item : collection) {
+            if(isCancelled())
+                return;
+            ++current;
+            log(text + " " + (current + 1) + "/" + size);
+            function.accept(item);
+        }
+    }
+
+    /**
      * Sets the progress and max progress
      * @param count the progress
      * @param total the max progress
