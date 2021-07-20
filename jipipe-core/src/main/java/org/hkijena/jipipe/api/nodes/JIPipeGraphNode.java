@@ -37,6 +37,7 @@ import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.data.JIPipeDataSlotInfo;
 import org.hkijena.jipipe.api.data.JIPipeDefaultMutableSlotConfiguration;
+import org.hkijena.jipipe.api.data.JIPipeMutableSlotConfiguration;
 import org.hkijena.jipipe.api.data.JIPipeSlotConfiguration;
 import org.hkijena.jipipe.api.data.JIPipeSlotType;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
@@ -1087,6 +1088,39 @@ public abstract class JIPipeGraphNode implements JIPipeValidatable, JIPipeParame
     public JIPipeProjectCompartment getProjectCompartment() {
         JIPipeProject project = graph.getAttachment(JIPipeProject.class);
         return project.getCompartments().getOrDefault(getCompartmentUUIDInGraph(), null);
+    }
+
+    /**
+     * Toggles a slot with given info on/off. Requires that the slot configuration is a {@link org.hkijena.jipipe.api.data.JIPipeMutableSlotConfiguration}
+     * @param info the slot info
+     * @param toggle if the slot should be present
+     */
+    public void toggleSlot(JIPipeDataSlotInfo info, boolean toggle) {
+        JIPipeMutableSlotConfiguration slotConfiguration = (JIPipeMutableSlotConfiguration) getSlotConfiguration();
+        if(toggle) {
+            if(info.getSlotType() == JIPipeSlotType.Input) {
+                if(!getInputSlotMap().containsKey(info.getName())) {
+                    slotConfiguration.addSlot(info.getName(), info, false);
+                }
+            }
+            else {
+                if(!getOutputSlotMap().containsKey(info.getName())) {
+                    slotConfiguration.addSlot(info.getName(), info, false);
+                }
+            }
+        }
+        else {
+            if(info.getSlotType() == JIPipeSlotType.Input) {
+                if(getInputSlotMap().containsKey(info.getName())) {
+                    slotConfiguration.removeInputSlot(info.getName(), false);
+                }
+            }
+            else {
+                if(getOutputSlotMap().containsKey(info.getName())) {
+                    slotConfiguration.removeOutputSlot(info.getName(), false);
+                }
+            }
+        }
     }
 
     public static <T extends JIPipeGraphNode> T fromJsonNode(JsonNode node, JIPipeIssueReport issues) {
