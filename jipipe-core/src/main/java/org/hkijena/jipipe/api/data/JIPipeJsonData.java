@@ -3,6 +3,7 @@ package org.hkijena.jipipe.api.data;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.utils.JsonUtils;
+import org.hkijena.jipipe.utils.PathUtils;
 import org.hkijena.jipipe.utils.ReflectionUtils;
 import org.hkijena.jipipe.utils.StringUtils;
 
@@ -33,5 +34,10 @@ public abstract class JIPipeJsonData implements JIPipeData {
     @Override
     public JIPipeData duplicate() {
         return (JIPipeData) ReflectionUtils.newInstance(getClass(), this);
+    }
+
+    public static JIPipeData importFrom(Path storagePath, Class<?> klass) {
+        Path targetFile = PathUtils.findFileByExtensionIn(storagePath, ".json");
+        return (JIPipeData) JsonUtils.readFromFile(targetFile, klass);
     }
 }
