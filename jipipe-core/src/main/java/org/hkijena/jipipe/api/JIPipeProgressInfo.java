@@ -16,8 +16,10 @@ package org.hkijena.jipipe.api;
 import com.google.common.eventbus.EventBus;
 import org.hkijena.jipipe.utils.StringUtils;
 
+import java.util.Collection;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.Consumer;
 
 /**
  * This object is available inside a {@link JIPipeRunnable} and contains methods to report progress, logs, and request cancellation.
@@ -78,6 +80,10 @@ public class JIPipeProgressInfo {
         return log;
     }
 
+    /**
+     * Writes a message into the log
+     * @param message the message
+     */
     public synchronized void log(String message) {
         log.append("<").append(progress).append("/").append(maxProgress).append("> ").append(logPrepend);
         boolean needsSeparator = !StringUtils.isNullOrEmpty(logPrepend) && !StringUtils.isNullOrEmpty(message);
@@ -88,6 +94,11 @@ public class JIPipeProgressInfo {
         eventBus.post(new StatusUpdatedEvent(this, progress.get(), maxProgress.get(), logPrepend + (needsSeparator ? " | " : " ") + message));
     }
 
+    /**
+     * Creates a sub-progress that has the same cancellation and progress, but shows the new category in front of sub-messages
+     * @param logPrepend the category
+     * @return progress info with the same properties as the current one, but with messages prepended
+     */
     public synchronized JIPipeProgressInfo resolve(String logPrepend) {
         JIPipeProgressInfo result = new JIPipeProgressInfo(this);
         if (StringUtils.isNullOrEmpty(result.logPrepend))
@@ -97,20 +108,65 @@ public class JIPipeProgressInfo {
         return result;
     }
 
+    /**
+     * Creates a sub-progress that has the same cancellation and progress, but shows the new category in front of sub-messages.
+     * This is a shortcut for resolve(text + " " + (index + 1) + "/" + size)
+     * @param text the category
+     * @param index index of the index operation
+     * @param size size of the index operation
+     * @return progress info with the same properties as the current one, but with messages prepended
+     */
     public synchronized JIPipeProgressInfo resolve(String text, int index, int size) {
         return resolve(text + " " + (index + 1) + "/" + size);
     }
 
+    /**
+     * Applies resolve(logPrepend) and then logs an empty message
+     * @param logPrepend the category
+     * @return progress info with the same properties as the current one, but with messages prepended
+     */
     public synchronized JIPipeProgressInfo resolveAndLog(String logPrepend) {
         JIPipeProgressInfo resolve = resolve(logPrepend);
         resolve.log("");
         return resolve;
     }
 
+    /**
+     * Creates a sub-progress that has the same cancellation and progress, but shows the new category in front of sub-messages.
+     * Shortcut for resolveAndLog(text + " " + (index + 1) + "/" + size)
+     * @param text the category
+     * @param index index of the index operation
+     * @param size size of the index operation
+     * @return progress info with the same properties as the current one, but with messages prepended
+     */
     public synchronized JIPipeProgressInfo resolveAndLog(String text, int index, int size) {
         return resolveAndLog(text + " " + (index + 1) + "/" + size);
     }
 
+    /**
+     * Applies a for-each operation where the progress is logged
+     * @param text the text
+     * @param collection the iterated collection
+     * @param function the function executed for each item in the collection
+     * @param <T> collection contents
+     */
+    public <T> void resolveAndLogForEach(String text, Collection<T> collection, Consumer<T> function) {
+        int size = collection.size();
+        int current = 0;
+        for (T item : collection) {
+            if(isCancelled())
+                return;
+            ++current;
+            log(text + " " + (current + 1) + "/" + size);
+            function.accept(item);
+        }
+    }
+
+    /**
+     * Sets the progress and max progress
+     * @param count the progress
+     * @param total the max progress
+     */
     public void setProgress(int count, int total) {
         setProgress(count);
         setMaxProgress(total);
