@@ -19,6 +19,7 @@ import org.hkijena.jipipe.utils.StringUtils;
 import java.util.Collection;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
 /**
@@ -150,7 +151,7 @@ public class JIPipeProgressInfo {
      * @param function the function executed for each item in the collection
      * @param <T> collection contents
      */
-    public <T> void resolveAndLogForEach(String text, Collection<T> collection, Consumer<T> function) {
+    public <T> void resolveAndLogForEach(String text, Collection<T> collection, BiConsumer<T, JIPipeProgressInfo> function) {
         int size = collection.size();
         int current = 0;
         for (T item : collection) {
@@ -158,7 +159,8 @@ public class JIPipeProgressInfo {
                 return;
             ++current;
             log(text + " " + (current + 1) + "/" + size);
-            function.accept(item);
+            JIPipeProgressInfo itemProgress = resolveAndLog(text + " " + (current + 1) + "/" + size);
+            function.accept(item, itemProgress);
         }
     }
 
@@ -169,7 +171,7 @@ public class JIPipeProgressInfo {
      * @param function the function executed for each item in the collection
      * @param <T> collection contents
      */
-    public <T> void resolveAndLogForEach(String text, T[] collection, Consumer<T> function) {
+    public <T> void resolveAndLogForEach(String text, T[] collection, BiConsumer<T, JIPipeProgressInfo> function) {
         int size = collection.length;
         int current = 0;
         for (T item : collection) {
@@ -177,7 +179,8 @@ public class JIPipeProgressInfo {
                 return;
             ++current;
             log(text + " " + (current + 1) + "/" + size);
-            function.accept(item);
+            JIPipeProgressInfo itemProgress = resolveAndLog(text + " " + (current + 1) + "/" + size);
+            function.accept(item, itemProgress);
         }
     }
 
@@ -187,7 +190,7 @@ public class JIPipeProgressInfo {
      * @param collection the iterated collection
      * @param function the function executed for each item in the collection
      */
-    public void resolveAndLogForEach(String text, int[] collection, Consumer<Integer> function) {
+    public void resolveAndLogForEach(String text, int[] collection, BiConsumer<Integer, JIPipeProgressInfo> function) {
         int size = collection.length;
         int current = 0;
         for (int item : collection) {
@@ -195,7 +198,8 @@ public class JIPipeProgressInfo {
                 return;
             ++current;
             log(text + " " + (current + 1) + "/" + size);
-            function.accept(item);
+            JIPipeProgressInfo itemProgress = resolveAndLog(text + " " + (current + 1) + "/" + size);
+            function.accept(item, itemProgress);
         }
     }
 
@@ -205,7 +209,7 @@ public class JIPipeProgressInfo {
      * @param collection the iterated collection
      * @param function the function executed for each item in the collection
      */
-    public void resolveAndLogForEach(String text, byte[] collection, Consumer<Byte> function) {
+    public void resolveAndLogForEach(String text, byte[] collection, BiConsumer<Byte, JIPipeProgressInfo> function) {
         int size = collection.length;
         int current = 0;
         for (byte item : collection) {
@@ -213,7 +217,8 @@ public class JIPipeProgressInfo {
                 return;
             ++current;
             log(text + " " + (current + 1) + "/" + size);
-            function.accept(item);
+            JIPipeProgressInfo itemProgress = resolveAndLog(text + " " + (current + 1) + "/" + size);
+            function.accept(item, itemProgress);
         }
     }
 
@@ -223,7 +228,7 @@ public class JIPipeProgressInfo {
      * @param collection the iterated collection
      * @param function the function executed for each item in the collection
      */
-    public void resolveAndLogForEach(String text, long[] collection, Consumer<Long> function) {
+    public void resolveAndLogForEach(String text, long[] collection, BiConsumer<Long, JIPipeProgressInfo> function) {
         int size = collection.length;
         int current = 0;
         for (long item : collection) {
@@ -231,7 +236,8 @@ public class JIPipeProgressInfo {
                 return;
             ++current;
             log(text + " " + (current + 1) + "/" + size);
-            function.accept(item);
+            JIPipeProgressInfo itemProgress = resolveAndLog(text + " " + (current + 1) + "/" + size);
+            function.accept(item, itemProgress);
         }
     }
 
@@ -241,7 +247,7 @@ public class JIPipeProgressInfo {
      * @param collection the iterated collection
      * @param function the function executed for each item in the collection
      */
-    public void resolveAndLogForEach(String text, short[] collection, Consumer<Short> function) {
+    public void resolveAndLogForEach(String text, short[] collection, BiConsumer<Short, JIPipeProgressInfo> function) {
         int size = collection.length;
         int current = 0;
         for (short item : collection) {
@@ -249,7 +255,8 @@ public class JIPipeProgressInfo {
                 return;
             ++current;
             log(text + " " + (current + 1) + "/" + size);
-            function.accept(item);
+            JIPipeProgressInfo itemProgress = resolveAndLog(text + " " + (current + 1) + "/" + size);
+            function.accept(item, itemProgress);
         }
     }
 
@@ -259,7 +266,7 @@ public class JIPipeProgressInfo {
      * @param collection the iterated collection
      * @param function the function executed for each item in the collection
      */
-    public void resolveAndLogForEach(String text, float[] collection, Consumer<Float> function) {
+    public void resolveAndLogForEach(String text, float[] collection, BiConsumer<Float, JIPipeProgressInfo> function) {
         int size = collection.length;
         int current = 0;
         for (float item : collection) {
@@ -267,7 +274,8 @@ public class JIPipeProgressInfo {
                 return;
             ++current;
             log(text + " " + (current + 1) + "/" + size);
-            function.accept(item);
+            JIPipeProgressInfo itemProgress = resolveAndLog(text + " " + (current + 1) + "/" + size);
+            function.accept(item, itemProgress);
         }
     }
 
@@ -277,15 +285,15 @@ public class JIPipeProgressInfo {
      * @param collection the iterated collection
      * @param function the function executed for each item in the collection
      */
-    public void resolveAndLogForEach(String text, double[] collection, Consumer<Double> function) {
+    public void resolveAndLogForEach(String text, double[] collection, BiConsumer<Double, JIPipeProgressInfo> function) {
         int size = collection.length;
         int current = 0;
         for (double item : collection) {
             if(isCancelled())
                 return;
             ++current;
-            log(text + " " + (current + 1) + "/" + size);
-            function.accept(item);
+            JIPipeProgressInfo itemProgress = resolveAndLog(text + " " + (current + 1) + "/" + size);
+            function.accept(item, itemProgress);
         }
     }
 
