@@ -70,7 +70,7 @@ public class UploadOMEROTableAlgorithm extends JIPipeMergingAlgorithm {
     protected void runIteration(JIPipeMergingDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
         List<OMEROImageReferenceData> images = dataBatch.getInputData("Image", OMEROImageReferenceData.class, progressInfo);
         List<ResultsTableData> tables = dataBatch.getInputData("Table", ResultsTableData.class, progressInfo);
-        JIPipeDataSlot dummy = dataBatch.toDummySlot(new JIPipeDataSlotInfo(ResultsTableData.class, JIPipeSlotType.Input, null), null, getInputSlot("Table"));
+        JIPipeDataSlot dummy = dataBatch.toDummySlot(new JIPipeDataSlotInfo(ResultsTableData.class, JIPipeSlotType.Input), null, getInputSlot("Table"));
 
         try (Gateway gateway = new Gateway(new OMEROToJIPipeLogger(progressInfo))) {
             ExperimenterData user = gateway.connect(credentials.getCredentials());

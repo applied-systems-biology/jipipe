@@ -74,7 +74,7 @@ public class IteratingFormProcessorAlgorithm extends JIPipeAlgorithm implements 
             existing = null;
         }
         if (existing == null) {
-            JIPipeDataSlotInfo info = new JIPipeDataSlotInfo(FormData.class, JIPipeSlotType.Input, null);
+            JIPipeDataSlotInfo info = new JIPipeDataSlotInfo(FormData.class, JIPipeSlotType.Input);
             info.setUserModifiable(false);
             slotConfiguration.addSlot(SLOT_FORMS,
                     info,

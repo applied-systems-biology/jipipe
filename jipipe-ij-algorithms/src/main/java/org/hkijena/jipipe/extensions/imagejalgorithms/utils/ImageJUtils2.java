@@ -70,7 +70,7 @@ public class ImageJUtils2 {
             }
         } else if (sourceArea == ImageROITargetArea.InsideRoi || sourceArea == ImageROITargetArea.OutsideRoi) {
             if (!slotConfiguration.getInputSlots().containsKey("ROI")) {
-                slotConfiguration.addSlot("ROI", new JIPipeDataSlotInfo(ROIListData.class, JIPipeSlotType.Input, "ROI"), false);
+                slotConfiguration.addSlot("ROI", new JIPipeDataSlotInfo(ROIListData.class, JIPipeSlotType.Input), false);
             }
             if (slotConfiguration.getInputSlots().containsKey("Mask")) {
                 slotConfiguration.removeInputSlot("Mask", false);
@@ -80,7 +80,7 @@ public class ImageJUtils2 {
                 slotConfiguration.removeInputSlot("ROI", false);
             }
             if (!slotConfiguration.getInputSlots().containsKey("Mask")) {
-                slotConfiguration.addSlot("Mask", new JIPipeDataSlotInfo(ImagePlusGreyscaleMaskData.class, JIPipeSlotType.Input, "Mask"), false);
+                slotConfiguration.addSlot("Mask", new JIPipeDataSlotInfo(ImagePlusGreyscaleMaskData.class, JIPipeSlotType.Input), false);
             }
         }
     }

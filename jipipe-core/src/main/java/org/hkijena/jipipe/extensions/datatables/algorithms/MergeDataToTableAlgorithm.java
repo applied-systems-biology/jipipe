@@ -33,7 +33,7 @@ public class MergeDataToTableAlgorithm extends JIPipeMergingAlgorithm {
 
     @Override
     protected void runIteration(JIPipeMergingDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
-        JIPipeDataSlot slot = new JIPipeDataSlot(new JIPipeDataSlotInfo(JIPipeData.class, JIPipeSlotType.Input, ""), null);
+        JIPipeDataSlot slot = new JIPipeDataSlot(new JIPipeDataSlotInfo(JIPipeData.class, JIPipeSlotType.Input), null);
         for (Integer row : dataBatch.getInputSlotRows().get(getFirstInputSlot())) {
             slot.addData(getFirstInputSlot().getVirtualData(row),
                     getFirstInputSlot().getAnnotations(row),

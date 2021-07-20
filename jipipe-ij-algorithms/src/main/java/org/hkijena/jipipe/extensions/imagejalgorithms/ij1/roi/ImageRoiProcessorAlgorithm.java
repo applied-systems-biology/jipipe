@@ -160,7 +160,7 @@ public abstract class ImageRoiProcessorAlgorithm extends JIPipeIteratingAlgorith
     private void updateSlots() {
         JIPipeDefaultMutableSlotConfiguration slotConfiguration = (JIPipeDefaultMutableSlotConfiguration) getSlotConfiguration();
         if (overrideReferenceImage && !getInputSlotMap().containsKey("Reference")) {
-            slotConfiguration.addSlot("Reference", new JIPipeDataSlotInfo(ImagePlusData.class, JIPipeSlotType.Input, null), false);
+            slotConfiguration.addSlot("Reference", new JIPipeDataSlotInfo(ImagePlusData.class, JIPipeSlotType.Input), false);
         } else if (!overrideReferenceImage && getInputSlotMap().containsKey("Reference")) {
             slotConfiguration.removeInputSlot("Reference", false);
         }

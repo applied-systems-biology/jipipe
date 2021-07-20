@@ -139,7 +139,7 @@ public class PathsToJIPipeProjectParametersAlgorithm extends JIPipeIteratingAlgo
                     if (StringUtils.isNullOrEmpty(slotName))
                         slotName = key;
                     slotName = StringUtils.makeUniqueString(StringUtils.makeFilesystemCompatible(slotName), " ", existing);
-                    slotConfiguration.addSlot(slotName, new JIPipeDataSlotInfo(PathData.class, JIPipeSlotType.Input, null), true);
+                    slotConfiguration.addSlot(slotName, new JIPipeDataSlotInfo(PathData.class, JIPipeSlotType.Input), true);
                     parameterKeyAssignments.get(slotName).set(key);
                 }
             } catch (IOException e) {

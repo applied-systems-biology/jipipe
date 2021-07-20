@@ -386,7 +386,7 @@ public class MultiTemplateMatchingAlgorithm extends JIPipeMergingAlgorithm {
         this.restrictToROI = restrictToROI;
         JIPipeDefaultMutableSlotConfiguration slotConfiguration = (JIPipeDefaultMutableSlotConfiguration) getSlotConfiguration();
         if (restrictToROI && !getInputSlotMap().containsKey("ROI")) {
-            slotConfiguration.addSlot("ROI", new JIPipeDataSlotInfo(ROIListData.class, JIPipeSlotType.Input, null), false);
+            slotConfiguration.addSlot("ROI", new JIPipeDataSlotInfo(ROIListData.class, JIPipeSlotType.Input), false);
         } else if (!restrictToROI && getInputSlotMap().containsKey("ROI")) {
             slotConfiguration.removeInputSlot("ROI", false);
         }

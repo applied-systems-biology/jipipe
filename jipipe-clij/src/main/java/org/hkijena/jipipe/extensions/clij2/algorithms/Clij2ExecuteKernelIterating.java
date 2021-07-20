@@ -108,8 +108,8 @@ public class Clij2ExecuteKernelIterating extends JIPipeIteratingAlgorithm {
             JIPipeDefaultMutableSlotConfiguration slotConfiguration = (JIPipeDefaultMutableSlotConfiguration) getSlotConfiguration();
             slotConfiguration.clearInputSlots(true);
             slotConfiguration.clearOutputSlots(true);
-            slotConfiguration.addSlot("src", new JIPipeDataSlotInfo(CLIJImageData.class, JIPipeSlotType.Input, null), true);
-            slotConfiguration.addSlot("dst", new JIPipeDataSlotInfo(CLIJImageData.class, JIPipeSlotType.Output, null), true);
+            slotConfiguration.addSlot("src", new JIPipeDataSlotInfo(CLIJImageData.class, JIPipeSlotType.Input), true);
+            slotConfiguration.addSlot("dst", new JIPipeDataSlotInfo(CLIJImageData.class, JIPipeSlotType.Output), true);
             kernelScript.setCode("__kernel void flip_2d (\n" +
                     "    IMAGE_src_TYPE  src,\n" +
                     "    IMAGE_dst_TYPE  dst,\n" +

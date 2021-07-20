@@ -49,7 +49,7 @@ import java.util.Set;
 @JsonSerialize(using = JIPipeDataSlotInfo.Serializer.class)
 @JsonDeserialize(using = JIPipeDataSlotInfo.Deserializer.class)
 public class JIPipeDataSlotInfo implements JIPipeParameterCollection {
-    private EventBus eventBus = new EventBus();
+    private final EventBus eventBus = new EventBus();
     private Class<? extends JIPipeData> dataClass;
     private JIPipeSlotType slotType;
     private String name;
@@ -75,20 +75,21 @@ public class JIPipeDataSlotInfo implements JIPipeParameterCollection {
         setVirtualByDataType();
     }
 
+    /**
+     * @param dataClass slot data class
+     * @param slotType  slot type
+     * @param name      unique slot name
+     */
+    public JIPipeDataSlotInfo(Class<? extends JIPipeData> dataClass, JIPipeSlotType slotType, String name) {
+        this(dataClass, slotType, name, null);
+    }
 
     /**
-     * Creates an unnamed slot.
-     * The name is assigned from the {@link JIPipeDefaultMutableSlotConfiguration}
-     *
-     * @param dataClass     slot data class
-     * @param slotType      slot type
-     * @param inheritedSlot only relevant if output slot. Can be an input slot name or '*' to automatically select the first input slot
+     * @param dataClass slot data class
+     * @param slotType  slot type
      */
-    public JIPipeDataSlotInfo(Class<? extends JIPipeData> dataClass, JIPipeSlotType slotType, String inheritedSlot) {
-        this.dataClass = dataClass;
-        this.slotType = slotType;
-        this.inheritedSlot = inheritedSlot;
-        setVirtualByDataType();
+    public JIPipeDataSlotInfo(Class<? extends JIPipeData> dataClass, JIPipeSlotType slotType) {
+        this(dataClass, slotType, null, null);
     }
 
     /**
@@ -104,7 +105,7 @@ public class JIPipeDataSlotInfo implements JIPipeParameterCollection {
      * @param slot Imported annotation
      */
     public JIPipeDataSlotInfo(JIPipeOutputSlot slot) {
-        this(slot.value(), JIPipeSlotType.Output, slot.slotName(), null);
+        this(slot.value(), JIPipeSlotType.Output, slot.slotName(), slot.inheritedSlot());
     }
 
     /**
@@ -123,16 +124,6 @@ public class JIPipeDataSlotInfo implements JIPipeParameterCollection {
         this.saveOutputs = other.saveOutputs;
         this.optional = other.optional;
         this.userModifiable = other.userModifiable;
-    }
-
-    /**
-     * Creates a new instance. The name is set to null.
-     *
-     * @param dataClass slot data class
-     * @param slotType  slot type
-     */
-    public JIPipeDataSlotInfo(Class<? extends JIPipeData> dataClass, JIPipeSlotType slotType) {
-        this(dataClass, slotType, null);
     }
 
     private void setVirtualByDataType() {

@@ -247,8 +247,8 @@ public class MacroWrapperAlgorithm extends JIPipeIteratingAlgorithm {
             JIPipeDefaultMutableSlotConfiguration slotConfiguration = (JIPipeDefaultMutableSlotConfiguration) getSlotConfiguration();
             slotConfiguration.clearInputSlots(true);
             slotConfiguration.clearOutputSlots(true);
-            slotConfiguration.addSlot("Input", new JIPipeDataSlotInfo(ImagePlusData.class, JIPipeSlotType.Input, null), true);
-            slotConfiguration.addSlot("Output", new JIPipeDataSlotInfo(ImagePlusData.class, JIPipeSlotType.Output, null), true);
+            slotConfiguration.addSlot("Input", new JIPipeDataSlotInfo(ImagePlusData.class, JIPipeSlotType.Input), true);
+            slotConfiguration.addSlot("Output", new JIPipeDataSlotInfo(ImagePlusData.class, JIPipeSlotType.Output), true);
             this.code.setCode("// To add variables, click the [+] button below.\n" +
                     "// They will be created automatically before this code fragment.\n\n" +
                     "// Each input image slot creates a window with its name.\n" +

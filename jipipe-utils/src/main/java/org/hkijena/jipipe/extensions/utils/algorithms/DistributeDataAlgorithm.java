@@ -113,8 +113,8 @@ public class DistributeDataAlgorithm extends JIPipeParameterSlotAlgorithm {
         if (UIUtils.confirmResetParameters(parent, "Load example")) {
             JIPipeDefaultMutableSlotConfiguration slotConfiguration = (JIPipeDefaultMutableSlotConfiguration) getSlotConfiguration();
             slotConfiguration.clearOutputSlots(true);
-            slotConfiguration.addSlot("W80", new JIPipeDataSlotInfo(JIPipeData.class, JIPipeSlotType.Output, null), true);
-            slotConfiguration.addSlot("W20", new JIPipeDataSlotInfo(JIPipeData.class, JIPipeSlotType.Output, null), true);
+            slotConfiguration.addSlot("W80", new JIPipeDataSlotInfo(JIPipeData.class, JIPipeSlotType.Output), true);
+            slotConfiguration.addSlot("W20", new JIPipeDataSlotInfo(JIPipeData.class, JIPipeSlotType.Output), true);
             weights.get("W80").set(80.0);
             weights.get("W20").set(20.0);
         }

@@ -165,10 +165,10 @@ public class CellPoseAlgorithm extends JIPipeSingleIterationAlgorithm {
         } else {
             JIPipeDefaultMutableSlotConfiguration slotConfiguration = (JIPipeDefaultMutableSlotConfiguration) getSlotConfiguration();
             if (!getInputSlotMap().containsKey("Pretrained model")) {
-                slotConfiguration.addSlot("Pretrained model", new JIPipeDataSlotInfo(CellPoseModelData.class, JIPipeSlotType.Input, null), false);
+                slotConfiguration.addSlot("Pretrained model", new JIPipeDataSlotInfo(CellPoseModelData.class, JIPipeSlotType.Input, null, null), false);
             }
             if (!getInputSlotMap().containsKey("Size model")) {
-                JIPipeDataSlotInfo slotInfo = new JIPipeDataSlotInfo(CellPoseSizeModelData.class, JIPipeSlotType.Input, null);
+                JIPipeDataSlotInfo slotInfo = new JIPipeDataSlotInfo(CellPoseSizeModelData.class, JIPipeSlotType.Input, null, null);
                 slotInfo.setOptional(true);
                 slotConfiguration.addSlot("Size model", slotInfo, false);
             }

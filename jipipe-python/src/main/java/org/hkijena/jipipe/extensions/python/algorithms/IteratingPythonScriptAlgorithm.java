@@ -102,8 +102,8 @@ public class IteratingPythonScriptAlgorithm extends JIPipeIteratingAlgorithm {
             JIPipeDefaultMutableSlotConfiguration slotConfiguration = (JIPipeDefaultMutableSlotConfiguration) getSlotConfiguration();
             slotConfiguration.clearInputSlots(true);
             slotConfiguration.clearOutputSlots(true);
-            slotConfiguration.addSlot("Input", new JIPipeDataSlotInfo(ResultsTableData.class, JIPipeSlotType.Input, null), true);
-            slotConfiguration.addSlot("Output", new JIPipeDataSlotInfo(ResultsTableData.class, JIPipeSlotType.Output, null), true);
+            slotConfiguration.addSlot("Input", new JIPipeDataSlotInfo(ResultsTableData.class, JIPipeSlotType.Input), true);
+            slotConfiguration.addSlot("Output", new JIPipeDataSlotInfo(ResultsTableData.class, JIPipeSlotType.Output), true);
             code.setCode("from jipipe.imagej import *\n" +
                     "\n" +
                     "# Get the input slot\n" +

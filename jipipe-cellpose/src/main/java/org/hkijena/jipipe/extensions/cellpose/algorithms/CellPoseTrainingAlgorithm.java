@@ -108,7 +108,7 @@ public class CellPoseTrainingAlgorithm extends JIPipeSingleIterationAlgorithm {
         } else {
             if (!getInputSlotMap().containsKey("Pretrained model")) {
                 JIPipeDefaultMutableSlotConfiguration slotConfiguration = (JIPipeDefaultMutableSlotConfiguration) getSlotConfiguration();
-                slotConfiguration.addSlot("Pretrained model", new JIPipeDataSlotInfo(CellPoseModelData.class, JIPipeSlotType.Input, null), false);
+                slotConfiguration.addSlot("Pretrained model", new JIPipeDataSlotInfo(CellPoseModelData.class, JIPipeSlotType.Input), false);
             }
         }
         if (!trainSizeModel) {
@@ -119,7 +119,7 @@ public class CellPoseTrainingAlgorithm extends JIPipeSingleIterationAlgorithm {
         } else {
             if (!getOutputSlotMap().containsKey("Size model")) {
                 JIPipeDefaultMutableSlotConfiguration slotConfiguration = (JIPipeDefaultMutableSlotConfiguration) getSlotConfiguration();
-                slotConfiguration.addSlot("Size model", new JIPipeDataSlotInfo(CellPoseSizeModelData.class, JIPipeSlotType.Output, null), false);
+                slotConfiguration.addSlot("Size model", new JIPipeDataSlotInfo(CellPoseSizeModelData.class, JIPipeSlotType.Output), false);
             }
         }
     }

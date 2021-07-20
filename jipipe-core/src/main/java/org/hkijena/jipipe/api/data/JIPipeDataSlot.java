@@ -936,7 +936,7 @@ public class JIPipeDataSlot {
     public static JIPipeDataSlot loadFromStoragePath(Path storagePath, JIPipeProgressInfo progressInfo) {
         JIPipeExportedDataTable dataTable = JIPipeExportedDataTable.loadFromJson(storagePath.resolve("data-table.json"));
         Class<? extends JIPipeData> acceptedDataType = JIPipe.getDataTypes().getById(dataTable.getAcceptedDataTypeId());
-        JIPipeDataSlot slot = new JIPipeDataSlot(new JIPipeDataSlotInfo(acceptedDataType, JIPipeSlotType.Input, ""), null);
+        JIPipeDataSlot slot = new JIPipeDataSlot(new JIPipeDataSlotInfo(acceptedDataType, JIPipeSlotType.Input), null);
         for (int i = 0; i < dataTable.getRowCount(); i++) {
             JIPipeProgressInfo rowProgress = progressInfo.resolveAndLog("Row", i, dataTable.getRowCount());
             JIPipeExportedDataTableRow row = dataTable.getRowList().get(i);
