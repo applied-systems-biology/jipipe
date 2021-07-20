@@ -32,6 +32,7 @@ public class JIPipeProgressInfo {
     private AtomicInteger maxProgress = new AtomicInteger(1);
     private StringBuilder log = new StringBuilder();
     private String logPrepend = "";
+    private AtomicBoolean logToStdOut = new AtomicBoolean(false);
 
     public JIPipeProgressInfo() {
     }
@@ -43,6 +44,7 @@ public class JIPipeProgressInfo {
         this.maxProgress = other.maxProgress;
         this.log = other.log;
         this.logPrepend = other.logPrepend;
+        this.logToStdOut = other.logToStdOut;
     }
 
     public synchronized void clearLog() {
@@ -81,6 +83,14 @@ public class JIPipeProgressInfo {
         return log;
     }
 
+    public void setLogToStdOut(boolean value) {
+        logToStdOut.set(value);
+    }
+
+    public boolean isLogToStdOut() {
+        return logToStdOut.get();
+    }
+
     /**
      * Writes a message into the log
      * @param message the message
@@ -92,6 +102,9 @@ public class JIPipeProgressInfo {
             log.append(" | ");
         log.append(" ").append(message);
         log.append("\n");
+        if(logToStdOut.get()) {
+            System.out.println("<" + progress + "/" + maxProgress + "> " + logPrepend + (needsSeparator ? " | " : "") + message);
+        }
         eventBus.post(new StatusUpdatedEvent(this, progress.get(), maxProgress.get(), logPrepend + (needsSeparator ? " | " : " ") + message));
     }
 
