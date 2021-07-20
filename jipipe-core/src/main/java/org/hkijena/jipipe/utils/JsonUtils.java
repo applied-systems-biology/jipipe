@@ -21,6 +21,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 
+import java.io.IOException;
 import java.nio.file.Path;
 
 /**
@@ -46,6 +47,22 @@ public class JsonUtils {
             objectMapper.registerModule(m);
         }
         return objectMapper;
+    }
+
+    public static <T> T readFromString(String json, Class<T> klass) {
+        try {
+            return objectMapper.readerFor(klass).readValue(json);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public static <T> T readFromFile(Path file, Class<T> klass) {
+        try {
+            return objectMapper.readerFor(klass).readValue(file.toFile());
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public static String toJsonString(Object data) {
