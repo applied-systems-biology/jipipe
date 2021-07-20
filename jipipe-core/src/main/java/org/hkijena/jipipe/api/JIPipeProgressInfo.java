@@ -157,10 +157,10 @@ public class JIPipeProgressInfo {
         for (T item : collection) {
             if(isCancelled())
                 return;
-            ++current;
             log(text + " " + (current + 1) + "/" + size);
             JIPipeProgressInfo itemProgress = resolveAndLog(text + " " + (current + 1) + "/" + size);
             function.accept(item, itemProgress);
+            ++current;
         }
     }
 
@@ -177,10 +177,10 @@ public class JIPipeProgressInfo {
         for (T item : collection) {
             if(isCancelled())
                 return;
-            ++current;
             log(text + " " + (current + 1) + "/" + size);
             JIPipeProgressInfo itemProgress = resolveAndLog(text + " " + (current + 1) + "/" + size);
             function.accept(item, itemProgress);
+            ++current;
         }
     }
 
@@ -196,10 +196,10 @@ public class JIPipeProgressInfo {
         for (int item : collection) {
             if(isCancelled())
                 return;
-            ++current;
             log(text + " " + (current + 1) + "/" + size);
             JIPipeProgressInfo itemProgress = resolveAndLog(text + " " + (current + 1) + "/" + size);
             function.accept(item, itemProgress);
+            ++current;
         }
     }
 
@@ -215,10 +215,10 @@ public class JIPipeProgressInfo {
         for (byte item : collection) {
             if(isCancelled())
                 return;
-            ++current;
             log(text + " " + (current + 1) + "/" + size);
             JIPipeProgressInfo itemProgress = resolveAndLog(text + " " + (current + 1) + "/" + size);
             function.accept(item, itemProgress);
+            ++current;
         }
     }
 
@@ -234,10 +234,10 @@ public class JIPipeProgressInfo {
         for (long item : collection) {
             if(isCancelled())
                 return;
-            ++current;
             log(text + " " + (current + 1) + "/" + size);
             JIPipeProgressInfo itemProgress = resolveAndLog(text + " " + (current + 1) + "/" + size);
             function.accept(item, itemProgress);
+            ++current;
         }
     }
 
@@ -253,10 +253,10 @@ public class JIPipeProgressInfo {
         for (short item : collection) {
             if(isCancelled())
                 return;
-            ++current;
             log(text + " " + (current + 1) + "/" + size);
             JIPipeProgressInfo itemProgress = resolveAndLog(text + " " + (current + 1) + "/" + size);
             function.accept(item, itemProgress);
+            ++current;
         }
     }
 
@@ -272,10 +272,10 @@ public class JIPipeProgressInfo {
         for (float item : collection) {
             if(isCancelled())
                 return;
-            ++current;
             log(text + " " + (current + 1) + "/" + size);
             JIPipeProgressInfo itemProgress = resolveAndLog(text + " " + (current + 1) + "/" + size);
             function.accept(item, itemProgress);
+            ++current;
         }
     }
 
@@ -291,9 +291,9 @@ public class JIPipeProgressInfo {
         for (double item : collection) {
             if(isCancelled())
                 return;
-            ++current;
             JIPipeProgressInfo itemProgress = resolveAndLog(text + " " + (current + 1) + "/" + size);
             function.accept(item, itemProgress);
+            ++current;
         }
     }
 
