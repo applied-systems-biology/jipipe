@@ -11,6 +11,8 @@ import org.hkijena.jipipe.api.data.JIPipeDataSlotInfo;
 import org.hkijena.jipipe.api.data.JIPipeDefaultMutableSlotConfiguration;
 import org.hkijena.jipipe.api.data.JIPipeSlotType;
 import org.hkijena.jipipe.api.nodes.JIPipeInputSlot;
+import org.hkijena.jipipe.api.nodes.JIPipeMergingAlgorithm;
+import org.hkijena.jipipe.api.nodes.JIPipeMergingDataBatch;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.JIPipeOutputSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeParameterSlotAlgorithm;
@@ -29,15 +31,15 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-@JIPipeDocumentation(name = "Split data randomly", description = "Distributes data across the output slots, so a certain percentage of data is in the specified slot." +
-        " Please note that negative weights will be replaced by zero.")
+@JIPipeDocumentation(name = "Split data randomly (percentage)", description = "Distributes data across the output slots, so a certain percentage of data is in the specified slot." +
+        " Please note that negative weights will be replaced by zero. The output data is unique, meaning that there will be no overlaps between different slots.")
 @JIPipeOrganization(nodeTypeCategory = MiscellaneousNodeTypeCategory.class)
 @JIPipeInputSlot(value = JIPipeData.class, slotName = "Input", autoCreate = true)
 @JIPipeOutputSlot(value = JIPipeData.class)
-public class DistributeDataAlgorithm extends JIPipeParameterSlotAlgorithm {
+public class DistributeDataRandomlyByPercentageAlgorithm extends JIPipeMergingAlgorithm {
     private final OutputSlotMapParameterCollection weights;
 
-    public DistributeDataAlgorithm(JIPipeNodeInfo info) {
+    public DistributeDataRandomlyByPercentageAlgorithm(JIPipeNodeInfo info) {
         super(info, JIPipeDefaultMutableSlotConfiguration.builder()
                 .addInputSlot("Input", JIPipeData.class)
                 .sealInput()
@@ -47,7 +49,7 @@ public class DistributeDataAlgorithm extends JIPipeParameterSlotAlgorithm {
         registerSubParameter(weights);
     }
 
-    public DistributeDataAlgorithm(DistributeDataAlgorithm other) {
+    public DistributeDataRandomlyByPercentageAlgorithm(DistributeDataRandomlyByPercentageAlgorithm other) {
         super(other);
         weights = new OutputSlotMapParameterCollection(Double.class, this, () -> 1, false);
         other.weights.copyTo(weights);
@@ -55,7 +57,7 @@ public class DistributeDataAlgorithm extends JIPipeParameterSlotAlgorithm {
     }
 
     @Override
-    public void runParameterSet(JIPipeProgressInfo progressInfo, List<JIPipeAnnotation> parameterAnnotations) {
+    protected void runIteration(JIPipeMergingDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
         if (getInputSlots().isEmpty())
             return;
         Map<String, Double> weightMap = new HashMap<>();
@@ -76,10 +78,7 @@ public class DistributeDataAlgorithm extends JIPipeParameterSlotAlgorithm {
             }
         }
         // Generate random order
-        List<Integer> availableRows = new ArrayList<>();
-        for (int i = 0; i < getFirstInputSlot().getRowCount(); i++) {
-            availableRows.add(i);
-        }
+        List<Integer> availableRows = new ArrayList<>(dataBatch.getInputRows("Input"));
         Collections.shuffle(availableRows);
         for (Integer row : availableRows) {
             if (weightMap.isEmpty())

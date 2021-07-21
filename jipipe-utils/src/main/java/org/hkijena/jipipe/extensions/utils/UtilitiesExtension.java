@@ -67,7 +67,8 @@ public class UtilitiesExtension extends JIPipePrepackagedDefaultJavaExtension {
         registerNodeType("generate-placeholder-for-missing-data", UsePlaceholderForMissingDataAlgorithm.class, UIUtils.getIconURLFromResources("actions/glob.png"));
         registerNodeType("data-batch-slicer", DataBatchSlicer.class, UIUtils.getIconURLFromResources("actions/filter.png"));
         registerNodeType("data-slicer", DataSlicer.class, UIUtils.getIconURLFromResources("actions/filter.png"));
-        registerNodeType("distribute-data", DistributeDataAlgorithm.class, UIUtils.getIconURLFromResources("actions/distribute-randomize.png"));
+        registerNodeType("distribute-data", DistributeDataRandomlyByPercentageAlgorithm.class, UIUtils.getIconURLFromResources("actions/distribute-randomize.png"));
+        registerNodeType("distribute-data-by-count", DistributeDataRandomlyByCountAlgorithm.class, UIUtils.getIconURLFromResources("actions/distribute-randomize.png"));
         registerNodeType("data-to-string-data", ToDataStringAlgorithm.class, UIUtils.getIconURLFromResources("actions/edit-select-text.png"));
 
         // Comment node
