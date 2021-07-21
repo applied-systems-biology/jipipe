@@ -15,8 +15,10 @@ package org.hkijena.jipipe.extensions.parameters.primitives;
 
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
+import org.hkijena.jipipe.ui.components.PickEnumValueDialog;
 import org.hkijena.jipipe.ui.parameters.JIPipeParameterEditorUI;
 import org.hkijena.jipipe.utils.ReflectionUtils;
+import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
 import java.awt.BorderLayout;
@@ -32,6 +34,9 @@ import java.util.Objects;
 public class EnumParameterEditorUI extends JIPipeParameterEditorUI {
 
     private JComboBox<Object> comboBox;
+    private JButton currentlyDisplayed;
+    private boolean isComboBox = true;
+    private EnumItemInfo enumItemInfo = new DefaultEnumItemInfo();
 
     /**
      * @param workbench       workbench
@@ -51,38 +56,71 @@ public class EnumParameterEditorUI extends JIPipeParameterEditorUI {
     @Override
     public void reload() {
         Object target = getParameterAccess().get(Object.class);
-        if (!Objects.equals(target, comboBox.getSelectedItem())) {
-            comboBox.setSelectedItem(target);
+
+        if(isComboBox) {
+            if (!Objects.equals(target, comboBox.getSelectedItem())) {
+                comboBox.setSelectedItem(target);
+            }
+        }
+        else {
+            currentlyDisplayed.setIcon(enumItemInfo.getIcon(target));
+            currentlyDisplayed.setToolTipText(enumItemInfo.getTooltip(target));
+            currentlyDisplayed.setText(enumItemInfo.getLabel(target));
         }
     }
 
     private void initialize() {
         setLayout(new BorderLayout());
+
+        // Combo box style
         Object[] values = getParameterAccess().getFieldClass().getEnumConstants();
         EnumParameterSettings settings = getParameterAccess().getAnnotationOfType(EnumParameterSettings.class);
-        EnumItemInfo info;
+        boolean comboBoxMode = true;
         if (settings != null) {
-            info = (EnumItemInfo) ReflectionUtils.newInstance(settings.itemInfo());
-        } else {
-            info = new DefaultEnumItemInfo();
+            enumItemInfo = (EnumItemInfo) ReflectionUtils.newInstance(settings.itemInfo());
+            comboBoxMode = !settings.searchable();
         }
-        Arrays.sort(values, Comparator.comparing(info::getLabel));
-        comboBox = new JComboBox<>(values);
-        comboBox.setSelectedItem(getParameterAccess().get(Object.class));
-        comboBox.addActionListener(e -> {
-            setParameter(comboBox.getSelectedItem(), false);
-        });
-        comboBox.setRenderer(new Renderer(info));
 
-        add(comboBox, BorderLayout.CENTER);
+        if(comboBoxMode) {
+            Arrays.sort(values, Comparator.comparing(enumItemInfo::getLabel));
+            comboBox = new JComboBox<>(values);
+            comboBox.setSelectedItem(getParameterAccess().get(Object.class));
+            comboBox.addActionListener(e -> {
+                setParameter(comboBox.getSelectedItem(), false);
+            });
+            comboBox.setRenderer(new Renderer(enumItemInfo));
+            add(comboBox, BorderLayout.CENTER);
+        }
+        else {
+            currentlyDisplayed = new JButton();
+            currentlyDisplayed.setHorizontalAlignment(SwingConstants.LEFT);
+            currentlyDisplayed.addActionListener(e -> pickEnum());
+            UIUtils.makeFlat(currentlyDisplayed);
+            add(currentlyDisplayed, BorderLayout.CENTER);
+
+            JButton selectButton = new JButton(UIUtils.getIconFromResources("actions/edit.png"));
+            UIUtils.makeFlat(selectButton);
+            selectButton.setToolTipText("Select value");
+            selectButton.addActionListener(e -> pickEnum());
+            add(selectButton, BorderLayout.EAST);
+        }
+    }
+
+    private void pickEnum() {
+        Object[] values = getParameterAccess().getFieldClass().getEnumConstants();
+        Object target = getParameterAccess().get(Object.class);
+        Object selected = PickEnumValueDialog.showDialog(getWorkbench().getWindow(), Arrays.asList(values), enumItemInfo, target, "Select value");
+        if(selected != null) {
+            setParameter(selected, true);
+        }
     }
 
     /**
      * Renders items in enum parameters
      */
-    private static class Renderer extends JLabel implements ListCellRenderer<Object> {
+    public static class Renderer extends JLabel implements ListCellRenderer<Object> {
 
-        private EnumItemInfo info;
+        private final EnumItemInfo info;
 
         public Renderer(EnumItemInfo info) {
             this.info = info;
