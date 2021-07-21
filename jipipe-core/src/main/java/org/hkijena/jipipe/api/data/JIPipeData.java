@@ -85,6 +85,16 @@ public interface JIPipeData {
     }
 
     /**
+     * This method returns a detailed string description (with multi-line, etc.) of the data.
+     * It can be used if toString() would yield too much information.
+     * Defaults to toString()
+     * @return detailed description string
+     */
+    default String toDetailedString() {
+        return toString();
+    }
+
+    /**
      * Returns the name of a data type
      *
      * @param klass The data class

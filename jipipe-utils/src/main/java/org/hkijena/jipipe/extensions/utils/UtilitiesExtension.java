@@ -68,6 +68,7 @@ public class UtilitiesExtension extends JIPipePrepackagedDefaultJavaExtension {
         registerNodeType("data-batch-slicer", DataBatchSlicer.class, UIUtils.getIconURLFromResources("actions/filter.png"));
         registerNodeType("data-slicer", DataSlicer.class, UIUtils.getIconURLFromResources("actions/filter.png"));
         registerNodeType("distribute-data", DistributeDataAlgorithm.class, UIUtils.getIconURLFromResources("actions/distribute-randomize.png"));
+        registerNodeType("data-to-string-data", ToDataStringAlgorithm.class, UIUtils.getIconURLFromResources("actions/edit-select-text.png"));
 
         // Comment node
         JIPipeJavaNodeInfo commentNodeInfo = new JIPipeJavaNodeInfo("jipipe:comment", JIPipeCommentNode.class);

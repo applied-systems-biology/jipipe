@@ -42,6 +42,7 @@ import org.hkijena.jipipe.utils.StringUtils;
 public class AnnotateWithDataString extends JIPipeSimpleIteratingAlgorithm {
 
     private String generatedAnnotation = "Data";
+    private boolean detailedDataString = false;
     private JIPipeAnnotationMergeStrategy annotationMergeStrategy = JIPipeAnnotationMergeStrategy.OverwriteExisting;
 
     /**
@@ -62,14 +63,14 @@ public class AnnotateWithDataString extends JIPipeSimpleIteratingAlgorithm {
         super(other);
         this.generatedAnnotation = other.generatedAnnotation;
         this.annotationMergeStrategy = other.annotationMergeStrategy;
+        this.detailedDataString = other.detailedDataString;
     }
 
     @Override
     protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
         if (!StringUtils.isNullOrEmpty(generatedAnnotation)) {
             JIPipeData inputData = dataBatch.getInputData(getFirstInputSlot(), JIPipeData.class, progressInfo);
-            String discriminator = "" + inputData;
-            dataBatch.addGlobalAnnotation(new JIPipeAnnotation(generatedAnnotation, discriminator), annotationMergeStrategy);
+            dataBatch.addGlobalAnnotation(new JIPipeAnnotation(generatedAnnotation, detailedDataString ? inputData.toDetailedString() : inputData.toString()), annotationMergeStrategy);
             dataBatch.addOutputData(getFirstOutputSlot(), inputData, progressInfo);
         }
     }
@@ -77,6 +78,17 @@ public class AnnotateWithDataString extends JIPipeSimpleIteratingAlgorithm {
     @Override
     public void reportValidity(JIPipeIssueReport report) {
         report.resolve("Generated annotation").checkNonEmpty(generatedAnnotation, this);
+    }
+
+    @JIPipeDocumentation(name = "Prefer detailed string", description = "If enabled, a more detailed string information (if available) is used instead of the string shown in the UI.")
+    @JIPipeParameter("detailed-data-string")
+    public boolean isDetailedDataString() {
+        return detailedDataString;
+    }
+
+    @JIPipeParameter("detailed-data-string")
+    public void setDetailedDataString(boolean detailedDataString) {
+        this.detailedDataString = detailedDataString;
     }
 
     /**
