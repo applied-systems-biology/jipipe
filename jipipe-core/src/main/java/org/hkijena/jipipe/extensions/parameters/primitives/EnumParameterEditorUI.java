@@ -75,13 +75,12 @@ public class EnumParameterEditorUI extends JIPipeParameterEditorUI {
         // Combo box style
         Object[] values = getParameterAccess().getFieldClass().getEnumConstants();
         EnumParameterSettings settings = getParameterAccess().getAnnotationOfType(EnumParameterSettings.class);
-        boolean comboBoxMode = true;
         if (settings != null) {
             enumItemInfo = (EnumItemInfo) ReflectionUtils.newInstance(settings.itemInfo());
-            comboBoxMode = !settings.searchable();
+            isComboBox = !settings.searchable();
         }
 
-        if(comboBoxMode) {
+        if(isComboBox) {
             Arrays.sort(values, Comparator.comparing(enumItemInfo::getLabel));
             comboBox = new JComboBox<>(values);
             comboBox.setSelectedItem(getParameterAccess().get(Object.class));
