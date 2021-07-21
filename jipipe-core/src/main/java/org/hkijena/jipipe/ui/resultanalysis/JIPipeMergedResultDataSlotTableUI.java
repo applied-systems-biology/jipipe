@@ -150,6 +150,20 @@ public class JIPipeMergedResultDataSlotTableUI extends JIPipeProjectWorkbenchPan
         exportFilesByMetadataItem.addActionListener(e -> exportFilesByMetadata());
         exportMenu.add(exportFilesByMetadataItem);
 
+        JButton autoSizeButton = new JButton(UIUtils.getIconFromResources("actions/zoom-fit-width.png"));
+        autoSizeButton.setToolTipText("Auto-size columns to fit their contents");
+        autoSizeButton.addActionListener(e -> table.packAll());
+        UIUtils.makeFlat25x25(autoSizeButton);
+        toolBar.add(autoSizeButton);
+
+        JButton smallSizeButton = new JButton(UIUtils.getIconFromResources("actions/zoom-best-fit.png"));
+        smallSizeButton.setToolTipText("Auto-size columns to the default size");
+        smallSizeButton.addActionListener(e -> UIUtils.packDataTable(table));
+        UIUtils.makeFlat25x25(smallSizeButton);
+        toolBar.add(smallSizeButton);
+
+        toolBar.addSeparator();
+
         PreviewControlUI previewControlUI = new PreviewControlUI();
         toolBar.add(previewControlUI);
     }
