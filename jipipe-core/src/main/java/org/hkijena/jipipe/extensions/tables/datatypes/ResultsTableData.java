@@ -975,6 +975,14 @@ public class ResultsTableData implements JIPipeData, TableModel {
     }
 
     /**
+     * Adds a new row and returns a {@link RowBuilder} for setting values conveniently
+     * @return the row builder
+     */
+    public RowBuilder addRowBuilder() {
+        return new RowBuilder(this, addRow());
+    }
+
+    /**
      * Adds a new row
      *
      * @return the newly created row id
@@ -1211,6 +1219,37 @@ public class ResultsTableData implements JIPipeData, TableModel {
             }
         }
         return resultsTableData;
+    }
+
+    /**
+     * Helper class for adding a row into the table
+     */
+    public static class RowBuilder {
+        private final ResultsTableData tableData;
+        private final int row;
+
+        public RowBuilder(ResultsTableData tableData, int row) {
+            this.tableData = tableData;
+            this.row = row;
+        }
+
+        public RowBuilder set(String columnName, Object value) {
+            int columnIndex = tableData.getOrCreateColumnIndex(columnName, !(value instanceof Number));
+            return set(columnIndex, value);
+        }
+
+        public RowBuilder set(int columnIndex, Object value) {
+            tableData.setValueAt(value, row, columnIndex);
+            return this;
+        }
+
+        public ResultsTableData getTableData() {
+            return tableData;
+        }
+
+        public int getRow() {
+            return row;
+        }
     }
 
     /**
