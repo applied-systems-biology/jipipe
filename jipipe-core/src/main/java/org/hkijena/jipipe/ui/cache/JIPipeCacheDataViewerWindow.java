@@ -36,6 +36,7 @@ import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
 import java.lang.ref.WeakReference;
 import java.util.Map;
+import java.util.function.Function;
 
 /**
  * Base class for a Window that displays cached data.
@@ -55,6 +56,7 @@ public abstract class JIPipeCacheDataViewerWindow extends JFrame {
     private JButton nextRowButton;
     private JLabel rowInfoLabel;
     private JPanel contentPane = new JPanel(new BorderLayout());
+    private Function<JIPipeVirtualData, JIPipeVirtualData> dataConverterFunction;
 
     public JIPipeCacheDataViewerWindow(JIPipeWorkbench workbench, JIPipeCacheSlotDataSource dataSource, String displayName) {
         this.workbench = workbench;
@@ -276,6 +278,8 @@ public abstract class JIPipeCacheDataViewerWindow extends JFrame {
             JIPipeVirtualData virtualData = dataSource.getSlot().getVirtualData(dataSource.getRow());
             if (lastVirtualData != null && virtualData == lastVirtualData.get())
                 return;
+            if(dataConverterFunction != null)
+                virtualData = dataConverterFunction.apply(virtualData);
             loadData(virtualData, new JIPipeProgressInfo());
             lastVirtualData = new WeakReference<>(virtualData);
         } else {
@@ -286,6 +290,8 @@ public abstract class JIPipeCacheDataViewerWindow extends JFrame {
             }
             if (lastVirtualData != null && virtualData == lastVirtualData.get())
                 return;
+            if(dataConverterFunction != null)
+                virtualData = dataConverterFunction.apply(virtualData);
             loadData(virtualData, new JIPipeProgressInfo());
             lastVirtualData = new WeakReference<>(virtualData);
         }
@@ -304,5 +310,13 @@ public abstract class JIPipeCacheDataViewerWindow extends JFrame {
 
     public String getDisplayName() {
         return displayName;
+    }
+
+    public Function<JIPipeVirtualData, JIPipeVirtualData> getDataConverterFunction() {
+        return dataConverterFunction;
+    }
+
+    public void setDataConverterFunction(Function<JIPipeVirtualData, JIPipeVirtualData> dataConverterFunction) {
+        this.dataConverterFunction = dataConverterFunction;
     }
 }
