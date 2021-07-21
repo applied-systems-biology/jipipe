@@ -45,7 +45,5 @@ public class DatatablesExtension extends JIPipePrepackagedDefaultJavaExtension {
                 ResourceUtils.getPluginResource("icons/data-types/data-table.png"),
                 null,
                 null);
-        registerNodeType("merge-data-to-table", MergeDataToTableAlgorithm.class, UIUtils.getIconURLFromResources("data-types/data-table.png"));
-        registerNodeType("extract-table-to-data", ExtractTableAlgorithm.class, UIUtils.getIconURLFromResources("data-types/data.png"));
     }
 }
