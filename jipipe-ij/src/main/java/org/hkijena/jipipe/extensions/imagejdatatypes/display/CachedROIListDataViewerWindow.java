@@ -43,10 +43,11 @@ public class CachedROIListDataViewerWindow extends JIPipeCacheDataViewerWindow {
     private final JLabel errorLabel = new JLabel(UIUtils.getIconFromResources("emblems/no-data.png"));
     private ImageViewerPanel imageViewerPanel;
 
-    public CachedROIListDataViewerWindow(JIPipeWorkbench workbench, JIPipeCacheSlotDataSource dataSource, String displayName) {
+    public CachedROIListDataViewerWindow(JIPipeWorkbench workbench, JIPipeCacheSlotDataSource dataSource, String displayName, boolean deferLoading) {
         super(workbench, dataSource, displayName);
         initialize();
-        reloadDisplayedData();
+        if(!deferLoading)
+            reloadDisplayedData();
     }
 
     private void initialize() {

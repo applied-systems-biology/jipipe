@@ -29,10 +29,11 @@ public class CachedPlotViewerWindow extends JIPipeCacheDataViewerWindow {
     private PlotEditor plotEditor;
     private JLabel errorLabel;
 
-    public CachedPlotViewerWindow(JIPipeWorkbench workbench, JIPipeCacheSlotDataSource dataSource, String displayName) {
+    public CachedPlotViewerWindow(JIPipeWorkbench workbench, JIPipeCacheSlotDataSource dataSource, String displayName, boolean deferLoading) {
         super(workbench, dataSource, displayName);
         initialize();
-        reloadDisplayedData();
+        if(!deferLoading)
+            reloadDisplayedData();
     }
 
     private void initialize() {

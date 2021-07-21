@@ -447,7 +447,7 @@ public class ResultsTableData implements JIPipeData, TableModel {
     public void display(String displayName, JIPipeWorkbench workbench, JIPipeDataSource source) {
         if (source instanceof JIPipeCacheSlotDataSource) {
 //            CacheAwareTableEditor.show(workbench, (JIPipeCacheSlotDataSource) source, displayName);
-            CachedTableViewerWindow window = new CachedTableViewerWindow(workbench, (JIPipeCacheSlotDataSource) source, displayName);
+            CachedTableViewerWindow window = new CachedTableViewerWindow(workbench, (JIPipeCacheSlotDataSource) source, displayName, false);
             window.setVisible(true);
         } else {
             workbench.getDocumentTabPane().addTab(displayName, UIUtils.getIconFromResources("data-types/results-table.png"),

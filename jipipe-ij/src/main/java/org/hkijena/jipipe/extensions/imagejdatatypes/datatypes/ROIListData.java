@@ -195,7 +195,7 @@ public class ROIListData extends ArrayList<Roi> implements JIPipeData {
     @Override
     public void display(String displayName, JIPipeWorkbench workbench, JIPipeDataSource source) {
         if (source instanceof JIPipeCacheSlotDataSource) {
-            CachedROIListDataViewerWindow window = new CachedROIListDataViewerWindow(workbench, (JIPipeCacheSlotDataSource) source, displayName);
+            CachedROIListDataViewerWindow window = new CachedROIListDataViewerWindow(workbench, (JIPipeCacheSlotDataSource) source, displayName, false);
             window.setVisible(true);
         } else {
             ImagePlus mask;

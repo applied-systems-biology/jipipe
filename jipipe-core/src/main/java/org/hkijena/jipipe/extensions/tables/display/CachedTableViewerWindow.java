@@ -29,10 +29,11 @@ public class CachedTableViewerWindow extends JIPipeCacheDataViewerWindow {
     private TableEditor tableEditor;
     private JLabel errorLabel;
 
-    public CachedTableViewerWindow(JIPipeWorkbench workbench, JIPipeCacheSlotDataSource dataSource, String displayName) {
+    public CachedTableViewerWindow(JIPipeWorkbench workbench, JIPipeCacheSlotDataSource dataSource, String displayName, boolean deferLoading) {
         super(workbench, dataSource, displayName);
         initialize();
-        reloadDisplayedData();
+        if(!deferLoading)
+            reloadDisplayedData();
     }
 
     private void initialize() {
