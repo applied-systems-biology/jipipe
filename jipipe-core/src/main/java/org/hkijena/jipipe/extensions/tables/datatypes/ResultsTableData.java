@@ -961,6 +961,20 @@ public class ResultsTableData implements JIPipeData, TableModel {
     }
 
     /**
+     * Adds a new row and writes the provided values into the table
+     * @param values map of column name and value. Automatically creates columns if needed
+     * @return inserted row index
+     */
+    public int addRow(Map<String, Object> values) {
+        int row = addRow();
+        for (Map.Entry<String, Object> entry : values.entrySet()) {
+            int columnIndex = getOrCreateColumnIndex(entry.getKey(), !(entry.getValue() instanceof Number));
+            setValueAt(entry.getValue(), row, columnIndex);
+        }
+        return row;
+    }
+
+    /**
      * Adds a new row
      *
      * @return the newly created row id
