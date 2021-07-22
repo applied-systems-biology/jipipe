@@ -212,6 +212,7 @@ public class PlotEditor extends JIPipeWorkbenchPanel implements JIPipeParameterC
         List<PlotDataSeries> seriesList = new ArrayList<>(data.getSeries());
         for (PlotDataSeries series : seriesList) {
             JIPipePlotSeriesBuilder builder = new JIPipePlotSeriesBuilder(this, JIPipeDataInfo.getInstance(data.getClass()));
+            builder.setName(series.getName());
             Map<String, String> columnMap = importData(series);
             for (Map.Entry<String, String> entry : columnMap.entrySet()) {
                 builder.assignData(entry.getKey(), availableData.get(entry.getValue()));
