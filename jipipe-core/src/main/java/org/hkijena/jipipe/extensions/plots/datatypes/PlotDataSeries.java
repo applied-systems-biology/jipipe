@@ -42,7 +42,7 @@ import java.nio.file.Path;
 @JsonDeserialize(using = PlotDataSeries.Deserializer.class)
 public class PlotDataSeries extends ResultsTableData implements JIPipeParameterCollection {
 
-    private EventBus eventBus = new EventBus();
+    private final EventBus eventBus = new EventBus();
     private String name;
 
     /**
