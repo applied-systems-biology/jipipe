@@ -19,7 +19,7 @@ import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.nodes.JIPipeInputSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.registries.JIPipeDatatypeRegistry;
-import org.hkijena.jipipe.utils.RankingFunction;
+import org.hkijena.jipipe.utils.search.RankingFunction;
 import org.hkijena.jipipe.utils.StringUtils;
 
 /**

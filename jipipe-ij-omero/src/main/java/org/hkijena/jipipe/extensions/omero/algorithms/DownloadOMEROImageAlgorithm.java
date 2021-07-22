@@ -53,7 +53,7 @@ import org.hkijena.jipipe.extensions.parameters.primitives.OptionalAnnotationNam
 import org.hkijena.jipipe.extensions.parameters.primitives.OptionalStringParameter;
 import org.hkijena.jipipe.extensions.parameters.primitives.StringParameterSettings;
 import org.hkijena.jipipe.extensions.parameters.roi.RectangleList;
-import org.hkijena.jipipe.utils.JsonUtils;
+import org.hkijena.jipipe.utils.json.JsonUtils;
 import org.hkijena.jipipe.utils.ResourceUtils;
 
 import java.awt.Rectangle;

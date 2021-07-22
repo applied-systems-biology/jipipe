@@ -29,7 +29,7 @@ import org.hkijena.jipipe.ui.components.FormPanel;
 import org.hkijena.jipipe.ui.components.MarkdownDocument;
 import org.hkijena.jipipe.ui.components.ModifiedFlowLayout;
 import org.hkijena.jipipe.ui.plotbuilder.PlotEditor;
-import org.hkijena.jipipe.utils.BusyCursor;
+import org.hkijena.jipipe.utils.ui.BusyCursor;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.jdesktop.swingx.JXPanel;

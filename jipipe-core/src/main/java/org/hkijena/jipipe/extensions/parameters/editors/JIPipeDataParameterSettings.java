@@ -14,8 +14,8 @@
 package org.hkijena.jipipe.extensions.parameters.editors;
 
 import org.hkijena.jipipe.api.data.JIPipeData;
-import org.hkijena.jipipe.utils.AnyClassFilter;
-import org.hkijena.jipipe.utils.ClassFilter;
+import org.hkijena.jipipe.utils.classfilters.AnyClassFilter;
+import org.hkijena.jipipe.utils.classfilters.ClassFilter;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

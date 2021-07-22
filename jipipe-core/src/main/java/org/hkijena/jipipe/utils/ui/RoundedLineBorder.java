@@ -1,4 +1,4 @@
-package org.hkijena.jipipe.utils;
+package org.hkijena.jipipe.utils.ui;
 
 import javax.swing.border.AbstractBorder;
 import java.awt.BasicStroke;

@@ -10,7 +10,7 @@ import ij.process.ImageConverter;
 import ij.process.ImageProcessor;
 import org.hkijena.jipipe.extensions.settings.FileChooserSettings;
 import org.hkijena.jipipe.ui.components.FormPanel;
-import org.hkijena.jipipe.utils.BusyCursor;
+import org.hkijena.jipipe.utils.ui.BusyCursor;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;

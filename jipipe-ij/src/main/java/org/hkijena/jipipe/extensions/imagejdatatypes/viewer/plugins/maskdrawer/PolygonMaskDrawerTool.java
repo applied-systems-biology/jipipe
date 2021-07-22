@@ -5,9 +5,9 @@ import ij.gui.PolygonRoi;
 import ij.gui.Roi;
 import ij.process.ImageProcessor;
 import org.hkijena.jipipe.ui.components.FormPanel;
-import org.hkijena.jipipe.utils.MouseClickedEvent;
-import org.hkijena.jipipe.utils.MouseExitedEvent;
-import org.hkijena.jipipe.utils.MouseMovedEvent;
+import org.hkijena.jipipe.utils.ui.MouseClickedEvent;
+import org.hkijena.jipipe.utils.ui.MouseExitedEvent;
+import org.hkijena.jipipe.utils.ui.MouseMovedEvent;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;

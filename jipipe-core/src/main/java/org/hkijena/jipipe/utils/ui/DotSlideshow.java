@@ -1,7 +1,8 @@
-package org.hkijena.jipipe.utils;
+package org.hkijena.jipipe.utils.ui;
 
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
+import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
 import java.awt.BorderLayout;

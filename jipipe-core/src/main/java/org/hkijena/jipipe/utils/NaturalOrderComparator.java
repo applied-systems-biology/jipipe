@@ -38,9 +38,9 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Random;
 
-public class NaturalOrderComparator implements Comparator<Object> {
+public class NaturalOrderComparator<T> implements Comparator<T> {
 
-    public static NaturalOrderComparator INSTANCE = new NaturalOrderComparator();
+    public static NaturalOrderComparator<Object> INSTANCE = new NaturalOrderComparator<>();
 
     int compareRight(String a, String b) {
         int bias = 0, ia = 0, ib = 0;
@@ -76,7 +76,7 @@ public class NaturalOrderComparator implements Comparator<Object> {
         }
     }
 
-    public int compare(Object o1, Object o2) {
+    public int compare(T o1, T o2) {
 
         // Allow direct comparison with numbers
         if (o1 instanceof Number && o2 instanceof Number) {

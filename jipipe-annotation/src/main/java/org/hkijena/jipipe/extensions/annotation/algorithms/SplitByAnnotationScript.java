@@ -31,7 +31,7 @@ import org.hkijena.jipipe.api.parameters.JIPipeDynamicParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterPersistence;
 import org.hkijena.jipipe.extensions.parameters.scripts.PythonScript;
-import org.hkijena.jipipe.utils.JythonUtils;
+import org.hkijena.jipipe.utils.scripting.JythonUtils;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.python.core.PyDictionary;
 import org.python.core.PyObject;

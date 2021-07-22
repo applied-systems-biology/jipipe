@@ -1,4 +1,4 @@
-package org.hkijena.jipipe.utils;
+package org.hkijena.jipipe.utils.classfilters;
 
 import java.util.function.Predicate;
 

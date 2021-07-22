@@ -4,7 +4,7 @@ import com.google.common.eventbus.Subscribe;
 import org.hkijena.jipipe.extensions.settings.GeneralUISettings;
 import org.hkijena.jipipe.ui.JIPipeWorkbenchPanel;
 import org.hkijena.jipipe.ui.theme.ModernMetalTheme;
-import org.hkijena.jipipe.utils.ScreenImage;
+import org.hkijena.jipipe.utils.ui.ScreenImage;
 
 import javax.swing.*;
 import java.awt.BasicStroke;

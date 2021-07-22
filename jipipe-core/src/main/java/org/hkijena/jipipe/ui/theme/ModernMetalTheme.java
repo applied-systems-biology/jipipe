@@ -13,9 +13,9 @@
 
 package org.hkijena.jipipe.ui.theme;
 
-import org.hkijena.jipipe.utils.CheckBoxIcon;
-import org.hkijena.jipipe.utils.CheckBoxMenuItemIcon;
-import org.hkijena.jipipe.utils.RoundedLineBorder;
+import org.hkijena.jipipe.utils.ui.CheckBoxIcon;
+import org.hkijena.jipipe.utils.ui.CheckBoxMenuItemIcon;
+import org.hkijena.jipipe.utils.ui.RoundedLineBorder;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;

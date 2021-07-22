@@ -11,18 +11,20 @@
  * See the LICENSE file provided with the code for the full license.
  */
 
-package org.hkijena.jipipe.utils;
-
-import com.fasterxml.jackson.databind.JsonNode;
+package org.hkijena.jipipe.utils.search;
 
 /**
- * Allows the object to be deserialized in-place from JSON data
+ * Models a search ranking function
+ *
+ * @param <T> the items
  */
-public interface JsonDeserializable {
+public interface RankingFunction<T> {
     /**
-     * Loads JSON data into the current object instance
+     * Ranks the value in conjunction with the filter strings
      *
-     * @param node the JSON data
+     * @param value         the value
+     * @param filterStrings the filter strings (can be null or empty)
+     * @return a rank for each category. each item represents the ranking score (lower values are higher ranks) for a column. if null, the item does not match
      */
-    void fromJson(JsonNode node);
+    int[] rank(T value, String[] filterStrings);
 }

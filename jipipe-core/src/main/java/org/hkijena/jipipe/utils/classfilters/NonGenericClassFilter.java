@@ -1,4 +1,6 @@
-package org.hkijena.jipipe.utils;
+package org.hkijena.jipipe.utils.classfilters;
+
+import org.hkijena.jipipe.utils.ReflectionUtils;
 
 public class NonGenericClassFilter implements ClassFilter {
     @Override

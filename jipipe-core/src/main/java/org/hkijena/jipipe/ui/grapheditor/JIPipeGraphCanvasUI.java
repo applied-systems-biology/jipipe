@@ -46,8 +46,8 @@ import org.hkijena.jipipe.ui.grapheditor.nodeui.JIPipeHorizontalNodeUI;
 import org.hkijena.jipipe.ui.grapheditor.nodeui.JIPipeNodeUI;
 import org.hkijena.jipipe.ui.grapheditor.nodeui.JIPipeVerticalNodeUI;
 import org.hkijena.jipipe.utils.PointRange;
-import org.hkijena.jipipe.utils.ScreenImage;
-import org.hkijena.jipipe.utils.ScreenImageSVG;
+import org.hkijena.jipipe.utils.ui.ScreenImage;
+import org.hkijena.jipipe.utils.ui.ScreenImageSVG;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.jfree.graphics2d.svg.SVGGraphics2D;
 

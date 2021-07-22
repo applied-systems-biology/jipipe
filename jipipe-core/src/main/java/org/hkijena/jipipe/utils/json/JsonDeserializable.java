@@ -11,26 +11,18 @@
  * See the LICENSE file provided with the code for the full license.
  */
 
-package org.hkijena.jipipe.utils;
+package org.hkijena.jipipe.utils.json;
 
-import javax.swing.*;
+import com.fasterxml.jackson.databind.JsonNode;
 
 /**
- * Enum wrapper for {@link javax.swing.ListSelectionModel} modes
+ * Allows the object to be deserialized in-place from JSON data
  */
-public enum ListSelectionMode {
-    Single(ListSelectionModel.SINGLE_SELECTION),
-    SingleInterval(ListSelectionModel.SINGLE_INTERVAL_SELECTION),
-    MultipleInterval(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
-
-    private final int nativeValue;
-
-    ListSelectionMode(int nativeValue) {
-
-        this.nativeValue = nativeValue;
-    }
-
-    public int getNativeValue() {
-        return nativeValue;
-    }
+public interface JsonDeserializable {
+    /**
+     * Loads JSON data into the current object instance
+     *
+     * @param node the JSON data
+     */
+    void fromJson(JsonNode node);
 }

@@ -2,7 +2,7 @@ package org.hkijena.jipipe.extensions.nodetoolboxtool;
 
 import org.hkijena.jipipe.api.nodes.JIPipeGraph;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
-import org.hkijena.jipipe.utils.JsonUtils;
+import org.hkijena.jipipe.utils.json.JsonUtils;
 
 import javax.swing.*;
 import java.awt.datatransfer.DataFlavor;

@@ -8,7 +8,7 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.viewer.ImageViewerLUTEditor
 import org.hkijena.jipipe.extensions.imagejdatatypes.viewer.ImageViewerPanel;
 import org.hkijena.jipipe.ui.components.DocumentChangeListener;
 import org.hkijena.jipipe.ui.components.FormPanel;
-import org.hkijena.jipipe.utils.BusyCursor;
+import org.hkijena.jipipe.utils.ui.BusyCursor;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;

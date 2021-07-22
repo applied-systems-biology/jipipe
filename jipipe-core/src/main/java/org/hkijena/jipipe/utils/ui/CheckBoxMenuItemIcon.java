@@ -1,4 +1,4 @@
-package org.hkijena.jipipe.utils;
+package org.hkijena.jipipe.utils.ui;
 
 import org.hkijena.jipipe.ui.theme.ModernMetalTheme;
 

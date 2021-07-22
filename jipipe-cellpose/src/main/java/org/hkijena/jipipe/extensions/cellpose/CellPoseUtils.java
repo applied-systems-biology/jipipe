@@ -12,29 +12,18 @@ import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeAnnotation;
 import org.hkijena.jipipe.api.data.JIPipeAnnotationMergeStrategy;
 import org.hkijena.jipipe.api.nodes.JIPipeMergingDataBatch;
-import org.hkijena.jipipe.extensions.cellpose.parameters.EnhancementParameters;
-import org.hkijena.jipipe.extensions.cellpose.parameters.ModelParameters;
 import org.hkijena.jipipe.extensions.cellpose.parameters.OutputParameters;
-import org.hkijena.jipipe.extensions.cellpose.parameters.PerformanceParameters;
-import org.hkijena.jipipe.extensions.cellpose.parameters.ThresholdParameters;
-import org.hkijena.jipipe.extensions.filesystem.dataypes.FileData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ROIListData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d3.color.ImagePlus3DColorRGBData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d3.greyscale.ImagePlus3DGreyscale32FData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d3.greyscale.ImagePlus3DGreyscaleData;
-import org.hkijena.jipipe.extensions.parameters.primitives.OptionalDoubleParameter;
-import org.hkijena.jipipe.extensions.python.PythonUtils;
-import org.hkijena.jipipe.utils.JsonUtils;
-import org.hkijena.jipipe.utils.MacroUtils;
+import org.hkijena.jipipe.utils.json.JsonUtils;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.Objects;
 import java.util.stream.Collectors;
 
 public class CellPoseUtils {

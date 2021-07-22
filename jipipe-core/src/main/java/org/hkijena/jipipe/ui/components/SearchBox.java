@@ -14,8 +14,8 @@
 package org.hkijena.jipipe.ui.components;
 
 import com.google.common.eventbus.EventBus;
-import org.hkijena.jipipe.utils.RankedData;
-import org.hkijena.jipipe.utils.RankingFunction;
+import org.hkijena.jipipe.utils.search.RankedData;
+import org.hkijena.jipipe.utils.search.RankingFunction;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.jdesktop.swingx.JXTextField;
 

@@ -14,7 +14,7 @@
 package org.hkijena.jipipe.ui.ijupdater;
 
 import net.imagej.updater.UpdateSite;
-import org.hkijena.jipipe.utils.RoundedLineBorder;
+import org.hkijena.jipipe.utils.ui.RoundedLineBorder;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;

@@ -17,11 +17,10 @@ import org.hkijena.jipipe.extensions.r.RExtensionSettings;
 import org.hkijena.jipipe.extensions.r.RUtils;
 import org.hkijena.jipipe.extensions.settings.RuntimeSettings;
 import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
-import org.hkijena.jipipe.utils.MacroUtils;
+import org.hkijena.jipipe.utils.scripting.MacroUtils;
 import org.hkijena.jipipe.utils.StringUtils;
 
 import javax.swing.*;
-import java.io.IOException;
 import java.nio.file.Path;
 
 @JIPipeDocumentation(name = "R data set", description = "Imports a standard R data set (datasets package) as table.")

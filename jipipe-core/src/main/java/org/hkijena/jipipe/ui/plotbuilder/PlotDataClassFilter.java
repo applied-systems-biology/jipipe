@@ -1,7 +1,7 @@
 package org.hkijena.jipipe.ui.plotbuilder;
 
 import org.hkijena.jipipe.extensions.plots.datatypes.PlotData;
-import org.hkijena.jipipe.utils.ClassFilter;
+import org.hkijena.jipipe.utils.classfilters.ClassFilter;
 
 public class PlotDataClassFilter implements ClassFilter {
     @Override

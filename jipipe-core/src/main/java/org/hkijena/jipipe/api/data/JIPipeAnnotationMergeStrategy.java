@@ -1,7 +1,7 @@
 package org.hkijena.jipipe.api.data;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import org.hkijena.jipipe.utils.JsonUtils;
+import org.hkijena.jipipe.utils.json.JsonUtils;
 import org.hkijena.jipipe.utils.StringUtils;
 
 import java.io.IOException;

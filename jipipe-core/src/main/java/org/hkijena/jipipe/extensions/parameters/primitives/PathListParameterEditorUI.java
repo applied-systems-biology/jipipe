@@ -20,7 +20,7 @@ import org.hkijena.jipipe.ui.components.PathListCellRenderer;
 import org.hkijena.jipipe.ui.parameters.JIPipeParameterEditorUI;
 import org.hkijena.jipipe.utils.PathIOMode;
 import org.hkijena.jipipe.utils.PathType;
-import org.hkijena.jipipe.utils.RoundedLineBorder;
+import org.hkijena.jipipe.utils.ui.RoundedLineBorder;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;

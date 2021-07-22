@@ -33,7 +33,7 @@ import org.hkijena.jipipe.extensions.parameters.editors.JIPipeDataParameterSetti
 import org.hkijena.jipipe.extensions.parameters.pairs.StringAndStringPairParameter;
 import org.hkijena.jipipe.extensions.parameters.primitives.StringParameterSettings;
 import org.hkijena.jipipe.extensions.parameters.references.JIPipeDataInfoRef;
-import org.hkijena.jipipe.utils.NonGenericClassFilter;
+import org.hkijena.jipipe.utils.classfilters.NonGenericClassFilter;
 import org.hkijena.jipipe.utils.ReflectionUtils;
 
 import java.nio.file.Path;
