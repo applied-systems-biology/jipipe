@@ -34,7 +34,10 @@ import org.hkijena.jipipe.api.data.JIPipeDataSource;
 import org.hkijena.jipipe.api.data.JIPipeDataStorageDocumentation;
 import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
+import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
+import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
+import org.hkijena.jipipe.extensions.parameters.colors.ColorListParameter;
 import org.hkijena.jipipe.extensions.plots.CachedPlotViewerWindow;
 import org.hkijena.jipipe.extensions.plots.utils.ColorMap;
 import org.hkijena.jipipe.extensions.plots.utils.ColorMapSupplier;
@@ -56,6 +59,7 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.Font;
 import java.awt.Image;
+import java.awt.Paint;
 import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
@@ -84,17 +88,19 @@ import java.util.stream.Collectors;
         "Additional metadata in the root object and series metadata depend on the exact plot type.")
 public abstract class PlotData implements JIPipeData, JIPipeParameterCollection, JIPipeValidatable {
 
-    private EventBus eventBus = new EventBus();
+    private final EventBus eventBus = new EventBus();
     private String title;
     private int exportWidth = 1024;
     private int exportHeight = 768;
     private Color backgroundColor = Color.WHITE;
     private Color gridColor = Color.GRAY;
     private boolean withLegend = true;
-    private List<PlotDataSeries> series = new ArrayList<>();
+    private final List<PlotDataSeries> series = new ArrayList<>();
     private int titleFontSize = 26;
     private int legendFontSize = 12;
     private ColorMap colorMap = ColorMap.Pastel1;
+    private boolean useCustomColorMap = false;
+    private ColorListParameter customColorMap = new ColorListParameter();
 
     /**
      * Creates a new empty instance
@@ -121,6 +127,8 @@ public abstract class PlotData implements JIPipeData, JIPipeParameterCollection,
         for (PlotDataSeries data : other.series) {
             this.series.add(new PlotDataSeries(data));
         }
+        this.useCustomColorMap = other.useCustomColorMap;
+        this.customColorMap = new ColorListParameter(other.customColorMap);
     }
 
     @Override
@@ -324,6 +332,51 @@ public abstract class PlotData implements JIPipeData, JIPipeParameterCollection,
         this.colorMap = colorMap;
     }
 
+    @JIPipeDocumentation(name = "Use custom color map", description = "If enabled, you can define a custom color map")
+    @JIPipeParameter("use-custom-color-map")
+    public boolean isUseCustomColorMap() {
+        return useCustomColorMap;
+    }
+
+    @JIPipeParameter("use-custom-color-map")
+    public void setUseCustomColorMap(boolean useCustomColorMap) {
+        this.useCustomColorMap = useCustomColorMap;
+        triggerParameterUIChange();
+    }
+
+    @JIPipeDocumentation(name = "Custom color map", description = "Add colors into this list to define a custom color map")
+    @JIPipeParameter("custom-color-map")
+    public ColorListParameter getCustomColorMap() {
+        return customColorMap;
+    }
+
+    @JIPipeParameter("custom-color-map")
+    public void setCustomColorMap(ColorListParameter customColorMap) {
+        this.customColorMap = customColorMap;
+    }
+
+    public Paint[] getCurrentColorMap() {
+        if(useCustomColorMap && !customColorMap.isEmpty()) {
+            Paint[] result = new Paint[customColorMap.size()];
+            for (int i = 0; i < customColorMap.size(); i++) {
+                Color color = customColorMap.get(i);
+                result[i] = color;
+            }
+            return result;
+        }
+        else {
+            return colorMap.getColors();
+        }
+    }
+
+    @Override
+    public boolean isParameterUIVisible(JIPipeParameterTree tree, JIPipeParameterAccess access) {
+        if(!useCustomColorMap && "custom-color-map".equals(access.getKey()) && access.getSource() == this) {
+            return false;
+        }
+        return JIPipeParameterCollection.super.isParameterUIVisible(tree, access);
+    }
+
     /**
      * Sets properties of charts
      *
@@ -341,7 +394,7 @@ public abstract class PlotData implements JIPipeData, JIPipeParameterCollection,
         if (chart.getTitle() != null) {
             chart.getTitle().setFont(new Font(Font.SANS_SERIF, Font.PLAIN, getTitleFontSize()));
         }
-        chart.getPlot().setDrawingSupplier(new ColorMapSupplier(colorMap.getColors()));
+        chart.getPlot().setDrawingSupplier(new ColorMapSupplier(getCurrentColorMap()));
     }
 
     @Override
