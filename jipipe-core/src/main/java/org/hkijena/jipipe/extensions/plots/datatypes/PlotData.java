@@ -374,6 +374,9 @@ public abstract class PlotData implements JIPipeData, JIPipeParameterCollection,
         if(!useCustomColorMap && "custom-color-map".equals(access.getKey()) && access.getSource() == this) {
             return false;
         }
+        if(useCustomColorMap && "color-map".equals(access.getKey()) && access.getSource() == this) {
+            return false;
+        }
         return JIPipeParameterCollection.super.isParameterUIVisible(tree, access);
     }
 
