@@ -29,6 +29,7 @@ import org.hkijena.jipipe.extensions.expressions.NumericFunctionExpression;
 import org.hkijena.jipipe.extensions.parameters.collections.ListParameter;
 import org.hkijena.jipipe.extensions.parameters.collections.ListParameterEditorUI;
 import org.hkijena.jipipe.extensions.parameters.colors.ColorDeserializer;
+import org.hkijena.jipipe.extensions.parameters.colors.ColorListParameter;
 import org.hkijena.jipipe.extensions.parameters.colors.ColorMap;
 import org.hkijena.jipipe.extensions.parameters.colors.ColorParameterEditorUI;
 import org.hkijena.jipipe.extensions.parameters.colors.ColorSerializer;
@@ -606,6 +607,7 @@ public class StandardParametersExtension extends JIPipePrepackagedDefaultJavaExt
         registerParameterEditor(PathList.class, PathListParameterEditorUI.class);
         registerParameterType("file", File.class, () -> new File(""), f -> f, "Filesystem path", "A path", FileParameterEditorUI.class);
         registerParameterType("color", Color.class, () -> Color.WHITE, c -> c, "Color", "A color", ColorParameterEditorUI.class);
+        registerParameterType("color-list", ColorListParameter.class, "Color list", "A list of colors");
         registerParameterType("rectangle", Rectangle.class, RectangleList.class, Rectangle::new, o -> new Rectangle((Rectangle) o), "Rectangle", "A rectangle", RectangleParameterEditorUI.class);
         registerColorJsonSerializer();
         registerRectangleJsonSerializer();
