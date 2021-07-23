@@ -47,7 +47,7 @@ public class TableColumnSourceExpressionParameter extends PairParameter<TableCol
 
     public TableColumnSourceExpressionParameter() {
         super(TableColumnSourceExpressionParameter.TableSourceType.class, DefaultExpressionParameter.class);
-        setKey(TableSourceType.Generate);
+        setKey(TableSourceType.ExistingColumn);
         setValue(new DefaultExpressionParameter());
     }
 
