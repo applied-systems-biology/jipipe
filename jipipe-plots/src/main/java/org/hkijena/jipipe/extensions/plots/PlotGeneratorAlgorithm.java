@@ -24,6 +24,8 @@ import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
 import org.hkijena.jipipe.api.nodes.JIPipeAlgorithm;
 import org.hkijena.jipipe.api.nodes.JIPipeGraph;
 import org.hkijena.jipipe.api.nodes.JIPipeInputSlot;
+import org.hkijena.jipipe.api.nodes.JIPipeMergingAlgorithm;
+import org.hkijena.jipipe.api.nodes.JIPipeMergingDataBatch;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.JIPipeOutputSlot;
 import org.hkijena.jipipe.api.nodes.categories.TableNodeTypeCategory;
@@ -50,11 +52,13 @@ import java.util.Objects;
 /**
  * Algorithm that creates {@link PlotData} from {@link ResultsTableData}
  */
-@JIPipeDocumentation(name = "Plot tables", description = "Converts input data tables into plots.")
-@JIPipeOrganization(nodeTypeCategory = TableNodeTypeCategory.class, menuPath = "Plot")
+@JIPipeDocumentation(name = "Plot tables", description = "Plots incoming tables. First, set the plot type via a parameter. This " +
+        "will then show the available settings for this plot type, and a list of input columns for the plot. " +
+        "Please ensure to correctly setup these input columns (hove one for a documentation).")
+@JIPipeOrganization(nodeTypeCategory = TableNodeTypeCategory.class)
 @JIPipeInputSlot(ResultsTableData.class)
 @JIPipeOutputSlot(PlotData.class)
-public class PlotGeneratorAlgorithm extends JIPipeAlgorithm {
+public class PlotGeneratorAlgorithm extends JIPipeMergingAlgorithm {
 
     private JIPipeDataInfoRef plotType = new JIPipeDataInfoRef();
     private PlotData plotTypeParameters;
@@ -87,36 +91,40 @@ public class PlotGeneratorAlgorithm extends JIPipeAlgorithm {
     }
 
     @Override
-    public void run(JIPipeProgressInfo progressInfo) {
+    protected void runIteration(JIPipeMergingDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
         PlotMetadata plotMetadata = plotType.getInfo().getDataClass().getAnnotation(PlotMetadata.class);
         Map<String, PlotColumn> plotColumns = new HashMap<>();
         for (PlotColumn column : plotMetadata.columns()) {
             plotColumns.put(column.name(), column);
         }
 
-        for (int row = 0; row < getFirstInputSlot().getRowCount(); ++row) {
-            ResultsTableData inputData = getFirstInputSlot().getData(row, ResultsTableData.class, progressInfo);
-            PlotData plot = (PlotData) plotTypeParameters.duplicate();
+        PlotData plot = (PlotData) plotTypeParameters.duplicate();
+        int seriesCounter = 0;
+        for (int row : dataBatch.getInputRows(getFirstInputSlot())) {
 
+            ResultsTableData inputData = getFirstInputSlot().getData(row, ResultsTableData.class, progressInfo);
             ResultsTableData seriesTable = new ResultsTableData();
             seriesTable.addRows(inputData.getRowCount());
 
-            // First generate real column data
+           // Generate series
             for (Map.Entry<String, JIPipeParameterAccess> entry : inputColumns.getParameters().entrySet()) {
                 TableColumnSourceExpressionParameter parameter = entry.getValue().get(TableColumnSourceExpressionParameter.class);
                 seriesTable.setColumn(entry.getKey(), parameter.pickOrGenerateColumn(inputData), plotColumns.get(entry.getKey()).isNumeric());
             }
 
-            if (seriesTable.getRowCount() == 0) {
-                throw new UserFriendlyRuntimeException("Table has now rows!",
-                        "Plot has no real input data!",
-                        "Algorithm '" + getName() + "'",
-                        "A plot only has column generators. But generators need to know how many rows they should generate.",
-                        "Please pick at least one input column from the input table.");
-            }
-
             plot.addSeries(new PlotDataSeries(seriesTable.getTable()));
-            getFirstOutputSlot().addData(plot, getFirstInputSlot().getAnnotations(row), JIPipeAnnotationMergeStrategy.Merge, progressInfo);
+
+            // Increment the series counter
+            seriesCounter += 1;
+            if(seriesCounter >= plotMetadata.maxSeriesCount()) {
+                progressInfo.log("Maximum number of series was reached (maximum is " + plotMetadata.maxSeriesCount() + "!). Creating a new plot.");
+                dataBatch.addOutputData(getFirstOutputSlot(), plot, progressInfo);
+                plot = (PlotData) plotTypeParameters.duplicate();
+                seriesCounter = 0;
+            }
+        }
+        if(!plot.getSeries().isEmpty()) {
+            dataBatch.addOutputData(getFirstOutputSlot(), plot, progressInfo);
         }
     }
 
@@ -129,7 +137,7 @@ public class PlotGeneratorAlgorithm extends JIPipeAlgorithm {
     }
 
     @JIPipeDocumentation(name = "Plot type", description = "The type of plot to be generated.")
-    @JIPipeParameter(value = "plot-type", priority = Priority.HIGH)
+    @JIPipeParameter(value = "plot-type", priority = Priority.HIGH, important = true)
     @JIPipeDataParameterSettings(dataBaseClass = PlotData.class, dataClassFilter = PlotDataClassFilter.class)
     public JIPipeDataInfoRef getPlotType() {
         if (plotType == null) {
@@ -157,6 +165,7 @@ public class PlotGeneratorAlgorithm extends JIPipeAlgorithm {
                 JIPipeMutableParameterAccess parameterAccess = new JIPipeMutableParameterAccess();
                 parameterAccess.setKey(column.name());
                 parameterAccess.setName(column.name());
+                parameterAccess.setImportant(true);
                 parameterAccess.setFieldClass(TableColumnSourceExpressionParameter.class);
                 TableColumnSourceExpressionParameter initialValue = new TableColumnSourceExpressionParameter();
                 parameterAccess.set(initialValue);
