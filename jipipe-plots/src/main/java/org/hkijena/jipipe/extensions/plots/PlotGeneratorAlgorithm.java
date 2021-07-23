@@ -160,7 +160,7 @@ public class PlotGeneratorAlgorithm extends JIPipeAlgorithm {
                 parameterAccess.setFieldClass(TableColumnSourceExpressionParameter.class);
                 TableColumnSourceExpressionParameter initialValue = new TableColumnSourceExpressionParameter();
                 parameterAccess.set(initialValue);
-                parameterAccess.setDescription(column.description() + " " + (column.isNumeric() ? "(Numeric column)" : "(String column)") + " " + TableColumnSourceExpressionParameter.DOCUMENTATION_DESCRIPTION);
+                parameterAccess.setDescription(column.description() + " " + (column.isNumeric() ? "(Numeric column)" : "(String column)") + "\n\n" + TableColumnSourceExpressionParameter.DOCUMENTATION_DESCRIPTION);
                 columnAssignments.addParameter(parameterAccess);
             }
         }
