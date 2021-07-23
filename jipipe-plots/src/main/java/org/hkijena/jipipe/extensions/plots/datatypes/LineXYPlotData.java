@@ -26,10 +26,12 @@ import java.nio.file.Path;
 
 /**
  * Generates a bar category plot
+ * Series table columns: X (Double), Y (Double)
+ * Multiple series: Yes
  */
 @JIPipeDocumentation(name = "XY line plot", description = "Plot that displays the Y values against the X values.")
 @PlotMetadata(columns = {@PlotColumn(name = "X", description = "The X values", isNumeric = true),
-        @PlotColumn(name = "Y", description = "The Y values", isNumeric = true)})
+        @PlotColumn(name = "Y", description = "The Y values", isNumeric = true)}, maxSeriesCount = Integer.MAX_VALUE)
 public class LineXYPlotData extends XYPlotData {
 
     private int lineThickness = 1;

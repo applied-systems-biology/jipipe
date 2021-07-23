@@ -23,11 +23,13 @@ import java.awt.Font;
 import java.nio.file.Path;
 
 /**
- * Generates a bar category plot
+ * Generates a Pie chart
+ * Series table columns: Amount (Double), Category (String)
+ * Multiple series: No
  */
 @JIPipeDocumentation(name = "3D pie plot", description = "Plot that shows the amount for each category as slice in a pie.")
 @PlotMetadata(columns = {@PlotColumn(name = "Amount", description = "The values to be displayed", isNumeric = true),
-        @PlotColumn(name = "Category", description = "The categories to be displayed", isNumeric = false)})
+        @PlotColumn(name = "Category", description = "The categories to be displayed", isNumeric = false)}, maxSeriesCount = 1)
 public class Pie3DPlotData extends PiePlotData {
 
     private int labelFontSize = 12;

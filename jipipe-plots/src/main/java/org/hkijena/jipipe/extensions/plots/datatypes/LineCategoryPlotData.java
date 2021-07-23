@@ -26,11 +26,13 @@ import java.nio.file.Path;
 
 /**
  * Generates a bar category plot
+ * Series table columns: Value (Double), Category (String), Group (String)
+ * Multiple series: No
  */
 @JIPipeDocumentation(name = "Line category plot", description = "Line chart that displays categories in its X axis and colors the lines according to the group.")
 @PlotMetadata(columns = {@PlotColumn(name = "Value", description = "Values displayed in the Y axis", isNumeric = true),
         @PlotColumn(name = "Category", description = "Categories displayed in the X axis. Must correspond to each value.", isNumeric = false),
-        @PlotColumn(name = "Group", description = "Groups to color the bars. Shown in the legend. Must correspond to each value.", isNumeric = false)})
+        @PlotColumn(name = "Group", description = "Groups to color the bars. Shown in the legend. Must correspond to each value.", isNumeric = false)}, maxSeriesCount = 1)
 public class LineCategoryPlotData extends CategoryPlotData {
 
     private int lineThickness = 1;

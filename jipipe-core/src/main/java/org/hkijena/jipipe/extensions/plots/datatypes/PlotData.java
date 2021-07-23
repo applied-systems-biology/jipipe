@@ -400,6 +400,26 @@ public abstract class PlotData implements JIPipeData, JIPipeParameterCollection,
         chart.getPlot().setDrawingSupplier(new ColorMapSupplier(getCurrentColorMap()));
     }
 
+    /**
+     * Gets the metadata for this plot instance.
+     * @return the metadata
+     */
+    public PlotMetadata getMetadata() {
+        return getClass().getAnnotation(PlotMetadata.class);
+    }
+
+    /**
+     * Generates an empty series table with the correct columns
+     * @return the series table
+     */
+    public ResultsTableData createSeriesTable() {
+        ResultsTableData result = new ResultsTableData();
+        for (PlotColumn column : getMetadata().columns()) {
+            result.addColumn(column.name(), !column.isNumeric());
+        }
+        return result;
+    }
+
     @Override
     public void reportValidity(JIPipeIssueReport report) {
         report.resolve("Export width").checkIfWithin(this, exportWidth, 0, Double.POSITIVE_INFINITY, false, true);

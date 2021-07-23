@@ -21,11 +21,13 @@ import java.awt.Font;
 import java.nio.file.Path;
 
 /**
- * Generates a bar category plot
+ * A scatter XY plot
+ * Series table columns: X (Double), Y (Double)
+ * Multiple series: Yes
  */
 @JIPipeDocumentation(name = "XY scatter plot", description = "Plot that displays the Y values against the X values.")
 @PlotMetadata(columns = {@PlotColumn(name = "X", description = "The X values", isNumeric = true),
-        @PlotColumn(name = "Y", description = "The Y values", isNumeric = true)})
+        @PlotColumn(name = "Y", description = "The Y values", isNumeric = true)}, maxSeriesCount = Integer.MAX_VALUE)
 public class ScatterXYPlotData extends XYPlotData {
 
     /**

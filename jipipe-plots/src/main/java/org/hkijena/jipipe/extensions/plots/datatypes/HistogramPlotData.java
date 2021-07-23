@@ -30,10 +30,12 @@ import java.util.Set;
 
 /**
  * Contains data to generate a histogram plot
+ * Series table colums: Value (Numeric)
+ * Multiple series: Yes
  */
 @JIPipeDocumentation(name = "Histogram plot", description = "Bar chart that displays the number of items for each bin. Please note that this plot requires " +
         "raw values as input. A pre-defined histogram table should be rendered with an XY bar plot.")
-@PlotMetadata(columns = {@PlotColumn(name = "Value", description = "Values to generate a histogram from.", isNumeric = true)})
+@PlotMetadata(columns = {@PlotColumn(name = "Value", description = "Values to generate a histogram from.", isNumeric = true)}, maxSeriesCount = Integer.MAX_VALUE)
 public class HistogramPlotData extends PlotData {
 
     private String binAxisLabel = "Bin";

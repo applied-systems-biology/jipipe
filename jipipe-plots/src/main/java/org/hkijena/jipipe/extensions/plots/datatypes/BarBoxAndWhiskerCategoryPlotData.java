@@ -22,12 +22,15 @@ import java.awt.Font;
 import java.nio.file.Path;
 
 /**
- * Generates a bar category plot
+ * A box and whisker plot
+ * Series table columns: Value (Double), Category (String), Group (String)
+ * Multiple series: Yes
  */
 @JIPipeDocumentation(name = "Box plot", description = "Box and whisker plot.")
 @PlotMetadata(columns = {@PlotColumn(name = "Value", description = "The values", isNumeric = true),
         @PlotColumn(name = "Category", description = "Category for each value. Displayed in the X axis.", isNumeric = false),
-        @PlotColumn(name = "Group", description = "Group for each value. Bars are colored by this column.", isNumeric = false)})
+        @PlotColumn(name = "Group", description = "Group for each value. Bars are colored by this column.", isNumeric = false)},
+        maxSeriesCount = Integer.MAX_VALUE)
 public class BarBoxAndWhiskerCategoryPlotData extends BoxAndWhiskerCategoryPlotData {
 
     /**
