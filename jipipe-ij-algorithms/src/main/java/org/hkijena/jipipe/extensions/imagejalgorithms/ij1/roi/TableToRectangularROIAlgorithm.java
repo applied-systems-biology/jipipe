@@ -44,12 +44,12 @@ import java.awt.Rectangle;
 @JIPipeOutputSlot(value = ROIListData.class, slotName = "Output")
 public class TableToRectangularROIAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
-    private TableColumnSourceExpressionParameter columnX1 = new TableColumnSourceExpressionParameter("\"X1\"");
-    private TableColumnSourceExpressionParameter columnY1 = new TableColumnSourceExpressionParameter("\"Y1\"");
-    private TableColumnSourceExpressionParameter columnX2 = new TableColumnSourceExpressionParameter("\"X2\"");
-    private TableColumnSourceExpressionParameter columnY2 = new TableColumnSourceExpressionParameter("\"Y2\"");
-    private TableColumnSourceExpressionParameter columnWidth = new TableColumnSourceExpressionParameter("\"Width\"");
-    private TableColumnSourceExpressionParameter columnHeight = new TableColumnSourceExpressionParameter("\"Height\"");
+    private TableColumnSourceExpressionParameter columnX1 = new TableColumnSourceExpressionParameter(TableColumnSourceExpressionParameter.TableSourceType.ExistingColumn, "\"X1\"");
+    private TableColumnSourceExpressionParameter columnY1 = new TableColumnSourceExpressionParameter(TableColumnSourceExpressionParameter.TableSourceType.ExistingColumn,"\"Y1\"");
+    private TableColumnSourceExpressionParameter columnX2 = new TableColumnSourceExpressionParameter(TableColumnSourceExpressionParameter.TableSourceType.ExistingColumn,"\"X2\"");
+    private TableColumnSourceExpressionParameter columnY2 = new TableColumnSourceExpressionParameter(TableColumnSourceExpressionParameter.TableSourceType.ExistingColumn,"\"Y2\"");
+    private TableColumnSourceExpressionParameter columnWidth = new TableColumnSourceExpressionParameter(TableColumnSourceExpressionParameter.TableSourceType.ExistingColumn,"\"Width\"");
+    private TableColumnSourceExpressionParameter columnHeight = new TableColumnSourceExpressionParameter(TableColumnSourceExpressionParameter.TableSourceType.ExistingColumn,"\"Height\"");
     private Anchor anchor = Anchor.TopLeft;
     private Mode mode = Mode.Rectangle;
 
@@ -103,8 +103,8 @@ public class TableToRectangularROIAlgorithm extends JIPipeSimpleIteratingAlgorit
         ResultsTableData table = dataBatch.getInputData(getFirstInputSlot(), ResultsTableData.class, progressInfo);
         ROIListData rois = new ROIListData();
 
-        TableColumn colX1 = columnX1.pickColumn(table);
-        TableColumn colY1 = columnY1.pickColumn(table);
+        TableColumn colX1 = columnX1.pickOrGenerateColumn(table);
+        TableColumn colY1 = columnY1.pickOrGenerateColumn(table);
         if (colX1 == null) {
             throw new UserFriendlyRuntimeException("Could not find column for X1!",
                     "The algorithm requires a column that provides coordinate X1.",
@@ -122,8 +122,8 @@ public class TableToRectangularROIAlgorithm extends JIPipeSimpleIteratingAlgorit
 
         if (anchor == Anchor.TopLeft || anchor == Anchor.Center) {
 
-            TableColumn colWidth = columnWidth.pickColumn(table);
-            TableColumn colHeight = columnHeight.pickColumn(table);
+            TableColumn colWidth = columnWidth.pickOrGenerateColumn(table);
+            TableColumn colHeight = columnHeight.pickOrGenerateColumn(table);
 
             if (colWidth == null) {
                 throw new UserFriendlyRuntimeException("Could not find column for width!",
@@ -157,8 +157,8 @@ public class TableToRectangularROIAlgorithm extends JIPipeSimpleIteratingAlgorit
                 createROI(rois, w, h, x, y);
             }
         } else {
-            TableColumn colX2 = columnX2.pickColumn(table);
-            TableColumn colY2 = columnY2.pickColumn(table);
+            TableColumn colX2 = columnX2.pickOrGenerateColumn(table);
+            TableColumn colY2 = columnY2.pickOrGenerateColumn(table);
             if (colX2 == null) {
                 throw new UserFriendlyRuntimeException("Could not find column for X2!",
                         "The algorithm requires a column that provides coordinate X2.",

@@ -104,7 +104,7 @@ public class PlotGeneratorAlgorithm extends JIPipeAlgorithm {
             // First generate real column data
             for (Map.Entry<String, JIPipeParameterAccess> entry : columnAssignments.getParameters().entrySet()) {
                 TableColumnSourceExpressionParameter parameter = entry.getValue().get(TableColumnSourceExpressionParameter.class);
-                seriesTable.setColumn(entry.getKey(), parameter.pickColumn(inputData), plotColumns.get(entry.getKey()).isNumeric());
+                seriesTable.setColumn(entry.getKey(), parameter.pickOrGenerateColumn(inputData), plotColumns.get(entry.getKey()).isNumeric());
             }
 
             if (seriesTable.getRowCount() == 0) {

@@ -46,7 +46,7 @@ import java.util.Set;
 @JIPipeOutputSlot(value = PathData.class, slotName = "Output", autoCreate = true)
 public class AnnotationTableToPaths extends JIPipeSimpleIteratingAlgorithm {
 
-    private TableColumnSourceExpressionParameter column = new TableColumnSourceExpressionParameter("\"data\"");
+    private TableColumnSourceExpressionParameter column = new TableColumnSourceExpressionParameter(TableColumnSourceExpressionParameter.TableSourceType.ExistingColumn, "\"data\"");
 
     /**
      * Instantiates the algorithm
@@ -70,7 +70,7 @@ public class AnnotationTableToPaths extends JIPipeSimpleIteratingAlgorithm {
     @Override
     protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
         AnnotationTableData tableData = dataBatch.getInputData(getFirstInputSlot(), AnnotationTableData.class, progressInfo);
-        TableColumn tableColumn = column.pickColumn(tableData);
+        TableColumn tableColumn = column.pickOrGenerateColumn(tableData);
         if (tableColumn == null) {
             throw new UserFriendlyRuntimeException("Could not find column that matches '" + column.toString() + "'!",
                     "Could not find column!",

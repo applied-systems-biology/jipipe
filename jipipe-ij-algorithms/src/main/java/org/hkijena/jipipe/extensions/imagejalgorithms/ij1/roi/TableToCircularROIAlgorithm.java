@@ -42,9 +42,9 @@ import org.hkijena.jipipe.extensions.tables.datatypes.TableColumn;
 @JIPipeOutputSlot(value = ROIListData.class, slotName = "Output")
 public class TableToCircularROIAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
-    private TableColumnSourceExpressionParameter columnX1 = new TableColumnSourceExpressionParameter();
-    private TableColumnSourceExpressionParameter columnY1 = new TableColumnSourceExpressionParameter();
-    private TableColumnSourceExpressionParameter columnRadius = new TableColumnSourceExpressionParameter();
+    private TableColumnSourceExpressionParameter columnX1 = new TableColumnSourceExpressionParameter(TableColumnSourceExpressionParameter.TableSourceType.ExistingColumn, "\"X\"");
+    private TableColumnSourceExpressionParameter columnY1 = new TableColumnSourceExpressionParameter(TableColumnSourceExpressionParameter.TableSourceType.ExistingColumn, "\"Y\"");
+    private TableColumnSourceExpressionParameter columnRadius = new TableColumnSourceExpressionParameter(TableColumnSourceExpressionParameter.TableSourceType.ExistingColumn, "\"Radius\"");
 
     /**
      * Instantiates a new node type.
@@ -57,9 +57,6 @@ public class TableToCircularROIAlgorithm extends JIPipeSimpleIteratingAlgorithm 
                 .addOutputSlot("Output", ROIListData.class, null)
                 .seal()
                 .build());
-        columnX1.setExpression("\"X\"");
-        columnY1.setExpression("\"Y\"");
-        columnRadius.setExpression("\"Radius\"");
     }
 
     /**
@@ -79,9 +76,9 @@ public class TableToCircularROIAlgorithm extends JIPipeSimpleIteratingAlgorithm 
         ResultsTableData table = dataBatch.getInputData(getFirstInputSlot(), ResultsTableData.class, progressInfo);
         ROIListData rois = new ROIListData();
 
-        TableColumn colX1 = columnX1.pickColumn(table);
-        TableColumn colY1 = columnY1.pickColumn(table);
-        TableColumn colRadius = columnRadius.pickColumn(table);
+        TableColumn colX1 = columnX1.pickOrGenerateColumn(table);
+        TableColumn colY1 = columnY1.pickOrGenerateColumn(table);
+        TableColumn colRadius = columnRadius.pickOrGenerateColumn(table);
         if (colX1 == null) {
             throw new UserFriendlyRuntimeException("Could not find column for X1!",
                     "The algorithm requires a column that provides coordinate X1.",

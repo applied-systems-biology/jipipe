@@ -16,34 +16,51 @@ package org.hkijena.jipipe.extensions.expressions;
 import org.hkijena.jipipe.api.JIPipeIssueReport;
 import org.hkijena.jipipe.api.JIPipeValidatable;
 import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
+import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
+import org.hkijena.jipipe.extensions.parameters.pairs.PairParameter;
+import org.hkijena.jipipe.extensions.parameters.pairs.PairParameterSettings;
 import org.hkijena.jipipe.extensions.tables.datatypes.DoubleArrayTableColumn;
 import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
 import org.hkijena.jipipe.extensions.tables.datatypes.StringArrayTableColumn;
 import org.hkijena.jipipe.extensions.tables.datatypes.TableColumn;
+import org.hkijena.jipipe.utils.StringUtils;
 
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.Objects;
+import java.util.Set;
 
 /**
  * Parameter that acts as source (via matching a column) or a generator
  */
-@ExpressionParameterSettings(variableSource = TableCellExpressionParameterVariableSource.class)
-public class TableColumnSourceExpressionParameter extends DefaultExpressionParameter implements JIPipeValidatable {
+@ExpressionParameterSettings(variableSource = TableColumnSourceExpressionParameter.VariableSource.class)
+@PairParameterSettings(keyLabel = "Column source", valueLabel = "Column name/value")
+public class TableColumnSourceExpressionParameter extends PairParameter<TableColumnSourceExpressionParameter.TableSourceType, DefaultExpressionParameter> implements JIPipeValidatable {
 
-    public static final String DOCUMENTATION_DESCRIPTION = "This parameter is an expression that has three modes: " +
-            "(1) Selecting an existing column by name, (2) Matching an existing column by boolean operators, and (3) Generating a new column based on a mathematical formula.<br/>" +
-            "<ol><li>Type in the name of the existing column. Put the name in double quotes. Example: <pre>\"Area\"</pre></li>" +
-            "<li>There will be two variables 'column_name' and 'column' available. The expression is repeated for all available columns. Example: <pre>\"Data\" IN column_name</pre></li>" +
-            "<li>There will be : 'row', 'num_rows', and 'num_cols'. Use them to generate values. Example: <pre>row^2</pre></li></ol>";
+    public static final String DOCUMENTATION_DESCRIPTION = "This parameter can be used to either select an existing column from a table or to generate a new column by providing a value for each row." +
+            "<ul>" +
+            "<li>Selecting columns by exact name: Type in the name of the column into the value field. Quotation marks are optional.</li>" +
+            "<li>Selecting columns by filtering: The value expression is called for each existing column and provided as variable 'value'. Return TRUE at any point to select the value. Example: <code>value == \"Mean\"</code></li>" +
+            "<li>Generating columns: The value expression is called for each row. Return a string or number. You have access to the other column values inside the row (as variables). Example: <code>Mean + 0.5 * X</code>. " +
+            "If you do not provide a valid expression, the expression itself is put in as column value (string)</li>" +
+            "</ul>";
 
     public TableColumnSourceExpressionParameter() {
+        super(TableColumnSourceExpressionParameter.TableSourceType.class, DefaultExpressionParameter.class);
+        setKey(TableSourceType.Generate);
+        setValue(new DefaultExpressionParameter());
     }
 
-    public TableColumnSourceExpressionParameter(String expression) {
-        super(expression);
+    public TableColumnSourceExpressionParameter(TableColumnSourceExpressionParameter.TableSourceType type, String expression) {
+        super(TableColumnSourceExpressionParameter.TableSourceType.class, DefaultExpressionParameter.class);
+        setKey(type);
+        setValue(new DefaultExpressionParameter(expression));
     }
 
-    public TableColumnSourceExpressionParameter(ExpressionParameter other) {
+    public TableColumnSourceExpressionParameter(TableColumnSourceExpressionParameter other) {
         super(other);
+        this.setKey(other.getKey());
+        this.setValue(new DefaultExpressionParameter(other.getValue()));
     }
 
     /**
@@ -53,55 +70,50 @@ public class TableColumnSourceExpressionParameter extends DefaultExpressionParam
      * @param table the table
      * @return the column
      */
-    public TableColumn pickColumn(ResultsTableData table) {
-        ExpressionVariables variableSet = new ExpressionVariables();
-        variableSet.set("num_rows", table.getRowCount());
-        variableSet.set("num_cols", table.getColumnCount());
+    public TableColumn pickOrGenerateColumn(ResultsTableData table) {
+        ExpressionVariables variables = new ExpressionVariables();
+        variables.set("num_rows", table.getRowCount());
+        variables.set("num_cols", table.getColumnCount());
 
-        // Option 1: Column name string
-        try {
-            String expression = getExpression();
-
-            // Apply user-friendliness fix
-//            if(!expression.startsWith("\"") && !expression.endsWith("\""))
-//                expression = "\"" + expression + "\"";
-
-            Object evaluationResult = getEvaluator().evaluate(expression, variableSet);
-            if (evaluationResult instanceof String) {
-                int columnIndex = table.getColumnIndex((String) evaluationResult);
+        if(getKey() == TableSourceType.ExistingColumn) {
+            // Try to parse the expression
+            try {
+                Object evaluationResult = getValue().evaluate(variables);
+                int columnIndex = table.getColumnIndex(StringUtils.nullToEmpty(evaluationResult));
                 if (columnIndex != -1) {
                     return table.getColumnReference(columnIndex);
                 }
-            }
-        } catch (Exception e) {
-        }
-
-        // Option 2: Column matching
-        for (int col = 0; col < table.getColumnCount(); col++) {
-            variableSet.set("column_name", table.getColumnName(col));
-            variableSet.set("column", col);
-            try {
-                Object evaluationResult = getEvaluator().evaluate(getExpression(), variableSet);
-                if (evaluationResult instanceof Boolean) {
-                    if ((boolean) evaluationResult) {
-                        return table.getColumnReference(col);
-                    }
-                }
             } catch (Exception e) {
             }
-        }
 
-        // Option 3: Column generation
-        try {
+            // Must be a column name
+            int columnIndex = table.getColumnIndex(getValue().getExpression());
+            if (columnIndex != -1) {
+                return table.getColumnReference(columnIndex);
+            }
+        }
+        else {
+            // Try to generate it
             Object[] rawData = new Object[table.getRowCount()];
             boolean isNumeric = true;
-            for (int row = 0; row < table.getRowCount(); row++) {
-                variableSet.set("row", row);
-                rawData[row] = getEvaluator().evaluate(getExpression(), variableSet);
-                if (!(rawData[row] instanceof Number))
-                    isNumeric = false;
+            try {
+                variables.set("num_rows", table.getRowCount());
+                for (int row = 0; row < table.getRowCount(); row++) {
+                    variables.set("row", row);
+                    for (int col = 0; col < table.getColumnCount(); col++) {
+                        variables.set(table.getColumnName(col), table.getValueAt(row, col));
+                    }
+                    rawData[row] = getValue().evaluate(variables);
+                    if (!(rawData[row] instanceof Number))
+                        isNumeric = false;
+                }
+            }
+            catch (Exception e) {
+                isNumeric = false;
             }
 
+            // Is a string value
+            Arrays.fill(rawData, getValue().getExpression());
             if (isNumeric) {
                 double[] data = new double[table.getRowCount()];
                 for (int row = 0; row < table.getRowCount(); row++) {
@@ -115,27 +127,52 @@ public class TableColumnSourceExpressionParameter extends DefaultExpressionParam
                 }
                 return new StringArrayTableColumn(data, "Generated");
             }
-
-        } catch (Exception e) {
         }
-
-        // Option 4: Column name equals expression
-        for (int col = 0; col < table.getColumnCount(); col++) {
-            if (Objects.equals(table.getColumnName(col), getExpression())) {
-                return table.getColumnReference(col);
-            }
-        }
-
         throw new UserFriendlyRuntimeException("Could not find column!",
                 "Could not find or generate column!",
                 "Table column source parameter",
-                "A node requested from you to specify a table column. You entered the expression '" + getExpression() + "', but it did not yield in a column.",
+                "A node requested from you to specify a table column. You entered the expression '" + getValue().getExpression() + "', but it did not yield in a column.",
                 "Check if the expression is correct. If you want an existing column, it should return a string. If you want to search for one, it should return a boolean value. " +
                         "If you want to generate one, it can return a number or string.");
     }
 
     @Override
     public void reportValidity(JIPipeIssueReport report) {
-        report.checkNonEmpty(getExpression(), this);
+        report.checkNonEmpty(getValue().getExpression(), this);
+    }
+
+    public static class VariableSource implements ExpressionParameterVariableSource {
+        private final static Set<ExpressionParameterVariable> VARIABLES;
+
+        static {
+            VARIABLES = new HashSet<>();
+            VARIABLES.add(new ExpressionParameterVariable("value", "For selecting columns: Contains the currently selected column. Return TRUE if the column should be selected.", "value"));
+            VARIABLES.add(new ExpressionParameterVariable("<Other column values>", "For generating columns: The values of the other columns are available as variables", ""));
+            VARIABLES.add(new ExpressionParameterVariable("Number of rows", "The number of rows within the table", "num_rows"));
+            VARIABLES.add(new ExpressionParameterVariable("Number of columns", "The number of columns within the table", "num_cols"));
+        }
+
+        @Override
+        public Set<ExpressionParameterVariable> getVariables(JIPipeParameterAccess parameterAccess) {
+            return VARIABLES;
+        }
+    }
+
+    public enum TableSourceType {
+        Generate,
+        ExistingColumn;
+
+
+        @Override
+        public String toString() {
+            switch (this) {
+                case Generate:
+                    return "Generate data";
+                case ExistingColumn:
+                    return "Select existing column";
+                default:
+                    throw new UnsupportedOperationException();
+            }
+        }
     }
 }

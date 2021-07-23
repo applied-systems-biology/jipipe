@@ -10,6 +10,10 @@ import org.hkijena.jipipe.api.nodes.JIPipeOutputSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.nodes.categories.TableNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
+import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
+import org.hkijena.jipipe.extensions.expressions.ExpressionParameterSettings;
+import org.hkijena.jipipe.extensions.expressions.ExpressionParameterVariable;
+import org.hkijena.jipipe.extensions.expressions.ExpressionParameterVariableSource;
 import org.hkijena.jipipe.extensions.expressions.ExpressionVariables;
 import org.hkijena.jipipe.extensions.parameters.pairs.PairParameterSettings;
 import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
@@ -17,7 +21,9 @@ import org.hkijena.jipipe.extensions.tables.parameters.collections.ExpressionTab
 import org.hkijena.jipipe.extensions.tables.parameters.processors.ExpressionTableColumnGeneratorProcessor;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @JIPipeDocumentation(name = "Apply expression per row", description = "Applies an expression for each row. The column values are available as variables.")
 @JIPipeOrganization(nodeTypeCategory = TableNodeTypeCategory.class)
@@ -67,6 +73,7 @@ public class ApplyExpressionPerRowAlgorithm extends JIPipeSimpleIteratingAlgorit
             "New columns are created if needed. Existing values are overwritten.")
     @JIPipeParameter("expression-list")
     @PairParameterSettings(singleRow = false, keyLabel = "Expression", valueLabel = "Column name")
+    @ExpressionParameterSettings(variableSource = VariableSource.class)
     public ExpressionTableColumnGeneratorProcessorParameterList getExpressionList() {
         return expressionList;
     }
@@ -74,5 +81,23 @@ public class ApplyExpressionPerRowAlgorithm extends JIPipeSimpleIteratingAlgorit
     @JIPipeParameter("expression-list")
     public void setExpressionList(ExpressionTableColumnGeneratorProcessorParameterList expressionList) {
         this.expressionList = expressionList;
+    }
+
+    public static class VariableSource implements ExpressionParameterVariableSource {
+        private final static Set<ExpressionParameterVariable> VARIABLES;
+
+        static {
+            VARIABLES = new HashSet<>();
+            VARIABLES.add(new ExpressionParameterVariable("<Other column values>", "The values of the other columns are available as variables", ""));
+            VARIABLES.add(new ExpressionParameterVariable("Table column index", "The column index", "column"));
+            VARIABLES.add(new ExpressionParameterVariable("Table column name", "The column name", "column_name"));
+            VARIABLES.add(new ExpressionParameterVariable("Number of rows", "The number of rows within the table", "num_rows"));
+            VARIABLES.add(new ExpressionParameterVariable("Number of columns", "The number of columns within the table", "num_cols"));
+        }
+
+        @Override
+        public Set<ExpressionParameterVariable> getVariables(JIPipeParameterAccess parameterAccess) {
+            return VARIABLES;
+        }
     }
 }
