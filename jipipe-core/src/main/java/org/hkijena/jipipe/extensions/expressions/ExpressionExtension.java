@@ -55,7 +55,7 @@ public class ExpressionExtension extends JIPipePrepackagedDefaultJavaExtension {
                 p -> new TableColumnSourceExpressionParameter((TableColumnSourceExpressionParameter) p),
                 "Column source",
                 "Defines a column source",
-                DefaultExpressionParameterEditorUI.class);
+                null);
         registerEnumParameterType("table-column-source:type",
                 TableColumnSourceExpressionParameter.TableSourceType.class,
                 "Column source type",

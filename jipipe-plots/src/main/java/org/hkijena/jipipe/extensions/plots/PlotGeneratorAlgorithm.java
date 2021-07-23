@@ -58,7 +58,7 @@ public class PlotGeneratorAlgorithm extends JIPipeAlgorithm {
 
     private JIPipeDataInfoRef plotType = new JIPipeDataInfoRef();
     private PlotData plotTypeParameters;
-    private JIPipeDynamicParameterCollection columnAssignments = new JIPipeDynamicParameterCollection(false);
+    private JIPipeDynamicParameterCollection inputColumns = new JIPipeDynamicParameterCollection(false);
 
     /**
      * Creates a new instance
@@ -70,7 +70,7 @@ public class PlotGeneratorAlgorithm extends JIPipeAlgorithm {
                 .addOutputSlot("Output", PlotData.class, null)
                 .seal()
                 .build());
-        registerSubParameter(columnAssignments);
+        registerSubParameter(inputColumns);
     }
 
     /**
@@ -83,7 +83,7 @@ public class PlotGeneratorAlgorithm extends JIPipeAlgorithm {
         this.plotType = new JIPipeDataInfoRef(other.plotType);
         if (other.plotTypeParameters != null)
             this.plotTypeParameters = (PlotData) other.plotTypeParameters.duplicate();
-        this.columnAssignments = new JIPipeDynamicParameterCollection(other.columnAssignments);
+        this.inputColumns = new JIPipeDynamicParameterCollection(other.inputColumns);
     }
 
     @Override
@@ -102,7 +102,7 @@ public class PlotGeneratorAlgorithm extends JIPipeAlgorithm {
             seriesTable.addRows(inputData.getRowCount());
 
             // First generate real column data
-            for (Map.Entry<String, JIPipeParameterAccess> entry : columnAssignments.getParameters().entrySet()) {
+            for (Map.Entry<String, JIPipeParameterAccess> entry : inputColumns.getParameters().entrySet()) {
                 TableColumnSourceExpressionParameter parameter = entry.getValue().get(TableColumnSourceExpressionParameter.class);
                 seriesTable.setColumn(entry.getKey(), parameter.pickOrGenerateColumn(inputData), plotColumns.get(entry.getKey()).isNumeric());
             }
@@ -149,8 +149,8 @@ public class PlotGeneratorAlgorithm extends JIPipeAlgorithm {
     }
 
     private void updateColumnAssignment() {
-        columnAssignments.beginModificationBlock();
-        columnAssignments.clear();
+        inputColumns.beginModificationBlock();
+        inputColumns.clear();
         if (plotType.getInfo() != null) {
             PlotMetadata plotMetadata = plotType.getInfo().getDataClass().getAnnotation(PlotMetadata.class);
             for (PlotColumn column : plotMetadata.columns()) {
@@ -161,10 +161,10 @@ public class PlotGeneratorAlgorithm extends JIPipeAlgorithm {
                 TableColumnSourceExpressionParameter initialValue = new TableColumnSourceExpressionParameter();
                 parameterAccess.set(initialValue);
                 parameterAccess.setDescription(column.description() + " " + (column.isNumeric() ? "(Numeric column)" : "(String column)") + "\n\n" + TableColumnSourceExpressionParameter.DOCUMENTATION_DESCRIPTION);
-                columnAssignments.addParameter(parameterAccess);
+                inputColumns.addParameter(parameterAccess);
             }
         }
-        columnAssignments.endModificationBlock();
+        inputColumns.endModificationBlock();
     }
 
     private void updatePlotTypeParameters() {
@@ -196,8 +196,8 @@ public class PlotGeneratorAlgorithm extends JIPipeAlgorithm {
 
     @JIPipeDocumentation(name = "Input columns", description = "Please define which input table columns are copied into the plot. " +
             "To find out which columns are available, run the quick run on input data. You can also generate missing columns.")
-    @JIPipeParameter(value = "column-assignments", persistence = JIPipeParameterPersistence.Object)
-    public JIPipeDynamicParameterCollection getColumnAssignments() {
-        return columnAssignments;
+    @JIPipeParameter(value = "input-columns", persistence = JIPipeParameterPersistence.Object)
+    public JIPipeDynamicParameterCollection getInputColumns() {
+        return inputColumns;
     }
 }
