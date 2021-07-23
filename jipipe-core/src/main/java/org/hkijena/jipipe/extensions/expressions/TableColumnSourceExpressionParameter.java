@@ -96,6 +96,7 @@ public class TableColumnSourceExpressionParameter extends PairParameter<TableCol
             // Try to generate it
             Object[] rawData = new Object[table.getRowCount()];
             boolean isNumeric = true;
+            boolean success = true;
             try {
                 variables.set("num_rows", table.getRowCount());
                 for (int row = 0; row < table.getRowCount(); row++) {
@@ -110,10 +111,13 @@ public class TableColumnSourceExpressionParameter extends PairParameter<TableCol
             }
             catch (Exception e) {
                 isNumeric = false;
+                success = false;
             }
 
-            // Is a string value
-            Arrays.fill(rawData, getValue().getExpression());
+            if(!success) {
+                // Is a string value
+                Arrays.fill(rawData, getValue().getExpression());
+            }
             if (isNumeric) {
                 double[] data = new double[table.getRowCount()];
                 for (int row = 0; row < table.getRowCount(); row++) {
