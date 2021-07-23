@@ -44,17 +44,6 @@ public class ConverterAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     @Override
     protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
-        dataBatch.addOutputData(getFirstOutputSlot(), dataBatch.getInputData(getFirstInputSlot(), getFirstInputSlot().getAcceptedDataType(), progressInfo), progressInfo);
-    }
-
-    @Override
-    public void reportValidity(JIPipeIssueReport report) {
-        super.reportValidity(report);
-        if (!JIPipe.getDataTypes().isConvertible(getFirstInputSlot().getAcceptedDataType(), getFirstOutputSlot().getAcceptedDataType())) {
-            report.resolve("Data").reportIsInvalid("Cannot convert input to output data!",
-                    "JIPipe is not aware of any conversion from the input type to the output type.",
-                    "Please select compatible types.",
-                    this);
-        }
+        dataBatch.addOutputData(getFirstOutputSlot(), dataBatch.getInputData(getFirstInputSlot(), JIPipeData.class, progressInfo), progressInfo);
     }
 }
