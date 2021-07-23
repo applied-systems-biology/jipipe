@@ -56,6 +56,10 @@ public class ExpressionExtension extends JIPipePrepackagedDefaultJavaExtension {
                 "Column source",
                 "Defines a column source",
                 DefaultExpressionParameterEditorUI.class);
+        registerEnumParameterType("table-column-source:type",
+                TableColumnSourceExpressionParameter.TableSourceType.class,
+                "Column source type",
+                "Type of column source");
         registerParameterType("annotation-query-expression",
                 AnnotationQueryExpression.class,
                 null,
