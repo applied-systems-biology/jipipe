@@ -34,6 +34,7 @@ import org.hkijena.jipipe.api.nodes.categories.MiscellaneousNodeTypeCategory;
 public class ConverterAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     public ConverterAlgorithm(JIPipeNodeInfo info) {
         super(info, JIPipeDefaultMutableSlotConfiguration.builder()
+                .sealInput()
                 .addInputSlot("Input", JIPipeData.class)
                 .restrictOutputSlotCount(1).build());
     }
