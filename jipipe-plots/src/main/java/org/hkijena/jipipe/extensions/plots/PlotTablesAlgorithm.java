@@ -18,10 +18,9 @@ import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeIssueReport;
 import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
+import org.hkijena.jipipe.api.data.JIPipeAnnotation;
 import org.hkijena.jipipe.api.data.JIPipeAnnotationMergeStrategy;
 import org.hkijena.jipipe.api.data.JIPipeDefaultMutableSlotConfiguration;
-import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
-import org.hkijena.jipipe.api.nodes.JIPipeAlgorithm;
 import org.hkijena.jipipe.api.nodes.JIPipeGraph;
 import org.hkijena.jipipe.api.nodes.JIPipeInputSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeMergingAlgorithm;
@@ -34,6 +33,11 @@ import org.hkijena.jipipe.api.parameters.JIPipeMutableParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterPersistence;
+import org.hkijena.jipipe.extensions.expressions.ExpressionParameterSettings;
+import org.hkijena.jipipe.extensions.expressions.ExpressionParameterVariable;
+import org.hkijena.jipipe.extensions.expressions.ExpressionParameterVariableSource;
+import org.hkijena.jipipe.extensions.expressions.ExpressionVariables;
+import org.hkijena.jipipe.extensions.expressions.StringQueryExpression;
 import org.hkijena.jipipe.extensions.expressions.TableColumnSourceExpressionParameter;
 import org.hkijena.jipipe.extensions.parameters.editors.JIPipeDataParameterSettings;
 import org.hkijena.jipipe.extensions.parameters.references.JIPipeDataInfoRef;
@@ -46,8 +50,11 @@ import org.hkijena.jipipe.ui.plotbuilder.PlotDataClassFilter;
 import org.scijava.Priority;
 
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 
 /**
  * Algorithm that creates {@link PlotData} from {@link ResultsTableData}
@@ -58,18 +65,19 @@ import java.util.Objects;
 @JIPipeOrganization(nodeTypeCategory = TableNodeTypeCategory.class)
 @JIPipeInputSlot(ResultsTableData.class)
 @JIPipeOutputSlot(PlotData.class)
-public class PlotGeneratorAlgorithm extends JIPipeMergingAlgorithm {
+public class PlotTablesAlgorithm extends JIPipeMergingAlgorithm {
 
     private JIPipeDataInfoRef plotType = new JIPipeDataInfoRef();
     private PlotData plotTypeParameters;
     private JIPipeDynamicParameterCollection inputColumns = new JIPipeDynamicParameterCollection(false);
+    private StringQueryExpression seriesName = new StringQueryExpression("SUMMARIZE_VARIABLES()");
 
     /**
      * Creates a new instance
      *
      * @param info The algorithm info
      */
-    public PlotGeneratorAlgorithm(JIPipeNodeInfo info) {
+    public PlotTablesAlgorithm(JIPipeNodeInfo info) {
         super(info, JIPipeDefaultMutableSlotConfiguration.builder().addInputSlot("Input", ResultsTableData.class)
                 .addOutputSlot("Output", PlotData.class, null)
                 .seal()
@@ -82,12 +90,13 @@ public class PlotGeneratorAlgorithm extends JIPipeMergingAlgorithm {
      *
      * @param other the original
      */
-    public PlotGeneratorAlgorithm(PlotGeneratorAlgorithm other) {
+    public PlotTablesAlgorithm(PlotTablesAlgorithm other) {
         super(other);
         this.plotType = new JIPipeDataInfoRef(other.plotType);
         if (other.plotTypeParameters != null)
             this.plotTypeParameters = (PlotData) other.plotTypeParameters.duplicate();
         this.inputColumns = new JIPipeDynamicParameterCollection(other.inputColumns);
+        this.seriesName = new StringQueryExpression(other.seriesName);
     }
 
     @Override
@@ -106,13 +115,21 @@ public class PlotGeneratorAlgorithm extends JIPipeMergingAlgorithm {
             ResultsTableData seriesTable = new ResultsTableData();
             seriesTable.addRows(inputData.getRowCount());
 
+            ExpressionVariables variables = new ExpressionVariables();
+            List<JIPipeAnnotation> originalAnnotations = getFirstInputSlot().getAnnotations(row);
+            for (JIPipeAnnotation annotation : originalAnnotations) {
+                variables.set(annotation.getName(), annotation.getValue());
+            }
+
            // Generate series
             for (Map.Entry<String, JIPipeParameterAccess> entry : inputColumns.getParameters().entrySet()) {
                 TableColumnSourceExpressionParameter parameter = entry.getValue().get(TableColumnSourceExpressionParameter.class);
                 seriesTable.setColumn(entry.getKey(), parameter.pickOrGenerateColumn(inputData), plotColumns.get(entry.getKey()).isNumeric());
             }
 
-            plot.addSeries(new PlotDataSeries(seriesTable.getTable()));
+            PlotDataSeries series = new PlotDataSeries(seriesTable.getTable());
+            series.setName(seriesName.generate(variables));
+            plot.addSeries(series);
 
             // Increment the series counter
             seriesCounter += 1;
@@ -208,5 +225,34 @@ public class PlotGeneratorAlgorithm extends JIPipeMergingAlgorithm {
     @JIPipeParameter(value = "input-columns", persistence = JIPipeParameterPersistence.Object)
     public JIPipeDynamicParameterCollection getInputColumns() {
         return inputColumns;
+    }
+
+    @JIPipeDocumentation(name = "Series name", description = "Expression that is used to generate the series name")
+    @JIPipeParameter("series-name")
+    @ExpressionParameterSettings(variableSource = VariableSource.class)
+    public StringQueryExpression getSeriesName() {
+        return seriesName;
+    }
+
+    @JIPipeParameter("series-name")
+    public void setSeriesName(StringQueryExpression seriesName) {
+        this.seriesName = seriesName;
+    }
+
+    public static class VariableSource implements ExpressionParameterVariableSource {
+
+        public static final Set<ExpressionParameterVariable> VARIABLES;
+
+        static {
+            VARIABLES = new HashSet<>();
+            VARIABLES.add(new ExpressionParameterVariable("<Annotations>",
+                    "Data annotations of the incoming data are available as variables named after their column names (use Update Cache to find the list of annotations)",
+                    ""));
+        }
+
+        @Override
+        public Set<ExpressionParameterVariable> getVariables(JIPipeParameterAccess parameterAccess) {
+            return VARIABLES;
+        }
     }
 }
