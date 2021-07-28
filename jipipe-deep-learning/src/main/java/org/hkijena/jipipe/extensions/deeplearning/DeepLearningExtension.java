@@ -82,8 +82,7 @@ public class DeepLearningExtension extends JIPipePrepackagedDefaultJavaExtension
 
     @Override
     public List<ImageIcon> getSplashIcons() {
-        return Arrays.asList(UIUtils.getIcon32FromResources("apps/tensorflow.png"),
-                UIUtils.getIcon32FromResources("apps/keras.png"));
+        return Arrays.asList(UIUtils.getIcon32FromResources("apps/tensorflow.png"));
     }
 
     @Override
