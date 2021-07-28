@@ -77,6 +77,31 @@ public interface JIPipeParameterCollection {
     }
 
     /**
+     * Sets a parameter and triggers the associated events
+     *
+     * @param key        the parameter key
+     * @param value      the parameter value
+     * @return if the parameter could be set
+     */
+    default boolean setParameter(String key, Object value) {
+        JIPipeParameterTree tree = new JIPipeParameterTree(this);
+        return tree.getParameters().get(key).set(value);
+    }
+
+    /**
+     * Gets a parameter
+     *
+     * @param key        the parameter key
+     * @param klass      the parameter class
+     * @param <T>        the parameter class
+     * @return the current value
+     */
+    default <T> T getParameter(String key, Class<T> klass) {
+        JIPipeParameterTree tree = new JIPipeParameterTree(this);
+        return tree.getParameters().get(key).get(klass);
+    }
+
+    /**
      * Gets the event bus that posts events about the parameters
      *
      * @return The event bus triggering {@link ParameterChangedEvent} and {@link ParameterStructureChangedEvent}
