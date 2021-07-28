@@ -28,7 +28,7 @@ public class TensorFlowEnvInstaller extends BasicMinicondaEnvPythonInstaller {
         setConfiguration(new Configuration());
 //        getConfiguration().setCondaDownloadURL(getLatestPy37Download());
         getConfiguration().setInstallationPath(Paths.get("jipipe").resolve("tensorflow"));
-        getConfiguration().setName("Deep Learning Toolkit");
+        getConfiguration().setName("Tensorflow");
     }
 
     @Override
