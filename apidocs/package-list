@@ -39,6 +39,7 @@ org.hkijena.jipipe.extensions.deeplearning
 org.hkijena.jipipe.extensions.deeplearning.configs
 org.hkijena.jipipe.extensions.deeplearning.datatypes
 org.hkijena.jipipe.extensions.deeplearning.enums
+org.hkijena.jipipe.extensions.deeplearning.environments
 org.hkijena.jipipe.extensions.deeplearning.nodes
 org.hkijena.jipipe.extensions.expressions
 org.hkijena.jipipe.extensions.expressions.constants
@@ -63,6 +64,7 @@ org.hkijena.jipipe.extensions.imagejalgorithms.ij1.analyze
 org.hkijena.jipipe.extensions.imagejalgorithms.ij1.background
 org.hkijena.jipipe.extensions.imagejalgorithms.ij1.binary
 org.hkijena.jipipe.extensions.imagejalgorithms.ij1.blur
+org.hkijena.jipipe.extensions.imagejalgorithms.ij1.calibration
 org.hkijena.jipipe.extensions.imagejalgorithms.ij1.color
 org.hkijena.jipipe.extensions.imagejalgorithms.ij1.contrast
 org.hkijena.jipipe.extensions.imagejalgorithms.ij1.convert
@@ -75,13 +77,17 @@ org.hkijena.jipipe.extensions.imagejalgorithms.ij1.fft
 org.hkijena.jipipe.extensions.imagejalgorithms.ij1.forms
 org.hkijena.jipipe.extensions.imagejalgorithms.ij1.generate
 org.hkijena.jipipe.extensions.imagejalgorithms.ij1.io
+org.hkijena.jipipe.extensions.imagejalgorithms.ij1.labels
 org.hkijena.jipipe.extensions.imagejalgorithms.ij1.lut
 org.hkijena.jipipe.extensions.imagejalgorithms.ij1.math
+org.hkijena.jipipe.extensions.imagejalgorithms.ij1.math.distancemap
+org.hkijena.jipipe.extensions.imagejalgorithms.ij1.math.local
 org.hkijena.jipipe.extensions.imagejalgorithms.ij1.misc
 org.hkijena.jipipe.extensions.imagejalgorithms.ij1.morphology
 org.hkijena.jipipe.extensions.imagejalgorithms.ij1.noise
 org.hkijena.jipipe.extensions.imagejalgorithms.ij1.opticalflow
 org.hkijena.jipipe.extensions.imagejalgorithms.ij1.roi
+org.hkijena.jipipe.extensions.imagejalgorithms.ij1.segment
 org.hkijena.jipipe.extensions.imagejalgorithms.ij1.sharpen
 org.hkijena.jipipe.extensions.imagejalgorithms.ij1.statistics
 org.hkijena.jipipe.extensions.imagejalgorithms.ij1.threshold
@@ -142,6 +148,7 @@ org.hkijena.jipipe.extensions.parameters.optional
 org.hkijena.jipipe.extensions.parameters.pairs
 org.hkijena.jipipe.extensions.parameters.patterns
 org.hkijena.jipipe.extensions.parameters.primitives
+org.hkijena.jipipe.extensions.parameters.quantities
 org.hkijena.jipipe.extensions.parameters.ranges
 org.hkijena.jipipe.extensions.parameters.references
 org.hkijena.jipipe.extensions.parameters.roi
@@ -205,6 +212,7 @@ org.hkijena.jipipe.ui.grapheditor.connections
 org.hkijena.jipipe.ui.grapheditor.contextmenu
 org.hkijena.jipipe.ui.grapheditor.contextmenu.clipboard
 org.hkijena.jipipe.ui.grapheditor.layout
+org.hkijena.jipipe.ui.grapheditor.nodeui
 org.hkijena.jipipe.ui.grapheditor.settings
 org.hkijena.jipipe.ui.grouping
 org.hkijena.jipipe.ui.ijupdater
@@ -221,3 +229,8 @@ org.hkijena.jipipe.ui.tableeditor
 org.hkijena.jipipe.ui.texteditor
 org.hkijena.jipipe.ui.theme
 org.hkijena.jipipe.utils
+org.hkijena.jipipe.utils.classfilters
+org.hkijena.jipipe.utils.json
+org.hkijena.jipipe.utils.scripting
+org.hkijena.jipipe.utils.search
+org.hkijena.jipipe.utils.ui
