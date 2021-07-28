@@ -13,11 +13,11 @@
 
 package org.hkijena.jipipe.extensions.parameters;
 
-import org.hkijena.jipipe.api.JIPipeOrganization;
+import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.components.DocumentTabPane;
-import org.hkijena.jipipe.ui.extension.MenuExtension;
-import org.hkijena.jipipe.ui.extension.MenuTarget;
+import org.hkijena.jipipe.ui.extension.JIPipeMenuExtension;
+import org.hkijena.jipipe.ui.extension.JIPipeMenuExtensionTarget;
 import org.hkijena.jipipe.utils.ParameterUITester;
 import org.hkijena.jipipe.utils.UIUtils;
 
@@ -27,14 +27,13 @@ import java.awt.event.ActionListener;
 /**
  * Adds an entry "New table" to the JIPipe menu
  */
-@JIPipeOrganization(menuExtensionTarget = MenuTarget.ProjectToolsMenu, menuPath = "Development")
-public class ParameterTesterMenuExtension extends MenuExtension implements ActionListener {
+public class ParameterTesterJIPipeMenuExtension extends JIPipeMenuExtension implements ActionListener {
     /**
      * Creates a new instance
      *
      * @param workbench workbench the extension is attached to
      */
-    public ParameterTesterMenuExtension(JIPipeWorkbench workbench) {
+    public ParameterTesterJIPipeMenuExtension(JIPipeWorkbench workbench) {
         super(workbench);
         setText("Show all parameter editors");
         setToolTipText("Opens a UI that shows all parameter types and their editors. This is useful for development.");
@@ -48,5 +47,15 @@ public class ParameterTesterMenuExtension extends MenuExtension implements Actio
         getWorkbench().getDocumentTabPane().addTab("Registered JIPipe parameters", UIUtils.getIconFromResources("actions/bug.png"),
                 tester, DocumentTabPane.CloseMode.withSilentCloseButton, true);
         getWorkbench().getDocumentTabPane().switchToLastTab();
+    }
+
+    @Override
+    public JIPipeMenuExtensionTarget getMenuTarget() {
+        return JIPipeMenuExtensionTarget.ProjectToolsMenu;
+    }
+
+    @Override
+    public String getMenuPath() {
+        return "Development";
     }
 }

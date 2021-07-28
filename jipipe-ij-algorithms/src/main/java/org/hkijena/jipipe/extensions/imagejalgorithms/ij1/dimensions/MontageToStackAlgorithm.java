@@ -18,7 +18,7 @@ import ij.ImageStack;
 import ij.plugin.StackMaker;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeIssueReport;
-import org.hkijena.jipipe.api.JIPipeOrganization;
+import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.JIPipeDataBatch;
 import org.hkijena.jipipe.api.nodes.JIPipeInputSlot;
@@ -35,7 +35,7 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d3.ImagePlus3DDat
  * Implementation of {@link ij.plugin.MontageMaker}
  */
 @JIPipeDocumentation(name = "Montage to stack", description = "Slices an image montage into a stack.")
-@JIPipeOrganization(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Dimensions")
+@JIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Dimensions")
 @JIPipeInputSlot(value = ImagePlus2DData.class, slotName = "Input", autoCreate = true)
 @JIPipeOutputSlot(value = ImagePlus3DData.class, slotName = "Output", inheritedSlot = "Input", autoCreate = true)
 public class MontageToStackAlgorithm extends JIPipeIteratingAlgorithm {

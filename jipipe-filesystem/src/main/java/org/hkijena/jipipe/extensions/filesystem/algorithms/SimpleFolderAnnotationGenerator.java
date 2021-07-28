@@ -16,7 +16,7 @@ package org.hkijena.jipipe.extensions.filesystem.algorithms;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeHidden;
 import org.hkijena.jipipe.api.JIPipeIssueReport;
-import org.hkijena.jipipe.api.JIPipeOrganization;
+import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeAnnotation;
 import org.hkijena.jipipe.api.data.JIPipeAnnotationMergeStrategy;
@@ -37,7 +37,7 @@ import org.hkijena.jipipe.utils.StringUtils;
  * Algorithm that generates annotations from folder names
  */
 @JIPipeDocumentation(name = "Folders to annotations", description = "Creates an annotation for each path based on its name")
-@JIPipeOrganization(nodeTypeCategory = AnnotationsNodeTypeCategory.class, menuPath = "Generate")
+@JIPipeNode(nodeTypeCategory = AnnotationsNodeTypeCategory.class, menuPath = "Generate")
 @JIPipeInputSlot(value = PathData.class, slotName = "Folders", autoCreate = true)
 @JIPipeOutputSlot(value = PathData.class, slotName = "Annotated folders", autoCreate = true)
 @JIPipeHidden

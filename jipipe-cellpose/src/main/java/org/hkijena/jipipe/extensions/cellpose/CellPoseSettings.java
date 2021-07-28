@@ -4,6 +4,7 @@ import com.google.common.eventbus.EventBus;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeIssueReport;
+import org.hkijena.jipipe.api.environments.ExternalEnvironmentParameterSettings;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.extensions.python.OptionalPythonEnvironment;
@@ -31,6 +32,7 @@ public class CellPoseSettings implements JIPipeParameterCollection {
             "Alternatively, the standard Python environment from the Python extension is used. Please ensure that CellPose is installed. " +
             "You can also install CellPose via the Select/Install button (CPU and GPU supported).")
     @JIPipeParameter("python-environment")
+    @ExternalEnvironmentParameterSettings(showCategory = "Cellppose")
     public OptionalPythonEnvironment getOverridePythonEnvironment() {
         return overridePythonEnvironment;
     }

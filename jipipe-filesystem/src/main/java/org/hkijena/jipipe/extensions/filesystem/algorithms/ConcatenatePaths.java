@@ -14,7 +14,7 @@
 package org.hkijena.jipipe.extensions.filesystem.algorithms;
 
 import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeOrganization;
+import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.JIPipeDataBatch;
 import org.hkijena.jipipe.api.nodes.JIPipeInputSlot;
@@ -28,7 +28,7 @@ import org.hkijena.jipipe.extensions.filesystem.dataypes.PathData;
  * Applies subfolder navigation to each input folder
  */
 @JIPipeDocumentation(name = "Concatenate paths", description = "Concatenates two paths")
-@JIPipeOrganization(menuPath = "Modify", nodeTypeCategory = FileSystemNodeTypeCategory.class)
+@JIPipeNode(menuPath = "Modify", nodeTypeCategory = FileSystemNodeTypeCategory.class)
 
 
 @JIPipeInputSlot(value = PathData.class, slotName = "Left", autoCreate = true)

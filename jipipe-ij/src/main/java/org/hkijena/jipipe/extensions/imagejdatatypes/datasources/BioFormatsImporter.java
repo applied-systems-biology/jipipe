@@ -23,7 +23,7 @@ import ome.xml.meta.OMEXMLMetadata;
 import ome.xml.model.enums.DimensionOrder;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeIssueReport;
-import org.hkijena.jipipe.api.JIPipeOrganization;
+import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeAnnotation;
 import org.hkijena.jipipe.api.data.JIPipeAnnotationMergeStrategy;
@@ -55,7 +55,7 @@ import java.util.List;
 @JIPipeDocumentation(name = "Bio-Formats importer", description = "Imports images via the Bio-Formats plugin")
 @JIPipeInputSlot(value = FileData.class, slotName = "Files")
 @JIPipeOutputSlot(value = OMEImageData.class, slotName = "Image")
-@JIPipeOrganization(nodeTypeCategory = DataSourceNodeTypeCategory.class)
+@JIPipeNode(nodeTypeCategory = DataSourceNodeTypeCategory.class)
 public class BioFormatsImporter extends JIPipeSimpleIteratingAlgorithm {
 
     private OMEColorMode colorMode = OMEColorMode.Default;

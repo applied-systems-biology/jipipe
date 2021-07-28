@@ -2,7 +2,7 @@ package org.hkijena.jipipe.extensions.imagejalgorithms.ij1.roi;
 
 import ij.gui.Roi;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeOrganization;
+import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.JIPipeDataBatch;
 import org.hkijena.jipipe.api.nodes.JIPipeInputSlot;
@@ -21,7 +21,7 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.util.HyperstackDimension;
         "Unlike the equivalent method for images, this node allows to have non-unique mappings.")
 @JIPipeInputSlot(value = ROIListData.class, slotName = "Input", autoCreate = true)
 @JIPipeOutputSlot(value = ROIListData.class, slotName = "Output", autoCreate = true)
-@JIPipeOrganization(nodeTypeCategory = RoiNodeTypeCategory.class, menuPath = "Modify")
+@JIPipeNode(nodeTypeCategory = RoiNodeTypeCategory.class, menuPath = "Modify")
 public class ReorderRoiDimensionsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     private HyperstackDimension targetZ = HyperstackDimension.Depth;

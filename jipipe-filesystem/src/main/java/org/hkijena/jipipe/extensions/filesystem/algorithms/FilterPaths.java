@@ -14,7 +14,7 @@
 package org.hkijena.jipipe.extensions.filesystem.algorithms;
 
 import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeOrganization;
+import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeAnnotation;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
@@ -40,7 +40,7 @@ import java.nio.file.Path;
  * Filters input files
  */
 @JIPipeDocumentation(name = "Filter paths", description = "Filters the paths (files/folders) by their name or absolute path")
-@JIPipeOrganization(menuPath = "Filter", nodeTypeCategory = FileSystemNodeTypeCategory.class)
+@JIPipeNode(menuPath = "Filter", nodeTypeCategory = FileSystemNodeTypeCategory.class)
 
 
 @JIPipeInputSlot(value = PathData.class, slotName = "Input", autoCreate = true)

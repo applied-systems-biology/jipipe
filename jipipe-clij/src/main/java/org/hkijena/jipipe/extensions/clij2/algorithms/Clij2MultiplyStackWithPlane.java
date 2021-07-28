@@ -5,7 +5,7 @@ import net.haesleinhuepf.clij.clearcl.ClearCLBuffer;
 import net.haesleinhuepf.clij2.CLIJ2;
 import net.haesleinhuepf.clij2.plugins.MultiplyStackWithPlane;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeOrganization;
+import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.JIPipeDataBatch;
 import org.hkijena.jipipe.api.nodes.JIPipeInputSlot;
@@ -19,7 +19,7 @@ import org.hkijena.jipipe.extensions.clij2.datatypes.CLIJImageData;
  * CLIJ2 algorithm ported from {@link net.haesleinhuepf.clij2.plugins.MultiplyStackWithPlane}
  */
 @JIPipeDocumentation(name = "CLIJ2 Multiply Stack With Plane", description = "Multiplies all pairs of pixel values x and y from an image stack X and a 2D image Y. " + "x and y are at " + "the same spatial position within a plane." + "<pre>f(x, y) = x * y</pre> Works for following image dimensions: 3D (first parameter), 2D (second parameter), 3D (result).")
-@JIPipeOrganization(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Math")
+@JIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Math")
 @JIPipeInputSlot(value = CLIJImageData.class, slotName = "input3d", autoCreate = true)
 @JIPipeInputSlot(value = CLIJImageData.class, slotName = "input2d", autoCreate = true)
 @JIPipeOutputSlot(value = CLIJImageData.class, slotName = "output3d", autoCreate = true)

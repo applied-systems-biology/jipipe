@@ -14,7 +14,7 @@
 package org.hkijena.jipipe.extensions.multiparameters.datasources;
 
 import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeOrganization;
+import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeAlgorithm;
@@ -30,7 +30,7 @@ import org.hkijena.jipipe.extensions.parameters.table.ParameterTable;
  */
 @JIPipeDocumentation(name = "Define multiple parameters", description = "Defines algorithm parameters that can be consumed by a multi-parameter algorithm")
 @JIPipeOutputSlot(value = ParametersData.class, slotName = "Parameters", autoCreate = true)
-@JIPipeOrganization(nodeTypeCategory = DataSourceNodeTypeCategory.class)
+@JIPipeNode(nodeTypeCategory = DataSourceNodeTypeCategory.class)
 public class ParametersDataTableDefinition extends JIPipeAlgorithm {
 
     private ParameterTable parameterTable = new ParameterTable();

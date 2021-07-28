@@ -1,7 +1,7 @@
 package org.hkijena.jipipe.extensions.imagejalgorithms.ij1.generate;
 
 import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeOrganization;
+import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
@@ -16,7 +16,7 @@ import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
 
 @JIPipeDocumentation(name = "Generate missing tables", description = "Generates placeholder or empty tables for data that are not paired " +
         "with a matching table in the same data batch. " + JIPipeMissingDataGeneratorAlgorithm.GENERATOR_ALGORITHM_DESCRIPTION)
-@JIPipeOrganization(nodeTypeCategory = DataSourceNodeTypeCategory.class)
+@JIPipeNode(nodeTypeCategory = DataSourceNodeTypeCategory.class)
 @JIPipeInputSlot(value = JIPipeData.class, slotName = "Data", autoCreate = true)
 @JIPipeInputSlot(value = ResultsTableData.class, slotName = "ROI", autoCreate = true, optional = true)
 @JIPipeOutputSlot(value = ResultsTableData.class, slotName = "ROI", autoCreate = true)

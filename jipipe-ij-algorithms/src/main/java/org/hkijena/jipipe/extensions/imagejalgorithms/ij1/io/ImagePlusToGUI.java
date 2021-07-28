@@ -14,7 +14,7 @@
 package org.hkijena.jipipe.extensions.imagejalgorithms.ij1.io;
 
 import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeOrganization;
+import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.JIPipeDataBatch;
 import org.hkijena.jipipe.api.nodes.JIPipeInputSlot;
@@ -30,7 +30,7 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 @JIPipeDocumentation(name = "Image to ImageJ", description = "Opens all incoming images in ImageJ")
 @JIPipeInputSlot(value = ImagePlusData.class, slotName = "Input", autoCreate = true)
 @JIPipeOutputSlot(value = ImagePlusData.class, slotName = "Output", autoCreate = true)
-@JIPipeOrganization(nodeTypeCategory = ImagesNodeTypeCategory.class)
+@JIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class)
 public class ImagePlusToGUI extends JIPipeSimpleIteratingAlgorithm {
 
     public ImagePlusToGUI(JIPipeNodeInfo info) {

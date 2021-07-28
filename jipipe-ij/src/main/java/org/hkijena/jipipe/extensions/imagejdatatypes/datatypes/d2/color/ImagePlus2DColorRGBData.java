@@ -16,7 +16,7 @@ package org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d2.color;
 import ij.ImagePlus;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeHeavyData;
-import org.hkijena.jipipe.api.JIPipeOrganization;
+import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.extensions.imagejdatatypes.color.ColorSpace;
 import org.hkijena.jipipe.extensions.imagejdatatypes.color.RGBColorSpace;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
@@ -32,7 +32,7 @@ import java.nio.file.Path;
  * RGB colored 2D image
  */
 @JIPipeDocumentation(name = "2D image (RGB)")
-@JIPipeOrganization(menuPath = "Images\n2D\nColor")
+@JIPipeNode(menuPath = "Images\n2D\nColor")
 @JIPipeHeavyData
 public class ImagePlus2DColorRGBData extends ImagePlus2DColorData implements ColoredImagePlusData {
 

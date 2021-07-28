@@ -16,7 +16,7 @@ package org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d5.color;
 import ij.ImagePlus;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeHeavyData;
-import org.hkijena.jipipe.api.JIPipeOrganization;
+import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.extensions.imagejdatatypes.color.ColorSpace;
 import org.hkijena.jipipe.extensions.imagejdatatypes.color.LABColorSpace;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
@@ -33,7 +33,7 @@ import java.nio.file.Path;
  * RGB color 5D image
  */
 @JIPipeDocumentation(name = "5D image (LAB)")
-@JIPipeOrganization(menuPath = "Images\n5D\nColor")
+@JIPipeNode(menuPath = "Images\n5D\nColor")
 @JIPipeHeavyData
 public class ImagePlus5DColorLABData extends ImagePlus5DColorData implements ColoredImagePlusData {
 

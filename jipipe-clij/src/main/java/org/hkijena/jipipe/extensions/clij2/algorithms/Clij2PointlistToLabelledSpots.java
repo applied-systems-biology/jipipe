@@ -5,7 +5,7 @@ import net.haesleinhuepf.clij.clearcl.ClearCLBuffer;
 import net.haesleinhuepf.clij2.CLIJ2;
 import net.haesleinhuepf.clij2.plugins.PointlistToLabelledSpots;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeOrganization;
+import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.JIPipeDataBatch;
 import org.hkijena.jipipe.api.nodes.JIPipeInputSlot;
@@ -19,7 +19,7 @@ import org.hkijena.jipipe.extensions.clij2.datatypes.CLIJImageData;
  * CLIJ2 algorithm ported from {@link net.haesleinhuepf.clij2.plugins.PointlistToLabelledSpots}
  */
 @JIPipeDocumentation(name = "CLIJ2 Pointlist To Labelled Spots", description = "Takes a pointlist with dimensions n*d with n point coordinates in d dimensions and a touch matrix of " + "size n*n to draw lines from all points to points if the corresponding pixel in the touch matrix is 1. Works for following image dimensions: 2D, 3D.")
-@JIPipeOrganization(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Point list")
+@JIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Point list")
 @JIPipeInputSlot(value = CLIJImageData.class, slotName = "pointlist", autoCreate = true)
 @JIPipeOutputSlot(value = CLIJImageData.class, slotName = "labelledSpots", autoCreate = true)
 

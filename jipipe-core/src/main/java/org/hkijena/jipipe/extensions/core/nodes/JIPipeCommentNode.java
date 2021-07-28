@@ -2,7 +2,7 @@ package org.hkijena.jipipe.extensions.core.nodes;
 
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeIssueReport;
-import org.hkijena.jipipe.api.JIPipeOrganization;
+import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
@@ -19,7 +19,7 @@ import java.awt.Color;
         "This nodes has no workload attached to it and will connect to any data type. It requires no input and produces no output.")
 @JIPipeInputSlot(value = JIPipeData.class, slotName = "Comment", autoCreate = true, optional = true)
 @JIPipeOutputSlot(value = JIPipeData.class, slotName = "Comment", autoCreate = true)
-@JIPipeOrganization(nodeTypeCategory = MiscellaneousNodeTypeCategory.class)
+@JIPipeNode(nodeTypeCategory = MiscellaneousNodeTypeCategory.class)
 public class JIPipeCommentNode extends JIPipeGraphNode {
 
     private Color backgroundColor = new Color(255, 255, 204);

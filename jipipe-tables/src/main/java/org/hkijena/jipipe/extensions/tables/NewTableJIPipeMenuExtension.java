@@ -13,13 +13,13 @@
 
 package org.hkijena.jipipe.extensions.tables;
 
-import org.hkijena.jipipe.api.JIPipeOrganization;
+import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.components.DocumentTabPane;
-import org.hkijena.jipipe.ui.extension.MenuExtension;
-import org.hkijena.jipipe.ui.extension.MenuTarget;
+import org.hkijena.jipipe.ui.extension.JIPipeMenuExtension;
+import org.hkijena.jipipe.ui.extension.JIPipeMenuExtensionTarget;
 import org.hkijena.jipipe.ui.tableeditor.TableEditor;
 import org.hkijena.jipipe.utils.UIUtils;
 
@@ -29,14 +29,13 @@ import java.awt.event.ActionListener;
 /**
  * Adds an entry "New table" to the JIPipe menu
  */
-@JIPipeOrganization(menuExtensionTarget = MenuTarget.ProjectMainMenu)
-public class NewTableMenuExtension extends MenuExtension implements ActionListener {
+public class NewTableJIPipeMenuExtension extends JIPipeMenuExtension implements ActionListener {
     /**
      * Creates a new instance
      *
      * @param workbench workbench the extension is attached to
      */
-    public NewTableMenuExtension(JIPipeWorkbench workbench) {
+    public NewTableJIPipeMenuExtension(JIPipeWorkbench workbench) {
         super(workbench);
         setText("New table");
         setIcon(UIUtils.getIconFromResources("data-types/results-table.png"));
@@ -49,5 +48,15 @@ public class NewTableMenuExtension extends MenuExtension implements ActionListen
         getWorkbench().getDocumentTabPane().addTab("Table", UIUtils.getIconFromResources("data-types/results-table.png"),
                 tableAnalyzerUI, DocumentTabPane.CloseMode.withAskOnCloseButton, true);
         getWorkbench().getDocumentTabPane().switchToLastTab();
+    }
+
+    @Override
+    public JIPipeMenuExtensionTarget getMenuTarget() {
+        return JIPipeMenuExtensionTarget.ProjectMainMenu;
+    }
+
+    @Override
+    public String getMenuPath() {
+        return "";
     }
 }

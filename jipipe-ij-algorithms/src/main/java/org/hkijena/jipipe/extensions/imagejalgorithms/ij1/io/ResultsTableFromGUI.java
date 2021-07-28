@@ -17,7 +17,7 @@ import ij.WindowManager;
 import ij.measure.ResultsTable;
 import ij.text.TextWindow;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeOrganization;
+import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.JIPipeDataBatch;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
@@ -37,7 +37,7 @@ import java.awt.Window;
  */
 @JIPipeDocumentation(name = "Table from ImageJ", description = "Imports one or multiple active ImageJ results table windows into JIPipe")
 @JIPipeOutputSlot(value = ResultsTableData.class, slotName = "Output", autoCreate = true)
-@JIPipeOrganization(nodeTypeCategory = DataSourceNodeTypeCategory.class)
+@JIPipeNode(nodeTypeCategory = DataSourceNodeTypeCategory.class)
 public class ResultsTableFromGUI extends JIPipeSimpleIteratingAlgorithm {
 
     private DefaultExpressionParameter titleFilterExpression = new DefaultExpressionParameter("title EQUALS \"Results\"");

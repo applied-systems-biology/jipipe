@@ -16,7 +16,7 @@ package org.hkijena.jipipe.extensions.annotation.algorithms;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeIssueReport;
-import org.hkijena.jipipe.api.JIPipeOrganization;
+import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeAnnotation;
 import org.hkijena.jipipe.api.data.JIPipeData;
@@ -46,7 +46,7 @@ import java.nio.file.Path;
         "All annotations are passed as dictionary 'annotations' that can be modified using Python functions. The values are then extracted and " +
         "converted into their respective JIPipe types. The target slot is extracted from a variable 'output_slot' that should be present within the script." +
         " If the variable is set to null or empty, the data is discarded.")
-@JIPipeOrganization(nodeTypeCategory = AnnotationsNodeTypeCategory.class, menuPath = "Filter")
+@JIPipeNode(nodeTypeCategory = AnnotationsNodeTypeCategory.class, menuPath = "Filter")
 @JIPipeInputSlot(value = JIPipeData.class, slotName = "Input")
 @JIPipeOutputSlot(value = JIPipeData.class, slotName = "Output")
 public class SplitByAnnotationScript extends JIPipeSimpleIteratingAlgorithm {

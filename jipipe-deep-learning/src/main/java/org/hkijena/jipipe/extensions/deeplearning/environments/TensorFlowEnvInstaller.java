@@ -1,6 +1,7 @@
 package org.hkijena.jipipe.extensions.deeplearning.environments;
 
 import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.environments.ExternalEnvironmentInfo;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.extensions.parameters.primitives.OptionalStringParameter;
@@ -15,23 +16,24 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Arrays;
 
-@JIPipeDocumentation(name = "Download & install Deep Learning Toolkit", description = "Creates a new Python environment with the Deep Learning Toolkit installed.")
-public class DeepLearningToolkitEnvInstaller extends BasicMinicondaEnvPythonInstaller {
+@JIPipeDocumentation(name = "Download & install Tensorflow", description = "Creates a new Python environment with Tensorflow installed.")
+@ExternalEnvironmentInfo(category = "Tensorflow")
+public class TensorFlowEnvInstaller extends BasicMinicondaEnvPythonInstaller {
     /**
      * @param workbench       the workbench
      * @param parameterAccess the parameter access that will receive the generated environment
      */
-    public DeepLearningToolkitEnvInstaller(JIPipeWorkbench workbench, JIPipeParameterAccess parameterAccess) {
+    public TensorFlowEnvInstaller(JIPipeWorkbench workbench, JIPipeParameterAccess parameterAccess) {
         super(workbench, parameterAccess);
         setConfiguration(new Configuration());
 //        getConfiguration().setCondaDownloadURL(getLatestPy37Download());
-        getConfiguration().setInstallationPath(Paths.get("jipipe").resolve("deep-learning-toolkit"));
+        getConfiguration().setInstallationPath(Paths.get("jipipe").resolve("tensorflow"));
         getConfiguration().setName("Deep Learning Toolkit");
     }
 
     @Override
     public String getTaskLabel() {
-        return "Install Deep Learning Toolkit";
+        return "Install Tensorflow";
     }
 
     @Override
@@ -56,12 +58,11 @@ public class DeepLearningToolkitEnvInstaller extends BasicMinicondaEnvPythonInst
             writer.newLine();
             for (String dependency : Arrays.asList("python>3.5,<3.8",
                     "pyqt",
-                    "numpy>1.14.6,<1.19.4",
                     "pandas",
                     "matplotlib",
                     "scipy",
                     "scikit-learn",
-                    "scikit-image>0.16",
+                    "scikit-image",
                     "opencv",
                     "tqdm",
                     "tifffile",
@@ -116,7 +117,8 @@ public class DeepLearningToolkitEnvInstaller extends BasicMinicondaEnvPythonInst
 
         @JIPipeDocumentation(name = "Tensorflow version", description = "Determines the Tensorflow version. If you use GPU processing, " +
                 "the Tensorflow version determines which CUDA toolkit version is installed. Please see https://www.tensorflow.org/install/source#gpu " +
-                "for a table that indicates which CUDA version is supported by which Tensorflow version.")
+                "for a table that indicates which CUDA version is supported by which Tensorflow version.\n\n" +
+                "Info for Nvidia A100: Please install at least version 2.4.0, due to the requirement of cuda-toolkit >= 11.0")
         @JIPipeParameter("tensorflow-version")
         public String getTensorFlowVersion() {
             return tensorFlowVersion;

@@ -5,7 +5,7 @@ import ij.IJ;
 import ij.ImagePlus;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeIssueReport;
-import org.hkijena.jipipe.api.JIPipeOrganization;
+import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeAnnotation;
 import org.hkijena.jipipe.api.data.JIPipeDataSlotInfo;
@@ -73,7 +73,7 @@ import java.util.stream.Collectors;
 @JIPipeOutputSlot(value = ImagePlus3DGreyscale32FData.class, slotName = "Probabilities")
 @JIPipeOutputSlot(value = ImagePlus2DGreyscale32FData.class, slotName = "Styles")
 @JIPipeOutputSlot(value = ROIListData.class, slotName = "ROI")
-@JIPipeOrganization(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Deep learning")
+@JIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Deep learning")
 public class CellPoseAlgorithm extends JIPipeSingleIterationAlgorithm {
 
     private ModelParameters modelParameters = new ModelParameters();

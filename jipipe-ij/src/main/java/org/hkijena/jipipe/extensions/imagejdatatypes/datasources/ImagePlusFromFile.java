@@ -19,7 +19,7 @@ import org.apache.commons.lang3.SystemUtils;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeIssueReport;
-import org.hkijena.jipipe.api.JIPipeOrganization;
+import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeAnnotation;
 import org.hkijena.jipipe.api.data.JIPipeAnnotationMergeStrategy;
@@ -54,7 +54,7 @@ import java.util.List;
  * Loads an image data from a file via IJ.openFile()
  */
 @JIPipeDocumentation(name = "Import image", description = "Loads an image via the native ImageJ functions.")
-@JIPipeOrganization(nodeTypeCategory = DataSourceNodeTypeCategory.class)
+@JIPipeNode(nodeTypeCategory = DataSourceNodeTypeCategory.class)
 @JIPipeInputSlot(FileData.class)
 @JIPipeOutputSlot(ImagePlusData.class)
 public class ImagePlusFromFile extends JIPipeSimpleIteratingAlgorithm {

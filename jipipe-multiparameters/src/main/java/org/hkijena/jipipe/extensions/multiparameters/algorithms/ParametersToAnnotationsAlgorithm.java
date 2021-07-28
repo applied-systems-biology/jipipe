@@ -1,7 +1,7 @@
 package org.hkijena.jipipe.extensions.multiparameters.algorithms;
 
 import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeOrganization;
+import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeAnnotation;
 import org.hkijena.jipipe.api.data.JIPipeAnnotationMergeStrategy;
@@ -21,7 +21,7 @@ import java.util.Map;
 
 @JIPipeDocumentation(name = "Parameters to annotations", description = "Converts parameter data into annotations. " +
         "Parameters are converted into JSON data.")
-@JIPipeOrganization(nodeTypeCategory = AnnotationsNodeTypeCategory.class, menuPath = "Generate")
+@JIPipeNode(nodeTypeCategory = AnnotationsNodeTypeCategory.class, menuPath = "Generate")
 @JIPipeInputSlot(value = ParametersData.class, slotName = "Input", autoCreate = true)
 @JIPipeOutputSlot(value = ParametersData.class, slotName = "Output", autoCreate = true)
 public class ParametersToAnnotationsAlgorithm extends JIPipeParameterlessSimpleIteratingAlgorithm {

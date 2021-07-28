@@ -46,7 +46,7 @@ import org.hkijena.jipipe.extensions.parameters.primitives.StringList;
 import org.hkijena.jipipe.extensions.tables.ColumnOperation;
 import org.hkijena.jipipe.ui.compat.ImageJDatatypeImporterUI;
 import org.hkijena.jipipe.ui.extension.GraphEditorToolBarButtonExtension;
-import org.hkijena.jipipe.ui.extension.MenuExtension;
+import org.hkijena.jipipe.ui.extension.JIPipeMenuExtension;
 import org.hkijena.jipipe.ui.grapheditor.contextmenu.NodeUIContextAction;
 import org.hkijena.jipipe.ui.parameters.JIPipeParameterEditorUI;
 import org.hkijena.jipipe.ui.parameters.JIPipeParameterGeneratorUI;
@@ -154,7 +154,7 @@ public abstract class JIPipeDefaultJavaExtension extends AbstractService impleme
      *
      * @param klass The menu entry
      */
-    public void registerMenuExtension(Class<? extends MenuExtension> klass) {
+    public void registerMenuExtension(Class<? extends JIPipeMenuExtension> klass) {
         registry.getCustomMenuRegistry().registerMenu(klass);
     }
 

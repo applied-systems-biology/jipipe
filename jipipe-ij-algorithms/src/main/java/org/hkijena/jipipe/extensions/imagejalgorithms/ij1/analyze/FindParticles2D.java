@@ -20,7 +20,7 @@ import ij.measure.ResultsTable;
 import ij.plugin.filter.ParticleAnalyzer;
 import ij.plugin.frame.RoiManager;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeOrganization;
+import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeAnnotation;
 import org.hkijena.jipipe.api.data.JIPipeAnnotationMergeStrategy;
@@ -55,7 +55,7 @@ import java.util.List;
         "This node requires a thresholded image as input and will extract measurements from the thresholded image. " +
         "If you already have ROI available and want measurements, use 'Extract ROI statistics'." +
         "If higher-dimensional data is provided, the results are generated for each 2D slice.")
-@JIPipeOrganization(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Analyze")
+@JIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Analyze")
 
 @JIPipeInputSlot(value = ImagePlusGreyscaleMaskData.class, slotName = "Mask")
 @JIPipeOutputSlot(value = ROIListData.class, slotName = "ROI")

@@ -14,7 +14,7 @@
 package org.hkijena.jipipe.extensions.annotation.algorithms;
 
 import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeOrganization;
+import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeAnnotation;
 import org.hkijena.jipipe.api.data.JIPipeData;
@@ -35,7 +35,7 @@ import java.util.List;
  * Removes a specified annotation
  */
 @JIPipeDocumentation(name = "Remove annotation", description = "Removes annotations by name or value")
-@JIPipeOrganization(menuPath = "Remove", nodeTypeCategory = AnnotationsNodeTypeCategory.class)
+@JIPipeNode(menuPath = "Remove", nodeTypeCategory = AnnotationsNodeTypeCategory.class)
 @JIPipeInputSlot(value = JIPipeData.class, slotName = "Input", autoCreate = true)
 @JIPipeOutputSlot(value = JIPipeData.class, slotName = "Output", inheritedSlot = "Input", autoCreate = true)
 public class RemoveAnnotationAlgorithm extends JIPipeSimpleIteratingAlgorithm {

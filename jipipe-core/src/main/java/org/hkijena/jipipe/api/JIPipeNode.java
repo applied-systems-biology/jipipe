@@ -17,17 +17,20 @@ import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.categories.InternalNodeTypeCategory;
-import org.hkijena.jipipe.ui.extension.MenuExtension;
-import org.hkijena.jipipe.ui.extension.MenuTarget;
+import org.hkijena.jipipe.ui.extension.JIPipeMenuExtension;
+import org.hkijena.jipipe.ui.extension.JIPipeMenuExtensionTarget;
 
+import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
 /**
  * Annotations used for organizing elements
  */
 @Retention(RetentionPolicy.RUNTIME)
-public @interface JIPipeOrganization {
+@Target(ElementType.TYPE)
+public @interface JIPipeNode {
     /**
      * A submenu where the entry should be located.
      * This is valid for {@link JIPipeGraphNode} and {@link org.hkijena.jipipe.api.data.JIPipeData}
@@ -46,12 +49,4 @@ public @interface JIPipeOrganization {
      * @return the category
      */
     Class<? extends JIPipeNodeTypeCategory> nodeTypeCategory() default InternalNodeTypeCategory.class;
-
-    /**
-     * Only used if attached to a {@link MenuExtension}.
-     * Determines in which main menu the item is placed
-     *
-     * @return menu target
-     */
-    MenuTarget menuExtensionTarget() default MenuTarget.None;
 }

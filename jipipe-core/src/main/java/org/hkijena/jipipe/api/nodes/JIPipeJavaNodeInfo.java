@@ -23,7 +23,7 @@ import org.hkijena.jipipe.JIPipeDependency;
 import org.hkijena.jipipe.api.JIPipeCitation;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeHidden;
-import org.hkijena.jipipe.api.JIPipeOrganization;
+import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
 import org.hkijena.jipipe.api.nodes.categories.InternalNodeTypeCategory;
 import org.hkijena.jipipe.extensions.parameters.primitives.HTMLText;
@@ -139,7 +139,7 @@ public class JIPipeJavaNodeInfo extends JIPipeMutableNodeInfo {
      * @return The category
      */
     public static JIPipeNodeTypeCategory getCategoryOf(Class<? extends JIPipeGraphNode> klass) {
-        JIPipeOrganization[] annotations = klass.getAnnotationsByType(JIPipeOrganization.class);
+        JIPipeNode[] annotations = klass.getAnnotationsByType(JIPipeNode.class);
         if (annotations.length > 0) {
             Class<? extends JIPipeNodeTypeCategory> categoryClass = annotations[0].nodeTypeCategory();
             return (JIPipeNodeTypeCategory) ReflectionUtils.newInstance(categoryClass);
@@ -155,7 +155,7 @@ public class JIPipeJavaNodeInfo extends JIPipeMutableNodeInfo {
      * @return The menu path
      */
     static String getMenuPathOf(Class<? extends JIPipeGraphNode> klass) {
-        JIPipeOrganization[] annotations = klass.getAnnotationsByType(JIPipeOrganization.class);
+        JIPipeNode[] annotations = klass.getAnnotationsByType(JIPipeNode.class);
         if (annotations.length > 0) {
             return annotations[0].menuPath();
         } else {

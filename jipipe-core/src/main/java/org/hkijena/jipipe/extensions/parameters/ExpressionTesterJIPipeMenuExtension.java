@@ -13,11 +13,11 @@
 
 package org.hkijena.jipipe.extensions.parameters;
 
-import org.hkijena.jipipe.api.JIPipeOrganization;
+import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.components.DocumentTabPane;
-import org.hkijena.jipipe.ui.extension.MenuExtension;
-import org.hkijena.jipipe.ui.extension.MenuTarget;
+import org.hkijena.jipipe.ui.extension.JIPipeMenuExtension;
+import org.hkijena.jipipe.ui.extension.JIPipeMenuExtensionTarget;
 import org.hkijena.jipipe.utils.ui.ExpressionTesterUI;
 import org.hkijena.jipipe.utils.UIUtils;
 
@@ -27,14 +27,13 @@ import java.awt.event.ActionListener;
 /**
  * Adds an entry "New table" to the JIPipe menu
  */
-@JIPipeOrganization(menuExtensionTarget = MenuTarget.ProjectToolsMenu, menuPath = "Development")
-public class ExpressionTesterMenuExtension extends MenuExtension implements ActionListener {
+public class ExpressionTesterJIPipeMenuExtension extends JIPipeMenuExtension implements ActionListener {
     /**
      * Creates a new instance
      *
      * @param workbench workbench the extension is attached to
      */
-    public ExpressionTesterMenuExtension(JIPipeWorkbench workbench) {
+    public ExpressionTesterJIPipeMenuExtension(JIPipeWorkbench workbench) {
         super(workbench);
         setText("Calculator");
         setToolTipText("Allows to evaluate mathematical and logical expressions.");
@@ -48,5 +47,15 @@ public class ExpressionTesterMenuExtension extends MenuExtension implements Acti
         getWorkbench().getDocumentTabPane().addTab("Calculator", UIUtils.getIconFromResources("actions/calculator.png"),
                 tester, DocumentTabPane.CloseMode.withSilentCloseButton, true);
         getWorkbench().getDocumentTabPane().switchToLastTab();
+    }
+
+    @Override
+    public JIPipeMenuExtensionTarget getMenuTarget() {
+        return JIPipeMenuExtensionTarget.ProjectToolsMenu;
+    }
+
+    @Override
+    public String getMenuPath() {
+        return "Development";
     }
 }

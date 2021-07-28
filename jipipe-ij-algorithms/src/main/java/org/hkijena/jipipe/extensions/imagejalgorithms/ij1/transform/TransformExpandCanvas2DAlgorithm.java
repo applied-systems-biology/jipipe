@@ -15,7 +15,7 @@ package org.hkijena.jipipe.extensions.imagejalgorithms.ij1.transform;
 
 import ij.ImagePlus;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeOrganization;
+import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.JIPipeDataBatch;
 import org.hkijena.jipipe.api.nodes.JIPipeInputSlot;
@@ -32,7 +32,7 @@ import org.hkijena.jipipe.extensions.parameters.roi.Anchor;
 import java.awt.Color;
 
 @JIPipeDocumentation(name = "Expand canvas 2D", description = "Pads each image slice with a background color.")
-@JIPipeOrganization(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Transform")
+@JIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Transform")
 @JIPipeInputSlot(value = ImagePlusData.class, slotName = "Input", autoCreate = true)
 @JIPipeOutputSlot(value = ImagePlusData.class, slotName = "Output", inheritedSlot = "Input", autoCreate = true)
 public class TransformExpandCanvas2DAlgorithm extends JIPipeIteratingAlgorithm {

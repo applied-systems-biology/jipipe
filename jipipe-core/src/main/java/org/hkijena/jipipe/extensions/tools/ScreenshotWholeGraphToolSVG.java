@@ -13,12 +13,12 @@
 
 package org.hkijena.jipipe.extensions.tools;
 
-import org.hkijena.jipipe.api.JIPipeOrganization;
+import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.extensions.settings.FileChooserSettings;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
-import org.hkijena.jipipe.ui.extension.MenuExtension;
-import org.hkijena.jipipe.ui.extension.MenuTarget;
+import org.hkijena.jipipe.ui.extension.JIPipeMenuExtension;
+import org.hkijena.jipipe.ui.extension.JIPipeMenuExtensionTarget;
 import org.hkijena.jipipe.ui.grapheditor.JIPipeGraphCanvasUI;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.jfree.graphics2d.svg.SVGGraphics2D;
@@ -27,8 +27,7 @@ import org.jfree.graphics2d.svg.SVGUtils;
 import java.io.IOException;
 import java.nio.file.Path;
 
-@JIPipeOrganization(menuExtensionTarget = MenuTarget.ProjectToolsMenu, menuPath = "Export full graph")
-public class ScreenshotWholeGraphToolSVG extends MenuExtension {
+public class ScreenshotWholeGraphToolSVG extends JIPipeMenuExtension {
 
     /**
      * Creates a new instance
@@ -59,4 +58,13 @@ public class ScreenshotWholeGraphToolSVG extends MenuExtension {
         }
     }
 
+    @Override
+    public JIPipeMenuExtensionTarget getMenuTarget() {
+        return JIPipeMenuExtensionTarget.ProjectToolsMenu;
+    }
+
+    @Override
+    public String getMenuPath() {
+        return "Export full graph";
+    }
 }

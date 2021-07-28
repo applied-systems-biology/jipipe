@@ -4,7 +4,7 @@ import ij.IJ;
 import ij.ImagePlus;
 import ij.process.ImageProcessor;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeOrganization;
+import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.data.JIPipeDefaultMutableSlotConfiguration;
@@ -34,7 +34,7 @@ import java.util.Map;
         "are both the current pixel values, as well as the local areas around these pixels.")
 @JIPipeInputSlot(value = ImagePlusGreyscale32FData.class)
 @JIPipeOutputSlot(value = ImagePlusGreyscale32FData.class, slotName = "Output", autoCreate = true)
-@JIPipeOrganization(menuPath = "Math\nLocal", nodeTypeCategory = ImagesNodeTypeCategory.class)
+@JIPipeNode(menuPath = "Math\nLocal", nodeTypeCategory = ImagesNodeTypeCategory.class)
 public class LocalImageCalculator2DExpression extends JIPipeIteratingAlgorithm {
 
     private DefaultExpressionParameter expression = new DefaultExpressionParameter("(MEDIAN(Local.I1) + I2) / 2");

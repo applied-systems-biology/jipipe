@@ -3,7 +3,7 @@ package org.hkijena.jipipe.extensions.forms.algorithms;
 import gnu.trove.set.TIntSet;
 import gnu.trove.set.hash.TIntHashSet;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeOrganization;
+import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeAnnotation;
 import org.hkijena.jipipe.api.data.JIPipeAnnotationMergeStrategy;
@@ -42,7 +42,7 @@ import java.util.stream.Collectors;
         "Groups are based on the annotations. " +
         "These forms are provided via the 'Forms' slot, where all contained form elements are shown in the user interface." +
         "After the user input, the form data objects are stored in an output slot (one set of copies per data batch).")
-@JIPipeOrganization(nodeTypeCategory = MiscellaneousNodeTypeCategory.class, menuPath = "Forms")
+@JIPipeNode(nodeTypeCategory = MiscellaneousNodeTypeCategory.class, menuPath = "Forms")
 @JIPipeInputSlot(value = JIPipeData.class, slotName = "Data")
 @JIPipeInputSlot(value = FormData.class, slotName = "Forms")
 @JIPipeOutputSlot(value = JIPipeData.class, slotName = "Data")

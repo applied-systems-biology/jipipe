@@ -14,7 +14,7 @@
 package org.hkijena.jipipe.extensions.deeplearning.nodes;
 
 import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeOrganization;
+import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.JIPipeDataBatch;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
@@ -39,7 +39,7 @@ import java.util.Collections;
 import java.util.List;
 
 @JIPipeDocumentation(name = "Create Model", description = "Creates a new Deep Learning model")
-@JIPipeOrganization(nodeTypeCategory = DataSourceNodeTypeCategory.class)
+@JIPipeNode(nodeTypeCategory = DataSourceNodeTypeCategory.class)
 @JIPipeOutputSlot(value = DeepLearningModelData.class, slotName = "Output", autoCreate = true)
 public class CreateModelAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 

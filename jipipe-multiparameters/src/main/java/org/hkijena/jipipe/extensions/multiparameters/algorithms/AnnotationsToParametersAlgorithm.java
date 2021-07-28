@@ -3,7 +3,7 @@ package org.hkijena.jipipe.extensions.multiparameters.algorithms;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeOrganization;
+import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeAnnotation;
 import org.hkijena.jipipe.api.data.JIPipeData;
@@ -23,7 +23,7 @@ import org.hkijena.jipipe.utils.json.JsonUtils;
 import java.util.Map;
 
 @JIPipeDocumentation(name = "Annotations to parameters", description = "Converts annotations into parameter data.")
-@JIPipeOrganization(nodeTypeCategory = MiscellaneousNodeTypeCategory.class)
+@JIPipeNode(nodeTypeCategory = MiscellaneousNodeTypeCategory.class)
 @JIPipeInputSlot(value = JIPipeData.class, slotName = "Input", autoCreate = true)
 @JIPipeOutputSlot(value = ParametersData.class, slotName = "Output", autoCreate = true)
 public class AnnotationsToParametersAlgorithm extends JIPipeParameterlessSimpleIteratingAlgorithm {

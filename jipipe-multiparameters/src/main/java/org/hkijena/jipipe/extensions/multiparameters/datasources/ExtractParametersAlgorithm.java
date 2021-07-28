@@ -2,7 +2,7 @@ package org.hkijena.jipipe.extensions.multiparameters.datasources;
 
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeOrganization;
+import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeAnnotation;
 import org.hkijena.jipipe.api.data.JIPipeAnnotationMergeStrategy;
@@ -30,7 +30,7 @@ import java.util.Set;
 @JIPipeDocumentation(name = "Extract parameters from node", description = "Extracts parameters from the incoming node(s)")
 @JIPipeInputSlot(value = JIPipeData.class, slotName = "Node", autoCreate = true)
 @JIPipeOutputSlot(value = ParametersData.class, slotName = "Parameters", autoCreate = true)
-@JIPipeOrganization(nodeTypeCategory = DataSourceNodeTypeCategory.class)
+@JIPipeNode(nodeTypeCategory = DataSourceNodeTypeCategory.class)
 public class ExtractParametersAlgorithm extends JIPipeAlgorithm {
 
     private OptionalAnnotationNameParameter nodeUUIDAnnotation = new OptionalAnnotationNameParameter("Node UUID", true);

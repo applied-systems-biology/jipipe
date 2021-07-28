@@ -155,8 +155,8 @@ public class StandardParametersExtension extends JIPipePrepackagedDefaultJavaExt
         registerRangeParameters();
         registerQuantityParameters();
 
-        registerMenuExtension(ParameterTesterMenuExtension.class);
-        registerMenuExtension(ExpressionTesterMenuExtension.class);
+        registerMenuExtension(ParameterTesterJIPipeMenuExtension.class);
+        registerMenuExtension(ExpressionTesterJIPipeMenuExtension.class);
     }
 
     private void registerQuantityParameters() {

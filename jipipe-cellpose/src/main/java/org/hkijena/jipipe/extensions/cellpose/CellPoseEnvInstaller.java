@@ -1,6 +1,8 @@
 package org.hkijena.jipipe.extensions.cellpose;
 
 import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.environments.ExternalEnvironmentInfo;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.extensions.python.installers.BasicMinicondaEnvPythonInstaller;
@@ -18,6 +20,7 @@ import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 
 @JIPipeDocumentation(name = "Download & install Cellpose (CPU)", description = "Creates a new Python environment with Cellpose installed.")
+@ExternalEnvironmentInfo(category = "Cellpose")
 public class CellPoseEnvInstaller extends BasicMinicondaEnvPythonInstaller {
     /**
      * @param workbench       the workbench
@@ -47,6 +50,7 @@ public class CellPoseEnvInstaller extends BasicMinicondaEnvPythonInstaller {
 
         // Upgrade cellpose (pip)
         runConda("run", "--no-capture-output", "pip", "install", "cellpose", "--upgrade");
+        runConda("run", "--no-capture-output", "pip", "install", "cellpose[gui]");
 
         // Download models
         if (((Configuration) getConfiguration()).isDownloadModels()) {

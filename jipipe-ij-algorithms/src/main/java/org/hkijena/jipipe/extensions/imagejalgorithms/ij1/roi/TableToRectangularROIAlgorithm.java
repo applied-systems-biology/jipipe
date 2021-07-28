@@ -17,7 +17,7 @@ import ij.gui.OvalRoi;
 import ij.gui.ShapeRoi;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeIssueReport;
-import org.hkijena.jipipe.api.JIPipeOrganization;
+import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeDefaultMutableSlotConfiguration;
 import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
@@ -39,7 +39,7 @@ import java.awt.Rectangle;
  * Wrapper around {@link ij.plugin.frame.RoiManager}
  */
 @JIPipeDocumentation(name = "Table to rectangular/oval ROIs", description = "Converts data from a table to rectangular or oval ROIs")
-@JIPipeOrganization(nodeTypeCategory = TableNodeTypeCategory.class, menuPath = "Convert")
+@JIPipeNode(nodeTypeCategory = TableNodeTypeCategory.class, menuPath = "Convert")
 @JIPipeInputSlot(value = ResultsTableData.class, slotName = "Input")
 @JIPipeOutputSlot(value = ROIListData.class, slotName = "Output")
 public class TableToRectangularROIAlgorithm extends JIPipeSimpleIteratingAlgorithm {

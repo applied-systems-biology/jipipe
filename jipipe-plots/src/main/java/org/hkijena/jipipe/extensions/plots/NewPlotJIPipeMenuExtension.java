@@ -13,11 +13,11 @@
 
 package org.hkijena.jipipe.extensions.plots;
 
-import org.hkijena.jipipe.api.JIPipeOrganization;
+import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.components.DocumentTabPane;
-import org.hkijena.jipipe.ui.extension.MenuExtension;
-import org.hkijena.jipipe.ui.extension.MenuTarget;
+import org.hkijena.jipipe.ui.extension.JIPipeMenuExtension;
+import org.hkijena.jipipe.ui.extension.JIPipeMenuExtensionTarget;
 import org.hkijena.jipipe.ui.plotbuilder.PlotEditor;
 import org.hkijena.jipipe.utils.UIUtils;
 
@@ -27,14 +27,13 @@ import java.awt.event.ActionListener;
 /**
  * Adds an entry "New plot" to the JIPipe menu
  */
-@JIPipeOrganization(menuExtensionTarget = MenuTarget.ProjectMainMenu)
-public class NewPlotMenuExtension extends MenuExtension implements ActionListener {
+public class NewPlotJIPipeMenuExtension extends JIPipeMenuExtension implements ActionListener {
     /**
      * Creates a new instance
      *
      * @param workbench workbench the extension is attached to
      */
-    public NewPlotMenuExtension(JIPipeWorkbench workbench) {
+    public NewPlotJIPipeMenuExtension(JIPipeWorkbench workbench) {
         super(workbench);
         setText("New plot");
         setIcon(UIUtils.getIconFromResources("data-types/data-type-plot.png"));
@@ -47,5 +46,15 @@ public class NewPlotMenuExtension extends MenuExtension implements ActionListene
         getWorkbench().getDocumentTabPane().addTab("Plot", UIUtils.getIconFromResources("data-types/data-type-plot.png"),
                 plotBuilderUI, DocumentTabPane.CloseMode.withAskOnCloseButton, true);
         getWorkbench().getDocumentTabPane().switchToLastTab();
+    }
+
+    @Override
+    public JIPipeMenuExtensionTarget getMenuTarget() {
+        return JIPipeMenuExtensionTarget.ProjectMainMenu;
+    }
+
+    @Override
+    public String getMenuPath() {
+        return "";
     }
 }

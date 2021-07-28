@@ -14,7 +14,7 @@
 package org.hkijena.jipipe.extensions.tables.algorithms;
 
 import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeOrganization;
+import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.JIPipeAlgorithm;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
@@ -28,7 +28,7 @@ import org.hkijena.jipipe.extensions.tables.parameters.collections.ResultsTableD
  * Algorithm that annotates all data with the same annotation
  */
 @JIPipeDocumentation(name = "Define tables", description = "Defines one or multiple tables.")
-@JIPipeOrganization(nodeTypeCategory = DataSourceNodeTypeCategory.class)
+@JIPipeNode(nodeTypeCategory = DataSourceNodeTypeCategory.class)
 @JIPipeOutputSlot(value = ResultsTableData.class, slotName = "Output", autoCreate = true)
 public class DefineTablesAlgorithm extends JIPipeAlgorithm {
 

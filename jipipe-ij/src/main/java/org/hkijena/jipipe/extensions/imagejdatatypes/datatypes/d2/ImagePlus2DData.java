@@ -16,7 +16,7 @@ package org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d2;
 import ij.ImagePlus;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeHeavyData;
-import org.hkijena.jipipe.api.JIPipeOrganization;
+import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.extensions.imagejdatatypes.color.ColorSpace;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.AsserterWrapperImageSource;
@@ -30,7 +30,7 @@ import java.nio.file.Path;
  * 2D image
  */
 @JIPipeDocumentation(name = "2D image")
-@JIPipeOrganization(menuPath = "Images\n2D")
+@JIPipeNode(menuPath = "Images\n2D")
 @JIPipeHeavyData
 public class ImagePlus2DData extends ImagePlusData {
 

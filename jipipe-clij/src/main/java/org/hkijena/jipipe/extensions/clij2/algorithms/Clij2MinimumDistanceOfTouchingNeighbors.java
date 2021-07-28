@@ -5,7 +5,7 @@ import net.haesleinhuepf.clij.clearcl.ClearCLBuffer;
 import net.haesleinhuepf.clij2.CLIJ2;
 import net.haesleinhuepf.clij2.plugins.MinimumDistanceOfTouchingNeighbors;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeOrganization;
+import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.JIPipeDataBatch;
 import org.hkijena.jipipe.api.nodes.JIPipeInputSlot;
@@ -19,7 +19,7 @@ import org.hkijena.jipipe.extensions.clij2.datatypes.CLIJImageData;
  * CLIJ2 algorithm ported from {@link net.haesleinhuepf.clij2.plugins.MinimumDistanceOfTouchingNeighbors}
  */
 @JIPipeDocumentation(name = "CLIJ2 Minimum Distance Of Touching Neighbors", description = "Takes a touch matrix and a distance matrix to determine the shortest distance of touching neighbors for every object. Works for following image dimensions: 2D.")
-@JIPipeOrganization(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Touch matrix")
+@JIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Touch matrix")
 @JIPipeInputSlot(value = CLIJImageData.class, slotName = "distance_matrix", autoCreate = true)
 @JIPipeInputSlot(value = CLIJImageData.class, slotName = "touch_matrix", autoCreate = true)
 @JIPipeOutputSlot(value = CLIJImageData.class, slotName = "minimum_distancelist_destination", autoCreate = true)

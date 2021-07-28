@@ -3,7 +3,7 @@ package org.hkijena.jipipe.extensions.imagejalgorithms.ij1.dimensions;
 import ij.ImagePlus;
 import ij.ImageStack;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeOrganization;
+import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeAnnotation;
 import org.hkijena.jipipe.api.data.JIPipeAnnotationMergeStrategy;
@@ -28,7 +28,7 @@ import java.util.List;
 
 @JIPipeDocumentation(name = "Split by dimension", description = "Splits a hyperstack by a selected dimension into a single or multiple output slots. " +
         "Multiple output slots can be utilized to split specific indices.")
-@JIPipeOrganization(menuPath = "Dimensions", nodeTypeCategory = ImagesNodeTypeCategory.class)
+@JIPipeNode(menuPath = "Dimensions", nodeTypeCategory = ImagesNodeTypeCategory.class)
 @JIPipeInputSlot(value = ImagePlusData.class, slotName = "Input", autoCreate = true)
 @JIPipeOutputSlot(value = ImagePlusData.class, slotName = "Output", autoCreate = true, inheritedSlot = "Input")
 public class HyperstackSplitterAlgorithm extends JIPipeSimpleIteratingAlgorithm {

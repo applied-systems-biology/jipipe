@@ -3,7 +3,7 @@ package org.hkijena.jipipe.extensions.imagejalgorithms.ij1.forms;
 import ij.IJ;
 import ij.ImagePlus;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeOrganization;
+import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeAnnotation;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
@@ -33,7 +33,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 @JIPipeDocumentation(name = "Draw/modify mask", description = "Allows users to draw or modify a mask that is drawn over a reference image." +
         " You can supply existing masks via the 'Masks' input. If a data batch has no existing mask, a new one is generated according to the " +
         "node parameters.")
-@JIPipeOrganization(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Forms")
+@JIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Forms")
 @JIPipeInputSlot(value = ImagePlusData.class, slotName = "Reference", autoCreate = true)
 @JIPipeInputSlot(value = ImagePlusGreyscaleMaskData.class, slotName = "Mask", autoCreate = true, optional = true)
 @JIPipeOutputSlot(value = ImagePlusGreyscaleMaskData.class, slotName = "Mask", autoCreate = true)

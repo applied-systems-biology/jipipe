@@ -91,7 +91,7 @@ public class TablesExtension extends JIPipePrepackagedDefaultJavaExtension {
 
         // Register generating data sources
         registerColumnSources();
-        registerMenuExtension(NewTableMenuExtension.class);
+        registerMenuExtension(NewTableJIPipeMenuExtension.class);
         registerColumnOperations();
 
         registerParameters();

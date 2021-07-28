@@ -15,7 +15,7 @@ package org.hkijena.jipipe.extensions.imagejdatatypes.datasources;
 
 import ij.measure.ResultsTable;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeOrganization;
+import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.JIPipeDataBatch;
 import org.hkijena.jipipe.api.nodes.JIPipeInputSlot;
@@ -34,7 +34,7 @@ import java.io.IOException;
 @JIPipeDocumentation(name = "Results table from file")
 @JIPipeInputSlot(value = FileData.class, slotName = "Files", autoCreate = true)
 @JIPipeOutputSlot(value = ResultsTableData.class, slotName = "Results table", autoCreate = true)
-@JIPipeOrganization(nodeTypeCategory = DataSourceNodeTypeCategory.class)
+@JIPipeNode(nodeTypeCategory = DataSourceNodeTypeCategory.class)
 public class ResultsTableFromFile extends JIPipeSimpleIteratingAlgorithm {
 
     /**

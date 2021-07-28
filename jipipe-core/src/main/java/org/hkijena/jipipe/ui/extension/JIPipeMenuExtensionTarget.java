@@ -16,7 +16,7 @@ package org.hkijena.jipipe.ui.extension;
 /**
  * Determines in which menu a menu extension is placed
  */
-public enum MenuTarget {
+public enum JIPipeMenuExtensionTarget {
     None,
     ProjectMainMenu,
     ProjectCompartmentMenu,

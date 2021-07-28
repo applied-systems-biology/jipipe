@@ -4,7 +4,7 @@ import ij.IJ;
 import ij.ImagePlus;
 import ij.process.ImageProcessor;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeOrganization;
+import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.data.JIPipeDefaultMutableSlotConfiguration;
@@ -30,7 +30,7 @@ import java.util.Map;
 @JIPipeDocumentation(name = "Image calculator 2D (Expression)", description = "Applies a pixel-wise mathematical operation that produces a single output image.")
 @JIPipeInputSlot(value = ImagePlusGreyscale32FData.class)
 @JIPipeOutputSlot(value = ImagePlusGreyscale32FData.class, slotName = "Output", autoCreate = true)
-@JIPipeOrganization(menuPath = "Math", nodeTypeCategory = ImagesNodeTypeCategory.class)
+@JIPipeNode(menuPath = "Math", nodeTypeCategory = ImagesNodeTypeCategory.class)
 public class ImageCalculator2DExpression extends JIPipeIteratingAlgorithm {
 
     private DefaultExpressionParameter expression = new DefaultExpressionParameter("(I1 + I2) / 2");

@@ -18,7 +18,7 @@ import com.google.common.eventbus.Subscribe;
 import ij.IJ;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeIssueReport;
-import org.hkijena.jipipe.api.JIPipeOrganization;
+import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.JIPipeProject;
 import org.hkijena.jipipe.api.data.JIPipeDataSlotInfo;
@@ -60,7 +60,7 @@ import java.util.Set;
 @JIPipeDocumentation(name = "Paths to JIPipe project parameters", description = "Stores the incoming paths into parameters. This node supports path and string parameters.")
 @JIPipeInputSlot(value = PathData.class, slotName = "Input")
 @JIPipeOutputSlot(value = ParametersData.class, slotName = "Parameters")
-@JIPipeOrganization(nodeTypeCategory = MiscellaneousNodeTypeCategory.class, menuPath = "Meta run")
+@JIPipeNode(nodeTypeCategory = MiscellaneousNodeTypeCategory.class, menuPath = "Meta run")
 public class PathsToJIPipeProjectParametersAlgorithm extends JIPipeIteratingAlgorithm {
 
     private InputSlotMapParameterCollection parameterKeyAssignments;

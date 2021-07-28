@@ -13,17 +13,18 @@
 
 package org.hkijena.jipipe.ui.registries;
 
-import org.hkijena.jipipe.api.JIPipeOrganization;
+import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.extension.GraphEditorToolBarButtonExtension;
-import org.hkijena.jipipe.ui.extension.MenuExtension;
-import org.hkijena.jipipe.ui.extension.MenuTarget;
+import org.hkijena.jipipe.ui.extension.JIPipeMenuExtension;
+import org.hkijena.jipipe.ui.extension.JIPipeMenuExtensionTarget;
 import org.hkijena.jipipe.ui.grapheditor.JIPipeGraphEditorUI;
 import org.hkijena.jipipe.ui.grapheditor.contextmenu.NodeUIContextAction;
 import org.hkijena.jipipe.utils.ReflectionUtils;
 import org.hkijena.jipipe.utils.StringUtils;
 
 import javax.swing.*;
+import java.lang.reflect.Constructor;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -35,7 +36,7 @@ import java.util.Map;
  * Registry for menu extensions
  */
 public class JIPipeCustomMenuRegistry {
-    private Map<MenuTarget, List<Class<? extends MenuExtension>>> registeredMenuExtensions = new HashMap<>();
+    private Map<JIPipeMenuExtensionTarget, List<Class<? extends JIPipeMenuExtension>>> registeredMenuExtensions = new HashMap<>();
     private List<Class<? extends GraphEditorToolBarButtonExtension>> registeredGraphEditorToolBarExtensions = new ArrayList<>();
     private List<NodeUIContextAction> registeredContextMenuActions = new ArrayList<>();
 
@@ -44,14 +45,20 @@ public class JIPipeCustomMenuRegistry {
      *
      * @param extension the extension
      */
-    public void registerMenu(Class<? extends MenuExtension> extension) {
-        JIPipeOrganization organization = extension.getAnnotation(JIPipeOrganization.class);
-        List<Class<? extends MenuExtension>> list = registeredMenuExtensions.getOrDefault(organization.menuExtensionTarget(), null);
-        if (list == null) {
-            list = new ArrayList<>();
-            registeredMenuExtensions.put(organization.menuExtensionTarget(), list);
+    public void registerMenu(Class<? extends JIPipeMenuExtension> extension) {
+        try {
+            Constructor<? extends JIPipeMenuExtension> constructor = extension.getConstructor(JIPipeWorkbench.class);
+            JIPipeMenuExtension instance = constructor.newInstance((JIPipeWorkbench) null);
+            List<Class<? extends JIPipeMenuExtension>> list = registeredMenuExtensions.getOrDefault(instance.getMenuTarget(), null);
+            if (list == null) {
+                list = new ArrayList<>();
+                registeredMenuExtensions.put(instance.getMenuTarget(), list);
+            }
+            list.add(extension);
         }
-        list.add(extension);
+        catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 
     /**
@@ -61,10 +68,10 @@ public class JIPipeCustomMenuRegistry {
      * @param workbench the workbench
      * @return the extensions
      */
-    public List<MenuExtension> getMenuExtensionsTargeting(MenuTarget target, JIPipeWorkbench workbench) {
-        List<MenuExtension> result = new ArrayList<>();
-        for (Class<? extends MenuExtension> klass : registeredMenuExtensions.getOrDefault(target, Collections.emptyList())) {
-            MenuExtension extension = (MenuExtension) ReflectionUtils.newInstance(klass, workbench);
+    public List<JIPipeMenuExtension> getMenuExtensionsTargeting(JIPipeMenuExtensionTarget target, JIPipeWorkbench workbench) {
+        List<JIPipeMenuExtension> result = new ArrayList<>();
+        for (Class<? extends JIPipeMenuExtension> klass : registeredMenuExtensions.getOrDefault(target, Collections.emptyList())) {
+            JIPipeMenuExtension extension = (JIPipeMenuExtension) ReflectionUtils.newInstance(klass, workbench);
             result.add(extension);
         }
         result.sort(Comparator.comparing(JMenuItem::getText));
@@ -82,7 +89,7 @@ public class JIPipeCustomMenuRegistry {
         return result;
     }
 
-    public Map<MenuTarget, List<Class<? extends MenuExtension>>> getRegisteredMenuExtensions() {
+    public Map<JIPipeMenuExtensionTarget, List<Class<? extends JIPipeMenuExtension>>> getRegisteredMenuExtensions() {
         return Collections.unmodifiableMap(registeredMenuExtensions);
     }
 

@@ -1,6 +1,7 @@
 package org.hkijena.jipipe.extensions.cellpose;
 
 import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.environments.ExternalEnvironmentInfo;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
@@ -9,6 +10,7 @@ import java.nio.file.Paths;
 
 @JIPipeDocumentation(name = "Download & install Cellpose (GPU)", description = "Creates a new Python environment with Cellpose installed. " +
         "Requires a graphics card suitable for GPU computing.")
+@ExternalEnvironmentInfo(category = "Cellpose")
 public class CellPoseGPUEnvInstaller extends CellPoseEnvInstaller {
     /**
      * @param workbench       the workbench

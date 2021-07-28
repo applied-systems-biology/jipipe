@@ -21,7 +21,7 @@ import ij.ImagePlus;
 import ij.plugin.ChannelArranger;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeIssueReport;
-import org.hkijena.jipipe.api.JIPipeOrganization;
+import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.JIPipeDataBatch;
 import org.hkijena.jipipe.api.nodes.JIPipeInputSlot;
@@ -48,7 +48,7 @@ import java.util.List;
  * Wrapper around {@link ij.plugin.ChannelArranger}
  */
 @JIPipeDocumentation(name = "Arrange channels", description = "Reorders the channels of each input image")
-@JIPipeOrganization(menuPath = "Colors", nodeTypeCategory = ImagesNodeTypeCategory.class)
+@JIPipeNode(menuPath = "Colors", nodeTypeCategory = ImagesNodeTypeCategory.class)
 @JIPipeInputSlot(value = ImagePlusData.class, slotName = "Input", autoCreate = true)
 @JIPipeOutputSlot(value = ImagePlusData.class, slotName = "Output", autoCreate = true, inheritedSlot = "Input")
 public class ArrangeChannelsAlgorithm extends JIPipeSimpleIteratingAlgorithm {

@@ -30,7 +30,7 @@ import omero.gateway.model.ExperimenterData;
 import omero.gateway.model.ImageData;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeIssueReport;
-import org.hkijena.jipipe.api.JIPipeOrganization;
+import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeAnnotation;
 import org.hkijena.jipipe.api.data.JIPipeAnnotationMergeStrategy;
@@ -64,7 +64,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 @JIPipeDocumentation(name = "Download from OMERO", description = "Imports an image from OMERO into ImageJ")
-@JIPipeOrganization(nodeTypeCategory = DataSourceNodeTypeCategory.class)
+@JIPipeNode(nodeTypeCategory = DataSourceNodeTypeCategory.class)
 @JIPipeInputSlot(value = OMEROImageReferenceData.class, slotName = "Input", autoCreate = true)
 @JIPipeOutputSlot(value = OMEImageData.class, slotName = "Output", autoCreate = true)
 public class DownloadOMEROImageAlgorithm extends JIPipeSimpleIteratingAlgorithm {

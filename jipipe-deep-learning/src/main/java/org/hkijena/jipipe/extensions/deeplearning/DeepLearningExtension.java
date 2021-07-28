@@ -14,7 +14,7 @@ import org.hkijena.jipipe.extensions.deeplearning.enums.NormalizationMethod;
 import org.hkijena.jipipe.extensions.deeplearning.enums.MonitorLoss;
 import org.hkijena.jipipe.extensions.deeplearning.enums.RegularizationMethod;
 import org.hkijena.jipipe.extensions.deeplearning.environments.DeepLearningDeviceEnvironment;
-import org.hkijena.jipipe.extensions.deeplearning.environments.DeepLearningToolkitEnvInstaller;
+import org.hkijena.jipipe.extensions.deeplearning.environments.TensorFlowEnvInstaller;
 import org.hkijena.jipipe.extensions.deeplearning.environments.DeepLearningToolkitLibraryEnvironment;
 import org.hkijena.jipipe.extensions.deeplearning.environments.DeepLearningToolkitLibraryEnvironmentInstaller;
 import org.hkijena.jipipe.extensions.deeplearning.environments.OptionalDeepLearningDeviceEnvironment;
@@ -122,7 +122,7 @@ public class DeepLearningExtension extends JIPipePrepackagedDefaultJavaExtension
                 UIUtils.getIconFromResources("actions/plugins.png"),
                 settings);
         registerEnvironmentInstaller(PythonEnvironment.class,
-                DeepLearningToolkitEnvInstaller.class,
+                TensorFlowEnvInstaller.class,
                 UIUtils.getIconFromResources("data-types/dl-model.png"));
         registerEnumParameterType("deep-learning-architecture",
                 NetworkArchitecture.class,
@@ -174,10 +174,9 @@ public class DeepLearningExtension extends JIPipePrepackagedDefaultJavaExtension
     public void postprocess() {
         if (!DeepLearningSettings.pythonSettingsAreValid()) {
             JIPipeNotification notification = new JIPipeNotification(getDependencyId() + ":python-not-configured");
-            notification.setHeading("Deep learning is not configured");
-            notification.setDescription("You need to setup a Python environment that will be used by JIPipe to apply Deep learning. " +
-                    "Please note that Deep learning is applied via a separate Python environment by default.");
-            notification.getActions().add(new JIPipeNotificationAction("Install Conda environment",
+            notification.setHeading("Tensortflow is not installed");
+            notification.setDescription("You need to setup a Python environment that comes with Tensorflow.");
+            notification.getActions().add(new JIPipeNotificationAction("Install Tensorflow",
                     "Installs a Conda environment that contains all necessary dependencies for the Deep Learning toolkit used by JIPipe",
                     UIUtils.getIconFromResources("actions/browser-download.png"),
                     DeepLearningExtension::installDeepLearningConda));
@@ -216,7 +215,7 @@ public class DeepLearningExtension extends JIPipePrepackagedDefaultJavaExtension
         DeepLearningSettings settings = DeepLearningSettings.getInstance();
         JIPipeParameterTree tree = new JIPipeParameterTree(settings);
         JIPipeParameterAccess parameterAccess = tree.getParameters().get("python-environment");
-        DeepLearningToolkitEnvInstaller installer = new DeepLearningToolkitEnvInstaller(workbench, parameterAccess);
+        TensorFlowEnvInstaller installer = new TensorFlowEnvInstaller(workbench, parameterAccess);
         JIPipeRunExecuterUI.runInDialog(workbench.getWindow(), installer);
     }
 

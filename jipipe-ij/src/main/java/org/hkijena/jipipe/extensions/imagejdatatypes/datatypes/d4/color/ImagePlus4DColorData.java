@@ -16,7 +16,7 @@ package org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d4.color;
 import ij.ImagePlus;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeHeavyData;
-import org.hkijena.jipipe.api.JIPipeOrganization;
+import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.extensions.imagejdatatypes.color.ColorSpace;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.color.ColoredImagePlusData;
@@ -34,7 +34,7 @@ import java.nio.file.Path;
  * Conversion works through {@link org.hkijena.jipipe.extensions.imagejdatatypes.algorithms.ImplicitImageTypeConverter}
  */
 @JIPipeDocumentation(name = "4D Image (Color)")
-@JIPipeOrganization(menuPath = "Images\n3D\nColor")
+@JIPipeNode(menuPath = "Images\n3D\nColor")
 @JIPipeHeavyData
 public class ImagePlus4DColorData extends ImagePlus4DData implements ColoredImagePlusData {
 

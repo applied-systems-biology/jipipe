@@ -21,7 +21,7 @@ import omero.gateway.model.ExperimenterData;
 import omero.gateway.model.ImageData;
 import omero.gateway.model.TableData;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeOrganization;
+import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeDataByMetadataExporter;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
@@ -45,7 +45,7 @@ import java.util.List;
 import java.util.Set;
 
 @JIPipeDocumentation(name = "Upload to OMERO", description = "Uploads tables to OMERO. The table is attached to an image.")
-@JIPipeOrganization(nodeTypeCategory = TableNodeTypeCategory.class)
+@JIPipeNode(nodeTypeCategory = TableNodeTypeCategory.class)
 @JIPipeInputSlot(value = ResultsTableData.class, slotName = "Table", autoCreate = true)
 @JIPipeInputSlot(value = OMEROImageReferenceData.class, slotName = "Image", autoCreate = true)
 public class UploadOMEROTableAlgorithm extends JIPipeMergingAlgorithm {

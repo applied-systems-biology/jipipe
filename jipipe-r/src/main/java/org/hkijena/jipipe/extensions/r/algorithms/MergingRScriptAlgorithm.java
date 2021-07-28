@@ -3,7 +3,7 @@ package org.hkijena.jipipe.extensions.r.algorithms;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeIssueReport;
-import org.hkijena.jipipe.api.JIPipeOrganization;
+import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeAnnotationMergeStrategy;
 import org.hkijena.jipipe.api.data.JIPipeData;
@@ -65,7 +65,7 @@ import java.util.Map;
         "Please note that you must use tiff() or other functions to actually write this file." +
         "Optionally, you can add annotations to the data.</li>" +
         "</ul>")
-@JIPipeOrganization(nodeTypeCategory = MiscellaneousNodeTypeCategory.class, menuPath = "R script")
+@JIPipeNode(nodeTypeCategory = MiscellaneousNodeTypeCategory.class, menuPath = "R script")
 @JIPipeInputSlot(ResultsTableData.class)
 @JIPipeOutputSlot(ImagePlusColorRGBData.class)
 @JIPipeOutputSlot(ResultsTableData.class)

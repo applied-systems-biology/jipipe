@@ -1,7 +1,7 @@
 package org.hkijena.jipipe.extensions.imagejalgorithms.ij1.roi;
 
 import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeOrganization;
+import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.JIPipeDataBatch;
 import org.hkijena.jipipe.api.nodes.JIPipeInputSlot;
@@ -23,7 +23,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 @JIPipeDocumentation(name = "Filter ROI list", description = "Only passes ROI lists that match the filter criteria.")
-@JIPipeOrganization(nodeTypeCategory = RoiNodeTypeCategory.class, menuPath = "Filter")
+@JIPipeNode(nodeTypeCategory = RoiNodeTypeCategory.class, menuPath = "Filter")
 @JIPipeInputSlot(value = ROIListData.class, slotName = "Input", autoCreate = true)
 @JIPipeOutputSlot(value = ROIListData.class, slotName = "Output", autoCreate = true)
 public class FilterROIListsAlgorithm extends JIPipeSimpleIteratingAlgorithm {

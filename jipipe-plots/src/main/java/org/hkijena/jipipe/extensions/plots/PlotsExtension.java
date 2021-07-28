@@ -71,7 +71,7 @@ public class PlotsExtension extends JIPipePrepackagedDefaultJavaExtension {
     public void register() {
 
         // Register extension so users can create plots
-        registerMenuExtension(NewPlotMenuExtension.class);
+        registerMenuExtension(NewPlotJIPipeMenuExtension.class);
 
         // Register parameter types
         registerEnumParameterType("plot-color-map", ColorMap.class, "Color map", "Determines how plot elements are colored");

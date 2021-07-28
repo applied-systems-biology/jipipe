@@ -16,7 +16,7 @@ package org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d3.color;
 import ij.ImagePlus;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeHeavyData;
-import org.hkijena.jipipe.api.JIPipeOrganization;
+import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.extensions.imagejdatatypes.color.ColorSpace;
 import org.hkijena.jipipe.extensions.imagejdatatypes.color.RGBColorSpace;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
@@ -32,7 +32,7 @@ import java.nio.file.Path;
  * RGB color 3D image
  */
 @JIPipeDocumentation(name = "3D image (RGB)")
-@JIPipeOrganization(menuPath = "Images\n3D\nColor")
+@JIPipeNode(menuPath = "Images\n3D\nColor")
 @JIPipeHeavyData
 public class ImagePlus3DColorRGBData extends ImagePlus3DColorData implements ColoredImagePlusData {
 

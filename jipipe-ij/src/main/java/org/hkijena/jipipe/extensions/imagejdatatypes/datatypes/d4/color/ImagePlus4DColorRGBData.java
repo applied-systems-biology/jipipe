@@ -16,7 +16,7 @@ package org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d4.color;
 import ij.ImagePlus;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeHeavyData;
-import org.hkijena.jipipe.api.JIPipeOrganization;
+import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.extensions.imagejdatatypes.color.ColorSpace;
 import org.hkijena.jipipe.extensions.imagejdatatypes.color.RGBColorSpace;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
@@ -32,7 +32,7 @@ import java.nio.file.Path;
  * RGB color 4D image
  */
 @JIPipeDocumentation(name = "4D image (RGB)")
-@JIPipeOrganization(menuPath = "Images\n4D\nColor")
+@JIPipeNode(menuPath = "Images\n4D\nColor")
 @JIPipeHeavyData
 public class ImagePlus4DColorRGBData extends ImagePlus4DColorData implements ColoredImagePlusData {
 

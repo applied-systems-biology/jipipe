@@ -19,7 +19,7 @@ import ij.plugin.filter.Convolver;
 import ij.process.ImageProcessor;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeIssueReport;
-import org.hkijena.jipipe.api.JIPipeOrganization;
+import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.JIPipeDataBatch;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
@@ -34,7 +34,7 @@ import org.hkijena.jipipe.extensions.parameters.matrix.Matrix2DFloat;
  * Wrapper around {@link Convolver}
  */
 @JIPipeDocumentation(name = "Image from matrix", description = "Creates an image from a matrix")
-@JIPipeOrganization(menuPath = "Convolve", nodeTypeCategory = DataSourceNodeTypeCategory.class)
+@JIPipeNode(menuPath = "Convolve", nodeTypeCategory = DataSourceNodeTypeCategory.class)
 @JIPipeOutputSlot(value = ImagePlusData.class, slotName = "Output", autoCreate = true)
 public class ImageFromMatrix2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 

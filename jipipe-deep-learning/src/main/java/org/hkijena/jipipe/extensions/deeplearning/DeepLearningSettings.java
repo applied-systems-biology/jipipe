@@ -6,6 +6,7 @@ import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeIssueReport;
 import org.hkijena.jipipe.api.environments.ExternalEnvironment;
+import org.hkijena.jipipe.api.environments.ExternalEnvironmentParameterSettings;
 import org.hkijena.jipipe.api.environments.ExternalEnvironmentSettings;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
@@ -38,10 +39,11 @@ public class DeepLearningSettings implements JIPipeParameterCollection, External
         return eventBus;
     }
 
-    @JIPipeDocumentation(name = "Deep Learning Python environment", description = "If enabled, a separate Python environment is used for Deep Learning. " +
+    @JIPipeDocumentation(name = "Tensorflow Python environment", description = "If enabled, a separate Python environment is used for Deep Learning. " +
             "Alternatively, the standard Python environment from the Python extension is used. Please ensure that the Deep Learning Toolkit is installed. " +
             "You can also install the Deep Learning Toolkit via the Select/Install button (CPU and GPU supported).")
     @JIPipeParameter("python-environment")
+    @ExternalEnvironmentParameterSettings(showCategory = "Tensorflow")
     public OptionalPythonEnvironment getOverridePythonEnvironment() {
         return overridePythonEnvironment;
     }

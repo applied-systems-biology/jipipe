@@ -16,7 +16,7 @@ package org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d2.greyscale;
 import ij.ImagePlus;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeHeavyData;
-import org.hkijena.jipipe.api.JIPipeOrganization;
+import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.extensions.imagejdatatypes.color.ColorSpace;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ConverterWrapperImageSource;
@@ -29,7 +29,7 @@ import java.nio.file.Path;
  * 8-bit greyscale 2D image
  */
 @JIPipeDocumentation(name = "2D image (8 bit)")
-@JIPipeOrganization(menuPath = "Images\n2D\nGreyscale")
+@JIPipeNode(menuPath = "Images\n2D\nGreyscale")
 @JIPipeHeavyData
 public class ImagePlus2DGreyscale8UData extends ImagePlus2DGreyscaleData {
 

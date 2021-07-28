@@ -16,7 +16,7 @@ package org.hkijena.jipipe.api.data;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeHeavyData;
 import org.hkijena.jipipe.api.JIPipeHidden;
-import org.hkijena.jipipe.api.JIPipeOrganization;
+import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.extensions.parameters.primitives.HTMLText;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
@@ -131,7 +131,7 @@ public interface JIPipeData {
      * @return The menu path of the data class
      */
     static String getMenuPathOf(Class<? extends JIPipeData> klass) {
-        JIPipeOrganization[] annotations = klass.getAnnotationsByType(JIPipeOrganization.class);
+        JIPipeNode[] annotations = klass.getAnnotationsByType(JIPipeNode.class);
         if (annotations.length > 0) {
             return annotations[0].menuPath();
         } else {

@@ -6,7 +6,7 @@ import inra.ijpb.algo.AlgoListener;
 import inra.ijpb.morphology.directional.DirectionalFilter;
 import org.hkijena.jipipe.api.JIPipeCitation;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeOrganization;
+import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.JIPipeDataBatch;
 import org.hkijena.jipipe.api.nodes.JIPipeInputSlot;
@@ -20,7 +20,7 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 
 @JIPipeDocumentation(name = "Directional filter 2D", description = "Filter that enhances curvilinear structures by applying oriented filters, while preserving their thickness. More information: https://imagej.net/plugins/morpholibj. " +
         "If higher-dimensional data is provided, the filter is applied to each 2D slice.")
-@JIPipeOrganization(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Features")
+@JIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Features")
 @JIPipeCitation("https://imagej.net/plugins/morpholibj")
 @JIPipeCitation("Soille et al., 20012, Heneghan et al., 20023; Hendriks et al., 2003")
 @JIPipeInputSlot(value = ImagePlusGreyscaleData.class, slotName = "Input", autoCreate = true)

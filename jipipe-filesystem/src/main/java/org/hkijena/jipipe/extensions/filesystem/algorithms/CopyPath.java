@@ -14,7 +14,7 @@
 package org.hkijena.jipipe.extensions.filesystem.algorithms;
 
 import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeOrganization;
+import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
 import org.hkijena.jipipe.api.nodes.JIPipeDataBatch;
@@ -44,7 +44,7 @@ import java.util.stream.Collectors;
         "[Folder] to [Folder]: By default, the contents of the source folder are copied into the destination folder. You can enable a parameter that instead " +
         "copies the contents into [Destination]/[Source folder name]\n" +
         "[Folder] to [Not existing]: The destination is automatically created. The [Folder] to [Folder] rule is applied.")
-@JIPipeOrganization(nodeTypeCategory = FileSystemNodeTypeCategory.class)
+@JIPipeNode(nodeTypeCategory = FileSystemNodeTypeCategory.class)
 
 
 @JIPipeInputSlot(value = PathData.class, slotName = "Source", autoCreate = true)

@@ -18,10 +18,10 @@ import ij.Prefs;
 import mslinks.ShellLink;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.SystemUtils;
-import org.hkijena.jipipe.api.JIPipeOrganization;
+import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
-import org.hkijena.jipipe.ui.extension.MenuExtension;
-import org.hkijena.jipipe.ui.extension.MenuTarget;
+import org.hkijena.jipipe.ui.extension.JIPipeMenuExtension;
+import org.hkijena.jipipe.ui.extension.JIPipeMenuExtensionTarget;
 import org.hkijena.jipipe.utils.ResourceUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 
@@ -37,8 +37,7 @@ import java.nio.file.Paths;
 import java.nio.file.attribute.PosixFilePermissions;
 import java.util.NoSuchElementException;
 
-@JIPipeOrganization(menuExtensionTarget = MenuTarget.ProjectToolsMenu)
-public class CreateLaunchersTool extends MenuExtension {
+public class CreateLaunchersTool extends JIPipeMenuExtension {
     /**
      * Creates a new instance
      *
@@ -50,6 +49,16 @@ public class CreateLaunchersTool extends MenuExtension {
         setToolTipText("Creates files that can open JIPipe directly (without ImageJ)");
         setIcon(UIUtils.getIconFromResources("apps/jipipe.png"));
         addActionListener(e -> createLaunchers());
+    }
+
+    @Override
+    public JIPipeMenuExtensionTarget getMenuTarget() {
+        return JIPipeMenuExtensionTarget.ProjectToolsMenu;
+    }
+
+    @Override
+    public String getMenuPath() {
+        return "";
     }
 
     private void createLaunchers() {

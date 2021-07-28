@@ -34,8 +34,8 @@ import org.hkijena.jipipe.ui.components.HTMLEditor;
 import org.hkijena.jipipe.ui.components.JIPipeValidityReportUI;
 import org.hkijena.jipipe.ui.components.MarkdownDocument;
 import org.hkijena.jipipe.ui.components.UserFriendlyErrorUI;
-import org.hkijena.jipipe.ui.extension.MenuExtension;
-import org.hkijena.jipipe.ui.extension.MenuTarget;
+import org.hkijena.jipipe.ui.extension.JIPipeMenuExtension;
+import org.hkijena.jipipe.ui.extension.JIPipeMenuExtensionTarget;
 import org.hkijena.jipipe.ui.theme.JIPipeUITheme;
 import org.hkijena.jipipe.utils.json.JsonUtils;
 import org.hkijena.jipipe.utils.ui.ListSelectionMode;
@@ -1113,15 +1113,15 @@ public class UIUtils {
      * @param targetMenuType the menu type
      * @param withSeparator  if a separator should be prepended if items are installed
      */
-    public static void installMenuExtension(JIPipeWorkbench workbench, JMenu targetMenu, MenuTarget targetMenuType, boolean withSeparator) {
-        List<MenuExtension> extensions = JIPipe.getCustomMenus()
+    public static void installMenuExtension(JIPipeWorkbench workbench, JMenu targetMenu, JIPipeMenuExtensionTarget targetMenuType, boolean withSeparator) {
+        List<JIPipeMenuExtension> extensions = JIPipe.getCustomMenus()
                 .getMenuExtensionsTargeting(targetMenuType, workbench);
         if (!extensions.isEmpty()) {
             if (withSeparator)
                 targetMenu.addSeparator();
             for (Map.Entry<String, JMenu> entry : createMenuTree(targetMenu, extensions.stream()
-                    .map(MenuExtension::getMenuPath).collect(Collectors.toSet())).entrySet()) {
-                for (MenuExtension extension : extensions) {
+                    .map(JIPipeMenuExtension::getMenuPath).collect(Collectors.toSet())).entrySet()) {
+                for (JIPipeMenuExtension extension : extensions) {
                     if (StringUtils.getCleanedMenuPath(entry.getKey()).equals(StringUtils.getCleanedMenuPath(extension.getMenuPath()))) {
                         entry.getValue().add(extension);
                     }

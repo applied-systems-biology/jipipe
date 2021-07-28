@@ -1,24 +1,23 @@
 package org.hkijena.jipipe.extensions.clij2.ui;
 
-import org.hkijena.jipipe.api.JIPipeOrganization;
+import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.components.DocumentTabPane;
-import org.hkijena.jipipe.ui.extension.MenuExtension;
-import org.hkijena.jipipe.ui.extension.MenuTarget;
+import org.hkijena.jipipe.ui.extension.JIPipeMenuExtension;
+import org.hkijena.jipipe.ui.extension.JIPipeMenuExtensionTarget;
 import org.hkijena.jipipe.utils.UIUtils;
 
 /**
  * Adds a menu item that allows to control CLIJ
  */
-@JIPipeOrganization(menuExtensionTarget = MenuTarget.ProjectToolsMenu, menuPath = "Extensions")
-public class CLIJControlPanelMenuExtension extends MenuExtension {
+public class CLIJControlPanelJIPipeMenuExtension extends JIPipeMenuExtension {
     /**
      * Creates a new instance
      *
      * @param workbench workbench the extension is attached to
      */
-    public CLIJControlPanelMenuExtension(JIPipeWorkbench workbench) {
+    public CLIJControlPanelJIPipeMenuExtension(JIPipeWorkbench workbench) {
         super(workbench);
         setText("CLIJ2 control panel");
         setIcon(UIUtils.getIconFromResources("apps/clij.png"));
@@ -49,5 +48,15 @@ public class CLIJControlPanelMenuExtension extends MenuExtension {
                     "Please update your graphics card drivers. On Linux, CLIJ2 makes use of libOpencv.so. On Ubuntu, this library must be manually installed via the ocl-icd-opencl-dev package. Check if it is installed."
             ));
         }
+    }
+
+    @Override
+    public JIPipeMenuExtensionTarget getMenuTarget() {
+        return JIPipeMenuExtensionTarget.ProjectToolsMenu;
+    }
+
+    @Override
+    public String getMenuPath() {
+        return "Extensions";
     }
 }

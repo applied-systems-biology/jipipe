@@ -23,7 +23,7 @@ import ij.plugin.RGBStackMerge;
 import ij.process.ColorProcessor;
 import ij.process.ImageProcessor;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeOrganization;
+import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.JIPipeDataBatch;
 import org.hkijena.jipipe.api.nodes.JIPipeInputSlot;
@@ -44,7 +44,7 @@ import java.awt.Image;
  * Implementation of {@link ij.plugin.MontageMaker}
  */
 @JIPipeDocumentation(name = "Stack to montage", description = "Converts an image stack into a montage.")
-@JIPipeOrganization(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Dimensions")
+@JIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Dimensions")
 @JIPipeInputSlot(value = ImagePlusData.class, slotName = "Input", autoCreate = true)
 @JIPipeOutputSlot(value = ImagePlus2DData.class, slotName = "Output", inheritedSlot = "Input", autoCreate = true)
 public class StackToMontageAlgorithm extends JIPipeIteratingAlgorithm {

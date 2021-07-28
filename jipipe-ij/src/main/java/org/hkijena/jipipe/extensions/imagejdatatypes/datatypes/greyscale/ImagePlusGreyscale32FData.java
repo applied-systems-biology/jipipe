@@ -16,7 +16,7 @@ package org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale;
 import ij.ImagePlus;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeHeavyData;
-import org.hkijena.jipipe.api.JIPipeOrganization;
+import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.extensions.imagejdatatypes.color.ColorSpace;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ConverterWrapperImageSource;
@@ -31,7 +31,7 @@ import java.nio.file.Path;
  * Conversion works through {@link org.hkijena.jipipe.extensions.imagejdatatypes.algorithms.ImplicitImageTypeConverter}
  */
 @JIPipeDocumentation(name = "Image (float)")
-@JIPipeOrganization(menuPath = "Images\nGreyscale")
+@JIPipeNode(menuPath = "Images\nGreyscale")
 @JIPipeHeavyData
 public class ImagePlusGreyscale32FData extends ImagePlusGreyscaleData {
 

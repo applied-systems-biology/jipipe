@@ -32,7 +32,7 @@ import omero.gateway.model.MapAnnotationData;
 import omero.model.NamedValue;
 import omero.model.Pixels;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeOrganization;
+import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeAnnotation;
 import org.hkijena.jipipe.api.data.JIPipeAnnotationMergeStrategy;
@@ -65,7 +65,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @JIPipeDocumentation(name = "Upload to OMERO", description = "Uploads an image to OMERO.")
-@JIPipeOrganization(nodeTypeCategory = ImagesNodeTypeCategory.class)
+@JIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class)
 @JIPipeInputSlot(value = OMEImageData.class, slotName = "Image", autoCreate = true)
 @JIPipeInputSlot(value = OMERODatasetReferenceData.class, slotName = "Dataset", autoCreate = true)
 @JIPipeOutputSlot(value = OMEROImageReferenceData.class, slotName = "ID", autoCreate = true)

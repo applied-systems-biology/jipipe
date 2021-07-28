@@ -20,7 +20,7 @@ import inra.ijpb.binary.BinaryImages;
 import inra.ijpb.binary.ChamferWeights;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeOrganization;
+import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.JIPipeDataBatch;
 import org.hkijena.jipipe.api.nodes.JIPipeGraph;
@@ -39,7 +39,7 @@ import org.hkijena.jipipe.extensions.parameters.editors.JIPipeDataParameterSetti
 import org.hkijena.jipipe.extensions.parameters.references.JIPipeDataInfoRef;
 
 @JIPipeDocumentation(name = "Geodesic Distance Map 2D", description = "Computes the geodesic distance map from a binary image. If higher-dimensional data is provided, the filter is applied to each 2D slice.")
-@JIPipeOrganization(menuPath = "Math\nDistance map", nodeTypeCategory = ImagesNodeTypeCategory.class)
+@JIPipeNode(menuPath = "Math\nDistance map", nodeTypeCategory = ImagesNodeTypeCategory.class)
 @JIPipeInputSlot(value = ImagePlusGreyscaleMaskData.class, slotName = "Marker", autoCreate = true)
 @JIPipeInputSlot(value = ImagePlusGreyscaleMaskData.class, slotName = "Mask", autoCreate = true)
 @JIPipeOutputSlot(value = ImagePlusGreyscaleData.class, slotName = "Output", autoCreate = true)

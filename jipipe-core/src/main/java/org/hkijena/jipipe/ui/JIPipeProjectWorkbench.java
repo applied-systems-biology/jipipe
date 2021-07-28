@@ -45,7 +45,7 @@ import org.hkijena.jipipe.ui.components.MemoryStatusUI;
 import org.hkijena.jipipe.ui.components.RecentProjectsMenu;
 import org.hkijena.jipipe.ui.components.ReloadableValidityChecker;
 import org.hkijena.jipipe.ui.data.VirtualDataControl;
-import org.hkijena.jipipe.ui.extension.MenuTarget;
+import org.hkijena.jipipe.ui.extension.JIPipeMenuExtensionTarget;
 import org.hkijena.jipipe.ui.extensionbuilder.JIPipeJsonExporter;
 import org.hkijena.jipipe.ui.extensions.JIPipePluginManagerUIPanel;
 import org.hkijena.jipipe.ui.extensions.JIPipePluginValidityCheckerPanel;
@@ -368,7 +368,7 @@ public class JIPipeProjectWorkbench extends JPanel implements JIPipeWorkbench {
         newProjectFromTemplateButton.addActionListener(e -> window.newProjectFromTemplate());
         projectMenu.add(newProjectFromTemplateButton);
 
-        UIUtils.installMenuExtension(this, projectMenu, MenuTarget.ProjectMainMenu, true);
+        UIUtils.installMenuExtension(this, projectMenu, JIPipeMenuExtensionTarget.ProjectMainMenu, true);
         projectMenu.addSeparator();
 
         // "Open project" entry
@@ -493,7 +493,7 @@ public class JIPipeProjectWorkbench extends JPanel implements JIPipeWorkbench {
         newCompartmentButton.addActionListener(e -> newCompartmentAfterCurrent());
         compartmentMenu.add(newCompartmentButton);
 
-        UIUtils.installMenuExtension(this, compartmentMenu, MenuTarget.ProjectCompartmentMenu, true);
+        UIUtils.installMenuExtension(this, compartmentMenu, JIPipeMenuExtensionTarget.ProjectCompartmentMenu, true);
 
         menu.add(compartmentMenu);
 
@@ -520,7 +520,7 @@ public class JIPipeProjectWorkbench extends JPanel implements JIPipeWorkbench {
         manageImageJPlugins.addActionListener(e -> manageImageJPlugins());
         pluginsMenu.add(manageImageJPlugins);
 
-        UIUtils.installMenuExtension(this, compartmentMenu, MenuTarget.ProjectPluginsMenu, true);
+        UIUtils.installMenuExtension(this, compartmentMenu, JIPipeMenuExtensionTarget.ProjectPluginsMenu, true);
 
         menu.add(pluginsMenu);
 
@@ -539,7 +539,7 @@ public class JIPipeProjectWorkbench extends JPanel implements JIPipeWorkbench {
         openNotificationsButton.addActionListener(e -> documentTabPane.selectSingletonTab(TAB_NOTIFICATIONS));
         toolsMenu.add(openNotificationsButton);
 
-        UIUtils.installMenuExtension(this, toolsMenu, MenuTarget.ProjectToolsMenu, false);
+        UIUtils.installMenuExtension(this, toolsMenu, JIPipeMenuExtensionTarget.ProjectToolsMenu, false);
         if (toolsMenu.getItemCount() > 0)
             menu.add(toolsMenu);
 
@@ -612,7 +612,7 @@ public class JIPipeProjectWorkbench extends JPanel implements JIPipeWorkbench {
 
         menu.add(helpMenu);
 
-        UIUtils.installMenuExtension(this, helpMenu, MenuTarget.ProjectHelpMenu, true);
+        UIUtils.installMenuExtension(this, helpMenu, JIPipeMenuExtensionTarget.ProjectHelpMenu, true);
 
         add(menu, BorderLayout.NORTH);
     }

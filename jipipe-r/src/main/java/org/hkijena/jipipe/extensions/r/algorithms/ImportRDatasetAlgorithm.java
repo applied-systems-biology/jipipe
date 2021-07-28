@@ -2,7 +2,7 @@ package org.hkijena.jipipe.extensions.r.algorithms;
 
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeIssueReport;
-import org.hkijena.jipipe.api.JIPipeOrganization;
+import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.JIPipeDataBatch;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
@@ -24,7 +24,7 @@ import javax.swing.*;
 import java.nio.file.Path;
 
 @JIPipeDocumentation(name = "R data set", description = "Imports a standard R data set (datasets package) as table.")
-@JIPipeOrganization(nodeTypeCategory = DataSourceNodeTypeCategory.class)
+@JIPipeNode(nodeTypeCategory = DataSourceNodeTypeCategory.class)
 @JIPipeOutputSlot(value = ResultsTableData.class, slotName = "Output", autoCreate = true)
 public class ImportRDatasetAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 

@@ -17,7 +17,7 @@ import ij.ImagePlus;
 import ij.ImageStack;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeOrganization;
+import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeDefaultMutableSlotConfiguration;
 import org.hkijena.jipipe.api.nodes.JIPipeDataBatch;
@@ -54,7 +54,7 @@ import java.util.stream.Collectors;
  * Loads an image data from a file via IJ.openFile()
  */
 @JIPipeDocumentation(name = "Import image stack", description = "Loads an image stack via the native ImageJ functions. The current implementation only allows 2D images to be imported and will show an error if higher-dimensional data is provided.")
-@JIPipeOrganization(nodeTypeCategory = DataSourceNodeTypeCategory.class)
+@JIPipeNode(nodeTypeCategory = DataSourceNodeTypeCategory.class)
 @JIPipeInputSlot(FolderData.class)
 @JIPipeOutputSlot(ImagePlusData.class)
 public class ImageStackFromFolder extends JIPipeSimpleIteratingAlgorithm {

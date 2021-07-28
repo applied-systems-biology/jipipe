@@ -17,7 +17,7 @@ import ij.ImagePlus;
 import inra.ijpb.binary.BinaryImages;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeOrganization;
+import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.JIPipeDataBatch;
 import org.hkijena.jipipe.api.nodes.JIPipeGraph;
@@ -38,7 +38,7 @@ import org.hkijena.jipipe.extensions.parameters.references.JIPipeDataInfoRef;
 
 @JIPipeDocumentation(name = "Connected components labeling 3D", description = "Applies a connected components labeling on a mask. Each connected component is assigned a unique value in the output label image. " +
         "If the image is non-binary, the connected components are generated per-input value. If 3D data is supplied, the connected components are extracted in 3D.")
-@JIPipeOrganization(menuPath = "Binary", nodeTypeCategory = ImagesNodeTypeCategory.class)
+@JIPipeNode(menuPath = "Binary", nodeTypeCategory = ImagesNodeTypeCategory.class)
 @JIPipeInputSlot(value = ImagePlus3DGreyscaleMaskData.class, slotName = "Input", autoCreate = true)
 @JIPipeOutputSlot(value = ImagePlusGreyscaleData.class, slotName = "Output", autoCreate = true)
 public class ConnectedComponentsLabeling3DAlgorithm extends JIPipeSimpleIteratingAlgorithm {

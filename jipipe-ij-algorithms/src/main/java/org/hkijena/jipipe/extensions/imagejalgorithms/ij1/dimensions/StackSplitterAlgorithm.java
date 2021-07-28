@@ -18,7 +18,7 @@ import ij.ImageStack;
 import ij.plugin.ChannelArranger;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeIssueReport;
-import org.hkijena.jipipe.api.JIPipeOrganization;
+import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeAnnotation;
 import org.hkijena.jipipe.api.data.JIPipeAnnotationMergeStrategy;
@@ -49,7 +49,7 @@ import java.util.stream.Collectors;
  */
 @JIPipeDocumentation(name = "Reduce & split stacks", description = "Splits incoming stacks into a customizable amount of stacks based on stack indices. Add more output slots " +
         "to create more groups.")
-@JIPipeOrganization(menuPath = "Dimensions", nodeTypeCategory = ImagesNodeTypeCategory.class)
+@JIPipeNode(menuPath = "Dimensions", nodeTypeCategory = ImagesNodeTypeCategory.class)
 @JIPipeInputSlot(value = ImagePlusData.class, slotName = "Input", autoCreate = true)
 @JIPipeOutputSlot(value = ImagePlusData.class, slotName = "Output", autoCreate = true, inheritedSlot = "Input")
 public class StackSplitterAlgorithm extends JIPipeSimpleIteratingAlgorithm {

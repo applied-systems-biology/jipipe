@@ -1,7 +1,7 @@
 package org.hkijena.jipipe.extensions.forms.algorithms;
 
 import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeOrganization;
+import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.nodes.JIPipeInputSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.JIPipeOutputSlot;
@@ -12,7 +12,7 @@ import org.hkijena.jipipe.extensions.forms.datatypes.FormData;
 @JIPipeDocumentation(name = "Selection input form", description = "Creates a selection input form (combo box). " + FormGeneratorAlgorithm.DOCUMENTATION_DESCRIPTION)
 @JIPipeInputSlot(value = FormData.class, slotName = "Existing")
 @JIPipeOutputSlot(value = FormData.class, slotName = "Combined")
-@JIPipeOrganization(nodeTypeCategory = DataSourceNodeTypeCategory.class)
+@JIPipeNode(nodeTypeCategory = DataSourceNodeTypeCategory.class)
 public class EnumFormGeneratorAlgorithm extends SimpleFormGeneratorAlgorithm {
 
     public EnumFormGeneratorAlgorithm(JIPipeNodeInfo info) {

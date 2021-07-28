@@ -16,7 +16,7 @@ package org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d4.greyscale;
 import ij.ImagePlus;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeHeavyData;
-import org.hkijena.jipipe.api.JIPipeOrganization;
+import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.extensions.imagejdatatypes.color.ColorSpace;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d4.ImagePlus4DData;
@@ -30,7 +30,7 @@ import java.nio.file.Path;
  * Greyscale 4D image
  */
 @JIPipeDocumentation(name = "4D image (greyscale)")
-@JIPipeOrganization(menuPath = "Images\n4D\nGreyscale")
+@JIPipeNode(menuPath = "Images\n4D\nGreyscale")
 @JIPipeHeavyData
 public class ImagePlus4DGreyscaleData extends ImagePlus4DData {
 

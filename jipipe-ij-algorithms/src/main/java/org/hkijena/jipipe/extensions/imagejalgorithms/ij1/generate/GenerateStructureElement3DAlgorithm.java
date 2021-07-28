@@ -21,7 +21,7 @@ import inra.ijpb.morphology.Morphology;
 import inra.ijpb.morphology.Strel3D;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeIssueReport;
-import org.hkijena.jipipe.api.JIPipeOrganization;
+import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeDefaultMutableSlotConfiguration;
 import org.hkijena.jipipe.api.nodes.JIPipeDataBatch;
@@ -37,7 +37,7 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d3.greyscale.Imag
  * Wrapper around {@link ImageProcessor}
  */
 @JIPipeDocumentation(name = "Generate structure element (3D)", description = "Generates a structure element that is consistent with the ones used by the 3D morphological operation.")
-@JIPipeOrganization(nodeTypeCategory = DataSourceNodeTypeCategory.class)
+@JIPipeNode(nodeTypeCategory = DataSourceNodeTypeCategory.class)
 @JIPipeOutputSlot(value = ImagePlusData.class, slotName = "Kernel")
 public class GenerateStructureElement3DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 

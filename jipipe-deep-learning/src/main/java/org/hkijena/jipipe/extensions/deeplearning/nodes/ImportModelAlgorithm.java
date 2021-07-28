@@ -14,7 +14,7 @@
 package org.hkijena.jipipe.extensions.deeplearning.nodes;
 
 import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeOrganization;
+import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.JIPipeDataBatch;
 import org.hkijena.jipipe.api.nodes.JIPipeInputSlot;
@@ -33,7 +33,7 @@ import java.nio.file.Path;
         "<li>Model JSON: The JSON representation of this model, obtained via model.to_json()</li>" +
         "<li>Model parameters: Parameters of this model in JSON format. Should at least define img_size and n_classes</li>" +
         "</ul>")
-@JIPipeOrganization(nodeTypeCategory = DataSourceNodeTypeCategory.class)
+@JIPipeNode(nodeTypeCategory = DataSourceNodeTypeCategory.class)
 @JIPipeInputSlot(value = FileData.class, slotName = "Model HDF5", autoCreate = true)
 @JIPipeInputSlot(value = FileData.class, slotName = "Model parameters", autoCreate = true)
 @JIPipeInputSlot(value = FileData.class, slotName = "Model JSON", autoCreate = true)

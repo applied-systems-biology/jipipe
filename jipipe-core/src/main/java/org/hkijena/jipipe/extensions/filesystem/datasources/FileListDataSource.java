@@ -15,7 +15,7 @@ package org.hkijena.jipipe.extensions.filesystem.datasources;
 
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeIssueReport;
-import org.hkijena.jipipe.api.JIPipeOrganization;
+import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.JIPipeAlgorithm;
 import org.hkijena.jipipe.api.nodes.JIPipeGraph;
@@ -40,7 +40,7 @@ import java.util.Objects;
  */
 @JIPipeDocumentation(name = "File list", description = "Converts each provided path into file data.")
 @JIPipeOutputSlot(value = FileData.class, slotName = "Filenames", autoCreate = true)
-@JIPipeOrganization(nodeTypeCategory = DataSourceNodeTypeCategory.class)
+@JIPipeNode(nodeTypeCategory = DataSourceNodeTypeCategory.class)
 public class FileListDataSource extends JIPipeAlgorithm {
 
     private PathList files = new PathList();

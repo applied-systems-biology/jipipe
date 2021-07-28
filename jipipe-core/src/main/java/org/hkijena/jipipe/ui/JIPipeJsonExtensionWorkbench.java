@@ -22,7 +22,7 @@ import org.hkijena.jipipe.ui.components.DocumentTabPane;
 import org.hkijena.jipipe.ui.components.RecentJsonExtensionsMenu;
 import org.hkijena.jipipe.ui.components.ReloadableValidityChecker;
 import org.hkijena.jipipe.ui.components.SplashScreen;
-import org.hkijena.jipipe.ui.extension.MenuTarget;
+import org.hkijena.jipipe.ui.extension.JIPipeMenuExtensionTarget;
 import org.hkijena.jipipe.ui.extensionbuilder.JIPipeJsonExtensionContentListUI;
 import org.hkijena.jipipe.ui.extensionbuilder.JIPipeJsonExtensionGraphUI;
 import org.hkijena.jipipe.ui.extensionbuilder.JIPipeJsonExtensionProjectValidation;
@@ -154,7 +154,7 @@ public class JIPipeJsonExtensionWorkbench extends JPanel implements JIPipeWorkbe
         newProjectButton.addActionListener(e -> window.newProject(false));
         projectMenu.add(newProjectButton);
 
-        UIUtils.installMenuExtension(this, projectMenu, MenuTarget.ExtensionBuilderMainMenu, true);
+        UIUtils.installMenuExtension(this, projectMenu, JIPipeMenuExtensionTarget.ExtensionBuilderMainMenu, true);
         projectMenu.addSeparator();
 
         // "Open project" entry
@@ -197,7 +197,7 @@ public class JIPipeJsonExtensionWorkbench extends JPanel implements JIPipeWorkbe
 
         // Tools menu
         JMenu toolsMenu = new JMenu("Tools");
-        UIUtils.installMenuExtension(this, toolsMenu, MenuTarget.ExtensionBuilderToolsMenu, false);
+        UIUtils.installMenuExtension(this, toolsMenu, JIPipeMenuExtensionTarget.ExtensionBuilderToolsMenu, false);
         if (toolsMenu.getItemCount() > 0)
             menu.add(toolsMenu);
 
@@ -224,7 +224,7 @@ public class JIPipeJsonExtensionWorkbench extends JPanel implements JIPipeWorkbe
         quickHelp.addActionListener(e -> documentTabPane.selectSingletonTab("INTRODUCTION"));
         helpMenu.add(quickHelp);
 
-        UIUtils.installMenuExtension(this, helpMenu, MenuTarget.ExtensionHelpMenu, true);
+        UIUtils.installMenuExtension(this, helpMenu, JIPipeMenuExtensionTarget.ExtensionHelpMenu, true);
 
         menu.add(helpMenu);
 

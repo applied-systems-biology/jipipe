@@ -19,7 +19,7 @@ import inra.ijpb.binary.BinaryImages;
 import inra.ijpb.binary.ChamferWeights3D;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeOrganization;
+import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.JIPipeDataBatch;
 import org.hkijena.jipipe.api.nodes.JIPipeGraph;
@@ -37,7 +37,7 @@ import org.hkijena.jipipe.extensions.parameters.editors.JIPipeDataParameterSetti
 import org.hkijena.jipipe.extensions.parameters.references.JIPipeDataInfoRef;
 
 @JIPipeDocumentation(name = "Chamfer Distance Map 3D", description = "Computes the distance map from a binary image. If higher-dimensional data is provided, the filter is applied to each 2D slice.")
-@JIPipeOrganization(menuPath = "Math\nDistance map", nodeTypeCategory = ImagesNodeTypeCategory.class)
+@JIPipeNode(menuPath = "Math\nDistance map", nodeTypeCategory = ImagesNodeTypeCategory.class)
 @JIPipeInputSlot(value = ImagePlus3DGreyscaleMaskData.class, slotName = "Input", autoCreate = true)
 @JIPipeOutputSlot(value = ImagePlusGreyscaleData.class, slotName = "Output", autoCreate = true)
 public class ChamferDistanceMap3DAlgorithm extends JIPipeSimpleIteratingAlgorithm {

@@ -16,7 +16,7 @@ package org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.fft;
 import ij.ImagePlus;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeHeavyData;
-import org.hkijena.jipipe.api.JIPipeOrganization;
+import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 
 import java.nio.file.Path;
@@ -25,7 +25,7 @@ import java.nio.file.Path;
  * 5D image in frequency space
  */
 @JIPipeDocumentation(name = "5D FFT Image")
-@JIPipeOrganization(menuPath = "Images\nFFT")
+@JIPipeNode(menuPath = "Images\nFFT")
 @JIPipeHeavyData
 public class ImagePlusFFT5DData extends ImagePlusFFT2DData {
 

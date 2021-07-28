@@ -27,4 +27,10 @@ public @interface ExternalEnvironmentParameterSettings {
      * @return if managing (loading/saving) presets is allowed
      */
     boolean allowManagePreset() default true;
+
+    /**
+     * If non-empty, only installation items with the matching category are shown
+     * @return the category or empty (no category)
+     */
+    String showCategory() default "";
 }

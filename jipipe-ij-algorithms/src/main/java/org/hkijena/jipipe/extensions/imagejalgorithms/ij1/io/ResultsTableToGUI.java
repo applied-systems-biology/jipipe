@@ -14,7 +14,7 @@
 package org.hkijena.jipipe.extensions.imagejalgorithms.ij1.io;
 
 import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeOrganization;
+import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.JIPipeDataBatch;
 import org.hkijena.jipipe.api.nodes.JIPipeInputSlot;
@@ -33,7 +33,7 @@ import java.util.stream.Collectors;
 @JIPipeDocumentation(name = "Table to ImageJ", description = "Opens all incoming tables in ImageJ")
 @JIPipeInputSlot(value = ResultsTableData.class, slotName = "Input", autoCreate = true)
 @JIPipeOutputSlot(value = ResultsTableData.class, slotName = "Output", autoCreate = true)
-@JIPipeOrganization(nodeTypeCategory = TableNodeTypeCategory.class)
+@JIPipeNode(nodeTypeCategory = TableNodeTypeCategory.class)
 public class ResultsTableToGUI extends JIPipeSimpleIteratingAlgorithm {
 
     public ResultsTableToGUI(JIPipeNodeInfo info) {

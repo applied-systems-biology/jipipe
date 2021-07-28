@@ -15,7 +15,7 @@ package org.hkijena.jipipe.extensions.utils.algorithms;
 
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeIssueReport;
-import org.hkijena.jipipe.api.JIPipeOrganization;
+import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.JIPipeProject;
 import org.hkijena.jipipe.api.JIPipeRun;
@@ -52,7 +52,7 @@ import java.util.Map;
         "Parameters can either point to a project parameter (preferred way) or to a parameter within a specific node (prefix with [node id]/). To find out the parameter ids, take a look at the 'Node ID' documentation on selecting a node.")
 @JIPipeInputSlot(value = ParametersData.class, slotName = "Project parameters", autoCreate = true)
 @JIPipeOutputSlot(value = JIPipeOutputData.class, slotName = "Output", autoCreate = true)
-@JIPipeOrganization(nodeTypeCategory = MiscellaneousNodeTypeCategory.class, menuPath = "Meta run")
+@JIPipeNode(nodeTypeCategory = MiscellaneousNodeTypeCategory.class, menuPath = "Meta run")
 public class RunJIPipeProjectAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     private Path projectFile = Paths.get("");

@@ -13,25 +13,25 @@
 
 package org.hkijena.jipipe.ui.extension;
 
-import org.hkijena.jipipe.api.JIPipeOrganization;
+import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 
 import javax.swing.*;
 
 /**
  * An extension for the extension builder or analysis tool menu.
- * Use {@link org.hkijena.jipipe.api.JIPipeOrganization} to determine the target menu and any sub-menu
+ * Use {@link JIPipeNode} to determine the target menu and any sub-menu
  */
-public abstract class MenuExtension extends JMenuItem {
+public abstract class JIPipeMenuExtension extends JMenuItem {
 
-    private JIPipeWorkbench workbench;
+    private final JIPipeWorkbench workbench;
 
     /**
      * Creates a new instance
      *
      * @param workbench workbench the extension is attached to
      */
-    public MenuExtension(JIPipeWorkbench workbench) {
+    public JIPipeMenuExtension(JIPipeWorkbench workbench) {
         this.workbench = workbench;
     }
 
@@ -39,7 +39,7 @@ public abstract class MenuExtension extends JMenuItem {
         return workbench;
     }
 
-    public String getMenuPath() {
-        return getClass().getAnnotation(JIPipeOrganization.class).menuPath();
-    }
+    public abstract JIPipeMenuExtensionTarget getMenuTarget();
+
+    public abstract String getMenuPath();
 }

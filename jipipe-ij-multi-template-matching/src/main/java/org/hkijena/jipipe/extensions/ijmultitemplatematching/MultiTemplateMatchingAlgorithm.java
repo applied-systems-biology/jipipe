@@ -20,7 +20,7 @@ import ij.process.ColorProcessor;
 import ij.process.ImageProcessor;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeOrganization;
+import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeDataInfo;
 import org.hkijena.jipipe.api.data.JIPipeDataSlotInfo;
@@ -72,7 +72,7 @@ import java.util.stream.Collectors;
 @JIPipeOutputSlot(value = ROIListData.class, slotName = "ROI", autoCreate = true)
 @JIPipeOutputSlot(value = ResultsTableData.class, slotName = "Measurements", autoCreate = true)
 @JIPipeOutputSlot(value = ImagePlusData.class, slotName = "Assembled templates")
-@JIPipeOrganization(menuPath = "Analyze", nodeTypeCategory = ImagesNodeTypeCategory.class)
+@JIPipeNode(menuPath = "Analyze", nodeTypeCategory = ImagesNodeTypeCategory.class)
 public class MultiTemplateMatchingAlgorithm extends JIPipeMergingAlgorithm {
 
     private final static String SCRIPT = loadScriptFromResources();

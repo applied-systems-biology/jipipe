@@ -16,7 +16,7 @@ package org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d5.greyscale;
 import ij.ImagePlus;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeHeavyData;
-import org.hkijena.jipipe.api.JIPipeOrganization;
+import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.extensions.imagejdatatypes.color.ColorSpace;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d5.ImagePlus5DData;
@@ -30,7 +30,7 @@ import java.nio.file.Path;
  * Greyscale 5D image
  */
 @JIPipeDocumentation(name = "5D image (greyscale)")
-@JIPipeOrganization(menuPath = "Images\n5D\nGreyscale")
+@JIPipeNode(menuPath = "Images\n5D\nGreyscale")
 @JIPipeHeavyData
 public class ImagePlus5DGreyscaleData extends ImagePlus5DData {
 

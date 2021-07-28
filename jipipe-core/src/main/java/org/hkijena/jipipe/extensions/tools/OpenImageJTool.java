@@ -14,14 +14,13 @@
 package org.hkijena.jipipe.extensions.tools;
 
 import ij.ImageJ;
-import org.hkijena.jipipe.api.JIPipeOrganization;
+import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
-import org.hkijena.jipipe.ui.extension.MenuExtension;
-import org.hkijena.jipipe.ui.extension.MenuTarget;
+import org.hkijena.jipipe.ui.extension.JIPipeMenuExtension;
+import org.hkijena.jipipe.ui.extension.JIPipeMenuExtensionTarget;
 import org.hkijena.jipipe.utils.UIUtils;
 
-@JIPipeOrganization(menuExtensionTarget = MenuTarget.ProjectToolsMenu)
-public class OpenImageJTool extends MenuExtension {
+public class OpenImageJTool extends JIPipeMenuExtension {
     /**
      * Creates a new instance
      *
@@ -38,5 +37,15 @@ public class OpenImageJTool extends MenuExtension {
     private void showImageJ() {
         final ImageJ ij = new ImageJ(ImageJ.EMBEDDED);
         ij.setVisible(true);
+    }
+
+    @Override
+    public JIPipeMenuExtensionTarget getMenuTarget() {
+        return JIPipeMenuExtensionTarget.ProjectToolsMenu;
+    }
+
+    @Override
+    public String getMenuPath() {
+        return "";
     }
 }

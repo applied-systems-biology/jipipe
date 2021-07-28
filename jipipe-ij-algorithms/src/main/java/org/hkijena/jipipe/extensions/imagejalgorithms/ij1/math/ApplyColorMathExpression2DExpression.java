@@ -3,7 +3,7 @@ package org.hkijena.jipipe.extensions.imagejalgorithms.ij1.math;
 import ij.ImagePlus;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeOrganization;
+import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeDataInfo;
 import org.hkijena.jipipe.api.nodes.JIPipeDataBatch;
@@ -32,7 +32,7 @@ import java.util.List;
 
 @JIPipeDocumentation(name = "Color math expression", description = "Applies a mathematical operation to each pixel. " +
         "The three available channels can be addressed individually.")
-@JIPipeOrganization(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Math")
+@JIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Math")
 @JIPipeInputSlot(value = ImagePlusColorData.class, slotName = "Input", autoCreate = true)
 @JIPipeOutputSlot(value = ImagePlusColorData.class, slotName = "Output", autoCreate = true)
 public class ApplyColorMathExpression2DExpression extends JIPipeSimpleIteratingAlgorithm {

@@ -18,7 +18,7 @@ import net.haesleinhuepf.clij2.CLIJ2;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeIssueReport;
-import org.hkijena.jipipe.api.JIPipeOrganization;
+import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeAnnotation;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
@@ -55,7 +55,7 @@ import java.util.List;
 import java.util.Map;
 
 @JIPipeDocumentation(name = "CLIJ2 Execute OpenCL kernel (iterating)", description = "Executes an OpenCL kernel via CLIJ2 to process images.")
-@JIPipeOrganization(nodeTypeCategory = ImagesNodeTypeCategory.class)
+@JIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class)
 public class Clij2ExecuteKernelIterating extends JIPipeIteratingAlgorithm {
 
     private OpenCLKernelScript kernelScript = new OpenCLKernelScript();

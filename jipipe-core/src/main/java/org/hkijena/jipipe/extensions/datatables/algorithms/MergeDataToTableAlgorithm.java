@@ -1,7 +1,7 @@
 package org.hkijena.jipipe.extensions.datatables.algorithms;
 
 import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeOrganization;
+import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeAnnotationMergeStrategy;
 import org.hkijena.jipipe.api.data.JIPipeData;
@@ -19,7 +19,7 @@ import org.hkijena.jipipe.api.nodes.categories.DataSourceNodeTypeCategory;
 
 @JIPipeDocumentation(name = "Merge into tables", description = "Creates data batches from the incoming data and merges them into data table data. " +
         "Such tables might be needed for some nodes that process lists of data.")
-@JIPipeOrganization(nodeTypeCategory = DataSourceNodeTypeCategory.class)
+@JIPipeNode(nodeTypeCategory = DataSourceNodeTypeCategory.class)
 @JIPipeInputSlot(value = JIPipeData.class, slotName = "Data", autoCreate = true)
 @JIPipeOutputSlot(value = JIPipeDataTableData.class, slotName = "Tables", autoCreate = true)
 public class MergeDataToTableAlgorithm extends JIPipeMergingAlgorithm {

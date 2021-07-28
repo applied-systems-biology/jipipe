@@ -23,7 +23,7 @@ import omero.gateway.model.ImageData;
 import omero.gateway.model.TableData;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeIssueReport;
-import org.hkijena.jipipe.api.JIPipeOrganization;
+import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeAnnotation;
 import org.hkijena.jipipe.api.data.JIPipeAnnotationMergeStrategy;
@@ -47,7 +47,7 @@ import java.util.List;
 @JIPipeDocumentation(name = "Download from OMERO", description = "Imports tables attached to an OMERO image as ImageJ table. " +
         "Please note that OMERO tables have a wider range of allowed data types, while ImageJ only supports numeric and string columns. " +
         "Any unsupported table object is converted into a string.")
-@JIPipeOrganization(nodeTypeCategory = DataSourceNodeTypeCategory.class)
+@JIPipeNode(nodeTypeCategory = DataSourceNodeTypeCategory.class)
 @JIPipeInputSlot(value = OMEROImageReferenceData.class, slotName = "Input", autoCreate = true)
 @JIPipeOutputSlot(value = ResultsTableData.class, slotName = "Output", autoCreate = true)
 public class DownloadOMEROTableAlgorithm extends JIPipeSimpleIteratingAlgorithm {
