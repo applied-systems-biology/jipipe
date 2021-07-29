@@ -14,6 +14,7 @@
 package org.hkijena.jipipe.ui.running;
 
 import com.google.common.eventbus.Subscribe;
+import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.JIPipeRun;
 import org.hkijena.jipipe.api.JIPipeRunSettings;
 import org.hkijena.jipipe.api.data.JIPipeSlotConfiguration;
@@ -103,7 +104,7 @@ public class RealTimeProjectRunner extends JIPipeProjectWorkbenchPanel {
         if (!runtimeSettings.isRealTimeRunEnabled()) {
             return;
         }
-        getProject().getCache().autoClean(true, true);
+        getProject().getCache().autoClean(true, true, new JIPipeProgressInfo());
         if (currentRun != null)
             JIPipeRunnerQueue.getInstance().cancel(currentRun);
         currentRun = null;

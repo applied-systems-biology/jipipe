@@ -14,6 +14,7 @@
 package org.hkijena.jipipe.ui.cache;
 
 import com.google.common.eventbus.Subscribe;
+import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.JIPipeProjectCache;
 import org.hkijena.jipipe.api.JIPipeProjectCacheState;
 import org.hkijena.jipipe.api.JIPipeRun;
@@ -161,7 +162,7 @@ public class JIPipeCacheBrowserUI extends JIPipeProjectWorkbenchPanel {
         toolBar.setFloatable(false);
 
         JButton clearOutdatedButton = new JButton("Clear outdated", UIUtils.getIconFromResources("actions/clear-brush.png"));
-        clearOutdatedButton.addActionListener(e -> getProject().getCache().autoClean(false, true));
+        clearOutdatedButton.addActionListener(e -> getProject().getCache().autoClean(false, true, new JIPipeProgressInfo()));
         toolBar.add(clearOutdatedButton);
 
         JButton clearAllButton = new JButton("Clear all", UIUtils.getIconFromResources("actions/clear-brush.png"));

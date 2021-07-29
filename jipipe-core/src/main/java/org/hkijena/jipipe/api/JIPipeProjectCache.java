@@ -217,11 +217,11 @@ public class JIPipeProjectCache {
 
     /**
      * Safely removes cache entries that are not accessible anymore (e.g. an algorithm was removed from the graph; or states where the slots do not exist anymore)
-     *
-     * @param compareSlots         if true, states are removed if the output slots don't align with the current configuration anymore
+     *  @param compareSlots         if true, states are removed if the output slots don't align with the current configuration anymore
      * @param compareProjectStates if true, states that are not within the project anymore are also removed
+     * @param progressInfo the progress info
      */
-    public void autoClean(boolean compareSlots, boolean compareProjectStates) {
+    public void autoClean(boolean compareSlots, boolean compareProjectStates, JIPipeProgressInfo progressInfo) {
         try {
             disableTriggerEvent = true;
             JIPipeProjectCacheQuery cacheQuery = new JIPipeProjectCacheQuery(project);
@@ -238,11 +238,13 @@ public class JIPipeProjectCache {
                         for (Map.Entry<JIPipeProjectCacheState, Map<String, JIPipeDataSlot>> stateEntry : ImmutableList.copyOf(stateMap.entrySet())) {
                             if (compareProjectStates) {
                                 if (!Objects.equals(stateEntry.getKey(), stateId)) {
+                                    progressInfo.log("Clearing " + algorithm.getDisplayName() + " state " + stateEntry.getKey());
                                     clear(algorithm, stateEntry.getKey());
                                 }
                             } else {
                                 for (String slotName : stateEntry.getValue().keySet()) {
                                     if (!algorithm.getOutputSlotMap().containsKey(slotName) || !algorithm.getOutputSlotMap().get(slotName).isOutput()) {
+                                        progressInfo.log("Clearing " + algorithm.getDisplayName() + " state " + stateEntry.getKey());
                                         clear(algorithm, stateEntry.getKey());
                                         break;
                                     }
@@ -267,7 +269,7 @@ public class JIPipeProjectCache {
      * @param event the event
      */
     public void onAlgorithmRemoved(JIPipeGraph.GraphChangedEvent event) {
-        autoClean(false, false);
+        autoClean(false, false,  new JIPipeProgressInfo());
     }
 
     public EventBus getEventBus() {

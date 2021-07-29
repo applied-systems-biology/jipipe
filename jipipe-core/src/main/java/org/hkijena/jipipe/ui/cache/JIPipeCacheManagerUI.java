@@ -16,6 +16,7 @@ package org.hkijena.jipipe.ui.cache;
 import com.google.common.eventbus.Subscribe;
 import com.google.common.html.HtmlEscapers;
 import org.hkijena.jipipe.JIPipe;
+import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.JIPipeProjectCache;
 import org.hkijena.jipipe.api.data.JIPipeDataInfo;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
@@ -68,7 +69,7 @@ public class JIPipeCacheManagerUI extends JIPipeProjectWorkbenchPanel {
         JMenuItem clearOutdated = new JMenuItem("Clear outdated", UIUtils.getIconFromResources("actions/clock.png"));
         clearOutdated.setToolTipText("Removes all cached items that are have no representation in the project graph, anymore. " +
                 "This includes items where the algorithm parameters have been changed.");
-        clearOutdated.addActionListener(e -> getProject().getCache().autoClean(false, true));
+        clearOutdated.addActionListener(e -> getProject().getCache().autoClean(false, true, new JIPipeProgressInfo()));
         clearMenu.add(clearOutdated);
 
         JMenuItem clearAll = new JMenuItem("Clear all", UIUtils.getIconFromResources("actions/delete.png"));

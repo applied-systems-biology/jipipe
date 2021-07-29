@@ -24,6 +24,7 @@ import org.hkijena.jipipe.api.JIPipeValidatable;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeAlgorithm;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
+import org.hkijena.jipipe.extensions.settings.GeneralDataSettings;
 
 import java.util.HashSet;
 import java.util.Map;
@@ -154,6 +155,11 @@ public class QuickRun implements JIPipeRunnable, JIPipeValidatable {
             for (JIPipeDataSlot outputSlot : node.getOutputSlots()) {
                 outputSlot.clearData();
             }
+        }
+
+        // Remove outdated cache if needed
+        if(GeneralDataSettings.getInstance().isAutoRemoveOutdatedCachedData()) {
+            project.getCache().autoClean(true, true, getProgressInfo().resolveAndLog("Remove outdated cache"));
         }
 
     }

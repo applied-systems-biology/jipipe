@@ -16,6 +16,7 @@ public class GeneralDataSettings implements JIPipeParameterCollection {
     private int maxTableColumnSize = 250;
     private boolean generateCachePreviews = true;
     private boolean generateResultPreviews = true;
+    private boolean autoRemoveOutdatedCachedData = true;
 
     @Override
     public EventBus getEventBus() {
@@ -88,6 +89,17 @@ public class GeneralDataSettings implements JIPipeParameterCollection {
     @JIPipeParameter("max-table-column-size")
     public void setMaxTableColumnSize(int maxTableColumnSize) {
         this.maxTableColumnSize = maxTableColumnSize;
+    }
+
+    @JIPipeDocumentation(name = "Automatically remove outdated cached data", description = "If enabled, outdated cached data will be automatically removed to save memory")
+    @JIPipeParameter("auto-remove-outdated-cached-data")
+    public boolean isAutoRemoveOutdatedCachedData() {
+        return autoRemoveOutdatedCachedData;
+    }
+
+    @JIPipeParameter("auto-remove-outdated-cached-data")
+    public void setAutoRemoveOutdatedCachedData(boolean autoRemoveOutdatedCachedData) {
+        this.autoRemoveOutdatedCachedData = autoRemoveOutdatedCachedData;
     }
 
     public static GeneralDataSettings getInstance() {
