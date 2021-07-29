@@ -32,7 +32,7 @@ public class CellPoseSettings implements JIPipeParameterCollection {
             "Alternatively, the standard Python environment from the Python extension is used. Please ensure that CellPose is installed. " +
             "You can also install CellPose via the Select/Install button (CPU and GPU supported).")
     @JIPipeParameter("python-environment")
-    @ExternalEnvironmentParameterSettings(showCategory = "Cellppose")
+    @ExternalEnvironmentParameterSettings(showCategory = "Cellpose")
     public OptionalPythonEnvironment getOverridePythonEnvironment() {
         return overridePythonEnvironment;
     }
