@@ -70,6 +70,8 @@ public class PencilMaskDrawerTool extends MaskDrawerTool {
         pencilShapeSelection = new JComboBox<>(PencilShape.values());
         pencilShapeSelection.setSelectedItem(PencilShape.Ellipse);
         pencilShapeSelection.addActionListener(e -> recalculatePencil());
+
+        recalculatePencil();
     }
 
     private void recalculatePencil() {

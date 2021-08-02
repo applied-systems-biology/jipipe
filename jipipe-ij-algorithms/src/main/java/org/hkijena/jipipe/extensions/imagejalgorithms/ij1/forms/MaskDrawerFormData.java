@@ -28,22 +28,37 @@ public class MaskDrawerFormData extends FormData {
 
     private final List<JIPipeMergingDataBatch> dataBatches;
     private final DrawMaskAlgorithm drawMaskAlgorithm;
-    private ImageViewerPanel imageViewerPanel = new ImageViewerPanel();
+    private ImageViewerPanel imageViewerPanel;
     private MaskDrawerPlugin maskDrawerPlugin;
+    private ImagePlus lazyLoadedImage;
+    private ImagePlus lazyLoadedMask;
 
     public MaskDrawerFormData(List<JIPipeMergingDataBatch> dataBatches, DrawMaskAlgorithm drawMaskAlgorithm) {
         this.dataBatches = dataBatches;
         this.drawMaskAlgorithm = drawMaskAlgorithm;
-        initializeImageViewer();
     }
 
     private void initializeImageViewer() {
+        imageViewerPanel = new ImageViewerPanel();
         maskDrawerPlugin = new MaskDrawerPlugin(imageViewerPanel);
         imageViewerPanel.setPlugins(Arrays.asList(new CalibrationPlugin(imageViewerPanel),
                 new PixelInfoPlugin(imageViewerPanel),
                 new LUTManagerPlugin(imageViewerPanel),
                 maskDrawerPlugin,
                 new MeasurementPlugin(imageViewerPanel)));
+        if(lazyLoadedImage != null) {
+            imageViewerPanel.setImage(lazyLoadedImage);
+            maskDrawerPlugin.setMask(lazyLoadedMask);
+            lazyLoadedImage = null;
+            lazyLoadedMask = null;
+        }
+    }
+
+    public ImageViewerPanel getImageViewerPanel() {
+        if(imageViewerPanel == null || maskDrawerPlugin == null) {
+            initializeImageViewer();
+        }
+        return imageViewerPanel;
     }
 
     @Override
@@ -53,6 +68,9 @@ public class MaskDrawerFormData extends FormData {
 
     @Override
     public void customCopy(FormData source, JIPipeIssueReport report) {
+        // Initialize the viewer
+        getImageViewerPanel();
+
         MaskDrawerFormData sourceData = (MaskDrawerFormData) source;
         ImagePlus sourceMask = sourceData.maskDrawerPlugin.getMask();
         ImagePlus targetMask = maskDrawerPlugin.getMask();
@@ -76,6 +94,9 @@ public class MaskDrawerFormData extends FormData {
 
     @Override
     public void customReset() {
+        // Initialize the viewer
+        getImageViewerPanel();
+
         ImagePlus targetMask = maskDrawerPlugin.getMask();
         ImageJUtils.forEachIndexedZCTSlice(targetMask, (targetProcessor, index) -> {
             targetProcessor.setValue(0);
@@ -91,6 +112,8 @@ public class MaskDrawerFormData extends FormData {
 
     @Override
     public JIPipeData duplicate() {
+        // Initialize the viewer
+        getImageViewerPanel();
         return new MaskDrawerFormData(dataBatches, drawMaskAlgorithm);
     }
 
@@ -101,7 +124,7 @@ public class MaskDrawerFormData extends FormData {
 
     @Override
     public Component getEditor(JIPipeWorkbench workbench) {
-        return imageViewerPanel;
+        return getImageViewerPanel();
     }
 
     @Override
@@ -109,8 +132,15 @@ public class MaskDrawerFormData extends FormData {
         int row = dataBatches.indexOf(dataBatch);
         ImagePlus referenceImage = dataBatch.getInputData("Reference", ImagePlusData.class, new JIPipeProgressInfo()).get(0).getImage();
         ImagePlus maskImage = drawMaskAlgorithm.getOutputSlot("Mask").getData(row, ImagePlusData.class, new JIPipeProgressInfo()).getImage();
-        imageViewerPanel.setImage(referenceImage);
-        maskDrawerPlugin.setMask(maskImage);
+
+        if(imageViewerPanel != null) {
+            imageViewerPanel.setImage(referenceImage);
+            maskDrawerPlugin.setMask(maskImage);
+        }
+        else {
+            lazyLoadedImage = referenceImage;
+            lazyLoadedMask = maskImage;
+        }
     }
 
     @Override
