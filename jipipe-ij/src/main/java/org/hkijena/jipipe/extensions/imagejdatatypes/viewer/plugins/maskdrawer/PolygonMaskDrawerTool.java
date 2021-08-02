@@ -24,6 +24,9 @@ import java.util.List;
  */
 public class PolygonMaskDrawerTool extends MaskDrawerTool {
 
+    public static boolean DEFAULT_SETTING_CLOSE = true;
+    public static boolean DEFAULT_SETTING_FILL = true;
+
     private final JTextArea infoArea = UIUtils.makeReadonlyBorderlessTextArea("");
     private List<Point> referencePoints = new ArrayList<>();
     private JCheckBox closeToggle;
@@ -43,8 +46,14 @@ public class PolygonMaskDrawerTool extends MaskDrawerTool {
     }
 
     private void initialize() {
-        closeToggle = new JCheckBox("Close polygon", true);
-        fillToggle = new JCheckBox("Fill", true);
+        closeToggle = new JCheckBox("Close polygon", DEFAULT_SETTING_CLOSE);
+        closeToggle.addActionListener(e -> {
+            DEFAULT_SETTING_CLOSE = closeToggle.isSelected();
+        });
+        fillToggle = new JCheckBox("Fill", DEFAULT_SETTING_FILL);
+        fillToggle.addActionListener(e -> {
+            DEFAULT_SETTING_FILL = fillToggle.isSelected();
+        });
     }
 
     @Override

@@ -56,7 +56,7 @@ public class REnvironment extends ExternalEnvironment {
 
     @Override
     public void reportValidity(JIPipeIssueReport report) {
-        if (getRExecutablePath() == null || !Files.isRegularFile(getRExecutablePath())) {
+        if (StringUtils.isNullOrEmpty(getRExecutablePath()) || !Files.isRegularFile(getRExecutablePath())) {
             report.resolve("Executable").reportIsInvalid(
                     "R executable does not exist",
                     "You need to provide a R executable",
@@ -64,7 +64,7 @@ public class REnvironment extends ExternalEnvironment {
                     "R environment"
             );
         }
-        if (getRScriptExecutablePath() == null || !Files.isRegularFile(getRScriptExecutablePath())) {
+        if (StringUtils.isNullOrEmpty(getRScriptExecutablePath()) || !Files.isRegularFile(getRScriptExecutablePath())) {
             report.resolve("Executable").reportIsInvalid(
                     "RScript executable does not exist",
                     "You need to provide a RScript executable",

@@ -20,6 +20,10 @@ import java.awt.Rectangle;
  */
 public class RectangleMaskDrawerTool extends MaskDrawerTool {
 
+    public static boolean DEFAULT_SETTING_START_FROM_CENTER = false;
+    public static boolean DEFAULT_SETTING_SQUARE = false;
+    public static boolean DEFAULT_SETTING_FILL = true;
+
     private final JTextArea infoArea = UIUtils.makeReadonlyBorderlessTextArea("");
     private Point referencePoint;
     private JCheckBox startFromCenterToggle;
@@ -37,9 +41,18 @@ public class RectangleMaskDrawerTool extends MaskDrawerTool {
     }
 
     private void initialize() {
-        startFromCenterToggle = new JCheckBox("Start from center", false);
-        squareToggle = new JCheckBox("Draw square", false);
-        fillToggle = new JCheckBox("Fill", true);
+        startFromCenterToggle = new JCheckBox("Start from center", DEFAULT_SETTING_START_FROM_CENTER);
+        startFromCenterToggle.addActionListener(e -> {
+            DEFAULT_SETTING_START_FROM_CENTER = startFromCenterToggle.isSelected();
+        });
+        squareToggle = new JCheckBox("Draw square", DEFAULT_SETTING_SQUARE);
+        squareToggle.addActionListener(e -> {
+            DEFAULT_SETTING_SQUARE = squareToggle.isSelected();
+        });
+        fillToggle = new JCheckBox("Fill", DEFAULT_SETTING_FILL);
+        fillToggle.addActionListener(e -> {
+            DEFAULT_SETTING_FILL = fillToggle.isSelected();
+        });
     }
 
     @Override

@@ -126,7 +126,7 @@ public class PythonEnvironment extends ExternalEnvironment {
 
     @Override
     public void reportValidity(JIPipeIssueReport report) {
-        if (getExecutablePath() == null || !Files.isRegularFile(getAbsoluteExecutablePath())) {
+        if (StringUtils.isNullOrEmpty(getExecutablePath()) || !Files.isRegularFile(getAbsoluteExecutablePath())) {
             report.resolve("Executable").reportIsInvalid(
                     "Python executable does not exist",
                     "You need to provide a Python executable",

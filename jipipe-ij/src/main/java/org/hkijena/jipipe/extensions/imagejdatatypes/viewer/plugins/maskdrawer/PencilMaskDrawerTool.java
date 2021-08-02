@@ -31,6 +31,9 @@ import java.util.Set;
 
 public class PencilMaskDrawerTool extends MaskDrawerTool {
 
+    public static int DEFAULT_SETTING_PENCIL_SIZE_X = 12;
+    public static int DEFAULT_SETTING_PENCIL_SIZE_Y = 12;
+
     private final Set<Point> interpolationPoints = new HashSet<>();
     private ImagePlus currentPencil;
     private BufferedImage currentPencilGhost;
@@ -50,13 +53,19 @@ public class PencilMaskDrawerTool extends MaskDrawerTool {
     }
 
     private void initialize() {
-        SpinnerNumberModel pencilSizeXModel = new SpinnerNumberModel(12, 1, Integer.MAX_VALUE, 1);
+        SpinnerNumberModel pencilSizeXModel = new SpinnerNumberModel(DEFAULT_SETTING_PENCIL_SIZE_X, 1, Integer.MAX_VALUE, 1);
         pencilSizeXSpinner = new JSpinner(pencilSizeXModel);
-        SpinnerNumberModel pencilSizeYModel = new SpinnerNumberModel(12, 1, Integer.MAX_VALUE, 1);
+        SpinnerNumberModel pencilSizeYModel = new SpinnerNumberModel(DEFAULT_SETTING_PENCIL_SIZE_Y, 1, Integer.MAX_VALUE, 1);
         pencilSizeYSpinner = new JSpinner(pencilSizeYModel);
 
-        pencilSizeXModel.addChangeListener(e -> recalculatePencil());
-        pencilSizeYModel.addChangeListener(e -> recalculatePencil());
+        pencilSizeXModel.addChangeListener(e -> {
+            DEFAULT_SETTING_PENCIL_SIZE_X = Math.max(1, pencilSizeXModel.getNumber().intValue());
+            recalculatePencil();
+        });
+        pencilSizeYModel.addChangeListener(e -> {
+            DEFAULT_SETTING_PENCIL_SIZE_Y = Math.max(1, pencilSizeYModel.getNumber().intValue());
+            recalculatePencil();
+        });
 
         pencilShapeSelection = new JComboBox<>(PencilShape.values());
         pencilShapeSelection.setSelectedItem(PencilShape.Ellipse);
