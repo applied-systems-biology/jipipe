@@ -118,8 +118,3 @@ elif args.operation == "list-devices-json":
 
 else:
     raise AttributeError("Unsupported operation: " + args.operation)
-
-# TODO: probieren ... visualisierungs modul
-# Model visualization
-# from keras.utils.visualize_util import plot
-# plot(autoencoder, to_file='model.png', show_shapes=True)

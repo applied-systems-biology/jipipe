@@ -18,9 +18,11 @@ Script to create a mobilenet model
 """
 
 import tensorflow as tf
+from dltoolbox import utils
+from dltoolbox.models import metrics
 
 
-def build_model(config):
+def build_model(config, **kwargs):
     """
     Build MobileNetV2 classification model.
     Set weights='imagenet' to use a pretrained model.
@@ -32,31 +34,36 @@ def build_model(config):
     """
 
     img_shape = tuple(config["image_shape"])
-    n_classes = config['n_classes']
+    num_classes = config['n_classes']
     model_path = config['output_model_path']
     model_json_path = config["output_model_json_path"]
+    model_type = config['model_type']
+    learning_rate = config['learning_rate']
 
-    mobilenet = tf.keras.applications.mobilenet_v2.MobileNetV2(
+    model = tf.keras.applications.mobilenet_v2.MobileNetV2(
         input_shape=img_shape,
         alpha=1.0,
         include_top=True,
         input_tensor=None,
         pooling=None,
-        classes=n_classes,
+        classes=num_classes,
         classifier_activation='softmax',
         **kwargs
     )
 
+    # get all metrics
+    model_metrics = metrics.get_metrics(model_type, num_classes)
+
+    # compile model, depend on the number of classes/segments (2 classes or more)
+    adam = tf.keras.optimizers.Adam(lr=learning_rate)
+    if num_classes == 2:
+        model.compile(optimizer=adam, loss=metrics.bce_dice_loss, metrics=model_metrics)
+    else:
+        model.compile(optimizer=adam, loss=metrics.ce_dice_loss, metrics=model_metrics)
+
     model.summary()
 
-    if model_path:
-        model.save(model_path)
-        print('[Create model] Saved model to:', model_path)
+    # save the model, model-architecture and model-config
+    utils.save_model_with_json(model=model, model_path=model_path, model_json_path=model_json_path, config=config)
 
-    if model_json_path:
-        model_json = model.to_json()
-        with open(model_json_path, "w") as f:
-            f.write(model_json)
-        print('[Create model] Saved model JSON to:', model_json_path)
-
-    return mobilenet
+    return model

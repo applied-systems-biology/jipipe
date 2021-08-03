@@ -25,8 +25,18 @@ public class DeepLearningPredictionConfiguration {
     private String inputImagesPattern = "raw/*.tif";
     private Path outputPath = Paths.get("");
     private Path inputModelPath = Paths.get("");
-    private PredictionType predictionType = PredictionType.standard;
     private NormalizationMethod normalization = NormalizationMethod.zero_one;
+
+    public DeepLearningPredictionConfiguration() {
+
+    }
+
+    public DeepLearningPredictionConfiguration(DeepLearningPredictionConfiguration other) {
+        this.inputImagesPattern = other.inputImagesPattern;
+        this.outputPath = other.outputPath;
+        this.inputModelPath = other.inputModelPath;
+        this.normalization = other.normalization;
+    }
 
     @JsonGetter("input_dir")
     public String getInputImagesPattern() {
@@ -56,16 +66,6 @@ public class DeepLearningPredictionConfiguration {
     @JsonSetter("input_model_path")
     public void setInputModelPath(Path inputModelPath) {
         this.inputModelPath = inputModelPath;
-    }
-
-    @JsonGetter("prediction_type")
-    public PredictionType getPredictionType() {
-        return predictionType;
-    }
-
-    @JsonSetter("prediction_type")
-    public void setPredictionType(PredictionType predictionType) {
-        this.predictionType = predictionType;
     }
 
     @JsonGetter("normalization")

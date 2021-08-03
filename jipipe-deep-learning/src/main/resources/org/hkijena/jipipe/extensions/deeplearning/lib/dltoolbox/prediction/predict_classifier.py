@@ -61,6 +61,11 @@ def predict_samples(model_config, config, model=None):
         # Preprocessing (normalization)
         image = utils.preprocessing(image, mode=config['normalization'])
 
+        # https://www.tensorflow.org/api_docs/python/tf/keras/applications/imagenet_utils/decode_predictions
+        # tf.keras.applications.imagenet_utils.decode_predictions(
+        #     preds, top=5
+        # )
+
         while len(image.shape) < 4:
             image = np.expand_dims(image, axis=-1)
             image = np.expand_dims(image, axis=0)

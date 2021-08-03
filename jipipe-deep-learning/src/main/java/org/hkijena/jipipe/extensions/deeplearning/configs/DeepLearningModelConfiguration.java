@@ -36,6 +36,7 @@ public class DeepLearningModelConfiguration implements JIPipeParameterCollection
     private NetworkArchitecture architecture = NetworkArchitecture.SegNet;
     private ModelType modelType = ModelType.segmentation;
     private RegularizationMethod regularizationMethod = RegularizationMethod.GaussianDropout;
+    private double learningRate = 0.001;
     private double regularizationLambda = 0.1;
     private int imageWidth = 256;
     private int imageHeight = 256;
@@ -43,7 +44,6 @@ public class DeepLearningModelConfiguration implements JIPipeParameterCollection
     private int numClasses = 2;
     private Path outputModelPath = Paths.get("");
     private Path outputModelJsonPath = Paths.get("");
-    private String loss = "";
 
     public DeepLearningModelConfiguration() {
     }
@@ -59,6 +59,7 @@ public class DeepLearningModelConfiguration implements JIPipeParameterCollection
         this.outputModelPath = other.outputModelPath;
         this.outputModelJsonPath = other.outputModelJsonPath;
         this.modelType = other.modelType;
+        this.learningRate = other.learningRate;
     }
 
     @Override
@@ -66,14 +67,17 @@ public class DeepLearningModelConfiguration implements JIPipeParameterCollection
         return eventBus;
     }
 
-    @JsonGetter("loss")
-    public String getLoss() {
-        return loss;
+    @JIPipeDocumentation(name = "Learning rate", description = "Initial learning rate for the underlying optimizer")
+    @JIPipeParameter("learning_rate")
+    @JsonGetter("learning_rate")
+    public double getLearningRate() {
+        return learningRate;
     }
 
-    @JsonSetter("loss")
-    public void setLoss(String loss) {
-        this.loss = loss;
+    @JIPipeParameter("learning_rate")
+    @JsonSetter("learning_rate")
+    public void setLearningRate(double learningRate) {
+        this.learningRate = learningRate;
     }
 
     @JIPipeDocumentation(name = "Architecture", description = "The model architecture")
@@ -102,7 +106,7 @@ public class DeepLearningModelConfiguration implements JIPipeParameterCollection
         this.modelType = modelType;
     }
 
-    @JIPipeDocumentation(name = "Regularization method", description = "The regularization method")
+    @JIPipeDocumentation(name = "Regularization method", description = "Additional methods to regularize within the model:   Dropout, GaussianDropout, GaussianNoise")
     @JIPipeParameter("regularization-method")
     @JsonGetter("regularization_method")
     public RegularizationMethod getRegularizationMethod() {
@@ -115,7 +119,7 @@ public class DeepLearningModelConfiguration implements JIPipeParameterCollection
         this.regularizationMethod = regularizationMethod;
     }
 
-    @JIPipeDocumentation(name = "Regularization lambda", description = "The regularization lambda")
+    @JIPipeDocumentation(name = "Regularization lambda", description = "Factorizing lambda in the interval [0,1] to reduce/reinforce the regularization")
     @JIPipeParameter("regularization-lambda")
     @JsonGetter("regularization_lambda")
     public double getRegularizationLambda() {

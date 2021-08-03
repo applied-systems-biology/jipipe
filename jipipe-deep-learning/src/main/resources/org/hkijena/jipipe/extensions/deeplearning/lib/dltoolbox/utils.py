@@ -12,24 +12,26 @@ Adolf-Reichwein-Straße 23, 07745 Jena, Germany
 
 import os
 from glob import glob
-
+from pathlib import Path
+import json
 import numpy as np
-from skimage import img_as_float32, img_as_ubyte
-from skimage import filters
-from skimage import io
-import keras
-import cv2
-from scipy.ndimage.interpolation import map_coordinates
-from scipy.ndimage.filters import gaussian_filter
 import tensorflow as tf
+import cv2
+from matplotlib import pyplot as plt
+from scipy.ndimage.filters import gaussian_filter
+from scipy.ndimage.interpolation import map_coordinates
+from skimage import filters
+from skimage import img_as_float32, img_as_ubyte
+from skimage import io
 
-from dltoolbox.models.metrics import *
+from dltoolbox.models import metrics
 
 
-def imread_collection(pattern, load_func=io.imread, **kwargs):
+def imread_collection(pattern, load_func=io.imread, verbose=False, **kwargs):
     """
     Custom version of skimage imread_collection that correctly handles TIFF files
     Args:
+        verbose: verbose during the image file iteration
         load_func: function used for loading an image. the first argument will be the image path (default: skimage.io.imread)
         pattern: glob pattern
 
@@ -40,12 +42,13 @@ def imread_collection(pattern, load_func=io.imread, **kwargs):
     files.sort()
     imgs = []
     for file in files:
-        print("[I/O] Reading", file, "...")
+        if verbose:
+            print("[I/O] Reading", file, "...")
         imgs.append(load_func(file, **kwargs))
     return imgs
 
 
-def load_and_compile_model(model_config, model_path, model=None) -> keras.Model:
+def load_and_compile_model(model_config, model_path, model=None) -> tf.keras.Model:
     """
     Loads an compiles a model
     Args:
@@ -56,41 +59,35 @@ def load_and_compile_model(model_config, model_path, model=None) -> keras.Model:
     Returns: The model
     """
 
-    from keras import models
-
     model_type = model_config['model_type']
-    n_classes = model_config['n_classes']
-    loss = model_config['loss']
+    num_classes = model_config['n_classes']
+    learning_rate = model_config['learning_rate']
+
+    # create the adam optimizer
+    adam = tf.keras.optimizers.Adam(lr=learning_rate)
 
     if model is None:
         print("[DLToolbox] Loading model from " + str(model_path))
-        model = models.load_model(model_path, compile=False)
+        model = tf.keras.models.load_model(model_path, compile=False)
+
+        # get all metrics
+        model_metrics = metrics.get_metrics(model_type, num_classes)
 
         if model_type == "segmentation":
 
-            # default loss
-            if loss == "":
-                # compile model, depend on the number of classes/segments (2 classes or more)
-                if n_classes == 2:
-                    model.compile(optimizer='adam', loss=bce_dice_loss, metrics=[dice_loss])
-                else:
-                    model.compile(optimizer='adam', loss=ce_dice_loss, metrics=[dice_loss])
+            # compile model, depend on the number of classes/segments (2 classes or more)
+            if num_classes == 2:
+                model.compile(optimizer=adam, loss=metrics.bce_dice_loss, metrics=model_metrics)
             else:
-                # TODO: diese compilation hier abhängig von dem model machen
-                pass
+                model.compile(optimizer=adam, loss=metrics.ce_dice_loss, metrics=model_metrics)
 
         elif model_type == "classification":
 
-            # default loss
-            if loss == "":
-                # compile model, depend on the number of classes/segments (2 classes or more)
-                if n_classes == 2:
-                    model.compile(loss='binary_crossentropy', optimizer=keras.optimizers.Adam(), metrics=['acc'])
-                else:
-                    model.compile(loss='categorical_crossentropy', optimizer=keras.optimizers.Adam(), metrics=['acc'])
+            # compile model, depend on the number of classes/segments (2 classes or more)
+            if num_classes == 2:
+                model.compile(loss='binary_crossentropy', optimizer=adam, metrics=model_metrics)
             else:
-                # TODO: diese compilation hier abhängig von dem model machen
-                pass
+                model.compile(loss='categorical_crossentropy', optimizer=adam, metrics=model_metrics)
 
         else:
             raise AttributeError("Unsupported model_type: " + model_type)
@@ -318,7 +315,7 @@ def validate_image_shape(model_shape, images):
         model_shape: should shape of the model (input or output)
         images: images load from directory
 
-    Returns: image array in the required shape
+    Returns: image array in the required shape. Take care of situation if only 1 images is loaded.
 
     """
 
@@ -331,12 +328,6 @@ def validate_image_shape(model_shape, images):
     #     meta_dict = {TAGS[key]: img.tag[key] for key in img.tag.keys()}
     # print(meta_dict)
     # print(meta_dict['ImageWidth'])
-
-    # Apply own function to imread-collection
-    # def imread_convert(f):
-    #     return imread(f).astype(np.uint8)
-    #
-    # ic = ImageCollection('/tmp/*.png', load_func=imread_convert)
 
     images_unique_shapes = [img.shape for img in images]
     images_unique_shapes = list(set(images_unique_shapes))
@@ -364,3 +355,70 @@ def validate_image_shape(model_shape, images):
                 f'[validate_image_shape] WARNING: image shape <{images_arr.shape[1:]}> != from model shape <{model_shape[1:]}>')
 
     return images_arr
+
+
+def plot_window(img, img_binary, title=None):
+    """
+    Plot the cut-out original image with drawn contours based on the binary annotations.
+
+    Args:
+        img ([type]): original image
+        img_binary ([type]): binary image
+        title: general title for the figure
+    """
+
+    img_binary = np.squeeze(img_binary)
+
+    fig, ax_arr = plt.subplots(1, 2, figsize=(18, 8))
+    ax1, ax2 = ax_arr.ravel()
+
+    if len(img.shape) == 3:
+        ax1.imshow(img)
+    else:
+        ax1.imshow(img, cmap='gray')
+    ax1.set_title("Original image with type: {}".format(img.dtype), fontsize=18)
+    ax1.contour(img_binary, colors='green', linewidths=2)
+
+    ax2.imshow(img_binary, cmap='gray')
+    ax2.set_title("Annotations image with type: {}".format(img_binary.dtype), fontsize=20)
+
+    if title is not None:
+        fig.suptitle('{}'.format(title), fontsize=30)
+
+    plt.tight_layout()
+    plt.show()
+
+
+def save_model_with_json(model, model_path, model_json_path, config):
+    """
+    Save the model, its architecture as a JSON and the config file.
+    Args:
+        model: the corresponding model
+        model_path: the model path
+        model_json_path: the path of the model architecture within a JSON
+        config: the config file to create the model
+
+    Returns:
+
+    """
+
+    # create the model directory
+    save_directory = str(Path(model_path).parent)
+    if not os.path.exists(save_directory):
+        os.makedirs(save_directory)
+        print('[Save model] create directory folder for model:', save_directory)
+
+    if model_path:
+        model.save(model_path)
+        print('[Save model] Saved model to:', model_path)
+
+    if model_json_path:
+        model_json = model.to_json()
+        with open(model_json_path, "w") as f:
+            f.write(model_json)
+        print('[Save model] Saved model JSON to:', model_json_path)
+
+        config_save_path = Path(model_json_path).parent / 'model-config.json'
+        with open(config_save_path, "w+") as f:
+            json.dump(config, f)
+        print('[Save model] Save model config file JSON to:', config_save_path)

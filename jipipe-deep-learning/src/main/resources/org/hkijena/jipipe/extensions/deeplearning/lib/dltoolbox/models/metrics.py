@@ -19,8 +19,45 @@ Script to define costum-made metrcis
 
 import numpy as np
 import tensorflow as tf
-from keras import losses
 from sklearn.metrics import matthews_corrcoef
+
+def get_metrics(model_type, num_classes):
+    """
+    Define multiple metrics dependent on the model-type
+    Args:
+        model_type: the model type as string, given in model-config.
+
+    Returns: all tensorflow metrics
+
+    """
+
+    if model_type == 'segmentation':
+        metrics = [
+            tf.keras.metrics.TruePositives(name='tp'),
+            tf.keras.metrics.FalsePositives(name='fp'),
+            tf.keras.metrics.TrueNegatives(name='tn'),
+            tf.keras.metrics.FalseNegatives(name='fn'),
+            tf.keras.metrics.AUC(name='prc', curve='PR'),  # precision-recall curve
+            tf.keras.metrics.MeanIoU(num_classes=num_classes),
+            dice_coeff,
+            IoU
+        ]
+    elif model_type == 'classification':
+        metrics = [
+            tf.keras.metrics.TruePositives(name='tp'),
+            tf.keras.metrics.FalsePositives(name='fp'),
+            tf.keras.metrics.TrueNegatives(name='tn'),
+            tf.keras.metrics.FalseNegatives(name='fn'),
+            tf.keras.metrics.Accuracy(name='accuracy'),
+            tf.keras.metrics.Precision(name='precision'),
+            tf.keras.metrics.Recall(name='recall'),
+            tf.keras.metrics.AUC(name='auc'),
+            tf.keras.metrics.AUC(name='prc', curve='PR'),  # precision-recall curve
+        ]
+    else:
+        raise AttributeError("Unsupported model-type for metrics: " + str(model_type))
+
+    return metrics
 
 
 def dice_coeff(y_true, y_pred):
@@ -52,13 +89,14 @@ def dice_loss(y_true, y_pred):
     Returns: Score
 
     """
+
     loss = 1 - dice_coeff(y_true, y_pred)
     return loss
 
 
 def bce_dice_loss(y_true, y_pred):
     """
-    binary-cross-entropy with dice loss as regularization term
+    Custom defined binary-cross-entropy with dice loss & IoU as regularization term
     Args:
         y_true: true labels
         y_pred: model prediction
@@ -66,14 +104,19 @@ def bce_dice_loss(y_true, y_pred):
     Returns: Score
 
     """
-    # TODO: alle regularisierungs-terme mit **kwargs dynamisch ergänzen
-    loss = losses.binary_crossentropy(y_true, y_pred) + dice_loss(y_true, y_pred)
+
+    # add a small epsilon to the predictions
+    EPSILON = 1e-05
+    y_pred = y_pred + EPSILON
+
+    loss = tf.keras.losses.binary_crossentropy(y_true, y_pred, from_logits=True) + dice_loss(y_true, y_pred)
+
     return loss
 
 
 def ce_dice_loss(y_true, y_pred):
     """
-    categorical-cross-entropy with dice loss as regularization term
+    Custom defined categorical-cross-entropy with dice loss & IoU as regularization term
     Args:
         y_true: true labels
         y_pred: model prediction
@@ -81,7 +124,12 @@ def ce_dice_loss(y_true, y_pred):
     Returns: Score
 
     """
-    loss = losses.categorical_crossentropy(y_true, y_pred) + dice_loss(y_true, y_pred)
+
+    # add a small epsilon to the predictions
+    EPSILON = 1e-05
+    y_pred = y_pred + EPSILON
+
+    loss = tf.keras.losses.categorical_crossentropy(y_true, y_pred, from_logits=True) + dice_loss(y_true, y_pred)
     return loss
 
 
@@ -123,83 +171,134 @@ def determine_advanded_measures(TP, FP, TN, FN):
     return accuracy, precision, recall, F_1
 
 
-def Jaccard_index(true_bb, pred_bb):
+def IoU(y_true, y_pred):
     """
+    Jaccard similarity coefficient score.
+
+    The Jaccard index [1], or Jaccard similarity coefficient, defined as the size of the intersection divided
+    by the size of the union of two label sets, is used to compare set of predicted labels
+    for a sample to the corresponding set of labels in y_true.
 
     Args:
-        true_bb: ground truth bounding box
-        pred_bb: predicted bounding box
+        true_bb: true labels
+        pred_bb: model prediction
 
     Returns:
+        scorefloat (if average is not None) or array of floats, shape = [n_unique_labels]
 
     """
 
-    true_bb = tf.stack([
-        true_bb[:, :, :, :, 0] - true_bb[:, :, :, :, 2] / 2.0,
-        true_bb[:, :, :, :, 1] - true_bb[:, :, :, :, 3] / 2.0,
-        true_bb[:, :, :, :, 0] + true_bb[:, :, :, :, 2] / 2.0,
-        true_bb[:, :, :, :, 1] + true_bb[:, :, :, :, 3] / 2.0])
-    true_bb = tf.transpose(true_bb, [1, 2, 3, 4, 0])
-    pred_bb = tf.stack([
-        pred_bb[:, :, :, :, 0] - pred_bb[:, :, :, :, 2] / 2.0,
-        pred_bb[:, :, :, :, 1] - pred_bb[:, :, :, :, 3] / 2.0,
-        pred_bb[:, :, :, :, 0] + pred_bb[:, :, :, :, 2] / 2.0,
-        pred_bb[:, :, :, :, 1] + pred_bb[:, :, :, :, 3] / 2.0])
-    pred_bb = tf.transpose(pred_bb, [1, 2, 3, 4, 0])
-    area = tf.maximum(0.0,
-                      tf.minimum(true_bb[:, :, :, :, 2:], pred_bb[:, :, :, :, 2:]) -
-                      tf.maximum(true_bb[:, :, :, :, :2], pred_bb[:, :, :, :, :2]))
+    y_true_f = tf.reshape(y_true, [-1])
+    y_pred_f = tf.reshape(y_pred, [-1])
 
-    intersection_area = area[:, :, :, :, 0] * area[:, :, :, :, 1]
-    gt_bb_area = (true_bb[:, :, :, :, 2] - true_bb[:, :, :, :, 0]) * \
-                 (true_bb[:, :, :, :, 3] - true_bb[:, :, :, :, 1])
-    pred_bb_area = (pred_bb[:, :, :, :, 2] - pred_bb[:, :, :, :, 0]) * \
-                   (pred_bb[:, :, :, :, 3] - pred_bb[:, :, :, :, 1])
-    union_area = tf.maximum(gt_bb_area + pred_bb_area - intersection_area, 1e-10)
-    iou = tf.clip_by_value(intersection_area / union_area, 0.0, 1.0)
+    intersection = tf.reduce_sum(y_true_f * y_pred_f)
+    union = (tf.reduce_sum(y_true_f) + tf.reduce_sum(y_pred_f)) - intersection
 
-    return iou
+    score = intersection / union
+
+    return score
 
 
-def MCC(y_true, y_pred):
+def IoU_loss(y_true, y_pred):
     """
-    calculate the Matthews correlation coefficient (MCC)
+    Jaccard similarity loss.
+
+    The Jaccard index [1], or Jaccard similarity coefficient, defined as the size of the intersection divided
+    by the size of the union of two label sets, is used to compare set of predicted labels
+    for a sample to the corresponding set of labels in y_true.
+
     Args:
-        y_true:
-        y_pred:
+        y_true: true labels
+        y_pred: model prediction
+
+    Returns: Score
+
+    """
+
+    loss = 1 - IoU(y_true, y_pred)
+    return loss
+
+
+def MMC(y_true, y_pred):
+    """
+    The Matthews correlation coefficient is used in machine learning as a measure of the quality of binary and
+    multiclass classifications. It takes into account true and false positives and negatives and is generally
+    regarded as a balanced measure which can be used even if the classes are of very different sizes.
+    The MCC is in essence a correlation coefficient value between -1 and +1. A coefficient of +1 represents
+    a perfect prediction, 0 an average random prediction and -1 an inverse prediction.
+    The statistic is also known as the phi coefficient. [source: Wikipedia]
+
+    Args:
+        y_true: true labels
+        y_pred: model prediction
 
     Returns:
-        float: The final score.
+        mcc. float. The Matthews correlation coefficient
+        (+1 represents a perfect prediction, 0 an average random prediction and -1 and inverse prediction)
     """
 
     '''
     calculate the Matthew correlation coefficient
     '''
 
-    # TP = df_tmp["TruePositive"]
-    # FP = df_tmp["FalsePositive"]
-    # FN = df_tmp["FalseNegative"]
-    # TN = df_tmp["TrueNegative"]
+    ### tensorflow
 
-    # counter = (TN * TP) - (FP * FN)
-    # denominator = np.sqrt( (TN + FN)*(FP + TP)*(TN + FP)*(FN + TP) )
+    # threshold = 0.5
+    #
+    # predicted = tf.cast(tf.greater(y_pred, threshold), tf.float32)
+    #
+    # true_pos = tf.math.count_nonzero(predicted * y_true)
+    # true_neg = tf.math.count_nonzero((predicted - 1) * (y_true - 1))
+    # false_pos = tf.math.count_nonzero(predicted * (y_true - 1))
+    # false_neg = tf.math.count_nonzero((predicted - 1) * y_true)
+    #
+    # x = tf.cast((true_pos + false_pos) * (true_pos + false_neg)
+    #             * (true_neg + false_pos) * (true_neg + false_neg), tf.float32)
+    #
+    # score = tf.cast((true_pos * true_neg) - (false_pos * false_neg), tf.float32) / tf.sqrt(x)
 
-    # return counter / denominator
+    ### sklearn
+    score = matthews_corrcoef(y_true, y_pred)
 
-    return matthews_corrcoef(y_true, y_pred)
+    return score
+
+
+def MMC_loss(y_true, y_pred):
+    """
+    The Matthews correlation coefficient - loss. is used in machine learning as a measure of the quality of binary and
+    multiclass classifications. It takes into account true and false positives and negatives and is generally
+    regarded as a balanced measure which can be used even if the classes are of very different sizes.
+    The MCC -loss is in essence a correlation coefficient value between -1 and +1. A coefficient of -1 represents
+    a perfect prediction, 0 an average random prediction and +1 an inverse prediction.
+
+    Args:
+        y_true: true labels
+        y_pred: model prediction
+
+    Returns:
+        mcc. float. The Matthews correlation coefficient
+        (+1 represents a perfect prediction, 0 an average random prediction and -1 and inverse prediction)
+    """
+
+    score = matthews_corrcoef(y_true, y_pred)
+
+    loss = score / -1
+
+    return loss
 
 
 def focal_loss(y_true, y_pred):
+
     gamma = 2
     alpha = 0.75
     eps = 1e-12
 
     # improve the stability of the focal loss and see issues 1 for more information
-    y_pred = K.clip(y_pred, eps, 1. - eps)
+    y_pred = tf.clip_by_value(y_pred, eps, 1. - eps)
     pt_1 = tf.where(tf.equal(y_true, 1), y_pred, tf.ones_like(y_pred))
     pt_0 = tf.where(tf.equal(y_true, 0), y_pred, tf.zeros_like(y_pred))
-    focal_loss_fixed = -K.sum(alpha * K.pow(1. - pt_1, gamma) * K.log(pt_1)) - K.sum(
-        (1 - alpha) * K.pow(pt_0, gamma) * K.log(1. - pt_0))
+    focal_loss_fixed = - tf.reduce_sum(alpha * tf.math.pow(1. - pt_1, gamma) * tf.math.log(pt_1)) - tf.reduce_sum(
+        (1 - alpha) * tf.math.pow(pt_0, gamma) * tf.math.log(1. - pt_0))
 
     return focal_loss_fixed
 

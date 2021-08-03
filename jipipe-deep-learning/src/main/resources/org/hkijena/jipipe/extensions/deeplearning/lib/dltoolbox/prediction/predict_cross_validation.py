@@ -26,7 +26,7 @@ import json
 import math
 import tifffile as tif
 import cv2
-from dltoolbox.prediction.predict_samples import predict_samples
+from dltoolbox.prediction.predict_unet import predict_samples
 from dltoolbox import utils
 
 
@@ -105,10 +105,6 @@ def predict_cross_validation(model_config, config, model=None):
 
         # (4) set all input directories of the test images for the current model
         config['input_dir'] = input_dirs
-
-        # TODO: tmp - später löschen
-        if model_id in [0,1,2,3,4,5,6,7,8,9,10]:
-            continue
 
         # (5) on-the-fly prediction of the test images with the corresponding model
         imgs_pred, imgs_filenames = predict_samples(model_config=model_config, config=config, model=model)

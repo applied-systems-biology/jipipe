@@ -19,9 +19,7 @@ import com.google.common.eventbus.EventBus;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
-import org.hkijena.jipipe.extensions.deeplearning.enums.MonitorLoss;
 import org.hkijena.jipipe.extensions.deeplearning.enums.NormalizationMethod;
-import org.hkijena.jipipe.extensions.parameters.primitives.NumberParameterSettings;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -34,12 +32,10 @@ public class DeepLearningTrainingConfiguration implements JIPipeParameterCollect
     private Path logDir = Paths.get("");
     private String inputImagesPattern = "raw/*.tif";
     private String inputLabelsPattern = "labels/*.tif";
-    private int maxEpochs = 1000;
+    private int maxEpochs = 100;
     private int batchSize = 32;
-    private double learningRate = 0.0001;
-    private MonitorLoss monitorLoss = MonitorLoss.val_loss;
-    private double validationSplit = 0.85;
-    private int augmentationFactor = 5;
+    private double validationSplit = 0.80;
+    private int augmentationFactor = 3;
     private NormalizationMethod normalization = NormalizationMethod.zero_one;
     private boolean useElasticTransform = true;
 
@@ -54,8 +50,6 @@ public class DeepLearningTrainingConfiguration implements JIPipeParameterCollect
         this.inputLabelsPattern = other.inputLabelsPattern;
         this.maxEpochs = other.maxEpochs;
         this.batchSize = other.batchSize;
-        this.learningRate = other.learningRate;
-        this.monitorLoss = other.monitorLoss;
         this.validationSplit = other.validationSplit;
         this.augmentationFactor = other.augmentationFactor;
         this.normalization = other.normalization;
@@ -63,7 +57,7 @@ public class DeepLearningTrainingConfiguration implements JIPipeParameterCollect
         this.useElasticTransform = other.useElasticTransform;
     }
 
-    @JIPipeDocumentation(name = "Use elastic transform", description = "If enabled, the augmentation will use elastic transforms")
+    @JIPipeDocumentation(name = "Use elastic transform", description = "Use an elastic transformation for data augmentation purpose")
     @JIPipeParameter("use-use_elastic_transformation")
     @JsonGetter("use_elastic_transformation")
     public boolean isUseElasticTransform() {
@@ -86,7 +80,7 @@ public class DeepLearningTrainingConfiguration implements JIPipeParameterCollect
         this.logDir = logDir;
     }
 
-    @JIPipeDocumentation(name = "Normalization", description = "The normalization method that should be used")
+    @JIPipeDocumentation(name = "Normalization", description = "Normalize the input data to the specified interval: [0,255] => [0,1]")
     @JIPipeParameter("normalization")
     @JsonGetter("normalization")
     public NormalizationMethod getNormalization() {
@@ -144,7 +138,7 @@ public class DeepLearningTrainingConfiguration implements JIPipeParameterCollect
         this.inputLabelsPattern = inputLabelsPattern;
     }
 
-    @JIPipeDocumentation(name = "Max epochs", description = "The maximum number of epochs")
+    @JIPipeDocumentation(name = "Max epochs", description = "Maximum number of training epochs")
     @JsonGetter("max_epochs")
     @JIPipeParameter("max-epochs")
     public int getMaxEpochs() {
@@ -157,7 +151,7 @@ public class DeepLearningTrainingConfiguration implements JIPipeParameterCollect
         this.maxEpochs = maxEpochs;
     }
 
-    @JIPipeDocumentation(name = "Batch size", description = "The batch size")
+    @JIPipeDocumentation(name = "Batch size", description = "The batch size defines the number of samples that will be propagated through the network")
     @JIPipeParameter("batch-size")
     @JsonGetter("batch_size")
     public int getBatchSize() {
@@ -170,34 +164,7 @@ public class DeepLearningTrainingConfiguration implements JIPipeParameterCollect
         this.batchSize = batchSize;
     }
 
-    @JIPipeDocumentation(name = "Learning rate", description = "The learning rate")
-    @JsonGetter("learning_rate")
-    @NumberParameterSettings(step = 0.0001)
-    @JIPipeParameter("learning-rate")
-    public double getLearningRate() {
-        return learningRate;
-    }
-
-    @JIPipeParameter("learning-rate")
-    @JsonSetter("learning_rate")
-    public void setLearningRate(double learningRate) {
-        this.learningRate = learningRate;
-    }
-
-    @JIPipeDocumentation(name = "Monitor loss", description = "The monitor loss")
-    @JIPipeParameter("monitor-loss")
-    @JsonGetter("monitor_loss")
-    public MonitorLoss getMonitorLoss() {
-        return monitorLoss;
-    }
-
-    @JIPipeParameter("monitor-loss")
-    @JsonSetter("monitor_loss")
-    public void setMonitorLoss(MonitorLoss monitorLoss) {
-        this.monitorLoss = monitorLoss;
-    }
-
-    @JIPipeDocumentation(name = "Validation split", description = "Ratio between training and validation data")
+    @JIPipeDocumentation(name = "Validation split", description = "Fraction of the training data to be used as validation data (0.8 = 80% used for training)")
     @JIPipeParameter("validation-split")
     @JsonGetter("validation_split")
     public double getValidationSplit() {
@@ -210,7 +177,7 @@ public class DeepLearningTrainingConfiguration implements JIPipeParameterCollect
         this.validationSplit = validationSplit;
     }
 
-    @JIPipeDocumentation(name = "Augmentation factor", description = "Controls how much real-time augmentation is applied")
+    @JIPipeDocumentation(name = "Augmentation factor", description = "Multiplier by which the whole data set for the training is augmented. Set to zero or one for no augmentation.")
     @JIPipeParameter("augmentation-factor")
     @JsonGetter("augmentation_factor")
     public int getAugmentationFactor() {

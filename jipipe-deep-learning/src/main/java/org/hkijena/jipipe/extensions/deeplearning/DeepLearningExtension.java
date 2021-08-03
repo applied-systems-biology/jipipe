@@ -8,10 +8,10 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
 import org.hkijena.jipipe.extensions.JIPipePrepackagedDefaultJavaExtension;
 import org.hkijena.jipipe.extensions.deeplearning.datatypes.DeepLearningModelData;
+import org.hkijena.jipipe.extensions.deeplearning.enums.EvaluationMethod;
 import org.hkijena.jipipe.extensions.deeplearning.enums.NetworkArchitecture;
 import org.hkijena.jipipe.extensions.deeplearning.enums.ModelType;
 import org.hkijena.jipipe.extensions.deeplearning.enums.NormalizationMethod;
-import org.hkijena.jipipe.extensions.deeplearning.enums.MonitorLoss;
 import org.hkijena.jipipe.extensions.deeplearning.enums.RegularizationMethod;
 import org.hkijena.jipipe.extensions.deeplearning.environments.DeepLearningDeviceEnvironment;
 import org.hkijena.jipipe.extensions.deeplearning.environments.TensorFlowEnvInstaller;
@@ -131,10 +131,10 @@ public class DeepLearningExtension extends JIPipePrepackagedDefaultJavaExtension
                 RegularizationMethod.class,
                 "Deep Learning regularization method",
                 "Regularization method to be used");
-        registerEnumParameterType("deep-learning-monitor-loss",
-                MonitorLoss.class,
-                "Deep Learning monitor loss",
-                "Monitor loss method to be used");
+        registerEnumParameterType("deep-learning-evaluation-method",
+                EvaluationMethod.class,
+                "Deep Learning evaluation method",
+                "The evaluation method");
         registerEnumParameterType("deep-learning-model-type",
                 ModelType.class,
                 "Deep Learning model type",

@@ -33,39 +33,54 @@ from dltoolbox import utils
 
 def plot_history(history, path, model):
     """
-    Plot history of metrics
+    Plot history of all available metrics
 
     Args:
         history: history object from model.fit
         path: save path where the plots will be stored
 
-    Returns:
+    """
+
+    for i, metric_name in enumerate(model.metrics_names):
+
+        print(f'[ {i} / {len(model.metrics_names) - 1} ] plot-history for loss/metric: {metric_name}')
+
+        # Plot training & validation values for each metric
+        figure = plt.figure(figsize=(12, 10))
+        plt.plot(history.history[metric_name], linewidth=2)
+        try:
+            plt.plot(history.history[f'val_{metric_name}'], linewidth=2)
+        except:
+            print(f'[Plot History] no <val_{metric_name}> available')
+        plt.title(f'Metric: {metric_name}', fontsize=20)
+        plt.ylabel(f'{metric_name}', fontsize=15)
+        plt.xlabel('epoch', fontsize=15)
+        plt.legend(['Train', 'Validation'], loc='upper left')
+        plt.savefig(os.path.join(path, f'training_validation_{metric_name}.png'))
+        plt.show()
+
+
+def plot_lr(history, path):
+    """
+    Plot history if the learning rate.
+
+    Args:
+        history: history object from model.fit
+        path: save path where the plots will be stored
 
     """
 
-    # Plot training & validation loss values
-    figure = plt.figure(figsize=(12, 10))
-    plt.plot(history.history[model.metrics_names[0]], linewidth=2)
-    plt.plot(history.history[f'val_{model.metrics_names[0]}'], linewidth=2)
-    plt.title(f'Model {model.metrics_names[0]}')
-    plt.ylabel(f'{model.metrics_names[0]}')
-    plt.xlabel('epoch')
-    plt.legend(['Train', 'Validation'], loc='upper left')
-    plt.savefig(os.path.join(path, f'training_validation_{model.metrics_names[0]}.png'))
-    plt.show()
+    print(history)
+    learning_rate = history['lr']
+    epochs = range(1, len(learning_rate) + 1)
 
-    # if additional metrics are given
-    if len(model.metrics_names) > 1:
-        # Plot training & validation accuracy values
-        figure = plt.figure(figsize=(12, 10))
-        plt.plot(history.history[model.metrics_names[1]], linewidth=2)
-        plt.plot(history.history[f'val_{model.metrics_names[1]}'], linewidth=2)
-        plt.title(f'Model {model.metrics_names[1]}')
-        plt.ylabel(f'{model.metrics_names[1]}')
-        plt.xlabel('epoch')
-        plt.legend(['Train', 'Validation'], loc='upper left')
-        plt.savefig(os.path.join(path, f'training_validation_{model.metrics_names[1]}.png'))
-        plt.show()
+    figure = plt.figure(figsize=(12, 10))
+    plt.plot(epochs, learning_rate, linewidth=2)
+    plt.title('Learning rate', fontsize=20)
+    plt.xlabel('Epochs', fontsize=15)
+    plt.ylabel('Learning rate', fontsize=15)
+    plt.savefig(os.path.join(path, 'learning_rate.png'))
+    plt.show()
 
 
 def plot_probabilities(config):
@@ -204,7 +219,7 @@ def evaluate_samples(config):
         x_path_filename = os.path.basename(x_path)
 
         x_path_pattern = \
-        [x_path_filename.split(elem)[0] for elem in raw_label_image_criteria if elem in x_path_filename][0]
+            [x_path_filename.split(elem)[0] for elem in raw_label_image_criteria if elem in x_path_filename][0]
         y_path_list = [y_path_tmp for y_path_tmp in Y_path if x_path_pattern in y_path_tmp]
 
         if len(y_path_list) == 0:
@@ -227,13 +242,6 @@ def evaluate_samples(config):
         # check that the both images should have the same shape
         print(f'[Evaluate] labeled image shape: {image_true.shape} - prediction image shape: {image_pred.shape}')
         assert image_true.shape[:2] == image_pred.shape[:2], "true and prediction image should have the same shape"
-
-        # if label image is not a binary image -> binarize it
-        num_unique_true_values = len(np.unique(image_true))
-
-        # if num_unique_true_values != 2: TODO: das hier löschen wenn binärbilder vorhanden
-        #     print(f'[Evaluate] binarize label image because of non-binary unique intensities: {num_unique_true_values}')
-        #     image_true = utils.binarizeAnnotation(image_true, use_otsu=True, convertToGray=True)
 
         # transfer all values to {0, 1}
         image_true = img_as_float32(image_true / np.max(image_true))
@@ -280,7 +288,6 @@ def evaluate_samples(config):
     print(f'[Evaluate] save final results to: {save_path}')
 
     return df_results
-
 
 # def evaluate_sample(model, X, Y):  # #X_Y_path):
 

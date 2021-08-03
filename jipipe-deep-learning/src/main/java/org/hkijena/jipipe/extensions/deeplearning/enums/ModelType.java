@@ -17,7 +17,8 @@ import org.apache.commons.lang.WordUtils;
 
 public enum ModelType {
     segmentation,
-    classification;
+    classification,
+    generation;
 
     @Override
     public String toString() {

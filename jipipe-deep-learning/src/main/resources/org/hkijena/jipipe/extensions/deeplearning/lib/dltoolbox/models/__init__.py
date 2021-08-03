@@ -15,10 +15,12 @@ Hans Knöll Insitute (HKI)
 Adolf-Reichwein-Straße 23, 07745 Jena, Germany
 """
 
-from dltoolbox.models import SegNet
-from dltoolbox.models import VGG16
-from dltoolbox.models import FCN32
-from dltoolbox.models import Xception
+from dltoolbox.models.classification import VGG16
+from dltoolbox.models.classification import Xception
+from dltoolbox.models.segmentation import SegNet
+from dltoolbox.models.segmentation import FCN32
+from dltoolbox.models.segmentation import MobileNetV2_pix2pix
+from dltoolbox.models.GANs import pix2pix
 
 
 def build_model(config):
@@ -31,16 +33,19 @@ def build_model(config):
 
     """
 
-    print("Building model of architecture " + config["architecture"])
+    print("[DLToolbox] Building model of architecture " + config["architecture"])
 
     if config["architecture"] == "SegNet":
-        SegNet.build_model(config)
+        return SegNet.build_model(config)
     elif config["architecture"] == "VGG16":
-        VGG16.build_model(config)
+        return VGG16.build_model(config)
     elif config["architecture"] == "FCN32":
-        FCN32.build_model(config)
+        return FCN32.build_model(config)
     elif config["architecture"] == "Xception":
-        Xception.build_model(config)
-
+        return Xception.build_model(config)
+    elif config["architecture"] == "MobileNetV2_pix2pix":
+        return MobileNetV2_pix2pix.build_model(config)
+    elif config["architecture"] == "pix2pix":
+        return pix2pix.build_model(config)
     else:
         raise AttributeError("Unsupported model-architecture: " + config["architecture"])

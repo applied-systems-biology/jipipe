@@ -19,7 +19,7 @@ from dltoolbox.training import train_segmenter
 from dltoolbox.training import train_classifier
 
 
-def train_model(model_config, config):
+def train_model(model_config, config, model=None):
     """
     Trains the model according to its configuration
     Args:
@@ -32,9 +32,9 @@ def train_model(model_config, config):
 
     if model_config["model_type"] == "segmentation":
         print("Detected a segmentation ({0}-classification) training".format(model_config["n_classes"]))
-        train_segmenter.train_model(model_config=model_config, config=config)
+        train_segmenter.train_model(model_config=model_config, config=config, model=model)
     elif model_config["model_type"] == "classification":
         print("Detected a {0}-class-classification training".format(model_config["n_classes"]))
-        train_classifier.train_model(model_config=model_config, config=config)
+        train_classifier.train_model(model_config=model_config, config=config, model=model)
     else:
         raise AttributeError("Could not find training method for this model")

@@ -16,12 +16,14 @@ Adolf-Reichwein-Straße 23, 07745 Jena, Germany
 """
 
 from dltoolbox.evaluation import evaluate
+from dltoolbox.evaluation import visualize
 
 
-def evaluate_data(config, model=None):
+def evaluate_data(model_config, config, model=None):
     """
     Evaluate the predicted data according to its labels
     Args:
+        model_config: The model parameters
         config: The evaluation settings
         model: The model. If None, it is loaded from the model config or config
 
@@ -37,5 +39,7 @@ def evaluate_data(config, model=None):
         evaluate.treshold_predictions(config=config)
     elif config['evaluation_method'] == "evaluate":
         evaluate.evaluate_samples(config=config)
+    elif config['evaluation_method'] == "visualize":
+        visualize.visualize_grad_cam(model_config=model_config, config=config, model=model)
     else:
         raise AttributeError("Unsupported evaluation method: " + config["evaluation_method"])
