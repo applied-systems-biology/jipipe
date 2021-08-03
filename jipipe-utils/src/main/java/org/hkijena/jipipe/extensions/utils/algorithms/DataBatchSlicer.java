@@ -23,7 +23,7 @@ import java.util.HashSet;
         "the output).")
 @JIPipeInputSlot(value = JIPipeData.class, slotName = "Input", autoCreate = true)
 @JIPipeOutputSlot(value = JIPipeData.class, slotName = "Output", inheritedSlot = "Input", autoCreate = true)
-@JIPipeNode(nodeTypeCategory = MiscellaneousNodeTypeCategory.class)
+@JIPipeNode(nodeTypeCategory = MiscellaneousNodeTypeCategory.class, menuPath = "Filter")
 public class DataBatchSlicer extends JIPipeMergingAlgorithm {
 
     private IntegerRange sliceRange = new IntegerRange("0");

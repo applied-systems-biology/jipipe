@@ -30,13 +30,9 @@ import org.hkijena.jipipe.extensions.filesystem.dataypes.FolderData;
  * Applies subfolder navigation to each input folder
  */
 @JIPipeDocumentation(name = "Get output path", description = "Obtains the output path of the current run where the receiving data is stored.")
-@JIPipeNode(nodeTypeCategory = MiscellaneousNodeTypeCategory.class)
-
-
+@JIPipeNode(nodeTypeCategory = MiscellaneousNodeTypeCategory.class, menuPath = "Convert")
 @JIPipeInputSlot(value = JIPipeData.class, slotName = "Data", autoCreate = true)
 @JIPipeOutputSlot(value = FolderData.class, slotName = "Output path", autoCreate = true)
-
-
 public class ConvertDataToOutputPath extends JIPipeSimpleIteratingAlgorithm {
 
     /**

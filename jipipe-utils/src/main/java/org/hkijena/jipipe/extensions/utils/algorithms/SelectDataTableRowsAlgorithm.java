@@ -20,7 +20,7 @@ import org.hkijena.jipipe.extensions.parameters.generators.IntegerRange;
 import java.util.List;
 
 @JIPipeDocumentation(name = "Select data rows", description = "Allows to select the only a specific set of input data table rows. All other rows are not stored in the output.")
-@JIPipeNode(nodeTypeCategory = MiscellaneousNodeTypeCategory.class)
+@JIPipeNode(nodeTypeCategory = MiscellaneousNodeTypeCategory.class, menuPath = "Filter")
 @JIPipeInputSlot(value = JIPipeData.class, slotName = "Input", autoCreate = true)
 @JIPipeOutputSlot(value = JIPipeData.class, slotName = "Output", autoCreate = true)
 public class SelectDataTableRowsAlgorithm extends JIPipeParameterSlotAlgorithm {

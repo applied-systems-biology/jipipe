@@ -22,7 +22,7 @@ import java.awt.image.BufferedImage;
 import java.lang.reflect.InvocationTargetException;
 
 @JIPipeDocumentation(name = "Data to preview", description = "Converts any data into preview image. Does not generate a result if no previews are supported.")
-@JIPipeNode(nodeTypeCategory = MiscellaneousNodeTypeCategory.class)
+@JIPipeNode(nodeTypeCategory = MiscellaneousNodeTypeCategory.class, menuPath = "Convert")
 @JIPipeInputSlot(value = JIPipeData.class, slotName = "Data", autoCreate = true)
 @JIPipeOutputSlot(value = ImagePlus2DColorRGBData.class, slotName = "Preview", autoCreate = true)
 public class DataToPreviewAlgorithm extends JIPipeSimpleIteratingAlgorithm {

@@ -35,13 +35,13 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Collections;
 
-@JIPipeDocumentation(name = "Export data by parameter", description = "Collects all incoming data into one or multiple folders that contain the raw output files. " +
+@JIPipeDocumentation(name = "Export data", description = "Collects all incoming data into one or multiple folders that contain the raw output files. " +
         "The output files are named according to the metadata columns and can be easily processed by humans or third-party scripts. " +
         "The output of this algorithm is the selected output directory. " +
         "Please note that you do not need to explicitly export data, as JIPipe automatically saves all output data.")
 @JIPipeInputSlot(value = JIPipeData.class, slotName = "Data", autoCreate = true)
 @JIPipeOutputSlot(value = FolderData.class, slotName = "Output path", autoCreate = true)
-@JIPipeNode(nodeTypeCategory = MiscellaneousNodeTypeCategory.class)
+@JIPipeNode(nodeTypeCategory = MiscellaneousNodeTypeCategory.class, menuPath = "Export")
 public class ExportDataByParameter extends JIPipeAlgorithm {
 
     private boolean splitByInputSlots = true;

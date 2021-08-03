@@ -29,6 +29,7 @@ import org.hkijena.jipipe.api.nodes.JIPipeInputSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.JIPipeOutputSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeSimpleIteratingAlgorithm;
+import org.hkijena.jipipe.api.nodes.categories.DataSourceNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.categories.MiscellaneousNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.filesystem.dataypes.FolderData;
@@ -40,7 +41,7 @@ import java.util.HashMap;
 import java.util.List;
 
 @JIPipeDocumentation(name = "Import data from slot", description = "Imports data from a slot folder back into JIPipe. The folder contains a data-table.json file and multiple folders with numeric names.")
-@JIPipeNode(nodeTypeCategory = MiscellaneousNodeTypeCategory.class)
+@JIPipeNode(nodeTypeCategory = DataSourceNodeTypeCategory.class)
 @JIPipeInputSlot(value = FolderData.class, slotName = "Slot folder", autoCreate = true)
 @JIPipeOutputSlot(value = JIPipeData.class, slotName = "Slot data", autoCreate = true)
 public class ImportData extends JIPipeSimpleIteratingAlgorithm {

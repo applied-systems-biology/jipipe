@@ -25,7 +25,7 @@ import java.util.Map;
 
 @JIPipeDocumentation(name = "Split data randomly (count)", description = "Distributes data across the output slots, so a each of the slot is provided with the number of data as specified. " +
         "The output data is unique, meaning that there will be no overlaps between different slots. If there is not enough data available, the slots with the lower order (left/top) are preferred.")
-@JIPipeNode(nodeTypeCategory = MiscellaneousNodeTypeCategory.class)
+@JIPipeNode(nodeTypeCategory = MiscellaneousNodeTypeCategory.class, menuPath = "Split")
 @JIPipeInputSlot(value = JIPipeData.class, slotName = "Input", autoCreate = true)
 @JIPipeOutputSlot(value = JIPipeData.class)
 public class DistributeDataRandomlyByCountAlgorithm extends JIPipeMergingAlgorithm {

@@ -26,6 +26,7 @@ import org.hkijena.jipipe.api.nodes.JIPipeInputSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.JIPipeOutputSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeSimpleIteratingAlgorithm;
+import org.hkijena.jipipe.api.nodes.categories.DataSourceNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.categories.MiscellaneousNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.filesystem.dataypes.FolderData;
@@ -41,7 +42,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @JIPipeDocumentation(name = "Import data row folder", description = "Imports one data row from a standardized row folder. Please ensure to define the appropriate data type.")
-@JIPipeNode(nodeTypeCategory = MiscellaneousNodeTypeCategory.class)
+@JIPipeNode(nodeTypeCategory = DataSourceNodeTypeCategory.class)
 @JIPipeInputSlot(value = FolderData.class, slotName = "Data row folder", autoCreate = true)
 @JIPipeOutputSlot(value = JIPipeData.class, slotName = "Data", autoCreate = true)
 public class ImportDataRowFolder extends JIPipeSimpleIteratingAlgorithm {

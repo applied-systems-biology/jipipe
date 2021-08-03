@@ -31,14 +31,14 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
-@JIPipeDocumentation(name = "Export data", description = "Exports all incoming data to the path specified by the path input data. " +
+@JIPipeDocumentation(name = "Export data (path input)", description = "Exports all incoming data to the path specified by the path input data. " +
         "The files will be named according to the last path component. Depending on the data type one or multiple files " +
         "that contain the last path component in their name might be created. " +
         "Duplicate files might be silently overwritten, meaning that the paths should be unique." +
         "Please note that you do not need to explicitly export data, as JIPipe automatically saves all output data.")
 @JIPipeInputSlot(JIPipeData.class)
 @JIPipeOutputSlot(PathData.class)
-@JIPipeNode(nodeTypeCategory = MiscellaneousNodeTypeCategory.class)
+@JIPipeNode(nodeTypeCategory = MiscellaneousNodeTypeCategory.class, menuPath = "Export")
 public class ExportData extends JIPipeIteratingAlgorithm {
 
     public ExportData(JIPipeNodeInfo info) {

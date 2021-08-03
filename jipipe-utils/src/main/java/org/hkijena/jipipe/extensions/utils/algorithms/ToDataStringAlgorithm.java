@@ -16,7 +16,7 @@ import org.hkijena.jipipe.extensions.strings.StringData;
 @JIPipeDocumentation(name = "To data string", description = "Converts the incoming data into a data object containing the string representation of the data")
 @JIPipeInputSlot(value = JIPipeData.class, slotName = "Input", autoCreate = true)
 @JIPipeOutputSlot(value = StringData.class, slotName = "Output", autoCreate = true)
-@JIPipeNode(nodeTypeCategory = MiscellaneousNodeTypeCategory.class)
+@JIPipeNode(nodeTypeCategory = MiscellaneousNodeTypeCategory.class, menuPath = "Convert")
 public class ToDataStringAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     private boolean detailedDataString = true;
