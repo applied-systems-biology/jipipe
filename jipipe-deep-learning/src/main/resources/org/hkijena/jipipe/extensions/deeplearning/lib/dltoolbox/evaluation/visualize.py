@@ -235,6 +235,9 @@ def visualize_grad_cam(model_config, config, model=None):
         plt.imshow(output)
         plt.tight_layout()
         plt.savefig(save_path, dpi=96)
-        plt.show()
+        try:
+            plt.show()
+        except:
+            print(f'[Visualize Grad-CAM] Skip plotting of figure')
 
         print(f'[Visualize Grad-CAM] Save figure to: {save_path}')

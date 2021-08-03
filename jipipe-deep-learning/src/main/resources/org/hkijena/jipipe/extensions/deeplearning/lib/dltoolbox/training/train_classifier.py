@@ -18,14 +18,11 @@ Script to train a segmentation network
 """
 
 import os
+
 import numpy as np
-import pandas as pd
-from glob import glob
-import math
-from sklearn.model_selection import train_test_split
-from skimage import io
-from pathlib import Path
 import tensorflow as tf
+from sklearn.model_selection import train_test_split
+
 from dltoolbox import utils
 from dltoolbox.evaluation import evaluate
 from dltoolbox.training import callbacks
@@ -46,6 +43,9 @@ def train_model(model_config, config, model=None):
     # assign hyper-parameter for training procedure
     input_dir = config['input_dir']
     label_dir = config['label_dir']
+    input_validation_dir = config['input_validation_dir']
+    label_validation_dir = config['label_validation_dir']
+    normalization_mode = config['normalization']
     n_epochs = config['max_epochs']
     batch_size = config['batch_size']
     validation_split = config['validation_split']
@@ -54,55 +54,27 @@ def train_model(model_config, config, model=None):
     output_model_json_path = config['output_model_json_path']
     augment_factor = config['augmentation_factor']
     log_dir = config['log_dir']
+    num_classes = model_config['n_classes']
 
     # load the model
-    model = utils.load_and_compile_model(model_config, input_model_path, model)
-
-    # check whether the input data are specified within a table OR as images
-    input_as_images = not str(input_dir).endswith('csv')
-
-    print('[Train model] Input is represented as images:', input_as_images)
-
-    if input_as_images:
-
-        # read all filenames from input files and the corresponding labels table
-        X_filenames = np.sort(glob(input_dir))
-        Y_df = pd.read_csv(label_dir, index_col=0)
-
-        X_paths = []
-        Y = []
-
-        # match input images with the labels table
-        for label_filename, label_value in Y_df.iterrows():
-
-            # skip objects where no label exist
-            if math.isnan(label_value['label']):
-                continue
-
-            for input_filename in X_filenames:
-
-                match = str(label_value['filename']) in input_filename
-                # if the filename of the image contains the label-filename the match condition is true
-                if match:
-                    X_paths.append(input_filename)
-                    Y.append(label_value['label'])
-
-                    # print(f"label_filename: {label_filename} - input_filename: {input_filename} - match: {match}")
-                    break
-
+    if model is not None:
+        assert isinstance(model, tf.keras.models.Model)
+        print(f'[Train model] Use model with input shape: {model.input_shape} and output shape: {model.output_shape}')
     else:
+        model = utils.load_and_compile_model(model_config, input_model_path, model)
+        print(f'[Train model] Model was successfully loaded from path: {input_model_path}')
 
-        df_data = pd.read_csv(label_dir, index_col=0)
+    # check whether the label data are specified within a .csv table
+    label_as_images = not str(label_dir).endswith('csv')
+    assert not label_as_images, "Label format not valid: provide the label files within a .csv file"
 
-        X_paths = df_data['filename'].tolist()
-        Y = df_data['label'].tolist()
+    # read the input and label images in dependence of their specified format: directory or .csv-table
+    X = utils.read_images(dir=input_dir, read_input=True, labels_for_classifier=False)
+    Y = utils.read_images(dir=label_dir, read_input=False, labels_for_classifier=True)
 
-    # read the matching input images and label values
-    X = io.imread_collection(X_paths)
+    print('[Train model] Input-images:', len(X), ', Label-images:', len(Y))
 
-    print('[Train model] Input-images:', len(X), ', Label-values:', len(Y))
-
-    assert len(X) == len(Y) > 0
+    assert len(X) == len(Y) > 0, "Unequal number of input - label images/values"
 
     # validate input data
     x = utils.validate_image_shape(model.input_shape, images=X)
@@ -112,7 +84,7 @@ def train_model(model_config, config, model=None):
     assert not np.any(np.isnan(x)), "[WARNING] Input data contains <nan> values"
     y_num_classes, y_num_classes_counts = np.unique(Y, return_counts=True)
     print(f'[Train model] Number of unique label-values: {y_num_classes} with counts: {y_num_classes_counts}')
-    assert len(y_num_classes) == model_config['n_classes'], "[WARNING] Number of unique labels do not match"
+    assert len(y_num_classes) == num_classes, "[WARNING] Number of unique labels do not match"
 
     """
         augment dataset with Elastic deformation [Simard2003] with a certain probability:
@@ -163,19 +135,43 @@ def train_model(model_config, config, model=None):
 
     # Preprocessing of the input data (normalization)
     print('[Train model] image intensity min-max-range before preprocessing:', x.min(), x.max())
-    x = utils.preprocessing(x, mode='zero_one')
+    x = utils.preprocessing(x, mode=normalization_mode)
     print('[Train model] image intensity min-max-range after preprocessing:', x.min(), x.max())
 
     # Preprocessing for the label data (transfer labels to categorical arrays (e.g. (0) -> [1,0] ; (1) -> [0,1] )
-    y = tf.keras.utils.to_categorical(Y, num_classes=model_config['n_classes'])
+    y = tf.keras.utils.to_categorical(Y, num_classes=num_classes)
 
-    # split the data in train and test images
-    x_train, x_valid, y_train, y_valid = train_test_split(x, y,
-                                                          train_size=validation_split,
-                                                          shuffle=True,
-                                                          random_state=42)
+    # Split into train - test data, in case no explicit validation data is specified
+    if input_validation_dir and label_validation_dir:
+        print('[Train model] Validation data is explicit given: no random split')
 
-    print('[Train model] Split data into training and validation data:')
+        x_train = x
+        y_train = y
+
+        # read validation data
+        x_valid = utils.read_images(dir=input_validation_dir, read_input=True, labels_for_classifier=False)
+        y_valid = utils.read_images(dir=label_validation_dir, read_input=False, labels_for_classifier=True)
+
+        # validate validation data
+        x_valid = utils.validate_image_shape(model.input_shape, images=x_valid)
+
+        # Preprocessing validation data (normalization)
+        print('[Train model] Validation input image intensity min-max-range before preprocessing:', x_valid.min(), x_valid.max())
+        if x_valid.max() > 1:
+            x_valid = utils.preprocessing(x_valid, mode=normalization_mode)
+            print('[Train model] Validation input image intensity min-max-range after preprocessing:', x_valid.min(),
+                  x_valid.max())
+
+        # Preprocessing for the validation label data (transfer labels to categorical arrays (e.g. (0) -> [1,0] ; (1) -> [0,1] )
+        y_valid = tf.keras.utils.to_categorical(y_valid, num_classes=num_classes)
+
+    else:
+        print('[Train model] Validation data is NOT explicit given: Split data into training and validation data')
+        x_train, x_valid, y_train, y_valid = train_test_split(x, y,
+                                                              train_size=validation_split,
+                                                              shuffle=True,
+                                                              random_state=42)
+
     print('[Train model] Train data:\t', x_train.shape, y_train.shape)
     print('[Train model] Validation data:\t', x_valid.shape, y_valid.shape)
 

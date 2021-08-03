@@ -109,7 +109,7 @@ def bce_dice_loss(y_true, y_pred):
     EPSILON = 1e-05
     y_pred = y_pred + EPSILON
 
-    loss = tf.keras.losses.binary_crossentropy(y_true, y_pred, from_logits=True) + dice_loss(y_true, y_pred)
+    loss = tf.keras.losses.binary_crossentropy(y_true, y_pred) + dice_loss(y_true, y_pred)
 
     return loss
 
@@ -129,7 +129,7 @@ def ce_dice_loss(y_true, y_pred):
     EPSILON = 1e-05
     y_pred = y_pred + EPSILON
 
-    loss = tf.keras.losses.categorical_crossentropy(y_true, y_pred, from_logits=True) + dice_loss(y_true, y_pred)
+    loss = tf.keras.losses.categorical_crossentropy(y_true, y_pred) + dice_loss(y_true, y_pred)
     return loss
 
 

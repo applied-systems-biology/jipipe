@@ -18,8 +18,7 @@ Script to train a segmentation network
 """
 
 import os
-from pathlib import Path
-import json
+
 import numpy as np
 import tensorflow as tf
 from sklearn.model_selection import train_test_split
@@ -44,6 +43,8 @@ def train_model(model_config, config, model=None):
     # assign hyper-parameter for training procedure
     input_dir = config['input_dir']
     label_dir = config['label_dir']
+    input_validation_dir = config['input_validation_dir']
+    label_validation_dir = config['label_validation_dir']
     normalization_mode = config['normalization']
     n_epochs = config['max_epochs']
     batch_size = config['batch_size']
@@ -54,6 +55,7 @@ def train_model(model_config, config, model=None):
     augment_factor = config['augmentation_factor']
     log_dir = config['log_dir']
 
+    # load the model
     if model is not None:
         assert isinstance(model, tf.keras.models.Model)
         print(f'[Train model] Use model with input shape: {model.input_shape} and output shape: {model.output_shape}')
@@ -61,13 +63,19 @@ def train_model(model_config, config, model=None):
         model = utils.load_and_compile_model(model_config, input_model_path, model)
         print(f'[Train model] Model was successfully loaded from path: {input_model_path}')
 
-    # validate input and label images
-    X = utils.imread_collection(input_dir, verbose=False)
-    Y = utils.imread_collection(label_dir, verbose=False, as_gray=True)
+    # read the input and label images in dependence of their specified format: directory or .csv-table
+    X = utils.read_images(dir=input_dir, read_input=True, labels_for_classifier=False)
+    Y = utils.read_images(dir=label_dir, read_input=False, labels_for_classifier=False)
 
     print('[Train model] Input-images:', len(X), ', Label-images:', len(Y))
 
-    assert len(X) == len(Y) > 0
+    # validate with 1 random sample, that the sequence between input and labels match
+    if False:
+        rd_idx = np.random.randint(low=0, high=len(X))
+        x, y = X[rd_idx], Y[rd_idx]
+        utils.plot_window(img=x, img_binary=y, title=f'Read images: validate sequence at index: {rd_idx}')
+
+    assert len(X) == len(Y) > 0, "Unequal number of input - label images/values"
 
     # validate input data
     x = utils.validate_image_shape(model.input_shape, images=X)
@@ -151,10 +159,36 @@ def train_model(model_config, config, model=None):
         y = utils.preprocessing(y, mode=normalization_mode)
         print('[Train model] Label image intensity min-max-range after preprocessing:', y.min(), y.max())
 
-    # Split into train - test data
-    x_train, x_valid, y_train, y_valid = train_test_split(x, y, test_size=1-validation_split, shuffle=True)
+    # Split into train - test data, in case no explicit validation data is specified
+    if input_validation_dir and label_validation_dir:
+        print('[Train model] Validation data is explicit given: no random split')
 
-    print('[Train model] Split data into training and validation data:')
+        x_train = x
+        y_train = y
+
+        # read validation data
+        x_valid = utils.read_images(dir=input_validation_dir, read_input=True, labels_for_classifier=False)
+        y_valid = utils.read_images(dir=label_validation_dir, read_input=False, labels_for_classifier=False)
+
+        # validate validation data
+        x_valid = utils.validate_image_shape(model.input_shape, images=x_valid)
+        y_valid = utils.validate_image_shape(model.output_shape, images=y_valid)
+
+        # Preprocessing validation data (normalization)
+        print('[Train model] Validation input image intensity min-max-range before preprocessing:', x_valid.min(), x_valid.max())
+        if x_valid.max() > 1:
+            x_valid = utils.preprocessing(x_valid, mode=normalization_mode)
+            print('[Train model] Validation input image intensity min-max-range after preprocessing:', x_valid.min(), x_valid.max())
+
+        print('[Train model] Validation label image intensity min-max-range before preprocessing:', y_valid.min(), y_valid.max())
+        if y_valid.max() > 1:
+            y_valid = utils.preprocessing(y_valid, mode=normalization_mode)
+            print('[Train model] Validation label image intensity min-max-range after preprocessing:', y_valid.min(), y_valid.max())
+
+    else:
+        print('[Train model] Validation data is NOT explicit given: Split data into training and validation data')
+        x_train, x_valid, y_train, y_valid = train_test_split(x, y, test_size=1-validation_split, shuffle=True)
+
     print('[Train model] train data:\t', x_train.shape, y_train.shape, np.unique(y_train))
     print('[Train model] validation data:\t', x_valid.shape, y_valid.shape, np.unique(y_valid))
 

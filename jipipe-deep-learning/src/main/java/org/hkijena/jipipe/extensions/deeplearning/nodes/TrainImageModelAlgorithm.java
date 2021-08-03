@@ -57,9 +57,11 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
-@JIPipeDocumentation(name = "Train model (labeled images)", description = "Trains a Deep Learning model with images. Please note the the model must be able to be trained with labeled images.")
+@JIPipeDocumentation(name = "Train model (labeled images)", description = "Trains a Deep Learning model with images. Please note the the model must be able to be trained with labeled images. " +
+        "For this node to work, you need to annotate a greyscale 16-bit or 8-bit label image column to each raw data input. To do this, you can use the node 'Annotate with data'.")
 @JIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Deep learning")
-@JIPipeInputSlot(value = ImagePlus3DGreyscaleData.class, slotName = "Labels", autoCreate = true)
+@JIPipeInputSlot(value = ImagePlus3DGreyscaleData.class, slotName = "Training data", autoCreate = true)
+@JIPipeInputSlot(value = ImagePlus3DGreyscaleData.class, slotName = "Test data", autoCreate = true)
 @JIPipeInputSlot(value = DeepLearningModelData.class, slotName = "Model", autoCreate = true)
 @JIPipeOutputSlot(value = DeepLearningModelData.class, slotName = "Trained model", autoCreate = true)
 public class TrainImageModelAlgorithm extends JIPipeSingleIterationAlgorithm {
@@ -133,7 +135,8 @@ public class TrainImageModelAlgorithm extends JIPipeSingleIterationAlgorithm {
     @Override
     protected void runIteration(JIPipeMergingDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
         JIPipeDataSlot inputModelSlot = getInputSlot("Model");
-        JIPipeDataSlot inputLabelsSlot = getInputSlot("Labels");
+        JIPipeDataSlot inputTrainingDataSlot = getInputSlot("Training data");
+        JIPipeDataSlot inputTestDataSlot = getInputSlot("Test data");
         int modelCounter = 0;
         for (Integer modelIndex : dataBatch.getInputSlotRows().get(inputModelSlot)) {
             JIPipeProgressInfo modelProgress = progressInfo.resolveAndLog("Check model", modelCounter++, dataBatch.getInputSlotRows().get(inputModelSlot).size());
@@ -155,45 +158,13 @@ public class TrainImageModelAlgorithm extends JIPipeSingleIterationAlgorithm {
             Path workDirectory = getNewScratch();
 
             // Save labels & raw images
-            Path labelsDirectory = workDirectory.resolve("labels");
-            Path rawsDirectory = workDirectory.resolve("raw");
-            try {
-                Files.createDirectories(labelsDirectory);
-                Files.createDirectories(rawsDirectory);
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-            int imageCounter = 0;
-            Set<Integer> labelRows = dataBatch.getInputSlotRows().get(inputLabelsSlot);
-            for (Integer imageIndex : labelRows) {
-                JIPipeProgressInfo imageProgress = modelProgress.resolveAndLog("Write labels", imageCounter++, labelRows.size());
-                ImagePlusData raw = inputLabelsSlot.getData(imageIndex, ImagePlus3DGreyscaleData.class, imageProgress);
-                ImagePlusData label = labelDataAnnotation.queryFirst(inputLabelsSlot.getDataAnnotations(imageIndex)).getData(ImagePlus3DGreyscaleData.class, progressInfo);
-                Path rawPath = rawsDirectory.resolve(imageCounter + "_img.tif");
-                Path labelPath = labelsDirectory.resolve(imageCounter + "_img.tif");
+            Path labelsDirectory = PathUtils.resolveAndMakeSubDirectory(workDirectory, "labels");
+            Path validationLabelsDirectory = PathUtils.resolveAndMakeSubDirectory(workDirectory, "validation-labels");
+            Path rawsDirectory = PathUtils.resolveAndMakeSubDirectory(workDirectory, "raw");
+            Path validationRawsDirectory = PathUtils.resolveAndMakeSubDirectory(workDirectory, "validation-raw");
 
-                if (raw.hasLoadedImage() || isScaleToModelSize()) {
-                    ImagePlus rawImage = isScaleToModelSize() ? DeepLearningUtils.scaleToModel(raw.getImage(),
-                            inputModel.getModelConfiguration(),
-                            getScale2DAlgorithm(),
-                            true,
-                            true,
-                            imageProgress) : raw.getImage();
-                    IJ.saveAsTiff(rawImage, rawPath.toString());
-                } else {
-                    raw.saveTo(rawsDirectory, imageCounter + "_img", true, imageProgress);
-                }
-                if (label.hasLoadedImage() || isScaleToModelSize()) {
-                    ImagePlus labelImage = isScaleToModelSize() ? DeepLearningUtils.scaleToModel(label.getImage(),
-                            inputModel.getModelConfiguration(),
-                            getScale2DAlgorithm(),
-                            true,
-                            true, imageProgress) : label.getImage();
-                    IJ.saveAsTiff(labelImage, labelPath.toString());
-                } else {
-                    label.saveTo(labelsDirectory, imageCounter + "_img", true, imageProgress);
-                }
-            }
+            writeImages(dataBatch, progressInfo, inputTestDataSlot, modelProgress, inputModel, labelsDirectory, rawsDirectory);
+            writeImages(dataBatch, progressInfo, inputTrainingDataSlot, modelProgress, inputModel, validationLabelsDirectory, validationRawsDirectory);
 
             // Save model according to standard interface
             inputModel.saveTo(workDirectory, "", false, modelProgress);
@@ -206,6 +177,8 @@ public class TrainImageModelAlgorithm extends JIPipeSingleIterationAlgorithm {
             trainingConfiguration.setLogDir(PathUtils.resolveAndMakeSubDirectory(workDirectory, "logs"));
             trainingConfiguration.setInputImagesPattern(rawsDirectory + "/*.tif");
             trainingConfiguration.setInputLabelsPattern(labelsDirectory + "/*.tif");
+            trainingConfiguration.setValidationImagesPattern(validationRawsDirectory + "/*.tif");
+            trainingConfiguration.setValidationLabelsPattern(validationLabelsDirectory + "/*.tif");
             trainingConfiguration.setNormalization(normalization);
             try {
                 JsonUtils.getObjectMapper().writerWithDefaultPrettyPrinter().writeValue(workDirectory.resolve("training-config.json").toFile(), trainingConfiguration);
@@ -245,6 +218,40 @@ public class TrainImageModelAlgorithm extends JIPipeSingleIterationAlgorithm {
 
             if (cleanUpAfterwards) {
                 PathUtils.deleteDirectoryRecursively(workDirectory, progressInfo.resolve("Cleanup"));
+            }
+        }
+    }
+
+    private void writeImages(JIPipeMergingDataBatch dataBatch, JIPipeProgressInfo progressInfo, JIPipeDataSlot inputTestDataSlot, JIPipeProgressInfo modelProgress, DeepLearningModelData inputModel, Path labelsDirectory, Path rawsDirectory) {
+        int imageCounter = 0;
+        Set<Integer> labelRows = dataBatch.getInputSlotRows().get(inputTestDataSlot);
+        for (Integer imageIndex : labelRows) {
+            JIPipeProgressInfo imageProgress = modelProgress.resolveAndLog("Write labeled images", imageCounter++, labelRows.size());
+            ImagePlusData raw = inputTestDataSlot.getData(imageIndex, ImagePlus3DGreyscaleData.class, imageProgress);
+            ImagePlusData label = labelDataAnnotation.queryFirst(inputTestDataSlot.getDataAnnotations(imageIndex)).getData(ImagePlus3DGreyscaleData.class, progressInfo);
+            Path rawPath = rawsDirectory.resolve(imageCounter + "_img.tif");
+            Path labelPath = labelsDirectory.resolve(imageCounter + "_img.tif");
+
+            if (raw.hasLoadedImage() || isScaleToModelSize()) {
+                ImagePlus rawImage = isScaleToModelSize() ? DeepLearningUtils.scaleToModel(raw.getImage(),
+                        inputModel.getModelConfiguration(),
+                        getScale2DAlgorithm(),
+                        true,
+                        true,
+                        imageProgress) : raw.getImage();
+                IJ.saveAsTiff(rawImage, rawPath.toString());
+            } else {
+                raw.saveTo(rawsDirectory, imageCounter + "_img", true, imageProgress);
+            }
+            if (label.hasLoadedImage() || isScaleToModelSize()) {
+                ImagePlus labelImage = isScaleToModelSize() ? DeepLearningUtils.scaleToModel(label.getImage(),
+                        inputModel.getModelConfiguration(),
+                        getScale2DAlgorithm(),
+                        true,
+                        true, imageProgress) : label.getImage();
+                IJ.saveAsTiff(labelImage, labelPath.toString());
+            } else {
+                label.saveTo(labelsDirectory, imageCounter + "_img", true, imageProgress);
             }
         }
     }

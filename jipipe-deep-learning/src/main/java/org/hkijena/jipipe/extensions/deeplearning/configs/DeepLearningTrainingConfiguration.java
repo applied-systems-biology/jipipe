@@ -32,6 +32,8 @@ public class DeepLearningTrainingConfiguration implements JIPipeParameterCollect
     private Path logDir = Paths.get("");
     private String inputImagesPattern = "raw/*.tif";
     private String inputLabelsPattern = "labels/*.tif";
+    private String validationImagesPattern = "validation_raw/*.tif";
+    private String validationLabelsPattern = "validation_raw/*.tif";
     private int maxEpochs = 100;
     private int batchSize = 32;
     private double validationSplit = 0.80;
@@ -48,6 +50,8 @@ public class DeepLearningTrainingConfiguration implements JIPipeParameterCollect
         this.outputModelJsonPath = other.outputModelJsonPath;
         this.inputImagesPattern = other.inputImagesPattern;
         this.inputLabelsPattern = other.inputLabelsPattern;
+        this.validationImagesPattern = other.validationImagesPattern;
+        this.validationLabelsPattern = other.validationLabelsPattern;
         this.maxEpochs = other.maxEpochs;
         this.batchSize = other.batchSize;
         this.validationSplit = other.validationSplit;
@@ -136,6 +140,26 @@ public class DeepLearningTrainingConfiguration implements JIPipeParameterCollect
     @JsonSetter("label_dir")
     public void setInputLabelsPattern(String inputLabelsPattern) {
         this.inputLabelsPattern = inputLabelsPattern;
+    }
+
+    @JsonGetter("input_validation_dir")
+    public String getValidationImagesPattern() {
+        return validationImagesPattern;
+    }
+
+    @JsonSetter("input_validation_dir")
+    public void setValidationImagesPattern(String validationImagesPattern) {
+        this.validationImagesPattern = validationImagesPattern;
+    }
+
+    @JsonGetter("label_validation_dir")
+    public String getValidationLabelsPattern() {
+        return validationLabelsPattern;
+    }
+
+    @JsonSetter("label_validation_dir")
+    public void setValidationLabelsPattern(String validationLabelsPattern) {
+        this.validationLabelsPattern = validationLabelsPattern;
     }
 
     @JIPipeDocumentation(name = "Max epochs", description = "Maximum number of training epochs")

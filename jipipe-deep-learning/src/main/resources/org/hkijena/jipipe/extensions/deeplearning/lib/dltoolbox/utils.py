@@ -15,6 +15,7 @@ from glob import glob
 from pathlib import Path
 import json
 import numpy as np
+import pandas as pd
 import tensorflow as tf
 import cv2
 from matplotlib import pyplot as plt
@@ -93,6 +94,59 @@ def load_and_compile_model(model_config, model_path, model=None) -> tf.keras.Mod
             raise AttributeError("Unsupported model_type: " + model_type)
 
     return model
+
+
+def read_images(dir, read_input, labels_for_classifier):
+    """
+    Read images from directory if string-pattern is specified OR from csv. table
+    Args:
+        dir: directory of the images to be read
+        read_input: boolean whether the input are the inputs (X) or labels (Y)
+        labels_for_classifier: boolean whether the labels are numerical values for a classification
+
+    Returns: input OR label images
+    """
+
+    # check whether the input and label data are specified within a table OR as images
+    read_as_images = not str(dir).endswith('csv')
+
+    # read input images in case they are provided in a table, check for <input> column in table
+    if not read_as_images:
+
+        df = pd.read_csv(dir, index_col=0)
+
+        if read_input:
+            assert 'input' in list(df.columns), "Input format not valid: provide a table with column <input>"
+
+            print(f'[Read images] Input is represented as images: {read_as_images} - '
+                  f'with shape: {df.shape} and column names: {list(df.columns)}')
+
+        else:
+            assert 'label' in list(df.columns), "Label format not valid: provide a table with column <label>"
+
+            print(f'[Read images] Label is represented as images: {read_as_images} - '
+                  f'with shape: {df.shape} and column names: {list(df.columns)}')
+
+        if read_input:
+            XY_paths = df['input'].tolist()
+        else:
+            XY_paths = df['label'].tolist()
+
+        # if labels are numerical values - do not read them as images and keep the list from the table
+        if labels_for_classifier:
+            XY = XY_paths.copy()
+        else:
+            XY = io.imread_collection(XY_paths)
+
+    elif read_input:
+
+        XY = imread_collection(dir, verbose=False)
+
+    else:
+
+        XY = imread_collection(dir, verbose=False, as_gray=True)
+
+    return XY
 
 
 def setup_devices(config=None):
@@ -422,3 +476,28 @@ def save_model_with_json(model, model_path, model_json_path, config):
         with open(config_save_path, "w+") as f:
             json.dump(config, f)
         print('[Save model] Save model config file JSON to:', config_save_path)
+
+
+def generate_input_label_table(input_dir, label_dir):
+    """
+    Create a pandas DataFrame with the columns <input> and <label> and the file paths for all available images in the
+    two specified directories
+    Args:
+        input_dir: directory of the input images
+        label_dir: directory of the label images
+
+    Returns: data table with <input> and <label> as columns
+    """
+
+    input_paths = list(glob(input_dir))
+    label_paths = list(glob(label_dir))
+
+    data = np.array([input_paths, label_paths]).T
+
+    print(f'[Generate input-label table] data shape of input and label images found with string pattern: {data.shape}')
+
+    assert len(data.shape) == 2, "Could not find either input or label images"
+
+    df_data = pd.DataFrame(data, columns=['input', 'label'])
+
+    return df_data
