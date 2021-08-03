@@ -23,6 +23,7 @@ import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.utils.ResourceUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 
+import javax.swing.*;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -104,16 +105,16 @@ public class DistributeDataRandomlyByPercentageAlgorithm extends JIPipeMergingAl
         return weights;
     }
 
-    @JIPipeDocumentation(name = "80:20 distribution", description = "Loads example parameters that distributes the outputs 80:20.")
+    @JIPipeDocumentation(name = "80:20 distribution", description = "Loads example parameters that distributes the outputs 80:20, labeled by Training and Test.")
     @JIPipeContextAction(iconURL = ResourceUtils.RESOURCE_BASE_PATH + "/icons/actions/distribute-randomize.png", iconDarkURL = ResourceUtils.RESOURCE_BASE_PATH + "/dark/icons/actions/distribute-randomize.png")
     public void setTo80And20Distribution(JIPipeWorkbench parent) {
         if (UIUtils.confirmResetParameters(parent, "Load example")) {
             JIPipeDefaultMutableSlotConfiguration slotConfiguration = (JIPipeDefaultMutableSlotConfiguration) getSlotConfiguration();
             slotConfiguration.clearOutputSlots(true);
-            slotConfiguration.addSlot("W80", new JIPipeDataSlotInfo(JIPipeData.class, JIPipeSlotType.Output), true);
-            slotConfiguration.addSlot("W20", new JIPipeDataSlotInfo(JIPipeData.class, JIPipeSlotType.Output), true);
-            weights.get("W80").set(80.0);
-            weights.get("W20").set(20.0);
+            slotConfiguration.addSlot("Training", new JIPipeDataSlotInfo(JIPipeData.class, JIPipeSlotType.Output), true);
+            slotConfiguration.addSlot("Test", new JIPipeDataSlotInfo(JIPipeData.class, JIPipeSlotType.Output), true);
+            weights.get("Training").set(80.0);
+            weights.get("Test").set(20.0);
         }
     }
 }
