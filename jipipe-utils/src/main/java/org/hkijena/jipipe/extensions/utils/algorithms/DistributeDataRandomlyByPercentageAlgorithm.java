@@ -9,11 +9,7 @@ import org.hkijena.jipipe.api.data.JIPipeDataAnnotationMergeStrategy;
 import org.hkijena.jipipe.api.data.JIPipeDataSlotInfo;
 import org.hkijena.jipipe.api.data.JIPipeDefaultMutableSlotConfiguration;
 import org.hkijena.jipipe.api.data.JIPipeSlotType;
-import org.hkijena.jipipe.api.nodes.JIPipeInputSlot;
-import org.hkijena.jipipe.api.nodes.JIPipeMergingAlgorithm;
-import org.hkijena.jipipe.api.nodes.JIPipeMergingDataBatch;
-import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
-import org.hkijena.jipipe.api.nodes.JIPipeOutputSlot;
+import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.MiscellaneousNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeContextAction;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
@@ -43,6 +39,7 @@ public class DistributeDataRandomlyByPercentageAlgorithm extends JIPipeMergingAl
                 .addInputSlot("Input", JIPipeData.class)
                 .sealInput()
                 .build());
+        getDataBatchGenerationSettings().setColumnMatching(JIPipeColumMatching.MergeAll);
         weights = new OutputSlotMapParameterCollection(Double.class, this, () -> 1, false);
         weights.updateSlots();
         registerSubParameter(weights);
