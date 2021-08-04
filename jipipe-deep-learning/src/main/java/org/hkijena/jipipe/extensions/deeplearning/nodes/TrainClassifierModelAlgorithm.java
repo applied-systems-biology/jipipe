@@ -52,7 +52,6 @@ import org.hkijena.jipipe.utils.PathUtils;
 import org.hkijena.jipipe.utils.ResourceUtils;
 
 import java.io.IOException;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -69,7 +68,7 @@ import java.util.Set;
 public class TrainClassifierModelAlgorithm extends JIPipeSingleIterationAlgorithm {
 
     private TransformScale2DAlgorithm scale2DAlgorithm;
-    private boolean scaleToModelSize = false;
+    private boolean scaleToModelSize = true;
     private DeepLearningTrainingConfiguration trainingConfiguration = new DeepLearningTrainingConfiguration();
     private OptionalPythonEnvironment overrideEnvironment = new OptionalPythonEnvironment();
     private boolean cleanUpAfterwards = true;
@@ -123,7 +122,7 @@ public class TrainClassifierModelAlgorithm extends JIPipeSingleIterationAlgorith
     }
 
     @JIPipeDocumentation(name = "Label annotation", description = "This annotation is used as label for the data. These labels should be non-empty and numeric. " +
-            "If annotations do not comply to this format, use the 'Set annotations' node to set/convert the labels.")
+            "If annotations do not comply to this format, use the 'Set annotations' node to set/convert the labels. \n\n" +  AnnotationQueryExpression.DOCUMENTATION_DESCRIPTION)
     @JIPipeParameter("label-annotation")
     public AnnotationQueryExpression getLabelAnnotation() {
         return labelAnnotation;
@@ -166,8 +165,8 @@ public class TrainClassifierModelAlgorithm extends JIPipeSingleIterationAlgorith
             Path rawsDirectory = PathUtils.resolveAndMakeSubDirectory(workDirectory, "raw");
             Path validationRawsDirectory = PathUtils.resolveAndMakeSubDirectory(workDirectory, "validation-raw");
 
-            saveLabelsAndImages(dataBatch, inputTrainingDataSlot, modelProgress, inputModel, labelFile, rawsDirectory);
-            saveLabelsAndImages(dataBatch, inputTestDataSlot, modelProgress, inputModel, validationLabelsFile, validationRawsDirectory);
+            saveLabelsAndImages(dataBatch, inputTrainingDataSlot, modelProgress, inputModel, labelFile, rawsDirectory, "train");
+            saveLabelsAndImages(dataBatch, inputTestDataSlot, modelProgress, inputModel, validationLabelsFile, validationRawsDirectory, "val");
 
             // Save model according to standard interface
             inputModel.saveTo(workDirectory, "", false, modelProgress);
@@ -225,7 +224,7 @@ public class TrainClassifierModelAlgorithm extends JIPipeSingleIterationAlgorith
         }
     }
 
-    private void saveLabelsAndImages(JIPipeMergingDataBatch dataBatch, JIPipeDataSlot inputImagesSlot, JIPipeProgressInfo modelProgress, DeepLearningModelData inputModel, Path labelFile, Path rawsDirectory) {
+    private void saveLabelsAndImages(JIPipeMergingDataBatch dataBatch, JIPipeDataSlot inputImagesSlot, JIPipeProgressInfo modelProgress, DeepLearningModelData inputModel, Path labelFile, Path rawsDirectory, String prefix) {
         ResultsTableData labels = new ResultsTableData();
         labels.addColumn("filename", true);
         labels.addColumn("label", true);
@@ -235,7 +234,7 @@ public class TrainClassifierModelAlgorithm extends JIPipeSingleIterationAlgorith
         for (Integer imageIndex : imageRows) {
             JIPipeProgressInfo imageProgress = modelProgress.resolveAndLog("Write images", imageCounter++, imageRows.size());
             ImagePlusData image = inputImagesSlot.getData(imageIndex, ImagePlus3DGreyscaleData.class, imageProgress);
-            Path rawPath = rawsDirectory.resolve(imageCounter + "_img.tif");
+            Path rawPath = rawsDirectory.resolve(imageCounter + "_" + prefix + ".tif");
 
             if (image.hasLoadedImage() || isScaleToModelSize()) {
                 ImagePlus rawImage = isScaleToModelSize() ? DeepLearningUtils.scaleToModel(image.getImage(),
@@ -246,7 +245,7 @@ public class TrainClassifierModelAlgorithm extends JIPipeSingleIterationAlgorith
 
                 IJ.saveAsTiff(rawImage, rawPath.toString());
             } else {
-                image.saveTo(rawsDirectory, imageCounter + "_img", true, imageProgress);
+                image.saveTo(rawsDirectory, imageCounter + "_" + prefix, true, imageProgress);
             }
 
             // Extract the label annotation + value
@@ -264,7 +263,7 @@ public class TrainClassifierModelAlgorithm extends JIPipeSingleIterationAlgorith
         labels.saveAsCSV(labelFile);
     }
 
-    @JIPipeDocumentation(name = "Training", description = "Use following settings to change the properties of the training.\n\n" + AnnotationQueryExpression.DOCUMENTATION_DESCRIPTION)
+    @JIPipeDocumentation(name = "Training", description = "Use following settings to change the properties of the training.")
     @JIPipeParameter(value = "training",
             iconURL = ResourceUtils.RESOURCE_BASE_PATH + "/icons/actions/dl-model.png",
             iconDarkURL = ResourceUtils.RESOURCE_BASE_PATH + "/dark/icons/actions/dl-model.png")
