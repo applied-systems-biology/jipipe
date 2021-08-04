@@ -71,6 +71,7 @@ public class PredictImageAlgorithm extends JIPipeSingleIterationAlgorithm {
     private boolean cleanUpAfterwards = true;
     private boolean deferImageLoading = false;
     private boolean scaleToModelSize = true;
+    private boolean scaleToModelWidthAndHeight = false;
     private OptionalPythonEnvironment overrideEnvironment = new OptionalPythonEnvironment();
     private OptionalDeepLearningDeviceEnvironment overrideDevices = new OptionalDeepLearningDeviceEnvironment();
     private NormalizationMethod normalization = NormalizationMethod.zero_one;
@@ -91,6 +92,7 @@ public class PredictImageAlgorithm extends JIPipeSingleIterationAlgorithm {
         this.scaleToModelSize = other.scaleToModelSize;
         this.deferImageLoading = other.deferImageLoading;
         this.normalization = other.normalization;
+        this.scaleToModelWidthAndHeight = other.scaleToModelWidthAndHeight;
         registerSubParameter(scale2DAlgorithm);
     }
 
@@ -174,7 +176,7 @@ public class PredictImageAlgorithm extends JIPipeSingleIterationAlgorithm {
                         ImagePlus rawImage = isScaleToModelSize() ? DeepLearningUtils.scaleToModel(raw.getImage(),
                                 inputModel.getModelConfiguration(),
                                 getScale2DAlgorithm(),
-                                false,
+                                isScaleToModelWidthAndHeight() ,
                                 true,
                                 modelProgress) : raw.getImage();
 
@@ -280,8 +282,9 @@ public class PredictImageAlgorithm extends JIPipeSingleIterationAlgorithm {
     }
 
     @JIPipeDocumentation(name = "Scale images to model size", description = "If enabled, images are automatically scaled to fit to the model size. Otherwise, " +
-            "Keras will apply tiling automatically if you provide images of an unsupported size.")
-    @JIPipeParameter("scale-to-model-size")
+            "Keras will apply tiling automatically if you provide images of an unsupported size. Please note that this setting by default will only update the number of channels (width and height are kept). " +
+            "If the sizes are different, then tiling will be applied automatically. If you do not want tiling, also enable 'Scale images to model width/height'.")
+    @JIPipeParameter(value = "scale-to-model-size", important = true)
     public boolean isScaleToModelSize() {
         return scaleToModelSize;
     }
@@ -290,6 +293,18 @@ public class PredictImageAlgorithm extends JIPipeSingleIterationAlgorithm {
     public void setScaleToModelSize(boolean scaleToModelSize) {
         this.scaleToModelSize = scaleToModelSize;
         triggerParameterUIChange();
+    }
+
+    @JIPipeDocumentation(name = "Scale images to model width/height", description = "If enabled, the width and height will also be scaled if 'Scale images to model size' is active. Only " +
+            "has an effect if 'Scale images to model size' is enabled.")
+    @JIPipeParameter(value = "scale-to-model-width-height", important = true)
+    public boolean isScaleToModelWidthAndHeight() {
+        return scaleToModelWidthAndHeight;
+    }
+
+    @JIPipeParameter("scale-to-model-width-height")
+    public void setScaleToModelWidthAndHeight(boolean scaleToModelWidthAndHeight) {
+        this.scaleToModelWidthAndHeight = scaleToModelWidthAndHeight;
     }
 
     @JIPipeDocumentation(name = "Scaling", description = "The following settings determine how the image is scaled in 2D if it does not fit to the size the model is designed for.")
