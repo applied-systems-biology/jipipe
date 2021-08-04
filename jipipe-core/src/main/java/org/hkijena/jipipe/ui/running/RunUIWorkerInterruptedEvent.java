@@ -20,14 +20,14 @@ import org.hkijena.jipipe.api.JIPipeRunnable;
  */
 public class RunUIWorkerInterruptedEvent {
 
-    private Exception exception;
+    private Throwable exception;
     private JIPipeRunWorker worker;
 
     /**
      * @param worker    the worker
      * @param exception the exception triggered when interrupted
      */
-    public RunUIWorkerInterruptedEvent(JIPipeRunWorker worker, Exception exception) {
+    public RunUIWorkerInterruptedEvent(JIPipeRunWorker worker, Throwable exception) {
         this.exception = exception;
         this.worker = worker;
     }
@@ -36,7 +36,7 @@ public class RunUIWorkerInterruptedEvent {
         return worker;
     }
 
-    public Exception getException() {
+    public Throwable getException() {
         return exception;
     }
 

@@ -264,7 +264,7 @@ public class QuickRunSetupUI extends JIPipeProjectWorkbenchPanel {
         }
     }
 
-    private void openError(Exception exception) {
+    private void openError(Throwable exception) {
         removeAll();
 
         UserFriendlyErrorUI errorUI = new UserFriendlyErrorUI(null, UserFriendlyErrorUI.WITH_SCROLLING);

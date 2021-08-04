@@ -320,7 +320,7 @@ public class JIPipeRunSettingsUI extends JIPipeProjectWorkbenchPanel {
             openError(event.getException());
     }
 
-    private void openError(Exception exception) {
+    private void openError(Throwable exception) {
         removeAll();
         UserFriendlyErrorUI errorUI = new UserFriendlyErrorUI(MarkdownDocument.fromPluginResource("documentation/run-error.md", new HashMap<>()),
                 UserFriendlyErrorUI.WITH_SCROLLING);

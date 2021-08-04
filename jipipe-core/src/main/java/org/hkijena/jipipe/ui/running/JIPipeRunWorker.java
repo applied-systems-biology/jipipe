@@ -28,7 +28,7 @@ import java.util.concurrent.atomic.AtomicLong;
 /**
  * A worker
  */
-public class JIPipeRunWorker extends SwingWorker<Exception, Object> {
+public class JIPipeRunWorker extends SwingWorker<Throwable, Object> {
 
     private final EventBus eventBus = new EventBus();
     private final JIPipeRunnable run;
@@ -49,11 +49,11 @@ public class JIPipeRunWorker extends SwingWorker<Exception, Object> {
     }
 
     @Override
-    protected Exception doInBackground() throws Exception {
+    protected Throwable doInBackground() {
         startTime.set(System.currentTimeMillis());
         try {
             run.run();
-        } catch (Exception e) {
+        } catch (Error | Exception e) {
             run.getProgressInfo().log("An error was encountered");
             run.getProgressInfo().log("------------------------");
             run.getProgressInfo().log(e.toString());
@@ -82,7 +82,7 @@ public class JIPipeRunWorker extends SwingWorker<Exception, Object> {
             if (isCancelled()) {
                 postInterruptedEvent(new RuntimeException("Execution was cancelled by user!"));
             } else if (get() != null) {
-                final Exception e = get();
+                final Throwable e = get();
                 postInterruptedEvent(e);
             } else {
                 postFinishedEvent();
@@ -100,7 +100,7 @@ public class JIPipeRunWorker extends SwingWorker<Exception, Object> {
         eventBus.post(new RunUIWorkerFinishedEvent(this));
     }
 
-    private void postInterruptedEvent(Exception e) {
+    private void postInterruptedEvent(Throwable e) {
         run.getProgressInfo().log("An error was encountered");
         run.getProgressInfo().log("------------------------");
         run.getProgressInfo().log(e.toString());

@@ -50,7 +50,7 @@ public class UserFriendlyErrorUI extends FormPanel {
      *
      * @param e the exception
      */
-    public void displayErrors(Exception e) {
+    public void displayErrors(Throwable e) {
         if (e instanceof UserFriendlyException) {
             StringWriter writer = new StringWriter();
             e.printStackTrace(new PrintWriter(writer));
