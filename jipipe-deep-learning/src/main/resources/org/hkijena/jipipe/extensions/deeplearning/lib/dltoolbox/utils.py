@@ -396,8 +396,10 @@ def validate_image_shape(model_shape, images):
     image_shape = images_unique_shapes[0]
     images_arr = np.array(images)
 
-    # if image_shape != model_shape[1:]:
-    if image_shape != model_shape:
+    print(f'[validate_image_shape] INFO: shape of images: {image_shape} and model: {model_shape}')
+
+    # check if length of shapes (and channel dimension of image and model match)
+    if len(image_shape) == 2:
         print(f'[validate_image_shape] CAUTION: image shape <{image_shape}> != from model shape <{model_shape}>')
         images_arr = np.expand_dims(images_arr, axis=-1)
         print(f'[validate_image_shape] Expand artificial channel dimension to: <{images_arr.shape}>')
