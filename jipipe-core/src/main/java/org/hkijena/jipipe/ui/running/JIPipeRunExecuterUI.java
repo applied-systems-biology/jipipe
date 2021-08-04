@@ -29,8 +29,10 @@ public class JIPipeRunExecuterUI extends JPanel {
     private JIPipeRunnable run;
     private JProgressBar progressBar;
     private JButton cancelButton;
+    private JButton closeButton;
     private JScrollPane logScrollPane;
     private JTextArea log;
+    private JDialog dialog;
 
     /**
      * @param run The runnable
@@ -64,6 +66,11 @@ public class JIPipeRunExecuterUI extends JPanel {
         cancelButton.addActionListener(e -> requestCancelRun());
         buttonPanel.add(cancelButton);
 
+        closeButton = new JButton("Close", UIUtils.getIconFromResources("actions/cancel.png"));
+        closeButton.addActionListener(e -> dialog.setVisible(false));
+        closeButton.setVisible(false);
+        buttonPanel.add(closeButton);
+
         add(buttonPanel, BorderLayout.SOUTH);
     }
 
@@ -71,13 +78,9 @@ public class JIPipeRunExecuterUI extends JPanel {
      * Starts the run
      */
     public void startRun() {
-        JIPipeRunWorker worker = JIPipeRunnerQueue.getInstance().enqueue(run);
+        JIPipeRunnerQueue.getInstance().enqueue(run);
         progressBar.setString("Waiting until other processes are finished ...");
         progressBar.setIndeterminate(true);
-        cancelButton.addActionListener(e -> {
-            cancelButton.setEnabled(false);
-            JIPipeRunnerQueue.getInstance().cancel(run);
-        });
     }
 
     /**
@@ -88,6 +91,16 @@ public class JIPipeRunExecuterUI extends JPanel {
         JIPipeRunnerQueue.getInstance().cancel(run);
     }
 
+    private void switchToCloseButtonIfPossible() {
+        if(dialog != null) {
+            cancelButton.setEnabled(false);
+            cancelButton.setVisible(false);
+            closeButton.setVisible(true);
+            revalidate();
+            repaint();
+        }
+    }
+
     /**
      * Triggered when a scheduled worker is finished
      *
@@ -96,7 +109,7 @@ public class JIPipeRunExecuterUI extends JPanel {
     @Subscribe
     public void onWorkerFinished(RunUIWorkerFinishedEvent event) {
         if (event.getRun() == run) {
-            cancelButton.setEnabled(false);
+            switchToCloseButtonIfPossible();
             progressBar.setString("Finished");
         }
     }
@@ -109,7 +122,7 @@ public class JIPipeRunExecuterUI extends JPanel {
     @Subscribe
     public void onWorkerInterrupted(RunUIWorkerFinishedEvent event) {
         if (event.getRun() == run) {
-            cancelButton.setEnabled(false);
+            switchToCloseButtonIfPossible();
             progressBar.setString("Finished");
         }
     }
@@ -152,4 +165,11 @@ public class JIPipeRunExecuterUI extends JPanel {
         dialog.setVisible(true);
     }
 
+    public JDialog getDialog() {
+        return dialog;
+    }
+
+    public void setDialog(JDialog dialog) {
+        this.dialog = dialog;
+    }
 }
