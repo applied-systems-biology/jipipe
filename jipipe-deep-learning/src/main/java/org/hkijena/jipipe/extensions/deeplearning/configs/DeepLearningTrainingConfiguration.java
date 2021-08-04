@@ -40,6 +40,7 @@ public class DeepLearningTrainingConfiguration implements JIPipeParameterCollect
     private int augmentationFactor = 3;
     private NormalizationMethod normalization = NormalizationMethod.zero_one;
     private boolean useElasticTransform = true;
+    private boolean showPlots = false;
 
     public DeepLearningTrainingConfiguration() {
     }
@@ -59,6 +60,7 @@ public class DeepLearningTrainingConfiguration implements JIPipeParameterCollect
         this.normalization = other.normalization;
         this.logDir = other.logDir;
         this.useElasticTransform = other.useElasticTransform;
+        this.showPlots = other.showPlots;
     }
 
     @JIPipeDocumentation(name = "Use elastic transform", description = "Use an elastic transformation for data augmentation purpose")
@@ -82,6 +84,16 @@ public class DeepLearningTrainingConfiguration implements JIPipeParameterCollect
     @JsonSetter("log_dir")
     public void setLogDir(Path logDir) {
         this.logDir = logDir;
+    }
+
+    @JsonGetter("show_plots")
+    public boolean isShowPlots() {
+        return showPlots;
+    }
+
+    @JsonSetter("show_plots")
+    public void setShowPlots(boolean showPlots) {
+        this.showPlots = showPlots;
     }
 
     @JIPipeDocumentation(name = "Normalization", description = "Normalize the input data to the specified interval: [0,255] => [0,1]")

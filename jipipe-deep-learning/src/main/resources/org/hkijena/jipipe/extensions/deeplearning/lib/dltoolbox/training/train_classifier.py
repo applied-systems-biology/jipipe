@@ -55,6 +55,7 @@ def train_model(model_config, config, model=None):
     augment_factor = config['augmentation_factor']
     log_dir = config['log_dir']
     num_classes = model_config['n_classes']
+    show_plots = config['show_plots']
 
     # load the model
     if model is not None:
@@ -151,8 +152,10 @@ def train_model(model_config, config, model=None):
         y_train = y
 
         # read validation data
-        x_valid = utils.read_images(path_dir=input_validation_dir, model_input_shape=True, labels_for_classifier=False)
-        y_valid = utils.read_images(path_dir=label_validation_dir, model_input_shape=False, labels_for_classifier=True)
+        x_valid = utils.read_images(path_dir=input_validation_dir, model_input_shape=model.input_shape,
+                                    read_input=True, labels_for_classifier=False)
+        y_valid = utils.read_images(path_dir=label_validation_dir, model_input_shape=model.output_shape,
+                                    read_input=False, labels_for_classifier=True)
 
         # validate validation data
         x_valid = utils.validate_image_shape(model.input_shape, images=x_valid)
@@ -238,7 +241,7 @@ def train_model(model_config, config, model=None):
     if output_model_path:
         figure_path = output_model_path.split('/')[:-1]
         figure_path = '/'.join(figure_path)
-        evaluate.plot_history(history=training_callbacks['history'], path=figure_path, model=model)
+        evaluate.plot_history(training_callbacks['history'], path=figure_path, model=model, show_plots=show_plots)
         # evaluate.plot_lr(history=training_callbacks['reduce_learning_rate'], path=figure_path)
         print('[Train model] Saved training history plots to:', figure_path)
 

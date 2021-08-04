@@ -15,29 +15,28 @@ Hans Knöll Insitute (HKI)
 Adolf-Reichwein-Straße 23, 07745 Jena, Germany
 """
 
-import sys
 import os
-import numpy as np
-import json
-import math
-import pandas as pd
 from glob import glob
 from pathlib import Path
+
 import matplotlib.pyplot as plt
+import numpy as np
+import pandas as pd
 import tifffile
-from tqdm import tqdm
 from skimage import io, filters, img_as_float32, img_as_ubyte
 from sklearn import metrics
-from dltoolbox import utils
+from tqdm import tqdm
 
 
-def plot_history(history, path, model):
+def plot_history(history, path, model, show_plots):
     """
     Plot history of all available metrics
 
     Args:
         history: history object from model.fit
         path: save path where the plots will be stored
+        model: the underlying model
+        show_plots: boolean whether the plots will be shown or not
 
     """
 
@@ -57,7 +56,8 @@ def plot_history(history, path, model):
         plt.xlabel('epoch', fontsize=15)
         plt.legend(['Train', 'Validation'], loc='upper left')
         plt.savefig(os.path.join(path, f'training_validation_{metric_name}.png'))
-        plt.show()
+        if show_plots:
+            plt.show()
 
 
 def plot_lr(history, path):
