@@ -39,6 +39,7 @@ import org.hkijena.jipipe.extensions.deeplearning.configs.DeepLearningTrainingCo
 import org.hkijena.jipipe.extensions.deeplearning.datatypes.DeepLearningModelData;
 import org.hkijena.jipipe.extensions.deeplearning.enums.ModelType;
 import org.hkijena.jipipe.extensions.expressions.DataAnnotationQueryExpression;
+import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.InterpolationMethod;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.transform.ScaleMode;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.transform.TransformScale2DAlgorithm;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
@@ -50,7 +51,6 @@ import org.hkijena.jipipe.utils.PathUtils;
 import org.hkijena.jipipe.utils.ResourceUtils;
 
 import java.io.IOException;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -80,6 +80,7 @@ public class TrainImageModelAlgorithm extends JIPipeSingleIterationAlgorithm {
         registerSubParameter(trainingConfiguration);
         scale2DAlgorithm = JIPipe.createNode(TransformScale2DAlgorithm.class);
         scale2DAlgorithm.setScaleMode(ScaleMode.Fit);
+        scale2DAlgorithm.setInterpolationMethod(InterpolationMethod.None);
         registerSubParameter(scale2DAlgorithm);
     }
 
@@ -163,8 +164,8 @@ public class TrainImageModelAlgorithm extends JIPipeSingleIterationAlgorithm {
             Path rawsDirectory = PathUtils.resolveAndMakeSubDirectory(workDirectory, "raw");
             Path validationRawsDirectory = PathUtils.resolveAndMakeSubDirectory(workDirectory, "validation-raw");
 
-            writeImages(dataBatch, progressInfo, inputTestDataSlot, modelProgress, inputModel, labelsDirectory, rawsDirectory);
-            writeImages(dataBatch, progressInfo, inputTrainingDataSlot, modelProgress, inputModel, validationLabelsDirectory, validationRawsDirectory);
+            writeImages(dataBatch, progressInfo, inputTrainingDataSlot, modelProgress, inputModel, labelsDirectory, rawsDirectory, "train");
+            writeImages(dataBatch, progressInfo, inputTestDataSlot, modelProgress, inputModel, validationLabelsDirectory, validationRawsDirectory, "val");
 
             // Save model according to standard interface
             inputModel.saveTo(workDirectory, "", false, modelProgress);
@@ -222,15 +223,15 @@ public class TrainImageModelAlgorithm extends JIPipeSingleIterationAlgorithm {
         }
     }
 
-    private void writeImages(JIPipeMergingDataBatch dataBatch, JIPipeProgressInfo progressInfo, JIPipeDataSlot inputTestDataSlot, JIPipeProgressInfo modelProgress, DeepLearningModelData inputModel, Path labelsDirectory, Path rawsDirectory) {
+    private void writeImages(JIPipeMergingDataBatch dataBatch, JIPipeProgressInfo progressInfo, JIPipeDataSlot inputTestDataSlot, JIPipeProgressInfo modelProgress, DeepLearningModelData inputModel, Path labelsDirectory, Path rawsDirectory, String prefix) {
         int imageCounter = 0;
         Set<Integer> labelRows = dataBatch.getInputSlotRows().get(inputTestDataSlot);
         for (Integer imageIndex : labelRows) {
             JIPipeProgressInfo imageProgress = modelProgress.resolveAndLog("Write labeled images", imageCounter++, labelRows.size());
             ImagePlusData raw = inputTestDataSlot.getData(imageIndex, ImagePlus3DGreyscaleData.class, imageProgress);
             ImagePlusData label = labelDataAnnotation.queryFirst(inputTestDataSlot.getDataAnnotations(imageIndex)).getData(ImagePlus3DGreyscaleData.class, progressInfo);
-            Path rawPath = rawsDirectory.resolve(imageCounter + "_img.tif");
-            Path labelPath = labelsDirectory.resolve(imageCounter + "_img.tif");
+            Path rawPath = rawsDirectory.resolve(imageCounter + "_" + prefix + ".tif");
+            Path labelPath = labelsDirectory.resolve(imageCounter + "_" + prefix + ".tif");
 
             if (raw.hasLoadedImage() || isScaleToModelSize()) {
                 ImagePlus rawImage = isScaleToModelSize() ? DeepLearningUtils.scaleToModel(raw.getImage(),
@@ -241,7 +242,7 @@ public class TrainImageModelAlgorithm extends JIPipeSingleIterationAlgorithm {
                         imageProgress) : raw.getImage();
                 IJ.saveAsTiff(rawImage, rawPath.toString());
             } else {
-                raw.saveTo(rawsDirectory, imageCounter + "_img", true, imageProgress);
+                raw.saveTo(rawsDirectory, imageCounter + "_" + prefix, true, imageProgress);
             }
             if (label.hasLoadedImage() || isScaleToModelSize()) {
                 ImagePlus labelImage = isScaleToModelSize() ? DeepLearningUtils.scaleToModel(label.getImage(),
@@ -251,7 +252,7 @@ public class TrainImageModelAlgorithm extends JIPipeSingleIterationAlgorithm {
                         true, imageProgress) : label.getImage();
                 IJ.saveAsTiff(labelImage, labelPath.toString());
             } else {
-                label.saveTo(labelsDirectory, imageCounter + "_img", true, imageProgress);
+                label.saveTo(labelsDirectory, imageCounter + "_" + prefix, true, imageProgress);
             }
         }
     }

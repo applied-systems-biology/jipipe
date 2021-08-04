@@ -1,5 +1,6 @@
 package org.hkijena.jipipe.extensions.deeplearning.environments;
 
+import org.apache.commons.lang3.SystemUtils;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.environments.ExternalEnvironmentInfo;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
@@ -40,15 +41,59 @@ public class TensorFlowEnvInstaller extends BasicMinicondaEnvPythonInstaller {
     protected void postprocessInstall() {
         super.postprocessInstall();
 
-        // We need to create the environment
-        Path environmentDefinitionPath = createEnvironment();
         Configuration configuration = (Configuration) getConfiguration();
 
-        // Apply the environment
-        runConda("env", "update", "--file", environmentDefinitionPath.toAbsolutePath().toString());
+        if(configuration.isUsePip()) {
+            Path environmentDefinitionPath = createPipRequirementsTxt();
+            runConda("run", "--no-capture-output", "pip", "install", "-r", environmentDefinitionPath.toAbsolutePath().toString());
+        }
+        else {
+            Path environmentDefinitionPath = createCondaEnvironmentYml();
+            runConda("env", "update", "--file", environmentDefinitionPath.toAbsolutePath().toString());
+        }
+
     }
 
-    private Path createEnvironment() {
+    private Path createPipRequirementsTxt() {
+        Path path = RuntimeSettings.generateTempFile("requirements", ".txt");
+        // Create the appropriate environment
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(path.toFile()))) {
+            Configuration configuration = (Configuration) getConfiguration();
+            String tensorFlowVersion = "";
+            if(configuration.getTensorFlowVersion().isEnabled()) {
+                tensorFlowVersion = "==" + configuration.getTensorFlowVersion();
+            }
+            for (String dependency : Arrays.asList(
+                    "pyqt5",
+                    "pandas",
+                    "matplotlib",
+                    "scipy",
+                    "scikit-learn",
+                    "scikit-image",
+                    "opencv-python",
+                    "tqdm",
+                    "tifffile",
+                    "tensorflow" + tensorFlowVersion,
+                    "tensorflow-estimator" + tensorFlowVersion,
+                    "keras>=2.3.1")) {
+                writer.write(dependency);
+                writer.newLine();
+            }
+            if (configuration.getH5pyVersion().isEnabled()) {
+                writer.write("h5py");
+                writer.write(configuration.getH5pyVersion().getContent());
+                writer.newLine();
+            } else {
+                writer.write("h5py");
+                writer.newLine();
+            }
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        return path;
+    }
+
+    private Path createCondaEnvironmentYml() {
         Path path = RuntimeSettings.generateTempFile("environment", ".yml");
         // Create the appropriate environment
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(path.toFile()))) {
@@ -80,18 +125,19 @@ public class TensorFlowEnvInstaller extends BasicMinicondaEnvPythonInstaller {
                 writer.write("  - h5py");
                 writer.newLine();
             }
+            String tensorFlowVersion = "";
+            if(configuration.getTensorFlowVersion().isEnabled()) {
+                tensorFlowVersion = "==" + configuration.getTensorFlowVersion();
+            }
             if (configuration.isWithGPU()) {
-                writer.write("  - tensorflow-gpu==");
-                writer.write(configuration.getTensorFlowVersion());
+                writer.write("  - tensorflow-gpu" + tensorFlowVersion);
                 writer.newLine();
             } else {
-                writer.write("  - tensorflow==");
-                writer.write(configuration.getTensorFlowVersion());
+                writer.write("  - tensorflow" + tensorFlowVersion);
                 writer.newLine();
             }
             // This is needed - otherwise conda might pull the wrong version
-            writer.write("  - tensorflow-estimator==");
-            writer.write(configuration.getTensorFlowVersion());
+            writer.write("  - tensorflow-estimator" + tensorFlowVersion);
             writer.newLine();
         } catch (IOException e) {
             throw new RuntimeException(e);
@@ -101,8 +147,9 @@ public class TensorFlowEnvInstaller extends BasicMinicondaEnvPythonInstaller {
 
     public static class Configuration extends BasicMinicondaEnvPythonInstaller.Configuration {
         private boolean withGPU = true;
-        private String tensorFlowVersion = "2.1.0";
-        private OptionalStringParameter h5pyVersion = new OptionalStringParameter("<3", true);
+        private OptionalStringParameter tensorFlowVersion = new OptionalStringParameter("2.1.0", !SystemUtils.IS_OS_WINDOWS);
+        private OptionalStringParameter h5pyVersion = new OptionalStringParameter("<3", !SystemUtils.IS_OS_WINDOWS);
+        private boolean usePip = SystemUtils.IS_OS_WINDOWS;
 
         @JIPipeDocumentation(name = "GPU support", description = "If enabled, install Tensorflow with GPU support.")
         @JIPipeParameter("with-gpu")
@@ -120,12 +167,12 @@ public class TensorFlowEnvInstaller extends BasicMinicondaEnvPythonInstaller {
                 "for a table that indicates which CUDA version is supported by which Tensorflow version.\n\n" +
                 "Info for Nvidia A100: Please install at least version 2.4.0, due to the requirement of cuda-toolkit >= 11.0")
         @JIPipeParameter("tensorflow-version")
-        public String getTensorFlowVersion() {
+        public OptionalStringParameter getTensorFlowVersion() {
             return tensorFlowVersion;
         }
 
         @JIPipeParameter("tensorflow-version")
-        public void setTensorFlowVersion(String tensorFlowVersion) {
+        public void setTensorFlowVersion(OptionalStringParameter tensorFlowVersion) {
             this.tensorFlowVersion = tensorFlowVersion;
         }
 
@@ -138,6 +185,18 @@ public class TensorFlowEnvInstaller extends BasicMinicondaEnvPythonInstaller {
         @JIPipeParameter("h5py-version")
         public void setH5pyVersion(OptionalStringParameter h5pyVersion) {
             this.h5pyVersion = h5pyVersion;
+        }
+
+        @JIPipeDocumentation(name = "Use pip", description = "Use pip instead of conda for setting up the environment. " +
+                "This is usually not needed for Linux, but resolves DLL issues on Windows.")
+        @JIPipeParameter("use-pip")
+        public boolean isUsePip() {
+            return usePip;
+        }
+
+        @JIPipeParameter("use-pip")
+        public void setUsePip(boolean usePip) {
+            this.usePip = usePip;
         }
     }
 }
