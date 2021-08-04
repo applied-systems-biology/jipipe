@@ -222,8 +222,10 @@ class LossAndErrorPrintingCallback(tf.keras.callbacks.Callback):
 ### TODO: confusion matrix callback
 
 
-### custom callback for store confusion matrix (for classification purpose)
 class ConfusionMatrixCallback(tf.keras.callbacks.Callback):
+    """
+    Custom callback for store confusion matrix (for classification purpose)
+    """
 
     def __init__(self, log_dir, classes):
         self.log_dir = log_dir
@@ -232,8 +234,6 @@ class ConfusionMatrixCallback(tf.keras.callbacks.Callback):
         # get label for classes from config file ['classes']
         self.classes = []
         for key, value in classes.items():
-            if 'Fusarium' in value:
-                continue
             self.classes.append(value)
 
     def on_epoch_end(self, epoch, logs=None):

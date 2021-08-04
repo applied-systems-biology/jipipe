@@ -159,6 +159,10 @@ def build_model(config):
     model.summary()
 
     # save the model, model-architecture and model-config
-    utils.save_model_with_json(model=model, model_path=model_path, model_json_path=model_json_path, config=config)
+    utils.save_model_with_json(model=model,
+                               model_path=model_path,
+                               model_json_path=model_json_path,
+                               model_config=config,
+                               operation_config=None)
 
     return model

@@ -96,24 +96,25 @@ def load_and_compile_model(model_config, model_path, model=None) -> tf.keras.Mod
     return model
 
 
-def read_images(dir, read_input, labels_for_classifier):
+def read_images(path_dir, model_input_shape, read_input, labels_for_classifier):
     """
     Read images from directory if string-pattern is specified OR from csv. table
     Args:
-        dir: directory of the images to be read
-        read_input: boolean whether the input are the inputs (X) or labels (Y)
+        path_dir: directory of the images to be read
+        model_input_shape: model input shape in model-config
+        read_input: boolean whether the input are the inputs (X: True) or labels (Y: False)
         labels_for_classifier: boolean whether the labels are numerical values for a classification
 
     Returns: input OR label images
     """
 
     # check whether the input and label data are specified within a table OR as images
-    read_as_images = not str(dir).endswith('csv')
+    read_as_images = not str(path_dir).endswith('csv')
 
     # read input images in case they are provided in a table, check for <input> column in table
     if not read_as_images:
 
-        df = pd.read_csv(dir, index_col=0)
+        df = pd.read_csv(path_dir, index_col=0)
 
         if read_input:
             assert 'input' in list(df.columns), "Input format not valid: provide a table with column <input>"
@@ -121,15 +122,14 @@ def read_images(dir, read_input, labels_for_classifier):
             print(f'[Read images] Input is represented as images: {read_as_images} - '
                   f'with shape: {df.shape} and column names: {list(df.columns)}')
 
+            XY_paths = df['input'].tolist()
+
         else:
             assert 'label' in list(df.columns), "Label format not valid: provide a table with column <label>"
 
             print(f'[Read images] Label is represented as images: {read_as_images} - '
                   f'with shape: {df.shape} and column names: {list(df.columns)}')
 
-        if read_input:
-            XY_paths = df['input'].tolist()
-        else:
             XY_paths = df['label'].tolist()
 
         # if labels are numerical values - do not read them as images and keep the list from the table
@@ -138,13 +138,14 @@ def read_images(dir, read_input, labels_for_classifier):
         else:
             XY = io.imread_collection(XY_paths)
 
-    elif read_input:
-
-        XY = imread_collection(dir, verbose=False)
-
+    elif model_input_shape[-1] > 1:
+        XY = imread_collection(path_dir, verbose=False)
+    elif model_input_shape[-1] == 1:
+        XY = imread_collection(path_dir, verbose=False, as_gray=True)
     else:
-
-        XY = imread_collection(dir, verbose=False, as_gray=True)
+        XY = imread_collection(path_dir, verbose=False, as_gray=True)
+        print(f'[Read images] Model shape: {model_input_shape} with number of channels: {model_input_shape[-1]}'
+              f' - read images as gray-scaled images')
 
     return XY
 
@@ -380,35 +381,33 @@ def validate_image_shape(model_shape, images):
     # with Image.open(input_dir_0) as img:
     #     #print(img.tag)
     #     meta_dict = {TAGS[key]: img.tag[key] for key in img.tag.keys()}
-    # print(meta_dict)
-    # print(meta_dict['ImageWidth'])
+    # print(meta_dict, meta_dict['ImageWidth'])
 
     images_unique_shapes = [img.shape for img in images]
     images_unique_shapes = list(set(images_unique_shapes))
+
+    # exclude the batch size if length of dimensions (batch size, x, y, c)
+    if len(model_shape) == 4:
+        model_shape = model_shape[1:]
 
     if len(images_unique_shapes) != 1:
         print('[validate_image_shape] CAUTION: shape of images have not all the same shape:', images_unique_shapes)
 
     image_shape = images_unique_shapes[0]
-
-    if image_shape != model_shape[1:]:
-        print(f'[validate_image_shape] CAUTION: image shape <{image_shape}> != from model shape <{model_shape[1:]}>')
-
     images_arr = np.array(images)
 
-    # Image and model shape match (including batch-dimension)
-    if len(images_arr.shape) == len(model_shape):
-        return images_arr
-
-    # Transfer to numpy required array with an additional channel dimension: (height,width) -> (height,width,1)
-    if len(images_arr.shape) == 3:
+    # if image_shape != model_shape[1:]:
+    if image_shape != model_shape:
+        print(f'[validate_image_shape] CAUTION: image shape <{image_shape}> != from model shape <{model_shape}>')
         images_arr = np.expand_dims(images_arr, axis=-1)
+        print(f'[validate_image_shape] Expand artificial channel dimension to: <{images_arr.shape}>')
 
-        if images_arr.shape[1:] != model_shape[1:]:
-            print(
-                f'[validate_image_shape] WARNING: image shape <{images_arr.shape[1:]}> != from model shape <{model_shape[1:]}>')
-
-    return images_arr
+    # Image and model shape match (including batch-dimension)
+    if images_arr.shape[1:] == model_shape:
+        return images_arr
+    else:
+        print(f"[validate_image_shape] CAUTION: image shape <{images_arr.shape[1:]}> != model shape <{model_shape[1:]}>")
+        return images_arr
 
 
 def plot_window(img, img_binary, title=None):
@@ -443,17 +442,17 @@ def plot_window(img, img_binary, title=None):
     plt.show()
 
 
-def save_model_with_json(model, model_path, model_json_path, config):
+def save_model_with_json(model, model_path, model_json_path, model_config, operation_config):
     """
     Save the model, its architecture as a JSON and the config file.
     Args:
         model: the corresponding model
         model_path: the model path
         model_json_path: the path of the model architecture within a JSON
-        config: the config file to create the model
+        model_config: the config file to create the model
+        operation_config: the config file used for the underlying operation
 
     Returns:
-
     """
 
     # create the model directory
@@ -462,20 +461,28 @@ def save_model_with_json(model, model_path, model_json_path, config):
         os.makedirs(save_directory)
         print('[Save model] create directory folder for model:', save_directory)
 
-    if model_path:
-        model.save(model_path)
-        print('[Save model] Saved model to:', model_path)
+    # save model
+    model.save(model_path)
+    print('[Save model] Saved model to:', model_path)
 
-    if model_json_path:
-        model_json = model.to_json()
-        with open(model_json_path, "w") as f:
-            f.write(model_json)
-        print('[Save model] Saved model JSON to:', model_json_path)
+    # save model architecture as JSON
+    model_json = model.to_json()
+    with open(model_json_path, "w") as f:
+        f.write(model_json)
+    print('[Save model] Saved model JSON to:', model_json_path)
 
-        config_save_path = Path(model_json_path).parent / 'model-config.json'
-        with open(config_save_path, "w+") as f:
-            json.dump(config, f)
-        print('[Save model] Save model config file JSON to:', config_save_path)
+    # save model config
+    model_config_save_path = Path(model_json_path).parent / 'model-config.json'
+    with open(model_config_save_path, "w+") as f:
+        json.dump(model_config, f)
+    print('[Save model] Save model config file JSON to:', model_config_save_path)
+
+    # save operation config
+    if operation_config is not None:
+        operation_config_save_path = Path(model_json_path).parent / 'operation-config.json'
+        with open(operation_config_save_path, "w+") as f:
+            json.dump(operation_config, f)
+        print('[Save model] Save model config file JSON to:', operation_config_save_path)
 
 
 def generate_input_label_table(input_dir, label_dir):

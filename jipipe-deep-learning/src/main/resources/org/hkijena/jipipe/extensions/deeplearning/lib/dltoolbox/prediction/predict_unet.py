@@ -17,15 +17,17 @@ Adolf-Reichwein-Straße 23, 07745 Jena, Germany
 Script to predict a network
 """
 
-
-import numpy as np
-import math
 import os
-from pathlib import Path
-import tifffile
-from skimage import img_as_float32
-from skimage import io
 import sys
+from pathlib import Path
+import numpy as np
+from glob import glob
+import pandas as pd
+import math
+from skimage import io, img_as_float32
+import tifffile
+import tensorflow as tf
+
 from dltoolbox import utils
 
 
@@ -41,51 +43,68 @@ def predict_samples(model_config, config, model=None):
 
     """
 
+    # assign hyper-parameter for training procedure
     input_dir = config['input_dir']
     output_dir = config['output_dir']
     input_model_path = config["input_model_path"] if "input_model_path" in config else model_config['output_model_path']
+    normalization_mode = config['normalization']
     model_img_shape = tuple(model_config["image_shape"])
 
-    # Load the model
-    model = utils.load_and_compile_model(model_config, input_model_path, model)
+    # load the model
+    if model is not None:
+        assert isinstance(model, tf.keras.models.Model)
+        print(f'[Predict] Use model with input shape: {model.input_shape} and output shape: {model.output_shape}')
+    else:
+        model = utils.load_and_compile_model(model_config, input_model_path, model)
+        print(f'[Predict] Model successfully loaded from path: {input_model_path}')
 
-    # Load the raw images
-    X = utils.imread_collection(input_dir)
+    # read the input and label images in dependence of their specified format: directory or .csv-table
+    X = utils.read_images(path_dir=input_dir,
+                          model_input_shape=model_img_shape,
+                          read_input=True,
+                          labels_for_classifier=False)
+
     print('[Predict] Images to predict:', len(X))
 
+    assert len(X) > 0, "No images found"
+
+    # validate input data
+    x = utils.validate_image_shape(model_img_shape, images=X)
+
+    print('[Predict] Input data:', x.shape)
+
+    # Preprocessing of the input data (normalization)
+    print('[Predict] Input image intensity min-max-range before preprocessing:', x.min(), x.max())
+    if x.max() > 1:
+        x = utils.preprocessing(x, mode=normalization_mode)
+        print('[Predict] Input image intensity min-max-range after preprocessing:', x.min(), x.max())
+
+    # create save directory if necessary
     if not os.path.exists(output_dir):
         os.makedirs(output_dir)
         print('[Predict] create directory folder for predicted images:', output_dir)
 
+    # get filenames of input images
+    read_as_images = not str(input_dir).endswith('csv')
+    if read_as_images:
+        filenames = np.sort(glob(input_dir))
+    else:
+        filenames = np.sort(pd.read_csv(input_dir, index_col=0)['input']).tolist()
+
     results = []
 
-    for (image, file_name) in zip(X, X.files):
-        print("[Predict] read image from path: " + str(file_name))
+    for idx, (image, file_name) in enumerate(zip(x, filenames)):
+        print(f"[Predict] [ {idx+1} / {len(filenames)} ] read image with shape: {image.shape} from path: {file_name}")
 
         img_x0 = image.shape[0]
         img_x1 = image.shape[1]
 
-        # TODO: testen:
-        # img_c = image.shape[2]
-
-        print("[Predict] Image shape is " + str(image.shape))
-
-        # Preprocessing (normalization)
-        image = utils.preprocessing(image, mode=config['normalization'])
-
         try:
-            # Todo: Check why this does not work with images != model_img_shape
-            # TODO: testen: ein großes Bild wird mit einem mal predicted:
-
-            # Load the model
-            # model = load_and_compile_model(model_config, input_model_path, model)
 
             whole_image = image
 
             if len(whole_image.shape) == 3:
                 whole_image = np.expand_dims(whole_image, axis=0)
-            elif len(whole_image.shape) == 2:
-                whole_image = np.expand_dims(np.expand_dims(whole_image, axis=-1), axis=0)
 
             prediction = model.predict(whole_image, batch_size=1)
 
@@ -107,7 +126,6 @@ def predict_samples(model_config, config, model=None):
                 while len(pad_width) < len(image.shape):
                     pad_width.append((0, 0))
                 print("[Predict] Padding with " + str(pad_width))
-                # TODO : padding mit tensorflow testen
                 img_padded = np.pad(image, pad_width=pad_width)
                 print("[Predict] Padded image has shape " + str(img_padded.shape))
             else:
@@ -115,10 +133,11 @@ def predict_samples(model_config, config, model=None):
                       " and window size " + str([ws0, ws1]))
                 img_padded = image
 
+            # perform the prediction via tiling
             prediction = None
             for (window_x0, window_x1, img_window) in utils.sliding_window(img_padded,
-                                                                   step_size=(ws0, ws1),
-                                                                   window_size=(ws0, ws1)):
+                                                                           step_size=(ws0, ws1),
+                                                                           window_size=(ws0, ws1)):
                 print("[Predict] Predicting window " + str((window_x0, window_x1, ws0, ws1))
                       + " in image " + str(img_padded.shape))
                 img_window_expanded = img_window
@@ -144,7 +163,7 @@ def predict_samples(model_config, config, model=None):
 
                 # Add window into output
                 prediction[window_x0:window_x0 + window_prediction.shape[0],
-                    window_x1:window_x1 + window_prediction.shape[1]] = window_prediction
+                window_x1:window_x1 + window_prediction.shape[1]] = window_prediction
 
         # Postprocessing
         prediction = np.squeeze(prediction)
@@ -160,4 +179,4 @@ def predict_samples(model_config, config, model=None):
 
         results.append(prediction)
 
-    return results, X.files
+    return results, filenames

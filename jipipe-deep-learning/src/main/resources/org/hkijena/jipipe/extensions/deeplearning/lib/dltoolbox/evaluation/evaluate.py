@@ -289,7 +289,7 @@ def evaluate_samples(config):
 
     return df_results
 
-# def evaluate_sample(model, X, Y):  # #X_Y_path):
+# def evaluate_sample(model, X, Y):  # #X_Y_path): ä TODO: model.evaluate in obere Funktion mit einbauen
 
 # read ALL images path
 # original_path_all = np.sort( glob( os.path.join( input_path, 'original', '*.png') ) )

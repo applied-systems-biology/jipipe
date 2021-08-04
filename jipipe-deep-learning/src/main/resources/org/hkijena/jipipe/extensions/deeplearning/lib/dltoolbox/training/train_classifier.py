@@ -69,8 +69,10 @@ def train_model(model_config, config, model=None):
     assert not label_as_images, "Label format not valid: provide the label files within a .csv file"
 
     # read the input and label images in dependence of their specified format: directory or .csv-table
-    X = utils.read_images(dir=input_dir, read_input=True, labels_for_classifier=False)
-    Y = utils.read_images(dir=label_dir, read_input=False, labels_for_classifier=True)
+    X = utils.read_images(input_dir, model_input_shape=model.input_shape,
+                          read_input=True, labels_for_classifier=False)
+    Y = utils.read_images(label_dir, model_input_shape=model.output_shape,
+                          read_input=False, labels_for_classifier=True)
 
     print('[Train model] Input-images:', len(X), ', Label-images:', len(Y))
 
@@ -79,7 +81,7 @@ def train_model(model_config, config, model=None):
     # validate input data
     x = utils.validate_image_shape(model.input_shape, images=X)
 
-    print('[Train model] Input data:\t', x.shape)
+    print('[Train model] Input data:', x.shape)
 
     assert not np.any(np.isnan(x)), "[WARNING] Input data contains <nan> values"
     y_num_classes, y_num_classes_counts = np.unique(Y, return_counts=True)
@@ -149,8 +151,8 @@ def train_model(model_config, config, model=None):
         y_train = y
 
         # read validation data
-        x_valid = utils.read_images(dir=input_validation_dir, read_input=True, labels_for_classifier=False)
-        y_valid = utils.read_images(dir=label_validation_dir, read_input=False, labels_for_classifier=True)
+        x_valid = utils.read_images(path_dir=input_validation_dir, model_input_shape=True, labels_for_classifier=False)
+        y_valid = utils.read_images(path_dir=label_validation_dir, model_input_shape=False, labels_for_classifier=True)
 
         # validate validation data
         x_valid = utils.validate_image_shape(model.input_shape, images=x_valid)
@@ -229,7 +231,8 @@ def train_model(model_config, config, model=None):
     utils.save_model_with_json(model=model,
                                model_path=output_model_path,
                                model_json_path=output_model_json_path,
-                               config=config)
+                               model_config=model_config,
+                               operation_config=config)
 
     # save the history plots
     if output_model_path:

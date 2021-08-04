@@ -18,7 +18,7 @@ Script to create a VGG16 model
 """
 
 import tensorflow as tf
-
+from dltoolbox import utils
 
 def build_model(config):
     """
@@ -87,14 +87,11 @@ def build_model(config):
 
     model.summary()
 
-    if model_path:
-        model.save(model_path)
-        print('[Create model] Saved model to:', model_path)
-
-    if model_json_path:
-        model_json = model.to_json()
-        with open(model_json_path, "w") as f:
-            f.write(model_json)
-        print('[Create model] Saved model JSON to:', model_json_path)
+    # save the model, model-architecture and model-config
+    utils.save_model_with_json(model=model,
+                               model_path=model_path,
+                               model_json_path=model_json_path,
+                               model_config=config,
+                               operation_config=None)
 
     return model

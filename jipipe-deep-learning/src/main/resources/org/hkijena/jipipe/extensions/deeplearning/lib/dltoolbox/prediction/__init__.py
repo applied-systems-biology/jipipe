@@ -19,7 +19,6 @@ Script to predict a network
 
 from dltoolbox.prediction import predict_unet
 from dltoolbox.prediction import predict_classifier
-from dltoolbox.prediction import predict_cross_validation
 
 
 def predict_data(model_config, config, model=None):
@@ -33,14 +32,11 @@ def predict_data(model_config, config, model=None):
 
     """
 
-    if config['prediction_type'] == "standard" and model_config['model_type'] == "segmentation":
-        print("[Predict] standard prediction procedure with specified samples via unet")
+    if model_config['model_type'] == "segmentation":
+        print("[Predict] Prediction procedure with specified samples via unet")
         predict_unet.predict_samples(model_config=model_config, config=config, model=model)
-    elif config['prediction_type'] == "standard" and model_config['model_type'] == "classification":
-        print("[Predict] standard prediction procedure with specified samples via classifier")
+    elif model_config['model_type'] == "classification":
+        print("[Predict] Prediction procedure with specified samples via classifier")
         predict_classifier.predict_samples(model_config=model_config, config=config, model=model)
-    elif config['prediction_type'] == "cross-validation":
-        print("[Predict] cross-validation prediction procedure with information table")
-        predict_cross_validation.predict_cross_validation(model_config=model_config, config=config, model=model)
     else:
-        raise AttributeError("Could not find valid prediction_type for prediction - {standard, cross-validation}")
+        raise AttributeError("Could not find a valid model type:" + str(model_config['model_type']))

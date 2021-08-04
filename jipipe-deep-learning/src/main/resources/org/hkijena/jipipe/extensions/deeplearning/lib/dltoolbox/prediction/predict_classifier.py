@@ -17,15 +17,10 @@ Adolf-Reichwein-Straße 23, 07745 Jena, Germany
 Script to predict a network
 """
 
-
+import os
 import numpy as np
 import pandas as pd
-import math
-import os
-from pathlib import Path
-import tifffile
-from skimage import io
-import sys
+import tensorflow as tf
 from dltoolbox import utils
 
 
@@ -44,33 +39,48 @@ def predict_samples(model_config, config, model=None):
     input_dir = config['input_dir']
     output_dir = config['output_dir']
     input_model_path = config["input_model_path"] if "input_model_path" in config else model_config['output_model_path']
+    normalization_mode = config['normalization']
+    model_img_shape = tuple(model_config["image_shape"])
 
     # Load the model
-    model = utils.load_and_compile_model(model_config, input_model_path, model)
+    if model is not None:
+        assert isinstance(model, tf.keras.models.Model)
+        print(f'[Predict] Use model with input shape: {model.input_shape} and output shape: {model.output_shape}')
+    else:
+        model = utils.load_and_compile_model(model_config, input_model_path, model)
+        print(f'[Predict] Model successfully loaded from path: {input_model_path}')
 
-    # Load the raw images
-    X = utils.imread_collection(input_dir)
+    # read the input and label images in dependence of their specified format: directory or .csv-table
+    X = utils.read_images(path_dir=input_dir,
+                          model_input_shape=model_img_shape,
+                          read_input=True,
+                          labels_for_classifier=False)
+
     print('[Predict] Images to predict:', len(X))
+
+    assert len(X) > 0, "No images found"
+
+    # validate input data
+    x = utils.validate_image_shape(model_img_shape, images=X)
+
+    print('[Predict] Input data:', x.shape)
+
+    # Preprocessing of the input data (normalization)
+    print('[Predict] Input image intensity min-max-range before preprocessing:', x.min(), x.max())
+    if x.max() > 1:
+        x = utils.preprocessing(x, mode=normalization_mode)
+        print('[Predict] Input image intensity min-max-range after preprocessing:', x.min(), x.max())
 
     results = []
     results_columns = None
 
-    for (image, file_name) in zip(X, X.files):
-        print(f"[Predict] read image with shape {image.shape} from path: " + str(file_name))
+    for idx, (image, file_name) in enumerate(zip(X, X.files)):
+        print(f"[Predict] [ {idx + 1} / {len(X)} ] read image with shape: {image.shape} from path: {file_name}")
 
-        # Preprocessing (normalization)
-        image = utils.preprocessing(image, mode=config['normalization'])
-
-        # https://www.tensorflow.org/api_docs/python/tf/keras/applications/imagenet_utils/decode_predictions
-        # tf.keras.applications.imagenet_utils.decode_predictions(
-        #     preds, top=5
-        # )
-
-        while len(image.shape) < 4:
-            image = np.expand_dims(image, axis=-1)
+        if len(image.shape) == 3:
             image = np.expand_dims(image, axis=0)
 
-        prediction = model.predict_on_batch(image)
+        prediction = model.predict(image, batch_size=1)
 
         # extract the column names from the first sample
         if results_columns is None:
@@ -89,8 +99,13 @@ def predict_samples(model_config, config, model=None):
 
     print(f"[Predict] all samples with their corresponding probabilities per class:\n\n{df_results}")
 
+    # create save directory if necessary
+    if not os.path.exists(output_dir):
+        os.makedirs(output_dir)
+        print('[Predict] create directory folder for predicted images:', output_dir)
+
     if output_dir:
-        predicted_file_name = os.path.join(Path(output_dir), 'predictions.csv')
+        predicted_file_name = os.path.join(output_dir, 'predictions.csv')
         print("[Predict] Saving prediction result to " + str(predicted_file_name))
         df_results.to_csv(predicted_file_name)
 

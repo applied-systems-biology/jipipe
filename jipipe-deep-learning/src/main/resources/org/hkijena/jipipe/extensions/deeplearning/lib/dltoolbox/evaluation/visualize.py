@@ -166,6 +166,8 @@ def visualize_grad_cam(model_config, config, model=None):
     input_dir = config['input_dir']
     label_dict = config['label_dict']
     output_figure_path = config['output_figure_path']
+    model_img_shape = tuple(model_config["image_shape"])
+    num_classes = model_config['n_classes']
 
     if model is not None:
         assert isinstance(model, tf.keras.models.Model)
@@ -175,11 +177,11 @@ def visualize_grad_cam(model_config, config, model=None):
         model = utils.load_and_compile_model(model_config, input_model_path, model)
         print(f'[Visualize Grad-CAM] Model was successfully loaded from path: {input_model_path}')
 
-    # validate input images
-    try:
-        X = utils.imread_collection(input_dir, verbose=False)
-    except:
-        X = io.imread_collection(input_dir)
+    # read the input and label images in dependence of their specified format: directory or .csv-table
+    X = utils.read_images(path_dir=input_dir,
+                          model_input_shape=model_img_shape,
+                          read_input=True,
+                          labels_for_classifier=False)
 
     print('[Visualize Grad-CAM] Input-images:', len(X))
 
@@ -210,10 +212,16 @@ def visualize_grad_cam(model_config, config, model=None):
         preds = model.predict(image)
         i = np.argmax(preds[0])
 
+        # if i > num_classes: # TODO: diese Methode als segmentierung implementieren
+        #     i = num_classes-1
+
         label = list(label_dict.keys())[list(label_dict.values()).index(i)]
+        # try:
         print('[Visualize Grad-CAM] Label: <{}> with probability: {:.2f}% at index: {}'.format(label, preds[0][i] * 100,
                                                                                                i))
         image_label = "{}: {:.2f}%".format(label, preds[0][i] * 100)
+        # except:
+        #     image_label = "{}: {:.2f}%".format(label, i * 100)
 
         cam = GradCAM(model, i)
         heatmap = cam.compute_heatmap(image)
