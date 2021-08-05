@@ -37,6 +37,7 @@ import java.nio.file.Path;
         "Duplicate files might be silently overwritten, meaning that the paths should be unique." +
         "Please note that you do not need to explicitly export data, as JIPipe automatically saves all output data.")
 @JIPipeInputSlot(JIPipeData.class)
+@JIPipeInputSlot(PathData.class)
 @JIPipeOutputSlot(PathData.class)
 @JIPipeNode(nodeTypeCategory = MiscellaneousNodeTypeCategory.class, menuPath = "Export")
 public class ExportData extends JIPipeIteratingAlgorithm {
@@ -45,6 +46,7 @@ public class ExportData extends JIPipeIteratingAlgorithm {
         super(info, JIPipeDefaultMutableSlotConfiguration.builder()
                 .addInputSlot("Data", JIPipeData.class)
                 .addInputSlot("Path", PathData.class)
+                .addOutputSlot("Path", PathData.class, null)
                 .seal()
                 .build());
     }
@@ -71,6 +73,7 @@ public class ExportData extends JIPipeIteratingAlgorithm {
             name = "unnamed";
 
         dataBatch.getInputData("Data", JIPipeData.class, progressInfo).saveTo(outputFolder, name, true, progressInfo);
+        dataBatch.addOutputData("Path", new PathData(outputFolder), progressInfo);
     }
 }
 
