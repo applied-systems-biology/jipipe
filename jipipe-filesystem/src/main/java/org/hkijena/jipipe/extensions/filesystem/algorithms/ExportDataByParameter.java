@@ -65,7 +65,7 @@ public class ExportDataByParameter extends JIPipeAlgorithm {
     public void run(JIPipeProgressInfo progressInfo) {
         Path outputPath;
         if (outputDirectory == null || outputDirectory.toString().isEmpty() || !outputDirectory.isAbsolute()) {
-            outputPath = getFirstOutputSlot().getStoragePath().resolve(outputDirectory);
+            outputPath = getFirstOutputSlot().getStoragePath().resolve(StringUtils.nullToEmpty(outputDirectory));
         } else {
             outputPath = outputDirectory;
         }

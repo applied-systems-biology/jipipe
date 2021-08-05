@@ -16,9 +16,7 @@ package org.hkijena.jipipe.extensions.filesystem.algorithms;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
-import org.hkijena.jipipe.api.data.JIPipeData;
-import org.hkijena.jipipe.api.data.JIPipeDataByMetadataExporter;
-import org.hkijena.jipipe.api.data.JIPipeDefaultMutableSlotConfiguration;
+import org.hkijena.jipipe.api.data.*;
 import org.hkijena.jipipe.api.nodes.JIPipeDataBatch;
 import org.hkijena.jipipe.api.nodes.JIPipeInputSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeIteratingAlgorithm;
@@ -65,18 +63,20 @@ public class ExportData extends JIPipeIteratingAlgorithm {
 
     @Override
     protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
-        Path basePath = dataBatch.getInputData("Path", PathData.class, progressInfo).toPath();
-        Path outputFolder = basePath.getParent();
-
-        if (!Files.exists(outputFolder)) {
+        Path outputDirectory = dataBatch.getInputData("Path", PathData.class, progressInfo).toPath();
+        if (outputDirectory == null || outputDirectory.toString().isEmpty() || !outputDirectory.isAbsolute()) {
+            outputDirectory = getFirstOutputSlot().getStoragePath().resolve(StringUtils.nullToEmpty(outputDirectory));
+        }
+        if (!Files.exists(outputDirectory)) {
             try {
-                Files.createDirectories(outputFolder);
+                Files.createDirectories(outputDirectory);
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
         }
-        exporter.writeToFolder(Collections.singletonList(getInputSlot("Data")),outputFolder, progressInfo);
-        dataBatch.addOutputData("Path", new PathData(outputFolder), progressInfo);
+        JIPipeDataSlot batchSlot = dataBatch.toDummySlot(new JIPipeDataSlotInfo(JIPipeData.class, JIPipeSlotType.Output, "Output"), this, getInputSlot("Data"));
+        exporter.writeToFolder(batchSlot,outputDirectory, progressInfo);
+        dataBatch.addOutputData("Path", new PathData(outputDirectory), progressInfo);
     }
 
     @JIPipeDocumentation(name = "File name generation", description = "Following settings control how the output file names are generated from metadata columns.")

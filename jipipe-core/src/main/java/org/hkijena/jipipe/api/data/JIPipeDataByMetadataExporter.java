@@ -27,12 +27,14 @@ import org.hkijena.jipipe.extensions.expressions.ExpressionParameterVariableSour
 import org.hkijena.jipipe.extensions.expressions.ExpressionVariables;
 import org.hkijena.jipipe.extensions.expressions.StringQueryExpression;
 import org.hkijena.jipipe.extensions.parameters.primitives.StringParameterSettings;
+import org.hkijena.jipipe.utils.PathUtils;
 import org.hkijena.jipipe.utils.ResourceUtils;
 import org.hkijena.jipipe.utils.StringUtils;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -54,6 +56,7 @@ public class JIPipeDataByMetadataExporter implements JIPipeParameterCollection {
     private int metadataValueLengthLimit = 80;
     private Mode mode = Mode.Automatic;
     private StringQueryExpression customName = new StringQueryExpression("SUMMARIZE_VARIABLES()");
+    private StringQueryExpression customSubDirectory = new StringQueryExpression("\"\"");
 
     public JIPipeDataByMetadataExporter() {
     }
@@ -71,6 +74,7 @@ public class JIPipeDataByMetadataExporter implements JIPipeParameterCollection {
         this.metadataValueLengthLimit = other.metadataValueLengthLimit;
         this.customName = new StringQueryExpression(other.customName);
         this.mode = other.mode;
+        this.customSubDirectory = new StringQueryExpression(other.customSubDirectory);
     }
 
     @Override
@@ -78,13 +82,13 @@ public class JIPipeDataByMetadataExporter implements JIPipeParameterCollection {
         if (access.getKey().equals("mode"))
             return true;
         if (mode == Mode.Automatic) {
-            return !access.getKey().equals("custom-name");
+            return !access.getKey().equals("custom-name") && !access.getKey().equals("custom-directory");
         } else {
             if (access.getKey().equals("ignore-missing-metadata"))
                 return true;
             if (access.getKey().equals("missing-string"))
                 return true;
-            return access.getKey().equals("custom-name");
+            return access.getKey().equals("custom-name") || access.getKey().equals("custom-directory");
         }
     }
 
@@ -98,6 +102,18 @@ public class JIPipeDataByMetadataExporter implements JIPipeParameterCollection {
     @JIPipeParameter("custom-name")
     public void setCustomName(StringQueryExpression customName) {
         this.customName = customName;
+    }
+
+    @JIPipeDocumentation(name = "Custom sub directory", description = "This expression is used to generate a sub directory for your files. Set it to \"\" to have no sub directory. Use '/' to make paths. You have all metadata available as variables.")
+    @JIPipeParameter("custom-directory")
+    @ExpressionParameterSettings(variableSource = VariableSource.class)
+    public StringQueryExpression getCustomDirectory() {
+        return customSubDirectory;
+    }
+
+    @JIPipeParameter("custom-directory")
+    public void setCustomDirectory(StringQueryExpression customDirectory) {
+        this.customSubDirectory = customDirectory;
     }
 
     @JIPipeDocumentation(name = "Mode", description = "If the mode is set to 'Automatic', the string is automatically " +
@@ -301,6 +317,7 @@ public class JIPipeDataByMetadataExporter implements JIPipeParameterCollection {
      */
     public void writeToFolder(JIPipeDataSlot dataSlot, int row, Path outputPath, JIPipeProgressInfo progressInfo, Set<String> existingMetadata) {
         String metadataString = generateMetadataString(dataSlot, row, existingMetadata);
+        outputPath = PathUtils.resolveAndMakeSubDirectory(outputPath, generateSubFolder(dataSlot, row));
         JIPipeData data = dataSlot.getData(row, JIPipeData.class, progressInfo);
         progressInfo.log("Saving " + data + " as " + metadataString + " into " + outputPath);
         data.saveTo(outputPath, metadataString, true, progressInfo);
@@ -374,6 +391,28 @@ public class JIPipeDataByMetadataExporter implements JIPipeParameterCollection {
         metadataString = StringUtils.makeUniqueString(metadataString, separatorString, existingMetadata);
         existingMetadata.add(metadataString);
         return metadataString;
+    }
+
+    public Path generateSubFolder(JIPipeDataSlot dataSlot, int row) {
+        if (mode == Mode.Automatic) {
+            return Paths.get("");
+        }
+        else {
+            ExpressionVariables parameters = new ExpressionVariables();
+            for (int col = 0; col < dataSlot.getAnnotationColumns().size(); col++) {
+                String metadataKey = dataSlot.getAnnotationColumns().get(col);
+                JIPipeAnnotation metadataValue = dataSlot.getAnnotationOr(row, metadataKey, null);
+                if (metadataValue == null && ignoreMissingMetadata)
+                    continue;
+                String value = metadataValue != null ? metadataValue.getValue() : missingString;
+                parameters.put(metadataKey, value);
+            }
+            parameters.set("data_string", dataSlot.getVirtualData(row).getStringRepresentation());
+            parameters.set("data_type", JIPipe.getDataTypes().getIdOf(dataSlot.getDataClass(row)));
+            parameters.set("row", row + "");
+
+            return Paths.get(StringUtils.nullToEmpty(customName.generate(parameters)));
+        }
     }
 
     public String generateMetadataString(JIPipeExportedDataTable exportedDataTable, int row, Set<String> existingMetadata) {
