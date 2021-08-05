@@ -17,6 +17,7 @@ import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeData;
+import org.hkijena.jipipe.api.data.JIPipeDataByMetadataExporter;
 import org.hkijena.jipipe.api.data.JIPipeDefaultMutableSlotConfiguration;
 import org.hkijena.jipipe.api.nodes.JIPipeDataBatch;
 import org.hkijena.jipipe.api.nodes.JIPipeInputSlot;
@@ -24,12 +25,14 @@ import org.hkijena.jipipe.api.nodes.JIPipeIteratingAlgorithm;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.JIPipeOutputSlot;
 import org.hkijena.jipipe.api.nodes.categories.MiscellaneousNodeTypeCategory;
+import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.filesystem.dataypes.PathData;
 import org.hkijena.jipipe.utils.StringUtils;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Collections;
 
 @JIPipeDocumentation(name = "Export data (path input)", description = "Exports all incoming data to the path specified by the path input data. " +
         "The files will be named according to the last path component. Depending on the data type one or multiple files " +
@@ -42,6 +45,8 @@ import java.nio.file.Path;
 @JIPipeNode(nodeTypeCategory = MiscellaneousNodeTypeCategory.class, menuPath = "Export")
 public class ExportData extends JIPipeIteratingAlgorithm {
 
+    private JIPipeDataByMetadataExporter exporter = new JIPipeDataByMetadataExporter();
+
     public ExportData(JIPipeNodeInfo info) {
         super(info, JIPipeDefaultMutableSlotConfiguration.builder()
                 .addInputSlot("Data", JIPipeData.class)
@@ -49,17 +54,19 @@ public class ExportData extends JIPipeIteratingAlgorithm {
                 .addOutputSlot("Path", PathData.class, null)
                 .seal()
                 .build());
+        registerSubParameter(exporter);
     }
 
     public ExportData(ExportData other) {
         super(other);
+        this.exporter = new JIPipeDataByMetadataExporter(other.exporter);
+        registerSubParameter(exporter);
     }
 
     @Override
     protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
         Path basePath = dataBatch.getInputData("Path", PathData.class, progressInfo).toPath();
         Path outputFolder = basePath.getParent();
-        String name = basePath.getFileName().toString();
 
         if (!Files.exists(outputFolder)) {
             try {
@@ -68,12 +75,14 @@ public class ExportData extends JIPipeIteratingAlgorithm {
                 throw new RuntimeException(e);
             }
         }
-
-        if (StringUtils.isNullOrEmpty(name))
-            name = "unnamed";
-
-        dataBatch.getInputData("Data", JIPipeData.class, progressInfo).saveTo(outputFolder, name, true, progressInfo);
+        exporter.writeToFolder(Collections.singletonList(getInputSlot("Data")),outputFolder, progressInfo);
         dataBatch.addOutputData("Path", new PathData(outputFolder), progressInfo);
+    }
+
+    @JIPipeDocumentation(name = "File name generation", description = "Following settings control how the output file names are generated from metadata columns.")
+    @JIPipeParameter("exporter")
+    public JIPipeDataByMetadataExporter getExporter() {
+        return exporter;
     }
 }
 
