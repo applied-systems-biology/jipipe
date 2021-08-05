@@ -343,8 +343,10 @@ public class ParameterPanel extends FormPanel implements Contextual {
         for (JIPipeParameterEditorUI ui : uiList.stream().sorted(comparator).collect(Collectors.toList())) {
             JIPipeParameterAccess parameterAccess = ui.getParameterAccess();
             JPanel labelPanel = new JPanel(new BorderLayout());
-            if (ui.isUILabelEnabled()) {
-                JLabel label = new JLabel(parameterAccess.getName());
+            if (ui.isUILabelEnabled() || parameterAccess.isImportant()) {
+                JLabel label = new JLabel();
+                if(ui.isUILabelEnabled())
+                    label.setText(parameterAccess.getName());
                 if (parameterAccess.isImportant())
                     label.setIcon(UIUtils.getIconFromResources("emblems/important.png"));
                 labelPanel.add(label, BorderLayout.CENTER);
@@ -359,8 +361,18 @@ public class ParameterPanel extends FormPanel implements Contextual {
             if (ui.isUILabelEnabled() || parameterCollection instanceof JIPipeDynamicParameterCollection) {
                 addToForm(ui, labelPanel, generateParameterDocumentation(parameterAccess, tree));
                 uiComponents.add(labelPanel);
-            } else
-                addToForm(ui, generateParameterDocumentation(parameterAccess, tree));
+            } else {
+                if(!parameterAccess.isImportant()) {
+                    addWideToForm(ui, generateParameterDocumentation(parameterAccess, tree));
+                }
+                else {
+                    JPanel wrapperPanel = new JPanel(new BorderLayout());
+                    wrapperPanel.add(ui, BorderLayout.CENTER);
+                    wrapperPanel.add(labelPanel, BorderLayout.WEST);
+                    addWideToForm(wrapperPanel, generateParameterDocumentation(parameterAccess, tree));
+                }
+            }
+
         }
 
         if (allowCollapse) {
