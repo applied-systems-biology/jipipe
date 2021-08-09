@@ -205,14 +205,8 @@ public class DeepLearningModelConfiguration implements JIPipeParameterCollection
         // Order is WHZCT
         List<Integer> shape = new ArrayList<>();
         shape.add(getImageWidth());
-        if (getImageHeight() > 1)
-            shape.add(getImageHeight());
-//        if (getImageDepth() > 1)
-//            shape.add(getImageDepth());
-        if (getImageChannels() > 1)
-            shape.add(getImageChannels());
-//        if (getImageFrames() > 1)
-//            shape.add(getImageFrames());
+        shape.add(getImageHeight());
+        shape.add(getImageChannels());
         return shape;
     }
 
