@@ -189,20 +189,21 @@ public class JIPipeMergingDataBatchBuilder {
         if (progressInfo.isCancelled())
             return null;
 
-        // Apply "empty" to all other keys if we have any other ones
-        if (allKeys.contains("") && allKeys.size() > 1) {
-            for (Map.Entry<JIPipeDataSlot, Multimap<String, Integer>> entry : matchedRows.entrySet()) {
+        // Apply "empty" to all other keys if we have any other ones (distribute case - only for multiple inputs)
+        if (allKeys.contains("") && slotList.size() > 1 && allKeys.size() > 1) {
 
-                // Add empty into all other ones
-                Collection<Integer> emptyRows = new HashSet<>(entry.getValue().get(""));
-
-                // Remove the "empty" key
-                entry.getValue().removeAll("");
-
-                // Copy
-                for (String key : entry.getValue().keySet()) {
-                    entry.getValue().putAll(key, emptyRows);
+            // Expand the empty key to all other keys
+            for (String key : allKeys) {
+                for (JIPipeDataSlot slot : slotList) {
+                    Multimap<String, Integer> slotMatchedRows = matchedRows.get(slot);
+                    if (slotMatchedRows.keySet().contains("")) {
+                        slotMatchedRows.putAll(key, slotMatchedRows.get(""));
+                    }
                 }
+            }
+            for (JIPipeDataSlot slot : slotList) {
+                Multimap<String, Integer> slotMatchedRows = matchedRows.get(slot);
+                slotMatchedRows.removeAll("");
             }
             allKeys.remove("");
         }
