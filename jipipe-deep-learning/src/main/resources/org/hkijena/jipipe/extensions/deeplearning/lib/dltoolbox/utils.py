@@ -136,7 +136,11 @@ def read_images(path_dir, model_input_shape, read_input, labels_for_classifier):
         if labels_for_classifier:
             XY = XY_paths.copy()
         else:
-            XY = io.imread_collection(XY_paths)
+            # differ between gray scale image with 1 pseudo channel and rgb image
+            if model_input_shape[-1] == 1:
+                XY = [io.imread(path, as_gray=True) for path in XY_paths]
+            else:
+                XY = [io.imread(path, as_gray=False) for path in XY_paths]
 
     elif model_input_shape[-1] > 1:
         XY = imread_collection(path_dir, verbose=False)
@@ -382,7 +386,7 @@ def validate_image_shape(model_shape, images):
     #     #print(img.tag)
     #     meta_dict = {TAGS[key]: img.tag[key] for key in img.tag.keys()}
     # print(meta_dict, meta_dict['ImageWidth'])
-
+    #print(images)
     images_unique_shapes = [img.shape for img in images]
     images_unique_shapes = list(set(images_unique_shapes))
 

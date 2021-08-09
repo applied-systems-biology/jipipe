@@ -19,6 +19,7 @@ Script to predict a network
 
 import os
 import numpy as np
+from glob import glob
 import pandas as pd
 import tensorflow as tf
 from dltoolbox import utils
@@ -71,10 +72,17 @@ def predict_samples(model_config, config, model=None):
         x = utils.preprocessing(x, mode=normalization_mode)
         print('[Predict] Input image intensity min-max-range after preprocessing:', x.min(), x.max())
 
+    # get filenames of input images
+    read_as_images = not str(input_dir).endswith('csv')
+    if read_as_images:
+        filenames = np.sort(glob(input_dir))
+    else:
+        filenames = np.sort(pd.read_csv(input_dir, index_col=0)['input']).tolist()
+
     results = []
     results_columns = None
 
-    for idx, (image, file_name) in enumerate(zip(X, X.files)):
+    for idx, (image, file_name) in enumerate(zip(x, filenames)):
         print(f"[Predict] [ {idx + 1} / {len(X)} ] read image with shape: {image.shape} from path: {file_name}")
 
         if len(image.shape) == 3:
@@ -84,7 +92,7 @@ def predict_samples(model_config, config, model=None):
 
         # extract the column names from the first sample
         if results_columns is None:
-            results_columns = ['sample']
+            results_columns = ['input']
             results_columns.extend(['probability_class_{0}'.format(idx) for idx, elem in enumerate(prediction[0])])
 
         print(f"[Predict] probabilities per class: {prediction[0]}")
