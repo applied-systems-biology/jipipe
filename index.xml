@@ -601,8 +601,8 @@ Alternatively, JIPipe provides automated installers (tested on Linux and Windows
       
       <guid>https://www.jipipe.org/documentation/standard-library/deep-learning/</guid>
       <description>JIPipe provides Deep Learning support via a standardized Python interface that allows to train/segment with different networks.
-Currently supported are &amp;hellip;
- SegNet VGG16  Setting up Deep Learning Deep Learning requires a Python installation that comes with the Deep Learning Toolkit (Download TBA). It is integrated via the Python library. This means that you will need to setup a Python environment with this library installed (Installation docs TBA) and provide the appropriate settings to JIPipe.</description>
+Setting up Deep Learning Deep Learning requires a Python installation that comes with Tensorflow 2. To simplify this process, we included automated installers for this environment that can be accessed via Project &amp;gt; Application settings &amp;gt; Extensions &amp;gt; Deep learning. Here, click Select/install at the Tensorflow item.
+The installer will ask you to review various settings - these should be fine for most system configurations.</description>
     </item>
     
     <item>

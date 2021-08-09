@@ -5,7 +5,7 @@
     
       <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-<meta name="revised" content="2021-07-28T13:42:38 CEST">
+<meta name="revised" content="2021-08-09T10:43:41 CEST">
 <title>Cellpose integration :: JIPipe for ImageJ</title>
 <link rel="shortcut icon" href="../../../images/favicon.png" type="image/x-icon" />
 <link href="../../../css/font-awesome.min.css" rel="stylesheet">
@@ -714,6 +714,13 @@ your hardware is not sufficient. Cellpose also will fall back to CPU processing 
 progress info from the Conda installation process. We cannot fix this on our end.</p>
 </p></div>
 
+<div class="notices warning" >
+<strong>Only Nvidia GPUs:</strong>
+If you want to make use of GPU processing, you will need to install the CUDA Toolkit.
+On Ubuntu Linux, install the package <code>nvidia-cuda-toolkit</code> (please review the output of APT carefully, as nvidia-cuda-toolkit only works with specific driver versions).
+On Windows, download the CUDA toolkit from the <a href="https://developer.nvidia.com/cuda-downloads" target="_blank">Nvidia homepage</a>. Please restart JIPipe or Windows after installing the toolkit - 
+otherwise the installed files will not be found by Tensorflow.
+</div>
 <h1 id="segmentation-with-cellpose">Segmentation with Cellpose</h1>
 <p>Segmenting images with Cellpose is handled by the <code>Cellpose</code> node (<code>Images &gt; Deep learning &gt; Cellpose</code>).
 It receives 2D or 3D images and, by default, outputs the ROI in ImageJ/JIPipe format (ROI Lists).</p>
@@ -737,7 +744,7 @@ image, use the <code>Annotate with data</code> node.</p>
 further processed in JIPipe.</p>
 
 <div class="notices info" ><p><p>Test data is optional (that&rsquo;s why the triangle is grey if disconnected). We still recommend to provide both training and test data sets.
-You can use the &lsquo;Split data randomly&rsquo; node to split data into two sets.</p>
+You can use the &lsquo;Split data randomly (percentage)&rsquo; node to split data into two sets.</p>
 </p></div>
 
 <p><img src="../../../img/documentation/cellpose-training.png" alt="Cellpose training"></p>

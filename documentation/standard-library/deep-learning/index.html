@@ -5,7 +5,7 @@
     
       <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-<meta name="revised" content="2021-07-28T13:42:38 CEST">
+<meta name="revised" content="2021-08-09T10:43:41 CEST">
 <title>Deep Learning :: JIPipe for ImageJ</title>
 <link rel="shortcut icon" href="../../../images/favicon.png" type="image/x-icon" />
 <link href="../../../css/font-awesome.min.css" rel="stylesheet">
@@ -693,22 +693,13 @@
     
     <p>JIPipe provides Deep Learning support via a standardized Python interface that
 allows to train/segment with different networks.</p>
-<p>Currently supported are &hellip;</p>
-<ul>
-<li>SegNet</li>
-<li>VGG16</li>
-</ul>
 <h1 id="setting-up-deep-learning">Setting up Deep Learning</h1>
-<p>Deep Learning requires a Python installation that comes with the <code>Deep Learning Toolkit</code> (Download TBA). It is integrated via the <a href="../../../documentation/standard-library/python/">Python library</a>.
-This means that you will need to setup a Python environment with this library installed (Installation docs TBA) and provide the
-appropriate settings to JIPipe.</p>
-<p>Alternatively, JIPipe provides automated installers (tested on Linux and Windows) that will download and setup everythinbg automatically.</p>
-<p>To setup Cellpose, navigate to <code>Project &gt; Application settings &gt; Extensions &gt; Deep learning </code>.
-Here you can find a setting <code>Deep Learning Python environment</code> that is enabled by default, meaning that
-DL nodes are executed in a different Python environment than the one setup in the <a href="../../../documentation/standard-library/python/">Python library</a> (recommended).
-You can disable the setting if you want.</p>
-<p>To install the necessary library or select an existing Python environment, click the <code>Select/Install</code> button.
-Here you can select an existing Conda environment, or let JIPipe install the CPU or GPU version of the Deep Learning environment.</p>
+<p>Deep Learning requires a Python installation that comes with Tensorflow 2. To simplify this process,
+we included automated installers for this environment that can be accessed via <code>Project &gt; Application settings &gt; Extensions &gt; Deep learning</code>.
+Here, click <code>Select/install</code> at the <code>Tensorflow</code> item.</p>
+<p>The installer will ask you to review various settings - these should be fine for most system configurations.
+If you are more experienced, then you can change the settings accordingly. You can also select an existing Conda or virtualenv
+environment by choosing the <code>Additional compatible installers</code> section inside <code>Select/Install</code>.</p>
 
 <div class="notices info" ><p><p>GPU processing requires large amounts of VRAM. You can always disable GPU processing on a per-node basis if
 your hardware is not sufficient.</p>
@@ -719,12 +710,33 @@ your hardware is not sufficient.</p>
 progress info from the Conda installation process. We cannot fix this on our end.</p>
 </p></div>
 
-<h1 id="segmentation">Segmentation</h1>
-<p>This section is currently being prepared. Please come back later.</p>
-<h1 id="classification">Classification</h1>
-<p>This section is currently being prepared. Please come back later.</p>
+<div class="notices warning" >
+<strong>Only Nvidia GPUs:</strong>
+If you want to make use of GPU processing, you will need to install the CUDA Toolkit.
+On Ubuntu Linux, install the package <code>nvidia-cuda-toolkit</code> (please review the output of APT carefully, as nvidia-cuda-toolkit only works with specific driver versions).
+On Windows, download the CUDA toolkit from the <a href="https://developer.nvidia.com/cuda-downloads" target="_blank">Nvidia homepage</a>. Please restart JIPipe or Windows after installing the toolkit - 
+otherwise the installed files will not be found by Tensorflow.
+</div>
 <h1 id="training">Training</h1>
-<p>This section is currently being prepared. Please come back later.</p>
+<p>To train a network from scratch, add a <code>Create model</code> node into the pipeline and set it up. It allows you to choose from
+different architectures and setup the expected image size, the number of classes, and additional factors like the
+learning rate. Here you also have to decide which kind of model is created: For example you can create segmentation oder
+classification models.</p>
+<p>Depending on the model choice, you will need to prepare your data in different ways:</p>
+<h2 id="segmentation-models">Segmentation models</h2>
+<p>Segmentation models are trained on labeled images, where the label is in most cases a binary mask.
+The label must be annotated as data annotation to the raw image (for example via the <code>Annotate with data</code> node).
+The data is supplied to the <code>Train model (labeled images)</code> node, which has three inputs:</p>
+<ul>
+<li>Training data: This contains the labeled images that are used for training the network</li>
+<li>Test data: This contains labeled images for evaluating the performance of the network</li>
+<li>The model (created from <code>Create model</code> or a pretrained model)</li>
+</ul>
+<p><strong>Please always ensure that there is no data shared between training and test data to prevent overfitting.</strong>
+You can achieve this either manually or by using the <code>Split data randomly (percentage)</code> node.</p>
+<p><img src="../../../img/documentation/deep-learning-segmentation-training.png" alt="Training example"></p>
+<h2 id="classifier-models">Classifier models</h2>
+<p>Classifiers determine which kind of object is shown in the image.</p>
 
 
     
