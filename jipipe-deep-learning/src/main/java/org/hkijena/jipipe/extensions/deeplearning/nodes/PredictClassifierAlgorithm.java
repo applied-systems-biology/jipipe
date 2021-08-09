@@ -252,7 +252,7 @@ public class PredictClassifierAlgorithm extends JIPipeSingleIterationAlgorithm {
             ResultsTableData predictionResult = ResultsTableData.fromCSV(predictionResultTableFile);
 
             for (int row = 0; row < predictionResult.getRowCount(); row++) {
-                String inputImagePath = predictionResult.getValueAsString(row, "sample");
+                String inputImagePath = predictionResult.getValueAsString(row, "input");
                 int inputRow = inputDataToRowMapping.get(inputImagePath);
 
                 double bestClassProbability = -1;

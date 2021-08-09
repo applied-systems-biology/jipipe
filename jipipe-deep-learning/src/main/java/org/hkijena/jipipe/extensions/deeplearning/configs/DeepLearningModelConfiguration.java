@@ -191,12 +191,8 @@ public class DeepLearningModelConfiguration implements JIPipeParameterCollection
         int dimensions = 1;
         if (getImageHeight() > 1)
             ++dimensions;
-//        if (getImageDepth() > 1)
-//            ++dimensions;
         if (getImageChannels() > 1)
             ++dimensions;
-//        if (getImageFrames() > 1)
-//            ++dimensions;
         return dimensions;
     }
 
@@ -215,12 +211,8 @@ public class DeepLearningModelConfiguration implements JIPipeParameterCollection
         setImageWidth(shape.get(0));
         if (shape.size() > 1)
             setImageHeight(shape.get(1));
-//        if (shape.size() > 2)
-//            setImageDepth(shape.get(2));
-        if (shape.size() > 3)
-            setImageChannels(shape.get(3));
-//        if (shape.size() > 4)
-//            setImageFrames(shape.get(4));
+        if (shape.size() > 2)
+            setImageChannels(shape.get(2));
     }
 
     @JIPipeDocumentation(name = "Number of classes", description = "The number of classes")
