@@ -94,6 +94,19 @@ public class Margin implements Function<Rectangle, Rectangle>, JIPipeParameterCo
         this.anchor = other.anchor;
     }
 
+    @Override
+    public String toString() {
+        return "Margin{" +
+                "left=" + left +
+                ", top=" + top +
+                ", right=" + right +
+                ", bottom=" + bottom +
+                ", width=" + width +
+                ", height=" + height +
+                ", anchor=" + anchor +
+                '}';
+    }
+
     public Margin(Anchor anchor) {
         this.anchor = anchor;
     }

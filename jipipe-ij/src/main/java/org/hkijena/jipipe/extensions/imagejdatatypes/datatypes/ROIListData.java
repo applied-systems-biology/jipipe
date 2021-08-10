@@ -35,6 +35,7 @@ import org.hkijena.jipipe.api.data.JIPipeCacheSlotDataSource;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataSource;
 import org.hkijena.jipipe.api.data.JIPipeDataStorageDocumentation;
+import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
 import org.hkijena.jipipe.extensions.imagejdatatypes.display.CachedROIListDataViewerWindow;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageSliceIndex;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.RoiOutline;
@@ -306,6 +307,9 @@ public class ROIListData extends ArrayList<Roi> implements JIPipeData {
     public ImagePlus toMask(Margin imageArea, boolean drawOutline, boolean drawFilledOutline, int lineThickness) {
         // Find the bounds and future stack position
         Rectangle bounds = imageArea.apply(this.getBounds());
+        if(bounds == null) {
+            throw new UserFriendlyRuntimeException("Invalid margin:" + imageArea, "Invalid margin!", "ROI list to mask", "The provided margin is invalid.", "Please check any margin parameters. Set them to Center/Center and all values to zero to be sure.");
+        }
         int sx = bounds.width + bounds.x;
         int sy = bounds.height + bounds.y;
         int sz = 1;
