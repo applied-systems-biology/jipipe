@@ -659,6 +659,7 @@ public class ImageJAlgorithmsExtension extends JIPipePrepackagedDefaultJavaExten
         registerNodeType("ij1-binary-remove-largest-region", RemoveLargestRegionAlgorithm.class, UIUtils.getIconURLFromResources("actions/filter.png"));
         registerNodeType("ij1-binary-volume-opening-2d", VolumeOpening2DAlgorithm.class, UIUtils.getIconURLFromResources("actions/filter.png"));
         registerNodeType("ij1-binary-volume-opening-3d", VolumeOpening3DAlgorithm.class, UIUtils.getIconURLFromResources("actions/filter.png"));
+        registerNodeType("ij1-binary-conditional-invert", ConditionalInverterAlgorithm.class, UIUtils.getIconURLFromResources("actions/invertimage.png"));
     }
 
     private void registerMorphologyAlgorithms() {
