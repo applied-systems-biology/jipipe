@@ -6,10 +6,7 @@ import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeAnnotation;
-import org.hkijena.jipipe.api.nodes.JIPipeDataBatch;
-import org.hkijena.jipipe.api.nodes.JIPipeInputSlot;
-import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
-import org.hkijena.jipipe.api.nodes.JIPipeSimpleIteratingAlgorithm;
+import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
@@ -24,7 +21,7 @@ import java.util.Set;
 @JIPipeDocumentation(name = "Conditional invert", description = "Inverts the image if a condition (based on statistics) is met. Otherwise, the image is not inverted.")
 @JIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Binary")
 @JIPipeInputSlot(slotName = "Input", value = ImagePlusGreyscaleMaskData.class, autoCreate = true)
-@JIPipeInputSlot(slotName = "Output", value = ImagePlusGreyscaleMaskData.class, autoCreate = true)
+@JIPipeOutputSlot(slotName = "Output", value = ImagePlusGreyscaleMaskData.class, autoCreate = true)
 public class ConditionalInverterAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     private DefaultExpressionParameter condition = new DefaultExpressionParameter("num_white > num_black");
