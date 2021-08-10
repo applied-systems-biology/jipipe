@@ -34,6 +34,7 @@ import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.MacroWrapperAlgorithm;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.Neighborhood2D;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.Neighborhood2D3D;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.Neighborhood3D;
+import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.analyze.AnnotateByImageStatisticsExpressionAlgorithm;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.analyze.FindParticles2D;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.analyze.ImageStatisticsAlgorithm;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.analyze.ImageStatisticsExpressionAlgorithm;
@@ -559,6 +560,7 @@ public class ImageJAlgorithmsExtension extends JIPipePrepackagedDefaultJavaExten
         registerNodeType("ij1-analyze-find-particles2d", FindParticles2D.class, UIUtils.getIconURLFromResources("actions/tool_elliptical_selection.png"));
         registerNodeType("ij1-analyze-image-statistics", ImageStatisticsAlgorithm.class, UIUtils.getIconURLFromResources("actions/statistics.png"));
         registerNodeType("ij1-analyze-image-statistics-expression", ImageStatisticsExpressionAlgorithm.class, UIUtils.getIconURLFromResources("actions/statistics.png"));
+        registerNodeType("ij1-analyze-annotate-by-image-statistics-expression", AnnotateByImageStatisticsExpressionAlgorithm.class, UIUtils.getIconURLFromResources("actions/statistics.png"));
         registerNodeType("ij1-analyze-statistics-histogram", HistogramGenerator.class, UIUtils.getIconURLFromResources("actions/office-chart-bar.png"));
         registerNodeType("ij1-analyze-statistics-pixels-greyscale", GreyscalePixelsGenerator.class, UIUtils.getIconURLFromResources("actions/statistics.png"));
 
