@@ -13,7 +13,9 @@
 
 package org.hkijena.jipipe.ui.grapheditor.contextmenu.clipboard;
 
+import com.google.common.collect.ImmutableList;
 import org.hkijena.jipipe.JIPipe;
+import org.hkijena.jipipe.api.compartments.algorithms.IOInterfaceAlgorithm;
 import org.hkijena.jipipe.api.compartments.algorithms.JIPipeCompartmentOutput;
 import org.hkijena.jipipe.api.history.PasteNodeGraphHistorySnapshot;
 import org.hkijena.jipipe.api.nodes.JIPipeGraph;
@@ -83,9 +85,11 @@ public class AlgorithmGraphPasteNodeUIContextAction implements NodeUIContextActi
         }
 
         // Replace project compartment with IOInterface
-        for (JIPipeGraphNode node : graph.getGraphNodes()) {
+        for (JIPipeGraphNode node : ImmutableList.copyOf(graph.getGraphNodes())) {
             if (node instanceof JIPipeCompartmentOutput) {
-                node.setInfo(JIPipe.getNodes().getInfoById("io-interface"));
+                IOInterfaceAlgorithm replacement = new IOInterfaceAlgorithm((IOInterfaceAlgorithm) node);
+                replacement.setInfo(JIPipe.getNodes().getInfoById("io-interface"));
+                graph.replaceNode(node, replacement);
             }
         }
 

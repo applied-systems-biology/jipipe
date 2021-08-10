@@ -1437,6 +1437,38 @@ public class JIPipeGraph implements JIPipeValidatable {
     }
 
     /**
+     * Replaces a node with another.
+     * @param target the target node
+     * @param replacement the replacement node
+     */
+    public void replaceNode(JIPipeGraphNode target, JIPipeGraphNode replacement) {
+        UUID compartment = getCompartmentUUIDOf(target);
+        insertNode(replacement, compartment);
+        for (Map.Entry<String, JIPipeDataSlot> entry : target.getInputSlotMap().entrySet()) {
+            JIPipeDataSlot replacementInput = replacement.getInputSlotMap().getOrDefault(entry.getKey(), null);
+            if(replacementInput == null) {
+                System.err.println("Could not find input slot " + entry.getKey());
+                continue;
+            }
+            for (JIPipeDataSlot slot : getSourceSlots(entry.getValue())) {
+                connect(slot, replacementInput);
+            }
+        }
+        for (Map.Entry<String, JIPipeDataSlot> entry : target.getOutputSlotMap().entrySet()) {
+            JIPipeDataSlot replacementOutput = replacement.getOutputSlotMap().getOrDefault(entry.getKey(), null);
+            if(replacementOutput == null) {
+                System.err.println("Could not find output slot " + entry.getKey());
+                continue;
+            }
+            for (JIPipeDataSlot slot : getTargetSlots(entry.getValue())) {
+                connect(replacementOutput, slot);
+            }
+        }
+        replacement.setLocations(target.getLocations());
+        removeNode(target, false);
+    }
+
+    /**
      * Returns the algorithm that has the same UUID as the foreign algorithm in the foreign graph.
      *
      * @param foreign An algorithm
