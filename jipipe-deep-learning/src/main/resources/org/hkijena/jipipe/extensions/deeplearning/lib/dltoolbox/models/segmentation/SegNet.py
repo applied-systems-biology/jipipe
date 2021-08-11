@@ -122,10 +122,10 @@ def build_model(config):
         inputs_reg = tf.keras.layers.GaussianNoise(reg_method_rate)(inputs)
 
     # distinguish for any or none regularization method
-    if reg_method == 'none':
-        encoder0_pool, encoder0 = encoder_block(inputs, 16)
-    else:
+    if reg_method in ['Dropout', 'GaussianDropout', 'GaussianNoise']:
         encoder0_pool, encoder0 = encoder_block(inputs_reg, 16)
+    else:
+        encoder0_pool, encoder0 = encoder_block(inputs, 16)
 
     encoder1_pool, encoder1 = encoder_block(encoder0_pool, 32)
     encoder2_pool, encoder2 = encoder_block(encoder1_pool, 64)

@@ -17,5 +17,5 @@ package org.hkijena.jipipe.extensions.deeplearning.enums;
  * Available architectures
  */
 public enum NetworkArchitecture {
-    SegNet, VGG16, FCN32, Xception, MobileNetV2_pix2pix, pix2pix
+    SegNet, VGG16, FCN32, Xception, MobileNetV2_pix2pix, pix2pix, example_classifier
 }

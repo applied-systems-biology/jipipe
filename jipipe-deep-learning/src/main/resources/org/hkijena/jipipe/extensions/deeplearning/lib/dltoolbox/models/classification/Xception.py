@@ -44,6 +44,8 @@ def build_model(config):
     """
 
     img_shape = tuple(config["image_shape"])
+    reg_method = config['regularization_method']
+    reg_method_rate = config['regularization_lambda']
     num_classes = config['n_classes']
     model_path = config['output_model_path']
     model_json_path = config["output_model_json_path"]
@@ -52,8 +54,22 @@ def build_model(config):
 
     inputs = tf.keras.layers.Input(shape=img_shape)
 
+    # perform regularization on input / visible - layer
+    if reg_method == 'Dropout':
+        inputs_reg = tf.keras.layers.Dropout(reg_method_rate)(inputs)
+    elif reg_method == 'GaussianDropout':
+        inputs_reg = tf.keras.layers.GaussianDropout(reg_method_rate)(inputs)
+    elif reg_method == 'GaussianNoise':
+        inputs_reg = tf.keras.layers.GaussianNoise(reg_method_rate)(inputs)
+
+    # distinguish for any or none regularization method
+    if reg_method in ['Dropout', 'GaussianDropout', 'GaussianNoise']:
+        x = tf.keras.layers.Conv2D(32, (3, 3), strides=(2, 2), use_bias=False)(inputs_reg)
+    else:
+        x = tf.keras.layers.Conv2D(32, (3, 3), strides=(2, 2), use_bias=False)(inputs)
+
     # Block 1
-    x = tf.keras.layers.Conv2D(32, (3, 3), strides=(2, 2), use_bias=False)(inputs)
+    # x = tf.keras.layers.Conv2D(32, (3, 3), strides=(2, 2), use_bias=False)(inputs)
     x = tf.keras.layers.BatchNormalization()(x)
     x = tf.keras.layers.Activation('relu')(x)
     x = tf.keras.layers.Conv2D(64, (3, 3), use_bias=False)(x)
@@ -143,6 +159,14 @@ def build_model(config):
     x = tf.keras.layers.SeparableConv2D(2048, (3, 3), padding='same', use_bias=False)(x)
     x = tf.keras.layers.BatchNormalization()(x)
     x = tf.keras.layers.Activation('relu')(x)
+
+    # perform regularization on input / visible - layer
+    if reg_method == 'Dropout':
+        x = tf.keras.layers.Dropout(reg_method_rate)(x)
+    elif reg_method == 'GaussianDropout':
+        x = tf.keras.layers.GaussianDropout(reg_method_rate)(x)
+    elif reg_method == 'GaussianNoise':
+        x = tf.keras.layers.GaussianNoise(reg_method_rate)(x)
 
     # Fully Connected Layer
     x = tf.keras.layers.GlobalAveragePooling2D()(x)

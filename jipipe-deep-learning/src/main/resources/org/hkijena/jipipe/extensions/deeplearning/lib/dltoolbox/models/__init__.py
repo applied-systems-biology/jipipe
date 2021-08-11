@@ -17,6 +17,7 @@ Adolf-Reichwein-Straße 23, 07745 Jena, Germany
 
 from dltoolbox.models.classification import VGG16
 from dltoolbox.models.classification import Xception
+from dltoolbox.models.classification import example_classifier
 from dltoolbox.models.segmentation import SegNet
 from dltoolbox.models.segmentation import FCN32
 from dltoolbox.models.segmentation import MobileNetV2_pix2pix
@@ -47,5 +48,7 @@ def build_model(config):
         return MobileNetV2_pix2pix.build_model(config)
     elif config["architecture"] == "pix2pix":
         return pix2pix.build_model(config)
+    elif config["architecture"] == "example_classifier":
+        return example_classifier.build_model(config)
     else:
         raise AttributeError("Unsupported model-architecture: " + config["architecture"])
