@@ -664,6 +664,7 @@ public class AdvancedFileChooser extends JPanel implements PropertyChangeListene
     }
 
     public void setDialogType(int dialogType) {
+        fileChooserComponent.setDialogType(dialogType);
         this.dialogType = dialogType;
     }
 
