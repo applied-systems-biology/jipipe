@@ -16,7 +16,7 @@ import java.nio.file.Paths;
 
 public class DownloadOfflineManualRun implements JIPipeRunnable {
 
-    public static final String DOWNLOAD_URL = "https://github.com/applied-systems-biology/jipipe/releases/download/2021.7/jipipe_offline_documentation.zip";
+    public static final String DOWNLOAD_URL = "https://github.com/applied-systems-biology/jipipe/releases/download/2021.8/jipipe_offline_documentation.zip";
     private JIPipeProgressInfo progressInfo = new JIPipeProgressInfo();
 
     @Override
