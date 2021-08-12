@@ -17,6 +17,8 @@ import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeIssueReport;
 import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
+import org.hkijena.jipipe.api.data.JIPipeAnnotation;
+import org.hkijena.jipipe.api.data.JIPipeAnnotationMergeStrategy;
 import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
 import org.hkijena.jipipe.api.nodes.JIPipeDataBatch;
 import org.hkijena.jipipe.api.nodes.JIPipeInputSlot;
@@ -37,11 +39,7 @@ import org.hkijena.jipipe.extensions.tables.parameters.collections.ExpressionTab
 import org.hkijena.jipipe.extensions.tables.parameters.processors.ExpressionTableColumnProcessorParameter;
 import org.hkijena.jipipe.utils.StringUtils;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Algorithm that integrates columns
@@ -82,6 +80,8 @@ public class ProcessColumnsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         ResultsTableData input = dataBatch.getInputData(getFirstInputSlot(), ResultsTableData.class, progressInfo);
         List<TableColumn> resultColumns = new ArrayList<>();
         ExpressionVariables expressionVariables = new ExpressionVariables();
+        Map<String, String> annotationsMap = JIPipeAnnotation.annotationListToMap(dataBatch.getGlobalAnnotations().values(), JIPipeAnnotationMergeStrategy.OverwriteExisting);
+        expressionVariables.set("annotations", annotationsMap);
         if (append) {
             for (String columnName : input.getColumnNames()) {
                 resultColumns.add(input.getColumnReference(input.getColumnIndex(columnName)));
