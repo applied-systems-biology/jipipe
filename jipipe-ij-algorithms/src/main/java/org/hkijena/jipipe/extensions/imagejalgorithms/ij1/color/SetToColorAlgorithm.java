@@ -51,7 +51,7 @@ public class SetToColorAlgorithm extends SimpleImageAndRoiIteratingAlgorithm {
 
     @Override
     protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
-        ImagePlus image = dataBatch.getInputData(getFirstInputSlot(), ImagePlusData.class, progressInfo).getDuplicateImage();
+        ImagePlus image = dataBatch.getInputData("Input", ImagePlusData.class, progressInfo).getDuplicateImage();
         image = ImageJUtils.channelsToRGB(image);
         if (image.getType() == ImagePlus.COLOR_RGB) {
             ImageJUtils.forEachIndexedZCTSlice(image, (ip, index) -> {
