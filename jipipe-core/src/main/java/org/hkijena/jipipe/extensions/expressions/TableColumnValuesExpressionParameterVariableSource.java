@@ -28,6 +28,7 @@ public class TableColumnValuesExpressionParameterVariableSource implements Expre
         VARIABLES.add(new ExpressionParameterVariable("Column values", "The values of this column as array", "values"));
         VARIABLES.add(new ExpressionParameterVariable("Number of rows", "The number of rows within the table", "num_rows"));
         VARIABLES.add(new ExpressionParameterVariable("Number of columns", "The number of columns within the table", "num_cols"));
+        VARIABLES.add(new ExpressionParameterVariable("Annotations", "Map of annotations of the current data batch", "annotations"));
     }
 
     @Override
