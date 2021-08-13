@@ -91,7 +91,7 @@ public class JIPipeIteratingAlgorithmDataBatchGenerationSettings implements JIPi
             "to data sets. This allows you to determine how interesting data annotation columns are extracted from the incoming data. " +
             "Union matches using the union of annotation columns. Intersection intersects the sets of available columns. You can also" +
             " customize which columns should be included or excluded.")
-    @JIPipeParameter(value = "column-matching", uiOrder = 999)
+    @JIPipeParameter(value = "column-matching", uiOrder = 999, important = true)
     public JIPipeColumMatching getColumnMatching() {
         return columnMatching;
     }
