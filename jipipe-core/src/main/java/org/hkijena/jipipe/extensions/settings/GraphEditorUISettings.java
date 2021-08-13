@@ -30,7 +30,7 @@ public class GraphEditorUISettings implements JIPipeParameterCollection {
     public static String ID = "graph-editor-ui";
 
     private EventBus eventBus = new EventBus();
-    private JIPipeGraphViewMode defaultViewMode = JIPipeGraphViewMode.Vertical;
+    private JIPipeGraphViewMode defaultViewMode = JIPipeGraphViewMode.VerticalCompact;
     private GraphAutoLayout autoLayout = GraphAutoLayout.MST;
     private boolean switchPanningDirection = false;
     private boolean enableLayoutHelper = true;
