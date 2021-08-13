@@ -75,6 +75,8 @@ public class FormPanel extends JXPanel {
     private JLabel parameterHelpDrillDown = new JLabel();
     private ArrayDeque<FutureComponent> infiniteScrollingQueue = new ArrayDeque<>();
 
+    private boolean withDocumentation;
+
     /**
      * Creates a new instance
      *
@@ -121,6 +123,7 @@ public class FormPanel extends JXPanel {
             content = contentPanel;
 
         if ((flags & WITH_DOCUMENTATION) == WITH_DOCUMENTATION) {
+            this.withDocumentation = true;
             boolean documentationBelow = (flags & DOCUMENTATION_BELOW) == DOCUMENTATION_BELOW;
             JSplitPane splitPane = new JSplitPane(documentationBelow ? JSplitPane.VERTICAL_SPLIT : JSplitPane.HORIZONTAL_SPLIT, content, helpPanel);
             splitPane.setDividerSize(3);
@@ -134,8 +137,13 @@ public class FormPanel extends JXPanel {
             });
             add(splitPane, BorderLayout.CENTER);
         } else {
+            this.withDocumentation = false;
             add(content, BorderLayout.CENTER);
         }
+    }
+
+    public boolean isWithDocumentation() {
+        return withDocumentation;
     }
 
     private void switchToDefaultHelp() {

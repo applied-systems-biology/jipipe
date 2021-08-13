@@ -15,6 +15,7 @@ package org.hkijena.jipipe.ui.parameters;
 
 import com.google.common.eventbus.Subscribe;
 import com.google.common.html.HtmlEscapers;
+import org.apache.commons.lang.WordUtils;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.parameters.JIPipeDynamicParameterCollection;
@@ -343,13 +344,19 @@ public class ParameterPanel extends FormPanel implements Contextual {
         for (JIPipeParameterEditorUI ui : uiList.stream().sorted(comparator).collect(Collectors.toList())) {
             JIPipeParameterAccess parameterAccess = ui.getParameterAccess();
             JPanel labelPanel = new JPanel(new BorderLayout());
+            MarkdownDocument documentation = generateParameterDocumentation(parameterAccess, tree);
             if (ui.isUILabelEnabled() || parameterAccess.isImportant()) {
                 JLabel label = new JLabel();
                 if(ui.isUILabelEnabled())
                     label.setText(parameterAccess.getName());
                 if (parameterAccess.isImportant())
                     label.setIcon(UIUtils.getIconFromResources("emblems/important.png"));
+                if(!isWithDocumentation())
+                    label.setToolTipText("<html>"+documentation.getRenderedHTML()+"</html>");
                 labelPanel.add(label, BorderLayout.CENTER);
+            }
+            if(!isWithDocumentation()) {
+                ui.setToolTipText("<html>"+documentation.getRenderedHTML()+"</html>");
             }
             if (isModifiable) {
                 JButton removeButton = new JButton(UIUtils.getIconFromResources("actions/close-tab.png"));
@@ -359,17 +366,17 @@ public class ParameterPanel extends FormPanel implements Contextual {
             }
 
             if (ui.isUILabelEnabled() || parameterCollection instanceof JIPipeDynamicParameterCollection) {
-                addToForm(ui, labelPanel, generateParameterDocumentation(parameterAccess, tree));
+                addToForm(ui, labelPanel, documentation);
                 uiComponents.add(labelPanel);
             } else {
                 if(!parameterAccess.isImportant()) {
-                    addWideToForm(ui, generateParameterDocumentation(parameterAccess, tree));
+                    addWideToForm(ui, documentation);
                 }
                 else {
                     JPanel wrapperPanel = new JPanel(new BorderLayout());
                     wrapperPanel.add(ui, BorderLayout.CENTER);
                     wrapperPanel.add(labelPanel, BorderLayout.WEST);
-                    addWideToForm(wrapperPanel, generateParameterDocumentation(parameterAccess, tree));
+                    addWideToForm(wrapperPanel, documentation);
                 }
             }
 
