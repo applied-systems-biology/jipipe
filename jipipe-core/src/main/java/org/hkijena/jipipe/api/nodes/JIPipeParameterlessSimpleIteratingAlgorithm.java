@@ -199,7 +199,7 @@ public abstract class JIPipeParameterlessSimpleIteratingAlgorithm extends JIPipe
     }
 
     @Override
-    public JIPipeParameterCollection getGenerationSettingsInterface() {
+    public JIPipeDataBatchGenerationSettings getGenerationSettingsInterface() {
         return dataBatchGenerationSettings;
     }
 
@@ -238,7 +238,7 @@ public abstract class JIPipeParameterlessSimpleIteratingAlgorithm extends JIPipe
         return batches;
     }
 
-    public static class DataBatchGenerationSettings implements JIPipeParameterCollection {
+    public static class DataBatchGenerationSettings implements JIPipeDataBatchGenerationSettings {
         private final EventBus eventBus = new EventBus();
         private OptionalIntegerRange limit = new OptionalIntegerRange(new IntegerRange("0-9"), false);
 

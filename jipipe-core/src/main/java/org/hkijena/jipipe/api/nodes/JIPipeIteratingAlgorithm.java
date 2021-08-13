@@ -97,7 +97,7 @@ public abstract class JIPipeIteratingAlgorithm extends JIPipeParameterSlotAlgori
     }
 
     @Override
-    public JIPipeParameterCollection getGenerationSettingsInterface() {
+    public JIPipeDataBatchGenerationSettings getGenerationSettingsInterface() {
         return dataBatchGenerationSettings;
     }
 

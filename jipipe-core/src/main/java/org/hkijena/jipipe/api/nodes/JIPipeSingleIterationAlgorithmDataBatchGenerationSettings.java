@@ -20,7 +20,7 @@ import org.hkijena.jipipe.api.data.JIPipeDataAnnotationMergeStrategy;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 
-public class JIPipeSingleIterationAlgorithmDataBatchGenerationSettings implements JIPipeParameterCollection {
+public class JIPipeSingleIterationAlgorithmDataBatchGenerationSettings implements JIPipeDataBatchGenerationSettings {
     private final EventBus eventBus = new EventBus();
     private JIPipeAnnotationMergeStrategy annotationMergeStrategy = JIPipeAnnotationMergeStrategy.Merge;
     private JIPipeDataAnnotationMergeStrategy dataAnnotationMergeStrategy = JIPipeDataAnnotationMergeStrategy.MergeTables;

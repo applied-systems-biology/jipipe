@@ -20,7 +20,7 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.extensions.parameters.generators.IntegerRange;
 import org.hkijena.jipipe.extensions.parameters.generators.OptionalIntegerRange;
 
-public class JIPipeSimpleIteratingAlgorithmDataBatchGenerationSettings implements JIPipeParameterCollection {
+public class JIPipeSimpleIteratingAlgorithmDataBatchGenerationSettings implements JIPipeDataBatchGenerationSettings {
     private final EventBus eventBus = new EventBus();
     private OptionalIntegerRange limit = new OptionalIntegerRange(new IntegerRange("0-9"), false);
 

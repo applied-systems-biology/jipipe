@@ -236,7 +236,7 @@ public class IteratingFormProcessorAlgorithm extends JIPipeAlgorithm implements 
     }
 
     @Override
-    public JIPipeParameterCollection getGenerationSettingsInterface() {
+    public JIPipeDataBatchGenerationSettings getGenerationSettingsInterface() {
         return dataBatchGenerationSettings;
     }
 

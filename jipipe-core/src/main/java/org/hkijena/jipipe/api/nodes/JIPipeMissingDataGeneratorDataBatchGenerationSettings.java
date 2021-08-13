@@ -28,7 +28,7 @@ import org.hkijena.jipipe.utils.ResourceUtils;
 /**
  * Groups data batch generation settings
  */
-public class JIPipeMissingDataGeneratorDataBatchGenerationSettings implements JIPipeParameterCollection {
+public class JIPipeMissingDataGeneratorDataBatchGenerationSettings implements JIPipeDataBatchGenerationSettings {
     private final EventBus eventBus = new EventBus();
     private JIPipeColumMatching dataSetMatching = JIPipeColumMatching.PrefixHashUnion;
     private StringQueryExpression customColumns = new StringQueryExpression();

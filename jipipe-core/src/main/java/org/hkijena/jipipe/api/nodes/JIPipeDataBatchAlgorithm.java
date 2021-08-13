@@ -28,7 +28,7 @@ public interface JIPipeDataBatchAlgorithm {
      *
      * @return batch generation settings as interface
      */
-    JIPipeParameterCollection getGenerationSettingsInterface();
+    JIPipeDataBatchGenerationSettings getGenerationSettingsInterface();
 
     /**
      * Generates data batches.

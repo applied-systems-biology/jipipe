@@ -29,7 +29,7 @@ import org.hkijena.jipipe.extensions.parameters.generators.OptionalIntegerRange;
 import org.hkijena.jipipe.extensions.parameters.primitives.StringParameterSettings;
 import org.hkijena.jipipe.utils.ResourceUtils;
 
-public class JIPipeMergingAlgorithmDataBatchGenerationSettings implements JIPipeParameterCollection {
+public class JIPipeMergingAlgorithmDataBatchGenerationSettings implements JIPipeDataBatchGenerationSettings {
     private final EventBus eventBus = new EventBus();
     private JIPipeColumMatching columnMatching = JIPipeColumMatching.PrefixHashUnion;
     private boolean skipIncompleteDataSets = false;
@@ -111,7 +111,7 @@ public class JIPipeMergingAlgorithmDataBatchGenerationSettings implements JIPipe
             if (getAnnotationMatchingMethod() != JIPipeAnnotationMatchingMethod.CustomExpression)
                 return false;
         }
-        return JIPipeParameterCollection.super.isParameterUIVisible(tree, access);
+        return JIPipeDataBatchGenerationSettings.super.isParameterUIVisible(tree, access);
     }
 
     @JIPipeDocumentation(name = "Custom grouping columns", description = "Only used if 'Grouping method' is set to 'Custom'. " +

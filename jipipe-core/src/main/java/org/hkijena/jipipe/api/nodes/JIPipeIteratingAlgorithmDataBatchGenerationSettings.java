@@ -32,7 +32,7 @@ import org.hkijena.jipipe.utils.ResourceUtils;
 /**
  * Groups data batch generation settings
  */
-public class JIPipeIteratingAlgorithmDataBatchGenerationSettings implements JIPipeParameterCollection {
+public class JIPipeIteratingAlgorithmDataBatchGenerationSettings implements JIPipeDataBatchGenerationSettings {
     private final EventBus eventBus = new EventBus();
     private JIPipeColumMatching columnMatching = JIPipeColumMatching.PrefixHashUnion;
     private boolean skipIncompleteDataSets = false;
@@ -114,7 +114,7 @@ public class JIPipeIteratingAlgorithmDataBatchGenerationSettings implements JIPi
             if (getAnnotationMatchingMethod() != JIPipeAnnotationMatchingMethod.CustomExpression)
                 return false;
         }
-        return JIPipeParameterCollection.super.isParameterUIVisible(tree, access);
+        return JIPipeDataBatchGenerationSettings.super.isParameterUIVisible(tree, access);
     }
 
     @JIPipeDocumentation(name = "Custom grouping columns", description = "Only used if 'Grouping method' is set to 'Custom'. " +
