@@ -50,7 +50,7 @@ public class OptionalParameterEditorUI extends JIPipeParameterEditorUI {
 
     @Override
     public void reload() {
-        OptionalParameter<?> parameter = getParameter(OptionalPathParameter.class);
+        OptionalParameter<?> parameter = getParameter(OptionalParameter.class);
         removeAll();
 
         // Create toggle button
