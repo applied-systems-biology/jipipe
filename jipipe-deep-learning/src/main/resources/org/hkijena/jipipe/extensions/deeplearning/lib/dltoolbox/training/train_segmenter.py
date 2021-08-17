@@ -65,15 +65,13 @@ def train_model(model_config, config, model=None):
         print(f'[Train model] Model was successfully loaded from path: {input_model_path}')
 
     # read the input and label images in dependence of their specified format: directory or .csv-table
-    X = utils.read_images(input_dir, model_input_shape=model.input_shape,
-                          read_input=True, labels_for_classifier=False)
-    Y = utils.read_images(label_dir, model_input_shape=model.output_shape,
-                          read_input=False, labels_for_classifier=False)
+    X, X_filepath = utils.read_images(input_dir, model_input_shape=model.input_shape, read_input=True)
+    Y, Y_filepath = utils.read_images(label_dir, model_input_shape=model.output_shape, read_input=False)
 
     print('[Train model] Input-images:', len(X), ', Label-images:', len(Y))
 
-    # validate with 1 random sample, that the sequence between input and labels match
-    if False:
+    # validate with one random sample to proof the sequence-match between input and labels
+    if show_plots:
         rd_idx = np.random.randint(low=0, high=len(X))
         x, y = X[rd_idx], Y[rd_idx]
         utils.plot_window(img=x, img_binary=y, title=f'Read images: validate sequence at index: {rd_idx}')
@@ -170,10 +168,12 @@ def train_model(model_config, config, model=None):
         y_train = y
 
         # read validation data
-        x_valid = utils.read_images(path_dir=input_validation_dir, model_input_shape=model.input_shape,
-                                    read_input=True, labels_for_classifier=False)
-        y_valid = utils.read_images(path_dir=label_validation_dir, model_input_shape=model.output_shape,
-                                    read_input=False, labels_for_classifier=False)
+        x_valid, filepath_x_valid = utils.read_images(path_dir=input_validation_dir,
+                                                      model_input_shape=model.input_shape,
+                                                      read_input=True)
+        y_valid, filepath_y_valid = utils.read_images(path_dir=label_validation_dir,
+                                                      model_input_shape=model.output_shape,
+                                                      read_input=False)
 
         # validate validation data
         x_valid = utils.validate_image_shape(model.input_shape, images=x_valid)
@@ -231,7 +231,11 @@ def train_model(model_config, config, model=None):
         print('[Train model] create directory folder for log:', log_dir)
 
     # get all callbacks which are active during the training
-    training_callbacks = callbacks.get_callbacks(input_model_path=input_model_path, log_dir=log_dir)
+    training_callbacks = callbacks.get_callbacks(input_model_path=input_model_path,
+                                                 log_dir=log_dir,
+                                                 unet_model=True,
+                                                 show_plots=show_plots,
+                                                 val_data=[x_valid, y_valid])
 
     # calculate the augmented number of steps per epoch for the training and validation
     steps_epoch = x_train.shape[0] // batch_size

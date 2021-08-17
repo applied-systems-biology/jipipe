@@ -57,9 +57,9 @@ def build_model(config, **kwargs):
     # compile model, depend on the number of classes/segments (2 classes or more)
     adam = tf.keras.optimizers.Adam(lr=learning_rate)
     if num_classes == 2:
-        model.compile(optimizer=adam, loss=metrics.bce_dice_loss, metrics=model_metrics)
+        model.compile(optimizer=adam, loss='binary_crossentropy', metrics=model_metrics)
     else:
-        model.compile(optimizer=adam, loss=metrics.ce_dice_loss, metrics=model_metrics)
+        model.compile(optimizer=adam, loss='categorical_crossentropy', metrics=model_metrics)
 
     model.summary()
 

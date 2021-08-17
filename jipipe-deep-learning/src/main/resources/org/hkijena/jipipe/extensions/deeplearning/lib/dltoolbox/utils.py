@@ -1,18 +1,25 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
 """
-Copyright by Jan-Philipp_Praetorius
 
-Research Group Applied Systems Biology - Head: Prof. Dr. Marc Thilo
-Figge
+@author: J-P Praetorius
+@email: jan-philipp.praetorius@leibniz-hki.de or p.e.mueller07@gmail.com
+
+Copyright by Jan-Philipp Praetorius
+
+Research Group Applied Systems Biology - Head: Prof. Dr. Marc Thilo Figge
 https://www.leibniz-hki.de/en/applied-systems-biology.html
 HKI-Center for Systems Biology of Infection
 Leibniz Institute for Natural Product Research and Infection Biology -
 Hans Knöll Insitute (HKI)
 Adolf-Reichwein-Straße 23, 07745 Jena, Germany
+
 """
 
 import os
 from glob import glob
 from pathlib import Path
+import re
 import json
 import numpy as np
 import pandas as pd
@@ -36,17 +43,33 @@ def imread_collection(pattern, load_func=io.imread, verbose=False, **kwargs):
         load_func: function used for loading an image. the first argument will be the image path (default: skimage.io.imread)
         pattern: glob pattern
 
-    Returns: list of loaded images
+    Returns:
+        imgs: images array
+        filepath: absolute path to corresponding images
 
     """
+
     files = glob(pattern)
-    files.sort()
+
+    # sort the file paths, by finding a numerical value in the basename
+    try:
+        files = sorted(files, key=lambda s: [int(t) if t.isdigit() else t.lower() for t in re.split('(\d+)', s)])
+        print(f'[imread_collection] INFO: Successfully applied natural string sorting')
+    except:
+        files.sort()
+        print(f'[imread_collection] CAUTION: applied standard sort() method')
+
     imgs = []
+    filepath = []
+
     for file in files:
         if verbose:
             print("[I/O] Reading", file, "...")
+
         imgs.append(load_func(file, **kwargs))
-    return imgs
+        filepath.append(file)
+
+    return imgs, filepath
 
 
 def load_and_compile_model(model_config, model_path, model=None) -> tf.keras.Model:
@@ -96,25 +119,28 @@ def load_and_compile_model(model_config, model_path, model=None) -> tf.keras.Mod
     return model
 
 
-def read_images(path_dir, model_input_shape, read_input, labels_for_classifier):
+def read_images(path_dir, model_input_shape, read_input):
     """
     Read images from directory if string-pattern is specified OR from csv. table
     Args:
         path_dir: directory of the images to be read
         model_input_shape: model input shape in model-config
         read_input: boolean whether the input are the inputs (X: True) or labels (Y: False)
-        labels_for_classifier: boolean whether the labels are numerical values for a classification
 
-    Returns: input OR label images
+    Returns:
+        XY: input OR label images
+        filepath: absolute path to corresponding images
+
     """
 
-    # check whether the input and label data are specified within a table OR as images
+    # check whether the input data are specified within a table OR as images
     read_as_images = not str(path_dir).endswith('csv')
 
     # read input images in case they are provided in a table, check for <input> column in table
     if not read_as_images:
 
-        df = pd.read_csv(path_dir, index_col=0)
+        df = pd.read_csv(path_dir)
+        print(f'[Read images] Columns names in table: {df.columns}')
 
         if read_input:
             assert 'input' in list(df.columns), "Input format not valid: provide a table with column <input>"
@@ -122,7 +148,7 @@ def read_images(path_dir, model_input_shape, read_input, labels_for_classifier):
             print(f'[Read images] Input is represented as images: {read_as_images} - '
                   f'with shape: {df.shape} and column names: {list(df.columns)}')
 
-            XY_paths = df['input'].tolist()
+            filepath = df['input'].tolist()
 
         else:
             assert 'label' in list(df.columns), "Label format not valid: provide a table with column <label>"
@@ -130,26 +156,46 @@ def read_images(path_dir, model_input_shape, read_input, labels_for_classifier):
             print(f'[Read images] Label is represented as images: {read_as_images} - '
                   f'with shape: {df.shape} and column names: {list(df.columns)}')
 
-            XY_paths = df['label'].tolist()
+            filepath = df['label'].tolist()
 
-        # if labels are numerical values - do not read them as images and keep the list from the table
-        if labels_for_classifier:
-            XY = XY_paths.copy()
+        # differ between gray scale image with 1 pseudo channel and RGB image
+        if model_input_shape[-1] == 1:
+            XY = [io.imread(path, as_gray=True) for path in filepath]
         else:
-            # differ between gray scale image with 1 pseudo channel and rgb image
-            if model_input_shape[-1] == 1:
-                XY = [io.imread(path, as_gray=True) for path in XY_paths]
-            else:
-                XY = [io.imread(path, as_gray=False) for path in XY_paths]
+            XY = [io.imread(path, as_gray=False) for path in filepath]
 
     elif model_input_shape[-1] > 1:
-        XY = imread_collection(path_dir, verbose=False)
+        XY, filepath = imread_collection(path_dir, verbose=False)
+        print(f'[Read images] Model shape: {model_input_shape} with number of channels: {model_input_shape[-1]}'
+              f' - read images as RGB images')
     elif model_input_shape[-1] == 1:
-        XY = imread_collection(path_dir, verbose=False, as_gray=True)
-    else:
-        XY = imread_collection(path_dir, verbose=False, as_gray=True)
+        XY, filepath = imread_collection(path_dir, verbose=False, as_gray=True)
         print(f'[Read images] Model shape: {model_input_shape} with number of channels: {model_input_shape[-1]}'
               f' - read images as gray-scaled images')
+    else:
+        XY, filepath = imread_collection(path_dir, verbose=False, as_gray=True)
+        print(f'[Read images] Model shape: {model_input_shape} with number of channels: {model_input_shape[-1]}'
+              f' - read images as gray-scaled images')
+
+    return XY, filepath
+
+
+def read_labels(path_dir):
+    """
+    Read labels in directory from csv. as table.
+    Args:
+        path_dir: directory of the csv file to be read
+
+    Returns: table with label values
+    """
+
+    df = pd.read_csv(path_dir)
+    print(f'[Read images] Columns names in table: {df.columns} and label are represented with shape: {df.shape}')
+
+    assert 'label' in list(df.columns), "Label format not valid: provide a table with column <label>"
+
+    # if labels are numerical values - do not read them as images and keep the list from the table
+    XY = df['label'].tolist()
 
     return XY
 
@@ -444,6 +490,28 @@ def plot_window(img, img_binary, title=None):
     if title is not None:
         fig.suptitle('{}'.format(title), fontsize=30)
 
+    plt.tight_layout()
+    plt.show()
+
+
+def plot_image_with_label(img, label, index):
+    """
+    Plot the original image with its corresponding layer and index from where it is extracted.
+
+    Args:
+        img: original image
+        label: the numerical / char represented label
+        index: index from where it is extracted
+
+    """
+
+    fig, ax = plt.subplots(1, 1, figsize=(8, 8))
+
+    if len(img.shape) == 3:
+        ax.imshow(img)
+    else:
+        ax.imshow(img, cmap='gray')
+    ax.set_title("Original image with label: <{}> at index: [{}]".format(label, index), fontsize=18)
     plt.tight_layout()
     plt.show()
 

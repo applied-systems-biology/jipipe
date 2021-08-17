@@ -70,12 +70,16 @@ def train_model(model_config, config, model=None):
     assert not label_as_images, "Label format not valid: provide the label files within a .csv file"
 
     # read the input and label images in dependence of their specified format: directory or .csv-table
-    X = utils.read_images(input_dir, model_input_shape=model.input_shape,
-                          read_input=True, labels_for_classifier=False)
-    Y = utils.read_images(label_dir, model_input_shape=model.output_shape,
-                          read_input=False, labels_for_classifier=True)
+    X, filepath = utils.read_images(input_dir, model_input_shape=model.input_shape, read_input=True)
+    Y = utils.read_labels(label_dir)
 
-    print('[Train model] Input-images:', len(X), ', Label-images:', len(Y))
+    print('[Train model] Input-images:', len(X), ', Label-values:', len(Y))
+
+    # validate with one random sample to proof the sequence-match between input and labels
+    if show_plots:
+        rd_idx = np.random.randint(low=0, high=len(X))
+        x_rd, y_rd = X[rd_idx], Y[rd_idx]
+        utils.plot_image_with_label(img=x_rd, label=y_rd, index=rd_idx)
 
     assert len(X) == len(Y) > 0, "Unequal number of input - label images/values"
 
@@ -137,9 +141,10 @@ def train_model(model_config, config, model=None):
         print('[Train model] Do <NOT> use elastic transformation')
 
     # Preprocessing of the input data (normalization)
-    print('[Train model] image intensity min-max-range before preprocessing:', x.min(), x.max())
-    x = utils.preprocessing(x, mode=normalization_mode)
-    print('[Train model] image intensity min-max-range after preprocessing:', x.min(), x.max())
+    print('[Train model] Input image intensity min-max-range before preprocessing:', x.min(), x.max())
+    if x.max() > 1:
+        x = utils.preprocessing(x, mode=normalization_mode)
+        print('[Train model] Input image intensity min-max-range after preprocessing:', x.min(), x.max())
 
     # Preprocessing for the label data (transfer labels to categorical arrays (e.g. (0) -> [1,0] ; (1) -> [0,1] )
     y = tf.keras.utils.to_categorical(Y, num_classes=num_classes)
@@ -152,10 +157,10 @@ def train_model(model_config, config, model=None):
         y_train = y
 
         # read validation data
-        x_valid = utils.read_images(path_dir=input_validation_dir, model_input_shape=model.input_shape,
-                                    read_input=True, labels_for_classifier=False)
-        y_valid = utils.read_images(path_dir=label_validation_dir, model_input_shape=model.output_shape,
-                                    read_input=False, labels_for_classifier=True)
+        x_valid, filepath_x_valid = utils.read_images(path_dir=input_validation_dir,
+                                                      model_input_shape=model.input_shape,
+                                                      read_input=True)
+        y_valid = utils.read_labels(path_dir=label_validation_dir)
 
         # validate validation data
         x_valid = utils.validate_image_shape(model.input_shape, images=x_valid)
@@ -209,7 +214,11 @@ def train_model(model_config, config, model=None):
         print('[Train model] create directory folder for log:', log_dir)
 
     # get all callbacks which are active during the training
-    training_callbacks = callbacks.get_callbacks(input_model_path=input_model_path, log_dir=log_dir)
+    training_callbacks = callbacks.get_callbacks(input_model_path=input_model_path,
+                                                 log_dir=log_dir,
+                                                 unet_model=False,
+                                                 show_plots=show_plots,
+                                                 val_data=[x_valid, y_valid])
 
     steps_epoch = x_train.shape[0] // batch_size
     print(f'[Train model] Number of steps per epoch-original: {steps_epoch}')

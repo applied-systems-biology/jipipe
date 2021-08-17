@@ -20,7 +20,7 @@ import matplotlib.pyplot as plt
 import tensorflow as tf
 import numpy as np
 import cv2
-from skimage import io
+from skimage import io, color
 from dltoolbox import utils
 
 
@@ -133,6 +133,14 @@ class GradCAM:
 
         image = np.squeeze(image)
         heatmap = cv2.applyColorMap(heatmap, colormap).astype(np.float32)
+
+        # convert image to RGB image if necessary
+        if len(image.shape) == 2:
+            image = color.gray2rgb(image)
+
+        # parse heatmap to image type if necessary
+        if heatmap.dtype != image.dtype:
+            heatmap = heatmap.astype(image.dtype)
 
         output = cv2.addWeighted(image, alpha, heatmap, 1 - alpha, 0)
 

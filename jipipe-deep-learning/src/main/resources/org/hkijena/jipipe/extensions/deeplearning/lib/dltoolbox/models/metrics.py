@@ -20,6 +20,8 @@ Script to define costum-made metrcis
 import numpy as np
 import tensorflow as tf
 from sklearn.metrics import matthews_corrcoef
+from scipy.spatial.distance import directed_hausdorff
+
 
 def get_metrics(model_type, num_classes):
     """
@@ -304,3 +306,18 @@ def focal_loss(y_true, y_pred):
 
 # TODO: averaged F1-score over thresholds from 1 to 5 pixelsaround the ground truth
 # get this metric here: https://www.cv-foundation.org/openaccess/content_cvpr_2016/papers/Perazzi_A_Benchmark_Dataset_CVPR_2016_paper.pdf
+
+# define costum loss-function and call it:
+
+# class CustomMSE(keras.losses.Loss):
+#     def __init__(self, regularization_factor=0.1, name="custom_mse"):
+#         super().__init__(name=name)
+#         self.regularization_factor = regularization_factor
+#
+#     def call(self, y_true, y_pred):
+#         mse = tf.math.reduce_mean(tf.square(y_true - y_pred))
+#         reg = tf.math.reduce_mean(tf.square(0.5 - y_pred))
+#         return mse + reg * self.regularization_factor
+#
+# model.compile(optimizer=keras.optimizers.Adam(), loss=CustomMSE())
+
