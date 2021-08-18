@@ -21,6 +21,8 @@ import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeAnnotation;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
+import org.hkijena.jipipe.api.data.JIPipeDataSlotInfo;
+import org.hkijena.jipipe.api.data.JIPipeSlotType;
 import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
 import org.hkijena.jipipe.api.nodes.JIPipeInputSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeMergingDataBatch;
@@ -52,6 +54,7 @@ import org.hkijena.jipipe.utils.PathUtils;
 import org.hkijena.jipipe.utils.ResourceUtils;
 
 import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -65,7 +68,10 @@ import java.util.Set;
 @JIPipeInputSlot(value = ImagePlus3DGreyscaleData.class, slotName = "Test data", autoCreate = true)
 @JIPipeInputSlot(value = DeepLearningModelData.class, slotName = "Model", autoCreate = true)
 @JIPipeOutputSlot(value = DeepLearningModelData.class, slotName = "Trained model", autoCreate = true)
+@JIPipeOutputSlot(value = ResultsTableData.class, slotName = "History")
 public class TrainClassifierModelAlgorithm extends JIPipeSingleIterationAlgorithm {
+
+    public static final JIPipeDataSlotInfo SLOT_HISTORY = new JIPipeDataSlotInfo(ResultsTableData.class, JIPipeSlotType.Output, "History");
 
     private TransformScale2DAlgorithm scale2DAlgorithm;
     private boolean scaleToModelSize = true;
@@ -75,6 +81,7 @@ public class TrainClassifierModelAlgorithm extends JIPipeSingleIterationAlgorith
     private OptionalDeepLearningDeviceEnvironment overrideDevices = new OptionalDeepLearningDeviceEnvironment();
     private AnnotationQueryExpression labelAnnotation = new AnnotationQueryExpression("Label");
     private NormalizationMethod normalization = NormalizationMethod.zero_one;
+    private boolean outputHistory = false;
 
     public TrainClassifierModelAlgorithm(JIPipeNodeInfo info) {
         super(info);
@@ -96,6 +103,19 @@ public class TrainClassifierModelAlgorithm extends JIPipeSingleIterationAlgorith
         this.scale2DAlgorithm = new TransformScale2DAlgorithm(other.scale2DAlgorithm);
         registerSubParameter(scale2DAlgorithm);
         this.overrideDevices = new OptionalDeepLearningDeviceEnvironment(other.overrideDevices);
+        setOutputHistory(other.isOutputHistory());
+    }
+
+    @JIPipeDocumentation(name = "Output history", description = "If enabled, the training history (loss, TP, FN, ...) is written to the output.")
+    @JIPipeParameter("output-history")
+    public boolean isOutputHistory() {
+        return outputHistory;
+    }
+
+    @JIPipeParameter("output-history")
+    public void setOutputHistory(boolean outputHistory) {
+        this.outputHistory = outputHistory;
+        toggleSlot(SLOT_HISTORY, outputHistory);
     }
 
     @JIPipeDocumentation(name = "Normalization", description = "The normalization method used for preprocessing the images.")
@@ -216,7 +236,15 @@ public class TrainClassifierModelAlgorithm extends JIPipeSingleIterationAlgorith
             DeepLearningModelData modelData = new DeepLearningModelData(workDirectory.resolve("trained_model.hdf5"),
                     workDirectory.resolve("model-config.json"),
                     workDirectory.resolve("trained_model.json"));
-            dataBatch.addOutputData(getFirstOutputSlot(), modelData, modelProgress);
+            dataBatch.addOutputData("Trained model", modelData, modelProgress);
+
+            if(outputHistory) {
+                Path historyFile = workDirectory.resolve("logs/training.log");
+                if(Files.isRegularFile(historyFile)) {
+                    ResultsTableData tableData = ResultsTableData.fromCSV(historyFile);
+                    dataBatch.addOutputData("History", tableData, progressInfo);
+                }
+            }
 
             if (cleanUpAfterwards) {
                 PathUtils.deleteDirectoryRecursively(workDirectory, progressInfo.resolve("Cleanup"));
