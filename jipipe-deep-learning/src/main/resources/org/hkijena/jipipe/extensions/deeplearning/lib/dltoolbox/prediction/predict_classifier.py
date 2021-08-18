@@ -52,10 +52,9 @@ def predict_samples(model_config, config, model=None):
         print(f'[Predict] Model successfully loaded from path: {input_model_path}')
 
     # read the input and label images in dependence of their specified format: directory or .csv-table
-    X = utils.read_images(path_dir=input_dir,
-                          model_input_shape=model_img_shape,
-                          read_input=True,
-                          labels_for_classifier=False)
+    X, filepath = utils.read_images(path_dir=input_dir,
+                                    model_input_shape=model_img_shape,
+                                    read_input=True)
 
     print('[Predict] Images to predict:', len(X))
 
@@ -72,17 +71,10 @@ def predict_samples(model_config, config, model=None):
         x = utils.preprocessing(x, mode=normalization_mode)
         print('[Predict] Input image intensity min-max-range after preprocessing:', x.min(), x.max())
 
-    # get filenames of input images
-    read_as_images = not str(input_dir).endswith('csv')
-    if read_as_images:
-        filenames = np.sort(glob(input_dir))
-    else:
-        filenames = np.sort(pd.read_csv(input_dir, index_col=0)['input']).tolist()
-
     results = []
     results_columns = None
 
-    for idx, (image, file_name) in enumerate(zip(x, filenames)):
+    for idx, (image, file_name) in enumerate(zip(x, filepath)):
         print(f"[Predict] [ {idx + 1} / {len(X)} ] read image with shape: {image.shape} from path: {file_name}")
 
         if len(image.shape) == 3:

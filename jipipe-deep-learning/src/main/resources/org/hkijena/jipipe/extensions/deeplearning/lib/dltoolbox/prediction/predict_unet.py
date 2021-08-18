@@ -59,10 +59,9 @@ def predict_samples(model_config, config, model=None):
         print(f'[Predict] Model successfully loaded from path: {input_model_path}')
 
     # read the input and label images in dependence of their specified format: directory or .csv-table
-    X = utils.read_images(path_dir=input_dir,
-                          model_input_shape=model_img_shape,
-                          read_input=True,
-                          labels_for_classifier=False)
+    X, filepath = utils.read_images(path_dir=input_dir,
+                                    model_input_shape=model_img_shape,
+                                    read_input=True)
 
     print('[Predict] Images to predict:', len(X))
 
@@ -84,17 +83,10 @@ def predict_samples(model_config, config, model=None):
         os.makedirs(output_dir)
         print('[Predict] create directory folder for predicted images:', output_dir)
 
-    # get filenames of input images
-    read_as_images = not str(input_dir).endswith('csv')
-    if read_as_images:
-        filenames = np.sort(glob(input_dir))
-    else:
-        filenames = np.sort(pd.read_csv(input_dir, index_col=0)['input']).tolist()
-
     results = []
 
-    for idx, (image, file_name) in enumerate(zip(x, filenames)):
-        print(f"[Predict] [ {idx+1} / {len(filenames)} ] read image with shape: {image.shape} from path: {file_name}")
+    for idx, (image, file_name) in enumerate(zip(x, filepath)):
+        print(f"[Predict] [ {idx+1} / {len(filepath)} ] read image with shape: {image.shape} from path: {file_name}")
 
         img_x0 = image.shape[0]
         img_x1 = image.shape[1]
@@ -179,4 +171,4 @@ def predict_samples(model_config, config, model=None):
 
         results.append(prediction)
 
-    return results, filenames
+    return results, filepath
