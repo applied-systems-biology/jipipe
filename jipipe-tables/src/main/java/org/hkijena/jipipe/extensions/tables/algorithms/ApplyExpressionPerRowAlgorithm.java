@@ -71,7 +71,7 @@ public class ApplyExpressionPerRowAlgorithm extends JIPipeSimpleIteratingAlgorit
     }
 
     @JIPipeDocumentation(name = "Expressions", description = "Each expression is applied for each row, with variables named according to the column values. " +
-            "New columns are created if needed. Existing values are overwritten.")
+            "New columns are created if needed. Existing values are overwritten. The operations are applied in order, meaning that you have access to the results of all previous operations.")
     @JIPipeParameter("expression-list")
     @PairParameterSettings(singleRow = false, keyLabel = "Expression", valueLabel = "Column name")
     @ExpressionParameterSettings(variableSource = VariableSource.class)
