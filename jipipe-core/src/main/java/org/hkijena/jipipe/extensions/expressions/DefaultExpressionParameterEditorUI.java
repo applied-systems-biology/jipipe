@@ -20,6 +20,7 @@ import org.fife.ui.rsyntaxtextarea.TokenMakerFactory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.components.DocumentChangeListener;
+import org.hkijena.jipipe.ui.components.RSyntaxTextField;
 import org.hkijena.jipipe.ui.parameters.JIPipeParameterEditorUI;
 import org.hkijena.jipipe.utils.ReflectionUtils;
 import org.hkijena.jipipe.utils.UIUtils;
@@ -79,7 +80,8 @@ public class DefaultExpressionParameterEditorUI extends JIPipeParameterEditorUI 
             }
         };
         RSyntaxDocument document = new RSyntaxDocument(tokenMakerFactory, "text/expression");
-        expressionEditor = new RSyntaxTextArea(document);
+        expressionEditor = new RSyntaxTextField(document);
+        expressionEditor.setFocusTraversalKeysEnabled(true);
         UIUtils.applyThemeToCodeEditor(expressionEditor);
         expressionEditor.setBackground(UIManager.getColor("TextArea.background"));
         expressionEditor.setLineWrap(true);
