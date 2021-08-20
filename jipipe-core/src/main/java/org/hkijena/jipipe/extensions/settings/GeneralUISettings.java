@@ -34,7 +34,6 @@ public class GeneralUISettings implements JIPipeParameterCollection {
     private boolean showParameterSearchBar = true;
     private boolean neverAskOnClosingTabs = false;
     private boolean validateOnSave = false;
-    private boolean projectInfoGeneratesPreview = true;
     private boolean addContextActionsToContextMenu = true;
     private boolean maximizeWindows = true;
     private boolean showIntroductionTour = true;
@@ -105,17 +104,6 @@ public class GeneralUISettings implements JIPipeParameterCollection {
     @JIPipeParameter("show-project-info")
     public void setShowProjectInfo(boolean showProjectInfo) {
         this.showProjectInfo = showProjectInfo;
-    }
-
-    @JIPipeDocumentation(name = "Project overview generates graph preview", description = "If enabled, the 'Project overview' tab generates a preview of the current pipeline.")
-    @JIPipeParameter("project-info-generates-preview")
-    public boolean isProjectInfoGeneratesPreview() {
-        return projectInfoGeneratesPreview;
-    }
-
-    @JIPipeParameter("project-info-generates-preview")
-    public void setProjectInfoGeneratesPreview(boolean projectInfoGeneratesPreview) {
-        this.projectInfoGeneratesPreview = projectInfoGeneratesPreview;
     }
 
     @JIPipeDocumentation(name = "Node context actions appear in the context menu", description = "If enabled, node-specific context actions (e.g. loading example data) are added into the node's context menu.")

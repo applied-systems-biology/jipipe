@@ -161,11 +161,7 @@ public class JIPipeProjectInfoUI extends JIPipeProjectWorkbenchPanel {
     private void renderBackgroundPanel() {
         BufferedImage headerBackground;
         headerBackground = UIUtils.getHeaderPanelBackground();
-
         headerPanel.setBackgroundImage(headerBackground);
-        if (GeneralUISettings.getInstance().isProjectInfoGeneratesPreview()) {
-            new BackgroundImageGenerator(getProjectWorkbench(), headerPanel).execute();
-        }
     }
 
     private void refreshDescription() {
