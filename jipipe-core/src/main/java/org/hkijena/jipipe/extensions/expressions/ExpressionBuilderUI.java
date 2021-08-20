@@ -41,14 +41,7 @@ import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -57,7 +50,7 @@ public class ExpressionBuilderUI extends JPanel {
     public static final Color COLOR_VARIABLE = new Color(0xffaf0a);
     public static final Color COLOR_CONSTANT = Color.BLUE;
     public static final Color COLOR_OPERATOR = new Color(0x854745);
-    public static final Color COLOR_FUNCTION = new Color(0xb38814);
+    public static final Color COLOR_FUNCTION = new Color(0x14A0B3);
     public static final Color COLOR_STRING = new Color(0xe80da5);
     private static final EntryRankingFunction RANKING_FUNCTION = new EntryRankingFunction();
     private static final Function<Object, String> ENTRY_TO_STRING_FUNCTION = new EntryToStringFunction();
@@ -70,7 +63,11 @@ public class ExpressionBuilderUI extends JPanel {
     private RSyntaxTextArea expressionEditor;
     private FormPanel inserterForm = new FormPanel(null, FormPanel.WITH_SCROLLING);
     private JPanel inserterButtonPanel = new JPanel();
-    private JButton syntaxCheckLabel;
+    private boolean inserterCommitted = true;
+
+    // Inserter
+    private Object currentlyInsertedObject;
+    private List<ExpressionBuilderParameterUI> inserterParameterEditorUIList;
 
     public ExpressionBuilderUI(String expression, Set<ExpressionParameterVariable> variables) {
         this.variables = variables;
@@ -232,11 +229,13 @@ public class ExpressionBuilderUI extends JPanel {
     }
 
     private void updateInserter() {
+        inserterCommitted = false;
         inserterForm.clear();
         inserterButtonPanel.removeAll();
         inserterButtonPanel.revalidate();
         inserterButtonPanel.repaint();
         Object value = commandPaletteList.getSelectedValue();
+        currentlyInsertedObject = value;
         if (value instanceof ExpressionParameterVariable) {
             ExpressionParameterVariable variable = (ExpressionParameterVariable) value;
             FormPanel.GroupHeaderPanel groupHeader = inserterForm.addGroupHeader(String.format("<html><i style=\"color: #ffdc53; \">Variable</i> %s (<code><strong>%s</strong></code>)</html>",
@@ -246,7 +245,10 @@ public class ExpressionBuilderUI extends JPanel {
 
             if (!StringUtils.isNullOrEmpty(((ExpressionParameterVariable) value).getKey())) {
                 JButton insertButton = new JButton("Insert", UIUtils.getIconFromResources("actions/insert-object.png"));
-                insertButton.addActionListener(e -> insertAtCaret(variable.getKey()));
+                insertButton.addActionListener(e -> {
+                    inserterCommitted = true;
+                    insertAtCaret(variable.getKey());
+                });
                 inserterButtonPanel.add(Box.createHorizontalGlue());
                 inserterButtonPanel.add(insertButton);
             }
@@ -261,12 +263,18 @@ public class ExpressionBuilderUI extends JPanel {
 
             JButton insertSimilarVariable = new JButton("Insert variable with same name", UIUtils.getIconFromResources("actions/variable.png"));
             insertSimilarVariable.setToolTipText("Inserts a variable that has the same name as the constant.");
-            insertSimilarVariable.addActionListener(e -> insertAtCaret("$\"" + constantEntry.getConstant().getName() + "\""));
+            insertSimilarVariable.addActionListener(e -> {
+                inserterCommitted = true;
+                insertAtCaret("$\"" + constantEntry.getConstant().getName() + "\"");
+            });
             inserterButtonPanel.add(insertSimilarVariable);
 
             JButton insertButton = new JButton("Insert", UIUtils.getIconFromResources("actions/insert-object.png"));
             insertButton.setToolTipText("Inserts the constant.");
-            insertButton.addActionListener(e -> insertAtCaret(constantEntry.getConstant().getName()));
+            insertButton.addActionListener(e -> {
+                inserterCommitted = true;
+                insertAtCaret(constantEntry.getConstant().getName());
+            });
             inserterButtonPanel.add(insertButton);
         } else if (value instanceof ExpressionOperatorEntry) {
             ExpressionOperatorEntry operatorEntry = (ExpressionOperatorEntry) value;
@@ -275,7 +283,7 @@ public class ExpressionBuilderUI extends JPanel {
                     HtmlEscapers.htmlEscaper().escape(operatorEntry.getSignature())), UIUtils.getIconFromResources("actions/insert-function.png"));
             groupHeader.setDescription(operatorEntry.getDescription());
 
-            List<ExpressionBuilderParameterUI> parameterEditorUIList = new ArrayList<>();
+            inserterParameterEditorUIList = new ArrayList<>();
             for (int i = 0; i < operatorEntry.getOperator().getOperandCount(); i++) {
                 ParameterInfo info = operatorEntry.getParameterInfo(i);
                 ExpressionBuilderParameterUI parameterUI = new ExpressionBuilderParameterUI();
@@ -283,19 +291,25 @@ public class ExpressionBuilderUI extends JPanel {
                 infoLabel.setToolTipText(info.getDescription());
                 appendTooltipForParameterLabel(info, infoLabel);
                 inserterForm.addToForm(parameterUI, infoLabel, null);
-                parameterEditorUIList.add(parameterUI);
+                inserterParameterEditorUIList.add(parameterUI);
             }
 
             inserterButtonPanel.add(Box.createHorizontalGlue());
 
             JButton insertButton = new JButton("Insert", UIUtils.getIconFromResources("actions/insert-object.png"));
             insertButton.setToolTipText("Inserts the operator with parameters.");
-            insertButton.addActionListener(e -> insertOperator(operatorEntry, parameterEditorUIList));
+            insertButton.addActionListener(e -> {
+                inserterCommitted = true;
+                insertOperator(operatorEntry, inserterParameterEditorUIList);
+            });
             inserterButtonPanel.add(insertButton);
 
             JButton insertSymbolButton = new JButton("Insert only symbol", UIUtils.getIconFromResources("actions/format-text-symbol.png"));
             insertSymbolButton.setToolTipText("Inserts the operator symbol.");
-            insertSymbolButton.addActionListener(e -> insertAtCaret(operatorEntry.getOperator().getSymbol()));
+            insertSymbolButton.addActionListener(e -> {
+                inserterCommitted = true;
+                insertAtCaret(operatorEntry.getOperator().getSymbol());
+            });
             inserterButtonPanel.add(insertSymbolButton);
         } else if (value instanceof JIPipeExpressionRegistry.ExpressionFunctionEntry) {
             JIPipeExpressionRegistry.ExpressionFunctionEntry functionEntry = (JIPipeExpressionRegistry.ExpressionFunctionEntry) value;
@@ -304,12 +318,12 @@ public class ExpressionBuilderUI extends JPanel {
                     HtmlEscapers.htmlEscaper().escape(functionEntry.getFunction().getName())), UIUtils.getIconFromResources("actions/insert-function.png"));
             groupHeader.setDescription(functionEntry.getDescription());
 
-            List<ExpressionBuilderParameterUI> parameterEditorUIList = new ArrayList<>();
+            inserterParameterEditorUIList = new ArrayList<>();
             if (functionEntry.getFunction().getMinimumArgumentCount() < functionEntry.getFunction().getMaximumArgumentCount()) {
                 JButton addParameterButton = new JButton("Add parameter", UIUtils.getIconFromResources("actions/list-add.png"));
                 addParameterButton.addActionListener(e -> {
-                    if (parameterEditorUIList.size() < functionEntry.getFunction().getMaximumArgumentCount()) {
-                        ParameterInfo info = functionEntry.getFunction().getParameterInfo(parameterEditorUIList.size());
+                    if (inserterParameterEditorUIList.size() < functionEntry.getFunction().getMaximumArgumentCount()) {
+                        ParameterInfo info = functionEntry.getFunction().getParameterInfo(inserterParameterEditorUIList.size());
                         ExpressionBuilderParameterUI parameterUI = new ExpressionBuilderParameterUI();
                         JLabel infoLabel = new JLabel(info.getName());
                         infoLabel.setToolTipText(info.getDescription());
@@ -317,9 +331,10 @@ public class ExpressionBuilderUI extends JPanel {
                         inserterForm.removeLastRow();
                         inserterForm.addToForm(parameterUI, infoLabel, null);
                         inserterForm.addVerticalGlue();
-                        parameterEditorUIList.add(parameterUI);
+                        inserterParameterEditorUIList.add(parameterUI);
                         inserterForm.revalidate();
                         inserterForm.repaint();
+                        inserterCommitted = false;
                     }
                 });
                 groupHeader.addColumn(addParameterButton);
@@ -330,21 +345,28 @@ public class ExpressionBuilderUI extends JPanel {
                 JLabel infoLabel = new JLabel(info.getName());
                 appendTooltipForParameterLabel(info, infoLabel);
                 inserterForm.addToForm(parameterUI, infoLabel, null);
-                parameterEditorUIList.add(parameterUI);
+                inserterParameterEditorUIList.add(parameterUI);
             }
 
             inserterButtonPanel.add(Box.createHorizontalGlue());
 
             JButton insertButton = new JButton("Insert", UIUtils.getIconFromResources("actions/insert-object.png"));
             insertButton.setToolTipText("Inserts the function with parameters.");
-            insertButton.addActionListener(e -> insertFunction(functionEntry, parameterEditorUIList));
+            insertButton.addActionListener(e -> {
+                inserterCommitted = true;
+                insertFunction(functionEntry, inserterParameterEditorUIList);
+            });
             inserterButtonPanel.add(insertButton);
 
             JButton insertSymbolButton = new JButton("Insert only symbol", UIUtils.getIconFromResources("actions/format-text-symbol.png"));
             insertSymbolButton.setToolTipText("Inserts the function symbol.");
-            insertSymbolButton.addActionListener(e -> insertAtCaret(functionEntry.getFunction().getName()));
+            insertSymbolButton.addActionListener(e -> {
+                inserterCommitted = true;
+                insertAtCaret(functionEntry.getFunction().getName());
+            });
             inserterButtonPanel.add(insertSymbolButton);
         } else {
+            inserterCommitted = true;
             FormPanel.GroupHeaderPanel groupHeader = inserterForm.addGroupHeader("Expression builder", UIUtils.getIconFromResources("actions/insert-function.png"));
             groupHeader.setDescription("Welcome to the expression builder that simplifies the creation of expressions. On the right-hand side you will find a list of all available functions and operators. " +
                     "Please note that the list of variables can be incomplete depending on various factors.");
@@ -457,8 +479,10 @@ public class ExpressionBuilderUI extends JPanel {
         AtomicBoolean confirmed = new AtomicBoolean(false);
         JButton confirmButton = new JButton("Accept", UIUtils.getIconFromResources("actions/checkmark.png"));
         confirmButton.addActionListener(e -> {
-            confirmed.set(true);
-            dialog.setVisible(false);
+            if(expressionBuilderUI.checkInserterBeforeAccept()) {
+                confirmed.set(true);
+                dialog.setVisible(false);
+            }
         });
         buttonPanel.add(confirmButton);
 
@@ -472,6 +496,65 @@ public class ExpressionBuilderUI extends JPanel {
         dialog.setLocationRelativeTo(parent);
         dialog.setVisible(true);
         return confirmed.get() ? expressionBuilderUI.getExpression() : null;
+    }
+
+    private void insertCurrentlyInsertedValue() {
+        if (currentlyInsertedObject instanceof ExpressionParameterVariable) {
+            ExpressionParameterVariable variable = (ExpressionParameterVariable) currentlyInsertedObject;
+            if (!StringUtils.isNullOrEmpty(variable.getKey())) {
+                insertAtCaret(variable.getKey());
+            }
+        } else if (currentlyInsertedObject instanceof ExpressionConstantEntry) {
+            ExpressionConstantEntry constantEntry = (ExpressionConstantEntry) currentlyInsertedObject;
+            insertAtCaret(constantEntry.getConstant().getName());
+        } else if (currentlyInsertedObject instanceof ExpressionOperatorEntry) {
+            insertOperator((ExpressionOperatorEntry) currentlyInsertedObject, inserterParameterEditorUIList);
+        } else if (currentlyInsertedObject instanceof JIPipeExpressionRegistry.ExpressionFunctionEntry) {
+            insertFunction((JIPipeExpressionRegistry.ExpressionFunctionEntry) currentlyInsertedObject, inserterParameterEditorUIList);
+        }
+    }
+
+    private boolean checkInserterBeforeAccept() {
+        if(currentlyInsertedObject != null) {
+            if(!inserterCommitted) {
+                boolean found = false;
+                if(inserterParameterEditorUIList != null && inserterParameterEditorUIList.size() > 0) {
+                    for (ExpressionBuilderParameterUI ui : inserterParameterEditorUIList) {
+                        if(!StringUtils.isNullOrEmpty(ui.getCurrentExpressionValue())) {
+                            found = true;
+                            break;
+                        }
+                    }
+                }
+                else {
+                    found = true;
+                }
+                if(found) {
+                    int result = JOptionPane.showOptionDialog(this,
+                            "You still have uncommitted values in the function builder.\n" +
+                                    "Do you want to replace the existing expression or insert the function into the expression?",
+                            "Expression builder",
+                            JOptionPane.YES_NO_CANCEL_OPTION,
+                            JOptionPane.QUESTION_MESSAGE,
+                            null,
+                            new Object[]{"Insert", "Replace", "Cancel"},
+                            "New window");
+                    switch (result) {
+                        case JOptionPane.YES_OPTION:
+                            insertCurrentlyInsertedValue();
+                            break;
+                        case JOptionPane.NO_OPTION:
+                            expressionEditor.setText("");
+                            insertCurrentlyInsertedValue();
+                            break;
+                        default:
+                            return false;
+                    }
+                }
+
+            }
+        }
+        return true;
     }
 
     public static class EntryToStringFunction implements Function<Object, String> {

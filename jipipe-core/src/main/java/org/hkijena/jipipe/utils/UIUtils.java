@@ -99,6 +99,8 @@ public class UIUtils {
     public static final Insets UI_PADDING = new Insets(4, 4, 4, 4);
     public static final Map<String, ImageIcon> ICON_FROM_RESOURCES_CACHE = new HashMap<>();
     public static boolean DARK_THEME = false;
+    private static Theme RSYNTAX_THEME_DEFAULT;
+    private static Theme RSYNTAX_THEME_DARK;
 
     public static void sendTrayNotification(String caption, String message, TrayIcon.MessageType messageType) {
         if (SystemUtils.IS_OS_LINUX) {
@@ -169,9 +171,21 @@ public class UIUtils {
     public static void applyThemeToCodeEditor(RSyntaxTextArea textArea) {
         if (DARK_THEME) {
             try {
-                Theme theme = Theme.load(ResourceUtils.class.getResourceAsStream(
-                        "/org/fife/ui/rsyntaxtextarea/themes/dark.xml"));
-                theme.apply(textArea);
+                if(RSYNTAX_THEME_DARK == null) {
+                    RSYNTAX_THEME_DARK = Theme.load(ResourceUtils.class.getResourceAsStream(
+                            "/org/hkijena/jipipe/rsyntaxtextarea/themes/dark.xml"));
+                }
+                RSYNTAX_THEME_DARK.apply(textArea);
+            } catch (IOException ioe) { // Never happens
+                ioe.printStackTrace();
+            }
+        } else {
+            try {
+                if(RSYNTAX_THEME_DEFAULT == null) {
+                    RSYNTAX_THEME_DEFAULT = Theme.load(ResourceUtils.class.getResourceAsStream(
+                            "/org/hkijena/jipipe/rsyntaxtextarea/themes/default.xml"));
+                }
+                RSYNTAX_THEME_DEFAULT.apply(textArea);
             } catch (IOException ioe) { // Never happens
                 ioe.printStackTrace();
             }
