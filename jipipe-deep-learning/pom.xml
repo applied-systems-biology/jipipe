@@ -5,11 +5,11 @@
     <parent>
         <artifactId>pom-jipipe</artifactId>
         <groupId>org.hkijena</groupId>
-        <version>2021.9</version>
+        <version>1.39.1</version>
     </parent>
 
     <artifactId>jipipe-deep-learning</artifactId>
-    <version>2021.9</version>
+    <version>1.39.1</version>
 
     <name>jipipe-deep-learning</name>
     <description>JIPipe deep-learning Integration</description>
@@ -78,22 +78,22 @@
             <dependency>
                 <groupId>org.hkijena</groupId>
                 <artifactId>jipipe-core</artifactId>
-                <version>2021.9</version>
+                <version>1.39.1</version>
             </dependency>
             <dependency>
                 <groupId>org.hkijena</groupId>
                 <artifactId>jipipe-ij</artifactId>
-                <version>2021.9</version>
+                <version>1.39.1</version>
             </dependency>
             <dependency>
                 <groupId>org.hkijena</groupId>
                 <artifactId>jipipe-ij-algorithms</artifactId>
-                <version>2021.9</version>
+                <version>1.39.1</version>
             </dependency>
             <dependency>
                 <groupId>org.hkijena</groupId>
                 <artifactId>jipipe-python</artifactId>
-                <version>2021.9</version>
+                <version>1.39.1</version>
             </dependency>
             <dependency>
                 <groupId>fr.inra.ijpb</groupId>

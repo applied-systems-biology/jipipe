@@ -33,7 +33,7 @@
       "citation" : ""
     },
     "id" : "org.hkijena.jipipe:compartments",
-    "version" : "2021.9",
+    "version" : "1.39.1",
     "ij:update-site-dependencies" : [ ],
     "ij:update-site-providers" : [ ]
   } ],

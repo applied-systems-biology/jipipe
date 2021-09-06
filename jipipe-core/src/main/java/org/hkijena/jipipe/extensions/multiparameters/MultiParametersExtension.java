@@ -61,6 +61,6 @@ public class MultiParametersExtension extends JIPipePrepackagedDefaultJavaExtens
 
     @Override
     public String getDependencyVersion() {
-        return "2021.9";
+        return "1.39.1";
     }
 }
