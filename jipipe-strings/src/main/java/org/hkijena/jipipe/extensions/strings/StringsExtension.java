@@ -64,6 +64,6 @@ public class StringsExtension extends JIPipePrepackagedDefaultJavaExtension {
 
     @Override
     public String getDependencyVersion() {
-        return "2021.8";
+        return "2021.9";
     }
 }
