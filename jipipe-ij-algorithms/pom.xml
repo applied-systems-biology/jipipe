@@ -5,11 +5,11 @@
     <parent>
         <artifactId>pom-jipipe</artifactId>
         <groupId>org.hkijena</groupId>
-        <version>1.39.1</version>
+        <version>1.39.2</version>
     </parent>
 
     <artifactId>jipipe-ij-algorithms</artifactId>
-    <version>1.39.1</version>
+    <version>1.39.2</version>
 
     <name>jipipe-ij-algorithms</name>
     <description>JIPipe ImageJ Algorithms</description>
@@ -78,27 +78,27 @@
             <dependency>
                 <groupId>org.hkijena</groupId>
                 <artifactId>jipipe-core</artifactId>
-                <version>1.39.1</version>
+                <version>1.39.2</version>
             </dependency>
             <dependency>
                 <groupId>org.hkijena</groupId>
                 <artifactId>jipipe-tables</artifactId>
-                <version>1.39.1</version>
+                <version>1.39.2</version>
             </dependency>
             <dependency>
                 <groupId>org.hkijena</groupId>
                 <artifactId>jipipe-strings</artifactId>
-                <version>1.39.1</version>
+                <version>1.39.2</version>
             </dependency>
             <dependency>
                 <groupId>org.hkijena</groupId>
                 <artifactId>jipipe-forms</artifactId>
-                <version>1.39.1</version>
+                <version>1.39.2</version>
             </dependency>
             <dependency>
                 <groupId>org.hkijena</groupId>
                 <artifactId>jipipe-ij</artifactId>
-                <version>1.39.1</version>
+                <version>1.39.2</version>
             </dependency>
             <dependency>
                 <groupId>sc.fiji</groupId>

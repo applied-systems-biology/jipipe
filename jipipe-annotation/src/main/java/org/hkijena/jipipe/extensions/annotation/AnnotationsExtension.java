@@ -100,6 +100,6 @@ public class AnnotationsExtension extends JIPipePrepackagedDefaultJavaExtension 
 
     @Override
     public String getDependencyVersion() {
-        return "1.39.1";
+        return "1.39.2";
     }
 }
