@@ -45,6 +45,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ExecutionException;
 
 /**
  * A tool that assists the user in configuring batch generation for
@@ -67,6 +68,7 @@ public class DataBatchAssistantUI extends JIPipeProjectWorkbenchPanel {
     private JIPipeGraphNode batchesNodeCopy;
     private List<JIPipeMergingDataBatch> batches = new ArrayList<>();
     private boolean autoRefresh = true;
+    private DataBatchGeneratorWorker lastWorker = null;
 
 
     /**
@@ -208,8 +210,14 @@ public class DataBatchAssistantUI extends JIPipeProjectWorkbenchPanel {
     }
 
     private void refreshBatchPreview() {
-        infiniteScrollingQueue.clear();
-        formPanel.clear();
+        batchPreviewNumberLabel.setText("Please wait ...");
+
+        // Stop worker
+        if(lastWorker != null) {
+            lastWorker.cancel(true);
+            lastWorker = null;
+        }
+
         batchesNodeCopy = algorithm.getInfo().duplicate(algorithm);
         // Pass cache as input slots
         for (JIPipeDataSlot inputSlot : batchesNodeCopy.getEffectiveInputSlots()) {
@@ -218,10 +226,17 @@ public class DataBatchAssistantUI extends JIPipeProjectWorkbenchPanel {
             }
         }
         // Generate dry-run
-        JIPipeDataBatchAlgorithm batchAlgorithm = (JIPipeDataBatchAlgorithm) batchesNodeCopy;
-        batches = batchAlgorithm.generateDataBatchesDryRun(batchesNodeCopy.getEffectiveInputSlots(), new JIPipeProgressInfo());
-        if (batches == null)
-            batches = Collections.emptyList();
+        batches.clear();
+        infiniteScrollingQueue.clear();
+        formPanel.clear();
+
+        lastWorker = new DataBatchGeneratorWorker(this,batchesNodeCopy);
+        lastWorker.execute();
+    }
+
+    private void displayBatches(List<JIPipeMergingDataBatch> batches) {
+        infiniteScrollingQueue.clear();
+        formPanel.clear();
 
         batchPreviewNumberLabel.setText(batches.size() + " batches");
         batchPreviewMissingLabel.setVisible(false);
@@ -236,10 +251,6 @@ public class DataBatchAssistantUI extends JIPipeProjectWorkbenchPanel {
             }
             infiniteScrollingQueue.addLast(batch);
         }
-//        for (JIPipeMergingDataBatch batch : batches) {
-//            DataBatchUI ui = new DataBatchUI(getProjectWorkbench(), copy, batch);
-//            batchPreviewPanel.addWideToForm(ui, null);
-//        }
         formPanel.addVerticalGlue();
         SwingUtilities.invokeLater(this::updateInfiniteScroll);
         scrollToBeginTimer.restart();
@@ -336,6 +347,46 @@ public class DataBatchAssistantUI extends JIPipeProjectWorkbenchPanel {
     public void onParameterChanged(JIPipeParameterCollection.ParameterChangedEvent event) {
         if (event.getSource() == batchSettings && autoRefresh) {
             refreshBatchPreview();
+        }
+    }
+
+    private static class DataBatchGeneratorWorker extends SwingWorker<List<JIPipeMergingDataBatch>, Object> {
+
+        private final DataBatchAssistantUI assistantUI;
+        private final JIPipeGraphNode algorithm;
+        private final JIPipeProgressInfo progressInfo = new JIPipeProgressInfo();
+
+        private DataBatchGeneratorWorker(DataBatchAssistantUI assistantUI, JIPipeGraphNode algorithm) {
+            this.assistantUI = assistantUI;
+            this.algorithm = algorithm;
+            progressInfo.getEventBus().register(this);
+        }
+
+        @Subscribe
+        public void onProgressInfoStatusUpdate(JIPipeProgressInfo.StatusUpdatedEvent event) {
+            SwingUtilities.invokeLater(() -> {
+                assistantUI.batchPreviewNumberLabel.setText("Please wait ... " + event.getMessage());
+            });
+        }
+
+        @Override
+        protected List<JIPipeMergingDataBatch> doInBackground() throws Exception {
+            List<JIPipeMergingDataBatch> batches = ((JIPipeDataBatchAlgorithm)algorithm).generateDataBatchesDryRun(algorithm.getEffectiveInputSlots(), progressInfo);
+            if (batches == null)
+                batches = Collections.emptyList();
+            return batches;
+        }
+
+        @Override
+        protected void done() {
+            super.done();
+            if(!isCancelled()) {
+                try {
+                    assistantUI.displayBatches(get());
+                } catch (InterruptedException | ExecutionException e) {
+                    assistantUI.displayBatches(Collections.emptyList());
+                }
+            }
         }
     }
 }

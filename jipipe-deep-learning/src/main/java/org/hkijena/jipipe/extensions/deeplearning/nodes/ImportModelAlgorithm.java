@@ -18,6 +18,7 @@ import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.JIPipeDataBatch;
 import org.hkijena.jipipe.api.nodes.JIPipeInputSlot;
+import org.hkijena.jipipe.api.nodes.JIPipeIteratingAlgorithm;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.JIPipeOutputSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeSimpleIteratingAlgorithm;
@@ -38,7 +39,7 @@ import java.nio.file.Path;
 @JIPipeInputSlot(value = FileData.class, slotName = "Model parameters", autoCreate = true)
 @JIPipeInputSlot(value = FileData.class, slotName = "Model JSON", autoCreate = true)
 @JIPipeOutputSlot(value = DeepLearningModelData.class, slotName = "Output", autoCreate = true)
-public class ImportModelAlgorithm extends JIPipeSimpleIteratingAlgorithm {
+public class ImportModelAlgorithm extends JIPipeIteratingAlgorithm {
 
     public ImportModelAlgorithm(JIPipeNodeInfo info) {
         super(info);

@@ -411,7 +411,7 @@ public class JIPipeDataByMetadataExporter implements JIPipeParameterCollection {
             parameters.set("data_type", JIPipe.getDataTypes().getIdOf(dataSlot.getDataClass(row)));
             parameters.set("row", row + "");
 
-            return Paths.get(StringUtils.nullToEmpty(customName.generate(parameters)));
+            return Paths.get(StringUtils.nullToEmpty(customSubDirectory.generate(parameters)));
         }
     }
 
