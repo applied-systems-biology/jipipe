@@ -291,6 +291,10 @@
   </url>
   
   <url>
+    <loc>https://www.jipipe.org/documentation/cli/</loc>
+  </url>
+  
+  <url>
     <loc>https://www.jipipe.org/documentation/standard-library/deep-learning/</loc>
   </url>
   

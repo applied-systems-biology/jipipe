@@ -99,5 +99,16 @@ JIPipe by default supports two types of extensions:
  Java extensions are similar to ImageJ plugins (*.jar) and are the most powerful plugin type. Just like ImageJ plugins, they are located in the plugins directory. JSON plugins are similar to ImageJ macros or scripts, as they are pure text files.</description>
     </item>
     
+    <item>
+      <title>Command Line Interface</title>
+      <link>https://www.jipipe.org/documentation/cli/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://www.jipipe.org/documentation/cli/</guid>
+      <description>You can run JIPipe pipelines without a graphical interface via the command line.
+Just run following command:
+./ImageJ --pass-classpath --full-classpath --main-class org.hkijena.jipipe.JIPipeCLI run --project &amp;lt;project file&amp;gt; --output-folder &amp;lt;output folder&amp;gt; Command line options ./ImageJ --pass-classpath --full-classpath --main-class org.hkijena.jipipe.JIPipeCLI run &amp;lt;options&amp;gt;  --project &amp;lt;Project file&amp;gt; provides the project file to be executed --output-folder &amp;lt;folder&amp;gt; defines where outputs will be written. Outputs are in standard JIPipe format. Optional: --num-threads &amp;lt;N=1,2,3,...&amp;gt; lets you enable multi-threading Optional: --overwrite-parameters &amp;lt;JSON file&amp;gt; allows you to overwrite specific parameters without the need for changing the project file Optional: --P&amp;lt;Node ID&amp;gt;/&amp;lt;Parameter ID&amp;gt; &amp;lt;Parameter value JSON&amp;gt; overwrites a specific parameter with the specified value  Overwriting parameters The JIPipe project file contains all parameters of a project.</description>
+    </item>
+    
   </channel>
 </rss>
