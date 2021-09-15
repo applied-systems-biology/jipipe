@@ -1,5 +1,5 @@
 #!/bin/bash
-JIPIPE_VERSION=1.39.2
+JIPIPE_VERSION=1.39.3
 APPIMAGE_TOOL_URL="https://github.com/AppImage/AppImageKit/releases/download/12/appimagetool-x86_64.AppImage"
 
 rm -rf AppDir

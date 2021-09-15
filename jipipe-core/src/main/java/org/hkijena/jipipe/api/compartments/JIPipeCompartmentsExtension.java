@@ -53,7 +53,7 @@ public class JIPipeCompartmentsExtension extends JIPipePrepackagedDefaultJavaExt
 
     @Override
     public String getDependencyVersion() {
-        return "1.39.2";
+        return "1.39.3";
     }
 
     @Override

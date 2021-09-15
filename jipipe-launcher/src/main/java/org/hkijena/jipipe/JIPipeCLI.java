@@ -1,5 +1,6 @@
 package org.hkijena.jipipe;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.google.common.collect.ImmutableList;
 import net.imagej.ImageJ;
@@ -7,6 +8,9 @@ import org.hkijena.jipipe.api.JIPipeIssueReport;
 import org.hkijena.jipipe.api.JIPipeProject;
 import org.hkijena.jipipe.api.JIPipeRun;
 import org.hkijena.jipipe.api.JIPipeRunSettings;
+import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
+import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
+import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
 import org.hkijena.jipipe.extensions.settings.ExtensionSettings;
 import org.hkijena.jipipe.utils.json.JsonUtils;
 
@@ -109,6 +113,36 @@ public class JIPipeCLI {
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
+
+            // Overwrite parameters
+            for (Map.Entry<String, String> entry : parameterOverrides.entrySet()) {
+                String[] components = entry.getKey().split("/");
+                String nodeId = components[0];
+                String parameterId = String.join("/", Arrays.copyOfRange(components, 1, components.length));
+                System.out.println("Setting parameter nodeId='" + nodeId + "' parameterId='" + parameterId + "' to " + entry.getValue());
+
+                JIPipeGraphNode node = project.getGraph().findNode(nodeId);
+                if(node == null) {
+                    throw new RuntimeException("Could not find node nodeId='" + nodeId + "'. Check if the UUID or alias ID are provided in the pipeline.");
+                }
+
+                JIPipeParameterTree tree = new JIPipeParameterTree(node);
+                JIPipeParameterAccess access = tree.getParameters().getOrDefault(parameterId, null);
+
+                if(access == null) {
+                    throw new RuntimeException("Could not find parameter parameterId='" + parameterId + "' in nodeId='" + nodeId + "'. Check if the UUID or alias ID are provided in the pipeline.");
+                }
+
+                Object value;
+                try {
+                    value = JsonUtils.getObjectMapper().readerFor(access.getFieldClass()).readValue(entry.getValue());
+                } catch (JsonProcessingException e) {
+                    throw new RuntimeException("Could not read parameter value '" + entry.getValue() + "' into data type " + access.getFieldClass() + "!");
+                }
+
+                access.set(value);
+            }
+
             project.reportValidity(projectIssues);
             projectIssues.print();
 
@@ -139,7 +173,7 @@ public class JIPipeCLI {
         System.out.println("Part of JIPipe https://www.jipipe.org/");
         System.out.println("Developed by Applied Systems Biology, HKI Jena, Germany");
         System.out.println();
-        System.out.println("run <Project file> <options>");
+        System.out.println("run <options>");
         System.out.println("Runs a project file and writes outputs to the specified directory.");
         System.out.println("--project <Project file>");
         System.out.println("--output-folder <Output folder>");
