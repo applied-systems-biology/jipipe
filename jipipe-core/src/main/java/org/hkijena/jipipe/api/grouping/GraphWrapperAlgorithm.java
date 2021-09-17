@@ -352,6 +352,22 @@ public class GraphWrapperAlgorithm extends JIPipeAlgorithm implements JIPipeData
         }
     }
 
+    @Override
+    public void setInternalStoragePath(Path internalStoragePath) {
+        super.setInternalStoragePath(internalStoragePath);
+
+        // Also update the storage paths of the internal nodes
+        Path scratch = getNewScratch();
+        for (JIPipeGraphNode node : getWrappedGraph().getGraphNodes()) {
+            node.setInternalStoragePath(scratch.resolve(node.getAliasIdInGraph()));
+        }
+        for (JIPipeDataSlot slot : getWrappedGraph().getSlotNodes()) {
+            if(slot.isOutput()) {
+                slot.setStoragePath(slot.getNode().getInternalStoragePath().resolve(slot.getName()));
+            }
+        }
+    }
+
     public JIPipeMergingAlgorithmDataBatchGenerationSettings getBatchGenerationSettings() {
         return batchGenerationSettings;
     }
