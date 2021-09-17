@@ -118,7 +118,7 @@ public class SplitChannelsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         ImagePlus image = dataBatch.getInputData(getFirstInputSlot(), ImagePlusData.class, progressInfo).getImage();
 
         // If we have a grayscale image then we can just skip everything
-        if (!image.isComposite() && image.getType() != ImagePlus.COLOR_256 && image.getType() != ImagePlus.COLOR_RGB) {
+        if (image.getNChannels() == 1 && image.getType() != ImagePlus.COLOR_256 && image.getType() != ImagePlus.COLOR_RGB) {
             int nChannels = 1;
             for (Map.Entry<String, JIPipeParameterAccess> entry : channelToSlotAssignment.getParameters().entrySet()) {
                 String slotName = entry.getKey();
