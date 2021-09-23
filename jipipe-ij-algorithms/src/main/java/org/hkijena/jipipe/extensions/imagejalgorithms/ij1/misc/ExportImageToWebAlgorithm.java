@@ -86,6 +86,12 @@ public class ExportImageToWebAlgorithm extends JIPipeIteratingAlgorithm {
             outputPath = outputDirectory;
         }
 
+        // Generate subfolder
+        Path subFolder = exporter.generateSubFolder(getFirstInputSlot(), dataBatch.getInputSlotRows().get(getFirstInputSlot()));
+        if(subFolder != null) {
+            outputPath = outputPath.resolve(subFolder);
+        }
+
         try {
             Files.createDirectories(outputPath);
         } catch (IOException e) {
