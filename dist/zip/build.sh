@@ -1,6 +1,6 @@
 #!/bin/bash
 
-JIPIPE_VERSION=1.39.5
+JIPIPE_VERSION=1.40.0
 
 if [ ! -e "./dependencies" ]; then
   mkdir dependencies

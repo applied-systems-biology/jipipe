@@ -14,6 +14,8 @@ import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.JIPipeOutputSlot;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
+import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
+import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
 import org.hkijena.jipipe.extensions.filesystem.dataypes.FileData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.AVICompression;
@@ -32,7 +34,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-@JIPipeDocumentation(name = "Export image to web format", description = "Exports incoming images into a web-ready format (PNG, JPEG, BMP, AVI, TIFF). " +
+@JIPipeDocumentation(name = "Export image", description = "Exports incoming images into a non-JIPipe format (PNG, JPEG, BMP, AVI, TIFF). " +
         "Please note support for input images depending on the file format: " +
         "<ul>" +
         "<li>PNG, JPEG, BMP: 2D images only</li>" +
@@ -167,6 +169,7 @@ public class ExportImageToWebAlgorithm extends JIPipeIteratingAlgorithm {
     @JIPipeParameter("file-format")
     public void setFileFormat(FileFormat fileFormat) {
         this.fileFormat = fileFormat;
+        triggerParameterUIChange();
     }
 
     @JIPipeDocumentation(name = "Animation speed (ms)", description = "Only used if the format is AVI. Determines how long a frame is shown.")
@@ -215,6 +218,25 @@ public class ExportImageToWebAlgorithm extends JIPipeIteratingAlgorithm {
             return false;
         this.jpegQuality = jpegQuality;
         return true;
+    }
+
+    @Override
+    public boolean isParameterUIVisible(JIPipeParameterTree tree, JIPipeParameterAccess access) {
+        if(fileFormat != FileFormat.AVI) {
+            if("movie-frame-time".equals(access.getKey())) {
+                return false;
+            }
+            if("movie-animated-dimension".equals(access.getKey())) {
+                return false;
+            }
+            if("avi-compression".equals(access.getKey())) {
+                return false;
+            }
+            if("jpeg-quality".equals(access.getKey())) {
+                return false;
+            }
+        }
+        return super.isParameterUIVisible(tree, access);
     }
 
     public enum FileFormat {

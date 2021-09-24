@@ -30,7 +30,7 @@ public class NodeToolBoxToolExtension extends JIPipePrepackagedDefaultJavaExtens
 
     @Override
     public String getDependencyVersion() {
-        return "1.39.5";
+        return "1.40.0";
     }
 
     @Override
