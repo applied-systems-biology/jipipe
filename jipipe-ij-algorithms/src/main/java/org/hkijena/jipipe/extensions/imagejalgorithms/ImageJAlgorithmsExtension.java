@@ -62,6 +62,8 @@ import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.dimensions.*;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.edge.CannyEdgeDetectorAlgorithm;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.edge.LaplacianEdgeDetectorAlgorithm;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.edge.SobelEdgeDetectorAlgorithm;
+import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.export.ExportROIAlgorithm;
+import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.export.ExportTableAlgorithm;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.features.DifferenceOfGaussian2DAlgorithm;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.features.DirectionalFilter2DAlgorithm;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.features.FrangiVesselnessFeatures;
@@ -97,7 +99,7 @@ import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.math.distancemap.Geode
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.math.distancemap.LabelChamferDistanceMap3DAlgorithm;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.math.local.*;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.misc.DataToPreviewAlgorithm;
-import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.misc.ExportImageToWebAlgorithm;
+import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.export.ExportImageAlgorithm;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.morphology.MorphologicalReconstruction2DAlgorithm;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.morphology.MorphologicalReconstruction3DAlgorithm;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.morphology.Morphology2DAlgorithm;
@@ -312,8 +314,11 @@ public class ImageJAlgorithmsExtension extends JIPipePrepackagedDefaultJavaExten
         registerSegmentationAlgorithms();
         registerCalibrationAlgorithms();
 
-        registerEnumParameterType("ij1-export-image-to-web:file-format", ExportImageToWebAlgorithm.FileFormat.class, "File format", "Exported file format.");
-        registerNodeType("iji-export-image-to-web", ExportImageToWebAlgorithm.class, UIUtils.getIconURLFromResources("actions/document-export.png"));
+        registerEnumParameterType("ij1-export-image-to-web:file-format", ExportImageAlgorithm.FileFormat.class, "File format", "Exported file format.");
+        registerEnumParameterType("ij1-export-table:file-format", ExportTableAlgorithm.FileFormat.class, "File format", "Exported file format.");
+        registerNodeType("iji-export-image-to-web", ExportImageAlgorithm.class, UIUtils.getIconURLFromResources("actions/document-export.png"));
+        registerNodeType("iji-export-roi-list", ExportROIAlgorithm.class, UIUtils.getIconURLFromResources("actions/document-export.png"));
+        registerNodeType("iji-export-table", ExportTableAlgorithm.class, UIUtils.getIconURLFromResources("actions/document-export.png"));
 
         registerNodeType("ij1-generate-missing-results-table", GenerateMissingTablesAlgorithm.class, UIUtils.getIconURLFromResources("actions/image-auto-adjust.png"));
         registerNodeType("ij1-generate-filter-kernel", GenerateStructureElement2DAlgorithm.class, UIUtils.getIconURLFromResources("actions/morphology.png"));

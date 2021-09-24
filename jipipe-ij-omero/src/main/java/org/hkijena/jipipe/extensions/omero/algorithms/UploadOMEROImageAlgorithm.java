@@ -45,6 +45,7 @@ import org.hkijena.jipipe.api.nodes.JIPipeMergingAlgorithm;
 import org.hkijena.jipipe.api.nodes.JIPipeMergingDataBatch;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.JIPipeOutputSlot;
+import org.hkijena.jipipe.api.nodes.categories.ExportNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.expressions.AnnotationQueryExpression;
@@ -65,7 +66,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @JIPipeDocumentation(name = "Upload to OMERO", description = "Uploads an image to OMERO.")
-@JIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class)
+@JIPipeNode(nodeTypeCategory = ExportNodeTypeCategory.class, menuPath = "Images")
 @JIPipeInputSlot(value = OMEImageData.class, slotName = "Image", autoCreate = true)
 @JIPipeInputSlot(value = OMERODatasetReferenceData.class, slotName = "Dataset", autoCreate = true)
 @JIPipeOutputSlot(value = OMEROImageReferenceData.class, slotName = "ID", autoCreate = true)

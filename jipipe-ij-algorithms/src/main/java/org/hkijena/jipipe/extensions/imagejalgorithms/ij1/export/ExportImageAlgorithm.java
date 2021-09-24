@@ -1,4 +1,4 @@
-package org.hkijena.jipipe.extensions.imagejalgorithms.ij1.misc;
+package org.hkijena.jipipe.extensions.imagejalgorithms.ij1.export;
 
 import ij.IJ;
 import ij.ImagePlus;
@@ -12,7 +12,7 @@ import org.hkijena.jipipe.api.nodes.JIPipeInputSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeIteratingAlgorithm;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.JIPipeOutputSlot;
-import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
+import org.hkijena.jipipe.api.nodes.categories.ExportNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
@@ -43,8 +43,8 @@ import java.util.Set;
         "</ul>")
 @JIPipeInputSlot(value = ImagePlusData.class, slotName = "Input", autoCreate = true)
 @JIPipeOutputSlot(value = FileData.class, slotName = "Exported file", autoCreate = true)
-@JIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Export")
-public class ExportImageToWebAlgorithm extends JIPipeIteratingAlgorithm {
+@JIPipeNode(nodeTypeCategory = ExportNodeTypeCategory.class, menuPath = "Images")
+public class ExportImageAlgorithm extends JIPipeIteratingAlgorithm {
 
     private final Set<String> existingMetadata = new HashSet<>();
     private JIPipeDataByMetadataExporter exporter;
@@ -55,13 +55,13 @@ public class ExportImageToWebAlgorithm extends JIPipeIteratingAlgorithm {
     private AVICompression aviCompression = AVICompression.PNG;
     private int jpegQuality = 100;
 
-    public ExportImageToWebAlgorithm(JIPipeNodeInfo info) {
+    public ExportImageAlgorithm(JIPipeNodeInfo info) {
         super(info);
         this.exporter = new JIPipeDataByMetadataExporter(DataExporterSettings.getInstance());
         registerSubParameter(exporter);
     }
 
-    public ExportImageToWebAlgorithm(ExportImageToWebAlgorithm other) {
+    public ExportImageAlgorithm(ExportImageAlgorithm other) {
         super(other);
         this.exporter = new JIPipeDataByMetadataExporter(other.exporter);
         this.outputDirectory = other.outputDirectory;

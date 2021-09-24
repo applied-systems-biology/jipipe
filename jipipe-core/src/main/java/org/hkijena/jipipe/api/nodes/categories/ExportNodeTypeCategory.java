@@ -19,36 +19,36 @@ import org.hkijena.jipipe.utils.UIUtils;
 import javax.swing.*;
 import java.awt.Color;
 
-public class MiscellaneousNodeTypeCategory implements JIPipeNodeTypeCategory {
+public class ExportNodeTypeCategory implements JIPipeNodeTypeCategory {
 
-    public static final Color FILL_COLOR = Color.getHSBColor(40.0f / 360.0f, 0.1f, 0.9f);
-    public static final Color BORDER_COLOR = Color.getHSBColor(40.0f / 360.0f, 0.1f, 0.5f);
-    public static final Color FILL_COLOR_DARK = Color.getHSBColor(40.0f / 360.0f, 0.5f, 0.3f);
-    public static final Color BORDER_COLOR_DARK = Color.getHSBColor(40.0f / 360.0f, 0.5f, 0.9f);
+    public static final Color FILL_COLOR = Color.getHSBColor(22.0f / 360.0f, 0.1f, 0.9f);
+    public static final Color BORDER_COLOR = Color.getHSBColor(22.0f / 360.0f, 0.1f, 0.5f);
+    public static final Color FILL_COLOR_DARK = Color.getHSBColor(22.0f / 360.0f, 0.5f, 0.3f);
+    public static final Color BORDER_COLOR_DARK = Color.getHSBColor(22.0f / 360.0f, 0.5f, 0.9f);
 
     @Override
     public String getId() {
-        return "org.hkijena.jipipe:miscellaneous";
+        return "org.hkijena.jipipe:export";
     }
 
     @Override
     public String getName() {
-        return "Miscellaneous";
+        return "Export";
     }
 
     @Override
     public String getDescription() {
-        return "Miscellaneous nodes";
+        return "Operations that export data";
     }
 
     @Override
     public int getUIOrder() {
-        return 1000;
+        return 60;
     }
 
     @Override
     public Icon getIcon() {
-        return UIUtils.getIconFromResources("actions/plugins.png");
+        return UIUtils.getIconFromResources("actions/document-export.png");
     }
 
     @Override
@@ -79,15 +79,5 @@ public class MiscellaneousNodeTypeCategory implements JIPipeNodeTypeCategory {
     @Override
     public boolean isVisibleInCompartmentGraph() {
         return false;
-    }
-
-    @Override
-    public boolean userCanCreate() {
-        return true;
-    }
-
-    @Override
-    public boolean userCanDelete() {
-        return true;
     }
 }

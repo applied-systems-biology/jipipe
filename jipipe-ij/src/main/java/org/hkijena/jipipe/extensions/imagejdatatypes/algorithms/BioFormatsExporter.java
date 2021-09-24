@@ -21,13 +21,14 @@ import org.hkijena.jipipe.api.nodes.JIPipeInputSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.JIPipeOutputSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeSimpleIteratingAlgorithm;
+import org.hkijena.jipipe.api.nodes.categories.ExportNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.OMEImageData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.parameters.OMEExporterSettings;
 
 @JIPipeDocumentation(name = "Bio-Formats exporter", description = "Exports an image with Bio-Formats")
-@JIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class)
+@JIPipeNode(nodeTypeCategory = ExportNodeTypeCategory.class, menuPath = "Images")
 @JIPipeInputSlot(value = OMEImageData.class, slotName = "Input", autoCreate = true)
 @JIPipeOutputSlot(value = OMEImageData.class, slotName = "Output", autoCreate = true)
 public class BioFormatsExporter extends JIPipeSimpleIteratingAlgorithm {

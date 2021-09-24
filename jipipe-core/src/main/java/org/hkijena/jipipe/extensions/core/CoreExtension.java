@@ -7,14 +7,7 @@ import org.hkijena.jipipe.api.data.JIPipeDataAnnotationMergeStrategy;
 import org.hkijena.jipipe.api.data.JIPipeEmptyData;
 import org.hkijena.jipipe.api.data.JIPipeMergedDataAnnotationsData;
 import org.hkijena.jipipe.api.nodes.JIPipeAnnotationMatchingMethod;
-import org.hkijena.jipipe.api.nodes.categories.AnnotationsNodeTypeCategory;
-import org.hkijena.jipipe.api.nodes.categories.DataSourceNodeTypeCategory;
-import org.hkijena.jipipe.api.nodes.categories.FileSystemNodeTypeCategory;
-import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
-import org.hkijena.jipipe.api.nodes.categories.InternalNodeTypeCategory;
-import org.hkijena.jipipe.api.nodes.categories.MiscellaneousNodeTypeCategory;
-import org.hkijena.jipipe.api.nodes.categories.RoiNodeTypeCategory;
-import org.hkijena.jipipe.api.nodes.categories.TableNodeTypeCategory;
+import org.hkijena.jipipe.api.nodes.categories.*;
 import org.hkijena.jipipe.extensions.JIPipePrepackagedDefaultJavaExtension;
 import org.hkijena.jipipe.extensions.core.data.CopyContainingFolderDataImportOperation;
 import org.hkijena.jipipe.extensions.core.data.DefaultDataDisplayOperation;
@@ -71,6 +64,7 @@ public class CoreExtension extends JIPipePrepackagedDefaultJavaExtension {
         registerNodeTypeCategory(new TableNodeTypeCategory());
         registerNodeTypeCategory(new RoiNodeTypeCategory());
         registerNodeTypeCategory(new AnnotationsNodeTypeCategory());
+        registerNodeTypeCategory(new ExportNodeTypeCategory());
 
         // Global data importers
         registerDatatypeImportOperation("", new CopyContainingFolderDataImportOperation());

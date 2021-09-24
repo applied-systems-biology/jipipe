@@ -22,6 +22,7 @@ import org.hkijena.jipipe.api.nodes.JIPipeInputSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeIteratingAlgorithm;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.JIPipeOutputSlot;
+import org.hkijena.jipipe.api.nodes.categories.ExportNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.categories.MiscellaneousNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.filesystem.dataypes.PathData;
@@ -40,7 +41,7 @@ import java.util.Collections;
 @JIPipeInputSlot(JIPipeData.class)
 @JIPipeInputSlot(PathData.class)
 @JIPipeOutputSlot(PathData.class)
-@JIPipeNode(nodeTypeCategory = MiscellaneousNodeTypeCategory.class, menuPath = "Export")
+@JIPipeNode(nodeTypeCategory = ExportNodeTypeCategory.class)
 public class ExportData extends JIPipeIteratingAlgorithm {
 
     private JIPipeDataByMetadataExporter exporter = new JIPipeDataByMetadataExporter();
