@@ -14,6 +14,7 @@
 package org.hkijena.jipipe.extensions.deeplearning.enums;
 
 public enum RegularizationMethod {
+    None,
     Dropout,
     GaussianDropout,
     GaussianNoise
