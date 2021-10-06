@@ -74,6 +74,7 @@ import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.fft.FFT2DForwardTransf
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.fft.FFT2DInverseTransform;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.fft.FFT2DSwapQuadrants;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.forms.DrawMaskAlgorithm;
+import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.generate.GenerateLUTImageFromColorMap;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.generate.GenerateMissingImageFromMathExpression2D;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.generate.GenerateMissingTablesAlgorithm;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.generate.GenerateMissingZeroImage;
@@ -90,7 +91,9 @@ import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.io.ResultsTableToGUI;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.labels.*;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.lut.LUTInverterAlgorithm;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.lut.RemoveLUTAlgorithm;
-import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.lut.SetLUTFromColorAlgorithm;
+import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.lut.SetLUTFromColorsAlgorithm;
+import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.lut.SetLUTFromColorMapAlgorithm;
+import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.lut.SetLUTFromImageAlgorithm;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.math.*;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.math.distancemap.ApplyDistanceTransform2DAlgorithm;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.math.distancemap.ChamferDistanceMap2DAlgorithm;
@@ -392,8 +395,11 @@ public class ImageJAlgorithmsExtension extends JIPipePrepackagedDefaultJavaExten
 
     private void registerLUTAlgorithms() {
         registerNodeType("ij1-remove-lut", RemoveLUTAlgorithm.class, UIUtils.getIconURLFromResources("actions/paint-gradient-linear.png"));
-        registerNodeType("ij1-set-lut-from-colors", SetLUTFromColorAlgorithm.class, UIUtils.getIconURLFromResources("actions/paint-gradient-linear.png"));
+        registerNodeType("ij1-set-lut-from-colors", SetLUTFromColorsAlgorithm.class, UIUtils.getIconURLFromResources("actions/paint-gradient-linear.png"));
+        registerNodeType("ij1-set-lut-from-color-map", SetLUTFromColorMapAlgorithm.class, UIUtils.getIconURLFromResources("actions/paint-gradient-linear.png"));
+        registerNodeType("ij1-set-lut-from-color-image", SetLUTFromImageAlgorithm.class, UIUtils.getIconURLFromResources("actions/paint-gradient-linear.png"));
         registerNodeType("ij1-invert-lut", LUTInverterAlgorithm.class, UIUtils.getIconURLFromResources("actions/object-inverse.png"));
+        registerNodeType("ij1-render-color-map", GenerateLUTImageFromColorMap.class, UIUtils.getIconURLFromResources("actions/paint-gradient-linear.png"));
     }
 
     private void registerGlobalParameters() {
@@ -820,7 +826,7 @@ public class ImageJAlgorithmsExtension extends JIPipePrepackagedDefaultJavaExten
 
     @Override
     public String getDependencyVersion() {
-        return "1.40.0";
+        return "1.41.0";
     }
 
     private static Map<Class<? extends JIPipeData>, Class<? extends JIPipeData>> get3DConversion() {

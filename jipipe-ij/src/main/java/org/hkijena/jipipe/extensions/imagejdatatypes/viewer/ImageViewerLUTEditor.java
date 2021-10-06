@@ -14,10 +14,15 @@
 package org.hkijena.jipipe.extensions.imagejdatatypes.viewer;
 
 import ij.CompositeImage;
+import ij.IJ;
 import ij.ImagePlus;
 import ij.process.LUT;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
+import org.hkijena.jipipe.extensions.parameters.colors.ColorMap;
+import org.hkijena.jipipe.extensions.parameters.colors.ColorMapEnumItemInfo;
+import org.hkijena.jipipe.extensions.settings.FileChooserSettings;
 import org.hkijena.jipipe.ui.components.ColorIcon;
+import org.hkijena.jipipe.ui.components.PickEnumValueDialog;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.jdesktop.swingx.JXMultiThumbSlider;
 import org.jdesktop.swingx.color.GradientThumbRenderer;
@@ -29,8 +34,12 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.event.MouseEvent;
+import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
 
 /**
  * Based on {@link org.jdesktop.swingx.JXGradientChooser}
@@ -43,10 +52,8 @@ public class ImageViewerLUTEditor extends JPanel implements ThumbListener {
      */
     private JXMultiThumbSlider<Color> slider;
     private JButton deleteThumbButton;
-    private JButton addThumbButton;
     private JButton changeColorButton;
-    private JButton invertColorsButton;
-    private ColorIcon changeColorButtonDisplayedColor = new ColorIcon(16, 16);
+    private final ColorIcon changeColorButtonDisplayedColor = new ColorIcon(16, 16);
     private boolean isUpdating = false;
     private String channelName;
     private LUT cachedLUT;
@@ -69,15 +76,66 @@ public class ImageViewerLUTEditor extends JPanel implements ThumbListener {
 
     public void importLUT(LUT lut) {
         isUpdating = true;
-        Color black = new Color(lut.getRGB(0));
-        Color white = new Color(lut.getRGB(255));
-        while (slider.getModel().getThumbCount() > 2) {
+
+        // We find the thumb locations
+        Set<Integer> thumbLocations = new TreeSet<>();
+
+        // Start and end locations are always available
+        thumbLocations.add(0);
+        thumbLocations.add(255);
+
+        // We check how if the R, G, and B functions change their monoticity
+        int monoticityR = 0;
+        int monoticityG = 0;
+        int monoticityB = 0;
+
+        for (int i = 1; i < 256; i++) {
+            int lastR = lut.getRed(i - 1);
+            int lastG = lut.getGreen(i - 1);
+            int lastB = lut.getBlue(i - 1);
+            int currentR = lut.getRed(i);
+            int currentG = lut.getGreen(i);
+            int currentB = lut.getBlue(i);
+            int currentMonoticityR = (int)Math.signum(currentR - lastR);
+            int currentMonoticityG = (int)Math.signum(currentG - lastG);
+            int currentMonoticityB = (int)Math.signum(currentB - lastB);
+            if(monoticityR != 0 && currentMonoticityR != 0 && currentMonoticityR != monoticityR) {
+                thumbLocations.add(i);
+            }
+            if(monoticityG != 0 && currentMonoticityG != 0 && currentMonoticityG != monoticityG) {
+                thumbLocations.add(i);
+            }
+            if(monoticityB != 0 && currentMonoticityB != 0 && currentMonoticityB != monoticityB) {
+                thumbLocations.add(i);
+            }
+            if(currentMonoticityR != 0)
+                monoticityR = currentMonoticityR;
+            if(currentMonoticityG != 0)
+                monoticityG = currentMonoticityG;
+            if(currentMonoticityB != 0)
+                monoticityB = currentMonoticityB;
+        }
+
+        while (slider.getModel().getThumbCount() > thumbLocations.size()) {
             slider.getModel().removeThumb(0);
         }
-        slider.getModel().getThumbAt(0).setPosition(0);
-        slider.getModel().getThumbAt(1).setPosition(1);
-        slider.getModel().getThumbAt(0).setObject(black);
-        slider.getModel().getThumbAt(1).setObject(white);
+        while (slider.getModel().getThumbCount() < thumbLocations.size()) {
+            slider.getModel().addThumb(0, Color.RED);
+        }
+
+        int index = 0;
+        for(int lutIndex : thumbLocations) {
+            float thumbLocation = lutIndex / 255.0f;
+            slider.getModel().getThumbAt(index).setPosition(thumbLocation);
+            slider.getModel().getThumbAt(index).setObject(new Color(lut.getRGB(lutIndex)));
+            index+=1;
+        }
+
+//        slider.getModel().getThumbAt(0).setPosition(0);
+//        slider.getModel().getThumbAt(1).setPosition(1);
+//        slider.getModel().getThumbAt(0).setObject(black);
+//        slider.getModel().getThumbAt(1).setObject(white);
+        cachedLUT = null;
         isUpdating = false;
     }
 
@@ -131,13 +189,36 @@ public class ImageViewerLUTEditor extends JPanel implements ThumbListener {
         slider.setPreferredSize(new Dimension(100, 35));
         slider.addMultiThumbListener(this);
         changeColorButton = new JButton(changeColorButtonDisplayedColor);
-        addThumbButton = new JButton(UIUtils.getIconFromResources("actions/color-add.png"));
+        changeColorButton.setToolTipText("Set color of selected gradient stop");
+        JButton addThumbButton = new JButton(UIUtils.getIconFromResources("actions/color-add.png"));
         deleteThumbButton = new JButton(UIUtils.getIconFromResources("actions/color-remove.png"));
-        invertColorsButton = new JButton(UIUtils.getIconFromResources("actions/object-inverse.png"));
+
+        JButton optionsButton = new JButton(UIUtils.getIconFromResources("actions/configuration.png"));
+        optionsButton.setToolTipText("Additional configuration options");
+        JPopupMenu menu = UIUtils.addPopupMenuToComponent(optionsButton);
+
+        // Menu items
+        JMenuItem invertColorsButton = new JMenuItem("Invert LUT",UIUtils.getIconFromResources("actions/object-inverse.png") );
+        invertColorsButton.addActionListener(e -> invertColors());
+        menu.add(invertColorsButton);
+
+        JMenuItem setToColorMapButton = new JMenuItem("Set to color map", UIUtils.getIconFromResources("actions/color-gradient.png"));
+        setToColorMapButton.addActionListener(e -> pickColorsFromColorMap());
+        menu.add(setToColorMapButton);
+
+        JMenuItem exportLUTButton = new JMenuItem("Export LUT", UIUtils.getIconFromResources("actions/document-export.png"));
+        exportLUTButton.addActionListener(e -> exportLUTToFile());
+        menu.add(exportLUTButton);
+
+        JMenuItem importLUTButton = new JMenuItem("Import LUT", UIUtils.getIconFromResources("actions/document-import.png"));
+        importLUTButton.addActionListener(e -> importLUTFromFile());
+        menu.add(importLUTButton);
+
+        // Standard buttons
         UIUtils.makeFlat25x25(addThumbButton);
         UIUtils.makeFlat25x25(changeColorButton);
         UIUtils.makeFlat25x25(deleteThumbButton);
-        UIUtils.makeFlat25x25(invertColorsButton);
+        UIUtils.makeFlat25x25(optionsButton);
 
         setLayout(new BorderLayout());
         add(slider, BorderLayout.CENTER);
@@ -148,13 +229,39 @@ public class ImageViewerLUTEditor extends JPanel implements ThumbListener {
         settingsPanel.add(changeColorButton);
         settingsPanel.add(addThumbButton);
         settingsPanel.add(deleteThumbButton);
-        settingsPanel.add(invertColorsButton);
+        settingsPanel.add(optionsButton);
         add(settingsPanel, BorderLayout.EAST);
 
         addThumbButton.addActionListener(e -> addColor());
         deleteThumbButton.addActionListener(e -> removeColor());
         changeColorButton.addActionListener(e -> changeColor());
-        invertColorsButton.addActionListener(e -> invertColors());
+    }
+
+    private void importLUTFromFile() {
+        Path path = FileChooserSettings.openFile(this, FileChooserSettings.LastDirectoryKey.Data, "Import LUT", UIUtils.EXTENSION_FILTER_PNG);
+        if(path != null) {
+            ImagePlus img = IJ.openImage(path.toString());
+            LUT lut = ImageJUtils.lutFromImage(img);
+            importLUT(lut);
+            SwingUtilities.invokeLater(this::applyLUT);
+        }
+    }
+
+    private void exportLUTToFile() {
+        Path path = FileChooserSettings.saveFile(this, FileChooserSettings.LastDirectoryKey.Data, "Export LUT", UIUtils.EXTENSION_FILTER_PNG);
+        if(path != null) {
+            LUT lut = generateLUT();
+            ImagePlus img = ImageJUtils.lutToImage(lut);
+            IJ.saveAs(img, "PNG", path.toString());
+        }
+    }
+
+    private void pickColorsFromColorMap() {
+        Object selected = PickEnumValueDialog.showDialog(this, Arrays.asList(ColorMap.values()), new ColorMapEnumItemInfo(), ColorMap.viridis, "Select LUT");
+        if(selected instanceof ColorMap) {
+            importLUT(((ColorMap) selected).toLUT());
+            SwingUtilities.invokeLater(this::applyLUT);
+        }
     }
 
     private void invertColors() {

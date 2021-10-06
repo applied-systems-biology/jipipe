@@ -20,46 +20,46 @@ import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.JIPipeDataBatch;
 import org.hkijena.jipipe.api.nodes.JIPipeInputSlot;
+import org.hkijena.jipipe.api.nodes.JIPipeIteratingAlgorithm;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.JIPipeOutputSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
+import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d2.color.ImagePlus2DColorRGBData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleData;
+import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageSliceIndex;
+import org.hkijena.jipipe.extensions.parameters.colors.ColorMap;
 
-import java.awt.Color;
-
-@JIPipeDocumentation(name = "Generate LUT (two colors)", description = "Generates a LUT from the first to the second color. " +
+@JIPipeDocumentation(name = "Set LUT (image)", description = "Sets the LUT of the image from another image, which should be a RGB image with a width of 256 and a height of 1. " +
         "This does not change the pixel data.")
 @JIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "LUT")
 @JIPipeInputSlot(value = ImagePlusGreyscaleData.class, slotName = "Input", autoCreate = true)
+@JIPipeInputSlot(value = ImagePlus2DColorRGBData.class, slotName = "LUT", autoCreate = true)
 @JIPipeOutputSlot(value = ImagePlusGreyscaleData.class, slotName = "Output", inheritedSlot = "Input", autoCreate = true)
-public class SetLUTFromColorAlgorithm extends JIPipeSimpleIteratingAlgorithm {
+public class SetLUTFromImageAlgorithm extends JIPipeIteratingAlgorithm {
     private boolean duplicateImage = true;
-    private Color firstColor = Color.BLACK;
-    private Color secondColor = Color.RED;
     private boolean applyToAllPlanes = true;
 
-    public SetLUTFromColorAlgorithm(JIPipeNodeInfo info) {
+    public SetLUTFromImageAlgorithm(JIPipeNodeInfo info) {
         super(info);
     }
 
-    public SetLUTFromColorAlgorithm(SetLUTFromColorAlgorithm other) {
+    public SetLUTFromImageAlgorithm(SetLUTFromImageAlgorithm other) {
         super(other);
         this.duplicateImage = other.duplicateImage;
-        this.firstColor = other.firstColor;
-        this.secondColor = other.secondColor;
         this.applyToAllPlanes = other.applyToAllPlanes;
     }
 
     @Override
     protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
-        ImagePlusData data = dataBatch.getInputData(getFirstInputSlot(), ImagePlusData.class, progressInfo);
+        ImagePlusData data = dataBatch.getInputData("Input", ImagePlusGreyscaleData.class, progressInfo);
+        ImagePlusData lutData = dataBatch.getInputData("LUT", ImagePlus2DColorRGBData.class, progressInfo);
         if (duplicateImage)
             data = (ImagePlusData) data.duplicate();
-        LUT lut = createGradientLUT(firstColor, secondColor);
+        LUT lut = ImageJUtils.lutFromImage(lutData.getImage());
         ImagePlus image = data.getImage();
         if (applyToAllPlanes && image.isStack()) {
             ImageSliceIndex original = new ImageSliceIndex(image.getC(), image.getZ(), image.getT());
@@ -89,28 +89,6 @@ public class SetLUTFromColorAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         this.duplicateImage = duplicateImage;
     }
 
-    @JIPipeDocumentation(name = "First color", description = "The color assigned to zero values.")
-    @JIPipeParameter("first-color")
-    public Color getFirstColor() {
-        return firstColor;
-    }
-
-    @JIPipeParameter("first-color")
-    public void setFirstColor(Color firstColor) {
-        this.firstColor = firstColor;
-    }
-
-    @JIPipeDocumentation(name = "Second color", description = "The color assigned to maximum values.")
-    @JIPipeParameter("second-color")
-    public Color getSecondColor() {
-        return secondColor;
-    }
-
-    @JIPipeParameter("second-color")
-    public void setSecondColor(Color secondColor) {
-        this.secondColor = secondColor;
-    }
-
     @JIPipeDocumentation(name = "Apply to all planes", description = "If enabled, all LUT are modified, not only the one of the current plane.")
     @JIPipeParameter("apply-to-all-planes")
     public boolean isApplyToAllPlanes() {
@@ -120,20 +98,5 @@ public class SetLUTFromColorAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     @JIPipeParameter("apply-to-all-planes")
     public void setApplyToAllPlanes(boolean applyToAllPlanes) {
         this.applyToAllPlanes = applyToAllPlanes;
-    }
-
-    public static LUT createGradientLUT(Color firstColor, Color secondColor) {
-        byte[] rLut = new byte[256];
-        byte[] gLut = new byte[256];
-        byte[] bLut = new byte[256];
-        double dr = (secondColor.getRed() - firstColor.getRed()) / 256.0;
-        double dg = (secondColor.getGreen() - firstColor.getGreen()) / 256.0;
-        double db = (secondColor.getBlue() - firstColor.getBlue()) / 256.0;
-        for (int i = 0; i < 256; i++) {
-            rLut[i] = (byte) (firstColor.getRed() + dr * i);
-            gLut[i] = (byte) (firstColor.getGreen() + dg * i);
-            bLut[i] = (byte) (firstColor.getBlue() + db * i);
-        }
-        return new LUT(rLut, gLut, bLut);
     }
 }

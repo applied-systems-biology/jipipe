@@ -13,6 +13,8 @@
 
 package org.hkijena.jipipe.extensions.parameters.colors;
 
+import ij.process.LUT;
+import org.hkijena.jipipe.extensions.parameters.primitives.EnumParameterSettings;
 import org.hkijena.jipipe.utils.ResourceUtils;
 
 import javax.imageio.ImageIO;
@@ -23,6 +25,7 @@ import java.io.IOException;
 /**
  * All available color maps
  */
+@EnumParameterSettings(itemInfo = ColorMapEnumItemInfo.class)
 public enum ColorMap {
     viridis,
     plasma,
@@ -102,5 +105,24 @@ public enum ColorMap {
     public Color apply(double value) {
         int pixel = Math.max(0, Math.min(511, (int) (value * 512)));
         return new Color(mapImage.getRGB(pixel, 0));
+    }
+
+    /**
+     * Converts the color map into an ImageJ {@link LUT}
+     * @return the LUT
+     */
+    public LUT toLUT() {
+        byte[] rLut = new byte[256];
+        byte[] gLut = new byte[256];
+        byte[] bLut = new byte[256];
+
+        for (int i = 0; i < 256; i++) {
+            int lutIndex = i * 2;
+            Color color = new Color(mapImage.getRGB(lutIndex, 0));
+            rLut[i] = (byte) color.getRed();
+            gLut[i] = (byte) color.getGreen();
+            bLut[i] = (byte) color.getBlue();
+        }
+        return new LUT(rLut, gLut, bLut);
     }
 }

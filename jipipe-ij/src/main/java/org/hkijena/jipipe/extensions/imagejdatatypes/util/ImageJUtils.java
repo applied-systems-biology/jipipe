@@ -1545,5 +1545,41 @@ public class ImageJUtils {
             return Float.compare(fraction, o.fraction);
         }
     }
+
+    /**
+     * Converts an image into a LUT. LUT values are extracted from the first row.
+     * @param image the image. Must be RGB.
+     * @return the lut
+     */
+    public static LUT lutFromImage(ImagePlus image) {
+        byte[] rLut = new byte[256];
+        byte[] gLut = new byte[256];
+        byte[] bLut = new byte[256];
+        ImageProcessor processor = image.getProcessor();
+        for (int i = 0; i < 256; i++) {
+            int lutIndex = (int)Math.floor(1.0 * i / 256 * image.getWidth());
+            Color color = new Color(processor.get(lutIndex, 0));
+            rLut[i] = (byte) color.getRed();
+            gLut[i] = (byte) color.getGreen();
+            bLut[i] = (byte) color.getBlue();
+        }
+        return new LUT(rLut, gLut, bLut);
+    }
+
+    /**
+     * Converts a LUT into an RGB image of size 256x1
+     * @param lut the lut
+     * @return the image
+     */
+    public static ImagePlus lutToImage(LUT lut) {
+        ImagePlus img = IJ.createImage("LUT", 256, 1, 1, 24);
+        ColorProcessor processor = (ColorProcessor) img.getProcessor();
+        for (int y = 0; y < img.getHeight(); y++) {
+            for (int x = 0; x < img.getWidth(); x++) {
+                processor.set(x, y, lut.getRGB(x));
+            }
+        }
+        return img;
+    }
 }
 
