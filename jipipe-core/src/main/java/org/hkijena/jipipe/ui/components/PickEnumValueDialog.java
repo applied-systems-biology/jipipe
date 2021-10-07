@@ -21,6 +21,8 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.util.Comparator;
 import java.util.List;
 import java.util.function.Predicate;
@@ -62,6 +64,14 @@ public class PickEnumValueDialog extends JDialog {
                 setSelectedItem(itemJList.getSelectedValue());
             }
         });
+        itemJList.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                if(e.getClickCount() > 1) {
+                    pickValue();
+                }
+            }
+        });
         JScrollPane scrollPane = new JScrollPane(itemJList);
         add(scrollPane, BorderLayout.CENTER);
         initializeButtonPanel();
@@ -80,11 +90,11 @@ public class PickEnumValueDialog extends JDialog {
         buttonPanel.add(cancelButton);
 
         confirmButton = new JButton("Select", UIUtils.getIconFromResources("actions/color-select.png"));
-        confirmButton.addActionListener(e -> pickAlgorithm());
+        confirmButton.addActionListener(e -> pickValue());
         confirmButton.addKeyListener(new KeyAdapter() {
             @Override
             public void keyReleased(KeyEvent e) {
-                pickAlgorithm();
+                pickValue();
             }
         });
         buttonPanel.add(confirmButton);
@@ -92,7 +102,7 @@ public class PickEnumValueDialog extends JDialog {
         add(buttonPanel, BorderLayout.SOUTH);
     }
 
-    private void pickAlgorithm() {
+    private void pickValue() {
         canceled = false;
         setVisible(false);
     }

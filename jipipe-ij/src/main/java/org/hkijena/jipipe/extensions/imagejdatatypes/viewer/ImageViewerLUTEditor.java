@@ -13,6 +13,8 @@
 
 package org.hkijena.jipipe.extensions.imagejdatatypes.viewer;
 
+import gnu.trove.list.TIntList;
+import gnu.trove.list.array.TIntArrayList;
 import ij.CompositeImage;
 import ij.IJ;
 import ij.ImagePlus;
@@ -69,12 +71,17 @@ public class ImageViewerLUTEditor extends JPanel implements ThumbListener {
         ImagePlus image = imageViewerPanel.getImage();
         if (image != null) {
             if (targetChannel < image.getLuts().length) {
-                importLUT(image.getLuts()[targetChannel]);
+                importLUT(image.getLuts()[targetChannel], true);
             }
         }
     }
 
-    public void importLUT(LUT lut) {
+    /**
+     * Imports a LUT into the editor.
+     * @param lut the LUT
+     * @param simplify removes gradient stop points that are too close to each other
+     */
+    public void importLUT(LUT lut, boolean simplify) {
         isUpdating = true;
 
         // We find the thumb locations
@@ -84,36 +91,84 @@ public class ImageViewerLUTEditor extends JPanel implements ThumbListener {
         thumbLocations.add(0);
         thumbLocations.add(255);
 
-        // We check how if the R, G, and B functions change their monoticity
-        int monoticityR = 0;
-        int monoticityG = 0;
-        int monoticityB = 0;
+//        // We check how if the R, G, and B functions change their monoticity
+//        int lastMonoticityR = 0;
+//        int lastMonoticityG = 0;
+//        int lastMonoticityB = 0;
+//
+//        for (int i = 1; i < 256; i++) {
+//            int lastR = lut.getRed(i - 1);
+//            int lastG = lut.getGreen(i - 1);
+//            int lastB = lut.getBlue(i - 1);
+//            int currentR = lut.getRed(i);
+//            int currentG = lut.getGreen(i);
+//            int currentB = lut.getBlue(i);
+//            int currentMonoticityR = (int)Math.signum(currentR - lastR);
+//            int currentMonoticityG = (int)Math.signum(currentG - lastG);
+//            int currentMonoticityB = (int)Math.signum(currentB - lastB);
+//            if(i != 1) {
+//                if (currentMonoticityR != 0 && lastMonoticityR != 0 && currentMonoticityR != lastMonoticityR) {
+//                    thumbLocations.add(i);
+//                }
+//                if (currentMonoticityG != 0 && lastMonoticityG != 0 && currentMonoticityG != lastMonoticityG) {
+//                    thumbLocations.add(i);
+//                }
+//                if (currentMonoticityB != 0 && lastMonoticityB != 0 &&currentMonoticityB != lastMonoticityB) {
+//                    thumbLocations.add(i);
+//                }
+//            }
+//
+//            if (currentMonoticityR != 0)
+//                lastMonoticityR = currentMonoticityR;
+//            if (currentMonoticityG != 0)
+//                lastMonoticityG = currentMonoticityG;
+//            if(currentMonoticityB != 0)
+//                lastMonoticityB = currentMonoticityB;
+//        }
 
-        for (int i = 1; i < 256; i++) {
-            int lastR = lut.getRed(i - 1);
-            int lastG = lut.getGreen(i - 1);
-            int lastB = lut.getBlue(i - 1);
-            int currentR = lut.getRed(i);
-            int currentG = lut.getGreen(i);
-            int currentB = lut.getBlue(i);
-            int currentMonoticityR = (int)Math.signum(currentR - lastR);
-            int currentMonoticityG = (int)Math.signum(currentG - lastG);
-            int currentMonoticityB = (int)Math.signum(currentB - lastB);
-            if(monoticityR != 0 && currentMonoticityR != 0 && currentMonoticityR != monoticityR) {
-                thumbLocations.add(i);
+        // We check how if the R, G, and B functions change their monoticity
+        int[] bufferR = new int[3];
+        int[] bufferG = new int[3];
+        int[] bufferB = new int[3];
+        TIntList derivationsR = new TIntArrayList(256);
+        TIntList derivationsG = new TIntArrayList(256);
+        TIntList derivationsB = new TIntArrayList(256);
+        derivationsR.add(0);
+        derivationsG.add(0);
+        derivationsB.add(0);
+        for (int i = 1; i < 255; i++) {
+            bufferR[0] = lut.getRed(i - 1);
+            bufferR[1] = lut.getRed(i);
+            bufferR[2] = lut.getRed(i + 1);
+            bufferG[0] = lut.getGreen(i - 1);
+            bufferG[1] = lut.getGreen(i);
+            bufferG[2] = lut.getGreen(i + 1);
+            bufferB[0] = lut.getBlue(i - 1);
+            bufferB[1] = lut.getBlue(i);
+            bufferB[2] = lut.getBlue(i + 1);
+
+            int derivationR = (bufferR[0] - bufferR[2]) / 2;
+            int derivationG = (bufferG[0] - bufferG[2]) / 2;
+            int derivationB = (bufferB[0] - bufferB[2]) / 2;
+
+            derivationsR.add(derivationR);
+            derivationsG.add(derivationG);
+            derivationsB.add(derivationB);
+        }
+        int lastLocation = 0;
+        for (int i = 2; i < 255; i++) {
+            int lastDerivationR = (int)Math.signum(derivationsR.get(i - 1));
+            int derivationR =  (int)Math.signum(derivationsR.get(i));
+            int lastDerivationG = (int)Math.signum(derivationsG.get(i - 1));
+            int derivationG =  (int)Math.signum(derivationsG.get(i));
+            int lastDerivationB = (int)Math.signum(derivationsB.get(i - 1));
+            int derivationB =  (int)Math.signum(derivationsB.get(i));
+            if(lastDerivationR != derivationR || lastDerivationB != derivationB || lastDerivationG != derivationG) {
+                if(i - lastLocation > 20 || !simplify) {
+                    thumbLocations.add(i);
+                    lastLocation = i;
+                }
             }
-            if(monoticityG != 0 && currentMonoticityG != 0 && currentMonoticityG != monoticityG) {
-                thumbLocations.add(i);
-            }
-            if(monoticityB != 0 && currentMonoticityB != 0 && currentMonoticityB != monoticityB) {
-                thumbLocations.add(i);
-            }
-            if(currentMonoticityR != 0)
-                monoticityR = currentMonoticityR;
-            if(currentMonoticityG != 0)
-                monoticityG = currentMonoticityG;
-            if(currentMonoticityB != 0)
-                monoticityB = currentMonoticityB;
         }
 
         while (slider.getModel().getThumbCount() > thumbLocations.size()) {
@@ -242,7 +297,7 @@ public class ImageViewerLUTEditor extends JPanel implements ThumbListener {
         if(path != null) {
             ImagePlus img = IJ.openImage(path.toString());
             LUT lut = ImageJUtils.lutFromImage(img);
-            importLUT(lut);
+            importLUT(lut, true);
             SwingUtilities.invokeLater(this::applyLUT);
         }
     }
@@ -259,7 +314,7 @@ public class ImageViewerLUTEditor extends JPanel implements ThumbListener {
     private void pickColorsFromColorMap() {
         Object selected = PickEnumValueDialog.showDialog(this, Arrays.asList(ColorMap.values()), new ColorMapEnumItemInfo(), ColorMap.viridis, "Select LUT");
         if(selected instanceof ColorMap) {
-            importLUT(((ColorMap) selected).toLUT());
+            importLUT(((ColorMap) selected).toLUT(), true);
             SwingUtilities.invokeLater(this::applyLUT);
         }
     }

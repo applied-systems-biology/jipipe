@@ -25,7 +25,7 @@ import java.io.IOException;
 /**
  * All available color maps
  */
-@EnumParameterSettings(itemInfo = ColorMapEnumItemInfo.class)
+@EnumParameterSettings(itemInfo = ColorMapEnumItemInfo.class, searchable = true)
 public enum ColorMap {
     viridis,
     plasma,

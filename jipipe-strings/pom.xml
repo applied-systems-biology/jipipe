@@ -5,11 +5,11 @@
     <parent>
         <artifactId>pom-jipipe</artifactId>
         <groupId>org.hkijena</groupId>
-        <version>1.41.0</version>
+        <version>1.41.1</version>
     </parent>
 
     <artifactId>jipipe-strings</artifactId>
-    <version>1.41.0</version>
+    <version>1.41.1</version>
 
     <name>jipipe-strings</name>
     <description>JIPipe Strings</description>
@@ -78,7 +78,7 @@
             <dependency>
                 <groupId>org.hkijena</groupId>
                 <artifactId>jipipe-core</artifactId>
-                <version>1.41.0</version>
+                <version>1.41.1</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
