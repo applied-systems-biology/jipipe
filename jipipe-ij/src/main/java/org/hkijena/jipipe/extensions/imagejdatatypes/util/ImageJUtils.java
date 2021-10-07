@@ -13,6 +13,8 @@
 
 package org.hkijena.jipipe.extensions.imagejdatatypes.util;
 
+import com.fasterxml.jackson.annotation.JsonGetter;
+import com.fasterxml.jackson.annotation.JsonSetter;
 import gnu.trove.list.TIntList;
 import gnu.trove.list.array.TByteArrayList;
 import gnu.trove.list.array.TFloatArrayList;
@@ -991,23 +993,23 @@ public class ImageJUtils {
 //            e.printStackTrace();
 //        }
         stops.sort(Comparator.naturalOrder());
-        if (stops.get(0).fraction > 0)
-            stops.add(0, new GradientStop(stops.get(0).getColor(), 0));
-        if (stops.get(stops.size() - 1).fraction < 1)
-            stops.add(new GradientStop(stops.get(stops.size() - 1).getColor(), 1));
+        if (stops.get(0).position > 0)
+            stops.add(0, new GradientStop(0, stops.get(0).getColor()));
+        if (stops.get(stops.size() - 1).position < 1)
+            stops.add(new GradientStop(1, stops.get(stops.size() - 1).getColor()));
         byte[] reds = new byte[256];
         byte[] greens = new byte[256];
         byte[] blues = new byte[256];
         int currentFirstStop = 0;
         int currentLastStop = 1;
         int startIndex = 0;
-        int endIndex = (int) (255 * stops.get(currentLastStop).fraction);
+        int endIndex = (int) (255 * stops.get(currentLastStop).position);
         for (int i = 0; i < 256; i++) {
             if (i != 255 && i >= endIndex) {
                 startIndex = i;
                 ++currentFirstStop;
                 ++currentLastStop;
-                endIndex = (int) (255 * stops.get(currentLastStop).fraction);
+                endIndex = (int) (255 * stops.get(currentLastStop).position);
             }
             Color currentStart = stops.get(currentFirstStop).getColor();
             Color currentEnd = stops.get(currentLastStop).getColor();
@@ -1524,25 +1526,45 @@ public class ImageJUtils {
     }
 
     public static class GradientStop implements Comparable<GradientStop> {
-        private final Color color;
-        private final float fraction;
+        private Color color;
+        private float position;
 
-        public GradientStop(Color color, float fraction) {
-            this.color = color;
-            this.fraction = fraction;
+        public GradientStop() {
         }
 
+        public GradientStop(float position, Color color) {
+            this.position = position;
+            this.color = color;
+        }
+
+        public GradientStop(GradientStop other) {
+            this.position = other.position;
+            this.color = other.color;
+        }
+
+        @JsonGetter("position")
+        public float getPosition() {
+            return position;
+        }
+
+        @JsonSetter("position")
+        public void setPosition(float position) {
+            this.position = position;
+        }
+
+        @JsonGetter("color")
         public Color getColor() {
             return color;
         }
 
-        public float getFraction() {
-            return fraction;
+        @JsonSetter("color")
+        public void setColor(Color color) {
+            this.color = color;
         }
 
         @Override
         public int compareTo(GradientStop o) {
-            return Float.compare(fraction, o.fraction);
+            return Float.compare(position, o.position);
         }
     }
 
@@ -1567,16 +1589,19 @@ public class ImageJUtils {
     }
 
     /**
-     * Converts a LUT into an RGB image of size 256x1
+     * Converts a LUT into an RGB image
      * @param lut the lut
+     * @param width width of the image
+     * @param height height of the image
      * @return the image
      */
-    public static ImagePlus lutToImage(LUT lut) {
-        ImagePlus img = IJ.createImage("LUT", 256, 1, 1, 24);
+    public static ImagePlus lutToImage(LUT lut, int width, int height) {
+        ImagePlus img = IJ.createImage("LUT", width, height, 1, 24);
         ColorProcessor processor = (ColorProcessor) img.getProcessor();
         for (int y = 0; y < img.getHeight(); y++) {
             for (int x = 0; x < img.getWidth(); x++) {
-                processor.set(x, y, lut.getRGB(x));
+                int lutIndex = (int) Math.floor(1.0 * x / img.getWidth() * 256);
+                processor.set(x, y, lut.getRGB(lutIndex));
             }
         }
         return img;

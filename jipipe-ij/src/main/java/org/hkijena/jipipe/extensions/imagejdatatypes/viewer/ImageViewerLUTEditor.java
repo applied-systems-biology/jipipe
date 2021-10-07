@@ -19,6 +19,7 @@ import ij.CompositeImage;
 import ij.IJ;
 import ij.ImagePlus;
 import ij.process.LUT;
+import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.LUTData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.extensions.parameters.colors.ColorMap;
 import org.hkijena.jipipe.extensions.parameters.colors.ColorMapEnumItemInfo;
@@ -26,6 +27,7 @@ import org.hkijena.jipipe.extensions.settings.FileChooserSettings;
 import org.hkijena.jipipe.ui.components.ColorIcon;
 import org.hkijena.jipipe.ui.components.PickEnumValueDialog;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.utils.json.JsonUtils;
 import org.jdesktop.swingx.JXMultiThumbSlider;
 import org.jdesktop.swingx.color.GradientThumbRenderer;
 import org.jdesktop.swingx.multislider.Thumb;
@@ -82,116 +84,8 @@ public class ImageViewerLUTEditor extends JPanel implements ThumbListener {
      * @param simplify removes gradient stop points that are too close to each other
      */
     public void importLUT(LUT lut, boolean simplify) {
-        isUpdating = true;
-
-        // We find the thumb locations
-        Set<Integer> thumbLocations = new TreeSet<>();
-
-        // Start and end locations are always available
-        thumbLocations.add(0);
-        thumbLocations.add(255);
-
-//        // We check how if the R, G, and B functions change their monoticity
-//        int lastMonoticityR = 0;
-//        int lastMonoticityG = 0;
-//        int lastMonoticityB = 0;
-//
-//        for (int i = 1; i < 256; i++) {
-//            int lastR = lut.getRed(i - 1);
-//            int lastG = lut.getGreen(i - 1);
-//            int lastB = lut.getBlue(i - 1);
-//            int currentR = lut.getRed(i);
-//            int currentG = lut.getGreen(i);
-//            int currentB = lut.getBlue(i);
-//            int currentMonoticityR = (int)Math.signum(currentR - lastR);
-//            int currentMonoticityG = (int)Math.signum(currentG - lastG);
-//            int currentMonoticityB = (int)Math.signum(currentB - lastB);
-//            if(i != 1) {
-//                if (currentMonoticityR != 0 && lastMonoticityR != 0 && currentMonoticityR != lastMonoticityR) {
-//                    thumbLocations.add(i);
-//                }
-//                if (currentMonoticityG != 0 && lastMonoticityG != 0 && currentMonoticityG != lastMonoticityG) {
-//                    thumbLocations.add(i);
-//                }
-//                if (currentMonoticityB != 0 && lastMonoticityB != 0 &&currentMonoticityB != lastMonoticityB) {
-//                    thumbLocations.add(i);
-//                }
-//            }
-//
-//            if (currentMonoticityR != 0)
-//                lastMonoticityR = currentMonoticityR;
-//            if (currentMonoticityG != 0)
-//                lastMonoticityG = currentMonoticityG;
-//            if(currentMonoticityB != 0)
-//                lastMonoticityB = currentMonoticityB;
-//        }
-
-        // We check how if the R, G, and B functions change their monoticity
-        int[] bufferR = new int[3];
-        int[] bufferG = new int[3];
-        int[] bufferB = new int[3];
-        TIntList derivationsR = new TIntArrayList(256);
-        TIntList derivationsG = new TIntArrayList(256);
-        TIntList derivationsB = new TIntArrayList(256);
-        derivationsR.add(0);
-        derivationsG.add(0);
-        derivationsB.add(0);
-        for (int i = 1; i < 255; i++) {
-            bufferR[0] = lut.getRed(i - 1);
-            bufferR[1] = lut.getRed(i);
-            bufferR[2] = lut.getRed(i + 1);
-            bufferG[0] = lut.getGreen(i - 1);
-            bufferG[1] = lut.getGreen(i);
-            bufferG[2] = lut.getGreen(i + 1);
-            bufferB[0] = lut.getBlue(i - 1);
-            bufferB[1] = lut.getBlue(i);
-            bufferB[2] = lut.getBlue(i + 1);
-
-            int derivationR = (bufferR[0] - bufferR[2]) / 2;
-            int derivationG = (bufferG[0] - bufferG[2]) / 2;
-            int derivationB = (bufferB[0] - bufferB[2]) / 2;
-
-            derivationsR.add(derivationR);
-            derivationsG.add(derivationG);
-            derivationsB.add(derivationB);
-        }
-        int lastLocation = 0;
-        for (int i = 2; i < 255; i++) {
-            int lastDerivationR = (int)Math.signum(derivationsR.get(i - 1));
-            int derivationR =  (int)Math.signum(derivationsR.get(i));
-            int lastDerivationG = (int)Math.signum(derivationsG.get(i - 1));
-            int derivationG =  (int)Math.signum(derivationsG.get(i));
-            int lastDerivationB = (int)Math.signum(derivationsB.get(i - 1));
-            int derivationB =  (int)Math.signum(derivationsB.get(i));
-            if(lastDerivationR != derivationR || lastDerivationB != derivationB || lastDerivationG != derivationG) {
-                if(i - lastLocation > 20 || !simplify) {
-                    thumbLocations.add(i);
-                    lastLocation = i;
-                }
-            }
-        }
-
-        while (slider.getModel().getThumbCount() > thumbLocations.size()) {
-            slider.getModel().removeThumb(0);
-        }
-        while (slider.getModel().getThumbCount() < thumbLocations.size()) {
-            slider.getModel().addThumb(0, Color.RED);
-        }
-
-        int index = 0;
-        for(int lutIndex : thumbLocations) {
-            float thumbLocation = lutIndex / 255.0f;
-            slider.getModel().getThumbAt(index).setPosition(thumbLocation);
-            slider.getModel().getThumbAt(index).setObject(new Color(lut.getRGB(lutIndex)));
-            index+=1;
-        }
-
-//        slider.getModel().getThumbAt(0).setPosition(0);
-//        slider.getModel().getThumbAt(1).setPosition(1);
-//        slider.getModel().getThumbAt(0).setObject(black);
-//        slider.getModel().getThumbAt(1).setObject(white);
-        cachedLUT = null;
-        isUpdating = false;
+      LUTData lutData = LUTData.fromLUT(lut, simplify);
+      importLUT(lutData);
     }
 
     public int getTargetChannel() {
@@ -208,7 +102,7 @@ public class ImageViewerLUTEditor extends JPanel implements ThumbListener {
         List<Thumb<Color>> stops = this.slider.getModel().getSortedThumbs();
         List<ImageJUtils.GradientStop> gradientStops = new ArrayList<>();
         for (Thumb<Color> thumb : stops) {
-            gradientStops.add(new ImageJUtils.GradientStop(thumb.getObject(), thumb.getPosition()));
+            gradientStops.add(new ImageJUtils.GradientStop(thumb.getPosition(), thumb.getObject()));
         }
         return ImageJUtils.createLUTFromGradient(gradientStops);
     }
@@ -261,13 +155,21 @@ public class ImageViewerLUTEditor extends JPanel implements ThumbListener {
         setToColorMapButton.addActionListener(e -> pickColorsFromColorMap());
         menu.add(setToColorMapButton);
 
-        JMenuItem exportLUTButton = new JMenuItem("Export LUT", UIUtils.getIconFromResources("actions/document-export.png"));
-        exportLUTButton.addActionListener(e -> exportLUTToFile());
-        menu.add(exportLUTButton);
+        JMenuItem exportLUTToJSONButton = new JMenuItem("Export LUT as *.json", UIUtils.getIconFromResources("actions/document-export.png"));
+        exportLUTToJSONButton.addActionListener(e -> exportLUTToJSON());
+        menu.add(exportLUTToJSONButton);
 
-        JMenuItem importLUTButton = new JMenuItem("Import LUT", UIUtils.getIconFromResources("actions/document-import.png"));
-        importLUTButton.addActionListener(e -> importLUTFromFile());
-        menu.add(importLUTButton);
+        JMenuItem exportLUTToPNGButton = new JMenuItem("Export LUT as *.png", UIUtils.getIconFromResources("actions/document-export.png"));
+        exportLUTToPNGButton.addActionListener(e -> exportLUTToPNG());
+        menu.add(exportLUTToPNGButton);
+
+        JMenuItem importLUTFromJSONButton = new JMenuItem("Import LUT from *.json", UIUtils.getIconFromResources("actions/document-import.png"));
+        importLUTFromJSONButton.addActionListener(e -> importLUTFromJSON());
+        menu.add(importLUTFromJSONButton);
+
+        JMenuItem importLUTFromPNGButton = new JMenuItem("Import LUT from *.png", UIUtils.getIconFromResources("actions/document-import.png"));
+        importLUTFromPNGButton.addActionListener(e -> importLUTFromPNG());
+        menu.add(importLUTFromPNGButton);
 
         // Standard buttons
         UIUtils.makeFlat25x25(addThumbButton);
@@ -292,7 +194,45 @@ public class ImageViewerLUTEditor extends JPanel implements ThumbListener {
         changeColorButton.addActionListener(e -> changeColor());
     }
 
-    private void importLUTFromFile() {
+    public void importLUT(LUTData lutData) {
+        isUpdating = true;
+        while (slider.getModel().getThumbCount() > lutData.size()) {
+            slider.getModel().removeThumb(0);
+        }
+        while (slider.getModel().getThumbCount() < lutData.size()) {
+            slider.getModel().addThumb(0, Color.RED);
+        }
+
+        for (int i = 0; i < lutData.size(); i++) {
+            slider.getModel().getThumbAt(i).setPosition(lutData.get(i).getPosition());
+            slider.getModel().getThumbAt(i).setObject(lutData.get(i).getColor());
+        }
+        cachedLUT = null;
+        isUpdating = false;
+    }
+
+    private void importLUTFromJSON() {
+        Path path = FileChooserSettings.openFile(this, FileChooserSettings.LastDirectoryKey.Data, "Import LUT", UIUtils.EXTENSION_FILTER_JSON);
+        if(path != null) {
+            LUTData lutData = JsonUtils.readFromFile(path, LUTData.class);
+            importLUT(lutData);
+            SwingUtilities.invokeLater(this::applyLUT);
+        }
+    }
+
+    private void exportLUTToJSON() {
+        Path path = FileChooserSettings.saveFile(this, FileChooserSettings.LastDirectoryKey.Data, "Export LUT", UIUtils.EXTENSION_FILTER_JSON);
+        if(path != null) {
+            LUTData lutData = new LUTData();
+            for (int i = 0; i < slider.getModel().getThumbCount(); i++) {
+                Thumb<Color> thumb = slider.getModel().getThumbAt(i);
+                lutData.addStop(thumb.getPosition(), thumb.getObject());
+            }
+            JsonUtils.saveToFile(lutData, path);
+        }
+    }
+
+    private void importLUTFromPNG() {
         Path path = FileChooserSettings.openFile(this, FileChooserSettings.LastDirectoryKey.Data, "Import LUT", UIUtils.EXTENSION_FILTER_PNG);
         if(path != null) {
             ImagePlus img = IJ.openImage(path.toString());
@@ -302,11 +242,11 @@ public class ImageViewerLUTEditor extends JPanel implements ThumbListener {
         }
     }
 
-    private void exportLUTToFile() {
+    private void exportLUTToPNG() {
         Path path = FileChooserSettings.saveFile(this, FileChooserSettings.LastDirectoryKey.Data, "Export LUT", UIUtils.EXTENSION_FILTER_PNG);
         if(path != null) {
             LUT lut = generateLUT();
-            ImagePlus img = ImageJUtils.lutToImage(lut);
+            ImagePlus img = ImageJUtils.lutToImage(lut, 256, 1);
             IJ.saveAs(img, "PNG", path.toString());
         }
     }

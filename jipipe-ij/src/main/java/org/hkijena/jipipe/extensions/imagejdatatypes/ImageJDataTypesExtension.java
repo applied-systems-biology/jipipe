@@ -35,6 +35,7 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.datasources.ImagePlusFromFi
 import org.hkijena.jipipe.extensions.imagejdatatypes.datasources.ROIDataFromFile;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datasources.ResultsTableFromFile;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
+import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.LUTData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.OMEImageData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ROIListData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.color.ImagePlusColorData;
@@ -248,7 +249,7 @@ public class ImageJDataTypesExtension extends JIPipePrepackagedDefaultJavaExtens
 
     @Override
     public String getDependencyVersion() {
-        return "1.41.1";
+        return "1.42.0";
     }
 
     @Override
@@ -350,6 +351,7 @@ public class ImageJDataTypesExtension extends JIPipePrepackagedDefaultJavaExtens
                 new AddToROIManagerDataDisplay(),
                 new AddROIToActiveJIPipeImageViewerDataDisplay(),
                 new AddROIToJIPipeImageViewerDataDisplay());
+        registerDatatype("imagej-lut", LUTData.class, ResourceUtils.getPluginResource("icons/data-types/lut.png"), null, null);
         registerImageJDataAdapter(new ROIDataImageJAdapter(), ROIDataImporterUI.class);
         registerDatatype("imagej-results-table",
                 ResultsTableData.class,
@@ -407,6 +409,8 @@ public class ImageJDataTypesExtension extends JIPipePrepackagedDefaultJavaExtens
         registerDatatypeConversion(new OMEImageToROITypeConverter());
         registerDatatypeConversion(new OmeImageToOMEXMLTypeConverter());
         registerDatatypeConversion(new PlotToImageTypeConverter());
+        registerDatatypeConversion(new ImageToLUTTypeConverter());
+        registerDatatypeConversion(new LUTToImageTypeConverter());
 
         Set<Class<? extends JIPipeData>> dataTypes = getRegistry().getDatatypeRegistry().getRegisteredDataTypes().values()
                 .stream().filter(ImagePlusData.class::isAssignableFrom).collect(Collectors.toSet());
