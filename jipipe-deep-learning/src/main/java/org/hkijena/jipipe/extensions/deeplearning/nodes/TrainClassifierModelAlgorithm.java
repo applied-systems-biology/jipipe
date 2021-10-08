@@ -65,7 +65,7 @@ import java.util.Set;
         "extracted from an annotation column. Please note that the model must be able to be trained with classified images.")
 @JIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Deep learning")
 @JIPipeInputSlot(value = ImagePlus3DGreyscaleData.class, slotName = "Training data", autoCreate = true)
-@JIPipeInputSlot(value = ImagePlus3DGreyscaleData.class, slotName = "Test data", autoCreate = true)
+@JIPipeInputSlot(value = ImagePlus3DGreyscaleData.class, slotName = "Validation data", autoCreate = true)
 @JIPipeInputSlot(value = DeepLearningModelData.class, slotName = "Model", autoCreate = true)
 @JIPipeOutputSlot(value = DeepLearningModelData.class, slotName = "Trained model", autoCreate = true)
 @JIPipeOutputSlot(value = ResultsTableData.class, slotName = "History")
@@ -157,7 +157,7 @@ public class TrainClassifierModelAlgorithm extends JIPipeSingleIterationAlgorith
     protected void runIteration(JIPipeMergingDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
         JIPipeDataSlot inputModelSlot = getInputSlot("Model");
         JIPipeDataSlot inputTrainingDataSlot = getInputSlot("Training data");
-        JIPipeDataSlot inputTestDataSlot = getInputSlot("Test data");
+        JIPipeDataSlot inputValidationDataSlot = getInputSlot("Validation data");
 
         int modelCounter = 0;
         for (Integer modelIndex : dataBatch.getInputSlotRows().get(inputModelSlot)) {
@@ -186,7 +186,7 @@ public class TrainClassifierModelAlgorithm extends JIPipeSingleIterationAlgorith
             Path validationRawsDirectory = PathUtils.resolveAndMakeSubDirectory(workDirectory, "validation-raw");
 
             saveLabelsAndImages(dataBatch, inputTrainingDataSlot, modelProgress, inputModel, labelFile, rawsDirectory, "train");
-            saveLabelsAndImages(dataBatch, inputTestDataSlot, modelProgress, inputModel, validationLabelsFile, validationRawsDirectory, "val");
+            saveLabelsAndImages(dataBatch, inputValidationDataSlot, modelProgress, inputModel, validationLabelsFile, validationRawsDirectory, "val");
 
             // Save model according to standard interface
             inputModel.saveTo(workDirectory, "", false, modelProgress);

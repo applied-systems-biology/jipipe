@@ -65,7 +65,7 @@ import java.util.Set;
         "For this node to work, you need to annotate a greyscale 16-bit or 8-bit label image column to each raw data input. To do this, you can use the node 'Annotate with data'.")
 @JIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Deep learning")
 @JIPipeInputSlot(value = ImagePlus3DGreyscaleData.class, slotName = "Training data", autoCreate = true)
-@JIPipeInputSlot(value = ImagePlus3DGreyscaleData.class, slotName = "Test data", autoCreate = true)
+@JIPipeInputSlot(value = ImagePlus3DGreyscaleData.class, slotName = "Validation data", autoCreate = true)
 @JIPipeInputSlot(value = DeepLearningModelData.class, slotName = "Model", autoCreate = true)
 @JIPipeOutputSlot(value = DeepLearningModelData.class, slotName = "Trained model", autoCreate = true)
 @JIPipeOutputSlot(value = ResultsTableData.class, slotName = "History")
@@ -158,7 +158,7 @@ public class TrainImageModelAlgorithm extends JIPipeSingleIterationAlgorithm {
     protected void runIteration(JIPipeMergingDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
         JIPipeDataSlot inputModelSlot = getInputSlot("Model");
         JIPipeDataSlot inputTrainingDataSlot = getInputSlot("Training data");
-        JIPipeDataSlot inputTestDataSlot = getInputSlot("Test data");
+        JIPipeDataSlot inputValidationDataSlot = getInputSlot("Validation data");
         int modelCounter = 0;
         for (Integer modelIndex : dataBatch.getInputSlotRows().get(inputModelSlot)) {
             JIPipeProgressInfo modelProgress = progressInfo.resolveAndLog("Check model", modelCounter++, dataBatch.getInputSlotRows().get(inputModelSlot).size());
@@ -186,7 +186,7 @@ public class TrainImageModelAlgorithm extends JIPipeSingleIterationAlgorithm {
             Path validationRawsDirectory = PathUtils.resolveAndMakeSubDirectory(workDirectory, "validation-raw");
 
             writeImages(dataBatch, progressInfo, inputTrainingDataSlot, modelProgress, inputModel, labelsDirectory, rawsDirectory, "train");
-            writeImages(dataBatch, progressInfo, inputTestDataSlot, modelProgress, inputModel, validationLabelsDirectory, validationRawsDirectory, "val");
+            writeImages(dataBatch, progressInfo, inputValidationDataSlot, modelProgress, inputModel, validationLabelsDirectory, validationRawsDirectory, "val");
 
             // Save model according to standard interface
             inputModel.saveTo(workDirectory, "", false, modelProgress);
@@ -252,13 +252,13 @@ public class TrainImageModelAlgorithm extends JIPipeSingleIterationAlgorithm {
         }
     }
 
-    private void writeImages(JIPipeMergingDataBatch dataBatch, JIPipeProgressInfo progressInfo, JIPipeDataSlot inputTestDataSlot, JIPipeProgressInfo modelProgress, DeepLearningModelData inputModel, Path labelsDirectory, Path rawsDirectory, String prefix) {
+    private void writeImages(JIPipeMergingDataBatch dataBatch, JIPipeProgressInfo progressInfo, JIPipeDataSlot inputValidationDataSlot, JIPipeProgressInfo modelProgress, DeepLearningModelData inputModel, Path labelsDirectory, Path rawsDirectory, String prefix) {
         int imageCounter = 0;
-        Set<Integer> labelRows = dataBatch.getInputSlotRows().get(inputTestDataSlot);
+        Set<Integer> labelRows = dataBatch.getInputSlotRows().get(inputValidationDataSlot);
         for (Integer imageIndex : labelRows) {
             JIPipeProgressInfo imageProgress = modelProgress.resolveAndLog("Write labeled images", imageCounter++, labelRows.size());
-            ImagePlusData raw = inputTestDataSlot.getData(imageIndex, ImagePlus3DGreyscaleData.class, imageProgress);
-            ImagePlusData label = labelDataAnnotation.queryFirst(inputTestDataSlot.getDataAnnotations(imageIndex)).getData(ImagePlus3DGreyscaleData.class, progressInfo);
+            ImagePlusData raw = inputValidationDataSlot.getData(imageIndex, ImagePlus3DGreyscaleData.class, imageProgress);
+            ImagePlusData label = labelDataAnnotation.queryFirst(inputValidationDataSlot.getDataAnnotations(imageIndex)).getData(ImagePlus3DGreyscaleData.class, progressInfo);
             Path rawPath = rawsDirectory.resolve(imageCounter + "_" + prefix + ".tif");
             Path labelPath = labelsDirectory.resolve(imageCounter + "_" + prefix + ".tif");
 
