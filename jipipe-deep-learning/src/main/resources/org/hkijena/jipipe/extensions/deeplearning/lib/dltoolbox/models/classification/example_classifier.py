@@ -18,8 +18,6 @@ Script to create a mobilenet model
 """
 
 import tensorflow as tf
-from dltoolbox import utils
-from dltoolbox.models import metrics
 
 
 def build_model(config):
@@ -35,9 +33,6 @@ def build_model(config):
 
     img_shape = tuple(config["image_shape"])
     num_classes = config['n_classes']
-    model_path = config['output_model_path']
-    model_json_path = config["output_model_json_path"]
-    model_type = config['model_type']
 
     # define the model
     inputs = tf.keras.layers.Input(shape=img_shape)
@@ -51,20 +46,5 @@ def build_model(config):
     x = tf.keras.layers.Dense(num_classes, activation="softmax")(x)
 
     model = tf.keras.models.Model(inputs=[inputs], outputs=[x])
-
-    # get all metrics
-    model_metrics = metrics.get_metrics(model_type, num_classes)
-
-    # compile model
-    model.compile(loss="categorical_crossentropy", optimizer="adam", metrics=model_metrics)
-
-    model.summary()
-
-    # save the model, model-architecture and model-config
-    utils.save_model_with_json(model=model,
-                               model_path=model_path,
-                               model_json_path=model_json_path,
-                               model_config=config,
-                               operation_config=None)
 
     return model

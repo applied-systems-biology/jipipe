@@ -14,35 +14,33 @@ Leibniz Institute for Natural Product Research and Infection Biology -
 Hans Knöll Insitute (HKI)
 Adolf-Reichwein-Straße 23, 07745 Jena, Germany
 
-Script to create a mobilenet model
+Script to create a Xception model
 """
 
 import tensorflow as tf
 
 
-def build_model(config, **kwargs):
+def build_model(config):
     """
-    Build MobileNetV2 classification model.
-    Set weights='imagenet' to use a pretrained model.
-
+    Creates a EfficientNet model
     Args:
-        config: The model parameters
+        config: the model parameters
 
-    Returns: The model
+    Returns: the model
+
     """
 
     img_shape = tuple(config["image_shape"])
-    num_classes = config['n_classes']
+    n_classes = config['n_classes']
 
-    model = tf.keras.applications.mobilenet_v2.MobileNetV2(
-        input_shape=img_shape,
-        alpha=1.0,
+    model = tf.keras.applications.efficientnet.EfficientNetB7(
         include_top=True,
+        weights='imagenet',
         input_tensor=None,
+        input_shape=img_shape,
         pooling=None,
-        classes=num_classes,
-        classifier_activation='softmax',
-        **kwargs
+        classes=n_classes,
+        classifier_activation='softmax'
     )
 
     return model

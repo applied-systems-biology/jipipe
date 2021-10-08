@@ -33,9 +33,6 @@ def build_model(config):
 
     img_shape = tuple(config["image_shape"])
     n_classes = config['n_classes']
-    model_path = config['output_model_path']
-
-    model_json_path = config["output_model_json_path"]
 
     img_input = tf.keras.layers.Input(shape=img_shape)
 
@@ -58,18 +55,6 @@ def build_model(config):
     o = tf.keras.layers.Reshape((-1, n_classes))(o)
     o = tf.keras.layers.Activation("softmax")(o)
 
-    fcn8 = tf.keras.models.Model(inputs=img_input, outputs=o)
+    model = tf.keras.models.Model(inputs=img_input, outputs=o)
 
-    fcn8.summary()
-
-    if model_path:
-        fcn8.save(model_path)
-        print('[Create model] Saved model to:', model_path)
-
-    if model_json_path:
-        model_json = fcn8.to_json()
-        with open(model_json_path, "w") as f:
-            f.write(model_json)
-        print('[Create model] Saved model JSON to:', model_json_path)
-
-    return fcn8
+    return model

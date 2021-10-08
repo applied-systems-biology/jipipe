@@ -18,7 +18,7 @@ Script to create a VGG16 model
 """
 
 import tensorflow as tf
-from dltoolbox import utils
+
 
 def build_model(config):
     """
@@ -32,8 +32,6 @@ def build_model(config):
 
     img_shape = tuple(config["image_shape"])
     num_classes = config['n_classes']
-    model_path = config['output_model_path']
-    model_json_path = config["output_model_json_path"]
 
     def secondConvBlock(input_tensor, num_filters):
         sec_conv = tf.keras.layers.Conv2D(num_filters, (3, 3), padding='same')(input_tensor)
@@ -78,20 +76,5 @@ def build_model(config):
 
     # create the model
     model = tf.keras.models.Model(inputs=[inputs], outputs=[output])
-
-    # compile model
-    if num_classes == 2:
-        model.compile(loss='binary_crossentropy', optimizer=tf.keras.optimizers.Adam(), metrics=['acc'])
-    else:
-        model.compile(loss='categorical_crossentropy', optimizer=tf.keras.optimizers.Adam(), metrics=['acc'])
-
-    model.summary()
-
-    # save the model, model-architecture and model-config
-    utils.save_model_with_json(model=model,
-                               model_path=model_path,
-                               model_json_path=model_json_path,
-                               model_config=config,
-                               operation_config=None)
 
     return model

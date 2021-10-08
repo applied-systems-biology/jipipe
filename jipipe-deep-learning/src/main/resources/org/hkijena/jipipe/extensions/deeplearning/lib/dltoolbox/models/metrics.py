@@ -21,6 +21,7 @@ import numpy as np
 import tensorflow as tf
 from sklearn.metrics import matthews_corrcoef
 from scipy.spatial.distance import directed_hausdorff
+from skimage.metrics import hausdorff_distance
 
 
 def get_metrics(model_type, num_classes):
@@ -39,11 +40,16 @@ def get_metrics(model_type, num_classes):
             tf.keras.metrics.FalsePositives(name='fp'),
             tf.keras.metrics.TrueNegatives(name='tn'),
             tf.keras.metrics.FalseNegatives(name='fn'),
-            tf.keras.metrics.AUC(name='prc', curve='PR'),  # precision-recall curve
-            tf.keras.metrics.MeanIoU(num_classes=num_classes),
             dice_coeff,
             IoU
         ]
+
+        # add the metric that will be monitored during training for all callbacks
+        if num_classes == 2:
+            metrics.append(tf.keras.losses.BinaryCrossentropy(from_logits=True, name='binary_crossentropy'))
+        else:
+            metrics.append(tf.keras.losses.CategoricalCrossentropy(from_logits=True, name='categorical_crossentropy'))
+
     elif model_type == 'classification':
         metrics = [
             tf.keras.metrics.TruePositives(name='tp'),
@@ -56,6 +62,13 @@ def get_metrics(model_type, num_classes):
             tf.keras.metrics.AUC(name='auc'),
             tf.keras.metrics.AUC(name='prc', curve='PR'),  # precision-recall curve
         ]
+
+        # add the metric that will be monitored during training for all callbacks
+        if num_classes == 2:
+            metrics.append(tf.keras.losses.BinaryCrossentropy(from_logits=True, name='binary_crossentropy'))
+        else:
+            metrics.append(tf.keras.losses.CategoricalCrossentropy(from_logits=True, name='categorical_crossentropy'))
+
     else:
         raise AttributeError("Unsupported model-type for metrics: " + str(model_type))
 
@@ -287,6 +300,41 @@ def MMC_loss(y_true, y_pred):
     loss = score / -1
 
     return loss
+
+def hausdorff_distance_loss(y_true, y_pred):
+
+    # skimage
+    points_a = (3, 0)
+    points_b = (6, 0)
+    shape = (7, 1)
+
+    image_a = np.zeros(shape, dtype=bool)
+    image_b = np.zeros(shape, dtype=bool)
+    image_a[points_a] = True
+    image_b[points_b] = True
+    hausdorff_distance(image_a, image_b)
+    print(3.0)
+
+    # scipy
+    u = np.array([(1.0, 0.0),
+
+                  (0.0, 1.0),
+
+                  (-1.0, 0.0),
+
+                  (0.0, -1.0)])
+
+    v = np.array([(2.0, 0.0),
+
+                  (0.0, 2.0),
+
+                  (-2.0, 0.0),
+
+                  (0.0, -4.0)])
+
+    score = directed_hausdorff(u, v)[0] # != directed_hausdorff(v, u)[0]
+
+    return score
 
 
 def focal_loss(y_true, y_pred):

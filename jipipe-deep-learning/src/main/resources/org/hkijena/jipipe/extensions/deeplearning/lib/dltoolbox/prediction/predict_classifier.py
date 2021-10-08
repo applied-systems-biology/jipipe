@@ -19,9 +19,9 @@ Script to predict a network
 
 import os
 import numpy as np
-from glob import glob
 import pandas as pd
 import tensorflow as tf
+
 from dltoolbox import utils
 
 
@@ -66,10 +66,26 @@ def predict_samples(model_config, config, model=None):
     print('[Predict] Input data:', x.shape)
 
     # Preprocessing of the input data (normalization)
-    print('[Predict] Input image intensity min-max-range before preprocessing:', x.min(), x.max())
-    if x.max() > 1:
+    if len(x.shape) == 1 and len(x) > 1:
+        # multiple images with different shapes
+        x_min, x_max = x[0].min(), x[0].max()
+    else:
+        # all images have the same shape
+        x_min, x_max = x.min(), x.max()
+
+    print('[Predict] Input image intensity min-max-range before preprocessing:', x_min, x_max)
+
+    if x_max > 1:
         x = utils.preprocessing(x, mode=normalization_mode)
-        print('[Predict] Input image intensity min-max-range after preprocessing:', x.min(), x.max())
+
+        if len(x.shape) == 1 and len(x) > 1:
+            # multiple images with different shapes
+            x_min, x_max = x[0].min(), x[0].max()
+        else:
+            # all images have the same shape
+            x_min, x_max = x.min(), x.max()
+
+        print('[Predict] Input image intensity min-max-range after preprocessing:', x_min, x_max)
 
     results = []
     results_columns = None

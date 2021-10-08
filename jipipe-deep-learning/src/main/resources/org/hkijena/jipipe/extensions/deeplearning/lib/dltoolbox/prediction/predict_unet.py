@@ -21,8 +21,6 @@ import os
 import sys
 from pathlib import Path
 import numpy as np
-from glob import glob
-import pandas as pd
 import math
 from skimage import io, img_as_float32
 import tifffile
@@ -43,7 +41,6 @@ def predict_samples(model_config, config, model=None):
 
     """
 
-    # assign hyper-parameter for training procedure
     input_dir = config['input_dir']
     output_dir = config['output_dir']
     input_model_path = config["input_model_path"] if "input_model_path" in config else model_config['output_model_path']
@@ -73,10 +70,26 @@ def predict_samples(model_config, config, model=None):
     print('[Predict] Input data:', x.shape)
 
     # Preprocessing of the input data (normalization)
-    print('[Predict] Input image intensity min-max-range before preprocessing:', x.min(), x.max())
-    if x.max() > 1:
+    if len(x.shape) == 1 and len(x) > 1:
+        # multiple images with different shapes
+        x_min, x_max = x[0].min(), x[0].max()
+    else:
+        # all images have the same shape
+        x_min, x_max = x.min(), x.max()
+
+    print('[Predict] Input image intensity min-max-range before preprocessing:', x_min, x_max)
+
+    if x_max > 1:
         x = utils.preprocessing(x, mode=normalization_mode)
-        print('[Predict] Input image intensity min-max-range after preprocessing:', x.min(), x.max())
+
+        if len(x.shape) == 1 and len(x) > 1:
+            # multiple images with different shapes
+            x_min, x_max = x[0].min(), x[0].max()
+        else:
+            # all images have the same shape
+            x_min, x_max = x.min(), x.max()
+
+        print('[Predict] Input image intensity min-max-range after preprocessing:', x_min, x_max)
 
     # create save directory if necessary
     if not os.path.exists(output_dir):

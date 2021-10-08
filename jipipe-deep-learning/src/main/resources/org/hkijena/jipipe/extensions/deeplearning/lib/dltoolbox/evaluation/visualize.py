@@ -67,7 +67,7 @@ class GradCAM:
 
         Args:
             image: input image
-            eps: regulaization epsilon
+            eps: regularization epsilon
 
         Returns: return a 2-tuple of the color mapped heatmap and the output, overlaid image
 
@@ -176,6 +176,8 @@ def visualize_grad_cam(model_config, config, model=None):
     output_figure_path = config['output_figure_path']
     model_img_shape = tuple(model_config["image_shape"])
     num_classes = model_config['n_classes']
+    normalization_mode = config['normalization']
+    model_type = model_config['model_type']
 
     if model is not None:
         assert isinstance(model, tf.keras.models.Model)
@@ -186,10 +188,7 @@ def visualize_grad_cam(model_config, config, model=None):
         print(f'[Visualize Grad-CAM] Model was successfully loaded from path: {input_model_path}')
 
     # read the input and label images in dependence of their specified format: directory or .csv-table
-    X = utils.read_images(path_dir=input_dir,
-                          model_input_shape=model_img_shape,
-                          read_input=True,
-                          labels_for_classifier=False)
+    X, filepath = utils.read_images(path_dir=input_dir, model_input_shape=model_img_shape, read_input=True)
 
     print('[Visualize Grad-CAM] Input-images:', len(X))
 
@@ -201,10 +200,26 @@ def visualize_grad_cam(model_config, config, model=None):
     print('[Visualize Grad-CAM] Input data:', x.shape)
 
     # Preprocessing of the input data (normalization)
-    print('[Visualize Grad-CAM] Input image intensity min-max-range before preprocessing:', x.min(), x.max())
-    if x.max() > 1:
-        x = utils.preprocessing(x, mode='zero_one')
-        print('[Visualize Grad-CAM] Input image intensity min-max-range after preprocessing:', x.min(), x.max())
+    if len(x.shape) == 1 and len(x) > 1:
+        # multiple images with different shapes
+        x_min, x_max = x[0].min(), x[0].max()
+    else:
+        # all images have the same shape
+        x_min, x_max = x.min(), x.max()
+
+    print('[Visualize Grad-CAM] Input image intensity min-max-range before preprocessing:', x_min, x_max)
+
+    if x_max > 1:
+        x = utils.preprocessing(x, mode=normalization_mode)
+
+        if len(x.shape) == 1 and len(x) > 1:
+            # multiple images with different shapes
+            x_min, x_max = x[0].min(), x[0].max()
+        else:
+            # all images have the same shape
+            x_min, x_max = x.min(), x.max()
+
+        print('[Visualize Grad-CAM] Input image intensity min-max-range after preprocessing:', x_min, x_max)
 
     if not os.path.exists(output_figure_path):
         os.makedirs(output_figure_path)
@@ -218,18 +233,30 @@ def visualize_grad_cam(model_config, config, model=None):
 
         # use network to make predictions on input and find class label index with largest corresponding probability
         preds = model.predict(image)
-        i = np.argmax(preds[0])
 
-        # if i > num_classes: # TODO: diese Methode als segmentierung implementieren
-        #     i = num_classes-1
+        if model_type == 'classification':
+            i = np.argmax(preds[0])
 
-        label = list(label_dict.keys())[list(label_dict.values()).index(i)]
-        # try:
-        print('[Visualize Grad-CAM] Label: <{}> with probability: {:.2f}% at index: {}'.format(label, preds[0][i] * 100,
-                                                                                               i))
-        image_label = "{}: {:.2f}%".format(label, preds[0][i] * 100)
-        # except:
-        #     image_label = "{}: {:.2f}%".format(label, i * 100)
+            label = list(label_dict.keys())[list(label_dict.values()).index(i)]
+            print('[Visualize Grad-CAM] Label: <{}> with probability: {:.2f}% at index: {}'.format(label,
+                                                                                                   preds[0][i]*100,
+                                                                                                   i))
+            image_label = "{}: {:.2f}%".format(label, preds[0][i] * 100)
+            label_probability = preds[0][i] * 100
+
+        elif model_type == 'segmentation':
+            # foreground or non-background label
+            i = 1
+
+            label = list(label_dict.keys())[list(label_dict.values()).index(i)]
+            print('[Visualize Grad-CAM] Label: <{}> with min-max-probability: {:.2f}%-{:.2f}%'.format(label,
+                                                                                                      preds[0].min()*100,
+                                                                                                      preds[0].max()*100))
+            image_label = "{}: {:.2f}%".format(label, preds[0].max()*100)
+            label_probability = preds[0].max() * 100
+
+        else:
+            print('[Visualize Grad-CAM] No valid model-type:', model_type)
 
         cam = GradCAM(model, i)
         heatmap = cam.compute_heatmap(image)
@@ -241,13 +268,17 @@ def visualize_grad_cam(model_config, config, model=None):
         cv2.rectangle(output, (0, 0), (340, 40), (0, 0, 0), -1)
         cv2.putText(output, image_label, (10, 25), cv2.FONT_HERSHEY_SIMPLEX, 0.8, (255, 255, 255), 2)
 
-        # display the original image and resulting heatmap and output image to our screen
         image = np.squeeze(image)
+
+        # display the original image and resulting heatmap and output image to our screen
+        if len(image.shape) != len(heatmap.shape):
+            image = color.gray2rgb(image)
+
         output = np.hstack([image, heatmap, output])
-
-        save_path = os.path.join(output_figure_path, os.path.basename(input_dir[idx]))
-
+        save_path = os.path.join(output_figure_path, os.path.splitext(os.path.basename(filepath[idx]))[0]+'.png')
         plt.figure(figsize=(21, 7))
+        title = "(max-) probability {:.2f}%".format(label_probability)
+        plt.title(title, fontsize=20)
         plt.imshow(output)
         plt.tight_layout()
         plt.savefig(save_path, dpi=96)

@@ -18,8 +18,6 @@ Script to create a SegNet model
 """
 
 import tensorflow as tf
-from dltoolbox.models import metrics
-from dltoolbox import utils
 
 
 def build_model(config):
@@ -36,10 +34,6 @@ def build_model(config):
     reg_method = config['regularization_method']
     reg_method_rate = config['regularization_lambda']
     num_classes = config['n_classes']
-    learning_rate = config['learning_rate']
-    model_path = config['output_model_path']
-    model_json_path = config["output_model_json_path"]
-    model_type = config['model_type']
 
     def conv_block(input_tensor, num_filters, kernel_size=3, reg_method='GaussianDropout'):
         """
@@ -145,24 +139,5 @@ def build_model(config):
 
     # create the model
     model = tf.keras.models.Model(inputs=[inputs], outputs=[outputs])
-
-    # get all metrics
-    model_metrics = metrics.get_metrics(model_type, num_classes)
-
-    # compile model, depend on the number of classes/segments (2 classes or more)
-    adam = tf.keras.optimizers.Adam(lr=learning_rate)
-    if num_classes == 2:
-        model.compile(optimizer=adam, loss=metrics.bce_dice_loss, metrics=model_metrics)
-    else:
-        model.compile(optimizer=adam, loss=metrics.ce_dice_loss, metrics=model_metrics)
-
-    model.summary()
-
-    # save the model, model-architecture and model-config
-    utils.save_model_with_json(model=model,
-                               model_path=model_path,
-                               model_json_path=model_json_path,
-                               model_config=config,
-                               operation_config=None)
 
     return model
