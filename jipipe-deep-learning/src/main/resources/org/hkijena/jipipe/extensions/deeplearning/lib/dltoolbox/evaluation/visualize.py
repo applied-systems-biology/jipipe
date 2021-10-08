@@ -176,7 +176,6 @@ def visualize_grad_cam(model_config, config, model=None):
     output_figure_path = config['output_figure_path']
     model_img_shape = tuple(model_config["image_shape"])
     num_classes = model_config['n_classes']
-    normalization_mode = config['normalization']
     model_type = model_config['model_type']
 
     if model is not None:
@@ -200,26 +199,10 @@ def visualize_grad_cam(model_config, config, model=None):
     print('[Visualize Grad-CAM] Input data:', x.shape)
 
     # Preprocessing of the input data (normalization)
-    if len(x.shape) == 1 and len(x) > 1:
-        # multiple images with different shapes
-        x_min, x_max = x[0].min(), x[0].max()
-    else:
-        # all images have the same shape
-        x_min, x_max = x.min(), x.max()
-
-    print('[Visualize Grad-CAM] Input image intensity min-max-range before preprocessing:', x_min, x_max)
-
-    if x_max > 1:
-        x = utils.preprocessing(x, mode=normalization_mode)
-
-        if len(x.shape) == 1 and len(x) > 1:
-            # multiple images with different shapes
-            x_min, x_max = x[0].min(), x[0].max()
-        else:
-            # all images have the same shape
-            x_min, x_max = x.min(), x.max()
-
-        print('[Visualize Grad-CAM] Input image intensity min-max-range after preprocessing:', x_min, x_max)
+    print('[Visualize Grad-CAM] Input image intensity min-max-range before preprocessing:', x.min(), x.max())
+    if x.max() > 1:
+        x = utils.preprocessing(x, mode='zero_one')
+        print('[Visualize Grad-CAM] Input image intensity min-max-range after preprocessing:', x.min(), x.max())
 
     if not os.path.exists(output_figure_path):
         os.makedirs(output_figure_path)

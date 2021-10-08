@@ -41,6 +41,7 @@ def predict_samples(model_config, config, model=None):
 
     """
 
+    # assign hyper-parameter for training procedure
     input_dir = config['input_dir']
     output_dir = config['output_dir']
     input_model_path = config["input_model_path"] if "input_model_path" in config else model_config['output_model_path']
@@ -70,26 +71,10 @@ def predict_samples(model_config, config, model=None):
     print('[Predict] Input data:', x.shape)
 
     # Preprocessing of the input data (normalization)
-    if len(x.shape) == 1 and len(x) > 1:
-        # multiple images with different shapes
-        x_min, x_max = x[0].min(), x[0].max()
-    else:
-        # all images have the same shape
-        x_min, x_max = x.min(), x.max()
-
-    print('[Predict] Input image intensity min-max-range before preprocessing:', x_min, x_max)
-
-    if x_max > 1:
+    print('[Predict] Input image intensity min-max-range before preprocessing:', x.min(), x.max())
+    if x.max() > 1:
         x = utils.preprocessing(x, mode=normalization_mode)
-
-        if len(x.shape) == 1 and len(x) > 1:
-            # multiple images with different shapes
-            x_min, x_max = x[0].min(), x[0].max()
-        else:
-            # all images have the same shape
-            x_min, x_max = x.min(), x.max()
-
-        print('[Predict] Input image intensity min-max-range after preprocessing:', x_min, x_max)
+        print('[Predict] Input image intensity min-max-range after preprocessing:', x.min(), x.max())
 
     # create save directory if necessary
     if not os.path.exists(output_dir):

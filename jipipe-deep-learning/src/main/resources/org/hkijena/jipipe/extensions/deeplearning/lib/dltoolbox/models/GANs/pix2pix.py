@@ -92,6 +92,8 @@ def build_generator(config):
 
     img_shape = tuple(config["image_shape"])
     n_classes = config['n_classes']
+    model_path = config['output_model_path']
+    model_json_path = config["output_model_json_path"]
 
     inputs = tf.keras.layers.Input(shape=img_shape)
 

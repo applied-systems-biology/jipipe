@@ -106,11 +106,10 @@ import tensorflow as tf
 from dltoolbox.evaluation import visualize
 
 
-def get_callbacks(num_classes, input_model_path, log_dir, unet_model, show_plots, val_data=None):
+def get_callbacks(input_model_path, log_dir, unet_model, show_plots, val_data=None):
     """
     Provide all tensorflow and custom defined callbacks dependent on a verbose level.
     Args:
-        num_classes: number of classes (2 -> binary,!=2 -> categorical)
         input_model_path: save path for the model checkpoint callback
         log_dir: save path for the logging directory
         unet_model: True if model is a unet model with image shape as output
@@ -121,27 +120,21 @@ def get_callbacks(num_classes, input_model_path, log_dir, unet_model, show_plots
 
     """
 
-    # direct monitoring of binary/categorical-crossentropy: because regularization(s) is not mixed in
-    if num_classes == 2:
-        monitored_loss = 'val_binary_crossentropy'
-    else:
-        monitored_loss = 'val_categorical_crossentropy'
-
     # create all tensorflow callbacks
     tensorboard_callback = tf.keras.callbacks.TensorBoard(log_dir=log_dir,
                                                           histogram_freq=0,
                                                           write_graph=False,
                                                           write_images=False)
-    earlyStopping_callback = tf.keras.callbacks.EarlyStopping(monitor=monitored_loss,
-                                                              patience=100,
+    earlyStopping_callback = tf.keras.callbacks.EarlyStopping(monitor='val_loss',
+                                                              patience=75,
                                                               verbose=1,
                                                               mode='min')
     modelCheckpoint_callback = tf.keras.callbacks.ModelCheckpoint(input_model_path,
                                                                   save_best_only=True,
                                                                   save_freq='epoch',
-                                                                  monitor=monitored_loss,
+                                                                  monitor='val_loss',
                                                                   mode='min')
-    reduceLr_callback = tf.keras.callbacks.ReduceLROnPlateau(monitor=monitored_loss,
+    reduceLr_callback = tf.keras.callbacks.ReduceLROnPlateau(monitor='val_loss',
                                                              factor=0.85,
                                                              patience=25,
                                                              min_lr=0.00001,

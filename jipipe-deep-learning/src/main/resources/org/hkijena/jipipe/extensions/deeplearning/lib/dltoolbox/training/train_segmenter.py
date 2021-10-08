@@ -22,7 +22,6 @@ import os
 import numpy as np
 import tensorflow as tf
 from sklearn.model_selection import train_test_split
-from sklearn.utils import class_weight
 
 from dltoolbox import utils
 from dltoolbox.evaluation import evaluate
@@ -53,9 +52,7 @@ def train_model(model_config, config, model=None):
     input_model_path = config["input_model_path"] if "input_model_path" in config else model_config['output_model_path']
     output_model_path = config['output_model_path']
     output_model_json_path = config['output_model_json_path']
-    n_classes = model_config['n_classes']
     augment_factor = config['augmentation_factor']
-    class_weight_factor = config['class_weight_factor']
     log_dir = config['log_dir']
     show_plots = config['show_plots']
 
@@ -96,21 +93,6 @@ def train_model(model_config, config, model=None):
     y_num_classes, y_num_classes_counts = np.unique(y, return_counts=True)
     print(f'[Train model] Number of unique label-values: {y_num_classes} with counts: {y_num_classes_counts}')
     assert len(y_num_classes) == model_config['n_classes'], "[WARNING] Number of unique labels do not match"
-
-    neg = y_num_classes_counts[0]
-    pos = y_num_classes_counts[1]
-    total = neg + pos
-
-    ### for 2 classes: add the best derived bias value: b_0 = log(pos/neg) = log(num_ones/num_zeros):
-    # Initial loss is about 50x less than with naive initialization. This way, the model not have spend first few epochs
-    # just learning that positive examples are unlikely. This also makes it easier read the loss graphs during training.
-    if len(y_num_classes) == 2:
-
-        # initial setting of the bias so that the model makes more reasonable initial estimates
-        initial_bias = np.log([pos / neg])
-        output_bias = tf.keras.initializers.Constant(initial_bias)
-        model.layers[-1].bias_initializer = output_bias
-        print(f'[Train model] Training with 2 classes: pos: {pos} - neg: {neg} -> initial_bias: {initial_bias}')
 
     """
     augment dataset with Elastic deformation [Simard2003] with a certain probability:
@@ -224,6 +206,12 @@ def train_model(model_config, config, model=None):
         vertical_flip=True,
     )
 
+    # differ for data normalization
+    # if normalization_mode == "zero_one":
+    #     data_gen_args['rescale'] = 1./255
+    # elif normalization_mode == "minus_one_to_one":
+    #     data_gen_args['rescale'] = 1./(127.5-1)
+
     # combine generators into one which yields image and masks for input and label images for training purpose
     train_image_datagen = tf.keras.preprocessing.image.ImageDataGenerator(**data_gen_args)
     train_label_datagen = tf.keras.preprocessing.image.ImageDataGenerator(**data_gen_args)
@@ -243,8 +231,7 @@ def train_model(model_config, config, model=None):
         print('[Train model] create directory folder for log:', log_dir)
 
     # get all callbacks which are active during the training
-    training_callbacks = callbacks.get_callbacks(num_classes=n_classes,
-                                                 input_model_path=input_model_path,
+    training_callbacks = callbacks.get_callbacks(input_model_path=input_model_path,
                                                  log_dir=log_dir,
                                                  unet_model=True,
                                                  show_plots=show_plots,
@@ -262,25 +249,6 @@ def train_model(model_config, config, model=None):
     assert y_train.shape[1:] == model.output_shape[1:], "[WARNING] shapes of y-train and model-output do not match"
     assert y_valid.shape[1:] == model.output_shape[1:], "[WARNING] shapes of y-valid and model-output do not match"
 
-    ### for 2 classes add class weights: {0: None, 1: uniform, else: c_i=(1/num_zeros)*(num_all/class_weight_factor) }
-    if len(y_num_classes) == 2:
-        if class_weight_factor == 0:
-            training_class_weights = None
-        elif class_weight_factor == 1:
-            classes = np.unique(y)
-            training_class_weights = class_weight.compute_class_weight('balanced', classes, y.ravel())
-        elif class_weight_factor > 1:
-            # Scaling total/factor helps keep loss to similar magnitude. Sum of weights of all examples stays the same.
-            weight_for_0 = (1 / neg) * (total / class_weight_factor)
-            weight_for_1 = (1 / pos) * (total / class_weight_factor)
-
-            training_class_weights = [weight_for_0, weight_for_1]
-        else:
-            training_class_weights = None
-    else:
-        training_class_weights = None
-    print(f'[Train model] Binary class weights:', training_class_weights)
-
     # fits the model on batches with real-time data augmentation:
     print('Start training ...')
 
@@ -289,8 +257,7 @@ def train_model(model_config, config, model=None):
               epochs=n_epochs,
               verbose=1,
               callbacks=list(training_callbacks.values()),
-              validation_data=(x_valid, y_valid),
-              class_weight=training_class_weights)
+              validation_data=(x_valid, y_valid))
 
     # save the model, model-architecture and model-config
     utils.save_model_with_json(model=model,

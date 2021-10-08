@@ -29,6 +29,8 @@ tf.keras.applications.xception.Xception(
 """
 
 import tensorflow as tf
+from dltoolbox import utils
+from dltoolbox.models import metrics
 
 
 def build_model(config):
@@ -45,6 +47,10 @@ def build_model(config):
     reg_method = config['regularization_method']
     reg_method_rate = config['regularization_lambda']
     num_classes = config['n_classes']
+    model_path = config['output_model_path']
+    model_json_path = config["output_model_json_path"]
+    model_type = config['model_type']
+    learning_rate = config['learning_rate']
 
     inputs = tf.keras.layers.Input(shape=img_shape)
 
@@ -173,5 +179,24 @@ def build_model(config):
     # weights_path = get_file('xception_weights.h5', WEIGHTS_PATH, cache_subdir='models')
     # load weights
     # model.load_weights(weights_path)
+
+    # get all metrics
+    model_metrics = metrics.get_metrics(model_type, num_classes)
+
+    # compile model
+    adam = tf.keras.optimizers.Adam(lr=learning_rate)
+    if num_classes == 2:
+        model.compile(loss='binary_crossentropy', optimizer=adam, metrics=model_metrics)
+    else:
+        model.compile(loss='categorical_crossentropy', optimizer=adam, metrics=model_metrics)
+
+    model.summary()
+
+    # save the model, model-architecture and model-config
+    utils.save_model_with_json(model=model,
+                               model_path=model_path,
+                               model_json_path=model_json_path,
+                               model_config=config,
+                               operation_config=None)
 
     return model

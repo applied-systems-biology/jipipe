@@ -18,6 +18,8 @@ Script to create a mobilenet model
 """
 
 import tensorflow as tf
+from dltoolbox import utils
+from dltoolbox.models import metrics
 
 
 def build_model(config, **kwargs):
@@ -33,6 +35,10 @@ def build_model(config, **kwargs):
 
     img_shape = tuple(config["image_shape"])
     num_classes = config['n_classes']
+    model_path = config['output_model_path']
+    model_json_path = config["output_model_json_path"]
+    model_type = config['model_type']
+    learning_rate = config['learning_rate']
 
     model = tf.keras.applications.mobilenet_v2.MobileNetV2(
         input_shape=img_shape,
@@ -44,5 +50,24 @@ def build_model(config, **kwargs):
         classifier_activation='softmax',
         **kwargs
     )
+
+    # get all metrics
+    model_metrics = metrics.get_metrics(model_type, num_classes)
+
+    # compile model, depend on the number of classes/segments (2 classes or more)
+    adam = tf.keras.optimizers.Adam(lr=learning_rate)
+    if num_classes == 2:
+        model.compile(optimizer=adam, loss='binary_crossentropy', metrics=model_metrics)
+    else:
+        model.compile(optimizer=adam, loss='categorical_crossentropy', metrics=model_metrics)
+
+    model.summary()
+
+    # save the model, model-architecture and model-config
+    utils.save_model_with_json(model=model,
+                               model_path=model_path,
+                               model_json_path=model_json_path,
+                               model_config=config,
+                               operation_config=None)
 
     return model

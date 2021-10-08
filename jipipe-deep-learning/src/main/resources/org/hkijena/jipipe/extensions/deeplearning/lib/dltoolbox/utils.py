@@ -30,7 +30,7 @@ from scipy.ndimage.filters import gaussian_filter
 from scipy.ndimage.interpolation import map_coordinates
 from skimage import filters
 from skimage import img_as_float32, img_as_ubyte
-from skimage import io, color
+from skimage import io
 
 from dltoolbox.models import metrics
 
@@ -66,12 +66,7 @@ def imread_collection(pattern, load_func=io.imread, verbose=False, **kwargs):
         if verbose:
             print("[I/O] Reading", file, "...")
 
-        img = load_func(file, **kwargs)
-        # if necessary: convert image manually to RGB image
-        if not kwargs['as_gray'] and len(img.shape) == 2:
-            img = color.gray2rgb(img)
-
-        imgs.append(img)
+        imgs.append(load_func(file, **kwargs))
         filepath.append(file)
 
     return imgs, filepath
@@ -170,7 +165,7 @@ def read_images(path_dir, model_input_shape, read_input):
             XY = [io.imread(path, as_gray=False) for path in filepath]
 
     elif model_input_shape[-1] > 1:
-        XY, filepath = imread_collection(path_dir, verbose=False, as_gray=False)
+        XY, filepath = imread_collection(path_dir, verbose=False)
         print(f'[Read images] Model shape: {model_input_shape} with number of channels: {model_input_shape[-1]}'
               f' - read images as RGB images')
     elif model_input_shape[-1] == 1:
@@ -280,27 +275,24 @@ def preprocessing(img, mode):
 
     print("[utils.preprocessing] preprocess image with mode: <{0}>".format(mode))
 
-    def apply_per_image(img):
-
-        if mode == 'zero_one':
-            return img_as_float32(img / 255.)
-        elif mode == 'minus_one_to_one':
-            return img_as_float32(img / (127.5 - 1.))
-        else:
-            raise AttributeError("Could not find valid normalization mode - {zero_one, minus_one_to_one}")
-
-
-    # multiple images with different shapes
-    if len(img.shape) == 1 and len(img) > 1:
-
-        for idx, x in enumerate(img):
-            img[idx] = apply_per_image(x)
-
-    # all images have the same shape
+    if mode == 'zero_one':
+        return img_as_float32(img / 255.)
+    elif mode == 'minus_one_to_one':
+        return img_as_float32(img / (127.5 - 1.))
     else:
-        img = apply_per_image(img)
+        raise AttributeError("Could not find valid normalization mode - {zero_one, minus_one_to_one}")
 
-    return img
+    # denominator = tf.constant(img, dtype=tf.float32)
+    # if mode == 'zero_one':
+    #     divisor = tf.constant(255., dtype=tf.float32)
+    # elif mode == 'minus_one_to_one':
+    #     divisor = tf.constant(127.5 - 1., dtype=tf.float32)
+    # else:
+    #     raise AttributeError("Could not find valid normalization mode - {zero_one, minus_one_to_one}")
+    #
+    # result = tf.constant(tf.truediv(denominator, divisor), dtype=tf.float32) #.numpy()
+    #
+    # return result
 
 
 def binarizeAnnotation(img, use_otsu, convertToGray=False):
@@ -432,6 +424,15 @@ def validate_image_shape(model_shape, images):
 
     """
 
+    # Read meta data (works only on tif files)
+    # from PIL import Image
+    # from PIL.TiffTags import TAGS
+    #
+    # with Image.open(input_dir_0) as img:
+    #     #print(img.tag)
+    #     meta_dict = {TAGS[key]: img.tag[key] for key in img.tag.keys()}
+    # print(meta_dict, meta_dict['ImageWidth'])
+    #print(images)
     images_unique_shapes = [img.shape for img in images]
     images_unique_shapes = list(set(images_unique_shapes))
 
@@ -439,38 +440,19 @@ def validate_image_shape(model_shape, images):
     if len(model_shape) == 4:
         model_shape = model_shape[1:]
 
+    if len(images_unique_shapes) != 1:
+        print('[validate_image_shape] CAUTION: shape of images have not all the same shape:', images_unique_shapes)
+
+    image_shape = images_unique_shapes[0]
     images_arr = np.array(images)
 
-    # if images have different shapes
-    if len(images_unique_shapes) != 1:
-        print('[validate_image_shape] CAUTION: shape of images do not have the same shape:', images_unique_shapes)
+    print(f'[validate_image_shape] INFO: shape of images: {image_shape} and model: {model_shape}')
 
-        for idx, img in enumerate(images_arr):
-
-            image_shape = img.shape
-
-            print(f'[validate_image_shape] INFO: shape of individual image : {image_shape} and model: {model_shape}')
-
-            # check if length of shapes (and channel dimension of image and model match)
-            if len(image_shape) == 2:
-                print(
-                    f'[validate_image_shape] CAUTION: image shape <{image_shape}> != from model shape <{model_shape}>')
-                img = np.expand_dims(img, axis=-1)
-                images_arr[idx] = img
-                print(f'[validate_image_shape] Expand artificial channel dimension to: <{images_arr.shape}>')
-
-    # if all images have the same shape
-    else:
-
-        image_shape = images_unique_shapes[0]
-
-        print(f'[validate_image_shape] INFO: shape of images: {image_shape} and model: {model_shape}')
-
-        # check if length of shapes (and channel dimension of image and model match)
-        if len(image_shape) == 2:
-            print(f'[validate_image_shape] CAUTION: image shape <{image_shape}> != from model shape <{model_shape}>')
-            images_arr = np.expand_dims(images_arr, axis=-1)
-            print(f'[validate_image_shape] Expand artificial channel dimension to: <{images_arr.shape}>')
+    # check if length of shapes (and channel dimension of image and model match)
+    if len(image_shape) == 2:
+        print(f'[validate_image_shape] CAUTION: image shape <{image_shape}> != from model shape <{model_shape}>')
+        images_arr = np.expand_dims(images_arr, axis=-1)
+        print(f'[validate_image_shape] Expand artificial channel dimension to: <{images_arr.shape}>')
 
     # Image and model shape match (including batch-dimension)
     if images_arr.shape[1:] == model_shape:
