@@ -81,7 +81,7 @@ public class ClassicWatershedSegmentationAlgorithm extends JIPipeIteratingAlgori
             resultImage.copyScale(resultImage);
             dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlus3DGreyscaleData(resultImage), progressInfo);
         } else {
-            ImagePlus mask = ImageJUtils2.getMaskFromMaskOrROI(targetArea, dataBatch, "Input", progressInfo);
+            ImagePlus mask = ImageJUtils2.getMaskFromMaskOrROI(targetArea, dataBatch, "Image", progressInfo);
             ImagePlus resultImage = Watershed.computeWatershed(inputImage, mask, inputImage.getStackSize() == 1 ? connectivity.getNativeValue2D() : connectivity.getNativeValue3D(), hMin, hMax);
             resultImage.copyScale(inputImage);
             dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlus3DGreyscaleData(resultImage), progressInfo);
