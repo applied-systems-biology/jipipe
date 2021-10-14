@@ -173,7 +173,7 @@ public class DeepLearningExtension extends JIPipePrepackagedDefaultJavaExtension
     public void postprocess() {
         if (!DeepLearningSettings.pythonSettingsAreValid()) {
             JIPipeNotification notification = new JIPipeNotification(getDependencyId() + ":python-not-configured");
-            notification.setHeading("Tensortflow is not installed");
+            notification.setHeading("Tensorflow is not installed");
             notification.setDescription("You need to setup a Python environment that comes with Tensorflow.");
             notification.getActions().add(new JIPipeNotificationAction("Install Tensorflow",
                     "Installs a Conda environment that contains all necessary dependencies for the Deep Learning toolkit used by JIPipe",
