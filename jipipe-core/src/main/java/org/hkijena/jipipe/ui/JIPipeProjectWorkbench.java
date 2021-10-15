@@ -96,8 +96,8 @@ public class JIPipeProjectWorkbench extends JPanel implements JIPipeWorkbench {
     public static final String TAB_VALIDITY_CHECK = "VALIDITY_CHECK";
     public static final String TAB_PLUGIN_VALIDITY_CHECK = "PLUGIN_VALIDITY_CHECK";
     public static final String TAB_NOTIFICATIONS = "NOTIFICATIONS";
-    private static final String TAB_PROJECT_OVERVIEW = "PROJECT_OVERVIEW";
-    private static final String TAB_LOG = "LOG";
+    public static final String TAB_PROJECT_OVERVIEW = "PROJECT_OVERVIEW";
+    public static final String TAB_LOG = "LOG";
     public DocumentTabPane documentTabPane;
     private JIPipeProjectWindow window;
     private JIPipeProject project;

@@ -37,9 +37,9 @@ import java.util.List;
 
 public class JIPipeLogViewer extends JIPipeProjectWorkbenchPanel {
     private final RuntimeSettings runtimeSettings = RuntimeSettings.getInstance();
-    private List<LogEntry> logEntries = new ArrayList<>();
-    private JList<LogEntry> logEntryJList = new JList<>();
-    private JTextPane logReader = new JTextPane();
+    private final List<LogEntry> logEntries = new ArrayList<>();
+    private final JList<LogEntry> logEntryJList = new JList<>();
+    private final JTextPane logReader = new JTextPane();
 
     public JIPipeLogViewer(JIPipeProjectWorkbench workbenchUI) {
         super(workbenchUI);
@@ -71,6 +71,11 @@ public class JIPipeLogViewer extends JIPipeProjectWorkbenchPanel {
                 showLog(selectedValue);
             }
         });
+    }
+
+    public void showLog(String log) {
+        logEntryJList.clearSelection();
+        logReader.setText(log);
     }
 
     private void showLog(LogEntry entry) {

@@ -29,6 +29,7 @@ import org.hkijena.jipipe.ui.parameters.ParameterPanel;
 import org.hkijena.jipipe.ui.quickrun.QuickRun;
 import org.hkijena.jipipe.ui.quickrun.QuickRunSettings;
 import org.hkijena.jipipe.ui.resultanalysis.JIPipeResultUI;
+import org.hkijena.jipipe.ui.running.JIPipeLogViewer;
 import org.hkijena.jipipe.ui.running.JIPipeRunExecuterUI;
 import org.hkijena.jipipe.ui.running.JIPipeRunnerQueue;
 import org.hkijena.jipipe.ui.running.RunUIWorkerFinishedEvent;
@@ -38,8 +39,13 @@ import org.hkijena.jipipe.utils.UIUtils;
 import javax.swing.*;
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Desktop;
 import java.awt.Dimension;
 import java.awt.Font;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.Set;
 import java.util.function.Consumer;
@@ -278,6 +284,19 @@ public class QuickRunSetupUI extends JIPipeProjectWorkbenchPanel {
         toolBar.setFloatable(false);
         toolBar.add(Box.createHorizontalGlue());
 
+        JButton openLogButton = new JButton("Open log", UIUtils.getIconFromResources("actions/show_log.png"));
+        JPopupMenu openLogMenu = UIUtils.addPopupMenuToComponent(openLogButton);
+
+        JMenuItem openLogInJIPipeItem = new JMenuItem("Open log in JIPipe", UIUtils.getIconFromResources("apps/jipipe.png"));
+        openLogInJIPipeItem.addActionListener(e -> openLogInJIPipe());
+        openLogMenu.add(openLogInJIPipeItem);
+
+        JMenuItem openLogInExternalEditorItem = new JMenuItem("Open log in external editor", UIUtils.getIconFromResources("actions/document-open-folder.png"));
+        openLogInExternalEditorItem.addActionListener(e -> openLogInExternalEditor());
+        openLogMenu.add(openLogInExternalEditorItem);
+
+        toolBar.add(openLogButton);
+
         JButton refreshButton = new JButton("Retry", UIUtils.getIconFromResources("actions/view-refresh.png"));
         refreshButton.addActionListener(e -> tryShowSelectionPanel());
         toolBar.add(refreshButton);
@@ -286,6 +305,32 @@ public class QuickRunSetupUI extends JIPipeProjectWorkbenchPanel {
         add(errorPanel, BorderLayout.CENTER);
 
         revalidate();
+    }
+
+    private void openLogInExternalEditor() {
+        if(currentQuickRun != null) {
+            Path tempFile = RuntimeSettings.generateTempFile("log", ".txt");
+            try {
+                Files.write(tempFile, currentQuickRun.getProgressInfo().getLog().toString().getBytes(StandardCharsets.UTF_8));
+                Desktop.getDesktop().open(tempFile.toFile());
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
+        else {
+            JOptionPane.showMessageDialog(this, "The log is unavailable for this run.", "Open log", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
+    private void openLogInJIPipe() {
+        if(currentQuickRun != null) {
+            DocumentTabPane.DocumentTab tab = getProjectWorkbench().getDocumentTabPane().selectSingletonTab(JIPipeProjectWorkbench.TAB_LOG);
+            JIPipeLogViewer viewer = (JIPipeLogViewer) tab.getContent();
+            viewer.showLog(currentQuickRun.getProgressInfo().getLog().toString());
+        }
+        else {
+            JOptionPane.showMessageDialog(this, "The log is unavailable for this run.", "Open log", JOptionPane.ERROR_MESSAGE);
+        }
     }
 
     private void generateQuickRun(boolean showResults) {
