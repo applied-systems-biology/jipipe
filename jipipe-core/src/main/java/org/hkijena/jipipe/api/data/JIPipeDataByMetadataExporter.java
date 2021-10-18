@@ -54,7 +54,7 @@ public class JIPipeDataByMetadataExporter implements JIPipeParameterCollection {
     private String missingString = "NA";
     private StringQueryExpression metadataKeyFilter = new StringQueryExpression("");
     private int metadataValueLengthLimit = 80;
-    private Mode mode = Mode.Automatic;
+    private Mode mode = Mode.Manual;
     private StringQueryExpression customName = new StringQueryExpression("SUMMARIZE_VARIABLES()");
     private StringQueryExpression customSubDirectory = new StringQueryExpression("\"\"");
 
@@ -92,8 +92,9 @@ public class JIPipeDataByMetadataExporter implements JIPipeParameterCollection {
         }
     }
 
-    @JIPipeDocumentation(name = "Custom name", description = "This expression is used to generate the file names. You have all metadata available as variables.")
-    @JIPipeParameter("custom-name")
+    @JIPipeDocumentation(name = "Custom name", description = "This expression is used to generate the file names. You have all metadata available as variables. By default, it will summarize all variables (annotations) into a long string. " +
+            "If you do not want to customize the file name, you can create you own string based on available annotations. For example, you can insert <code>#Dataset + \"_\" + Threshold</code> to store the data set and a threshold annotation.")
+    @JIPipeParameter(value = "custom-name", important = true)
     @ExpressionParameterSettings(variableSource = VariableSource.class)
     public StringQueryExpression getCustomName() {
         return customName;
