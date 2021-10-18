@@ -239,4 +239,9 @@ public class UploadOMEROImageAlgorithm extends JIPipeMergingAlgorithm {
     public void setUploadedAnnotationsFilter(AnnotationQueryExpression uploadedAnnotationsFilter) {
         this.uploadedAnnotationsFilter = uploadedAnnotationsFilter;
     }
+
+    @Override
+    public boolean supportsParallelization() {
+        return true;
+    }
 }
