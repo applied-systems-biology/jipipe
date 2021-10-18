@@ -149,9 +149,10 @@ public class JIPipeImageJPluginManager extends JIPipeWorkbenchPanel {
     }
 
     private void enqueueRun(JIPipeRunnable runnable) {
-        JIPipeRunExecuterUI executerUI = new JIPipeRunExecuterUI(runnable);
-        managerUI.setOptionPanelContent(executerUI);
-        executerUI.startRun();
+        JIPipeRunExecuterUI ui = new JIPipeRunExecuterUI(runnable);
+        managerUI.setOptionPanelContent(null);
+        managerUI.setMainPanelContent(ui);
+        ui.startRun();
     }
 
     private void openLegacyUpdater() {
@@ -262,14 +263,17 @@ public class JIPipeImageJPluginManager extends JIPipeWorkbenchPanel {
                     messagePanel.addMessage(MessagePanel.MessageType.Error, "Could not activate update sites.", null);
                 }
             }
+            managerUI.setMainPanelContent(null);
         } else if (event.getRun() == activateUpdateSiteRun) {
             getWorkbench().sendStatusBarText("Activated update sites");
             showCurrentFilesCollection();
+            managerUI.setMainPanelContent(null);
         } else if (event.getRun() == applyRun) {
             JButton exitButton = new JButton("Close ImageJ");
             exitButton.addActionListener(e -> System.exit(0));
             messagePanel.addMessage(MessagePanel.MessageType.Info, "Changes were successfully applied. Please restart ImageJ.", exitButton);
             showCurrentFilesCollection();
+            managerUI.setMainPanelContent(null);
         }
     }
 
