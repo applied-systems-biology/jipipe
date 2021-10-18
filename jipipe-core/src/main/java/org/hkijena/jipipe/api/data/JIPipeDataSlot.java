@@ -155,6 +155,23 @@ public class JIPipeDataSlot {
     }
 
     /**
+     * Gets all the data stored in a specific row.
+     * Please note that this will allocate virtual data
+     *
+     * @param <T>          Data type
+     * @param dataClass    the class to return
+     * @param progressInfo progress for data loading
+     * @return Data at row
+     */
+    public <T extends JIPipeData> List<T> getAllData(Class<T> dataClass, JIPipeProgressInfo progressInfo) {
+        List<T> result = new ArrayList<>();
+        for (int row = 0; row < getRowCount(); row++) {
+            result.add((T) JIPipe.getDataTypes().convert(data.get(row).getData(progressInfo), dataClass));
+        }
+        return result;
+    }
+
+    /**
      * Gets a data annotation as {@link JIPipeVirtualData}
      *
      * @param row    the row
