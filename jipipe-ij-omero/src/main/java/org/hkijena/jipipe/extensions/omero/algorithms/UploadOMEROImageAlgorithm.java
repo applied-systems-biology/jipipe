@@ -58,8 +58,9 @@ public class UploadOMEROImageAlgorithm extends JIPipeMergingAlgorithm {
     private boolean uploadAnnotations = false;
     private AnnotationQueryExpression uploadedAnnotationsFilter = new AnnotationQueryExpression("");
 
-    private OMEROGateway currentGateway;
-    private Map<Long, OMEROImageUploader> currentUploaders = new HashMap<>();
+    private final Map<Thread, OMEROGateway> currentGateways = new HashMap<>();
+    private final Map<Thread, Map<Long, OMEROImageUploader>> currentUploaders = new HashMap<>();
+    private JIPipeProgressInfo parameterProgressInfo;
 
     public UploadOMEROImageAlgorithm(JIPipeNodeInfo info) {
         super(info);
@@ -82,28 +83,17 @@ public class UploadOMEROImageAlgorithm extends JIPipeMergingAlgorithm {
 
     @Override
     public void runParameterSet(JIPipeProgressInfo progressInfo, List<JIPipeAnnotation> parameterAnnotations) {
-        try {
-            currentGateway = new OMEROGateway(credentials.getCredentials(), progressInfo);
-            for (OMERODatasetReferenceData dataset : getInputSlot("Dataset").getAllData(OMERODatasetReferenceData.class, progressInfo)) {
-                if(!currentUploaders.containsKey(dataset.getDatasetId())) {
-                    int numThreads = getThreadPool() != null ? getThreadPool().getMaxThreads() : 1;
-                    currentUploaders.put(dataset.getDatasetId(), new OMEROImageUploader(credentials.getCredentials(), dataset.getDatasetId(), numThreads, numThreads, progressInfo));
-                }
+        this.parameterProgressInfo = progressInfo;
+        super.runParameterSet(progressInfo, parameterAnnotations);
+        for (OMEROGateway gateway : currentGateways.values()) {
+            try {
+                gateway.close();
+            } catch (Exception e) {
+                e.printStackTrace();
             }
-            super.runParameterSet(progressInfo, parameterAnnotations);
         }
-        catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-        finally {
-            if(currentGateway != null) {
-                try {
-                    currentGateway.close();
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
-            for (OMEROImageUploader uploader : currentUploaders.values()) {
+        for (Map<Long, OMEROImageUploader> threadUploaders : currentUploaders.values()) {
+            for (OMEROImageUploader uploader : threadUploaders.values()) {
                 try {
                     uploader.close();
                 } catch (Exception e) {
@@ -132,6 +122,29 @@ public class UploadOMEROImageAlgorithm extends JIPipeMergingAlgorithm {
     }
 
     private void uploadImages(Path targetPath, List<JIPipeAnnotation> annotations, long datasetId, JIPipeProgressInfo progressInfo) {
+        // Create OMERO connection if needed
+        OMEROImageUploader uploader;
+        OMEROGateway gateway;
+        synchronized (this) {
+            gateway = currentGateways.getOrDefault(Thread.currentThread(), null);
+            if(gateway == null) {
+                parameterProgressInfo.log("Creating OMERO gateway for thread " + Thread.currentThread());
+                gateway = new OMEROGateway(credentials.getCredentials(), parameterProgressInfo);
+                currentGateways.put(Thread.currentThread(), gateway);
+            }
+            Map<Long, OMEROImageUploader> uploaderMap = currentUploaders.getOrDefault(Thread.currentThread(), null);
+            if(uploaderMap == null) {
+                uploaderMap = new HashMap<>();
+                currentUploaders.put(Thread.currentThread(), uploaderMap);
+            }
+            uploader = uploaderMap.getOrDefault(datasetId, null);
+            if(uploader == null) {
+                parameterProgressInfo.log("Creating OMERO uploader for dataset=" + datasetId + " in thread " + Thread.currentThread());
+                uploader = new OMEROImageUploader(credentials.getCredentials(), datasetId, 1, 1, parameterProgressInfo.resolve("Dataset " + datasetId));
+                uploaderMap.put(datasetId, uploader);
+            }
+        }
+
         List<Path> filePaths = PathUtils.findFilesByExtensionIn(targetPath, ".ome.tif");
         progressInfo.log("Uploading " + filePaths.size() + " files");
 
@@ -139,10 +152,8 @@ public class UploadOMEROImageAlgorithm extends JIPipeMergingAlgorithm {
         if(!uploadAnnotations) {
             filteredAnnotations = null;
         }
-
-        OMEROImageUploader uploader = currentUploaders.get(datasetId);
         for (Path filePath : filePaths) {
-            for (long imageId : uploader.upload(filePath, filteredAnnotations, currentGateway)) {
+            for (long imageId : uploader.upload(filePath, filteredAnnotations, gateway)) {
                 getFirstOutputSlot().addData(new OMEROImageReferenceData(imageId), annotations, JIPipeAnnotationMergeStrategy.Merge, progressInfo);
             }
         }
@@ -201,6 +212,6 @@ public class UploadOMEROImageAlgorithm extends JIPipeMergingAlgorithm {
 
     @Override
     public boolean supportsParallelization() {
-        return false;
+        return true;
     }
 }
