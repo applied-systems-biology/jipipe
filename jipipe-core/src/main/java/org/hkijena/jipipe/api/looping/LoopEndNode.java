@@ -8,12 +8,16 @@ import org.hkijena.jipipe.api.data.JIPipeDataSlotInfo;
 import org.hkijena.jipipe.api.data.JIPipeMutableSlotConfiguration;
 import org.hkijena.jipipe.api.data.JIPipeSlotType;
 import org.hkijena.jipipe.api.grouping.GraphWrapperAlgorithm;
+import org.hkijena.jipipe.api.nodes.JIPipeInputSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
+import org.hkijena.jipipe.api.nodes.JIPipeOutputSlot;
 import org.hkijena.jipipe.api.nodes.categories.MiscellaneousNodeTypeCategory;
 
 @JIPipeDocumentation(name = "Loop end", description = "Indicates the end of a loop. All nodes following a loop start are " +
         "executed per data batch of this loop start node")
 @JIPipeNode(nodeTypeCategory = MiscellaneousNodeTypeCategory.class)
+@JIPipeInputSlot(value = JIPipeData.class, slotName = "Data")
+@JIPipeOutputSlot(value = JIPipeData.class, slotName = "Data")
 public class LoopEndNode extends IOInterfaceAlgorithm {
 
     private GraphWrapperAlgorithm.IterationMode iterationMode = GraphWrapperAlgorithm.IterationMode.IteratingDataBatch;

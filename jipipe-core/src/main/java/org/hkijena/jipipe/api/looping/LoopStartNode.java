@@ -8,7 +8,9 @@ import org.hkijena.jipipe.api.data.JIPipeDataSlotInfo;
 import org.hkijena.jipipe.api.data.JIPipeMutableSlotConfiguration;
 import org.hkijena.jipipe.api.data.JIPipeSlotType;
 import org.hkijena.jipipe.api.grouping.GraphWrapperAlgorithm;
+import org.hkijena.jipipe.api.nodes.JIPipeInputSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
+import org.hkijena.jipipe.api.nodes.JIPipeOutputSlot;
 import org.hkijena.jipipe.api.nodes.categories.MiscellaneousNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 
@@ -18,6 +20,8 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameter;
         "Please be aware that intermediate results of this loop are discarded automatically, meaning that only the end points will contain the generated data. " +
         "You can also explicitly insert loop end nodes to collect results.")
 @JIPipeNode(nodeTypeCategory = MiscellaneousNodeTypeCategory.class)
+@JIPipeInputSlot(value = JIPipeData.class, slotName = "Data")
+@JIPipeOutputSlot(value = JIPipeData.class, slotName = "Data")
 public class LoopStartNode extends IOInterfaceAlgorithm {
 
     private GraphWrapperAlgorithm.IterationMode iterationMode = GraphWrapperAlgorithm.IterationMode.IteratingDataBatch;
