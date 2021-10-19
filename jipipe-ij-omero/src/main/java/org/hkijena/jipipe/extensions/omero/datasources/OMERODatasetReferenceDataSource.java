@@ -34,6 +34,7 @@ public class OMERODatasetReferenceDataSource extends JIPipeSimpleIteratingAlgori
 
     public OMERODatasetReferenceDataSource(JIPipeNodeInfo info) {
         super(info);
+        datasetIds.add(0L);
     }
 
     public OMERODatasetReferenceDataSource(OMERODatasetReferenceDataSource other) {

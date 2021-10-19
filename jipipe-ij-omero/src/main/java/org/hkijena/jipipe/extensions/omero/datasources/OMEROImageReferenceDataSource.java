@@ -34,6 +34,7 @@ public class OMEROImageReferenceDataSource extends JIPipeSimpleIteratingAlgorith
 
     public OMEROImageReferenceDataSource(JIPipeNodeInfo info) {
         super(info);
+        imageIds.add(0L);
     }
 
     public OMEROImageReferenceDataSource(OMEROImageReferenceDataSource other) {

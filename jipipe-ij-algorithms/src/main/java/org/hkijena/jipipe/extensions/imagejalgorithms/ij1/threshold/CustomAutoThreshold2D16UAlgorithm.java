@@ -318,7 +318,7 @@ public class CustomAutoThreshold2D16UAlgorithm extends JIPipeIteratingAlgorithm 
     @JIPipeDocumentation(name = "Thresholding function", description = "This expression is executed for each set of slices. " +
             "The expression should return a number that will be used as threshold. A pixel is set to 255 if its value is larger than " +
             "this threshold.")
-    @JIPipeParameter("thresholding-function")
+    @JIPipeParameter(value = "thresholding-function", important = true)
     @ExpressionParameterSettings(variableSource = VariableSource.class)
     public DefaultExpressionParameter getThresholdCalculationExpression() {
         return thresholdCalculationExpression;

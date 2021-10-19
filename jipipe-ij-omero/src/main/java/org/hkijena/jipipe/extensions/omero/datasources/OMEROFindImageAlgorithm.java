@@ -102,7 +102,7 @@ public class OMEROFindImageAlgorithm extends JIPipeParameterSlotAlgorithm {
             MetadataFacility metadata = gateway.getFacility(MetadataFacility.class);
             for (Long datasetId : datasetIds) {
                 DatasetData datasetData = browseFacility.getDatasets(context, Collections.singletonList(datasetId)).iterator().next();
-                progressInfo.log("Listing datasets in dataset ID=" + datasetData.getId());
+                progressInfo.log("Listing images in dataset ID=" + datasetData.getId());
                 for (Object obj : datasetData.getImages()) {
                     if (obj instanceof ImageData) {
                         ImageData imageData = (ImageData) obj;
