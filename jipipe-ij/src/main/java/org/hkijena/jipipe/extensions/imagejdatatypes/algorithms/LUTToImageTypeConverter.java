@@ -13,14 +13,10 @@
 
 package org.hkijena.jipipe.extensions.imagejdatatypes.algorithms;
 
-import ij.ImagePlus;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataConverter;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.LUTData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d2.color.ImagePlus2DColorRGBData;
-import org.hkijena.jipipe.extensions.plots.datatypes.PlotData;
-
-import java.awt.image.BufferedImage;
 
 public class LUTToImageTypeConverter implements JIPipeDataConverter {
     @Override

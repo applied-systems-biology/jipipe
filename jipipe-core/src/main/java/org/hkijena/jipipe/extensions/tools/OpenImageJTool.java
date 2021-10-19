@@ -14,7 +14,6 @@
 package org.hkijena.jipipe.extensions.tools;
 
 import ij.ImageJ;
-import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.extension.JIPipeMenuExtension;
 import org.hkijena.jipipe.ui.extension.JIPipeMenuExtensionTarget;

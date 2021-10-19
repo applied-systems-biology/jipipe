@@ -2,27 +2,20 @@ package org.hkijena.jipipe.extensions.parameters.quantities;
 
 import org.apache.commons.lang3.math.NumberUtils;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
-import org.hkijena.jipipe.extensions.parameters.ranges.DefaultTrackBackground;
-import org.hkijena.jipipe.extensions.parameters.ranges.NumberRangeInvertedMode;
-import org.hkijena.jipipe.extensions.parameters.ranges.NumberRangeParameterSettings;
-import org.hkijena.jipipe.extensions.parameters.ranges.PaintGenerator;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.components.DocumentChangeListener;
-import org.hkijena.jipipe.ui.components.SearchBox;
 import org.hkijena.jipipe.ui.parameters.JIPipeParameterEditorUI;
-import org.hkijena.jipipe.ui.theme.ModernMetalTheme;
-import org.hkijena.jipipe.utils.ReflectionUtils;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
-import org.jdesktop.swingx.JXMultiThumbSlider;
 import org.jdesktop.swingx.JXTextField;
-import org.jdesktop.swingx.multislider.Thumb;
-import org.jdesktop.swingx.multislider.ThumbListener;
 
 import javax.swing.*;
 import javax.swing.event.DocumentEvent;
-import java.awt.*;
-import java.awt.event.MouseEvent;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Dimension;
+import java.awt.Font;
 import java.util.Objects;
 
 public class QuantityParameterEditorUI extends JIPipeParameterEditorUI {
@@ -64,13 +57,13 @@ public class QuantityParameterEditorUI extends JIPipeParameterEditorUI {
         });
         add(valueEditor, BorderLayout.CENTER);
 
-        unitEditor= new JComboBox<>();
+        unitEditor = new JComboBox<>();
         unitEditor.setPreferredSize(new Dimension(120, 25));
         unitEditor.setEditor(new Editor());
         unitEditor.setFont(new Font(Font.DIALOG, Font.ITALIC, 12));
         unitEditor.setBackground(UIManager.getColor("TextField.background"));
-        unitEditor.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createMatteBorder(0,1,0,0, Color.GRAY),
-                BorderFactory.createEmptyBorder(0,16,0,4)));
+        unitEditor.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createMatteBorder(0, 1, 0, 0, Color.GRAY),
+                BorderFactory.createEmptyBorder(0, 16, 0, 4)));
         for (int i = 0; i < unitEditor.getComponentCount(); i++) {
             Component component = unitEditor.getComponent(i);
             if (component instanceof AbstractButton) {
@@ -105,7 +98,7 @@ public class QuantityParameterEditorUI extends JIPipeParameterEditorUI {
         (unitEditorField).getDocument().addDocumentListener(new DocumentChangeListener() {
             @Override
             public void changed(DocumentEvent documentEvent) {
-                if(!isUpdatingTextBoxes) {
+                if (!isUpdatingTextBoxes) {
                     String s = StringUtils.nullToEmpty(unitEditorField.getText()).trim();
                     Quantity parameter = getParameter(Quantity.class);
                     if (!Objects.equals(parameter.getUnit(), s)) {
@@ -134,8 +127,8 @@ public class QuantityParameterEditorUI extends JIPipeParameterEditorUI {
 
             String[] predefinedUnits = Quantity.KNOWN_UNITS;
             QuantityParameterSettings settings = getParameterAccess().getAnnotationOfType(QuantityParameterSettings.class);
-            if(settings != null) {
-                if(settings.predefinedUnits().length > 0) {
+            if (settings != null) {
+                if (settings.predefinedUnits().length > 0) {
                     predefinedUnits = settings.predefinedUnits();
                 }
             }

@@ -100,10 +100,10 @@ public class RidgeDetector2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
             double sigma_ = sigma;
             double lowerThreshold_ = lowerThreshold;
             double upperThreshold_ = upperThreshold;
-            if(estimateSigma) {
+            if (estimateSigma) {
                 sigma_ = lineWidth / (2 * Math.sqrt(3)) + 0.5;
             }
-            if(estimateLowThreshold) {
+            if (estimateLowThreshold) {
                 double clow = contrastLow;
                 if (darkLine) {
                     clow = 255 - contrastLow;
@@ -112,7 +112,7 @@ public class RidgeDetector2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
                         / (Math.sqrt(2 * Math.PI) * sigma_ * sigma_ * sigma_)
                         * Math.exp(-((lineWidth / 2.0) * (lineWidth / 2.0)) / (2 * sigma_ * sigma_))));
             }
-            if(estimateHighThreshold) {
+            if (estimateHighThreshold) {
                 double chigh = contrastHigh;
                 if (darkLine) {
                     chigh = 255 - contrastHigh;
@@ -400,23 +400,23 @@ public class RidgeDetector2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     @Override
     public boolean isParameterUIVisible(JIPipeParameterTree tree, JIPipeParameterAccess access) {
-        if(access.getSource() == this) {
-            if("sigma".equals(access.getKey()) && estimateSigma) {
+        if (access.getSource() == this) {
+            if ("sigma".equals(access.getKey()) && estimateSigma) {
                 return false;
             }
-            if("lower-threshold".equals(access.getKey()) && estimateLowThreshold) {
+            if ("lower-threshold".equals(access.getKey()) && estimateLowThreshold) {
                 return false;
             }
-            if("upper-threshold".equals(access.getKey()) && estimateHighThreshold) {
+            if ("upper-threshold".equals(access.getKey()) && estimateHighThreshold) {
                 return false;
             }
-            if("low-contrast".equals(access.getKey()) && !estimateLowThreshold) {
+            if ("low-contrast".equals(access.getKey()) && !estimateLowThreshold) {
                 return false;
             }
-            if("high-contrast".equals(access.getKey()) && !estimateHighThreshold) {
+            if ("high-contrast".equals(access.getKey()) && !estimateHighThreshold) {
                 return false;
             }
-            if("line-width".equals(access.getKey()) && !estimateLowThreshold && !estimateHighThreshold && !estimateSigma) {
+            if ("line-width".equals(access.getKey()) && !estimateLowThreshold && !estimateHighThreshold && !estimateSigma) {
                 return false;
             }
         }

@@ -1,7 +1,5 @@
 package org.hkijena.jipipe.extensions.imagejalgorithms.ij1.export;
 
-import ij.IJ;
-import ij.ImagePlus;
 import ij.gui.Roi;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeNode;
@@ -15,14 +13,8 @@ import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.JIPipeOutputSlot;
 import org.hkijena.jipipe.api.nodes.categories.ExportNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
-import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
-import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
 import org.hkijena.jipipe.extensions.filesystem.dataypes.FileData;
-import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ROIListData;
-import org.hkijena.jipipe.extensions.imagejdatatypes.util.AVICompression;
-import org.hkijena.jipipe.extensions.imagejdatatypes.util.HyperstackDimension;
-import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.extensions.parameters.primitives.PathParameterSettings;
 import org.hkijena.jipipe.extensions.settings.DataExporterSettings;
 import org.hkijena.jipipe.utils.PathIOMode;
@@ -79,7 +71,7 @@ public class ExportROIAlgorithm extends JIPipeIteratingAlgorithm {
 
         // Generate subfolder
         Path subFolder = exporter.generateSubFolder(getFirstInputSlot(), dataBatch.getInputSlotRows().get(getFirstInputSlot()));
-        if(subFolder != null) {
+        if (subFolder != null) {
             outputPath = outputPath.resolve(subFolder);
         }
 
@@ -92,28 +84,25 @@ public class ExportROIAlgorithm extends JIPipeIteratingAlgorithm {
         ROIListData rois = dataBatch.getInputData(getFirstInputSlot(), ROIListData.class, progressInfo);
         String baseName = exporter.generateMetadataString(getFirstInputSlot(), dataBatch.getInputSlotRows().get(getFirstInputSlot()), existingMetadata);
 
-        if(exportAsROIFile && rois.size() > 1) {
+        if (exportAsROIFile && rois.size() > 1) {
             Set<String> existing = new HashSet<>();
             for (Roi roi : rois) {
                 ROIListData singleton = new ROIListData();
                 singleton.add(roi);
                 String roiName;
-                if(!StringUtils.isNullOrEmpty(roi.getName())) {
+                if (!StringUtils.isNullOrEmpty(roi.getName())) {
                     roiName = StringUtils.makeUniqueString(baseName + "_" + roi.getName(), "_", existing);
-                }
-                else {
+                } else {
                     roiName = StringUtils.makeUniqueString(baseName, "_", existing);
                 }
                 singleton.saveTo(outputPath, roiName, true, progressInfo);
                 dataBatch.addOutputData(getFirstOutputSlot(), new FileData(outputPath.resolve(roiName + ".roi")), progressInfo);
             }
-        }
-        else {
+        } else {
             rois.saveTo(outputPath, baseName, true, progressInfo);
-            if(rois.size() == 1) {
+            if (rois.size() == 1) {
                 dataBatch.addOutputData(getFirstOutputSlot(), new FileData(outputPath.resolve(baseName + ".roi")), progressInfo);
-            }
-            else {
+            } else {
                 dataBatch.addOutputData(getFirstOutputSlot(), new FileData(outputPath.resolve(baseName + ".zip")), progressInfo);
             }
         }

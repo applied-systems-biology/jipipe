@@ -37,11 +37,11 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
 import org.hkijena.jipipe.extensions.deeplearning.DeepLearningSettings;
 import org.hkijena.jipipe.extensions.deeplearning.DeepLearningUtils;
-import org.hkijena.jipipe.extensions.deeplearning.environments.OptionalDeepLearningDeviceEnvironment;
 import org.hkijena.jipipe.extensions.deeplearning.configs.DeepLearningPredictionConfiguration;
 import org.hkijena.jipipe.extensions.deeplearning.datatypes.DeepLearningModelData;
 import org.hkijena.jipipe.extensions.deeplearning.enums.ModelType;
 import org.hkijena.jipipe.extensions.deeplearning.enums.NormalizationMethod;
+import org.hkijena.jipipe.extensions.deeplearning.environments.OptionalDeepLearningDeviceEnvironment;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.transform.ScaleMode;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.transform.TransformScale2DAlgorithm;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
@@ -51,9 +51,9 @@ import org.hkijena.jipipe.extensions.parameters.primitives.OptionalDataAnnotatio
 import org.hkijena.jipipe.extensions.python.OptionalPythonEnvironment;
 import org.hkijena.jipipe.extensions.python.PythonUtils;
 import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
-import org.hkijena.jipipe.utils.json.JsonUtils;
 import org.hkijena.jipipe.utils.PathUtils;
 import org.hkijena.jipipe.utils.ResourceUtils;
+import org.hkijena.jipipe.utils.json.JsonUtils;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -266,14 +266,13 @@ public class PredictClassifierAlgorithm extends JIPipeSingleIterationAlgorithm {
                 for (int i = 0; i < inputModel.getModelConfiguration().getNumClasses(); i++) {
                     String columnName = "probability_class_" + i;
                     double probability;
-                    if(predictionResult.getColumnNames().contains(columnName)) {
+                    if (predictionResult.getColumnNames().contains(columnName)) {
                         probability = predictionResult.getValueAsDouble(row, columnName);
-                    }
-                    else {
+                    } else {
                         probability = 0;
                     }
                     rowMetadata.setValueAt(probability, 0, "probability_class_" + i);
-                    if(probability > bestClassProbability) {
+                    if (probability > bestClassProbability) {
                         bestClassProbability = probability;
                         bestClass = i;
                     }

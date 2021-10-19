@@ -13,8 +13,6 @@
 
 package org.hkijena.jipipe.extensions.imagejdatatypes.viewer;
 
-import gnu.trove.list.TIntList;
-import gnu.trove.list.array.TIntArrayList;
 import ij.CompositeImage;
 import ij.IJ;
 import ij.ImagePlus;
@@ -42,8 +40,6 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Set;
-import java.util.TreeSet;
 
 /**
  * Based on {@link org.jdesktop.swingx.JXGradientChooser}
@@ -51,13 +47,13 @@ import java.util.TreeSet;
 public class ImageViewerLUTEditor extends JPanel implements ThumbListener {
     private final ImageViewerPanel imageViewerPanel;
     private final int targetChannel;
+    private final ColorIcon changeColorButtonDisplayedColor = new ColorIcon(16, 16);
     /**
      * The multi-thumb slider to use for the gradient stops
      */
     private JXMultiThumbSlider<Color> slider;
     private JButton deleteThumbButton;
     private JButton changeColorButton;
-    private final ColorIcon changeColorButtonDisplayedColor = new ColorIcon(16, 16);
     private boolean isUpdating = false;
     private String channelName;
     private LUT cachedLUT;
@@ -80,12 +76,13 @@ public class ImageViewerLUTEditor extends JPanel implements ThumbListener {
 
     /**
      * Imports a LUT into the editor.
-     * @param lut the LUT
+     *
+     * @param lut      the LUT
      * @param simplify removes gradient stop points that are too close to each other
      */
     public void importLUT(LUT lut, boolean simplify) {
-      LUTData lutData = LUTData.fromLUT(lut, simplify);
-      importLUT(lutData);
+        LUTData lutData = LUTData.fromLUT(lut, simplify);
+        importLUT(lutData);
     }
 
     public int getTargetChannel() {
@@ -147,7 +144,7 @@ public class ImageViewerLUTEditor extends JPanel implements ThumbListener {
         JPopupMenu menu = UIUtils.addPopupMenuToComponent(optionsButton);
 
         // Menu items
-        JMenuItem invertColorsButton = new JMenuItem("Invert LUT",UIUtils.getIconFromResources("actions/object-inverse.png") );
+        JMenuItem invertColorsButton = new JMenuItem("Invert LUT", UIUtils.getIconFromResources("actions/object-inverse.png"));
         invertColorsButton.addActionListener(e -> invertColors());
         menu.add(invertColorsButton);
 
@@ -213,7 +210,7 @@ public class ImageViewerLUTEditor extends JPanel implements ThumbListener {
 
     private void importLUTFromJSON() {
         Path path = FileChooserSettings.openFile(this, FileChooserSettings.LastDirectoryKey.Data, "Import LUT", UIUtils.EXTENSION_FILTER_JSON);
-        if(path != null) {
+        if (path != null) {
             LUTData lutData = JsonUtils.readFromFile(path, LUTData.class);
             importLUT(lutData);
             SwingUtilities.invokeLater(this::applyLUT);
@@ -222,7 +219,7 @@ public class ImageViewerLUTEditor extends JPanel implements ThumbListener {
 
     private void exportLUTToJSON() {
         Path path = FileChooserSettings.saveFile(this, FileChooserSettings.LastDirectoryKey.Data, "Export LUT", UIUtils.EXTENSION_FILTER_JSON);
-        if(path != null) {
+        if (path != null) {
             LUTData lutData = new LUTData();
             for (int i = 0; i < slider.getModel().getThumbCount(); i++) {
                 Thumb<Color> thumb = slider.getModel().getThumbAt(i);
@@ -234,7 +231,7 @@ public class ImageViewerLUTEditor extends JPanel implements ThumbListener {
 
     private void importLUTFromPNG() {
         Path path = FileChooserSettings.openFile(this, FileChooserSettings.LastDirectoryKey.Data, "Import LUT", UIUtils.EXTENSION_FILTER_PNG);
-        if(path != null) {
+        if (path != null) {
             ImagePlus img = IJ.openImage(path.toString());
             LUT lut = ImageJUtils.lutFromImage(img);
             importLUT(lut, true);
@@ -244,7 +241,7 @@ public class ImageViewerLUTEditor extends JPanel implements ThumbListener {
 
     private void exportLUTToPNG() {
         Path path = FileChooserSettings.saveFile(this, FileChooserSettings.LastDirectoryKey.Data, "Export LUT", UIUtils.EXTENSION_FILTER_PNG);
-        if(path != null) {
+        if (path != null) {
             LUT lut = generateLUT();
             ImagePlus img = ImageJUtils.lutToImage(lut, 256, 1);
             IJ.saveAs(img, "PNG", path.toString());
@@ -253,7 +250,7 @@ public class ImageViewerLUTEditor extends JPanel implements ThumbListener {
 
     private void pickColorsFromColorMap() {
         Object selected = PickEnumValueDialog.showDialog(this, Arrays.asList(ColorMap.values()), new ColorMapEnumItemInfo(), ColorMap.viridis, "Select LUT");
-        if(selected instanceof ColorMap) {
+        if (selected instanceof ColorMap) {
             importLUT(((ColorMap) selected).toLUT(), true);
             SwingUtilities.invokeLater(this::applyLUT);
         }

@@ -642,7 +642,7 @@ public class CellPoseAlgorithm extends JIPipeSingleIterationAlgorithm {
 
     @Override
     public boolean isParameterUIVisible(JIPipeParameterTree tree, JIPipeParameterAccess access) {
-        if(access.getSource() == modelParameters && "mean-diameter".equals(access.getKey())) {
+        if (access.getSource() == modelParameters && "mean-diameter".equals(access.getKey())) {
             // This is never needed
             return false;
         }

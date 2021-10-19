@@ -21,10 +21,8 @@ import javax.swing.*;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Font;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
-import java.util.Set;
 
 public class ExternalEnvironmentParameterEditorUI extends JIPipeParameterEditorUI {
 
@@ -64,7 +62,7 @@ public class ExternalEnvironmentParameterEditorUI extends JIPipeParameterEditorU
 
         editButton = new JButton("Edit", UIUtils.getIconFromResources("actions/document-edit.png"));
         editButton.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createMatteBorder(0, 1, 0, 0,
-                UIManager.getColor("Separator.foreground")),
+                        UIManager.getColor("Separator.foreground")),
                 BorderFactory.createEmptyBorder(4, 3, 4, 3)));
         editButton.setOpaque(false);
         editButton.setToolTipText("Edit current environment");
@@ -73,7 +71,7 @@ public class ExternalEnvironmentParameterEditorUI extends JIPipeParameterEditorU
 
         installButton = new JButton("Select/Install", UIUtils.getIconFromResources("actions/browser-download.png"));
         installButton.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createMatteBorder(0, 1, 0, 0,
-                UIManager.getColor("Separator.foreground")),
+                        UIManager.getColor("Separator.foreground")),
                 BorderFactory.createEmptyBorder(4, 3, 4, 8)));
         installButton.setOpaque(false);
         installButton.setToolTipText("Installs a new environment (if available) or selects an existing one");
@@ -115,14 +113,14 @@ public class ExternalEnvironmentParameterEditorUI extends JIPipeParameterEditorU
             for (JIPipeExternalEnvironmentRegistry.InstallerEntry installer : JIPipe.getInstance()
                     .getExternalEnvironmentRegistry().getInstallers((Class<? extends ExternalEnvironment>) fieldClass)) {
 
-                if(!StringUtils.isNullOrEmpty(menuCategory)) {
+                if (!StringUtils.isNullOrEmpty(menuCategory)) {
                     // Check if the category matches
                     ExternalEnvironmentInfo installerInfo = installer.getInstallerClass().getAnnotation(ExternalEnvironmentInfo.class);
                     String installerCategory = "";
                     if (installerInfo != null) {
                         installerCategory = installerInfo.category();
                     }
-                    if(!Objects.equals(menuCategory, installerCategory)) {
+                    if (!Objects.equals(menuCategory, installerCategory)) {
                         foundAdditionalEnvironments = true;
                         continue;
                     }
@@ -134,18 +132,18 @@ public class ExternalEnvironmentParameterEditorUI extends JIPipeParameterEditorU
                         (JIPipeRunnable) ReflectionUtils.newInstance(installer.getInstallerClass(), getWorkbench(), getParameterAccess())));
                 installMenu.add(item);
             }
-            if(foundAdditionalEnvironments) {
+            if (foundAdditionalEnvironments) {
                 JMenu additionalEnvironmentsMenu = new JMenu("Additional compatible installers");
                 for (JIPipeExternalEnvironmentRegistry.InstallerEntry installer : JIPipe.getInstance()
                         .getExternalEnvironmentRegistry().getInstallers((Class<? extends ExternalEnvironment>) fieldClass)) {
-                    if(!StringUtils.isNullOrEmpty(menuCategory)) {
+                    if (!StringUtils.isNullOrEmpty(menuCategory)) {
                         // Check if the category matches
                         ExternalEnvironmentInfo installerInfo = installer.getInstallerClass().getAnnotation(ExternalEnvironmentInfo.class);
                         String installerCategory = "";
                         if (installerInfo != null) {
                             installerCategory = installerInfo.category();
                         }
-                        if(Objects.equals(menuCategory, installerCategory)) {
+                        if (Objects.equals(menuCategory, installerCategory)) {
                             continue;
                         }
                     }

@@ -19,8 +19,8 @@ import org.hkijena.jipipe.extensions.settings.FileChooserSettings;
 import org.hkijena.jipipe.ui.components.MarkdownDocument;
 import org.hkijena.jipipe.ui.components.MarkdownReader;
 import org.hkijena.jipipe.ui.components.SearchTextField;
-import org.hkijena.jipipe.utils.ui.BusyCursor;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.utils.ui.BusyCursor;
 
 import javax.swing.*;
 import java.awt.BorderLayout;

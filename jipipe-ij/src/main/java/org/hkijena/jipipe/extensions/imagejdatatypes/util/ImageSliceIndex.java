@@ -30,7 +30,8 @@ public class ImageSliceIndex {
 
     /**
      * Initializes a slice index
-     *  @param c channel
+     *
+     * @param c channel
      * @param z Z-index
      * @param t frame
      */

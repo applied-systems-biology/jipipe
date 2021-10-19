@@ -13,7 +13,6 @@
 
 package org.hkijena.jipipe.ui.registries;
 
-import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.extension.GraphEditorToolBarButtonExtension;
 import org.hkijena.jipipe.ui.extension.JIPipeMenuExtension;
@@ -55,8 +54,7 @@ public class JIPipeCustomMenuRegistry {
                 registeredMenuExtensions.put(instance.getMenuTarget(), list);
             }
             list.add(extension);
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }

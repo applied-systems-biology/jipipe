@@ -61,7 +61,7 @@ public class ImagePlusFromFileImageSource implements ImageSource {
         if (removeLUT) {
             ImageJUtils.removeLUT(image, true);
         }
-        if(removeOverlay) {
+        if (removeOverlay) {
             ImageJUtils.removeOverlay(image);
         }
         return image;

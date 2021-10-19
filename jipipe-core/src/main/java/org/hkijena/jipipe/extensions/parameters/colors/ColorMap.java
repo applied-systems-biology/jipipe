@@ -109,6 +109,7 @@ public enum ColorMap {
 
     /**
      * Converts the color map into an ImageJ {@link LUT}
+     *
      * @return the LUT
      */
     public LUT toLUT() {

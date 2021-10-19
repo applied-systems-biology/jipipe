@@ -20,12 +20,9 @@ import org.hkijena.jipipe.extensions.expressions.ParameterInfo;
 import org.hkijena.jipipe.extensions.parameters.quantities.Quantity;
 import org.hkijena.jipipe.utils.StringUtils;
 
-import java.util.Arrays;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 @JIPipeDocumentation(name = "Convert quantity", description = "Converts a quantity string '[value] [unit]' to another unit. Will throw an error if the unit is unknown. Supported are length, time, and weight units (metric).")
 public class QuantityConvertFunction extends ExpressionFunction {
@@ -38,7 +35,7 @@ public class QuantityConvertFunction extends ExpressionFunction {
      */
     public static final Map<String, Double> UNITS_FACTORS = new HashMap<>();
 
-    static  {
+    static {
         UNITS_FACTORS.put("nm", 1e-9);
         UNITS_FACTORS.put("µm", 1e-6);
         UNITS_FACTORS.put("micron", 1e-6);
@@ -77,8 +74,7 @@ public class QuantityConvertFunction extends ExpressionFunction {
     public ParameterInfo getParameterInfo(int index) {
         if (index == 0) {
             return new ParameterInfo("quantity", "Quantity string e.g., 1 µm or 10s");
-        }
-        else if(index == 1) {
+        } else if (index == 1) {
             return new ParameterInfo("target unit", "The target unit");
         }
         return null;
@@ -88,7 +84,7 @@ public class QuantityConvertFunction extends ExpressionFunction {
     public Object evaluate(List<Object> parameters, ExpressionVariables variables) {
         Object value = parameters.get(0);
         Quantity quantity = Quantity.parse(value.toString());
-        
+
         double sourceFactor = UNITS_FACTORS.get(quantity.getUnit());
         double targetFactor = UNITS_FACTORS.get(StringUtils.nullToEmpty(parameters.get(1)));
 

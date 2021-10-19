@@ -20,7 +20,6 @@ import java.util.Collection;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.BiConsumer;
-import java.util.function.Consumer;
 
 /**
  * This object is available inside a {@link JIPipeRunnable} and contains methods to report progress, logs, and request cancellation.
@@ -83,16 +82,17 @@ public class JIPipeProgressInfo {
         return log;
     }
 
-    public void setLogToStdOut(boolean value) {
-        logToStdOut.set(value);
-    }
-
     public boolean isLogToStdOut() {
         return logToStdOut.get();
     }
 
+    public void setLogToStdOut(boolean value) {
+        logToStdOut.set(value);
+    }
+
     /**
      * Writes a message into the log
+     *
      * @param message the message
      */
     public synchronized void log(String message) {
@@ -102,7 +102,7 @@ public class JIPipeProgressInfo {
             log.append(" | ");
         log.append(" ").append(message);
         log.append("\n");
-        if(logToStdOut.get()) {
+        if (logToStdOut.get()) {
             System.out.println("<" + progress + "/" + maxProgress + "> " + logPrepend + (needsSeparator ? " | " : "") + message);
         }
         eventBus.post(new StatusUpdatedEvent(this, progress.get(), maxProgress.get(), logPrepend + (needsSeparator ? " | " : " ") + message));
@@ -110,6 +110,7 @@ public class JIPipeProgressInfo {
 
     /**
      * Creates a sub-progress that has the same cancellation and progress, but shows the new category in front of sub-messages
+     *
      * @param logPrepend the category
      * @return progress info with the same properties as the current one, but with messages prepended
      */
@@ -125,9 +126,10 @@ public class JIPipeProgressInfo {
     /**
      * Creates a sub-progress that has the same cancellation and progress, but shows the new category in front of sub-messages.
      * This is a shortcut for resolve(text + " " + (index + 1) + "/" + size)
-     * @param text the category
+     *
+     * @param text  the category
      * @param index index of the index operation
-     * @param size size of the index operation
+     * @param size  size of the index operation
      * @return progress info with the same properties as the current one, but with messages prepended
      */
     public synchronized JIPipeProgressInfo resolve(String text, int index, int size) {
@@ -136,6 +138,7 @@ public class JIPipeProgressInfo {
 
     /**
      * Applies resolve(logPrepend) and then logs an empty message
+     *
      * @param logPrepend the category
      * @return progress info with the same properties as the current one, but with messages prepended
      */
@@ -148,9 +151,10 @@ public class JIPipeProgressInfo {
     /**
      * Creates a sub-progress that has the same cancellation and progress, but shows the new category in front of sub-messages.
      * Shortcut for resolveAndLog(text + " " + (index + 1) + "/" + size)
-     * @param text the category
+     *
+     * @param text  the category
      * @param index index of the index operation
-     * @param size size of the index operation
+     * @param size  size of the index operation
      * @return progress info with the same properties as the current one, but with messages prepended
      */
     public synchronized JIPipeProgressInfo resolveAndLog(String text, int index, int size) {
@@ -159,16 +163,17 @@ public class JIPipeProgressInfo {
 
     /**
      * Applies a for-each operation where the progress is logged
-     * @param text the text
+     *
+     * @param text       the text
      * @param collection the iterated collection
-     * @param function the function executed for each item in the collection
-     * @param <T> collection contents
+     * @param function   the function executed for each item in the collection
+     * @param <T>        collection contents
      */
     public <T> void resolveAndLogForEach(String text, Collection<T> collection, BiConsumer<T, JIPipeProgressInfo> function) {
         int size = collection.size();
         int current = 0;
         for (T item : collection) {
-            if(isCancelled())
+            if (isCancelled())
                 return;
             log(text + " " + (current + 1) + "/" + size);
             JIPipeProgressInfo itemProgress = resolveAndLog(text + " " + (current + 1) + "/" + size);
@@ -179,16 +184,17 @@ public class JIPipeProgressInfo {
 
     /**
      * Applies a for-each operation where the progress is logged
-     * @param text the text
+     *
+     * @param text       the text
      * @param collection the iterated collection
-     * @param function the function executed for each item in the collection
-     * @param <T> collection contents
+     * @param function   the function executed for each item in the collection
+     * @param <T>        collection contents
      */
     public <T> void resolveAndLogForEach(String text, T[] collection, BiConsumer<T, JIPipeProgressInfo> function) {
         int size = collection.length;
         int current = 0;
         for (T item : collection) {
-            if(isCancelled())
+            if (isCancelled())
                 return;
             log(text + " " + (current + 1) + "/" + size);
             JIPipeProgressInfo itemProgress = resolveAndLog(text + " " + (current + 1) + "/" + size);
@@ -199,15 +205,16 @@ public class JIPipeProgressInfo {
 
     /**
      * Applies a for-each operation where the progress is logged
-     * @param text the text
+     *
+     * @param text       the text
      * @param collection the iterated collection
-     * @param function the function executed for each item in the collection
+     * @param function   the function executed for each item in the collection
      */
     public void resolveAndLogForEach(String text, int[] collection, BiConsumer<Integer, JIPipeProgressInfo> function) {
         int size = collection.length;
         int current = 0;
         for (int item : collection) {
-            if(isCancelled())
+            if (isCancelled())
                 return;
             log(text + " " + (current + 1) + "/" + size);
             JIPipeProgressInfo itemProgress = resolveAndLog(text + " " + (current + 1) + "/" + size);
@@ -218,15 +225,16 @@ public class JIPipeProgressInfo {
 
     /**
      * Applies a for-each operation where the progress is logged
-     * @param text the text
+     *
+     * @param text       the text
      * @param collection the iterated collection
-     * @param function the function executed for each item in the collection
+     * @param function   the function executed for each item in the collection
      */
     public void resolveAndLogForEach(String text, byte[] collection, BiConsumer<Byte, JIPipeProgressInfo> function) {
         int size = collection.length;
         int current = 0;
         for (byte item : collection) {
-            if(isCancelled())
+            if (isCancelled())
                 return;
             log(text + " " + (current + 1) + "/" + size);
             JIPipeProgressInfo itemProgress = resolveAndLog(text + " " + (current + 1) + "/" + size);
@@ -237,15 +245,16 @@ public class JIPipeProgressInfo {
 
     /**
      * Applies a for-each operation where the progress is logged
-     * @param text the text
+     *
+     * @param text       the text
      * @param collection the iterated collection
-     * @param function the function executed for each item in the collection
+     * @param function   the function executed for each item in the collection
      */
     public void resolveAndLogForEach(String text, long[] collection, BiConsumer<Long, JIPipeProgressInfo> function) {
         int size = collection.length;
         int current = 0;
         for (long item : collection) {
-            if(isCancelled())
+            if (isCancelled())
                 return;
             log(text + " " + (current + 1) + "/" + size);
             JIPipeProgressInfo itemProgress = resolveAndLog(text + " " + (current + 1) + "/" + size);
@@ -256,15 +265,16 @@ public class JIPipeProgressInfo {
 
     /**
      * Applies a for-each operation where the progress is logged
-     * @param text the text
+     *
+     * @param text       the text
      * @param collection the iterated collection
-     * @param function the function executed for each item in the collection
+     * @param function   the function executed for each item in the collection
      */
     public void resolveAndLogForEach(String text, short[] collection, BiConsumer<Short, JIPipeProgressInfo> function) {
         int size = collection.length;
         int current = 0;
         for (short item : collection) {
-            if(isCancelled())
+            if (isCancelled())
                 return;
             log(text + " " + (current + 1) + "/" + size);
             JIPipeProgressInfo itemProgress = resolveAndLog(text + " " + (current + 1) + "/" + size);
@@ -275,15 +285,16 @@ public class JIPipeProgressInfo {
 
     /**
      * Applies a for-each operation where the progress is logged
-     * @param text the text
+     *
+     * @param text       the text
      * @param collection the iterated collection
-     * @param function the function executed for each item in the collection
+     * @param function   the function executed for each item in the collection
      */
     public void resolveAndLogForEach(String text, float[] collection, BiConsumer<Float, JIPipeProgressInfo> function) {
         int size = collection.length;
         int current = 0;
         for (float item : collection) {
-            if(isCancelled())
+            if (isCancelled())
                 return;
             log(text + " " + (current + 1) + "/" + size);
             JIPipeProgressInfo itemProgress = resolveAndLog(text + " " + (current + 1) + "/" + size);
@@ -294,15 +305,16 @@ public class JIPipeProgressInfo {
 
     /**
      * Applies a for-each operation where the progress is logged
-     * @param text the text
+     *
+     * @param text       the text
      * @param collection the iterated collection
-     * @param function the function executed for each item in the collection
+     * @param function   the function executed for each item in the collection
      */
     public void resolveAndLogForEach(String text, double[] collection, BiConsumer<Double, JIPipeProgressInfo> function) {
         int size = collection.length;
         int current = 0;
         for (double item : collection) {
-            if(isCancelled())
+            if (isCancelled())
                 return;
             JIPipeProgressInfo itemProgress = resolveAndLog(text + " " + (current + 1) + "/" + size);
             function.accept(item, itemProgress);
@@ -312,6 +324,7 @@ public class JIPipeProgressInfo {
 
     /**
      * Sets the progress and max progress
+     *
      * @param count the progress
      * @param total the max progress
      */

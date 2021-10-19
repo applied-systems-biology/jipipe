@@ -86,20 +86,19 @@ public class PathFromUserDataSource extends JIPipeSimpleIteratingAlgorithm {
             SwingUtilities.invokeLater(() -> {
                 try {
                     JIPipeWorkbench workbench = JIPipeWorkbench.tryFindWorkbench(getGraph(), new JIPipeDummyWorkbench());
-                    if(multiple) {
+                    if (multiple) {
                         pathList.addAll(FileChooserSettings.selectMulti(workbench.getWindow(),
                                 FileChooserSettings.LastDirectoryKey.Data,
                                 getDisplayName(),
                                 pathIOMode,
                                 pathType));
-                    }
-                    else {
+                    } else {
                         Path path = FileChooserSettings.selectSingle(workbench.getWindow(),
                                 FileChooserSettings.LastDirectoryKey.Data,
                                 getDisplayName(),
                                 pathIOMode,
                                 pathType);
-                        if(path != null)
+                        if (path != null)
                             pathList.add(path);
                     }
                     windowOpened.set(false);

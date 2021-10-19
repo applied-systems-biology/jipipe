@@ -13,14 +13,11 @@
 
 package org.hkijena.jipipe.ui.components;
 
-import org.hkijena.jipipe.extensions.parameters.primitives.EnumItemInfo;
-import org.hkijena.jipipe.extensions.parameters.primitives.EnumParameterEditorUI;
 import org.hkijena.jipipe.utils.NaturalOrderComparator;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
 import java.awt.BorderLayout;
-import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Window;
 import java.awt.event.KeyAdapter;
@@ -110,9 +107,9 @@ public abstract class PickerDialog<T> extends JDialog {
         searchField.addKeyListener(new KeyAdapter() {
             @Override
             public void keyReleased(KeyEvent e) {
-            if (selectedItem != null && e.getKeyCode() == KeyEvent.VK_ENTER) {
-                confirmButton.requestFocusInWindow();
-            }
+                if (selectedItem != null && e.getKeyCode() == KeyEvent.VK_ENTER) {
+                    confirmButton.requestFocusInWindow();
+                }
             }
         });
         toolBar.add(searchField);
@@ -122,6 +119,7 @@ public abstract class PickerDialog<T> extends JDialog {
 
     /**
      * Gets the search string for the specified icon
+     *
      * @param item the item
      * @return string that contains the properties of this item
      */
@@ -130,7 +128,7 @@ public abstract class PickerDialog<T> extends JDialog {
     public List<T> getFilteredAndSortedItems() {
         Predicate<T> filterFunction = item -> searchField.test(getSearchString(item));
         Comparator<T> comparator = itemComparator;
-        if(comparator == null)
+        if (comparator == null)
             comparator = new NaturalOrderComparator<>();
         return availableItems.stream().filter(filterFunction).sorted(comparator).collect(Collectors.toList());
     }

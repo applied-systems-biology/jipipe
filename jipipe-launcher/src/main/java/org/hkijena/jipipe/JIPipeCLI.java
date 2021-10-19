@@ -38,7 +38,7 @@ public class JIPipeCLI {
         List<String> argsList = Arrays.asList(args);
         int firstArgIndex = 0;
 
-        if(argsList.contains("org.hkijena.jipipe.JIPipeCLI")) {
+        if (argsList.contains("org.hkijena.jipipe.JIPipeCLI")) {
             // Started with ImageJ
             while (firstArgIndex < args.length && args[firstArgIndex].startsWith("-")) {
                 firstArgIndex += 2;
@@ -58,7 +58,7 @@ public class JIPipeCLI {
             Path outputFolder = null;
             int numThreads = 1;
             Map<String, String> parameterOverrides = new HashMap<>();
-            for (int i = firstArgIndex + 1; i < args.length; i+=2) {
+            for (int i = firstArgIndex + 1; i < args.length; i += 2) {
                 String arg = args[i];
                 String value = args[i + 1];
                 if (arg.equals("--project")) {
@@ -85,17 +85,17 @@ public class JIPipeCLI {
                 }
             }
 
-            if(projectFile == null || !Files.exists(projectFile)) {
+            if (projectFile == null || !Files.exists(projectFile)) {
                 System.err.println("Project file does not exist!");
                 showHelp();
                 return;
             }
-            if(outputFolder == null ) {
+            if (outputFolder == null) {
                 System.err.println("Please provide an output folder!");
                 showHelp();
                 return;
             }
-            if(numThreads < 1) {
+            if (numThreads < 1) {
                 System.err.println("Invalid number of threads!");
                 showHelp();
                 return;
@@ -122,14 +122,14 @@ public class JIPipeCLI {
                 System.out.println("Setting parameter nodeId='" + nodeId + "' parameterId='" + parameterId + "' to " + entry.getValue());
 
                 JIPipeGraphNode node = project.getGraph().findNode(nodeId);
-                if(node == null) {
+                if (node == null) {
                     throw new RuntimeException("Could not find node nodeId='" + nodeId + "'. Check if the UUID or alias ID are provided in the pipeline.");
                 }
 
                 JIPipeParameterTree tree = new JIPipeParameterTree(node);
                 JIPipeParameterAccess access = tree.getParameters().getOrDefault(parameterId, null);
 
-                if(access == null) {
+                if (access == null) {
                     throw new RuntimeException("Could not find parameter parameterId='" + parameterId + "' in nodeId='" + nodeId + "'. Check if the UUID or alias ID are provided in the pipeline.");
                 }
 
@@ -155,8 +155,7 @@ public class JIPipeCLI {
             JIPipeRun run = new JIPipeRun(project, settings);
             run.getProgressInfo().setLogToStdOut(true);
             run.run();
-        }
-        else {
+        } else {
             showHelp();
         }
     }

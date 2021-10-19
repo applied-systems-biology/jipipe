@@ -50,14 +50,14 @@ public class TransformEqualizeDimensionsAlgorithm extends JIPipeIteratingAlgorit
         ImagePlus image = dataBatch.getInputData("Input", ImagePlusData.class, progressInfo).getImage();
         ImagePlus referenceImage = dataBatch.getInputData("Reference", ImagePlusData.class, progressInfo).getImage();
 
-        if(equalWidthAndHeight) {
+        if (equalWidthAndHeight) {
             scale2DAlgorithm.clearSlotData();
             scale2DAlgorithm.getFirstInputSlot().addData(new ImagePlusData(image), progressInfo);
             scale2DAlgorithm.run(progressInfo.resolve("2D scaling"));
             image = scale2DAlgorithm.getFirstOutputSlot().getData(0, ImagePlusData.class, progressInfo).getImage();
             scale2DAlgorithm.clearSlotData();
         }
-        if(equalHyperstackDimensions) {
+        if (equalHyperstackDimensions) {
             image = ImageJUtils.ensureEqualSize(image, referenceImage, copySlices);
         }
 

@@ -13,6 +13,16 @@ import java.util.regex.Pattern;
 public class Quantity {
     public static final Pattern PARSE_QUANTITY_PATTERN = Pattern.compile("([+-]?\\d+[,.]?\\d*)(.*)");
     public static final String UNIT_NO_UNIT = "";
+    public static final String[] KNOWN_UNITS_IMAGE_DIMENSIONS = new String[]{
+            "pixel", "nm", "µm", "microns", "mm", "cm", "dm", "m", "km"
+    };
+    public static final String[] KNOWN_UNITS = new String[]{
+            "pixel",
+            "nm", "µm", "microns", "mm", "cm", "dm", "m", "km",
+            "ng", "µg", "mg", "g", "kg", "t",
+            "Da",
+            "ns", "µs", "ms", "s", "min", "h", "d"
+    };
     private double value;
     private String unit;
 
@@ -54,20 +64,9 @@ public class Quantity {
         this.unit = unit;
     }
 
-    public static final String[] KNOWN_UNITS_IMAGE_DIMENSIONS = new String[] {
-        "pixel", "nm", "µm", "microns", "mm", "cm", "dm", "m", "km"
-    };
-
-    public static final String[] KNOWN_UNITS = new String[] {
-        "pixel",
-        "nm", "µm", "microns", "mm", "cm", "dm", "m", "km",
-        "ng", "µg", "mg", "g", "kg", "t",
-        "Da",
-        "ns", "µs", "ms", "s", "min", "h", "d"
-    };
-
     /**
      * Parses a quantity from a string
+     *
      * @param string the parsed string
      */
     public static Quantity parse(String string) {
@@ -78,8 +77,7 @@ public class Quantity {
             valueString = valueString.replace(',', '.').replace(" ", "");
             unitString = unitString.replace(" ", "");
             return new Quantity(NumberUtils.createDouble(valueString), unitString);
-        }
-        else {
+        } else {
             return null;
         }
     }

@@ -397,8 +397,7 @@ public class JIPipeDataByMetadataExporter implements JIPipeParameterCollection {
     public Path generateSubFolder(JIPipeDataSlot dataSlot, int row) {
         if (mode == Mode.Automatic) {
             return Paths.get("");
-        }
-        else {
+        } else {
             ExpressionVariables parameters = new ExpressionVariables();
             for (int col = 0; col < dataSlot.getAnnotationColumns().size(); col++) {
                 String metadataKey = dataSlot.getAnnotationColumns().get(col);

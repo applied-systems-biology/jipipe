@@ -71,7 +71,8 @@ public abstract class ImageViewerPanelPlugin {
 
     /**
      * Called before draw is called
-     *  @param c c position
+     *
+     * @param c c position
      * @param z z position
      * @param t t position
      */

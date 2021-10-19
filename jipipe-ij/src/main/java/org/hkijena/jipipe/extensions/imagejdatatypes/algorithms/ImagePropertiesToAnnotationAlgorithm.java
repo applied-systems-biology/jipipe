@@ -159,50 +159,50 @@ public class ImagePropertiesToAnnotationAlgorithm extends JIPipeSimpleIteratingA
         if (getFramesSizeAnnotation().isEnabled()) {
             annotations.add(new JIPipeAnnotation(getFramesSizeAnnotation().getContent(), "" + inputData.getImage().getNFrames()));
         }
-        if(physicalDimensionXAnnotation.isEnabled()) {
+        if (physicalDimensionXAnnotation.isEnabled()) {
             Calibration calibration = inputData.getImage().getCalibration();
             double value = 0;
             String unit = "";
-            if(calibration != null) {
+            if (calibration != null) {
                 value = calibration.getX(1);
                 unit = calibration.getXUnit();
             }
             physicalDimensionXAnnotation.addAnnotationIfEnabled(annotations, value + (!unit.isEmpty() ? " " + unit : ""));
         }
-        if(physicalDimensionYAnnotation.isEnabled()) {
+        if (physicalDimensionYAnnotation.isEnabled()) {
             Calibration calibration = inputData.getImage().getCalibration();
             double value = 0;
             String unit = "";
-            if(calibration != null) {
+            if (calibration != null) {
                 value = calibration.getY(1);
                 unit = calibration.getYUnit();
             }
             physicalDimensionYAnnotation.addAnnotationIfEnabled(annotations, value + (!unit.isEmpty() ? " " + unit : ""));
         }
-        if(physicalDimensionZAnnotation.isEnabled()) {
+        if (physicalDimensionZAnnotation.isEnabled()) {
             Calibration calibration = inputData.getImage().getCalibration();
             double value = 0;
             String unit = "";
-            if(calibration != null) {
+            if (calibration != null) {
                 value = calibration.getZ(1);
                 unit = calibration.getZUnit();
             }
             physicalDimensionZAnnotation.addAnnotationIfEnabled(annotations, value + (!unit.isEmpty() ? " " + unit : ""));
         }
-        if(physicalDimensionTAnnotation.isEnabled()) {
+        if (physicalDimensionTAnnotation.isEnabled()) {
             Calibration calibration = inputData.getImage().getCalibration();
             double value = 1;
             String unit = "";
-            if(calibration != null) {
+            if (calibration != null) {
                 unit = calibration.getTimeUnit();
             }
             physicalDimensionTAnnotation.addAnnotationIfEnabled(annotations, value + (!unit.isEmpty() ? " " + unit : ""));
         }
-        if(physicalDimensionValueAnnotation.isEnabled()) {
+        if (physicalDimensionValueAnnotation.isEnabled()) {
             Calibration calibration = inputData.getImage().getCalibration();
             double value = 1;
             String unit = "";
-            if(calibration != null) {
+            if (calibration != null) {
                 unit = calibration.getValueUnit();
             }
             physicalDimensionValueAnnotation.addAnnotationIfEnabled(annotations, value + (!unit.isEmpty() ? " " + unit : ""));
@@ -265,6 +265,7 @@ public class ImagePropertiesToAnnotationAlgorithm extends JIPipeSimpleIteratingA
     public OptionalAnnotationNameParameter getPhysicalDimensionYAnnotation() {
         return physicalDimensionYAnnotation;
     }
+
     @JIPipeParameter("physical-dimension-y-annotation")
 
     public void setPhysicalDimensionYAnnotation(OptionalAnnotationNameParameter physicalDimensionYAnnotation) {

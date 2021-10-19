@@ -7,6 +7,7 @@ import java.lang.annotation.RetentionPolicy;
 public @interface ExternalEnvironmentInfo {
     /**
      * Allows to tag the environment for the GUI.
+     *
      * @return the category
      */
     String category() default "";

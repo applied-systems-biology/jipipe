@@ -192,7 +192,7 @@ public class AutoSaveSettings implements JIPipeParameterCollection {
     @JIPipeContextAction(iconURL = ResourceUtils.RESOURCE_BASE_PATH + "/icons/actions/clear-brush.png", iconDarkURL = ResourceUtils.RESOURCE_BASE_PATH + "/dark/icons/actions/clear-brush.png")
     public void removeDuplicateBackups(JIPipeWorkbench workbench) {
         if (JOptionPane.showConfirmDialog(workbench.getWindow(),
-                "Do you really want to remove duplicate backups?\nThis will only affect backups and not your actual project files." ,
+                "Do you really want to remove duplicate backups?\nThis will only affect backups and not your actual project files.",
                 "Remove duplicate backups",
                 JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
             JIPipeRunExecuterUI.runInDialog(workbench.getWindow(), new CleanBackupsRun(workbench));

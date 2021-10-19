@@ -103,7 +103,7 @@ public class JIPipeRunExecuterUI extends JPanel {
     }
 
     private void switchToCloseButtonIfPossible() {
-        if(dialog != null) {
+        if (dialog != null) {
             throbberIcon.stop();
             cancelButton.setEnabled(false);
             cancelButton.setVisible(false);
@@ -162,6 +162,14 @@ public class JIPipeRunExecuterUI extends JPanel {
         }
     }
 
+    public JDialog getDialog() {
+        return dialog;
+    }
+
+    public void setDialog(JDialog dialog) {
+        this.dialog = dialog;
+    }
+
     public static void runInDialog(Component parent, JIPipeRunnable run) {
         JDialog dialog = new JDialog();
         dialog.setTitle(run.getTaskLabel());
@@ -184,13 +192,5 @@ public class JIPipeRunExecuterUI extends JPanel {
         });
         JIPipeRunnerQueue.getInstance().enqueue(run);
         dialog.setVisible(true);
-    }
-
-    public JDialog getDialog() {
-        return dialog;
-    }
-
-    public void setDialog(JDialog dialog) {
-        this.dialog = dialog;
     }
 }

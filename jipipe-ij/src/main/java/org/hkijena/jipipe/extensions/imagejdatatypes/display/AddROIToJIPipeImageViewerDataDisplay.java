@@ -26,8 +26,8 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.viewer.plugins.ImageViewerP
 import org.hkijena.jipipe.extensions.imagejdatatypes.viewer.plugins.ROIManagerPlugin;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.components.WindowListCellRenderer;
-import org.hkijena.jipipe.utils.ui.ListSelectionMode;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.utils.ui.ListSelectionMode;
 
 import javax.swing.*;
 import java.awt.Frame;

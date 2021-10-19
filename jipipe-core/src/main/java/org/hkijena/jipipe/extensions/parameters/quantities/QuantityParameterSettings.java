@@ -7,6 +7,7 @@ import java.lang.annotation.RetentionPolicy;
 public @interface QuantityParameterSettings {
     /**
      * List of predefined units that are displayed to the user
+     *
      * @return units
      */
     String[] predefinedUnits() default {};

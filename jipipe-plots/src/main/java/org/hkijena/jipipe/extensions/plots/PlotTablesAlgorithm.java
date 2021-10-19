@@ -120,7 +120,7 @@ public class PlotTablesAlgorithm extends JIPipeMergingAlgorithm {
                 variables.set(annotation.getName(), annotation.getValue());
             }
 
-           // Generate series
+            // Generate series
             for (Map.Entry<String, JIPipeParameterAccess> entry : inputColumns.getParameters().entrySet()) {
                 TableColumnSourceExpressionParameter parameter = entry.getValue().get(TableColumnSourceExpressionParameter.class);
                 seriesTable.setColumn(entry.getKey(), parameter.pickOrGenerateColumn(inputData), plotColumns.get(entry.getKey()).isNumeric());
@@ -132,14 +132,14 @@ public class PlotTablesAlgorithm extends JIPipeMergingAlgorithm {
 
             // Increment the series counter
             seriesCounter += 1;
-            if(seriesCounter >= plotMetadata.maxSeriesCount()) {
+            if (seriesCounter >= plotMetadata.maxSeriesCount()) {
                 progressInfo.log("Maximum number of series was reached (maximum is " + plotMetadata.maxSeriesCount() + "!). Creating a new plot.");
                 dataBatch.addOutputData(getFirstOutputSlot(), plot, progressInfo);
                 plot = (PlotData) plotTypeParameters.duplicate();
                 seriesCounter = 0;
             }
         }
-        if(!plot.getSeries().isEmpty()) {
+        if (!plot.getSeries().isEmpty()) {
             dataBatch.addOutputData(getFirstOutputSlot(), plot, progressInfo);
         }
     }

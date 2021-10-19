@@ -13,7 +13,6 @@
 
 package org.hkijena.jipipe.extensions.plots;
 
-import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.components.DocumentTabPane;
 import org.hkijena.jipipe.ui.extension.JIPipeMenuExtension;

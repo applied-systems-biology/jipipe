@@ -18,7 +18,10 @@ import org.hkijena.jipipe.extensions.parameters.primitives.EnumParameterEditorUI
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
-import java.awt.*;
+import java.awt.BorderLayout;
+import java.awt.Component;
+import java.awt.Dimension;
+import java.awt.Window;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
@@ -67,7 +70,7 @@ public class PickEnumValueDialog extends JDialog {
         itemJList.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
-                if(e.getClickCount() > 1) {
+                if (e.getClickCount() > 1) {
                     pickValue();
                 }
             }
@@ -116,9 +119,9 @@ public class PickEnumValueDialog extends JDialog {
         searchField.addKeyListener(new KeyAdapter() {
             @Override
             public void keyReleased(KeyEvent e) {
-            if (selectedItem != null && e.getKeyCode() == KeyEvent.VK_ENTER) {
-                confirmButton.requestFocusInWindow();
-            }
+                if (selectedItem != null && e.getKeyCode() == KeyEvent.VK_ENTER) {
+                    confirmButton.requestFocusInWindow();
+                }
             }
         });
         toolBar.add(searchField);

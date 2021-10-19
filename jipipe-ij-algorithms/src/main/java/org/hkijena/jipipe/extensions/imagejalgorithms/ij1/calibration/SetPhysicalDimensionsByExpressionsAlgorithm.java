@@ -46,23 +46,23 @@ public class SetPhysicalDimensionsByExpressionsAlgorithm extends JIPipeSimpleIte
     protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
         ImagePlus img = dataBatch.getInputData(getFirstInputSlot(), ImagePlusData.class, progressInfo).getDuplicateImage();
         Calibration calibration = img.getCalibration();
-        if(calibration == null) {
+        if (calibration == null) {
             calibration = new Calibration(img);
             img.setCalibration(calibration);
         }
         ExpressionVariables variables = new ExpressionVariables();
         ImagePlusPropertiesExpressionParameterVariableSource.extractValues(variables, img, dataBatch.getGlobalAnnotations().values());
-        if(physicalDimensionX.isEnabled()) {
+        if (physicalDimensionX.isEnabled()) {
             Quantity quantity = Quantity.parse(StringUtils.nullToEmpty(physicalDimensionX.getContent().evaluate(variables)));
             calibration.setXUnit(quantity.getUnit());
             calibration.pixelWidth = quantity.getValue();
         }
-        if(physicalDimensionY.isEnabled()) {
+        if (physicalDimensionY.isEnabled()) {
             Quantity quantity = Quantity.parse(StringUtils.nullToEmpty(physicalDimensionY.getContent().evaluate(variables)));
             calibration.setYUnit(quantity.getUnit());
             calibration.pixelHeight = quantity.getValue();
         }
-        if(physicalDimensionZ.isEnabled()) {
+        if (physicalDimensionZ.isEnabled()) {
             Quantity quantity = Quantity.parse(StringUtils.nullToEmpty(physicalDimensionZ.getContent().evaluate(variables)));
             calibration.setZUnit(quantity.getUnit());
             calibration.pixelDepth = quantity.getValue();

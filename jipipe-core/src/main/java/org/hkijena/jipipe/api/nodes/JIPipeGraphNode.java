@@ -1092,31 +1092,29 @@ public abstract class JIPipeGraphNode implements JIPipeValidatable, JIPipeParame
 
     /**
      * Toggles a slot with given info on/off. Requires that the slot configuration is a {@link org.hkijena.jipipe.api.data.JIPipeMutableSlotConfiguration}
-     * @param info the slot info
+     *
+     * @param info   the slot info
      * @param toggle if the slot should be present
      */
     public void toggleSlot(JIPipeDataSlotInfo info, boolean toggle) {
         JIPipeMutableSlotConfiguration slotConfiguration = (JIPipeMutableSlotConfiguration) getSlotConfiguration();
-        if(toggle) {
-            if(info.getSlotType() == JIPipeSlotType.Input) {
-                if(!getInputSlotMap().containsKey(info.getName())) {
+        if (toggle) {
+            if (info.getSlotType() == JIPipeSlotType.Input) {
+                if (!getInputSlotMap().containsKey(info.getName())) {
+                    slotConfiguration.addSlot(info.getName(), info, false);
+                }
+            } else {
+                if (!getOutputSlotMap().containsKey(info.getName())) {
                     slotConfiguration.addSlot(info.getName(), info, false);
                 }
             }
-            else {
-                if(!getOutputSlotMap().containsKey(info.getName())) {
-                    slotConfiguration.addSlot(info.getName(), info, false);
-                }
-            }
-        }
-        else {
-            if(info.getSlotType() == JIPipeSlotType.Input) {
-                if(getInputSlotMap().containsKey(info.getName())) {
+        } else {
+            if (info.getSlotType() == JIPipeSlotType.Input) {
+                if (getInputSlotMap().containsKey(info.getName())) {
                     slotConfiguration.removeInputSlot(info.getName(), false);
                 }
-            }
-            else {
-                if(getOutputSlotMap().containsKey(info.getName())) {
+            } else {
+                if (getOutputSlotMap().containsKey(info.getName())) {
                     slotConfiguration.removeOutputSlot(info.getName(), false);
                 }
             }

@@ -59,7 +59,7 @@ public class SaveProjectAndCacheRun implements JIPipeRunnable {
 
     @Override
     public void run() {
-        if(Files.isDirectory(outputPath)) {
+        if (Files.isDirectory(outputPath)) {
             PathUtils.deleteDirectoryRecursively(outputPath, getProgressInfo().resolve("Delete existing files"));
         }
         try {

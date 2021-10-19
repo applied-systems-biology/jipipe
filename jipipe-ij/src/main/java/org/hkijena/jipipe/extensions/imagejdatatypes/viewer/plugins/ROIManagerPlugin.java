@@ -45,14 +45,13 @@ public class ROIManagerPlugin extends ImageViewerPanelPlugin {
     }
 
 
-
     @Override
     public void onImageChanged() {
         for (Roi roi : overlayRois) {
             rois.remove(roi);
         }
-        if(getCurrentImage().getOverlay() != null) {
-            if(getCurrentImage().getRoi() != null) {
+        if (getCurrentImage().getOverlay() != null) {
+            if (getCurrentImage().getRoi() != null) {
                 rois.add(getCurrentImage().getRoi());
             }
             for (Roi roi : getCurrentImage().getOverlay()) {

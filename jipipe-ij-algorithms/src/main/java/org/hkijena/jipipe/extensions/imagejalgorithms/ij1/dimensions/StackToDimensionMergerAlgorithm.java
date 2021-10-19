@@ -162,7 +162,7 @@ public class StackToDimensionMergerAlgorithm extends JIPipeIteratingAlgorithm {
             }
             ImagePlus result = new ImagePlus(createdDimension.toString(), stack);
             result.setDimensions(numC, inputImages.size(), numT);
-            if(!inputImages.isEmpty())
+            if (!inputImages.isEmpty())
                 result.copyScale(inputImages.get(0));
             dataBatch.addOutputData(getFirstOutputSlot(), JIPipe.createData(targetType, result), progressInfo);
         } else if (createdDimension == HyperstackDimension.Channel) {
@@ -186,7 +186,7 @@ public class StackToDimensionMergerAlgorithm extends JIPipeIteratingAlgorithm {
             }
             ImagePlus result = new ImagePlus(createdDimension.toString(), stack);
             result.setDimensions(inputImages.size(), numZ, numT);
-            if(!inputImages.isEmpty())
+            if (!inputImages.isEmpty())
                 result.copyScale(inputImages.get(0));
             dataBatch.addOutputData(getFirstOutputSlot(), JIPipe.createData(targetType, result), progressInfo);
         } else if (createdDimension == HyperstackDimension.Frame) {
@@ -208,7 +208,7 @@ public class StackToDimensionMergerAlgorithm extends JIPipeIteratingAlgorithm {
             }
             ImagePlus result = new ImagePlus(createdDimension.toString(), stack);
             result.setDimensions(numC, numZ, inputImages.size());
-            if(!inputImages.isEmpty())
+            if (!inputImages.isEmpty())
                 result.copyScale(inputImages.get(0));
             dataBatch.addOutputData(getFirstOutputSlot(), JIPipe.createData(targetType, result), progressInfo);
         }

@@ -15,8 +15,8 @@ package org.hkijena.jipipe.ui.components;
 
 import org.hkijena.jipipe.extensions.settings.FileChooserSettings;
 import org.hkijena.jipipe.ui.plotbuilder.PlotEditor;
-import org.hkijena.jipipe.utils.ui.CopyImageToClipboard;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.utils.ui.CopyImageToClipboard;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.ChartUtils;
 import org.jfree.chart.JFreeChart;

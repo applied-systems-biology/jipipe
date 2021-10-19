@@ -40,11 +40,11 @@ import org.hkijena.jipipe.ui.components.DocumentTabPane;
 import org.hkijena.jipipe.ui.components.FormPanel;
 import org.hkijena.jipipe.ui.components.PathEditor;
 import org.hkijena.jipipe.ui.running.JIPipeRunExecuterUI;
-import org.hkijena.jipipe.utils.ui.CopyImageToClipboard;
 import org.hkijena.jipipe.utils.PathIOMode;
 import org.hkijena.jipipe.utils.PathType;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.utils.ui.CopyImageToClipboard;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
@@ -82,8 +82,7 @@ public class ImageViewerPanel extends JPanel {
     private JLabel imageInfoLabel = new JLabel();
     private JScrollPane scrollPane;
     private JSpinner animationSpeedControl = new JSpinner(new SpinnerNumberModel(250, 5, 10000, 1));
-    private Timer animationTimer = new Timer(250, e -> animateNextSlice());
-    private int rotation = 0;
+    private int rotation = 0;    private Timer animationTimer = new Timer(250, e -> animateNextSlice());
     private JMenuItem exportAllSlicesItem;
     private JMenuItem exportMovieItem;
     private JToolBar toolBar = new JToolBar();
@@ -94,7 +93,6 @@ public class ImageViewerPanel extends JPanel {
     private Component currentContentPanel;
     private DocumentTabPane tabPane = new DocumentTabPane();
     private Map<String, FormPanel> formPanels = new HashMap<>();
-
     public ImageViewerPanel() {
         if (JIPipe.getInstance() != null) {
             settings = ImageViewerUISettings.getInstance();
@@ -813,5 +811,7 @@ public class ImageViewerPanel extends JPanel {
         window.setVisible(true);
         return dataDisplay;
     }
+
+
 
 }

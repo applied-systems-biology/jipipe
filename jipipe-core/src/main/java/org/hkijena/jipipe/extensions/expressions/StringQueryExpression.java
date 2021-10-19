@@ -60,7 +60,7 @@ public class StringQueryExpression extends DefaultExpressionParameter implements
     /**
      * Queries a string out of the list
      *
-     * @param strings              existing annotations for the data
+     * @param strings             existing annotations for the data
      * @param expressionVariables expression parameters
      * @return the annotation that matches the query or null if none matches
      */
@@ -91,7 +91,7 @@ public class StringQueryExpression extends DefaultExpressionParameter implements
     /**
      * Generates an annotation value
      *
-     * @param strings              existing annotations for the data
+     * @param strings             existing annotations for the data
      * @param expressionVariables expression parameters
      * @return the annotation that matches the query or null if none matches
      */

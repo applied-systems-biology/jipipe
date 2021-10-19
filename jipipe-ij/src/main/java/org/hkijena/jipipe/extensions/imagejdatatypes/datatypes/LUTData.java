@@ -62,8 +62,7 @@ public class LUTData implements JIPipeData {
             } else {
                 JsonUtils.getObjectMapper().writerWithDefaultPrettyPrinter().writeValue(storageFilePath.resolve(name + ".json").toFile(), this);
             }
-        }
-        catch (IOException e) {
+        } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }
@@ -86,6 +85,7 @@ public class LUTData implements JIPipeData {
 
     /**
      * Converts the {@link LUTData} into an ImageJ {@link LUT}
+     *
      * @return the LUT
      */
     public LUT toLUT() {
@@ -94,6 +94,7 @@ public class LUTData implements JIPipeData {
 
     /**
      * Renders the {@link LUTData} into an RGB Image
+     *
      * @return the image
      */
     public ImagePlus toImage(int width, int height) {
@@ -108,10 +109,15 @@ public class LUTData implements JIPipeData {
         return gradientStops.get(index);
     }
 
+    public void addStop(float position, Color color) {
+        gradientStops.add(new ImageJUtils.GradientStop(position, color));
+    }
+
     /**
      * Creates a {@link LUTData} object from an image. The image must RGB color and
      * contain the value mappings in the first row. LUTs always have 256 colors, but other
      * number of columns are supported (in such case, the image will be stretched)
+     *
      * @param img the LUT image
      * @return the LUT
      */
@@ -123,7 +129,8 @@ public class LUTData implements JIPipeData {
      * Imports an ImageJ LUT into a {@link LUTData} object.
      * Please note, that ImageJ represents LUTs as array of colors, while {@link LUTData} represents LUTs
      * as set of gradient stops. The conversion might not be always 100% perfect.
-     * @param lut the LUT
+     *
+     * @param lut      the LUT
      * @param simplify attempt to remove spurious gradient stops
      * @return the LUT
      */
@@ -198,14 +205,14 @@ public class LUTData implements JIPipeData {
         }
         int lastLocation = 0;
         for (int i = 2; i < 255; i++) {
-            int lastDerivationR = (int)Math.signum(derivationsR.get(i - 1));
-            int derivationR =  (int)Math.signum(derivationsR.get(i));
-            int lastDerivationG = (int)Math.signum(derivationsG.get(i - 1));
-            int derivationG =  (int)Math.signum(derivationsG.get(i));
-            int lastDerivationB = (int)Math.signum(derivationsB.get(i - 1));
-            int derivationB =  (int)Math.signum(derivationsB.get(i));
-            if(lastDerivationR != derivationR || lastDerivationB != derivationB || lastDerivationG != derivationG) {
-                if(i - lastLocation > 20 || !simplify) {
+            int lastDerivationR = (int) Math.signum(derivationsR.get(i - 1));
+            int derivationR = (int) Math.signum(derivationsR.get(i));
+            int lastDerivationG = (int) Math.signum(derivationsG.get(i - 1));
+            int derivationG = (int) Math.signum(derivationsG.get(i));
+            int lastDerivationB = (int) Math.signum(derivationsB.get(i - 1));
+            int derivationB = (int) Math.signum(derivationsB.get(i));
+            if (lastDerivationR != derivationR || lastDerivationB != derivationB || lastDerivationG != derivationG) {
+                if (i - lastLocation > 20 || !simplify) {
                     thumbLocations.add(i);
                     lastLocation = i;
                 }
@@ -213,15 +220,11 @@ public class LUTData implements JIPipeData {
         }
 
         LUTData data = new LUTData();
-        for(int lutIndex : thumbLocations) {
+        for (int lutIndex : thumbLocations) {
             float thumbLocation = lutIndex / 255.0f;
             data.addStop(thumbLocation, new Color(lut.getRGB(lutIndex)));
         }
         return data;
-    }
-
-    public void addStop(float position, Color color) {
-        gradientStops.add(new ImageJUtils.GradientStop(position, color));
     }
 
     public static LUTData importFrom(Path storagePath) {

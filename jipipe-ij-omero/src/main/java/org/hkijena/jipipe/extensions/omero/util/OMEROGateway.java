@@ -1,22 +1,23 @@
 package org.hkijena.jipipe.extensions.omero.util;
 
-import IceInternal.Ex;
 import omero.gateway.Gateway;
 import omero.gateway.LoginCredentials;
 import omero.gateway.SecurityContext;
 import omero.gateway.facility.BrowseFacility;
 import omero.gateway.facility.DataManagerFacility;
+import omero.gateway.facility.MetadataFacility;
 import omero.gateway.model.ExperimenterData;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 
-public class OMEROGateway implements AutoCloseable{
+public class OMEROGateway implements AutoCloseable {
 
     private final LoginCredentials credentials;
+    private final JIPipeProgressInfo progressInfo;
     private Gateway gateway;
-    private  SecurityContext context;
+    private SecurityContext context;
     private BrowseFacility browseFacility;
     private DataManagerFacility dataManagerFacility;
-    private final JIPipeProgressInfo progressInfo;
+    private MetadataFacility metadata;
 
     public OMEROGateway(LoginCredentials credentials, JIPipeProgressInfo progressInfo) {
         this.credentials = credentials;
@@ -32,7 +33,8 @@ public class OMEROGateway implements AutoCloseable{
             context = new SecurityContext(user.getGroupId());
             browseFacility = gateway.getFacility(BrowseFacility.class);
             dataManagerFacility = gateway.getFacility(DataManagerFacility.class);
-        }catch (Exception e) {
+            metadata = gateway.getFacility(MetadataFacility.class);
+        } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
@@ -64,5 +66,9 @@ public class OMEROGateway implements AutoCloseable{
     @Override
     public void close() throws Exception {
         gateway.close();
+    }
+
+    public MetadataFacility getMetadata() {
+        return metadata;
     }
 }

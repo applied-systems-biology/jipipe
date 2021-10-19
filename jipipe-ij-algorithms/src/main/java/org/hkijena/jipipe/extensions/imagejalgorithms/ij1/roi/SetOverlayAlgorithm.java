@@ -38,6 +38,6 @@ public class SetOverlayAlgorithm extends JIPipeIteratingAlgorithm {
             overlay.add(roi);
         }
         img.setOverlay(overlay);
-        dataBatch.addOutputData(getFirstOutputSlot(),new ImagePlusData(img), progressInfo);
+        dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusData(img), progressInfo);
     }
 }

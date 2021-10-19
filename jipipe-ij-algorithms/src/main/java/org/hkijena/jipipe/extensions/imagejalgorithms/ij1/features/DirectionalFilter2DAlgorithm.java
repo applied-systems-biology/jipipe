@@ -94,7 +94,7 @@ public class DirectionalFilter2DAlgorithm extends JIPipeSimpleIteratingAlgorithm
         filter.addAlgoListener(new AlgoListener() {
             @Override
             public void algoProgressChanged(AlgoEvent evt) {
-                progressInfo.log("Directional filter: " + (int)evt.getCurrentProgress() + "/" + (int)evt.getTotalProgress());
+                progressInfo.log("Directional filter: " + (int) evt.getCurrentProgress() + "/" + (int) evt.getTotalProgress());
             }
 
             @Override

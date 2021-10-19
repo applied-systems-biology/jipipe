@@ -172,7 +172,7 @@ public class UIUtils {
     public static void applyThemeToCodeEditor(RSyntaxTextArea textArea) {
         if (DARK_THEME) {
             try {
-                if(RSYNTAX_THEME_DARK == null) {
+                if (RSYNTAX_THEME_DARK == null) {
                     RSYNTAX_THEME_DARK = Theme.load(ResourceUtils.class.getResourceAsStream(
                             "/org/hkijena/jipipe/rsyntaxtextarea/themes/dark.xml"));
                 }
@@ -182,7 +182,7 @@ public class UIUtils {
             }
         } else {
             try {
-                if(RSYNTAX_THEME_DEFAULT == null) {
+                if (RSYNTAX_THEME_DEFAULT == null) {
                     RSYNTAX_THEME_DEFAULT = Theme.load(ResourceUtils.class.getResourceAsStream(
                             "/org/hkijena/jipipe/rsyntaxtextarea/themes/default.xml"));
                 }
@@ -383,7 +383,7 @@ public class UIUtils {
             @Override
             public void mouseClicked(MouseEvent mouseEvent) {
                 super.mouseClicked(mouseEvent);
-                if(mouseEvent.getButton() == MouseEvent.BUTTON3) {
+                if (mouseEvent.getButton() == MouseEvent.BUTTON3) {
                     reloadFunction.run();
                     popupMenu.revalidate();
                     popupMenu.show(mouseEvent.getComponent(), mouseEvent.getX(), mouseEvent.getY());

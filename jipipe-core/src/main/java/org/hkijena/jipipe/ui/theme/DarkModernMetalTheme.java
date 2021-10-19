@@ -13,10 +13,10 @@
 
 package org.hkijena.jipipe.ui.theme;
 
+import org.hkijena.jipipe.utils.UIUtils;
 import org.hkijena.jipipe.utils.ui.CheckBoxIcon;
 import org.hkijena.jipipe.utils.ui.CheckBoxMenuItemIcon;
 import org.hkijena.jipipe.utils.ui.RoundedLineBorder;
-import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
 import javax.swing.border.Border;

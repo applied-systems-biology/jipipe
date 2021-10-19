@@ -48,10 +48,10 @@ import org.hkijena.jipipe.extensions.tables.display.CachedTableViewerWindow;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.components.DocumentTabPane;
 import org.hkijena.jipipe.ui.tableeditor.TableEditor;
-import org.hkijena.jipipe.utils.json.JsonUtils;
 import org.hkijena.jipipe.utils.PathUtils;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.utils.json.JsonUtils;
 import org.python.core.PyDictionary;
 
 import javax.swing.*;
@@ -968,6 +968,7 @@ public class ResultsTableData implements JIPipeData, TableModel {
 
     /**
      * Adds a new row and writes the provided values into the table
+     *
      * @param values map of column name and value. Automatically creates columns if needed
      * @return inserted row index
      */
@@ -982,6 +983,7 @@ public class ResultsTableData implements JIPipeData, TableModel {
 
     /**
      * Adds a new row and returns a {@link RowBuilder} for setting values conveniently
+     *
      * @return the row builder
      */
     public RowBuilder addRowBuilder() {
@@ -1200,90 +1202,90 @@ public class ResultsTableData implements JIPipeData, TableModel {
     private static String replaceQuotedCommas(String text) {
         char[] c = text.toCharArray();
         boolean inQuotes = false;
-        for (int i=0; i<c.length; i++) {
-            if (c[i]=='"')
+        for (int i = 0; i < c.length; i++) {
+            if (c[i] == '"')
                 inQuotes = !inQuotes;
-            if (inQuotes && c[i]==',')
+            if (inQuotes && c[i] == ',')
                 c[i] = commaSubstitute;
         }
         return new String(c);
     }
 
     private static int getTableType(String[] lines, String cellSeparator) {
-        if (lines.length<2) return 0;
-        String[] items=lines[1].split(cellSeparator);
+        if (lines.length < 2) return 0;
+        String[] items = lines[1].split(cellSeparator);
         int nonNumericCount = 0;
         int nonNumericIndex = 0;
-        for (int i=0; i<items.length; i++) {
+        for (int i = 0; i < items.length; i++) {
             if (!items[i].equals("NaN") && Double.isNaN(Tools.parseDouble(items[i]))) {
                 nonNumericCount++;
                 nonNumericIndex = i;
             }
         }
-        if (nonNumericCount==0)
+        if (nonNumericCount == 0)
             return 0; // assume this is all-numeric table
-        if (nonNumericCount==1 && nonNumericIndex==1)
+        if (nonNumericCount == 1 && nonNumericIndex == 1)
             return 1; // assume this is an ImageJ Results table with row numbers and row labels
-        if (nonNumericCount==1 && nonNumericIndex==0)
+        if (nonNumericCount == 1 && nonNumericIndex == 0)
             return 2; // assume this is an ImageJ Results table without row numbers and with row labels
         return 3;
     }
 
     public static ResultsTableData fromCSV(Path path, String cellSeparator) {
-        final String lineSeparator =  "\n";
+        final String lineSeparator = "\n";
         String text = IJ.openAsString(path.toString());
-        if (text==null)
+        if (text == null)
             return null;
-        if (text.length()==0)
+        if (text.length() == 0)
             return new ResultsTableData();
         if (text.startsWith("Error:"))
-            throw new RuntimeException(new IOException("Error opening "+path));
+            throw new RuntimeException(new IOException("Error opening " + path));
         boolean csv = path.endsWith(".csv") || path.endsWith(".CSV");
         boolean commasReplaced = false;
         if (csv && text.contains("\"")) {
             text = replaceQuotedCommas(text);
             commasReplaced = true;
         }
-        String commaSubstitute2 = ""+commaSubstitute;
+        String commaSubstitute2 = "" + commaSubstitute;
         String[] lines = text.split(lineSeparator);
-        if (lines.length==0 || (lines.length==1 && lines[0].length()==0))
+        if (lines.length == 0 || (lines.length == 1 && lines[0].length() == 0))
             throw new RuntimeException(new IOException("Table is empty or invalid"));
         String[] headings = lines[0].split(cellSeparator);
-        if (headings.length<1)
-            throw new RuntimeException( new IOException("This is not a tab or comma delimited text file."));
+        if (headings.length < 1)
+            throw new RuntimeException(new IOException("This is not a tab or comma delimited text file."));
         int numbersInHeadings = 0;
         for (String heading : headings) {
             if (heading.equals("NaN") || !Double.isNaN(Tools.parseDouble(heading)))
                 numbersInHeadings++;
         }
-        boolean allNumericHeadings = numbersInHeadings==headings.length;
+        boolean allNumericHeadings = numbersInHeadings == headings.length;
         if (allNumericHeadings) {
-            for (int i=0; i<headings.length; i++)
-                headings[i] = "C"+(i+1);
+            for (int i = 0; i < headings.length; i++)
+                headings[i] = "C" + (i + 1);
         }
-        int firstColumn = headings.length>0&&headings[0].equals(" ")?1:0;
-        for (int i=0; i<headings.length; i++) {
+        int firstColumn = headings.length > 0 && headings[0].equals(" ") ? 1 : 0;
+        for (int i = 0; i < headings.length; i++) {
             headings[i] = headings[i].trim();
             if (commasReplaced) {
                 if (headings[i].startsWith("\"") && headings[i].endsWith("\""))
-                    headings[i] = headings[i].substring(1, headings[i].length()-1);
+                    headings[i] = headings[i].substring(1, headings[i].length() - 1);
             }
         }
-        int firstRow = allNumericHeadings?0:1;
-        boolean labels = firstColumn==1 && headings[1].equals("Label");
-        int type=getTableType(lines, cellSeparator);
+        int firstRow = allNumericHeadings ? 0 : 1;
+        boolean labels = firstColumn == 1 && headings[1].equals("Label");
+        int type = getTableType(lines, cellSeparator);
         //if (!labels && (type==1||type==2))
         //	labels = true;
-        int labelsIndex = (type==2)?0:1;
+        int labelsIndex = (type == 2) ? 0 : 1;
         if (lines[0].startsWith("\t")) {
-            String[] headings2 = new String[headings.length+1];
+            String[] headings2 = new String[headings.length + 1];
             headings2[0] = " ";
             System.arraycopy(headings, 0, headings2, 1, headings.length);
             headings = headings2;
             firstColumn = 1;
         }
         ResultsTable rt = new ResultsTable();
-        if (firstRow>=lines.length) { //empty table?
+        if (firstRow >= lines.length) { //empty table?
             for (String heading : headings) {
                 if (heading == null) continue;
                 int col = rt.getColumnIndex(heading);
@@ -1292,20 +1294,20 @@ public class ResultsTableData implements JIPipeData, TableModel {
             }
             return new ResultsTableData(rt);
         }
-        for (int i=firstRow; i<lines.length; i++) {
+        for (int i = firstRow; i < lines.length; i++) {
             rt.incrementCounter();
             String[] items = lines[i].split(cellSeparator);
-            for (int j=firstColumn; j<headings.length; j++) {
-                if (j==labelsIndex&&labels)
+            for (int j = firstColumn; j < headings.length; j++) {
+                if (j == labelsIndex && labels)
                     rt.addLabel(headings[labelsIndex], items[labelsIndex]);
                 else {
-                    double value = j<items.length?Tools.parseDouble(items[j]):Double.NaN;
+                    double value = j < items.length ? Tools.parseDouble(items[j]) : Double.NaN;
                     if (Double.isNaN(value)) {
-                        String item = j<items.length?items[j]:"";
+                        String item = j < items.length ? items[j] : "";
                         if (commasReplaced) {
                             item = item.replaceAll(commaSubstitute2, ",");
                             if (item.startsWith("\"") && item.endsWith("\""))
-                                item = item.substring(1, item.length()-1);
+                                item = item.substring(1, item.length() - 1);
                         }
                         rt.addValue(headings[j], item);
                     } else

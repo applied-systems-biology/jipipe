@@ -37,11 +37,11 @@ public class AdvancedFileChooser extends JPanel implements PropertyChangeListene
 
     private final FileSystemView fileSystemView = FileSystemView.getFileSystemView();
     private final FileChooserComponent fileChooserComponent = new FileChooserComponent();
+    private final JToolBar drillDownToolBar = new JToolBar();
     private FormPanel linkPanel;
     private List<Path> history = new ArrayList<>();
     private int currentHistoryIndex = 0;
     private Path initialDirectory;
-    private final JToolBar drillDownToolBar = new JToolBar();
     private boolean drillDownEditMode = false;
     private FancyTextField pathField;
     private JToggleButton bookmarkToggle;
@@ -65,7 +65,7 @@ public class AdvancedFileChooser extends JPanel implements PropertyChangeListene
         addComponentListener(new ComponentAdapter() {
             @Override
             public void componentResized(ComponentEvent e) {
-                if(!drillDownEditMode) {
+                if (!drillDownEditMode) {
                     updateDrillDown();
                 }
             }
@@ -106,7 +106,7 @@ public class AdvancedFileChooser extends JPanel implements PropertyChangeListene
         pathField.getTextField().addKeyListener(new KeyAdapter() {
             @Override
             public void keyReleased(KeyEvent e) {
-                if(e.getKeyCode() == KeyEvent.VK_ENTER) {
+                if (e.getKeyCode() == KeyEvent.VK_ENTER) {
                     drillDownEditMode = false;
                     trySetCurrentDirectory(pathField.getText());
                 }
@@ -116,10 +116,9 @@ public class AdvancedFileChooser extends JPanel implements PropertyChangeListene
         drillDownToolBar.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
-                if(!drillDownEditMode) {
+                if (!drillDownEditMode) {
                     switchToDrillDownEditMode();
-                }
-                else {
+                } else {
                     super.mouseClicked(e);
                 }
             }
@@ -128,6 +127,7 @@ public class AdvancedFileChooser extends JPanel implements PropertyChangeListene
 
     /**
      * Gets the underlying file chooser component
+     *
      * @return the filter chooser
      */
     public FileChooserComponent getFileChooserComponent() {
@@ -142,10 +142,9 @@ public class AdvancedFileChooser extends JPanel implements PropertyChangeListene
 
     private void updateDrillDown() {
         drillDownToolBar.removeAll();
-        if(drillDownEditMode) {
+        if (drillDownEditMode) {
             createDrillDownEditor();
-        }
-        else {
+        } else {
             createClickableDrillDown();
         }
         drillDownToolBar.revalidate();
@@ -155,7 +154,7 @@ public class AdvancedFileChooser extends JPanel implements PropertyChangeListene
     private void createDrillDownEditor() {
         drillDownToolBar.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
         String pathString = fileChooserComponent.getCurrentDirectory().getAbsolutePath();
-        if(!pathString.endsWith("/") && !pathString.endsWith("/")) {
+        if (!pathString.endsWith("/") && !pathString.endsWith("/")) {
             pathString = pathString + File.separator;
         }
         pathField.setText(pathString);
@@ -175,16 +174,14 @@ public class AdvancedFileChooser extends JPanel implements PropertyChangeListene
     private void trySetCurrentDirectory(String path) {
         try {
             Path p = Paths.get(path);
-            if(!Files.isDirectory(p)) {
+            if (!Files.isDirectory(p)) {
                 p = p.getParent();
             }
-            if(Files.isDirectory(p)) {
+            if (Files.isDirectory(p)) {
                 fileChooserComponent.setCurrentDirectory(p.toFile());
             }
-        }
-        catch (Exception e) {
-        }
-        finally {
+        } catch (Exception e) {
+        } finally {
             updateDrillDown();
         }
     }
@@ -196,7 +193,7 @@ public class AdvancedFileChooser extends JPanel implements PropertyChangeListene
         List<Path> parents = new ArrayList<>();
         List<Path> removedParents = new ArrayList<>();
         parents.add(currentDirectory);
-        while(currentDirectory.getParent() != null && !currentDirectory.getParent().equals(currentDirectory)) {
+        while (currentDirectory.getParent() != null && !currentDirectory.getParent().equals(currentDirectory)) {
             parents.add(currentDirectory.getParent());
             currentDirectory = currentDirectory.getParent();
         }
@@ -204,7 +201,7 @@ public class AdvancedFileChooser extends JPanel implements PropertyChangeListene
         int availableWidth = drillDownToolBar.getWidth() - 75;
         FontMetrics metrics = getFontMetrics(getFont());
         for (int i = 1; i < parents.size(); ++i) {
-            if(availableWidth > 0) {
+            if (availableWidth > 0) {
                 Path path = parents.get(i);
                 String name;
                 if (path.getFileName() != null)
@@ -214,21 +211,21 @@ public class AdvancedFileChooser extends JPanel implements PropertyChangeListene
                 int componentWidth = 4 + 2 + 4 + 2 + 16 + metrics.stringWidth(name) + 32;
                 availableWidth -= componentWidth;
             }
-            if(availableWidth <= 0) {
+            if (availableWidth <= 0) {
                 removedParents.add(parents.get(i));
                 parents.remove(i);
                 --i;
             }
         }
 
-        if(!removedParents.isEmpty()) {
+        if (!removedParents.isEmpty()) {
             JButton pathButton = new JButton("...");
             pathButton.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
-            pathButton.setBorder(BorderFactory.createEmptyBorder(8,4,8,2));
+            pathButton.setBorder(BorderFactory.createEmptyBorder(8, 4, 8, 2));
             drillDownToolBar.add(pathButton);
             JButton nextButton = new JButton(UIUtils.getIconFromResources("actions/arrow-right.png"));
             nextButton.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
-            nextButton.setBorder(BorderFactory.createEmptyBorder(8,2,8,4));
+            nextButton.setBorder(BorderFactory.createEmptyBorder(8, 2, 8, 4));
             drillDownToolBar.add(nextButton);
 
             JPopupMenu menu = new JPopupMenu();
@@ -251,19 +248,19 @@ public class AdvancedFileChooser extends JPanel implements PropertyChangeListene
         Collections.reverse(parents);
         for (Path path : parents) {
             String name;
-            if(path.getFileName() != null)
+            if (path.getFileName() != null)
                 name = path.getFileName().toString();
             else
                 name = path.toString();
             JButton pathButton = new JButton(name);
             pathButton.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
-            pathButton.setBorder(BorderFactory.createEmptyBorder(8,4,8,2));
+            pathButton.setBorder(BorderFactory.createEmptyBorder(8, 4, 8, 2));
             drillDownToolBar.add(pathButton);
             pathButton.addActionListener(e -> fileChooserComponent.setCurrentDirectory(path.toFile()));
 
             JButton nextButton = new JButton(UIUtils.getIconFromResources("actions/arrow-right.png"));
             nextButton.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
-            nextButton.setBorder(BorderFactory.createEmptyBorder(8,2,8,4));
+            nextButton.setBorder(BorderFactory.createEmptyBorder(8, 2, 8, 4));
             drillDownToolBar.add(nextButton);
 
             JPopupMenu nextMenu = new JPopupMenu();
@@ -271,7 +268,7 @@ public class AdvancedFileChooser extends JPanel implements PropertyChangeListene
                 nextMenu.removeAll();
                 try {
                     Files.list(path).forEach(child -> {
-                        if(Files.isDirectory(child)) {
+                        if (Files.isDirectory(child)) {
                             JMenuItem childItem = new JMenuItem(StringUtils.orElse(child.getFileName(), child.toString()));
                             childItem.addActionListener(e -> fileChooserComponent.setCurrentDirectory(child.toFile()));
                             nextMenu.add(childItem);
@@ -290,19 +287,19 @@ public class AdvancedFileChooser extends JPanel implements PropertyChangeListene
         JButton goBackButton = new JButton(UIUtils.getIconFromResources("actions/back.png"));
         goBackButton.setToolTipText("Go back");
         goBackButton.addActionListener(e -> goBack());
-        goBackButton.setBorder(BorderFactory.createEmptyBorder(8,8,8,8));
+        goBackButton.setBorder(BorderFactory.createEmptyBorder(8, 8, 8, 8));
         actionToolbar.add(goBackButton);
 
         JButton goForwardButton = new JButton(UIUtils.getIconFromResources("actions/next.png"));
         goForwardButton.setToolTipText("Go forward");
         goForwardButton.addActionListener(e -> goForward());
-        goForwardButton.setBorder(BorderFactory.createEmptyBorder(8,8,8,8));
+        goForwardButton.setBorder(BorderFactory.createEmptyBorder(8, 8, 8, 8));
         actionToolbar.add(goForwardButton);
 
         JButton goUpButton = new JButton(UIUtils.getIconFromResources("actions/go-parent-folder.png"));
         goUpButton.setToolTipText("Go to parent directory");
         goUpButton.addActionListener(e -> goToParentDirectory());
-        goUpButton.setBorder(BorderFactory.createEmptyBorder(8,8,8,8));
+        goUpButton.setBorder(BorderFactory.createEmptyBorder(8, 8, 8, 8));
         actionToolbar.add(goUpButton);
 
         actionToolbar.addSeparator();
@@ -315,12 +312,12 @@ public class AdvancedFileChooser extends JPanel implements PropertyChangeListene
         actionToolbar.add(bookmarkToggle);
 
         if (!UIManager.getBoolean("FileChooser.readOnly")) {
-            FilePane filePane = ((FileChooserComponentUI)fileChooserComponent.getUI()).getFilePane();
+            FilePane filePane = ((FileChooserComponentUI) fileChooserComponent.getUI()).getFilePane();
             JButton newFolderButton = new JButton();
             newFolderButton.setAction(filePane.getNewFolderAction());
             newFolderButton.setText("New folder");
             newFolderButton.setIcon(UIUtils.getIconFromResources("actions/folder-new.png"));
-            newFolderButton.setBorder(BorderFactory.createEmptyBorder(8,3,8,3));
+            newFolderButton.setBorder(BorderFactory.createEmptyBorder(8, 3, 8, 3));
             actionToolbar.add(newFolderButton);
         }
 
@@ -329,11 +326,11 @@ public class AdvancedFileChooser extends JPanel implements PropertyChangeListene
         JButton refreshButton = new JButton(UIUtils.getIconFromResources("actions/view-refresh.png"));
         refreshButton.setToolTipText("Refresh");
         refreshButton.addActionListener(e -> fileChooserComponent.rescanCurrentDirectory());
-        refreshButton.setBorder(BorderFactory.createEmptyBorder(8,8,8,8));
+        refreshButton.setBorder(BorderFactory.createEmptyBorder(8, 8, 8, 8));
         actionToolbar.add(refreshButton);
 
         // View button group
-        FilePane filePane = ((FileChooserComponentUI)fileChooserComponent.getUI()).getFilePane();
+        FilePane filePane = ((FileChooserComponentUI) fileChooserComponent.getUI()).getFilePane();
         ButtonGroup viewButtonGroup = new ButtonGroup();
 
         // List Button
@@ -370,21 +367,24 @@ public class AdvancedFileChooser extends JPanel implements PropertyChangeListene
     }
 
     private void toggleBookmark(File directory, boolean bookmarked) {
-        if(JIPipe.isInstantiated() && !JIPipe.getInstance().isInitializing()) {
+        if (JIPipe.isInstantiated() && !JIPipe.getInstance().isInitializing()) {
             FileChooserSettings settings = FileChooserSettings.getInstance();
             Path path = directory.toPath();
-            if(bookmarked) {
-                if(!settings.getBookmarks().contains(path)) {
+            if (bookmarked) {
+                if (!settings.getBookmarks().contains(path)) {
                     settings.getBookmarks().add(path);
                     settings.triggerParameterChange("bookmarks");
                 }
-            }
-            else {
+            } else {
                 settings.getBookmarks().remove(path);
                 settings.triggerParameterChange("bookmarks");
             }
             updateLinks();
         }
+    }
+
+    public Path getInitialDirectory() {
+        return initialDirectory;
     }
 
     public void setInitialDirectory(Path directory) {
@@ -394,17 +394,13 @@ public class AdvancedFileChooser extends JPanel implements PropertyChangeListene
         history.clear();
     }
 
-    public Path getInitialDirectory() {
-        return initialDirectory;
-    }
-
     private void goToParentDirectory() {
         fileChooserComponent.changeToParentDirectory();
     }
 
     private void goForward() {
-        if(!history.isEmpty()) {
-            if(currentHistoryIndex + 1 >= 0 && currentHistoryIndex + 1 < history.size()) {
+        if (!history.isEmpty()) {
+            if (currentHistoryIndex + 1 >= 0 && currentHistoryIndex + 1 < history.size()) {
                 List<Path> backup = new ArrayList<>(history);
                 int indexBackup = currentHistoryIndex;
                 Path target = history.get(currentHistoryIndex + 1);
@@ -416,16 +412,15 @@ public class AdvancedFileChooser extends JPanel implements PropertyChangeListene
     }
 
     private void goBack() {
-        if(!history.isEmpty()) {
-            if(currentHistoryIndex - 1 >= 0) {
+        if (!history.isEmpty()) {
+            if (currentHistoryIndex - 1 >= 0) {
                 List<Path> backup = new ArrayList<>(history);
                 int indexBackup = currentHistoryIndex;
                 Path target = history.get(currentHistoryIndex - 1);
                 fileChooserComponent.setCurrentDirectory(target.toFile());
                 this.history = backup;
                 this.currentHistoryIndex = indexBackup - 1;
-            }
-            else {
+            } else {
                 List<Path> backup = new ArrayList<>(history);
                 int indexBackup = currentHistoryIndex;
                 fileChooserComponent.setCurrentDirectory(initialDirectory.toFile());
@@ -436,10 +431,10 @@ public class AdvancedFileChooser extends JPanel implements PropertyChangeListene
     }
 
     private void addToHistory(Path directory) {
-        if(!history.isEmpty()) {
-            if(currentHistoryIndex != history.size() - 1) {
+        if (!history.isEmpty()) {
+            if (currentHistoryIndex != history.size() - 1) {
                 for (int i = currentHistoryIndex; i < history.size(); i++) {
-                    if(!history.isEmpty())
+                    if (!history.isEmpty())
                         history.remove(history.size() - 1);
                 }
             }
@@ -453,10 +448,9 @@ public class AdvancedFileChooser extends JPanel implements PropertyChangeListene
 
         // Standard places
         addLinkCategory("Places");
-        if(!SystemUtils.IS_OS_WINDOWS) {
+        if (!SystemUtils.IS_OS_WINDOWS) {
             addLink("Home", UIUtils.getIconFromResources("places/user-home.png"), fileSystemView.getHomeDirectory());
-        }
-        else {
+        } else {
             addLink("Home", UIUtils.getIconFromResources("places/user-home.png"),
                     fileSystemView.getHomeDirectory().toPath().getParent().toFile());
         }
@@ -467,15 +461,14 @@ public class AdvancedFileChooser extends JPanel implements PropertyChangeListene
                 : fileSystemView.getRoots();
 
         for (File root : baseFolders) {
-            if(!SystemUtils.IS_OS_WINDOWS) {
+            if (!SystemUtils.IS_OS_WINDOWS) {
                 String name;
-                if(root.toString().equals("/"))
+                if (root.toString().equals("/"))
                     name = "Root";
                 else
                     name = root.getName();
                 addLink(name, UIUtils.getIconFromResources("places/folder-root.png"), root);
-            }
-            else {
+            } else {
                 Icon icon;
                 if (fileSystemView.isFloppyDrive(root)) {
                     icon = UIUtils.getIconFromResources("devices/media-floppy.png");
@@ -486,7 +479,7 @@ public class AdvancedFileChooser extends JPanel implements PropertyChangeListene
                 } else {
                     continue;
                 }
-                if(root.toPath().getParent() != null)
+                if (root.toPath().getParent() != null)
                     continue;
                 addLink(root.toString(), icon, root);
             }
@@ -494,7 +487,7 @@ public class AdvancedFileChooser extends JPanel implements PropertyChangeListene
         addLink("ImageJ", UIUtils.getIconFromResources("apps/imagej.png"),
                 Paths.get(Prefs.getImageJDir() != null ? Prefs.getImageJDir() : "").toAbsolutePath().toFile());
 
-        if(JIPipe.isInstantiated() && !JIPipe.getInstance().isInitializing()) {
+        if (JIPipe.isInstantiated() && !JIPipe.getInstance().isInitializing()) {
             FileChooserSettings settings = FileChooserSettings.getInstance();
 
             // Last directories
@@ -502,7 +495,7 @@ public class AdvancedFileChooser extends JPanel implements PropertyChangeListene
             Path defaultDir = Paths.get("").toAbsolutePath();
             for (FileChooserSettings.LastDirectoryKey key : FileChooserSettings.LastDirectoryKey.values()) {
                 Path path = settings.getLastDirectoryBy(key);
-                if(!Objects.equals(path, defaultDir) && Files.isDirectory(path)) {
+                if (!Objects.equals(path, defaultDir) && Files.isDirectory(path)) {
                     lastDirectories.add(path);
                 }
             }
@@ -515,7 +508,7 @@ public class AdvancedFileChooser extends JPanel implements PropertyChangeListene
 
             // Bookmarks
             List<Path> bookmarks = settings.getBookmarks().stream().filter(Files::isDirectory).collect(Collectors.toList());
-            if(!bookmarks.isEmpty()) {
+            if (!bookmarks.isEmpty()) {
                 addLinkCategory("Bookmarks");
                 for (Path path : bookmarks) {
                     String name = renderPathLabel(path);
@@ -531,13 +524,13 @@ public class AdvancedFileChooser extends JPanel implements PropertyChangeListene
 
     private String renderPathLabel(Path path) {
         String parent = "";
-        if(path.getParent() != null && !Objects.equals(path.getParent(), path)) {
+        if (path.getParent() != null && !Objects.equals(path.getParent(), path)) {
             parent = path.getParent().toAbsolutePath().toString();
         }
-        if(parent.length() > 40) {
+        if (parent.length() > 40) {
             parent = parent.substring(parent.length() - 40) + File.separator + "...";
         }
-        if(!parent.isEmpty() && !parent.endsWith(File.separator)) {
+        if (!parent.isEmpty() && !parent.endsWith(File.separator)) {
             parent += File.separator;
         }
         return parent + StringUtils.orElse(path.getFileName(), path.toString());
@@ -555,13 +548,13 @@ public class AdvancedFileChooser extends JPanel implements PropertyChangeListene
             fileChooserComponent.setCurrentDirectory(target);
         });
         button.setIconTextGap(12);
-        button.setBorder(BorderFactory.createEmptyBorder(4,8,4,8));
+        button.setBorder(BorderFactory.createEmptyBorder(4, 8, 4, 8));
         linkPanel.addWideToForm(button, null);
     }
 
     @Override
     public void propertyChange(PropertyChangeEvent evt) {
-        if(evt.getPropertyName().equals(JFileChooser.DIRECTORY_CHANGED_PROPERTY)) {
+        if (evt.getPropertyName().equals(JFileChooser.DIRECTORY_CHANGED_PROPERTY)) {
             addToHistory(fileChooserComponent.getCurrentDirectory().toPath());
             updateDrillDown();
             updateBookmarkToggle();
@@ -569,9 +562,9 @@ public class AdvancedFileChooser extends JPanel implements PropertyChangeListene
     }
 
     private void updateBookmarkToggle() {
-        if(JIPipe.isInstantiated() && !JIPipe.getInstance().isInitializing()) {
+        if (JIPipe.isInstantiated() && !JIPipe.getInstance().isInitializing()) {
             FileChooserSettings settings = FileChooserSettings.getInstance();
-            if(fileChooserComponent.getCurrentDirectory() != null) {
+            if (fileChooserComponent.getCurrentDirectory() != null) {
                 bookmarkToggle.setSelected(settings.getBookmarks().contains(fileChooserComponent.getCurrentDirectory().toPath()));
             }
         }
@@ -579,13 +572,12 @@ public class AdvancedFileChooser extends JPanel implements PropertyChangeListene
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        if(JFileChooser.APPROVE_SELECTION.equals(e.getActionCommand())) {
+        if (JFileChooser.APPROVE_SELECTION.equals(e.getActionCommand())) {
             returnValue = JFileChooser.APPROVE_OPTION;
-        }
-        else if(JFileChooser.CANCEL_SELECTION.equals(e.getActionCommand())) {
+        } else if (JFileChooser.CANCEL_SELECTION.equals(e.getActionCommand())) {
             returnValue = JFileChooser.CANCEL_OPTION;
         }
-        if(dialog != null) {
+        if (dialog != null) {
             dialog.setVisible(false);
         }
     }
@@ -598,14 +590,14 @@ public class AdvancedFileChooser extends JPanel implements PropertyChangeListene
 
         JDialog dialog;
         Window window;
-        if(parent instanceof Window)
+        if (parent instanceof Window)
             window = (Window) parent;
         else
             window = SwingUtilities.getWindowAncestor(parent);
         if (window instanceof Frame) {
-            dialog = new JDialog((Frame)window, title, true);
+            dialog = new JDialog((Frame) window, title, true);
         } else {
-            dialog = new JDialog((Dialog)window, title, true);
+            dialog = new JDialog((Dialog) window, title, true);
         }
         dialog.setComponentOrientation(this.getComponentOrientation());
 
@@ -634,7 +626,7 @@ public class AdvancedFileChooser extends JPanel implements PropertyChangeListene
             return JFileChooser.ERROR_OPTION;
         }
 
-        if(approveButtonText != null) {
+        if (approveButtonText != null) {
             fileChooserComponent.setApproveButtonText(approveButtonText);
             setDialogType(JFileChooser.CUSTOM_DIALOG);
         }
@@ -690,16 +682,16 @@ public class AdvancedFileChooser extends JPanel implements PropertyChangeListene
         fileChooserComponent.addChoosableFileFilter(extensionFilter);
     }
 
-    public void setFileFilter(FileNameExtensionFilter extensionFilter) {
-        fileChooserComponent.setFileFilter(extensionFilter);
-    }
-
     public File getSelectedFile() {
         return fileChooserComponent.getSelectedFile();
     }
 
     public FileFilter getFileFilter() {
         return fileChooserComponent.getFileFilter();
+    }
+
+    public void setFileFilter(FileNameExtensionFilter extensionFilter) {
+        fileChooserComponent.setFileFilter(extensionFilter);
     }
 
     public void setMultiSelectionEnabled(boolean multiSelection) {
@@ -719,7 +711,7 @@ public class AdvancedFileChooser extends JPanel implements PropertyChangeListene
             FileChooserUI ui = new FileChooserComponentUI(this);
             setUI(ui);
 
-            if(isAcceptAllFileFilterUsed()) {
+            if (isAcceptAllFileFilterUsed()) {
                 addChoosableFileFilter(getAcceptAllFileFilter());
             }
         }
@@ -740,14 +732,13 @@ public class AdvancedFileChooser extends JPanel implements PropertyChangeListene
             // Remove the top panel
             for (Component component : fc.getComponents()) {
                 Object constraints = ((BorderLayout) fc.getLayout()).getConstraints(component);
-                if(constraints == BorderLayout.NORTH) {
+                if (constraints == BorderLayout.NORTH) {
                     // Remove the top pane
                     component.setVisible(false);
-                }
-                else if (constraints == BorderLayout.CENTER) {
+                } else if (constraints == BorderLayout.CENTER) {
                     // Add border to the list
                     filePane = (FilePane) component;
-                    ((JComponent)component).setBorder(BorderFactory.createEtchedBorder());
+                    ((JComponent) component).setBorder(BorderFactory.createEtchedBorder());
                 }
             }
         }

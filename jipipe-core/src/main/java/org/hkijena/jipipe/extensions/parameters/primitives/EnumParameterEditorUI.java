@@ -57,12 +57,11 @@ public class EnumParameterEditorUI extends JIPipeParameterEditorUI {
     public void reload() {
         Object target = getParameterAccess().get(Object.class);
 
-        if(isComboBox) {
+        if (isComboBox) {
             if (!Objects.equals(target, comboBox.getSelectedItem())) {
                 comboBox.setSelectedItem(target);
             }
-        }
-        else {
+        } else {
             currentlyDisplayed.setIcon(enumItemInfo.getIcon(target));
             currentlyDisplayed.setToolTipText(enumItemInfo.getTooltip(target));
             currentlyDisplayed.setText(enumItemInfo.getLabel(target));
@@ -80,7 +79,7 @@ public class EnumParameterEditorUI extends JIPipeParameterEditorUI {
             isComboBox = !settings.searchable();
         }
 
-        if(isComboBox) {
+        if (isComboBox) {
             Arrays.sort(values, Comparator.comparing(enumItemInfo::getLabel));
             comboBox = new JComboBox<>(values);
             comboBox.setSelectedItem(getParameterAccess().get(Object.class));
@@ -89,8 +88,7 @@ public class EnumParameterEditorUI extends JIPipeParameterEditorUI {
             });
             comboBox.setRenderer(new Renderer(enumItemInfo));
             add(comboBox, BorderLayout.CENTER);
-        }
-        else {
+        } else {
             currentlyDisplayed = new JButton();
             currentlyDisplayed.setHorizontalAlignment(SwingConstants.LEFT);
             currentlyDisplayed.addActionListener(e -> pickEnum());
@@ -109,7 +107,7 @@ public class EnumParameterEditorUI extends JIPipeParameterEditorUI {
         Object[] values = getParameterAccess().getFieldClass().getEnumConstants();
         Object target = getParameterAccess().get(Object.class);
         Object selected = PickEnumValueDialog.showDialog(getWorkbench().getWindow(), Arrays.asList(values), enumItemInfo, target, "Select value");
-        if(selected != null) {
+        if (selected != null) {
             setParameter(selected, true);
         }
     }

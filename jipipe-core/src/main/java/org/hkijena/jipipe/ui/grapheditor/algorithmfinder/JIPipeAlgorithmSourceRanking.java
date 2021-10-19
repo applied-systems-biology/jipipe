@@ -19,8 +19,8 @@ import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.JIPipeOutputSlot;
 import org.hkijena.jipipe.api.registries.JIPipeDatatypeRegistry;
-import org.hkijena.jipipe.utils.search.RankingFunction;
 import org.hkijena.jipipe.utils.StringUtils;
+import org.hkijena.jipipe.utils.search.RankingFunction;
 
 /**
  * Ranks {@link JIPipeNodeInfo} or {@link JIPipeGraphNode} instances

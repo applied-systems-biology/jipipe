@@ -16,7 +16,6 @@ package org.hkijena.jipipe.extensions.imagejalgorithms.ij1.generate;
 import ij.IJ;
 import ij.ImagePlus;
 import ij.process.ColorProcessor;
-import ij.process.ImageProcessor;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
@@ -27,10 +26,8 @@ import org.hkijena.jipipe.api.nodes.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.nodes.categories.DataSourceNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
-import org.hkijena.jipipe.extensions.imagejdatatypes.util.BitDepth;
 import org.hkijena.jipipe.extensions.parameters.colors.ColorMap;
 
-import java.awt.Color;
 import java.awt.image.BufferedImage;
 
 /**
@@ -78,7 +75,7 @@ public class GenerateLUTImageFromColorMap extends JIPipeSimpleIteratingAlgorithm
         ColorProcessor processor = (ColorProcessor) img.getProcessor();
         for (int y = 0; y < img.getHeight(); y++) {
             for (int x = 0; x < img.getWidth(); x++) {
-                int lutIndex = (int)(x * 1.0 / img.getWidth() * mapImage.getWidth());
+                int lutIndex = (int) (x * 1.0 / img.getWidth() * mapImage.getWidth());
                 processor.set(x, y, mapImage.getRGB(lutIndex, 0));
             }
         }

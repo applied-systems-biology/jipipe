@@ -43,11 +43,10 @@ public class TensorFlowEnvInstaller extends BasicMinicondaEnvPythonInstaller {
 
         Configuration configuration = (Configuration) getConfiguration();
 
-        if(configuration.isUsePip()) {
+        if (configuration.isUsePip()) {
             Path environmentDefinitionPath = createPipRequirementsTxt();
             runConda("run", "--no-capture-output", "pip", "install", "-r", environmentDefinitionPath.toAbsolutePath().toString());
-        }
-        else {
+        } else {
             Path environmentDefinitionPath = createCondaEnvironmentYml();
             runConda("env", "update", "--file", environmentDefinitionPath.toAbsolutePath().toString());
         }
@@ -60,7 +59,7 @@ public class TensorFlowEnvInstaller extends BasicMinicondaEnvPythonInstaller {
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(path.toFile()))) {
             Configuration configuration = (Configuration) getConfiguration();
             String tensorFlowVersion = "";
-            if(configuration.getTensorFlowVersion().isEnabled()) {
+            if (configuration.getTensorFlowVersion().isEnabled()) {
                 tensorFlowVersion = "==" + configuration.getTensorFlowVersion();
             }
             for (String dependency : Arrays.asList(
@@ -126,7 +125,7 @@ public class TensorFlowEnvInstaller extends BasicMinicondaEnvPythonInstaller {
                 writer.newLine();
             }
             String tensorFlowVersion = "";
-            if(configuration.getTensorFlowVersion().isEnabled()) {
+            if (configuration.getTensorFlowVersion().isEnabled()) {
                 tensorFlowVersion = "==" + configuration.getTensorFlowVersion();
             }
             if (configuration.isWithGPU()) {

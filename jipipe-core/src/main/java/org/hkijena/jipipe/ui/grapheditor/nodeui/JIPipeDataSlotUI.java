@@ -648,7 +648,7 @@ public abstract class JIPipeDataSlotUI extends JIPipeWorkbenchPanel {
                 dialog.dispose();
             }
         });
-        if(getNodeUI().getGraphUI().isLayoutHelperEnabled()) {
+        if (getNodeUI().getGraphUI().isLayoutHelperEnabled()) {
             Point cursorLocation = new Point();
             if (getNodeUI().getGraphUI().getViewMode() == JIPipeGraphViewMode.Horizontal) {
                 cursorLocation.x = getNodeUI().getRightX() + getNodeUI().getGraphUI().getViewMode().getGridWidth();

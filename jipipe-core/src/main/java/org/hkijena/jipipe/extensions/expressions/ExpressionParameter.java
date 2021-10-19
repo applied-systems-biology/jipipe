@@ -71,7 +71,7 @@ public abstract class ExpressionParameter {
      */
     public double evaluateToNumber(ExpressionVariables variables) {
         Object result = evaluate(variables);
-        return ((Number)result).doubleValue();
+        return ((Number) result).doubleValue();
     }
 
     /**

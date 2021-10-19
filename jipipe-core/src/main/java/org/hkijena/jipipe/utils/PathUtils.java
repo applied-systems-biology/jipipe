@@ -51,7 +51,7 @@ public class PathUtils {
 
     public static Path resolveAndMakeSubDirectory(Path directory, Path name) {
         Path result = directory.resolve(name);
-        if(!Files.exists(result)) {
+        if (!Files.exists(result)) {
             try {
                 Files.createDirectories(result);
             } catch (IOException e) {

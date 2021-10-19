@@ -36,10 +36,10 @@ import org.hkijena.jipipe.ui.components.FormPanel;
 import org.hkijena.jipipe.ui.components.JIPipeNodeInfoListCellRenderer;
 import org.hkijena.jipipe.ui.components.SearchTextField;
 import org.hkijena.jipipe.ui.parameters.ParameterPanel;
-import org.hkijena.jipipe.utils.json.JsonUtils;
-import org.hkijena.jipipe.utils.scripting.MacroUtils;
 import org.hkijena.jipipe.utils.TooltipUtils;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.utils.json.JsonUtils;
+import org.hkijena.jipipe.utils.scripting.MacroUtils;
 import org.scijava.Context;
 
 import javax.swing.*;

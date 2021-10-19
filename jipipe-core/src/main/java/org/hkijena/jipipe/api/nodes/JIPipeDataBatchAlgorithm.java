@@ -15,7 +15,6 @@ package org.hkijena.jipipe.api.nodes;
 
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
-import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 
 import java.util.List;
 

@@ -213,7 +213,7 @@ public class DataBatchAssistantUI extends JIPipeProjectWorkbenchPanel {
         batchPreviewNumberLabel.setText("Please wait ...");
 
         // Stop worker
-        if(lastWorker != null) {
+        if (lastWorker != null) {
             lastWorker.cancel(true);
             lastWorker = null;
         }
@@ -230,7 +230,7 @@ public class DataBatchAssistantUI extends JIPipeProjectWorkbenchPanel {
         infiniteScrollingQueue.clear();
         formPanel.clear();
 
-        lastWorker = new DataBatchGeneratorWorker(this,batchesNodeCopy);
+        lastWorker = new DataBatchGeneratorWorker(this, batchesNodeCopy);
         lastWorker.execute();
     }
 
@@ -371,7 +371,7 @@ public class DataBatchAssistantUI extends JIPipeProjectWorkbenchPanel {
 
         @Override
         protected List<JIPipeMergingDataBatch> doInBackground() throws Exception {
-            List<JIPipeMergingDataBatch> batches = ((JIPipeDataBatchAlgorithm)algorithm).generateDataBatchesDryRun(algorithm.getEffectiveInputSlots(), progressInfo);
+            List<JIPipeMergingDataBatch> batches = ((JIPipeDataBatchAlgorithm) algorithm).generateDataBatchesDryRun(algorithm.getEffectiveInputSlots(), progressInfo);
             if (batches == null)
                 batches = Collections.emptyList();
             return batches;
@@ -380,7 +380,7 @@ public class DataBatchAssistantUI extends JIPipeProjectWorkbenchPanel {
         @Override
         protected void done() {
             super.done();
-            if(!isCancelled()) {
+            if (!isCancelled()) {
                 try {
                     assistantUI.displayBatches(get());
                 } catch (InterruptedException | ExecutionException e) {

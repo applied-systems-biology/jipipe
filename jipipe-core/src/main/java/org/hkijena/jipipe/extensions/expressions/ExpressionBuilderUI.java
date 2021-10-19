@@ -23,10 +23,10 @@ import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.registries.JIPipeExpressionRegistry;
 import org.hkijena.jipipe.ui.components.FormPanel;
 import org.hkijena.jipipe.ui.components.SearchTextField;
-import org.hkijena.jipipe.utils.search.RankedData;
-import org.hkijena.jipipe.utils.search.RankingFunction;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.utils.search.RankedData;
+import org.hkijena.jipipe.utils.search.RankingFunction;
 
 import javax.swing.*;
 import javax.swing.text.BadLocationException;
@@ -41,7 +41,14 @@ import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -458,46 +465,6 @@ public class ExpressionBuilderUI extends JPanel {
         return expressionEditor.getText().trim();
     }
 
-    public static String showDialog(Component parent, String expression, Set<ExpressionParameterVariable> variables) {
-        JDialog dialog = new JDialog(SwingUtilities.getWindowAncestor(parent));
-
-        ExpressionBuilderUI expressionBuilderUI = new ExpressionBuilderUI(expression, variables);
-        JPanel contentPanel = new JPanel(new BorderLayout(4, 4));
-        contentPanel.add(expressionBuilderUI, BorderLayout.CENTER);
-
-        JPanel buttonPanel = new JPanel();
-        buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.X_AXIS));
-
-        buttonPanel.add(new ExpressionBuilderSyntaxChecker(expressionBuilderUI.expressionEditor));
-
-        buttonPanel.add(Box.createHorizontalGlue());
-
-        JButton cancelButton = new JButton("Discard", UIUtils.getIconFromResources("actions/cancel.png"));
-        cancelButton.addActionListener(e -> dialog.setVisible(false));
-        buttonPanel.add(cancelButton);
-
-        AtomicBoolean confirmed = new AtomicBoolean(false);
-        JButton confirmButton = new JButton("Accept", UIUtils.getIconFromResources("actions/checkmark.png"));
-        confirmButton.addActionListener(e -> {
-            if(expressionBuilderUI.checkInserterBeforeAccept()) {
-                confirmed.set(true);
-                dialog.setVisible(false);
-            }
-        });
-        buttonPanel.add(confirmButton);
-
-        contentPanel.add(buttonPanel, BorderLayout.SOUTH);
-
-        dialog.setContentPane(contentPanel);
-        dialog.setModal(true);
-        dialog.setTitle("Expression builder");
-        dialog.pack();
-        dialog.setSize(800, 600);
-        dialog.setLocationRelativeTo(parent);
-        dialog.setVisible(true);
-        return confirmed.get() ? expressionBuilderUI.getExpression() : null;
-    }
-
     private void insertCurrentlyInsertedValue() {
         if (currentlyInsertedObject instanceof ExpressionParameterVariable) {
             ExpressionParameterVariable variable = (ExpressionParameterVariable) currentlyInsertedObject;
@@ -515,21 +482,20 @@ public class ExpressionBuilderUI extends JPanel {
     }
 
     private boolean checkInserterBeforeAccept() {
-        if(currentlyInsertedObject != null) {
-            if(!inserterCommitted) {
+        if (currentlyInsertedObject != null) {
+            if (!inserterCommitted) {
                 boolean found = false;
-                if(inserterParameterEditorUIList != null && inserterParameterEditorUIList.size() > 0) {
+                if (inserterParameterEditorUIList != null && inserterParameterEditorUIList.size() > 0) {
                     for (ExpressionBuilderParameterUI ui : inserterParameterEditorUIList) {
-                        if(!StringUtils.isNullOrEmpty(ui.getCurrentExpressionValue())) {
+                        if (!StringUtils.isNullOrEmpty(ui.getCurrentExpressionValue())) {
                             found = true;
                             break;
                         }
                     }
-                }
-                else {
+                } else {
                     found = true;
                 }
-                if(found) {
+                if (found) {
                     int result = JOptionPane.showOptionDialog(this,
                             "You still have uncommitted values in the function builder.\n" +
                                     "Do you want to replace the existing expression or insert the function into the expression?",
@@ -555,6 +521,46 @@ public class ExpressionBuilderUI extends JPanel {
             }
         }
         return true;
+    }
+
+    public static String showDialog(Component parent, String expression, Set<ExpressionParameterVariable> variables) {
+        JDialog dialog = new JDialog(SwingUtilities.getWindowAncestor(parent));
+
+        ExpressionBuilderUI expressionBuilderUI = new ExpressionBuilderUI(expression, variables);
+        JPanel contentPanel = new JPanel(new BorderLayout(4, 4));
+        contentPanel.add(expressionBuilderUI, BorderLayout.CENTER);
+
+        JPanel buttonPanel = new JPanel();
+        buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.X_AXIS));
+
+        buttonPanel.add(new ExpressionBuilderSyntaxChecker(expressionBuilderUI.expressionEditor));
+
+        buttonPanel.add(Box.createHorizontalGlue());
+
+        JButton cancelButton = new JButton("Discard", UIUtils.getIconFromResources("actions/cancel.png"));
+        cancelButton.addActionListener(e -> dialog.setVisible(false));
+        buttonPanel.add(cancelButton);
+
+        AtomicBoolean confirmed = new AtomicBoolean(false);
+        JButton confirmButton = new JButton("Accept", UIUtils.getIconFromResources("actions/checkmark.png"));
+        confirmButton.addActionListener(e -> {
+            if (expressionBuilderUI.checkInserterBeforeAccept()) {
+                confirmed.set(true);
+                dialog.setVisible(false);
+            }
+        });
+        buttonPanel.add(confirmButton);
+
+        contentPanel.add(buttonPanel, BorderLayout.SOUTH);
+
+        dialog.setContentPane(contentPanel);
+        dialog.setModal(true);
+        dialog.setTitle("Expression builder");
+        dialog.pack();
+        dialog.setSize(800, 600);
+        dialog.setLocationRelativeTo(parent);
+        dialog.setVisible(true);
+        return confirmed.get() ? expressionBuilderUI.getExpression() : null;
     }
 
     public static class EntryToStringFunction implements Function<Object, String> {

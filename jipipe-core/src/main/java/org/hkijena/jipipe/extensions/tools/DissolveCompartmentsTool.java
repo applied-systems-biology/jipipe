@@ -33,11 +33,11 @@ public class DissolveCompartmentsTool extends JIPipeMenuExtension {
 
     private void dissolveCompartments() {
         JIPipeProjectWorkbench workbench = (JIPipeProjectWorkbench) getWorkbench();
-        if(JOptionPane.showConfirmDialog(workbench.getWindow(), "You will lose all manual node positions and all nodes will be put into one compartment. This operation cannot be undone. Do you want to continue?", "Dissolve compartments", JOptionPane.YES_NO_OPTION) == JOptionPane.NO_OPTION) {
+        if (JOptionPane.showConfirmDialog(workbench.getWindow(), "You will lose all manual node positions and all nodes will be put into one compartment. This operation cannot be undone. Do you want to continue?", "Dissolve compartments", JOptionPane.YES_NO_OPTION) == JOptionPane.NO_OPTION) {
             return;
         }
         workbench.getDocumentTabPane().closeAllTabs();
-        try(BusyCursor cursor = new BusyCursor(workbench.getWindow())) {
+        try (BusyCursor cursor = new BusyCursor(workbench.getWindow())) {
             JIPipeGraph graph = new JIPipeGraph(workbench.getProject().getGraph());
             // Replace project compartment with IOInterface
             for (JIPipeGraphNode node : ImmutableList.copyOf(graph.getGraphNodes())) {
@@ -55,7 +55,7 @@ public class DissolveCompartmentsTool extends JIPipeMenuExtension {
             JIPipeProjectCompartment compartment = workbench.getProject().addCompartment("Merged");
             UUID compartmentUUID = compartment.getProjectCompartmentUUID();
             for (JIPipeGraphNode node : graph.getGraphNodes()) {
-                graph.setCompartment(node.getUUIDInGraph(),compartmentUUID);
+                graph.setCompartment(node.getUUIDInGraph(), compartmentUUID);
             }
             workbench.getProject().getGraph().mergeWith(graph);
         }

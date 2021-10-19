@@ -35,11 +35,11 @@ import java.util.Set;
 public class ManagerUI extends JIPipeWorkbenchPanel {
 
     private final JIPipeImageJPluginManager pluginManager;
+    JToolBar toolBar = new JToolBar();
     private FilesCollection filesCollection;
     private JXTable table;
     private ViewOptions.Option currentViewOption = ViewOptions.Option.UPDATEABLE;
     private SearchTextField searchTextField;
-    JToolBar toolBar = new JToolBar();
     private JPanel tablePanel = new JPanel(new BorderLayout());
     private JPanel optionPanel;
 
@@ -152,24 +152,22 @@ public class ManagerUI extends JIPipeWorkbenchPanel {
 
     public void setMainPanelContent(Component content) {
         removeAll();
-        if(content != null) {
+        if (content != null) {
             add(toolBar, BorderLayout.NORTH);
             add(content, BorderLayout.CENTER);
             revalidate();
             repaint();
-        }
-        else {
+        } else {
             setOptionPanelContent(null);
         }
     }
 
     public void setOptionPanelContent(Component content) {
         removeAll();
-        if(content == null) {
+        if (content == null) {
             add(toolBar, BorderLayout.NORTH);
             add(tablePanel, BorderLayout.CENTER);
-        }
-        else {
+        } else {
             add(toolBar, BorderLayout.NORTH);
             optionPanel.removeAll();
             optionPanel.add(content, BorderLayout.CENTER);

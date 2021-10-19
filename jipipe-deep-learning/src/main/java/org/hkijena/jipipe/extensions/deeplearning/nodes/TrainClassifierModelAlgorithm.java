@@ -36,11 +36,11 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
 import org.hkijena.jipipe.extensions.deeplearning.DeepLearningSettings;
 import org.hkijena.jipipe.extensions.deeplearning.DeepLearningUtils;
-import org.hkijena.jipipe.extensions.deeplearning.enums.NormalizationMethod;
-import org.hkijena.jipipe.extensions.deeplearning.environments.OptionalDeepLearningDeviceEnvironment;
 import org.hkijena.jipipe.extensions.deeplearning.configs.DeepLearningTrainingConfiguration;
 import org.hkijena.jipipe.extensions.deeplearning.datatypes.DeepLearningModelData;
 import org.hkijena.jipipe.extensions.deeplearning.enums.ModelType;
+import org.hkijena.jipipe.extensions.deeplearning.enums.NormalizationMethod;
+import org.hkijena.jipipe.extensions.deeplearning.environments.OptionalDeepLearningDeviceEnvironment;
 import org.hkijena.jipipe.extensions.expressions.AnnotationQueryExpression;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.transform.ScaleMode;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.transform.TransformScale2DAlgorithm;
@@ -49,9 +49,9 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d3.greyscale.Imag
 import org.hkijena.jipipe.extensions.python.OptionalPythonEnvironment;
 import org.hkijena.jipipe.extensions.python.PythonUtils;
 import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
-import org.hkijena.jipipe.utils.json.JsonUtils;
 import org.hkijena.jipipe.utils.PathUtils;
 import org.hkijena.jipipe.utils.ResourceUtils;
+import org.hkijena.jipipe.utils.json.JsonUtils;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -142,7 +142,7 @@ public class TrainClassifierModelAlgorithm extends JIPipeSingleIterationAlgorith
     }
 
     @JIPipeDocumentation(name = "Label annotation", description = "This annotation is used as label for the data. These labels should be non-empty and numeric. " +
-            "If annotations do not comply to this format, use the 'Set annotations' node to set/convert the labels. \n\n" +  AnnotationQueryExpression.DOCUMENTATION_DESCRIPTION)
+            "If annotations do not comply to this format, use the 'Set annotations' node to set/convert the labels. \n\n" + AnnotationQueryExpression.DOCUMENTATION_DESCRIPTION)
     @JIPipeParameter("label-annotation")
     public AnnotationQueryExpression getLabelAnnotation() {
         return labelAnnotation;
@@ -238,9 +238,9 @@ public class TrainClassifierModelAlgorithm extends JIPipeSingleIterationAlgorith
                     workDirectory.resolve("trained_model.json"));
             dataBatch.addOutputData("Trained model", modelData, modelProgress);
 
-            if(outputHistory) {
+            if (outputHistory) {
                 Path historyFile = workDirectory.resolve("logs/training.log");
-                if(Files.isRegularFile(historyFile)) {
+                if (Files.isRegularFile(historyFile)) {
                     ResultsTableData tableData = ResultsTableData.fromCSV(historyFile);
                     dataBatch.addOutputData("History", tableData, progressInfo);
                 }

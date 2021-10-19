@@ -16,7 +16,6 @@ package org.hkijena.jipipe.extensions.imagejalgorithms.ij1.labels;
 import ij.process.LUT;
 import inra.ijpb.color.ColorMaps;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
-import org.hkijena.jipipe.extensions.parameters.colors.ColorMap;
 
 import javax.swing.*;
 import java.awt.Color;
@@ -84,7 +83,7 @@ public class LabelColorMapIcon implements Icon {
         int w = imageWidth - insets.left - insets.right;
         int h = imageHeight - insets.top - insets.bottom - 1;
 
-        if(colorMapImage == null) {
+        if (colorMapImage == null) {
             byte[][] lut = colorMap.computeLut(256, false);
             byte[] red = new byte[256];
             byte[] green = new byte[256];

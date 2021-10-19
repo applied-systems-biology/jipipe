@@ -45,10 +45,10 @@ import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.components.DocumentTabPane;
 import org.hkijena.jipipe.ui.plotbuilder.PlotEditor;
-import org.hkijena.jipipe.utils.json.JsonUtils;
 import org.hkijena.jipipe.utils.ParameterUtils;
 import org.hkijena.jipipe.utils.PathUtils;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.utils.json.JsonUtils;
 import org.jfree.chart.ChartUtils;
 import org.jfree.chart.JFreeChart;
 import org.jfree.graphics2d.svg.SVGGraphics2D;
@@ -89,13 +89,13 @@ import java.util.stream.Collectors;
 public abstract class PlotData implements JIPipeData, JIPipeParameterCollection, JIPipeValidatable {
 
     private final EventBus eventBus = new EventBus();
+    private final List<PlotDataSeries> series = new ArrayList<>();
     private String title;
     private int exportWidth = 1024;
     private int exportHeight = 768;
     private Color backgroundColor = Color.WHITE;
     private Color gridColor = Color.GRAY;
     private boolean withLegend = true;
-    private final List<PlotDataSeries> series = new ArrayList<>();
     private int titleFontSize = 26;
     private int legendFontSize = 12;
     private ColorMap colorMap = ColorMap.Pastel1;
@@ -356,25 +356,24 @@ public abstract class PlotData implements JIPipeData, JIPipeParameterCollection,
     }
 
     public Paint[] getCurrentColorMap() {
-        if(useCustomColorMap && !customColorMap.isEmpty()) {
+        if (useCustomColorMap && !customColorMap.isEmpty()) {
             Paint[] result = new Paint[customColorMap.size()];
             for (int i = 0; i < customColorMap.size(); i++) {
                 Color color = customColorMap.get(i);
                 result[i] = color;
             }
             return result;
-        }
-        else {
+        } else {
             return colorMap.getColors();
         }
     }
 
     @Override
     public boolean isParameterUIVisible(JIPipeParameterTree tree, JIPipeParameterAccess access) {
-        if(!useCustomColorMap && "custom-color-map".equals(access.getKey()) && access.getSource() == this) {
+        if (!useCustomColorMap && "custom-color-map".equals(access.getKey()) && access.getSource() == this) {
             return false;
         }
-        if(useCustomColorMap && "color-map".equals(access.getKey()) && access.getSource() == this) {
+        if (useCustomColorMap && "color-map".equals(access.getKey()) && access.getSource() == this) {
             return false;
         }
         return JIPipeParameterCollection.super.isParameterUIVisible(tree, access);
@@ -402,6 +401,7 @@ public abstract class PlotData implements JIPipeData, JIPipeParameterCollection,
 
     /**
      * Gets the metadata for this plot instance.
+     *
      * @return the metadata
      */
     public PlotMetadata getMetadata() {
@@ -410,6 +410,7 @@ public abstract class PlotData implements JIPipeData, JIPipeParameterCollection,
 
     /**
      * Generates an empty series table with the correct columns
+     *
      * @return the series table
      */
     public ResultsTableData createSeriesTable() {

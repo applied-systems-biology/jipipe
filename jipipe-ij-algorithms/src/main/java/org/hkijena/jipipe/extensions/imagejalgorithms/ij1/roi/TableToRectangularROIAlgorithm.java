@@ -45,11 +45,11 @@ import java.awt.Rectangle;
 public class TableToRectangularROIAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     private TableColumnSourceExpressionParameter columnX1 = new TableColumnSourceExpressionParameter(TableColumnSourceExpressionParameter.TableSourceType.ExistingColumn, "\"X1\"");
-    private TableColumnSourceExpressionParameter columnY1 = new TableColumnSourceExpressionParameter(TableColumnSourceExpressionParameter.TableSourceType.ExistingColumn,"\"Y1\"");
-    private TableColumnSourceExpressionParameter columnX2 = new TableColumnSourceExpressionParameter(TableColumnSourceExpressionParameter.TableSourceType.ExistingColumn,"\"X2\"");
-    private TableColumnSourceExpressionParameter columnY2 = new TableColumnSourceExpressionParameter(TableColumnSourceExpressionParameter.TableSourceType.ExistingColumn,"\"Y2\"");
-    private TableColumnSourceExpressionParameter columnWidth = new TableColumnSourceExpressionParameter(TableColumnSourceExpressionParameter.TableSourceType.ExistingColumn,"\"Width\"");
-    private TableColumnSourceExpressionParameter columnHeight = new TableColumnSourceExpressionParameter(TableColumnSourceExpressionParameter.TableSourceType.ExistingColumn,"\"Height\"");
+    private TableColumnSourceExpressionParameter columnY1 = new TableColumnSourceExpressionParameter(TableColumnSourceExpressionParameter.TableSourceType.ExistingColumn, "\"Y1\"");
+    private TableColumnSourceExpressionParameter columnX2 = new TableColumnSourceExpressionParameter(TableColumnSourceExpressionParameter.TableSourceType.ExistingColumn, "\"X2\"");
+    private TableColumnSourceExpressionParameter columnY2 = new TableColumnSourceExpressionParameter(TableColumnSourceExpressionParameter.TableSourceType.ExistingColumn, "\"Y2\"");
+    private TableColumnSourceExpressionParameter columnWidth = new TableColumnSourceExpressionParameter(TableColumnSourceExpressionParameter.TableSourceType.ExistingColumn, "\"Width\"");
+    private TableColumnSourceExpressionParameter columnHeight = new TableColumnSourceExpressionParameter(TableColumnSourceExpressionParameter.TableSourceType.ExistingColumn, "\"Height\"");
     private Anchor anchor = Anchor.TopLeft;
     private Mode mode = Mode.Rectangle;
 

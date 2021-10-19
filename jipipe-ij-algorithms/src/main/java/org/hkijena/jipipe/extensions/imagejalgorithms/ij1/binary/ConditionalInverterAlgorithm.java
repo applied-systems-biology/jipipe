@@ -6,11 +6,19 @@ import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeAnnotation;
-import org.hkijena.jipipe.api.nodes.*;
+import org.hkijena.jipipe.api.nodes.JIPipeDataBatch;
+import org.hkijena.jipipe.api.nodes.JIPipeInputSlot;
+import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
+import org.hkijena.jipipe.api.nodes.JIPipeOutputSlot;
+import org.hkijena.jipipe.api.nodes.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
-import org.hkijena.jipipe.extensions.expressions.*;
+import org.hkijena.jipipe.extensions.expressions.DefaultExpressionParameter;
+import org.hkijena.jipipe.extensions.expressions.ExpressionParameterSettings;
+import org.hkijena.jipipe.extensions.expressions.ExpressionParameterVariable;
+import org.hkijena.jipipe.extensions.expressions.ExpressionParameterVariableSource;
+import org.hkijena.jipipe.extensions.expressions.ExpressionVariables;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleMaskData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 
@@ -53,7 +61,7 @@ public class ConditionalInverterAlgorithm extends JIPipeSimpleIteratingAlgorithm
         variables.set("c", -1);
         variables.set("t", -1);
         variables.set("title", img.getTitle());
-        if(applyPerSlice) {
+        if (applyPerSlice) {
             ImageJUtils.forEachIndexedZCTSlice(img, (ip, index) -> {
                 double[] nums = new double[2];
                 byte[] arr = (byte[]) ip.getPixels();
@@ -68,12 +76,11 @@ public class ConditionalInverterAlgorithm extends JIPipeSimpleIteratingAlgorithm
                 variables.set("num_white", nums[1]);
                 variables.set("num_black", nums[0]);
 
-                if(condition.test(variables)) {
+                if (condition.test(variables)) {
                     ip.invert();
                 }
             }, progressInfo);
-        }
-        else {
+        } else {
             double[] nums = new double[2];
             ImageJUtils.forEachIndexedZCTSlice(img, (ip, index) -> {
                 byte[] arr = (byte[]) ip.getPixels();
@@ -89,7 +96,7 @@ public class ConditionalInverterAlgorithm extends JIPipeSimpleIteratingAlgorithm
             variables.set("num_white", nums[1]);
             variables.set("num_black", nums[0]);
 
-            if(condition.test(variables)) {
+            if (condition.test(variables)) {
                 ImageJUtils.forEachSlice(img, ImageProcessor::invert, progressInfo);
             }
         }
@@ -142,7 +149,7 @@ public class ConditionalInverterAlgorithm extends JIPipeSimpleIteratingAlgorithm
 
         @Override
         public Set<ExpressionParameterVariable> getVariables(JIPipeParameterAccess parameterAccess) {
-           return VARIABLES;
+            return VARIABLES;
         }
     }
 }

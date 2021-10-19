@@ -16,7 +16,6 @@ package org.hkijena.jipipe.extensions.deeplearning.configs;
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonSetter;
 import org.hkijena.jipipe.extensions.deeplearning.enums.EvaluationMethod;
-import org.hkijena.jipipe.extensions.deeplearning.enums.NormalizationMethod;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;

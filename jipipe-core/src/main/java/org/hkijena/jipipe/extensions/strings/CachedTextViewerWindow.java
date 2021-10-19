@@ -38,7 +38,7 @@ public class CachedTextViewerWindow extends JIPipeCacheDataViewerWindow {
     public CachedTextViewerWindow(JIPipeWorkbench workbench, JIPipeCacheSlotDataSource dataSource, String displayName, boolean deferLoading) {
         super(workbench, dataSource, displayName);
         initialize();
-        if(!deferLoading)
+        if (!deferLoading)
             reloadDisplayedData();
     }
 
@@ -61,7 +61,7 @@ public class CachedTextViewerWindow extends JIPipeCacheDataViewerWindow {
 
     @Override
     public JToolBar getToolBar() {
-      return toolBar;
+        return toolBar;
     }
 
     @Override
@@ -94,11 +94,10 @@ public class CachedTextViewerWindow extends JIPipeCacheDataViewerWindow {
     @Override
     protected void loadData(JIPipeVirtualData virtualData, JIPipeProgressInfo progressInfo) {
         JIPipeData data = virtualData.getData(progressInfo);
-        if(data instanceof StringData) {
+        if (data instanceof StringData) {
             textArea.setText(((StringData) data).getData());
             textArea.setSyntaxEditingStyle(((StringData) data).getMimeType());
-        }
-        else {
+        } else {
             textArea.setText(data.toDetailedString());
         }
     }

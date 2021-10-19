@@ -3,10 +3,10 @@ package org.hkijena.jipipe.extensions.imagejdatatypes.viewer.plugins.maskdrawer;
 import com.google.common.eventbus.Subscribe;
 import ij.process.ImageProcessor;
 import org.hkijena.jipipe.ui.components.FormPanel;
+import org.hkijena.jipipe.utils.UIUtils;
 import org.hkijena.jipipe.utils.ui.MouseClickedEvent;
 import org.hkijena.jipipe.utils.ui.MouseExitedEvent;
 import org.hkijena.jipipe.utils.ui.MouseMovedEvent;
-import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
 import java.awt.Cursor;

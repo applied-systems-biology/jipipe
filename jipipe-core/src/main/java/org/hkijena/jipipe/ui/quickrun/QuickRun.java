@@ -158,7 +158,7 @@ public class QuickRun implements JIPipeRunnable, JIPipeValidatable {
         }
 
         // Remove outdated cache if needed
-        if(GeneralDataSettings.getInstance().isAutoRemoveOutdatedCachedData()) {
+        if (GeneralDataSettings.getInstance().isAutoRemoveOutdatedCachedData()) {
             project.getCache().autoClean(true, true, getProgressInfo().resolveAndLog("Remove outdated cache"));
         }
 

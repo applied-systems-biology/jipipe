@@ -34,13 +34,12 @@ public class RSyntaxTextField extends RSyntaxTextArea {
     }
 
     @Override
-    protected void processComponentKeyEvent( KeyEvent e ) {
-        if ( e.getKeyCode() == KeyEvent.VK_TAB ) {
+    protected void processComponentKeyEvent(KeyEvent e) {
+        if (e.getKeyCode() == KeyEvent.VK_TAB) {
             transferFocus();
             e.consume();
-        }
-        else {
-            super.processComponentKeyEvent( e );
+        } else {
+            super.processComponentKeyEvent(e);
         }
     }
 }

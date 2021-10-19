@@ -274,7 +274,7 @@ public class ImageJUtils {
      * Applies copy-scaling to ensure that the target image has the same size as the reference image
      * Will silently drop slices that are outside the range of the reference image
      *
-     * @param target the target image
+     * @param target     the target image
      * @param reference  the image
      * @param copySlices if slices should be copied. otherwise, empty (black) slices are created
      * @return image that has the same size as the reference. returns the same target if the size matches
@@ -287,19 +287,17 @@ public class ImageJUtils {
         } else {
             ImageStack stack = new ImageStack(target.getWidth(), target.getHeight(), reference.getNChannels() * reference.getNFrames() * reference.getNSlices());
             forEachIndexedZCTSlice(reference, (ip, index) -> {
-                if(copySlices) {
+                if (copySlices) {
                     int z = Math.min(target.getNSlices() - 1, index.getZ());
                     int c = Math.min(target.getNChannels() - 1, index.getC());
                     int t = Math.min(target.getNFrames() - 1, index.getT());
                     ImageProcessor processor = ImageJUtils.getSliceZero(target, c, z, t);
                     stack.setProcessor(processor, zeroSliceIndexToOneStackIndex(z, c, t, reference));
-                }
-                else {
+                } else {
                     if (index.getZ() < target.getNSlices() && index.getC() < target.getNChannels() && index.getT() < target.getNFrames()) {
                         ImageProcessor processor = ImageJUtils.getSliceZero(target, index);
                         stack.setProcessor(processor, index.zeroSliceIndexToOneStackIndex(reference));
-                    }
-                    else {
+                    } else {
                         ImageProcessor processor;
                         switch (target.getBitDepth()) {
                             case 8:
@@ -329,10 +327,11 @@ public class ImageJUtils {
 
     /**
      * Returns an image that has the specified size by copying
-     * @param target the target image
-     * @param nChannels number of channels
-     * @param nSlices number of slices
-     * @param nFrames number of frames
+     *
+     * @param target     the target image
+     * @param nChannels  number of channels
+     * @param nSlices    number of slices
+     * @param nFrames    number of frames
      * @param copySlices if slices should be copied. otherwise, empty (black) slices are created
      * @return image that has the specified size. returns the same target if the size matches
      */
@@ -346,19 +345,17 @@ public class ImageJUtils {
             for (int z = 0; z < nSlices; z++) {
                 for (int c = 0; c < nChannels; c++) {
                     for (int t = 0; t < nFrames; t++) {
-                        if(copySlices) {
+                        if (copySlices) {
                             int z_ = Math.min(target.getNSlices() - 1, z);
                             int c_ = Math.min(target.getNChannels() - 1, c);
                             int t_ = Math.min(target.getNFrames() - 1, t);
                             ImageProcessor processor = ImageJUtils.getSliceZero(target, c_, z_, t_);
                             stack.setProcessor(processor, zeroSliceIndexToOneStackIndex(c, z, t, nChannels, nSlices, nFrames));
-                        }
-                        else {
+                        } else {
                             if (z < target.getNSlices() && c < target.getNChannels() && t < target.getNFrames()) {
                                 ImageProcessor processor = ImageJUtils.getSliceZero(target, c, z, t);
                                 stack.setProcessor(processor, zeroSliceIndexToOneStackIndex(c, z, t, nChannels, nSlices, nFrames));
-                            }
-                            else {
+                            } else {
                                 ImageProcessor processor;
                                 switch (target.getBitDepth()) {
                                     case 8:
@@ -1525,6 +1522,47 @@ public class ImageJUtils {
         image.setOverlay(null);
     }
 
+    /**
+     * Converts an image into a LUT. LUT values are extracted from the first row.
+     *
+     * @param image the image. Must be RGB.
+     * @return the lut
+     */
+    public static LUT lutFromImage(ImagePlus image) {
+        byte[] rLut = new byte[256];
+        byte[] gLut = new byte[256];
+        byte[] bLut = new byte[256];
+        ImageProcessor processor = image.getProcessor();
+        for (int i = 0; i < 256; i++) {
+            int lutIndex = (int) Math.floor(1.0 * i / 256 * image.getWidth());
+            Color color = new Color(processor.get(lutIndex, 0));
+            rLut[i] = (byte) color.getRed();
+            gLut[i] = (byte) color.getGreen();
+            bLut[i] = (byte) color.getBlue();
+        }
+        return new LUT(rLut, gLut, bLut);
+    }
+
+    /**
+     * Converts a LUT into an RGB image
+     *
+     * @param lut    the lut
+     * @param width  width of the image
+     * @param height height of the image
+     * @return the image
+     */
+    public static ImagePlus lutToImage(LUT lut, int width, int height) {
+        ImagePlus img = IJ.createImage("LUT", width, height, 1, 24);
+        ColorProcessor processor = (ColorProcessor) img.getProcessor();
+        for (int y = 0; y < img.getHeight(); y++) {
+            for (int x = 0; x < img.getWidth(); x++) {
+                int lutIndex = (int) Math.floor(1.0 * x / img.getWidth() * 256);
+                processor.set(x, y, lut.getRGB(lutIndex));
+            }
+        }
+        return img;
+    }
+
     public static class GradientStop implements Comparable<GradientStop> {
         private Color color;
         private float position;
@@ -1566,45 +1604,6 @@ public class ImageJUtils {
         public int compareTo(GradientStop o) {
             return Float.compare(position, o.position);
         }
-    }
-
-    /**
-     * Converts an image into a LUT. LUT values are extracted from the first row.
-     * @param image the image. Must be RGB.
-     * @return the lut
-     */
-    public static LUT lutFromImage(ImagePlus image) {
-        byte[] rLut = new byte[256];
-        byte[] gLut = new byte[256];
-        byte[] bLut = new byte[256];
-        ImageProcessor processor = image.getProcessor();
-        for (int i = 0; i < 256; i++) {
-            int lutIndex = (int)Math.floor(1.0 * i / 256 * image.getWidth());
-            Color color = new Color(processor.get(lutIndex, 0));
-            rLut[i] = (byte) color.getRed();
-            gLut[i] = (byte) color.getGreen();
-            bLut[i] = (byte) color.getBlue();
-        }
-        return new LUT(rLut, gLut, bLut);
-    }
-
-    /**
-     * Converts a LUT into an RGB image
-     * @param lut the lut
-     * @param width width of the image
-     * @param height height of the image
-     * @return the image
-     */
-    public static ImagePlus lutToImage(LUT lut, int width, int height) {
-        ImagePlus img = IJ.createImage("LUT", width, height, 1, 24);
-        ColorProcessor processor = (ColorProcessor) img.getProcessor();
-        for (int y = 0; y < img.getHeight(); y++) {
-            for (int x = 0; x < img.getWidth(); x++) {
-                int lutIndex = (int) Math.floor(1.0 * x / img.getWidth() * 256);
-                processor.set(x, y, lut.getRGB(lutIndex));
-            }
-        }
-        return img;
     }
 }
 

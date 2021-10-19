@@ -19,9 +19,9 @@ import com.fasterxml.jackson.databind.JsonNode;
 import ij.IJ;
 import ij.Prefs;
 import org.hkijena.jipipe.extensions.settings.GraphEditorUISettings;
-import org.hkijena.jipipe.utils.json.JsonUtils;
 import org.hkijena.jipipe.utils.ResourceUtils;
 import org.hkijena.jipipe.utils.StringUtils;
+import org.hkijena.jipipe.utils.json.JsonUtils;
 
 import java.io.IOException;
 import java.net.MalformedURLException;

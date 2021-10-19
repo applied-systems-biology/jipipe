@@ -18,10 +18,10 @@ import net.imagej.updater.UpdateSite;
 import org.hkijena.jipipe.ui.components.FancyTextField;
 import org.hkijena.jipipe.ui.components.FormPanel;
 import org.hkijena.jipipe.ui.components.SearchTextField;
-import org.hkijena.jipipe.utils.search.RankedData;
-import org.hkijena.jipipe.utils.search.RankingFunction;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.utils.search.RankedData;
+import org.hkijena.jipipe.utils.search.RankingFunction;
 
 import javax.swing.*;
 import java.awt.BorderLayout;

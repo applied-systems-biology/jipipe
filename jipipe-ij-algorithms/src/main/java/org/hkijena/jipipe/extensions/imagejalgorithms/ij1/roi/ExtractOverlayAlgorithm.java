@@ -31,11 +31,11 @@ public class ExtractOverlayAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
         ImagePlus img = dataBatch.getInputData(getFirstInputSlot(), ImagePlusData.class, progressInfo).getImage();
         ROIListData rois = new ROIListData();
-        if(img.getOverlay() != null) {
+        if (img.getOverlay() != null) {
             for (Roi roi : img.getOverlay()) {
                 rois.add(roi);
             }
         }
-        dataBatch.addOutputData(getFirstOutputSlot(),rois, progressInfo);
+        dataBatch.addOutputData(getFirstOutputSlot(), rois, progressInfo);
     }
 }

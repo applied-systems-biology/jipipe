@@ -41,19 +41,19 @@ public class SetPhysicalDimensionsAlgorithm extends JIPipeSimpleIteratingAlgorit
     protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
         ImagePlus img = dataBatch.getInputData(getFirstInputSlot(), ImagePlusData.class, progressInfo).getDuplicateImage();
         Calibration calibration = img.getCalibration();
-        if(calibration == null) {
+        if (calibration == null) {
             calibration = new Calibration(img);
             img.setCalibration(calibration);
         }
-        if(physicalDimensionX.isEnabled()) {
+        if (physicalDimensionX.isEnabled()) {
             calibration.setXUnit(physicalDimensionX.getContent().getUnit());
             calibration.pixelWidth = physicalDimensionX.getContent().getValue();
         }
-        if(physicalDimensionY.isEnabled()) {
+        if (physicalDimensionY.isEnabled()) {
             calibration.setYUnit(physicalDimensionY.getContent().getUnit());
             calibration.pixelHeight = physicalDimensionY.getContent().getValue();
         }
-        if(physicalDimensionZ.isEnabled()) {
+        if (physicalDimensionZ.isEnabled()) {
             calibration.setZUnit(physicalDimensionZ.getContent().getUnit());
             calibration.pixelDepth = physicalDimensionZ.getContent().getValue();
         }

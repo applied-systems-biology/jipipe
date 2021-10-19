@@ -173,7 +173,7 @@ public class ImagePlusFromFile extends JIPipeSimpleIteratingAlgorithm {
             if (removeLut) {
                 ImageJUtils.removeLUT(image, true);
             }
-            if(removeOverlay) {
+            if (removeOverlay) {
                 ImageJUtils.removeOverlay(image);
             }
             outputData = (ImagePlusData) JIPipe.createData(generatedImageType.getInfo().getDataClass(), image);

@@ -13,13 +13,12 @@
 
 package org.hkijena.jipipe.extensions.parameters;
 
-import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.components.DocumentTabPane;
 import org.hkijena.jipipe.ui.extension.JIPipeMenuExtension;
 import org.hkijena.jipipe.ui.extension.JIPipeMenuExtensionTarget;
-import org.hkijena.jipipe.utils.ui.ExpressionTesterUI;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.utils.ui.ExpressionTesterUI;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;

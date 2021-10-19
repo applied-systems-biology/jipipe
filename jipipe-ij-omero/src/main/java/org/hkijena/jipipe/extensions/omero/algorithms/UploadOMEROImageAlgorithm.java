@@ -52,14 +52,13 @@ import java.util.Map;
 @JIPipeOutputSlot(value = OMEROImageReferenceData.class, slotName = "ID", autoCreate = true)
 public class UploadOMEROImageAlgorithm extends JIPipeMergingAlgorithm {
 
+    private final Map<Thread, OMEROGateway> currentGateways = new HashMap<>();
+    private final Map<Thread, Map<Long, OMEROImageUploader>> currentUploaders = new HashMap<>();
     private OMEROCredentials credentials = new OMEROCredentials();
     private OMEExporterSettings exporterSettings = new OMEExporterSettings();
     private JIPipeDataByMetadataExporter exporter = new JIPipeDataByMetadataExporter();
     private boolean uploadAnnotations = false;
     private AnnotationQueryExpression uploadedAnnotationsFilter = new AnnotationQueryExpression("");
-
-    private final Map<Thread, OMEROGateway> currentGateways = new HashMap<>();
-    private final Map<Thread, Map<Long, OMEROImageUploader>> currentUploaders = new HashMap<>();
     private JIPipeProgressInfo parameterProgressInfo;
 
     public UploadOMEROImageAlgorithm(JIPipeNodeInfo info) {
@@ -127,18 +126,18 @@ public class UploadOMEROImageAlgorithm extends JIPipeMergingAlgorithm {
         OMEROGateway gateway;
         synchronized (this) {
             gateway = currentGateways.getOrDefault(Thread.currentThread(), null);
-            if(gateway == null) {
+            if (gateway == null) {
                 parameterProgressInfo.log("Creating OMERO gateway for thread " + Thread.currentThread());
                 gateway = new OMEROGateway(credentials.getCredentials(), parameterProgressInfo);
                 currentGateways.put(Thread.currentThread(), gateway);
             }
             Map<Long, OMEROImageUploader> uploaderMap = currentUploaders.getOrDefault(Thread.currentThread(), null);
-            if(uploaderMap == null) {
+            if (uploaderMap == null) {
                 uploaderMap = new HashMap<>();
                 currentUploaders.put(Thread.currentThread(), uploaderMap);
             }
             uploader = uploaderMap.getOrDefault(datasetId, null);
-            if(uploader == null) {
+            if (uploader == null) {
                 parameterProgressInfo.log("Creating OMERO uploader for dataset=" + datasetId + " in thread " + Thread.currentThread());
                 uploader = new OMEROImageUploader(credentials.getCredentials(), datasetId, 1, 1, parameterProgressInfo.resolve("Dataset " + datasetId));
                 uploaderMap.put(datasetId, uploader);
@@ -149,7 +148,7 @@ public class UploadOMEROImageAlgorithm extends JIPipeMergingAlgorithm {
         progressInfo.log("Uploading " + filePaths.size() + " files");
 
         List<JIPipeAnnotation> filteredAnnotations = uploadedAnnotationsFilter.queryAll(annotations);
-        if(!uploadAnnotations) {
+        if (!uploadAnnotations) {
             filteredAnnotations = null;
         }
         for (Path filePath : filePaths) {

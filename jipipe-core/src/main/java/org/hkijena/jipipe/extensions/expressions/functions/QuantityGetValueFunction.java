@@ -19,8 +19,6 @@ import org.hkijena.jipipe.extensions.expressions.ExpressionVariables;
 import org.hkijena.jipipe.extensions.expressions.ParameterInfo;
 import org.hkijena.jipipe.extensions.parameters.quantities.Quantity;
 
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
 @JIPipeDocumentation(name = "Get quantity value", description = "Parses a quantity string '[value] [unit]' and extracts the value as number.")

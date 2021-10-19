@@ -308,7 +308,7 @@ public class QuickRunSetupUI extends JIPipeProjectWorkbenchPanel {
     }
 
     private void openLogInExternalEditor() {
-        if(currentQuickRun != null) {
+        if (currentQuickRun != null) {
             Path tempFile = RuntimeSettings.generateTempFile("log", ".txt");
             try {
                 Files.write(tempFile, currentQuickRun.getProgressInfo().getLog().toString().getBytes(StandardCharsets.UTF_8));
@@ -316,19 +316,17 @@ public class QuickRunSetupUI extends JIPipeProjectWorkbenchPanel {
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
-        }
-        else {
+        } else {
             JOptionPane.showMessageDialog(this, "The log is unavailable for this run.", "Open log", JOptionPane.ERROR_MESSAGE);
         }
     }
 
     private void openLogInJIPipe() {
-        if(currentQuickRun != null) {
+        if (currentQuickRun != null) {
             DocumentTabPane.DocumentTab tab = getProjectWorkbench().getDocumentTabPane().selectSingletonTab(JIPipeProjectWorkbench.TAB_LOG);
             JIPipeLogViewer viewer = (JIPipeLogViewer) tab.getContent();
             viewer.showLog(currentQuickRun.getProgressInfo().getLog().toString());
-        }
-        else {
+        } else {
             JOptionPane.showMessageDialog(this, "The log is unavailable for this run.", "Open log", JOptionPane.ERROR_MESSAGE);
         }
     }

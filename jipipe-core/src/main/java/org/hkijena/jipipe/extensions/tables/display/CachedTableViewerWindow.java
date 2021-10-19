@@ -32,7 +32,7 @@ public class CachedTableViewerWindow extends JIPipeCacheDataViewerWindow {
     public CachedTableViewerWindow(JIPipeWorkbench workbench, JIPipeCacheSlotDataSource dataSource, String displayName, boolean deferLoading) {
         super(workbench, dataSource, displayName);
         initialize();
-        if(!deferLoading)
+        if (!deferLoading)
             reloadDisplayedData();
     }
 

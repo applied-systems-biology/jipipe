@@ -29,7 +29,6 @@ import org.hkijena.jipipe.api.data.JIPipeDefaultMutableSlotConfiguration;
 import org.hkijena.jipipe.api.data.JIPipeMutableSlotConfiguration;
 import org.hkijena.jipipe.api.data.JIPipeSlotConfiguration;
 import org.hkijena.jipipe.api.nodes.*;
-import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.extensions.parameters.generators.IntegerRange;
 import org.hkijena.jipipe.extensions.parameters.primitives.EnumItemInfo;
 import org.hkijena.jipipe.extensions.parameters.primitives.EnumParameterSettings;
@@ -362,7 +361,7 @@ public class GraphWrapperAlgorithm extends JIPipeAlgorithm implements JIPipeData
             node.setInternalStoragePath(scratch.resolve(node.getAliasIdInGraph()));
         }
         for (JIPipeDataSlot slot : getWrappedGraph().getSlotNodes()) {
-            if(slot.isOutput()) {
+            if (slot.isOutput()) {
                 slot.setStoragePath(slot.getNode().getInternalStoragePath().resolve(slot.getName()));
             }
         }

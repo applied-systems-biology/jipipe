@@ -255,7 +255,7 @@ public class JIPipeMergingDataBatch implements Comparable<JIPipeMergingDataBatch
      */
     public Set<Integer> getInputRows(String slot) {
         for (Map.Entry<JIPipeDataSlot, Set<Integer>> entry : getInputSlotRows().entrySet()) {
-            if(slot.equals(entry.getKey().getName())) {
+            if (slot.equals(entry.getKey().getName())) {
                 return entry.getValue();
             }
         }

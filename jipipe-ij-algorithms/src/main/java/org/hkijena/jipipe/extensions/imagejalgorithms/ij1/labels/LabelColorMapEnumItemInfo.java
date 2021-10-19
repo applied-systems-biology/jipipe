@@ -16,7 +16,6 @@ package org.hkijena.jipipe.extensions.imagejalgorithms.ij1.labels;
 import inra.ijpb.color.ColorMaps;
 import org.apache.commons.lang.WordUtils;
 import org.hkijena.jipipe.extensions.parameters.colors.ColorMap;
-import org.hkijena.jipipe.extensions.parameters.colors.ColorMapIcon;
 import org.hkijena.jipipe.extensions.parameters.primitives.EnumItemInfo;
 
 import javax.swing.*;

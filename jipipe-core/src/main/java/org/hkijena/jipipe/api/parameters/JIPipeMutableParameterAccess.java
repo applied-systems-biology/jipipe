@@ -22,8 +22,8 @@ import com.fasterxml.jackson.databind.JsonDeserializer;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import org.hkijena.jipipe.JIPipe;
-import org.hkijena.jipipe.utils.json.JsonUtils;
 import org.hkijena.jipipe.utils.StringUtils;
+import org.hkijena.jipipe.utils.json.JsonUtils;
 import org.scijava.Priority;
 
 import java.io.IOException;
@@ -317,8 +317,7 @@ public class JIPipeMutableParameterAccess implements JIPipeParameterAccess {
             try {
                 if (jsonNode.has("value"))
                     result.set(JsonUtils.getObjectMapper().readerFor(result.getFieldClass()).readValue(jsonNode.get("value")));
-            }
-            catch (Exception e) {
+            } catch (Exception e) {
                 e.printStackTrace();
             }
             if (jsonNode.has("short-key"))

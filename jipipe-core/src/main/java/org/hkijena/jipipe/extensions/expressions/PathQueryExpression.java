@@ -40,7 +40,7 @@ public class PathQueryExpression extends DefaultExpressionParameter implements P
     /**
      * Queries a string out of the list
      *
-     * @param strings              existing annotations for the data
+     * @param strings             existing annotations for the data
      * @param expressionVariables expression parameters
      * @return the annotation that matches the query or null if none matches
      */
@@ -56,7 +56,7 @@ public class PathQueryExpression extends DefaultExpressionParameter implements P
     /**
      * Generates an annotation value
      *
-     * @param strings              existing annotations for the data
+     * @param strings             existing annotations for the data
      * @param expressionVariables expression parameters
      * @return the annotation that matches the query or null if none matches
      */
@@ -97,7 +97,7 @@ public class PathQueryExpression extends DefaultExpressionParameter implements P
     /**
      * Returns true of one of the strings matches the query.
      *
-     * @param strings              the strings
+     * @param strings             the strings
      * @param expressionVariables
      * @return if one string matches
      */

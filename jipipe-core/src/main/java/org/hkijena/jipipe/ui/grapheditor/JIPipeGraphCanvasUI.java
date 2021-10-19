@@ -46,9 +46,9 @@ import org.hkijena.jipipe.ui.grapheditor.nodeui.JIPipeHorizontalNodeUI;
 import org.hkijena.jipipe.ui.grapheditor.nodeui.JIPipeNodeUI;
 import org.hkijena.jipipe.ui.grapheditor.nodeui.JIPipeVerticalNodeUI;
 import org.hkijena.jipipe.utils.PointRange;
+import org.hkijena.jipipe.utils.UIUtils;
 import org.hkijena.jipipe.utils.ui.ScreenImage;
 import org.hkijena.jipipe.utils.ui.ScreenImageSVG;
-import org.hkijena.jipipe.utils.UIUtils;
 import org.jfree.graphics2d.svg.SVGGraphics2D;
 
 import javax.swing.FocusManager;
@@ -1028,7 +1028,7 @@ public class JIPipeGraphCanvasUI extends JIPipeWorkbenchPanel implements MouseMo
         Graphics2D g = (Graphics2D) graphics;
         g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
-        if(settings.isDrawNodeShadows()) {
+        if (settings.isDrawNodeShadows()) {
             for (JIPipeNodeUI ui : nodeUIs.values()) {
                 DROP_SHADOW_BORDER.paint(g, ui.getX() - 3, ui.getY() - 3, ui.getWidth() + 8, ui.getHeight() + 8);
             }
@@ -1367,15 +1367,14 @@ public class JIPipeGraphCanvasUI extends JIPipeWorkbenchPanel implements MouseMo
         PointRange.tighten(sourcePoint, targetPoint);
 
         // Draw arrow
-        if(settings.isDrawImprovedEdges() && strokeBorder != null) {
+        if (settings.isDrawImprovedEdges() && strokeBorder != null) {
             g.setStroke(strokeBorder);
             g.setColor(getEdgeColor(source, target, multicolor, multiColorIndex, multiColorMax));
             drawEdge(g, sourcePoint.center, sourceUI.getBounds(), targetPoint.center, uiShape, scale, viewX, viewY);
             g.setStroke(stroke);
             g.setColor(improvedStrokeBackgroundColor);
             drawEdge(g, sourcePoint.center, sourceUI.getBounds(), targetPoint.center, uiShape, scale, viewX, viewY);
-        }
-        else {
+        } else {
             g.setStroke(stroke);
             g.setColor(getEdgeColor(source, target, multicolor, multiColorIndex, multiColorMax));
             drawEdge(g, sourcePoint.center, sourceUI.getBounds(), targetPoint.center, uiShape, scale, viewX, viewY);
@@ -1420,15 +1419,14 @@ public class JIPipeGraphCanvasUI extends JIPipeWorkbenchPanel implements MouseMo
                         targetPoint.y = 0;
                     }
                 }
-                if(settings.isDrawImprovedEdges() && borderStroke != null) {
+                if (settings.isDrawImprovedEdges() && borderStroke != null) {
                     g.setStroke(borderStroke);
                     g.setColor(baseColor);
                     drawOutsideEdge(g, sourcePoint, targetPoint);
                     g.setStroke(stroke);
                     g.setColor(improvedStrokeBackgroundColor);
                     drawOutsideEdge(g, sourcePoint, targetPoint);
-                }
-                else {
+                } else {
                     g.setStroke(stroke);
                     g.setColor(baseColor);
                     drawOutsideEdge(g, sourcePoint, targetPoint);

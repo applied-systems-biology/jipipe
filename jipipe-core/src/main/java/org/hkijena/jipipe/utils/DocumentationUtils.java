@@ -7,7 +7,6 @@ import org.hkijena.jipipe.api.JIPipeDocumentation;
 
 import java.io.IOException;
 import java.net.URL;
-import java.nio.file.Files;
 
 public class DocumentationUtils {
 
@@ -22,19 +21,19 @@ public class DocumentationUtils {
     /**
      * Returns the documentation description string if available.
      * Prefers to use the resource URL if set up.
+     *
      * @param documentation the documentation annotation
      * @return the description
      */
     public static String getDocumentationDescription(JIPipeDocumentation documentation) {
-        if(!StringUtils.isNullOrEmpty(documentation.descriptionResourceURL())) {
+        if (!StringUtils.isNullOrEmpty(documentation.descriptionResourceURL())) {
             URL url = documentation.descriptionResourceClass().getResource(documentation.descriptionResourceURL());
             try {
-                return  Resources.toString(url, Charsets.UTF_8);
+                return Resources.toString(url, Charsets.UTF_8);
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
-        }
-        else {
+        } else {
             return documentation.description();
         }
     }

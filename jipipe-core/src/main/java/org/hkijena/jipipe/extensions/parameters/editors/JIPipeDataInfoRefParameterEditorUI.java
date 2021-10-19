@@ -22,11 +22,11 @@ import org.hkijena.jipipe.extensions.parameters.references.JIPipeDataInfoRef;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.components.JIPipeDataTypePicker;
 import org.hkijena.jipipe.ui.parameters.JIPipeParameterEditorUI;
-import org.hkijena.jipipe.utils.classfilters.AnyClassFilter;
-import org.hkijena.jipipe.utils.classfilters.ClassFilter;
 import org.hkijena.jipipe.utils.ReflectionUtils;
 import org.hkijena.jipipe.utils.TooltipUtils;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.utils.classfilters.AnyClassFilter;
+import org.hkijena.jipipe.utils.classfilters.ClassFilter;
 
 import javax.swing.*;
 import java.awt.BorderLayout;

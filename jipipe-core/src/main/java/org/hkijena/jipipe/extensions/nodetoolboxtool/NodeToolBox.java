@@ -12,9 +12,9 @@ import org.hkijena.jipipe.ui.components.JIPipeNodeInfoListCellRenderer;
 import org.hkijena.jipipe.ui.components.MarkdownDocument;
 import org.hkijena.jipipe.ui.components.MarkdownReader;
 import org.hkijena.jipipe.ui.components.SearchTextField;
-import org.hkijena.jipipe.utils.search.RankedData;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.utils.search.RankedData;
 
 import javax.swing.*;
 import java.awt.BorderLayout;
@@ -80,7 +80,7 @@ public class NodeToolBox extends JPanel {
         List<JIPipeNodeInfo> infos = getFilteredAndSortedInfos();
         DefaultListModel<JIPipeNodeInfo> model = new DefaultListModel<>();
         for (JIPipeNodeInfo info : infos) {
-            if(info.isHidden() ||info.getCategory() == null ||info.getCategory() instanceof InternalNodeTypeCategory) {
+            if (info.isHidden() || info.getCategory() == null || info.getCategory() instanceof InternalNodeTypeCategory) {
                 continue;
             }
             model.addElement(info);

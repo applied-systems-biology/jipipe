@@ -67,20 +67,19 @@ public class OMEROImageUploader implements AutoCloseable {
 
             handler = new ErrorHandler(config);
             library.addObserver(new OMEROUploadToJIPipeLogger(progressInfo));
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
 
     public List<Long> upload(Path imagePath, List<JIPipeAnnotation> annotationList, OMEROGateway gateway) {
-        ImportCandidates candidates = new ImportCandidates(reader, new String[] {imagePath.toString()}, handler);
+        ImportCandidates candidates = new ImportCandidates(reader, new String[]{imagePath.toString()}, handler);
         reader.setMetadataOptions(new DefaultMetadataOptions(MetadataLevel.ALL));
         List<Long> uploadedImages = new ArrayList<>();
         for (Pixels image : OMEROUtils.importImages(library, store, config, candidates)) {
             uploadedImages.add(image.getId().getValue());
         }
-        if(annotationList != null && !annotationList.isEmpty()) {
+        if (annotationList != null && !annotationList.isEmpty()) {
             List<NamedValue> namedValues = new ArrayList<>();
             for (JIPipeAnnotation annotation : annotationList) {
                 namedValues.add(new NamedValue(annotation.getName(), annotation.getValue()));
@@ -92,8 +91,7 @@ public class OMEROImageUploader implements AutoCloseable {
                 try {
                     ImageData image = gateway.getBrowseFacility().getImage(gateway.getContext(), uploadedImage);
                     gateway.getDataManagerFacility().attachAnnotation(gateway.getContext(), mapAnnotationData, image);
-                }
-                catch (Exception e) {
+                } catch (Exception e) {
                     throw new RuntimeException(e);
                 }
             }
@@ -103,7 +101,7 @@ public class OMEROImageUploader implements AutoCloseable {
 
     @Override
     public void close() throws Exception {
-        if(store != null) {
+        if (store != null) {
             store.logout();
             store = null;
         }

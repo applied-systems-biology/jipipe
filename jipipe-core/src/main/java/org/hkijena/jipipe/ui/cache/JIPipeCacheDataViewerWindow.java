@@ -70,7 +70,7 @@ public abstract class JIPipeCacheDataViewerWindow extends JFrame {
 
 
         if (dataSource.getSlot().getNode() != null) {
-            if(dataSource.getSlot().getNode().getGraph() != null)
+            if (dataSource.getSlot().getNode().getGraph() != null)
                 this.algorithm = (JIPipeAlgorithm) project.getGraph().getEquivalentAlgorithm(dataSource.getSlot().getNode());
             else
                 this.algorithm = null;
@@ -278,7 +278,7 @@ public abstract class JIPipeCacheDataViewerWindow extends JFrame {
             JIPipeVirtualData virtualData = dataSource.getSlot().getVirtualData(dataSource.getRow());
             if (lastVirtualData != null && virtualData == lastVirtualData.get())
                 return;
-            if(dataConverterFunction != null)
+            if (dataConverterFunction != null)
                 virtualData = dataConverterFunction.apply(virtualData);
             loadData(virtualData, new JIPipeProgressInfo());
             lastVirtualData = new WeakReference<>(virtualData);
@@ -290,7 +290,7 @@ public abstract class JIPipeCacheDataViewerWindow extends JFrame {
             }
             if (lastVirtualData != null && virtualData == lastVirtualData.get())
                 return;
-            if(dataConverterFunction != null)
+            if (dataConverterFunction != null)
                 virtualData = dataConverterFunction.apply(virtualData);
             loadData(virtualData, new JIPipeProgressInfo());
             lastVirtualData = new WeakReference<>(virtualData);

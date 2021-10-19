@@ -79,8 +79,8 @@ public interface JIPipeParameterCollection {
     /**
      * Sets a parameter and triggers the associated events
      *
-     * @param key        the parameter key
-     * @param value      the parameter value
+     * @param key   the parameter key
+     * @param value the parameter value
      * @return if the parameter could be set
      */
     default boolean setParameter(String key, Object value) {
@@ -91,9 +91,9 @@ public interface JIPipeParameterCollection {
     /**
      * Gets a parameter
      *
-     * @param key        the parameter key
-     * @param klass      the parameter class
-     * @param <T>        the parameter class
+     * @param key   the parameter key
+     * @param klass the parameter class
+     * @param <T>   the parameter class
      * @return the current value
      */
     default <T> T getParameter(String key, Class<T> klass) {

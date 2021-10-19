@@ -27,7 +27,6 @@ import org.hkijena.jipipe.utils.StringUtils;
 
 import java.util.Arrays;
 import java.util.HashSet;
-import java.util.Objects;
 import java.util.Set;
 
 /**
@@ -75,7 +74,7 @@ public class TableColumnSourceExpressionParameter extends PairParameter<TableCol
         variables.set("num_rows", table.getRowCount());
         variables.set("num_cols", table.getColumnCount());
 
-        if(getKey() == TableSourceType.ExistingColumn) {
+        if (getKey() == TableSourceType.ExistingColumn) {
             // Try to parse the expression
             try {
                 Object evaluationResult = getValue().evaluate(variables);
@@ -91,8 +90,7 @@ public class TableColumnSourceExpressionParameter extends PairParameter<TableCol
             if (columnIndex != -1) {
                 return table.getColumnReference(columnIndex);
             }
-        }
-        else {
+        } else {
             // Try to generate it
             Object[] rawData = new Object[table.getRowCount()];
             boolean isNumeric = true;
@@ -108,13 +106,12 @@ public class TableColumnSourceExpressionParameter extends PairParameter<TableCol
                     if (!(rawData[row] instanceof Number))
                         isNumeric = false;
                 }
-            }
-            catch (Exception e) {
+            } catch (Exception e) {
                 isNumeric = false;
                 success = false;
             }
 
-            if(!success) {
+            if (!success) {
                 // Is a string value
                 Arrays.fill(rawData, getValue().getExpression());
             }
@@ -145,23 +142,6 @@ public class TableColumnSourceExpressionParameter extends PairParameter<TableCol
         report.checkNonEmpty(getValue().getExpression(), this);
     }
 
-    public static class VariableSource implements ExpressionParameterVariableSource {
-        private final static Set<ExpressionParameterVariable> VARIABLES;
-
-        static {
-            VARIABLES = new HashSet<>();
-            VARIABLES.add(new ExpressionParameterVariable("value", "For selecting columns: Contains the currently selected column. Return TRUE if the column should be selected.", "value"));
-            VARIABLES.add(new ExpressionParameterVariable("<Other column values>", "For generating columns: The values of the other columns are available as variables", ""));
-            VARIABLES.add(new ExpressionParameterVariable("Number of rows", "The number of rows within the table", "num_rows"));
-            VARIABLES.add(new ExpressionParameterVariable("Number of columns", "The number of columns within the table", "num_cols"));
-        }
-
-        @Override
-        public Set<ExpressionParameterVariable> getVariables(JIPipeParameterAccess parameterAccess) {
-            return VARIABLES;
-        }
-    }
-
     public enum TableSourceType {
         Generate,
         ExistingColumn;
@@ -177,6 +157,23 @@ public class TableColumnSourceExpressionParameter extends PairParameter<TableCol
                 default:
                     throw new UnsupportedOperationException();
             }
+        }
+    }
+
+    public static class VariableSource implements ExpressionParameterVariableSource {
+        private final static Set<ExpressionParameterVariable> VARIABLES;
+
+        static {
+            VARIABLES = new HashSet<>();
+            VARIABLES.add(new ExpressionParameterVariable("value", "For selecting columns: Contains the currently selected column. Return TRUE if the column should be selected.", "value"));
+            VARIABLES.add(new ExpressionParameterVariable("<Other column values>", "For generating columns: The values of the other columns are available as variables", ""));
+            VARIABLES.add(new ExpressionParameterVariable("Number of rows", "The number of rows within the table", "num_rows"));
+            VARIABLES.add(new ExpressionParameterVariable("Number of columns", "The number of columns within the table", "num_cols"));
+        }
+
+        @Override
+        public Set<ExpressionParameterVariable> getVariables(JIPipeParameterAccess parameterAccess) {
+            return VARIABLES;
         }
     }
 }

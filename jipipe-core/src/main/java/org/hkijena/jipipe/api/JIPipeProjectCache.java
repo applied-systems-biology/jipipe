@@ -217,9 +217,10 @@ public class JIPipeProjectCache {
 
     /**
      * Safely removes cache entries that are not accessible anymore (e.g. an algorithm was removed from the graph; or states where the slots do not exist anymore)
-     *  @param compareSlots         if true, states are removed if the output slots don't align with the current configuration anymore
+     *
+     * @param compareSlots         if true, states are removed if the output slots don't align with the current configuration anymore
      * @param compareProjectStates if true, states that are not within the project anymore are also removed
-     * @param progressInfo the progress info
+     * @param progressInfo         the progress info
      */
     public void autoClean(boolean compareSlots, boolean compareProjectStates, JIPipeProgressInfo progressInfo) {
         try {
@@ -269,7 +270,7 @@ public class JIPipeProjectCache {
      * @param event the event
      */
     public void onAlgorithmRemoved(JIPipeGraph.GraphChangedEvent event) {
-        autoClean(false, false,  new JIPipeProgressInfo());
+        autoClean(false, false, new JIPipeProgressInfo());
     }
 
     public EventBus getEventBus() {

@@ -2,7 +2,11 @@ package org.hkijena.jipipe.ui.components;
 
 import org.jdesktop.swingx.graphics.GraphicsUtilities;
 
-import java.awt.*;
+import java.awt.Color;
+import java.awt.Graphics2D;
+import java.awt.Point;
+import java.awt.Rectangle;
+import java.awt.RenderingHints;
 import java.awt.geom.RoundRectangle2D;
 import java.awt.image.BufferedImage;
 import java.awt.image.ConvolveOp;
@@ -11,45 +15,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class DropShadowRenderer {
-    private static enum Position {TOP, TOP_LEFT, LEFT, BOTTOM_LEFT,
-        BOTTOM, BOTTOM_RIGHT, RIGHT, TOP_RIGHT}
-
     private static final Map<Double, Map<DropShadowRenderer.Position, BufferedImage>> CACHE
-            = new HashMap<Double,Map<DropShadowRenderer.Position,BufferedImage>>();
-
+            = new HashMap<Double, Map<DropShadowRenderer.Position, BufferedImage>>();
     private Color shadowColor;
-    public void setShadowColor(Color shadowColor) {
-        this.shadowColor = shadowColor;
-    }
-
-    public void setShadowSize(int shadowSize) {
-        this.shadowSize = shadowSize;
-    }
-
-    public void setShadowOpacity(float shadowOpacity) {
-        this.shadowOpacity = shadowOpacity;
-    }
-
-    public void setCornerSize(int cornerSize) {
-        this.cornerSize = cornerSize;
-    }
-
-    public void setShowTopShadow(boolean showTopShadow) {
-        this.showTopShadow = showTopShadow;
-    }
-
-    public void setShowLeftShadow(boolean showLeftShadow) {
-        this.showLeftShadow = showLeftShadow;
-    }
-
-    public void setShowBottomShadow(boolean showBottomShadow) {
-        this.showBottomShadow = showBottomShadow;
-    }
-
-    public void setShowRightShadow(boolean showRightShadow) {
-        this.showRightShadow = showRightShadow;
-    }
-
     private int shadowSize;
     private float shadowOpacity;
     private int cornerSize;
@@ -69,10 +37,9 @@ public class DropShadowRenderer {
     public DropShadowRenderer(boolean showLeftShadow) {
         this(Color.BLACK, 5, .5f, 12, false, showLeftShadow, true, true);
     }
-
     public DropShadowRenderer(Color shadowColor, int shadowSize,
-                            float shadowOpacity, int cornerSize, boolean showTopShadow,
-                            boolean showLeftShadow, boolean showBottomShadow, boolean showRightShadow) {
+                              float shadowOpacity, int cornerSize, boolean showTopShadow,
+                              boolean showLeftShadow, boolean showBottomShadow, boolean showRightShadow) {
         this.shadowColor = shadowColor;
         this.shadowSize = shadowSize;
         this.shadowOpacity = shadowOpacity;
@@ -91,7 +58,7 @@ public class DropShadowRenderer {
          * 1) Get images for this border
          * 2) Paint the images for each side of the border that should be painted
          */
-        Map<DropShadowRenderer.Position,BufferedImage> images = getImages();
+        Map<DropShadowRenderer.Position, BufferedImage> images = getImages();
 
         //The location and size of the shadows depends on which shadows are being
         //drawn. For instance, if the left & bottom shadows are being drawn, then
@@ -217,12 +184,12 @@ public class DropShadowRenderer {
         }
     }
 
-    private Map<DropShadowRenderer.Position,BufferedImage> getImages() {
+    private Map<DropShadowRenderer.Position, BufferedImage> getImages() {
         //first, check to see if an image for this size has already been rendered
         //if so, use the cache. Else, draw and save
-        Map<DropShadowRenderer.Position,BufferedImage> images = CACHE.get(shadowSize + (shadowColor.hashCode() * .3) + (shadowOpacity * .12));//TODO do a real hash
+        Map<DropShadowRenderer.Position, BufferedImage> images = CACHE.get(shadowSize + (shadowColor.hashCode() * .3) + (shadowOpacity * .12));//TODO do a real hash
         if (images == null) {
-            images = new HashMap<DropShadowRenderer.Position,BufferedImage>();
+            images = new HashMap<DropShadowRenderer.Position, BufferedImage>();
 
             /*
              * To draw a drop shadow, I have to:
@@ -242,11 +209,11 @@ public class DropShadowRenderer {
             RoundRectangle2D rect = new RoundRectangle2D.Double(0, 0, rectWidth, rectWidth, cornerSize, cornerSize);
             int imageWidth = rectWidth + shadowSize * 2;
             BufferedImage image = GraphicsUtilities.createCompatibleTranslucentImage(imageWidth, imageWidth);
-            Graphics2D buffer = (Graphics2D)image.getGraphics();
+            Graphics2D buffer = (Graphics2D) image.getGraphics();
 
             try {
                 buffer.setPaint(new Color(shadowColor.getRed(), shadowColor.getGreen(),
-                        shadowColor.getBlue(), (int)(shadowOpacity * 255)));
+                        shadowColor.getBlue(), (int) (shadowOpacity * 255)));
 //                buffer.setColor(new Color(0.0f, 0.0f, 0.0f, shadowOpacity));
                 buffer.translate(shadowSize, shadowSize);
                 buffer.fill(rect);
@@ -254,14 +221,14 @@ public class DropShadowRenderer {
                 buffer.dispose();
             }
 
-            float blurry = 1.0f / (float)(shadowSize * shadowSize);
+            float blurry = 1.0f / (float) (shadowSize * shadowSize);
             float[] blurKernel = new float[shadowSize * shadowSize];
-            for (int i=0; i<blurKernel.length; i++) {
+            for (int i = 0; i < blurKernel.length; i++) {
                 blurKernel[i] = blurry;
             }
             ConvolveOp blur = new ConvolveOp(new Kernel(shadowSize, shadowSize, blurKernel));
             BufferedImage targetImage = GraphicsUtilities.createCompatibleTranslucentImage(imageWidth, imageWidth);
-            ((Graphics2D)targetImage.getGraphics()).drawImage(image, blur, -(shadowSize/2), -(shadowSize/2));
+            ((Graphics2D) targetImage.getGraphics()).drawImage(image, blur, -(shadowSize / 2), -(shadowSize / 2));
 
             int x = 1;
             int y = 1;
@@ -324,7 +291,7 @@ public class DropShadowRenderer {
         try {
             g2.drawImage(img,
                     0, 0, w, h,
-                    x, y, x+w, y+h,
+                    x, y, x + w, y + h,
                     null);
         } finally {
             g2.dispose();
@@ -344,31 +311,68 @@ public class DropShadowRenderer {
         return showTopShadow;
     }
 
+    public void setShowTopShadow(boolean showTopShadow) {
+        this.showTopShadow = showTopShadow;
+    }
+
     public boolean isShowLeftShadow() {
         return showLeftShadow;
+    }
+
+    public void setShowLeftShadow(boolean showLeftShadow) {
+        this.showLeftShadow = showLeftShadow;
     }
 
     public boolean isShowRightShadow() {
         return showRightShadow;
     }
 
+    public void setShowRightShadow(boolean showRightShadow) {
+        this.showRightShadow = showRightShadow;
+    }
+
     public boolean isShowBottomShadow() {
         return showBottomShadow;
+    }
+
+    public void setShowBottomShadow(boolean showBottomShadow) {
+        this.showBottomShadow = showBottomShadow;
     }
 
     public int getShadowSize() {
         return shadowSize;
     }
 
+    public void setShadowSize(int shadowSize) {
+        this.shadowSize = shadowSize;
+    }
+
     public Color getShadowColor() {
         return shadowColor;
+    }
+
+    public void setShadowColor(Color shadowColor) {
+        this.shadowColor = shadowColor;
     }
 
     public float getShadowOpacity() {
         return shadowOpacity;
     }
 
+    public void setShadowOpacity(float shadowOpacity) {
+        this.shadowOpacity = shadowOpacity;
+    }
+
     public int getCornerSize() {
         return cornerSize;
+    }
+
+    public void setCornerSize(int cornerSize) {
+        this.cornerSize = cornerSize;
+    }
+
+    private static enum Position {
+        TOP, TOP_LEFT, LEFT, BOTTOM_LEFT,
+        BOTTOM, BOTTOM_RIGHT, RIGHT, TOP_RIGHT
     }
 }

@@ -30,6 +30,7 @@ public @interface EnumParameterSettings {
 
     /**
      * If enabled, the {@link EnumParameterEditorUI} will display a button with the enum value that opens a window for searching
+     *
      * @return if the enum items should be seachable
      */
     boolean searchable() default false;

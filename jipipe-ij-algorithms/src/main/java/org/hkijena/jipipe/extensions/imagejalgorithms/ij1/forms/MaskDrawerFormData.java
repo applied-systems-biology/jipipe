@@ -46,7 +46,7 @@ public class MaskDrawerFormData extends FormData {
                 new LUTManagerPlugin(imageViewerPanel),
                 maskDrawerPlugin,
                 new MeasurementPlugin(imageViewerPanel)));
-        if(lazyLoadedImage != null) {
+        if (lazyLoadedImage != null) {
             imageViewerPanel.setImage(lazyLoadedImage);
             maskDrawerPlugin.setMask(lazyLoadedMask);
             lazyLoadedImage = null;
@@ -55,7 +55,7 @@ public class MaskDrawerFormData extends FormData {
     }
 
     public ImageViewerPanel getImageViewerPanel() {
-        if(imageViewerPanel == null || maskDrawerPlugin == null) {
+        if (imageViewerPanel == null || maskDrawerPlugin == null) {
             initializeImageViewer();
         }
         return imageViewerPanel;
@@ -133,11 +133,10 @@ public class MaskDrawerFormData extends FormData {
         ImagePlus referenceImage = dataBatch.getInputData("Reference", ImagePlusData.class, new JIPipeProgressInfo()).get(0).getImage();
         ImagePlus maskImage = drawMaskAlgorithm.getOutputSlot("Mask").getData(row, ImagePlusData.class, new JIPipeProgressInfo()).getImage();
 
-        if(imageViewerPanel != null) {
+        if (imageViewerPanel != null) {
             imageViewerPanel.setImage(referenceImage);
             maskDrawerPlugin.setMask(maskImage);
-        }
-        else {
+        } else {
             lazyLoadedImage = referenceImage;
             lazyLoadedMask = maskImage;
         }

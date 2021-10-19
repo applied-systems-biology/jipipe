@@ -42,10 +42,10 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
 import org.hkijena.jipipe.extensions.settings.RuntimeSettings;
 import org.hkijena.jipipe.utils.GraphUtils;
-import org.hkijena.jipipe.utils.json.JsonUtils;
 import org.hkijena.jipipe.utils.ParameterUtils;
 import org.hkijena.jipipe.utils.ReflectionUtils;
 import org.hkijena.jipipe.utils.StringUtils;
+import org.hkijena.jipipe.utils.json.JsonUtils;
 import org.jgrapht.Graph;
 import org.jgrapht.alg.cycle.CycleDetector;
 import org.jgrapht.graph.DefaultDirectedGraph;
@@ -1342,9 +1342,9 @@ public class JIPipeGraph implements JIPipeValidatable {
                     if (!slot.getInfo().isOptional() && graph.incomingEdgesOf(slot).isEmpty()) {
                         report.resolve(getCompartmentDisplayNameOf(slot.getNode())).resolve(slot.getNode().getName())
                                 .resolve("Slot: " + slot.getName()).reportIsInvalid("An input slot has no incoming data!",
-                                "Input slots must always be provided with input data.",
-                                "Please connect the slot to an output of another algorithm.",
-                                this);
+                                        "Input slots must always be provided with input data.",
+                                        "Please connect the slot to an output of another algorithm.",
+                                        this);
                     }
                 }
             }
@@ -1409,9 +1409,9 @@ public class JIPipeGraph implements JIPipeValidatable {
                 if (!slot.getInfo().isOptional() && graph.incomingEdgesOf(slot).isEmpty()) {
                     report.resolve(getCompartmentDisplayNameOf(slot.getNode())).resolve(slot.getNode().getName())
                             .resolve("Slot: " + slot.getName()).reportIsInvalid("An input slot has no incoming data!",
-                            "Input slots must always be provided with input data.",
-                            "Please connect the slot to an output of another algorithm.",
-                            this);
+                                    "Input slots must always be provided with input data.",
+                                    "Please connect the slot to an output of another algorithm.",
+                                    this);
                     return;
                 }
             }
@@ -1438,7 +1438,8 @@ public class JIPipeGraph implements JIPipeValidatable {
 
     /**
      * Replaces a node with another.
-     * @param target the target node
+     *
+     * @param target      the target node
      * @param replacement the replacement node
      */
     public void replaceNode(JIPipeGraphNode target, JIPipeGraphNode replacement) {
@@ -1446,7 +1447,7 @@ public class JIPipeGraph implements JIPipeValidatable {
         insertNode(replacement, compartment);
         for (Map.Entry<String, JIPipeDataSlot> entry : target.getInputSlotMap().entrySet()) {
             JIPipeDataSlot replacementInput = replacement.getInputSlotMap().getOrDefault(entry.getKey(), null);
-            if(replacementInput == null) {
+            if (replacementInput == null) {
                 System.err.println("Could not find input slot " + entry.getKey());
                 continue;
             }
@@ -1456,7 +1457,7 @@ public class JIPipeGraph implements JIPipeValidatable {
         }
         for (Map.Entry<String, JIPipeDataSlot> entry : target.getOutputSlotMap().entrySet()) {
             JIPipeDataSlot replacementOutput = replacement.getOutputSlotMap().getOrDefault(entry.getKey(), null);
-            if(replacementOutput == null) {
+            if (replacementOutput == null) {
                 System.err.println("Could not find output slot " + entry.getKey());
                 continue;
             }

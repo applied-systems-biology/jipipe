@@ -15,7 +15,6 @@ package org.hkijena.jipipe.ui.parameters;
 
 import com.google.common.eventbus.Subscribe;
 import com.google.common.html.HtmlEscapers;
-import org.apache.commons.lang.WordUtils;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.parameters.JIPipeDynamicParameterCollection;
@@ -231,8 +230,8 @@ public class ParameterPanel extends FormPanel implements Contextual {
         }
 
         for (JIPipeParameterCollection collection : groupedBySource.keySet().stream().sorted(
-                Comparator.comparing(traversed::getSourceCollapsed).thenComparing(traversed::getSourceUIOrder).thenComparing(
-                        Comparator.nullsFirst(Comparator.comparing(traversed::getSourceDocumentationName))))
+                        Comparator.comparing(traversed::getSourceCollapsed).thenComparing(traversed::getSourceUIOrder).thenComparing(
+                                Comparator.nullsFirst(Comparator.comparing(traversed::getSourceDocumentationName))))
                 .collect(Collectors.toList())) {
             if (collection == this.displayedParameters)
                 continue;
@@ -347,16 +346,16 @@ public class ParameterPanel extends FormPanel implements Contextual {
             MarkdownDocument documentation = generateParameterDocumentation(parameterAccess, tree);
             if (ui.isUILabelEnabled() || parameterAccess.isImportant()) {
                 JLabel label = new JLabel();
-                if(ui.isUILabelEnabled())
+                if (ui.isUILabelEnabled())
                     label.setText(parameterAccess.getName());
                 if (parameterAccess.isImportant())
                     label.setIcon(UIUtils.getIconFromResources("emblems/important.png"));
-                if(!isWithDocumentation())
-                    label.setToolTipText("<html>"+documentation.getRenderedHTML()+"</html>");
+                if (!isWithDocumentation())
+                    label.setToolTipText("<html>" + documentation.getRenderedHTML() + "</html>");
                 labelPanel.add(label, BorderLayout.CENTER);
             }
-            if(!isWithDocumentation()) {
-                ui.setToolTipText("<html>"+documentation.getRenderedHTML()+"</html>");
+            if (!isWithDocumentation()) {
+                ui.setToolTipText("<html>" + documentation.getRenderedHTML() + "</html>");
             }
             if (isModifiable) {
                 JButton removeButton = new JButton(UIUtils.getIconFromResources("actions/close-tab.png"));
@@ -369,10 +368,9 @@ public class ParameterPanel extends FormPanel implements Contextual {
                 addToForm(ui, labelPanel, documentation);
                 uiComponents.add(labelPanel);
             } else {
-                if(!parameterAccess.isImportant()) {
+                if (!parameterAccess.isImportant()) {
                     addWideToForm(ui, documentation);
-                }
-                else {
+                } else {
                     JPanel wrapperPanel = new JPanel(new BorderLayout());
                     wrapperPanel.add(ui, BorderLayout.CENTER);
                     wrapperPanel.add(labelPanel, BorderLayout.WEST);

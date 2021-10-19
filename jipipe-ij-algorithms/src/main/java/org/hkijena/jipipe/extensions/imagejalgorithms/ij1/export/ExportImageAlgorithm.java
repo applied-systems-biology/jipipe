@@ -90,7 +90,7 @@ public class ExportImageAlgorithm extends JIPipeIteratingAlgorithm {
 
         // Generate subfolder
         Path subFolder = exporter.generateSubFolder(getFirstInputSlot(), dataBatch.getInputSlotRows().get(getFirstInputSlot()));
-        if(subFolder != null) {
+        if (subFolder != null) {
             outputPath = outputPath.resolve(subFolder);
         }
 
@@ -222,17 +222,17 @@ public class ExportImageAlgorithm extends JIPipeIteratingAlgorithm {
 
     @Override
     public boolean isParameterUIVisible(JIPipeParameterTree tree, JIPipeParameterAccess access) {
-        if(fileFormat != FileFormat.AVI) {
-            if("movie-frame-time".equals(access.getKey())) {
+        if (fileFormat != FileFormat.AVI) {
+            if ("movie-frame-time".equals(access.getKey())) {
                 return false;
             }
-            if("movie-animated-dimension".equals(access.getKey())) {
+            if ("movie-animated-dimension".equals(access.getKey())) {
                 return false;
             }
-            if("avi-compression".equals(access.getKey())) {
+            if ("avi-compression".equals(access.getKey())) {
                 return false;
             }
-            if("jpeg-quality".equals(access.getKey())) {
+            if ("jpeg-quality".equals(access.getKey())) {
                 return false;
             }
         }

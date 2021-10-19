@@ -81,7 +81,7 @@ public class WorkbenchNotificationInboxUI extends JIPipeWorkbenchPanel {
                     null);
         }
 
-        if(!hasNotifications) {
+        if (!hasNotifications) {
             JPanel noNotificationPanel = new JPanel(new BorderLayout());
             noNotificationPanel.setLayout(new BorderLayout());
             noNotificationPanel.setBorder(BorderFactory.createLineBorder(Color.GRAY, 1, true));

@@ -18,11 +18,11 @@ public class DeepLearningUtils {
      * Will apply scaling of width and height if enabled
      * and copy to higher dimensions
      *
-     * @param image              the image
-     * @param modelConfiguration the model configuration
-     * @param scale2DAlgorithm   the scaling algorithm
+     * @param image               the image
+     * @param modelConfiguration  the model configuration
+     * @param scale2DAlgorithm    the scaling algorithm
      * @param scaleWidthAndHeight if the width and height should be scaled
-     * @param copySlices if generated slices should be copied from their closest existing slices or be set to black
+     * @param copySlices          if generated slices should be copied from their closest existing slices or be set to black
      * @return scaled image
      */
     public static ImagePlus scaleToModel(ImagePlus image, DeepLearningModelConfiguration modelConfiguration, TransformScale2DAlgorithm scale2DAlgorithm, boolean scaleWidthAndHeight, boolean copySlices, JIPipeProgressInfo progressInfo) {

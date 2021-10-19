@@ -394,7 +394,7 @@ public class JIPipeDataBatch implements Comparable<JIPipeDataBatch> {
     public JIPipeDataSlot toDummySlot(JIPipeDataSlotInfo info, JIPipeGraphNode node, JIPipeDataSlot sourceSlot) {
         JIPipeDataSlot dummy = new JIPipeDataSlot(info, node);
         ArrayList<JIPipeAnnotation> annotations = new ArrayList<>(getGlobalAnnotations().values());
-        dummy.addData(sourceSlot.getVirtualData( getInputRow(sourceSlot.getName())), annotations, JIPipeAnnotationMergeStrategy.Merge);
+        dummy.addData(sourceSlot.getVirtualData(getInputRow(sourceSlot.getName())), annotations, JIPipeAnnotationMergeStrategy.Merge);
         for (Map.Entry<String, JIPipeDataAnnotation> entry : dataAnnotations.entrySet()) {
             dummy.setVirtualDataAnnotation(dummy.getRowCount() - 1, entry.getKey(), entry.getValue().getVirtualData());
         }
@@ -403,7 +403,7 @@ public class JIPipeDataBatch implements Comparable<JIPipeDataBatch> {
 
     public int getInputRow(String slot) {
         for (Map.Entry<JIPipeDataSlot, Integer> entry : getInputSlotRows().entrySet()) {
-            if(slot.equals(entry.getKey().getName())) {
+            if (slot.equals(entry.getKey().getName())) {
                 return entry.getValue();
             }
         }
