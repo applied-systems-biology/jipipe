@@ -25,8 +25,7 @@ public class RebuildAliasIdsTool extends JIPipeMenuExtension {
 
     private void rebuildIds() {
         JIPipeProjectWorkbench workbench = (JIPipeProjectWorkbench) getWorkbench();
-//        workbench.getProject().rebuildAliasIds(true);
-        workbench.getProject().getGraph().convertLoopsToGroups(Collections.emptySet());
+        workbench.getProject().rebuildAliasIds(true);
         workbench.sendStatusBarText("Rebuilt alias IDs");
     }
 

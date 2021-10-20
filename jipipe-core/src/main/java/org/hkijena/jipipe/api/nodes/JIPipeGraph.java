@@ -38,7 +38,9 @@ import org.hkijena.jipipe.api.JIPipeValidatable;
 import org.hkijena.jipipe.api.compartments.algorithms.JIPipeProjectCompartment;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
+import org.hkijena.jipipe.api.grouping.GraphWrapperAlgorithm;
 import org.hkijena.jipipe.api.looping.LoopEndNode;
+import org.hkijena.jipipe.api.looping.LoopGroup;
 import org.hkijena.jipipe.api.looping.LoopStartNode;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
@@ -1630,7 +1632,7 @@ public class JIPipeGraph implements JIPipeValidatable {
      * Please note that nested loops will be put into the group; only order 1 loops will be converted.
      * @param additionalLoopEnds nodes that are marked as loop ends
      */
-    public void convertLoopsToGroups(Set<JIPipeGraphNode> additionalLoopEnds) {
+    public List<LoopGroup> extractLoopGroups(Set<JIPipeGraphNode> additionalLoopEnds, Set<JIPipeGraphNode> deactivatedNodes) {
 
         // Collect all valid loop starts and ends
         Set<JIPipeGraphNode> loopStarts = new HashSet<>();
@@ -1638,17 +1640,22 @@ public class JIPipeGraph implements JIPipeValidatable {
         for (JIPipeGraphNode node : getGraphNodes()) {
             if (node instanceof LoopEndNode || additionalLoopEnds.contains(node)) {
                 loopEnds.add(node);
-            } else if (node instanceof LoopStartNode) {
+            } else if (node instanceof LoopStartNode && ((LoopStartNode) node).getIterationMode() != GraphWrapperAlgorithm.IterationMode.PassThrough) {
                 loopStarts.add(node);
             } else if (node.getOutputSlots().isEmpty()) {
                 loopEnds.add(node);
             } else {
                 boolean isConnected = false;
                 for (JIPipeDataSlot outputSlot : node.getOutputSlots()) {
-                    if (graph.outDegreeOf(outputSlot) > 0) {
-                        isConnected = true;
-                        break;
+                    for (JIPipeGraphEdge edge : graph.outgoingEdgesOf(outputSlot)) {
+                        JIPipeDataSlot target = graph.getEdgeTarget(edge);
+                        if(!deactivatedNodes.contains(target.getNode())) {
+                            isConnected = true;
+                            break;
+                        }
                     }
+                    if(isConnected)
+                        break;
                 }
                 if(!isConnected)
                     loopEnds.add(node);
@@ -1657,7 +1664,7 @@ public class JIPipeGraph implements JIPipeValidatable {
 
         // Optimization if there are no loops
         if (loopStarts.isEmpty()) {
-            return;
+            return new ArrayList<>();
         }
 
         // Find start points for the loop search
@@ -1747,9 +1754,26 @@ public class JIPipeGraph implements JIPipeValidatable {
             }
         }
 
-        // Find nodes within the same loop group, then apply grafting
-        System.out.println();
+        // Collect loops
+        List<LoopGroup> result = new ArrayList<>();
+        for (JIPipeGraphNode startNode : startNodes) {
+            if(startNode != dummyLoopStart) {
+                LoopGroup loopGroup = new LoopGroup(this);
+                loopGroup.setLoopStartNode(startNode);
+                loopGroup.getNodes().add(startNode);
+                for (Map.Entry<JIPipeGraphNode, JIPipeGraphNode> entry : loopStartNodes.entrySet()) {
+                    if(entry.getValue() == startNode) {
+                        loopGroup.getNodes().add(entry.getKey());
+                        if(loopEnds.contains(entry.getKey())) {
+                            loopGroup.getLoopEndNodes().add(entry.getKey());
+                        }
+                    }
+                }
+                result.add(loopGroup);
+            }
+        }
 
+        return result;
     }
 
     /**

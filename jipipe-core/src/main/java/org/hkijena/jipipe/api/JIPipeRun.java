@@ -20,6 +20,7 @@ import org.hkijena.jipipe.api.compartments.algorithms.JIPipeProjectCompartment;
 import org.hkijena.jipipe.api.data.JIPipeDataInfo;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
+import org.hkijena.jipipe.api.looping.LoopGroup;
 import org.hkijena.jipipe.api.nodes.JIPipeAlgorithm;
 import org.hkijena.jipipe.api.nodes.JIPipeGraph;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
@@ -32,6 +33,8 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -258,6 +261,17 @@ public class JIPipeRun implements JIPipeRunnable {
             }
         }
 
+        // Collect loop groups
+        List<LoopGroup> loopGroups = copiedGraph.extractLoopGroups(Collections.emptySet(), unExecutableAlgorithms);
+        Map<JIPipeGraphNode, LoopGroup> nodeLoops = new HashMap<>();
+        for (LoopGroup loopGroup : loopGroups) {
+            for (JIPipeGraphNode node : loopGroup.getNodes()) {
+                nodeLoops.put(node, loopGroup);
+            }
+        }
+        Set<LoopGroup> executedLoops = new HashSet<>();
+
+        // Run nodes
         progressInfo.setMaxProgress(traversedSlots.size());
         for (int index = 0; index < traversedSlots.size(); ++index) {
             if (progressInfo.isCancelled())
@@ -274,7 +288,7 @@ public class JIPipeRun implements JIPipeRunnable {
                 continue;
 
             // Let algorithms provide sub-progress
-            JIPipeProgressInfo subProgress = progressInfo.resolve("Algorithm: " + slot.getNode().getName());
+            JIPipeProgressInfo subProgress = progressInfo.resolve(slot.getNode().getName());
 
             if (slot.isInput()) {
                 // Copy data from source
@@ -292,20 +306,35 @@ public class JIPipeRun implements JIPipeRunnable {
                 // Check if this is a postprocessor
                 if (!executedAlgorithms.contains(node) && postprocessorNodes.contains(node)) {
                     subProgress.resolveAndLog("Node is postprocessor. Deferring the run.");
+                    continue;
                 }
 
-                // Ensure the algorithm has run
-                if (!executedAlgorithms.contains(node)) {
-                    runNode(executedAlgorithms, node, subProgress);
+                LoopGroup loop = nodeLoops.getOrDefault(node, null);
+                if(loop == null) {
+                    // Ensure the algorithm has run
+                    if (!executedAlgorithms.contains(node)) {
+                        runNode(executedAlgorithms, node, subProgress);
+                    }
+
+                    // Check if we can flush the output
+                    tryFlushOutputSlot(traversedSlots, executedAlgorithms, index, slot, flushedSlots, subProgress);
+
+                    // Check if we can flush the inputs
+                    for (JIPipeDataSlot inputSlot : node.getInputSlots()) {
+                        tryFlushInputSlot(inputSlot, executedAlgorithms, flushedSlots);
+                    }
+                }
+                else {
+                    // Encountered a loop
+                    if(!executedLoops.contains(loop)) {
+                        subProgress = progressInfo.resolveAndLog("Loop #" + loopGroups.indexOf(loop));
+
+                        // TODO: Execute loop, pass data to targets
+
+                        executedLoops.add(loop);
+                    }
                 }
 
-                // Check if we can flush the output
-                tryFlushOutputSlot(traversedSlots, executedAlgorithms, index, slot, flushedSlots, subProgress);
-
-                // Check if we can flush the inputs
-                for (JIPipeDataSlot inputSlot : node.getInputSlots()) {
-                    tryFlushInputSlot(inputSlot, executedAlgorithms, flushedSlots);
-                }
             }
         }
 
