@@ -38,6 +38,8 @@ import org.hkijena.jipipe.api.JIPipeValidatable;
 import org.hkijena.jipipe.api.compartments.algorithms.JIPipeProjectCompartment;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
+import org.hkijena.jipipe.api.looping.LoopEndNode;
+import org.hkijena.jipipe.api.looping.LoopStartNode;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
 import org.hkijena.jipipe.extensions.settings.RuntimeSettings;
@@ -49,12 +51,14 @@ import org.hkijena.jipipe.utils.json.JsonUtils;
 import org.jgrapht.Graph;
 import org.jgrapht.alg.cycle.CycleDetector;
 import org.jgrapht.graph.DefaultDirectedGraph;
+import org.jgrapht.traverse.BreadthFirstIterator;
 import org.jgrapht.traverse.GraphIterator;
 import org.jgrapht.traverse.TopologicalOrderIterator;
 
 import java.awt.Point;
 import java.io.IOException;
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * Manages multiple {@link JIPipeGraphNode} instances as graph
@@ -1621,6 +1625,132 @@ public class JIPipeGraph implements JIPipeValidatable {
         return nodeUUIDs.isEmpty();
     }
 
+    /**
+     * Converts loop structures into equivalent group nodes
+     * Please note that nested loops will be put into the group; only order 1 loops will be converted.
+     * @param additionalLoopEnds nodes that are marked as loop ends
+     */
+    public void convertLoopsToGroups(Set<JIPipeGraphNode> additionalLoopEnds) {
+
+        // Collect all valid loop starts and ends
+        Set<JIPipeGraphNode> loopStarts = new HashSet<>();
+        Set<JIPipeGraphNode> loopEnds = new HashSet<>();
+        for (JIPipeGraphNode node : getGraphNodes()) {
+            if (node instanceof LoopEndNode || additionalLoopEnds.contains(node)) {
+                loopEnds.add(node);
+            } else if (node instanceof LoopStartNode) {
+                loopStarts.add(node);
+            } else if (node.getOutputSlots().isEmpty()) {
+                loopEnds.add(node);
+            } else {
+                boolean isConnected = false;
+                for (JIPipeDataSlot outputSlot : node.getOutputSlots()) {
+                    if (graph.outDegreeOf(outputSlot) > 0) {
+                        isConnected = true;
+                        break;
+                    }
+                }
+                if(!isConnected)
+                    loopEnds.add(node);
+            }
+        }
+
+        // Optimization if there are no loops
+        if (loopStarts.isEmpty()) {
+            return;
+        }
+
+        // Find start points for the loop search
+        Set<JIPipeGraphNode> startNodes = new HashSet<>();
+        for (JIPipeGraphNode node : getGraphNodes()) {
+            if (node.getInputSlots().isEmpty()) {
+                startNodes.add(node);
+            } else {
+                for (JIPipeDataSlot slot : node.getInputSlots()) {
+                    if (graph.inDegreeOf(slot) == 0) {
+                        startNodes.add(node);
+                        break;
+                    }
+                }
+            }
+        }
+
+        // We need this to distinguish null from "no loop"
+        LoopStartNode dummyLoopStart = new LoopStartNode(new JIPipeJavaNodeInfo("loop:start", LoopStartNode.class));
+
+        // Iterate from start points to assign loop starts
+        // Nested loops will be ignored (but tracked)
+        Map<JIPipeGraphNode, JIPipeGraphNode> loopStartNodes = new HashMap<>();
+        Map<JIPipeGraphNode, Integer> loopDepths = new HashMap<>();
+        for (JIPipeGraphNode startNode : startNodes) {
+            // Initialize the start nodes
+            if (loopStarts.contains(startNode)) {
+                loopStartNodes.put(startNode, startNode);
+                loopDepths.put(startNode, 1);
+            } else {
+                loopStartNodes.put(startNode, dummyLoopStart);
+                loopDepths.put(startNode, 0);
+            }
+        }
+        for (JIPipeDataSlot target : traverseSlots()) {
+            JIPipeGraphNode targetNode = target.getNode();
+            if (target.isInput()) {
+                JIPipeGraphNode currentLoopStart = loopStartNodes.getOrDefault(targetNode, null);
+                // Must be null -> Otherwise it might already be assigned
+                if (currentLoopStart == null) {
+                    Set<JIPipeGraphNode> previousLoopStarts = new HashSet<>();
+                    int previousLoopDepth = 0;
+                    boolean previousConnectedToEnd = false;
+                    for (JIPipeGraphEdge edge : graph.incomingEdgesOf(target)) {
+                        JIPipeDataSlot source = graph.getEdgeSource(edge);
+                        JIPipeGraphNode sourceNode = source.getNode();
+                        if(!loopEnds.contains(sourceNode)) {
+                            JIPipeGraphNode edgeLoopStart = loopStartNodes.getOrDefault(sourceNode, dummyLoopStart);
+                            previousLoopStarts.add(edgeLoopStart);
+                        }
+                        else {
+                            previousConnectedToEnd = true;
+                        }
+                        previousLoopDepth = Math.max(previousLoopDepth, loopDepths.get(sourceNode));
+                    }
+                    // Determine the depth
+                    if (loopStarts.contains(targetNode)) {
+                        previousLoopDepth += 1;
+                    }
+                    else if(previousConnectedToEnd) {
+                        previousLoopDepth = Math.max(0, previousLoopDepth - 1);
+                    }
+                    if(previousLoopDepth == 0) {
+                        previousLoopStarts.clear();
+                    }
+                    if (previousLoopStarts.isEmpty()) {
+                        previousLoopStarts.add(dummyLoopStart);
+                    }
+                    if (previousLoopStarts.size() == 1) {
+                        JIPipeGraphNode previousLoopStart = previousLoopStarts.iterator().next();
+                        if (previousLoopStart == dummyLoopStart && loopStarts.contains(targetNode)) {
+                            loopStartNodes.put(targetNode, targetNode);
+                            loopDepths.put(targetNode, previousLoopDepth);
+                        } else {
+                            loopStartNodes.put(targetNode, previousLoopStart);
+                            loopDepths.put(targetNode, previousLoopDepth);
+                        }
+                    } else {
+                        throw new UserFriendlyRuntimeException("Invalid loop detected: The node '" + targetNode.getDisplayName() + "' is rooted in different loops: "
+                                + previousLoopStarts.stream().map(JIPipeGraphNode::getDisplayName).collect(Collectors.joining(", ")),
+                                "Invalid loop detected!",
+                                "Node '" + targetNode.getDisplayName() + "', loop start nodes " + previousLoopStarts.stream().map(JIPipeGraphNode::getDisplayName).collect(Collectors.joining(", ")),
+                                "You have created a loop section that has more than one loop starts. JIPipe does not know how to resolve this.",
+                                "Check the affected node and trace back the loop start nodes. You can nest loops, but you cannot have multiple loop starts with equal depths.");
+                    }
+                }
+            }
+        }
+
+        // Find nodes within the same loop group, then apply grafting
+        System.out.println();
+
+    }
 
     /**
      * Serializes an {@link JIPipeGraph}
