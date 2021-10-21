@@ -11,7 +11,7 @@ import java.util.Set;
  */
 public class LoopGroup {
     private final JIPipeGraph graph;
-    private JIPipeGraphNode loopStartNode;
+    private LoopStartNode loopStartNode;
     private Set<JIPipeGraphNode> nodes = new HashSet<>();
     private Set<JIPipeGraphNode> loopEndNodes = new HashSet<>();
 
@@ -23,11 +23,11 @@ public class LoopGroup {
         return graph;
     }
 
-    public JIPipeGraphNode getLoopStartNode() {
+    public LoopStartNode getLoopStartNode() {
         return loopStartNode;
     }
 
-    public void setLoopStartNode(JIPipeGraphNode loopStartNode) {
+    public void setLoopStartNode(LoopStartNode loopStartNode) {
         this.loopStartNode = loopStartNode;
     }
 

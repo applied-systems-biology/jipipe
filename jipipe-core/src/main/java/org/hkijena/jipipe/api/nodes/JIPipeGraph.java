@@ -1082,10 +1082,11 @@ public class JIPipeGraph implements JIPipeValidatable {
     /**
      * Copies the selected algorithms into a new graph
      * Connections between the nodes are kept
+     * UUIDs are kept
      *
      * @param nodes        the nodes
      * @param withInternal also copy internal algorithms
-     * @return graph that only contains the selected algorithms
+     * @return graph that only contains the selected algorithms, UUIDs are the same between the original and copies
      */
     public JIPipeGraph extract(Collection<JIPipeGraphNode> nodes, boolean withInternal) {
         JIPipeGraph graph = new JIPipeGraph();
@@ -1687,12 +1688,12 @@ public class JIPipeGraph implements JIPipeValidatable {
 
         // Iterate from start points to assign loop starts
         // Nested loops will be ignored (but tracked)
-        Map<JIPipeGraphNode, JIPipeGraphNode> loopStartNodes = new HashMap<>();
+        Map<JIPipeGraphNode, LoopStartNode> loopStartNodes = new HashMap<>();
         Map<JIPipeGraphNode, Integer> loopDepths = new HashMap<>();
         for (JIPipeGraphNode startNode : startNodes) {
             // Initialize the start nodes
             if (loopStarts.contains(startNode)) {
-                loopStartNodes.put(startNode, startNode);
+                loopStartNodes.put(startNode, (LoopStartNode) startNode);
                 loopDepths.put(startNode, 1);
             } else {
                 loopStartNodes.put(startNode, dummyLoopStart);
@@ -1736,10 +1737,10 @@ public class JIPipeGraph implements JIPipeValidatable {
                     if (previousLoopStarts.size() == 1) {
                         JIPipeGraphNode previousLoopStart = previousLoopStarts.iterator().next();
                         if (previousLoopStart == dummyLoopStart && loopStarts.contains(targetNode)) {
-                            loopStartNodes.put(targetNode, targetNode);
+                            loopStartNodes.put(targetNode, (LoopStartNode) targetNode);
                             loopDepths.put(targetNode, previousLoopDepth);
                         } else {
-                            loopStartNodes.put(targetNode, previousLoopStart);
+                            loopStartNodes.put(targetNode, (LoopStartNode) previousLoopStart);
                             loopDepths.put(targetNode, previousLoopDepth);
                         }
                     } else {
@@ -1756,13 +1757,13 @@ public class JIPipeGraph implements JIPipeValidatable {
 
         // Collect loops
         List<LoopGroup> result = new ArrayList<>();
-        for (JIPipeGraphNode startNode : startNodes) {
-            if(startNode != dummyLoopStart) {
+        for (LoopStartNode loopStartNode : new HashSet<>(loopStartNodes.values())) {
+            if(loopStartNode != dummyLoopStart) {
                 LoopGroup loopGroup = new LoopGroup(this);
-                loopGroup.setLoopStartNode(startNode);
-                loopGroup.getNodes().add(startNode);
-                for (Map.Entry<JIPipeGraphNode, JIPipeGraphNode> entry : loopStartNodes.entrySet()) {
-                    if(entry.getValue() == startNode) {
+                loopGroup.setLoopStartNode(loopStartNode);
+                loopGroup.getNodes().add(loopStartNode);
+                for (Map.Entry<JIPipeGraphNode, LoopStartNode> entry : loopStartNodes.entrySet()) {
+                    if(entry.getValue() == loopStartNode) {
                         loopGroup.getNodes().add(entry.getKey());
                         if(loopEnds.contains(entry.getKey())) {
                             loopGroup.getLoopEndNodes().add(entry.getKey());

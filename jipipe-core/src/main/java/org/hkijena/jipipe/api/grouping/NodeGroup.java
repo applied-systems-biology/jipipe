@@ -115,44 +115,63 @@ public class NodeGroup extends GraphWrapperAlgorithm implements JIPipeCustomPara
         initializeContents();
 
         if (autoCreateSlots) {
-            setPreventUpdateSlots(true);
-            JIPipeMutableSlotConfiguration inputSlotConfiguration = (JIPipeMutableSlotConfiguration) getGroupInput().getSlotConfiguration();
-            JIPipeMutableSlotConfiguration outputSlotConfiguration = (JIPipeMutableSlotConfiguration) getGroupOutput().getSlotConfiguration();
-            BiMap<JIPipeDataSlot, String> exportedInputSlotNames = HashBiMap.create();
-            BiMap<JIPipeDataSlot, String> exportedOutputSlotNames = HashBiMap.create();
-            for (JIPipeDataSlot slot : getWrappedGraph().getUnconnectedSlots()) {
-                if (!slot.getNode().getInfo().isRunnable())
-                    continue;
-                if (slot.isInput()) {
-                    String uniqueName = StringUtils.makeUniqueString(slot.getName(), " ", exportedInputSlotNames::containsValue);
-                    inputSlotConfiguration.addSlot(uniqueName, slot.getInfo(), false);
-                    exportedInputSlotNames.put(slot, uniqueName);
-                } else if (slot.isOutput()) {
-                    String uniqueName = StringUtils.makeUniqueString(slot.getName(), " ", exportedOutputSlotNames::containsValue);
-                    outputSlotConfiguration.addSlot(uniqueName, slot.getInfo(), false);
-                    exportedOutputSlotNames.put(slot, uniqueName);
-                }
-            }
-            setPreventUpdateSlots(false);
-            updateGroupSlots();
-
-            // Internal input slot -> Connect to group output
-            for (Map.Entry<JIPipeDataSlot, String> entry : exportedInputSlotNames.entrySet()) {
-                JIPipeDataSlot internalSlot = entry.getKey();
-                String exportedName = entry.getValue();
-                JIPipeDataSlot source = getGroupInput().getOutputSlot(exportedName);
-                getWrappedGraph().connect(source, internalSlot);
-            }
-            // Internal output slot -> Connect to group input
-            for (Map.Entry<JIPipeDataSlot, String> entry : exportedOutputSlotNames.entrySet()) {
-                JIPipeDataSlot internalSlot = entry.getKey();
-                String exportedName = entry.getValue();
-                JIPipeDataSlot target = getGroupOutput().getInputSlot(exportedName);
-                getWrappedGraph().connect(internalSlot, target);
-            }
+            this.autoCreateSlots();
         }
 
         this.exportedParameters.getEventBus().register(this);
+    }
+
+    /**
+     * Automatically creates slots that connect all inputs
+     * @return Map from a slot in the wrapped graph to the exported group slot
+     */
+    public BiMap<JIPipeDataSlot, JIPipeDataSlot> autoCreateSlots() {
+        setPreventUpdateSlots(true);
+        JIPipeMutableSlotConfiguration inputSlotConfiguration = (JIPipeMutableSlotConfiguration) getGroupInput().getSlotConfiguration();
+        JIPipeMutableSlotConfiguration outputSlotConfiguration = (JIPipeMutableSlotConfiguration) getGroupOutput().getSlotConfiguration();
+        BiMap<JIPipeDataSlot, JIPipeDataSlot> exportedSlots = HashBiMap.create();
+        BiMap<JIPipeDataSlot, String> exportedInputSlotNames = HashBiMap.create();
+        BiMap<JIPipeDataSlot, String> exportedOutputSlotNames = HashBiMap.create();
+        for (JIPipeDataSlot slot : getWrappedGraph().getUnconnectedSlots()) {
+            if (!slot.getNode().getInfo().isRunnable())
+                continue;
+            if (slot.isInput()) {
+                String uniqueName = StringUtils.makeUniqueString(slot.getName(), " ", exportedInputSlotNames::containsValue);
+                inputSlotConfiguration.addSlot(uniqueName, slot.getInfo(), false);
+                exportedInputSlotNames.put(slot, uniqueName);
+            } else if (slot.isOutput()) {
+                String uniqueName = StringUtils.makeUniqueString(slot.getName(), " ", exportedOutputSlotNames::containsValue);
+                outputSlotConfiguration.addSlot(uniqueName, slot.getInfo(), false);
+                exportedOutputSlotNames.put(slot, uniqueName);
+            }
+        }
+        setPreventUpdateSlots(false);
+        updateGroupSlots();
+
+        // Store the assigned slots
+        for (Map.Entry<JIPipeDataSlot, String> entry : exportedInputSlotNames.entrySet()) {
+            exportedSlots.put(entry.getKey(), getInputSlot(entry.getValue()));
+        }
+        for (Map.Entry<JIPipeDataSlot, String> entry : exportedOutputSlotNames.entrySet()) {
+            exportedSlots.put(entry.getKey(), getOutputSlot(entry.getValue()));
+        }
+
+        // Internal input slot -> Connect to group output
+        for (Map.Entry<JIPipeDataSlot, String> entry : exportedInputSlotNames.entrySet()) {
+            JIPipeDataSlot internalSlot = entry.getKey();
+            String exportedName = entry.getValue();
+            JIPipeDataSlot source = getGroupInput().getOutputSlot(exportedName);
+            getWrappedGraph().connect(source, internalSlot);
+        }
+        // Internal output slot -> Connect to group input
+        for (Map.Entry<JIPipeDataSlot, String> entry : exportedOutputSlotNames.entrySet()) {
+            JIPipeDataSlot internalSlot = entry.getKey();
+            String exportedName = entry.getValue();
+            JIPipeDataSlot target = getGroupOutput().getInputSlot(exportedName);
+            getWrappedGraph().connect(internalSlot, target);
+        }
+
+        return exportedSlots;
     }
 
     private void initializeContents() {

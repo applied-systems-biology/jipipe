@@ -674,8 +674,9 @@ public class JIPipeDataSlot {
      * @param progressInfo the progress
      */
     public void addData(JIPipeDataSlot sourceSlot, JIPipeProgressInfo progressInfo) {
+        String text = "Copying data from " + sourceSlot.getDisplayName() + " to " + getDisplayName();
         for (int row = 0; row < sourceSlot.getRowCount(); ++row) {
-            progressInfo.resolveAndLog("Copying data from slot to slot", row, sourceSlot.getRowCount());
+            progressInfo.resolveAndLog(text, row, sourceSlot.getRowCount());
             addData(sourceSlot.getVirtualData(row), sourceSlot.getAnnotations(row), JIPipeAnnotationMergeStrategy.Merge);
 
             // Copy data annotations

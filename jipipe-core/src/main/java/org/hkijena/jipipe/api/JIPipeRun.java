@@ -14,15 +14,20 @@
 package org.hkijena.jipipe.api;
 
 import com.google.common.base.Charsets;
+import com.google.common.collect.BiMap;
 import ij.IJ;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.hkijena.jipipe.api.compartments.algorithms.JIPipeProjectCompartment;
 import org.hkijena.jipipe.api.data.JIPipeDataInfo;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
+import org.hkijena.jipipe.api.grouping.GraphWrapperAlgorithm;
+import org.hkijena.jipipe.api.grouping.NodeGroup;
 import org.hkijena.jipipe.api.looping.LoopGroup;
+import org.hkijena.jipipe.api.looping.LoopStartNode;
 import org.hkijena.jipipe.api.nodes.JIPipeAlgorithm;
 import org.hkijena.jipipe.api.nodes.JIPipeGraph;
+import org.hkijena.jipipe.api.nodes.JIPipeGraphEdge;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.utils.StringUtils;
 
@@ -254,7 +259,7 @@ public class JIPipeRun implements JIPipeRunnable {
             for (int i = 0; i < preprocessorNodes.size(); i++) {
                 JIPipeGraphNode node = preprocessorNodes.get(i);
                 progressInfo.setProgress(i);
-                JIPipeProgressInfo subProgress = progressInfo.resolve("Algorithm: " + node.getName());
+                JIPipeProgressInfo subProgress = progressInfo.resolve(node.getName());
                 if (!executedAlgorithms.contains(node)) {
                     runNode(executedAlgorithms, node, subProgress);
                 }
@@ -327,11 +332,48 @@ public class JIPipeRun implements JIPipeRunnable {
                 else {
                     // Encountered a loop
                     if(!executedLoops.contains(loop)) {
-                        subProgress = progressInfo.resolveAndLog("Loop #" + loopGroups.indexOf(loop));
+                        subProgress = progressInfo.resolveAndLog("Loop #" + (loopGroups.indexOf(loop) + 1));
+                        JIPipeGraph loopGraph = copiedGraph.extract(loop.getNodes(), true);
+                        NodeGroup group = new NodeGroup(loopGraph, false);
+                        BiMap<JIPipeDataSlot, JIPipeDataSlot> loopGraphSlotMap = group.autoCreateSlots();
+                        group.setIterationMode(loop.getLoopStartNode().getIterationMode());
+                        group.setThreadPool(threadPool);
 
-                        // TODO: Execute loop, pass data to targets
+                        // IMPORTANT! Otherwise the nested JIPipeGraphRunner will run into an infinite depth loop
+                        ((LoopStartNode)loopGraph.getEquivalentAlgorithm(loop.getLoopStartNode()))
+                                .setIterationMode(GraphWrapperAlgorithm.IterationMode.PassThrough);
+
+                        // Pass input data from inputs of loop into equivalent input of group
+                        for (JIPipeDataSlot inputSlot : loop.getLoopStartNode().getInputSlots()) {
+                            JIPipeDataSlot groupInput = loopGraphSlotMap.get(loopGraph.getEquivalentSlot(inputSlot));
+                            groupInput.addData(inputSlot, subProgress);
+                        }
+
+                        // Execute the loop
+                        group.run(subProgress);
+
+                        // Pass output data
+                        for (Map.Entry<JIPipeDataSlot, JIPipeDataSlot> entry : loopGraphSlotMap.entrySet()) {
+                            // Info: We need the value; the key already has cleared data!
+                            if(entry.getKey().isOutput()) {
+                                JIPipeDataSlot originalSlot = copiedGraph.getEquivalentSlot(entry.getKey());
+                                JIPipeDataSlot sourceSlot = entry.getValue();
+                                originalSlot.addData(sourceSlot, subProgress);
+                            }
+                        }
 
                         executedLoops.add(loop);
+                    }
+
+                    // IMPORTANT!
+                    executedAlgorithms.add(slot.getNode());
+
+                    // Check if we can flush the output
+                    tryFlushOutputSlot(traversedSlots, executedAlgorithms, index, slot, flushedSlots, subProgress);
+
+                    // Check if we can flush the inputs
+                    for (JIPipeDataSlot inputSlot : node.getInputSlots()) {
+                        tryFlushInputSlot(inputSlot, executedAlgorithms, flushedSlots);
                     }
                 }
 
@@ -355,11 +397,17 @@ public class JIPipeRun implements JIPipeRunnable {
             JIPipeGraphNode node = additionalAlgorithms.get(index);
             int absoluteIndex = index + preprocessorNodes.size() + traversedSlots.size() - 1;
             progressInfo.setProgress(absoluteIndex);
-            JIPipeProgressInfo subProgress = progressInfo.resolve("Algorithm: " + node.getName());
+            JIPipeProgressInfo subProgress = progressInfo.resolve(node.getName());
             runNode(executedAlgorithms, node, subProgress);
         }
     }
 
+    /**
+     * For a given input slot, clear all data and data annotations if all its source algorithms have been executed
+     * @param inputSlot the input slot
+     * @param executedAlgorithms all executed algorithms
+     * @param flushedSlots already flushed slots
+     */
     private void tryFlushInputSlot(JIPipeDataSlot inputSlot, Set<JIPipeGraphNode> executedAlgorithms, Set<JIPipeDataSlot> flushedSlots) {
         if (flushedSlots.contains(inputSlot))
             return;
