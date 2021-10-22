@@ -223,7 +223,7 @@ public abstract class JIPipeIteratingAlgorithm extends JIPipeParameterSlotAlgori
                             "Try to switch to the 'Data batches' tab to preview how data is split into batches.");
         }
 
-        if (!supportsParallelization() || !isParallelizationEnabled() || getThreadPool() == null || getThreadPool().getMaxThreads() <= 1) {
+        if (!supportsParallelization() || !isParallelizationEnabled() || getThreadPool() == null || getThreadPool().getMaxThreads() <= 1 || dataBatches.size() <= 1) {
             for (int i = 0; i < dataBatches.size(); i++) {
                 if (progressInfo.isCancelled())
                     return;

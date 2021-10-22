@@ -36,6 +36,7 @@ import org.hkijena.jipipe.api.nodes.categories.DataSourceNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.omero.OMEROCredentials;
 import org.hkijena.jipipe.extensions.omero.datatypes.OMEROImageReferenceData;
+import org.hkijena.jipipe.extensions.omero.util.OMEROGateway;
 import org.hkijena.jipipe.extensions.omero.util.OMEROToJIPipeLogger;
 import org.hkijena.jipipe.extensions.omero.util.OMEROUtils;
 import org.hkijena.jipipe.extensions.parameters.primitives.OptionalStringParameter;
@@ -44,7 +45,7 @@ import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
 import java.util.ArrayList;
 import java.util.List;
 
-@JIPipeDocumentation(name = "Download from OMERO", description = "Imports tables attached to an OMERO image as ImageJ table. " +
+@JIPipeDocumentation(name = "Download table from OMERO", description = "Imports tables attached to an OMERO image as ImageJ table. " +
         "Please note that OMERO tables have a wider range of allowed data types, while ImageJ only supports numeric and string columns. " +
         "Any unsupported table object is converted into a string.")
 @JIPipeNode(nodeTypeCategory = DataSourceNodeTypeCategory.class)
@@ -73,14 +74,17 @@ public class DownloadOMEROTableAlgorithm extends JIPipeSimpleIteratingAlgorithm 
     }
 
     @Override
+    public void runParameterSet(JIPipeProgressInfo progressInfo, List<JIPipeAnnotation> parameterAnnotations) {
+        super.runParameterSet(progressInfo, parameterAnnotations);
+    }
+
+    @Override
     protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
         OMEROImageReferenceData imageReferenceData = dataBatch.getInputData(getFirstInputSlot(), OMEROImageReferenceData.class, progressInfo);
-        try (Gateway gateway = new Gateway(new OMEROToJIPipeLogger(progressInfo))) {
-            ExperimenterData user = gateway.connect(credentials.getCredentials());
-            SecurityContext context = new SecurityContext(user.getGroupId());
-            BrowseFacility browseFacility = gateway.getFacility(BrowseFacility.class);
-            TablesFacility tablesFacility = gateway.getFacility(TablesFacility.class);
-            ImageData imageData = browseFacility.getImage(context, imageReferenceData.getImageId());
+        try (OMEROGateway gateway = new OMEROGateway(credentials.getCredentials(), progressInfo)) {
+            TablesFacility tablesFacility = gateway.getGateway().getFacility(TablesFacility.class);
+            ImageData imageData = gateway.getImage(imageReferenceData.getImageId(), -1);
+            SecurityContext context = new SecurityContext(imageData.getGroupId());
             for (FileAnnotationData fileAnnotationData : tablesFacility.getAvailableTables(context, imageData)) {
                 String fileName = fileAnnotationData.getFileName();
                 long fileID = fileAnnotationData.getFileID();
@@ -143,5 +147,10 @@ public class DownloadOMEROTableAlgorithm extends JIPipeSimpleIteratingAlgorithm 
     @JIPipeParameter("file-name-annotation")
     public void setFileNameAnnotation(OptionalStringParameter fileNameAnnotation) {
         this.fileNameAnnotation = fileNameAnnotation;
+    }
+
+    @Override
+    public boolean supportsParallelization() {
+        return true;
     }
 }

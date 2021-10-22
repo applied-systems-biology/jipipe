@@ -13,14 +13,9 @@
 
 package org.hkijena.jipipe.extensions.omero.datasources;
 
-import omero.gateway.Gateway;
-import omero.gateway.LoginCredentials;
 import omero.gateway.SecurityContext;
 import omero.gateway.exception.DSAccessException;
 import omero.gateway.exception.DSOutOfServiceException;
-import omero.gateway.facility.BrowseFacility;
-import omero.gateway.facility.MetadataFacility;
-import omero.gateway.model.ExperimenterData;
 import omero.gateway.model.ProjectData;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeIssueReport;
@@ -28,16 +23,19 @@ import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeAnnotation;
 import org.hkijena.jipipe.api.data.JIPipeAnnotationMergeStrategy;
+import org.hkijena.jipipe.api.nodes.JIPipeDataBatch;
+import org.hkijena.jipipe.api.nodes.JIPipeInputSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.JIPipeOutputSlot;
-import org.hkijena.jipipe.api.nodes.JIPipeParameterSlotAlgorithm;
+import org.hkijena.jipipe.api.nodes.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.nodes.categories.DataSourceNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.expressions.StringMapQueryExpression;
 import org.hkijena.jipipe.extensions.expressions.StringQueryExpression;
 import org.hkijena.jipipe.extensions.omero.OMEROCredentials;
+import org.hkijena.jipipe.extensions.omero.datatypes.OMEROGroupReferenceData;
 import org.hkijena.jipipe.extensions.omero.datatypes.OMEROProjectReferenceData;
-import org.hkijena.jipipe.extensions.omero.util.OMEROToJIPipeLogger;
+import org.hkijena.jipipe.extensions.omero.util.OMEROGateway;
 import org.hkijena.jipipe.extensions.omero.util.OMEROUtils;
 import org.hkijena.jipipe.extensions.parameters.primitives.OptionalAnnotationNameParameter;
 import org.hkijena.jipipe.utils.json.JsonUtils;
@@ -49,9 +47,10 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 @JIPipeDocumentation(name = "List projects", description = "Returns the ID(s) of project(s) according to search criteria.")
+@JIPipeInputSlot(value = OMEROGroupReferenceData.class, slotName = "Group", autoCreate = true)
 @JIPipeOutputSlot(value = OMEROProjectReferenceData.class, slotName = "Projects", autoCreate = true)
 @JIPipeNode(nodeTypeCategory = DataSourceNodeTypeCategory.class, menuPath = "OMERO")
-public class OMEROFindProjectAlgorithm extends JIPipeParameterSlotAlgorithm {
+public class OMEROFindProjectAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     private OMEROCredentials credentials = new OMEROCredentials();
     private StringQueryExpression projectNameFilters = new StringQueryExpression("");
@@ -79,24 +78,19 @@ public class OMEROFindProjectAlgorithm extends JIPipeParameterSlotAlgorithm {
     }
 
     @Override
-    public void runParameterSet(JIPipeProgressInfo progressInfo, List<JIPipeAnnotation> parameterAnnotations) {
-        LoginCredentials credentials = this.credentials.getCredentials();
-        progressInfo.log("Connecting to " + credentials.getUser().getUsername() + "@" + credentials.getServer().getHost());
-        try (Gateway gateway = new Gateway(new OMEROToJIPipeLogger(progressInfo))) {
-            ExperimenterData user = gateway.connect(credentials);
-            SecurityContext context = new SecurityContext(user.getGroupId());
-            BrowseFacility browseFacility = gateway.getFacility(BrowseFacility.class);
-            MetadataFacility metadata = gateway.getFacility(MetadataFacility.class);
-            progressInfo.log("Listing projects");
+    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
+        long groupId = dataBatch.getInputData("Group", OMEROGroupReferenceData.class, progressInfo).getGroupId();
+        try(OMEROGateway gateway = new OMEROGateway(credentials.getCredentials(), progressInfo)) {
+            SecurityContext context = new SecurityContext(groupId);
             try {
-                for (ProjectData project : browseFacility.getProjects(context)) {
+                for (ProjectData project : gateway.getBrowseFacility().getProjects(context)) {
                     if (!projectNameFilters.test(project.getName())) {
                         continue;
                     }
-                    Map<String, String> keyValuePairs = OMEROUtils.getKeyValuePairAnnotations(metadata, context, project);
+                    Map<String, String> keyValuePairs = OMEROUtils.getKeyValuePairAnnotations(gateway.getMetadata(), context, project);
                     if (!keyValuePairFilters.test(keyValuePairs))
                         continue;
-                    Set<String> tags = OMEROUtils.getTagAnnotations(metadata, context, project);
+                    Set<String> tags = OMEROUtils.getTagAnnotations(gateway.getMetadata(), context, project);
                     if (!tagFilters.test(tags)) {
                         continue;
                     }
@@ -119,8 +113,6 @@ public class OMEROFindProjectAlgorithm extends JIPipeParameterSlotAlgorithm {
             } catch (DSOutOfServiceException | DSAccessException e) {
                 throw new RuntimeException(e);
             }
-        } catch (Exception e) {
-            throw new RuntimeException(e);
         }
     }
 

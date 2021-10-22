@@ -9,6 +9,7 @@ import ome.formats.importer.ImportLibrary;
 import ome.formats.importer.OMEROWrapper;
 import ome.formats.importer.cli.ErrorHandler;
 import omero.gateway.LoginCredentials;
+import omero.gateway.SecurityContext;
 import omero.gateway.model.ImageData;
 import omero.gateway.model.MapAnnotationData;
 import omero.model.NamedValue;
@@ -24,8 +25,7 @@ import java.util.List;
 public class OMEROImageUploader implements AutoCloseable {
     private final LoginCredentials credentials;
     private final long datasetId;
-    private final int numProcessingThreads;
-    private final int numUploadThreads;
+    private final SecurityContext context;
     private final JIPipeProgressInfo progressInfo;
     private OMEROMetadataStoreClient store;
     private OMEROWrapper reader;
@@ -33,11 +33,10 @@ public class OMEROImageUploader implements AutoCloseable {
     private ImportLibrary library;
     private ImportConfig config;
 
-    public OMEROImageUploader(LoginCredentials credentials, long datasetId, int numProcessingThreads, int numUploadThreads, JIPipeProgressInfo progressInfo) {
+    public OMEROImageUploader(LoginCredentials credentials, long datasetId, SecurityContext context, JIPipeProgressInfo progressInfo) {
         this.credentials = credentials;
         this.datasetId = datasetId;
-        this.numProcessingThreads = numProcessingThreads;
-        this.numUploadThreads = numUploadThreads;
+        this.context = context;
         this.progressInfo = progressInfo;
         initialize();
     }
@@ -49,8 +48,8 @@ public class OMEROImageUploader implements AutoCloseable {
         config.sendReport.set(false);
         config.contOnError.set(false);
         config.debug.set(false);
-        config.parallelFileset.set(numProcessingThreads);
-        config.parallelUpload.set(numUploadThreads);
+        config.parallelFileset.set(1);
+        config.parallelUpload.set(1);
         config.hostname.set(credentials.getServer().getHost());
         config.port.set(credentials.getServer().getPort());
         config.username.set(credentials.getUser().getUsername());
@@ -89,8 +88,8 @@ public class OMEROImageUploader implements AutoCloseable {
             mapAnnotationData.setNameSpace(MapAnnotationData.NS_CLIENT_CREATED);
             for (Long uploadedImage : uploadedImages) {
                 try {
-                    ImageData image = gateway.getBrowseFacility().getImage(gateway.getContext(), uploadedImage);
-                    gateway.getDataManagerFacility().attachAnnotation(gateway.getContext(), mapAnnotationData, image);
+                    ImageData image = gateway.getBrowseFacility().getImage(context, uploadedImage);
+                    gateway.getDataManagerFacility().attachAnnotation(context, mapAnnotationData, image);
                 } catch (Exception e) {
                     throw new RuntimeException(e);
                 }
@@ -100,7 +99,7 @@ public class OMEROImageUploader implements AutoCloseable {
     }
 
     @Override
-    public void close() throws Exception {
+    public void close() {
         if (store != null) {
             store.logout();
             store = null;

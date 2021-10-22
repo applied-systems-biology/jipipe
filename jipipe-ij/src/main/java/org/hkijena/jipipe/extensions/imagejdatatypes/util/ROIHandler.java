@@ -371,32 +371,6 @@ public class ROIHandler {
     }
 
     /**
-     * Returns the rois if any stored in the ROI manager.
-     *
-     * @return See above.
-     */
-    public static Roi[] readFromRoiManager() {
-
-        RoiManager manager = RoiManager.getInstance();
-        if (manager == null) return null;
-        return manager.getRoisAsArray();
-    }
-
-    /**
-     * Returns rois if any from the overlay.
-     *
-     * @return See above
-     */
-    public static Roi[] readFromOverlays() {
-
-        ImagePlus image = IJ.getImage();
-        Overlay overlay = image.getOverlay();
-        if (overlay == null) return null;
-        return overlay.toArray();
-
-    }
-
-    /**
      * Save ROIs in the ROI manager to the given MetadataStore.
      *
      * @param store Where to store the rois.
@@ -408,11 +382,11 @@ public class ROIHandler {
         if (roiListData != null && !roiListData.isEmpty()) {
             rois = roiListData.toArray(new Roi[0]);
         } else {
-            rois = readFromOverlays();
+            rois = new Roi[0];
         }
 
-        if (rois == null || rois.length == 0) return;
-        List<String> discardList = new ArrayList<String>();
+        if (rois.length == 0) return;
+        List<String> discardList = new ArrayList<>();
         String roiID = null;
 
         OME root = (OME) store.getRoot();

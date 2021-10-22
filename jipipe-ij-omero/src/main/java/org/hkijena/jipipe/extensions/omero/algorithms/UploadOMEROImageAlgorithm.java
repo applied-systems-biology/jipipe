@@ -13,6 +13,8 @@
 
 package org.hkijena.jipipe.extensions.omero.algorithms;
 
+import omero.gateway.SecurityContext;
+import omero.gateway.model.DatasetData;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
@@ -31,7 +33,6 @@ import org.hkijena.jipipe.api.nodes.categories.ExportNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.expressions.AnnotationQueryExpression;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.OMEImageData;
-import org.hkijena.jipipe.extensions.imagejdatatypes.parameters.OMEExporterSettings;
 import org.hkijena.jipipe.extensions.omero.OMEROCredentials;
 import org.hkijena.jipipe.extensions.omero.datatypes.OMERODatasetReferenceData;
 import org.hkijena.jipipe.extensions.omero.datatypes.OMEROImageReferenceData;
@@ -135,7 +136,8 @@ public class UploadOMEROImageAlgorithm extends JIPipeMergingAlgorithm {
             uploader = uploaderMap.getOrDefault(datasetId, null);
             if (uploader == null) {
                 parameterProgressInfo.log("Creating OMERO uploader for dataset=" + datasetId + " in thread " + Thread.currentThread());
-                uploader = new OMEROImageUploader(credentials.getCredentials(), datasetId, 1, 1, parameterProgressInfo.resolve("Dataset " + datasetId));
+                DatasetData dataset = gateway.getDataset(datasetId, -1);
+                uploader = new OMEROImageUploader(credentials.getCredentials(), datasetId, new SecurityContext(dataset.getGroupId()), parameterProgressInfo.resolve("Dataset " + datasetId));
                 uploaderMap.put(datasetId, uploader);
             }
         }

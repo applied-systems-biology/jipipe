@@ -38,6 +38,7 @@ import org.hkijena.jipipe.extensions.expressions.StringQueryExpression;
 import org.hkijena.jipipe.extensions.omero.OMEROCredentials;
 import org.hkijena.jipipe.extensions.omero.datatypes.OMERODatasetReferenceData;
 import org.hkijena.jipipe.extensions.omero.datatypes.OMEROProjectReferenceData;
+import org.hkijena.jipipe.extensions.omero.util.OMEROGateway;
 import org.hkijena.jipipe.extensions.omero.util.OMEROToJIPipeLogger;
 import org.hkijena.jipipe.extensions.omero.util.OMEROUtils;
 import org.hkijena.jipipe.extensions.parameters.primitives.OptionalAnnotationNameParameter;
@@ -93,22 +94,19 @@ public class OMEROFindDatasetAlgorithm extends JIPipeParameterSlotAlgorithm {
 
         LoginCredentials credentials = this.credentials.getCredentials();
         progressInfo.log("Connecting to " + credentials.getUser().getUsername() + "@" + credentials.getServer().getHost());
-        try (Gateway gateway = new Gateway(new OMEROToJIPipeLogger(progressInfo))) {
-            ExperimenterData user = gateway.connect(credentials);
-            SecurityContext context = new SecurityContext(user.getGroupId());
-            BrowseFacility browseFacility = gateway.getFacility(BrowseFacility.class);
-            MetadataFacility metadata = gateway.getFacility(MetadataFacility.class);
+        try (OMEROGateway gateway = new OMEROGateway(credentials, progressInfo)) {
             for (Long projectId : projectIds) {
                 progressInfo.log("Listing datasets in project ID=" + projectId);
-                ProjectData projectData = browseFacility.getProjects(context, Collections.singletonList(projectId)).iterator().next();
+                ProjectData projectData = gateway.getProject(projectId, -1);
+                SecurityContext context = new SecurityContext(projectData.getGroupId());
                 for (DatasetData dataset : projectData.getDatasets()) {
                     if (!datasetNameFilters.test(dataset.getName())) {
                         continue;
                     }
-                    Map<String, String> keyValuePairs = OMEROUtils.getKeyValuePairAnnotations(metadata, context, dataset);
+                    Map<String, String> keyValuePairs = OMEROUtils.getKeyValuePairAnnotations(gateway.getMetadata(), context, dataset);
                     if (!keyValuePairFilters.test(keyValuePairs))
                         continue;
-                    Set<String> tags = OMEROUtils.getTagAnnotations(metadata, context, dataset);
+                    Set<String> tags = OMEROUtils.getTagAnnotations(gateway.getMetadata(), context, dataset);
                     if (!tagFilters.test(tags)) {
                         continue;
                     }

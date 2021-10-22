@@ -196,7 +196,7 @@ public abstract class JIPipeMergingAlgorithm extends JIPipeParameterSlotAlgorith
             }
         }
 
-        if (!supportsParallelization() || !isParallelizationEnabled() || getThreadPool() == null || getThreadPool().getMaxThreads() <= 1) {
+        if (!supportsParallelization() || !isParallelizationEnabled() || getThreadPool() == null || getThreadPool().getMaxThreads() <= 1  || dataBatches.size() <= 1) {
             for (int i = 0; i < dataBatches.size(); i++) {
                 if (progressInfo.isCancelled())
                     return;

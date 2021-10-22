@@ -38,6 +38,7 @@ import org.hkijena.jipipe.extensions.expressions.StringQueryExpression;
 import org.hkijena.jipipe.extensions.omero.OMEROCredentials;
 import org.hkijena.jipipe.extensions.omero.datatypes.OMERODatasetReferenceData;
 import org.hkijena.jipipe.extensions.omero.datatypes.OMEROImageReferenceData;
+import org.hkijena.jipipe.extensions.omero.util.OMEROGateway;
 import org.hkijena.jipipe.extensions.omero.util.OMEROToJIPipeLogger;
 import org.hkijena.jipipe.extensions.omero.util.OMEROUtils;
 import org.hkijena.jipipe.extensions.parameters.primitives.OptionalAnnotationNameParameter;
@@ -95,13 +96,10 @@ public class OMEROFindImageAlgorithm extends JIPipeParameterSlotAlgorithm {
 
         LoginCredentials credentials = this.credentials.getCredentials();
         progressInfo.log("Connecting to " + credentials.getUser().getUsername() + "@" + credentials.getServer().getHost());
-        try (Gateway gateway = new Gateway(new OMEROToJIPipeLogger(progressInfo))) {
-            ExperimenterData user = gateway.connect(credentials);
-            SecurityContext context = new SecurityContext(user.getGroupId());
-            BrowseFacility browseFacility = gateway.getFacility(BrowseFacility.class);
-            MetadataFacility metadata = gateway.getFacility(MetadataFacility.class);
+        try (OMEROGateway gateway = new OMEROGateway(credentials, progressInfo)) {
             for (Long datasetId : datasetIds) {
-                DatasetData datasetData = browseFacility.getDatasets(context, Collections.singletonList(datasetId)).iterator().next();
+                DatasetData datasetData = gateway.getDataset(datasetId, -1);
+                SecurityContext context = new SecurityContext(datasetData.getGroupId());
                 progressInfo.log("Listing images in dataset ID=" + datasetData.getId());
                 for (Object obj : datasetData.getImages()) {
                     if (obj instanceof ImageData) {
@@ -109,10 +107,10 @@ public class OMEROFindImageAlgorithm extends JIPipeParameterSlotAlgorithm {
                         if (!imageNameFilters.test(imageData.getName())) {
                             continue;
                         }
-                        Map<String, String> keyValuePairs = OMEROUtils.getKeyValuePairAnnotations(metadata, context, imageData);
+                        Map<String, String> keyValuePairs = OMEROUtils.getKeyValuePairAnnotations(gateway.getMetadata(), context, imageData);
                         if (!keyValuePairFilters.test(keyValuePairs))
                             continue;
-                        Set<String> tags = OMEROUtils.getTagAnnotations(metadata, context, imageData);
+                        Set<String> tags = OMEROUtils.getTagAnnotations(gateway.getMetadata(), context, imageData);
                         if (!tagFilters.test(tags)) {
                             continue;
                         }

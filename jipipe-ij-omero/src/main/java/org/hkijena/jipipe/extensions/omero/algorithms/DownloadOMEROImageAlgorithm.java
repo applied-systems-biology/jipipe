@@ -57,9 +57,10 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Collectors;
 
-@JIPipeDocumentation(name = "Download from OMERO", description = "Imports an image from OMERO into ImageJ")
+@JIPipeDocumentation(name = "Download image from OMERO", description = "Imports an image from OMERO into ImageJ")
 @JIPipeNode(nodeTypeCategory = DataSourceNodeTypeCategory.class)
 @JIPipeInputSlot(value = OMEROImageReferenceData.class, slotName = "Input", autoCreate = true)
 @JIPipeOutputSlot(value = OMEImageData.class, slotName = "Output", autoCreate = true)
@@ -83,6 +84,8 @@ public class DownloadOMEROImageAlgorithm extends JIPipeSimpleIteratingAlgorithm 
     private boolean addKeyValuePairsAsAnnotations = true;
     private OptionalStringParameter tagAnnotation = new OptionalStringParameter("Tags", true);
     private JIPipeProgressInfo parameterProgressInfo;
+    private AtomicLong lastGroupId = new AtomicLong(-1);
+
 
     public DownloadOMEROImageAlgorithm(JIPipeNodeInfo info) {
         super(info);
@@ -114,6 +117,8 @@ public class DownloadOMEROImageAlgorithm extends JIPipeSimpleIteratingAlgorithm 
     @Override
     public void runParameterSet(JIPipeProgressInfo progressInfo, List<JIPipeAnnotation> parameterAnnotations) {
         this.parameterProgressInfo = progressInfo;
+        this.lastGroupId.set(-1);
+        // Run downloader
         super.runParameterSet(progressInfo, parameterAnnotations);
         for (OMEROGateway gateway : currentGateways.values()) {
             try {
@@ -128,6 +133,29 @@ public class DownloadOMEROImageAlgorithm extends JIPipeSimpleIteratingAlgorithm 
     protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
         OMEROImageReferenceData imageReferenceData = dataBatch.getInputData(getFirstInputSlot(), OMEROImageReferenceData.class, progressInfo);
         LoginCredentials lc = credentials.getCredentials();
+
+        // Get gateway and fine the appropriate group for the image
+        OMEROGateway gateway;
+        synchronized (this) {
+            gateway = currentGateways.getOrDefault(Thread.currentThread(), null);
+            if (gateway == null) {
+                parameterProgressInfo.log("Creating OMERO gateway for thread " + Thread.currentThread());
+                gateway = new OMEROGateway(credentials.getCredentials(), parameterProgressInfo);
+                currentGateways.put(Thread.currentThread(), gateway);
+            }
+        }
+
+        ImageData imageData = gateway.getImage(imageReferenceData.getImageId(), lastGroupId.get());
+        if(imageData == null) {
+            progressInfo.log("Unable to obtain image info. Retrying by testing available groups.");
+            imageData = gateway.getImage(imageReferenceData.getImageId(), -1);
+        }
+        if(imageData == null) {
+            throw new RuntimeException("Unable to find image with ID=" + imageReferenceData.getImageId());
+        }
+        lastGroupId.set(imageData.getGroupId());
+
+        // Setup for Bioformats
         ImporterOptions options;
         try {
             options = new ImporterOptions();
@@ -150,7 +178,7 @@ public class DownloadOMEROImageAlgorithm extends JIPipeSimpleIteratingAlgorithm 
                 "\npass=" +
                 lc.getUser().getPassword() +
                 "\ngroupID=" +
-                0 + // ctx.getGroupID()
+                imageData.getGroupId() +
                 "\niid=" +
                 imageReferenceData.getImageId();
         options.setId(omeroId);
@@ -177,7 +205,7 @@ public class DownloadOMEROImageAlgorithm extends JIPipeSimpleIteratingAlgorithm 
 
         try {
             ImportProcess process = new ImportProcess(options);
-            progressInfo.log("Downloading image ID=" + imageReferenceData.getImageId() + " from " + lc.getUser().getUsername() + "@" + lc.getServer().getHost() + ":" + lc.getServer().getPort());
+            progressInfo.log("Downloading image ID=" + imageReferenceData.getImageId() + " from " + lc.getUser().getUsername() + "@" + lc.getServer().getHost() + ":" + lc.getServer().getPort() + " (Group " + imageData.getGroupId() + ")");
             if (!process.execute()) {
                 throw new NullPointerException();
             }
@@ -196,26 +224,17 @@ public class DownloadOMEROImageAlgorithm extends JIPipeSimpleIteratingAlgorithm 
                 List<JIPipeAnnotation> annotations = new ArrayList<>();
 
                 if (addKeyValuePairsAsAnnotations || tagAnnotation.isEnabled()) {
-                    OMEROGateway gateway;
-                    synchronized (this) {
-                        gateway = currentGateways.getOrDefault(Thread.currentThread(), null);
-                        if (gateway == null) {
-                            parameterProgressInfo.log("Creating OMERO gateway for thread " + Thread.currentThread());
-                            gateway = new OMEROGateway(credentials.getCredentials(), parameterProgressInfo);
-                            currentGateways.put(Thread.currentThread(), gateway);
-                        }
-                    }
                     try {
-                        ImageData imageData = gateway.getBrowseFacility().getImage(gateway.getContext(), imageReferenceData.getImageId());
-                        if (addKeyValuePairsAsAnnotations) {
-                            for (Map.Entry<String, String> entry : OMEROUtils.getKeyValuePairAnnotations(gateway.getMetadata(), gateway.getContext(), imageData).entrySet()) {
-                                annotations.add(new JIPipeAnnotation(entry.getKey(), entry.getValue()));
-                            }
-                        }
-                        if (tagAnnotation.isEnabled()) {
-                            List<String> sortedTags = OMEROUtils.getTagAnnotations(gateway.getMetadata(), gateway.getContext(), imageData).stream().sorted().collect(Collectors.toList());
-                            annotations.add(new JIPipeAnnotation(tagAnnotation.getContent(), JsonUtils.toJsonString(sortedTags)));
-                        }
+//                        ImageData imageData = gateway.getBrowseFacility().getImage(gateway.getContext(), imageReferenceData.getImageId());
+//                        if (addKeyValuePairsAsAnnotations) {
+//                            for (Map.Entry<String, String> entry : OMEROUtils.getKeyValuePairAnnotations(gateway.getMetadata(), gateway.getContext(), imageData).entrySet()) {
+//                                annotations.add(new JIPipeAnnotation(entry.getKey(), entry.getValue()));
+//                            }
+//                        }
+//                        if (tagAnnotation.isEnabled()) {
+//                            List<String> sortedTags = OMEROUtils.getTagAnnotations(gateway.getMetadata(), gateway.getContext(), imageData).stream().sorted().collect(Collectors.toList());
+//                            annotations.add(new JIPipeAnnotation(tagAnnotation.getContent(), JsonUtils.toJsonString(sortedTags)));
+//                        }
                     } catch (Exception e) {
                         throw new RuntimeException(e);
                     }

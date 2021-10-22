@@ -35,6 +35,7 @@ import org.hkijena.jipipe.api.nodes.categories.ExportNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.omero.OMEROCredentials;
 import org.hkijena.jipipe.extensions.omero.datatypes.OMEROImageReferenceData;
+import org.hkijena.jipipe.extensions.omero.util.OMEROGateway;
 import org.hkijena.jipipe.extensions.omero.util.OMEROToJIPipeLogger;
 import org.hkijena.jipipe.extensions.omero.util.OMEROUtils;
 import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
@@ -72,11 +73,9 @@ public class UploadOMEROTableAlgorithm extends JIPipeMergingAlgorithm {
         List<ResultsTableData> tables = dataBatch.getInputData("Table", ResultsTableData.class, progressInfo);
         JIPipeDataSlot dummy = dataBatch.toDummySlot(new JIPipeDataSlotInfo(ResultsTableData.class, JIPipeSlotType.Input), null, getInputSlot("Table"));
 
-        try (Gateway gateway = new Gateway(new OMEROToJIPipeLogger(progressInfo))) {
-            ExperimenterData user = gateway.connect(credentials.getCredentials());
-            SecurityContext context = new SecurityContext(user.getGroupId());
-            BrowseFacility browseFacility = gateway.getFacility(BrowseFacility.class);
-            TablesFacility tablesFacility = gateway.getFacility(TablesFacility.class);
+        try (OMEROGateway gateway = new OMEROGateway(credentials.getCredentials(), progressInfo)) {
+
+            TablesFacility tablesFacility = gateway.getGateway().getFacility(TablesFacility.class);
 
             // Generate file names
             Set<String> existingFileNames = new HashSet<>();
@@ -90,7 +89,8 @@ public class UploadOMEROTableAlgorithm extends JIPipeMergingAlgorithm {
             // Attach tables for each image
             for (OMEROImageReferenceData image : images) {
                 progressInfo.log("Attaching tables to Image ID=" + image.getImageId());
-                ImageData imageData = browseFacility.getImage(context, image.getImageId());
+                ImageData imageData = gateway.getImage(image.getImageId(), -1);
+                SecurityContext context = new SecurityContext(imageData.getGroupId());
                 for (int i = 0; i < tables.size(); i++) {
                     progressInfo.resolve("Attaching tables to Image ID=" + image.getImageId()).resolveAndLog((i + 1) + "/" + tables.size());
                     ResultsTableData resultsTableData = tables.get(i);
