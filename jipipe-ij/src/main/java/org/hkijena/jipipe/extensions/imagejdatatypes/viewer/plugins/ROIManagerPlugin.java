@@ -16,6 +16,7 @@ import org.hkijena.jipipe.utils.UIUtils;
 import javax.swing.*;
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Dimension;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.HashSet;
@@ -78,6 +79,7 @@ public class ROIManagerPlugin extends ImageViewerPanelPlugin {
         headerPanel.addColumn(exportROIsButton);
 
         JPanel panel = new JPanel(new BorderLayout());
+        panel.setMinimumSize(new Dimension(100, 300));
         panel.setBorder(BorderFactory.createEtchedBorder());
         JToolBar listToolBar = new JToolBar();
         listToolBar.setFloatable(false);

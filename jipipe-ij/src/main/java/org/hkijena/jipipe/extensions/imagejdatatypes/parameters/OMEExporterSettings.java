@@ -25,7 +25,7 @@ public class OMEExporterSettings implements JIPipeParameterCollection {
     private boolean splitC = false;
     private boolean splitT = false;
     private boolean padded = false;
-    private boolean saveROI = false;
+    private boolean saveROI = true;
     private boolean noLUT = true;
     private OMETIFFCompression compression = OMETIFFCompression.Uncompressed;
     private DimensionOrder dimensionOrder = DimensionOrder.XYCZT;

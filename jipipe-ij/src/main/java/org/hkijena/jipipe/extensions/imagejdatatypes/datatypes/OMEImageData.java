@@ -57,11 +57,13 @@ import ome.xml.model.primitives.PositiveInteger;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeHeavyData;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
+import org.hkijena.jipipe.api.data.JIPipeCacheSlotDataSource;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataSource;
 import org.hkijena.jipipe.api.data.JIPipeDataStorageDocumentation;
 import org.hkijena.jipipe.api.exceptions.UserFriendlyNullPointerException;
 import org.hkijena.jipipe.extensions.imagejdatatypes.ImageJDataTypesSettings;
+import org.hkijena.jipipe.extensions.imagejdatatypes.display.CachedImagePlusDataViewerWindow;
 import org.hkijena.jipipe.extensions.imagejdatatypes.parameters.OMEExporterSettings;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ROIHandler;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
@@ -139,14 +141,13 @@ public class OMEImageData implements JIPipeData {
 
     @Override
     public void display(String displayName, JIPipeWorkbench workbench, JIPipeDataSource source) {
-        if (rois != null && !rois.isEmpty()) {
-            ROIListData data = new ROIListData(rois);
-            for (Roi roi : data) {
-                roi.setImage(image);
-            }
-            data.display(displayName, workbench, source);
-        } else {
-            (new ImagePlusData(image)).display(displayName, workbench, source);
+        if (source instanceof JIPipeCacheSlotDataSource) {
+            CachedImagePlusDataViewerWindow window = new CachedImagePlusDataViewerWindow(workbench, (JIPipeCacheSlotDataSource) source, displayName, true);
+            window.setVisible(true);
+            SwingUtilities.invokeLater(window::reloadDisplayedData);
+        }
+        else {
+            getDuplicateImage().show();
         }
     }
 
@@ -247,7 +248,6 @@ public class OMEImageData implements JIPipeData {
         boolean saveRoi = settings.isSaveROI();
         String compression = settings.getCompression().getCompression();
         boolean noLookupTables = settings.isNoLUT();
-        boolean windowless = true;
         ImagePlus imp = imageData.getImage();
 
         try (IFormatWriter w = new ImageWriter().getWriter(outfile)) {
@@ -274,7 +274,7 @@ public class OMEImageData implements JIPipeData {
             w.setWriteSequentially(true);
             FileInfo fi = imp.getOriginalFileInfo();
             String xml = fi == null ? null : fi.description == null ? null :
-                    fi.description.indexOf("xml") == -1 ? null : fi.description;
+                    !fi.description.contains("xml") ? null : fi.description;
 
             // Use existing metadata
             if (imageData.getMetadata() != null) {
@@ -288,8 +288,7 @@ public class OMEImageData implements JIPipeData {
                 ServiceFactory factory = new ServiceFactory();
                 service = factory.getInstance(OMEXMLService.class);
                 store = service.createOMEXMLMetadata(xml);
-            } catch (DependencyException de) {
-            } catch (ServiceException se) {
+            } catch (DependencyException | ServiceException ignored) {
             }
 
 
@@ -314,7 +313,7 @@ public class OMEImageData implements JIPipeData {
                     int pixelType = FormatTools.pixelTypeFromString(type);
                     if (pixelType == ptype) {
                         String imageName = store.getImageName(series);
-                        if (title.indexOf(imageName) >= 0) {
+                        if (title.contains(imageName)) {
                             matchingSeries.add(series);
                         }
                     }
@@ -329,7 +328,7 @@ public class OMEImageData implements JIPipeData {
                         for (int j = 0; j < matchingSeries.size(); j++) {
                             if (i != j) {
                                 String compName = store.getImageName(matchingSeries.get(j));
-                                if (compName.indexOf(name) >= 0) {
+                                if (compName.contains(name)) {
                                     valid = false;
                                     break;
                                 }
@@ -384,7 +383,7 @@ public class OMEImageData implements JIPipeData {
                 } else if (FormatTools.isSigned(originalType)) {
                     applyCalibrationFunction = true;
                 }
-            } catch (EnumerationException e) {
+            } catch (EnumerationException ignored) {
             }
 
             if (store.getPixelsBinDataCount(0) == 0 ||
@@ -414,20 +413,10 @@ public class OMEImageData implements JIPipeData {
             store.setPixelsPhysicalSizeX(FormatTools.getPhysicalSizeX(cal.pixelWidth, cal.getXUnit()), 0);
             store.setPixelsPhysicalSizeY(FormatTools.getPhysicalSizeY(cal.pixelHeight, cal.getYUnit()), 0);
             store.setPixelsPhysicalSizeZ(FormatTools.getPhysicalSizeZ(cal.pixelDepth, cal.getZUnit()), 0);
-            store.setPixelsTimeIncrement(FormatTools.getTime(new Double(cal.frameInterval), cal.getTimeUnit()), 0);
+            store.setPixelsTimeIncrement(FormatTools.getTime(cal.frameInterval, cal.getTimeUnit()), 0);
 
             if (imp.getImageStackSize() !=
                     imp.getNChannels() * imp.getNSlices() * imp.getNFrames()) {
-                if (!windowless) {
-                    IJ.showMessageWithCancel("Bio-Formats Exporter Warning",
-                            "The number of planes in the stack (" + imp.getImageStackSize() +
-                                    ") does not match the number of expected planes (" +
-                                    (imp.getNChannels() * imp.getNSlices() * imp.getNFrames()) + ")." +
-                                    "\nIf you select 'OK', only " + imp.getImageStackSize() +
-                                    " planes will be exported. If you wish to export all of the " +
-                                    "planes,\nselect 'Cancel' and convert the Image5D window " +
-                                    "to a stack.");
-                }
                 store.setPixelsSizeZ(new PositiveInteger(imp.getImageStackSize()), 0);
                 store.setPixelsSizeC(new PositiveInteger(1), 0);
                 store.setPixelsSizeT(new PositiveInteger(1), 0);
@@ -537,8 +526,8 @@ public class OMEImageData implements JIPipeData {
             if (codecs != null && codecs.length > 1) {
                 boolean selected = false;
                 if (compression != null) {
-                    for (int i = 0; i < codecs.length; i++) {
-                        if (codecs[i].equals(compression)) {
+                    for (String codec : codecs) {
+                        if (codec.equals(compression)) {
                             selected = true;
                             break;
                         }
@@ -547,24 +536,11 @@ public class OMEImageData implements JIPipeData {
             }
             boolean in = false;
             if (outputFiles.length > 1) {
-                for (int i = 0; i < outputFiles.length; i++) {
-                    if (new File(outputFiles[i]).exists()) {
+                for (String outputFile : outputFiles) {
+                    if (new File(outputFile).exists()) {
                         in = true;
                         break;
                     }
-                }
-            }
-            if (in && !windowless) {
-                int ret1 = JOptionPane.showConfirmDialog(null,
-                        "Some files already exist. \n" +
-                                "Would you like to replace them?", "Replace?",
-                        JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
-                if (ret1 != JOptionPane.OK_OPTION) {
-                    return;
-                }
-                //Delete the files overwrite does not correctly work
-                for (int i = 0; i < outputFiles.length; i++) {
-                    new File(outputFiles[i]).delete();
                 }
             }
             //We are now ready to write the image
@@ -586,9 +562,9 @@ public class OMEImageData implements JIPipeData {
 
             boolean littleEndian = false;
             if (w.getMetadataRetrieve().getPixelsBigEndian(0) != null) {
-                littleEndian = !w.getMetadataRetrieve().getPixelsBigEndian(0).booleanValue();
+                littleEndian = !w.getMetadataRetrieve().getPixelsBigEndian(0);
             } else if (w.getMetadataRetrieve().getPixelsBinDataCount(0) == 0) {
-                littleEndian = !w.getMetadataRetrieve().getPixelsBinDataBigEndian(0, 0).booleanValue();
+                littleEndian = !w.getMetadataRetrieve().getPixelsBinDataBigEndian(0, 0);
             }
             byte[] plane = null;
             w.setInterleaved(false);
@@ -717,9 +693,7 @@ public class OMEImageData implements JIPipeData {
                 }
                 w.saveBytes(no[fileIndex]++, plane);
             }
-        } catch (FormatException e) {
-            WindowTools.reportException(e);
-        } catch (IOException e) {
+        } catch (FormatException | IOException e) {
             WindowTools.reportException(e);
         }
     }
@@ -759,7 +733,7 @@ public class OMEImageData implements JIPipeData {
             w.setWriteSequentially(true);
             FileInfo fi = imp.getOriginalFileInfo();
             String xml = fi == null ? null : fi.description == null ? null :
-                    fi.description.indexOf("xml") == -1 ? null : fi.description;
+                    !fi.description.contains("xml") ? null : fi.description;
 
             OMEXMLService service = null;
             IMetadata store = null;
@@ -768,10 +742,8 @@ public class OMEImageData implements JIPipeData {
                 ServiceFactory factory = new ServiceFactory();
                 service = factory.getInstance(OMEXMLService.class);
                 store = service.createOMEXMLMetadata(xml);
-            } catch (DependencyException de) {
-            } catch (ServiceException se) {
+            } catch (DependencyException | ServiceException ignored) {
             }
-
 
             if (store == null) IJ.error("OME-XML Java library not found.");
 
@@ -794,7 +766,7 @@ public class OMEImageData implements JIPipeData {
                     int pixelType = FormatTools.pixelTypeFromString(type);
                     if (pixelType == ptype) {
                         String imageName = store.getImageName(series);
-                        if (title.indexOf(imageName) >= 0) {
+                        if (title.contains(imageName)) {
                             matchingSeries.add(series);
                         }
                     }
@@ -809,7 +781,7 @@ public class OMEImageData implements JIPipeData {
                         for (int j = 0; j < matchingSeries.size(); j++) {
                             if (i != j) {
                                 String compName = store.getImageName(matchingSeries.get(j));
-                                if (compName.indexOf(name) >= 0) {
+                                if (compName.contains(name)) {
                                     valid = false;
                                     break;
                                 }
@@ -864,7 +836,7 @@ public class OMEImageData implements JIPipeData {
                 } else if (FormatTools.isSigned(originalType)) {
                     applyCalibrationFunction = true;
                 }
-            } catch (EnumerationException e) {
+            } catch (EnumerationException ignored) {
             }
 
             if (store.getPixelsBinDataCount(0) == 0 ||
@@ -874,7 +846,7 @@ public class OMEImageData implements JIPipeData {
             if (store.getPixelsDimensionOrder(0) == null) {
                 try {
                     store.setPixelsDimensionOrder(DimensionOrder.fromString(order), 0);
-                } catch (EnumerationException e) {
+                } catch (EnumerationException ignored) {
                 }
             }
 
@@ -985,9 +957,9 @@ public class OMEImageData implements JIPipeData {
 
             boolean littleEndian = false;
             if (w.getMetadataRetrieve().getPixelsBigEndian(0) != null) {
-                littleEndian = !w.getMetadataRetrieve().getPixelsBigEndian(0).booleanValue();
+                littleEndian = !w.getMetadataRetrieve().getPixelsBigEndian(0);
             } else if (w.getMetadataRetrieve().getPixelsBinDataCount(0) == 0) {
-                littleEndian = !w.getMetadataRetrieve().getPixelsBinDataBigEndian(0, 0).booleanValue();
+                littleEndian = !w.getMetadataRetrieve().getPixelsBinDataBigEndian(0, 0);
             }
             byte[] plane = null;
             w.setInterleaved(false);

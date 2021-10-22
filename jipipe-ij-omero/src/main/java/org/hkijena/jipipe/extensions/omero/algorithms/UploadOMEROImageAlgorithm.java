@@ -55,7 +55,6 @@ public class UploadOMEROImageAlgorithm extends JIPipeMergingAlgorithm {
     private final Map<Thread, OMEROGateway> currentGateways = new HashMap<>();
     private final Map<Thread, Map<Long, OMEROImageUploader>> currentUploaders = new HashMap<>();
     private OMEROCredentials credentials = new OMEROCredentials();
-    private OMEExporterSettings exporterSettings = new OMEExporterSettings();
     private JIPipeDataByMetadataExporter exporter = new JIPipeDataByMetadataExporter();
     private boolean uploadAnnotations = false;
     private AnnotationQueryExpression uploadedAnnotationsFilter = new AnnotationQueryExpression("");
@@ -64,19 +63,16 @@ public class UploadOMEROImageAlgorithm extends JIPipeMergingAlgorithm {
     public UploadOMEROImageAlgorithm(JIPipeNodeInfo info) {
         super(info);
         registerSubParameter(credentials);
-        registerSubParameter(exporterSettings);
         registerSubParameter(exporter);
     }
 
     public UploadOMEROImageAlgorithm(UploadOMEROImageAlgorithm other) {
         super(other);
         this.credentials = new OMEROCredentials(other.credentials);
-        this.exporterSettings = new OMEExporterSettings(other.exporterSettings);
         this.exporter = new JIPipeDataByMetadataExporter(other.exporter);
         this.uploadAnnotations = other.uploadAnnotations;
         this.uploadedAnnotationsFilter = new AnnotationQueryExpression(other.uploadedAnnotationsFilter);
         registerSubParameter(credentials);
-        registerSubParameter(exporterSettings);
         registerSubParameter(exporter);
     }
 
@@ -161,7 +157,6 @@ public class UploadOMEROImageAlgorithm extends JIPipeMergingAlgorithm {
     private void exportImages(OMEImageData image, List<JIPipeAnnotation> annotations, Path targetPath, JIPipeProgressInfo progressInfo) {
         JIPipeDataSlot dummy = new JIPipeDataSlot(new JIPipeDataSlotInfo(OMEImageData.class, JIPipeSlotType.Input), this);
         dummy.addData(image, annotations, JIPipeAnnotationMergeStrategy.Merge, progressInfo);
-        image.setExporterSettings(exporterSettings);
 
         // Export to BioFormats
         progressInfo.log("Image files will be written into " + targetPath);
@@ -173,12 +168,6 @@ public class UploadOMEROImageAlgorithm extends JIPipeMergingAlgorithm {
     @JIPipeParameter("credentials")
     public OMEROCredentials getCredentials() {
         return credentials;
-    }
-
-    @JIPipeDocumentation(name = "Exporter settings", description = "To upload the image to OMERO, it must be exported via Bio Formats. Use following settings to change the generated output.")
-    @JIPipeParameter("exporter-settings")
-    public OMEExporterSettings getExporterSettings() {
-        return exporterSettings;
     }
 
     @JIPipeDocumentation(name = "File name generation", description = "Following settings control how the output file names are generated from metadata columns.")

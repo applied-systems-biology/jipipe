@@ -58,6 +58,7 @@ import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.convert.ConvertImageAl
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.convolve.ConvolveByImage2DAlgorithm;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.convolve.ConvolveByParameter2DAlgorithm;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.datasources.ImageStackFromFolder;
+import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.datasources.OMEImageFromImagePlus;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.dimensions.*;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.edge.CannyEdgeDetectorAlgorithm;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.edge.LaplacianEdgeDetectorAlgorithm;
@@ -328,6 +329,8 @@ public class ImageJAlgorithmsExtension extends JIPipePrepackagedDefaultJavaExten
         registerNodeType("ij1-generate-filter-kernel-3d", GenerateStructureElement3DAlgorithm.class, UIUtils.getIconURLFromResources("actions/morphology.png"));
         registerNodeType("ij1-data-to-preview", DataToPreviewAlgorithm.class, UIUtils.getIconURLFromResources("actions/viewimage.png"));
         registerNodeType("external-imagej-macro", MacroWrapperAlgorithm.class, UIUtils.getIconURLFromResources("apps/imagej.png"));
+
+        registerNodeType("ome-image-from-image-plus", OMEImageFromImagePlus.class);
 
         // Register enum parameters
         registerGlobalEnums();

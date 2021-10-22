@@ -19,6 +19,7 @@ import org.hkijena.jipipe.api.data.JIPipeCacheSlotDataSource;
 import org.hkijena.jipipe.api.data.JIPipeVirtualData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.OMEImageData;
+import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ROIListData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.viewer.ImageViewerPanel;
 import org.hkijena.jipipe.extensions.imagejdatatypes.viewer.plugins.AnimationSpeedPlugin;
 import org.hkijena.jipipe.extensions.imagejdatatypes.viewer.plugins.CalibrationPlugin;
@@ -99,20 +100,29 @@ public class CachedImagePlusDataViewerWindow extends JIPipeCacheDataViewerWindow
     @Override
     protected void loadData(JIPipeVirtualData virtualData, JIPipeProgressInfo progressInfo) {
         ImagePlus image;
+        ROIListData rois = new ROIListData();
         if (ImagePlusData.class.isAssignableFrom(virtualData.getDataClass())) {
             ImagePlusData data = (ImagePlusData) virtualData.getData(progressInfo);
             imageViewerPanel.getCanvas().setError(null);
             image = data.getViewedImage(true);
+            if(data.getImage().getRoi() != null) {
+                rois.add(data.getImage().getRoi());
+            }
         } else if (OMEImageData.class.isAssignableFrom(virtualData.getDataClass())) {
             OMEImageData data = (OMEImageData) virtualData.getData(progressInfo);
             imageViewerPanel.getCanvas().setError(null);
             image = data.getDuplicateImage();
+            rois.addAll(data.getRois());
         } else {
             throw new UnsupportedOperationException();
         }
         image.setTitle(image.getTitle());
         boolean fitImage = imageViewerPanel.getImage() == null;
         imageViewerPanel.setImage(image);
+        if(!rois.isEmpty()) {
+            imageViewerPanel.getPlugin(ROIManagerPlugin.class).clearROIs();
+            imageViewerPanel.getPlugin(ROIManagerPlugin.class).importROIs(rois);
+        }
         if (fitImage)
             SwingUtilities.invokeLater(imageViewerPanel::fitImageToScreen);
     }
