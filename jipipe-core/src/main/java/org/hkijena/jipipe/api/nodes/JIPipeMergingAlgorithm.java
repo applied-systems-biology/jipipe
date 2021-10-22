@@ -206,14 +206,14 @@ public abstract class JIPipeMergingAlgorithm extends JIPipeParameterSlotAlgorith
             }
         } else {
             List<Runnable> tasks = new ArrayList<>();
-            for (int i = 0; i < getFirstInputSlot().getRowCount(); i++) {
-                int rowIndex = i;
+            for (int i = 0; i < dataBatches.size(); i++) {
+                int dataBatchIndex = i;
                 JIPipeParameterTree finalTree = tree;
                 tasks.add(() -> {
                     if (progressInfo.isCancelled())
                         return;
-                    JIPipeProgressInfo slotProgress = progressInfo.resolveAndLog("Data row", rowIndex, dataBatches.size());
-                    JIPipeMergingDataBatch dataBatch = dataBatches.get(rowIndex);
+                    JIPipeProgressInfo slotProgress = progressInfo.resolveAndLog("Data row", dataBatchIndex, dataBatches.size());
+                    JIPipeMergingDataBatch dataBatch = dataBatches.get(dataBatchIndex);
                     uploadAdaptiveParameters(dataBatch, finalTree, parameterBackups, progressInfo);
                     runIteration(dataBatch, slotProgress);
                 });

@@ -234,7 +234,7 @@ public class DataBatchAssistantUI extends JIPipeProjectWorkbenchPanel {
         lastWorker.execute();
     }
 
-    private void displayBatches(List<JIPipeMergingDataBatch> batches) {
+    private void displayBatches(List<JIPipeMergingDataBatch> batches, JIPipeGraphNode algorithm) {
         infiniteScrollingQueue.clear();
         formPanel.clear();
 
@@ -242,7 +242,7 @@ public class DataBatchAssistantUI extends JIPipeProjectWorkbenchPanel {
         batchPreviewMissingLabel.setVisible(false);
         batchPreviewDuplicateLabel.setVisible(false);
         for (JIPipeMergingDataBatch batch : batches) {
-            for (JIPipeDataSlot inputSlot : batchesNodeCopy.getEffectiveInputSlots()) {
+            for (JIPipeDataSlot inputSlot : algorithm.getEffectiveInputSlots()) {
                 List<JIPipeData> data = batch.getInputData(inputSlot, JIPipeData.class, new JIPipeProgressInfo());
                 if (data.isEmpty())
                     batchPreviewMissingLabel.setVisible(true);
@@ -382,9 +382,9 @@ public class DataBatchAssistantUI extends JIPipeProjectWorkbenchPanel {
             super.done();
             if (!isCancelled()) {
                 try {
-                    assistantUI.displayBatches(get());
+                    assistantUI.displayBatches(get(), algorithm);
                 } catch (InterruptedException | ExecutionException e) {
-                    assistantUI.displayBatches(Collections.emptyList());
+                    assistantUI.displayBatches(Collections.emptyList(), algorithm);
                 }
             }
         }

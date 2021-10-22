@@ -233,15 +233,15 @@ public abstract class JIPipeIteratingAlgorithm extends JIPipeParameterSlotAlgori
             }
         } else {
             List<Runnable> tasks = new ArrayList<>();
-            for (int i = 0; i < getFirstInputSlot().getRowCount(); i++) {
-                int rowIndex = i;
+            for (int i = 0; i < dataBatches.size(); i++) {
+                int dataBatchIndex = i;
                 JIPipeParameterTree finalTree = tree;
                 tasks.add(() -> {
                     if (progressInfo.isCancelled())
                         return;
-                    JIPipeProgressInfo slotProgress = progressInfo.resolveAndLog("Data row", rowIndex, dataBatches.size());
-                    uploadAdaptiveParameters(dataBatches.get(rowIndex), finalTree, parameterBackups, progressInfo);
-                    runIteration(dataBatches.get(rowIndex), slotProgress);
+                    JIPipeProgressInfo slotProgress = progressInfo.resolveAndLog("Data row", dataBatchIndex, dataBatches.size());
+                    uploadAdaptiveParameters(dataBatches.get(dataBatchIndex), finalTree, parameterBackups, progressInfo);
+                    runIteration(dataBatches.get(dataBatchIndex), slotProgress);
                 });
             }
             progressInfo.log(String.format("Running %d batches (batch size %d) in parallel. Available threads = %d", tasks.size(), getParallelizationBatchSize(), getThreadPool().getMaxThreads()));
