@@ -44,12 +44,12 @@ public class ImagePlus5DData extends ImagePlusData {
      */
     public ImagePlus5DData(ImagePlus image) {
         super(ImageJUtils.convert3ChannelToRGBIfNeeded(image));
-        ImageJUtils.assert5DImage(image);
+        ImageJUtils.assert5DImage(getImage());
     }
 
     public ImagePlus5DData(ImagePlus image, ColorSpace colorSpace) {
         super(ImageJUtils.convert3ChannelToRGBIfNeeded(image), colorSpace);
-        ImageJUtils.assert5DImage(image);
+        ImageJUtils.assert5DImage(getImage());
     }
 
     public ImagePlus5DData(ImageSource source) {

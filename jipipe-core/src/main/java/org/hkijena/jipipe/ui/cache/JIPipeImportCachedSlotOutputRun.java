@@ -89,7 +89,7 @@ public class JIPipeImportCachedSlotOutputRun implements JIPipeRunnable {
     }
 
     private void importIntoTempSlot(JIPipeDataSlot tempSlot, Path dataFolder, JIPipeProgressInfo slotProgressInfo) {
-        slotProgressInfo.log("Importing from " + slotProgressInfo);
+        slotProgressInfo.log("Importing from " + dataFolder);
         if (!Files.exists(dataFolder.resolve("data-table.json"))) {
             slotProgressInfo.log("Error: data-table.json missing");
             throw new UserFriendlyRuntimeException("Missing data-table.json!",
@@ -123,6 +123,7 @@ public class JIPipeImportCachedSlotOutputRun implements JIPipeRunnable {
                     JIPipeData dataAnnotationData = JIPipe.importData(dataFolder.resolve(dataAnnotation.getRowStorageFolder()), dataAnnotationDataTypeInfo.getDataClass());
                     tempSlot.setDataAnnotation(tempSlot.getRowCount() - 1, dataAnnotation.getName(), dataAnnotationData);
                 } catch (Exception e) {
+                    slotProgressInfo.log("Error: " + e);
                     e.printStackTrace();
                 }
             }

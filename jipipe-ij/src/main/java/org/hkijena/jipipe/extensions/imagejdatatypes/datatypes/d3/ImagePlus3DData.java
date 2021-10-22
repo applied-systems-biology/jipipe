@@ -44,12 +44,12 @@ public class ImagePlus3DData extends ImagePlusData {
      */
     public ImagePlus3DData(ImagePlus image) {
         super(ImageJUtils.convert3ChannelToRGBIfNeeded(image));
-        ImageJUtils.assert3DImage(image);
+        ImageJUtils.assert3DImage(getImage());
     }
 
     public ImagePlus3DData(ImagePlus image, ColorSpace colorSpace) {
         super(ImageJUtils.convert3ChannelToRGBIfNeeded(image), colorSpace);
-        ImageJUtils.assert3DImage(image);
+        ImageJUtils.assert3DImage(getImage());
     }
 
     public ImagePlus3DData(ImageSource source) {
