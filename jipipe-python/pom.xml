@@ -5,11 +5,11 @@
     <parent>
         <artifactId>pom-jipipe</artifactId>
         <groupId>org.hkijena</groupId>
-        <version>1.44.0</version>
+        <version>1.45.0</version>
     </parent>
 
     <artifactId>jipipe-python</artifactId>
-    <version>1.44.0</version>
+    <version>1.45.0</version>
 
     <name>jipipe-python</name>
     <description>JIPipe Python Integration</description>
@@ -78,7 +78,7 @@
             <dependency>
                 <groupId>org.hkijena</groupId>
                 <artifactId>jipipe-core</artifactId>
-                <version>1.44.0</version>
+                <version>1.45.0</version>
             </dependency>
             <dependency>
                 <groupId>org.python</groupId>
