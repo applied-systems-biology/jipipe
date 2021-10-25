@@ -1712,14 +1712,15 @@ public class JIPipeGraph implements JIPipeValidatable {
                     for (JIPipeGraphEdge edge : graph.incomingEdgesOf(target)) {
                         JIPipeDataSlot source = graph.getEdgeSource(edge);
                         JIPipeGraphNode sourceNode = source.getNode();
-                        if(!loopEnds.contains(sourceNode)) {
-                            JIPipeGraphNode edgeLoopStart = loopStartNodes.getOrDefault(sourceNode, dummyLoopStart);
-                            previousLoopStarts.add(edgeLoopStart);
+                        if (sourceNode instanceof JIPipeAlgorithm) {
+                            if (!loopEnds.contains(sourceNode)) {
+                                JIPipeGraphNode edgeLoopStart = loopStartNodes.getOrDefault(sourceNode, dummyLoopStart);
+                                previousLoopStarts.add(edgeLoopStart);
+                            } else {
+                                previousConnectedToEnd = true;
+                            }
+                            previousLoopDepth = Math.max(previousLoopDepth, loopDepths.get(sourceNode));
                         }
-                        else {
-                            previousConnectedToEnd = true;
-                        }
-                        previousLoopDepth = Math.max(previousLoopDepth, loopDepths.get(sourceNode));
                     }
                     // Determine the depth
                     if (loopStarts.contains(targetNode)) {

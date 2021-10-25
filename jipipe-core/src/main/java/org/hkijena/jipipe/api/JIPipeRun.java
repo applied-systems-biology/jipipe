@@ -164,8 +164,10 @@ public class JIPipeRun implements JIPipeRunnable {
             }
             if (configuration.isSaveToDisk() && !configuration.getDisableSaveToDiskNodes().contains(outputSlot.getNode())) {
                 JIPipeProgressInfo saveProgress = progressInfo.resolveAndLog(String.format("Saving data in slot '%s' (data type %s)", outputSlot.getDisplayName(), JIPipeDataInfo.getInstance(outputSlot.getAcceptedDataType()).getName()));
+                progressInfo.log("Flushing slot " + outputSlot.getDisplayName());
                 outputSlot.flush(configuration.getOutputPath(), saveProgress);
             } else {
+                progressInfo.log("Clearing slot " + outputSlot.getDisplayName());
                 outputSlot.clearData();
             }
             flushedSlots.add(outputSlot);
@@ -324,7 +326,7 @@ public class JIPipeRun implements JIPipeRunnable {
 
                     // Check if we can flush the inputs
                     for (JIPipeDataSlot inputSlot : node.getInputSlots()) {
-                        tryFlushInputSlot(inputSlot, executedAlgorithms, flushedSlots);
+                        tryFlushInputSlot(inputSlot, executedAlgorithms, flushedSlots, subProgress);
                     }
                 }
                 else {
@@ -371,7 +373,7 @@ public class JIPipeRun implements JIPipeRunnable {
 
                     // Check if we can flush the inputs
                     for (JIPipeDataSlot inputSlot : node.getInputSlots()) {
-                        tryFlushInputSlot(inputSlot, executedAlgorithms, flushedSlots);
+                        tryFlushInputSlot(inputSlot, executedAlgorithms, flushedSlots, subProgress);
                     }
                 }
 
@@ -405,8 +407,9 @@ public class JIPipeRun implements JIPipeRunnable {
      * @param inputSlot the input slot
      * @param executedAlgorithms all executed algorithms
      * @param flushedSlots already flushed slots
+     * @param progressInfo the progress
      */
-    private void tryFlushInputSlot(JIPipeDataSlot inputSlot, Set<JIPipeGraphNode> executedAlgorithms, Set<JIPipeDataSlot> flushedSlots) {
+    private void tryFlushInputSlot(JIPipeDataSlot inputSlot, Set<JIPipeGraphNode> executedAlgorithms, Set<JIPipeDataSlot> flushedSlots, JIPipeProgressInfo progressInfo) {
         if (flushedSlots.contains(inputSlot))
             return;
         Set<JIPipeGraphNode> sourceAlgorithms = new HashSet<>();
@@ -416,6 +419,7 @@ public class JIPipeRun implements JIPipeRunnable {
         sourceAlgorithms.removeAll(executedAlgorithms);
         if (sourceAlgorithms.isEmpty()) {
             // Flush the data and destroy it
+            progressInfo.log("Clearing slot " + inputSlot.getDisplayName());
             inputSlot.destroy();
             flushedSlots.add(inputSlot);
 //            System.gc();

@@ -134,7 +134,7 @@ public class JIPipeGraphRunner implements JIPipeRunnable {
                 if (loop == null) {
                     // Ensure the algorithm has run
                     runNode(executedAlgorithms, node, subProgress);
-                    tryFlushSlot(slot, executedAlgorithms, traversedSlots, flushedSlots, currentIndex);
+                    tryFlushSlot(slot, executedAlgorithms, traversedSlots, flushedSlots, currentIndex, progressInfo);
                 } else {
                     // Encountered a loop
                     if (!executedLoops.contains(loop)) {
@@ -173,7 +173,7 @@ public class JIPipeGraphRunner implements JIPipeRunnable {
 
                     // IMPORTANT!
                     executedAlgorithms.add(slot.getNode());
-                    tryFlushSlot(slot, executedAlgorithms, traversedSlots, flushedSlots, currentIndex);
+                    tryFlushSlot(slot, executedAlgorithms, traversedSlots, flushedSlots, currentIndex, progressInfo);
                 }
             }
         }
@@ -200,7 +200,7 @@ public class JIPipeGraphRunner implements JIPipeRunnable {
         }
     }
 
-    private void tryFlushSlot(JIPipeDataSlot slot, Set<JIPipeGraphNode> executedAlgorithms, List<JIPipeDataSlot> traversedSlots, Set<JIPipeDataSlot> flushedSlots, int currentIndex) {
+    private void tryFlushSlot(JIPipeDataSlot slot, Set<JIPipeGraphNode> executedAlgorithms, List<JIPipeDataSlot> traversedSlots, Set<JIPipeDataSlot> flushedSlots, int currentIndex, JIPipeProgressInfo progressInfo) {
         if (!executedAlgorithms.contains(slot.getNode()))
             return;
         if (flushedSlots.contains(slot))
@@ -223,6 +223,7 @@ public class JIPipeGraphRunner implements JIPipeRunnable {
             }
         }
         if (canFlush) {
+            progressInfo.log("Clearing slot " + slot.getDisplayName());
             slot.clearData();
         }
     }
