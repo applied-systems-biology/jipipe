@@ -16,6 +16,7 @@ package org.hkijena.jipipe.ui.running;
 import com.google.common.eventbus.Subscribe;
 import org.hkijena.jipipe.api.JIPipeRun;
 import org.hkijena.jipipe.api.JIPipeRunnable;
+import org.hkijena.jipipe.extensions.settings.FileChooserSettings;
 import org.hkijena.jipipe.extensions.settings.RuntimeSettings;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbenchPanel;
@@ -25,12 +26,17 @@ import org.hkijena.jipipe.utils.UIUtils;
 import javax.swing.*;
 import java.awt.BorderLayout;
 import java.awt.Component;
+import java.awt.Desktop;
 import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -51,9 +57,45 @@ public class JIPipeLogViewer extends JIPipeProjectWorkbenchPanel {
         setLayout(new BorderLayout());
         logReader.setFont(new Font(Font.MONOSPACED, Font.PLAIN, 12));
         logEntryJList.setCellRenderer(new LogEntryRenderer());
+
+        // List panel
+        JPanel leftPanel = new JPanel(new BorderLayout());
+        leftPanel.add(logEntryJList, BorderLayout.CENTER);
+        logEntryJList.addListSelectionListener(e -> {
+            LogEntry selectedValue = logEntryJList.getSelectedValue();
+            if (selectedValue != null) {
+                showLog(selectedValue);
+            }
+        });
+
+        JToolBar leftToolbar = new JToolBar();
+        leftToolbar.setFloatable(false);
+        leftPanel.add(leftToolbar, BorderLayout.NORTH);
+
+        JButton clearButton = new JButton("Clear", UIUtils.getIconFromResources("actions/edit-clear.png"));
+        clearButton.addActionListener(e -> clearLog());
+        leftToolbar.add(clearButton);
+
+        // Viewer panel
+        JPanel rightPanel = new JPanel(new BorderLayout());
+        rightPanel.add(new JScrollPane(logReader), BorderLayout.CENTER);
+
+        JToolBar rightToolbar = new JToolBar();
+        rightToolbar.setFloatable(false);
+        rightPanel.add(rightToolbar, BorderLayout.NORTH);
+
+        JButton exportButton = new JButton("Export", UIUtils.getIconFromResources("actions/document-export.png"));
+        exportButton.addActionListener(e -> exportLog());
+        rightToolbar.add(exportButton);
+
+        JButton openInExternalToolButton = new JButton("Open log in external editor", UIUtils.getIconFromResources("actions/document-open-folder.png"));
+        openInExternalToolButton.addActionListener(e -> openLogInExternalTool());
+        rightToolbar.add(openInExternalToolButton);
+
+        // Split pane
         JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT,
-                logEntryJList,
-                new JScrollPane(logReader));
+                leftPanel,
+                rightPanel);
         splitPane.setDividerSize(3);
         splitPane.setResizeWeight(0.33);
         addComponentListener(new ComponentAdapter() {
@@ -64,18 +106,46 @@ public class JIPipeLogViewer extends JIPipeProjectWorkbenchPanel {
             }
         });
         add(splitPane, BorderLayout.CENTER);
+    }
 
-        logEntryJList.addListSelectionListener(e -> {
-            LogEntry selectedValue = logEntryJList.getSelectedValue();
-            if (selectedValue != null) {
-                showLog(selectedValue);
+    private void openLogInExternalTool() {
+        Path tempFile = RuntimeSettings.generateTempFile("log", ".txt");
+        try {
+            Files.write(tempFile, logReader.getText().getBytes(StandardCharsets.UTF_8));
+            Desktop.getDesktop().open(tempFile.toFile());
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private void exportLog() {
+        Path path = FileChooserSettings.saveFile(this, FileChooserSettings.LastDirectoryKey.Data, "Export log", UIUtils.EXTENSION_FILTER_TXT);
+        if(path != null) {
+            try {
+                Files.write(path, logReader.getText().getBytes(StandardCharsets.UTF_8));
+            } catch (IOException e) {
+                throw new RuntimeException(e);
             }
-        });
+        }
+    }
+
+    private void clearLog() {
+        logReader.setText("");
+        logEntries.clear();
+        updateEntryList();
     }
 
     public void showLog(String log) {
         logEntryJList.clearSelection();
         logReader.setText(log);
+    }
+
+    private void updateEntryList() {
+        DefaultListModel<LogEntry> model = new DefaultListModel<>();
+        for (LogEntry logEntry : logEntries) {
+            model.add(0, logEntry);
+        }
+        logEntryJList.setModel(model);
     }
 
     private void showLog(LogEntry entry) {
@@ -90,11 +160,7 @@ public class JIPipeLogViewer extends JIPipeProjectWorkbenchPanel {
             if (logEntries.size() + 1 > runtimeSettings.getLogLimit())
                 logEntries.remove(0);
             logEntries.add(new LogEntry(run.getTaskLabel(), LocalDateTime.now(), log.toString(), success));
-            DefaultListModel<LogEntry> model = new DefaultListModel<>();
-            for (LogEntry logEntry : logEntries) {
-                model.add(0, logEntry);
-            }
-            logEntryJList.setModel(model);
+            updateEntryList();
         }
     }
 
