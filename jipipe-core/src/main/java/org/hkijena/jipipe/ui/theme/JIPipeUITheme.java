@@ -27,6 +27,7 @@ public enum JIPipeUITheme {
     private final String name;
     private final boolean isDark;
     private final boolean isModern;
+    private boolean installedListener;
 
     JIPipeUITheme(String name, boolean isModern, boolean isDark) {
         this.name = name;
@@ -83,6 +84,16 @@ public enum JIPipeUITheme {
             default:
                 UIManager.put("Button.borderColor", ModernMetalTheme.MEDIUM_GRAY);
                 break;
+        }
+
+        // Prevent external theme changes
+        if(!installedListener) {
+            UIManager.addPropertyChangeListener(evt -> {
+                if ("lookAndFeel".equals(evt.getPropertyName())) {
+                    install();
+                }
+            });
+            installedListener = true;
         }
     }
 
