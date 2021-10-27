@@ -45,7 +45,7 @@ import java.util.Set;
  * Algorithm that integrates columns
  */
 @JIPipeDocumentation(name = "Filter tables", description = "Filters tables by their properties.")
-@JIPipeNode(nodeTypeCategory = TableNodeTypeCategory.class)
+@JIPipeNode(nodeTypeCategory = TableNodeTypeCategory.class, menuPath = "Filter")
 @JIPipeInputSlot(value = ResultsTableData.class, slotName = "Input", autoCreate = true)
 @JIPipeOutputSlot(value = ResultsTableData.class, slotName = "Output", autoCreate = true)
 public class FilterTablesAlgorithm extends JIPipeSimpleIteratingAlgorithm {

@@ -38,7 +38,7 @@ import java.util.List;
  * Algorithm that integrates columns
  */
 @JIPipeDocumentation(name = "Filter table rows", description = "Filters tables by iterating through each row and testing a filter expression.")
-@JIPipeNode(nodeTypeCategory = TableNodeTypeCategory.class)
+@JIPipeNode(nodeTypeCategory = TableNodeTypeCategory.class, menuPath = "Filter")
 @JIPipeInputSlot(value = ResultsTableData.class, slotName = "Input", autoCreate = true)
 @JIPipeOutputSlot(value = ResultsTableData.class, slotName = "Output", autoCreate = true)
 public class FilterTableRowsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
