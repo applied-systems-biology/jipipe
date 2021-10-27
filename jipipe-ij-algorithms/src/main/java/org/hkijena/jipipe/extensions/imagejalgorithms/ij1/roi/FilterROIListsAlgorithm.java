@@ -3,6 +3,7 @@ package org.hkijena.jipipe.extensions.imagejalgorithms.ij1.roi;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
+import org.hkijena.jipipe.api.data.JIPipeAnnotation;
 import org.hkijena.jipipe.api.nodes.JIPipeDataBatch;
 import org.hkijena.jipipe.api.nodes.JIPipeInputSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
@@ -46,13 +47,17 @@ public class FilterROIListsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         ROIListData rois = dataBatch.getInputData(getFirstInputSlot(), ROIListData.class, progressInfo);
 
         ExpressionVariables parameters = new ExpressionVariables();
+        if(includeAnnotations) {
+            for (JIPipeAnnotation annotation : dataBatch.getGlobalAnnotations().values()) {
+                parameters.set(annotation.getName(), annotation.getValue());
+            }
+        }
         Rectangle bounds = rois.getBounds();
         parameters.set("count", rois.size());
         parameters.set("x", bounds.x);
         parameters.set("y", bounds.y);
         parameters.set("width", bounds.width);
         parameters.set("height", bounds.height);
-
         if (filter.test(parameters)) {
             dataBatch.addOutputData(getFirstOutputSlot(), rois, progressInfo);
         }
