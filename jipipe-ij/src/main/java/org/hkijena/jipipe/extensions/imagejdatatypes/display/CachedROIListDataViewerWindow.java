@@ -15,11 +15,13 @@ package org.hkijena.jipipe.extensions.imagejdatatypes.display;
 
 import ij.IJ;
 import ij.ImagePlus;
+import ij.gui.Roi;
 import ij.process.ImageProcessor;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeCacheSlotDataSource;
 import org.hkijena.jipipe.api.data.JIPipeVirtualData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ROIListData;
+import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.extensions.imagejdatatypes.viewer.ImageViewerPanel;
 import org.hkijena.jipipe.extensions.imagejdatatypes.viewer.plugins.AnimationSpeedPlugin;
 import org.hkijena.jipipe.extensions.imagejdatatypes.viewer.plugins.CalibrationPlugin;
@@ -104,6 +106,9 @@ public class CachedROIListDataViewerWindow extends JIPipeCacheDataViewerWindow {
         ROIListData data = (ROIListData) virtualData.getData(progressInfo);
         int width;
         int height;
+        int numZ = 1;
+        int numC = 1;
+        int numT = 1;
 
         if (data.isEmpty()) {
             width = 128;
@@ -112,13 +117,19 @@ public class CachedROIListDataViewerWindow extends JIPipeCacheDataViewerWindow {
             Rectangle bounds = data.getBounds();
             width = bounds.x + bounds.width;
             height = bounds.y + bounds.height;
+            for (Roi roi : data) {
+                numZ = Math.max(roi.getZPosition(), numZ);
+                numC = Math.max(roi.getCPosition(), numC);
+                numT = Math.max(roi.getTPosition(), numT);
+            }
         }
 
         imageViewerPanel.getCanvas().setError(null);
-        ImagePlus image = IJ.createImage("empty", "8-bit", width, height, 1);
-        ImageProcessor processor = image.getProcessor();
-        processor.setColor(0);
-        processor.fill();
+        ImagePlus image = IJ.createImage("empty", "8-bit", width, height, numC, numZ, numT);
+        ImageJUtils.forEachSlice(image, ip -> {
+            ip.setColor(0);
+            ip.fill();
+        }, new JIPipeProgressInfo());
         boolean fitImage = imageViewerPanel.getImage() == null;
         plugin.clearROIs();
         imageViewerPanel.setImage(image);
