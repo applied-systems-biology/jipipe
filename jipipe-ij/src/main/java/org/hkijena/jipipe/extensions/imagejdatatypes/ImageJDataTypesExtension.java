@@ -99,6 +99,7 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.display.OpenInImageJDataDis
 import org.hkijena.jipipe.extensions.imagejdatatypes.parameters.OMEColorMode;
 import org.hkijena.jipipe.extensions.imagejdatatypes.parameters.OMETIFFCompression;
 import org.hkijena.jipipe.extensions.imagejdatatypes.resultanalysis.*;
+import org.hkijena.jipipe.extensions.imagejdatatypes.tools.BioFormatsConfigTool;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.AVICompression;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.BitDepth;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.OptionalBitDepth;
@@ -249,7 +250,7 @@ public class ImageJDataTypesExtension extends JIPipePrepackagedDefaultJavaExtens
 
     @Override
     public String getDependencyVersion() {
-        return "1.47.0";
+        return "1.48.0";
     }
 
     @Override
@@ -395,6 +396,8 @@ public class ImageJDataTypesExtension extends JIPipePrepackagedDefaultJavaExtens
         // Register additional file importers
         registerDatatypeOperation("path", new ImportImageJPathDataOperation());
         registerDatatypeOperation("file", new ImportImageJPathDataOperation());
+
+        registerMenuExtension(BioFormatsConfigTool.class);
 
     }
 

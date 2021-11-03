@@ -16,9 +16,11 @@ package org.hkijena.jipipe.extensions.imagejdatatypes.datasources;
 import ij.ImagePlus;
 import loci.common.Region;
 import loci.formats.FormatException;
+import loci.plugins.config.ConfigWindow;
 import loci.plugins.in.ImagePlusReader;
 import loci.plugins.in.ImportProcess;
 import loci.plugins.in.ImporterOptions;
+import loci.plugins.util.WindowTools;
 import ome.xml.meta.OMEXMLMetadata;
 import ome.xml.model.enums.DimensionOrder;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
@@ -34,6 +36,7 @@ import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.JIPipeOutputSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.nodes.categories.DataSourceNodeTypeCategory;
+import org.hkijena.jipipe.api.parameters.JIPipeContextAction;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.filesystem.dataypes.FileData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.OMEImageData;
@@ -43,6 +46,8 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.util.ROIHandler;
 import org.hkijena.jipipe.extensions.parameters.primitives.IntegerList;
 import org.hkijena.jipipe.extensions.parameters.primitives.OptionalAnnotationNameParameter;
 import org.hkijena.jipipe.extensions.parameters.roi.RectangleList;
+import org.hkijena.jipipe.ui.JIPipeWorkbench;
+import org.hkijena.jipipe.utils.ResourceUtils;
 
 import java.awt.Rectangle;
 import java.io.IOException;
@@ -413,5 +418,13 @@ public class BioFormatsImporter extends JIPipeSimpleIteratingAlgorithm {
     @JIPipeParameter("series-annotation")
     public void setSeriesAnnotation(OptionalAnnotationNameParameter seriesAnnotation) {
         this.seriesAnnotation = seriesAnnotation;
+    }
+
+    @JIPipeDocumentation(name = "Configure Bio-Formats", description = "Opens the Bio-Formats configuration window that allows to set format-specific settings. Please note that these settings are global and not managed by JIPipe.")
+    @JIPipeContextAction(iconURL = ResourceUtils.RESOURCE_BASE_PATH + "/icons/apps/bioformats.png", iconDarkURL = ResourceUtils.RESOURCE_BASE_PATH + "/icons/apps/bioformats.png")
+    public void setToExample(JIPipeWorkbench parent) {
+        ConfigWindow cw = new ConfigWindow();
+        WindowTools.placeWindow(cw);
+        cw.setVisible(true);
     }
 }
