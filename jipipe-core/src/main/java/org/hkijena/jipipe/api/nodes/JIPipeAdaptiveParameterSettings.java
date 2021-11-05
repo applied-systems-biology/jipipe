@@ -15,6 +15,7 @@ package org.hkijena.jipipe.api.nodes;
 
 import com.google.common.eventbus.EventBus;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.parameters.JIPipeContextAction;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
@@ -23,7 +24,11 @@ import org.hkijena.jipipe.extensions.expressions.ExpressionParameterVariableSour
 import org.hkijena.jipipe.extensions.parameters.pairs.PairParameterSettings;
 import org.hkijena.jipipe.extensions.parameters.pairs.StringQueryExpressionAndStringPairParameter;
 import org.hkijena.jipipe.extensions.parameters.primitives.StringParameterSettings;
+import org.hkijena.jipipe.ui.JIPipeWorkbench;
+import org.hkijena.jipipe.utils.ResourceUtils;
+import org.hkijena.jipipe.utils.UIUtils;
 
+import javax.swing.*;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -125,6 +130,12 @@ public class JIPipeAdaptiveParameterSettings implements JIPipeParameterCollectio
     @JIPipeParameter("parameter-annotations-prefix")
     public void setParameterAnnotationsPrefix(String parameterAnnotationsPrefix) {
         this.parameterAnnotationsPrefix = parameterAnnotationsPrefix;
+    }
+
+    @JIPipeDocumentation(name = "Add", description = "Adds an adaptive parameter.")
+    @JIPipeContextAction(iconURL = ResourceUtils.RESOURCE_BASE_PATH + "/icons/actions/list-add.png", iconDarkURL = ResourceUtils.RESOURCE_BASE_PATH + "/dark/icons/actions/list-add.png")
+    public void addAdaptiveParameterAssistant(JIPipeWorkbench parent) {
+        TODO
     }
 
     public static class VariableSource implements ExpressionParameterVariableSource {
