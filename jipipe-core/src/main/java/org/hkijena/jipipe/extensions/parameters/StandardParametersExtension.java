@@ -516,6 +516,14 @@ public class StandardParametersExtension extends JIPipePrepackagedDefaultJavaExt
                 "String pair",
                 "A pair of strings",
                 null);
+        registerParameterType("expression:expression:pair",
+                ExpressionAndExpressionPairParameter.class,
+                ExpressionAndExpressionPairParameter.List.class,
+                null,
+                null,
+                "Expression pair",
+                "A pair of expressions",
+                null);
     }
 
     private void registerGeneratingParameters() {
