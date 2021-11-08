@@ -25,6 +25,7 @@ import org.hkijena.jipipe.extensions.parameters.pairs.PairParameterSettings;
 import org.hkijena.jipipe.extensions.parameters.pairs.StringQueryExpressionAndStringPairParameter;
 import org.hkijena.jipipe.extensions.parameters.primitives.StringParameterSettings;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
+import org.hkijena.jipipe.ui.parameters.AdaptiveParameterBuilder;
 import org.hkijena.jipipe.utils.ResourceUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 
@@ -43,6 +44,7 @@ public class JIPipeAdaptiveParameterSettings implements JIPipeParameterCollectio
     private boolean attachOnlyNonDefaultParameterAnnotations = true;
     private boolean parameterAnnotationsUseInternalNames = false;
     private String parameterAnnotationsPrefix = "";
+    private JIPipeGraphNode node;
 
     public JIPipeAdaptiveParameterSettings() {
     }
@@ -54,6 +56,7 @@ public class JIPipeAdaptiveParameterSettings implements JIPipeParameterCollectio
         this.attachOnlyNonDefaultParameterAnnotations = other.attachOnlyNonDefaultParameterAnnotations;
         this.parameterAnnotationsUseInternalNames = other.parameterAnnotationsUseInternalNames;
         this.parameterAnnotationsPrefix = other.parameterAnnotationsPrefix;
+        this.node = other.node;
     }
 
     @Override
@@ -135,7 +138,21 @@ public class JIPipeAdaptiveParameterSettings implements JIPipeParameterCollectio
     @JIPipeDocumentation(name = "Add", description = "Adds an adaptive parameter.")
     @JIPipeContextAction(iconURL = ResourceUtils.RESOURCE_BASE_PATH + "/icons/actions/list-add.png", iconDarkURL = ResourceUtils.RESOURCE_BASE_PATH + "/dark/icons/actions/list-add.png")
     public void addAdaptiveParameterAssistant(JIPipeWorkbench parent) {
-        TODO
+        AdaptiveParameterBuilder dialog = new AdaptiveParameterBuilder(parent, getNode() != null ? getNode() : this);
+        dialog.setModal(true);
+        dialog.setSize(800,600);
+        dialog.revalidate();
+        dialog.repaint();
+        dialog.setLocationRelativeTo(parent.getWindow());
+        dialog.setVisible(true);
+    }
+
+    public JIPipeGraphNode getNode() {
+        return node;
+    }
+
+    public void setNode(JIPipeGraphNode node) {
+        this.node = node;
     }
 
     public static class VariableSource implements ExpressionParameterVariableSource {

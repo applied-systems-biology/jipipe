@@ -135,6 +135,7 @@ public class ExpressionExtension extends JIPipePrepackagedDefaultJavaExtension {
         registerExpressionFunction(new RegexStringPredicateFunction());
         registerExpressionFunction(new GetVariableFunction());
         registerExpressionFunction(new IfElseFunction());
+        registerExpressionFunction(new SwitchCaseFunction());
         registerExpressionFunction(new VariableExistsFunction());
         registerExpressionFunction(new ToNumberFunction());
         registerExpressionFunction(new ToStringFunction());

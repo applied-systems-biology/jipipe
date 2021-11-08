@@ -64,6 +64,7 @@ public abstract class JIPipeSimpleIteratingAlgorithm extends JIPipeParameterSlot
      */
     public JIPipeSimpleIteratingAlgorithm(JIPipeNodeInfo info, JIPipeSlotConfiguration slotConfiguration) {
         super(info, slotConfiguration);
+        adaptiveParameterSettings.setNode(this);
         registerSubParameter(dataBatchGenerationSettings);
         registerSubParameter(adaptiveParameterSettings);
     }
@@ -75,6 +76,7 @@ public abstract class JIPipeSimpleIteratingAlgorithm extends JIPipeParameterSlot
      */
     public JIPipeSimpleIteratingAlgorithm(JIPipeNodeInfo info) {
         super(info, null);
+        adaptiveParameterSettings.setNode(this);
         registerSubParameter(dataBatchGenerationSettings);
         registerSubParameter(adaptiveParameterSettings);
     }
@@ -89,6 +91,7 @@ public abstract class JIPipeSimpleIteratingAlgorithm extends JIPipeParameterSlot
         this.dataBatchGenerationSettings = new JIPipeSimpleIteratingAlgorithmDataBatchGenerationSettings(other.dataBatchGenerationSettings);
         this.adaptiveParameterSettings = new JIPipeAdaptiveParameterSettings(other.adaptiveParameterSettings);
         this.parallelizationEnabled = other.parallelizationEnabled;
+        adaptiveParameterSettings.setNode(this);
         registerSubParameter(dataBatchGenerationSettings);
         registerSubParameter(adaptiveParameterSettings);
     }

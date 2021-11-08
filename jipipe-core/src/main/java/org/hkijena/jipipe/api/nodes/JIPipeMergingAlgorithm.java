@@ -71,6 +71,7 @@ public abstract class JIPipeMergingAlgorithm extends JIPipeParameterSlotAlgorith
      */
     public JIPipeMergingAlgorithm(JIPipeNodeInfo info, JIPipeSlotConfiguration slotConfiguration) {
         super(info, slotConfiguration);
+        adaptiveParameterSettings.setNode(this);
         registerSubParameter(dataBatchGenerationSettings);
         registerSubParameter(adaptiveParameterSettings);
     }
@@ -82,6 +83,7 @@ public abstract class JIPipeMergingAlgorithm extends JIPipeParameterSlotAlgorith
      */
     public JIPipeMergingAlgorithm(JIPipeNodeInfo info) {
         super(info, null);
+        adaptiveParameterSettings.setNode(this);
         registerSubParameter(dataBatchGenerationSettings);
         registerSubParameter(adaptiveParameterSettings);
     }
@@ -96,6 +98,7 @@ public abstract class JIPipeMergingAlgorithm extends JIPipeParameterSlotAlgorith
         this.dataBatchGenerationSettings = new JIPipeMergingAlgorithmDataBatchGenerationSettings(other.dataBatchGenerationSettings);
         this.adaptiveParameterSettings = new JIPipeAdaptiveParameterSettings(other.adaptiveParameterSettings);
         this.parallelizationEnabled = other.parallelizationEnabled;
+        adaptiveParameterSettings.setNode(this);
         registerSubParameter(dataBatchGenerationSettings);
         registerSubParameter(adaptiveParameterSettings);
     }
