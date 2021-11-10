@@ -51,7 +51,11 @@ public class ListParameterEditorUI extends JIPipeParameterEditorUI {
         toolBar.setFloatable(false);
 
         toolBar.add(Box.createHorizontalStrut(4));
-        toolBar.add(new JLabel(getParameterAccess().getName()));
+        JLabel nameLabel = new JLabel(getParameterAccess().getName());
+        if(getParameterAccess().isImportant()) {
+            nameLabel.setIcon(UIUtils.getIconFromResources("emblems/important.png"));
+        }
+        toolBar.add(nameLabel);
 
         toolBar.add(Box.createHorizontalGlue());
 
@@ -90,6 +94,11 @@ public class ListParameterEditorUI extends JIPipeParameterEditorUI {
 
     @Override
     public boolean isUILabelEnabled() {
+        return false;
+    }
+
+    @Override
+    public boolean isUIImportantLabelEnabled() {
         return false;
     }
 

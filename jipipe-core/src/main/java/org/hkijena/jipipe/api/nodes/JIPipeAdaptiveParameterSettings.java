@@ -79,7 +79,7 @@ public class JIPipeAdaptiveParameterSettings implements JIPipeParameterCollectio
             "The 'Parameter key' setting determines to which parameter this value is written to.")
     @PairParameterSettings(keyLabel = "Value", valueLabel = "Parameter key")
     @StringParameterSettings(monospace = true)
-    @JIPipeParameter("overridden-parameters")
+    @JIPipeParameter(value = "overridden-parameters", important = true, uiOrder = -100)
     public StringQueryExpressionAndStringPairParameter.List getOverriddenParameters() {
         return overriddenParameters;
     }

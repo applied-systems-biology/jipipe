@@ -344,7 +344,7 @@ public class ParameterPanel extends FormPanel implements Contextual {
             JIPipeParameterAccess parameterAccess = ui.getParameterAccess();
             JPanel labelPanel = new JPanel(new BorderLayout());
             MarkdownDocument documentation = generateParameterDocumentation(parameterAccess, tree);
-            if (ui.isUILabelEnabled() || parameterAccess.isImportant()) {
+            if (ui.isUILabelEnabled() || (parameterAccess.isImportant() && ui.isUIImportantLabelEnabled())) {
                 JLabel label = new JLabel();
                 if (ui.isUILabelEnabled())
                     label.setText(parameterAccess.getName());
@@ -368,13 +368,14 @@ public class ParameterPanel extends FormPanel implements Contextual {
                 addToForm(ui, labelPanel, documentation);
                 uiComponents.add(labelPanel);
             } else {
-                if (!parameterAccess.isImportant()) {
+                if (!parameterAccess.isImportant() || !ui.isUIImportantLabelEnabled()) {
                     addWideToForm(ui, documentation);
                 } else {
                     JPanel wrapperPanel = new JPanel(new BorderLayout());
                     wrapperPanel.add(ui, BorderLayout.CENTER);
                     wrapperPanel.add(labelPanel, BorderLayout.WEST);
                     addWideToForm(wrapperPanel, documentation);
+                    uiComponents.add(labelPanel);
                 }
             }
 
