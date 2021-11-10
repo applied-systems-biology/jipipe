@@ -28,6 +28,7 @@ import org.hkijena.jipipe.utils.UIUtils;
 import javax.swing.*;
 import javax.swing.event.DocumentEvent;
 import java.awt.BorderLayout;
+import java.awt.Dimension;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Objects;
@@ -58,11 +59,14 @@ public class DefaultExpressionParameterEditorUI extends JIPipeParameterEditorUI 
 //        add(availableModes, BorderLayout.WEST);
 
         JPanel optionPanel = new JPanel();
-        optionPanel.setOpaque(false);
+        optionPanel.setOpaque(true);
         optionPanel.setLayout(new BoxLayout(optionPanel, BoxLayout.X_AXIS));
+        optionPanel.setBorder(BorderFactory.createMatteBorder(0,1,0,0, UIManager.getColor("Button.borderColor")));
 
-        JButton functionBuilder = new JButton(UIUtils.getIconFromResources("actions/insert-math-expression.png"));
+        JButton functionBuilder = new JButton("Edit", UIUtils.getIconFromResources("actions/insert-math-expression.png"));
         UIUtils.makeFlat25x25(functionBuilder);
+        functionBuilder.setPreferredSize(new Dimension(80, 25));
+        functionBuilder.setMaximumSize(new Dimension(80, 25));
         optionPanel.add(functionBuilder);
         functionBuilder.addActionListener(e -> editInFunctionBuilder());
 
