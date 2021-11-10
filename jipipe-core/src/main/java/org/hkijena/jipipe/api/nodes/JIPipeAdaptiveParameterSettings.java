@@ -19,6 +19,8 @@ import org.hkijena.jipipe.api.parameters.JIPipeContextAction;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
+import org.hkijena.jipipe.extensions.expressions.DefaultExpressionParameter;
+import org.hkijena.jipipe.extensions.expressions.ExpressionParameterSettings;
 import org.hkijena.jipipe.extensions.expressions.ExpressionParameterVariable;
 import org.hkijena.jipipe.extensions.expressions.ExpressionParameterVariableSource;
 import org.hkijena.jipipe.extensions.parameters.pairs.PairParameterSettings;
@@ -79,6 +81,7 @@ public class JIPipeAdaptiveParameterSettings implements JIPipeParameterCollectio
             "The 'Parameter key' setting determines to which parameter this value is written to.")
     @PairParameterSettings(keyLabel = "Value", valueLabel = "Parameter key")
     @StringParameterSettings(monospace = true)
+    @ExpressionParameterSettings(variableSource = VariableSource.class)
     @JIPipeParameter(value = "overridden-parameters", important = true, uiOrder = -100)
     public StringQueryExpressionAndStringPairParameter.List getOverriddenParameters() {
         return overriddenParameters;
@@ -145,6 +148,12 @@ public class JIPipeAdaptiveParameterSettings implements JIPipeParameterCollectio
         dialog.repaint();
         dialog.setLocationRelativeTo(parent.getWindow());
         dialog.setVisible(true);
+        if(!dialog.isCanceled() && dialog.getCurrentParameterAccess() != null) {
+            DefaultExpressionParameter parameter = dialog.build();
+            String uniqueKey = dialog.getParameterTree().getUniqueKey(dialog.getCurrentParameterAccess());
+            overriddenParameters.add(new StringQueryExpressionAndStringPairParameter(parameter.getExpression(), uniqueKey));
+            triggerParameterChange("overridden-parameters");
+        }
     }
 
     public JIPipeGraphNode getNode() {

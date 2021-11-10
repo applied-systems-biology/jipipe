@@ -1,11 +1,17 @@
 package org.hkijena.jipipe.ui.parameters;
 
 import org.hkijena.jipipe.JIPipe;
+import org.hkijena.jipipe.api.nodes.JIPipeAdaptiveParameterSettings;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
+import org.hkijena.jipipe.api.parameters.JIPipeDummyParameterCollection;
+import org.hkijena.jipipe.api.parameters.JIPipeManualParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTypeInfo;
+import org.hkijena.jipipe.extensions.expressions.DefaultExpressionParameter;
+import org.hkijena.jipipe.extensions.expressions.ExpressionParameterSettings;
+import org.hkijena.jipipe.extensions.expressions.ExpressionParameterVariableSource;
 import org.hkijena.jipipe.extensions.expressions.StringQueryExpression;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.components.DocumentTabPane;
@@ -14,14 +20,18 @@ import org.hkijena.jipipe.ui.components.MarkdownDocument;
 import org.hkijena.jipipe.ui.components.ParameterTreeUI;
 import org.hkijena.jipipe.ui.components.ReadonlyCopyableTextField;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.utils.json.JsonUtils;
+import org.hkijena.jipipe.utils.scripting.MacroUtils;
 
 import javax.swing.*;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreePath;
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
+import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -57,6 +67,14 @@ public class AdaptiveParameterBuilder extends JDialog {
             DefaultMutableTreeNode child = (DefaultMutableTreeNode) rootNode.getChildAt(0);
             treeComponent.setSelectionPath(new TreePath(child.getPath()));
         }
+    }
+
+    public JIPipeParameterAccess getCurrentParameterAccess() {
+        return currentParameterAccess;
+    }
+
+    public JIPipeParameterTree getParameterTree() {
+        return parameterTree;
     }
 
     private void initialize() {
@@ -129,7 +147,7 @@ public class AdaptiveParameterBuilder extends JDialog {
 
     private void initializeButtonPanel() {
         JPanel buttonPanel = new JPanel();
-        buttonPanel.setBorder(BorderFactory.createEmptyBorder(0,0,8,8));
+        buttonPanel.setBorder(BorderFactory.createEmptyBorder(0, 0, 8, 8));
         buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.X_AXIS));
         buttonPanel.add(Box.createHorizontalGlue());
 
@@ -194,16 +212,74 @@ public class AdaptiveParameterBuilder extends JDialog {
     }
 
     private void addNewConditionValuePair() {
-        if(currentParameterAccess != null) {
+        if (currentParameterAccess != null) {
             ConditionValuePair pair = new ConditionValuePair();
+            pair.setCondition(new DefaultExpressionParameter("true"));
             pair.setValueType(currentParameterAccess.getFieldClass());
             pair.setValue(JIPipe.getParameterTypes().getInfoByFieldClass(currentParameterAccess.getFieldClass()).newInstance());
             conditionValuePairs.add(pair);
+            rebuildConditionValuePairList();
         }
     }
 
     private void rebuildConditionValuePairList() {
+        listPanel.clear();
+        for (ConditionValuePair conditionValuePair : conditionValuePairs) {
+            listPanel.addWideToForm(new ConditionValuePairUI(this, conditionValuePair), null);
+        }
+        listPanel.addVerticalGlue();
+        revalidate();
+        repaint();
+    }
 
+    private void moveUp(ConditionValuePairUI conditionValuePairUI) {
+        int i = conditionValuePairs.indexOf(conditionValuePairUI.conditionValuePair);
+        if (i > 0) {
+            ConditionValuePair other = conditionValuePairs.get(i - 1);
+            conditionValuePairs.set(i, other);
+            conditionValuePairs.set(i - 1, conditionValuePairUI.conditionValuePair);
+            rebuildConditionValuePairList();
+        }
+    }
+
+    private void delete(ConditionValuePairUI conditionValuePairUI) {
+        conditionValuePairs.remove(conditionValuePairUI.conditionValuePair);
+        rebuildConditionValuePairList();
+    }
+
+    private void moveDown(ConditionValuePairUI conditionValuePairUI) {
+        int i = conditionValuePairs.indexOf(conditionValuePairUI.conditionValuePair);
+        if (i > 0 && i < (conditionValuePairs.size() - 1)) {
+            ConditionValuePair other = conditionValuePairs.get(i + 1);
+            conditionValuePairs.set(i, other);
+            conditionValuePairs.set(i + 1, conditionValuePairUI.conditionValuePair);
+            rebuildConditionValuePairList();
+        }
+    }
+
+    public DefaultExpressionParameter build() {
+        StringBuilder builder = new StringBuilder();
+        if(conditionValuePairs.isEmpty()) {
+            builder.append("default");
+        }
+        else {
+            builder.append("SWITCH(");
+            for (int i = 0; i < conditionValuePairs.size(); i++) {
+                ConditionValuePair conditionValuePair = conditionValuePairs.get(i);
+                if(i != 0) {
+                    builder.append(", ");
+                }
+                builder.append("CASE(");
+                builder.append(conditionValuePair.condition.getExpression());
+                builder.append(", ");
+                builder.append(MacroUtils.escapeString(JsonUtils.toJsonString(conditionValuePair.value)));
+                builder.append(")");
+            }
+            builder.append(", ");
+            builder.append("CASE(true, default)");
+            builder.append(")");
+        }
+        return new DefaultExpressionParameter(builder.toString());
     }
 
     public boolean isCanceled() {
@@ -211,15 +287,15 @@ public class AdaptiveParameterBuilder extends JDialog {
     }
 
     public static class ConditionValuePair {
-        private StringQueryExpression condition = new StringQueryExpression();
+        private DefaultExpressionParameter condition = new StringQueryExpression();
         private Object value;
         private Class<?> valueType;
 
-        public StringQueryExpression getCondition() {
+        public DefaultExpressionParameter getCondition() {
             return condition;
         }
 
-        public void setCondition(StringQueryExpression condition) {
+        public void setCondition(DefaultExpressionParameter condition) {
             this.condition = condition;
         }
 
@@ -237,6 +313,86 @@ public class AdaptiveParameterBuilder extends JDialog {
 
         public void setValueType(Class<?> valueType) {
             this.valueType = valueType;
+        }
+    }
+
+    public static class ConditionValuePairUI extends JPanel {
+        private final AdaptiveParameterBuilder adaptiveParameterBuilder;
+        private final ConditionValuePair conditionValuePair;
+
+        public ConditionValuePairUI(AdaptiveParameterBuilder adaptiveParameterBuilder, ConditionValuePair conditionValuePair) {
+            this.adaptiveParameterBuilder = adaptiveParameterBuilder;
+            this.conditionValuePair = conditionValuePair;
+            initialize();
+        }
+
+        private void initialize() {
+            setLayout(new BorderLayout());
+            setBorder(BorderFactory.createLineBorder(Color.GRAY));
+            JToolBar toolBar = new JToolBar();
+            toolBar.setFloatable(false);
+
+            JButton moveUpButton = new JButton(UIUtils.getIconFromResources("actions/arrow-up.png"));
+            UIUtils.makeFlat25x25(moveUpButton);
+            moveUpButton.addActionListener(e -> moveUp());
+            toolBar.add(moveUpButton);
+
+            JButton moveDownButton = new JButton(UIUtils.getIconFromResources("actions/arrow-down.png"));
+            UIUtils.makeFlat25x25(moveDownButton);
+            moveDownButton.addActionListener(e -> moveDown());
+            toolBar.add(moveDownButton);
+
+            toolBar.add(Box.createHorizontalGlue());
+
+            JButton deleteButton = new JButton(UIUtils.getIconFromResources("actions/close-tab.png"));
+            UIUtils.makeFlat25x25(deleteButton);
+            deleteButton.addActionListener(e -> delete());
+            toolBar.add(deleteButton);
+
+            add(toolBar, BorderLayout.NORTH);
+
+            FormPanel formPanel = new FormPanel(null, FormPanel.NONE);
+
+            JIPipeManualParameterAccess conditionAccess = JIPipeManualParameterAccess.builder().setSource(new JIPipeDummyParameterCollection())
+                    .setFieldClass(DefaultExpressionParameter.class)
+                    .addAnnotation(new ExpressionParameterSettings() {
+
+                        @Override
+                        public Class<? extends Annotation> annotationType() {
+                            return ExpressionParameterSettings.class;
+                        }
+
+                        @Override
+                        public Class<? extends ExpressionParameterVariableSource> variableSource() {
+                            return JIPipeAdaptiveParameterSettings.VariableSource.class;
+                        }
+                    })
+                    .setKey("condition")
+                    .setGetter(conditionValuePair::getCondition)
+                    .setSetter(conditionValuePair::setCondition).build();
+            JIPipeManualParameterAccess valueAccess = JIPipeManualParameterAccess.builder().setSource(new JIPipeDummyParameterCollection())
+                    .setFieldClass(conditionValuePair.getValueType())
+                    .setKey("value")
+                    .setGetter(conditionValuePair::getValue)
+                    .setSetter(conditionValuePair::setValue).build();
+            formPanel.addToForm(JIPipe.getParameterTypes().createEditorFor(adaptiveParameterBuilder.workbench, conditionAccess),
+                    new JLabel("Condition"), null);
+            formPanel.addToForm(JIPipe.getParameterTypes().createEditorFor(adaptiveParameterBuilder.workbench, valueAccess),
+                    new JLabel("Value"), null);
+
+            add(formPanel, BorderLayout.CENTER);
+        }
+
+        private void moveDown() {
+            adaptiveParameterBuilder.moveDown(this);
+        }
+
+        private void delete() {
+            adaptiveParameterBuilder.delete(this);
+        }
+
+        private void moveUp() {
+            adaptiveParameterBuilder.moveUp(this);
         }
     }
 }

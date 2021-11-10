@@ -355,6 +355,8 @@ public class JIPipeManualParameterAccess implements JIPipeParameterAccess {
 
         /**
          * Returns the finished object
+         * Requires following properties to be set:
+         * source, field class, getter, setter
          *
          * @return the finished object
          */
