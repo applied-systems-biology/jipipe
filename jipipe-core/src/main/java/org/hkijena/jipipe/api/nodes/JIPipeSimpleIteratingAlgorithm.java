@@ -21,6 +21,7 @@ import org.hkijena.jipipe.api.JIPipeIssueReport;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeAnnotation;
 import org.hkijena.jipipe.api.data.JIPipeAnnotationMergeStrategy;
+import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataAnnotationMergeStrategy;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.data.JIPipeSlotConfiguration;
@@ -96,6 +97,17 @@ public abstract class JIPipeSimpleIteratingAlgorithm extends JIPipeParameterSlot
         registerSubParameter(adaptiveParameterSettings);
     }
 
+    /**
+     * A pass-through variant for iterating algorithms.
+     * Passes the data batch to the single output
+     * @param progressInfo progress info
+     * @param dataBatch the data batch
+     */
+    protected void runPassThrough(JIPipeProgressInfo progressInfo, JIPipeDataBatch dataBatch) {
+        progressInfo.log("Passing trough (via dynamic pass-through)");
+        dataBatch.addOutputData(getFirstOutputSlot(), dataBatch.getInputData(getFirstInputSlot(), JIPipeData.class, progressInfo), progressInfo);
+    }
+
     @Override
     public void runParameterSet(JIPipeProgressInfo progressInfo, List<JIPipeAnnotation> parameterAnnotations) {
         if (getEffectiveInputSlotCount() > 1)
@@ -126,14 +138,21 @@ public abstract class JIPipeSimpleIteratingAlgorithm extends JIPipeParameterSlot
             JIPipeDataBatch dataBatch = new JIPipeDataBatch(this);
             dataBatch.addGlobalAnnotations(parameterAnnotations, JIPipeAnnotationMergeStrategy.Merge);
             uploadAdaptiveParameters(dataBatch, tree, parameterBackups, progressInfo);
-            runIteration(dataBatch, slotProgress);
+            if(isPassThrough()) {
+                runPassThrough(slotProgress, dataBatch);
+            }
+            else {
+                runIteration(dataBatch, slotProgress);
+            }
         } else {
 
             boolean withLimit = dataBatchGenerationSettings.getLimit().isEnabled();
             IntegerRange limit = dataBatchGenerationSettings.getLimit().getContent();
             TIntSet allowedIndices = withLimit ? new TIntHashSet(limit.getIntegers()) : null;
 
-            if (!supportsParallelization() || !isParallelizationEnabled() || getThreadPool() == null || getThreadPool().getMaxThreads() <= 1 || getFirstInputSlot().getRowCount() <= 1) {
+            boolean hasAdaptiveParameters = getAdaptiveParameterSettings().isEnabled() && !getAdaptiveParameterSettings().getOverriddenParameters().isEmpty();
+
+            if (!supportsParallelization() || !isParallelizationEnabled() || getThreadPool() == null || getThreadPool().getMaxThreads() <= 1 || getFirstInputSlot().getRowCount() <= 1 || hasAdaptiveParameters) {
                 for (int i = 0; i < getFirstInputSlot().getRowCount(); i++) {
                     if (withLimit && !allowedIndices.contains(i))
                         continue;
@@ -146,7 +165,12 @@ public abstract class JIPipeSimpleIteratingAlgorithm extends JIPipeParameterSlot
                     dataBatch.addGlobalDataAnnotations(getFirstInputSlot().getDataAnnotations(i), JIPipeDataAnnotationMergeStrategy.MergeTables);
                     dataBatch.addGlobalAnnotations(parameterAnnotations, JIPipeAnnotationMergeStrategy.Merge);
                     uploadAdaptiveParameters(dataBatch, tree, parameterBackups, progressInfo);
-                    runIteration(dataBatch, slotProgress);
+                    if(isPassThrough()) {
+                        runPassThrough(slotProgress, dataBatch);
+                    }
+                    else {
+                        runIteration(dataBatch, slotProgress);
+                    }
                 }
             } else {
                 List<Runnable> tasks = new ArrayList<>();
@@ -165,7 +189,12 @@ public abstract class JIPipeSimpleIteratingAlgorithm extends JIPipeParameterSlot
                         dataBatch.addGlobalDataAnnotations(getFirstInputSlot().getDataAnnotations(rowIndex), JIPipeDataAnnotationMergeStrategy.MergeTables);
                         dataBatch.addGlobalAnnotations(parameterAnnotations, JIPipeAnnotationMergeStrategy.Merge);
                         uploadAdaptiveParameters(dataBatch, finalTree, parameterBackups, progressInfo);
-                        runIteration(dataBatch, slotProgress);
+                        if(isPassThrough()) {
+                            runPassThrough(slotProgress, dataBatch);
+                        }
+                        else {
+                            runIteration(dataBatch, slotProgress);
+                        }
                     });
                 }
                 progressInfo.log(String.format("Running %d batches (batch size %d) in parallel. Available threads = %d", tasks.size(), getParallelizationBatchSize(), getThreadPool().getMaxThreads()));
@@ -204,12 +233,14 @@ public abstract class JIPipeSimpleIteratingAlgorithm extends JIPipeParameterSlot
                 }
             } else if (target.getFieldClass().isAssignableFrom(newValue.getClass())) {
                 // Set new value
+                progressInfo.log("Set adaptive parameter " + key + " to value " + JsonUtils.toJsonString(newValue));
                 target.set(newValue);
                 if (getAdaptiveParameterSettings().isAttachParameterAnnotations()) {
                     annotateWithParameter(dataBatch, key, target, newValue);
                 }
             } else {
                 // Is JSON. Parse
+                progressInfo.log("Set adaptive parameter " + key + " to value " + newValue);
                 try {
                     newValue = JsonUtils.getObjectMapper().readerFor(target.getFieldClass()).readValue(StringUtils.nullToEmpty(newValue));
                 } catch (JsonProcessingException e) {

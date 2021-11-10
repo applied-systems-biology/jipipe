@@ -18,6 +18,7 @@ import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeAnnotation;
 import org.hkijena.jipipe.api.data.JIPipeAnnotationMergeStrategy;
+import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.data.JIPipeSlotConfiguration;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
@@ -119,6 +120,19 @@ public abstract class JIPipeSingleIterationAlgorithm extends JIPipeParameterSlot
         return builder.build(progressInfo);
     }
 
+    /**
+     * A pass-through variant for merging algorithms.
+     * Passes the data batch to the single output
+     * @param progressInfo progress info
+     * @param dataBatch the data batch
+     */
+    protected void runPassThrough(JIPipeProgressInfo progressInfo, JIPipeMergingDataBatch dataBatch) {
+        progressInfo.log("Passing trough (via dynamic pass-through)");
+        for (int row : dataBatch.getInputSlotRows().get(getFirstInputSlot())) {
+            dataBatch.addOutputData(getFirstOutputSlot(), getFirstInputSlot().getData(row, JIPipeData.class, progressInfo), progressInfo);
+        }
+    }
+
     @Override
     public void runParameterSet(JIPipeProgressInfo progressInfo, List<JIPipeAnnotation> parameterAnnotations) {
 
@@ -141,7 +155,12 @@ public abstract class JIPipeSingleIterationAlgorithm extends JIPipeParameterSlot
             JIPipeMergingDataBatch dataBatch = new JIPipeMergingDataBatch(this);
             dataBatch.addGlobalAnnotations(parameterAnnotations, dataBatchGenerationSettings.getAnnotationMergeStrategy());
             uploadAdaptiveParameters(dataBatch, tree, parameterBackups, progressInfo);
-            runIteration(dataBatch, slotProgress);
+            if(isPassThrough()) {
+                runPassThrough(slotProgress, dataBatch);
+            }
+            else {
+                runIteration(dataBatch, slotProgress);
+            }
             return;
         }
 
@@ -156,7 +175,12 @@ public abstract class JIPipeSingleIterationAlgorithm extends JIPipeParameterSlot
                 return;
             JIPipeProgressInfo slotProgress = progressInfo.resolveAndLog("Data row", i, dataBatches.size());
             uploadAdaptiveParameters(dataBatches.get(i), tree, parameterBackups, progressInfo);
-            runIteration(dataBatches.get(i), slotProgress);
+            if(isPassThrough()) {
+                runPassThrough(slotProgress, dataBatches.get(i));
+            }
+            else {
+                runIteration(dataBatches.get(i), slotProgress);
+            }
         }
     }
 
@@ -182,12 +206,14 @@ public abstract class JIPipeSingleIterationAlgorithm extends JIPipeParameterSlot
                 }
             } else if (target.getFieldClass().isAssignableFrom(newValue.getClass())) {
                 // Set new value
+                progressInfo.log("Set adaptive parameter " + key + " to value " + JsonUtils.toJsonString(newValue));
                 target.set(newValue);
                 if (getAdaptiveParameterSettings().isAttachParameterAnnotations()) {
                     annotateWithParameter(dataBatch, key, target, newValue);
                 }
             } else {
                 // Is JSON. Parse
+                progressInfo.log("Set adaptive parameter " + key + " to value " + newValue);
                 try {
                     newValue = JsonUtils.getObjectMapper().readerFor(target.getFieldClass()).readValue(StringUtils.nullToEmpty(newValue));
                 } catch (JsonProcessingException e) {

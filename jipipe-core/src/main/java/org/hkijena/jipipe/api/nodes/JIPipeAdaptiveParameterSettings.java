@@ -66,7 +66,7 @@ public class JIPipeAdaptiveParameterSettings implements JIPipeParameterCollectio
         return eventBus;
     }
 
-    @JIPipeDocumentation(name = "Enable adaptive parameters", description = "If enabled, you can use custom expressions to generate parameters.")
+    @JIPipeDocumentation(name = "Enable adaptive parameters", description = "If enabled, you can use custom expressions to generate parameters. Please note that this will disable parallelization.")
     @JIPipeParameter("enabled")
     public boolean isEnabled() {
         return enabled;

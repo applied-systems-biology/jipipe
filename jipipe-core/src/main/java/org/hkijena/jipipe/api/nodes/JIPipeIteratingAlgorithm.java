@@ -20,6 +20,7 @@ import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeAnnotation;
 import org.hkijena.jipipe.api.data.JIPipeAnnotationMergeStrategy;
+import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.data.JIPipeSlotConfiguration;
 import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
@@ -137,6 +138,17 @@ public abstract class JIPipeIteratingAlgorithm extends JIPipeParameterSlotAlgori
         return dataBatches;
     }
 
+    /**
+     * A pass-through variant for iterating algorithms.
+     * Passes the data batch to the single output
+     * @param progressInfo progress info
+     * @param dataBatch the data batch
+     */
+    protected void runPassThrough(JIPipeProgressInfo progressInfo, JIPipeDataBatch dataBatch) {
+        progressInfo.log("Passing trough (via dynamic pass-through)");
+        dataBatch.addOutputData(getFirstOutputSlot(), dataBatch.getInputData(getFirstInputSlot(), JIPipeData.class, progressInfo), progressInfo);
+    }
+
     @Override
     public void runParameterSet(JIPipeProgressInfo progressInfo, List<JIPipeAnnotation> parameterAnnotations) {
 
@@ -167,7 +179,12 @@ public abstract class JIPipeIteratingAlgorithm extends JIPipeParameterSlotAlgori
             JIPipeDataBatch dataBatch = new JIPipeDataBatch(this);
             dataBatch.addGlobalAnnotations(parameterAnnotations, dataBatchGenerationSettings.getAnnotationMergeStrategy());
             uploadAdaptiveParameters(dataBatch, tree, parameterBackups, progressInfo);
-            runIteration(dataBatch, slotProgress);
+            if(isPassThrough()) {
+                runPassThrough(slotProgress, dataBatch);
+            }
+            else {
+                runIteration(dataBatch, slotProgress);
+            }
             return;
         } else if (getEffectiveInputSlotCount() == 1) {
 
@@ -213,8 +230,10 @@ public abstract class JIPipeIteratingAlgorithm extends JIPipeParameterSlotAlgori
             }
             // Convert to single batch and attach parameters
             dataBatches = JIPipeMergingDataBatchBuilder.convertMergingToSingleDataBatches(mergingDataBatches);
-            for (JIPipeDataBatch dataBatch : dataBatches) {
-                dataBatch.addGlobalAnnotations(parameterAnnotations, dataBatchGenerationSettings.getAnnotationMergeStrategy());
+            if(dataBatches != null) {
+                for (JIPipeDataBatch dataBatch : dataBatches) {
+                    dataBatch.addGlobalAnnotations(parameterAnnotations, dataBatchGenerationSettings.getAnnotationMergeStrategy());
+                }
             }
         }
 
@@ -227,13 +246,20 @@ public abstract class JIPipeIteratingAlgorithm extends JIPipeParameterSlotAlgori
                             "Try to switch to the 'Data batches' tab to preview how data is split into batches.");
         }
 
-        if (!supportsParallelization() || !isParallelizationEnabled() || getThreadPool() == null || getThreadPool().getMaxThreads() <= 1 || dataBatches.size() <= 1) {
+        boolean hasAdaptiveParameters = getAdaptiveParameterSettings().isEnabled() && !getAdaptiveParameterSettings().getOverriddenParameters().isEmpty();
+
+        if (!supportsParallelization() || !isParallelizationEnabled() || getThreadPool() == null || getThreadPool().getMaxThreads() <= 1 || dataBatches.size() <= 1 || hasAdaptiveParameters) {
             for (int i = 0; i < dataBatches.size(); i++) {
                 if (progressInfo.isCancelled())
                     return;
                 JIPipeProgressInfo slotProgress = progressInfo.resolveAndLog("Data row", i, dataBatches.size());
                 uploadAdaptiveParameters(dataBatches.get(i), tree, parameterBackups, progressInfo);
-                runIteration(dataBatches.get(i), slotProgress);
+                if(isPassThrough()) {
+                    runPassThrough(slotProgress, dataBatches.get(i));
+                }
+                else {
+                    runIteration(dataBatches.get(i), slotProgress);
+                }
             }
         } else {
             List<Runnable> tasks = new ArrayList<>();
@@ -245,7 +271,12 @@ public abstract class JIPipeIteratingAlgorithm extends JIPipeParameterSlotAlgori
                         return;
                     JIPipeProgressInfo slotProgress = progressInfo.resolveAndLog("Data row", dataBatchIndex, dataBatches.size());
                     uploadAdaptiveParameters(dataBatches.get(dataBatchIndex), finalTree, parameterBackups, progressInfo);
-                    runIteration(dataBatches.get(dataBatchIndex), slotProgress);
+                    if(isPassThrough()) {
+                        runPassThrough(slotProgress, dataBatches.get(dataBatchIndex));
+                    }
+                    else {
+                        runIteration(dataBatches.get(dataBatchIndex), slotProgress);
+                    }
                 });
             }
             progressInfo.log(String.format("Running %d batches (batch size %d) in parallel. Available threads = %d", tasks.size(), getParallelizationBatchSize(), getThreadPool().getMaxThreads()));
@@ -283,12 +314,14 @@ public abstract class JIPipeIteratingAlgorithm extends JIPipeParameterSlotAlgori
                 }
             } else if (target.getFieldClass().isAssignableFrom(newValue.getClass())) {
                 // Set new value
+                progressInfo.log("Set adaptive parameter " + key + " to value " + JsonUtils.toJsonString(newValue));
                 target.set(newValue);
                 if (getAdaptiveParameterSettings().isAttachParameterAnnotations()) {
                     annotateWithParameter(dataBatch, key, target, newValue);
                 }
             } else {
                 // Is JSON. Parse
+                progressInfo.log("Set adaptive parameter " + key + " to value " + newValue);
                 try {
                     newValue = JsonUtils.getObjectMapper().readerFor(target.getFieldClass()).readValue(StringUtils.nullToEmpty(newValue));
                 } catch (JsonProcessingException e) {
