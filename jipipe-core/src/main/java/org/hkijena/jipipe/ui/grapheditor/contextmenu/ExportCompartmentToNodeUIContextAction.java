@@ -54,7 +54,7 @@ public class ExportCompartmentToNodeUIContextAction implements NodeUIContextActi
         }
 
         JIPipeGraph extractedGraph = project.getGraph().extract(project.getGraph().getNodesWithinCompartment(compartmentId), true);
-        NodeGroup nodeGroup = new NodeGroup(extractedGraph, true);
+        NodeGroup nodeGroup = new NodeGroup(extractedGraph, true, false, true);
         JIPipeJsonExporter.createExporter(projectWorkbench, nodeGroup, compartment.getName(), compartment.getCustomDescription());
     }
 

@@ -140,7 +140,7 @@ public class JIPipeGraphRunner implements JIPipeRunnable {
                     if (!executedLoops.contains(loop)) {
                         subProgress = progressInfo.resolveAndLog("Loop #" + (loopGroups.indexOf(loop) + 1));
                         JIPipeGraph loopGraph = algorithmGraph.extract(loop.getNodes(), true);
-                        NodeGroup group = new NodeGroup(loopGraph, false);
+                        NodeGroup group = new NodeGroup(loopGraph, false, false, true);
                         BiMap<JIPipeDataSlot, JIPipeDataSlot> loopGraphSlotMap = group.autoCreateSlots();
                         group.setIterationMode(loop.getLoopStartNode().getIterationMode());
                         group.setThreadPool(threadPool);

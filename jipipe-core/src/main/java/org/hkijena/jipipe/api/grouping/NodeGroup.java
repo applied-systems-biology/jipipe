@@ -40,9 +40,11 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
+import org.hkijena.jipipe.ui.grapheditor.JIPipeGraphViewMode;
 import org.hkijena.jipipe.utils.ParameterUtils;
 import org.hkijena.jipipe.utils.StringUtils;
 
+import java.awt.Point;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -84,11 +86,12 @@ public class NodeGroup extends GraphWrapperAlgorithm implements JIPipeCustomPara
 
     /**
      * Initializes from an existing graph
-     *
      * @param graph           algorithms to be added
      * @param autoCreateSlots automatically create input and output slots
+     * @param clearLocations if enabled, clear the locations. if false, fixLocations will be queried
+     * @param fixLocations if enabled, move group inputs/outputs to locations where they fit better
      */
-    public NodeGroup(JIPipeGraph graph, boolean autoCreateSlots) {
+    public NodeGroup(JIPipeGraph graph, boolean autoCreateSlots, boolean clearLocations, boolean fixLocations) {
         super(JIPipe.getNodes().getInfoById("node-group"), new JIPipeGraph());
 
         // Remove all algorithms with no i/o
@@ -99,8 +102,10 @@ public class NodeGroup extends GraphWrapperAlgorithm implements JIPipeCustomPara
 //        }
 
         // Clear locations
-        for (JIPipeGraphNode node : graph.getGraphNodes()) {
-            node.clearLocations();
+        if(clearLocations) {
+            for (JIPipeGraphNode node : graph.getGraphNodes()) {
+                node.clearLocations();
+            }
         }
 
         // Replace all JIPipeCompartmentOutput by IOInterfaceAlgorithm
@@ -119,6 +124,40 @@ public class NodeGroup extends GraphWrapperAlgorithm implements JIPipeCustomPara
         }
 
         this.exportedParameters.getEventBus().register(this);
+
+        if(!clearLocations && fixLocations) {
+            // Assign locations of input and output accordingly
+            for (JIPipeGraphViewMode viewMode : JIPipeGraphViewMode.values()) {
+                int minX = Integer.MAX_VALUE;
+                int maxX = Integer.MIN_VALUE;
+                int minY = Integer.MAX_VALUE;
+                int maxY = Integer.MIN_VALUE;
+                for (JIPipeGraphNode graphNode : graph.getGraphNodes()) {
+                    Map<String, Point> locations = graphNode.getLocations().getOrDefault("", null);
+                    if(locations != null) {
+                        Point point = locations.getOrDefault(viewMode.name(), null);
+                        if(point != null) {
+                            minX = Math.min(minX, point.x);
+                            minY = Math.min(minY, point.y);
+                            maxX = Math.max(maxX, point.x);
+                            maxY = Math.max(maxY, point.y);
+                        }
+                    }
+                }
+
+                // Set group input/output
+                if(minX != Integer.MAX_VALUE && minY != Integer.MAX_VALUE && maxX != Integer.MIN_VALUE && maxY != Integer.MIN_VALUE) {
+                    if(viewMode == JIPipeGraphViewMode.Horizontal) {
+                        getGroupInput().setLocationWithin("", new Point(minX - 3, minY - 3), viewMode.name());
+                        getGroupOutput().setLocationWithin("", new Point(maxX + 3, maxY), viewMode.name());
+                    }
+                    else {
+                        getGroupInput().setLocationWithin("", new Point(minX, minY - 5), viewMode.name());
+                        getGroupOutput().setLocationWithin("", new Point(maxX, maxY + 5), viewMode.name());
+                    }
+                }
+            }
+        }
     }
 
     /**

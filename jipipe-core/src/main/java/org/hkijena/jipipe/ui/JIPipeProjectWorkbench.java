@@ -698,7 +698,7 @@ public class JIPipeProjectWorkbench extends JPanel implements JIPipeWorkbench {
             UIUtils.openValidityReportDialog(this, report, false);
             return;
         }
-        NodeGroup nodeGroup = new NodeGroup(new JIPipeGraph(getProject().getGraph()), true);
+        NodeGroup nodeGroup = new NodeGroup(new JIPipeGraph(getProject().getGraph()), true, false, true);
         JIPipeJsonExporter exporter = new JIPipeJsonExporter(this, nodeGroup);
         exporter.getNodeInfo().setName("Custom algorithm");
         exporter.getNodeInfo().setDescription(new HTMLText("A custom algorithm"));

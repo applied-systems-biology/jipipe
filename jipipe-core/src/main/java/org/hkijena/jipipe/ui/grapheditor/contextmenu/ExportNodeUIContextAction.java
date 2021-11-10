@@ -52,7 +52,7 @@ public class ExportNodeUIContextAction implements NodeUIContextAction {
         NodeGroup group;
         if (algorithms.size() > 1 || !(algorithms.iterator().next() instanceof NodeGroup)) {
             JIPipeGraph graph = project.getGraph().extract(algorithms, true);
-            group = new NodeGroup(graph, true);
+            group = new NodeGroup(graph, true, false, true);
         } else {
             group = new NodeGroup((NodeGroup) algorithms.iterator().next());
         }
