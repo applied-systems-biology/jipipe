@@ -91,22 +91,26 @@ public abstract class ImageRoiProcessorAlgorithm extends JIPipeIteratingAlgorith
      */
     protected Map<ImagePlusData, ROIListData> getReferenceImage(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
         if (overrideReferenceImage) {
+            progressInfo.log("Extracted reference image from input slot");
             ImagePlusData reference = dataBatch.getInputData("Reference", ImagePlusData.class, progressInfo);
             Map<ImagePlusData, ROIListData> result = new HashMap<>();
             result.put(reference, dataBatch.getInputData("ROI", ROIListData.class, progressInfo));
             return result;
         } else {
+            progressInfo.log("Extracting reference images");
             Map<Optional<ImagePlus>, ROIListData> byReferenceImage = dataBatch.getInputData("ROI", ROIListData.class, progressInfo).groupByReferenceImage();
             Map<ImagePlusData, ROIListData> result = new HashMap<>();
             if (preferAssociatedImage) {
                 for (Map.Entry<Optional<ImagePlus>, ROIListData> entry : byReferenceImage.entrySet()) {
                     if (entry.getKey().isPresent()) {
+                        progressInfo.log("Extracted reference image " +  entry.getValue() + " from ROI");
                         result.put(new ImagePlusData(entry.getKey().get()), entry.getValue());
                     } else {
                         toMaskAlgorithm.clearSlotData();
                         toMaskAlgorithm.getFirstInputSlot().addData(entry.getValue(), progressInfo);
                         toMaskAlgorithm.run(progressInfo);
                         ImagePlusData reference = toMaskAlgorithm.getFirstOutputSlot().getData(0, ImagePlusData.class, progressInfo);
+                        progressInfo.log("Generated reference image " + reference + " from ROI dimensions");
                         result.put(reference, entry.getValue());
                     }
                 }
