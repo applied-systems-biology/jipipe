@@ -249,7 +249,7 @@ public class AdaptiveParameterBuilder extends JDialog {
 
     private void moveDown(ConditionValuePairUI conditionValuePairUI) {
         int i = conditionValuePairs.indexOf(conditionValuePairUI.conditionValuePair);
-        if (i > 0 && i < (conditionValuePairs.size() - 1)) {
+        if (i >= 0 && i < (conditionValuePairs.size() - 1)) {
             ConditionValuePair other = conditionValuePairs.get(i + 1);
             conditionValuePairs.set(i, other);
             conditionValuePairs.set(i + 1, conditionValuePairUI.conditionValuePair);
