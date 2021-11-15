@@ -4,6 +4,7 @@ import com.google.common.eventbus.EventBus;
 import gnu.trove.map.TObjectIntMap;
 import gnu.trove.map.hash.TObjectIntHashMap;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
+import org.hkijena.jipipe.api.nodes.JIPipeAlgorithm;
 import org.hkijena.jipipe.api.nodes.JIPipeGraph;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 
@@ -27,13 +28,11 @@ public class JIPipeGraphGCHelper {
 
     private void initialize() {
         for (JIPipeDataSlot node : graph.getSlotNodes()) {
-            if(node.isInput()) {
+            if (node.isInput()) {
                 slotScore.put(node, graph.getGraph().inDegreeOf(node));
-            }
-            else if(node.isOutput()) {
+            } else if (node.isOutput()) {
                 slotScore.put(node, graph.getGraph().outDegreeOf(node));
-            }
-            else {
+            } else {
                 throw new UnsupportedOperationException("Unknown slot type!");
             }
         }

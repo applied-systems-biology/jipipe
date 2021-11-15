@@ -527,6 +527,8 @@ public class JIPipeRun implements JIPipeRunnable {
     private boolean tryLoadFromCache(JIPipeGraphNode algorithm, JIPipeProgressInfo progressInfo, JIPipeProjectCacheQuery cacheQuery) {
         if (!configuration.isLoadFromCache())
             return false;
+        if(!(algorithm instanceof  JIPipeAlgorithm))
+            return false;
         JIPipeGraphNode projectAlgorithm = cacheQuery.getNode(algorithm.getUUIDInGraph());
         JIPipeProjectCacheState stateId = cacheQuery.getCachedId(projectAlgorithm);
         Map<String, JIPipeDataSlot> cachedData = project.getCache().extract(projectAlgorithm, stateId);
