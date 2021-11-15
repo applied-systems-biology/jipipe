@@ -14,6 +14,7 @@
 package org.hkijena.jipipe.api;
 
 import com.google.common.collect.BiMap;
+import com.google.common.eventbus.Subscribe;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
 import org.hkijena.jipipe.api.grouping.GraphWrapperAlgorithm;
@@ -57,10 +58,12 @@ public class JIPipeGraphRunner implements JIPipeRunnable {
 
     @Override
     public void run() {
+        JIPipeGraphGCHelper gc = new JIPipeGraphGCHelper(algorithmGraph);
+        gc.getEventBus().register(this);
+
         Set<JIPipeGraphNode> unExecutableAlgorithms = algorithmGraph.getDeactivatedAlgorithms(algorithmsWithExternalInput);
         Set<JIPipeGraphNode> executedAlgorithms = new HashSet<>();
         List<JIPipeDataSlot> traversedSlots = algorithmGraph.traverseSlots();
-        Set<JIPipeDataSlot> flushedSlots = new HashSet<>();
 
         List<JIPipeGraphNode> preprocessorNodes = new ArrayList<>();
         List<JIPipeGraphNode> postprocessorNodes = new ArrayList<>();
@@ -87,6 +90,14 @@ public class JIPipeGraphRunner implements JIPipeRunnable {
             }
         }
 
+        // Set the input GC
+        for (JIPipeGraphNode node : algorithmsWithExternalInput) {
+            // "Virtual" input connection
+            for (JIPipeDataSlot inputSlot : node.getInputSlots()) {
+                gc.incrementUsageCounter(inputSlot);
+            }
+        }
+
         // Collect loop groups
         List<LoopGroup> loopGroups = algorithmGraph.extractLoopGroups(Collections.emptySet(), unExecutableAlgorithms);
         Map<JIPipeGraphNode, LoopGroup> nodeLoops = new HashMap<>();
@@ -109,15 +120,23 @@ public class JIPipeGraphRunner implements JIPipeRunnable {
             JIPipeProgressInfo subProgress = progressInfo.resolveAndLog(slot.getNode().getName());
 
             // If an algorithm cannot be executed, skip it automatically
-            if (unExecutableAlgorithms.contains(slot.getNode()))
+            if (unExecutableAlgorithms.contains(slot.getNode())) {
+                // Mark for gc
+                gc.deactivateNode(slot.getNode());
                 continue;
+            }
 
             if (slot.isInput()) {
+                // Only applied if the slot does not receive data from outside
                 if (!algorithmsWithExternalInput.contains(slot.getNode())) {
                     // Copy data from source (merging rows)
                     Set<JIPipeDataSlot> sourceSlots = algorithmGraph.getSourceSlots(slot);
                     for (JIPipeDataSlot sourceSlot : sourceSlots) {
+                        // Add data from source slot
                         slot.addData(sourceSlot, subProgress);
+
+                        // Mark as used in GC helper
+                        gc.decrementUsageCounter(sourceSlot);
                     }
                 }
             } else if (slot.isOutput()) {
@@ -134,7 +153,18 @@ public class JIPipeGraphRunner implements JIPipeRunnable {
                 if (loop == null) {
                     // Ensure the algorithm has run
                     runNode(executedAlgorithms, node, subProgress);
-                    tryFlushSlot(slot, executedAlgorithms, traversedSlots, flushedSlots, currentIndex, progressInfo);
+
+                    // Mark all inputs of the node as completed
+                    for (JIPipeDataSlot inputSlot : node.getInputSlots()) {
+                        gc.markAsCompleted(inputSlot);
+                    }
+
+                    // Mark free outputs as completed
+                    for (JIPipeDataSlot outputSlot : node.getOutputSlots()) {
+                        if(algorithmGraph.getGraph().outDegreeOf(outputSlot) == 0) {
+                            gc.markAsCompleted(outputSlot);
+                        }
+                    }
                 } else {
                     // Encountered a loop
                     if (!executedLoops.contains(loop)) {
@@ -168,12 +198,21 @@ public class JIPipeGraphRunner implements JIPipeRunnable {
                             }
                         }
 
+                        // Mark the whole loop in GC
+                        for (JIPipeGraphNode loopNode : loop.getNodes()) {
+                            for (JIPipeDataSlot inputSlot : loopNode.getInputSlots()) {
+                                gc.markAsCompleted(inputSlot);
+                            }
+                            for (JIPipeDataSlot outputSlot : loopNode.getOutputSlots()) {
+                                gc.markAsCompleted(outputSlot);
+                            }
+                        }
+
                         executedLoops.add(loop);
                     }
 
                     // IMPORTANT!
                     executedAlgorithms.add(slot.getNode());
-                    tryFlushSlot(slot, executedAlgorithms, traversedSlots, flushedSlots, currentIndex, progressInfo);
                 }
             }
         }
@@ -197,36 +236,32 @@ public class JIPipeGraphRunner implements JIPipeRunnable {
             progressInfo.setProgress(absoluteIndex);
             JIPipeProgressInfo subProgress = progressInfo.resolve(node.getName());
             runNode(executedAlgorithms, node, subProgress);
+
+            // Mark all inputs of the node as completed
+            for (JIPipeDataSlot inputSlot : node.getInputSlots()) {
+                gc.markAsCompleted(inputSlot);
+            }
+        }
+
+        // GC: Mark all as completed
+        for (JIPipeDataSlot incompleteSlot : gc.getIncompleteSlots()) {
+            progressInfo.resolve("GC").log("Found incomplete GC slot: " + incompleteSlot.getDisplayName());
+        }
+        gc.markAllAsCompleted();
+    }
+
+    @Subscribe
+    public void onSlotCompleted(JIPipeGraphGCHelper.SlotCompletedEvent event) {
+        if(!persistentDataNodes.contains(event.getSlot().getNode())) {
+            event.getSlot().clearData();
+            event.getSource().markAsFlushed(event.getSlot());
         }
     }
 
-    private void tryFlushSlot(JIPipeDataSlot slot, Set<JIPipeGraphNode> executedAlgorithms, List<JIPipeDataSlot> traversedSlots, Set<JIPipeDataSlot> flushedSlots, int currentIndex, JIPipeProgressInfo progressInfo) {
-        if (!executedAlgorithms.contains(slot.getNode()))
-            return;
-        if (flushedSlots.contains(slot))
-            return;
-        if(persistentDataNodes.contains(slot.getNode()))
-            return;
-        boolean canFlush = true;
-        for (int j = currentIndex + 1; j < traversedSlots.size(); ++j) {
-            JIPipeDataSlot futureSlot = traversedSlots.get(j);
-            boolean isDeactivated = (futureSlot.getNode() instanceof JIPipeAlgorithm) && (!((JIPipeAlgorithm) futureSlot.getNode()).isEnabled());
-            if (!isDeactivated) {
-                if(slot.isOutput() && futureSlot.isInput() && algorithmGraph.getSourceSlots(futureSlot).contains(slot)) {
-                    canFlush = false;
-                    break;
-                }
-                else if(slot.isInput() && futureSlot.isOutput() && algorithmGraph.getTargetSlots(futureSlot).contains(slot)) {
-                    canFlush = false;
-                    break;
-                }
-            }
-        }
-        if (canFlush) {
-            progressInfo.log("Clearing slot " + slot.getDisplayName());
-            slot.clearData();
-        }
-    }
+     @Subscribe
+     public void onSlotFlushed(JIPipeGraphGCHelper.SlotFlushedEvent event) {
+       progressInfo.resolve("GC").log("Cleared data in " + event.getSlot().getDisplayName());
+     }
 
     private void runNode(Set<JIPipeGraphNode> executedAlgorithms, JIPipeGraphNode node, JIPipeProgressInfo subProgress) {
         if (!executedAlgorithms.contains(node)) {
