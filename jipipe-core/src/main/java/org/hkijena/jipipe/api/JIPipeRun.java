@@ -274,8 +274,10 @@ public class JIPipeRun implements JIPipeRunnable {
                 // Copy data from source
                 Set<JIPipeDataSlot> sourceSlots = copiedGraph.getSourceSlots(slot);
                 for (JIPipeDataSlot sourceSlot : sourceSlots) {
-                    // Add data from source slot
-                    slot.addData(sourceSlot, subProgress);
+                    if(slot.getNode() instanceof JIPipeAlgorithm && !unExecutableAlgorithms.contains(slot.getNode())) {
+                        // Add data from source slot
+                        slot.addData(sourceSlot, subProgress);
+                    }
 
                     // Mark as used in GC helper
                     gc.decrementUsageCounter(sourceSlot);
@@ -352,8 +354,10 @@ public class JIPipeRun implements JIPipeRunnable {
                         for (JIPipeDataSlot inputSlot : loopNode.getInputSlots()) {
                             gc.markAsCompleted(inputSlot);
                         }
-                        for (JIPipeDataSlot outputSlot : loopNode.getOutputSlots()) {
-                            gc.markAsCompleted(outputSlot);
+                        if(!loop.getLoopEndNodes().contains(loopNode)) {
+                            for (JIPipeDataSlot outputSlot : loopNode.getOutputSlots()) {
+                                gc.markAsCompleted(outputSlot);
+                            }
                         }
                     }
                 }
