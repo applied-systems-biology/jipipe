@@ -2,9 +2,13 @@ package org.hkijena.jipipe.ui.nodetemplate;
 
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
+import org.hkijena.jipipe.api.parameters.JIPipeContextAction;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
+import org.hkijena.jipipe.ui.components.MarkdownDocument;
 import org.hkijena.jipipe.ui.parameters.JIPipeParameterEditorUI;
+import org.hkijena.jipipe.ui.parameters.ParameterPanel;
+import org.hkijena.jipipe.utils.ResourceUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
@@ -32,12 +36,17 @@ public class JIPipeNodeTemplateParameterEditorUI extends JIPipeParameterEditorUI
         editButton.addActionListener(e -> editParameters());
         add(editButton, BorderLayout.EAST);
         infoButton = new JButton();
+        infoButton.addActionListener(e->editParameters());
         infoButton.setHorizontalAlignment(SwingConstants.LEFT);
         add(infoButton, BorderLayout.CENTER);
     }
 
     private void editParameters() {
-
+        JIPipeNodeTemplate parameter = new JIPipeNodeTemplate(getParameter(JIPipeNodeTemplate.class));
+        if(ParameterPanel.showDialog(getWorkbench(), parameter, new MarkdownDocument("# Node templates\n\nUse this user interface to modify node templates."), "Edit template",
+                ParameterPanel.WITH_SCROLLING | ParameterPanel.WITH_SEARCH_BAR | ParameterPanel.WITH_DOCUMENTATION)) {
+            setParameter(parameter, true);
+        }
     }
 
     @Override
