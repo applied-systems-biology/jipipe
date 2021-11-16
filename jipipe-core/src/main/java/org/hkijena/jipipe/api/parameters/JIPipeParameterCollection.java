@@ -89,6 +89,16 @@ public interface JIPipeParameterCollection {
     }
 
     /**
+     * Gets an access instance to a parameter of the defined key
+     * @param key the parameter key
+     * @return the access instance
+     */
+    default JIPipeParameterAccess getParameterAccess(String key) {
+        JIPipeParameterTree tree = new JIPipeParameterTree(this);
+        return tree.getParameters().get(key);
+    }
+
+    /**
      * Gets a parameter
      *
      * @param key   the parameter key

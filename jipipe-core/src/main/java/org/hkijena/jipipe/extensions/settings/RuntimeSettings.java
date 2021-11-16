@@ -33,15 +33,16 @@ import java.nio.file.Path;
 public class RuntimeSettings implements JIPipeParameterCollection {
     public static final String ID = "runtime";
 
-    private EventBus eventBus = new EventBus();
+    private final EventBus eventBus = new EventBus();
     private boolean allowSkipAlgorithmsWithoutInput = true;
     private boolean allowCache = true;
     private OptionalPathParameter tempDirectory = new OptionalPathParameter();
     private int defaultRunThreads = 1;
-    private int defaultTestBenchThreads = 1;
+    private int defaultQuickRunThreads = 1;
     private int realTimeRunDelay = 400;
     private boolean realTimeRunEnabled = false;
     private int logLimit = 15;
+    private boolean showQuickRunSetupWindow = true;
 
     /**
      * Creates a new instance
@@ -52,6 +53,18 @@ public class RuntimeSettings implements JIPipeParameterCollection {
     @Override
     public EventBus getEventBus() {
         return eventBus;
+    }
+
+    @JIPipeDocumentation(name = "Show Quick Run setup window", description = "If enabled, a setup window is shown on executing a Quick Run or Update Cache command. " +
+            "This setting is automatically disabled when the user changed the settings.")
+    @JIPipeParameter("show-quick-run-setup-window")
+    public boolean isShowQuickRunSetupWindow() {
+        return showQuickRunSetupWindow;
+    }
+
+    @JIPipeParameter("show-quick-run-setup-window")
+    public void setShowQuickRunSetupWindow(boolean showQuickRunSetupWindow) {
+        this.showQuickRunSetupWindow = showQuickRunSetupWindow;
     }
 
     @JIPipeDocumentation(name = "Automatically skip algorithms without input", description = "If enabled, algorithms and their dependents without " +
@@ -118,8 +131,8 @@ public class RuntimeSettings implements JIPipeParameterCollection {
 
     @JIPipeDocumentation(name = "Default thread count (quick run)", description = "Default number of threads for executing quick runs.")
     @JIPipeParameter("default-test-bench-threads")
-    public int getDefaultTestBenchThreads() {
-        return defaultTestBenchThreads;
+    public int getDefaultQuickRunThreads() {
+        return defaultQuickRunThreads;
     }
 
     /**
@@ -129,10 +142,10 @@ public class RuntimeSettings implements JIPipeParameterCollection {
      * @return if successful
      */
     @JIPipeParameter("default-test-bench-threads")
-    public boolean setDefaultTestBenchThreads(int defaultTestBenchThreads) {
+    public boolean setDefaultQuickRunThreads(int defaultTestBenchThreads) {
         if (defaultTestBenchThreads <= 0)
             return false;
-        this.defaultTestBenchThreads = defaultTestBenchThreads;
+        this.defaultQuickRunThreads = defaultTestBenchThreads;
         eventBus.post(new ParameterChangedEvent(this, "default-test-bench-threads"));
         return true;
     }

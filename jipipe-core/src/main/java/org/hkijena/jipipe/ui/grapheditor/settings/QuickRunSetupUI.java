@@ -28,6 +28,7 @@ import org.hkijena.jipipe.ui.components.UserFriendlyErrorUI;
 import org.hkijena.jipipe.ui.parameters.ParameterPanel;
 import org.hkijena.jipipe.ui.quickrun.QuickRun;
 import org.hkijena.jipipe.ui.quickrun.QuickRunSettings;
+import org.hkijena.jipipe.ui.quickrun.QuickRunSetupWindow;
 import org.hkijena.jipipe.ui.resultanalysis.JIPipeResultUI;
 import org.hkijena.jipipe.ui.running.JIPipeLogViewer;
 import org.hkijena.jipipe.ui.running.JIPipeRunExecuterUI;
@@ -123,7 +124,7 @@ public class QuickRunSetupUI extends JIPipeProjectWorkbenchPanel {
             currentSettings.setLoadFromCache(true);
             currentSettings.setStoreToCache(false);
             currentSettings.setStoreIntermediateResults(true);
-            generateQuickRun(true);
+            generateQuickRun(true, true);
         }
     }
 
@@ -160,7 +161,7 @@ public class QuickRunSetupUI extends JIPipeProjectWorkbenchPanel {
             currentSettings.setLoadFromCache(true);
             currentSettings.setStoreToCache(true);
             currentSettings.setStoreIntermediateResults(cacheIntermediateResults);
-            generateQuickRun(false);
+            generateQuickRun(false, true);
         }
     }
 
@@ -177,7 +178,7 @@ public class QuickRunSetupUI extends JIPipeProjectWorkbenchPanel {
             return false;
         currentSettings = settings;
         nextRunOnSuccess = onSuccess;
-        generateQuickRun(showResults);
+        generateQuickRun(showResults, true);
         return true;
     }
 
@@ -213,14 +214,19 @@ public class QuickRunSetupUI extends JIPipeProjectWorkbenchPanel {
 
         JToolBar toolBar = new JToolBar();
         toolBar.setFloatable(false);
+
+        JButton backButton = new JButton("Back", UIUtils.getIconFromResources("actions/back.png"));
+        backButton.addActionListener(e -> tryShowSelectionPanel());
+        toolBar.add(backButton);
+
         toolBar.add(Box.createHorizontalGlue());
 
         JButton runOnly = new JButton("Run", UIUtils.getIconFromResources("actions/run-build.png"));
-        runOnly.addActionListener(e -> generateQuickRun(false));
+        runOnly.addActionListener(e -> generateQuickRun(false, false));
         toolBar.add(runOnly);
 
         JButton runAndOpen = new JButton("Run & open results", UIUtils.getIconFromResources("actions/run-build.png"));
-        runAndOpen.addActionListener(e -> generateQuickRun(true));
+        runAndOpen.addActionListener(e -> generateQuickRun(true, false));
         toolBar.add(runAndOpen);
 
         setupPanel.add(toolBar, BorderLayout.NORTH);
@@ -331,7 +337,7 @@ public class QuickRunSetupUI extends JIPipeProjectWorkbenchPanel {
         }
     }
 
-    private void generateQuickRun(boolean showResults) {
+    private void generateQuickRun(boolean showResults, boolean showSetupPanel) {
 
         JIPipeIssueReport report = new JIPipeIssueReport();
         getProject().reportValidity(report, algorithm);
@@ -340,8 +346,25 @@ public class QuickRunSetupUI extends JIPipeProjectWorkbenchPanel {
             return;
         }
 
+        // Setup panel
+        if(showSetupPanel && RuntimeSettings.getInstance().isShowQuickRunSetupWindow()) {
+            QuickRunSetupWindow window = new QuickRunSetupWindow(getWorkbench());
+            window.revalidate();
+            window.repaint();
+            window.setLocationRelativeTo(getProjectWorkbench().getWindow());
+            window.setVisible(true);
+            if(window.isCancelled()) {
+                tryShowSelectionPanel();
+                return;
+            }
+        }
+        if(!showSetupPanel) {
+            RuntimeSettings.getInstance().setShowQuickRunSetupWindow(false);
+            RuntimeSettings.getInstance().triggerParameterChange("show-quick-run-setup-window");
+        }
+
         currentQuickRun = new QuickRun(getProject(), algorithm, currentSettings);
-        RuntimeSettings.getInstance().setDefaultTestBenchThreads(currentSettings.getNumThreads());
+        RuntimeSettings.getInstance().setDefaultQuickRunThreads(currentSettings.getNumThreads());
         showNextResults = showResults;
 
         removeAll();

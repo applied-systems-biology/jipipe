@@ -35,7 +35,7 @@ public class QuickRunSettings implements JIPipeParameterCollection {
     private boolean saveToDisk = true;
     private boolean excludeSelected = false;
     private boolean storeIntermediateResults = false;
-    private int numThreads = RuntimeSettings.getInstance().getDefaultTestBenchThreads();
+    private int numThreads = RuntimeSettings.getInstance().getDefaultQuickRunThreads();
 
     /**
      * Creates a new instance

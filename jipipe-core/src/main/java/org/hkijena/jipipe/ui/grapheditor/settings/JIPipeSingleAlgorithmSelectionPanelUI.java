@@ -158,7 +158,7 @@ public class JIPipeSingleAlgorithmSelectionPanelUI extends JIPipeProjectWorkbenc
             if (batchAssistantTabContent != null && tabbedPane.getCurrentContent() == batchAssistantTabContent) {
                 if (batchAssistantTabContent.getComponentCount() == 0) {
                     DataBatchAssistantUI browserUI = new DataBatchAssistantUI(getProjectWorkbench(), algorithm,
-                            () -> runTestBench(false,
+                            () -> executeQuickRun(false,
                                     false,
                                     true,
                                     false,
@@ -224,7 +224,7 @@ public class JIPipeSingleAlgorithmSelectionPanelUI extends JIPipeProjectWorkbenc
      * @param storeIntermediateOutputs if the run should store intermediate outputs
      * @param excludeSelected          if the current algorithm should be excluded
      */
-    public void runTestBench(boolean showResults, boolean showCache, boolean showBatchAssistant, boolean saveToDisk, boolean storeIntermediateOutputs, boolean excludeSelected) {
+    public void executeQuickRun(boolean showResults, boolean showCache, boolean showBatchAssistant, boolean saveToDisk, boolean storeIntermediateOutputs, boolean excludeSelected) {
         // Activate the quick run
         tabbedPane.switchToContent(testBenchTabContent);
         QuickRunSetupUI testBenchSetupUI = (QuickRunSetupUI) testBenchTabContent.getComponent(0);

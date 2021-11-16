@@ -295,7 +295,7 @@ public class JIPipeGraphCompartmentUI extends JIPipeGraphEditorUI {
             JIPipeSingleAlgorithmSelectionPanelUI panel = new JIPipeSingleAlgorithmSelectionPanelUI(this,
                     event.getUi().getNode());
             setPropertyPanel(panel);
-            panel.runTestBench(true,
+            panel.executeQuickRun(true,
                     false,
                     false,
                     true,
@@ -308,7 +308,7 @@ public class JIPipeGraphCompartmentUI extends JIPipeGraphEditorUI {
             JIPipeSingleAlgorithmSelectionPanelUI panel = new JIPipeSingleAlgorithmSelectionPanelUI(this,
                     event.getUi().getNode());
             setPropertyPanel(panel);
-            panel.runTestBench(false,
+            panel.executeQuickRun(false,
                     true,
                     false,
                     false,
