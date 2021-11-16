@@ -17,7 +17,6 @@ import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonSetter;
 import org.hkijena.jipipe.JIPipeImageJUpdateSiteDependency;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
-import org.hkijena.jipipe.ui.nodetemplate.JIPipeNodeTemplate;
 
 /**
  * Metadata for a {@link JIPipeProject}

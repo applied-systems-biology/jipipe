@@ -28,6 +28,7 @@ import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.categories.DataSourceNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeContextAction;
+import org.hkijena.jipipe.extensions.nodetemplate.NodeTemplateBox;
 import org.hkijena.jipipe.extensions.nodetoolboxtool.NodeToolBox;
 import org.hkijena.jipipe.extensions.settings.GeneralUISettings;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
@@ -224,6 +225,9 @@ public class JIPipeGraphCompartmentUI extends JIPipeGraphEditorUI {
 
         bottomPanel.addTab("Available nodes", UIUtils.getIconFromResources("actions/configuration.png"),
                 new NodeToolBox(), DocumentTabPane.CloseMode.withoutCloseButton);
+
+        bottomPanel.addTab("Node templates", UIUtils.getIconFromResources("actions/favorite.png"),
+                new NodeTemplateBox(getAlgorithmGraph().getProject()), DocumentTabPane.CloseMode.withoutCloseButton);
 
         splitPane.setBottomComponent(bottomPanel);
     }

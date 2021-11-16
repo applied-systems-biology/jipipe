@@ -88,8 +88,9 @@ public class ListParameterEditorUI extends JIPipeParameterEditorUI {
     }
 
     private void addNewEntry() {
-        getParameter(ListParameter.class).addNewInstance();
-        reload();
+        ListParameter<?> parameter = getParameter(ListParameter.class);
+        parameter.addNewInstance();
+        setParameter(parameter, true);
     }
 
     @Override

@@ -27,8 +27,8 @@ public class NodeToolBox extends JPanel {
 
     private JList<JIPipeNodeInfo> algorithmList;
     private SearchTextField searchField;
-    private MarkdownReader documentationReader = new MarkdownReader(false);
-    private JToolBar toolBar = new JToolBar();
+    private final MarkdownReader documentationReader = new MarkdownReader(false);
+    private final JToolBar toolBar = new JToolBar();
 
     public NodeToolBox() {
         initialize();
@@ -42,7 +42,6 @@ public class NodeToolBox extends JPanel {
     private void initialize() {
         setLayout(new BorderLayout());
 
-        JToolBar toolBar = new JToolBar();
         add(toolBar, BorderLayout.NORTH);
 
         searchField = new SearchTextField();
@@ -143,7 +142,7 @@ public class NodeToolBox extends JPanel {
         window.setAlwaysOnTop(true);
         window.setTitle("Available nodes");
         window.setIconImage(UIUtils.getIcon128FromResources("jipipe.png").getImage());
-        window.setContentPane(new NodeToolBox());
+        window.setContentPane(toolBox);
         window.pack();
         window.setSize(300, 700);
         window.setVisible(true);
