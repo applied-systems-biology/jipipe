@@ -18,10 +18,6 @@ import java.awt.datatransfer.StringSelection;
 import java.nio.file.Path;
 
 public class CopyPathDataOperation implements JIPipeDataImportOperation, JIPipeDataDisplayOperation {
-    @Override
-    public void display(JIPipeData data, String displayName, JIPipeWorkbench workbench, JIPipeDataSource source) {
-        UIUtils.openFileInNative(((PathData) data).toPath());
-    }
 
     @Override
     public String getId() {
@@ -49,11 +45,19 @@ public class CopyPathDataOperation implements JIPipeDataImportOperation, JIPipeD
     }
 
     @Override
+    public void display(JIPipeData data, String displayName, JIPipeWorkbench workbench, JIPipeDataSource source) {
+        String string = ((PathData) data).toPath().toString();
+        StringSelection selection = new StringSelection(string);
+        Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
+        clipboard.setContents(selection, selection);
+    }
+
+    @Override
     public JIPipeData show(JIPipeDataSlot slot, JIPipeExportedDataTableRow row, String dataAnnotationName, Path rowStorageFolder, String compartmentName, String algorithmName, String displayName, JIPipeWorkbench workbench) {
         Path listFile = PathUtils.findFileByExtensionIn(rowStorageFolder, ".json");
         if (listFile != null) {
             PathData pathData = PathData.importFrom(rowStorageFolder);
-            StringSelection selection = new StringSelection(pathData.getPath().toString());
+            StringSelection selection = new StringSelection(pathData.getPath());
             Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
             clipboard.setContents(selection, selection);
             return pathData;
