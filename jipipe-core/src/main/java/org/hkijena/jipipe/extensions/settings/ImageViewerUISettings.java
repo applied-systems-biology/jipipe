@@ -27,7 +27,7 @@ public class ImageViewerUISettings implements JIPipeParameterCollection {
 
     public static String ID = "image-viewer-ui";
 
-    private EventBus eventBus = new EventBus();
+    private final EventBus eventBus = new EventBus();
     private boolean showSideBar = true;
     private int defaultAnimationSpeed = 250;
 

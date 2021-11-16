@@ -17,6 +17,7 @@ import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonSetter;
 import org.hkijena.jipipe.JIPipeImageJUpdateSiteDependency;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
+import org.hkijena.jipipe.ui.nodetemplate.JIPipeNodeTemplate;
 
 /**
  * Metadata for a {@link JIPipeProject}
@@ -25,6 +26,7 @@ public class JIPipeProjectMetadata extends JIPipeMetadata {
     private JIPipeImageJUpdateSiteDependency.List updateSiteDependencies = new JIPipeImageJUpdateSiteDependency.List();
     private String templateDescription = "";
     private JIPipeProjectPermissions permissions = new JIPipeProjectPermissions();
+    private JIPipeNodeTemplate.List nodeTemplates = new JIPipeNodeTemplate.List();
 
     @JIPipeDocumentation(name = "ImageJ update site dependencies", description = "ImageJ update sites that should be enabled for the project to work. Use this if you rely on " +
             "third-party methods that are not referenced in a JIPipe extension (e.g. within a script or macro node). " +
@@ -66,5 +68,18 @@ public class JIPipeProjectMetadata extends JIPipeMetadata {
     @JsonSetter("permissions")
     public void setPermissions(JIPipeProjectPermissions permissions) {
         this.permissions = permissions;
+    }
+
+    @JIPipeDocumentation(name = "Node templates", description = "A list of node templates that will be available for users who edit the project.")
+    @JIPipeParameter("node-templates")
+    @JsonGetter("node-templates")
+    public JIPipeNodeTemplate.List getNodeTemplates() {
+        return nodeTemplates;
+    }
+
+    @JIPipeParameter("node-templates")
+    @JsonSetter("node-templates")
+    public void setNodeTemplates(JIPipeNodeTemplate.List nodeTemplates) {
+        this.nodeTemplates = nodeTemplates;
     }
 }

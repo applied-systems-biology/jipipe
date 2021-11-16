@@ -77,6 +77,8 @@ import org.hkijena.jipipe.extensions.parameters.util.LogicalOperation;
 import org.hkijena.jipipe.extensions.parameters.util.SortOrder;
 import org.hkijena.jipipe.ui.grapheditor.JIPipeGraphViewMode;
 import org.hkijena.jipipe.ui.grapheditor.layout.GraphAutoLayout;
+import org.hkijena.jipipe.ui.nodetemplate.JIPipeNodeTemplate;
+import org.hkijena.jipipe.ui.nodetemplate.JIPipeNodeTemplateParameterEditorUI;
 import org.hkijena.jipipe.utils.PathIOMode;
 import org.hkijena.jipipe.utils.PathType;
 import org.hkijena.jipipe.utils.json.JsonUtils;
@@ -604,6 +606,16 @@ public class StandardParametersExtension extends JIPipePrepackagedDefaultJavaExt
                 JIPipeDataByMetadataExporter.Mode.class,
                 "Exporter mode",
                 "Allows you to choose between automatic or manual name generation.");
+
+        // Node templates
+        registerParameterType("node-template",
+                JIPipeNodeTemplate.class,
+                JIPipeNodeTemplate.List.class,
+                null,
+                null,
+                "Node template",
+                "Stores a copy of a node",
+                JIPipeNodeTemplateParameterEditorUI.class);
     }
 
     private void registerCommonJavaTypes() {
