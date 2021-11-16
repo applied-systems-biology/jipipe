@@ -903,6 +903,7 @@ public class JIPipeGraphCanvasUI extends JIPipeWorkbenchPanel implements MouseMo
         }
         removeOldNodes();
         addNewNodes();
+        requestFocusInWindow();
     }
 
     /**
@@ -947,6 +948,7 @@ public class JIPipeGraphCanvasUI extends JIPipeWorkbenchPanel implements MouseMo
             }
         }
 
+        requestFocusInWindow();
         getEventBus().post(new GraphCanvasUpdatedEvent(this));
     }
 
@@ -1666,6 +1668,7 @@ public class JIPipeGraphCanvasUI extends JIPipeWorkbenchPanel implements MouseMo
 
     private void updateSelection() {
         repaint();
+        requestFocusInWindow();
         eventBus.post(new AlgorithmSelectionChangedEvent(this));
     }
 
