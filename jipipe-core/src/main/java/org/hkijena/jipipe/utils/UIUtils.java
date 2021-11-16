@@ -52,6 +52,7 @@ import javax.swing.text.html.HTMLEditorKit;
 import java.awt.*;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.DataFlavor;
+import java.awt.datatransfer.StringSelection;
 import java.awt.datatransfer.Transferable;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
@@ -1144,6 +1145,16 @@ public class UIUtils {
                 }
             }
         }
+    }
+
+    /**
+     * Copies the string to the clipboard
+     * @param string the string
+     */
+    public static void copyToClipboard(String string) {
+        StringSelection selection = new StringSelection(string);
+        Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
+        clipboard.setContents(selection, selection);
     }
 
     /**

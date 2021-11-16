@@ -741,6 +741,24 @@ public class TableEditor extends JIPipeWorkbenchPanel {
     }
 
     /**
+     * Shows table data in a new window
+     * @param workbench the workbench
+     * @param tableData the data
+     * @param title the title
+     * @return the table editor component
+     */
+    public static TableEditor openWindow(JIPipeWorkbench workbench, ResultsTableData tableData, String title) {
+        JFrame window = new JFrame(title);
+        window.getContentPane().setLayout(new BorderLayout());
+        TableEditor editor = new TableEditor(workbench, tableData);
+        window.getContentPane().add(editor, BorderLayout.CENTER);
+        window.setSize(1024,768);
+        window.setLocationRelativeTo(workbench.getWindow());
+        window.setVisible(true);
+        return editor;
+    }
+
+    /**
      * Renders a table cell
      */
     private static class Renderer extends JLabel implements TableCellRenderer {

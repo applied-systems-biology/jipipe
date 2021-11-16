@@ -27,6 +27,7 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.extensions.settings.FileChooserSettings;
 import org.hkijena.jipipe.extensions.settings.GeneralDataSettings;
 import org.hkijena.jipipe.extensions.tables.datatypes.AnnotationTableData;
+import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.JIPipeWorkbenchPanel;
@@ -40,6 +41,7 @@ import org.hkijena.jipipe.ui.resultanalysis.JIPipeAnnotationTableCellRenderer;
 import org.hkijena.jipipe.ui.resultanalysis.JIPipeNodeTableCellRenderer;
 import org.hkijena.jipipe.ui.resultanalysis.JIPipeProjectCompartmentTableCellRenderer;
 import org.hkijena.jipipe.ui.running.JIPipeRunnerQueue;
+import org.hkijena.jipipe.ui.tableeditor.TableEditor;
 import org.hkijena.jipipe.utils.TooltipUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.jdesktop.swingx.JXTable;
@@ -54,7 +56,10 @@ import java.awt.Component;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.nio.file.Path;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * UI that displays a {@link JIPipeDataSlot} that is cached
@@ -174,6 +179,10 @@ public class JIPipeCacheMultiDataSlotTableUI extends JIPipeWorkbenchPanel {
         toolBar.add(exportButton);
         JPopupMenu exportMenu = UIUtils.addPopupMenuToComponent(exportButton);
 
+        JMenuItem exportAsTableItem = new JMenuItem("Metadata as table", UIUtils.getIconFromResources("actions/link.png"));
+        exportAsTableItem.addActionListener(e -> exportAsTable());
+        exportMenu.add(exportAsTableItem);
+
         JMenuItem exportAsCsvItem = new JMenuItem("Metadata as *.csv", UIUtils.getIconFromResources("data-types/results-table.png"));
         exportAsCsvItem.addActionListener(e -> exportAsCSV());
         exportMenu.add(exportAsCsvItem);
@@ -217,6 +226,19 @@ public class JIPipeCacheMultiDataSlotTableUI extends JIPipeWorkbenchPanel {
             JIPipeCachedSlotToOutputExporterRun run = new JIPipeCachedSlotToOutputExporterRun(getWorkbench(), path, slots, true);
             JIPipeRunnerQueue.getInstance().enqueue(run);
         }
+    }
+
+
+    private void exportAsTable() {
+        AnnotationTableData tableData = new AnnotationTableData();
+        for (JIPipeDataSlot slot : multiSlotTable.getSlotList()) {
+            tableData.addRows(slot.toAnnotationTable(true));
+        }
+        Set<String> nodes = new HashSet<>();
+        for (JIPipeDataSlot dataSlot : multiSlotTable.getSlotList()) {
+            nodes.add(dataSlot.getNode().getDisplayName());
+        }
+        TableEditor.openWindow(getWorkbench(), tableData, nodes.stream().sorted().collect(Collectors.joining(", ")));
     }
 
     private void exportAsCSV() {

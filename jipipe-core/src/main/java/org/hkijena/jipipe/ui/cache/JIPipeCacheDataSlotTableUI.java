@@ -34,6 +34,7 @@ import org.hkijena.jipipe.ui.components.SearchTextFieldTableRowFilter;
 import org.hkijena.jipipe.ui.parameters.ParameterPanel;
 import org.hkijena.jipipe.ui.resultanalysis.JIPipeAnnotationTableCellRenderer;
 import org.hkijena.jipipe.ui.running.JIPipeRunnerQueue;
+import org.hkijena.jipipe.ui.tableeditor.TableEditor;
 import org.hkijena.jipipe.utils.TooltipUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.jdesktop.swingx.JXTable;
@@ -154,6 +155,10 @@ public class JIPipeCacheDataSlotTableUI extends JIPipeWorkbenchPanel {
         toolBar.add(exportButton);
         JPopupMenu exportMenu = UIUtils.addPopupMenuToComponent(exportButton);
 
+        JMenuItem exportAsTableItem = new JMenuItem("Metadata as table", UIUtils.getIconFromResources("actions/link.png"));
+        exportAsTableItem.addActionListener(e -> exportAsTable());
+        exportMenu.add(exportAsTableItem);
+
         JMenuItem exportAsCsvItem = new JMenuItem("Metadata as *.csv", UIUtils.getIconFromResources("data-types/results-table.png"));
         exportAsCsvItem.addActionListener(e -> exportAsCSV());
         exportMenu.add(exportAsCsvItem);
@@ -182,6 +187,11 @@ public class JIPipeCacheDataSlotTableUI extends JIPipeWorkbenchPanel {
 
         PreviewControlUI previewControlUI = new PreviewControlUI();
         toolBar.add(previewControlUI);
+    }
+
+    private void exportAsTable() {
+        ResultsTableData tableData = dataTable.getSlot().toAnnotationTable(true);
+        TableEditor.openWindow(getWorkbench(), tableData, slot.getNode().getDisplayName() + "/" + slot.getName());
     }
 
     private void exportByMetadataExporter() {

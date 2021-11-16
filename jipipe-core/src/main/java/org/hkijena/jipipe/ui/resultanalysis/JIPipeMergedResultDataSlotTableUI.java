@@ -38,6 +38,7 @@ import org.hkijena.jipipe.ui.components.SearchTextField;
 import org.hkijena.jipipe.ui.components.SearchTextFieldTableRowFilter;
 import org.hkijena.jipipe.ui.parameters.ParameterPanel;
 import org.hkijena.jipipe.ui.running.JIPipeRunnerQueue;
+import org.hkijena.jipipe.ui.tableeditor.TableEditor;
 import org.hkijena.jipipe.utils.TooltipUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.jdesktop.swingx.JXTable;
@@ -51,6 +52,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.nio.file.Path;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Displays the result of multiple {@link JIPipeDataSlot}
@@ -142,6 +144,10 @@ public class JIPipeMergedResultDataSlotTableUI extends JIPipeProjectWorkbenchPan
         toolBar.add(exportButton);
         JPopupMenu exportMenu = UIUtils.addPopupMenuToComponent(exportButton);
 
+        JMenuItem exportAsTableItem = new JMenuItem("Metadata as table", UIUtils.getIconFromResources("actions/link.png"));
+        exportAsTableItem.addActionListener(e -> exportAsTable());
+        exportMenu.add(exportAsTableItem);
+
         JMenuItem exportAsCsvItem = new JMenuItem("Metadata as *.csv", UIUtils.getIconFromResources("data-types/results-table.png"));
         exportAsCsvItem.addActionListener(e -> exportAsCSV());
         exportMenu.add(exportAsCsvItem);
@@ -183,6 +189,14 @@ public class JIPipeMergedResultDataSlotTableUI extends JIPipeProjectWorkbenchPan
         if (run.setup()) {
             JIPipeRunnerQueue.getInstance().enqueue(run);
         }
+    }
+
+    private void exportAsTable() {
+        AnnotationTableData tableData = new AnnotationTableData();
+        for (JIPipeExportedDataTable exportedDataTable : mergedDataTable.getAddedTables()) {
+            tableData.addRows(exportedDataTable.toAnnotationTable());
+        }
+        TableEditor.openWindow(getWorkbench(), tableData, "Metadata");
     }
 
     private void exportAsCSV() {

@@ -25,6 +25,7 @@ import org.hkijena.jipipe.api.data.JIPipeExportedDataTableRow;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.extensions.settings.FileChooserSettings;
 import org.hkijena.jipipe.extensions.settings.GeneralDataSettings;
+import org.hkijena.jipipe.extensions.tables.datatypes.AnnotationTableData;
 import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbenchPanel;
@@ -35,6 +36,7 @@ import org.hkijena.jipipe.ui.components.SearchTextField;
 import org.hkijena.jipipe.ui.components.SearchTextFieldTableRowFilter;
 import org.hkijena.jipipe.ui.parameters.ParameterPanel;
 import org.hkijena.jipipe.ui.running.JIPipeRunnerQueue;
+import org.hkijena.jipipe.ui.tableeditor.TableEditor;
 import org.hkijena.jipipe.utils.TooltipUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.jdesktop.swingx.JXTable;
@@ -141,6 +143,10 @@ public class JIPipeResultDataSlotTableUI extends JIPipeProjectWorkbenchPanel {
         toolBar.add(exportButton);
         JPopupMenu exportMenu = UIUtils.addPopupMenuToComponent(exportButton);
 
+        JMenuItem exportAsTableItem = new JMenuItem("Metadata as table", UIUtils.getIconFromResources("actions/link.png"));
+        exportAsTableItem.addActionListener(e -> exportAsTable());
+        exportMenu.add(exportAsTableItem);
+
         JMenuItem exportAsCsvItem = new JMenuItem("Metadata as *.csv", UIUtils.getIconFromResources("data-types/results-table.png"));
         exportAsCsvItem.addActionListener(e -> exportAsCSV());
         exportMenu.add(exportAsCsvItem);
@@ -176,6 +182,11 @@ public class JIPipeResultDataSlotTableUI extends JIPipeProjectWorkbenchPanel {
         if (run.setup()) {
             JIPipeRunnerQueue.getInstance().enqueue(run);
         }
+    }
+
+    private void exportAsTable() {
+        ResultsTableData tableData = dataTable.toAnnotationTable();
+        TableEditor.openWindow(getWorkbench(), tableData, "Metadata");
     }
 
     private void exportAsCSV() {

@@ -16,6 +16,7 @@ package org.hkijena.jipipe.ui.cache;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.JIPipeRunnable;
+import org.hkijena.jipipe.api.data.JIPipeAnnotation;
 import org.hkijena.jipipe.api.data.JIPipeCacheSlotDataSource;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataAnnotation;
@@ -29,6 +30,7 @@ import org.hkijena.jipipe.extensions.settings.GeneralDataSettings;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.JIPipeWorkbenchPanel;
 import org.hkijena.jipipe.ui.running.JIPipeRunExecuterUI;
+import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.hkijena.jipipe.utils.ui.BusyCursor;
 
@@ -92,6 +94,28 @@ public class JIPipeDataSlotRowUI extends JIPipeWorkbenchPanel {
             }
 
             add(dataAnnotationButton);
+        }
+
+        if(!slot.getAnnotations(row).isEmpty()) {
+            JButton annotationButton = new JButton("Annotations ...", UIUtils.getIconFromResources("data-types/annotation.png"));
+            JPopupMenu annotationMenu = UIUtils.addPopupMenuToComponent(annotationButton);
+            for (JIPipeAnnotation annotation : slot.getAnnotations(row)) {
+                JMenu entryMenu = new JMenu(annotation.getName());
+                entryMenu.setIcon(UIUtils.getIconFromResources("data-types/annotation.png"));
+
+                JMenuItem valueItem = new JMenuItem(StringUtils.nullToEmpty(annotation.getValue()), UIUtils.getIconFromResources("actions/equals.png"));
+                valueItem.setEnabled(false);
+                entryMenu.add(valueItem);
+
+                entryMenu.addSeparator();
+
+                JMenuItem copyAnnotationValueItem = new JMenuItem("Copy value", UIUtils.getIconFromResources("actions/edit-copy.png"));
+                copyAnnotationValueItem.addActionListener(e -> UIUtils.copyToClipboard(annotation.getValue()));
+                entryMenu.add(copyAnnotationValueItem);
+
+                annotationMenu.add(entryMenu);
+            }
+            add(annotationButton);
         }
 
         JButton copyButton = new JButton("Copy string", UIUtils.getIconFromResources("actions/edit-copy.png"));
