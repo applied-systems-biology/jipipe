@@ -1639,9 +1639,9 @@ public class JIPipeGraph implements JIPipeValidatable {
         Set<JIPipeGraphNode> loopStarts = new HashSet<>();
         Set<JIPipeGraphNode> loopEnds = new HashSet<>();
         for (JIPipeGraphNode node : getGraphNodes()) {
-            if (node instanceof LoopEndNode || additionalLoopEnds.contains(node)) {
+            if ((node instanceof LoopEndNode && !((LoopEndNode) node).isPassThrough()) || additionalLoopEnds.contains(node)) {
                 loopEnds.add(node);
-            } else if (node instanceof LoopStartNode && ((LoopStartNode) node).getIterationMode() != GraphWrapperAlgorithm.IterationMode.PassThrough) {
+            } else if (node instanceof LoopStartNode && ((LoopStartNode) node).getIterationMode() != GraphWrapperAlgorithm.IterationMode.PassThrough && !((LoopStartNode) node).isPassThrough()) {
                 loopStarts.add(node);
             } else if (node.getOutputSlots().isEmpty()) {
                 loopEnds.add(node);
