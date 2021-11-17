@@ -218,7 +218,7 @@ public class ParameterPanel extends FormPanel implements Contextual {
                 }
             }
 
-            if (parameterCount <= 0) {
+            if (parameterCount <= 0 && !(source instanceof JIPipeDynamicParameterCollection)) {
                 hiddenCollections.add(source);
             }
         }
