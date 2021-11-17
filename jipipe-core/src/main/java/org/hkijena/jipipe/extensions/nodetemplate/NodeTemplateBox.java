@@ -1,5 +1,8 @@
 package org.hkijena.jipipe.extensions.nodetemplate;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.google.common.collect.ImmutableList;
 import com.google.common.eventbus.Subscribe;
 import com.google.common.html.HtmlEscapers;
 import org.hkijena.jipipe.JIPipe;
@@ -9,6 +12,7 @@ import org.hkijena.jipipe.api.data.JIPipeDataInfo;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.nodes.categories.InternalNodeTypeCategory;
+import org.hkijena.jipipe.extensions.settings.FileChooserSettings;
 import org.hkijena.jipipe.extensions.settings.NodeTemplateSettings;
 import org.hkijena.jipipe.ui.components.AlwaysOnTopToggle;
 import org.hkijena.jipipe.ui.components.MarkdownDocument;
@@ -16,6 +20,7 @@ import org.hkijena.jipipe.ui.components.MarkdownReader;
 import org.hkijena.jipipe.ui.components.SearchTextField;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.utils.json.JsonUtils;
 import org.hkijena.jipipe.utils.search.RankedData;
 
 import javax.swing.*;
@@ -23,6 +28,11 @@ import java.awt.BorderLayout;
 import java.awt.Cursor;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -40,7 +50,7 @@ public class NodeTemplateBox extends JPanel {
     public NodeTemplateBox(JIPipeProject project) {
         this.project = project;
         initialize();
-        reloadAlgorithmList();
+        reloadTemplateList();
         NodeTemplateSettings.getInstance().getEventBus().register(this);
     }
 
@@ -50,7 +60,7 @@ public class NodeTemplateBox extends JPanel {
 
     @Subscribe
     public void onNodeTemplatesRefreshed(NodeTemplateSettings.NodeTemplatesRefreshedEvent event) {
-        reloadAlgorithmList();
+        reloadTemplateList();
     }
 
     private void initialize() {
@@ -58,7 +68,7 @@ public class NodeTemplateBox extends JPanel {
         add(toolBar, BorderLayout.NORTH);
 
         searchField = new SearchTextField();
-        searchField.addActionListener(e -> reloadAlgorithmList());
+        searchField.addActionListener(e -> reloadTemplateList());
         toolBar.add(searchField);
 
         templateList = new JList<>();
@@ -87,42 +97,209 @@ public class NodeTemplateBox extends JPanel {
 
         add(splitPane, BorderLayout.CENTER);
 
-        JButton reloadButton = new JButton("Refresh", UIUtils.getIconFromResources("actions/view-refresh.png"));
-        reloadButton.setToolTipText("Refresh list");
-        reloadButton.addActionListener(e -> reloadAlgorithmList());
-        toolBar.add(reloadButton);
-
         JButton manageButton = new JButton("Manage", UIUtils.getIconFromResources("actions/wrench.png"));
         toolBar.add(manageButton);
 
         JPopupMenu manageMenu = UIUtils.addPopupMenuToComponent(manageButton);
 
-        JMenuItem copyToProjectItem = new JMenuItem("Copy selection to project", UIUtils.getIconFromResources("actions/edit-copy.png"));
-        copyToProjectItem.addActionListener(e -> copySelectionToProject());
-        manageMenu.add(copyToProjectItem);
+        JMenuItem refreshItem = new JMenuItem("Reload list", UIUtils.getIconFromResources("actions/view-refresh.png"));
+        refreshItem.addActionListener(e -> reloadTemplateList());
+        manageMenu.add(refreshItem);
 
-        JMenuItem copyToGlobalItem = new JMenuItem("Copy selection to global storage", UIUtils.getIconFromResources("actions/edit-copy.png"));
-        copyToGlobalItem.addActionListener(e -> copySelectionToGlobal());
-        manageMenu.add(copyToGlobalItem);
+        JMenuItem selectAllItem = new JMenuItem("Select all", UIUtils.getIconFromResources("actions/edit-select-all.png"));
+        selectAllItem.addActionListener(e -> {
+            if(templateList.getModel().getSize() > 0) {
+                templateList.setSelectionInterval(0, templateList.getModel().getSize() - 1);
+            }
+        });
+        manageMenu.add(selectAllItem);
+
+        manageMenu.addSeparator();
+
+        if(project != null) {
+            JMenuItem copyToProjectItem = new JMenuItem("Copy selection to project", UIUtils.getIconFromResources("actions/edit-copy.png"));
+            copyToProjectItem.addActionListener(e -> copySelectionToProject());
+            manageMenu.add(copyToProjectItem);
+
+            JMenuItem copyToGlobalItem = new JMenuItem("Copy selection to global storage", UIUtils.getIconFromResources("actions/edit-copy.png"));
+            copyToGlobalItem.addActionListener(e -> copySelectionToGlobal());
+            manageMenu.add(copyToGlobalItem);
+
+            manageMenu.addSeparator();
+        }
+
+        JMenuItem importItem = new JMenuItem("Import from file", UIUtils.getIconFromResources("actions/document-import.png"));
+        importItem.addActionListener(e -> importTemplates());
+        manageMenu.add(importItem);
+
+        JMenuItem exportItem = new JMenuItem("Export selection to file", UIUtils.getIconFromResources("actions/document-export.png"));
+        exportItem.addActionListener(e -> exportTemplates());
+        manageMenu.add(exportItem);
+
+        manageMenu.addSeparator();
 
         JMenuItem deleteItem = new JMenuItem("Delete selection", UIUtils.getIconFromResources("actions/edit-delete.png"));
         deleteItem.addActionListener(e -> deleteSelection());
         manageMenu.add(deleteItem);
     }
 
-    private void copySelectionToGlobal() {
+    private void exportTemplates() {
+        if(templateList.getSelectedValuesList().isEmpty()) {
+            return;
+        }
+        Path path = FileChooserSettings.saveFile(this, FileChooserSettings.LastDirectoryKey.Projects, "Export templates", UIUtils.EXTENSION_FILTER_JSON);
+        if(path != null) {
+            try {
+                Files.write(path, JsonUtils.toPrettyJsonString(templateList.getSelectedValuesList()).getBytes(StandardCharsets.UTF_8));
+            } catch (IOException e) {
+                UIUtils.openErrorDialog(this, e);
+            }
+        }
+    }
 
+    private void importTemplates() {
+        Path path = FileChooserSettings.openFile(this, FileChooserSettings.LastDirectoryKey.Projects, "Import templates", UIUtils.EXTENSION_FILTER_JSON);
+        if(path != null) {
+            try {
+                JsonNode node = JsonUtils.getObjectMapper().readerFor(JsonNode.class).readValue(path.toFile());
+                List<JIPipeNodeTemplate> templates = new ArrayList<>();
+                for (JsonNode element : ImmutableList.copyOf(node.elements())) {
+                    templates.add(JsonUtils.getObjectMapper().readerFor(JIPipeNodeTemplate.class).readValue(element));
+                }
+                boolean writeToProject = false;
+                if(project != null) {
+                    int result = JOptionPane.showOptionDialog(this,
+                            "Node templates can be stored globally or inside the project. Where should the templates be stored?",
+                            "Import node templates",
+                            JOptionPane.YES_NO_CANCEL_OPTION,
+                            JOptionPane.QUESTION_MESSAGE,
+                            null,
+                            new Object[]{"Globally", "Inside project", "Cancel"},
+                            "Globally");
+                    if(result == JOptionPane.CANCEL_OPTION)
+                        return;
+                    writeToProject = result == JOptionPane.NO_OPTION;
+                }
+                if(writeToProject) {
+                    for (JIPipeNodeTemplate template : templates) {
+                        if(!project.getMetadata().getNodeTemplates().contains(template)) {
+                            project.getMetadata().getNodeTemplates().add(template);
+                        }
+                    }
+                    project.getMetadata().triggerParameterChange("node-templates");
+                }
+                else {
+                    NodeTemplateSettings templateSettings = NodeTemplateSettings.getInstance();
+                    for (JIPipeNodeTemplate template : templates) {
+                        if(!templateSettings.getNodeTemplates().contains(template)) {
+                            templateSettings.getNodeTemplates().add(template);
+                        }
+                    }
+                    templateSettings.triggerParameterChange("node-templates");
+                }
+                NodeTemplateSettings.triggerRefreshedEvent();
+            } catch (Exception e) {
+                UIUtils.openErrorDialog(this, e);
+            }
+        }
+    }
+
+    private void copySelectionToGlobal() {
+        if(project == null) {
+            return;
+        }
+        if(templateList.getSelectedValuesList().isEmpty()) {
+            JOptionPane.showMessageDialog(this, "You did not select any templates!", "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+        if(JOptionPane.showConfirmDialog(this, "Do you really want to copy " + templateList.getSelectedValuesList().size() + " templates into the global storage?",
+                "Copy selection to global storage", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE) == JOptionPane.NO_OPTION) {
+            return;
+        }
+        NodeTemplateSettings templateSettings = NodeTemplateSettings.getInstance();
+        Set<JIPipeNodeTemplate> copied = new HashSet<>();
+        for (JIPipeNodeTemplate template : ImmutableList.copyOf(templateList.getSelectedValuesList())) {
+            if(!templateSettings.getNodeTemplates().contains(template)) {
+                templateSettings.getNodeTemplates().add(template);
+                copied.add(template);
+            }
+        }
+        if(!copied.isEmpty()) {
+            if(JOptionPane.showConfirmDialog(this, "Successfully copied " + copied.size() + " templates into the global storage.\n" +
+                    "Do you want to remove these from the project storage?", "Copy selection to global storage", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE) == JOptionPane.YES_OPTION) {
+                for (JIPipeNodeTemplate template : copied) {
+                    project.getMetadata().getNodeTemplates().remove(template);
+                }
+                project.getMetadata().triggerParameterChange("node-templates");
+            }
+        }
+        NodeTemplateSettings.triggerRefreshedEvent();
     }
 
     private void copySelectionToProject() {
-
+        if(project == null) {
+            return;
+        }
+        if(templateList.getSelectedValuesList().isEmpty()) {
+            JOptionPane.showMessageDialog(this, "You did not select any templates!", "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+        if(JOptionPane.showConfirmDialog(this, "Do you really want to copy " + templateList.getSelectedValuesList().size() + " templates into the project storage?",
+                "Copy selection to project", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE) == JOptionPane.NO_OPTION) {
+            return;
+        }
+        NodeTemplateSettings templateSettings = NodeTemplateSettings.getInstance();
+        Set<JIPipeNodeTemplate> copied = new HashSet<>();
+        for (JIPipeNodeTemplate template : ImmutableList.copyOf(templateList.getSelectedValuesList())) {
+            if(!project.getMetadata().getNodeTemplates().contains(template)) {
+                project.getMetadata().getNodeTemplates().add(template);
+                copied.add(template);
+            }
+        }
+        if(!copied.isEmpty()) {
+            if(JOptionPane.showConfirmDialog(this, "Successfully copied " + copied.size() + " templates into the project storage.\n" +
+                    "Do you want to remove these from the global storage?", "Copy selection to project", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE) == JOptionPane.YES_OPTION) {
+                for (JIPipeNodeTemplate template : copied) {
+                    templateSettings.getNodeTemplates().remove(template);
+                }
+                templateSettings.triggerParameterChange("node-templates");
+            }
+        }
+        NodeTemplateSettings.triggerRefreshedEvent();
     }
 
     private void deleteSelection() {
-
+        if(templateList.getSelectedValuesList().isEmpty()) {
+            JOptionPane.showMessageDialog(this, "You did not select any templates!", "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+        if(JOptionPane.showConfirmDialog(this, "Do you really want to delete " + templateList.getSelectedValuesList().size() + " templates?",
+                "Delete selected templates", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE) == JOptionPane.NO_OPTION) {
+            return;
+        }
+        boolean modifiedProject = false;
+        boolean modifiedGlobal = false;
+        NodeTemplateSettings templateSettings = NodeTemplateSettings.getInstance();
+        for (JIPipeNodeTemplate template : ImmutableList.copyOf(templateList.getSelectedValuesList())) {
+            if(templateSettings.getNodeTemplates().remove(template)) {
+                modifiedGlobal = true;
+            }
+            if(project != null && project.getMetadata().getNodeTemplates().remove(template)) {
+                modifiedProject = true;
+            }
+        }
+        if(modifiedGlobal) {
+            templateSettings.triggerParameterChange("node-templates");
+        }
+        if(modifiedProject) {
+            project.getMetadata().triggerParameterChange("node-templates");
+        }
+        if(modifiedProject || modifiedGlobal) {
+            NodeTemplateSettings.triggerRefreshedEvent();
+        }
     }
 
-    private void reloadAlgorithmList() {
+    private void reloadTemplateList() {
         List<JIPipeNodeTemplate> infos = getFilteredAndSortedInfos();
         DefaultListModel<JIPipeNodeTemplate> model = new DefaultListModel<>();
         for (JIPipeNodeTemplate info : infos) {

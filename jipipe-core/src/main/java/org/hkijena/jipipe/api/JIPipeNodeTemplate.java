@@ -21,6 +21,8 @@ import org.hkijena.jipipe.utils.ResourceUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.hkijena.jipipe.utils.json.JsonUtils;
 
+import java.util.Objects;
+
 /**
  * Contains the JSON data of a node that can be created by a user for sharing
  * An intermediate between copying a node and a proper plugin.
@@ -140,6 +142,19 @@ public class JIPipeNodeTemplate implements JIPipeParameterCollection {
             e.printStackTrace();
         }
         return null;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        JIPipeNodeTemplate template = (JIPipeNodeTemplate) o;
+        return Objects.equals(name, template.name) && Objects.equals(description, template.description) && Objects.equals(data, template.data);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(name, description, data);
     }
 
     public static class List extends ListParameter<JIPipeNodeTemplate> {

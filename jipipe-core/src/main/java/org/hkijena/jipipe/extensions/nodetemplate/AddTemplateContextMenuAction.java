@@ -42,7 +42,7 @@ public class AddTemplateContextMenuAction implements NodeUIContextAction {
         int result = JOptionPane.YES_OPTION;
         if(canvasUI.getGraph().getProject() != null) {
             result = JOptionPane.showOptionDialog(canvasUI.getWorkbench().getWindow(),
-                    "Node templates can be stored globally or inside the project. Where you the template be stored?",
+                    "Node templates can be stored globally or inside the project. Where should the template be stored?",
                     "Create node template",
                     JOptionPane.YES_NO_CANCEL_OPTION,
                     JOptionPane.QUESTION_MESSAGE,
@@ -66,7 +66,7 @@ public class AddTemplateContextMenuAction implements NodeUIContextAction {
                 canvasUI.getGraph().getProject().getMetadata().getNodeTemplates().add(template);
                 canvasUI.getGraph().getProject().getMetadata().triggerParameterChange("node-templates");
             }
-            NodeTemplateSettings.getInstance().getEventBus().post(new NodeTemplateSettings.NodeTemplatesRefreshedEvent());
+            NodeTemplateSettings.triggerRefreshedEvent();
         }
     }
 

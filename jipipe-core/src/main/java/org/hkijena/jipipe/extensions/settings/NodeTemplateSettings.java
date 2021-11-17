@@ -34,6 +34,10 @@ public class NodeTemplateSettings implements JIPipeParameterCollection {
         return JIPipe.getSettings().getSettings(ID, NodeTemplateSettings.class);
     }
 
+    public static void triggerRefreshedEvent() {
+        getInstance().getEventBus().post(new NodeTemplatesRefreshedEvent());
+    }
+
     /**
      * This event should always be triggered into NodeTemplateSettings.getInstance().getEventBus()
      * (even if non-global). Will refresh the {@link org.hkijena.jipipe.extensions.nodetemplate.NodeTemplateBox} instances.

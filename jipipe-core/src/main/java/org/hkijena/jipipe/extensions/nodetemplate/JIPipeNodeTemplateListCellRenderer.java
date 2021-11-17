@@ -17,10 +17,12 @@ import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeNodeTemplate;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.ui.components.ColorIcon;
+import org.hkijena.jipipe.ui.theme.ModernMetalTheme;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
+import javax.swing.plaf.ColorUIResource;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Font;
@@ -33,6 +35,11 @@ import java.util.Set;
  * Renderer for {@link JIPipeNodeInfo}
  */
 public class JIPipeNodeTemplateListCellRenderer extends JPanel implements ListCellRenderer<JIPipeNodeTemplate> {
+
+    public static final Color COLOR_GLOBAL =
+            new Color(0x2372BE);
+    public static final Color COLOR_PROJECT =
+            new Color(0x6B40AA);
 
     private final Set<JIPipeNodeTemplate> projectTemplateList;
     private ColorIcon nodeColor;
@@ -117,9 +124,11 @@ public class JIPipeNodeTemplateListCellRenderer extends JPanel implements ListCe
             nodeNameLabel.setText("<Invalid node type>");
         }
         if(projectTemplateList.contains(template)) {
+            storageLabel.setForeground(COLOR_PROJECT);
             storageLabel.setText("Project storage");
         }
         else {
+            storageLabel.setForeground(COLOR_GLOBAL);
             storageLabel.setText("Global storage");
         }
 
