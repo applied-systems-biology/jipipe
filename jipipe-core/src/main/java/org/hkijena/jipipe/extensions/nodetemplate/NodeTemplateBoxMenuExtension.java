@@ -13,8 +13,7 @@ public class NodeTemplateBoxMenuExtension extends GraphEditorToolBarButtonExtens
         super(graphEditorUI);
         setToolTipText("Open a list of all available nodes that can be dragged into the graph");
         setIcon(UIUtils.getIconFromResources("actions/favorites.png"));
-        JIPipeProject project = graphEditorUI.getAlgorithmGraph().getProject();
-        addActionListener(e -> NodeTemplateBox.openNewToolBoxWindow(project));
+        addActionListener(e -> NodeTemplateBox.openNewToolBoxWindow(graphEditorUI.getWorkbench()));
     }
 
     @Override

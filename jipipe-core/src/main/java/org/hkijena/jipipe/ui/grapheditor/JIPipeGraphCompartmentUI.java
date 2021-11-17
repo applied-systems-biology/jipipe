@@ -227,7 +227,7 @@ public class JIPipeGraphCompartmentUI extends JIPipeGraphEditorUI {
                 new NodeToolBox(), DocumentTabPane.CloseMode.withoutCloseButton);
 
         bottomPanel.addTab("Node templates", UIUtils.getIconFromResources("actions/favorite.png"),
-                new NodeTemplateBox(getAlgorithmGraph().getProject()), DocumentTabPane.CloseMode.withoutCloseButton);
+                new NodeTemplateBox(getWorkbench()), DocumentTabPane.CloseMode.withoutCloseButton);
 
         splitPane.setBottomComponent(bottomPanel);
     }

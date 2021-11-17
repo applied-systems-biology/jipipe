@@ -82,6 +82,7 @@ public class JIPipeNodeTemplate implements JIPipeParameterCollection {
     @JsonSetter("data")
     @JIPipeParameter("data")
     public void setData(String data) {
+        this.nodeInfo = null;
         this.data = data;
     }
 

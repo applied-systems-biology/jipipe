@@ -14,10 +14,14 @@ import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.nodes.categories.InternalNodeTypeCategory;
 import org.hkijena.jipipe.extensions.settings.FileChooserSettings;
 import org.hkijena.jipipe.extensions.settings.NodeTemplateSettings;
+import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
+import org.hkijena.jipipe.ui.JIPipeWorkbench;
+import org.hkijena.jipipe.ui.JIPipeWorkbenchPanel;
 import org.hkijena.jipipe.ui.components.AlwaysOnTopToggle;
 import org.hkijena.jipipe.ui.components.MarkdownDocument;
 import org.hkijena.jipipe.ui.components.MarkdownReader;
 import org.hkijena.jipipe.ui.components.SearchTextField;
+import org.hkijena.jipipe.ui.parameters.ParameterPanel;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.hkijena.jipipe.utils.json.JsonUtils;
@@ -38,7 +42,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-public class NodeTemplateBox extends JPanel {
+public class NodeTemplateBox extends JIPipeWorkbenchPanel {
 
     private final JIPipeProject project;
     private JList<JIPipeNodeTemplate> templateList;
@@ -47,8 +51,14 @@ public class NodeTemplateBox extends JPanel {
     private final MarkdownReader documentationReader = new MarkdownReader(false);
     private final JToolBar toolBar = new JToolBar();
 
-    public NodeTemplateBox(JIPipeProject project) {
-        this.project = project;
+    public NodeTemplateBox(JIPipeWorkbench workbench) {
+        super(workbench);
+        if(workbench instanceof JIPipeProjectWorkbench) {
+            this.project = ((JIPipeProjectWorkbench) workbench).getProject();
+        }
+        else {
+            this.project = null;
+        }
         initialize();
         reloadTemplateList();
         NodeTemplateSettings.getInstance().getEventBus().register(this);
@@ -116,6 +126,10 @@ public class NodeTemplateBox extends JPanel {
 
         manageMenu.addSeparator();
 
+        JMenuItem editItem = new JMenuItem("Edit selected template", UIUtils.getIconFromResources("actions/document-edit.png"));
+        editItem.addActionListener(e -> editSelected());
+        manageMenu.add(editItem);
+
         if(project != null) {
             JMenuItem copyToProjectItem = new JMenuItem("Copy selection to project", UIUtils.getIconFromResources("actions/edit-copy.png"));
             copyToProjectItem.addActionListener(e -> copySelectionToProject());
@@ -124,9 +138,9 @@ public class NodeTemplateBox extends JPanel {
             JMenuItem copyToGlobalItem = new JMenuItem("Copy selection to global storage", UIUtils.getIconFromResources("actions/edit-copy.png"));
             copyToGlobalItem.addActionListener(e -> copySelectionToGlobal());
             manageMenu.add(copyToGlobalItem);
-
-            manageMenu.addSeparator();
         }
+
+        manageMenu.addSeparator();
 
         JMenuItem importItem = new JMenuItem("Import from file", UIUtils.getIconFromResources("actions/document-import.png"));
         importItem.addActionListener(e -> importTemplates());
@@ -141,6 +155,27 @@ public class NodeTemplateBox extends JPanel {
         JMenuItem deleteItem = new JMenuItem("Delete selection", UIUtils.getIconFromResources("actions/edit-delete.png"));
         deleteItem.addActionListener(e -> deleteSelection());
         manageMenu.add(deleteItem);
+    }
+
+    private void editSelected() {
+        if(templateList.getSelectedValuesList().isEmpty()) {
+            JOptionPane.showMessageDialog(this, "You did not select any templates!", "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+        JIPipeNodeTemplate template = templateList.getSelectedValue();
+        JIPipeNodeTemplate copy = new JIPipeNodeTemplate(template);
+        if(ParameterPanel.showDialog(getWorkbench(), copy, new MarkdownDocument("# Node templates\n\nUse this user interface to modify node templates."), "Edit template",
+                ParameterPanel.WITH_SCROLLING | ParameterPanel.WITH_SEARCH_BAR | ParameterPanel.WITH_DOCUMENTATION)) {
+            template.setData(copy.getData());
+            template.setDescription(copy.getDescription());
+            template.setName(copy.getName());
+            if(project != null) {
+                project.getMetadata().triggerParameterChange("node-templates");
+            }
+            NodeTemplateSettings templateSettings = NodeTemplateSettings.getInstance();
+            templateSettings.triggerParameterChange("node-templates");
+            NodeTemplateSettings.triggerRefreshedEvent();
+        }
     }
 
     private void exportTemplates() {
@@ -376,8 +411,8 @@ public class NodeTemplateBox extends JPanel {
         return project;
     }
 
-    public static void openNewToolBoxWindow(JIPipeProject project) {
-        NodeTemplateBox toolBox = new NodeTemplateBox(project);
+    public static void openNewToolBoxWindow(JIPipeWorkbench workbench) {
+        NodeTemplateBox toolBox = new NodeTemplateBox(workbench);
         JFrame window = new JFrame();
         toolBox.getToolBar().add(new AlwaysOnTopToggle(window));
         window.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
