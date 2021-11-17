@@ -5,7 +5,7 @@
     
       <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-<meta name="revised" content="2021-11-17T17:20:40 CET">
+<meta name="revised" content="2021-11-17T17:35:59 CET">
 <title>Creating pipelines :: JIPipe for ImageJ</title>
 <link rel="shortcut icon" href="../../images/favicon.png" type="image/x-icon" />
 <link href="../../css/font-awesome.min.css" rel="stylesheet">
@@ -748,46 +748,6 @@
 
 <p>This section explains the JIPipe user interface, how to create an analysis pipeline,
 and some concepts behind how analysis pipelines work.</p>
-<h1 id="batch-processing">Batch processing</h1>
-<p>JIPipe is a tool to create data processing workflows via a graphical language.
-A special feature of JIPipe processing is always done in <em>batches</em>, meaning that workflows
-are always designed to scale for large amounts of data without the need of external scripts or
-major changes in a pipeline.</p>
-<p>The JIPipe graphical language is graph-based where nodes represent data processing algorithms
-and edges represent that data is transferred from an algorithm output to another algorithm&rsquo;s input.</p>
-<p>An example is the application of a gaussian filter to an image after loading it:</p>
-<link href="../../mermaid/mermaid.css" type="text/css" rel="stylesheet"/>
-<script defer src="../../mermaid/mermaid.js">mermaid.initialize({startOnLoad:true});</script>
-<div class="mermaid" align="left" >
-graph LR;
-    A[File] --> B[Load image]
-    B --> C[Apply gaussian]
-</div>
-<p>To design efficient and scalable pipelines yourself, it is a good idea to
-look into the <a href="https://www.jipipe.org/documentation/basic-concepts/batch-processing/">JIPipe data model</a>.</p>
-<h1 id="graph-compartments">Graph compartments</h1>
-<p>A common issue with graphical programming languages is that larger pipelines are
-hard to navigate. Another issue with such languages is that it is hard to separate functional
-units for easier readability.</p>
-<p>JIPipe solves both issues with the concept of strongly separated <em>graph components</em> that
-group a set of algorithms together. Components only can interact via special interface algorithms,
-making it easier to structure the pipeline.</p>
-<p>Please take a look at our <a href="https://www.jipipe.org/documentation/create-pipelines/compartments/">graph compartment documentation</a> for more information.</p>
-<h1 id="user-interface-overview">User interface overview</h1>
-<p>The JIPipe user interface is designed around managing an <em>analysis project</em>.
-A project contains all information to run an analysis, outside of the input data and
-can be saved into <a href="https://www.json.org/json-en.html">JSON</a> files.
-The user interface is separated into three sections:</p>
-<ol>
-<li><strong>The project menu</strong> contains all operations for the current project / window. It allows you to open/save projects, access and modify <a href="https://www.jipipe.org/documentation/create-pipelines/compartments/">graph compartments</a>, manage <a href="https://www.jipipe.org/documentation/plugins/">plugins</a>, and run the analysis</li>
-<li><strong>The tab bar</strong> allows you to switch between different interfaces associated to the current project. You can close thabs by clicking the <code>x</code> icon. If a tab contains some data that will be lost after closing it, you will have to confirm the action. If no question is asked on closing a tab, you will be able to open it later again without losing data.</li>
-<li><strong>The current content</strong> depends on the selected tab</li>
-</ol>
-
-<div class="notices tip" ><p><p>You can also close a tab by clicking it with the middle mouse button.</p>
-</p></div>
-
-<h1 id="further-reading">Further reading</h1>
 <ul class="children children-li">
 <p><span><li>
 <a href="../../documentation/create-pipelines/pipeline-editor/" >Pipeline editor</a></li></p>

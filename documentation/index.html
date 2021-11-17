@@ -5,7 +5,7 @@
     
       <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-<meta name="revised" content="2021-11-17T17:20:40 CET">
+<meta name="revised" content="2021-11-17T17:35:59 CET">
 <title>Documentation :: JIPipe for ImageJ</title>
 <link rel="shortcut icon" href="../images/favicon.png" type="image/x-icon" />
 <link href="../css/font-awesome.min.css" rel="stylesheet">
@@ -439,52 +439,38 @@
       <a href="../documentation-java-api/algorithm/">Creating an algorithm</a><i class="fa fa-angle-right fa-lg category-icon"></i><i class="fa fa-circle-thin read-icon"></i>
       </div>
         <ul>
-      <li data-nav-id="https://www.jipipe.org/documentation-java-api/algorithm/iterating-algorithms/" class="dd-item">
+      <li data-nav-id="https://www.jipipe.org/documentation/run-pipelines/run/" class="dd-item">
         <div>
-          <a href="../documentation-java-api/algorithm/iterating-algorithms/">
-            Handling multiple inputs
+          <a href="../documentation/run-pipelines/run/">
+            Running the whole pipeline
           </a><i class="fa fa-circle-thin read-icon"></i>
         </div>
     </li>
-      <li data-nav-id="https://www.jipipe.org/documentation-java-api/algorithm/merging-algorithms/" class="dd-item">
+      <li data-nav-id="https://www.jipipe.org/documentation/run-pipelines/result-analysis/" class="dd-item">
         <div>
-          <a href="../documentation-java-api/algorithm/merging-algorithms/">
-            Merging input data
+          <a href="../documentation/run-pipelines/result-analysis/">
+            Review results
           </a><i class="fa fa-circle-thin read-icon"></i>
         </div>
     </li>
-      <li data-nav-id="https://www.jipipe.org/documentation-java-api/algorithm/slot-configuration/" class="dd-item">
+      <li data-nav-id="https://www.jipipe.org/documentation/run-pipelines/connect-external-software/" class="dd-item">
         <div>
-          <a href="../documentation-java-api/algorithm/slot-configuration/">
-            Customizing slots
+          <a href="../documentation/run-pipelines/connect-external-software/">
+            Use results in external software
           </a><i class="fa fa-circle-thin read-icon"></i>
         </div>
     </li>
-      <li data-nav-id="https://www.jipipe.org/documentation-java-api/algorithm/parameters/" class="dd-item">
+      <li data-nav-id="https://www.jipipe.org/documentation/run-pipelines/quick-run/" class="dd-item">
         <div>
-          <a href="../documentation-java-api/algorithm/parameters/">
-            Parameters
+          <a href="../documentation/run-pipelines/quick-run/">
+            Running a single node
           </a><i class="fa fa-circle-thin read-icon"></i>
         </div>
     </li>
-      <li data-nav-id="https://www.jipipe.org/documentation-java-api/algorithm/parallelization/" class="dd-item">
+      <li data-nav-id="https://www.jipipe.org/documentation/run-pipelines/cache/" class="dd-item">
         <div>
-          <a href="../documentation-java-api/algorithm/parallelization/">
-            Parallelization
-          </a><i class="fa fa-circle-thin read-icon"></i>
-        </div>
-    </li>
-      <li data-nav-id="https://www.jipipe.org/documentation-java-api/algorithm/custom-info/" class="dd-item">
-        <div>
-          <a href="../documentation-java-api/algorithm/custom-info/">
-            Custom algorithm info
-          </a><i class="fa fa-circle-thin read-icon"></i>
-        </div>
-    </li>
-      <li data-nav-id="https://www.jipipe.org/documentation-java-api/algorithm/context-actions/" class="dd-item">
-        <div>
-          <a href="../documentation-java-api/algorithm/context-actions/">
-            Context actions
+          <a href="../documentation/run-pipelines/cache/">
+            Data caching
           </a><i class="fa fa-circle-thin read-icon"></i>
         </div>
     </li>
@@ -784,13 +770,20 @@ The user interface is separated into three sections:</p>
 <ul class="children children-li">
 <p><span><li>
 <a href="../documentation/basic-concepts/" >Basic concepts</a></li></p>
-<p>This section explains the JIPipe user interface, how to create an analysis pipeline, and some concepts behind how analysis pipelines work.
-Batch processing JIPipe is a tool to create data processing workflows via a graphical language. A special feature of JIPipe processing is always done in batches, meaning that workflows are always designed to scale for large amounts of data without the need of external scripts or major changes in a pipeline.</p>
+<p>This section explains some basic concepts that are helpful to understand if you want to use JIPipe.
+ Batch processing
+Explains basic concepts about how data is processed within JIPipe. We really recommend to take a look at this documentation.
+  </p>
 </span>
 <p><span><li>
 <a href="../documentation/create-pipelines/" >Creating pipelines</a></li></p>
 <p>This section explains the JIPipe user interface, how to create an analysis pipeline, and some concepts behind how analysis pipelines work.
-Batch processing JIPipe is a tool to create data processing workflows via a graphical language. A special feature of JIPipe processing is always done in batches, meaning that workflows are always designed to scale for large amounts of data without the need of external scripts or major changes in a pipeline.</p>
+ Pipeline editor
+Explains the graph editor user interface, how to create a pipeline, and additional features like the algorithm finder tool.
+  Expression parameters
+Explains the expression parameter type language that is often used for filtering or generating numbers.
+  Graph compartments
+Explains the concept of graph compartments that allow easy organization of the analysis pipeline into functional units.</p>
 </span>
 <p><span><li>
 <a href="../documentation/run-pipelines/" >Running pipelines</a></li></p>
