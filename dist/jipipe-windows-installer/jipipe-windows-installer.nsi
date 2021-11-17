@@ -3,7 +3,7 @@ RequestExecutionLevel user
 
 ; HM NIS Edit Wizard helper defines
 !define PRODUCT_NAME "JIPipe"
-!define PRODUCT_VERSION "1.48.0"
+!define PRODUCT_VERSION "1.49.0"
 !define PRODUCT_PUBLISHER "Applied Systems Biology - HKI Jena, Germany"
 !define PRODUCT_WEB_SITE "https://www.jipipe.org/"
 !define PRODUCT_DIR_REGKEY "Software\Microsoft\Windows\CurrentVersion\App Paths\JIPipe"
