@@ -12,6 +12,7 @@ org.hkijena.jipipe.api.grouping
 org.hkijena.jipipe.api.grouping.events
 org.hkijena.jipipe.api.grouping.parameters
 org.hkijena.jipipe.api.history
+org.hkijena.jipipe.api.looping
 org.hkijena.jipipe.api.nodes
 org.hkijena.jipipe.api.nodes.categories
 org.hkijena.jipipe.api.notifications
@@ -72,6 +73,7 @@ org.hkijena.jipipe.extensions.imagejalgorithms.ij1.convolve
 org.hkijena.jipipe.extensions.imagejalgorithms.ij1.datasources
 org.hkijena.jipipe.extensions.imagejalgorithms.ij1.dimensions
 org.hkijena.jipipe.extensions.imagejalgorithms.ij1.edge
+org.hkijena.jipipe.extensions.imagejalgorithms.ij1.export
 org.hkijena.jipipe.extensions.imagejalgorithms.ij1.features
 org.hkijena.jipipe.extensions.imagejalgorithms.ij1.fft
 org.hkijena.jipipe.extensions.imagejalgorithms.ij1.forms
@@ -120,6 +122,7 @@ org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale
 org.hkijena.jipipe.extensions.imagejdatatypes.display
 org.hkijena.jipipe.extensions.imagejdatatypes.parameters
 org.hkijena.jipipe.extensions.imagejdatatypes.resultanalysis
+org.hkijena.jipipe.extensions.imagejdatatypes.tools
 org.hkijena.jipipe.extensions.imagejdatatypes.util
 org.hkijena.jipipe.extensions.imagejdatatypes.util.measure
 org.hkijena.jipipe.extensions.imagejdatatypes.viewer
@@ -130,6 +133,7 @@ org.hkijena.jipipe.extensions.multiparameters
 org.hkijena.jipipe.extensions.multiparameters.algorithms
 org.hkijena.jipipe.extensions.multiparameters.datasources
 org.hkijena.jipipe.extensions.multiparameters.datatypes
+org.hkijena.jipipe.extensions.nodetemplate
 org.hkijena.jipipe.extensions.nodetoolboxtool
 org.hkijena.jipipe.extensions.omero
 org.hkijena.jipipe.extensions.omero.algorithms

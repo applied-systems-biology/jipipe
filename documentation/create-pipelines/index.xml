@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Creating pipelines on JIPipe for ImageJ</title>
+    <link>https://www.jipipe.org/documentation/create-pipelines/</link>
+    <description>Recent content in Creating pipelines on JIPipe for ImageJ</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language><atom:link href="https://www.jipipe.org/documentation/create-pipelines/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Pipeline editor</title>
+      <link>https://www.jipipe.org/documentation/create-pipelines/pipeline-editor/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://www.jipipe.org/documentation/create-pipelines/pipeline-editor/</guid>
+      <description>This guide is also available as video tutorial.The graph editor (pipeline editor) allows you to edit the processing steps of a graph compartment. Its user interface is separated into three sections:
+ The analysis graph contains the processing steps (also referred as algorithms) The settings panel shows the properties of the currently selected algorithms The toolbar allows you to add more algorithms into the graph, navigate to existing algorithms, change some behavior settings of the graph editor, and create screenshots  Analysis graph The analysis graph contains algorithms that are represented by rectangles.</description>
+    </item>
+    
+    <item>
+      <title>Expression parameters</title>
+      <link>https://www.jipipe.org/documentation/create-pipelines/expressions/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://www.jipipe.org/documentation/create-pipelines/expressions/</guid>
+      <description>When using nodes that filter or generate data, you might encounter a parameter type called &amp;ldquo;Expression&amp;rdquo;. This parameter allows to to write simple to complex functions that can test for one or multiple conditions or act as input for a generator node. The basic concept of this expression language is to mix string, boolean, and numeric operations into one simple but powerful language. It allows you for example to first calculate a numeric metric and use it for filtering objects within one line.</description>
+    </item>
+    
+    <item>
+      <title>Graph compartments</title>
+      <link>https://www.jipipe.org/documentation/create-pipelines/compartments/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://www.jipipe.org/documentation/create-pipelines/compartments/</guid>
+      <description>A common issue with graphical programming languages is that large graphs are hard to navigate. JIPipe solves this issue by separating the pipeline graph into sub-graphs. Each sub-graph has a predetermined output node that is visible to other compartments. Other nodes on the other hand are not visible to other compartments.
+The difference between compartments and simple node groups is that compartments only communicate with each other via the compartment output node.</description>
+    </item>
+    
+    <item>
+      <title>Group nodes</title>
+      <link>https://www.jipipe.org/documentation/create-pipelines/groups/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://www.jipipe.org/documentation/create-pipelines/groups/</guid>
+      <description>While compartments offer a simple way to structure pipelines into functional units, they are not suitable for creating &amp;ldquo;user-defined&amp;rdquo; nodes that can be re-used. Node groups cover this use case by providing a node that contains a dedicated pipeline inside of it. Data is communicated between the main and the inner pipeline via interface nodes that can be customized by users.
+The group node can be found in Miscellaneous &amp;gt; Group, or can be created from a set of selected nodes by right-clicking them and selecting the Group option (which will also create inputs and outputs that match the selection).</description>
+    </item>
+    
+    <item>
+      <title>Loop nodes</title>
+      <link>https://www.jipipe.org/documentation/create-pipelines/loops/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://www.jipipe.org/documentation/create-pipelines/loops/</guid>
+      <description>JIPipe processes data node-per-node, meaning that a node always processes all available input data before passing the results to the next node. This is easy to understand and makes no assumptions about the structure of the data. The issue is that such a model allocates all memory required to process the data at once.
+Group nodes provide a feature that allows to loop the contained pipeline for each input data batch, reducing the memory allocated during the processing (if the groups are set up so that memory-intensive tasks are split).</description>
+    </item>
+    
+  </channel>
+</rss>

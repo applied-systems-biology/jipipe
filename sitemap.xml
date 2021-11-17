@@ -3,6 +3,18 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   
   <url>
+    <loc>https://www.jipipe.org/documentation/basic-concepts/</loc>
+  </url>
+  
+  <url>
+    <loc>https://www.jipipe.org/documentation/create-pipelines/</loc>
+  </url>
+  
+  <url>
+    <loc>https://www.jipipe.org/documentation/run-pipelines/</loc>
+  </url>
+  
+  <url>
     <loc>https://www.jipipe.org/faq/general/</loc>
   </url>
   
@@ -27,7 +39,7 @@
   </url>
   
   <url>
-    <loc>https://www.jipipe.org/documentation/batch-pipelines/</loc>
+    <loc>https://www.jipipe.org/documentation/basic-concepts/batch-processing/</loc>
   </url>
   
   <url>
@@ -55,11 +67,19 @@
   </url>
   
   <url>
+    <loc>https://www.jipipe.org/documentation/create-pipelines/pipeline-editor/</loc>
+  </url>
+  
+  <url>
     <loc>https://www.jipipe.org/documentation/standard-library/python/api/</loc>
   </url>
   
   <url>
     <loc>https://www.jipipe.org/documentation-java-api/data-type/result-ui/</loc>
+  </url>
+  
+  <url>
+    <loc>https://www.jipipe.org/documentation/run-pipelines/run/</loc>
   </url>
   
   <url>
@@ -91,6 +111,10 @@
   </url>
   
   <url>
+    <loc>https://www.jipipe.org/documentation/create-pipelines/expressions/</loc>
+  </url>
+  
+  <url>
     <loc>https://www.jipipe.org/documentation/standard-library/imagej-integration/</loc>
   </url>
   
@@ -99,11 +123,11 @@
   </url>
   
   <url>
-    <loc>https://www.jipipe.org/documentation/graph-editor/</loc>
+    <loc>https://www.jipipe.org/documentation-java-api/data-type/result-preview/</loc>
   </url>
   
   <url>
-    <loc>https://www.jipipe.org/documentation-java-api/data-type/result-preview/</loc>
+    <loc>https://www.jipipe.org/documentation/run-pipelines/result-analysis/</loc>
   </url>
   
   <url>
@@ -135,10 +159,6 @@
   </url>
   
   <url>
-    <loc>https://www.jipipe.org/documentation/expressions/</loc>
-  </url>
-  
-  <url>
     <loc>https://www.jipipe.org/faq/</loc>
   </url>
   
@@ -159,7 +179,7 @@
   </url>
   
   <url>
-    <loc>https://www.jipipe.org/documentation/graph-compartment/</loc>
+    <loc>https://www.jipipe.org/documentation/create-pipelines/compartments/</loc>
   </url>
   
   <url>
@@ -172,6 +192,10 @@
   
   <url>
     <loc>https://www.jipipe.org/documentation-data-api/pipeline-output/</loc>
+  </url>
+  
+  <url>
+    <loc>https://www.jipipe.org/documentation/run-pipelines/connect-external-software/</loc>
   </url>
   
   <url>
@@ -188,10 +212,6 @@
   
   <url>
     <loc>https://www.jipipe.org/documentation-java-api/</loc>
-  </url>
-  
-  <url>
-    <loc>https://www.jipipe.org/documentation/result-analysis/</loc>
   </url>
   
   <url>
@@ -215,11 +235,11 @@
   </url>
   
   <url>
-    <loc>https://www.jipipe.org/documentation/quick-run/</loc>
+    <loc>https://www.jipipe.org/documentation/run-pipelines/quick-run/</loc>
   </url>
   
   <url>
-    <loc>https://www.jipipe.org/documentation/cache/</loc>
+    <loc>https://www.jipipe.org/documentation/run-pipelines/cache/</loc>
   </url>
   
   <url>
@@ -299,11 +319,19 @@
   </url>
   
   <url>
+    <loc>https://www.jipipe.org/documentation/create-pipelines/groups/</loc>
+  </url>
+  
+  <url>
     <loc>https://www.jipipe.org/documentation-json-api/slot-definition/</loc>
   </url>
   
   <url>
     <loc>https://www.jipipe.org/documentation-json-api/data-table/</loc>
+  </url>
+  
+  <url>
+    <loc>https://www.jipipe.org/documentation/create-pipelines/loops/</loc>
   </url>
   
   <url>

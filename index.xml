@@ -68,11 +68,11 @@ Can I save data by their metadata? Yes, use the node Miscellaneous &amp;gt; Expo
     </item>
     
     <item>
-      <title>Batch pipelines</title>
-      <link>https://www.jipipe.org/documentation/batch-pipelines/</link>
+      <title>Batch processing</title>
+      <link>https://www.jipipe.org/documentation/basic-concepts/batch-processing/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
-      <guid>https://www.jipipe.org/documentation/batch-pipelines/</guid>
+      <guid>https://www.jipipe.org/documentation/basic-concepts/batch-processing/</guid>
       <description>JIPipe was designed to always process data in batches, meaning that algorithms always work on multiple data sets at once. This greatly reduces the required work to upscale a processing pipeline from one or few to a large amount of data sets.
 We will use this pipeline as example:
 mermaid.initialize({startOnLoad:true}); graph LR;A[File] -- B[Load image]B -- C[Apply gaussian] In the pipeline, a file is provided as input. Then the file is loaded as image.</description>
@@ -129,6 +129,16 @@ A solution can be JIPipeIteratingAlgorithm or JIPipeSimpleIteratingAlgorithm tha
     </item>
     
     <item>
+      <title>Pipeline editor</title>
+      <link>https://www.jipipe.org/documentation/create-pipelines/pipeline-editor/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://www.jipipe.org/documentation/create-pipelines/pipeline-editor/</guid>
+      <description>This guide is also available as video tutorial.The graph editor (pipeline editor) allows you to edit the processing steps of a graph compartment. Its user interface is separated into three sections:
+ The analysis graph contains the processing steps (also referred as algorithms) The settings panel shows the properties of the currently selected algorithms The toolbar allows you to add more algorithms into the graph, navigate to existing algorithms, change some behavior settings of the graph editor, and create screenshots  Analysis graph The analysis graph contains algorithms that are represented by rectangles.</description>
+    </item>
+    
+    <item>
       <title>Python API</title>
       <link>https://www.jipipe.org/documentation/standard-library/python/api/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
@@ -150,6 +160,17 @@ The project code is licensed under BSD 2-Clause. See the LICENSE file provided w
       <description>After processing, users should be able to continue processing the data from within JIPipe. The data instances are cleared from memory after processing, meaning that the data needs to be loaded from its output folder after processing.
 An user interface is shown when a user select a row in the results table. There are two ways to modify the user interface:
  Registering additional operations that will be available to users (recommended) Replacing the interface with a custom one  Adding custom operations JIPipe already comes with some default operations, such as opening the containing folder.</description>
+    </item>
+    
+    <item>
+      <title>Running the whole pipeline</title>
+      <link>https://www.jipipe.org/documentation/run-pipelines/run/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://www.jipipe.org/documentation/run-pipelines/run/</guid>
+      <description>JIPipe stores its results in a user-defined output folder. After clicking  Run (located at the top right corner of a project window) JIPipe will query the output folder from you. You can also generate a random folder that will be located on your operating system&amp;rsquo;s temporary directory by clicking the button.
+After confirming the settings by clicking  Run now, JIPipe will start processing the pipeline.
+You can have as many runs as you want.</description>
     </item>
     
     <item>
@@ -214,6 +235,15 @@ For many cases, the default implementation JIPipeMutableSlotConfiguration is suf
     </item>
     
     <item>
+      <title>Expression parameters</title>
+      <link>https://www.jipipe.org/documentation/create-pipelines/expressions/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://www.jipipe.org/documentation/create-pipelines/expressions/</guid>
+      <description>When using nodes that filter or generate data, you might encounter a parameter type called &amp;ldquo;Expression&amp;rdquo;. This parameter allows to to write simple to complex functions that can test for one or multiple conditions or act as input for a generator node. The basic concept of this expression language is to mix string, boolean, and numeric operations into one simple but powerful language. It allows you for example to first calculate a numeric metric and use it for filtering objects within one line.</description>
+    </item>
+    
+    <item>
       <title>ImageJ integration</title>
       <link>https://www.jipipe.org/documentation/standard-library/imagej-integration/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
@@ -234,22 +264,22 @@ Image data types Various ImageJ algorithms only work on data with a specific col
     </item>
     
     <item>
-      <title>Pipeline editor</title>
-      <link>https://www.jipipe.org/documentation/graph-editor/</link>
-      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
-      
-      <guid>https://www.jipipe.org/documentation/graph-editor/</guid>
-      <description>This guide is also available as video tutorial.The graph editor (pipeline editor) allows you to edit the processing steps of a graph compartment. Its user interface is separated into three sections:
- The analysis graph contains the processing steps (also referred as algorithms) The settings panel shows the properties of the currently selected algorithms The toolbar allows you to add more algorithms into the graph, navigate to existing algorithms, change some behavior settings of the graph editor, and create screenshots  Analysis graph The analysis graph contains algorithms that are represented by rectangles.</description>
-    </item>
-    
-    <item>
       <title>Preview from results folder</title>
       <link>https://www.jipipe.org/documentation-java-api/data-type/result-preview/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
       <guid>https://www.jipipe.org/documentation-java-api/data-type/result-preview/</guid>
       <description>While JIPipeData allows you to define a custom function for previewing, this only works for data already present in memory. To allow previewing of data stored in a results folder, you need to suppy a JIPipeResultDataSlotPreviewUI that loads the data from disk and generates a preview. We recommend to use JIPipeAsyncResultDataPlotPreviewUI This class will offload the loading and preview generation into a separate thread to prevent the UI from freezing. By default it will use the already defined importFrom(Path) method present in the JIPipeData class and use its already defined preview function.</description>
+    </item>
+    
+    <item>
+      <title>Review results</title>
+      <link>https://www.jipipe.org/documentation/run-pipelines/result-analysis/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://www.jipipe.org/documentation/run-pipelines/result-analysis/</guid>
+      <description>Running the whole pipeline or executing a quick run with HDD output will result in a folder that contains all output data and the current project file. JIPipe will automatically open an interface that allows you to navigate through the results, and import them back into ImageJ or JIPipe (if supported by the generated data type). You can also re-open these folders via Project &amp;gt; Open analysis output ....
+The UI has two main components:</description>
     </item>
     
     <item>
@@ -311,15 +341,6 @@ By default, there are four data types that can be used as input and output:</des
     </item>
     
     <item>
-      <title>Expression parameters</title>
-      <link>https://www.jipipe.org/documentation/expressions/</link>
-      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
-      
-      <guid>https://www.jipipe.org/documentation/expressions/</guid>
-      <description>When using nodes that filter or generate data, you might encounter a parameter type called &amp;ldquo;Expression&amp;rdquo;. This parameter allows to to write simple to complex functions that can test for one or multiple conditions or act as input for a generator node. The basic concept of this expression language is to mix string, boolean, and numeric operations into one simple but powerful language. It allows you for example to first calculate a numeric metric and use it for filtering objects within one line.</description>
-    </item>
-    
-    <item>
       <title>Dependency</title>
       <link>https://www.jipipe.org/documentation-json-api/dependency/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
@@ -342,10 +363,10 @@ The filesystem library has two basic data types:
     
     <item>
       <title>Graph compartments</title>
-      <link>https://www.jipipe.org/documentation/graph-compartment/</link>
+      <link>https://www.jipipe.org/documentation/create-pipelines/compartments/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
-      <guid>https://www.jipipe.org/documentation/graph-compartment/</guid>
+      <guid>https://www.jipipe.org/documentation/create-pipelines/compartments/</guid>
       <description>A common issue with graphical programming languages is that large graphs are hard to navigate. JIPipe solves this issue by separating the pipeline graph into sub-graphs. Each sub-graph has a predetermined output node that is visible to other compartments. Other nodes on the other hand are not visible to other compartments.
 The difference between compartments and simple node groups is that compartments only communicate with each other via the compartment output node.</description>
     </item>
@@ -385,6 +406,17 @@ mermaid.initialize({startOnLoad:true}); graph LR; Root[&#34;</description>
     </item>
     
     <item>
+      <title>Use results in external software</title>
+      <link>https://www.jipipe.org/documentation/run-pipelines/connect-external-software/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://www.jipipe.org/documentation/run-pipelines/connect-external-software/</guid>
+      <description>JIPipe stores outputs in a standardized format that can be easily read with third-party software. The output folder of always contains a file project.jip, which is the project that generated the output.
+This folder contains sub-folders named according to the graph compartment. The ID is the unique ID of the graph compartment and can be looked up in the project.jip file or the compartment graph editor.
+Each of these compartment folders contains a set of additional sub-folders based on unique ID of the node (also visible in the graph editor).</description>
+    </item>
+    
+    <item>
       <title>Parallelization</title>
       <link>https://www.jipipe.org/documentation-java-api/algorithm/parallelization/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
@@ -413,17 +445,6 @@ How algorithms are registered Algorithm instances are created by an JIPipeNodeIn
       <guid>https://www.jipipe.org/documentation-json-api/graph-edge/</guid>
       <description>This document describes the properties of the JSON API object. You also can access the document in JSON Schema format: graph-edge.schema.json
 Edge in a graphsource-node:stringAlgorithm ID of the edge sourcetarget-node:stringAlgorithm ID of the edge targetsource-slot:stringSlot name within the edge source algorithmtarget-slot:stringSlot name within the edge target algorithmExample { &amp;#34;source-node&amp;#34; : &amp;#34;default-preprocessing-list-files&amp;#34;, &amp;#34;target-node&amp;#34; : &amp;#34;default-preprocessing-filter-files&amp;#34;, &amp;#34;source-slot&amp;#34; : &amp;#34;Files&amp;#34;, &amp;#34;target-slot&amp;#34; : &amp;#34;Files&amp;#34; } </description>
-    </item>
-    
-    <item>
-      <title>Running a pipeline</title>
-      <link>https://www.jipipe.org/documentation/result-analysis/</link>
-      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
-      
-      <guid>https://www.jipipe.org/documentation/result-analysis/</guid>
-      <description>JIPipe stores its results in a user-defined output folder. After clicking  Run (located at the top right corner of a project window) JIPipe will query the output folder from you. You can also generate a random folder that will be located on your operating system&amp;rsquo;s temporary directory by clicking the button.
-After confirming the settings by clicking  Run now, JIPipe will start processing the pipeline.
-You can have as many runs as you want.</description>
     </item>
     
     <item>
@@ -458,20 +479,21 @@ We recommend to use the algorithms in Annotation &amp;gt; Generate while setting
     
     <item>
       <title>Running a single node</title>
-      <link>https://www.jipipe.org/documentation/quick-run/</link>
+      <link>https://www.jipipe.org/documentation/run-pipelines/quick-run/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
-      <guid>https://www.jipipe.org/documentation/quick-run/</guid>
-      <description>Many algorithms require plenty of user-defined parameters to create the expected results. Finding those parameters on the other hand can be very time-consuming due to the requirement of repeating all previous and following processing steps.
-JIPipe comes with a feature termed Quick Run that makes it easier to only test a part of an analysis pipeline. You can find the testbench by selecting an algorithm in the algorithm graph and selecting the  Quick Run tab.</description>
+      <guid>https://www.jipipe.org/documentation/run-pipelines/quick-run/</guid>
+      <description>As an additional option to running the whole pipeline, JIPipe also allows you to run the workflow only up to the selected node. The most convenient way to run a single node can be accessed by clicking the green play button that is located inside each node.
+Here you will find following options:
+ Update cache: Runs the pipeline up until the selected node. The result of the selected node will be stored inside a memory cache, which can be reviewed in the Cache browser tab (see below) Cache intermediate results: Runs the pipeline up until the selected node.</description>
     </item>
     
     <item>
       <title>Data caching</title>
-      <link>https://www.jipipe.org/documentation/cache/</link>
+      <link>https://www.jipipe.org/documentation/run-pipelines/cache/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
-      <guid>https://www.jipipe.org/documentation/cache/</guid>
+      <guid>https://www.jipipe.org/documentation/run-pipelines/cache/</guid>
       <description>JIPipe has a project-wide cache for generated results. This cache can be accessed by algorithms to prevent repeating previous calculation steps.
 Load data into the cache To cache data, right click a node and click  Update cache. This will execute a Quick run and store all results into the cache.
 Accessing the cache Cache items are assigned a unique identifier ( Snapshot) that is based on relevant algorithm parameters and the processing pipeline behind the data generation.</description>
@@ -617,6 +639,16 @@ The installer will ask you to review various settings - these should be fine for
     </item>
     
     <item>
+      <title>Group nodes</title>
+      <link>https://www.jipipe.org/documentation/create-pipelines/groups/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://www.jipipe.org/documentation/create-pipelines/groups/</guid>
+      <description>While compartments offer a simple way to structure pipelines into functional units, they are not suitable for creating &amp;ldquo;user-defined&amp;rdquo; nodes that can be re-used. Node groups cover this use case by providing a node that contains a dedicated pipeline inside of it. Data is communicated between the main and the inner pipeline via interface nodes that can be customized by users.
+The group node can be found in Miscellaneous &amp;gt; Group, or can be created from a set of selected nodes by right-clicking them and selecting the Group option (which will also create inputs and outputs that match the selection).</description>
+    </item>
+    
+    <item>
       <title>Slot definition</title>
       <link>https://www.jipipe.org/documentation-json-api/slot-definition/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
@@ -634,6 +666,16 @@ The installer will ask you to review various settings - these should be fine for
       <guid>https://www.jipipe.org/documentation-json-api/data-table/</guid>
       <description>This document describes the properties of the JSON API object. You also can access the document in JSON Schema format: data-table.schema.json
  Defines a data table   node-id:  string      The node type ID that generated the data. Optional.   slot:  string      The slot name that generated the data. Optional.   rows:  object[]       The data row items See data-table-row        data-type:  string       The data type ID behind the row      Example { &amp;#34;node-id&amp;#34; : &amp;#34;ij1-fft-forward2d&amp;#34;, &amp;#34;slot&amp;#34; : &amp;#34;Output&amp;#34;, &amp;#34;internal-path&amp;#34; : &amp;#34;/fastdata/projects/JIPipe/Output&amp;#34;, &amp;#34;rows&amp;#34; : [ { &amp;#34;index&amp;#34; : 0, &amp;#34;annotations&amp;#34; : [ ], &amp;#34;true-data-type&amp;#34; : &amp;#34;imagej-imgplus-fft-2d&amp;#34; } ], &amp;#34;data-type&amp;#34; : &amp;#34;imagej-imgplus-fft-2d&amp;#34; } </description>
+    </item>
+    
+    <item>
+      <title>Loop nodes</title>
+      <link>https://www.jipipe.org/documentation/create-pipelines/loops/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://www.jipipe.org/documentation/create-pipelines/loops/</guid>
+      <description>JIPipe processes data node-per-node, meaning that a node always processes all available input data before passing the results to the next node. This is easy to understand and makes no assumptions about the structure of the data. The issue is that such a model allocates all memory required to process the data at once.
+Group nodes provide a feature that allows to loop the contained pipeline for each input data batch, reducing the memory allocated during the processing (if the groups are set up so that memory-intensive tasks are split).</description>
     </item>
     
     <item>
