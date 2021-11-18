@@ -260,12 +260,12 @@ public class JIPipeRun implements JIPipeRunnable {
             progressInfo.setProgress(index + preprocessorNodes.size(), traversedSlots.size());
             progressInfo.log(slot.getDisplayName());
 
-            // If an algorithm cannot be executed, skip it automatically
-            if (unExecutableAlgorithms.contains(slot.getNode())) {
-                // Mark for gc
-                gc.deactivateNode(slot.getNode());
-                continue;
-            }
+//            // If an algorithm cannot be executed, skip it automatically
+//            if (unExecutableAlgorithms.contains(slot.getNode())) {
+//                // Mark for gc
+//                gc.deactivateNode(slot.getNode());
+//                continue;
+//            }
 
             // Let algorithms provide sub-progress
             JIPipeProgressInfo subProgress = progressInfo.resolve(slot.getNode().getName());
@@ -295,7 +295,12 @@ public class JIPipeRun implements JIPipeRunnable {
                 if(loop == null) {
                     // Ensure the algorithm has run
                     if (!executedAlgorithms.contains(node)) {
-                        runNode(executedAlgorithms, node, subProgress);
+                        if(!unExecutableAlgorithms.contains(node)) {
+                            runNode(executedAlgorithms, node, subProgress);
+                        }
+                        else {
+                            executedAlgorithms.add(node);
+                        }
                     }
 
                     // Mark all inputs of the node as completed
@@ -422,63 +427,6 @@ public class JIPipeRun implements JIPipeRunnable {
         progressInfo.resolve("GC").log("Cleared data in " + event.getSlot().getDisplayName());
     }
 
-//    /**
-//     * For a given input slot, clear all data and data annotations if all its source algorithms have been executed
-//     * @param inputSlot the input slot
-//     * @param executedAlgorithms all executed algorithms
-//     * @param flushedSlots already flushed slots
-//     * @param progressInfo the progress
-//     */
-//    private void tryFlushInputSlot(JIPipeDataSlot inputSlot, Set<JIPipeGraphNode> executedAlgorithms, Set<JIPipeDataSlot> flushedSlots, JIPipeProgressInfo progressInfo) {
-//        if (flushedSlots.contains(inputSlot))
-//            return;
-//        Set<JIPipeGraphNode> sourceAlgorithms = new HashSet<>();
-//        for (JIPipeDataSlot sourceSlot : copiedGraph.getSourceSlots(inputSlot)) {
-//            sourceAlgorithms.add(sourceSlot.getNode());
-//        }
-//        sourceAlgorithms.removeAll(executedAlgorithms);
-//        if (sourceAlgorithms.isEmpty()) {
-//            // Flush the data and destroy it
-//            progressInfo.log("Clearing slot " + inputSlot.getDisplayName());
-//            inputSlot.destroy();
-//            flushedSlots.add(inputSlot);
-////            System.gc();
-//        }
-//    }
-
-    //    private void tryFlushOutputSlot(List<JIPipeDataSlot> traversedSlots, Set<JIPipeGraphNode> executedAlgorithms, int currentIndex, JIPipeDataSlot outputSlot, Set<JIPipeDataSlot> flushedSlots, JIPipeProgressInfo progressInfo, JIPipeProjectCacheQuery cacheQuery) {
-//        if (!executedAlgorithms.contains(outputSlot.getNode()))
-//            return;
-//        if (flushedSlots.contains(outputSlot))
-//            return;
-//        boolean canFlush = true;
-//        for (int j = currentIndex + 1; j < traversedSlots.size(); ++j) {
-//            JIPipeDataSlot futureSlot = traversedSlots.get(j);
-//            boolean isDeactivated = (futureSlot.getNode() instanceof JIPipeAlgorithm) && (!((JIPipeAlgorithm) futureSlot.getNode()).isEnabled());
-//            if (!isDeactivated && futureSlot.isInput() && copiedGraph.getSourceSlots(futureSlot).contains(outputSlot)) {
-//                canFlush = false;
-//                break;
-//            }
-//        }
-//        if (canFlush) {
-//            if (configuration.isStoreToCache() && !configuration.getDisableStoreToCacheNodes().contains(outputSlot.getNode())) {
-//                JIPipeGraphNode runAlgorithm = outputSlot.getNode();
-//                JIPipeGraphNode projectAlgorithm = cacheQuery.getNode(runAlgorithm.getUUIDInGraph());
-//                JIPipeProjectCacheState stateId = cacheQuery.getCachedId(projectAlgorithm);
-//                project.getCache().store(projectAlgorithm, stateId, outputSlot, progressInfo);
-//            }
-//            if (configuration.isSaveToDisk() && !configuration.getDisableSaveToDiskNodes().contains(outputSlot.getNode())) {
-//                JIPipeProgressInfo saveProgress = progressInfo.resolveAndLog(String.format("Saving data in slot '%s' (data type %s)", outputSlot.getDisplayName(), JIPipeDataInfo.getInstance(outputSlot.getAcceptedDataType()).getName()));
-//                progressInfo.log("Flushing slot " + outputSlot.getDisplayName());
-//                outputSlot.flush(configuration.getOutputPath(), saveProgress);
-//            } else {
-//                progressInfo.log("Clearing slot " + outputSlot.getDisplayName());
-//                outputSlot.clearData();
-//            }
-//            flushedSlots.add(outputSlot);
-//        }
-//    }
-
     private void runNode(Set<JIPipeGraphNode> executedAlgorithms, JIPipeGraphNode node, JIPipeProgressInfo progressInfo) {
         progressInfo.log("");
 
@@ -546,6 +494,11 @@ public class JIPipeRun implements JIPipeRunnable {
                 }
             }
             for (JIPipeDataSlot outputSlot : algorithm.getOutputSlots()) {
+                if(cachedData.get(outputSlot.getName()).isEmpty()) {
+                    // If it's empty, we don't know
+                    progressInfo.log(String.format("Cache for slot %s is empty!", outputSlot.getName()));
+                    return false;
+                }
                 outputSlot.clearData();
                 outputSlot.addData(cachedData.get(outputSlot.getName()), progressInfo);
             }

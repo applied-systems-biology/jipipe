@@ -120,11 +120,11 @@ public class JIPipeGraphRunner implements JIPipeRunnable {
             JIPipeProgressInfo subProgress = progressInfo.resolveAndLog(slot.getNode().getName());
 
             // If an algorithm cannot be executed, skip it automatically
-            if (unExecutableAlgorithms.contains(slot.getNode())) {
-                // Mark for gc
-                gc.deactivateNode(slot.getNode());
-                continue;
-            }
+//            if (unExecutableAlgorithms.contains(slot.getNode())) {
+//                // Mark for gc
+//                gc.deactivateNode(slot.getNode());
+//                continue;
+//            }
 
             if (slot.isInput()) {
                 // Only applied if the slot does not receive data from outside
@@ -154,7 +154,12 @@ public class JIPipeGraphRunner implements JIPipeRunnable {
                 LoopGroup loop = nodeLoops.getOrDefault(node, null);
                 if (loop == null) {
                     // Ensure the algorithm has run
-                    runNode(executedAlgorithms, node, subProgress);
+                    if(!unExecutableAlgorithms.contains(node)) {
+                        runNode(executedAlgorithms, node, subProgress);
+                    }
+                    else {
+                        executedAlgorithms.add(node);
+                    }
 
                     // Mark all inputs of the node as completed
                     for (JIPipeDataSlot inputSlot : node.getInputSlots()) {
