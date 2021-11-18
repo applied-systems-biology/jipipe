@@ -39,10 +39,6 @@
   </url>
   
   <url>
-    <loc>https://www.jipipe.org/documentation/basic-concepts/batch-processing/</loc>
-  </url>
-  
-  <url>
     <loc>https://www.jipipe.org/documentation-data-api/data-table/</loc>
   </url>
   
@@ -83,6 +79,10 @@
   </url>
   
   <url>
+    <loc>https://www.jipipe.org/documentation/basic-concepts/visual-programming/</loc>
+  </url>
+  
+  <url>
     <loc>https://www.jipipe.org/examples/</loc>
   </url>
   
@@ -96,6 +96,10 @@
   
   <url>
     <loc>https://www.jipipe.org/documentation-json-api/algorithm/</loc>
+  </url>
+  
+  <url>
+    <loc>https://www.jipipe.org/documentation/basic-concepts/batch-processing/</loc>
   </url>
   
   <url>
