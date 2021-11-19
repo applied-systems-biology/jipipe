@@ -117,14 +117,14 @@ public class CachedImagePlusDataViewerWindow extends JIPipeCacheDataViewerWindow
         if (ImagePlusData.class.isAssignableFrom(virtualData.getDataClass())) {
             ImagePlusData data = (ImagePlusData) virtualData.getData(progressInfo);
             imageViewerPanel.getCanvas().setError(null);
-            image = data.getViewedImage(true);
+            image = data.getViewedImage(false);
             if(data.getImage().getRoi() != null) {
                 rois.add(data.getImage().getRoi());
             }
         } else if (OMEImageData.class.isAssignableFrom(virtualData.getDataClass())) {
             OMEImageData data = (OMEImageData) virtualData.getData(progressInfo);
             imageViewerPanel.getCanvas().setError(null);
-            image = data.getDuplicateImage();
+            image = data.getImage();
             rois.addAll(data.getRois());
         } else {
             throw new UnsupportedOperationException();
