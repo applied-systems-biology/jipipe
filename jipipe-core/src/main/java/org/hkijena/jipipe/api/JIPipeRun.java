@@ -274,7 +274,7 @@ public class JIPipeRun implements JIPipeRunnable {
                 // Copy data from source
                 Set<JIPipeDataSlot> sourceSlots = copiedGraph.getSourceSlots(slot);
                 for (JIPipeDataSlot sourceSlot : sourceSlots) {
-                    if(slot.getNode() instanceof JIPipeAlgorithm && !unExecutableAlgorithms.contains(slot.getNode())) {
+                    if(slot.getNode() instanceof JIPipeAlgorithm) {
                         // Add data from source slot
                         slot.addData(sourceSlot, subProgress);
                     }

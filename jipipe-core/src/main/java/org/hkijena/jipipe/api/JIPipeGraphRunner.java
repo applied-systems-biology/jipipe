@@ -132,7 +132,7 @@ public class JIPipeGraphRunner implements JIPipeRunnable {
                     // Copy data from source (merging rows)
                     Set<JIPipeDataSlot> sourceSlots = algorithmGraph.getSourceSlots(slot);
                     for (JIPipeDataSlot sourceSlot : sourceSlots) {
-                        if(slot.getNode() instanceof JIPipeAlgorithm && !unExecutableAlgorithms.contains(slot.getNode())) {
+                        if(slot.getNode() instanceof JIPipeAlgorithm) {
                             // Add data from source slot
                             slot.addData(sourceSlot, subProgress);
                         }
