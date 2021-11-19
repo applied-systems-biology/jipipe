@@ -5,7 +5,7 @@
     
       <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-<meta name="revised" content="2021-11-18T11:42:24 CET">
+<meta name="revised" content="2021-11-19T18:01:40 CET">
 <title>Examples :: JIPipe for ImageJ</title>
 <link rel="shortcut icon" href="../images/favicon.png" type="image/x-icon" />
 <link href="../css/font-awesome.min.css" rel="stylesheet">
@@ -728,7 +728,126 @@
     
 
 <p>To get started, you can take a look at some example pipelines and other kind of examples:</p>
-<div class="examples-container">
+<div class="examples">
+    
+    <div class="example-item">
+        <div class="example-item-thumbnail">
+            <img src="../img/examples/example-confrontation-assay.png" />
+        </div>        
+        <div class="example-item-content" style="background-image: url('');">
+            <h2>Host-pathogen interactions</h2>
+            <div class="example-item-description">Alveolar macrophages were confronted with various species of fungi, including <i>Aspergillus fumigatus</i> and various <i>Lichtheimia</i> species, followed either directly by microscopy, or first by tissue fixation and fluorescence labeling, and then confocal microscopy.</div>
+            <div class="example-item-buttons">
+                
+                <a href="#" target="_self" class="btn btn-lg btn-success">Download</a>
+                
+                <a href="https://onlinelibrary.wiley.com/doi/full/10.1002/cyto.a.23201" target="_blank" class="btn btn-lg btn-info">Publication</a>
+                
+            </div>
+        </div>
+    </div>
+    
+    <div class="example-item">
+        <div class="example-item-thumbnail">
+            <img src="../img/examples/example-droplets.png" />
+        </div>        
+        <div class="example-item-content" style="background-image: url('');">
+            <h2>Bacterial growth measured in fluid droplets</h2>
+            <div class="example-item-description">Microfluidic droplets of approximately 100 micrometer diameter were filled with a solution containing E. coli bacteria and the bacterial growth was observed via brightfield transmitted light microscopy. This JIPipe workflow finds the droplets that show bacterial growth.</div>
+            <div class="example-item-buttons">
+                
+                <a href="#" target="_self" class="btn btn-lg btn-success">Download</a>
+                
+                <a href="#" target="_self" class="btn btn-lg btn-info">Publication</a>
+                
+            </div>
+        </div>
+    </div>
+    
+    <div class="example-item">
+        <div class="example-item-thumbnail">
+            <img src="../img/examples/example-glomeruli.png" />
+        </div>        
+        <div class="example-item-content" style="background-image: url('');">
+            <h2>Kidney status check via glomeruli counting</h2>
+            <div class="example-item-description">This pipeline analyzes light-sheet fluorescence microscopy of whole murine kidney data. These images were generated with staining specific to glomeruli, functional units of kidney. Here, we reduced the size of the image stack from 700 to 20, which non-workstation computers can process without issues.</div>
+            <div class="example-item-buttons">
+                
+                <a href="#" target="_self" class="btn btn-lg btn-success">Download</a>
+                
+                <a href="https://jasn.asnjournals.org/content/28/2/452.short" target="_blank" class="btn btn-lg btn-info">Publication</a>
+                
+            </div>
+        </div>
+    </div>
+    
+    <div class="example-item">
+        <div class="example-item-thumbnail">
+            <img src="../img/examples/example-liver.png" />
+        </div>        
+        <div class="example-item-content" style="background-image: url('');">
+            <h2>Nanoparticle delivery analysis in liver</h2>
+            <div class="example-item-description">Micelle nanocarriers were injected into the circulatory system of the mouse vie the tail veins. Two-photon microscopy was utilized to image the cargo delivered by the micelles to the hepatocytes, sinusoids, canaliculi and liver-sinusoidal endothelial cells.</div>
+            <div class="example-item-buttons">
+                
+                <a href="#" target="_self" class="btn btn-lg btn-success">Download</a>
+                
+                <a href="https://pubs.acs.org/doi/abs/10.1021/acsnano.1c04213" target="_blank" class="btn btn-lg btn-info">Publication</a>
+                
+            </div>
+        </div>
+    </div>
+    
+    <div class="example-item">
+        <div class="example-item-thumbnail">
+            <img src="../img/examples/example-worms.png" />
+        </div>        
+        <div class="example-item-content" style="background-image: url('');">
+            <h2>Track analysis of unlabeled nematodes</h2>
+            <div class="example-item-description">Live worms of the species C. elegans were recorded via transmitted light microscopy. The resulting time-series images are analyzed by a JIPipe pipeline.</div>
+            <div class="example-item-buttons">
+                
+                <a href="#" target="_self" class="btn btn-lg btn-success">Download</a>
+                
+                <a href="https://www.pnas.org/content/118/37/e2110669118.short" target="_blank" class="btn btn-lg btn-info">Publication</a>
+                
+            </div>
+        </div>
+    </div>
+    
+</div>
+<script type="text/javascript">
+    
+
+    
+    function copyTextToClipboard(text, onsuccess) {
+      if (!navigator.clipboard) {
+        fallbackCopyTextToClipboard(text);
+        return;
+      }
+     navigator.permissions.query({name:'geolocation'}).then(function(result) {
+        if (result.state == "granted" || result.state == "prompt") {
+          navigator.clipboard.writeText(text).then(function() {
+            alert(onsuccess);
+          }, function(err) {
+            console.error('Async: Could not copy text: ', err);
+          });
+        }
+        else {
+          alert("Unable to copy to clipboard! You might be using an older browser that does not support this.");
+        }
+      });
+    }
+    
+    function copyMontageExample() {
+      var url = window.location.origin + '/examples/example-montage.json';
+      fetch(url)
+      .then(function(response) {
+        response.text().then(text => copyTextToClipboard(text, "Copied the node to clipboard! Paste it into an existing JIPipe project."));
+      });
+    }
+</script>
+<!-- <div class="examples-container">
   <div class="examples">
     <div>
       <img src="../img/examples/example-spores.png" />
@@ -784,59 +903,8 @@
       </div>
     </div>
   </div>
-</div>
-<script type="text/javascript">
-$(document).ready(function(){
-  // Landing page slideshow
-  $('.examples').slick({
-    infinite: true,
-    dots: true,
-    slidesToShow: 3,
-    slidesToScroll: 3,
-    autoplay: true,
-    autoplaySpeed: 10000,
-    centerMode: true,
-    centerPadding: '5rem',
-    initialSlide: 1,
-    responsive: [
-      {
-        breakpoint: 1024,
-        settings: {
-          slidesToShow: 1,
-          slidesToScroll: 1
-        }
-      }
-    ]
-  });
-});
-
-function copyTextToClipboard(text, onsuccess) {
-  if (!navigator.clipboard) {
-    fallbackCopyTextToClipboard(text);
-    return;
-  }
- navigator.permissions.query({name:'geolocation'}).then(function(result) {
-    if (result.state == "granted" || result.state == "prompt") {
-      navigator.clipboard.writeText(text).then(function() {
-        alert(onsuccess);
-      }, function(err) {
-        console.error('Async: Could not copy text: ', err);
-      });
-    }
-    else {
-      alert("Unable to copy to clipboard! You might be using an older browser that does not support this.");
-    }
-  });
-}
-
-function copyMontageExample() {
-  var url = window.location.origin + '/examples/example-montage.json';
-  fetch(url)
-  .then(function(response) {
-    response.text().then(text => copyTextToClipboard(text, "Copied the node to clipboard! Paste it into an existing JIPipe project."));
-  });
-}
-</script>
+</div> --><blockquote>
+</blockquote>
 
 
 
