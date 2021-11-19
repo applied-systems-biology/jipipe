@@ -408,6 +408,7 @@ public class JIPipeRun implements JIPipeRunnable {
                 JIPipeGraphNode runAlgorithm = slot.getNode();
                 JIPipeGraphNode projectAlgorithm = cacheQuery.getNode(runAlgorithm.getUUIDInGraph());
                 JIPipeProjectCacheState stateId = cacheQuery.getCachedId(projectAlgorithm);
+                progressInfo.resolve("GC").log("Caching slot " + slot.getDisplayName());
                 project.getCache().store(projectAlgorithm, stateId, slot, progressInfo.resolve("GC"));
             }
             if (configuration.isSaveToDisk() && !configuration.getDisableSaveToDiskNodes().contains(slot.getNode())) {
