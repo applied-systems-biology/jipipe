@@ -37,10 +37,12 @@ import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
 import java.awt.Rectangle;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowListener;
 import java.util.ArrayList;
 import java.util.List;
 
-public class CachedROIListDataViewerWindow extends JIPipeCacheDataViewerWindow {
+public class CachedROIListDataViewerWindow extends JIPipeCacheDataViewerWindow implements WindowListener {
 
     private final JLabel errorLabel = new JLabel(UIUtils.getIconFromResources("emblems/no-data.png"));
     private ImageViewerPanel imageViewerPanel;
@@ -50,6 +52,7 @@ public class CachedROIListDataViewerWindow extends JIPipeCacheDataViewerWindow {
         initialize();
         if (!deferLoading)
             reloadDisplayedData();
+        addWindowListener(this);
     }
 
     private void initialize() {
@@ -136,5 +139,40 @@ public class CachedROIListDataViewerWindow extends JIPipeCacheDataViewerWindow {
         plugin.importROIs(data);
         if (fitImage)
             SwingUtilities.invokeLater(imageViewerPanel::fitImageToScreen);
+    }
+
+    @Override
+    public void windowOpened(WindowEvent e) {
+
+    }
+
+    @Override
+    public void windowClosing(WindowEvent e) {
+        imageViewerPanel.dispose();
+    }
+
+    @Override
+    public void windowClosed(WindowEvent e) {
+
+    }
+
+    @Override
+    public void windowIconified(WindowEvent e) {
+
+    }
+
+    @Override
+    public void windowDeiconified(WindowEvent e) {
+
+    }
+
+    @Override
+    public void windowActivated(WindowEvent e) {
+
+    }
+
+    @Override
+    public void windowDeactivated(WindowEvent e) {
+
     }
 }

@@ -13,6 +13,7 @@
 
 package org.hkijena.jipipe.extensions.imagejdatatypes.display;
 
+import com.google.common.collect.ImmutableSet;
 import ij.ImagePlus;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeCacheSlotDataSource;
@@ -21,6 +22,7 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.OMEImageData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ROIListData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.viewer.ImageViewerPanel;
+import org.hkijena.jipipe.extensions.imagejdatatypes.viewer.ImageViewerWindow;
 import org.hkijena.jipipe.extensions.imagejdatatypes.viewer.plugins.AnimationSpeedPlugin;
 import org.hkijena.jipipe.extensions.imagejdatatypes.viewer.plugins.CalibrationPlugin;
 import org.hkijena.jipipe.extensions.imagejdatatypes.viewer.plugins.ImageViewerPanelPlugin;
@@ -34,10 +36,14 @@ import org.hkijena.jipipe.ui.cache.JIPipeCacheDataViewerWindow;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowListener;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
-public class CachedImagePlusDataViewerWindow extends JIPipeCacheDataViewerWindow {
+public class CachedImagePlusDataViewerWindow extends JIPipeCacheDataViewerWindow implements WindowListener {
 
     private final JLabel errorLabel = new JLabel(UIUtils.getIconFromResources("emblems/no-data.png"));
     private ImageViewerPanel imageViewerPanel;
@@ -47,6 +53,7 @@ public class CachedImagePlusDataViewerWindow extends JIPipeCacheDataViewerWindow
         initialize();
         if (!deferLoadingData)
             reloadDisplayedData();
+        addWindowListener(this);
     }
 
     private void initialize() {
@@ -71,6 +78,12 @@ public class CachedImagePlusDataViewerWindow extends JIPipeCacheDataViewerWindow
             return null;
         else
             return imageViewerPanel.getToolBar();
+    }
+
+    @Override
+    public void setTitle(String title) {
+        super.setTitle(title);
+        imageViewerPanel.setName(getTitle());
     }
 
     @Override
@@ -125,5 +138,41 @@ public class CachedImagePlusDataViewerWindow extends JIPipeCacheDataViewerWindow
         }
         if (fitImage)
             SwingUtilities.invokeLater(imageViewerPanel::fitImageToScreen);
+    }
+
+    @Override
+    public void windowOpened(WindowEvent e) {
+        imageViewerPanel.setName(getTitle());
+        imageViewerPanel.addToOpenPanels();
+        imageViewerPanel.setAsActiveViewerPanel();
+    }
+
+    @Override
+    public void windowClosing(WindowEvent e) {
+        imageViewerPanel.dispose();
+    }
+
+    @Override
+    public void windowClosed(WindowEvent e) {
+    }
+
+    @Override
+    public void windowIconified(WindowEvent e) {
+
+    }
+
+    @Override
+    public void windowDeiconified(WindowEvent e) {
+
+    }
+
+    @Override
+    public void windowActivated(WindowEvent e) {
+        imageViewerPanel.setAsActiveViewerPanel();
+    }
+
+    @Override
+    public void windowDeactivated(WindowEvent e) {
+
     }
 }

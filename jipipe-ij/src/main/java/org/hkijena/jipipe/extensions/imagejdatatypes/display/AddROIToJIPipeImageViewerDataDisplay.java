@@ -21,16 +21,16 @@ import org.hkijena.jipipe.api.data.JIPipeDataSource;
 import org.hkijena.jipipe.api.data.JIPipeExportedDataTableRow;
 import org.hkijena.jipipe.api.data.JIPipeResultSlotDataSource;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ROIListData;
-import org.hkijena.jipipe.extensions.imagejdatatypes.viewer.ImageViewerWindow;
+import org.hkijena.jipipe.extensions.imagejdatatypes.viewer.ImageViewerPanel;
 import org.hkijena.jipipe.extensions.imagejdatatypes.viewer.plugins.ImageViewerPanelPlugin;
 import org.hkijena.jipipe.extensions.imagejdatatypes.viewer.plugins.ROIManagerPlugin;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
-import org.hkijena.jipipe.ui.components.WindowListCellRenderer;
+import org.hkijena.jipipe.ui.components.ComponentListCellRenderer;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.hkijena.jipipe.utils.ui.ListSelectionMode;
 
 import javax.swing.*;
-import java.awt.Frame;
+import java.awt.Component;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -41,25 +41,25 @@ import java.util.stream.Collectors;
 public class AddROIToJIPipeImageViewerDataDisplay implements JIPipeDataDisplayOperation, JIPipeDataImportOperation {
     @Override
     public void display(JIPipeData data, String displayName, JIPipeWorkbench workbench, JIPipeDataSource source) {
-        List<ImageViewerWindow> windows = new ArrayList<>(ImageViewerWindow.getOpenWindows());
-        if (windows.isEmpty()) {
+        List<ImageViewerPanel> viewerPanels = new ArrayList<>(ImageViewerPanel.getOpenViewerPanels());
+        if (viewerPanels.isEmpty()) {
             JOptionPane.showMessageDialog(workbench.getWindow(), "There are no active JIPipe image viewers.", "Add to image viewer", JOptionPane.ERROR_MESSAGE);
             return;
         }
-        windows.sort(Comparator.comparing(Frame::getTitle));
-        if (ImageViewerWindow.getActiveWindow() != null) {
-            windows.remove(ImageViewerWindow.getActiveWindow());
-            windows.add(0, ImageViewerWindow.getActiveWindow());
+        viewerPanels.sort(Comparator.comparing(Component::getName));
+        if (ImageViewerPanel.getActiveViewerPanel() != null) {
+            viewerPanels.remove(ImageViewerPanel.getActiveViewerPanel());
+            viewerPanels.add(0, ImageViewerPanel.getActiveViewerPanel());
         }
-        List<ImageViewerWindow> selected = UIUtils.getSelectionByDialog(workbench.getWindow(),
-                windows,
-                Collections.singleton(windows.get(0)),
+        List<ImageViewerPanel> selected = UIUtils.getSelectionByDialog(workbench.getWindow(),
+                viewerPanels,
+                Collections.singleton(viewerPanels.get(0)),
                 "Add to image viewer",
                 "Please select one or multiple image viewers.",
-                new WindowListCellRenderer<>(),
+                new ComponentListCellRenderer<>(UIUtils.getIconFromResources("actions/window.png")),
                 ListSelectionMode.MultipleInterval);
-        for (ImageViewerWindow window : selected) {
-            for (ImageViewerPanelPlugin plugin : window.getViewerPanel().getPlugins().stream()
+        for (ImageViewerPanel viewerPanel : selected) {
+            for (ImageViewerPanelPlugin plugin : viewerPanel.getPlugins().stream()
                     .filter(plugin -> plugin instanceof ROIManagerPlugin).collect(Collectors.toList())) {
                 ((ROIManagerPlugin) plugin).importROIs((ROIListData) data);
             }

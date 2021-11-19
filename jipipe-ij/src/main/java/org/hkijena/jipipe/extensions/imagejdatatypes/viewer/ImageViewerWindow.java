@@ -23,8 +23,6 @@ import java.util.HashSet;
 import java.util.Set;
 
 public class ImageViewerWindow extends JFrame implements WindowListener {
-    private static final Set<ImageViewerWindow> OPEN_WINDOWS = new HashSet<>();
-    private static ImageViewerWindow ACTIVE_WINDOW = null;
     private final ImageViewerPanel viewerPanel;
 
     public ImageViewerWindow() {
@@ -53,15 +51,21 @@ public class ImageViewerWindow extends JFrame implements WindowListener {
 
     @Override
     public void windowOpened(WindowEvent e) {
-        OPEN_WINDOWS.add(this);
+        viewerPanel.setName(getTitle());
+        viewerPanel.addToOpenPanels();
+        viewerPanel.setAsActiveViewerPanel();
         SwingUtilities.invokeLater(viewerPanel::fitImageToScreen);
     }
 
     @Override
+    public void setTitle(String title) {
+        super.setTitle(title);
+        viewerPanel.setName(getTitle());
+    }
+
+    @Override
     public void windowClosing(WindowEvent e) {
-        OPEN_WINDOWS.remove(this);
-        if (ACTIVE_WINDOW == this)
-            ACTIVE_WINDOW = null;
+        viewerPanel.dispose();
     }
 
     @Override
@@ -81,19 +85,11 @@ public class ImageViewerWindow extends JFrame implements WindowListener {
 
     @Override
     public void windowActivated(WindowEvent e) {
-        ACTIVE_WINDOW = this;
+        viewerPanel.setAsActiveViewerPanel();
     }
 
     @Override
     public void windowDeactivated(WindowEvent e) {
 
-    }
-
-    public static Set<ImageViewerWindow> getOpenWindows() {
-        return ImmutableSet.copyOf(OPEN_WINDOWS);
-    }
-
-    public static ImageViewerWindow getActiveWindow() {
-        return ACTIVE_WINDOW;
     }
 }

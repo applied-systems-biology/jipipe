@@ -212,6 +212,11 @@ public class MaskDrawerPlugin extends ImageViewerPanelPlugin {
                 setMask(mask);
             }
         }
+        else {
+            mask = null;
+            currentMaskSlice = null;
+            currentMaskSlicePreview = null;
+        }
         currentTool.onImageChanged();
     }
 

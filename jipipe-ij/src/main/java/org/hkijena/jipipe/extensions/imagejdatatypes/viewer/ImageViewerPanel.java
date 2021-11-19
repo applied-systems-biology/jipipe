@@ -58,10 +58,15 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
-public class ImageViewerPanel extends JPanel {
+public class ImageViewerPanel extends JPanel{
+    private static ImageViewerPanel ACTIVE_PANEL = null;
+    private static final Set<ImageViewerPanel> OPEN_PANELS = new HashSet<>();
+
     private final JButton zoomStatusButton = new JButton();
     private final ImageViewerUISettings settings;
     private ImagePlus image;
@@ -136,6 +141,30 @@ public class ImageViewerPanel extends JPanel {
             refreshImageInfo();
             refreshSlice();
         }
+    }
+
+    public void setAsActiveViewerPanel() {
+        ACTIVE_PANEL = this;
+    }
+
+    public void addToOpenPanels() {
+        OPEN_PANELS.add(this);
+    }
+
+    public void dispose() {
+        if(ACTIVE_PANEL == this) {
+            ACTIVE_PANEL = null;
+        }
+        OPEN_PANELS.remove(this);
+        setImage(null);
+    }
+
+    public static ImageViewerPanel getActiveViewerPanel() {
+        return ACTIVE_PANEL;
+    }
+
+    public static Set<ImageViewerPanel> getOpenViewerPanels() {
+        return OPEN_PANELS;
     }
 
     private void initialize() {
@@ -568,6 +597,7 @@ public class ImageViewerPanel extends JPanel {
 
     public void setImage(ImagePlus image) {
         this.image = image;
+        this.slice = null;
         if (image != null) {
             this.statistics = image.getStatistics();
         } else {

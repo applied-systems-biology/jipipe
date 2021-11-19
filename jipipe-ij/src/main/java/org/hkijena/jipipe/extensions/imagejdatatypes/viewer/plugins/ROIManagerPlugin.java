@@ -51,7 +51,7 @@ public class ROIManagerPlugin extends ImageViewerPanelPlugin {
         for (Roi roi : overlayRois) {
             rois.remove(roi);
         }
-        if (getCurrentImage().getOverlay() != null) {
+        if (getCurrentImage() != null && getCurrentImage().getOverlay() != null) {
             if (getCurrentImage().getRoi() != null) {
                 rois.add(getCurrentImage().getRoi());
             }
@@ -181,7 +181,7 @@ public class ROIManagerPlugin extends ImageViewerPanelPlugin {
 
         viewToolBar.add(Box.createHorizontalGlue());
 
-        if (getCurrentImage().getNSlices() > 1) {
+        {
             JToggleButton toggle = new JToggleButton(UIUtils.getIconFromResources("actions/layer-flatten-z.png"));
             toggle.setToolTipText("Show all ROIs regardless of Z axis.");
             toggle.setSelected(roiSeeThroughZ);
@@ -191,7 +191,7 @@ public class ROIManagerPlugin extends ImageViewerPanelPlugin {
             });
             viewToolBar.add(toggle);
         }
-        if (getCurrentImage().getNFrames() > 1) {
+        {
             JToggleButton toggle = new JToggleButton(UIUtils.getIconFromResources("actions/layer-flatten-t.png"));
             toggle.setToolTipText("Show all ROIs regardless of time axis.");
             toggle.setSelected(roiSeeThroughT);
@@ -201,7 +201,7 @@ public class ROIManagerPlugin extends ImageViewerPanelPlugin {
             });
             viewToolBar.add(toggle);
         }
-        if (getCurrentImage().getNChannels() > 1) {
+        {
             JToggleButton toggle = new JToggleButton(UIUtils.getIconFromResources("actions/layer-flatten-c.png"));
             toggle.setToolTipText("Show all ROIs regardless of channel axis.");
             toggle.setSelected(roiSeeThroughC);
