@@ -27,6 +27,7 @@ import org.hkijena.jipipe.api.nodes.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleData;
+import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.extensions.parameters.generators.IntegerRange;
 import org.hkijena.jipipe.extensions.parameters.primitives.BooleanParameterSettings;
 
@@ -75,7 +76,7 @@ public class FilterLabelsByIdAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     @Override
     protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
         ImagePlus inputImage = dataBatch.getInputData(getFirstInputSlot(), ImagePlusGreyscaleData.class, progressInfo).getImage();
-        ImagePlus outputImage = inputImage.duplicate();
+        ImagePlus outputImage = ImageJUtils.duplicate(inputImage);
         outputImage.setTitle(inputImage.getTitle());
         if (keepValues) {
             LabelImages.keepLabels(outputImage, Ints.toArray(values.getIntegers()));

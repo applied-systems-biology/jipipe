@@ -25,6 +25,7 @@ import org.hkijena.jipipe.api.nodes.JIPipeOutputSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleData;
+import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 
 @JIPipeDocumentation(name = "Remap labels", description = "Ensures that the labels in the given label image range from 1 to Lmax.")
 @JIPipeNode(menuPath = "Labels", nodeTypeCategory = ImagesNodeTypeCategory.class)
@@ -43,7 +44,7 @@ public class RemapLabelsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     @Override
     protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
         ImagePlus inputImage = dataBatch.getInputData(getFirstInputSlot(), ImagePlusGreyscaleData.class, progressInfo).getImage();
-        ImagePlus outputImage = inputImage.duplicate();
+        ImagePlus outputImage = ImageJUtils.duplicate(inputImage);
         outputImage.setTitle(inputImage.getTitle());
         LabelImages.remapLabels(outputImage);
         outputImage.setDimensions(inputImage.getNChannels(), inputImage.getNSlices(), inputImage.getNFrames());

@@ -26,6 +26,7 @@ import org.hkijena.jipipe.api.nodes.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleData;
+import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 
 @JIPipeDocumentation(name = "Remove largest label", description = "Remove the label with the largest area")
 @JIPipeNode(menuPath = "Labels", nodeTypeCategory = ImagesNodeTypeCategory.class)
@@ -58,7 +59,7 @@ public class RemoveLargestLabelAlgorithm extends JIPipeSimpleIteratingAlgorithm 
     @Override
     protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
         ImagePlus inputImage = dataBatch.getInputData(getFirstInputSlot(), ImagePlusGreyscaleData.class, progressInfo).getImage();
-        ImagePlus outputImage = inputImage.duplicate();
+        ImagePlus outputImage = ImageJUtils.duplicate(inputImage);
         outputImage.setTitle(inputImage.getTitle());
         for (int i = 0; i < iterations; i++) {
             LabelImages.removeLargestLabel(outputImage);

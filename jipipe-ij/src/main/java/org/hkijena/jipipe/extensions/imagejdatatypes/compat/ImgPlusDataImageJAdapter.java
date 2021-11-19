@@ -20,6 +20,7 @@ import org.apache.commons.lang.reflect.ConstructorUtils;
 import org.hkijena.jipipe.api.compat.ImageJDatatypeAdapter;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
+import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.utils.StringUtils;
 
 import java.lang.reflect.InvocationTargetException;
@@ -78,7 +79,7 @@ public class ImgPlusDataImageJAdapter implements ImageJDatatypeAdapter {
             imageJData = IJ.getImage();
         }
         try {
-            ImagePlus img = ((ImagePlus) imageJData).duplicate();
+            ImagePlus img = ImageJUtils.duplicate((ImagePlus) imageJData);
             return (JIPipeData) ConstructorUtils.invokeConstructor(jipipeDataClass, img);
         } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException | InstantiationException e) {
             throw new RuntimeException(e);

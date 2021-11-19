@@ -92,7 +92,7 @@ public class RoiToMaskAlgorithm extends JIPipeIteratingAlgorithm {
 
         ImagePlus result;
         if (drawOver) {
-            result = ImageJUtils.convertToGreyscale8UIfNeeded(reference.duplicate());
+            result = ImageJUtils.convertToGreyscale8UIfNeeded(ImageJUtils.duplicate(reference));
             result.setTitle("Reference+ROIs");
         } else {
             result = IJ.createImage("ROIs", "8-bit", sx, sy, sc, sz, st);

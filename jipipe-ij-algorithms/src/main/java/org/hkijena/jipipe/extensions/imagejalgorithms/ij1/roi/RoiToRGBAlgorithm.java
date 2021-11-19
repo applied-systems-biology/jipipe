@@ -140,7 +140,7 @@ public class RoiToRGBAlgorithm extends JIPipeIteratingAlgorithm {
 
         ImagePlus result;
         if (drawOver) {
-            result = ImageJUtils.convertToColorRGBIfNeeded(reference.duplicate());
+            result = ImageJUtils.convertToColorRGBIfNeeded(ImageJUtils.duplicate(reference));
             result.setTitle("Reference+ROIs");
         } else {
             result = IJ.createImage("ROIs", "RGB", sx, sy, sc, sz, st);

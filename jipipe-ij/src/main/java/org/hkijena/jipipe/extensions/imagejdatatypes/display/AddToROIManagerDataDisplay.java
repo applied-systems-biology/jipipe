@@ -24,6 +24,7 @@ import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataDisplayOperation;
 import org.hkijena.jipipe.api.data.JIPipeDataSource;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ROIListData;
+import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.extensions.parameters.roi.Margin;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.utils.UIUtils;
@@ -91,7 +92,7 @@ public class AddToROIManagerDataDisplay implements JIPipeDataDisplayOperation {
                     roiManager.add(fallbackImage, (Roi) roi.clone(), -1);
                 }
             } else {
-                ImagePlus target = entry.getKey().get().duplicate();
+                ImagePlus target = ImageJUtils.duplicate(entry.getKey().get());
                 target.setTitle(entry.getKey().get().getTitle());
                 target.show();
                 for (Roi roi : entry.getValue()) {

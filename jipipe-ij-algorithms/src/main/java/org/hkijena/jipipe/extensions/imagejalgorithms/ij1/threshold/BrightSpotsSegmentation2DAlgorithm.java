@@ -96,7 +96,7 @@ public class BrightSpotsSegmentation2DAlgorithm extends JIPipeSimpleIteratingAlg
 
         ImageJUtils.forEachIndexedSlice(img, (imp, index) -> {
             ImagePlus slice = new ImagePlus("slice", imp);
-            ImagePlus processedSlice = slice.duplicate();
+            ImagePlus processedSlice = ImageJUtils.duplicate(slice);
 
             // Apply background subtraction
             BackgroundSubtracter backgroundSubtracter = new BackgroundSubtracter();

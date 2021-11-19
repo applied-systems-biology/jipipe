@@ -22,13 +22,17 @@ import gnu.trove.list.array.TIntArrayList;
 import gnu.trove.list.array.TShortArrayList;
 import gnu.trove.map.TIntIntMap;
 import gnu.trove.map.hash.TIntIntHashMap;
+import ij.CompositeImage;
 import ij.IJ;
 import ij.ImagePlus;
 import ij.ImageStack;
 import ij.WindowManager;
+import ij.gui.Overlay;
 import ij.gui.PolygonRoi;
+import ij.gui.Roi;
 import ij.plugin.PlugIn;
 import ij.plugin.filter.AVI_Writer;
+import ij.plugin.frame.Recorder;
 import ij.process.*;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
@@ -44,6 +48,7 @@ import javax.swing.*;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Graphics2D;
+import java.awt.Image;
 import java.awt.Rectangle;
 import java.awt.Shape;
 import java.awt.geom.AffineTransform;
@@ -71,6 +76,69 @@ import java.util.stream.Collectors;
 public class ImageJUtils {
     private ImageJUtils() {
 
+    }
+
+    /**
+     * Faster version of the duplicate() method in {@link ImagePlus}.
+     * The reason behind this is that {@link ij.plugin.Duplicator} uses an expensive crop() operation instead of Java's array copy
+     * to allow making duplicates of ROI
+     * @param imp the image
+     * @return a copy of the image
+     */
+    public static ImagePlus duplicate(ImagePlus imp) {
+        ImageStack stack = imp.getStack();
+        boolean virtualStack = stack.isVirtual();
+        double min = imp.getDisplayRangeMin();
+        double max = imp.getDisplayRangeMax();
+        ImageStack copyStack = new ImageStack(imp.getWidth(), imp.getHeight(), imp.getProcessor().getColorModel());
+        int n = stack.size();
+        for (int i=1; i<=n; i++) {
+            ImageProcessor sourceProcessor = stack.getProcessor(i);
+            ImageProcessor targetProcessor;
+            if(sourceProcessor instanceof ByteProcessor) {
+                sourceProcessor.setSnapshotCopyMode(false);
+                targetProcessor = new ByteProcessor(imp.getWidth(), imp.getHeight(), (byte[]) sourceProcessor.getPixelsCopy());
+            }
+            else if(sourceProcessor instanceof ShortProcessor) {
+                sourceProcessor.setSnapshotCopyMode(false);
+                targetProcessor = new ShortProcessor(imp.getWidth(), imp.getHeight(), (short[]) sourceProcessor.getPixelsCopy(), sourceProcessor.getColorModel());
+            }
+            else if(sourceProcessor instanceof ColorProcessor) {
+                sourceProcessor.setSnapshotCopyMode(false);
+                targetProcessor = new ColorProcessor(imp.getWidth(), imp.getHeight(), (int[]) sourceProcessor.getPixelsCopy());
+            }
+            else if(sourceProcessor instanceof FloatProcessor) {
+                sourceProcessor.setSnapshotCopyMode(false);
+                targetProcessor = new FloatProcessor(imp.getWidth(), imp.getHeight(), (float[]) sourceProcessor.getPixelsCopy());
+            }
+            else {
+                sourceProcessor.setRoi((Roi) null);
+                targetProcessor = sourceProcessor.crop();
+            }
+            copyStack.addSlice(stack.getSliceLabel(i), targetProcessor);
+        }
+        IJ.showProgress(1.0);
+        ImagePlus imp2 = imp.createImagePlus();
+        imp2.setStack("DUP_"+imp.getTitle(), copyStack);
+        String info = (String)imp.getProperty("Info");
+        if (info!=null)
+            imp2.setProperty("Info", info);
+        imp2.setProperties(imp.getPropertiesAsArray());
+        imp2.setCalibration(imp.getCalibration());
+        int[] dim = imp.getDimensions();
+        imp2.setDimensions(dim[2], dim[3], dim[4]);
+        if (imp.isComposite()) {
+            imp2 = new CompositeImage(imp2, 0);
+            ((CompositeImage)imp2).copyLuts(imp);
+        }
+        if (virtualStack)
+            imp2.setDisplayRange(min, max);
+        if (imp.isHyperStack())
+            imp2.setOpenAsHyperStack(true);
+        Overlay overlay = imp.getOverlay();
+        if (overlay!=null && !imp.getHideOverlay())
+            imp2.setOverlay(overlay);
+        return imp2;
     }
 
     public static boolean imagesHaveSameSize(ImagePlus... images) {
@@ -398,7 +466,7 @@ public class ImageJUtils {
      */
     public static ImagePlus rotate(ImagePlus img, double degrees, boolean expandCanvas, Color background, boolean addRoi, JIPipeProgressInfo progressInfo) {
         if (degrees == 0)
-            return img.duplicate();
+            return duplicate(img);
         if (degrees % 90 == 0) {
             ImageStack stack;
             int width;
@@ -478,7 +546,7 @@ public class ImageJUtils {
                     imagePlus.setRoi(roi);
                 return imagePlus;
             } else {
-                ImagePlus imagePlus = img.duplicate();
+                ImagePlus imagePlus = duplicate(img);
                 forEachSlice(imagePlus, ip -> {
                     ip.setColor(background);
                     ip.rotate(degrees);
@@ -839,7 +907,7 @@ public class ImageJUtils {
      * @return Result image
      */
     public static ImagePlus runOnNewImage(ImagePlus img, String command, Object... parameters) {
-        ImagePlus copy = img.duplicate();
+        ImagePlus copy = duplicate(img);
         String params = toParameterString(parameters);
         WindowManager.setTempCurrentImage(copy);
         IJ.run(command, params);
@@ -872,7 +940,7 @@ public class ImageJUtils {
      * @return Result image
      */
     public static ImagePlus runOnNewImage(ImagePlus img, PlugIn plugin, Object... parameters) {
-        ImagePlus copy = img.duplicate();
+        ImagePlus copy = duplicate(img);
         String params = toParameterString(parameters);
         WindowManager.setTempCurrentImage(copy);
         plugin.run(params);
@@ -1198,7 +1266,7 @@ public class ImageJUtils {
      */
     public static ImagePlus convertToSameTypeIfNeeded(ImagePlus image, ImagePlus reference, boolean doScaling) {
         if (reference.getType() != image.getType()) {
-            image = image.duplicate();
+            image = duplicate(image);
             ImageConverter converter = new ImageConverter(image);
             ImageConverter.setDoScaling(doScaling);
             if (reference.getType() == ImagePlus.GRAY8)
@@ -1333,7 +1401,7 @@ public class ImageJUtils {
         if (image.getType() != ImagePlus.GRAY8 &&
                 image.getType() != ImagePlus.GRAY16 &&
                 image.getType() != ImagePlus.GRAY32) {
-            image = image.duplicate();
+            image = duplicate(image);
             ImageConverter.setDoScaling(true);
             ImageConverter ic = new ImageConverter(image);
             ic.convertToGray32();
@@ -1350,7 +1418,7 @@ public class ImageJUtils {
      */
     public static ImagePlus convertToGreyscale8UIfNeeded(ImagePlus image) {
         if (image.getType() != ImagePlus.GRAY8) {
-            image = image.duplicate();
+            image = duplicate(image);
             ImageConverter.setDoScaling(true);
             ImageConverter ic = new ImageConverter(image);
             ic.convertToGray8();
@@ -1367,7 +1435,7 @@ public class ImageJUtils {
      */
     public static ImagePlus convertToGrayscale32FIfNeeded(ImagePlus image) {
         if (image.getType() != ImagePlus.GRAY32) {
-            image = image.duplicate();
+            image = duplicate(image);
             ImageConverter.setDoScaling(true);
             ImageConverter ic = new ImageConverter(image);
             ic.convertToGray32();
@@ -1384,7 +1452,7 @@ public class ImageJUtils {
      */
     public static ImagePlus convertToGrayscale16UIfNeeded(ImagePlus image) {
         if (image.getType() != ImagePlus.GRAY16) {
-            image = image.duplicate();
+            image = duplicate(image);
             ImageConverter.setDoScaling(true);
             ImageConverter ic = new ImageConverter(image);
             ic.convertToGray16();
@@ -1402,7 +1470,7 @@ public class ImageJUtils {
     public static ImagePlus convertToColorRGBIfNeeded(ImagePlus image) {
         if (image.getType() != ImagePlus.COLOR_RGB) {
             String title = image.getTitle();
-            image = image.duplicate();
+            image = duplicate(image);
             image.setTitle(title);
             ImageConverter.setDoScaling(true);
             ImageConverter ic = new ImageConverter(image);
@@ -1421,7 +1489,7 @@ public class ImageJUtils {
     public static ImagePlus convertToColorLABIfNeeded(ImagePlus image) {
         if (image.getType() != ImagePlus.COLOR_RGB) {
             String title = image.getTitle();
-            image = image.duplicate();
+            image = duplicate(image);
             image.setTitle(title);
             ImageConverter.setDoScaling(true);
             ImageConverter ic = new ImageConverter(image);

@@ -15,6 +15,7 @@ import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.HyperstackDimension;
+import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 
 /**
  * Algorithm that reorders Hyperstack dimensions
@@ -51,7 +52,7 @@ public class ReorderDimensionsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
             return;
         }
 
-        ImagePlus reorganized = image.duplicate();
+        ImagePlus reorganized = ImageJUtils.duplicate(image);
         reorganized.setTitle(image.getTitle());
 
         int depth = reorganized.getNSlices();

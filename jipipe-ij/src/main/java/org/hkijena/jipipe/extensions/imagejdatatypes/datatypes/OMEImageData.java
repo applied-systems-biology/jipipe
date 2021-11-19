@@ -65,6 +65,7 @@ import org.hkijena.jipipe.api.exceptions.UserFriendlyNullPointerException;
 import org.hkijena.jipipe.extensions.imagejdatatypes.ImageJDataTypesSettings;
 import org.hkijena.jipipe.extensions.imagejdatatypes.display.CachedImagePlusDataViewerWindow;
 import org.hkijena.jipipe.extensions.imagejdatatypes.parameters.OMEExporterSettings;
+import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ROIHandler;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.utils.PathUtils;
@@ -132,7 +133,7 @@ public class OMEImageData implements JIPipeData {
 
     @Override
     public JIPipeData duplicate() {
-        ImagePlus imp = image.duplicate();
+        ImagePlus imp = ImageJUtils.duplicate(image);
         imp.setTitle(getImage().getTitle());
         OMEImageData copy = new OMEImageData(imp, new ROIListData(rois), metadata);
         copy.exporterSettings = new OMEExporterSettings(exporterSettings);
@@ -167,7 +168,7 @@ public class OMEImageData implements JIPipeData {
      * @return the duplicate
      */
     public ImagePlus getDuplicateImage() {
-        ImagePlus imp = image.duplicate();
+        ImagePlus imp = ImageJUtils.duplicate(image);
         imp.setTitle(getImage().getTitle());
         return imp;
     }

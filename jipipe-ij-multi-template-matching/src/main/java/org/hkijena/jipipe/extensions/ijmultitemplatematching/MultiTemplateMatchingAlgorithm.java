@@ -180,7 +180,7 @@ public class MultiTemplateMatchingAlgorithm extends JIPipeMergingAlgorithm {
             else
                 target = data.getImage();
         } else {
-            target = original.duplicate();
+            target = ImageJUtils.duplicate(original);
         }
 
         // Fill with color if requested
@@ -215,7 +215,7 @@ public class MultiTemplateMatchingAlgorithm extends JIPipeMergingAlgorithm {
                 }
             }
             int templateIndex = Integer.parseInt(templateName.split("_")[0]);
-            ImagePlus template = templates.get(templateIndex).duplicate();
+            ImagePlus template = ImageJUtils.duplicate(templates.get(templateIndex));
             ImageProcessor templateProcessor = template.getProcessor();
             if (verticalFlip)
                 templateProcessor.flipVertical();

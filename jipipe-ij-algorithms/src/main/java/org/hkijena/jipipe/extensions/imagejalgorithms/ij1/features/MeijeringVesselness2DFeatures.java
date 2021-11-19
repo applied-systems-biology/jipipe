@@ -99,7 +99,7 @@ public class MeijeringVesselness2DFeatures extends JIPipeSimpleIteratingAlgorith
         ImagePlus img = inputData.getImage();
 
         if (invert) {
-            img = img.duplicate();
+            img = ImageJUtils.duplicate(img);
             ImageJUtils.forEachSlice(img, ImageProcessor::invert, progressInfo);
         }
 

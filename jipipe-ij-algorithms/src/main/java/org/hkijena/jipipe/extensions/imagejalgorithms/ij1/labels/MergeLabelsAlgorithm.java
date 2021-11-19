@@ -26,6 +26,7 @@ import org.hkijena.jipipe.api.nodes.JIPipeOutputSlot;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ROIListData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleData;
+import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 
 @JIPipeDocumentation(name = "Merge label inside ROI", description = "Sets all labels inside the specified ROI to the same value.")
 @JIPipeNode(menuPath = "Labels", nodeTypeCategory = ImagesNodeTypeCategory.class)
@@ -54,7 +55,7 @@ public class MergeLabelsAlgorithm extends JIPipeIteratingAlgorithm {
             rois = new ROIListData(rois);
             rois.logicalOr();
         }
-        ImagePlus outputImage = inputImage.duplicate();
+        ImagePlus outputImage = ImageJUtils.duplicate(inputImage);
         outputImage.setTitle(inputImage.getTitle());
         LabelImages.mergeLabels(outputImage, rois.get(0), false);
         outputImage.setDimensions(inputImage.getNChannels(), inputImage.getNSlices(), inputImage.getNFrames());

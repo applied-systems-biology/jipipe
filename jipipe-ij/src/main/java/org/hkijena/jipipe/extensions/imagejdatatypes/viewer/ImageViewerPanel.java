@@ -562,7 +562,7 @@ public class ImageViewerPanel extends JPanel{
     private void openInImageJ() {
         if (image != null) {
             String title = image.getTitle();
-            ImagePlus duplicate = image.duplicate();
+            ImagePlus duplicate = ImageJUtils.duplicate(image);
             duplicate.setTitle(title);
             duplicate.show();
         }

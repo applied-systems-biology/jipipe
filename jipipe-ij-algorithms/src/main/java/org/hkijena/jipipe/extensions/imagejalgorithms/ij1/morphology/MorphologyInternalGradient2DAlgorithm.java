@@ -75,7 +75,7 @@ public class MorphologyInternalGradient2DAlgorithm extends JIPipeSimpleIterating
 
     private void applyInternalGradient(ImagePlus img) {
         // Erode the original image
-        ImagePlus eroded = img.duplicate();
+        ImagePlus eroded = ImageJUtils.duplicate(img);
         RankFilters erosionFilter = new RankFilters();
         erosionFilter.rank(eroded.getProcessor(), radius, RankFilters.MIN); //TODO: Set element to octagon
 

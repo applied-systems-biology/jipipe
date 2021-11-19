@@ -156,7 +156,7 @@ public class ImagePlusData implements JIPipeData, ColoredImagePlusData {
     @Override
     public JIPipeData duplicate() {
         if (image != null) {
-            ImagePlus imp = image.duplicate();
+            ImagePlus imp = ImageJUtils.duplicate(image);
             imp.setTitle(getImage().getTitle());
             return JIPipe.createData(getClass(), imp, colorSpace);
         } else {
@@ -170,7 +170,7 @@ public class ImagePlusData implements JIPipeData, ColoredImagePlusData {
      * @return the duplicate
      */
     public ImagePlus getDuplicateImage() {
-        ImagePlus imp = getImage().duplicate();
+        ImagePlus imp = ImageJUtils.duplicate(getImage());
         imp.copyAttributes(getImage());
         return imp;
     }

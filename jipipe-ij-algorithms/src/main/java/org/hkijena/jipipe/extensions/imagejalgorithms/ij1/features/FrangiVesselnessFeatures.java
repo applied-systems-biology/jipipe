@@ -94,7 +94,7 @@ public class FrangiVesselnessFeatures extends JIPipeSimpleIteratingAlgorithm {
         ImagePlus img = inputData.getImage();
 
         if (invert) {
-            img = img.duplicate();
+            img = ImageJUtils.duplicate(img);
             ImageJUtils.forEachSlice(img, ImageProcessor::invert, progressInfo);
         }
 

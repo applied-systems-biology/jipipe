@@ -25,6 +25,7 @@ import org.hkijena.jipipe.api.nodes.JIPipeOutputSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleData;
+import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 
 @JIPipeDocumentation(name = "Remove border labels", description = "Sets all labels to zero that are connected to the image borders.")
 @JIPipeNode(menuPath = "Labels", nodeTypeCategory = ImagesNodeTypeCategory.class)
@@ -43,7 +44,7 @@ public class RemoveBorderLabelsAlgorithm extends JIPipeSimpleIteratingAlgorithm 
     @Override
     protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
         ImagePlus inputImage = dataBatch.getInputData(getFirstInputSlot(), ImagePlusGreyscaleData.class, progressInfo).getImage();
-        ImagePlus outputImage = inputImage.duplicate();
+        ImagePlus outputImage = ImageJUtils.duplicate(inputImage);
         outputImage.setTitle(inputImage.getTitle());
         LabelImages.removeBorderLabels(outputImage);
         outputImage.setDimensions(inputImage.getNChannels(), inputImage.getNSlices(), inputImage.getNFrames());

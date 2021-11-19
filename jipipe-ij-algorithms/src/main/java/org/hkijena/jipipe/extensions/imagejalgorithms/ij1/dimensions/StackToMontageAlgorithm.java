@@ -34,6 +34,7 @@ import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d2.ImagePlus2DData;
+import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.extensions.parameters.primitives.OptionalIntegerParameter;
 
 import java.awt.Color;
@@ -87,7 +88,7 @@ public class StackToMontageAlgorithm extends JIPipeIteratingAlgorithm {
             dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusData(imp), progressInfo);
             return;
         }
-        imp = imp.duplicate();
+        imp = ImageJUtils.duplicate(imp);
         boolean hyperstack = imp.isHyperStack();
         if (hyperstack && imp.getNSlices() > 1 && imp.getNFrames() > 1) {
             IJ.error("5D hyperstacks are not supported");

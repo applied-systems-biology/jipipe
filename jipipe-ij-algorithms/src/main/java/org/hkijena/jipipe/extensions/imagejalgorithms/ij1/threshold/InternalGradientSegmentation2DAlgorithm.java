@@ -104,7 +104,7 @@ public class InternalGradientSegmentation2DAlgorithm extends JIPipeSimpleIterati
 
     private void applyInternalGradient(ImagePlus img) {
         // Erode the original image
-        ImagePlus eroded = img.duplicate();
+        ImagePlus eroded = ImageJUtils.duplicate(img);
         RankFilters erosionFilter = new RankFilters();
         erosionFilter.rank(eroded.getProcessor(), internalGradientRadius, RankFilters.MIN); //TODO: Set element to octagon
 
@@ -124,7 +124,7 @@ public class InternalGradientSegmentation2DAlgorithm extends JIPipeSimpleIterati
 
         ImageJUtils.forEachIndexedSlice(img, (imp, index) -> {
             ImagePlus slice = new ImagePlus("slice", imp);
-            ImagePlus processedSlice = slice.duplicate();
+            ImagePlus processedSlice = ImageJUtils.duplicate(slice);
 
             // Apply CLAHE enhancer
             if (applyFirstCLAHE) {
