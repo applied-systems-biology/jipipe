@@ -1,12 +1,17 @@
 package org.hkijena.jipipe.api;
 
+import com.google.common.collect.BiMap;
+import com.google.common.collect.HashBiMap;
 import com.google.common.eventbus.EventBus;
-import gnu.trove.map.TObjectIntMap;
-import gnu.trove.map.hash.TObjectIntHashMap;
+import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
-import org.hkijena.jipipe.api.nodes.JIPipeAlgorithm;
+import org.hkijena.jipipe.api.data.JIPipeDataSlotInfo;
+import org.hkijena.jipipe.api.data.JIPipeSlotType;
 import org.hkijena.jipipe.api.nodes.JIPipeGraph;
+import org.hkijena.jipipe.api.nodes.JIPipeGraphEdge;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
+import org.jgrapht.graph.DefaultDirectedGraph;
+import org.jgrapht.graph.DefaultEdge;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -17,23 +22,39 @@ import java.util.Set;
 public class JIPipeGraphGCHelper {
     private final EventBus eventBus = new EventBus();
     private final JIPipeGraph graph;
-    private final TObjectIntMap<JIPipeDataSlot> slotScore = new TObjectIntHashMap<>();
+    private final DefaultDirectedGraph<JIPipeDataSlot, DefaultEdge> gcGraph;
     private final Set<JIPipeDataSlot> completedSlots = new HashSet<>();
-    private final Set<JIPipeDataSlot> flushedSlots = new HashSet<>();
+    private final BiMap<JIPipeGraphNode, JIPipeDataSlot> dummyNodes = HashBiMap.create();
 
     public JIPipeGraphGCHelper(JIPipeGraph graph) {
         this.graph = graph;
+        this.gcGraph = new DefaultDirectedGraph<>(DefaultEdge.class);
         initialize();
     }
 
     private void initialize() {
         for (JIPipeDataSlot node : graph.getSlotNodes()) {
-            if (node.isInput()) {
-                slotScore.put(node, graph.getGraph().inDegreeOf(node));
-            } else if (node.isOutput()) {
-                slotScore.put(node, graph.getGraph().outDegreeOf(node));
-            } else {
-                throw new UnsupportedOperationException("Unknown slot type!");
+            gcGraph.addVertex(node);
+        }
+        // Copy all edges. We only copy inter-node edges
+        for (JIPipeGraphEdge edge : graph.getGraph().edgeSet()) {
+            JIPipeDataSlot edgeSource = graph.getGraph().getEdgeSource(edge);
+            JIPipeDataSlot edgeTarget = graph.getGraph().getEdgeTarget(edge);
+            if(edgeSource.getNode() != edgeTarget.getNode()) {
+                gcGraph.addEdge(edgeSource, edgeTarget);
+            }
+        }
+        // We create a dummy node for each JIPipeGraphNode and apply connections there.
+        // This makes it easier to deal with nodes that have no inputs or outputs
+        for (JIPipeGraphNode graphNode : graph.getGraphNodes()) {
+            JIPipeDataSlot dummy = new JIPipeDataSlot(new JIPipeDataSlotInfo(JIPipeData.class, JIPipeSlotType.Output, "Dummy"), graphNode);
+            gcGraph.addVertex(dummy);
+            dummyNodes.put(graphNode, dummy);
+            for (JIPipeDataSlot inputSlot : graphNode.getInputSlots()) {
+                gcGraph.addEdge(inputSlot, dummy);
+            }
+            for (JIPipeDataSlot outputSlot : graphNode.getOutputSlots()) {
+                gcGraph.addEdge(dummy, outputSlot);
             }
         }
     }
@@ -44,41 +65,59 @@ public class JIPipeGraphGCHelper {
      */
     public void markAsCompleted(JIPipeDataSlot slot) {
         if(!completedSlots.contains(slot)) {
-            slotScore.put(slot, 0);
+            isolate(slot);
             completedSlots.add(slot);
-            eventBus.post(new SlotCompletedEvent(this, slot));
-        }
-    }
-
-    /**
-     * Marks a slot node as flushed (all outgoing/ingoing data transfers have been handled and data was flushed) by setting the usage counter to a negative value
-     * @param slot the slot
-     */
-    public void markAsFlushed(JIPipeDataSlot slot) {
-        if(!flushedSlots.contains(slot)) {
-            slotScore.put(slot, -1);
-            if(!completedSlots.contains(slot)) {
-                completedSlots.add(slot);
+            if(!dummyNodes.containsValue(slot)) {
                 eventBus.post(new SlotCompletedEvent(this, slot));
             }
-            flushedSlots.add(slot);
-            eventBus.post(new SlotFlushedEvent(this, slot));
+        }
+    }
+
+    private void isolate(JIPipeDataSlot slot) {
+        for (DefaultEdge edge : gcGraph.edgesOf(slot)) {
+            gcGraph.removeEdge(edge);
         }
     }
 
     /**
-     * Decrements the usage counter of the slot. Has no effect if the counter is zero or less.
+     * Checks the slot for completion (degree is zero)
      * @param slot the slot
      */
-    public void decrementUsageCounter(JIPipeDataSlot slot) {
-        int i = slotScore.get(slot);
-        if(i > 1) {
-            slotScore.put(slot, i - 1);
-        }
-        else if(i == 1) {
-            slotScore.put(slot, 0);
+    private void checkForCompletion(JIPipeDataSlot slot) {
+        if(gcGraph.degreeOf(slot) == 0 && !completedSlots.contains(slot)) {
             completedSlots.add(slot);
-            eventBus.post(new SlotCompletedEvent(this, slot));
+            if(!dummyNodes.containsValue(slot)) {
+                eventBus.post(new SlotCompletedEvent(this, slot));
+            }
+        }
+    }
+
+    /**
+     * Marks an output slot as used
+     * @param source the output slot
+     * @param target the input slot
+     */
+    public void markCopyOutputToInput(JIPipeDataSlot source, JIPipeDataSlot target) {
+        if(!source.isOutput()) {
+            throw new UnsupportedOperationException();
+        }
+        gcGraph.removeEdge(source, target);
+        checkForCompletion(source);
+    }
+
+    /**
+     * Marks a node as executed, marking inputs for GC
+     * @param node the node
+     */
+    public void markNodeExecuted(JIPipeGraphNode node) {
+        JIPipeDataSlot dummy = dummyNodes.get(node);
+        for (JIPipeDataSlot inputSlot : node.getInputSlots()) {
+            gcGraph.removeEdge(inputSlot, dummy);
+            checkForCompletion(inputSlot);
+        }
+        for (JIPipeDataSlot outputSlot : node.getOutputSlots()) {
+            gcGraph.removeEdge(dummy, outputSlot);
+            checkForCompletion(outputSlot);
         }
     }
 
@@ -89,14 +128,6 @@ public class JIPipeGraphGCHelper {
         for (JIPipeDataSlot slotNode : graph.getSlotNodes()) {
             markAsCompleted(slotNode);
         }
-    }
-
-    /**
-     * Decrements the usage counter of the slot. Has no effect if the counter is zero or less.
-     * @param slot the slot
-     */
-    public void incrementUsageCounter(JIPipeDataSlot slot) {
-        slotScore.increment(slot);
     }
 
     public EventBus getEventBus() {
@@ -125,21 +156,9 @@ public class JIPipeGraphGCHelper {
         return graph;
     }
 
-    /**
-     * Helper method for deactivation of a node
-     * @param node the node
-     */
-    public void deactivateNode(JIPipeGraphNode node) {
-        // Mark sources
-        for (JIPipeDataSlot inputSlot : node.getInputSlots()) {
-            for (JIPipeDataSlot sourceSlot : graph.getSourceSlots(inputSlot)) {
-                decrementUsageCounter(sourceSlot);
-            }
-        }
-        // Mark inputs as completed
-        for (JIPipeDataSlot inputSlot : node.getInputSlots()) {
-            markAsCompleted(inputSlot);
-        }
+    @Override
+    public String toString() {
+        return "Graph GC [" + gcGraph.vertexSet().size() + " vertices, " + gcGraph.edgeSet().size() + " edges]";
     }
 
     public static class SlotCompletedEvent {
@@ -147,24 +166,6 @@ public class JIPipeGraphGCHelper {
         private final JIPipeDataSlot slot;
 
         public SlotCompletedEvent(JIPipeGraphGCHelper source, JIPipeDataSlot slot) {
-            this.source = source;
-            this.slot = slot;
-        }
-
-        public JIPipeGraphGCHelper getSource() {
-            return source;
-        }
-
-        public JIPipeDataSlot getSlot() {
-            return slot;
-        }
-    }
-
-    public static class SlotFlushedEvent {
-        private final JIPipeGraphGCHelper source;
-        private final JIPipeDataSlot slot;
-
-        public SlotFlushedEvent(JIPipeGraphGCHelper source, JIPipeDataSlot slot) {
             this.source = source;
             this.slot = slot;
         }
