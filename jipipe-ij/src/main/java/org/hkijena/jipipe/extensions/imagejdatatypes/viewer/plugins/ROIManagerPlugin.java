@@ -9,14 +9,17 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ROIListData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageSliceIndex;
 import org.hkijena.jipipe.extensions.imagejdatatypes.viewer.ImageViewerPanel;
 import org.hkijena.jipipe.extensions.imagejdatatypes.viewer.RoiListCellRenderer;
+import org.hkijena.jipipe.extensions.settings.FileChooserSettings;
 import org.hkijena.jipipe.ui.components.ColorIcon;
 import org.hkijena.jipipe.ui.components.FormPanel;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
+import javax.swing.filechooser.FileNameExtensionFilter;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
+import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.HashSet;
@@ -69,13 +72,29 @@ public class ROIManagerPlugin extends ImageViewerPanelPlugin {
             return;
         FormPanel.GroupHeaderPanel headerPanel = formPanel.addGroupHeader("ROI", UIUtils.getIconFromResources("data-types/roi.png"));
         JButton importROIsButton = new JButton("Import", UIUtils.getIconFromResources("actions/document-import.png"));
-        importROIsButton.setToolTipText("Imports ROIs from the ImageJ ROI manager");
-        importROIsButton.addActionListener(e -> importROIs());
+        JPopupMenu importMenu = UIUtils.addPopupMenuToComponent(importROIsButton);
+
+        JMenuItem importFromManagerItem = new JMenuItem("Import from ImageJ ROI Manager", UIUtils.getIconFromResources("apps/imagej.png"));
+        importFromManagerItem.addActionListener(e -> importROIsFromManager());
+        importMenu.add(importFromManagerItem);
+
+        JMenuItem importFromFileItem = new JMenuItem("Import from file", UIUtils.getIconFromResources("actions/fileopen.png"));
+        importFromFileItem.addActionListener(e -> importROIsFromFile());
+        importMenu.add(importFromFileItem);
+
         headerPanel.addColumn(importROIsButton);
 
-        JButton exportROIsButton = new JButton(UIUtils.getIconFromResources("actions/document-export.png"));
-        exportROIsButton.setToolTipText("Exports ROIs to the ImageJ ROI manager");
-        exportROIsButton.addActionListener(e -> exportROIs());
+        JButton exportROIsButton = new JButton("Export", UIUtils.getIconFromResources("actions/document-export.png"));
+        JPopupMenu exportMenu = UIUtils.addPopupMenuToComponent(exportROIsButton);
+
+        JMenuItem exportToManagerItem = new JMenuItem("Export to ImageJ ROI Manager", UIUtils.getIconFromResources("apps/imagej.png"));
+        exportToManagerItem.addActionListener(e -> exportROIsToManager());
+        exportMenu.add(exportToManagerItem);
+
+        JMenuItem exportToFileItem = new JMenuItem("Export to file", UIUtils.getIconFromResources("actions/save.png"));
+        exportToFileItem.addActionListener(e -> exportROIsToFile());
+        exportMenu.add(exportToFileItem);
+
         headerPanel.addColumn(exportROIsButton);
 
         JPanel panel = new JPanel(new BorderLayout());
@@ -214,7 +233,29 @@ public class ROIManagerPlugin extends ImageViewerPanelPlugin {
 
         panel.add(viewToolBar, BorderLayout.SOUTH);
 
-        formPanel.addWideToForm(panel, null);
+        formPanel.addVerticalGlue(panel, null);
+    }
+
+    private void importROIsFromFile() {
+        Path path = FileChooserSettings.openFile(getViewerPanel(), FileChooserSettings.LastDirectoryKey.Data, "Import ROI", UIUtils.EXTENSION_FILTER_ROIS);
+        if(path != null) {
+            ROIListData importedROIs = ROIListData.loadRoiListFromFile(path);
+            importROIs(importedROIs);
+        }
+    }
+
+    private void exportROIsToFile() {
+        FileNameExtensionFilter[] fileNameExtensionFilters;
+        if(rois.size() == 1) {
+            fileNameExtensionFilters = new FileNameExtensionFilter[] { UIUtils.EXTENSION_FILTER_ROI, UIUtils.EXTENSION_FILTER_ROI_ZIP };
+        }
+        else {
+            fileNameExtensionFilters = new FileNameExtensionFilter[] { UIUtils.EXTENSION_FILTER_ROI_ZIP };
+        }
+        Path path = FileChooserSettings.saveFile(getViewerPanel(), FileChooserSettings.LastDirectoryKey.Data, "Export ROI", fileNameExtensionFilters);
+        if(path != null) {
+            rois.save(path);
+        }
     }
 
     @Override
@@ -386,11 +427,11 @@ public class ROIManagerPlugin extends ImageViewerPanelPlugin {
         updateROIJList();
     }
 
-    public void exportROIs() {
+    public void exportROIsToManager() {
         rois.addToRoiManager(RoiManager.getRoiManager());
     }
 
-    public void importROIs() {
+    public void importROIsFromManager() {
         for (Roi roi : RoiManager.getRoiManager().getRoisAsArray()) {
             rois.add((Roi) roi.clone());
         }

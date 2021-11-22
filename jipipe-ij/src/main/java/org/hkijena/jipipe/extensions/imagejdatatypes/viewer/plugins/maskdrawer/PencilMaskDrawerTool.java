@@ -17,6 +17,7 @@ import org.hkijena.jipipe.utils.ui.MousePressedEvent;
 import org.hkijena.jipipe.utils.ui.MouseReleasedEvent;
 
 import javax.swing.*;
+import java.awt.BorderLayout;
 import java.awt.Cursor;
 import java.awt.Graphics2D;
 import java.awt.Point;
@@ -33,12 +34,14 @@ public class PencilMaskDrawerTool extends MaskDrawerTool {
 
     public static int DEFAULT_SETTING_PENCIL_SIZE_X = 12;
     public static int DEFAULT_SETTING_PENCIL_SIZE_Y = 12;
+    public static boolean DEFAULT_SETTING_PENCIL_LINK_Y = true;
 
     private final Set<Point> interpolationPoints = new HashSet<>();
     private ImagePlus currentPencil;
     private BufferedImage currentPencilGhost;
     private JSpinner pencilSizeXSpinner;
     private JSpinner pencilSizeYSpinner;
+    private JToggleButton pencilSizeYLinkToggle;
     private JComboBox<PencilShape> pencilShapeSelection;
     private Point lastPencilPosition;
     private boolean isDrawing;
@@ -57,14 +60,22 @@ public class PencilMaskDrawerTool extends MaskDrawerTool {
         pencilSizeXSpinner = new JSpinner(pencilSizeXModel);
         SpinnerNumberModel pencilSizeYModel = new SpinnerNumberModel(DEFAULT_SETTING_PENCIL_SIZE_Y, 1, Integer.MAX_VALUE, 1);
         pencilSizeYSpinner = new JSpinner(pencilSizeYModel);
+        pencilSizeYLinkToggle = new JToggleButton(UIUtils.getIconFromResources("actions/edit-link.png"), DEFAULT_SETTING_PENCIL_LINK_Y);
+        UIUtils.makeFlat25x25(pencilSizeYLinkToggle);
 
         pencilSizeXModel.addChangeListener(e -> {
             DEFAULT_SETTING_PENCIL_SIZE_X = Math.max(1, pencilSizeXModel.getNumber().intValue());
+            if(pencilSizeYLinkToggle.isSelected()) {
+                pencilSizeYModel.setValue(pencilSizeXModel.getNumber());
+            }
             recalculatePencil();
         });
         pencilSizeYModel.addChangeListener(e -> {
             DEFAULT_SETTING_PENCIL_SIZE_Y = Math.max(1, pencilSizeYModel.getNumber().intValue());
             recalculatePencil();
+        });
+        pencilSizeYLinkToggle.addActionListener(e -> {
+            DEFAULT_SETTING_PENCIL_LINK_Y = pencilSizeYLinkToggle.isSelected();
         });
 
         pencilShapeSelection = new JComboBox<>(PencilShape.values());
@@ -105,7 +116,10 @@ public class PencilMaskDrawerTool extends MaskDrawerTool {
     public void createPalettePanel(FormPanel formPanel) {
         formPanel.addToForm(pencilShapeSelection, new JLabel("Pencil type"), null);
         formPanel.addToForm(pencilSizeXSpinner, new JLabel("Pencil width"), null);
-        formPanel.addToForm(pencilSizeYSpinner, new JLabel("Pencil height"), null);
+        JPanel sizeYPanel = new JPanel(new BorderLayout());
+        sizeYPanel.add(pencilSizeYLinkToggle, BorderLayout.WEST);
+        sizeYPanel.add(pencilSizeYSpinner, BorderLayout.CENTER);
+        formPanel.addToForm(sizeYPanel, new JLabel("Pencil height"), null);
     }
 
     private void recalculatePencilGhost() {

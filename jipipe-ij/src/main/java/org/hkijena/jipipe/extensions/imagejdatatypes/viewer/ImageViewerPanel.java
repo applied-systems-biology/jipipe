@@ -642,7 +642,9 @@ public class ImageViewerPanel extends JPanel{
             plugin.createPalettePanel(formPanel);
         }
         for (Map.Entry<String, FormPanel> entry : formPanels.entrySet()) {
-            entry.getValue().addVerticalGlue();
+            if(!entry.getValue().isHasVerticalGlue()) {
+                entry.getValue().addVerticalGlue();
+            }
             SwingUtilities.invokeLater(() -> {
                 entry.getValue().getScrollPane().getVerticalScrollBar().setValue(scrollValues.getOrDefault(entry.getKey(), 0));
             });

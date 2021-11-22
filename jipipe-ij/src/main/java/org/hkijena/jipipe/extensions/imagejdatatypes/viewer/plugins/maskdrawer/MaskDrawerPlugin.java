@@ -67,6 +67,7 @@ public class MaskDrawerPlugin extends ImageViewerPanelPlugin {
     private JCheckBox showGuidesToggle = new JCheckBox("Show guide lines", true);
     private ButtonGroup toolButtonGroup = new ButtonGroup();
     private Function<ImagePlus, ImagePlus> maskGenerator;
+    private FormPanel.GroupHeaderPanel currentGroupHeader;
 
     public MaskDrawerPlugin(ImageViewerPanel viewerPanel) {
         super(viewerPanel);
@@ -232,6 +233,7 @@ public class MaskDrawerPlugin extends ImageViewerPanelPlugin {
             return;
         }
         FormPanel.GroupHeaderPanel groupHeader = formPanel.addGroupHeader("Draw mask", UIUtils.getIconFromResources("actions/draw-brush.png"));
+        this.currentGroupHeader = groupHeader;
         if (mask != null && mask.getStackSize() > 1) {
             JButton copySliceButton = new JButton("Copy slice to ...", UIUtils.getIconFromResources("actions/edit-copy.png"));
             copySliceButton.addActionListener(e -> copySlice());
@@ -243,7 +245,14 @@ public class MaskDrawerPlugin extends ImageViewerPanelPlugin {
         formPanel.addToForm(colorSelectionPanel, new JLabel("Color"), null);
         formPanel.addToForm(highlightColorButton, new JLabel("Highlight color"), null);
         formPanel.addToForm(maskColorButton, new JLabel("Mask color"), null);
+    }
 
+    /**
+     * The current group header created by  createPalettePanel. Use this for adding your own buttons into createPalettePanel
+     * @return the current group header. can be null
+     */
+    public FormPanel.GroupHeaderPanel getCurrentGroupHeader() {
+        return currentGroupHeader;
     }
 
     private void copySlice() {
@@ -415,6 +424,14 @@ public class MaskDrawerPlugin extends ImageViewerPanelPlugin {
 
     public ImageProcessor getCurrentMaskSlice() {
         return currentMaskSlice;
+    }
+
+    public void clearCurrentMask() {
+        if(getCurrentMaskSlice() != null) {
+            getCurrentMaskSlice().setColor(0);
+            getCurrentMaskSlice().fillRect(0,0, getCurrentMaskSlice().getWidth(), getCurrentMaskSlice().getHeight());
+            recalculateMaskPreview();
+        }
     }
 
     @Override

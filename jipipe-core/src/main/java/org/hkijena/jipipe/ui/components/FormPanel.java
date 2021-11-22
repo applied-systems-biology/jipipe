@@ -76,6 +76,7 @@ public class FormPanel extends JXPanel {
     private ArrayDeque<FutureComponent> infiniteScrollingQueue = new ArrayDeque<>();
 
     private boolean withDocumentation;
+    private boolean hasVerticalGlue;
 
     /**
      * Creates a new instance
@@ -144,6 +145,10 @@ public class FormPanel extends JXPanel {
 
     public boolean isWithDocumentation() {
         return withDocumentation;
+    }
+
+    public boolean isHasVerticalGlue() {
+        return hasVerticalGlue;
     }
 
     private void switchToDefaultHelp() {
@@ -353,6 +358,7 @@ public class FormPanel extends JXPanel {
             }
         });
         ++numRows;
+        hasVerticalGlue = true;
     }
 
     /**
@@ -374,6 +380,7 @@ public class FormPanel extends JXPanel {
         infiniteScrollingQueue.clear();
         contentPanel.removeAll();
         numRows = 0;
+        hasVerticalGlue = false;
         revalidate();
         repaint();
     }
@@ -398,14 +405,16 @@ public class FormPanel extends JXPanel {
                 anchor = GridBagConstraints.WEST;
                 gridx = 0;
                 gridy = numRows;
-                fill = GridBagConstraints.VERTICAL;
+                fill = GridBagConstraints.BOTH;
                 gridwidth = 2;
                 weightx = 1;
                 weighty = 1;
+                insets = UI_PADDING;
             }
         });
         documentComponent(component, document);
         ++numRows;
+        hasVerticalGlue = true;
     }
 
     /**
