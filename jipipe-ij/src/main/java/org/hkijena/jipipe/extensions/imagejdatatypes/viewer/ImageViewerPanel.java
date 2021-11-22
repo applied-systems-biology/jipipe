@@ -70,7 +70,7 @@ public class ImageViewerPanel extends JPanel{
     private final JButton zoomStatusButton = new JButton();
     private final ImageViewerUISettings settings;
     private ImagePlus image;
-    private ImageProcessor slice;
+    private ImageProcessor currentSlice;
     private ImageStatistics statistics;
     private ImageViewerPanelCanvas canvas;
     private JLabel stackSliderLabel = new JLabel("Slice (Z)");
@@ -597,7 +597,7 @@ public class ImageViewerPanel extends JPanel{
 
     public void setImage(ImagePlus image) {
         this.image = image;
-        this.slice = null;
+        this.currentSlice = null;
         if (image != null) {
             this.statistics = image.getStatistics();
         } else {
@@ -741,7 +741,7 @@ public class ImageViewerPanel extends JPanel{
             channelSliderLabel.setText(String.format("Channel (C) %d/%d", channel, image.getNChannels()));
 //            System.out.println("bps: " + image.getDisplayRangeMin() + ", " + image.getDisplayRangeMax());
             image.setPosition(channel, stack, frame);
-            this.slice = image.getProcessor();
+            this.currentSlice = image.getProcessor();
             this.statistics = image.getStatistics();
             for (ImageViewerPanelPlugin plugin : plugins) {
 //                System.out.println(plugin + ": " + image.getDisplayRangeMin() + ", " + image.getDisplayRangeMax());
@@ -758,7 +758,7 @@ public class ImageViewerPanel extends JPanel{
             plugin.beforeDraw(c, z, t);
         }
 //        System.out.println(Arrays.stream(image.getLuts()).map(Object::toString).collect(Collectors.joining(" ")));
-        ImageProcessor processor = image.getProcessor();
+        ImageProcessor processor = image.getProcessor().duplicate();
         for (ImageViewerPanelPlugin plugin : plugins) {
             processor = plugin.draw(c, z, t, processor);
         }
@@ -791,6 +791,7 @@ public class ImageViewerPanel extends JPanel{
                 canvas.setImage(null);
                 return;
             }
+            System.out.println("tg " + processor.getMin() + ", " + processor.getMax());
             canvas.setImage(processor.getBufferedImage());
         } else {
             canvas.setImage(null);
@@ -811,8 +812,8 @@ public class ImageViewerPanel extends JPanel{
         }
     }
 
-    public ImageProcessor getSlice() {
-        return slice;
+    public ImageProcessor getCurrentSlice() {
+        return currentSlice;
     }
 
     public ImageStatistics getStatistics() {

@@ -1,7 +1,7 @@
 package org.hkijena.jipipe.extensions.imagejdatatypes.viewer.plugins;
 
-import ij.ImagePlus;
 import ij.process.ImageProcessor;
+import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.extensions.imagejdatatypes.viewer.ImageViewerPanel;
 import org.hkijena.jipipe.extensions.imagejdatatypes.viewer.ImageViewerPanelDisplayRangeControl;
 import org.hkijena.jipipe.ui.components.FormPanel;
@@ -27,7 +27,7 @@ public class CalibrationPlugin extends GeneralImageViewerPanelPlugin {
         calibrationModes.setSelectedItem(ImageJCalibrationMode.AutomaticImageJ);
         displayRangeCalibrationControl = new ImageViewerPanelDisplayRangeControl(this);
         calibrationModes.addActionListener(e -> {
-            displayRangeCalibrationControl.applyCalibration(true);
+            uploadSliceToCanvas();
         });
 //        autoCalibrateButton.addActionListener(e -> {
 //            if (autoCalibrateButton.isSelected()) {
@@ -42,7 +42,7 @@ public class CalibrationPlugin extends GeneralImageViewerPanelPlugin {
 
     @Override
     public void onImageChanged() {
-        displayRangeCalibrationControl.applyCalibration(false);
+        displayRangeCalibrationControl.updateSliders(true);
     }
 
     @Override
@@ -55,18 +55,20 @@ public class CalibrationPlugin extends GeneralImageViewerPanelPlugin {
 
     @Override
     public ImageProcessor draw(int c, int z, int t, ImageProcessor processor) {
+        ImageJUtils.calibrate(processor, getSelectedCalibration(), displayRangeCalibrationControl.getCustomMin(), displayRangeCalibrationControl.getCustomMax());
         return processor;
     }
 
     @Override
     public void onSliceChanged() {
-        displayRangeCalibrationControl.applyCalibration(false);
+        displayRangeCalibrationControl.updateSliders(false);
+//        displayRangeCalibrationControl.applyCalibration(false);
 //        displayRangeCalibrationControl.updateSliders();
     }
 
     @Override
     public void beforeDraw(int c, int z, int t) {
-        displayRangeCalibrationControl.applyCalibration(false);
+//        displayRangeCalibrationControl.applyCalibration(false);
     }
 
     public ImageJCalibrationMode getSelectedCalibration() {
@@ -77,9 +79,6 @@ public class CalibrationPlugin extends GeneralImageViewerPanelPlugin {
         calibrationModes.setSelectedItem(mode);
     }
 
-    public void applyCalibrationTo(ImagePlus foreign) {
-        displayRangeCalibrationControl.applyCalibration(foreign);
-    }
 
 //    public void disableAutoCalibration() {
 //        autoCalibrateButton.setSelected(false);

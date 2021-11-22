@@ -45,7 +45,7 @@ public class PixelInfoPlugin extends GeneralImageViewerPanelPlugin {
                 } else {
                     String value = "";
                     try {
-                        ImageProcessor slice = getViewerPanel().getSlice();
+                        ImageProcessor slice = getViewerPanel().getCurrentSlice();
                         if (slice != null) {
                             if (slice instanceof ColorProcessor) {
                                 Color color = ((ColorProcessor) slice).getColor(coordinate.x, coordinate.y);

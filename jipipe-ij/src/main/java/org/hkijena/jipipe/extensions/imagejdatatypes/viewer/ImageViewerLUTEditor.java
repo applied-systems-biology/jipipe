@@ -331,7 +331,6 @@ public class ImageViewerLUTEditor extends JPanel implements ThumbListener {
             updateFromStop(-1, Color.black);
             return;
         }
-        float pos = slider.getModel().getThumbAt(thumb).getPosition();
         Color color = slider.getModel().getThumbAt(thumb).getObject();
         updateFromStop(thumb, color);
         updateDeleteButtons();
@@ -349,15 +348,16 @@ public class ImageViewerLUTEditor extends JPanel implements ThumbListener {
         ImagePlus image = imageViewerPanel.getImage();
         if (image != null && image.getType() != ImagePlus.COLOR_RGB) {
             if (targetChannel < image.getNChannels()) {
-                if (image instanceof CompositeImage) {
-                    CompositeImage compositeImage = (CompositeImage) image;
-                    compositeImage.setChannelLut(getLUT(), targetChannel + 1);
-                }
-                int c = image.getC();
-                if (c == targetChannel + 1) {
-                    image.setLut(getLUT());
-                    imageViewerPanel.uploadSliceToCanvas();
-                }
+//                if (image instanceof CompositeImage) {
+//                    CompositeImage compositeImage = (CompositeImage) image;
+//                    compositeImage.setChannelLut(getLUT(), targetChannel + 1);
+//                }
+//                int c = image.getC();
+//                if (c == targetChannel + 1) {
+//                    image.setLut(getLUT());
+//                    imageViewerPanel.uploadSliceToCanvas();
+//                }
+                imageViewerPanel.uploadSliceToCanvas();
             }
         }
     }

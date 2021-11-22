@@ -33,6 +33,10 @@ public abstract class ImageViewerPanelPlugin {
         return viewerPanel.getImage();
     }
 
+    public ImageProcessor getCurrentSlice() {
+        return viewerPanel.getCurrentSlice();
+    }
+
     /**
      * Called when the current image is changed
      */

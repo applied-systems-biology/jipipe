@@ -75,7 +75,7 @@ public class MeasurementPlugin extends ImageViewerPanelPlugin implements JIPipeP
             showNoMeasurements();
             return;
         }
-        if (getViewerPanel().getSlice() == null) {
+        if (getViewerPanel().getCurrentSlice() == null) {
             showNoMeasurements();
             return;
         }
@@ -93,7 +93,7 @@ public class MeasurementPlugin extends ImageViewerPanelPlugin implements JIPipeP
         }
         ROIListData data = new ROIListData();
         data.add(roi);
-        ResultsTableData measurements = data.measure(new ImagePlus("Reference", getViewerPanel().getSlice()),
+        ResultsTableData measurements = data.measure(new ImagePlus("Reference", getViewerPanel().getCurrentSlice()),
                 statistics, false);
         if (measurements.getRowCount() != 1) {
             showNoMeasurements();

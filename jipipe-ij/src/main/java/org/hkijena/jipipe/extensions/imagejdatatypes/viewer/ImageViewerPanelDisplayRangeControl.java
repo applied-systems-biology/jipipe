@@ -13,10 +13,8 @@
 
 package org.hkijena.jipipe.extensions.imagejdatatypes.viewer;
 
-import ij.ImagePlus;
 import ij.process.ImageProcessor;
 import ij.process.ImageStatistics;
-import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.extensions.imagejdatatypes.viewer.plugins.CalibrationPlugin;
 import org.hkijena.jipipe.ui.theme.ModernMetalTheme;
 import org.hkijena.jipipe.utils.ImageJCalibrationMode;
@@ -133,38 +131,33 @@ public class ImageViewerPanelDisplayRangeControl extends JPanel implements Thumb
         add(toolbar, BorderLayout.NORTH);
     }
 
-    public void updateSliders() {
-        isUpdating = true;
-        if (calibrationPlugin.getCurrentImage().getImage() != null) {
-            double displayRangeMin = calibrationPlugin.getCurrentImage().getDisplayRangeMin();
-            double displayRangeMax = calibrationPlugin.getCurrentImage().getDisplayRangeMax();
-            ImageStatistics statistics = calibrationPlugin.getViewerPanel().getStatistics();
-            if (statistics == null)
-                return;
-            double min = statistics.min;
-            double max = statistics.max;
-            double positionMin = Math.min(1, Math.max(0, displayRangeMin - min) / (max - min));
-            double positionMax = Math.min(1, Math.max(0, displayRangeMax - min) / (max - min));
-            slider.getModel().getThumbAt(0).setPosition((float) positionMin);
-            slider.getModel().getThumbAt(1).setPosition((float) positionMax);
+    public void updateSliders(boolean clearCustom) {
+        if(clearCustom || getCalibrationPlugin().getSelectedCalibration() != ImageJCalibrationMode.Custom) {
+            isUpdating = true;
+            if (getCalibrationPlugin().getCurrentSlice() != null) {
+                double displayRangeMin = getCalibrationPlugin().getCurrentSlice().getMin();
+                double displayRangeMax = getCalibrationPlugin().getCurrentSlice().getMax();
+                ImageStatistics statistics = getCalibrationPlugin().getCurrentSlice().getStats();
+                if (statistics == null)
+                    return;
+                double min = statistics.min;
+                double max = statistics.max;
+                double positionMin = Math.min(1, Math.max(0, displayRangeMin - min) / (max - min));
+                double positionMax = Math.min(1, Math.max(0, displayRangeMax - min) / (max - min));
+                slider.getModel().getThumbAt(0).setPosition((float) positionMin);
+                slider.getModel().getThumbAt(1).setPosition((float) positionMax);
+            }
+            isUpdating = false;
         }
-        isUpdating = false;
         slider.repaint();
     }
 
-    public void applyCalibration(ImagePlus foreign) {
-        ImageJUtils.calibrate(foreign, calibrationPlugin.getSelectedCalibration(), customMin, customMax);
+    public double getCustomMin() {
+        return customMin;
     }
 
-    public void applyCalibration(boolean upload) {
-//        System.out.println("Calibrate");
-        if (calibrationPlugin.getCurrentImage() != null && calibrationPlugin.getCurrentImage().getType() != ImagePlus.COLOR_RGB) {
-            ImageJUtils.calibrate(calibrationPlugin.getCurrentImage(), calibrationPlugin.getSelectedCalibration(), customMin, customMax);
-//            System.out.println("AC:" + calibrationPlugin.getCurrentImage().getDisplayRangeMin() + ", " + calibrationPlugin.getCurrentImage().getDisplayRangeMax());
-            updateSliders();
-            if (upload)
-                calibrationPlugin.uploadSliceToCanvas();
-        }
+    public double getCustomMax() {
+        return customMax;
     }
 
     @Override
@@ -174,7 +167,8 @@ public class ImageViewerPanelDisplayRangeControl extends JPanel implements Thumb
 
     private void applyCustomCalibration() {
         if (!isUpdating) {
-            ImageStatistics statistics = calibrationPlugin.getViewerPanel().getStatistics();
+            ImageProcessor currentSlice = getCalibrationPlugin().getCurrentSlice();
+            ImageStatistics statistics = currentSlice.getStats();
             double min = statistics.min;
             double max = statistics.max;
             double diff = max - min;
@@ -271,7 +265,7 @@ public class ImageViewerPanelDisplayRangeControl extends JPanel implements Thumb
             g.setColor(UIManager.getColor("Button.borderColor"));
             g.drawLine(0, h, w + 2 * ThumbRenderer.SIZE, h);
             g.setColor(COLOR_SELECTED);
-            ImageProcessor slice = imageViewerPanelDisplayRangeControl.getCalibrationPlugin().getViewerPanel().getSlice();
+            ImageProcessor slice = imageViewerPanelDisplayRangeControl.getCalibrationPlugin().getViewerPanel().getCurrentSlice();
             ImageStatistics statistics = imageViewerPanelDisplayRangeControl.getCalibrationPlugin().getViewerPanel().getStatistics();
             if (statistics != null && slice != null) {
                 long[] histogram = statistics.getHistogram();
