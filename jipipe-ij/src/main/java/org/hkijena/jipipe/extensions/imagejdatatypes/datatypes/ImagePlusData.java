@@ -32,14 +32,17 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.color.RGBColorSpace;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.color.ColoredImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.display.CachedImagePlusDataViewerWindow;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
+import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageSliceIndex;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageSource;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.utils.PathUtils;
 
 import javax.swing.*;
+import java.awt.Color;
 import java.awt.Component;
 import java.awt.image.BufferedImage;
 import java.nio.file.Path;
+import java.util.Collections;
 
 /**
  * ImageJ image
@@ -204,6 +207,26 @@ public class ImagePlusData implements JIPipeData, ColoredImagePlusData {
             int imageWidth = (int) (image.getWidth() * factor);
             int imageHeight = (int) (image.getHeight() * factor);
             ImagePlus rgbImage = ImageJUtils.channelsToRGB(image);
+
+            // ROI rendering
+            if(image.getRoi() != null) {
+                rgbImage = ImageJUtils.convertToColorRGBIfNeeded(rgbImage);
+                ROIListData rois = new ROIListData();
+                rois.add(image.getRoi());
+                rois.draw(rgbImage.getProcessor(),
+                        new ImageSliceIndex(0,0,0),
+                        false,
+                        false,
+                        false,
+                        true,
+                        false,
+                        false,
+                        1,
+                        Color.RED,
+                        Color.YELLOW,
+                        Collections.emptyList());
+            }
+
             ImageProcessor resized = rgbImage.getProcessor().resize(imageWidth, imageHeight, smooth);
             BufferedImage bufferedImage = resized.getBufferedImage();
             return new JLabel(new ImageIcon(bufferedImage));

@@ -66,17 +66,21 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.ImageJDataTypesSettings;
 import org.hkijena.jipipe.extensions.imagejdatatypes.display.CachedImagePlusDataViewerWindow;
 import org.hkijena.jipipe.extensions.imagejdatatypes.parameters.OMEExporterSettings;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
+import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageSliceIndex;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ROIHandler;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.utils.PathUtils;
 
 import javax.swing.*;
+import java.awt.Color;
 import java.awt.Component;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -103,7 +107,38 @@ public class OMEImageData implements JIPipeData {
 
     @Override
     public Component preview(int width, int height) {
-        return new ImagePlusData(image).preview(width, height);
+        if (image != null) {
+            double factorX = 1.0 * width / image.getWidth();
+            double factorY = 1.0 * height / image.getHeight();
+            double factor = Math.max(factorX, factorY);
+            boolean smooth = factor < 0;
+            int imageWidth = (int) (image.getWidth() * factor);
+            int imageHeight = (int) (image.getHeight() * factor);
+            ImagePlus rgbImage = ImageJUtils.channelsToRGB(image);
+
+            // ROI rendering
+            if(rois != null && !rois.isEmpty()) {
+                rgbImage = ImageJUtils.convertToColorRGBIfNeeded(rgbImage);
+                rois.draw(rgbImage.getProcessor(),
+                        new ImageSliceIndex(0,0,0),
+                        false,
+                        false,
+                        false,
+                        true,
+                        false,
+                        false,
+                        1,
+                        Color.RED,
+                        Color.YELLOW,
+                        Collections.emptyList());
+            }
+
+            ImageProcessor resized = rgbImage.getProcessor().resize(imageWidth, imageHeight, smooth);
+            BufferedImage bufferedImage = resized.getBufferedImage();
+            return new JLabel(new ImageIcon(bufferedImage));
+        } else {
+            return new JLabel("N/A");
+        }
     }
 
     public ImagePlus getImage() {
