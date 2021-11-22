@@ -594,8 +594,10 @@ public class JIPipeMergingDataBatchBuilder {
         for (JIPipeMergingDataBatch batch : mergingDataBatches) {
             JIPipeDataBatch singleBatch = new JIPipeDataBatch(batch.getNode());
             for (Map.Entry<JIPipeDataSlot, Set<Integer>> entry : batch.getInputSlotRows().entrySet()) {
-                if (entry.getValue().size() != 1)
+                if (entry.getValue().size() > 1)
                     return null;
+                if(entry.getValue().isEmpty())
+                    continue;
                 int targetRow = entry.getValue().iterator().next();
                 singleBatch.setInputData(entry.getKey(), targetRow);
                 singleBatch.setGlobalAnnotations(batch.getGlobalAnnotations());
