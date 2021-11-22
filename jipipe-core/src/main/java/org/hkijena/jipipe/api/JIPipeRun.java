@@ -259,7 +259,9 @@ public class JIPipeRun implements JIPipeRunnable {
                         "Do not click 'Cancel' if you do not want to cancel the execution.");
             JIPipeDataSlot slot = traversedSlots.get(index);
             progressInfo.setProgress(index + preprocessorNodes.size(), traversedSlots.size());
-            progressInfo.log(slot.getDisplayName());
+            if(!unExecutableAlgorithms.contains(slot.getNode())) {
+                progressInfo.log(slot.getDisplayName());
+            }
 
 //            // If an algorithm cannot be executed, skip it automatically
 //            if (unExecutableAlgorithms.contains(slot.getNode())) {
