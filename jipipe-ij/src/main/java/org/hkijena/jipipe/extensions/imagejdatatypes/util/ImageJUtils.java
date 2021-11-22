@@ -1147,7 +1147,7 @@ public class ImageJUtils {
             ((ColorProcessor) imp).setMinAndMax(min, max, channels);
         }
         else {
-            System.out.println(min + ", " + max);
+//            System.out.println(min + ", " + max);
             imp.setMinAndMax(min, max);
         }
     }

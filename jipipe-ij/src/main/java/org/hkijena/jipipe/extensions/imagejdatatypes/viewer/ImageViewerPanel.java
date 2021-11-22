@@ -791,7 +791,7 @@ public class ImageViewerPanel extends JPanel{
                 canvas.setImage(null);
                 return;
             }
-            System.out.println("tg " + processor.getMin() + ", " + processor.getMax());
+//            System.out.println("tg " + processor.getMin() + ", " + processor.getMax());
             canvas.setImage(processor.getBufferedImage());
         } else {
             canvas.setImage(null);
