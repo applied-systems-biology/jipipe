@@ -16,7 +16,7 @@ See the LICENSE file provided with this code for the full license.
     <packaging>pom</packaging>
     <groupId>org.hkijena</groupId>
     <artifactId>pom-jipipe</artifactId>
-    <version>1.49.1</version>
+    <version>1.50.0</version>
     <name>jipipe</name>
     <description>JIPipe</description>
     <url>https://www.jipipe.org/</url>

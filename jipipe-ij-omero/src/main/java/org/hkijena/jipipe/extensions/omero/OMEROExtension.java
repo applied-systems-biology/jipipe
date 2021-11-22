@@ -101,6 +101,6 @@ public class OMEROExtension extends JIPipePrepackagedDefaultJavaExtension {
 
     @Override
     public String getDependencyVersion() {
-        return "1.49.1";
+        return "1.50.0";
     }
 }
