@@ -61,6 +61,7 @@ public class PencilMaskDrawerTool extends MaskDrawerTool {
         SpinnerNumberModel pencilSizeYModel = new SpinnerNumberModel(DEFAULT_SETTING_PENCIL_SIZE_Y, 1, Integer.MAX_VALUE, 1);
         pencilSizeYSpinner = new JSpinner(pencilSizeYModel);
         pencilSizeYLinkToggle = new JToggleButton(UIUtils.getIconFromResources("actions/edit-link.png"), DEFAULT_SETTING_PENCIL_LINK_Y);
+        pencilSizeYLinkToggle.setToolTipText("Keep the Y size the same as the X size");
         UIUtils.makeFlat25x25(pencilSizeYLinkToggle);
 
         pencilSizeXModel.addChangeListener(e -> {
@@ -76,6 +77,9 @@ public class PencilMaskDrawerTool extends MaskDrawerTool {
         });
         pencilSizeYLinkToggle.addActionListener(e -> {
             DEFAULT_SETTING_PENCIL_LINK_Y = pencilSizeYLinkToggle.isSelected();
+            if(pencilSizeYLinkToggle.isSelected()) {
+                pencilSizeYModel.setValue(pencilSizeXModel.getNumber());
+            }
         });
 
         pencilShapeSelection = new JComboBox<>(PencilShape.values());
