@@ -33,6 +33,7 @@ import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Polygon;
+import java.awt.RenderingHints;
 import java.awt.event.MouseEvent;
 
 public class ImageViewerPanelDisplayRangeControl extends JPanel implements ThumbListener {
@@ -53,8 +54,8 @@ public class ImageViewerPanelDisplayRangeControl extends JPanel implements Thumb
         trackRenderer = new TrackRenderer(this);
         initializeToolbar();
         slider = new JXMultiThumbSlider<>();
-        slider.setPreferredSize(new Dimension(100, 64));
-        slider.setMinimumSize(new Dimension(100, 64));
+        slider.setPreferredSize(new Dimension(100, 72));
+        slider.setMinimumSize(new Dimension(100, 72));
         slider.setOpaque(true);
         slider.setTrackRenderer(trackRenderer);
         slider.setThumbRenderer(new ThumbRenderer());
@@ -69,16 +70,66 @@ public class ImageViewerPanelDisplayRangeControl extends JPanel implements Thumb
 
     private void initializeToolbar() {
         JPanel toolbar = new JPanel();
-        toolbar.setBorder(BorderFactory.createEmptyBorder(0, 0, 2, 0));
+        toolbar.setBorder(BorderFactory.createEmptyBorder(0, 0, 5, 0));
         toolbar.setLayout(new BoxLayout(toolbar, BoxLayout.X_AXIS));
+
+        JButton setMinButton = new JButton("set min");
+        setMinButton.setBorder(BorderFactory.createLineBorder(Color.GRAY, 1));
+        setMinButton.addActionListener(e -> {
+            if (calibrationPlugin.getCurrentImage().getImage() != null) {
+                int value;
+                int min = 0;
+                int max = 0;
+                ImageStatistics statistics = calibrationPlugin.getViewerPanel().getStatistics();
+                if (statistics != null) {
+                   min = (int) statistics.min;
+                   max = (int) statistics.max;
+                }
+                value = (int) (min + slider.getModel().getThumbAt(0).getPosition() * (max - min));
+                Integer newValue = UIUtils.getIntegerByDialog(getCalibrationPlugin().getViewerPanel(), "Set min display value", "Please enter the new value:", value, min, max);
+                if (newValue != null) {
+                    float position = (newValue.floatValue() - min) / (max - min);
+                    slider.getModel().getThumbAt(0).setPosition(Math.max(0, Math.min(position, 1)));
+                }
+            }
+        });
+        toolbar.add(Box.createHorizontalStrut(2));
+        toolbar.add(setMinButton);
+
+        JButton setMaxButton = new JButton("set max");
+        setMaxButton.setBorder(BorderFactory.createLineBorder(Color.GRAY, 1));
+        setMaxButton.addActionListener(e -> {
+            if (calibrationPlugin.getCurrentImage().getImage() != null) {
+                int value;
+                int min = 0;
+                int max = 0;
+                ImageStatistics statistics = calibrationPlugin.getViewerPanel().getStatistics();
+                if (statistics != null) {
+                    min = (int) statistics.min;
+                    max = (int) statistics.max;
+                }
+                value = (int) (min + slider.getModel().getThumbAt(1).getPosition() * (max - min));
+                Integer newValue = UIUtils.getIntegerByDialog(getCalibrationPlugin().getViewerPanel(), "Set max display value", "Please enter the new value:", value, min, max);
+                if (newValue != null) {
+                    float position = (newValue.floatValue() - min) / (max - min);
+                    slider.getModel().getThumbAt(1).setPosition(Math.max(0, Math.min(position, 1)));
+                }
+            }
+        });
+        toolbar.add(Box.createHorizontalStrut(2));
+        toolbar.add(setMaxButton);
+
         toolbar.add(Box.createHorizontalGlue());
-        JToggleButton logarithmicHistogramToggle = new JToggleButton(UIUtils.getIconFromResources("actions/logarithm.png"));
+
+        JToggleButton logarithmicHistogramToggle = new JToggleButton("log");
+        logarithmicHistogramToggle.setBorder(BorderFactory.createLineBorder(Color.GRAY, 1));
         logarithmicHistogramToggle.setSelected(trackRenderer.isLogarithmic());
         logarithmicHistogramToggle.addActionListener(e -> {
             trackRenderer.setLogarithmic(logarithmicHistogramToggle.isSelected());
             repaint();
         });
         toolbar.add(logarithmicHistogramToggle);
+
         add(toolbar, BorderLayout.NORTH);
     }
 
@@ -212,8 +263,9 @@ public class ImageViewerPanelDisplayRangeControl extends JPanel implements Thumb
         @Override
         protected void paintComponent(Graphics gfx) {
             Graphics2D g = (Graphics2D) gfx;
+            g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
             int w = slider.getWidth() - 2 * ThumbRenderer.SIZE;
-            int h = slider.getHeight() - 16;
+            int h = slider.getHeight() - 22;
             g.setColor(getBackground());
             g.fillRect(0, 0, slider.getWidth(), slider.getHeight());
             g.setColor(UIManager.getColor("Button.borderColor"));
@@ -257,11 +309,22 @@ public class ImageViewerPanelDisplayRangeControl extends JPanel implements Thumb
                 }
             }
             g.setColor(UIManager.getColor("Label.foreground"));
+            double min = 0;
+            double max = 0;
+            if(statistics != null) {
+                min = statistics.min;
+                max = statistics.max;
+            }
             for (int i = 0; i < 2; i++) {
                 Thumb<DisplayRangeStop> thumb = slider.getModel().getThumbAt(i);
                 float position = Math.max(0, Math.min(thumb.getPosition(), 1));
                 int x = ThumbRenderer.SIZE - 1 + (int) (w * position);
                 g.fillRect(x, 4, 2, h + 4);
+                if(statistics != null) {
+                    int value = (int) (min + thumb.getPosition() * (max - min));
+                    int stringWidth = g.getFontMetrics().stringWidth(value + "");
+                    g.drawString("" + value, Math.max(0, Math.min(w - stringWidth, x - (stringWidth / 2))), h + 18);
+                }
             }
         }
 
