@@ -80,19 +80,17 @@ public class ImageViewerPanelDisplayRangeControl extends JPanel implements Thumb
         setMinButton.setBorder(BorderFactory.createLineBorder(Color.GRAY, 1));
         setMinButton.addActionListener(e -> {
             if (calibrationPlugin.getCurrentImage().getImage() != null) {
-                int value;
-                int min = 0;
-                int max = 0;
-                ImageStatistics statistics = calibrationPlugin.getViewerPanel().getStatistics();
-                if (statistics != null) {
-                   min = (int) statistics.min;
-                   max = (int) statistics.max;
-                }
-                value = (int) (min + slider.getModel().getThumbAt(0).getPosition() * (max - min));
-                Integer newValue = UIUtils.getIntegerByDialog(getCalibrationPlugin().getViewerPanel(), "Set min display value", "Please enter the new value:", value, min, max);
+                int value = (int) (minSelectableValue + slider.getModel().getThumbAt(0).getPosition() * (maxSelectableValue - minSelectableValue));
+                Integer newValue = UIUtils.getIntegerByDialog(getCalibrationPlugin().getViewerPanel(),
+                        "Set min display value",
+                        "Please enter the new value:",
+                        value,
+                        (int)Math.floor(minSelectableValue),
+                        (int)Math.ceil(maxSelectableValue));
                 if (newValue != null) {
-                    float position = (newValue.floatValue() - min) / (max - min);
+                    float position = (float) ((newValue.floatValue() - minSelectableValue) / (maxSelectableValue - minSelectableValue));
                     slider.getModel().getThumbAt(0).setPosition(Math.max(0, Math.min(position, 1)));
+                    applyCustomCalibration();
                 }
             }
         });
@@ -103,19 +101,17 @@ public class ImageViewerPanelDisplayRangeControl extends JPanel implements Thumb
         setMaxButton.setBorder(BorderFactory.createLineBorder(Color.GRAY, 1));
         setMaxButton.addActionListener(e -> {
             if (calibrationPlugin.getCurrentImage().getImage() != null) {
-                int value;
-                int min = 0;
-                int max = 0;
-                ImageStatistics statistics = calibrationPlugin.getViewerPanel().getStatistics();
-                if (statistics != null) {
-                    min = (int) statistics.min;
-                    max = (int) statistics.max;
-                }
-                value = (int) (min + slider.getModel().getThumbAt(1).getPosition() * (max - min));
-                Integer newValue = UIUtils.getIntegerByDialog(getCalibrationPlugin().getViewerPanel(), "Set max display value", "Please enter the new value:", value, min, max);
+                int value = (int) (minSelectableValue + slider.getModel().getThumbAt(1).getPosition() * (maxSelectableValue - minSelectableValue));
+                Integer newValue = UIUtils.getIntegerByDialog(getCalibrationPlugin().getViewerPanel(),
+                        "Set max display value",
+                        "Please enter the new value:",
+                        value,
+                        (int)Math.floor(minSelectableValue),
+                        (int)Math.ceil(maxSelectableValue));
                 if (newValue != null) {
-                    float position = (newValue.floatValue() - min) / (max - min);
+                    float position = (float) ((newValue.floatValue() - minSelectableValue) / (maxSelectableValue - minSelectableValue));
                     slider.getModel().getThumbAt(1).setPosition(Math.max(0, Math.min(position, 1)));
+                    applyCustomCalibration();
                 }
             }
         });
