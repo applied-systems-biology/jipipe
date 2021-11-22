@@ -13,8 +13,11 @@
 
 package org.hkijena.jipipe.extensions.imagejdatatypes.viewer;
 
+import ij.process.ColorProcessor;
+import ij.process.FloatProcessor;
 import ij.process.ImageProcessor;
 import ij.process.ImageStatistics;
+import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.extensions.imagejdatatypes.viewer.plugins.CalibrationPlugin;
 import org.hkijena.jipipe.ui.theme.ModernMetalTheme;
 import org.hkijena.jipipe.utils.ImageJCalibrationMode;
@@ -41,6 +44,8 @@ public class ImageViewerPanelDisplayRangeControl extends JPanel implements Thumb
     private boolean isUpdating = false;
     private double customMin;
     private double customMax;
+    private double minSelectableValue;
+    private double maxSelectableValue;
 
     public ImageViewerPanelDisplayRangeControl(CalibrationPlugin calibrationPlugin) {
         this.calibrationPlugin = calibrationPlugin;
@@ -131,17 +136,30 @@ public class ImageViewerPanelDisplayRangeControl extends JPanel implements Thumb
         add(toolbar, BorderLayout.NORTH);
     }
 
-    public void updateSliders(boolean clearCustom) {
+    public void updateFromCurrentSlice(boolean clearCustom) {
         if(clearCustom || getCalibrationPlugin().getSelectedCalibration() != ImageJCalibrationMode.Custom) {
             isUpdating = true;
-            if (getCalibrationPlugin().getCurrentSlice() != null) {
-                double displayRangeMin = getCalibrationPlugin().getCurrentSlice().getMin();
-                double displayRangeMax = getCalibrationPlugin().getCurrentSlice().getMax();
-                ImageStatistics statistics = getCalibrationPlugin().getCurrentSlice().getStats();
-                if (statistics == null)
-                    return;
-                double min = statistics.min;
-                double max = statistics.max;
+            ImageProcessor currentSlice = getCalibrationPlugin().getCurrentSlice();
+            if (currentSlice != null) {
+                double min, max;
+                if(currentSlice instanceof FloatProcessor) {
+                    ImageStatistics statistics = currentSlice.getStats();
+                    if (statistics == null)
+                        return;
+                    min = statistics.min;
+                    max = statistics.max;
+                }
+                else {
+                    min = currentSlice.minValue();
+                    max = currentSlice.maxValue();
+                }
+                minSelectableValue = min;
+                maxSelectableValue = max;
+                double[] calibration = ImageJUtils.calculateCalibration(currentSlice, getCalibrationPlugin().getSelectedCalibration(), minSelectableValue, maxSelectableValue);
+                customMin = calibration[0];
+                customMax = calibration[1];
+                double displayRangeMin = customMin;
+                double displayRangeMax = customMax;
                 double positionMin = Math.min(1, Math.max(0, displayRangeMin - min) / (max - min));
                 double positionMax = Math.min(1, Math.max(0, displayRangeMax - min) / (max - min));
                 slider.getModel().getThumbAt(0).setPosition((float) positionMin);
@@ -167,10 +185,8 @@ public class ImageViewerPanelDisplayRangeControl extends JPanel implements Thumb
 
     private void applyCustomCalibration() {
         if (!isUpdating) {
-            ImageProcessor currentSlice = getCalibrationPlugin().getCurrentSlice();
-            ImageStatistics statistics = currentSlice.getStats();
-            double min = statistics.min;
-            double max = statistics.max;
+            double min = minSelectableValue;
+            double max = maxSelectableValue;
             double diff = max - min;
             float posMin = Float.POSITIVE_INFINITY;
             float posMax = Float.NEGATIVE_INFINITY;
@@ -303,19 +319,14 @@ public class ImageViewerPanelDisplayRangeControl extends JPanel implements Thumb
                 }
             }
             g.setColor(UIManager.getColor("Label.foreground"));
-            double min = 0;
-            double max = 0;
-            if(statistics != null) {
-                min = statistics.min;
-                max = statistics.max;
-            }
             for (int i = 0; i < 2; i++) {
                 Thumb<DisplayRangeStop> thumb = slider.getModel().getThumbAt(i);
                 float position = Math.max(0, Math.min(thumb.getPosition(), 1));
                 int x = ThumbRenderer.SIZE - 1 + (int) (w * position);
                 g.fillRect(x, 4, 2, h + 4);
                 if(statistics != null) {
-                    int value = (int) (min + thumb.getPosition() * (max - min));
+                    int value = (int) (imageViewerPanelDisplayRangeControl.minSelectableValue + thumb.getPosition() *
+                            (imageViewerPanelDisplayRangeControl.maxSelectableValue - imageViewerPanelDisplayRangeControl.minSelectableValue));
                     int stringWidth = g.getFontMetrics().stringWidth(value + "");
                     g.drawString("" + value, Math.max(0, Math.min(w - stringWidth, x - (stringWidth / 2))), h + 18);
                 }

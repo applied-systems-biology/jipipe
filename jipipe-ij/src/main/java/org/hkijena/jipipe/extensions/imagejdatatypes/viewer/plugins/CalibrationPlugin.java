@@ -1,5 +1,6 @@
 package org.hkijena.jipipe.extensions.imagejdatatypes.viewer.plugins;
 
+import ij.ImagePlus;
 import ij.process.ImageProcessor;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.extensions.imagejdatatypes.viewer.ImageViewerPanel;
@@ -42,7 +43,11 @@ public class CalibrationPlugin extends GeneralImageViewerPanelPlugin {
 
     @Override
     public void onImageChanged() {
-        displayRangeCalibrationControl.updateSliders(true);
+        if(getCurrentImage() != null && getCurrentImage().getType() == ImagePlus.COLOR_RGB) {
+            // Set to 0-255
+            calibrationModes.setSelectedItem(ImageJCalibrationMode.Depth8Bit);
+        }
+        displayRangeCalibrationControl.updateFromCurrentSlice(true);
     }
 
     @Override
@@ -61,7 +66,7 @@ public class CalibrationPlugin extends GeneralImageViewerPanelPlugin {
 
     @Override
     public void onSliceChanged() {
-        displayRangeCalibrationControl.updateSliders(false);
+        displayRangeCalibrationControl.updateFromCurrentSlice(false);
 //        displayRangeCalibrationControl.applyCalibration(false);
 //        displayRangeCalibrationControl.updateSliders();
     }
