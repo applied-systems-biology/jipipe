@@ -37,6 +37,7 @@ import org.hkijena.jipipe.api.data.JIPipeDataSource;
 import org.hkijena.jipipe.api.data.JIPipeDataStorageDocumentation;
 import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
 import org.hkijena.jipipe.extensions.imagejdatatypes.display.CachedROIListDataViewerWindow;
+import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageSliceIndex;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.RoiOutline;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.measure.ImageStatisticsSetParameter;
@@ -918,6 +919,10 @@ public class ROIListData extends ArrayList<Roi> implements JIPipeData {
     public ResultsTableData measure(ImagePlus imp, ImageStatisticsSetParameter measurements, boolean addNameToTable) {
         ResultsTableData result = new ResultsTableData(new ResultsTable());
         if (imp != null) {
+
+            // Make a duplicate to prevent the measuring messing with the image
+            imp = ImageJUtils.duplicate(imp);
+
             measurements.updateAnalyzer();
             Analyzer aSys = new Analyzer(imp); // System Analyzer
             ResultsTable rtSys = Analyzer.getResultsTable();

@@ -1094,6 +1094,64 @@ public class ImageJUtils {
         return new LUT(reds, greens, blues);
     }
 
+    public static void calibrate(ImageProcessor imp, ImageJCalibrationMode calibrationMode, double customMin, double customMax) {
+        double min = calibrationMode.getMin();
+        double max = calibrationMode.getMax();
+        if (calibrationMode == ImageJCalibrationMode.Custom) {
+            min = customMin;
+            max = customMax;
+        } else if (calibrationMode == ImageJCalibrationMode.AutomaticImageJ) {
+            ImageStatistics stats = imp.getStats();
+            int limit = stats.pixelCount / 10;
+            int[] histogram = stats.histogram;
+            int threshold = stats.pixelCount / 5000;
+            int i = -1;
+            boolean found = false;
+            int count;
+            do {
+                i++;
+                count = histogram[i];
+                if (count > limit) count = 0;
+                found = count > threshold;
+            } while (!found && i < 255);
+            int hmin = i;
+            i = 256;
+            do {
+                i--;
+                count = histogram[i];
+                if (count > limit) count = 0;
+                found = count > threshold;
+            } while (!found && i > 0);
+            int hmax = i;
+            if (hmax >= hmin) {
+                min = stats.histMin + hmin * stats.binSize;
+                max = stats.histMin + hmax * stats.binSize;
+                if (min == max) {
+                    min = stats.min;
+                    max = stats.max;
+                }
+            } else {
+                int bitDepth = imp.getBitDepth();
+                if (bitDepth == 16 || bitDepth == 32) {
+                    min = imp.getMin();
+                    max = imp.getMax();
+                }
+            }
+        } else if (calibrationMode == ImageJCalibrationMode.MinMax) {
+            ImageStatistics stats = imp.getStats();
+            min = stats.min;
+            max = stats.max;
+        }
+        if (imp instanceof ColorProcessor) {
+            int channels = imp.getNChannels();
+            ((ColorProcessor) imp).setMinAndMax(min, max, channels);
+        }
+        else {
+            System.out.println(min + ", " + max);
+            imp.setMinAndMax(min, max);
+        }
+    }
+
     /**
      * Calibrates the image. Ported from {@link ij.plugin.frame.ContrastAdjuster}
      *
