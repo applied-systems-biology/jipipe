@@ -431,6 +431,7 @@ public class MaskDrawerPlugin extends ImageViewerPanelPlugin {
             getCurrentMaskSlice().setColor(0);
             getCurrentMaskSlice().fillRect(0,0, getCurrentMaskSlice().getWidth(), getCurrentMaskSlice().getHeight());
             recalculateMaskPreview();
+            getViewerPanel().getCanvas().getEventBus().post(new MaskDrawerPlugin.MaskChangedEvent(this));
         }
     }
 
