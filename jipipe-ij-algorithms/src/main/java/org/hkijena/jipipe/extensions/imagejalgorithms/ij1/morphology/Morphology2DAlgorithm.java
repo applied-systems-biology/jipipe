@@ -78,7 +78,7 @@ public class Morphology2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     @Override
     public boolean supportsParallelization() {
-        return true;
+        return false;
     }
 
     @Override
