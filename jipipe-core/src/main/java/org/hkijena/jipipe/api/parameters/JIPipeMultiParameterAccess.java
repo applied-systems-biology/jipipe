@@ -1,6 +1,7 @@
 package org.hkijena.jipipe.api.parameters;
 
 import java.lang.annotation.Annotation;
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -47,6 +48,11 @@ public class JIPipeMultiParameterAccess implements JIPipeParameterAccess {
     @Override
     public <T extends Annotation> T getAnnotationOfType(Class<T> klass) {
         return getFirstAccess().getAnnotationOfType(klass);
+    }
+
+    @Override
+    public Collection<Annotation> getAnnotations() {
+        return getFirstAccess().getAnnotations();
     }
 
     @Override

@@ -19,6 +19,7 @@ import org.hkijena.jipipe.utils.StringUtils;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Consumer;
@@ -34,7 +35,7 @@ public class JIPipeManualParameterAccess implements JIPipeParameterAccess {
     private String name;
     private String description;
     private boolean hidden;
-    private Map<Class<? extends Annotation>, Annotation> annotations = new HashMap<>();
+    private final Map<Class<? extends Annotation>, Annotation> annotations = new HashMap<>();
     private Function<Class<? extends Annotation>, Annotation> annotationSupplier;
     private Class<?> fieldClass;
     private Supplier<Object> getter;
@@ -78,6 +79,11 @@ public class JIPipeManualParameterAccess implements JIPipeParameterAccess {
             return (T) result;
         else
             return null;
+    }
+
+    @Override
+    public Collection<Annotation> getAnnotations() {
+        return annotations.values();
     }
 
     public Function<Class<? extends Annotation>, Annotation> getAnnotationSupplier() {
@@ -290,7 +296,7 @@ public class JIPipeManualParameterAccess implements JIPipeParameterAccess {
         }
 
         public Builder addAnnotation(Annotation annotation) {
-            access.annotations.put(annotation.getClass(), annotation);
+            access.annotations.put(annotation.annotationType(), annotation);
             return this;
         }
 

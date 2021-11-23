@@ -16,6 +16,7 @@ package org.hkijena.jipipe.api.parameters;
 import org.scijava.Priority;
 
 import java.lang.annotation.Annotation;
+import java.util.Collection;
 
 /**
  * Interface around accessing a parameter
@@ -65,6 +66,12 @@ public interface JIPipeParameterAccess {
      * @return Annotation or null if not found
      */
     <T extends Annotation> T getAnnotationOfType(Class<T> klass);
+
+    /**
+     * Gets all available annotations for this parameter
+     * @return the annotations
+     */
+    Collection<Annotation> getAnnotations();
 
     /**
      * Returns the parameter data type

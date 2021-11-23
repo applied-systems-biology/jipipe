@@ -214,6 +214,7 @@ public class AdaptiveParameterBuilder extends JDialog {
     private void addNewConditionValuePair() {
         if (currentParameterAccess != null) {
             ConditionValuePair pair = new ConditionValuePair();
+            pair.setOriginalAccess(currentParameterAccess);
             pair.setCondition(new DefaultExpressionParameter("true"));
             pair.setValueType(currentParameterAccess.getFieldClass());
             pair.setValue(JIPipe.getParameterTypes().getInfoByFieldClass(currentParameterAccess.getFieldClass()).newInstance());
@@ -287,6 +288,7 @@ public class AdaptiveParameterBuilder extends JDialog {
     }
 
     public static class ConditionValuePair {
+        private JIPipeParameterAccess originalAccess;
         private DefaultExpressionParameter condition = new StringQueryExpression();
         private Object value;
         private Class<?> valueType;
@@ -313,6 +315,14 @@ public class AdaptiveParameterBuilder extends JDialog {
 
         public void setValueType(Class<?> valueType) {
             this.valueType = valueType;
+        }
+
+        public JIPipeParameterAccess getOriginalAccess() {
+            return originalAccess;
+        }
+
+        public void setOriginalAccess(JIPipeParameterAccess originalAccess) {
+            this.originalAccess = originalAccess;
         }
     }
 
@@ -370,11 +380,17 @@ public class AdaptiveParameterBuilder extends JDialog {
                     .setKey("condition")
                     .setGetter(conditionValuePair::getCondition)
                     .setSetter(conditionValuePair::setCondition).build();
-            JIPipeManualParameterAccess valueAccess = JIPipeManualParameterAccess.builder().setSource(new JIPipeDummyParameterCollection())
+            JIPipeManualParameterAccess.Builder builder = JIPipeManualParameterAccess.builder().setSource(new JIPipeDummyParameterCollection())
                     .setFieldClass(conditionValuePair.getValueType())
                     .setKey("value")
                     .setGetter(conditionValuePair::getValue)
-                    .setSetter(conditionValuePair::setValue).build();
+                    .setSetter(conditionValuePair::setValue);
+            if(conditionValuePair.getOriginalAccess() != null) {
+                for (Annotation annotation : conditionValuePair.getOriginalAccess().getAnnotations()) {
+                    builder.addAnnotation(annotation);
+                }
+            }
+            JIPipeManualParameterAccess valueAccess = builder.build();
             formPanel.addToForm(JIPipe.getParameterTypes().createEditorFor(adaptiveParameterBuilder.workbench, conditionAccess),
                     new JLabel("Condition"), null);
             formPanel.addToForm(JIPipe.getParameterTypes().createEditorFor(adaptiveParameterBuilder.workbench, valueAccess),

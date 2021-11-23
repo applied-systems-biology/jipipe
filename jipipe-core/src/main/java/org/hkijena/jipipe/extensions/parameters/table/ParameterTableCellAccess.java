@@ -17,16 +17,18 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 
 import java.lang.annotation.Annotation;
+import java.util.Collection;
+import java.util.Collections;
 
 /**
  * Implements the access to table cell
  */
 public class ParameterTableCellAccess implements JIPipeParameterAccess {
 
-    private JIPipeParameterAccess parent;
-    private ParameterTable table;
-    private int row;
-    private int column;
+    private final JIPipeParameterAccess parent;
+    private final ParameterTable table;
+    private final int row;
+    private final int column;
 
     /**
      * Creates a new instance
@@ -71,6 +73,11 @@ public class ParameterTableCellAccess implements JIPipeParameterAccess {
     @Override
     public <T extends Annotation> T getAnnotationOfType(Class<T> klass) {
         return null;
+    }
+
+    @Override
+    public Collection<Annotation> getAnnotations() {
+        return Collections.emptyList();
     }
 
     @Override

@@ -21,6 +21,10 @@ import org.hkijena.jipipe.utils.StringUtils;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.List;
 import java.util.Objects;
 
 /**
@@ -83,6 +87,18 @@ public class JIPipeReflectionParameterAccess implements JIPipeParameterAccess {
         if (annotation != null)
             return annotation;
         return getFieldClass().getAnnotation(klass);
+    }
+
+    @Override
+    public Collection<Annotation> getAnnotations() {
+        List<Annotation> annotationList = new ArrayList<>();
+        if(getter != null) {
+            annotationList.addAll(Arrays.asList(getter.getAnnotations()));
+        }
+        if(setter != null) {
+            annotationList.addAll(Arrays.asList(setter.getAnnotations()));
+        }
+        return annotationList;
     }
 
     @Override

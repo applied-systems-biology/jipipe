@@ -17,13 +17,14 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 
 import java.lang.annotation.Annotation;
+import java.util.Collection;
 
 /**
  * Parameter access for the key entry in {@link PairParameter}
  */
 public class PairParameterValueAccess<K, V> implements JIPipeParameterAccess {
-    private JIPipeParameterAccess parent;
-    private PairParameter<K, V> pair;
+    private final JIPipeParameterAccess parent;
+    private final PairParameter<K, V> pair;
 
     /**
      * Creates a new instance
@@ -68,6 +69,11 @@ public class PairParameterValueAccess<K, V> implements JIPipeParameterAccess {
     @Override
     public <T extends Annotation> T getAnnotationOfType(Class<T> klass) {
         return getParent().getAnnotationOfType(klass);
+    }
+
+    @Override
+    public Collection<Annotation> getAnnotations() {
+        return getParent().getAnnotations();
     }
 
     @Override

@@ -28,6 +28,7 @@ import org.scijava.Priority;
 
 import java.io.IOException;
 import java.lang.annotation.Annotation;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
@@ -179,6 +180,11 @@ public class JIPipeMutableParameterAccess implements JIPipeParameterAccess {
     @Override
     public <T extends Annotation> T getAnnotationOfType(Class<T> klass) {
         return (T) annotationMap.getOrDefault(klass, null);
+    }
+
+    @Override
+    public Collection<Annotation> getAnnotations() {
+        return annotationMap.values();
     }
 
     @Override

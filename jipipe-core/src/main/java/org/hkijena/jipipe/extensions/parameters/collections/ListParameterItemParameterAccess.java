@@ -18,6 +18,7 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.scijava.Priority;
 
 import java.lang.annotation.Annotation;
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -25,10 +26,10 @@ import java.util.List;
  */
 public class ListParameterItemParameterAccess<T> implements JIPipeParameterAccess {
 
-    private List<T> entryList;
-    private Class<T> entryType;
-    private int index;
-    private JIPipeParameterAccess parent;
+    private final List<T> entryList;
+    private final Class<T> entryType;
+    private final int index;
+    private final JIPipeParameterAccess parent;
 
     /**
      * Creates a new instance
@@ -73,6 +74,11 @@ public class ListParameterItemParameterAccess<T> implements JIPipeParameterAcces
     @Override
     public <T extends Annotation> T getAnnotationOfType(Class<T> klass) {
         return parent.getAnnotationOfType(klass);
+    }
+
+    @Override
+    public Collection<Annotation> getAnnotations() {
+        return parent.getAnnotations();
     }
 
     @Override
