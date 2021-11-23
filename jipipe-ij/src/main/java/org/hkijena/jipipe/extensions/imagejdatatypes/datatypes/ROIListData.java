@@ -169,7 +169,11 @@ public class ROIListData extends ArrayList<Roi> implements JIPipeData {
                     if (roi.getName() != null) {
                         label = roi.getName();
                     }
+                    while(label.endsWith(".roi")) {
+                        label = label.substring(0, label.length() - 4);
+                    }
                     label = StringUtils.makeUniqueString(label, " ", existing);
+                    existing.add(label);
                     if (!label.endsWith(".roi")) label += ".roi";
                     zos.putNextEntry(new ZipEntry(label));
                     re.write(roi);
@@ -210,7 +214,11 @@ public class ROIListData extends ArrayList<Roi> implements JIPipeData {
                     if (roi.getName() != null) {
                         label = roi.getName();
                     }
+                    while(label.endsWith(".roi")) {
+                        label = label.substring(0, label.length() - 4);
+                    }
                     label = StringUtils.makeUniqueString(label, " ", existing);
+                    existing.add(label);
                     if (!label.endsWith(".roi")) label += ".roi";
                     zos.putNextEntry(new ZipEntry(label));
                     re.write(roi);
