@@ -347,18 +347,18 @@ public class QuickRunSetupUI extends JIPipeProjectWorkbenchPanel {
         }
 
         // Setup panel
-        if(showSetupPanel && RuntimeSettings.getInstance().isShowQuickRunSetupWindow()) {
+        if (showSetupPanel && RuntimeSettings.getInstance().isShowQuickRunSetupWindow()) {
             QuickRunSetupWindow window = new QuickRunSetupWindow(getWorkbench());
             window.revalidate();
             window.repaint();
             window.setLocationRelativeTo(getProjectWorkbench().getWindow());
             window.setVisible(true);
-            if(window.isCancelled()) {
+            if (window.isCancelled()) {
                 tryShowSelectionPanel();
                 return;
             }
         }
-        if(!showSetupPanel) {
+        if (!showSetupPanel) {
             RuntimeSettings.getInstance().setShowQuickRunSetupWindow(false);
             RuntimeSettings.getInstance().triggerParameterChange("show-quick-run-setup-window");
         }

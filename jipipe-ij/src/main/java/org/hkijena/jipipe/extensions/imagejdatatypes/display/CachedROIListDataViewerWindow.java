@@ -16,7 +16,6 @@ package org.hkijena.jipipe.extensions.imagejdatatypes.display;
 import ij.IJ;
 import ij.ImagePlus;
 import ij.gui.Roi;
-import ij.process.ImageProcessor;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeCacheSlotDataSource;
 import org.hkijena.jipipe.api.data.JIPipeVirtualData;

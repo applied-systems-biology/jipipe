@@ -98,8 +98,8 @@ public class LUTManagerPlugin extends GeneralImageViewerPanelPlugin {
         // Workaround: setting LUT overrides calibration for some reason
         // Recalibrate again
         CalibrationPlugin calibrationPlugin = getViewerPanel().getPlugin(CalibrationPlugin.class);
-        if(calibrationPlugin != null) {
-            calibrationPlugin.draw(c,z,t, processor);
+        if (calibrationPlugin != null) {
+            calibrationPlugin.draw(c, z, t, processor);
         }
 
         return processor;

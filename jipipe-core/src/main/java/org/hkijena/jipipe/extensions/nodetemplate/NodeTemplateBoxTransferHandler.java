@@ -2,7 +2,6 @@ package org.hkijena.jipipe.extensions.nodetemplate;
 
 import org.hkijena.jipipe.api.JIPipeNodeTemplate;
 import org.hkijena.jipipe.api.nodes.JIPipeGraph;
-import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.utils.json.JsonUtils;
 
 import javax.swing.*;

@@ -40,7 +40,7 @@ public class JIPipeGraphGCHelper {
         for (JIPipeGraphEdge edge : graph.getGraph().edgeSet()) {
             JIPipeDataSlot edgeSource = graph.getGraph().getEdgeSource(edge);
             JIPipeDataSlot edgeTarget = graph.getGraph().getEdgeTarget(edge);
-            if(edgeSource.getNode() != edgeTarget.getNode()) {
+            if (edgeSource.getNode() != edgeTarget.getNode()) {
                 gcGraph.addEdge(edgeSource, edgeTarget);
             }
         }
@@ -61,13 +61,14 @@ public class JIPipeGraphGCHelper {
 
     /**
      * Marks a slot node as done (all outgoing/ingoing data transfers have been handled) by setting the usage counter to zero
+     *
      * @param slot the slot
      */
     public void markAsCompleted(JIPipeDataSlot slot) {
-        if(!completedSlots.contains(slot)) {
+        if (!completedSlots.contains(slot)) {
             isolate(slot);
             completedSlots.add(slot);
-            if(!dummyNodes.containsValue(slot)) {
+            if (!dummyNodes.containsValue(slot)) {
                 eventBus.post(new SlotCompletedEvent(this, slot));
             }
         }
@@ -81,12 +82,13 @@ public class JIPipeGraphGCHelper {
 
     /**
      * Checks the slot for completion (degree is zero)
+     *
      * @param slot the slot
      */
     private void checkForCompletion(JIPipeDataSlot slot) {
-        if(gcGraph.degreeOf(slot) == 0 && !completedSlots.contains(slot)) {
+        if (gcGraph.degreeOf(slot) == 0 && !completedSlots.contains(slot)) {
             completedSlots.add(slot);
-            if(!dummyNodes.containsValue(slot)) {
+            if (!dummyNodes.containsValue(slot)) {
                 eventBus.post(new SlotCompletedEvent(this, slot));
             }
         }
@@ -94,11 +96,12 @@ public class JIPipeGraphGCHelper {
 
     /**
      * Marks an output slot as used
+     *
      * @param source the output slot
      * @param target the input slot
      */
     public void markCopyOutputToInput(JIPipeDataSlot source, JIPipeDataSlot target) {
-        if(!source.isOutput()) {
+        if (!source.isOutput()) {
             throw new UnsupportedOperationException();
         }
         gcGraph.removeEdge(source, target);
@@ -107,6 +110,7 @@ public class JIPipeGraphGCHelper {
 
     /**
      * Marks a node as executed, marking inputs for GC
+     *
      * @param node the node
      */
     public void markNodeExecuted(JIPipeGraphNode node) {
@@ -136,6 +140,7 @@ public class JIPipeGraphGCHelper {
 
     /**
      * Gets all slots with a usage counter of zero
+     *
      * @return the slots
      */
     public Set<JIPipeDataSlot> getCompletedSlots() {
@@ -144,6 +149,7 @@ public class JIPipeGraphGCHelper {
 
     /**
      * Gets all slots with a usage counter of greater than zero
+     *
      * @return the slots
      */
     public Set<JIPipeDataSlot> getIncompleteSlots() {

@@ -209,12 +209,12 @@ public class ImagePlusData implements JIPipeData, ColoredImagePlusData {
             ImagePlus rgbImage = ImageJUtils.channelsToRGB(image);
 
             // ROI rendering
-            if(image.getRoi() != null) {
+            if (image.getRoi() != null) {
                 rgbImage = ImageJUtils.convertToColorRGBIfNeeded(rgbImage);
                 ROIListData rois = new ROIListData();
                 rois.add(image.getRoi());
                 rois.draw(rgbImage.getProcessor(),
-                        new ImageSliceIndex(0,0,0),
+                        new ImageSliceIndex(0, 0, 0),
                         false,
                         false,
                         false,

@@ -92,10 +92,10 @@ public class JIPipeReflectionParameterAccess implements JIPipeParameterAccess {
     @Override
     public Collection<Annotation> getAnnotations() {
         List<Annotation> annotationList = new ArrayList<>();
-        if(getter != null) {
+        if (getter != null) {
             annotationList.addAll(Arrays.asList(getter.getAnnotations()));
         }
-        if(setter != null) {
+        if (setter != null) {
             annotationList.addAll(Arrays.asList(setter.getAnnotations()));
         }
         return annotationList;

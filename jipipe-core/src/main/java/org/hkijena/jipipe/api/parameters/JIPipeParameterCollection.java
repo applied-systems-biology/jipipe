@@ -90,6 +90,7 @@ public interface JIPipeParameterCollection {
 
     /**
      * Gets an access instance to a parameter of the defined key
+     *
      * @param key the parameter key
      * @return the access instance
      */

@@ -17,20 +17,18 @@ public class CaseFunction extends ExpressionFunction {
 
     @Override
     public ParameterInfo getParameterInfo(int index) {
-        if(index == 0) {
+        if (index == 0) {
             return new ParameterInfo("Condition", "The condition. Must evaluate to a boolean or a number (numbers larger than zero are considered as true, otherwise false)", Boolean.class, Number.class);
-        }
-        else {
+        } else {
             return new ParameterInfo("Value", "Value to be returned if the condition is true", Object.class);
         }
     }
 
     @Override
     public Object evaluate(List<Object> parameters, ExpressionVariables variables) {
-        if(parameters.size() == 1) {
+        if (parameters.size() == 1) {
             return Arrays.asList(true, parameters.get(0));
-        }
-        else {
+        } else {
             return Arrays.asList(parameters.get(0), parameters.get(1));
         }
     }

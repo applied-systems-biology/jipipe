@@ -123,8 +123,9 @@ public abstract class JIPipeSingleIterationAlgorithm extends JIPipeParameterSlot
     /**
      * A pass-through variant for merging algorithms.
      * Passes the data batch to the single output
+     *
      * @param progressInfo progress info
-     * @param dataBatch the data batch
+     * @param dataBatch    the data batch
      */
     protected void runPassThrough(JIPipeProgressInfo progressInfo, JIPipeMergingDataBatch dataBatch) {
         progressInfo.log("Passing trough (via dynamic pass-through)");
@@ -155,10 +156,9 @@ public abstract class JIPipeSingleIterationAlgorithm extends JIPipeParameterSlot
             JIPipeMergingDataBatch dataBatch = new JIPipeMergingDataBatch(this);
             dataBatch.addGlobalAnnotations(parameterAnnotations, dataBatchGenerationSettings.getAnnotationMergeStrategy());
             uploadAdaptiveParameters(dataBatch, tree, parameterBackups, progressInfo);
-            if(isPassThrough()) {
+            if (isPassThrough()) {
                 runPassThrough(slotProgress, dataBatch);
-            }
-            else {
+            } else {
                 runIteration(dataBatch, slotProgress);
             }
             return;
@@ -175,10 +175,9 @@ public abstract class JIPipeSingleIterationAlgorithm extends JIPipeParameterSlot
                 return;
             JIPipeProgressInfo slotProgress = progressInfo.resolveAndLog("Data row", i, dataBatches.size());
             uploadAdaptiveParameters(dataBatches.get(i), tree, parameterBackups, progressInfo);
-            if(isPassThrough()) {
+            if (isPassThrough()) {
                 runPassThrough(slotProgress, dataBatches.get(i));
-            }
-            else {
+            } else {
                 runIteration(dataBatches.get(i), slotProgress);
             }
         }

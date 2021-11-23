@@ -259,7 +259,7 @@ public class JIPipeRun implements JIPipeRunnable {
                         "Do not click 'Cancel' if you do not want to cancel the execution.");
             JIPipeDataSlot slot = traversedSlots.get(index);
             progressInfo.setProgress(index + preprocessorNodes.size(), traversedSlots.size());
-            if(!unExecutableAlgorithms.contains(slot.getNode())) {
+            if (!unExecutableAlgorithms.contains(slot.getNode())) {
                 progressInfo.log(slot.getDisplayName());
             }
 
@@ -277,7 +277,7 @@ public class JIPipeRun implements JIPipeRunnable {
                 // Copy data from source
                 Set<JIPipeDataSlot> sourceSlots = copiedGraph.getSourceSlots(slot);
                 for (JIPipeDataSlot sourceSlot : sourceSlots) {
-                    if(slot.getNode() instanceof JIPipeAlgorithm) {
+                    if (slot.getNode() instanceof JIPipeAlgorithm) {
                         // Add data from source slot
                         slot.addData(sourceSlot, subProgress);
                         gc.markCopyOutputToInput(sourceSlot, slot);
@@ -293,23 +293,21 @@ public class JIPipeRun implements JIPipeRunnable {
                 }
 
                 LoopGroup loop = nodeLoops.getOrDefault(node, null);
-                if(loop == null) {
+                if (loop == null) {
                     // Ensure the algorithm has run
                     if (!executedAlgorithms.contains(node)) {
-                        if(!unExecutableAlgorithms.contains(node)) {
+                        if (!unExecutableAlgorithms.contains(node)) {
                             runNode(executedAlgorithms, node, subProgress);
-                        }
-                        else {
+                        } else {
                             executedAlgorithms.add(node);
                         }
                     }
 
                     // Mark the node as executed
                     gc.markNodeExecuted(node);
-                }
-                else {
+                } else {
                     // Encountered a loop
-                    if(!executedLoops.contains(loop)) {
+                    if (!executedLoops.contains(loop)) {
                         subProgress = progressInfo.resolveAndLog("Loop #" + (loopGroups.indexOf(loop) + 1));
                         JIPipeGraph loopGraph = copiedGraph.extract(loop.getNodes(), true);
                         NodeGroup group = new NodeGroup(loopGraph, false, false, true);
@@ -318,7 +316,7 @@ public class JIPipeRun implements JIPipeRunnable {
                         group.setThreadPool(threadPool);
 
                         // IMPORTANT! Otherwise the nested JIPipeGraphRunner will run into an infinite depth loop
-                        ((LoopStartNode)loopGraph.getEquivalentAlgorithm(loop.getLoopStartNode()))
+                        ((LoopStartNode) loopGraph.getEquivalentAlgorithm(loop.getLoopStartNode()))
                                 .setIterationMode(GraphWrapperAlgorithm.IterationMode.PassThrough);
 
                         // Pass input data from inputs of loop into equivalent input of group
@@ -333,7 +331,7 @@ public class JIPipeRun implements JIPipeRunnable {
                         // Pass output data
                         for (Map.Entry<JIPipeDataSlot, JIPipeDataSlot> entry : loopGraphSlotMap.entrySet()) {
                             // Info: We need the value; the key already has cleared data!
-                            if(entry.getKey().isOutput()) {
+                            if (entry.getKey().isOutput()) {
                                 JIPipeDataSlot originalSlot = copiedGraph.getEquivalentSlot(entry.getKey());
                                 JIPipeDataSlot sourceSlot = entry.getValue();
                                 originalSlot.addData(sourceSlot, subProgress);
@@ -351,7 +349,7 @@ public class JIPipeRun implements JIPipeRunnable {
                         for (JIPipeDataSlot inputSlot : loopNode.getInputSlots()) {
                             gc.markAsCompleted(inputSlot);
                         }
-                        if(!loop.getLoopEndNodes().contains(loopNode)) {
+                        if (!loop.getLoopEndNodes().contains(loopNode)) {
                             for (JIPipeDataSlot outputSlot : loopNode.getOutputSlots()) {
                                 gc.markAsCompleted(outputSlot);
                             }
@@ -393,17 +391,16 @@ public class JIPipeRun implements JIPipeRunnable {
     @Subscribe
     public void onSlotCompleted(JIPipeGraphGCHelper.SlotCompletedEvent event) {
         JIPipeDataSlot slot = event.getSlot();
-        if(slot.isEmpty()) {
+        if (slot.isEmpty()) {
             return;
         }
-        if(!(slot.getNode() instanceof JIPipeAlgorithm)) {
+        if (!(slot.getNode() instanceof JIPipeAlgorithm)) {
             return;
         }
-        if(slot.isInput()) {
+        if (slot.isInput()) {
             progressInfo.resolve("GC").log("Clearing input slot " + slot.getDisplayName());
             slot.destroy();
-        }
-        else if(slot.isOutput()) {
+        } else if (slot.isOutput()) {
             if (configuration.isStoreToCache() && !configuration.getDisableStoreToCacheNodes().contains(slot.getNode())) {
                 JIPipeGraphNode runAlgorithm = slot.getNode();
                 JIPipeGraphNode projectAlgorithm = cacheQuery.getNode(runAlgorithm.getUUIDInGraph());
@@ -467,14 +464,14 @@ public class JIPipeRun implements JIPipeRunnable {
     /**
      * Attempts to load data from cache
      *
-     * @param algorithm the target algorithm
+     * @param algorithm  the target algorithm
      * @param cacheQuery the cache query
      * @return if successful. This means all output slots were restored.
      */
     private boolean tryLoadFromCache(JIPipeGraphNode algorithm, JIPipeProgressInfo progressInfo, JIPipeProjectCacheQuery cacheQuery) {
         if (!configuration.isLoadFromCache())
             return false;
-        if(!(algorithm instanceof  JIPipeAlgorithm))
+        if (!(algorithm instanceof JIPipeAlgorithm))
             return false;
         JIPipeGraphNode projectAlgorithm = cacheQuery.getNode(algorithm.getUUIDInGraph());
         JIPipeProjectCacheState stateId = cacheQuery.getCachedId(projectAlgorithm);
@@ -489,7 +486,7 @@ public class JIPipeRun implements JIPipeRunnable {
                 }
             }
             for (JIPipeDataSlot outputSlot : algorithm.getOutputSlots()) {
-                if(cachedData.get(outputSlot.getName()).isEmpty()) {
+                if (cachedData.get(outputSlot.getName()).isEmpty()) {
                     // If it's empty, we don't know
                     progressInfo.log(String.format("Cache for slot %s is empty!", outputSlot.getName()));
                     return false;

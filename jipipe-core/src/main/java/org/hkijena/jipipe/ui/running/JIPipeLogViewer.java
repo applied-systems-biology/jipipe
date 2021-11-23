@@ -120,7 +120,7 @@ public class JIPipeLogViewer extends JIPipeProjectWorkbenchPanel {
 
     private void exportLog() {
         Path path = FileChooserSettings.saveFile(this, FileChooserSettings.LastDirectoryKey.Data, "Export log", UIUtils.EXTENSION_FILTER_TXT);
-        if(path != null) {
+        if (path != null) {
             try {
                 Files.write(path, logReader.getText().getBytes(StandardCharsets.UTF_8));
             } catch (IOException e) {

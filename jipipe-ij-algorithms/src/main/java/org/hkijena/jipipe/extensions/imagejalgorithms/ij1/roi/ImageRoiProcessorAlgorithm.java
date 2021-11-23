@@ -103,7 +103,7 @@ public abstract class ImageRoiProcessorAlgorithm extends JIPipeIteratingAlgorith
             if (preferAssociatedImage) {
                 for (Map.Entry<Optional<ImagePlus>, ROIListData> entry : byReferenceImage.entrySet()) {
                     if (entry.getKey().isPresent()) {
-                        progressInfo.log("Extracted reference image " +  entry.getValue() + " from ROI");
+                        progressInfo.log("Extracted reference image " + entry.getValue() + " from ROI");
                         result.put(new ImagePlusData(entry.getKey().get()), entry.getValue());
                     } else {
                         toMaskAlgorithm.clearSlotData();

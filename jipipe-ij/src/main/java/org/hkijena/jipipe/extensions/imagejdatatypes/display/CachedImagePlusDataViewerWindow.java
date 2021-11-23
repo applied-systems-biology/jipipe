@@ -13,7 +13,6 @@
 
 package org.hkijena.jipipe.extensions.imagejdatatypes.display;
 
-import com.google.common.collect.ImmutableSet;
 import ij.ImagePlus;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeCacheSlotDataSource;
@@ -22,7 +21,6 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.OMEImageData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ROIListData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.viewer.ImageViewerPanel;
-import org.hkijena.jipipe.extensions.imagejdatatypes.viewer.ImageViewerWindow;
 import org.hkijena.jipipe.extensions.imagejdatatypes.viewer.plugins.AnimationSpeedPlugin;
 import org.hkijena.jipipe.extensions.imagejdatatypes.viewer.plugins.AnnotationInfoPlugin;
 import org.hkijena.jipipe.extensions.imagejdatatypes.viewer.plugins.CalibrationPlugin;
@@ -40,9 +38,7 @@ import javax.swing.*;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 public class CachedImagePlusDataViewerWindow extends JIPipeCacheDataViewerWindow implements WindowListener {
 
@@ -120,7 +116,7 @@ public class CachedImagePlusDataViewerWindow extends JIPipeCacheDataViewerWindow
             ImagePlusData data = (ImagePlusData) virtualData.getData(progressInfo);
             imageViewerPanel.getCanvas().setError(null);
             image = data.getViewedImage(false);
-            if(data.getImage().getRoi() != null) {
+            if (data.getImage().getRoi() != null) {
                 rois.add(data.getImage().getRoi());
             }
         } else if (OMEImageData.class.isAssignableFrom(virtualData.getDataClass())) {
@@ -134,7 +130,7 @@ public class CachedImagePlusDataViewerWindow extends JIPipeCacheDataViewerWindow
         image.setTitle(image.getTitle());
         boolean fitImage = imageViewerPanel.getImage() == null;
         imageViewerPanel.setImage(image);
-        if(!rois.isEmpty()) {
+        if (!rois.isEmpty()) {
             imageViewerPanel.getPlugin(ROIManagerPlugin.class).clearROIs();
             imageViewerPanel.getPlugin(ROIManagerPlugin.class).importROIs(rois);
         }

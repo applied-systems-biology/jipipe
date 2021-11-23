@@ -35,10 +35,7 @@ import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.utils.ResourceUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 
-import java.awt.Rectangle;
-import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 /**
@@ -78,7 +75,7 @@ public class FilterTablesAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         ResultsTableData input = dataBatch.getInputData(getFirstInputSlot(), ResultsTableData.class, progressInfo);
 
         ExpressionVariables parameters = new ExpressionVariables();
-        if(includeAnnotations) {
+        if (includeAnnotations) {
             for (JIPipeAnnotation annotation : dataBatch.getGlobalAnnotations().values()) {
                 parameters.set(annotation.getName(), annotation.getValue());
             }

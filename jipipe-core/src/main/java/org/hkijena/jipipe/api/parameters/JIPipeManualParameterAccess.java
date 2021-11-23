@@ -31,11 +31,11 @@ import java.util.function.Supplier;
  */
 public class JIPipeManualParameterAccess implements JIPipeParameterAccess {
 
+    private final Map<Class<? extends Annotation>, Annotation> annotations = new HashMap<>();
     private String key;
     private String name;
     private String description;
     private boolean hidden;
-    private final Map<Class<? extends Annotation>, Annotation> annotations = new HashMap<>();
     private Function<Class<? extends Annotation>, Annotation> annotationSupplier;
     private Class<?> fieldClass;
     private Supplier<Object> getter;

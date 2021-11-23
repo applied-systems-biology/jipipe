@@ -22,7 +22,6 @@ import org.hkijena.jipipe.api.data.JIPipeExportedDataTableRow;
 import org.hkijena.jipipe.api.data.JIPipeResultSlotDataSource;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ROIListData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.viewer.ImageViewerPanel;
-import org.hkijena.jipipe.extensions.imagejdatatypes.viewer.ImageViewerWindow;
 import org.hkijena.jipipe.extensions.imagejdatatypes.viewer.plugins.ImageViewerPanelPlugin;
 import org.hkijena.jipipe.extensions.imagejdatatypes.viewer.plugins.ROIManagerPlugin;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
@@ -36,10 +35,9 @@ public class AddROIToActiveJIPipeImageViewerDataDisplay implements JIPipeDataDis
     @Override
     public void display(JIPipeData data, String displayName, JIPipeWorkbench workbench, JIPipeDataSource source) {
         ImageViewerPanel viewerPanel = ImageViewerPanel.getActiveViewerPanel();
-        if(viewerPanel == null){
+        if (viewerPanel == null) {
             JOptionPane.showMessageDialog(workbench.getWindow(), "There is no active JIPipe image viewer.", "Add to active image viewer", JOptionPane.ERROR_MESSAGE);
-        }
-        else {
+        } else {
             for (ImageViewerPanelPlugin plugin : viewerPanel.getPlugins().stream()
                     .filter(plugin -> plugin instanceof ROIManagerPlugin).collect(Collectors.toList())) {
                 ((ROIManagerPlugin) plugin).importROIs((ROIListData) data);

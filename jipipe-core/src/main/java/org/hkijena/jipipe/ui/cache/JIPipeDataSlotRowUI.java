@@ -96,7 +96,7 @@ public class JIPipeDataSlotRowUI extends JIPipeWorkbenchPanel {
             add(dataAnnotationButton);
         }
 
-        if(!slot.getAnnotations(row).isEmpty()) {
+        if (!slot.getAnnotations(row).isEmpty()) {
             JButton annotationButton = new JButton("Annotations ...", UIUtils.getIconFromResources("data-types/annotation.png"));
             JPopupMenu annotationMenu = UIUtils.addPopupMenuToComponent(annotationButton);
             for (JIPipeAnnotation annotation : slot.getAnnotations(row)) {

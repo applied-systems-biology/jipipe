@@ -69,6 +69,7 @@ public interface JIPipeParameterAccess {
 
     /**
      * Gets all available annotations for this parameter
+     *
      * @return the annotations
      */
     Collection<Annotation> getAnnotations();

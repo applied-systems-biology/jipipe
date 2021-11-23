@@ -13,7 +13,6 @@
 
 package org.hkijena.jipipe.extensions.imagejdatatypes.viewer;
 
-import ij.process.ColorProcessor;
 import ij.process.FloatProcessor;
 import ij.process.ImageProcessor;
 import ij.process.ImageStatistics;
@@ -85,8 +84,8 @@ public class ImageViewerPanelDisplayRangeControl extends JPanel implements Thumb
                         "Set min display value",
                         "Please enter the new value:",
                         value,
-                        (int)Math.floor(minSelectableValue),
-                        (int)Math.ceil(maxSelectableValue));
+                        (int) Math.floor(minSelectableValue),
+                        (int) Math.ceil(maxSelectableValue));
                 if (newValue != null) {
                     float position = (float) ((newValue.floatValue() - minSelectableValue) / (maxSelectableValue - minSelectableValue));
                     slider.getModel().getThumbAt(0).setPosition(Math.max(0, Math.min(position, 1)));
@@ -106,8 +105,8 @@ public class ImageViewerPanelDisplayRangeControl extends JPanel implements Thumb
                         "Set max display value",
                         "Please enter the new value:",
                         value,
-                        (int)Math.floor(minSelectableValue),
-                        (int)Math.ceil(maxSelectableValue));
+                        (int) Math.floor(minSelectableValue),
+                        (int) Math.ceil(maxSelectableValue));
                 if (newValue != null) {
                     float position = (float) ((newValue.floatValue() - minSelectableValue) / (maxSelectableValue - minSelectableValue));
                     slider.getModel().getThumbAt(1).setPosition(Math.max(0, Math.min(position, 1)));
@@ -133,19 +132,18 @@ public class ImageViewerPanelDisplayRangeControl extends JPanel implements Thumb
     }
 
     public void updateFromCurrentSlice(boolean clearCustom) {
-        if(clearCustom || getCalibrationPlugin().getSelectedCalibration() != ImageJCalibrationMode.Custom) {
+        if (clearCustom || getCalibrationPlugin().getSelectedCalibration() != ImageJCalibrationMode.Custom) {
             isUpdating = true;
             ImageProcessor currentSlice = getCalibrationPlugin().getCurrentSlice();
             if (currentSlice != null) {
                 double min, max;
-                if(currentSlice instanceof FloatProcessor) {
+                if (currentSlice instanceof FloatProcessor) {
                     ImageStatistics statistics = currentSlice.getStats();
                     if (statistics == null)
                         return;
                     min = statistics.min;
                     max = statistics.max;
-                }
-                else {
+                } else {
                     min = currentSlice.minValue();
                     max = currentSlice.maxValue();
                 }
@@ -320,7 +318,7 @@ public class ImageViewerPanelDisplayRangeControl extends JPanel implements Thumb
                 float position = Math.max(0, Math.min(thumb.getPosition(), 1));
                 int x = ThumbRenderer.SIZE - 1 + (int) (w * position);
                 g.fillRect(x, 4, 2, h + 4);
-                if(statistics != null) {
+                if (statistics != null) {
                     int value = (int) (imageViewerPanelDisplayRangeControl.minSelectableValue + thumb.getPosition() *
                             (imageViewerPanelDisplayRangeControl.maxSelectableValue - imageViewerPanelDisplayRangeControl.minSelectableValue));
                     int stringWidth = g.getFontMetrics().stringWidth(value + "");

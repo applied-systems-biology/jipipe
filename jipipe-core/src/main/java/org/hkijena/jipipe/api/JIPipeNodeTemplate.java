@@ -3,13 +3,8 @@ package org.hkijena.jipipe.api;
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonSetter;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonNode;
 import com.google.common.eventbus.EventBus;
-import org.hkijena.jipipe.JIPipe;
-import org.hkijena.jipipe.api.grouping.NodeGroup;
 import org.hkijena.jipipe.api.nodes.JIPipeGraph;
-import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
-import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.parameters.JIPipeContextAction;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
@@ -104,14 +99,14 @@ public class JIPipeNodeTemplate implements JIPipeParameterCollection {
     /**
      * Gets the node type stored inside the data.
      * Returns null if the node type could not be found.
+     *
      * @return the node type or null if it could not be found
      */
     public JIPipeGraph getGraph() {
-        if(graph == null) {
+        if (graph == null) {
             try {
                 graph = JsonUtils.readFromString(data, JIPipeGraph.class);
-            }
-            catch (Exception e) {
+            } catch (Exception e) {
             }
         }
         return graph;

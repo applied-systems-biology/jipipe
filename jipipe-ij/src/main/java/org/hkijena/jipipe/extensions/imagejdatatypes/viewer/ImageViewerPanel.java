@@ -63,10 +63,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-public class ImageViewerPanel extends JPanel{
-    private static ImageViewerPanel ACTIVE_PANEL = null;
+public class ImageViewerPanel extends JPanel {
     private static final Set<ImageViewerPanel> OPEN_PANELS = new HashSet<>();
-
+    private static ImageViewerPanel ACTIVE_PANEL = null;
     private final JButton zoomStatusButton = new JButton();
     private final ImageViewerUISettings settings;
     private ImagePlus image;
@@ -87,8 +86,8 @@ public class ImageViewerPanel extends JPanel{
     private JLabel imageInfoLabel = new JLabel();
     private JScrollPane scrollPane;
     private JSpinner animationSpeedControl = new JSpinner(new SpinnerNumberModel(250, 5, 10000, 1));
-    private int rotation = 0;    private Timer animationTimer = new Timer(250, e -> animateNextSlice());
-    private JMenuItem exportAllSlicesItem;
+    private int rotation = 0;
+    private JMenuItem exportAllSlicesItem;    private Timer animationTimer = new Timer(250, e -> animateNextSlice());
     private JMenuItem exportMovieItem;
     private JToolBar toolBar = new JToolBar();
     private List<ImageViewerPanelPlugin> plugins = new ArrayList<>();
@@ -152,19 +151,11 @@ public class ImageViewerPanel extends JPanel{
     }
 
     public void dispose() {
-        if(ACTIVE_PANEL == this) {
+        if (ACTIVE_PANEL == this) {
             ACTIVE_PANEL = null;
         }
         OPEN_PANELS.remove(this);
         setImage(null);
-    }
-
-    public static ImageViewerPanel getActiveViewerPanel() {
-        return ACTIVE_PANEL;
-    }
-
-    public static Set<ImageViewerPanel> getOpenViewerPanels() {
-        return OPEN_PANELS;
     }
 
     private void initialize() {
@@ -642,7 +633,7 @@ public class ImageViewerPanel extends JPanel{
             plugin.createPalettePanel(formPanel);
         }
         for (Map.Entry<String, FormPanel> entry : formPanels.entrySet()) {
-            if(!entry.getValue().isHasVerticalGlue()) {
+            if (!entry.getValue().isHasVerticalGlue()) {
                 entry.getValue().addVerticalGlue();
             }
             SwingUtilities.invokeLater(() -> {
@@ -820,6 +811,14 @@ public class ImageViewerPanel extends JPanel{
         return statistics;
     }
 
+    public static ImageViewerPanel getActiveViewerPanel() {
+        return ACTIVE_PANEL;
+    }
+
+    public static Set<ImageViewerPanel> getOpenViewerPanels() {
+        return OPEN_PANELS;
+    }
+
     /**
      * Opens the image in a new frame
      *
@@ -844,6 +843,7 @@ public class ImageViewerPanel extends JPanel{
         window.setVisible(true);
         return dataDisplay;
     }
+
 
 
 

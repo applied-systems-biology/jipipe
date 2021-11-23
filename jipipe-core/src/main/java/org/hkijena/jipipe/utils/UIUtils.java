@@ -1153,6 +1153,7 @@ public class UIUtils {
 
     /**
      * Copies the string to the clipboard
+     *
      * @param string the string
      */
     public static void copyToClipboard(String string) {

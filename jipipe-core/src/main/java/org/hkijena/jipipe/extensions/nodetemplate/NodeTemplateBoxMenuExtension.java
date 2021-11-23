@@ -1,7 +1,5 @@
 package org.hkijena.jipipe.extensions.nodetemplate;
 
-import org.hkijena.jipipe.api.JIPipeProject;
-import org.hkijena.jipipe.extensions.nodetoolboxtool.NodeToolBox;
 import org.hkijena.jipipe.ui.extension.GraphEditorToolBarButtonExtension;
 import org.hkijena.jipipe.ui.grapheditor.JIPipeGraphCompartmentUI;
 import org.hkijena.jipipe.ui.grapheditor.JIPipeGraphEditorUI;

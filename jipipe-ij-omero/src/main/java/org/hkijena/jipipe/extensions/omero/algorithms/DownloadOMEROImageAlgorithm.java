@@ -43,13 +43,11 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.util.ROIHandler;
 import org.hkijena.jipipe.extensions.omero.OMEROCredentials;
 import org.hkijena.jipipe.extensions.omero.datatypes.OMEROImageReferenceData;
 import org.hkijena.jipipe.extensions.omero.util.OMEROGateway;
-import org.hkijena.jipipe.extensions.omero.util.OMEROUtils;
 import org.hkijena.jipipe.extensions.parameters.primitives.OptionalAnnotationNameParameter;
 import org.hkijena.jipipe.extensions.parameters.primitives.OptionalStringParameter;
 import org.hkijena.jipipe.extensions.parameters.primitives.StringParameterSettings;
 import org.hkijena.jipipe.extensions.parameters.roi.RectangleList;
 import org.hkijena.jipipe.utils.ResourceUtils;
-import org.hkijena.jipipe.utils.json.JsonUtils;
 
 import java.awt.Rectangle;
 import java.io.IOException;
@@ -58,7 +56,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicLong;
-import java.util.stream.Collectors;
 
 @JIPipeDocumentation(name = "Download image from OMERO", description = "Imports an image from OMERO into ImageJ")
 @JIPipeNode(nodeTypeCategory = DataSourceNodeTypeCategory.class)
@@ -146,11 +143,11 @@ public class DownloadOMEROImageAlgorithm extends JIPipeSimpleIteratingAlgorithm 
         }
 
         ImageData imageData = gateway.getImage(imageReferenceData.getImageId(), lastGroupId.get());
-        if(imageData == null) {
+        if (imageData == null) {
             progressInfo.log("Unable to obtain image info. Retrying by testing available groups.");
             imageData = gateway.getImage(imageReferenceData.getImageId(), -1);
         }
-        if(imageData == null) {
+        if (imageData == null) {
             throw new RuntimeException("Unable to find image with ID=" + imageReferenceData.getImageId());
         }
         lastGroupId.set(imageData.getGroupId());

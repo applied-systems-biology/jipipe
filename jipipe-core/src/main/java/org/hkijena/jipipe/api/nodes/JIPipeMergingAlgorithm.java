@@ -154,8 +154,9 @@ public abstract class JIPipeMergingAlgorithm extends JIPipeParameterSlotAlgorith
     /**
      * A pass-through variant for merging algorithms.
      * Passes the data batch to the single output
+     *
      * @param progressInfo progress info
-     * @param dataBatch the data batch
+     * @param dataBatch    the data batch
      */
     protected void runPassThrough(JIPipeProgressInfo progressInfo, JIPipeMergingDataBatch dataBatch) {
         progressInfo.log("Passing trough (via dynamic pass-through)");
@@ -186,10 +187,9 @@ public abstract class JIPipeMergingAlgorithm extends JIPipeParameterSlotAlgorith
             JIPipeMergingDataBatch dataBatch = new JIPipeMergingDataBatch(this);
             dataBatch.addGlobalAnnotations(parameterAnnotations, dataBatchGenerationSettings.getAnnotationMergeStrategy());
             uploadAdaptiveParameters(dataBatch, tree, parameterBackups, progressInfo);
-            if(isPassThrough()) {
+            if (isPassThrough()) {
                 runPassThrough(slotProgress, dataBatch);
-            }
-            else {
+            } else {
                 runIteration(dataBatch, slotProgress);
             }
             return;
@@ -220,16 +220,15 @@ public abstract class JIPipeMergingAlgorithm extends JIPipeParameterSlotAlgorith
 
         boolean hasAdaptiveParameters = getAdaptiveParameterSettings().isEnabled() && !getAdaptiveParameterSettings().getOverriddenParameters().isEmpty();
 
-        if (!supportsParallelization() || !isParallelizationEnabled() || getThreadPool() == null || getThreadPool().getMaxThreads() <= 1  || dataBatches.size() <= 1 || hasAdaptiveParameters) {
+        if (!supportsParallelization() || !isParallelizationEnabled() || getThreadPool() == null || getThreadPool().getMaxThreads() <= 1 || dataBatches.size() <= 1 || hasAdaptiveParameters) {
             for (int i = 0; i < dataBatches.size(); i++) {
                 if (progressInfo.isCancelled())
                     return;
                 JIPipeProgressInfo slotProgress = progressInfo.resolveAndLog("Data row", i, dataBatches.size());
                 uploadAdaptiveParameters(dataBatches.get(i), tree, parameterBackups, progressInfo);
-                if(isPassThrough()) {
+                if (isPassThrough()) {
                     runPassThrough(slotProgress, dataBatches.get(i));
-                }
-                else {
+                } else {
                     runIteration(dataBatches.get(i), slotProgress);
                 }
             }
@@ -244,10 +243,9 @@ public abstract class JIPipeMergingAlgorithm extends JIPipeParameterSlotAlgorith
                     JIPipeProgressInfo slotProgress = progressInfo.resolveAndLog("Data row", dataBatchIndex, dataBatches.size());
                     JIPipeMergingDataBatch dataBatch = dataBatches.get(dataBatchIndex);
                     uploadAdaptiveParameters(dataBatch, finalTree, parameterBackups, progressInfo);
-                    if(isPassThrough()) {
+                    if (isPassThrough()) {
                         runPassThrough(slotProgress, dataBatch);
-                    }
-                    else {
+                    } else {
                         runIteration(dataBatch, slotProgress);
                     }
                 });

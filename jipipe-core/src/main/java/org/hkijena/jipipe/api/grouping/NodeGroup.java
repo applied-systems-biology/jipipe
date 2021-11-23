@@ -86,10 +86,11 @@ public class NodeGroup extends GraphWrapperAlgorithm implements JIPipeCustomPara
 
     /**
      * Initializes from an existing graph
+     *
      * @param graph           algorithms to be added
      * @param autoCreateSlots automatically create input and output slots
-     * @param clearLocations if enabled, clear the locations. if false, fixLocations will be queried
-     * @param fixLocations if enabled, move group inputs/outputs to locations where they fit better
+     * @param clearLocations  if enabled, clear the locations. if false, fixLocations will be queried
+     * @param fixLocations    if enabled, move group inputs/outputs to locations where they fit better
      */
     public NodeGroup(JIPipeGraph graph, boolean autoCreateSlots, boolean clearLocations, boolean fixLocations) {
         super(JIPipe.getNodes().getInfoById("node-group"), new JIPipeGraph());
@@ -102,7 +103,7 @@ public class NodeGroup extends GraphWrapperAlgorithm implements JIPipeCustomPara
 //        }
 
         // Clear locations
-        if(clearLocations) {
+        if (clearLocations) {
             for (JIPipeGraphNode node : graph.getGraphNodes()) {
                 node.clearLocations();
             }
@@ -125,7 +126,7 @@ public class NodeGroup extends GraphWrapperAlgorithm implements JIPipeCustomPara
 
         this.exportedParameters.getEventBus().register(this);
 
-        if(!clearLocations && fixLocations) {
+        if (!clearLocations && fixLocations) {
             // Assign locations of input and output accordingly
             for (JIPipeGraphViewMode viewMode : JIPipeGraphViewMode.values()) {
                 int minX = Integer.MAX_VALUE;
@@ -134,9 +135,9 @@ public class NodeGroup extends GraphWrapperAlgorithm implements JIPipeCustomPara
                 int maxY = Integer.MIN_VALUE;
                 for (JIPipeGraphNode graphNode : graph.getGraphNodes()) {
                     Map<String, Point> locations = graphNode.getLocations().getOrDefault("", null);
-                    if(locations != null) {
+                    if (locations != null) {
                         Point point = locations.getOrDefault(viewMode.name(), null);
-                        if(point != null) {
+                        if (point != null) {
                             minX = Math.min(minX, point.x);
                             minY = Math.min(minY, point.y);
                             maxX = Math.max(maxX, point.x);
@@ -146,12 +147,11 @@ public class NodeGroup extends GraphWrapperAlgorithm implements JIPipeCustomPara
                 }
 
                 // Set group input/output
-                if(minX != Integer.MAX_VALUE && minY != Integer.MAX_VALUE && maxX != Integer.MIN_VALUE && maxY != Integer.MIN_VALUE) {
-                    if(viewMode == JIPipeGraphViewMode.Horizontal) {
+                if (minX != Integer.MAX_VALUE && minY != Integer.MAX_VALUE && maxX != Integer.MIN_VALUE && maxY != Integer.MIN_VALUE) {
+                    if (viewMode == JIPipeGraphViewMode.Horizontal) {
                         getGroupInput().setLocationWithin("", new Point(minX - 3, minY - 3), viewMode.name());
                         getGroupOutput().setLocationWithin("", new Point(maxX + 3, maxY), viewMode.name());
-                    }
-                    else {
+                    } else {
                         getGroupInput().setLocationWithin("", new Point(minX, minY - 5), viewMode.name());
                         getGroupOutput().setLocationWithin("", new Point(maxX, maxY + 5), viewMode.name());
                     }
@@ -162,6 +162,7 @@ public class NodeGroup extends GraphWrapperAlgorithm implements JIPipeCustomPara
 
     /**
      * Automatically creates slots that connect all inputs
+     *
      * @return Map from a slot in the wrapped graph to the exported group slot
      */
     public BiMap<JIPipeDataSlot, JIPipeDataSlot> autoCreateSlots() {

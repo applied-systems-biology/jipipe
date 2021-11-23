@@ -1,6 +1,5 @@
 package org.hkijena.jipipe.extensions.imagejdatatypes.viewer.plugins;
 
-import com.google.common.collect.Maps;
 import org.hkijena.jipipe.api.data.JIPipeAnnotation;
 import org.hkijena.jipipe.extensions.imagejdatatypes.viewer.ImageViewerPanel;
 import org.hkijena.jipipe.extensions.settings.FileChooserSettings;
@@ -12,7 +11,6 @@ import org.hkijena.jipipe.utils.UIUtils;
 import org.jdesktop.swingx.JXTable;
 
 import javax.swing.*;
-import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableCellRenderer;
 import java.awt.BorderLayout;
 import java.awt.Component;
@@ -67,16 +65,16 @@ public class AnnotationInfoPlugin extends ImageViewerPanelPlugin {
     }
 
     private void exportToTableEditor() {
-        if(currentData == null)
+        if (currentData == null)
             return;
         TableEditor.openWindow(getCacheDataViewerWindow().getWorkbench(), new ResultsTableData(currentData), getCacheDataViewerWindow().getTitle() + " - Annotations");
     }
 
     private void exportAsCSV() {
-        if(currentData == null)
+        if (currentData == null)
             return;
         Path path = FileChooserSettings.saveFile(getViewerPanel(), FileChooserSettings.LastDirectoryKey.Data, "Export as *.csv", UIUtils.EXTENSION_FILTER_CSV);
-        if(path != null) {
+        if (path != null) {
             currentData.saveAsCSV(path);
         }
     }
@@ -102,7 +100,7 @@ public class AnnotationInfoPlugin extends ImageViewerPanelPlugin {
         ResultsTableData model = new ResultsTableData();
         model.addStringColumn("Name");
         model.addStringColumn("Value");
-        if(cacheDataViewerWindow != null && cacheDataViewerWindow.getDataSource() != null) {
+        if (cacheDataViewerWindow != null && cacheDataViewerWindow.getDataSource() != null) {
             for (JIPipeAnnotation annotation : cacheDataViewerWindow.getDataSource().getSlot().getAnnotations(cacheDataViewerWindow.getDataSource().getRow())) {
                 model.addRow();
                 model.setLastValue(annotation.getName(), "Name");
@@ -122,7 +120,6 @@ public class AnnotationInfoPlugin extends ImageViewerPanelPlugin {
 
         /**
          * Creates a new renderer
-         *
          */
         public Renderer() {
             setOpaque(true);

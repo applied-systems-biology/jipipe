@@ -23,7 +23,7 @@ public class QuickRunSetupWindow extends JDialog {
     private void initialize() {
         getContentPane().setLayout(new BorderLayout());
         setTitle("Quick run / Update cache");
-        setSize(800,600);
+        setSize(800, 600);
         setModal(true);
         setIconImage(UIUtils.getIcon128FromResources("jipipe.png").getImage());
 

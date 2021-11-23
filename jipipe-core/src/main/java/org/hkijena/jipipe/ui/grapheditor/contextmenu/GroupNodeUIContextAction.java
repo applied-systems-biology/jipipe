@@ -42,7 +42,7 @@ public class GroupNodeUIContextAction implements NodeUIContextAction {
         JIPipeGraph graph = canvasUI.getGraph();
         JIPipeGraph subGraph = graph.extract(algorithms, false);
         NodeGroup group = new NodeGroup(subGraph, true, false, true);
-        if(JOptionPane.showConfirmDialog(canvasUI.getWorkbench().getWindow(), "Do you want to keep the selected nodes?", "Group", JOptionPane.YES_NO_OPTION) == JOptionPane.NO_OPTION) {
+        if (JOptionPane.showConfirmDialog(canvasUI.getWorkbench().getWindow(), "Do you want to keep the selected nodes?", "Group", JOptionPane.YES_NO_OPTION) == JOptionPane.NO_OPTION) {
             for (JIPipeGraphNode algorithm : algorithms) {
                 graph.removeNode(algorithm, true);
             }

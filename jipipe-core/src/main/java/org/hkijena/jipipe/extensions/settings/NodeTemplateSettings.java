@@ -3,9 +3,9 @@ package org.hkijena.jipipe.extensions.settings;
 import com.google.common.eventbus.EventBus;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.JIPipeNodeTemplate;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
-import org.hkijena.jipipe.api.JIPipeNodeTemplate;
 
 public class NodeTemplateSettings implements JIPipeParameterCollection {
 

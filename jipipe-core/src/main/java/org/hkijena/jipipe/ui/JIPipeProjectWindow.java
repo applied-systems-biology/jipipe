@@ -45,9 +45,6 @@ import org.scijava.Context;
 
 import javax.swing.*;
 import java.awt.BorderLayout;
-import java.awt.KeyboardFocusManager;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;

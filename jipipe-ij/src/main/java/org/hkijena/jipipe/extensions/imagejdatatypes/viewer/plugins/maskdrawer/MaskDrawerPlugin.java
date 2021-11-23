@@ -212,8 +212,7 @@ public class MaskDrawerPlugin extends ImageViewerPanelPlugin {
                 currentMaskSlice = mask.getProcessor();
                 setMask(mask);
             }
-        }
-        else {
+        } else {
             mask = null;
             currentMaskSlice = null;
             currentMaskSlicePreview = null;
@@ -249,6 +248,7 @@ public class MaskDrawerPlugin extends ImageViewerPanelPlugin {
 
     /**
      * The current group header created by  createPalettePanel. Use this for adding your own buttons into createPalettePanel
+     *
      * @return the current group header. can be null
      */
     public FormPanel.GroupHeaderPanel getCurrentGroupHeader() {
@@ -427,9 +427,9 @@ public class MaskDrawerPlugin extends ImageViewerPanelPlugin {
     }
 
     public void clearCurrentMask() {
-        if(getCurrentMaskSlice() != null) {
+        if (getCurrentMaskSlice() != null) {
             getCurrentMaskSlice().setColor(0);
-            getCurrentMaskSlice().fillRect(0,0, getCurrentMaskSlice().getWidth(), getCurrentMaskSlice().getHeight());
+            getCurrentMaskSlice().fillRect(0, 0, getCurrentMaskSlice().getWidth(), getCurrentMaskSlice().getHeight());
             recalculateMaskPreview();
             getViewerPanel().getCanvas().getEventBus().post(new MaskDrawerPlugin.MaskChangedEvent(this));
         }
@@ -458,7 +458,7 @@ public class MaskDrawerPlugin extends ImageViewerPanelPlugin {
 
     @Override
     public void postprocessDrawForExport(BufferedImage image, ImageSliceIndex sliceIndex) {
-        if(mask == null)
+        if (mask == null)
             return;
         int z = Math.min(mask.getNSlices() - 1, sliceIndex.getZ());
         int c = Math.min(mask.getNChannels() - 1, sliceIndex.getC());

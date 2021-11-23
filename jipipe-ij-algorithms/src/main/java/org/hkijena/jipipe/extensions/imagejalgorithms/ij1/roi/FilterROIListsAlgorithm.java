@@ -47,7 +47,7 @@ public class FilterROIListsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         ROIListData rois = dataBatch.getInputData(getFirstInputSlot(), ROIListData.class, progressInfo);
 
         ExpressionVariables parameters = new ExpressionVariables();
-        if(includeAnnotations) {
+        if (includeAnnotations) {
             for (JIPipeAnnotation annotation : dataBatch.getGlobalAnnotations().values()) {
                 parameters.set(annotation.getName(), annotation.getValue());
             }

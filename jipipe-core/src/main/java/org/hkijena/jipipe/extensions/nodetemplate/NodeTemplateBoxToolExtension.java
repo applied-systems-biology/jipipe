@@ -2,7 +2,6 @@ package org.hkijena.jipipe.extensions.nodetemplate;
 
 import org.hkijena.jipipe.JIPipeJavaExtension;
 import org.hkijena.jipipe.extensions.JIPipePrepackagedDefaultJavaExtension;
-import org.hkijena.jipipe.extensions.nodetoolboxtool.NodeToolBoxMenuExtension;
 import org.hkijena.jipipe.extensions.parameters.primitives.HTMLText;
 import org.hkijena.jipipe.extensions.parameters.primitives.StringList;
 import org.scijava.plugin.Plugin;

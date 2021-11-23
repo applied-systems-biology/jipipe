@@ -13,14 +13,11 @@
 
 package org.hkijena.jipipe.extensions.imagejdatatypes.viewer;
 
-import com.google.common.collect.ImmutableSet;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
-import java.util.HashSet;
-import java.util.Set;
 
 public class ImageViewerWindow extends JFrame implements WindowListener {
     private final ImageViewerPanel viewerPanel;

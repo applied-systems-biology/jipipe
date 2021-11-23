@@ -6,8 +6,6 @@ import org.hkijena.jipipe.ui.extension.JIPipeMenuExtension;
 import org.hkijena.jipipe.ui.extension.JIPipeMenuExtensionTarget;
 import org.hkijena.jipipe.utils.UIUtils;
 
-import java.util.Collections;
-
 public class RebuildAliasIdsTool extends JIPipeMenuExtension {
     /**
      * Creates a new instance

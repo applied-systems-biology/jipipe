@@ -32,7 +32,6 @@ import ij.gui.PolygonRoi;
 import ij.gui.Roi;
 import ij.plugin.PlugIn;
 import ij.plugin.filter.AVI_Writer;
-import ij.plugin.frame.Recorder;
 import ij.process.*;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
@@ -48,7 +47,6 @@ import javax.swing.*;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Graphics2D;
-import java.awt.Image;
 import java.awt.Rectangle;
 import java.awt.Shape;
 import java.awt.geom.AffineTransform;
@@ -82,6 +80,7 @@ public class ImageJUtils {
      * Faster version of the duplicate() method in {@link ImagePlus}.
      * The reason behind this is that {@link ij.plugin.Duplicator} uses an expensive crop() operation instead of Java's array copy
      * to allow making duplicates of ROI
+     *
      * @param imp the image
      * @return a copy of the image
      */
@@ -92,26 +91,22 @@ public class ImageJUtils {
         double max = imp.getDisplayRangeMax();
         ImageStack copyStack = new ImageStack(imp.getWidth(), imp.getHeight(), imp.getProcessor().getColorModel());
         int n = stack.size();
-        for (int i=1; i<=n; i++) {
+        for (int i = 1; i <= n; i++) {
             ImageProcessor sourceProcessor = stack.getProcessor(i);
             ImageProcessor targetProcessor;
-            if(sourceProcessor instanceof ByteProcessor) {
+            if (sourceProcessor instanceof ByteProcessor) {
                 sourceProcessor.setSnapshotCopyMode(false);
                 targetProcessor = new ByteProcessor(imp.getWidth(), imp.getHeight(), (byte[]) sourceProcessor.getPixelsCopy());
-            }
-            else if(sourceProcessor instanceof ShortProcessor) {
+            } else if (sourceProcessor instanceof ShortProcessor) {
                 sourceProcessor.setSnapshotCopyMode(false);
                 targetProcessor = new ShortProcessor(imp.getWidth(), imp.getHeight(), (short[]) sourceProcessor.getPixelsCopy(), sourceProcessor.getColorModel());
-            }
-            else if(sourceProcessor instanceof ColorProcessor) {
+            } else if (sourceProcessor instanceof ColorProcessor) {
                 sourceProcessor.setSnapshotCopyMode(false);
                 targetProcessor = new ColorProcessor(imp.getWidth(), imp.getHeight(), (int[]) sourceProcessor.getPixelsCopy());
-            }
-            else if(sourceProcessor instanceof FloatProcessor) {
+            } else if (sourceProcessor instanceof FloatProcessor) {
                 sourceProcessor.setSnapshotCopyMode(false);
                 targetProcessor = new FloatProcessor(imp.getWidth(), imp.getHeight(), (float[]) sourceProcessor.getPixelsCopy());
-            }
-            else {
+            } else {
                 sourceProcessor.setRoi((Roi) null);
                 targetProcessor = sourceProcessor.crop();
             }
@@ -119,9 +114,9 @@ public class ImageJUtils {
         }
         IJ.showProgress(1.0);
         ImagePlus imp2 = imp.createImagePlus();
-        imp2.setStack("DUP_"+imp.getTitle(), copyStack);
-        String info = (String)imp.getProperty("Info");
-        if (info!=null)
+        imp2.setStack("DUP_" + imp.getTitle(), copyStack);
+        String info = (String) imp.getProperty("Info");
+        if (info != null)
             imp2.setProperty("Info", info);
         imp2.setProperties(imp.getPropertiesAsArray());
         imp2.setCalibration(imp.getCalibration());
@@ -129,14 +124,14 @@ public class ImageJUtils {
         imp2.setDimensions(dim[2], dim[3], dim[4]);
         if (imp.isComposite()) {
             imp2 = new CompositeImage(imp2, 0);
-            ((CompositeImage)imp2).copyLuts(imp);
+            ((CompositeImage) imp2).copyLuts(imp);
         }
         if (virtualStack)
             imp2.setDisplayRange(min, max);
         if (imp.isHyperStack())
             imp2.setOpenAsHyperStack(true);
         Overlay overlay = imp.getOverlay();
-        if (overlay!=null && !imp.getHideOverlay())
+        if (overlay != null && !imp.getHideOverlay())
             imp2.setOverlay(overlay);
         return imp2;
     }
@@ -1193,7 +1188,7 @@ public class ImageJUtils {
             min = stats.min;
             max = stats.max;
         }
-        return new double[] { min, max };
+        return new double[]{min, max};
     }
 
     /**

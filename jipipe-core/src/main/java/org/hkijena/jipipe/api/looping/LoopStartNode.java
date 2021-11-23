@@ -67,7 +67,7 @@ public class LoopStartNode extends IOInterfaceAlgorithm implements JIPipeDataBat
 
     @JIPipeParameter("iteration-mode")
     public void setIterationMode(GraphWrapperAlgorithm.IterationMode iterationMode) {
-       this.iterationMode = iterationMode;
+        this.iterationMode = iterationMode;
     }
 
     @JIPipeDocumentation(name = "Data batch generation", description = "Only used if the graph iteration mode is not set to 'Pass data through'. " +

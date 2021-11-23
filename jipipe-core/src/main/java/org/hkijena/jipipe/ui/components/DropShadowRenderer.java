@@ -37,6 +37,7 @@ public class DropShadowRenderer {
     public DropShadowRenderer(boolean showLeftShadow) {
         this(Color.BLACK, 5, .5f, 12, false, showLeftShadow, true, true);
     }
+
     public DropShadowRenderer(Color shadowColor, int shadowSize,
                               float shadowOpacity, int cornerSize, boolean showTopShadow,
                               boolean showLeftShadow, boolean showBottomShadow, boolean showRightShadow) {

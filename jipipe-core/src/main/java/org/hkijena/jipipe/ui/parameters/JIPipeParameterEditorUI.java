@@ -118,6 +118,7 @@ public abstract class JIPipeParameterEditorUI extends JIPipeWorkbenchPanel imple
 
     /**
      * If true, the {@link ParameterPanel} will render an "important" label if the parameter is marked as important.
+     *
      * @return if an automatically generated "important" label should be displayed
      */
     public boolean isUIImportantLabelEnabled() {

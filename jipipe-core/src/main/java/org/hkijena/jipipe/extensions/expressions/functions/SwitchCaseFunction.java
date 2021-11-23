@@ -22,22 +22,21 @@ public class SwitchCaseFunction extends ExpressionFunction {
         for (int i = 0; i < (parameters.size() / 2); i++) {
             Object condition = parameters.get(i * 2);
             Object value = parameters.get(i * 2 + 1);
-            if(condition instanceof Boolean) {
-                if((boolean) condition) {
+            if (condition instanceof Boolean) {
+                if ((boolean) condition) {
                     result = value;
                     found = true;
                     break;
                 }
-            }
-            else if(condition instanceof Number) {
-                if(((Number) condition).doubleValue()> 0) {
+            } else if (condition instanceof Number) {
+                if (((Number) condition).doubleValue() > 0) {
                     found = true;
                     result = value;
                     break;
                 }
             }
         }
-        if(!found && parameters.size() % 2 != 0) {
+        if (!found && parameters.size() % 2 != 0) {
             result = parameters.get(parameters.size() - 1);
         }
         return result;

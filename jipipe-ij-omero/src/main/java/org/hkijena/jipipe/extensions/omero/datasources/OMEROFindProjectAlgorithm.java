@@ -80,7 +80,7 @@ public class OMEROFindProjectAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     @Override
     protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
         long groupId = dataBatch.getInputData("Group", OMEROGroupReferenceData.class, progressInfo).getGroupId();
-        try(OMEROGateway gateway = new OMEROGateway(credentials.getCredentials(), progressInfo)) {
+        try (OMEROGateway gateway = new OMEROGateway(credentials.getCredentials(), progressInfo)) {
             SecurityContext context = new SecurityContext(groupId);
             try {
                 for (ProjectData project : gateway.getBrowseFacility().getProjects(context)) {

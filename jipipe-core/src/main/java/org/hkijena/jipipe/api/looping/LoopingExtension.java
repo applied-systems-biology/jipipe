@@ -15,12 +15,6 @@ package org.hkijena.jipipe.api.looping;
 
 import org.hkijena.jipipe.JIPipeJavaExtension;
 import org.hkijena.jipipe.api.grouping.GraphWrapperAlgorithm;
-import org.hkijena.jipipe.api.grouping.GraphWrapperAlgorithmInput;
-import org.hkijena.jipipe.api.grouping.GraphWrapperAlgorithmOutput;
-import org.hkijena.jipipe.api.grouping.parameters.GraphNodeParameterEditorUI;
-import org.hkijena.jipipe.api.grouping.parameters.GraphNodeParameters;
-import org.hkijena.jipipe.api.grouping.parameters.NodeGroupContents;
-import org.hkijena.jipipe.api.grouping.parameters.NodeGroupContentsParameterEditorUI;
 import org.hkijena.jipipe.extensions.JIPipePrepackagedDefaultJavaExtension;
 import org.hkijena.jipipe.extensions.parameters.primitives.HTMLText;
 import org.hkijena.jipipe.extensions.parameters.primitives.StringList;

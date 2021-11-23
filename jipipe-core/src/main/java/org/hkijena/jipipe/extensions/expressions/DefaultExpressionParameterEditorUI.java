@@ -61,7 +61,7 @@ public class DefaultExpressionParameterEditorUI extends JIPipeParameterEditorUI 
         JPanel optionPanel = new JPanel();
         optionPanel.setOpaque(true);
         optionPanel.setLayout(new BoxLayout(optionPanel, BoxLayout.X_AXIS));
-        optionPanel.setBorder(BorderFactory.createMatteBorder(0,1,0,0, UIManager.getColor("Button.borderColor")));
+        optionPanel.setBorder(BorderFactory.createMatteBorder(0, 1, 0, 0, UIManager.getColor("Button.borderColor")));
 
         JButton functionBuilder = new JButton("Edit", UIUtils.getIconFromResources("actions/insert-math-expression.png"));
         UIUtils.makeFlat25x25(functionBuilder);

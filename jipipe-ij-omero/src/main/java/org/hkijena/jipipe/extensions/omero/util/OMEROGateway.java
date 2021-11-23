@@ -1,6 +1,5 @@
 package org.hkijena.jipipe.extensions.omero.util;
 
-import omero.SecurityViolation;
 import omero.gateway.Gateway;
 import omero.gateway.LoginCredentials;
 import omero.gateway.SecurityContext;
@@ -9,7 +8,6 @@ import omero.gateway.exception.DSOutOfServiceException;
 import omero.gateway.facility.BrowseFacility;
 import omero.gateway.facility.DataManagerFacility;
 import omero.gateway.facility.MetadataFacility;
-import omero.gateway.facility.TablesFacility;
 import omero.gateway.model.DatasetData;
 import omero.gateway.model.ExperimenterData;
 import omero.gateway.model.GroupData;
@@ -73,7 +71,7 @@ public class OMEROGateway implements AutoCloseable {
     }
 
     @Override
-    public void close()  {
+    public void close() {
         try {
             gateway.close();
         } catch (Exception e) {
@@ -87,30 +85,29 @@ public class OMEROGateway implements AutoCloseable {
 
     /**
      * Gets a project
+     *
      * @param projectId the project ID
-     * @param groupId the group ID. Can be negative; then all available group Ids will be tested
+     * @param groupId   the group ID. Can be negative; then all available group Ids will be tested
      * @return the project or null if it was not found
      */
     public ProjectData getProject(long projectId, long groupId) {
-        if(groupId >= 0) {
+        if (groupId >= 0) {
             try {
                 Collection<ProjectData> projects = browseFacility.getProjects(new SecurityContext(groupId), Collections.singletonList(projectId));
-                if(!projects.isEmpty()) {
+                if (!projects.isEmpty()) {
                     return projects.iterator().next();
                 }
             } catch (DSOutOfServiceException | DSAccessException e) {
                 throw new RuntimeException(e);
             }
-        }
-        else {
+        } else {
             for (GroupData group : user.getGroups()) {
                 try {
                     Collection<ProjectData> projects = browseFacility.getProjects(new SecurityContext(group.getId()), Collections.singletonList(projectId));
-                    if(!projects.isEmpty()) {
+                    if (!projects.isEmpty()) {
                         return projects.iterator().next();
                     }
-                }
-                catch (DSOutOfServiceException | DSAccessException e) {
+                } catch (DSOutOfServiceException | DSAccessException e) {
                     throw new RuntimeException(e);
                 }
             }
@@ -120,30 +117,29 @@ public class OMEROGateway implements AutoCloseable {
 
     /**
      * Gets a dataset
+     *
      * @param datasetId the project ID
-     * @param groupId the group ID. Can be negative; then all available group Ids will be tested
+     * @param groupId   the group ID. Can be negative; then all available group Ids will be tested
      * @return the project or null if it was not found
      */
     public DatasetData getDataset(long datasetId, long groupId) {
-        if(groupId >= 0) {
+        if (groupId >= 0) {
             try {
                 Collection<DatasetData> datasets = browseFacility.getDatasets(new SecurityContext(groupId), Collections.singletonList(datasetId));
-                if(!datasets.isEmpty()) {
+                if (!datasets.isEmpty()) {
                     return datasets.iterator().next();
                 }
             } catch (DSOutOfServiceException | DSAccessException e) {
                 throw new RuntimeException(e);
             }
-        }
-        else {
+        } else {
             for (GroupData group : user.getGroups()) {
                 try {
                     Collection<DatasetData> datasets = browseFacility.getDatasets(new SecurityContext(group.getId()), Collections.singletonList(datasetId));
-                    if(!datasets.isEmpty()) {
+                    if (!datasets.isEmpty()) {
                         return datasets.iterator().next();
                     }
-                }
-                catch (DSOutOfServiceException | DSAccessException e) {
+                } catch (DSOutOfServiceException | DSAccessException e) {
                     throw new RuntimeException(e);
                 }
             }
@@ -153,30 +149,29 @@ public class OMEROGateway implements AutoCloseable {
 
     /**
      * Gets a dataset
+     *
      * @param imageId the image ID
      * @param groupId the group ID. Can be negative; then all available group Ids will be tested
      * @return the project or null if it was not found
      */
     public ImageData getImage(long imageId, long groupId) {
-        if(groupId >= 0) {
+        if (groupId >= 0) {
             try {
                 Collection<ImageData> images = browseFacility.getImages(new SecurityContext(groupId), Collections.singletonList(imageId));
-                if(!images.isEmpty()) {
+                if (!images.isEmpty()) {
                     return images.iterator().next();
                 }
             } catch (DSOutOfServiceException | DSAccessException e) {
                 throw new RuntimeException(e);
             }
-        }
-        else {
+        } else {
             for (GroupData group : user.getGroups()) {
                 try {
                     Collection<ImageData> images = browseFacility.getImages(new SecurityContext(group.getId()), Collections.singletonList(imageId));
-                    if(!images.isEmpty()) {
+                    if (!images.isEmpty()) {
                         return images.iterator().next();
                     }
-                }
-                catch (DSOutOfServiceException | DSAccessException e) {
+                } catch (DSOutOfServiceException | DSAccessException e) {
                     throw new RuntimeException(e);
                 }
             }

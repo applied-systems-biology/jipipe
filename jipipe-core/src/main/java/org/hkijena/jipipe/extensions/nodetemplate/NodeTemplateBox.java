@@ -1,6 +1,5 @@
 package org.hkijena.jipipe.extensions.nodetemplate;
 
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.google.common.collect.ImmutableList;
 import com.google.common.eventbus.Subscribe;
@@ -12,7 +11,6 @@ import org.hkijena.jipipe.api.data.JIPipeDataInfo;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeGraph;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
-import org.hkijena.jipipe.api.nodes.categories.InternalNodeTypeCategory;
 import org.hkijena.jipipe.extensions.settings.FileChooserSettings;
 import org.hkijena.jipipe.extensions.settings.NodeTemplateSettings;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
@@ -37,7 +35,6 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -46,18 +43,17 @@ import java.util.Set;
 public class NodeTemplateBox extends JIPipeWorkbenchPanel {
 
     private final JIPipeProject project;
-    private JList<JIPipeNodeTemplate> templateList;
     private final Set<JIPipeNodeTemplate> projectTemplateList = new HashSet<>();
-    private SearchTextField searchField;
     private final MarkdownReader documentationReader = new MarkdownReader(false);
     private final JToolBar toolBar = new JToolBar();
+    private JList<JIPipeNodeTemplate> templateList;
+    private SearchTextField searchField;
 
     public NodeTemplateBox(JIPipeWorkbench workbench) {
         super(workbench);
-        if(workbench instanceof JIPipeProjectWorkbench) {
+        if (workbench instanceof JIPipeProjectWorkbench) {
             this.project = ((JIPipeProjectWorkbench) workbench).getProject();
-        }
-        else {
+        } else {
             this.project = null;
         }
         initialize();
@@ -119,7 +115,7 @@ public class NodeTemplateBox extends JIPipeWorkbenchPanel {
 
         JMenuItem selectAllItem = new JMenuItem("Select all", UIUtils.getIconFromResources("actions/edit-select-all.png"));
         selectAllItem.addActionListener(e -> {
-            if(templateList.getModel().getSize() > 0) {
+            if (templateList.getModel().getSize() > 0) {
                 templateList.setSelectionInterval(0, templateList.getModel().getSize() - 1);
             }
         });
@@ -131,7 +127,7 @@ public class NodeTemplateBox extends JIPipeWorkbenchPanel {
         editItem.addActionListener(e -> editSelected());
         manageMenu.add(editItem);
 
-        if(project != null) {
+        if (project != null) {
             JMenuItem copyToProjectItem = new JMenuItem("Copy selection to project", UIUtils.getIconFromResources("actions/edit-copy.png"));
             copyToProjectItem.addActionListener(e -> copySelectionToProject());
             manageMenu.add(copyToProjectItem);
@@ -159,18 +155,18 @@ public class NodeTemplateBox extends JIPipeWorkbenchPanel {
     }
 
     private void editSelected() {
-        if(templateList.getSelectedValuesList().isEmpty()) {
+        if (templateList.getSelectedValuesList().isEmpty()) {
             JOptionPane.showMessageDialog(this, "You did not select any templates!", "Error", JOptionPane.ERROR_MESSAGE);
             return;
         }
         JIPipeNodeTemplate template = templateList.getSelectedValue();
         JIPipeNodeTemplate copy = new JIPipeNodeTemplate(template);
-        if(ParameterPanel.showDialog(getWorkbench(), copy, new MarkdownDocument("# Node templates\n\nUse this user interface to modify node templates."), "Edit template",
+        if (ParameterPanel.showDialog(getWorkbench(), copy, new MarkdownDocument("# Node templates\n\nUse this user interface to modify node templates."), "Edit template",
                 ParameterPanel.WITH_SCROLLING | ParameterPanel.WITH_SEARCH_BAR | ParameterPanel.WITH_DOCUMENTATION)) {
             template.setData(copy.getData());
             template.setDescription(copy.getDescription());
             template.setName(copy.getName());
-            if(project != null) {
+            if (project != null) {
                 project.getMetadata().triggerParameterChange("node-templates");
             }
             NodeTemplateSettings templateSettings = NodeTemplateSettings.getInstance();
@@ -180,11 +176,11 @@ public class NodeTemplateBox extends JIPipeWorkbenchPanel {
     }
 
     private void exportTemplates() {
-        if(templateList.getSelectedValuesList().isEmpty()) {
+        if (templateList.getSelectedValuesList().isEmpty()) {
             return;
         }
         Path path = FileChooserSettings.saveFile(this, FileChooserSettings.LastDirectoryKey.Projects, "Export templates", UIUtils.EXTENSION_FILTER_JSON);
-        if(path != null) {
+        if (path != null) {
             try {
                 Files.write(path, JsonUtils.toPrettyJsonString(templateList.getSelectedValuesList()).getBytes(StandardCharsets.UTF_8));
             } catch (IOException e) {
@@ -195,7 +191,7 @@ public class NodeTemplateBox extends JIPipeWorkbenchPanel {
 
     private void importTemplates() {
         Path path = FileChooserSettings.openFile(this, FileChooserSettings.LastDirectoryKey.Projects, "Import templates", UIUtils.EXTENSION_FILTER_JSON);
-        if(path != null) {
+        if (path != null) {
             try {
                 JsonNode node = JsonUtils.getObjectMapper().readerFor(JsonNode.class).readValue(path.toFile());
                 List<JIPipeNodeTemplate> templates = new ArrayList<>();
@@ -203,7 +199,7 @@ public class NodeTemplateBox extends JIPipeWorkbenchPanel {
                     templates.add(JsonUtils.getObjectMapper().readerFor(JIPipeNodeTemplate.class).readValue(element));
                 }
                 boolean writeToProject = false;
-                if(project != null) {
+                if (project != null) {
                     int result = JOptionPane.showOptionDialog(this,
                             "Node templates can be stored globally or inside the project. Where should the templates be stored?",
                             "Import node templates",
@@ -212,22 +208,21 @@ public class NodeTemplateBox extends JIPipeWorkbenchPanel {
                             null,
                             new Object[]{"Globally", "Inside project", "Cancel"},
                             "Globally");
-                    if(result == JOptionPane.CANCEL_OPTION)
+                    if (result == JOptionPane.CANCEL_OPTION)
                         return;
                     writeToProject = result == JOptionPane.NO_OPTION;
                 }
-                if(writeToProject) {
+                if (writeToProject) {
                     for (JIPipeNodeTemplate template : templates) {
-                        if(!project.getMetadata().getNodeTemplates().contains(template)) {
+                        if (!project.getMetadata().getNodeTemplates().contains(template)) {
                             project.getMetadata().getNodeTemplates().add(template);
                         }
                     }
                     project.getMetadata().triggerParameterChange("node-templates");
-                }
-                else {
+                } else {
                     NodeTemplateSettings templateSettings = NodeTemplateSettings.getInstance();
                     for (JIPipeNodeTemplate template : templates) {
-                        if(!templateSettings.getNodeTemplates().contains(template)) {
+                        if (!templateSettings.getNodeTemplates().contains(template)) {
                             templateSettings.getNodeTemplates().add(template);
                         }
                     }
@@ -241,27 +236,27 @@ public class NodeTemplateBox extends JIPipeWorkbenchPanel {
     }
 
     private void copySelectionToGlobal() {
-        if(project == null) {
+        if (project == null) {
             return;
         }
-        if(templateList.getSelectedValuesList().isEmpty()) {
+        if (templateList.getSelectedValuesList().isEmpty()) {
             JOptionPane.showMessageDialog(this, "You did not select any templates!", "Error", JOptionPane.ERROR_MESSAGE);
             return;
         }
-        if(JOptionPane.showConfirmDialog(this, "Do you really want to copy " + templateList.getSelectedValuesList().size() + " templates into the global storage?",
+        if (JOptionPane.showConfirmDialog(this, "Do you really want to copy " + templateList.getSelectedValuesList().size() + " templates into the global storage?",
                 "Copy selection to global storage", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE) == JOptionPane.NO_OPTION) {
             return;
         }
         NodeTemplateSettings templateSettings = NodeTemplateSettings.getInstance();
         Set<JIPipeNodeTemplate> copied = new HashSet<>();
         for (JIPipeNodeTemplate template : ImmutableList.copyOf(templateList.getSelectedValuesList())) {
-            if(!templateSettings.getNodeTemplates().contains(template)) {
+            if (!templateSettings.getNodeTemplates().contains(template)) {
                 templateSettings.getNodeTemplates().add(template);
                 copied.add(template);
             }
         }
-        if(!copied.isEmpty()) {
-            if(JOptionPane.showConfirmDialog(this, "Successfully copied " + copied.size() + " templates into the global storage.\n" +
+        if (!copied.isEmpty()) {
+            if (JOptionPane.showConfirmDialog(this, "Successfully copied " + copied.size() + " templates into the global storage.\n" +
                     "Do you want to remove these from the project storage?", "Copy selection to global storage", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE) == JOptionPane.YES_OPTION) {
                 for (JIPipeNodeTemplate template : copied) {
                     project.getMetadata().getNodeTemplates().remove(template);
@@ -273,27 +268,27 @@ public class NodeTemplateBox extends JIPipeWorkbenchPanel {
     }
 
     private void copySelectionToProject() {
-        if(project == null) {
+        if (project == null) {
             return;
         }
-        if(templateList.getSelectedValuesList().isEmpty()) {
+        if (templateList.getSelectedValuesList().isEmpty()) {
             JOptionPane.showMessageDialog(this, "You did not select any templates!", "Error", JOptionPane.ERROR_MESSAGE);
             return;
         }
-        if(JOptionPane.showConfirmDialog(this, "Do you really want to copy " + templateList.getSelectedValuesList().size() + " templates into the project storage?",
+        if (JOptionPane.showConfirmDialog(this, "Do you really want to copy " + templateList.getSelectedValuesList().size() + " templates into the project storage?",
                 "Copy selection to project", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE) == JOptionPane.NO_OPTION) {
             return;
         }
         NodeTemplateSettings templateSettings = NodeTemplateSettings.getInstance();
         Set<JIPipeNodeTemplate> copied = new HashSet<>();
         for (JIPipeNodeTemplate template : ImmutableList.copyOf(templateList.getSelectedValuesList())) {
-            if(!project.getMetadata().getNodeTemplates().contains(template)) {
+            if (!project.getMetadata().getNodeTemplates().contains(template)) {
                 project.getMetadata().getNodeTemplates().add(template);
                 copied.add(template);
             }
         }
-        if(!copied.isEmpty()) {
-            if(JOptionPane.showConfirmDialog(this, "Successfully copied " + copied.size() + " templates into the project storage.\n" +
+        if (!copied.isEmpty()) {
+            if (JOptionPane.showConfirmDialog(this, "Successfully copied " + copied.size() + " templates into the project storage.\n" +
                     "Do you want to remove these from the global storage?", "Copy selection to project", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE) == JOptionPane.YES_OPTION) {
                 for (JIPipeNodeTemplate template : copied) {
                     templateSettings.getNodeTemplates().remove(template);
@@ -305,11 +300,11 @@ public class NodeTemplateBox extends JIPipeWorkbenchPanel {
     }
 
     private void deleteSelection() {
-        if(templateList.getSelectedValuesList().isEmpty()) {
+        if (templateList.getSelectedValuesList().isEmpty()) {
             JOptionPane.showMessageDialog(this, "You did not select any templates!", "Error", JOptionPane.ERROR_MESSAGE);
             return;
         }
-        if(JOptionPane.showConfirmDialog(this, "Do you really want to delete " + templateList.getSelectedValuesList().size() + " templates?",
+        if (JOptionPane.showConfirmDialog(this, "Do you really want to delete " + templateList.getSelectedValuesList().size() + " templates?",
                 "Delete selected templates", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE) == JOptionPane.NO_OPTION) {
             return;
         }
@@ -317,20 +312,20 @@ public class NodeTemplateBox extends JIPipeWorkbenchPanel {
         boolean modifiedGlobal = false;
         NodeTemplateSettings templateSettings = NodeTemplateSettings.getInstance();
         for (JIPipeNodeTemplate template : ImmutableList.copyOf(templateList.getSelectedValuesList())) {
-            if(templateSettings.getNodeTemplates().remove(template)) {
+            if (templateSettings.getNodeTemplates().remove(template)) {
                 modifiedGlobal = true;
             }
-            if(project != null && project.getMetadata().getNodeTemplates().remove(template)) {
+            if (project != null && project.getMetadata().getNodeTemplates().remove(template)) {
                 modifiedProject = true;
             }
         }
-        if(modifiedGlobal) {
+        if (modifiedGlobal) {
             templateSettings.triggerParameterChange("node-templates");
         }
-        if(modifiedProject) {
+        if (modifiedProject) {
             project.getMetadata().triggerParameterChange("node-templates");
         }
-        if(modifiedProject || modifiedGlobal) {
+        if (modifiedProject || modifiedGlobal) {
             NodeTemplateSettings.triggerRefreshedEvent();
         }
     }
@@ -363,15 +358,15 @@ public class NodeTemplateBox extends JIPipeWorkbenchPanel {
                 builder.append(description).append("</br>");
 
             JIPipeGraph graph = template.getGraph();
-            if(graph != null) {
+            if (graph != null) {
                 // Write description
-                if(graph.getGraphNodes().size() == 1) {
+                if (graph.getGraphNodes().size() == 1) {
                     description = graph.getGraphNodes().iterator().next().getInfo().getDescription().getBody();
                 }
                 if (description != null && !description.isEmpty())
                     builder.append(description).append("</br>");
 
-                if(graph.getGraphNodes().size() == 1) {
+                if (graph.getGraphNodes().size() == 1) {
                     JIPipeGraphNode node = graph.getGraphNodes().iterator().next();
                     // Write algorithm slot info
                     builder.append("<table style=\"margin-top: 10px;\">");
@@ -392,8 +387,7 @@ public class NodeTemplateBox extends JIPipeWorkbenchPanel {
                         builder.append("</tr>");
                     }
                     builder.append("</table>\n\n");
-                }
-                else if(!graph.getGraphNodes().isEmpty()) {
+                } else if (!graph.getGraphNodes().isEmpty()) {
                     // Write list of nodes
                     builder.append("<table style=\"margin-top: 10px;\">");
                     for (JIPipeGraphNode node : graph.getGraphNodes()) {
@@ -413,7 +407,7 @@ public class NodeTemplateBox extends JIPipeWorkbenchPanel {
     private List<JIPipeNodeTemplate> getFilteredAndSortedInfos() {
         List<JIPipeNodeTemplate> templates = new ArrayList<>(NodeTemplateSettings.getInstance().getNodeTemplates());
         this.projectTemplateList.clear();
-        if(project != null) {
+        if (project != null) {
             templates.addAll(project.getMetadata().getNodeTemplates());
             this.projectTemplateList.addAll(project.getMetadata().getNodeTemplates());
         }

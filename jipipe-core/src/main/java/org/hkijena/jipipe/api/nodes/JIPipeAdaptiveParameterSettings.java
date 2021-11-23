@@ -29,9 +29,7 @@ import org.hkijena.jipipe.extensions.parameters.primitives.StringParameterSettin
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.parameters.AdaptiveParameterBuilder;
 import org.hkijena.jipipe.utils.ResourceUtils;
-import org.hkijena.jipipe.utils.UIUtils;
 
-import javax.swing.*;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -143,12 +141,12 @@ public class JIPipeAdaptiveParameterSettings implements JIPipeParameterCollectio
     public void addAdaptiveParameterAssistant(JIPipeWorkbench parent) {
         AdaptiveParameterBuilder dialog = new AdaptiveParameterBuilder(parent, getNode() != null ? getNode() : this);
         dialog.setModal(true);
-        dialog.setSize(800,600);
+        dialog.setSize(800, 600);
         dialog.revalidate();
         dialog.repaint();
         dialog.setLocationRelativeTo(parent.getWindow());
         dialog.setVisible(true);
-        if(!dialog.isCanceled() && dialog.getCurrentParameterAccess() != null) {
+        if (!dialog.isCanceled() && dialog.getCurrentParameterAccess() != null) {
             DefaultExpressionParameter parameter = dialog.build();
             String uniqueKey = dialog.getParameterTree().getUniqueKey(dialog.getCurrentParameterAccess());
             overriddenParameters.add(new StringQueryExpressionAndStringPairParameter(parameter.getExpression(), uniqueKey));

@@ -238,7 +238,7 @@ public class ROIManagerPlugin extends ImageViewerPanelPlugin {
 
     private void importROIsFromFile() {
         Path path = FileChooserSettings.openFile(getViewerPanel(), FileChooserSettings.LastDirectoryKey.Data, "Import ROI", UIUtils.EXTENSION_FILTER_ROIS);
-        if(path != null) {
+        if (path != null) {
             ROIListData importedROIs = ROIListData.loadRoiListFromFile(path);
             importROIs(importedROIs);
         }
@@ -246,14 +246,13 @@ public class ROIManagerPlugin extends ImageViewerPanelPlugin {
 
     private void exportROIsToFile() {
         FileNameExtensionFilter[] fileNameExtensionFilters;
-        if(rois.size() == 1) {
-            fileNameExtensionFilters = new FileNameExtensionFilter[] { UIUtils.EXTENSION_FILTER_ROI, UIUtils.EXTENSION_FILTER_ROI_ZIP };
-        }
-        else {
-            fileNameExtensionFilters = new FileNameExtensionFilter[] { UIUtils.EXTENSION_FILTER_ROI_ZIP };
+        if (rois.size() == 1) {
+            fileNameExtensionFilters = new FileNameExtensionFilter[]{UIUtils.EXTENSION_FILTER_ROI, UIUtils.EXTENSION_FILTER_ROI_ZIP};
+        } else {
+            fileNameExtensionFilters = new FileNameExtensionFilter[]{UIUtils.EXTENSION_FILTER_ROI_ZIP};
         }
         Path path = FileChooserSettings.saveFile(getViewerPanel(), FileChooserSettings.LastDirectoryKey.Data, "Export ROI", fileNameExtensionFilters);
-        if(path != null) {
+        if (path != null) {
             rois.save(path);
         }
     }

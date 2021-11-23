@@ -52,7 +52,7 @@ public class ListParameterEditorUI extends JIPipeParameterEditorUI {
 
         toolBar.add(Box.createHorizontalStrut(4));
         JLabel nameLabel = new JLabel(getParameterAccess().getName());
-        if(getParameterAccess().isImportant()) {
+        if (getParameterAccess().isImportant()) {
             nameLabel.setIcon(UIUtils.getIconFromResources("emblems/important.png"));
         }
         toolBar.add(nameLabel);

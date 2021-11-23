@@ -43,7 +43,7 @@ public class MeasurementDrawerPlugin extends MaskDrawerPlugin {
         getCurrentGroupHeader().addColumn(clearButton);
 
         ROIManagerPlugin roiManager = getViewerPanel().getPlugin(ROIManagerPlugin.class);
-        if(roiManager != null) {
+        if (roiManager != null) {
             JButton addAsROIButton = new JButton("Add to ROI manager", UIUtils.getIconFromResources("actions/list-add.png"));
             addAsROIButton.addActionListener(e -> addToROIManager());
             getCurrentGroupHeader().addColumn(addAsROIButton);

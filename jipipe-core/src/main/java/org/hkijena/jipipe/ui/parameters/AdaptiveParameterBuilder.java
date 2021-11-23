@@ -40,8 +40,8 @@ public class AdaptiveParameterBuilder extends JDialog {
     private final JIPipeWorkbench workbench;
     private final JIPipeParameterCollection parameterCollection;
     private final JIPipeParameterTree parameterTree;
-    private ParameterTreeUI parameterTreeUI;
     private final JPanel contentPanel = new JPanel(new BorderLayout());
+    private ParameterTreeUI parameterTreeUI;
     private FormPanel listPanel;
     private FormPanel infoPanel;
     private ReadonlyCopyableTextField nameLabel;
@@ -260,14 +260,13 @@ public class AdaptiveParameterBuilder extends JDialog {
 
     public DefaultExpressionParameter build() {
         StringBuilder builder = new StringBuilder();
-        if(conditionValuePairs.isEmpty()) {
+        if (conditionValuePairs.isEmpty()) {
             builder.append("default");
-        }
-        else {
+        } else {
             builder.append("SWITCH(");
             for (int i = 0; i < conditionValuePairs.size(); i++) {
                 ConditionValuePair conditionValuePair = conditionValuePairs.get(i);
-                if(i != 0) {
+                if (i != 0) {
                     builder.append(", ");
                 }
                 builder.append("CASE(");
@@ -385,7 +384,7 @@ public class AdaptiveParameterBuilder extends JDialog {
                     .setKey("value")
                     .setGetter(conditionValuePair::getValue)
                     .setSetter(conditionValuePair::setValue);
-            if(conditionValuePair.getOriginalAccess() != null) {
+            if (conditionValuePair.getOriginalAccess() != null) {
                 for (Annotation annotation : conditionValuePair.getOriginalAccess().getAnnotations()) {
                     builder.addAnnotation(annotation);
                 }

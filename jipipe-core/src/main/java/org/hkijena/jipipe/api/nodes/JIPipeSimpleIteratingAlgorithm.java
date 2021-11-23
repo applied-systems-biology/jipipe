@@ -100,8 +100,9 @@ public abstract class JIPipeSimpleIteratingAlgorithm extends JIPipeParameterSlot
     /**
      * A pass-through variant for iterating algorithms.
      * Passes the data batch to the single output
+     *
      * @param progressInfo progress info
-     * @param dataBatch the data batch
+     * @param dataBatch    the data batch
      */
     protected void runPassThrough(JIPipeProgressInfo progressInfo, JIPipeDataBatch dataBatch) {
         progressInfo.log("Passing trough (via dynamic pass-through)");
@@ -138,10 +139,9 @@ public abstract class JIPipeSimpleIteratingAlgorithm extends JIPipeParameterSlot
             JIPipeDataBatch dataBatch = new JIPipeDataBatch(this);
             dataBatch.addGlobalAnnotations(parameterAnnotations, JIPipeAnnotationMergeStrategy.Merge);
             uploadAdaptiveParameters(dataBatch, tree, parameterBackups, progressInfo);
-            if(isPassThrough()) {
+            if (isPassThrough()) {
                 runPassThrough(slotProgress, dataBatch);
-            }
-            else {
+            } else {
                 runIteration(dataBatch, slotProgress);
             }
         } else {
@@ -165,10 +165,9 @@ public abstract class JIPipeSimpleIteratingAlgorithm extends JIPipeParameterSlot
                     dataBatch.addGlobalDataAnnotations(getFirstInputSlot().getDataAnnotations(i), JIPipeDataAnnotationMergeStrategy.MergeTables);
                     dataBatch.addGlobalAnnotations(parameterAnnotations, JIPipeAnnotationMergeStrategy.Merge);
                     uploadAdaptiveParameters(dataBatch, tree, parameterBackups, progressInfo);
-                    if(isPassThrough()) {
+                    if (isPassThrough()) {
                         runPassThrough(slotProgress, dataBatch);
-                    }
-                    else {
+                    } else {
                         runIteration(dataBatch, slotProgress);
                     }
                 }
@@ -189,10 +188,9 @@ public abstract class JIPipeSimpleIteratingAlgorithm extends JIPipeParameterSlot
                         dataBatch.addGlobalDataAnnotations(getFirstInputSlot().getDataAnnotations(rowIndex), JIPipeDataAnnotationMergeStrategy.MergeTables);
                         dataBatch.addGlobalAnnotations(parameterAnnotations, JIPipeAnnotationMergeStrategy.Merge);
                         uploadAdaptiveParameters(dataBatch, finalTree, parameterBackups, progressInfo);
-                        if(isPassThrough()) {
+                        if (isPassThrough()) {
                             runPassThrough(slotProgress, dataBatch);
-                        }
-                        else {
+                        } else {
                             runIteration(dataBatch, slotProgress);
                         }
                     });

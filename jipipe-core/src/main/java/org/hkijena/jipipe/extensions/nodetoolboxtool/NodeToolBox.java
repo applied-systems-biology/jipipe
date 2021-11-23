@@ -25,10 +25,10 @@ import java.util.List;
 
 public class NodeToolBox extends JPanel {
 
-    private JList<JIPipeNodeInfo> algorithmList;
-    private SearchTextField searchField;
     private final MarkdownReader documentationReader = new MarkdownReader(false);
     private final JToolBar toolBar = new JToolBar();
+    private JList<JIPipeNodeInfo> algorithmList;
+    private SearchTextField searchField;
 
     public NodeToolBox() {
         initialize();

@@ -53,7 +53,6 @@ import org.hkijena.jipipe.utils.json.JsonUtils;
 import org.jgrapht.Graph;
 import org.jgrapht.alg.cycle.CycleDetector;
 import org.jgrapht.graph.DefaultDirectedGraph;
-import org.jgrapht.traverse.BreadthFirstIterator;
 import org.jgrapht.traverse.GraphIterator;
 import org.jgrapht.traverse.TopologicalOrderIterator;
 
@@ -1631,6 +1630,7 @@ public class JIPipeGraph implements JIPipeValidatable {
     /**
      * Converts loop structures into equivalent group nodes
      * Please note that nested loops will be put into the group; only order 1 loops will be converted.
+     *
      * @param additionalLoopEnds nodes that are marked as loop ends
      */
     public List<LoopGroup> extractLoopGroups(Set<JIPipeGraphNode> additionalLoopEnds, Set<JIPipeGraphNode> deactivatedNodes) {
@@ -1650,15 +1650,15 @@ public class JIPipeGraph implements JIPipeValidatable {
                 for (JIPipeDataSlot outputSlot : node.getOutputSlots()) {
                     for (JIPipeGraphEdge edge : graph.outgoingEdgesOf(outputSlot)) {
                         JIPipeDataSlot target = graph.getEdgeTarget(edge);
-                        if(!deactivatedNodes.contains(target.getNode())) {
+                        if (!deactivatedNodes.contains(target.getNode())) {
                             isConnected = true;
                             break;
                         }
                     }
-                    if(isConnected)
+                    if (isConnected)
                         break;
                 }
-                if(!isConnected)
+                if (!isConnected)
                     loopEnds.add(node);
             }
         }
@@ -1725,11 +1725,10 @@ public class JIPipeGraph implements JIPipeValidatable {
                     // Determine the depth
                     if (loopStarts.contains(targetNode)) {
                         previousLoopDepth += 1;
-                    }
-                    else if(previousConnectedToEnd) {
+                    } else if (previousConnectedToEnd) {
                         previousLoopDepth = Math.max(0, previousLoopDepth - 1);
                     }
-                    if(previousLoopDepth == 0) {
+                    if (previousLoopDepth == 0) {
                         previousLoopStarts.clear();
                     }
                     if (previousLoopStarts.isEmpty()) {
@@ -1759,14 +1758,14 @@ public class JIPipeGraph implements JIPipeValidatable {
         // Collect loops
         List<LoopGroup> result = new ArrayList<>();
         for (LoopStartNode loopStartNode : new HashSet<>(loopStartNodes.values())) {
-            if(loopStartNode != dummyLoopStart) {
+            if (loopStartNode != dummyLoopStart) {
                 LoopGroup loopGroup = new LoopGroup(this);
                 loopGroup.setLoopStartNode(loopStartNode);
                 loopGroup.getNodes().add(loopStartNode);
                 for (Map.Entry<JIPipeGraphNode, LoopStartNode> entry : loopStartNodes.entrySet()) {
-                    if(entry.getValue() == loopStartNode) {
+                    if (entry.getValue() == loopStartNode) {
                         loopGroup.getNodes().add(entry.getKey());
-                        if(loopEnds.contains(entry.getKey())) {
+                        if (loopEnds.contains(entry.getKey())) {
                             loopGroup.getLoopEndNodes().add(entry.getKey());
                         }
                     }

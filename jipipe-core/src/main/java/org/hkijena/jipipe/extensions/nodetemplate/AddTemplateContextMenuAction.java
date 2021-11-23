@@ -2,7 +2,6 @@ package org.hkijena.jipipe.extensions.nodetemplate;
 
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeNodeTemplate;
-import org.hkijena.jipipe.api.grouping.NodeGroup;
 import org.hkijena.jipipe.api.nodes.JIPipeGraph;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.extensions.settings.NodeTemplateSettings;
@@ -10,7 +9,6 @@ import org.hkijena.jipipe.ui.components.MarkdownDocument;
 import org.hkijena.jipipe.ui.grapheditor.JIPipeGraphCanvasUI;
 import org.hkijena.jipipe.ui.grapheditor.contextmenu.NodeUIContextAction;
 import org.hkijena.jipipe.ui.grapheditor.nodeui.JIPipeNodeUI;
-import org.hkijena.jipipe.ui.parameters.ParameterExplorerWindow;
 import org.hkijena.jipipe.ui.parameters.ParameterPanel;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.hkijena.jipipe.utils.json.JsonUtils;
@@ -34,7 +32,7 @@ public class AddTemplateContextMenuAction implements NodeUIContextAction {
         template.setData(JsonUtils.toPrettyJsonString(subGraph));
 
         int result = JOptionPane.YES_OPTION;
-        if(canvasUI.getGraph().getProject() != null) {
+        if (canvasUI.getGraph().getProject() != null) {
             result = JOptionPane.showOptionDialog(canvasUI.getWorkbench().getWindow(),
                     "Node templates can be stored globally or inside the project. Where should the template be stored?",
                     "Create node template",
@@ -44,18 +42,17 @@ public class AddTemplateContextMenuAction implements NodeUIContextAction {
                     new Object[]{"Globally", "Inside project", "Cancel"},
                     "Globally");
         }
-        if(result == JOptionPane.CANCEL_OPTION)
+        if (result == JOptionPane.CANCEL_OPTION)
             return;
 
-        if(ParameterPanel.showDialog(canvasUI.getWorkbench(), template, new MarkdownDocument("# Node templates\n\nUse this user interface to modify node templates."), "Create template",
+        if (ParameterPanel.showDialog(canvasUI.getWorkbench(), template, new MarkdownDocument("# Node templates\n\nUse this user interface to modify node templates."), "Create template",
                 ParameterPanel.WITH_SCROLLING | ParameterPanel.WITH_SEARCH_BAR | ParameterPanel.WITH_DOCUMENTATION)) {
-            if(result == JOptionPane.YES_OPTION) {
+            if (result == JOptionPane.YES_OPTION) {
                 // Store globally
                 NodeTemplateSettings.getInstance().getNodeTemplates().add(template);
                 NodeTemplateSettings.getInstance().triggerParameterChange("node-templates");
                 JIPipe.getSettings().save();
-            }
-            else {
+            } else {
                 // Store locally
                 canvasUI.getGraph().getProject().getMetadata().getNodeTemplates().add(template);
                 canvasUI.getGraph().getProject().getMetadata().triggerParameterChange("node-templates");

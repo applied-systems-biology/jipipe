@@ -20,12 +20,9 @@ import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.categories.MiscellaneousNodeTypeCategory;
 import org.hkijena.jipipe.ui.components.ColorIcon;
-import org.hkijena.jipipe.ui.theme.ModernMetalTheme;
-import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
-import javax.swing.plaf.ColorUIResource;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Font;
@@ -53,6 +50,7 @@ public class JIPipeNodeTemplateListCellRenderer extends JPanel implements ListCe
 
     /**
      * Creates a new renderer
+     *
      * @param projectTemplateList templates that are in project
      */
     public JIPipeNodeTemplateListCellRenderer(Set<JIPipeNodeTemplate> projectTemplateList) {
@@ -118,15 +116,14 @@ public class JIPipeNodeTemplateListCellRenderer extends JPanel implements ListCe
 
         JIPipeGraph graph = template.getGraph();
         if (graph != null) {
-            if(graph.getGraphNodes().size() == 1) {
+            if (graph.getGraphNodes().size() == 1) {
                 JIPipeGraphNode node = graph.getGraphNodes().iterator().next();
                 JIPipeNodeInfo info = node.getInfo();
                 nodeColor.setFillColor(UIUtils.getFillColorFor(info));
                 nodeNameLabel.setText((info.getCategory().getName() + "\n" + info.getMenuPath() + "\n" + info.getName()).replace("\n\n", "\n").replace("\n", " > "));
                 nameLabel.setText(template.getName());
                 nodeIcon.setIcon(JIPipe.getNodes().getIconFor(info));
-            }
-            else {
+            } else {
                 nodeColor.setFillColor(UIUtils.DARK_THEME ? MiscellaneousNodeTypeCategory.FILL_COLOR_DARK : MiscellaneousNodeTypeCategory.FILL_COLOR);
                 nodeNameLabel.setText(graph.getGraphNodes().size() + " nodes");
                 nameLabel.setText(template.getName());
@@ -136,11 +133,10 @@ public class JIPipeNodeTemplateListCellRenderer extends JPanel implements ListCe
             nameLabel.setText(template.getName());
             nodeNameLabel.setText("<Invalid>");
         }
-        if(projectTemplateList.contains(template)) {
+        if (projectTemplateList.contains(template)) {
             storageLabel.setForeground(COLOR_PROJECT);
             storageLabel.setText("Project storage");
-        }
-        else {
+        } else {
             storageLabel.setForeground(COLOR_GLOBAL);
             storageLabel.setText("Global storage");
         }

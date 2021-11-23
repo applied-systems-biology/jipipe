@@ -141,8 +141,9 @@ public abstract class JIPipeIteratingAlgorithm extends JIPipeParameterSlotAlgori
     /**
      * A pass-through variant for iterating algorithms.
      * Passes the data batch to the single output
+     *
      * @param progressInfo progress info
-     * @param dataBatch the data batch
+     * @param dataBatch    the data batch
      */
     protected void runPassThrough(JIPipeProgressInfo progressInfo, JIPipeDataBatch dataBatch) {
         progressInfo.log("Passing trough (via dynamic pass-through)");
@@ -179,10 +180,9 @@ public abstract class JIPipeIteratingAlgorithm extends JIPipeParameterSlotAlgori
             JIPipeDataBatch dataBatch = new JIPipeDataBatch(this);
             dataBatch.addGlobalAnnotations(parameterAnnotations, dataBatchGenerationSettings.getAnnotationMergeStrategy());
             uploadAdaptiveParameters(dataBatch, tree, parameterBackups, progressInfo);
-            if(isPassThrough()) {
+            if (isPassThrough()) {
                 runPassThrough(slotProgress, dataBatch);
-            }
-            else {
+            } else {
                 runIteration(dataBatch, slotProgress);
             }
             return;
@@ -230,7 +230,7 @@ public abstract class JIPipeIteratingAlgorithm extends JIPipeParameterSlotAlgori
             }
             // Convert to single batch and attach parameters
             dataBatches = JIPipeMergingDataBatchBuilder.convertMergingToSingleDataBatches(mergingDataBatches);
-            if(dataBatches != null) {
+            if (dataBatches != null) {
                 for (JIPipeDataBatch dataBatch : dataBatches) {
                     dataBatch.addGlobalAnnotations(parameterAnnotations, dataBatchGenerationSettings.getAnnotationMergeStrategy());
                 }
@@ -254,10 +254,9 @@ public abstract class JIPipeIteratingAlgorithm extends JIPipeParameterSlotAlgori
                     return;
                 JIPipeProgressInfo slotProgress = progressInfo.resolveAndLog("Data row", i, dataBatches.size());
                 uploadAdaptiveParameters(dataBatches.get(i), tree, parameterBackups, progressInfo);
-                if(isPassThrough()) {
+                if (isPassThrough()) {
                     runPassThrough(slotProgress, dataBatches.get(i));
-                }
-                else {
+                } else {
                     runIteration(dataBatches.get(i), slotProgress);
                 }
             }
@@ -271,10 +270,9 @@ public abstract class JIPipeIteratingAlgorithm extends JIPipeParameterSlotAlgori
                         return;
                     JIPipeProgressInfo slotProgress = progressInfo.resolveAndLog("Data row", dataBatchIndex, dataBatches.size());
                     uploadAdaptiveParameters(dataBatches.get(dataBatchIndex), finalTree, parameterBackups, progressInfo);
-                    if(isPassThrough()) {
+                    if (isPassThrough()) {
                         runPassThrough(slotProgress, dataBatches.get(dataBatchIndex));
-                    }
-                    else {
+                    } else {
                         runIteration(dataBatches.get(dataBatchIndex), slotProgress);
                     }
                 });

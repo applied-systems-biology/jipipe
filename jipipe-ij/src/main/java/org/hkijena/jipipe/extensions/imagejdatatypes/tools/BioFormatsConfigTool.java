@@ -13,7 +13,6 @@
 
 package org.hkijena.jipipe.extensions.imagejdatatypes.tools;
 
-import ij.ImageJ;
 import loci.plugins.config.ConfigWindow;
 import loci.plugins.util.WindowTools;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;

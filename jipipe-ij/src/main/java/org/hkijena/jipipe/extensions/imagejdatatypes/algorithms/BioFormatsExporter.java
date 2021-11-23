@@ -26,14 +26,12 @@ import org.hkijena.jipipe.api.nodes.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.nodes.categories.ExportNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.filesystem.dataypes.FileData;
-import org.hkijena.jipipe.extensions.filesystem.dataypes.PathData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.OMEImageData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.parameters.OMEExporterSettings;
 import org.hkijena.jipipe.extensions.parameters.primitives.PathParameterSettings;
 import org.hkijena.jipipe.extensions.settings.DataExporterSettings;
 import org.hkijena.jipipe.utils.PathIOMode;
 import org.hkijena.jipipe.utils.PathType;
-import org.hkijena.jipipe.utils.PathUtils;
 import org.hkijena.jipipe.utils.StringUtils;
 
 import java.io.IOException;
@@ -50,10 +48,10 @@ import java.util.Set;
 @JIPipeOutputSlot(value = FileData.class, slotName = "Output", autoCreate = true)
 public class BioFormatsExporter extends JIPipeSimpleIteratingAlgorithm {
 
+    private final Set<String> existingMetadata = new HashSet<>();
     private OMEExporterSettings exporterSettings = new OMEExporterSettings();
     private JIPipeDataByMetadataExporter exporter;
     private Path outputDirectory = Paths.get("exported-data");
-    private final Set<String> existingMetadata = new HashSet<>();
 
     public BioFormatsExporter(JIPipeNodeInfo info) {
         super(info);
@@ -99,7 +97,7 @@ public class BioFormatsExporter extends JIPipeSimpleIteratingAlgorithm {
         }
 
         String baseName = StringUtils.nullToEmpty(exporter.generateMetadataString(getFirstInputSlot(), dataBatch.getInputSlotRows().get(getFirstInputSlot()), existingMetadata));
-        if(!baseName.endsWith(".ome.tif") && !baseName.endsWith(".ome.tiff")) {
+        if (!baseName.endsWith(".ome.tif") && !baseName.endsWith(".ome.tiff")) {
             baseName = baseName + ".ome.tif";
         }
 

@@ -3,7 +3,6 @@ package org.hkijena.jipipe.extensions.nodetemplate;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeNodeTemplate;
 import org.hkijena.jipipe.api.nodes.JIPipeGraph;
-import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
@@ -37,14 +36,14 @@ public class JIPipeNodeTemplateParameterEditorUI extends JIPipeParameterEditorUI
         editButton.addActionListener(e -> editParameters());
         add(editButton, BorderLayout.EAST);
         infoButton = new JButton();
-        infoButton.addActionListener(e->editParameters());
+        infoButton.addActionListener(e -> editParameters());
         infoButton.setHorizontalAlignment(SwingConstants.LEFT);
         add(infoButton, BorderLayout.CENTER);
     }
 
     private void editParameters() {
         JIPipeNodeTemplate parameter = new JIPipeNodeTemplate(getParameter(JIPipeNodeTemplate.class));
-        if(ParameterPanel.showDialog(getWorkbench(), parameter, new MarkdownDocument("# Node templates\n\nUse this user interface to modify node templates."), "Edit template",
+        if (ParameterPanel.showDialog(getWorkbench(), parameter, new MarkdownDocument("# Node templates\n\nUse this user interface to modify node templates."), "Edit template",
                 ParameterPanel.WITH_SCROLLING | ParameterPanel.WITH_SEARCH_BAR | ParameterPanel.WITH_DOCUMENTATION)) {
             setParameter(parameter, true);
         }
@@ -59,18 +58,16 @@ public class JIPipeNodeTemplateParameterEditorUI extends JIPipeParameterEditorUI
     public void reload() {
         JIPipeNodeTemplate parameter = getParameter(JIPipeNodeTemplate.class);
         JIPipeGraph graph = parameter.getGraph();
-        if(graph != null) {
-            if(graph.getGraphNodes().size() == 1) {
+        if (graph != null) {
+            if (graph.getGraphNodes().size() == 1) {
                 JIPipeNodeInfo nodeInfo = graph.getGraphNodes().iterator().next().getInfo();
                 infoButton.setText("<html>" + parameter.getName() + "<br/><i>" + nodeInfo.getName() + "</i></html>");
                 infoButton.setIcon(JIPipe.getNodes().getIconFor(nodeInfo));
-            }
-            else {
+            } else {
                 infoButton.setText("<html>" + parameter.getName() + "<br/><i>" + graph.getGraphNodes().size() + " nodes</i></html>");
                 infoButton.setIcon(UIUtils.getIconFromResources("actions/distribute-graph.png"));
             }
-        }
-        else {
+        } else {
             infoButton.setText("<html>" + parameter.getName() + "<br/><i><span style=\"color: red;\">Unable to load</span></i></html>");
             infoButton.setIcon(UIUtils.getIconFromResources("emblems/vcs-conflicting.png"));
         }

@@ -66,7 +66,7 @@ public class PencilMaskDrawerTool extends MaskDrawerTool {
 
         pencilSizeXModel.addChangeListener(e -> {
             DEFAULT_SETTING_PENCIL_SIZE_X = Math.max(1, pencilSizeXModel.getNumber().intValue());
-            if(pencilSizeYLinkToggle.isSelected()) {
+            if (pencilSizeYLinkToggle.isSelected()) {
                 pencilSizeYModel.setValue(pencilSizeXModel.getNumber());
             }
             recalculatePencil();
@@ -77,7 +77,7 @@ public class PencilMaskDrawerTool extends MaskDrawerTool {
         });
         pencilSizeYLinkToggle.addActionListener(e -> {
             DEFAULT_SETTING_PENCIL_LINK_Y = pencilSizeYLinkToggle.isSelected();
-            if(pencilSizeYLinkToggle.isSelected()) {
+            if (pencilSizeYLinkToggle.isSelected()) {
                 pencilSizeYModel.setValue(pencilSizeXModel.getNumber());
             }
         });

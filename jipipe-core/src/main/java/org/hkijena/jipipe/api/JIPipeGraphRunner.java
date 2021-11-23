@@ -125,7 +125,7 @@ public class JIPipeGraphRunner implements JIPipeRunnable {
                     // Copy data from source (merging rows)
                     Set<JIPipeDataSlot> sourceSlots = algorithmGraph.getSourceSlots(slot);
                     for (JIPipeDataSlot sourceSlot : sourceSlots) {
-                        if(slot.getNode() instanceof JIPipeAlgorithm) {
+                        if (slot.getNode() instanceof JIPipeAlgorithm) {
                             // Add data from source slot
                             slot.addData(sourceSlot, subProgress);
                             gc.markCopyOutputToInput(sourceSlot, slot);
@@ -145,10 +145,9 @@ public class JIPipeGraphRunner implements JIPipeRunnable {
                 LoopGroup loop = nodeLoops.getOrDefault(node, null);
                 if (loop == null) {
                     // Ensure the algorithm has run
-                    if(!unExecutableAlgorithms.contains(node)) {
+                    if (!unExecutableAlgorithms.contains(node)) {
                         runNode(executedAlgorithms, node, subProgress);
-                    }
-                    else {
+                    } else {
                         executedAlgorithms.add(node);
                     }
 
@@ -191,7 +190,7 @@ public class JIPipeGraphRunner implements JIPipeRunnable {
                             for (JIPipeDataSlot inputSlot : loopNode.getInputSlots()) {
                                 gc.markAsCompleted(inputSlot);
                             }
-                            if(!loop.getLoopEndNodes().contains(loopNode)) {
+                            if (!loop.getLoopEndNodes().contains(loopNode)) {
                                 for (JIPipeDataSlot outputSlot : loopNode.getOutputSlots()) {
                                     gc.markAsCompleted(outputSlot);
                                 }
@@ -244,13 +243,13 @@ public class JIPipeGraphRunner implements JIPipeRunnable {
     @Subscribe
     public void onSlotCompleted(JIPipeGraphGCHelper.SlotCompletedEvent event) {
         JIPipeDataSlot slot = event.getSlot();
-        if(slot.isEmpty()) {
+        if (slot.isEmpty()) {
             return;
         }
-        if(!(slot.getNode() instanceof JIPipeAlgorithm)) {
+        if (!(slot.getNode() instanceof JIPipeAlgorithm)) {
             return;
         }
-        if(!persistentDataNodes.contains(slot.getNode())) {
+        if (!persistentDataNodes.contains(slot.getNode())) {
             slot.clearData();
         }
     }

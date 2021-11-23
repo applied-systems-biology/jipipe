@@ -18,7 +18,6 @@ import ij.IJ;
 import ij.ImagePlus;
 import ij.ImageStack;
 import ij.Prefs;
-import ij.gui.Roi;
 import ij.io.FileInfo;
 import ij.measure.Calibration;
 import ij.process.ByteProcessor;
@@ -79,7 +78,6 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
@@ -117,10 +115,10 @@ public class OMEImageData implements JIPipeData {
             ImagePlus rgbImage = ImageJUtils.channelsToRGB(image);
 
             // ROI rendering
-            if(rois != null && !rois.isEmpty()) {
+            if (rois != null && !rois.isEmpty()) {
                 rgbImage = ImageJUtils.convertToColorRGBIfNeeded(rgbImage);
                 rois.draw(rgbImage.getProcessor(),
-                        new ImageSliceIndex(0,0,0),
+                        new ImageSliceIndex(0, 0, 0),
                         false,
                         false,
                         false,
@@ -181,8 +179,7 @@ public class OMEImageData implements JIPipeData {
             CachedImagePlusDataViewerWindow window = new CachedImagePlusDataViewerWindow(workbench, (JIPipeCacheSlotDataSource) source, displayName, true);
             window.setVisible(true);
             SwingUtilities.invokeLater(window::reloadDisplayedData);
-        }
-        else {
+        } else {
             getDuplicateImage().show();
         }
     }

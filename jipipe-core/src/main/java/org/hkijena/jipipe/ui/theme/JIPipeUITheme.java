@@ -24,11 +24,11 @@ public enum JIPipeUITheme {
     ModernLight("Modern light", true, false),
     ModernDark("Modern dark", true, true);
 
+    private static boolean INSTALLED_LISTENER;
+    private static boolean IS_UPDATING_THEME;
     private final String name;
     private final boolean isDark;
     private final boolean isModern;
-    private static boolean INSTALLED_LISTENER;
-    private static boolean IS_UPDATING_THEME;
 
     JIPipeUITheme(String name, boolean isModern, boolean isDark) {
         this.name = name;
@@ -90,10 +90,10 @@ public enum JIPipeUITheme {
         IS_UPDATING_THEME = false;
 
         // Prevent external theme changes
-        if(!INSTALLED_LISTENER) {
+        if (!INSTALLED_LISTENER) {
             UIManager.addPropertyChangeListener(evt -> {
                 if ("lookAndFeel".equals(evt.getPropertyName())) {
-                    if(!IS_UPDATING_THEME) {
+                    if (!IS_UPDATING_THEME) {
                         install();
                     }
                 }

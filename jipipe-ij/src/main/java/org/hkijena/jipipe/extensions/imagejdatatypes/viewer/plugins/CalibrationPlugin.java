@@ -43,7 +43,7 @@ public class CalibrationPlugin extends GeneralImageViewerPanelPlugin {
 
     @Override
     public void onImageChanged() {
-        if(getCurrentImage() != null && getCurrentImage().getType() == ImagePlus.COLOR_RGB) {
+        if (getCurrentImage() != null && getCurrentImage().getType() == ImagePlus.COLOR_RGB) {
             // Set to 0-255
             calibrationModes.setSelectedItem(ImageJCalibrationMode.Depth8Bit);
         }
