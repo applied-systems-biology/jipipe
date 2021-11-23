@@ -75,6 +75,7 @@ public class SaveProjectAndCacheRun implements JIPipeRunnable {
         for (int i = 0; i < nodes.size(); i++) {
             if (getProgressInfo().isCancelled())
                 return;
+            progressInfo.setProgress(i + 1, nodes.size());
             JIPipeGraphNode node = nodes.get(i);
             JIPipeProgressInfo nodeProgress = progressInfo.resolveAndLog(node.getDisplayName(), i, nodes.size());
 
