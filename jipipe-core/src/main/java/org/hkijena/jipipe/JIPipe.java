@@ -16,6 +16,7 @@ package org.hkijena.jipipe;
 import com.google.common.collect.ImmutableList;
 import com.google.common.eventbus.EventBus;
 import ij.IJ;
+import ij.Prefs;
 import net.imagej.ui.swing.updater.SwingAuthenticator;
 import net.imagej.updater.FilesCollection;
 import net.imagej.updater.UpdateSite;
@@ -50,6 +51,7 @@ import org.hkijena.jipipe.ui.ijupdater.IJProgressAdapter;
 import org.hkijena.jipipe.ui.ijupdater.JIPipeImageJPluginManager;
 import org.hkijena.jipipe.ui.registries.JIPipeCustomMenuRegistry;
 import org.hkijena.jipipe.ui.running.JIPipeRunnerQueue;
+import org.hkijena.jipipe.utils.PathUtils;
 import org.hkijena.jipipe.utils.json.JsonUtils;
 import org.scijava.Context;
 import org.scijava.InstantiableException;
@@ -59,14 +61,24 @@ import org.scijava.plugin.Plugin;
 import org.scijava.plugin.PluginInfo;
 import org.scijava.plugin.PluginService;
 import org.scijava.service.AbstractService;
+import org.w3c.dom.Document;
+import org.w3c.dom.NodeList;
+import org.xml.sax.SAXException;
 
+import javax.xml.XMLConstants;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.net.Authenticator;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
@@ -75,6 +87,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.zip.GZIPInputStream;
 
 /**
  * A scijava service that discovers JIPipe plugins in the classpath
@@ -82,19 +95,19 @@ import java.util.stream.Collectors;
 @Plugin(type = JIPipeRegistry.class)
 public class JIPipe extends AbstractService implements JIPipeRegistry {
     private static JIPipe instance;
-    private EventBus eventBus = new EventBus();
-    private Set<String> registeredExtensionIds = new HashSet<>();
-    private List<JIPipeDependency> registeredExtensions = new ArrayList<>();
-    private List<JIPipeDependency> failedExtensions = new ArrayList<>();
-    private JIPipeNodeRegistry nodeRegistry = new JIPipeNodeRegistry();
-    private JIPipeDatatypeRegistry datatypeRegistry = new JIPipeDatatypeRegistry();
-    private JIPipeImageJAdapterRegistry imageJDataAdapterRegistry = new JIPipeImageJAdapterRegistry();
-    private JIPipeCustomMenuRegistry customMenuRegistry = new JIPipeCustomMenuRegistry();
-    private JIPipeParameterTypeRegistry parameterTypeRegistry = new JIPipeParameterTypeRegistry();
-    private JIPipeSettingsRegistry settingsRegistry = new JIPipeSettingsRegistry();
-    private JIPipeExpressionRegistry tableOperationRegistry = new JIPipeExpressionRegistry();
-    private JIPipeUtilityRegistry utilityRegistry = new JIPipeUtilityRegistry();
-    private JIPipeExternalEnvironmentRegistry externalEnvironmentRegistry = new JIPipeExternalEnvironmentRegistry();
+    private final EventBus eventBus = new EventBus();
+    private final Set<String> registeredExtensionIds = new HashSet<>();
+    private final List<JIPipeDependency> registeredExtensions = new ArrayList<>();
+    private final List<JIPipeDependency> failedExtensions = new ArrayList<>();
+    private final JIPipeNodeRegistry nodeRegistry = new JIPipeNodeRegistry();
+    private final JIPipeDatatypeRegistry datatypeRegistry = new JIPipeDatatypeRegistry();
+    private final JIPipeImageJAdapterRegistry imageJDataAdapterRegistry = new JIPipeImageJAdapterRegistry();
+    private final JIPipeCustomMenuRegistry customMenuRegistry = new JIPipeCustomMenuRegistry();
+    private final JIPipeParameterTypeRegistry parameterTypeRegistry = new JIPipeParameterTypeRegistry();
+    private final JIPipeSettingsRegistry settingsRegistry = new JIPipeSettingsRegistry();
+    private final JIPipeExpressionRegistry tableOperationRegistry = new JIPipeExpressionRegistry();
+    private final JIPipeUtilityRegistry utilityRegistry = new JIPipeUtilityRegistry();
+    private final JIPipeExternalEnvironmentRegistry externalEnvironmentRegistry = new JIPipeExternalEnvironmentRegistry();
     private FilesCollection imageJPlugins = null;
     private boolean initializing = false;
 
@@ -176,93 +189,9 @@ public class JIPipe extends AbstractService implements JIPipeRegistry {
 
         // Check for errors
         logService.info("[3/3] Error-checking-phase ...");
-        for (Class<? extends JIPipeData> dataType : datatypeRegistry.getRegisteredDataTypes().values()) {
-            if (dataType.isInterface() || Modifier.isAbstract(dataType.getModifiers()))
-                continue;
-            // Check if we can find a method "import"
-            try {
-                Method method = dataType.getDeclaredMethod("importFrom", Path.class);
-                if (!Modifier.isStatic(method.getModifiers())) {
-                    throw new IllegalArgumentException("Import method is not static!");
-                }
-                if (!JIPipeData.class.isAssignableFrom(method.getReturnType())) {
-                    throw new IllegalArgumentException("Import method does not return JIPipeData!");
-                }
-            } catch (NoClassDefFoundError | Exception e) {
-                // Unregister node
-                logService.warn("Data type '" + dataType + "' cannot be instantiated.");
-                issues.getErroneousDataTypes().add(dataType);
-                e.printStackTrace();
-            }
-            JIPipeDataInfo info = JIPipeDataInfo.getInstance(dataType);
-            if (info.getStorageDocumentation() == null) {
-                logService.warn("Data type '" + dataType + "' has no storage documentation.");
-                issues.getErroneousDataTypes().add(dataType);
-            }
-        }
+        validateDataTypes(issues);
         if (extensionSettings.isValidateNodeTypes()) {
-            for (JIPipeNodeInfo info : ImmutableList.copyOf(nodeRegistry.getRegisteredNodeInfos().values())) {
-                try {
-                    // Test instantiation
-                    JIPipeGraphNode algorithm = info.newInstance();
-
-                    // Test parameters
-                    JIPipeParameterTree collection = new JIPipeParameterTree(algorithm);
-                    for (Map.Entry<String, JIPipeParameterAccess> entry : collection.getParameters().entrySet()) {
-                        if (JIPipe.getParameterTypes().getInfoByFieldClass(entry.getValue().getFieldClass()) == null) {
-                            throw new UserFriendlyRuntimeException("Unregistered parameter found: " + entry.getValue().getFieldClass() + " @ "
-                                    + algorithm + " -> " + entry.getKey(),
-                                    "A plugin is invalid!",
-                                    "JIPipe plugin checker",
-                                    "There is an error in the plugin's code that makes it use an unsupported parameter type.",
-                                    "Please contact the plugin author for further help.");
-                        }
-                    }
-
-                    // Test duplication
-                    try {
-                        algorithm.duplicate();
-                    } catch (Exception e1) {
-                        throw new UserFriendlyRuntimeException(e1,
-                                "A plugin is invalid!",
-                                "JIPipe plugin checker",
-                                "There is an error in the plugin's code that prevents the copying of a node.",
-                                "Please contact the plugin author for further help.");
-                    }
-
-                    // Test serialization
-                    try {
-                        JsonUtils.toJsonString(algorithm);
-                    } catch (Exception e1) {
-                        throw new UserFriendlyRuntimeException(e1,
-                                "A plugin is invalid!",
-                                "JIPipe plugin checker",
-                                "There is an error in the plugin's code that prevents the saving of a node.",
-                                "Please contact the plugin author for further help.");
-                    }
-
-                    // Test cache state generation
-                    try {
-                        if (algorithm instanceof JIPipeAlgorithm) {
-                            ((JIPipeAlgorithm) algorithm).getStateId();
-                        }
-                    } catch (Exception e1) {
-                        throw new UserFriendlyRuntimeException(e1,
-                                "A plugin is invalid!",
-                                "JIPipe plugin checker",
-                                "There is an error in the plugin's code that prevents the cache state generation of a node.",
-                                "Please contact the plugin author for further help.");
-                    }
-
-                    logService.debug("OK: Algorithm '" + info.getId() + "'");
-                } catch (NoClassDefFoundError | Exception e) {
-                    // Unregister node
-                    logService.warn("Unregistering node with id '" + info.getId() + "' as it cannot be instantiated, duplicated, serialized, or cached.");
-                    nodeRegistry.unregister(info.getId());
-                    issues.getErroneousNodes().add(info);
-                    e.printStackTrace();
-                }
-            }
+            validateNodeTypes(issues);
         }
 
         // Check for update sites
@@ -307,6 +236,98 @@ public class JIPipe extends AbstractService implements JIPipeRegistry {
 
         logService.info("JIPipe loading finished");
         initializing = false;
+    }
+
+    private void validateDataTypes(JIPipeRegistryIssues issues) {
+        for (Class<? extends JIPipeData> dataType : datatypeRegistry.getRegisteredDataTypes().values()) {
+            if (dataType.isInterface() || Modifier.isAbstract(dataType.getModifiers()))
+                continue;
+            // Check if we can find a method "import"
+            try {
+                Method method = dataType.getDeclaredMethod("importFrom", Path.class);
+                if (!Modifier.isStatic(method.getModifiers())) {
+                    throw new IllegalArgumentException("Import method is not static!");
+                }
+                if (!JIPipeData.class.isAssignableFrom(method.getReturnType())) {
+                    throw new IllegalArgumentException("Import method does not return JIPipeData!");
+                }
+            } catch (NoClassDefFoundError | Exception e) {
+                // Unregister node
+                logService.warn("Data type '" + dataType + "' cannot be instantiated.");
+                issues.getErroneousDataTypes().add(dataType);
+                e.printStackTrace();
+            }
+            JIPipeDataInfo info = JIPipeDataInfo.getInstance(dataType);
+            if (info.getStorageDocumentation() == null) {
+                logService.warn("Data type '" + dataType + "' has no storage documentation.");
+                issues.getErroneousDataTypes().add(dataType);
+            }
+        }
+    }
+
+    private void validateNodeTypes(JIPipeRegistryIssues issues) {
+        for (JIPipeNodeInfo info : ImmutableList.copyOf(nodeRegistry.getRegisteredNodeInfos().values())) {
+            try {
+                // Test instantiation
+                JIPipeGraphNode algorithm = info.newInstance();
+
+                // Test parameters
+                JIPipeParameterTree collection = new JIPipeParameterTree(algorithm);
+                for (Map.Entry<String, JIPipeParameterAccess> entry : collection.getParameters().entrySet()) {
+                    if (JIPipe.getParameterTypes().getInfoByFieldClass(entry.getValue().getFieldClass()) == null) {
+                        throw new UserFriendlyRuntimeException("Unregistered parameter found: " + entry.getValue().getFieldClass() + " @ "
+                                + algorithm + " -> " + entry.getKey(),
+                                "A plugin is invalid!",
+                                "JIPipe plugin checker",
+                                "There is an error in the plugin's code that makes it use an unsupported parameter type.",
+                                "Please contact the plugin author for further help.");
+                    }
+                }
+
+                // Test duplication
+                try {
+                    algorithm.duplicate();
+                } catch (Exception e1) {
+                    throw new UserFriendlyRuntimeException(e1,
+                            "A plugin is invalid!",
+                            "JIPipe plugin checker",
+                            "There is an error in the plugin's code that prevents the copying of a node.",
+                            "Please contact the plugin author for further help.");
+                }
+
+                // Test serialization
+                try {
+                    JsonUtils.toJsonString(algorithm);
+                } catch (Exception e1) {
+                    throw new UserFriendlyRuntimeException(e1,
+                            "A plugin is invalid!",
+                            "JIPipe plugin checker",
+                            "There is an error in the plugin's code that prevents the saving of a node.",
+                            "Please contact the plugin author for further help.");
+                }
+
+                // Test cache state generation
+                try {
+                    if (algorithm instanceof JIPipeAlgorithm) {
+                        ((JIPipeAlgorithm) algorithm).getStateId();
+                    }
+                } catch (Exception e1) {
+                    throw new UserFriendlyRuntimeException(e1,
+                            "A plugin is invalid!",
+                            "JIPipe plugin checker",
+                            "There is an error in the plugin's code that prevents the cache state generation of a node.",
+                            "Please contact the plugin author for further help.");
+                }
+
+                logService.debug("OK: Algorithm '" + info.getId() + "'");
+            } catch (NoClassDefFoundError | Exception e) {
+                // Unregister node
+                logService.warn("Unregistering node with id '" + info.getId() + "' as it cannot be instantiated, duplicated, serialized, or cached.");
+                nodeRegistry.unregister(info.getId());
+                issues.getErroneousNodes().add(info);
+                e.printStackTrace();
+            }
+        }
     }
 
     public boolean isInitializing() {
@@ -391,6 +412,17 @@ public class JIPipe extends AbstractService implements JIPipeRegistry {
         }
     }
 
+    private Document readXMLGZ(Path path) throws ParserConfigurationException, IOException, SAXException {
+        try (InputStream inputStream = new GZIPInputStream(new FileInputStream(path.toFile()))) {
+            DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+            dbf.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
+            DocumentBuilder db = dbf.newDocumentBuilder();
+            Document doc = db.parse(inputStream);
+            doc.getDocumentElement().normalize();
+            return doc;
+        }
+    }
+
     /**
      * Checks the update sites of all extensions and stores the results in the issues
      *
@@ -410,30 +442,54 @@ public class JIPipe extends AbstractService implements JIPipeRegistry {
             for (JIPipeImageJUpdateSiteDependency dependency : dependencies) {
                 logService.info("  - " + dependency.getName() + " @ " + dependency.getUrl());
             }
-            try {
-                UpdaterUtil.useSystemProxies();
-                Authenticator.setDefault(new SwingAuthenticator());
 
-                imageJPlugins = new FilesCollection(JIPipeImageJPluginManager.getImageJRoot().toFile());
-                AvailableSites.initializeAndAddSites(imageJPlugins);
-                imageJPlugins.downloadIndexAndChecksum(progressAdapter);
-            } catch (Exception e) {
-                logService.error("Unable to check update sites!");
-                e.printStackTrace();
-                missingSites.clear();
-                logService.info("No ImageJ update site check is applied.");
-            }
-            if (imageJPlugins != null) {
-                logService.info("Following ImageJ update sites are currently active: ");
-                for (UpdateSite updateSite : imageJPlugins.getUpdateSites(true)) {
-                    if (updateSite.isActive()) {
-                        logService.info("  - " + updateSite.getName() + " @ " + updateSite.getURL());
-                        missingSites.removeIf(site -> Objects.equals(site.getName(), updateSite.getName()));
+            // Try to use the existing database
+            Path dbPath = Paths.get(Prefs.getImageJDir()).resolve("db.xml.gz");
+            boolean dbPathSuccess = false;
+            if(Files.isRegularFile(dbPath)) {
+                try {
+                    Document document = readXMLGZ(dbPath);
+                    NodeList activeSitesNodes = document.getElementsByTagName("update-site");
+                    for (int i = 0; i < activeSitesNodes.getLength(); i++) {
+                        String name = activeSitesNodes.item(i).getAttributes().getNamedItem("name").getNodeValue();
+                        missingSites.removeIf(site -> Objects.equals(site.getName(), name));
+                    }
+                    if(missingSites.isEmpty()) {
+                       dbPathSuccess = true;
                     }
                 }
-            } else {
-                System.err.println("No update sites available! Skipping.");
-                missingSites.clear();
+                catch (Exception e) {
+                    logService.warn("Unable to read " + dbPath);
+                }
+            }
+
+            // Query update sites again (via ImageJ)
+            if(!dbPathSuccess) {
+                try {
+                    UpdaterUtil.useSystemProxies();
+                    Authenticator.setDefault(new SwingAuthenticator());
+
+                    imageJPlugins = new FilesCollection(JIPipeImageJPluginManager.getImageJRoot().toFile());
+                    AvailableSites.initializeAndAddSites(imageJPlugins);
+                    imageJPlugins.downloadIndexAndChecksum(progressAdapter);
+                } catch (Exception e) {
+                    logService.error("Unable to check update sites!");
+                    e.printStackTrace();
+                    missingSites.clear();
+                    logService.info("No ImageJ update site check is applied.");
+                }
+                if (imageJPlugins != null) {
+                    logService.info("Following ImageJ update sites are currently active: ");
+                    for (UpdateSite updateSite : imageJPlugins.getUpdateSites(true)) {
+                        if (updateSite.isActive()) {
+                            logService.info("  - " + updateSite.getName() + " @ " + updateSite.getURL());
+                            missingSites.removeIf(site -> Objects.equals(site.getName(), updateSite.getName()));
+                        }
+                    }
+                } else {
+                    System.err.println("No update sites available! Skipping.");
+                    missingSites.clear();
+                }
             }
         }
 

@@ -5,11 +5,11 @@
     <parent>
         <artifactId>pom-jipipe</artifactId>
         <groupId>org.hkijena</groupId>
-        <version>1.51.0</version>
+        <version>1.51.2</version>
     </parent>
 
     <artifactId>jipipe-core</artifactId>
-    <version>1.51.0</version>
+    <version>1.51.2</version>
 
     <name>jipipe-core</name>
     <description>JIPipe Core</description>
