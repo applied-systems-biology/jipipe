@@ -2,6 +2,8 @@ package org.hkijena.jipipe.extensions.nodetemplate;
 
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeNodeTemplate;
+import org.hkijena.jipipe.api.nodes.JIPipeGraph;
+import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
@@ -56,10 +58,17 @@ public class JIPipeNodeTemplateParameterEditorUI extends JIPipeParameterEditorUI
     @Override
     public void reload() {
         JIPipeNodeTemplate parameter = getParameter(JIPipeNodeTemplate.class);
-        JIPipeNodeInfo nodeInfo = parameter.getNodeInfo();
-        if(nodeInfo != null) {
-            infoButton.setText("<html>" + parameter.getName() + "<br/><i>" + nodeInfo.getName() + "</i></html>");
-            infoButton.setIcon(JIPipe.getNodes().getIconFor(nodeInfo));
+        JIPipeGraph graph = parameter.getGraph();
+        if(graph != null) {
+            if(graph.getGraphNodes().size() == 1) {
+                JIPipeNodeInfo nodeInfo = graph.getGraphNodes().iterator().next().getInfo();
+                infoButton.setText("<html>" + parameter.getName() + "<br/><i>" + nodeInfo.getName() + "</i></html>");
+                infoButton.setIcon(JIPipe.getNodes().getIconFor(nodeInfo));
+            }
+            else {
+                infoButton.setText("<html>" + parameter.getName() + "<br/><i>" + graph.getGraphNodes().size() + " nodes</i></html>");
+                infoButton.setIcon(UIUtils.getIconFromResources("actions/distribute-graph.png"));
+            }
         }
         else {
             infoButton.setText("<html>" + parameter.getName() + "<br/><i><span style=\"color: red;\">Unable to load</span></i></html>");

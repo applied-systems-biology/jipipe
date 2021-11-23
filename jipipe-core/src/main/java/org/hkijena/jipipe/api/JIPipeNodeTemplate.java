@@ -32,7 +32,7 @@ public class JIPipeNodeTemplate implements JIPipeParameterCollection {
     private String name = "Unnamed template";
     private HTMLText description = new HTMLText();
     private String data;
-    private JIPipeNodeInfo nodeInfo;
+    private JIPipeGraph graph;
 
     public JIPipeNodeTemplate() {
     }
@@ -41,7 +41,7 @@ public class JIPipeNodeTemplate implements JIPipeParameterCollection {
         this.name = other.name;
         this.description = new HTMLText(other.description);
         this.data = other.data;
-        this.nodeInfo = other.nodeInfo;
+        this.graph = other.graph;
     }
 
     @JIPipeDocumentation(name = "Name", description = "Name of the template")
@@ -82,7 +82,7 @@ public class JIPipeNodeTemplate implements JIPipeParameterCollection {
     @JsonSetter("data")
     @JIPipeParameter("data")
     public void setData(String data) {
-        this.nodeInfo = null;
+        this.graph = null;
         this.data = data;
     }
 
@@ -93,18 +93,8 @@ public class JIPipeNodeTemplate implements JIPipeParameterCollection {
         if (json != null) {
             try {
                 JIPipeGraph graph = JsonUtils.getObjectMapper().readValue(json, JIPipeGraph.class);
-                if(!graph.getGraphNodes().isEmpty()) {
-                    if(graph.getGraphNodes().size() == 1) {
-                        setData(JsonUtils.toPrettyJsonString(graph.getGraphNodes().iterator().next()));
-                        triggerParameterChange("data");
-                    }
-                    else {
-                        // Group them up
-                        NodeGroup group = new NodeGroup(graph, true, false, true);
-                        setData(JsonUtils.toPrettyJsonString(group));
-                        triggerParameterChange("data");
-                    }
-                }
+                setData(json);
+                triggerParameterChange("data");
             } catch (JsonProcessingException e) {
                 e.printStackTrace();
             }
@@ -116,33 +106,20 @@ public class JIPipeNodeTemplate implements JIPipeParameterCollection {
      * Returns null if the node type could not be found.
      * @return the node type or null if it could not be found
      */
-    public JIPipeNodeInfo getNodeInfo() {
-        if(nodeInfo == null) {
+    public JIPipeGraph getGraph() {
+        if(graph == null) {
             try {
-                JsonNode node = JsonUtils.readFromString(data, JsonNode.class);
-                String nodeInfoId = node.get("jipipe:node-info-id").asText();
-                nodeInfo = JIPipe.getNodes().getInfoById(nodeInfoId);
+                graph = JsonUtils.readFromString(data, JIPipeGraph.class);
             }
             catch (Exception e) {
             }
         }
-        return nodeInfo;
+        return graph;
     }
 
     @Override
     public EventBus getEventBus() {
         return eventBus;
-    }
-
-    public JIPipeGraphNode newInstance() {
-        try {
-            JsonNode node = JsonUtils.readFromString(data, JsonNode.class);
-            return JIPipeGraphNode.fromJsonNode(node, new JIPipeIssueReport());
-        }
-        catch (Exception e) {
-            e.printStackTrace();
-        }
-        return null;
     }
 
     @Override

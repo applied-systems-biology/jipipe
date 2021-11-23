@@ -10,6 +10,7 @@ import org.hkijena.jipipe.api.JIPipeNodeTemplate;
 import org.hkijena.jipipe.api.JIPipeProject;
 import org.hkijena.jipipe.api.data.JIPipeDataInfo;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
+import org.hkijena.jipipe.api.nodes.JIPipeGraph;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.nodes.categories.InternalNodeTypeCategory;
 import org.hkijena.jipipe.extensions.settings.FileChooserSettings;
@@ -338,8 +339,7 @@ public class NodeTemplateBox extends JIPipeWorkbenchPanel {
         List<JIPipeNodeTemplate> infos = getFilteredAndSortedInfos();
         DefaultListModel<JIPipeNodeTemplate> model = new DefaultListModel<>();
         for (JIPipeNodeTemplate info : infos) {
-            if (info.getNodeInfo() == null || info.getNodeInfo().isHidden() || info.getNodeInfo().getCategory() == null
-                    || info.getNodeInfo().getCategory() instanceof InternalNodeTypeCategory) {
+            if (info.getGraph() == null) {
                 continue;
             }
             model.addElement(info);
@@ -362,32 +362,48 @@ public class NodeTemplateBox extends JIPipeWorkbenchPanel {
             if (description != null && !description.isEmpty())
                 builder.append(description).append("</br>");
 
-            JIPipeGraphNode node = template.newInstance();
-            if(node != null) {
+            JIPipeGraph graph = template.getGraph();
+            if(graph != null) {
                 // Write description
-                description = node.getInfo().getDescription().getBody();
+                if(graph.getGraphNodes().size() == 1) {
+                    description = graph.getGraphNodes().iterator().next().getInfo().getDescription().getBody();
+                }
                 if (description != null && !description.isEmpty())
                     builder.append(description).append("</br>");
 
-                // Write algorithm slot info
-                builder.append("<table style=\"margin-top: 10px;\">");
-                for (JIPipeDataSlot slot : node.getInputSlots()) {
-                    builder.append("<tr>");
-                    builder.append("<td><p style=\"background-color:#27ae60; color:white;border:3px solid #27ae60;border-radius:5px;text-align:center;\">Input</p></td>");
-                    builder.append("<td>").append("<img src=\"").append(JIPipe.getDataTypes().getIconURLFor(slot.getAcceptedDataType())).append("\"/></td>");
-                    builder.append("<td>").append(HtmlEscapers.htmlEscaper().escape(StringUtils.orElse(slot.getName(), "-"))).append("</td>");
-                    builder.append("<td><i>(").append(HtmlEscapers.htmlEscaper().escape(JIPipeDataInfo.getInstance(slot.getAcceptedDataType()).getName())).append(")</i></td>");
-                    builder.append("</tr>");
+                if(graph.getGraphNodes().size() == 1) {
+                    JIPipeGraphNode node = graph.getGraphNodes().iterator().next();
+                    // Write algorithm slot info
+                    builder.append("<table style=\"margin-top: 10px;\">");
+                    for (JIPipeDataSlot slot : node.getInputSlots()) {
+                        builder.append("<tr>");
+                        builder.append("<td><p style=\"background-color:#27ae60; color:white;border:3px solid #27ae60;border-radius:5px;text-align:center;\">Input</p></td>");
+                        builder.append("<td>").append("<img src=\"").append(JIPipe.getDataTypes().getIconURLFor(slot.getAcceptedDataType())).append("\"/></td>");
+                        builder.append("<td>").append(HtmlEscapers.htmlEscaper().escape(StringUtils.orElse(slot.getName(), "-"))).append("</td>");
+                        builder.append("<td><i>(").append(HtmlEscapers.htmlEscaper().escape(JIPipeDataInfo.getInstance(slot.getAcceptedDataType()).getName())).append(")</i></td>");
+                        builder.append("</tr>");
+                    }
+                    for (JIPipeDataSlot slot : node.getOutputSlots()) {
+                        builder.append("<tr>");
+                        builder.append("<td><p style=\"background-color:#da4453; color:white;border:3px solid #da4453;border-radius:5px;text-align:center;\">Output</p></td>");
+                        builder.append("<td>").append("<img src=\"").append(JIPipe.getDataTypes().getIconURLFor(slot.getAcceptedDataType())).append("\"/></td>");
+                        builder.append("<td>").append(HtmlEscapers.htmlEscaper().escape(StringUtils.orElse(slot.getName(), "-"))).append("</td>");
+                        builder.append("<td><i>(").append(HtmlEscapers.htmlEscaper().escape(JIPipeDataInfo.getInstance(slot.getAcceptedDataType()).getName())).append(")</i></td>");
+                        builder.append("</tr>");
+                    }
+                    builder.append("</table>\n\n");
                 }
-                for (JIPipeDataSlot slot : node.getOutputSlots()) {
-                    builder.append("<tr>");
-                    builder.append("<td><p style=\"background-color:#da4453; color:white;border:3px solid #da4453;border-radius:5px;text-align:center;\">Output</p></td>");
-                    builder.append("<td>").append("<img src=\"").append(JIPipe.getDataTypes().getIconURLFor(slot.getAcceptedDataType())).append("\"/></td>");
-                    builder.append("<td>").append(HtmlEscapers.htmlEscaper().escape(StringUtils.orElse(slot.getName(), "-"))).append("</td>");
-                    builder.append("<td><i>(").append(HtmlEscapers.htmlEscaper().escape(JIPipeDataInfo.getInstance(slot.getAcceptedDataType()).getName())).append(")</i></td>");
-                    builder.append("</tr>");
+                else if(!graph.getGraphNodes().isEmpty()) {
+                    // Write list of nodes
+                    builder.append("<table style=\"margin-top: 10px;\">");
+                    for (JIPipeGraphNode node : graph.getGraphNodes()) {
+                        builder.append("<tr>");
+                        builder.append("<td>").append("<img src=\"").append(JIPipe.getNodes().getIconURLFor(node.getInfo())).append("\"/></td>");
+                        builder.append("<td>").append(HtmlEscapers.htmlEscaper().escape(node.getName())).append("</td>");
+                        builder.append("</tr>");
+                    }
+                    builder.append("</table>\n\n");
                 }
-                builder.append("</table>\n\n");
             }
             documentationReader.setDocument(new MarkdownDocument(builder.toString()));
         } else
@@ -431,14 +447,12 @@ public class NodeTemplateBox extends JIPipeWorkbenchPanel {
         String nameHayStack;
         String name2HayStack;
         String descriptionHayStack;
-        if (template.getNodeInfo() == null || template.getNodeInfo().isHidden())
-            return null;
         nameHayStack = StringUtils.orElse(template.getName(), "").toLowerCase();
-        name2HayStack = StringUtils.orElse(template.getNodeInfo().getName(), "").toLowerCase();
+//        name2HayStack = StringUtils.orElse(template.getNodeInfo().getName(), "").toLowerCase();
         descriptionHayStack = StringUtils.orElse(template.getDescription().getBody(), "").toLowerCase();
 
         nameHayStack = nameHayStack.toLowerCase();
-        name2HayStack = name2HayStack.toLowerCase();
+//        name2HayStack = name2HayStack.toLowerCase();
         descriptionHayStack = descriptionHayStack.toLowerCase();
 
         int[] ranks = new int[3];
@@ -446,8 +460,8 @@ public class NodeTemplateBox extends JIPipeWorkbenchPanel {
         for (String string : searchStrings) {
             if (nameHayStack.contains(string.toLowerCase()))
                 --ranks[0];
-            if (name2HayStack.contains(string.toLowerCase()))
-                --ranks[1];
+//            if (name2HayStack.contains(string.toLowerCase()))
+//                --ranks[1];
             if (descriptionHayStack.contains(string.toLowerCase()))
                 --ranks[2];
         }

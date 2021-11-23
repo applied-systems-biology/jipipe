@@ -29,15 +29,9 @@ public class AddTemplateContextMenuAction implements NodeUIContextAction {
     public void run(JIPipeGraphCanvasUI canvasUI, Set<JIPipeNodeUI> selection) {
         Set<JIPipeGraphNode> algorithms = selection.stream().map(JIPipeNodeUI::getNode).collect(Collectors.toSet());
         JIPipeNodeTemplate template = new JIPipeNodeTemplate();
-        if(selection.size() == 1) {
-            template.setData(JsonUtils.toPrettyJsonString(selection.iterator().next().getNode()));
-        }
-        else {
-            JIPipeGraph graph = canvasUI.getGraph();
-            JIPipeGraph subGraph = graph.extract(algorithms, false);
-            NodeGroup group = new NodeGroup(subGraph, true, false, true);
-            template.setData(JsonUtils.toPrettyJsonString(group));
-        }
+        JIPipeGraph graph = canvasUI.getGraph();
+        JIPipeGraph subGraph = graph.extract(algorithms, false);
+        template.setData(JsonUtils.toPrettyJsonString(subGraph));
 
         int result = JOptionPane.YES_OPTION;
         if(canvasUI.getGraph().getProject() != null) {

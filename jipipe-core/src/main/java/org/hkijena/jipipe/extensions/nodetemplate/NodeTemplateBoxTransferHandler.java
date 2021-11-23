@@ -20,13 +20,7 @@ public class NodeTemplateBoxTransferHandler extends TransferHandler {
     @Override
     protected Transferable createTransferable(JComponent c) {
         if (c instanceof JList) {
-            JIPipeGraph graph = new JIPipeGraph();
-            for (JIPipeNodeTemplate template : ((JList<JIPipeNodeTemplate>) c).getSelectedValuesList()) {
-                JIPipeGraphNode node = template.newInstance();
-                if(node != null) {
-                    graph.insertNode(node);
-                }
-            }
+            JIPipeGraph graph = ((JList<JIPipeNodeTemplate>) c).getSelectedValue().getGraph();
             String json = JsonUtils.toJsonString(graph);
             return new Transferable() {
                 @Override
