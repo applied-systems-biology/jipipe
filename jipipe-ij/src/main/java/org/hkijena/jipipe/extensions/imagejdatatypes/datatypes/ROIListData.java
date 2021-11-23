@@ -167,8 +167,9 @@ public class ROIListData extends ArrayList<Roi> implements JIPipeData {
                     Roi roi = this.get(i);
                     if (roi == null) continue;
                     if (roi.getName() != null) {
-                        label = StringUtils.makeUniqueString(roi.getName(), " ", existing);
+                        label = roi.getName();
                     }
+                    label = StringUtils.makeUniqueString(label, " ", existing);
                     if (!label.endsWith(".roi")) label += ".roi";
                     zos.putNextEntry(new ZipEntry(label));
                     re.write(roi);
@@ -207,8 +208,9 @@ public class ROIListData extends ArrayList<Roi> implements JIPipeData {
                     Roi roi = this.get(i);
                     if (roi == null) continue;
                     if (roi.getName() != null) {
-                        label = StringUtils.makeUniqueString(roi.getName(), " ", existing);
+                        label = roi.getName();
                     }
+                    label = StringUtils.makeUniqueString(label, " ", existing);
                     if (!label.endsWith(".roi")) label += ".roi";
                     zos.putNextEntry(new ZipEntry(label));
                     re.write(roi);
