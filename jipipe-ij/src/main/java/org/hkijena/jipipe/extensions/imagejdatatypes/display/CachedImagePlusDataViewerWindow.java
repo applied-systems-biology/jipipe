@@ -24,6 +24,7 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ROIListData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.viewer.ImageViewerPanel;
 import org.hkijena.jipipe.extensions.imagejdatatypes.viewer.ImageViewerWindow;
 import org.hkijena.jipipe.extensions.imagejdatatypes.viewer.plugins.AnimationSpeedPlugin;
+import org.hkijena.jipipe.extensions.imagejdatatypes.viewer.plugins.AnnotationInfoPlugin;
 import org.hkijena.jipipe.extensions.imagejdatatypes.viewer.plugins.CalibrationPlugin;
 import org.hkijena.jipipe.extensions.imagejdatatypes.viewer.plugins.ImageViewerPanelPlugin;
 import org.hkijena.jipipe.extensions.imagejdatatypes.viewer.plugins.LUTManagerPlugin;
@@ -66,6 +67,7 @@ public class CachedImagePlusDataViewerWindow extends JIPipeCacheDataViewerWindow
         pluginList.add(new AnimationSpeedPlugin(imageViewerPanel));
         pluginList.add(new MeasurementDrawerPlugin(imageViewerPanel));
         pluginList.add(new MeasurementPlugin(imageViewerPanel));
+        pluginList.add(new AnnotationInfoPlugin(imageViewerPanel, this));
         imageViewerPanel.setPlugins(pluginList);
         setContentPane(imageViewerPanel);
         revalidate();
