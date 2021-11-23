@@ -27,7 +27,8 @@ public enum JIPipeUITheme {
     private final String name;
     private final boolean isDark;
     private final boolean isModern;
-    private boolean installedListener;
+    private static boolean INSTALLED_LISTENER;
+    private static boolean IS_UPDATING_THEME;
 
     JIPipeUITheme(String name, boolean isModern, boolean isDark) {
         this.name = name;
@@ -49,6 +50,7 @@ public enum JIPipeUITheme {
      */
     public void install() {
         UIUtils.DARK_THEME = isDark;
+        IS_UPDATING_THEME = true;
         switch (this) {
             case Metal:
                 try {
@@ -85,15 +87,18 @@ public enum JIPipeUITheme {
                 UIManager.put("Button.borderColor", ModernMetalTheme.MEDIUM_GRAY);
                 break;
         }
+        IS_UPDATING_THEME = false;
 
         // Prevent external theme changes
-        if(!installedListener) {
+        if(!INSTALLED_LISTENER) {
             UIManager.addPropertyChangeListener(evt -> {
                 if ("lookAndFeel".equals(evt.getPropertyName())) {
-                    install();
+                    if(!IS_UPDATING_THEME) {
+                        install();
+                    }
                 }
             });
-            installedListener = true;
+            INSTALLED_LISTENER = true;
         }
     }
 

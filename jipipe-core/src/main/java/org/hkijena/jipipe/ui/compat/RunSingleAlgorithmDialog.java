@@ -77,6 +77,7 @@ public class RunSingleAlgorithmDialog extends JDialog implements JIPipeWorkbench
     public RunSingleAlgorithmDialog(Context context) {
         this.context = context;
         initialize(null);
+        reloadAlgorithmList();
     }
 
     /**
@@ -86,6 +87,7 @@ public class RunSingleAlgorithmDialog extends JDialog implements JIPipeWorkbench
     public RunSingleAlgorithmDialog(Context context, JIPipeNodeInfo selectedNode) {
         this.context = context;
         initialize(selectedNode);
+        reloadAlgorithmList();
     }
 
     /**
@@ -95,6 +97,7 @@ public class RunSingleAlgorithmDialog extends JDialog implements JIPipeWorkbench
     public RunSingleAlgorithmDialog(Context context, Class<? extends JIPipeGraphNode> selectedNode) {
         this.context = context;
         initialize(JIPipe.getNodes().getNodeInfosFromClass(selectedNode).iterator().next());
+        reloadAlgorithmList();
     }
 
     private void initialize(JIPipeNodeInfo selectedNode) {
@@ -155,7 +158,7 @@ public class RunSingleAlgorithmDialog extends JDialog implements JIPipeWorkbench
         List<JIPipeNodeInfo> infos = getFilteredAndSortedInfos();
         DefaultListModel<JIPipeNodeInfo> model = new DefaultListModel<>();
         for (JIPipeNodeInfo info : infos) {
-            if (SingleImageJAlgorithmRun.isCompatible(info))
+            if (info.isCompatibleWithImageJ())
                 model.addElement(info);
         }
         algorithmList.setModel(model);
@@ -178,9 +181,7 @@ public class RunSingleAlgorithmDialog extends JDialog implements JIPipeWorkbench
         algorithmList.setBorder(BorderFactory.createEtchedBorder());
         algorithmList.setCellRenderer(new JIPipeNodeInfoListCellRenderer());
         algorithmList.setModel(new DefaultListModel<>());
-        algorithmList.addListSelectionListener(e -> {
-            selectNodeInfo(algorithmList.getSelectedValue());
-        });
+        algorithmList.addListSelectionListener(e -> selectNodeInfo(algorithmList.getSelectedValue()));
         JScrollPane scrollPane = new JScrollPane(algorithmList);
         listPanel.add(scrollPane, BorderLayout.CENTER);
     }

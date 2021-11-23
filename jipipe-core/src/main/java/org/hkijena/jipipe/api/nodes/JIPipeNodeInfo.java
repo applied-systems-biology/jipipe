@@ -13,7 +13,9 @@
 
 package org.hkijena.jipipe.api.nodes;
 
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.JIPipeDependency;
+import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.extensions.parameters.primitives.HTMLText;
 import org.hkijena.jipipe.utils.StringUtils;
 
@@ -166,5 +168,26 @@ public interface JIPipeNodeInfo {
      */
     static List<JIPipeNodeInfo> getSortedList(Set<JIPipeNodeInfo> entries) {
         return entries.stream().sorted(Comparator.comparing(JIPipeNodeInfo::getName)).collect(Collectors.toList());
+    }
+
+    /**
+     * Returns true if an algorithm can be run in a single ImageJ algorithm run
+     *
+     * @return if the algorithm is compatible
+     */
+    default boolean isCompatibleWithImageJ() {
+        if (!getCategory().userCanCreate())
+            return false;
+        JIPipeGraphNode algorithm = newInstance();
+        for (JIPipeDataSlot inputSlot : algorithm.getInputSlots()) {
+            if (!JIPipe.getImageJAdapters().supportsJIPipeData(inputSlot.getAcceptedDataType()))
+                return false;
+        }
+        for (JIPipeDataSlot outputSlot : algorithm.getOutputSlots()) {
+            if (!JIPipe.getImageJAdapters().supportsJIPipeData(outputSlot.getAcceptedDataType()))
+                return false;
+        }
+
+        return true;
     }
 }

@@ -131,6 +131,7 @@ public class JIPipeDependencyUI extends JPanel {
     private void insertTable(FormPanel formPanel, DefaultTableModel model, String categoryName, Icon categoryIcon) {
         formPanel.addGroupHeader(categoryName, categoryIcon);
         JXTable table = new JXTable(model);
+        table.setRowHeight(64);
         table.packAll();
         table.setSortOrder(0, SortOrder.ASCENDING);
         UIUtils.fitRowHeights(table);
@@ -145,14 +146,20 @@ public class JIPipeDependencyUI extends JPanel {
         if (list.isEmpty())
             return;
         DefaultTableModel model = new DefaultTableModel();
-        model.setColumnIdentifiers(new Object[]{"Name", "ID", "Description", "Input slots", "Output slots"});
+        model.setColumnIdentifiers(new Object[]{"Name", "ID", "Description", "Input slots", "Output slots", "ImageJ support"});
         for (JIPipeNodeInfo info : list) {
+            String supportsImageJEntry;
+            if (info.isCompatibleWithImageJ())
+                supportsImageJEntry = StringUtils.createIconTextHTMLTable("Yes", ResourceUtils.getPluginResource("icons/emblems/vcs-normal.png"));
+            else
+                supportsImageJEntry = StringUtils.createIconTextHTMLTable("No", ResourceUtils.getPluginResource("icons/emblems/vcs-conflicting.png"));
             model.addRow(new Object[]{
                     info.getName(),
                     info.getId(),
                     info.getDescription(),
                     TooltipUtils.getSlotTable(info.getInputSlots().stream().map(JIPipeDataSlotInfo::new).collect(Collectors.toList())),
-                    TooltipUtils.getSlotTable(info.getOutputSlots().stream().map(JIPipeDataSlotInfo::new).collect(Collectors.toList()))
+                    TooltipUtils.getSlotTable(info.getOutputSlots().stream().map(JIPipeDataSlotInfo::new).collect(Collectors.toList())),
+                    supportsImageJEntry
             });
         }
         insertTable(formPanel, model, "Algorithms", UIUtils.getIconFromResources("actions/run-build.png"));
