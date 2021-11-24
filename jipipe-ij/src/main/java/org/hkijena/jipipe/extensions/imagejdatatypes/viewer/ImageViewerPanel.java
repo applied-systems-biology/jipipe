@@ -467,11 +467,12 @@ public class ImageViewerPanel extends JPanel {
     }
 
     public void exportVideo() {
-        FormPanel formPanel = new FormPanel(null, FormPanel.NONE);
-        PathEditor exportPathEditor = new PathEditor(PathIOMode.Save, PathType.FilesOnly);
-        exportPathEditor.setPath(FileChooserSettings.getInstance().getLastDataDirectory());
-        formPanel.addToForm(exportPathEditor, new JLabel("Exported file"), null);
+        Path path = FileChooserSettings.saveFile(this, FileChooserSettings.LastDirectoryKey.Data, "Export video", UIUtils.EXTENSION_FILTER_AVI);
+        if(path == null) {
+            return;
+        }
 
+        FormPanel formPanel = new FormPanel(null, FormPanel.NONE);
         List<HyperstackDimension> availableDimensions = new ArrayList<>();
         if (image.getNFrames() > 1)
             availableDimensions.add(HyperstackDimension.Frame);
@@ -500,10 +501,9 @@ public class ImageViewerPanel extends JPanel {
                 null,
                 null);
         if (response == JOptionPane.OK_OPTION) {
-            FileChooserSettings.getInstance().setLastDataDirectory(exportPathEditor.getPath());
             ImageViewerVideoExporterRun run = new ImageViewerVideoExporterRun(
                     this,
-                    exportPathEditor.getPath(),
+                    path,
                     getCurrentSlicePosition(),
                     (HyperstackDimension) dimensionEditor.getSelectedItem(),
                     animationTimer.getDelay(),

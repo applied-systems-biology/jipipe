@@ -103,6 +103,7 @@ public class UIUtils {
     public static final FileNameExtensionFilter EXTENSION_FILTER_ROI_ZIP = new FileNameExtensionFilter("ImageJ ROIs (*.zip)", "zip");
     public static final FileNameExtensionFilter EXTENSION_FILTER_ROI = new FileNameExtensionFilter("ImageJ ROI (*.roi)", "roi");
     public static final FileNameExtensionFilter EXTENSION_FILTER_ROIS = new FileNameExtensionFilter("ImageJ ROI (*.roi, *.zip)", "roi", "zip");
+    public static final FileNameExtensionFilter EXTENSION_FILTER_AVI = new FileNameExtensionFilter("Video file (*.avi)", "avi");
     public static final Insets UI_PADDING = new Insets(4, 4, 4, 4);
     public static final Map<String, ImageIcon> ICON_FROM_RESOURCES_CACHE = new HashMap<>();
     public static boolean DARK_THEME = false;
