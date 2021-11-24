@@ -34,9 +34,10 @@ public class MemoryStatusUI extends JProgressBar {
         setStringPainted(true);
         setString("- / -");
         timer = new Timer(1000, e -> {
+            long usedMemory = (Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()) / MEGABYTES;
             setMaximum((int) (Runtime.getRuntime().maxMemory() / MEGABYTES));
-            setValue((int) (Runtime.getRuntime().totalMemory() / MEGABYTES));
-            setString((Runtime.getRuntime().totalMemory() / MEGABYTES) + "MB / " + (Runtime.getRuntime().maxMemory() / MEGABYTES) + "MB");
+            setValue((int) usedMemory);
+            setString(usedMemory + "MB / " + (Runtime.getRuntime().maxMemory() / MEGABYTES) + "MB");
         });
         timer.setRepeats(true);
         timer.start();
