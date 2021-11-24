@@ -51,7 +51,7 @@ public class FormsExtension extends JIPipePrepackagedDefaultJavaExtension {
 
     @Override
     public String getDependencyVersion() {
-        return "1.51.2";
+        return "1.52.0";
     }
 
     @Override
