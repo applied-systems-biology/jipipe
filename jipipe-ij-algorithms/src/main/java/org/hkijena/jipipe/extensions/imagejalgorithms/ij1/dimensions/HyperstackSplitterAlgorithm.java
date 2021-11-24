@@ -83,7 +83,7 @@ public class HyperstackSplitterAlgorithm extends JIPipeSimpleIteratingAlgorithm 
                 for (JIPipeDataSlot outputSlot : getOutputSlots()) {
                     OptionalIntegerRange range = outputIndices.get(outputSlot.getName()).get(OptionalIntegerRange.class);
                     if (range.isEnabled()) {
-                        if (!range.getContent().getIntegers().contains(c)) {
+                        if (!range.getContent().getIntegers(0, img.getNChannels()).contains(c)) {
                             continue;
                         }
                     }
@@ -111,7 +111,7 @@ public class HyperstackSplitterAlgorithm extends JIPipeSimpleIteratingAlgorithm 
                 for (JIPipeDataSlot outputSlot : getOutputSlots()) {
                     OptionalIntegerRange range = outputIndices.get(outputSlot.getName()).get(OptionalIntegerRange.class);
                     if (range.isEnabled()) {
-                        if (!range.getContent().getIntegers().contains(z)) {
+                        if (!range.getContent().getIntegers(0, img.getNSlices()).contains(z)) {
                             continue;
                         }
                     }
@@ -139,7 +139,7 @@ public class HyperstackSplitterAlgorithm extends JIPipeSimpleIteratingAlgorithm 
                 for (JIPipeDataSlot outputSlot : getOutputSlots()) {
                     OptionalIntegerRange range = outputIndices.get(outputSlot.getName()).get(OptionalIntegerRange.class);
                     if (range.isEnabled()) {
-                        if (!range.getContent().getIntegers().contains(t)) {
+                        if (!range.getContent().getIntegers(0, img.getNFrames()).contains(t)) {
                             continue;
                         }
                     }

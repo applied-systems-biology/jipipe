@@ -13,22 +13,35 @@
 
 package org.hkijena.jipipe.extensions.parameters.generators;
 
+import org.hkijena.jipipe.JIPipe;
+import org.hkijena.jipipe.api.parameters.JIPipeDummyParameterCollection;
+import org.hkijena.jipipe.api.parameters.JIPipeManualParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
+import org.hkijena.jipipe.extensions.expressions.DefaultExpressionParameter;
+import org.hkijena.jipipe.extensions.expressions.ExpressionParameterSettings;
+import org.hkijena.jipipe.extensions.expressions.ExpressionParameterVariable;
+import org.hkijena.jipipe.extensions.expressions.ExpressionParameterVariableSource;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.components.DocumentChangeListener;
 import org.hkijena.jipipe.ui.parameters.JIPipeParameterEditorUI;
+import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
 import javax.swing.event.DocumentEvent;
+import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Font;
+import java.lang.annotation.Annotation;
+import java.util.Set;
 
 /**
  * Editor for {@link IntegerRange}
  */
 public class IntegerRangeParameterEditorUI extends JIPipeParameterEditorUI {
 
-    private JTextField textField;
+    private JToggleButton expressionModeToggle;
+    private JTextField rangeStringEditor;
+    private boolean isUpdating = false;
 
     /**
      * @param workbench       workbench
@@ -36,8 +49,38 @@ public class IntegerRangeParameterEditorUI extends JIPipeParameterEditorUI {
      */
     public IntegerRangeParameterEditorUI(JIPipeWorkbench workbench, JIPipeParameterAccess parameterAccess) {
         super(workbench, parameterAccess);
-        setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
+        initialize();
         reload();
+    }
+
+    private void initialize() {
+        setLayout(new BorderLayout());
+
+        expressionModeToggle = new JToggleButton(UIUtils.getIconFromResources("actions/insert-math-expression.png"));
+        expressionModeToggle.setToolTipText("If enabled, use a math expression instead of a range string.");
+        expressionModeToggle.addActionListener(e -> {
+            IntegerRange rangeString = getParameter(IntegerRange.class);
+            rangeString.setUseExpression(expressionModeToggle.isSelected());
+            setParameter(rangeString, true);
+        });
+        UIUtils.makeFlat25x25(expressionModeToggle);
+        expressionModeToggle.setBorder(BorderFactory.createMatteBorder(1, 1, 1, 0, UIManager.getColor("Button.borderColor")));
+
+        rangeStringEditor = new JTextField();
+        rangeStringEditor.setFont(new Font(Font.MONOSPACED, Font.PLAIN, 12));
+        rangeStringEditor.getDocument().addDocumentListener(new DocumentChangeListener() {
+            @Override
+            public void changed(DocumentEvent documentEvent) {
+                if(!isUpdating) {
+                    IntegerRange rangeString = getParameter(IntegerRange.class);
+                    if (!rangeString.isUseExpression()) {
+                        rangeString.setValue(rangeStringEditor.getText());
+                        checkParameter();
+                        setParameter(rangeString, false);
+                    }
+                }
+            }
+        });
     }
 
     @Override
@@ -47,32 +90,62 @@ public class IntegerRangeParameterEditorUI extends JIPipeParameterEditorUI {
 
     @Override
     public void reload() {
-        removeAll();
-        IntegerRange rangeString = getParameter(IntegerRange.class);
-        textField = new JTextField(rangeString.getValue());
-        textField.setFont(new Font(Font.MONOSPACED, Font.PLAIN, 12));
-        textField.getDocument().addDocumentListener(new DocumentChangeListener() {
-            @Override
-            public void changed(DocumentEvent documentEvent) {
-                rangeString.setValue(textField.getText());
-                checkParameter();
+        try {
+            isUpdating = true;
+            removeAll();
+            IntegerRange rangeString = getParameter(IntegerRange.class);
+
+            add(expressionModeToggle, BorderLayout.WEST);
+            expressionModeToggle.setSelected(rangeString.isUseExpression());
+            if (rangeString.isUseExpression()) {
+                JIPipeManualParameterAccess access = JIPipeManualParameterAccess.builder()
+                        .setSource(new JIPipeDummyParameterCollection())
+                        .setFieldClass(DefaultExpressionParameter.class)
+                        .setGetter(rangeString::getExpression)
+                        .addAnnotation(new IntegerRangeExpressionVariablesAnnotationImpl())
+                        .setSetter(expression -> {
+                            rangeString.setExpression((DefaultExpressionParameter) expression);
+                            setParameter(rangeString, false);
+                            checkParameter();
+                        }).build();
+                add(JIPipe.getParameterTypes().createEditorFor(getWorkbench(), access), BorderLayout.CENTER);
+            } else {
+                rangeStringEditor.setText(rangeString.getValue());
+                add(rangeStringEditor, BorderLayout.CENTER);
             }
-        });
-        add(textField);
-        revalidate();
-        repaint();
-        checkParameter();
+
+            revalidate();
+            repaint();
+            checkParameter();
+        }
+        finally {
+            isUpdating = false;
+        }
     }
 
     private void checkParameter() {
         IntegerRange rangeString = getParameter(IntegerRange.class);
         try {
-            rangeString.getIntegers();
-            textField.setBorder(BorderFactory.createEtchedBorder());
-            textField.setToolTipText("Valid!");
+            if(!rangeString.isUseExpression()) {
+                rangeString.getIntegers(0, 0);
+            }
+            rangeStringEditor.setBorder(BorderFactory.createEtchedBorder());
+            rangeStringEditor.setToolTipText("Valid!");
         } catch (Exception e) {
-            textField.setBorder(BorderFactory.createLineBorder(Color.RED));
-            textField.setToolTipText("Invalid: " + e.getMessage());
+            rangeStringEditor.setBorder(BorderFactory.createLineBorder(Color.RED));
+            rangeStringEditor.setToolTipText("Invalid: " + e.getMessage());
+        }
+    }
+
+    private static class IntegerRangeExpressionVariablesAnnotationImpl implements ExpressionParameterSettings {
+        @Override
+        public Class<? extends ExpressionParameterVariableSource> variableSource() {
+            return IntegerRange.VariableSource.class;
+        }
+
+        @Override
+        public Class<? extends Annotation> annotationType() {
+            return ExpressionParameterSettings.class;
         }
     }
 }

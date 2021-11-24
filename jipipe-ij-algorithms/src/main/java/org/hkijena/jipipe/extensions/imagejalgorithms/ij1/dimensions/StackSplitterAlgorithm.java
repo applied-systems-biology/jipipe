@@ -109,7 +109,7 @@ public class StackSplitterAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         ImagePlus img = dataBatch.getInputData(getFirstInputSlot(), ImagePlusData.class, progressInfo).getImage();
         for (Map.Entry<String, JIPipeParameterAccess> entry : stackAssignments.getParameters().entrySet()) {
             IntegerRange sliceSelection = entry.getValue().get(IntegerRange.class);
-            List<Integer> sliceIndices = sliceSelection.getIntegers();
+            List<Integer> sliceIndices = sliceSelection.getIntegers(0, img.getStackSize());
             if (ignoreMissingSlices) {
                 sliceIndices.removeIf(i -> i >= img.getStackSize());
             } else {
@@ -150,39 +150,6 @@ public class StackSplitterAlgorithm extends JIPipeSimpleIteratingAlgorithm {
             }
             result.copyScale(img);
             dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusData(result), annotations, JIPipeAnnotationMergeStrategy.Merge, progressInfo);
-        }
-    }
-
-    @Override
-    public void reportValidity(JIPipeIssueReport report) {
-        for (Map.Entry<String, JIPipeParameterAccess> entry : stackAssignments.getParameters().entrySet()) {
-            IntegerRange sliceSelection = entry.getValue().get(IntegerRange.class);
-            try {
-                List<Integer> integers = sliceSelection.getIntegers();
-                if (integers.isEmpty()) {
-                    report.resolve("Stack assignment").resolve(entry.getKey()).reportIsInvalid("No slices selected!",
-                            "You have to select at least one slice.",
-                            "Please enter a valid selection (e.g. 10-15)",
-                            this);
-                }
-                for (Integer integer : integers) {
-                    if (integer < 0) {
-                        report.resolve("Stack assignment").resolve(entry.getKey()).reportIsInvalid("Slice indices cannot be negative!",
-                                "The first slice index is 0. Negative indices are not valid.",
-                                "Please enter a valid selection (e.g. 10-15)",
-                                this);
-                        break;
-                    }
-                }
-
-            } catch (NumberFormatException | NullPointerException e) {
-                report.resolve("Stack assignment").resolve(entry.getKey()).reportIsInvalid("Wrong slice index format!",
-                        "The slice indices must follow a specific pattern. " + "The format is: [range];[range];... where [range] is " +
-                                "either a number or a range of numbers notated as [from]-[to] (inclusive). Inverse ordered ranges are allowed." +
-                                " An example is 0-10;12;20-21. The first index is zero.",
-                        "Please enter a valid selection (e.g. 10-15)",
-                        this);
-            }
         }
     }
 

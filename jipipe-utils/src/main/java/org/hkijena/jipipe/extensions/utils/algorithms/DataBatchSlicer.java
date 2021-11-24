@@ -39,8 +39,8 @@ public class DataBatchSlicer extends JIPipeMergingAlgorithm {
 
     @Override
     protected void runIteration(JIPipeMergingDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
-        HashSet<Integer> indices = new HashSet<>(sliceRange.getIntegers());
         ArrayList<Integer> rows = new ArrayList<>(dataBatch.getInputRows(getFirstInputSlot()));
+        HashSet<Integer> indices = new HashSet<>(sliceRange.getIntegers(0, rows.size()));
         for (int i = 0; i < rows.size(); i++) {
             if (indices.contains(i)) {
                 int row = rows.get(i);

@@ -200,7 +200,7 @@ public class ArrangeChannelsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         if (reordering == null)
             return;
         IntegerRange range = new IntegerRange(reordering);
-        List<Integer> channelIndices = range.tryGetIntegers();
+        List<Integer> channelIndices = range.tryGetIntegers(0, 0);
         if (channelIndices == null || channelIndices.isEmpty() || channelIndices.stream().anyMatch(i -> i <= 0)) {
             JOptionPane.showMessageDialog(parent.getWindow(), "Invalid channel indices. Please provide a comma separated list of positive numbers.");
             return;

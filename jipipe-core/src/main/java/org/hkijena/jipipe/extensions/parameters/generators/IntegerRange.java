@@ -15,19 +15,18 @@ package org.hkijena.jipipe.extensions.parameters.generators;
 
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonSetter;
-import com.fasterxml.jackson.core.JsonGenerator;
-import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.DeserializationContext;
-import com.fasterxml.jackson.databind.JsonDeserializer;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.JsonSerializer;
-import com.fasterxml.jackson.databind.SerializerProvider;
+import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
+import org.hkijena.jipipe.extensions.expressions.DefaultExpressionParameter;
+import org.hkijena.jipipe.extensions.expressions.ExpressionParameterVariable;
+import org.hkijena.jipipe.extensions.expressions.ExpressionParameterVariableSource;
+import org.hkijena.jipipe.extensions.expressions.ExpressionVariables;
 import org.hkijena.jipipe.utils.StringUtils;
 
-import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Parameter that contains an integer range as string.
@@ -37,9 +36,12 @@ import java.util.List;
  */
 public class IntegerRange {
 
-    public static final String DOCUMENTATION_DESCRIPTION = "The format is the following: [range];[range];... with [range] either being a single integer or a range [from]-[to] (both inclusive). Negative values must be enclosed in parentheses. Example: 0-5;1;(-1)-10";
+    public static final String DOCUMENTATION_DESCRIPTION = "The format is the following: [range];[range];... with [range] either being a single integer or a range [from]-[to] (both inclusive). " +
+            "Negative values must be enclosed in parentheses. Example: 0-5;1;(-1)-10. If you want more customization options use the expression mode and functions such as MAKE_SEQUENCE.";
 
     private String value;
+    private boolean useExpression = false;
+    private DefaultExpressionParameter expression = new DefaultExpressionParameter("MAKE_SEQUENCE(0, 10)");
 
     /**
      * Creates a new instance with a null value
@@ -63,6 +65,28 @@ public class IntegerRange {
      */
     public IntegerRange(IntegerRange other) {
         this.value = other.value;
+        this.useExpression = other.useExpression;
+        this.expression = new DefaultExpressionParameter(other.expression);
+    }
+
+    @JsonGetter("is-expression")
+    public boolean isUseExpression() {
+        return useExpression;
+    }
+
+    @JsonSetter("is-expression")
+    public void setUseExpression(boolean useExpression) {
+        this.useExpression = useExpression;
+    }
+
+    @JsonGetter("expression")
+    public DefaultExpressionParameter getExpression() {
+        return expression;
+    }
+
+    @JsonSetter("expression")
+    public void setExpression(DefaultExpressionParameter expression) {
+        this.expression = expression;
     }
 
     @JsonGetter("value")
@@ -79,10 +103,12 @@ public class IntegerRange {
      * Generates the list of integers based on the value. Throws no exceptions.
      *
      * @return null if the format is wrong
+     * @param min the min value the integers can have
+     * @param max the max value the integers can have
      */
-    public List<Integer> tryGetIntegers() {
+    public List<Integer> tryGetIntegers(int min, int max) {
         try {
-            return getIntegers();
+            return getIntegers(min, max);
         } catch (Exception e) {
             return null;
         }
@@ -93,8 +119,61 @@ public class IntegerRange {
      *
      * @return the generated integers
      * @throws NumberFormatException if the format is wrong
+     * @param min the min value the integers can have
+     * @param max the max value the integers can have
      */
-    public List<Integer> getIntegers() throws NumberFormatException {
+    public List<Integer> getIntegers(int min, int max) throws NumberFormatException {
+        if(isUseExpression()) {
+            ExpressionVariables variables = new ExpressionVariables();
+            variables.set("min", min);
+            variables.set("max", max);
+            Object result = expression.evaluate(variables);
+            List<Integer> integers = new ArrayList<>();
+            if(result instanceof Number) {
+                integers.add(((Number) result).intValue());
+            }
+            else if (result instanceof String) {
+                try {
+                    integers.add((int)Double.parseDouble("" + result));
+                }
+                catch (Exception e) {
+                    return getIntegersFromRangeString("" + result);
+                }
+            }
+            else if(result instanceof Collection) {
+                for (Object o : (Collection<?>) result) {
+                    if(o instanceof Number) {
+                        integers.add(((Number) o).intValue());
+                    }
+                    else if(o instanceof String) {
+                        try {
+                            integers.add((int)Double.parseDouble("" + o));
+                        }
+                        catch (Exception e) {
+                            integers.addAll(getIntegersFromRangeString("" + o));
+                        }
+                    }
+                    else {
+                        throw new UnsupportedOperationException("Invalid expression output for integer range: " + o);
+                    }
+                }
+            }
+            else {
+                throw new UnsupportedOperationException("Invalid expression output for integer range: " + result);
+            }
+            return integers;
+        }
+        else {
+            return getIntegersFromRangeString(value);
+        }
+    }
+
+    /**
+     * Converts a range string of format [range];[range];... to a list of integers
+     * @param value the range string
+     * @return the list of integers
+     */
+    public static List<Integer> getIntegersFromRangeString(String value) {
         String string = StringUtils.orElse(value, "").replace(" ", "");
         List<Integer> integers = new ArrayList<>();
         string = string.replace(',', ';');
@@ -160,31 +239,13 @@ public class IntegerRange {
         return StringUtils.orElse(value, "[Empty]");
     }
 
-    /**
-     * Serializes the reference as ID
-     */
-    public static class Serializer extends JsonSerializer<IntegerRange> {
-
+    public static class VariableSource implements ExpressionParameterVariableSource {
         @Override
-        public void serialize(IntegerRange ref, JsonGenerator jsonGenerator, SerializerProvider serializerProvider) throws IOException, JsonProcessingException {
-            jsonGenerator.writeString(ref.value);
-        }
-
-    }
-
-    /**
-     * Deserializes the reference from a string
-     */
-    public static class Deserializer extends JsonDeserializer<IntegerRange> {
-
-        @Override
-        public IntegerRange deserialize(JsonParser jsonParser, DeserializationContext deserializationContext) throws IOException, JsonProcessingException {
-            JsonNode node = jsonParser.readValueAsTree();
-            IntegerRange result = new IntegerRange();
-            if (!node.isNull()) {
-                result.setValue(node.textValue());
-            }
-            return result;
+        public Set<ExpressionParameterVariable> getVariables(JIPipeParameterAccess parameterAccess) {
+            Set<ExpressionParameterVariable> variables = new HashSet<>();
+            variables.add(new ExpressionParameterVariable("Minimum value", "The minimum value the range of the range. Can be any value if not suitable for the parameter.", "min"));
+            variables.add(new ExpressionParameterVariable("Maximum value", "The minimum value the range of the range. Can be any value if not suitable for the parameter.", "max"));
+            return variables;
         }
     }
 }

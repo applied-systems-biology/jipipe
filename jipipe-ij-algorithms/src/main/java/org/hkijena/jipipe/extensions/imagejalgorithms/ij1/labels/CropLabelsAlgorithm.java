@@ -94,7 +94,7 @@ public class CropLabelsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         ImagePlus inputImage = dataBatch.getInputData(getFirstInputSlot(), ImagePlusGreyscaleData.class, progressInfo).getImage();
         TIntHashSet knownLabels = new TIntHashSet(LabelImages.findAllLabels(inputImage));
         if (labelIdLimit.isEnabled()) {
-            for (Integer i : labelIdLimit.getContent().getIntegers()) {
+            for (Integer i : labelIdLimit.getContent().getIntegers(0, 0)) {
                 if (!knownLabels.contains(i))
                     continue;
                 ImagePlus cropped = LabelImages.cropLabel(inputImage, i, border);

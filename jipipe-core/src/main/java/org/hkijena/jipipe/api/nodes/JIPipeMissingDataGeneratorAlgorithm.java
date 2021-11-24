@@ -104,7 +104,7 @@ public abstract class JIPipeMissingDataGeneratorAlgorithm extends JIPipeParamete
         dataBatches.sort(Comparator.naturalOrder());
         boolean withLimit = dataBatchGenerationSettings.getLimit().isEnabled();
         IntegerRange limit = dataBatchGenerationSettings.getLimit().getContent();
-        TIntSet allowedIndices = withLimit ? new TIntHashSet(limit.getIntegers()) : null;
+        TIntSet allowedIndices = withLimit ? new TIntHashSet(limit.getIntegers(0, dataBatches.size())) : null;
         if (withLimit) {
             List<JIPipeMergingDataBatch> limitedBatches = new ArrayList<>();
             for (int i = 0; i < dataBatches.size(); i++) {

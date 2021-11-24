@@ -123,7 +123,7 @@ public class ImageStackFromFolder extends JIPipeSimpleIteratingAlgorithm {
             // Slicing
             if (!StringUtils.isNullOrEmpty(slicesToImport.getValue())) {
                 List<Path> inputFilesSliced = new ArrayList<>();
-                for (Integer index : slicesToImport.getIntegers()) {
+                for (Integer index : slicesToImport.getIntegers(0, inputFiles.size())) {
                     if (ignoreInvalidSlices && index < 0 || index >= inputFiles.size()) {
                         continue;
                     }

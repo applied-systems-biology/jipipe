@@ -142,14 +142,14 @@ public class DeepLearningDeviceEnvironment extends ExternalEnvironment {
         root.set("log-device-placement", isLogDevicePlacement() ? BooleanNode.TRUE : BooleanNode.FALSE);
         if (isWithGPU()) {
             if (getGpuIds().isEnabled())
-                root.set("gpus", JsonUtils.getObjectMapper().convertValue(getCpuIds().getContent().getIntegers(), JsonNode.class));
+                root.set("gpus", JsonUtils.getObjectMapper().convertValue(getCpuIds().getContent().getIntegers(0, 0), JsonNode.class));
             else
                 root.set("gpus", JsonUtils.getObjectMapper().convertValue("all", JsonNode.class));
         } else {
             root.set("gpus", JsonUtils.getObjectMapper().convertValue(new ArrayList<>(), JsonNode.class));
         }
         if (getCpuIds().isEnabled())
-            root.set("cpus", JsonUtils.getObjectMapper().convertValue(getCpuIds().getContent().getIntegers(), JsonNode.class));
+            root.set("cpus", JsonUtils.getObjectMapper().convertValue(getCpuIds().getContent().getIntegers(0, 0), JsonNode.class));
         else
             root.set("cpus", JsonUtils.getObjectMapper().convertValue("all", JsonNode.class));
         return root;

@@ -79,7 +79,7 @@ public class SimpleIteratingFormProcessorAlgorithm extends JIPipeAlgorithm imple
             List<JIPipeMergingDataBatch> dataBatchList = new ArrayList<>();
             boolean withLimit = dataBatchGenerationSettings.getLimit().isEnabled();
             IntegerRange limit = dataBatchGenerationSettings.getLimit().getContent();
-            TIntSet allowedIndices = withLimit ? new TIntHashSet(limit.getIntegers()) : null;
+            TIntSet allowedIndices = withLimit ? new TIntHashSet(limit.getIntegers(0, dataSlot.getRowCount())) : null;
             for (int row = 0; row < dataSlot.getRowCount(); row++) {
                 if (withLimit && !allowedIndices.contains(row))
                     continue;
@@ -237,7 +237,7 @@ public class SimpleIteratingFormProcessorAlgorithm extends JIPipeAlgorithm imple
         JIPipeDataSlot slot = slots.stream().filter(s -> "Data".equals(s.getName())).findFirst().get();
         boolean withLimit = dataBatchGenerationSettings.getLimit().isEnabled();
         IntegerRange limit = dataBatchGenerationSettings.getLimit().getContent();
-        TIntSet allowedIndices = withLimit ? new TIntHashSet(limit.getIntegers()) : null;
+        TIntSet allowedIndices = withLimit ? new TIntHashSet(limit.getIntegers(0, slot.getRowCount())) : null;
         for (int i = 0; i < slot.getRowCount(); i++) {
             if (withLimit && !allowedIndices.contains(i))
                 continue;

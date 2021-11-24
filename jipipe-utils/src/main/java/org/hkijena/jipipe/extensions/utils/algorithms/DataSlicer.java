@@ -37,7 +37,7 @@ public class DataSlicer extends JIPipeParameterSlotAlgorithm {
 
     @Override
     public void runParameterSet(JIPipeProgressInfo progressInfo, List<JIPipeAnnotation> parameterAnnotations) {
-        HashSet<Integer> indices = new HashSet<>(sliceRange.getIntegers());
+        HashSet<Integer> indices = new HashSet<>(sliceRange.getIntegers(0, getFirstInputSlot().getRowCount()));
         for (int row = 0; row < getFirstInputSlot().getRowCount(); row++) {
             if (indices.contains(row)) {
                 getFirstOutputSlot().addData(getFirstInputSlot().getVirtualData(row),

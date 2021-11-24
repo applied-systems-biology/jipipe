@@ -114,7 +114,7 @@ public class RUtils {
             } else if (o instanceof DoubleList) {
                 value = "c(" + ((DoubleList) o).stream().map(i -> i + "").collect(Collectors.joining(", ")) + ")";
             } else if (o instanceof IntegerRange) {
-                value = "c(" + ((IntegerRange) o).getIntegers().stream().map(i -> i + "").collect(Collectors.joining(", ")) + ")";
+                value = "c(" + ((IntegerRange) o).getIntegers(0, 0).stream().map(i -> i + "").collect(Collectors.joining(", ")) + ")";
             } else if (o instanceof StringList) {
                 value = "c(" + ((StringList) o).stream().map(s -> "\"" + MacroUtils.escapeString(s) + "\"").collect(Collectors.joining(", ")) + ")";
             }

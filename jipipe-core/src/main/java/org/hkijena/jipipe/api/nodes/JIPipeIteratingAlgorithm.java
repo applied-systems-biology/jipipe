@@ -122,7 +122,7 @@ public abstract class JIPipeIteratingAlgorithm extends JIPipeParameterSlotAlgori
         dataBatches.sort(Comparator.naturalOrder());
         boolean withLimit = dataBatchGenerationSettings.getLimit().isEnabled();
         IntegerRange limit = dataBatchGenerationSettings.getLimit().getContent();
-        TIntSet allowedIndices = withLimit ? new TIntHashSet(limit.getIntegers()) : null;
+        TIntSet allowedIndices = withLimit ? new TIntHashSet(limit.getIntegers(0, dataBatches.size())) : null;
         if (withLimit) {
             List<JIPipeMergingDataBatch> limitedBatches = new ArrayList<>();
             for (int i = 0; i < dataBatches.size(); i++) {
@@ -190,7 +190,7 @@ public abstract class JIPipeIteratingAlgorithm extends JIPipeParameterSlotAlgori
 
             boolean withLimit = dataBatchGenerationSettings.getLimit().isEnabled();
             IntegerRange limit = dataBatchGenerationSettings.getLimit().getContent();
-            TIntSet allowedIndices = withLimit ? new TIntHashSet(limit.getIntegers()) : null;
+            TIntSet allowedIndices = withLimit ? new TIntHashSet(limit.getIntegers(0, getFirstInputSlot().getRowCount())) : null;
 
             dataBatches = new ArrayList<>();
             for (int row = 0; row < getFirstInputSlot().getRowCount(); row++) {
