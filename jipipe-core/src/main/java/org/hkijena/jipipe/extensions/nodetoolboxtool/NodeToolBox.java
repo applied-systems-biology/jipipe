@@ -166,9 +166,12 @@ public class NodeToolBox extends JPanel {
 
         int[] ranks = new int[3];
 
-        for (String string : searchStrings) {
+        for (int i = 0; i < searchStrings.length; i++) {
+            String string = searchStrings[i];
             if (nameHayStack.contains(string.toLowerCase()))
                 --ranks[0];
+            if (i == 0 && nameHayStack.startsWith(string.toLowerCase()))
+                ranks[0] -= 2;
             if (menuHayStack.contains(string.toLowerCase()))
                 --ranks[1];
             if (descriptionHayStack.contains(string.toLowerCase()))
