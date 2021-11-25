@@ -726,14 +726,8 @@ public abstract class JIPipeDataSlotUI extends JIPipeWorkbenchPanel {
             JIPipeGraph graph = slot.getNode().getGraph();
             if (graph.getGraph().containsEdge(source, target))
                 return;
-            JIPipeGraphHistory graphHistory = nodeUI.getGraphUI().getGraphHistory();
-            if (getGraphUI().isLayoutHelperEnabled()) {
-                graphHistory.addSnapshotBefore(new CompoundGraphHistorySnapshot(Arrays.asList(
-                        new EdgeConnectGraphHistorySnapshot(graph, source, target),
-                        new MoveNodesGraphHistorySnapshot(graph, "Move to target slot")
-                )));
-            } else {
-                graphHistory.addSnapshotBefore(new EdgeConnectGraphHistorySnapshot(graph, source, target));
+            if(getGraphUI().getHistoryJournal() != null) {
+                getGraphUI().getHistoryJournal().snapshotBeforeConnect(source, target, getNodeUI().getNode().getCompartmentUUIDInGraph());
             }
             getGraph().connect(source, target);
         } else {
@@ -749,22 +743,23 @@ public abstract class JIPipeDataSlotUI extends JIPipeWorkbenchPanel {
      */
     public void disconnectSlot(JIPipeDataSlot source, JIPipeDataSlot target) {
         if (getGraph().getGraph().containsEdge(source, target)) {
-            JIPipeGraphHistory graphHistory = nodeUI.getGraphUI().getGraphHistory();
-            graphHistory.addSnapshotBefore(new EdgeDisconnectGraphHistorySnapshot(getGraph(), Collections.singleton(source), Collections.singleton(target)));
+            if(getGraphUI().getHistoryJournal() != null) {
+                getGraphUI().getHistoryJournal().snapshotBeforeDisconnect(source, target, getNodeUI().getNode().getCompartmentUUIDInGraph());
+            }
             getGraph().disconnect(source, target, true);
         }
     }
 
     private void disconnectAll(Set<JIPipeDataSlot> otherSlots) {
         JIPipeGraph graph = slot.getNode().getGraph();
-        JIPipeGraphHistory graphHistory = nodeUI.getGraphUI().getGraphHistory();
+        if(getGraphUI().getHistoryJournal() != null) {
+            getGraphUI().getHistoryJournal().snapshotBeforeDisconnectAll(slot, slot.getNode().getCompartmentUUIDInGraph());
+        }
         if (slot.isInput()) {
-            graphHistory.addSnapshotBefore(new EdgeDisconnectGraphHistorySnapshot(graph, otherSlots, Collections.singleton(slot)));
             for (JIPipeDataSlot sourceSlot : otherSlots) {
                 getGraph().disconnect(sourceSlot, slot, true);
             }
         } else {
-            graphHistory.addSnapshotBefore(new EdgeDisconnectGraphHistorySnapshot(graph, Collections.singleton(slot), otherSlots));
             for (JIPipeDataSlot targetSlot : otherSlots) {
                 getGraph().disconnect(slot, targetSlot, true);
             }

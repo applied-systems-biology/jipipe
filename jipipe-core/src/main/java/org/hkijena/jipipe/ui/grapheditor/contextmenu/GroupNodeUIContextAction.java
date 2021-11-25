@@ -36,6 +36,9 @@ public class GroupNodeUIContextAction implements NodeUIContextAction {
     public void run(JIPipeGraphCanvasUI canvasUI, Set<JIPipeNodeUI> selection) {
         if (!JIPipeProjectWorkbench.canAddOrDeleteNodes(canvasUI.getWorkbench()))
             return;
+        if(canvasUI.getHistoryJournal() != null) {
+            
+        }
         canvasUI.getGraphHistory().addSnapshotBefore(new GraphChangedHistorySnapshot(canvasUI.getGraph(), "Group"));
         Set<JIPipeGraphNode> algorithms = selection.stream().map(JIPipeNodeUI::getNode).collect(Collectors.toSet());
         JIPipeGraph graph = canvasUI.getGraph();

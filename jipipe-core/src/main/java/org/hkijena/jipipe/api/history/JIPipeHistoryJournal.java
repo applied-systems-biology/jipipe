@@ -8,7 +8,9 @@ import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
 import java.util.Collection;
+import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 /**
  * Base class for all journals that track the history of projects or graphs
@@ -22,6 +24,75 @@ public interface JIPipeHistoryJournal {
      * @param icon an icon. can be null.
      */
     void snapshot(String name, String description, UUID compartment, Icon icon);
+
+    /**
+     * Snapshot before cutting a compartment
+     * @param nodes the nodes
+     * @param compartment the compartment. can be null.
+     */
+    default void snapshotBeforeCutNodes(Set<JIPipeGraphNode> nodes, UUID compartment) {
+        if(nodes.size() == 1) {
+            snapshot("Cut node",
+                    "Node <code>" + nodes.iterator().next().getDisplayName() + "</code>",
+                    compartment,
+                    UIUtils.getIconFromResources("actions/edit-cut.png"));
+        }
+        else {
+            snapshot("Cut node",
+                    "Nodes <ul>" + nodes.stream().map(n -> "<li><code>" + n.getDisplayName() + "</li></code>").collect(Collectors.joining()) + "</ul>",
+                    compartment,
+                    UIUtils.getIconFromResources("actions/edit-cut.png"));
+        }
+    }
+
+    /**
+     * Snapshot before cutting a compartment
+     * @param compartment the compartment
+     */
+    default void snapshotBeforeCutCompartment(JIPipeProjectCompartment compartment) {
+        snapshot("Cut compartment",
+                "Compartment <code>" + compartment.getName() + "</code>",
+                compartment.getProjectCompartmentUUID(),
+                UIUtils.getIconFromResources("actions/edit-cut.png"));
+    }
+
+    /**
+     * Snapshot before disconnecting two slots
+     * @param slot the slot
+     * @param compartment the compartment. can be null.
+     */
+    default void snapshotBeforeDisconnectAll(JIPipeDataSlot slot, UUID compartment) {
+        snapshot("Disconnect all slots",
+                "Disconnecting all edges from <code>" + slot.getDisplayName() + "</code>",
+                compartment,
+                UIUtils.getIconFromResources("actions/dialog-close.png"));
+    }
+
+    /**
+     * Snapshot before disconnecting two slots
+     * @param source the source
+     * @param target the target
+     * @param compartment the compartment. can be null.
+     */
+    default void snapshotBeforeDisconnect(JIPipeDataSlot source, JIPipeDataSlot target, UUID compartment) {
+        snapshot("Disconnect slots",
+                "Disconnecting <code>" + source.getDisplayName() + "</code>" + " and <code>" + target.getDisplayName() + "</code>",
+                compartment,
+                UIUtils.getIconFromResources("actions/dialog-close.png"));
+    }
+
+    /**
+     * Snapshot before connecting two slots
+     * @param source the source
+     * @param target the target
+     * @param compartment the compartment. can be null.
+     */
+    default void snapshotBeforeConnect(JIPipeDataSlot source, JIPipeDataSlot target, UUID compartment) {
+        snapshot("Connect slots",
+                "Connecting <code>" + source.getDisplayName() + "</code>" + " and <code>" + target.getDisplayName() + "</code>",
+                compartment,
+                UIUtils.getIconFromResources("actions/plug.png"));
+    }
 
     /**
      * Snapshot before adding a slot
@@ -88,7 +159,7 @@ public interface JIPipeHistoryJournal {
      */
     default void snapshotBeforeAddNodes(Collection<JIPipeGraphNode> nodes, UUID compartment) {
         snapshot("Add " + nodes.size() + " nodes",
-                "Added following nodes into the graph: <ul>" +  nodes.stream().map(s -> "<li><code>" + s.getName() + "</code></li>") + "</ul>",
+                "Added following nodes into the graph: <ul>" +  nodes.stream().map(s -> "<li><code>" + s.getName() + "</code></li>").collect(Collectors.joining()) + "</ul>",
                 compartment,
                 UIUtils.getIconFromResources("actions/list-add.png"));
     }

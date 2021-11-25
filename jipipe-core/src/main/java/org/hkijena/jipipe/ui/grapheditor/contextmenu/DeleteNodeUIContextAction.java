@@ -23,6 +23,7 @@ import org.hkijena.jipipe.utils.UIUtils;
 import javax.swing.*;
 import java.awt.event.KeyEvent;
 import java.util.Set;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 public class DeleteNodeUIContextAction implements NodeUIContextAction {
@@ -45,7 +46,10 @@ public class DeleteNodeUIContextAction implements NodeUIContextAction {
                 "Do you really want to remove the selected nodes?", "Delete algorithms",
                 JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
             Set<JIPipeGraphNode> nodes = selection.stream().map(JIPipeNodeUI::getNode).collect(Collectors.toSet());
-            canvasUI.getGraphHistory().addSnapshotBefore(new RemoveNodeGraphHistorySnapshot(canvasUI.getGraph(), nodes));
+            UUID compartment = nodes.stream().map(JIPipeGraphNode::getUUIDInGraph).findFirst().orElse(null);
+            if(canvasUI.getHistoryJournal() != null) {
+                canvasUI.getHistoryJournal().snapshotBeforeRemoveNodes(nodes, compartment);
+            }
             canvasUI.getGraph().removeNodes(nodes, true);
         }
     }

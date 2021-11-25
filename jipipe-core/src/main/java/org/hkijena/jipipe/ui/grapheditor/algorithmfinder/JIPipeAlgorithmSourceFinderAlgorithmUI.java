@@ -244,7 +244,7 @@ public class JIPipeAlgorithmSourceFinderAlgorithmUI extends JPanel {
         button.addActionListener(e -> {
             if (!JIPipeProjectWorkbench.canModifySlots(canvasUI.getWorkbench()))
                 return;
-            AddAlgorithmSlotPanel.showDialog(this, canvasUI.getGraphHistory(), algorithm, slotType);
+            AddAlgorithmSlotPanel.showDialog(this, canvasUI.getHistoryJournal(), algorithm, slotType);
         });
         return button;
     }

@@ -14,6 +14,7 @@
 package org.hkijena.jipipe.ui.extensionbuilder;
 
 import org.hkijena.jipipe.JIPipeJsonExtension;
+import org.hkijena.jipipe.api.history.JIPipeDedicatedGraphHistoryJournal;
 import org.hkijena.jipipe.api.nodes.JIPipeGraph;
 import org.hkijena.jipipe.ui.JIPipeJsonExtensionWorkbench;
 import org.hkijena.jipipe.ui.components.MarkdownDocument;
@@ -52,7 +53,7 @@ public class JIPipeJsonExtensionGraphUI extends JIPipeGraphEditorUI {
      * @param compartment    The compartment
      */
     public JIPipeJsonExtensionGraphUI(JIPipeJsonExtensionWorkbench workbenchUI, JIPipeGraph algorithmGraph, UUID compartment) {
-        super(workbenchUI, algorithmGraph, compartment, historyJournal);
+        super(workbenchUI, algorithmGraph, compartment, new JIPipeDedicatedGraphHistoryJournal());
         initializeDefaultPanel();
         setPropertyPanel(defaultPanel);
 

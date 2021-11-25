@@ -93,7 +93,7 @@ public class JIPipeSlotEditorUI extends JPanel {
             addInputButton.addActionListener(e -> {
                 if (!JIPipeProjectWorkbench.canModifySlots(editorUI.getWorkbench()))
                     return;
-                AddAlgorithmSlotPanel.showDialog(this, editorUI.getCanvasUI().getGraphHistory(), algorithm, JIPipeSlotType.Input);
+                AddAlgorithmSlotPanel.showDialog(this, editorUI.getCanvasUI().getHistoryJournal(), algorithm, JIPipeSlotType.Input);
             });
             toolBar.add(addInputButton);
         }
@@ -103,7 +103,7 @@ public class JIPipeSlotEditorUI extends JPanel {
             addOutputButton.addActionListener(e -> {
                 if (!JIPipeProjectWorkbench.canModifySlots(editorUI.getWorkbench()))
                     return;
-                AddAlgorithmSlotPanel.showDialog(this, editorUI.getCanvasUI().getGraphHistory(), algorithm, JIPipeSlotType.Output);
+                AddAlgorithmSlotPanel.showDialog(this, editorUI.getCanvasUI().getHistoryJournal(), algorithm, JIPipeSlotType.Output);
             });
             toolBar.add(addOutputButton);
         }
@@ -147,16 +147,17 @@ public class JIPipeSlotEditorUI extends JPanel {
         if (!JIPipeProjectWorkbench.canModifySlots(editorUI.getWorkbench()))
             return;
         JIPipeDataSlot slot = getSelectedSlot();
+        if(slot == null) {
+            return;
+        }
         if (!slot.getInfo().isUserModifiable()) {
             JOptionPane.showMessageDialog(this, "This slot cannot be edited.", "Edit slot", JOptionPane.ERROR_MESSAGE);
             return;
         }
-        if (slot != null) {
-            if (slot.getSlotType() == JIPipeSlotType.Input && canModifyInputSlots()) {
-                EditAlgorithmSlotPanel.showDialog(this, editorUI.getCanvasUI().getGraphHistory(), slot);
-            } else if (slot.getSlotType() == JIPipeSlotType.Output && canModifyOutputSlots()) {
-                EditAlgorithmSlotPanel.showDialog(this, editorUI.getCanvasUI().getGraphHistory(), slot);
-            }
+        if (slot.getSlotType() == JIPipeSlotType.Input && canModifyInputSlots()) {
+            EditAlgorithmSlotPanel.showDialog(this, editorUI.getCanvasUI().getHistoryJournal(), slot);
+        } else if (slot.getSlotType() == JIPipeSlotType.Output && canModifyOutputSlots()) {
+            EditAlgorithmSlotPanel.showDialog(this, editorUI.getCanvasUI().getHistoryJournal(), slot);
         }
     }
 
@@ -166,8 +167,9 @@ public class JIPipeSlotEditorUI extends JPanel {
             String newLabel = JOptionPane.showInputDialog(this,
                     "Please enter a new label for the slot.\nLeave the text empty to remove an existing label.",
                     slot.getInfo().getCustomName());
-            editorUI.getCanvasUI().getGraphHistory().addSnapshotBefore(new SlotConfigurationHistorySnapshot(slot.getNode(),
-                    "Relabel slot '" + slot.getDisplayName() + "'"));
+            if(editorUI.getHistoryJournal() != null) {
+                editorUI.getHistoryJournal().snapshotBeforeLabelSlot(slot, slot.getNode().getCompartmentUUIDInGraph());
+            }
             slot.getInfo().setCustomName(newLabel);
         }
     }
@@ -175,8 +177,9 @@ public class JIPipeSlotEditorUI extends JPanel {
     private void moveSlotDown() {
         JIPipeDataSlot slot = getSelectedSlot();
         if (slot != null) {
-            editorUI.getCanvasUI().getGraphHistory().addSnapshotBefore(new SlotConfigurationHistorySnapshot(slot.getNode(),
-                    "Move slot '" + slot.getDisplayName() + "' down"));
+            if(editorUI.getHistoryJournal() != null) {
+                editorUI.getHistoryJournal().snapshotBeforeMoveSlot(slot, slot.getNode().getCompartmentUUIDInGraph());
+            }
             ((JIPipeMutableSlotConfiguration) algorithm.getSlotConfiguration()).moveDown(slot.getName(), slot.getSlotType());
             editorUI.getCanvasUI().repaint();
         }
@@ -185,8 +188,9 @@ public class JIPipeSlotEditorUI extends JPanel {
     private void moveSlotUp() {
         JIPipeDataSlot slot = getSelectedSlot();
         if (slot != null) {
-            editorUI.getCanvasUI().getGraphHistory().addSnapshotBefore(new SlotConfigurationHistorySnapshot(slot.getNode(),
-                    "Move slot '" + slot.getDisplayName() + "' up"));
+            if(editorUI.getHistoryJournal() != null) {
+                editorUI.getHistoryJournal().snapshotBeforeMoveSlot(slot, slot.getNode().getCompartmentUUIDInGraph());
+            }
             ((JIPipeMutableSlotConfiguration) algorithm.getSlotConfiguration()).moveUp(slot.getName(), slot.getSlotType());
             editorUI.getCanvasUI().repaint();
         }
@@ -240,8 +244,9 @@ public class JIPipeSlotEditorUI extends JPanel {
                         JOptionPane.ERROR_MESSAGE);
                 continue;
             }
-            editorUI.getCanvasUI().getGraphHistory().addSnapshotBefore(new SlotConfigurationHistorySnapshot(slot.getNode(),
-                    "Remove slot '" + slot.getDisplayName() + "'"));
+            if(editorUI.getHistoryJournal() != null) {
+                editorUI.getHistoryJournal().snapshotBeforeRemoveSlot(slot.getNode(), slot.getInfo(), slot.getNode().getCompartmentUUIDInGraph());
+            }
             if (slot.isInput())
                 slotConfiguration.removeInputSlot(slot.getName(), true);
             else
