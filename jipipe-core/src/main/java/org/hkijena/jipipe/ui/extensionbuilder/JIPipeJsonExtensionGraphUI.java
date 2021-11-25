@@ -52,7 +52,7 @@ public class JIPipeJsonExtensionGraphUI extends JIPipeGraphEditorUI {
      * @param compartment    The compartment
      */
     public JIPipeJsonExtensionGraphUI(JIPipeJsonExtensionWorkbench workbenchUI, JIPipeGraph algorithmGraph, UUID compartment) {
-        super(workbenchUI, algorithmGraph, compartment);
+        super(workbenchUI, algorithmGraph, compartment, historyJournal);
         initializeDefaultPanel();
         setPropertyPanel(defaultPanel);
 

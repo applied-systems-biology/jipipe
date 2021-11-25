@@ -20,9 +20,6 @@ import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeProject;
 import org.hkijena.jipipe.api.compartments.JIPipeExportedCompartment;
 import org.hkijena.jipipe.api.compartments.algorithms.JIPipeProjectCompartment;
-import org.hkijena.jipipe.api.history.AddCompartmentGraphHistorySnapshot;
-import org.hkijena.jipipe.api.history.AddNodeGraphHistorySnapshot;
-import org.hkijena.jipipe.api.history.ImportCompartmentGraphHistorySnapshot;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.extensions.core.nodes.JIPipeCommentNode;
@@ -76,7 +73,7 @@ public class JIPipeCompartmentGraphUI extends JIPipeGraphEditorUI {
      * @param workbenchUI The workbench UI
      */
     public JIPipeCompartmentGraphUI(JIPipeProjectWorkbench workbenchUI) {
-        super(workbenchUI, workbenchUI.getProject().getCompartmentGraph(), null);
+        super(workbenchUI, workbenchUI.getProject().getCompartmentGraph(), null, historyJournal);
         initializeDefaultPanel();
         setPropertyPanel(defaultPanel);
 

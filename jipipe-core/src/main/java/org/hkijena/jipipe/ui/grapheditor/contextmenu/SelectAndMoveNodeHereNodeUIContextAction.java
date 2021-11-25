@@ -13,7 +13,6 @@
 
 package org.hkijena.jipipe.ui.grapheditor.contextmenu;
 
-import org.hkijena.jipipe.api.history.MoveNodesGraphHistorySnapshot;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.ui.components.PickNodeDialog;
 import org.hkijena.jipipe.ui.grapheditor.JIPipeGraphCanvasUI;

@@ -18,13 +18,6 @@ import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.data.JIPipeMutableSlotConfiguration;
-import org.hkijena.jipipe.api.history.CompoundGraphHistorySnapshot;
-import org.hkijena.jipipe.api.history.EdgeConnectGraphHistorySnapshot;
-import org.hkijena.jipipe.api.history.EdgeDisconnectGraphHistorySnapshot;
-import org.hkijena.jipipe.api.history.GraphChangedHistorySnapshot;
-import org.hkijena.jipipe.api.history.JIPipeGraphHistory;
-import org.hkijena.jipipe.api.history.MoveNodesGraphHistorySnapshot;
-import org.hkijena.jipipe.api.history.SlotConfigurationHistorySnapshot;
 import org.hkijena.jipipe.api.nodes.JIPipeGraph;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphEdge;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
@@ -198,7 +191,12 @@ public abstract class JIPipeDataSlotUI extends JIPipeWorkbenchPanel {
                     JMenuItem showButton = new JMenuItem("Show all outgoing edges", UIUtils.getIconFromResources("actions/eye.png"));
                     showButton.setToolTipText("Un-hides all outgoing edges");
                     showButton.addActionListener(e -> {
-                        nodeUI.getGraphUI().getGraphHistory().addSnapshotBefore(new GraphChangedHistorySnapshot(getGraph(), "Un-hide edges"));
+                        if(getGraphUI().getHistoryJournal() != null) {
+                            getGraphUI().getHistoryJournal().snapshot("Un-hide edges",
+                                    "Shown all edges of slot " + getSlot().getDisplayName(),
+                                    getSlot().getNode().getCompartmentUUIDInGraph(),
+                                    UIUtils.getIconFromResources("actions/eye.png"));
+                        }
                         for (JIPipeGraphEdge target : hiddenEdges) {
                             target.setUiHidden(false);
                         }
@@ -210,7 +208,12 @@ public abstract class JIPipeDataSlotUI extends JIPipeWorkbenchPanel {
                     JMenuItem showButton = new JMenuItem("Hide all outgoing edges", UIUtils.getIconFromResources("actions/eye-slash.png"));
                     showButton.setToolTipText("Hides all outgoing edges");
                     showButton.addActionListener(e -> {
-                        nodeUI.getGraphUI().getGraphHistory().addSnapshotBefore(new GraphChangedHistorySnapshot(getGraph(), "Hide edges"));
+                        if(getGraphUI().getHistoryJournal() != null) {
+                            getGraphUI().getHistoryJournal().snapshot("Hide edges",
+                                    "Hidden all edges of slot " + getSlot().getDisplayName(),
+                                    getSlot().getNode().getCompartmentUUIDInGraph(),
+                                    UIUtils.getIconFromResources("actions/eye-slash.png"));
+                        }
                         for (JIPipeGraphEdge target : visibleEdges) {
                             target.setUiHidden(true);
                         }
@@ -419,7 +422,12 @@ public abstract class JIPipeDataSlotUI extends JIPipeWorkbenchPanel {
                 JMenuItem showButton = new JMenuItem("Show incoming edge", UIUtils.getIconFromResources("actions/eye.png"));
                 showButton.setToolTipText("Un-hides the incoming edge");
                 showButton.addActionListener(e -> {
-                    nodeUI.getGraphUI().getGraphHistory().addSnapshotBefore(new GraphChangedHistorySnapshot(getGraph(), "Un-hide edge"));
+                    if(getGraphUI().getHistoryJournal() != null) {
+                        getGraphUI().getHistoryJournal().snapshot("Un-hide edge",
+                                "Shown the edge " + sourceSlot.getDisplayName() + " -> " + slot.getDisplayName(),
+                                getNodeUI().getNode().getCompartmentUUIDInGraph(),
+                                UIUtils.getIconFromResources("actions/eye.png"));
+                    }
                     edge.setUiHidden(false);
                     nodeUI.getGraphUI().repaint();
                 });
@@ -429,7 +437,12 @@ public abstract class JIPipeDataSlotUI extends JIPipeWorkbenchPanel {
                 JMenuItem hideButton = new JMenuItem("Hide incoming edge", UIUtils.getIconFromResources("actions/eye-slash.png"));
                 hideButton.setToolTipText("Hides the incoming edge");
                 hideButton.addActionListener(e -> {
-                    nodeUI.getGraphUI().getGraphHistory().addSnapshotBefore(new GraphChangedHistorySnapshot(getGraph(), "Hide edge"));
+                    if(getGraphUI().getHistoryJournal() != null) {
+                        getGraphUI().getHistoryJournal().snapshot("Hide edge",
+                                "Hidden the edge " + sourceSlot.getDisplayName() + " -> " + slot.getDisplayName(),
+                                getNodeUI().getNode().getCompartmentUUIDInGraph(),
+                                UIUtils.getIconFromResources("actions/eye-slash.png"));
+                    }
                     edge.setUiHidden(true);
                     nodeUI.getGraphUI().repaint();
                 });
@@ -457,7 +470,12 @@ public abstract class JIPipeDataSlotUI extends JIPipeWorkbenchPanel {
                 JMenuItem showButton = new JMenuItem("Show outgoing edge", UIUtils.getIconFromResources("actions/eye.png"));
                 showButton.setToolTipText("Un-hides the outgoing edge");
                 showButton.addActionListener(e -> {
-                    nodeUI.getGraphUI().getGraphHistory().addSnapshotBefore(new GraphChangedHistorySnapshot(getGraph(), "Un-hide edge"));
+                    if(getGraphUI().getHistoryJournal() != null) {
+                        getGraphUI().getHistoryJournal().snapshot("Un-hide edge",
+                                "Shown the edge " + slot.getDisplayName() + " -> " + targetSlot.getDisplayName(),
+                                getNodeUI().getNode().getCompartmentUUIDInGraph(),
+                                UIUtils.getIconFromResources("actions/eye.png"));
+                    }
                     edge.setUiHidden(false);
                     nodeUI.getGraphUI().repaint();
                 });
@@ -467,7 +485,12 @@ public abstract class JIPipeDataSlotUI extends JIPipeWorkbenchPanel {
                 JMenuItem hideButton = new JMenuItem("Hide outgoing edge", UIUtils.getIconFromResources("actions/eye-slash.png"));
                 hideButton.setToolTipText("Hides the outgoing edge");
                 hideButton.addActionListener(e -> {
-                    nodeUI.getGraphUI().getGraphHistory().addSnapshotBefore(new GraphChangedHistorySnapshot(getGraph(), "Hide edge"));
+                    if(getGraphUI().getHistoryJournal() != null) {
+                        getGraphUI().getHistoryJournal().snapshot("Hide edge",
+                                "Hidden the edge " + slot.getDisplayName() + " -> " + targetSlot.getDisplayName(),
+                                getNodeUI().getNode().getCompartmentUUIDInGraph(),
+                                UIUtils.getIconFromResources("actions/eye-slash.png"));
+                    }
                     edge.setUiHidden(true);
                     nodeUI.getGraphUI().repaint();
                 });
@@ -484,7 +507,12 @@ public abstract class JIPipeDataSlotUI extends JIPipeWorkbenchPanel {
         if (edge.getUiShape() != JIPipeGraphEdge.Shape.Elbow) {
             JMenuItem setShapeItem = new JMenuItem("Draw as elbow", UIUtils.getIconFromResources("actions/standard-connector.png"));
             setShapeItem.addActionListener(e -> {
-                nodeUI.getGraphUI().getGraphHistory().addSnapshotBefore(new GraphChangedHistorySnapshot(getGraph(), "Draw as elbow"));
+                if(getGraphUI().getHistoryJournal() != null) {
+                    getGraphUI().getHistoryJournal().snapshot("Draw edge as elbow",
+                            getSlot().getDisplayName(),
+                            getNodeUI().getNode().getCompartmentUUIDInGraph(),
+                            UIUtils.getIconFromResources("actions/standard-connector.png"));
+                }
                 edge.setUiShape(JIPipeGraphEdge.Shape.Elbow);
                 nodeUI.getGraphUI().repaint();
             });
@@ -493,7 +521,12 @@ public abstract class JIPipeDataSlotUI extends JIPipeWorkbenchPanel {
         if (edge.getUiShape() != JIPipeGraphEdge.Shape.Line) {
             JMenuItem setShapeItem = new JMenuItem("Draw as line", UIUtils.getIconFromResources("actions/draw-line.png"));
             setShapeItem.addActionListener(e -> {
-                nodeUI.getGraphUI().getGraphHistory().addSnapshotBefore(new GraphChangedHistorySnapshot(getGraph(), "Draw as line"));
+                if(getGraphUI().getHistoryJournal() != null) {
+                    getGraphUI().getHistoryJournal().snapshot("Draw edge as line",
+                            getSlot().getDisplayName(),
+                            getNodeUI().getNode().getCompartmentUUIDInGraph(),
+                            UIUtils.getIconFromResources("actions/draw-line.png"));
+                }
                 edge.setUiShape(JIPipeGraphEdge.Shape.Line);
                 nodeUI.getGraphUI().repaint();
             });
@@ -587,7 +620,7 @@ public abstract class JIPipeDataSlotUI extends JIPipeWorkbenchPanel {
     private void editSlot() {
         if (!JIPipeProjectWorkbench.canModifySlots(getWorkbench()))
             return;
-        EditAlgorithmSlotPanel.showDialog(this, getGraphUI().getGraphHistory(), slot);
+        EditAlgorithmSlotPanel.showDialog(this, getGraphUI().getHistoryJournal(), slot);
     }
 
     private void relabelSlot() {
@@ -596,7 +629,9 @@ public abstract class JIPipeDataSlotUI extends JIPipeWorkbenchPanel {
                 slot.getInfo().getCustomName());
         if (newLabel == null)
             return;
-        getGraphUI().getGraphHistory().addSnapshotBefore(new SlotConfigurationHistorySnapshot(slot.getNode(), "Relabel slot '" + slot.getDisplayName() + "'"));
+        if(getGraphUI().getHistoryJournal() != null) {
+            getGraphUI().getHistoryJournal().snapshotBeforeLabelSlot(slot, slot.getNode().getCompartmentUUIDInGraph());
+        }
         slot.getInfo().setCustomName(newLabel);
         getGraphUI().getWorkbench().setProjectModified(true);
     }
@@ -605,7 +640,9 @@ public abstract class JIPipeDataSlotUI extends JIPipeWorkbenchPanel {
         if (!JIPipeProjectWorkbench.canModifySlots(getWorkbench()))
             return;
         JIPipeMutableSlotConfiguration slotConfiguration = (JIPipeMutableSlotConfiguration) slot.getNode().getSlotConfiguration();
-        getGraphUI().getGraphHistory().addSnapshotBefore(new SlotConfigurationHistorySnapshot(slot.getNode(), "Remove slot '" + slot.getDisplayName() + "'"));
+        if(getGraphUI().getHistoryJournal() != null) {
+            getGraphUI().getHistoryJournal().snapshotBeforeRemoveSlot(slot.getNode(), slot.getInfo(), slot.getNode().getCompartmentUUIDInGraph());
+        }
         if (slot.isInput())
             slotConfiguration.removeInputSlot(slot.getName(), true);
         else if (slot.isOutput())
@@ -614,8 +651,9 @@ public abstract class JIPipeDataSlotUI extends JIPipeWorkbenchPanel {
 
     private void moveSlotDown() {
         if (slot != null) {
-            getGraphUI().getGraphHistory().addSnapshotBefore(new SlotConfigurationHistorySnapshot(slot.getNode(),
-                    "Move slot '" + slot.getDisplayName() + "' down"));
+            if(getGraphUI().getHistoryJournal() != null) {
+                getGraphUI().getHistoryJournal().snapshotBeforeMoveSlot(slot, slot.getNode().getCompartmentUUIDInGraph());
+            }
             ((JIPipeMutableSlotConfiguration) nodeUI.getNode().getSlotConfiguration()).moveDown(slot.getName(), slot.getSlotType());
             getGraphUI().repaint();
         }
@@ -623,8 +661,9 @@ public abstract class JIPipeDataSlotUI extends JIPipeWorkbenchPanel {
 
     private void moveSlotUp() {
         if (slot != null) {
-            getGraphUI().getGraphHistory().addSnapshotBefore(new SlotConfigurationHistorySnapshot(slot.getNode(),
-                    "Move slot '" + slot.getDisplayName() + "' up"));
+            if(getGraphUI().getHistoryJournal() != null) {
+                getGraphUI().getHistoryJournal().snapshotBeforeMoveSlot(slot, slot.getNode().getCompartmentUUIDInGraph());
+            }
             ((JIPipeMutableSlotConfiguration) nodeUI.getNode().getSlotConfiguration()).moveUp(slot.getName(), slot.getSlotType());
             getGraphUI().repaint();
         }

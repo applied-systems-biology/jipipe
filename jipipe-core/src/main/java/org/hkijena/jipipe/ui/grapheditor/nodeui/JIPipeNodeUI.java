@@ -118,7 +118,7 @@ public abstract class JIPipeNodeUI extends JIPipeWorkbenchPanel {
         addSlotButton.addActionListener(e -> {
             if (!JIPipeProjectWorkbench.canModifySlots(getWorkbench()))
                 return;
-            AddAlgorithmSlotPanel.showDialog(this, graphUI.getGraphHistory(), node, slotType);
+            AddAlgorithmSlotPanel.showDialog(this, graphUI.getHistoryJournal(), node, slotType);
         });
 
         return addSlotButton;

@@ -18,8 +18,7 @@ import org.hkijena.jipipe.api.data.JIPipeDataInfo;
 import org.hkijena.jipipe.api.data.JIPipeDataSlotInfo;
 import org.hkijena.jipipe.api.data.JIPipeDefaultMutableSlotConfiguration;
 import org.hkijena.jipipe.api.data.JIPipeSlotType;
-import org.hkijena.jipipe.api.history.JIPipeGraphHistory;
-import org.hkijena.jipipe.api.history.SlotConfigurationHistorySnapshot;
+import org.hkijena.jipipe.api.history.JIPipeHistoryJournal;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.nodes.JIPipeIOSlotConfiguration;
 import org.hkijena.jipipe.utils.StringUtils;
@@ -51,7 +50,7 @@ public class AddAlgorithmSlotPanel extends JPanel {
      * Remember the type selected last for increased usability
      */
     private static JIPipeDataInfo lastSelectedType = null;
-    private final JIPipeGraphHistory graphHistory;
+    private final JIPipeHistoryJournal historyJournal;
     private JIPipeGraphNode algorithm;
     private JIPipeSlotType slotType;
     private SearchTextField searchField;
@@ -68,12 +67,12 @@ public class AddAlgorithmSlotPanel extends JPanel {
     /**
      * @param algorithm    the target algorithm
      * @param slotType     the slot type to be created
-     * @param graphHistory the graph history
+     * @param historyJournal the history journal. can be null.
      */
-    public AddAlgorithmSlotPanel(JIPipeGraphNode algorithm, JIPipeSlotType slotType, JIPipeGraphHistory graphHistory) {
+    public AddAlgorithmSlotPanel(JIPipeGraphNode algorithm, JIPipeSlotType slotType, JIPipeHistoryJournal historyJournal) {
         this.algorithm = algorithm;
         this.slotType = slotType;
-        this.graphHistory = graphHistory;
+        this.historyJournal = historyJournal;
         initialize();
         initializeAvailableInfos();
         reloadTypeList();
@@ -223,7 +222,6 @@ public class AddAlgorithmSlotPanel extends JPanel {
             JOptionPane.showMessageDialog(this, "The name '" + slotName + "' is not a valid slot name. It can only contain alphanumeric characters and following characters: . _ , #");
             return;
         }
-        graphHistory.addSnapshotBefore(new SlotConfigurationHistorySnapshot(algorithm, "Add slot '" + slotName + "'"));
 
         JIPipeDefaultMutableSlotConfiguration slotConfiguration = (JIPipeDefaultMutableSlotConfiguration) algorithm.getSlotConfiguration();
         JIPipeDataSlotInfo slotDefinition;
@@ -240,8 +238,12 @@ public class AddAlgorithmSlotPanel extends JPanel {
         } else {
             throw new UnsupportedOperationException();
         }
-
         slotDefinition.setInheritanceConversions(inheritanceConversions);
+
+        if(getHistoryJournal() != null) {
+            getHistoryJournal().snapshotBeforeAddSlot(algorithm, slotDefinition, algorithm.getCompartmentUUIDInGraph());
+        }
+
         slotConfiguration.addSlot(slotName, slotDefinition, true);
         lastSelectedType = selectedInfo;
 
@@ -347,17 +349,21 @@ public class AddAlgorithmSlotPanel extends JPanel {
         this.dialog = dialog;
     }
 
+    public JIPipeHistoryJournal getHistoryJournal() {
+        return historyJournal;
+    }
+
     /**
      * Shows a dialog for adding slots
      *
      * @param parent       parent component
-     * @param graphHistory the graph history
+     * @param historyJournal the graph history
      * @param algorithm    target algorithm
      * @param slotType     slot type to be created
      */
-    public static void showDialog(Component parent, JIPipeGraphHistory graphHistory, JIPipeGraphNode algorithm, JIPipeSlotType slotType) {
+    public static void showDialog(Component parent, JIPipeHistoryJournal historyJournal, JIPipeGraphNode algorithm, JIPipeSlotType slotType) {
         JDialog dialog = new JDialog();
-        AddAlgorithmSlotPanel panel = new AddAlgorithmSlotPanel(algorithm, slotType, graphHistory);
+        AddAlgorithmSlotPanel panel = new AddAlgorithmSlotPanel(algorithm, slotType, historyJournal);
         panel.setDialog(dialog);
         dialog.setContentPane(panel);
         dialog.setTitle("Add slot");

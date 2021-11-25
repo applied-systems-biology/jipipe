@@ -24,8 +24,7 @@ import gnu.trove.list.TIntList;
 import gnu.trove.list.array.TIntArrayList;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
-import org.hkijena.jipipe.api.history.JIPipeGraphHistory;
-import org.hkijena.jipipe.api.history.MoveNodesGraphHistorySnapshot;
+import org.hkijena.jipipe.api.history.JIPipeHistoryJournal;
 import org.hkijena.jipipe.api.nodes.JIPipeGraph;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphEdge;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
@@ -99,8 +98,8 @@ public class JIPipeGraphCanvasUI extends JIPipeWorkbenchPanel implements MouseMo
     private final BiMap<JIPipeGraphNode, JIPipeNodeUI> nodeUIs = HashBiMap.create();
     private final Set<JIPipeNodeUI> selection = new HashSet<>();
     private final EventBus eventBus = new EventBus();
-    private final JIPipeGraphHistory graphHistory = new JIPipeGraphHistory();
     private final GraphEditorUISettings settings;
+    private final JIPipeHistoryJournal historyJournal;
     private UUID compartment;
     private boolean layoutHelperEnabled;
     private JIPipeGraphViewMode viewMode;
@@ -110,17 +109,16 @@ public class JIPipeGraphCanvasUI extends JIPipeWorkbenchPanel implements MouseMo
     private Point selectionSecond;
     private long lastTimeExpandedNegative = 0;
     private List<NodeUIContextAction> contextActions = new ArrayList<>();
-    private MoveNodesGraphHistorySnapshot currentlyDraggedSnapshot;
-    private Map<JIPipeNodeUI, Point> currentlyDraggedOffsets = new HashMap<>();
+    private final Map<JIPipeNodeUI, Point> currentlyDraggedOffsets = new HashMap<>();
     private JIPipeDataSlotUI currentConnectionDragSource;
     private JIPipeDataSlotUI currentConnectionDragTarget;
     private JIPipeDataSlotUI currentHighlightedForDisconnect;
     private Set<JIPipeDataSlot> currentHighlightedForDisconnectSourceSlots;
     private double zoom = 1.0;
     private JScrollPane scrollPane;
-    private NodeHotKeyStorage nodeHotKeyStorage;
+    private final NodeHotKeyStorage nodeHotKeyStorage;
     private Set<JIPipeGraphNode> scheduledSelection = new HashSet<>();
-    private Color improvedStrokeBackgroundColor = UIManager.getColor("Panel.background");
+    private final Color improvedStrokeBackgroundColor = UIManager.getColor("Panel.background");
 
     /**
      * Used to store the minimum dimensions of the canvas to reduce user disruption
@@ -129,13 +127,14 @@ public class JIPipeGraphCanvasUI extends JIPipeWorkbenchPanel implements MouseMo
 
     /**
      * Creates a new UI
-     *
-     * @param workbench   the workbench
+     *  @param workbench   the workbench
      * @param graph       The algorithm graph
      * @param compartment The compartment to show
+     * @param historyJournal object that tracks the history of this graph. Set to null to disable the undo feature.
      */
-    public JIPipeGraphCanvasUI(JIPipeWorkbench workbench, JIPipeGraph graph, UUID compartment) {
+    public JIPipeGraphCanvasUI(JIPipeWorkbench workbench, JIPipeGraph graph, UUID compartment, JIPipeHistoryJournal historyJournal) {
         super(workbench);
+        this.historyJournal = historyJournal;
         setLayout(null);
         this.graph = graph;
         this.nodeHotKeyStorage = NodeHotKeyStorage.getInstance(graph);
@@ -1772,10 +1771,6 @@ public class JIPipeGraphCanvasUI extends JIPipeWorkbenchPanel implements MouseMo
         return uis;
     }
 
-    public JIPipeGraphHistory getGraphHistory() {
-        return graphHistory;
-    }
-
     public JIPipeDataSlotUI getCurrentConnectionDragSource() {
         return currentConnectionDragSource;
     }
@@ -1904,6 +1899,10 @@ public class JIPipeGraphCanvasUI extends JIPipeWorkbenchPanel implements MouseMo
 
     public void setScheduledSelection(Set<JIPipeGraphNode> scheduledSelection) {
         this.scheduledSelection = scheduledSelection;
+    }
+
+    public JIPipeHistoryJournal getHistoryJournal() {
+        return historyJournal;
     }
 
     /**

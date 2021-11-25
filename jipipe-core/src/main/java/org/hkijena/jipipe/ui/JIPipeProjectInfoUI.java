@@ -312,7 +312,7 @@ public class JIPipeProjectInfoUI extends JIPipeProjectWorkbenchPanel {
 
         @Override
         protected BufferedImage doInBackground() throws Exception {
-            JIPipeGraphCanvasUI canvasUI = new JIPipeGraphCanvasUI(workbench, workbench.getProject().getGraph(), null);
+            JIPipeGraphCanvasUI canvasUI = new JIPipeGraphCanvasUI(workbench, workbench.getProject().getGraph(), null, historyJournal);
             canvasUI.setViewMode(JIPipeGraphViewMode.Horizontal);
             canvasUI.autoLayoutAll();
             canvasUI.crop();

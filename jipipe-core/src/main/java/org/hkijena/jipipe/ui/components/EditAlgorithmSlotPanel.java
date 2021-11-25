@@ -19,8 +19,7 @@ import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.data.JIPipeDataSlotInfo;
 import org.hkijena.jipipe.api.data.JIPipeDefaultMutableSlotConfiguration;
 import org.hkijena.jipipe.api.data.JIPipeSlotType;
-import org.hkijena.jipipe.api.history.JIPipeGraphHistory;
-import org.hkijena.jipipe.api.history.SlotConfigurationHistorySnapshot;
+import org.hkijena.jipipe.api.history.JIPipeHistoryJournal;
 import org.hkijena.jipipe.api.nodes.JIPipeGraph;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.utils.StringUtils;
@@ -48,7 +47,7 @@ import java.util.stream.Collectors;
  */
 public class EditAlgorithmSlotPanel extends JPanel {
 
-    private final JIPipeGraphHistory graphHistory;
+    private final JIPipeHistoryJournal historyJournal;
     private JIPipeDataSlot existingSlot;
     private SearchTextField searchField;
     private JList<JIPipeDataInfo> datatypeList;
@@ -64,18 +63,21 @@ public class EditAlgorithmSlotPanel extends JPanel {
 
     /**
      * Creates a new instance
-     *
-     * @param existingSlot the existing slot
-     * @param graphHistory the graph history
+     *  @param existingSlot the existing slot
+     * @param historyJournal the history journal. can be null.
      */
-    public EditAlgorithmSlotPanel(JIPipeDataSlot existingSlot, JIPipeGraphHistory graphHistory) {
+    public EditAlgorithmSlotPanel(JIPipeDataSlot existingSlot, JIPipeHistoryJournal historyJournal) {
         this.existingSlot = existingSlot;
-        this.graphHistory = graphHistory;
+        this.historyJournal = historyJournal;
         initialize();
         initializeAvailableInfos();
         reloadTypeList();
 
         setInitialValues();
+    }
+
+    public JIPipeHistoryJournal getHistoryJournal() {
+        return historyJournal;
     }
 
     private void setInitialValues() {
@@ -204,7 +206,9 @@ public class EditAlgorithmSlotPanel extends JPanel {
             return;
 
         // Create a undo snapshot
-        graphHistory.addSnapshotBefore(new SlotConfigurationHistorySnapshot(existingSlot.getNode(), "Edit slot '" + existingSlot.getDisplayName() + "'"));
+        if(getHistoryJournal() != null) {
+            getHistoryJournal().snapshotBeforeEditSlot(existingSlot, existingSlot.getNode().getCompartmentUUIDInGraph());
+        }
 
         JIPipeGraphNode algorithm = existingSlot.getNode();
         JIPipeSlotType slotType = existingSlot.getSlotType();
@@ -369,12 +373,12 @@ public class EditAlgorithmSlotPanel extends JPanel {
      * Shows a dialog for adding slots
      *
      * @param parent       parent component
-     * @param graphHistory the graph history for undo snapshots
+     * @param historyJournal the graph history for undo snapshots. can be null.
      * @param existingSlot the slot to be edited
      */
-    public static void showDialog(Component parent, JIPipeGraphHistory graphHistory, JIPipeDataSlot existingSlot) {
+    public static void showDialog(Component parent, JIPipeHistoryJournal historyJournal, JIPipeDataSlot existingSlot) {
         JDialog dialog = new JDialog();
-        EditAlgorithmSlotPanel panel = new EditAlgorithmSlotPanel(existingSlot, graphHistory);
+        EditAlgorithmSlotPanel panel = new EditAlgorithmSlotPanel(existingSlot, historyJournal);
         panel.setDialog(dialog);
         dialog.setContentPane(panel);
         dialog.setTitle("Edit slot '" + existingSlot.getName() + "'");

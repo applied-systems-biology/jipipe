@@ -16,7 +16,6 @@ package org.hkijena.jipipe.ui.grapheditor.contextmenu;
 import com.google.common.collect.ImmutableList;
 import org.hkijena.jipipe.api.JIPipeProject;
 import org.hkijena.jipipe.api.compartments.algorithms.JIPipeProjectCompartment;
-import org.hkijena.jipipe.api.history.DeleteCompartmentGraphHistorySnapshot;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.extensions.settings.GraphEditorUISettings;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
@@ -43,11 +42,12 @@ public class DeleteCompartmentUIContextAction implements NodeUIContextAction {
                 "Do you really want to remove the following compartments: " +
                         selection.stream().map(JIPipeNodeUI::getNode).map(JIPipeGraphNode::getName).collect(Collectors.joining(", ")), "Delete compartments",
                 JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
-            JIPipeProject project = ((JIPipeProjectWorkbench) canvasUI.getWorkbench()).getProject();
             for (JIPipeNodeUI ui : ImmutableList.copyOf(selection)) {
                 if (ui.getNode() instanceof JIPipeProjectCompartment) {
                     JIPipeProjectCompartment compartment = (JIPipeProjectCompartment) ui.getNode();
-                    canvasUI.getGraphHistory().addSnapshotBefore(new DeleteCompartmentGraphHistorySnapshot(project, compartment));
+                    if(canvasUI.getHistoryJournal() != null) {
+                        canvasUI.getHistoryJournal().snapshotBeforeRemoveCompartment(compartment);
+                    }
                     compartment.getProject().removeCompartment(compartment);
                 } else {
                     canvasUI.getGraph().removeNode(ui.getNode(), true);

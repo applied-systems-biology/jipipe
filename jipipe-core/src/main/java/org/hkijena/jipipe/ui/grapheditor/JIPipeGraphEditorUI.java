@@ -16,8 +16,7 @@ package org.hkijena.jipipe.ui.grapheditor;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.eventbus.Subscribe;
 import org.hkijena.jipipe.JIPipe;
-import org.hkijena.jipipe.api.history.AddNodeGraphHistorySnapshot;
-import org.hkijena.jipipe.api.history.MoveNodesGraphHistorySnapshot;
+import org.hkijena.jipipe.api.history.JIPipeHistoryJournal;
 import org.hkijena.jipipe.api.nodes.JIPipeGraph;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
@@ -52,7 +51,6 @@ import java.awt.event.MouseMotionListener;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.nio.file.Path;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
@@ -77,8 +75,8 @@ public abstract class JIPipeGraphEditorUI extends JIPipeWorkbenchPanel implement
     private final GraphEditorUISettings graphUISettings;
 
     protected JMenuBar menuBar = new JMenuBar();
-    private JIPipeGraphCanvasUI canvasUI;
-    private JIPipeGraph algorithmGraph;
+    private final JIPipeGraphCanvasUI canvasUI;
+    private final JIPipeGraph algorithmGraph;
 
     private JSplitPane splitPane;
     private JScrollPane scrollPane;
@@ -87,17 +85,21 @@ public abstract class JIPipeGraphEditorUI extends JIPipeWorkbenchPanel implement
     private boolean isPanning = false;
 
     private Set<JIPipeNodeInfo> addableAlgorithms = new HashSet<>();
-    private SearchBox<Object> navigator = new SearchBox<>();
+    private final SearchBox<Object> navigator = new SearchBox<>();
+
+    private final JIPipeHistoryJournal historyJournal;
 
     /**
      * @param workbenchUI    the workbench
      * @param algorithmGraph the algorithm graph
      * @param compartment    the graph compartment to display. Set to null to display all compartments
+     * @param historyJournal object that tracks the history of this graph. Set to null to disable the undo feature.
      */
-    public JIPipeGraphEditorUI(JIPipeWorkbench workbenchUI, JIPipeGraph algorithmGraph, UUID compartment) {
+    public JIPipeGraphEditorUI(JIPipeWorkbench workbenchUI, JIPipeGraph algorithmGraph, UUID compartment, JIPipeHistoryJournal historyJournal) {
         super(workbenchUI);
         this.algorithmGraph = algorithmGraph;
-        this.canvasUI = new JIPipeGraphCanvasUI(getWorkbench(), algorithmGraph, compartment);
+        this.historyJournal = historyJournal;
+        this.canvasUI = new JIPipeGraphCanvasUI(getWorkbench(), algorithmGraph, compartment, historyJournal);
         this.graphUISettings = GraphEditorUISettings.getInstance();
         initialize();
         reloadMenuBar();
@@ -209,7 +211,9 @@ public abstract class JIPipeGraphEditorUI extends JIPipeWorkbenchPanel implement
                 return;
             JIPipeNodeInfo info = (JIPipeNodeInfo) event.getValue();
             JIPipeGraphNode node = info.newInstance();
-            getCanvasUI().getGraphHistory().addSnapshotBefore(new AddNodeGraphHistorySnapshot(algorithmGraph, Collections.singleton(node)));
+            if(getHistoryJournal() != null) {
+                getHistoryJournal().snapshotBeforeAddNode(node, getCompartment());
+            }
             canvasUI.getScheduledSelection().clear();
             canvasUI.getScheduledSelection().add(node);
             algorithmGraph.insertNode(node, getCompartment());
@@ -249,17 +253,19 @@ public abstract class JIPipeGraphEditorUI extends JIPipeWorkbenchPanel implement
         if (!graphEditorToolBarButtonExtensions.isEmpty())
             menuBar.add(new JSeparator(JSeparator.VERTICAL));
 
-        JButton undoButton = new JButton(UIUtils.getIconFromResources("actions/undo.png"));
-        undoButton.setToolTipText("<html>Undo<br><i>Ctrl-Z</i></html>");
-        UIUtils.makeFlat25x25(undoButton);
-        undoButton.addActionListener(e -> undo());
-        menuBar.add(undoButton);
+        if(getHistoryJournal() != null) {
+            JButton undoButton = new JButton(UIUtils.getIconFromResources("actions/undo.png"));
+            undoButton.setToolTipText("<html>Undo<br><i>Ctrl-Z</i></html>");
+            UIUtils.makeFlat25x25(undoButton);
+            undoButton.addActionListener(e -> undo());
+            menuBar.add(undoButton);
 
-        JButton redoButton = new JButton(UIUtils.getIconFromResources("actions/edit-redo.png"));
-        redoButton.setToolTipText("<html>Redo<br><i>Ctrl-Shift-Z</i></html>");
-        UIUtils.makeFlat25x25(redoButton);
-        redoButton.addActionListener(e -> redo());
-        menuBar.add(redoButton);
+            JButton redoButton = new JButton(UIUtils.getIconFromResources("actions/edit-redo.png"));
+            redoButton.setToolTipText("<html>Redo<br><i>Ctrl-Shift-Z</i></html>");
+            UIUtils.makeFlat25x25(redoButton);
+            redoButton.addActionListener(e -> redo());
+            menuBar.add(redoButton);
+        }
 
         menuBar.add(new JSeparator(JSeparator.VERTICAL));
 
@@ -275,7 +281,9 @@ public abstract class JIPipeGraphEditorUI extends JIPipeWorkbenchPanel implement
             layoutMenu.removeAll();
             JMenuItem autoLayoutItem = new JMenuItem("Auto-layout all nodes", UIUtils.getIconFromResources("actions/distribute-unclump.png"));
             autoLayoutItem.addActionListener(e -> {
-                canvasUI.getGraphHistory().addSnapshotBefore(new MoveNodesGraphHistorySnapshot(canvasUI.getGraph(), "Auto-layout all nodes"));
+                if(getHistoryJournal() != null) {
+                    getHistoryJournal().snapshot("Auto-layout", "Apply auto-layout", getCompartment(), UIUtils.getIconFromResources("actions/distribute-unclump.png"));
+                }
                 canvasUI.autoLayoutAll();
             });
             autoLayoutItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_L, KeyEvent.CTRL_MASK | KeyEvent.SHIFT_MASK));
@@ -297,7 +305,9 @@ public abstract class JIPipeGraphEditorUI extends JIPipeWorkbenchPanel implement
         centerViewButton.setToolTipText("Center view to nodes");
         UIUtils.makeFlat25x25(centerViewButton);
         centerViewButton.addActionListener(e -> {
-            canvasUI.getGraphHistory().addSnapshotBefore(new MoveNodesGraphHistorySnapshot(canvasUI.getGraph(), "Center view to nodes"));
+            if(getHistoryJournal() != null) {
+                getHistoryJournal().snapshot("Center view to nodes", "Apply center view to nodes", getCompartment(), UIUtils.getIconFromResources("actions/view-restore.png"));
+            }
             canvasUI.crop();
         });
         menuBar.add(centerViewButton);
@@ -436,31 +446,35 @@ public abstract class JIPipeGraphEditorUI extends JIPipeWorkbenchPanel implement
     }
 
     private void redo() {
-        int scrollX = scrollPane.getHorizontalScrollBar().getValue();
-        int scrollY = scrollPane.getVerticalScrollBar().getValue();
-        if (canvasUI.getGraphHistory().redo()) {
-            getWorkbench().sendStatusBarText("Redo successful");
-        } else {
-            getWorkbench().sendStatusBarText("Redo unsuccessful");
+        if(getHistoryJournal() != null) {
+            int scrollX = scrollPane.getHorizontalScrollBar().getValue();
+            int scrollY = scrollPane.getVerticalScrollBar().getValue();
+            if (getHistoryJournal().redo(getCompartment())) {
+                getWorkbench().sendStatusBarText("Redo successful");
+            } else {
+                getWorkbench().sendStatusBarText("Redo unsuccessful");
+            }
+            SwingUtilities.invokeLater(() -> {
+                scrollPane.getHorizontalScrollBar().setValue(scrollX);
+                scrollPane.getVerticalScrollBar().setValue(scrollY);
+            });
         }
-        SwingUtilities.invokeLater(() -> {
-            scrollPane.getHorizontalScrollBar().setValue(scrollX);
-            scrollPane.getVerticalScrollBar().setValue(scrollY);
-        });
     }
 
     private void undo() {
-        int scrollX = scrollPane.getHorizontalScrollBar().getValue();
-        int scrollY = scrollPane.getVerticalScrollBar().getValue();
-        if (canvasUI.getGraphHistory().undo()) {
-            getWorkbench().sendStatusBarText("Undo successful");
-        } else {
-            getWorkbench().sendStatusBarText("Undo unsuccessful");
+        if(getHistoryJournal() != null) {
+            int scrollX = scrollPane.getHorizontalScrollBar().getValue();
+            int scrollY = scrollPane.getVerticalScrollBar().getValue();
+            if (getHistoryJournal().undo(getCompartment())) {
+                getWorkbench().sendStatusBarText("Undo successful");
+            } else {
+                getWorkbench().sendStatusBarText("Undo unsuccessful");
+            }
+            SwingUtilities.invokeLater(() -> {
+                scrollPane.getHorizontalScrollBar().setValue(scrollX);
+                scrollPane.getVerticalScrollBar().setValue(scrollY);
+            });
         }
-        SwingUtilities.invokeLater(() -> {
-            scrollPane.getHorizontalScrollBar().setValue(scrollX);
-            scrollPane.getVerticalScrollBar().setValue(scrollY);
-        });
     }
 
     /**
@@ -762,6 +776,10 @@ public abstract class JIPipeGraphEditorUI extends JIPipeWorkbenchPanel implement
             }
         }
         navigator.setModel(model);
+    }
+
+    public JIPipeHistoryJournal getHistoryJournal() {
+        return historyJournal;
     }
 
     private static int[] rankNavigationEntry(Object value, String[] searchStrings) {
