@@ -30,8 +30,8 @@ public class JIPipeRunnerQueueUI extends JPanel {
     private JPanel emptyQueuePanel;
     private JPanel runningQueuePanel;
     private JProgressBar runningQueueProgress;
-    private JLabel throbberLabel;
     private ThrobberIcon throbberIcon;
+    private JLabel queueCountLabel;
 
     /**
      * Creates new instance
@@ -64,13 +64,17 @@ public class JIPipeRunnerQueueUI extends JPanel {
         runningQueuePanel.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createEmptyBorder(1, 1, 1, 1),
                 BorderFactory.createCompoundBorder(new RoundedLineBorder(UIManager.getColor("Button.borderColor"), 1, 2),
                         BorderFactory.createEmptyBorder(5, 15, 5, 15))));
-        throbberLabel = new JLabel();
+        JLabel throbberLabel = new JLabel();
         throbberIcon = new ThrobberIcon(throbberLabel, UIUtils.getIconFromResources("status/throbber.png"), 80, 24);
         throbberLabel.setIcon(throbberIcon);
         runningQueuePanel.add(throbberLabel);
         runningQueuePanel.add(Box.createHorizontalStrut(2));
         runningQueueProgress = new JProgressBar();
         runningQueuePanel.add(runningQueueProgress);
+
+        queueCountLabel = new JLabel();
+        runningQueuePanel.add(queueCountLabel);
+
         JButton cancelButton = new JButton(UIUtils.getIconFromResources("actions/cancel.png"));
         UIUtils.makeBorderlessWithoutMargin(cancelButton);
         cancelButton.setToolTipText("Cancel");
@@ -92,10 +96,18 @@ public class JIPipeRunnerQueueUI extends JPanel {
             removeAll();
             add(runningQueuePanel, BorderLayout.EAST);
             throbberIcon.start();
+            int size = JIPipeRunnerQueue.getInstance().size();
+            if(size <= 1) {
+                queueCountLabel.setText("");
+            }
+            else {
+                queueCountLabel.setText(" +" + (size - 1) + "");
+            }
             revalidate();
             repaint();
         } else {
             removeAll();
+            queueCountLabel.setText("");
             add(emptyQueuePanel, BorderLayout.EAST);
             throbberIcon.stop();
             revalidate();
@@ -110,6 +122,16 @@ public class JIPipeRunnerQueueUI extends JPanel {
      */
     @Subscribe
     public void onWorkerStarted(RunUIWorkerStartedEvent event) {
+        updateStatus();
+    }
+
+    /**
+     * Triggered when a worker is enqueued
+     *
+     * @param event Generated event
+     */
+    @Subscribe
+    public void onWorkerEnqueued(RunUIWorkerEnqueuedEvent event) {
         updateStatus();
     }
 

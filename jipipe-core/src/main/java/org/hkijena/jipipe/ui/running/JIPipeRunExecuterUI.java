@@ -142,6 +142,7 @@ public class JIPipeRunExecuterUI extends JPanel {
     @Subscribe
     public void onWorkerStart(RunUIWorkerStartedEvent event) {
         if (event.getRun() == run) {
+            cancelButton.setEnabled(true);
             throbberIcon.start();
         }
     }

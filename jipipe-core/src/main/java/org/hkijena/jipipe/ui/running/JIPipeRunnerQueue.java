@@ -30,9 +30,9 @@ public class JIPipeRunnerQueue {
     private static JIPipeRunnerQueue instance;
 
     private JIPipeRunWorker currentlyRunningWorker = null;
-    private Queue<JIPipeRunWorker> queue = new ArrayDeque<>();
-    private Map<JIPipeRunnable, JIPipeRunWorker> assignedWorkers = new HashMap<>();
-    private EventBus eventBus = new EventBus();
+    private final Queue<JIPipeRunWorker> queue = new ArrayDeque<>();
+    private final Map<JIPipeRunnable, JIPipeRunWorker> assignedWorkers = new HashMap<>();
+    private final EventBus eventBus = new EventBus();
 
     private JIPipeRunnerQueue() {
 
@@ -55,8 +55,19 @@ public class JIPipeRunnerQueue {
         return false;
     }
 
+    /**
+     * @return true if nothing is running and the queue is empty
+     */
     public boolean isEmpty() {
         return currentlyRunningWorker == null && queue.isEmpty();
+    }
+
+    /**
+     * The size of the queue (includes the currently running {@link org.hkijena.jipipe.api.JIPipeRun}
+     * @return the size
+     */
+    public int size() {
+        return (currentlyRunningWorker != null ? 1 : 0) + queue.size();
     }
 
     /**
@@ -70,6 +81,7 @@ public class JIPipeRunnerQueue {
         worker.getEventBus().register(this);
         assignedWorkers.put(run, worker);
         queue.add(worker);
+        eventBus.post(new RunUIWorkerEnqueuedEvent(run, worker));
         tryDequeue();
         return worker;
     }
