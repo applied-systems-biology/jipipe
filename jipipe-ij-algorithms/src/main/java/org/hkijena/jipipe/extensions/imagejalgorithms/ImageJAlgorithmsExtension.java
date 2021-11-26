@@ -104,14 +104,7 @@ import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.math.distancemap.Geode
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.math.distancemap.LabelChamferDistanceMap3DAlgorithm;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.math.local.*;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.misc.DataToPreviewAlgorithm;
-import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.morphology.MorphologicalReconstruction2DAlgorithm;
-import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.morphology.MorphologicalReconstruction3DAlgorithm;
-import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.morphology.Morphology2DAlgorithm;
-import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.morphology.Morphology3DAlgorithm;
-import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.morphology.MorphologyBinary2DAlgorithm;
-import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.morphology.MorphologyFillHoles2DAlgorithm;
-import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.morphology.MorphologyOutline2DAlgorithm;
-import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.morphology.MorphologySkeletonize2DAlgorithm;
+import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.morphology.*;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.noise.AddNoise2DAlgorithm;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.noise.AddSaltAndPepperNoise2DAlgorithm;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.noise.DespeckleFilter2DAlgorithm;
@@ -688,6 +681,7 @@ public class ImageJAlgorithmsExtension extends JIPipePrepackagedDefaultJavaExten
         registerNodeType("ij1-morph-binary-skeletonize2d", MorphologySkeletonize2DAlgorithm.class, UIUtils.getIconURLFromResources("actions/object-to-path.png"));
         registerNodeType("ij1-morph-reconstruct-2d", MorphologicalReconstruction2DAlgorithm.class, UIUtils.getIconURLFromResources("actions/insert-math-expression.png"));
         registerNodeType("ij1-morph-reconstruct-3d", MorphologicalReconstruction3DAlgorithm.class, UIUtils.getIconURLFromResources("actions/insert-math-expression.png"));
+        registerNodeType("ij1-morph-find-holes-3d", FindHoles2DAlgorithm.class, UIUtils.getIconURLFromResources("actions/object-tweak-randomize.png"));
 
         registerEnumParameterType("ij1-morph-binary-operation2d:operation", MorphologyBinary2DAlgorithm.Operation.class,
                 "Operation", "Available operations");
