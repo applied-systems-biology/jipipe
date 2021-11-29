@@ -120,14 +120,24 @@ public class ProcessEnvironment extends ExternalEnvironment {
     }
 
     public Path getAbsoluteExecutablePath() {
-        if(SystemUtils.IS_OS_WINDOWS)
+        if(SystemUtils.IS_OS_WINDOWS) {
+            if(StringUtils.isNullOrEmpty(getExecutablePathWindows()))
+                return Paths.get("");
             return PathUtils.relativeToImageJToAbsolute(getExecutablePathWindows());
-        else if(SystemUtils.IS_OS_LINUX)
+        }
+        else if(SystemUtils.IS_OS_LINUX) {
+            if(StringUtils.isNullOrEmpty(getExecutablePathLinux()))
+                return Paths.get("");
             return PathUtils.relativeToImageJToAbsolute(getExecutablePathLinux());
-        else if(SystemUtils.IS_OS_MAC_OSX)
+        }
+        else if(SystemUtils.IS_OS_MAC_OSX) {
+            if (StringUtils.isNullOrEmpty(getExecutablePathOSX()))
+                return Paths.get("");
             return PathUtils.relativeToImageJToAbsolute(getExecutablePathOSX());
-        else {
+        } else {
             System.err.println("Operating system not detected.");
+            if(StringUtils.isNullOrEmpty(getExecutablePathWindows()))
+                return Paths.get("");
             return PathUtils.relativeToImageJToAbsolute(getExecutablePathWindows());
         }
     }
@@ -148,9 +158,9 @@ public class ProcessEnvironment extends ExternalEnvironment {
 
     @Override
     public void reportValidity(JIPipeIssueReport report) {
-        if (StringUtils.isNullOrEmpty(getExecutablePathWindows()) || !Files.isRegularFile(getAbsoluteExecutablePath())) {
+        if (StringUtils.isNullOrEmpty(getAbsoluteExecutablePath()) || !Files.isRegularFile(getAbsoluteExecutablePath())) {
             report.resolve("Executable").reportIsInvalid(
-                    "Python executable does not exist",
+                    "Executable does not exist",
                     "You need to provide a Python executable",
                     "Provide a Python executable",
                     "Python environment"
