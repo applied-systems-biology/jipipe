@@ -32,6 +32,8 @@ import org.hkijena.jipipe.extensions.utils.algorithms.meta.GetJIPipeSlotFolderAl
 import org.hkijena.jipipe.extensions.utils.algorithms.meta.JIPipeProjectParameterDefinition;
 import org.hkijena.jipipe.extensions.utils.algorithms.meta.PathsToJIPipeProjectParametersAlgorithm;
 import org.hkijena.jipipe.extensions.utils.algorithms.meta.RunJIPipeProjectAlgorithm;
+import org.hkijena.jipipe.extensions.utils.algorithms.processes.RunProcessIteratingAlgorithm;
+import org.hkijena.jipipe.extensions.utils.algorithms.processes.RunProcessMergingAlgorithm;
 import org.hkijena.jipipe.extensions.utils.contextmenu.ParameterExplorerContextMenuAction;
 import org.hkijena.jipipe.extensions.utils.datatypes.JIPipeOutputData;
 import org.hkijena.jipipe.extensions.utils.datatypes.PathDataToJIPipeOutputConverter;
@@ -81,6 +83,9 @@ public class UtilitiesExtension extends JIPipePrepackagedDefaultJavaExtension {
         registerNodeType("distribute-data", DistributeDataRandomlyByPercentageAlgorithm.class, UIUtils.getIconURLFromResources("actions/distribute-randomize.png"));
         registerNodeType("distribute-data-by-count", DistributeDataRandomlyByCountAlgorithm.class, UIUtils.getIconURLFromResources("actions/distribute-randomize.png"));
         registerNodeType("data-to-string-data", ToDataStringAlgorithm.class, UIUtils.getIconURLFromResources("actions/edit-select-text.png"));
+
+        registerNodeType("run-process-iterating", RunProcessIteratingAlgorithm.class, UIUtils.getIconURLFromResources("actions/cm_runterm.png"));
+        registerNodeType("run-process-merging", RunProcessMergingAlgorithm.class, UIUtils.getIconURLFromResources("actions/cm_runterm.png"));
 
         // Comment node
         JIPipeJavaNodeInfo commentNodeInfo = new JIPipeJavaNodeInfo("jipipe:comment", JIPipeCommentNode.class);

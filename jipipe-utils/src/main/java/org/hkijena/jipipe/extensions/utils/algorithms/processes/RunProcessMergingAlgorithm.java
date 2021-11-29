@@ -1,6 +1,5 @@
 package org.hkijena.jipipe.extensions.utils.algorithms.processes;
 
-import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
@@ -8,10 +7,11 @@ import org.hkijena.jipipe.api.data.JIPipeAnnotation;
 import org.hkijena.jipipe.api.data.JIPipeAnnotationMergeStrategy;
 import org.hkijena.jipipe.api.data.JIPipeDataAnnotationMergeStrategy;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
-import org.hkijena.jipipe.api.data.JIPipeDataSlotInfo;
 import org.hkijena.jipipe.api.data.JIPipeDefaultMutableSlotConfiguration;
 import org.hkijena.jipipe.api.nodes.JIPipeDataBatch;
 import org.hkijena.jipipe.api.nodes.JIPipeIteratingAlgorithm;
+import org.hkijena.jipipe.api.nodes.JIPipeMergingAlgorithm;
+import org.hkijena.jipipe.api.nodes.JIPipeMergingDataBatch;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.categories.MiscellaneousNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
@@ -24,23 +24,22 @@ import org.hkijena.jipipe.utils.ProcessUtils;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.Collections;
 import java.util.Map;
 
-@JIPipeDocumentation(name = "Run process (Iterating)", description = "Executes a process.")
+@JIPipeDocumentation(name = "Run process (Merging)", description = "Executes a process.")
 @JIPipeNode(nodeTypeCategory = MiscellaneousNodeTypeCategory.class, menuPath = "Process")
-public class RunProcessIteratingAlgorithm extends JIPipeIteratingAlgorithm {
+public class RunProcessMergingAlgorithm extends JIPipeMergingAlgorithm {
 
     private ProcessEnvironment processEnvironment = new ProcessEnvironment();
     private OptionalDefaultExpressionParameter overrideArguments = new OptionalDefaultExpressionParameter(true, "ARRAY()");
     private boolean outputOutputFolder = false;
     private boolean cleanUpAfterwards = true;
 
-    public RunProcessIteratingAlgorithm(JIPipeNodeInfo info) {
+    public RunProcessMergingAlgorithm(JIPipeNodeInfo info) {
         super(info, JIPipeDefaultMutableSlotConfiguration.builder().build());
     }
 
-    public RunProcessIteratingAlgorithm(RunProcessIteratingAlgorithm other) {
+    public RunProcessMergingAlgorithm(RunProcessMergingAlgorithm other) {
         super(other);
         this.processEnvironment = new ProcessEnvironment(other.processEnvironment);
         this.overrideArguments = new OptionalDefaultExpressionParameter(other.overrideArguments);
@@ -49,7 +48,7 @@ public class RunProcessIteratingAlgorithm extends JIPipeIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
+    protected void runIteration(JIPipeMergingDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
         Path workDirectory = getNewScratch();
         Path inputPath = PathUtils.resolveAndMakeSubDirectory(workDirectory,"inputs");
         Path outputPath = PathUtils.resolveAndMakeSubDirectory(workDirectory,"outputs");
@@ -58,7 +57,7 @@ public class RunProcessIteratingAlgorithm extends JIPipeIteratingAlgorithm {
 
         // Save all inputs
         for (JIPipeDataSlot slot : getEffectiveInputSlots()) {
-            JIPipeDataSlot dummy = slot.slice(Collections.singletonList(dataBatch.getInputRow(slot)));
+            JIPipeDataSlot dummy = slot.slice(dataBatch.getInputRows(slot));
             dummy.save(inputPath.resolve(slot.getName()), inputPath, progressInfo.resolve("Save inputs"));
         }
 

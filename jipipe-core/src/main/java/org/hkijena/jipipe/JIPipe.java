@@ -25,6 +25,7 @@ import net.imagej.updater.util.Progress;
 import net.imagej.updater.util.UpdaterUtil;
 import org.apache.commons.lang3.reflect.ConstructorUtils;
 import org.hkijena.jipipe.api.JIPipeIssueReport;
+import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.JIPipeProject;
 import org.hkijena.jipipe.api.JIPipeRun;
 import org.hkijena.jipipe.api.JIPipeRunSettings;
@@ -32,6 +33,7 @@ import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataDisplayOperation;
 import org.hkijena.jipipe.api.data.JIPipeDataImportOperation;
 import org.hkijena.jipipe.api.data.JIPipeDataInfo;
+import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
 import org.hkijena.jipipe.api.nodes.JIPipeAlgorithm;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
@@ -626,6 +628,16 @@ public class JIPipe extends AbstractService implements JIPipeRegistry {
         } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    /**
+     * Imports data from a slot folder
+     * @param slotFolder a folder that contains data-table.json
+     * @param progressInfo the progress info
+     * @return the imported data slot
+     */
+    public static JIPipeDataSlot importDataSlot(Path slotFolder, JIPipeProgressInfo progressInfo) {
+        return JIPipeDataSlot.loadFromStoragePath(slotFolder, progressInfo);
     }
 
     public static JIPipeParameterTypeRegistry getParameterTypes() {
