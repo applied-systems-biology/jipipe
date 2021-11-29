@@ -1,4 +1,4 @@
-package org.hkijena.jipipe.extensions.utils.algorithms;
+package org.hkijena.jipipe.extensions.utils.algorithms.distribute;
 
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeNode;

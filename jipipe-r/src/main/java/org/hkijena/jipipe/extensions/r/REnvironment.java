@@ -28,7 +28,6 @@ import java.util.HashSet;
 import java.util.Set;
 
 public class REnvironment extends ExternalEnvironment {
-    private final EventBus eventBus = new EventBus();
     private Path RExecutablePath = Paths.get("");
     private Path RScriptExecutablePath = Paths.get("");
     private DefaultExpressionParameter arguments = new DefaultExpressionParameter("ARRAY(script_file)");
@@ -47,11 +46,6 @@ public class REnvironment extends ExternalEnvironment {
         this.RScriptExecutablePath = other.RScriptExecutablePath;
         this.arguments = new DefaultExpressionParameter(other.arguments);
         this.environmentVariables = new StringQueryExpressionAndStringPairParameter.List(other.environmentVariables);
-    }
-
-    @Override
-    public EventBus getEventBus() {
-        return eventBus;
     }
 
     @Override

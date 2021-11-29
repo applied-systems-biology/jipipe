@@ -26,6 +26,12 @@ import org.hkijena.jipipe.extensions.filesystem.resultanalysis.OpenPathDataOpera
 import org.hkijena.jipipe.extensions.parameters.primitives.HTMLText;
 import org.hkijena.jipipe.extensions.parameters.primitives.StringList;
 import org.hkijena.jipipe.extensions.utils.algorithms.*;
+import org.hkijena.jipipe.extensions.utils.algorithms.distribute.DistributeDataRandomlyByCountAlgorithm;
+import org.hkijena.jipipe.extensions.utils.algorithms.distribute.DistributeDataRandomlyByPercentageAlgorithm;
+import org.hkijena.jipipe.extensions.utils.algorithms.meta.GetJIPipeSlotFolderAlgorithm;
+import org.hkijena.jipipe.extensions.utils.algorithms.meta.JIPipeProjectParameterDefinition;
+import org.hkijena.jipipe.extensions.utils.algorithms.meta.PathsToJIPipeProjectParametersAlgorithm;
+import org.hkijena.jipipe.extensions.utils.algorithms.meta.RunJIPipeProjectAlgorithm;
 import org.hkijena.jipipe.extensions.utils.contextmenu.ParameterExplorerContextMenuAction;
 import org.hkijena.jipipe.extensions.utils.datatypes.JIPipeOutputData;
 import org.hkijena.jipipe.extensions.utils.datatypes.PathDataToJIPipeOutputConverter;

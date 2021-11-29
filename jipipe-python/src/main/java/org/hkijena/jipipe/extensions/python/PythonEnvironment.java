@@ -31,7 +31,6 @@ import java.util.Set;
  * Parameter that describes a Python environment
  */
 public class PythonEnvironment extends ExternalEnvironment {
-    private final EventBus eventBus = new EventBus();
     private PythonEnvironmentType type = PythonEnvironmentType.System;
     private DefaultExpressionParameter arguments = new DefaultExpressionParameter("ARRAY(script_file)");
     private Path executablePath = Paths.get("");
@@ -117,11 +116,6 @@ public class PythonEnvironment extends ExternalEnvironment {
     @JIPipeParameter("environment-variables")
     public void setEnvironmentVariables(StringQueryExpressionAndStringPairParameter.List environmentVariables) {
         this.environmentVariables = environmentVariables;
-    }
-
-    @Override
-    public EventBus getEventBus() {
-        return eventBus;
     }
 
     @Override
