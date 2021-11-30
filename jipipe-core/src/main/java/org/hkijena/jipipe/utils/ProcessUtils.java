@@ -20,10 +20,16 @@ import com.sun.jna.platform.win32.WinNT;
 import org.apache.commons.exec.CommandLine;
 import org.apache.commons.exec.DefaultExecutor;
 import org.apache.commons.exec.ExecuteWatchdog;
+import org.apache.commons.exec.LogOutputStream;
 import org.apache.commons.exec.PumpStreamHandler;
 import org.apache.commons.exec.Watchdog;
+import org.apache.commons.lang.WordUtils;
 import org.apache.commons.lang3.SystemUtils;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
+import org.hkijena.jipipe.extensions.expressions.ExpressionVariables;
+import org.hkijena.jipipe.extensions.parameters.pairs.StringQueryExpressionAndStringPairParameter;
+import org.hkijena.jipipe.extensions.processes.ProcessEnvironment;
+import org.hkijena.jipipe.utils.scripting.MacroUtils;
 import org.jgrapht.graph.DefaultDirectedGraph;
 import org.jgrapht.graph.DefaultEdge;
 import org.jgrapht.traverse.BreadthFirstIterator;
@@ -36,7 +42,12 @@ import java.io.OutputStream;
 import java.lang.reflect.Field;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 public class ProcessUtils {
 
@@ -77,6 +88,68 @@ public class ProcessUtils {
             result = -1;
         }
         return result;
+    }
+
+    /**
+     * Runs a process
+     * @param environment the process environment
+     * @param variables additional variables for the arguments (can be null)
+     * @param progressInfo the progress info
+     */
+    public static void runProcess(ProcessEnvironment environment, ExpressionVariables variables, JIPipeProgressInfo progressInfo) {
+        CommandLine commandLine = new CommandLine(environment.getAbsoluteExecutablePath().toFile());
+
+        Map<String, String> environmentVariables = new HashMap<>();
+        ExpressionVariables existingEnvironmentVariables = new ExpressionVariables();
+        for (Map.Entry<String, String> entry : System.getenv().entrySet()) {
+            existingEnvironmentVariables.put(entry.getKey(), entry.getValue());
+            environmentVariables.put(entry.getKey(), entry.getValue());
+        }
+        for (StringQueryExpressionAndStringPairParameter environmentVariable : environment.getEnvironmentVariables()) {
+            String value = StringUtils.nullToEmpty(environmentVariable.getKey().evaluate(existingEnvironmentVariables));
+            environmentVariables.put(environmentVariable.getValue(), value);
+        }
+        for (Map.Entry<String, String> entry : environmentVariables.entrySet()) {
+            progressInfo.log("Setting environment variable " + entry.getKey() + "=" + entry.getValue());
+        }
+
+        if(variables == null) {
+            variables = new ExpressionVariables();
+        }
+        variables.set("executable", environment.getAbsoluteExecutablePath().toString());
+        Object evaluationResult = environment.getArguments().evaluate(variables);
+        for (Object item : (Collection<?>) evaluationResult) {
+            commandLine.addArgument(StringUtils.nullToEmpty(item));
+        }
+
+        ProcessUtils.ExtendedExecutor executor = new ProcessUtils.ExtendedExecutor(ExecuteWatchdog.INFINITE_TIMEOUT, progressInfo);
+        setupLogger(commandLine, executor, progressInfo);
+
+        try {
+            executor.execute(commandLine, environmentVariables);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public static void setupLogger(CommandLine commandLine, DefaultExecutor executor, JIPipeProgressInfo progressInfo) {
+        progressInfo.log("Running " + Arrays.stream(commandLine.toStrings()).map(s -> {
+            if (s.contains(" ")) {
+                return "\"" + MacroUtils.escapeString(s) + "\"";
+            } else {
+                return MacroUtils.escapeString(s);
+            }
+        }).collect(Collectors.joining(" ")));
+
+        LogOutputStream progressInfoLog = new LogOutputStream() {
+            @Override
+            protected void processLine(String s, int i) {
+                for (String s1 : s.split("\\r")) {
+                    progressInfo.log(WordUtils.wrap(s1, 120));
+                }
+            }
+        };
+        executor.setStreamHandler(new PumpStreamHandler(progressInfoLog, progressInfoLog));
     }
 
     /**

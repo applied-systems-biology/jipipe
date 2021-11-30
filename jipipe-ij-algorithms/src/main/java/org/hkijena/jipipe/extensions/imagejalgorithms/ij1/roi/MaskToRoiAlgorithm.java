@@ -55,11 +55,12 @@ public class MaskToRoiAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         ImagePlusGreyscaleMaskData inputData = dataBatch.getInputData(getFirstInputSlot(), ImagePlusGreyscaleMaskData.class, progressInfo);
         ROIListData result = new ROIListData();
         ImageJUtils.forEachIndexedZCTSlice(inputData.getImage(), (ip, index) -> {
-            int threshold = ip.isInvertedLut() ? 255 : 0;
+            ImageProcessor ip2 = ip.duplicate();
+            int threshold = ip2.isInvertedLut() ? 255 : 0;
             if (!invertThreshold)
                 threshold = (threshold == 255) ? 0 : 255;
-            ip.setThreshold(threshold, threshold, ImageProcessor.NO_LUT_UPDATE);
-            Roi roi = ThresholdToSelection.run(new ImagePlus("slice", ip));
+            ip2.setThreshold(threshold, threshold, ImageProcessor.NO_LUT_UPDATE);
+            Roi roi = ThresholdToSelection.run(new ImagePlus("slice", ip2));
             if (roi != null) {
                 roi.setPosition(index.getC() + 1, index.getZ() + 1, index.getT() + 1);
                 result.add(roi);
