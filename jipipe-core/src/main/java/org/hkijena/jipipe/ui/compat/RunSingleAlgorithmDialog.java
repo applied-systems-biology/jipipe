@@ -23,6 +23,7 @@ import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.data.JIPipeDefaultMutableSlotConfiguration;
 import org.hkijena.jipipe.api.data.JIPipeMutableSlotConfiguration;
 import org.hkijena.jipipe.api.data.JIPipeSlotType;
+import org.hkijena.jipipe.api.history.JIPipeDedicatedGraphHistoryJournal;
 import org.hkijena.jipipe.api.nodes.JIPipeGraph;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
@@ -246,7 +247,7 @@ public class RunSingleAlgorithmDialog extends JDialog implements JIPipeWorkbench
                 JButton addButton = new JButton(UIUtils.getIconFromResources("actions/list-add.png"));
                 addButton.setToolTipText("Add new input");
                 UIUtils.makeFlat25x25(addButton);
-                addButton.addActionListener(e -> AddAlgorithmSlotPanel.showDialog(this, new JIPipeGraphHistory(), getAlgorithm(), JIPipeSlotType.Input));
+                addButton.addActionListener(e -> AddAlgorithmSlotPanel.showDialog(this, new JIPipeDedicatedGraphHistoryJournal(), getAlgorithm(), JIPipeSlotType.Input));
                 inputDataHeaderPanel.addColumn(addButton);
             }
             if (slotConfiguration.canModifyInputSlots()) {
@@ -287,7 +288,7 @@ public class RunSingleAlgorithmDialog extends JDialog implements JIPipeWorkbench
                 JButton addButton = new JButton(UIUtils.getIconFromResources("actions/list-add.png"));
                 addButton.setToolTipText("Add new output");
                 UIUtils.makeFlat25x25(addButton);
-                addButton.addActionListener(e -> AddAlgorithmSlotPanel.showDialog(this, new JIPipeGraphHistory(), getAlgorithm(), JIPipeSlotType.Input));
+                addButton.addActionListener(e -> AddAlgorithmSlotPanel.showDialog(this, new JIPipeDedicatedGraphHistoryJournal(), getAlgorithm(), JIPipeSlotType.Input));
                 outputDataHeaderPanel.addColumn(addButton);
             }
             if (slotConfiguration.canModifyInputSlots()) {

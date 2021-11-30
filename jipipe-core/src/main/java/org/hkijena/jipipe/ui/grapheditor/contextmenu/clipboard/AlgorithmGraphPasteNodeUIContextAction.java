@@ -128,8 +128,9 @@ public class AlgorithmGraphPasteNodeUIContextAction implements NodeUIContextActi
         }
 
         // Add to graph
-        canvasUI.getGraphHistory().addSnapshotBefore(new PasteNodeGraphHistorySnapshot(canvasUI.getGraph(),
-                new HashSet<>(graph.getGraphNodes())));
+        if(canvasUI.getHistoryJournal() != null) {
+            canvasUI.getHistoryJournal().snapshotBeforePasteNodes(graph.getGraphNodes(), canvasUI.getCompartment());
+        }
         canvasUI.getGraph().mergeWith(graph);
     }
 }

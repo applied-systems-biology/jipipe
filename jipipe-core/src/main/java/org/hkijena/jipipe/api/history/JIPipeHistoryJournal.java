@@ -166,6 +166,18 @@ public interface JIPipeHistoryJournal {
 
     /**
      * Create a snapshot for adding a node
+     * @param nodes the nodes
+     * @param compartment the compartment. can be null.
+     */
+    default void snapshotBeforePasteNodes(Collection<JIPipeGraphNode> nodes, UUID compartment) {
+        snapshot("Paste " + nodes.size() + " nodes",
+                "Added following nodes into the graph: <ul>" +  nodes.stream().map(s -> "<li><code>" + s.getName() + "</code></li>").collect(Collectors.joining()) + "</ul>",
+                compartment,
+                UIUtils.getIconFromResources("actions/edit-paste.png"));
+    }
+
+    /**
+     * Create a snapshot for adding a node
      * @param node the node
      * @param compartment the compartment. can be null.
      */
@@ -173,6 +185,17 @@ public interface JIPipeHistoryJournal {
         snapshot("Add node",
                 "Added a node <code>" + node.getName() + "</code> into the graph.",
                 compartment,
+                UIUtils.getIconFromResources("actions/list-add.png"));
+    }
+
+    /**
+     * Create a snapshot for adding a node
+     * @param compartment the compartment.
+     */
+    default void snapshotBeforeAddCompartment(String compartment) {
+        snapshot("Add node",
+                "Added a compartment <code>" + compartment + "</code>.",
+                null,
                 UIUtils.getIconFromResources("actions/list-add.png"));
     }
 
@@ -186,6 +209,18 @@ public interface JIPipeHistoryJournal {
                 "Removed following nodes from the graph: <ul>" +  nodes.stream().map(s -> "<li><code>" + s.getName() + "</code></li>") + "</ul>",
                 compartment,
                 UIUtils.getIconFromResources("actions/delete.png"));
+    }
+
+    /**
+     * Create a snapshot for moving nodes
+     * @param nodes the nodes
+     * @param compartment the compartment
+     */
+    default void snapshotBeforeMoveNodes(Set<JIPipeGraphNode> nodes, UUID compartment) {
+        snapshot("Moved " + nodes.size() + " nodes",
+                "Moved following nodes: <ul>" +  nodes.stream().map(s -> "<li><code>" + s.getName() + "</code></li>") + "</ul>",
+                compartment,
+                UIUtils.getIconFromResources("actions/transform-move.png"));
     }
 
     /**
@@ -224,4 +259,6 @@ public interface JIPipeHistoryJournal {
      * @return if undo was successful
      */
     boolean undo(UUID compartment);
+
+
 }

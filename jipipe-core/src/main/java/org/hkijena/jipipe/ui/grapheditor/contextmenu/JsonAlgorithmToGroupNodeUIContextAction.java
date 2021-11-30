@@ -15,6 +15,7 @@ package org.hkijena.jipipe.ui.grapheditor.contextmenu;
 
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.grouping.JsonAlgorithm;
+import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
 import org.hkijena.jipipe.ui.grapheditor.JIPipeGraphCanvasUI;
 import org.hkijena.jipipe.ui.grapheditor.nodeui.JIPipeNodeUI;
@@ -22,6 +23,8 @@ import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
 import java.util.Set;
+import java.util.UUID;
+import java.util.stream.Collectors;
 
 public class JsonAlgorithmToGroupNodeUIContextAction implements NodeUIContextAction {
     @Override
@@ -33,7 +36,11 @@ public class JsonAlgorithmToGroupNodeUIContextAction implements NodeUIContextAct
     public void run(JIPipeGraphCanvasUI canvasUI, Set<JIPipeNodeUI> selection) {
         if (!JIPipeProjectWorkbench.canAddOrDeleteNodes(canvasUI.getWorkbench()))
             return;
-        canvasUI.getGraphHistory().addSnapshotBefore(new GraphChangedHistorySnapshot(canvasUI.getGraph(), "Convert to group"));
+        if(canvasUI.getHistoryJournal() != null) {
+            Set<JIPipeGraphNode> nodes = selection.stream().map(JIPipeNodeUI::getNode).collect(Collectors.toSet());
+            UUID compartment = nodes.stream().map(JIPipeGraphNode::getUUIDInGraph).findFirst().orElse(null);
+            canvasUI.getHistoryJournal().snapshot("Convert to group", "Converted nodes into a group", compartment, UIUtils.getIconFromResources("actions/extract-archive.png"));
+        }
         for (JIPipeNodeUI ui : selection) {
             if (ui.getNode() instanceof JsonAlgorithm) {
                 JsonAlgorithm.unpackToNodeGroup((JsonAlgorithm) ui.getNode());

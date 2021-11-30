@@ -14,6 +14,7 @@
 package org.hkijena.jipipe.ui.grapheditor.contextmenu;
 
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
+import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.ui.grapheditor.JIPipeGraphCanvasUI;
 import org.hkijena.jipipe.ui.grapheditor.nodeui.JIPipeNodeUI;
 import org.hkijena.jipipe.utils.UIUtils;
@@ -22,6 +23,8 @@ import javax.swing.*;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.UUID;
+import java.util.stream.Collectors;
 
 public class IsolateNodesUIContextAction implements NodeUIContextAction {
     @Override
@@ -33,7 +36,11 @@ public class IsolateNodesUIContextAction implements NodeUIContextAction {
 
     @Override
     public void run(JIPipeGraphCanvasUI canvasUI, Set<JIPipeNodeUI> selection) {
-        canvasUI.getGraphHistory().addSnapshotBefore(new GraphChangedHistorySnapshot(canvasUI.getGraph(), "Isolated nodes"));
+        if(canvasUI.getHistoryJournal() != null) {
+            Set<JIPipeGraphNode> nodes = selection.stream().map(JIPipeNodeUI::getNode).collect(Collectors.toSet());
+            UUID compartment = nodes.stream().map(JIPipeGraphNode::getUUIDInGraph).findFirst().orElse(null);
+            canvasUI.getHistoryJournal().snapshot("Isolate nodes", "Isolated nodes", compartment, UIUtils.getIconFromResources("actions/object-group.png"));
+        }
         Set<JIPipeDataSlot> slots = new HashSet<>();
         for (JIPipeNodeUI ui : selection) {
             slots.addAll(ui.getNode().getInputSlots());

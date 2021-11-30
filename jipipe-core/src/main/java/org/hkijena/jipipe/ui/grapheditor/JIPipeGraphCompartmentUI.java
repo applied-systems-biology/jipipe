@@ -21,6 +21,7 @@ import org.hkijena.jipipe.api.JIPipeProject;
 import org.hkijena.jipipe.api.compartments.algorithms.JIPipeProjectCompartment;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.grouping.NodeGroup;
+import org.hkijena.jipipe.api.history.JIPipeDedicatedGraphHistoryJournal;
 import org.hkijena.jipipe.api.nodes.JIPipeGraph;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
@@ -77,7 +78,7 @@ public class JIPipeGraphCompartmentUI extends JIPipeGraphEditorUI {
      * @param compartment    The compartment
      */
     public JIPipeGraphCompartmentUI(JIPipeWorkbench workbenchUI, JIPipeGraph algorithmGraph, UUID compartment) {
-        super(workbenchUI, algorithmGraph, compartment, historyJournal);
+        super(workbenchUI, algorithmGraph, compartment, algorithmGraph.getProject() != null ? algorithmGraph.getProject().getHistoryJournal() : new JIPipeDedicatedGraphHistoryJournal());
         initializeDefaultPanel();
         setPropertyPanel(defaultPanel);
 
@@ -377,7 +378,7 @@ public class JIPipeGraphCompartmentUI extends JIPipeGraphEditorUI {
                     if (!JIPipeProjectWorkbench.canAddOrDeleteNodes(graphEditorUI.getWorkbench()))
                         return;
                     JIPipeGraphNode node = info.newInstance();
-                    graphEditorUI.getCanvasUI().getGraphHistory().addSnapshotBefore(new AddNodeGraphHistorySnapshot(algorithmGraph, Collections.singleton(node)));
+                    graphEditorUI.getCanvasUI().getHistoryJournal().snapshotBeforeAddNode(node, graphEditorUI.getCompartment());
                     graphEditorUI.getCanvasUI().getScheduledSelection().clear();
                     graphEditorUI.getCanvasUI().getScheduledSelection().add(node);
                     algorithmGraph.insertNode(node, graphEditorUI.getCompartment());
@@ -421,7 +422,7 @@ public class JIPipeGraphCompartmentUI extends JIPipeGraphEditorUI {
                         if (!JIPipeProjectWorkbench.canAddOrDeleteNodes(graphEditorUI.getWorkbench()))
                             return;
                         JIPipeGraphNode node = info.newInstance();
-                        graphEditorUI.getCanvasUI().getGraphHistory().addSnapshotBefore(new AddNodeGraphHistorySnapshot(algorithmGraph, Collections.singleton(node)));
+                        graphEditorUI.getHistoryJournal().snapshotBeforeAddNode(node, graphEditorUI.getCompartment());
                         algorithmGraph.insertNode(node, graphEditorUI.getCompartment());
                     });
                     addedAlgorithms.add(info);

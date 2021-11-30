@@ -17,6 +17,7 @@ import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.JIPipeJsonExtension;
 import org.hkijena.jipipe.api.grouping.JsonNodeInfo;
 import org.hkijena.jipipe.api.grouping.NodeGroup;
+import org.hkijena.jipipe.api.history.JIPipeDedicatedGraphHistoryJournal;
 import org.hkijena.jipipe.extensions.parameters.primitives.HTMLText;
 import org.hkijena.jipipe.ui.JIPipeJsonExtensionWindow;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
@@ -49,7 +50,7 @@ public class JIPipeJsonExporter extends JIPipeGraphEditorUI {
      * @param group       the node group that will be converted into an algorithm
      */
     public JIPipeJsonExporter(JIPipeProjectWorkbench workbenchUI, NodeGroup group) {
-        super(workbenchUI, group.getWrappedGraph(), null, historyJournal);
+        super(workbenchUI, group.getWrappedGraph(), null, new JIPipeDedicatedGraphHistoryJournal());
         nodeInfo = new JsonNodeInfo(group);
         nodeInfo.setName(group.getName());
         nodeInfo.setDescription(group.getCustomDescription());

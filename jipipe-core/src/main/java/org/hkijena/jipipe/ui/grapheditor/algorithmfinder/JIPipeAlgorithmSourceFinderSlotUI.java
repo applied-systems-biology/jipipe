@@ -120,16 +120,17 @@ public class JIPipeAlgorithmSourceFinderSlotUI extends JPanel {
         if (!JIPipeProjectWorkbench.canModifySlots(canvasUI.getWorkbench()))
             return;
         JIPipeDefaultMutableSlotConfiguration slotConfiguration = (JIPipeDefaultMutableSlotConfiguration) outputSlot.getNode().getSlotConfiguration();
-        canvasUI.getGraphHistory().addSnapshotBefore(new SlotConfigurationHistorySnapshot(outputSlot.getNode(),
-                "Remove slot '" + outputSlot.getDisplayName() + "'"));
+        if(canvasUI.getHistoryJournal() != null) {
+            canvasUI.getHistoryJournal().snapshotBeforeRemoveSlot(outputSlot.getNode(), outputSlot.getInfo(), canvasUI.getCompartment());
+        }
         slotConfiguration.removeOutputSlot(outputSlot.getName(), true);
     }
 
     private void connectToNewInstance() {
-        canvasUI.getGraphHistory().addSnapshotBefore(new CompoundGraphHistorySnapshot(Arrays.asList(
-                new AddNodeGraphHistorySnapshot(graph, Collections.singleton(outputSlot.getNode())),
-                new EdgeConnectGraphHistorySnapshot(graph, outputSlot, inputSlot)
-        )));
+        if(canvasUI.getHistoryJournal() != null) {
+            canvasUI.getHistoryJournal().snapshotBeforeAddNode(inputSlot.getNode(), compartment);
+            canvasUI.getHistoryJournal().snapshotBeforeConnect(outputSlot, inputSlot, compartment);
+        }
         canvasUI.getScheduledSelection().clear();
         canvasUI.getScheduledSelection().add(outputSlot.getNode());
         graph.insertNode(outputSlot.getNode(), compartment);
@@ -139,7 +140,9 @@ public class JIPipeAlgorithmSourceFinderSlotUI extends JPanel {
 
     private void connectToExistingInstance() {
         if (graph.canConnect(outputSlot, inputSlot, true)) {
-            canvasUI.getGraphHistory().addSnapshotBefore(new EdgeConnectGraphHistorySnapshot(graph, outputSlot, inputSlot));
+            if(canvasUI.getHistoryJournal() != null) {
+                canvasUI.getHistoryJournal().snapshotBeforeConnect(outputSlot, inputSlot, compartment);
+            }
             graph.connect(outputSlot, inputSlot);
             eventBus.post(new AlgorithmFinderSuccessEvent(outputSlot, inputSlot));
         } else {

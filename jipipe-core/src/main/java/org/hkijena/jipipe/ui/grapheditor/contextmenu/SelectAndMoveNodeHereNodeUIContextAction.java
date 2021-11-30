@@ -22,6 +22,7 @@ import org.hkijena.jipipe.utils.UIUtils;
 import javax.swing.*;
 import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
+import java.util.Collections;
 import java.util.Set;
 
 public class SelectAndMoveNodeHereNodeUIContextAction implements NodeUIContextAction {
@@ -40,7 +41,9 @@ public class SelectAndMoveNodeHereNodeUIContextAction implements NodeUIContextAc
         if (algorithm != null) {
             JIPipeNodeUI ui = canvasUI.getNodeUIs().getOrDefault(algorithm, null);
             if (ui != null) {
-                canvasUI.getGraphHistory().addSnapshotBefore(new MoveNodesGraphHistorySnapshot(canvasUI.getGraph(), "Move node here ..."));
+                if(canvasUI.getHistoryJournal() != null) {
+                    canvasUI.getHistoryJournal().snapshotBeforeMoveNodes(Collections.singleton(ui.getNode()), ui.getNode().getCompartmentUUIDInGraph());
+                }
                 ui.moveToClosestGridPoint(canvasUI.getGraphEditorCursor(), false, true);
                 canvasUI.repaint();
                 canvasUI.getEventBus().post(new JIPipeNodeUI.AlgorithmEvent(ui));

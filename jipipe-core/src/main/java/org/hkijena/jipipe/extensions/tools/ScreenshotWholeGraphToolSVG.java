@@ -13,6 +13,7 @@
 
 package org.hkijena.jipipe.extensions.tools;
 
+import org.hkijena.jipipe.api.history.JIPipeDedicatedGraphHistoryJournal;
 import org.hkijena.jipipe.extensions.settings.FileChooserSettings;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
@@ -43,7 +44,7 @@ public class ScreenshotWholeGraphToolSVG extends JIPipeMenuExtension {
 
     private void createScreenshot() {
         JIPipeProjectWorkbench workbench = (JIPipeProjectWorkbench) getWorkbench();
-        JIPipeGraphCanvasUI canvasUI = new JIPipeGraphCanvasUI(workbench, workbench.getProject().getGraph(), null, historyJournal);
+        JIPipeGraphCanvasUI canvasUI = new JIPipeGraphCanvasUI(workbench, workbench.getProject().getGraph(), null, new JIPipeDedicatedGraphHistoryJournal());
         canvasUI.autoLayoutAll();
         SVGGraphics2D screenshot = canvasUI.createScreenshotSVG();
         Path file = FileChooserSettings.saveFile(this, FileChooserSettings.LastDirectoryKey.Parameters, "Export full graph as *.svg", UIUtils.EXTENSION_FILTER_SVG);

@@ -39,6 +39,7 @@ import org.hkijena.jipipe.api.compartments.algorithms.JIPipeProjectCompartment;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
+import org.hkijena.jipipe.api.history.JIPipeHistoryJournal;
 import org.hkijena.jipipe.api.nodes.JIPipeGraph;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphEdge;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
@@ -89,6 +90,7 @@ public class JIPipeProject implements JIPipeValidatable {
     private JIPipeProjectCache cache;
     private boolean isCleaningUp;
     private boolean isLoading;
+    private JIPipeHistoryJournal historyJournal;
 
     /**
      * A JIPipe project
@@ -645,6 +647,10 @@ public class JIPipeProject implements JIPipeValidatable {
                 }
             }
         }
+    }
+
+    public JIPipeHistoryJournal getHistoryJournal() {
+        return historyJournal;
     }
 
     /**

@@ -20,6 +20,7 @@ import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeProject;
 import org.hkijena.jipipe.api.compartments.JIPipeExportedCompartment;
 import org.hkijena.jipipe.api.compartments.algorithms.JIPipeProjectCompartment;
+import org.hkijena.jipipe.api.history.JIPipeDedicatedGraphHistoryJournal;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.extensions.core.nodes.JIPipeCommentNode;
@@ -73,7 +74,7 @@ public class JIPipeCompartmentGraphUI extends JIPipeGraphEditorUI {
      * @param workbenchUI The workbench UI
      */
     public JIPipeCompartmentGraphUI(JIPipeProjectWorkbench workbenchUI) {
-        super(workbenchUI, workbenchUI.getProject().getCompartmentGraph(), null, historyJournal);
+        super(workbenchUI, workbenchUI.getProject().getCompartmentGraph(), null, workbenchUI.getProject().getHistoryJournal());
         initializeDefaultPanel();
         setPropertyPanel(defaultPanel);
 
@@ -205,8 +206,9 @@ public class JIPipeCompartmentGraphUI extends JIPipeGraphEditorUI {
         if (!JIPipeProjectWorkbench.canAddOrDeleteNodes(getWorkbench()))
             return;
         JIPipeCommentNode node = JIPipe.createNode(JIPipeCommentNode.class);
-        AddNodeGraphHistorySnapshot snapshot = new AddNodeGraphHistorySnapshot(getAlgorithmGraph(), Collections.singleton(node));
-        getCanvasUI().getGraphHistory().addSnapshotBefore(snapshot);
+        if(getCanvasUI().getHistoryJournal() != null) {
+            getCanvasUI().getHistoryJournal().snapshotBeforeAddNode(node, null);
+        }
         getAlgorithmGraph().insertNode(node);
     }
 
@@ -225,8 +227,10 @@ public class JIPipeCompartmentGraphUI extends JIPipeGraphEditorUI {
                 String name = UIUtils.getUniqueStringByDialog(this, "Please enter the name of the new compartment:",
                         exportedCompartment.getSuggestedName(), s -> getProject().getCompartments().containsKey(s));
                 if (name != null && !name.isEmpty()) {
-                    JIPipeProjectCompartment compartment = exportedCompartment.addTo(getProject(), name);
-                    getCanvasUI().getGraphHistory().addSnapshotBefore(new ImportCompartmentGraphHistorySnapshot(getProject(), compartment));
+                    if(getHistoryJournal() != null) {
+                        getHistoryJournal().snapshotBeforeAddCompartment(name);
+                    }
+                    exportedCompartment.addTo(getProject(), name);
                 }
             } catch (IOException e) {
                 IJ.handleException(e);
@@ -248,10 +252,10 @@ public class JIPipeCompartmentGraphUI extends JIPipeGraphEditorUI {
         String compartmentName = UIUtils.getUniqueStringByDialog(this, "Please enter the name of the compartment",
                 "Compartment", s -> getProject().getCompartments().containsKey(s));
         if (compartmentName != null && !compartmentName.trim().isEmpty()) {
-            AddCompartmentGraphHistorySnapshot snapshot = new AddCompartmentGraphHistorySnapshot(getProject(), compartmentName);
-            getCanvasUI().getGraphHistory().addSnapshotBefore(snapshot);
-            JIPipeProjectCompartment compartment = getProject().addCompartment(compartmentName);
-            snapshot.setCompartmentInstance(compartment);
+            if(getHistoryJournal() != null) {
+                getHistoryJournal().snapshotBeforeAddCompartment(compartmentName);
+            }
+            getProject().addCompartment(compartmentName);
         }
     }
 
