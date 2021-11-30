@@ -100,7 +100,7 @@ public class JIPipeGraphCanvasUI extends JIPipeWorkbenchPanel implements MouseMo
     private final EventBus eventBus = new EventBus();
     private final GraphEditorUISettings settings;
     private final JIPipeHistoryJournal historyJournal;
-    private UUID compartment;
+    private final UUID compartment;
     private boolean layoutHelperEnabled;
     private JIPipeGraphViewMode viewMode;
     private JIPipeGraphDragAndDropBehavior dragAndDropBehavior;
@@ -119,6 +119,7 @@ public class JIPipeGraphCanvasUI extends JIPipeWorkbenchPanel implements MouseMo
     private final NodeHotKeyStorage nodeHotKeyStorage;
     private Set<JIPipeGraphNode> scheduledSelection = new HashSet<>();
     private final Color improvedStrokeBackgroundColor = UIManager.getColor("Panel.background");
+    private boolean hasDragSnapshot = false;
 
     /**
      * Used to store the minimum dimensions of the canvas to reduce user disruption
@@ -585,6 +586,15 @@ public class JIPipeGraphCanvasUI extends JIPipeWorkbenchPanel implements MouseMo
         }
     }
 
+    private void createMoveSnapshotIfNeeded() {
+        if(!hasDragSnapshot) {
+            if(getHistoryJournal() != null) {
+                getHistoryJournal().snapshot("Move nodes", "Nodes were dragged with the mouse", getCompartment(), UIUtils.getIconFromResources("actions/transform-move.png"));
+            }
+            hasDragSnapshot = true;
+        }
+    }
+
     @Override
     public void mouseDragged(MouseEvent mouseEvent) {
         if (!currentlyDraggedOffsets.isEmpty()) {
@@ -611,11 +621,10 @@ public class JIPipeGraphCanvasUI extends JIPipeWorkbenchPanel implements MouseMo
                 int x = Math.max(0, currentlyDraggedOffset.x + mouseEvent.getX());
                 int y = Math.max(0, currentlyDraggedOffset.y + mouseEvent.getY());
 
-                if (currentlyDraggedSnapshot != null) {
+                if (!hasDragSnapshot) {
                     // Check if something would change
                     if (!Objects.equals(currentlyDragged.getLocation(), viewMode.realLocationToGrid(new Point(x, y), zoom))) {
-                        graphHistory.addSnapshotBefore(currentlyDraggedSnapshot);
-                        currentlyDraggedSnapshot = null;
+                       createMoveSnapshotIfNeeded();
                     }
                 }
 
@@ -789,12 +798,12 @@ public class JIPipeGraphCanvasUI extends JIPipeWorkbenchPanel implements MouseMo
                             }
                         }
                     }
+                    this.hasDragSnapshot = false;
                     for (JIPipeNodeUI nodeUI : selection) {
                         Point offset = new Point();
                         offset.x = nodeUI.getX() - mouseEvent.getX();
                         offset.y = nodeUI.getY() - mouseEvent.getY();
                         currentlyDraggedOffsets.put(nodeUI, offset);
-                        currentlyDraggedSnapshot = new MoveNodesGraphHistorySnapshot(graph, "Move node");
                     }
                 } else {
                     selectionFirst = mouseEvent.getPoint();
@@ -818,6 +827,7 @@ public class JIPipeGraphCanvasUI extends JIPipeWorkbenchPanel implements MouseMo
     @Override
     public void mouseReleased(MouseEvent mouseEvent) {
         currentlyDraggedOffsets.clear();
+        hasDragSnapshot = false;
         if (mouseEvent.getButton() == MouseEvent.BUTTON2)
             return;
 
