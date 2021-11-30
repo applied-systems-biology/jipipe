@@ -52,9 +52,14 @@ public class CellPoseEnvInstaller extends BasicMinicondaEnvPythonInstaller {
         runConda("run", "--no-capture-output", "pip", "install", "cellpose[gui]");
 
         // Download models
-        if (((Configuration) getConfiguration()).isDownloadModels()) {
-            runConda("run", "--no-capture-output", "python", "-u", "-c", "from cellpose import models; models.download_model_weights()");
-        }
+//        if (((Configuration) getConfiguration()).isDownloadModels()) {
+//            try {
+//                runConda("run", "--no-capture-output", "python", "-u", "-c", "from cellpose import models; models.download_model_weights()");
+//            }
+//            catch (Exception e) {
+//                getProgressInfo().log("Unable to download models! (You can ignore this, Cellpose will download models on the first start)");
+//            }
+//        }
     }
 
     private Path downloadEnvironment() {
@@ -79,18 +84,18 @@ public class CellPoseEnvInstaller extends BasicMinicondaEnvPythonInstaller {
     }
 
     public static class Configuration extends BasicMinicondaEnvPythonInstaller.Configuration {
-        private boolean downloadModels = true;
-
-        @JIPipeDocumentation(name = "Download models", description = "If enabled, models will also be downloaded. " +
-                "Otherwise, Cellpose might download the models during its first run.")
-        @JIPipeParameter("download-models")
-        public boolean isDownloadModels() {
-            return downloadModels;
-        }
-
-        @JIPipeParameter("download-models")
-        public void setDownloadModels(boolean downloadModels) {
-            this.downloadModels = downloadModels;
-        }
+//        private boolean downloadModels = true;
+//
+//        @JIPipeDocumentation(name = "Download models", description = "If enabled, models will also be downloaded. " +
+//                "Otherwise, Cellpose might download the models during its first run.")
+//        @JIPipeParameter("download-models")
+//        public boolean isDownloadModels() {
+//            return downloadModels;
+//        }
+//
+//        @JIPipeParameter("download-models")
+//        public void setDownloadModels(boolean downloadModels) {
+//            this.downloadModels = downloadModels;
+//        }
     }
 }
