@@ -276,5 +276,27 @@ public interface JIPipeHistoryJournal {
      */
     boolean undo(UUID compartment);
 
+    /**
+     * Attempts to go to a specified snapshot
+     * @param snapshot the snapshot
+     * @param compartment the compartment. can be null.
+     * @return if the undo/redo was successful
+     */
+    boolean goToSnapshot(JIPipeHistoryJournalSnapshot snapshot, UUID compartment);
+
+    /**
+     * Event when the history log was changed
+     */
+    class ChangedEvent {
+        private final JIPipeHistoryJournal historyJournal;
+
+        public ChangedEvent(JIPipeHistoryJournal historyJournal) {
+            this.historyJournal = historyJournal;
+        }
+
+        public JIPipeHistoryJournal getHistoryJournal() {
+            return historyJournal;
+        }
+    }
 
 }

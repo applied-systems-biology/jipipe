@@ -6,4 +6,5 @@ public interface JIPipeHistoryJournalSnapshot {
     String getName();
     String getDescription();
     Icon getIcon();
+    boolean restore();
 }
