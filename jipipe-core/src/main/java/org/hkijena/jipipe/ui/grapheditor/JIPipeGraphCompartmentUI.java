@@ -78,7 +78,7 @@ public class JIPipeGraphCompartmentUI extends JIPipeGraphEditorUI {
      * @param compartment    The compartment
      */
     public JIPipeGraphCompartmentUI(JIPipeWorkbench workbenchUI, JIPipeGraph algorithmGraph, UUID compartment) {
-        super(workbenchUI, algorithmGraph, compartment, algorithmGraph.getProject() != null ? algorithmGraph.getProject().getHistoryJournal() : new JIPipeDedicatedGraphHistoryJournal());
+        super(workbenchUI, algorithmGraph, compartment, algorithmGraph.getProject() != null ? algorithmGraph.getProject().getHistoryJournal() : new JIPipeDedicatedGraphHistoryJournal(algorithmGraph));
         initializeDefaultPanel();
         setPropertyPanel(defaultPanel);
 

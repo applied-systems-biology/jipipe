@@ -1,5 +1,6 @@
 package org.hkijena.jipipe.api.history;
 
+import com.google.common.eventbus.EventBus;
 import org.hkijena.jipipe.api.compartments.algorithms.JIPipeProjectCompartment;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.data.JIPipeDataSlotInfo;
@@ -8,6 +9,7 @@ import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
 import java.util.Collection;
+import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -16,6 +18,13 @@ import java.util.stream.Collectors;
  * Base class for all journals that track the history of projects or graphs
  */
 public interface JIPipeHistoryJournal {
+
+    /**
+     * The event bus
+     * @return the event bus
+     */
+    EventBus getEventBus();
+
     /**
      * Creates a new snapshot in the history journal
      * @param name the name of the snapshot
@@ -24,6 +33,13 @@ public interface JIPipeHistoryJournal {
      * @param icon an icon. can be null.
      */
     void snapshot(String name, String description, UUID compartment, Icon icon);
+
+    /**
+     * Gets the list of all snapshots.
+     * The higher the index, the newer the snapshot.
+     * @return the list of snapshots
+     */
+    List<JIPipeHistoryJournalSnapshot> getSnapshots();
 
     /**
      * Snapshot before cutting a compartment
@@ -193,7 +209,7 @@ public interface JIPipeHistoryJournal {
      * @param compartment the compartment.
      */
     default void snapshotBeforeAddCompartment(String compartment) {
-        snapshot("Add node",
+        snapshot("Add compartment",
                 "Added a compartment <code>" + compartment + "</code>.",
                 null,
                 UIUtils.getIconFromResources("actions/list-add.png"));

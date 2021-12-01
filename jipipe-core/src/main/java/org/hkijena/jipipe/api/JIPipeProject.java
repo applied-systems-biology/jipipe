@@ -39,7 +39,9 @@ import org.hkijena.jipipe.api.compartments.algorithms.JIPipeProjectCompartment;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
+import org.hkijena.jipipe.api.history.JIPipeDedicatedGraphHistoryJournal;
 import org.hkijena.jipipe.api.history.JIPipeHistoryJournal;
+import org.hkijena.jipipe.api.history.JIPipeProjectHistoryJournal;
 import org.hkijena.jipipe.api.nodes.JIPipeGraph;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphEdge;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
@@ -90,12 +92,13 @@ public class JIPipeProject implements JIPipeValidatable {
     private JIPipeProjectCache cache;
     private boolean isCleaningUp;
     private boolean isLoading;
-    private JIPipeHistoryJournal historyJournal;
+    private JIPipeProjectHistoryJournal historyJournal;
 
     /**
      * A JIPipe project
      */
     public JIPipeProject() {
+        this.historyJournal = new JIPipeProjectHistoryJournal(this);
         this.cache = new JIPipeProjectCache(this);
         this.metadata.setDescription(new HTMLText(MarkdownDocument.fromPluginResource("documentation/new-project-template.md", new HashMap<>()).getRenderedHTML()));
         this.graph.attach(JIPipeProject.class, this);
@@ -649,7 +652,7 @@ public class JIPipeProject implements JIPipeValidatable {
         }
     }
 
-    public JIPipeHistoryJournal getHistoryJournal() {
+    public JIPipeProjectHistoryJournal getHistoryJournal() {
         return historyJournal;
     }
 
