@@ -555,6 +555,22 @@ public class JIPipeProject implements JIPipeValidatable {
     }
 
     /**
+     * Rebuilds the compartment list from the current state of the compartment graph
+     */
+    public void rebuildCompartmentsFromGraph() {
+        compartments.clear();
+        for (JIPipeGraphNode node : compartmentGraph.getGraphNodes()) {
+            if (node instanceof JIPipeProjectCompartment) {
+                JIPipeProjectCompartment compartment = (JIPipeProjectCompartment) node;
+                compartment.setProject(this);
+                compartments.put(compartment.getProjectCompartmentUUID(), compartment);
+                initializeCompartment(compartment);
+            }
+        }
+        updateCompartmentVisibility();
+    }
+
+    /**
      * Returns a list of all nodes that cannot be executed or are deactivated by the user.
      * This method works on transitive deactivation (e.g. a dependency is deactivated).
      *
@@ -743,7 +759,7 @@ public class JIPipeProject implements JIPipeValidatable {
      * Triggered when a sample is added to an {@link JIPipeProject}
      */
     public static class CompartmentAddedEvent {
-        private JIPipeProjectCompartment compartment;
+        private final JIPipeProjectCompartment compartment;
 
         /**
          * @param compartment the compartment
@@ -762,7 +778,7 @@ public class JIPipeProject implements JIPipeValidatable {
      */
     public static class CompartmentRemovedEvent {
         private final UUID compartmentUUID;
-        private JIPipeProjectCompartment compartment;
+        private final JIPipeProjectCompartment compartment;
 
         /**
          * @param compartment     the compartment
@@ -786,7 +802,7 @@ public class JIPipeProject implements JIPipeValidatable {
      * Triggered when the work directory of a project or algorithm was changed
      */
     public static class WorkDirectoryChangedEvent {
-        private Path workDirectory;
+        private final Path workDirectory;
 
         /**
          * @param workDirectory the work directory
