@@ -57,6 +57,7 @@ public class TransformScale2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     private ScaleMode scaleMode = ScaleMode.Stretch;
     private Anchor anchor = Anchor.CenterCenter;
     private Color background = Color.BLACK;
+    private boolean avoidUnnecessaryScaling = true;
 
     /**
      * Instantiates a new node type.
@@ -86,6 +87,18 @@ public class TransformScale2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         this.scaleMode = other.scaleMode;
         this.anchor = other.anchor;
         this.background = other.background;
+        this.avoidUnnecessaryScaling = other.avoidUnnecessaryScaling;
+    }
+
+    @JIPipeDocumentation(name = "Avoid unnecessary scaling", description = "If enabled, the ImageJ resize method is not called if the image already has the correct size.")
+    @JIPipeParameter("avoid-unnecessary-scaling")
+    public boolean isAvoidUnnecessaryScaling() {
+        return avoidUnnecessaryScaling;
+    }
+
+    @JIPipeParameter("avoid-unnecessary-scaling")
+    public void setAvoidUnnecessaryScaling(boolean avoidUnnecessaryScaling) {
+        this.avoidUnnecessaryScaling = avoidUnnecessaryScaling;
     }
 
     @Override
@@ -121,25 +134,30 @@ public class TransformScale2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
             sx = (int) (sx * fac);
         }
 
-        if (img.isStack()) {
-            ImageStack result = new ImageStack(sx, sy, img.getStackSize());
-            int finalSx = sx;
-            int finalSy = sy;
-            ImageJUtils.forEachIndexedZCTSlice(img, (imp, index) -> {
-                ImageProcessor resized = scaleProcessor(imp, finalSx, finalSy, interpolationMethod, interpolationMethod != InterpolationMethod.None, scaleMode, anchor, background);
-                result.setProcessor(resized, index.zeroSliceIndexToOneStackIndex(img));
-            }, progressInfo);
-            ImagePlusData resized = new ImagePlusData(new ImagePlus("Resized", result));
-            resized.getImage().setDimensions(img.getNChannels(), img.getNSlices(), img.getNFrames());
-            resized.getImage().copyScale(img);
-            dataBatch.addOutputData(getFirstOutputSlot(), resized, progressInfo);
-        } else {
-            ImageProcessor resized = scaleProcessor(img.getProcessor(), sx, sy, interpolationMethod, interpolationMethod != InterpolationMethod.None, scaleMode, anchor, background);
-            ImagePlus result = new ImagePlus("Resized", resized);
-            result.copyScale(img);
-            dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusData(result), progressInfo);
+        if(avoidUnnecessaryScaling && img.getWidth() == sx && img.getHeight() == sy) {
+            progressInfo.log("Image already has the target size. No scaling needed.");
+            dataBatch.addOutputData(getFirstOutputSlot(), inputData, progressInfo);
         }
-
+        else {
+            if (img.isStack()) {
+                ImageStack result = new ImageStack(sx, sy, img.getStackSize());
+                int finalSx = sx;
+                int finalSy = sy;
+                ImageJUtils.forEachIndexedZCTSlice(img, (imp, index) -> {
+                    ImageProcessor resized = scaleProcessor(imp, finalSx, finalSy, interpolationMethod, interpolationMethod != InterpolationMethod.None, scaleMode, anchor, background);
+                    result.setProcessor(resized, index.zeroSliceIndexToOneStackIndex(img));
+                }, progressInfo);
+                ImagePlusData resized = new ImagePlusData(new ImagePlus("Resized", result));
+                resized.getImage().setDimensions(img.getNChannels(), img.getNSlices(), img.getNFrames());
+                resized.getImage().copyScale(img);
+                dataBatch.addOutputData(getFirstOutputSlot(), resized, progressInfo);
+            } else {
+                ImageProcessor resized = scaleProcessor(img.getProcessor(), sx, sy, interpolationMethod, interpolationMethod != InterpolationMethod.None, scaleMode, anchor, background);
+                ImagePlus result = new ImagePlus("Resized", resized);
+                result.copyScale(img);
+                dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusData(result), progressInfo);
+            }
+        }
     }
 
     @JIPipeDocumentation(name = "Placement", description = "Used if the scale mode is 'Fit' or 'Cover'. Determines where the image is placed.")
