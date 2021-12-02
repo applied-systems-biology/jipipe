@@ -5,6 +5,7 @@ import com.google.common.eventbus.EventBus;
 import org.hkijena.jipipe.api.JIPipeProject;
 import org.hkijena.jipipe.api.nodes.JIPipeGraph;
 import org.hkijena.jipipe.extensions.settings.HistoryJournalSettings;
+import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
 import java.time.LocalDateTime;
@@ -64,7 +65,20 @@ public class JIPipeProjectHistoryJournal implements JIPipeHistoryJournal {
     @Override
     public boolean goToSnapshot(JIPipeHistoryJournalSnapshot snapshot, UUID compartment) {
         if(undoStack.contains((Snapshot)snapshot)) {
-//            boolean createSnapshot = redoStack.isEmpty();
+            boolean createSnapshot = redoStack.isEmpty();
+
+            // If the redo stack was empty at the beginning, create a new snapshot
+            if(createSnapshot) {
+                JIPipeGraph copy = new JIPipeGraph(getProject().getGraph());
+                JIPipeGraph compartmentGraph = new JIPipeGraph(project.getCompartmentGraph());
+                redoStack.add(new Snapshot(this,
+                        LocalDateTime.now(),
+                        "Before undo",
+                        "A snapshot of the current version",
+                        UIUtils.getIconFromResources("actions/edit-undo.png"),
+                        copy,
+                        compartmentGraph));
+            }
 
             // Shift other undo operations into the redo stack
             while(!undoStack.isEmpty()) {
@@ -74,27 +88,24 @@ public class JIPipeProjectHistoryJournal implements JIPipeHistoryJournal {
                     break;
             }
 
-            // If the redo stack was empty at the beginning, create a new snapshot
-//            if(createSnapshot) {
-//                JIPipeGraph copy = new JIPipeGraph(getProject().getGraph());
-//                JIPipeGraph compartmentGraph = new JIPipeGraph(project.getCompartmentGraph());
-//                redoStack.push(new Snapshot(this,
-//                        LocalDateTime.now(),
-//                        "Before undo",
-//                        "A snapshot of the current version",
-//                        UIUtils.getIconFromResources("actions/edit-undo.png"),
-//                        copy,
-//                        compartmentGraph));
-//            }
-
-            // Move the undo operation out of the stacks
             currentSnapshot = (Snapshot) snapshot;
 
             getEventBus().post(new ChangedEvent(this));
             return currentSnapshot.restore();
         }
         else if(redoStack.contains((Snapshot) snapshot)) {
+            // Shift other undo operations into the undo stack
+            while(!redoStack.isEmpty()) {
+                Snapshot pop = redoStack.remove(redoStack.size() - 1);
+                undoStack.add(pop);
+                if(pop == snapshot)
+                    break;
+            }
 
+            currentSnapshot = (Snapshot) snapshot;
+
+            getEventBus().post(new ChangedEvent(this));
+            return currentSnapshot.restore();
         }
 
         return false;
