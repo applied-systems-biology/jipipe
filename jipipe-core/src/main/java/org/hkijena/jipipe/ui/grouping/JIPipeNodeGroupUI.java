@@ -16,9 +16,9 @@ package org.hkijena.jipipe.ui.grouping;
 import org.hkijena.jipipe.api.grouping.NodeGroup;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.JIPipeWorkbenchPanel;
-import org.hkijena.jipipe.ui.compartments.JIPipeCompartmentUI;
+import org.hkijena.jipipe.ui.grapheditor.compartments.JIPipeCompartmentUI;
 import org.hkijena.jipipe.ui.components.DocumentTabPane;
-import org.hkijena.jipipe.ui.grapheditor.JIPipeGraphCompartmentUI;
+import org.hkijena.jipipe.ui.grapheditor.JIPipePipelineGraphEditorUI;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import java.awt.BorderLayout;
@@ -27,12 +27,12 @@ import java.util.List;
 
 /**
  * Editor for a {@link org.hkijena.jipipe.api.grouping.NodeGroup}
- * Contains a {@link JIPipeGraphCompartmentUI} instance that allows editing the compartment's content
+ * Contains a {@link JIPipePipelineGraphEditorUI} instance that allows editing the compartment's content
  */
 public class JIPipeNodeGroupUI extends JIPipeWorkbenchPanel {
 
     private NodeGroup nodeGroup;
-    private JIPipeGraphCompartmentUI graphUI;
+    private JIPipePipelineGraphEditorUI graphUI;
 
     /**
      * Creates a new editor
@@ -48,7 +48,7 @@ public class JIPipeNodeGroupUI extends JIPipeWorkbenchPanel {
 
     private void initialize() {
         setLayout(new BorderLayout());
-        graphUI = new JIPipeGraphCompartmentUI(getWorkbench(), nodeGroup.getWrappedGraph(), null);
+        graphUI = new JIPipePipelineGraphEditorUI(getWorkbench(), nodeGroup.getWrappedGraph(), null);
         add(graphUI, BorderLayout.CENTER);
     }
 

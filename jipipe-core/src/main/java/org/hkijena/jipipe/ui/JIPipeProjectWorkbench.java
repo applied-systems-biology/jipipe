@@ -32,8 +32,8 @@ import org.hkijena.jipipe.extensions.settings.ProjectsSettings;
 import org.hkijena.jipipe.extensions.settings.RuntimeSettings;
 import org.hkijena.jipipe.ui.cache.JIPipeCacheBrowserUI;
 import org.hkijena.jipipe.ui.cache.JIPipeCacheManagerUI;
-import org.hkijena.jipipe.ui.compartments.JIPipeCompartmentGraphUI;
-import org.hkijena.jipipe.ui.compartments.JIPipeCompartmentUI;
+import org.hkijena.jipipe.ui.grapheditor.compartments.JIPipeCompartmentsGraphEditorUI;
+import org.hkijena.jipipe.ui.grapheditor.compartments.JIPipeCompartmentUI;
 import org.hkijena.jipipe.ui.compendium.JIPipeAlgorithmCompendiumUI;
 import org.hkijena.jipipe.ui.compendium.JIPipeDataTypeCompendiumUI;
 import org.hkijena.jipipe.ui.compendium.WelcomePanel;
@@ -212,7 +212,7 @@ public class JIPipeProjectWorkbench extends JPanel implements JIPipeWorkbench {
         documentTabPane.addSingletonTab(TAB_COMPARTMENT_EDITOR,
                 "Compartments",
                 UIUtils.getIconFromResources("actions/straight-connector.png"),
-                new JIPipeCompartmentGraphUI(this),
+                new JIPipeCompartmentsGraphEditorUI(this),
                 false);
         documentTabPane.addSingletonTab(TAB_PROJECT_SETTINGS,
                 "Project settings",

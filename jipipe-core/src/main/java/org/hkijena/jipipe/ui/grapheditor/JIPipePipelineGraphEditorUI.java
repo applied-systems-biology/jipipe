@@ -47,6 +47,7 @@ import org.hkijena.jipipe.ui.grapheditor.nodeui.JIPipeNodeUI;
 import org.hkijena.jipipe.ui.grapheditor.settings.JIPipeMultiAlgorithmSelectionPanelUI;
 import org.hkijena.jipipe.ui.grapheditor.settings.JIPipeSingleAlgorithmSelectionPanelUI;
 import org.hkijena.jipipe.ui.grouping.JIPipeNodeGroupUI;
+import org.hkijena.jipipe.ui.history.HistoryJournalUI;
 import org.hkijena.jipipe.utils.DocumentationUtils;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.TooltipUtils;
@@ -64,7 +65,7 @@ import java.util.stream.Collectors;
 /**
  * Editor for a project graph compartment
  */
-public class JIPipeGraphCompartmentUI extends JIPipeGraphEditorUI {
+public class JIPipePipelineGraphEditorUI extends JIPipeGraphEditorUI {
 
     private JPanel defaultPanel;
     private boolean disableUpdateOnSelection = false;
@@ -77,7 +78,7 @@ public class JIPipeGraphCompartmentUI extends JIPipeGraphEditorUI {
      * @param algorithmGraph The graph
      * @param compartment    The compartment
      */
-    public JIPipeGraphCompartmentUI(JIPipeWorkbench workbenchUI, JIPipeGraph algorithmGraph, UUID compartment) {
+    public JIPipePipelineGraphEditorUI(JIPipeWorkbench workbenchUI, JIPipeGraph algorithmGraph, UUID compartment) {
         super(workbenchUI, algorithmGraph, compartment, algorithmGraph.getProject() != null ? algorithmGraph.getProject().getHistoryJournal() : new JIPipeDedicatedGraphHistoryJournal(algorithmGraph));
         initializeDefaultPanel();
         setPropertyPanel(defaultPanel);
@@ -228,6 +229,11 @@ public class JIPipeGraphCompartmentUI extends JIPipeGraphEditorUI {
 
         bottomPanel.addTab("Node templates", UIUtils.getIconFromResources("actions/favorite.png"),
                 new NodeTemplateBox(getWorkbench()), DocumentTabPane.CloseMode.withoutCloseButton);
+
+        bottomPanel.addTab("Journal",
+                UIUtils.getIconFromResources("actions/edit-undo-history.png"),
+                new HistoryJournalUI(getHistoryJournal()),
+                DocumentTabPane.CloseMode.withoutCloseButton);
 
         splitPane.setBottomComponent(bottomPanel);
     }

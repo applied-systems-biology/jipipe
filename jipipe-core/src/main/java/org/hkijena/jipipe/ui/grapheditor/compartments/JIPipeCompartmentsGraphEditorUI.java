@@ -11,7 +11,7 @@
  * See the LICENSE file provided with the code for the full license.
  */
 
-package org.hkijena.jipipe.ui.compartments;
+package org.hkijena.jipipe.ui.grapheditor.compartments;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.eventbus.Subscribe;
@@ -20,12 +20,14 @@ import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeProject;
 import org.hkijena.jipipe.api.compartments.JIPipeExportedCompartment;
 import org.hkijena.jipipe.api.compartments.algorithms.JIPipeProjectCompartment;
-import org.hkijena.jipipe.api.history.JIPipeDedicatedGraphHistoryJournal;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.extensions.core.nodes.JIPipeCommentNode;
+import org.hkijena.jipipe.extensions.nodetemplate.NodeTemplateBox;
+import org.hkijena.jipipe.extensions.nodetoolboxtool.NodeToolBox;
 import org.hkijena.jipipe.extensions.settings.FileChooserSettings;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
+import org.hkijena.jipipe.ui.components.DocumentTabPane;
 import org.hkijena.jipipe.ui.components.MarkdownDocument;
 import org.hkijena.jipipe.ui.components.MarkdownReader;
 import org.hkijena.jipipe.ui.grapheditor.JIPipeCompartmentGraphDragAndDropBehavior;
@@ -46,6 +48,7 @@ import org.hkijena.jipipe.ui.grapheditor.contextmenu.clipboard.GraphCompartmentP
 import org.hkijena.jipipe.ui.grapheditor.nodeui.JIPipeNodeUI;
 import org.hkijena.jipipe.ui.grapheditor.settings.JIPipeMultiAlgorithmSelectionPanelUI;
 import org.hkijena.jipipe.ui.grapheditor.settings.JIPipeSingleAlgorithmSelectionPanelUI;
+import org.hkijena.jipipe.ui.history.HistoryJournalUI;
 import org.hkijena.jipipe.utils.TooltipUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.hkijena.jipipe.utils.json.JsonUtils;
@@ -57,7 +60,6 @@ import java.awt.event.ComponentEvent;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
@@ -67,13 +69,13 @@ import java.util.stream.Collectors;
 /**
  * Graph editor UI for a project compartment graph
  */
-public class JIPipeCompartmentGraphUI extends JIPipeGraphEditorUI {
+public class JIPipeCompartmentsGraphEditorUI extends JIPipeGraphEditorUI {
     private JPanel defaultPanel;
 
     /**
      * @param workbenchUI The workbench UI
      */
-    public JIPipeCompartmentGraphUI(JIPipeProjectWorkbench workbenchUI) {
+    public JIPipeCompartmentsGraphEditorUI(JIPipeProjectWorkbench workbenchUI) {
         super(workbenchUI, workbenchUI.getProject().getCompartmentGraph(), null, workbenchUI.getProject().getHistoryJournal());
         initializeDefaultPanel();
         setPropertyPanel(defaultPanel);
@@ -126,9 +128,18 @@ public class JIPipeCompartmentGraphUI extends JIPipeGraphEditorUI {
         JIPipeGraphEditorMinimap minimap = new JIPipeGraphEditorMinimap(this);
         splitPane.setTopComponent(minimap);
 
+        DocumentTabPane bottomPanel = new DocumentTabPane();
+
         MarkdownReader markdownReader = new MarkdownReader(false);
         markdownReader.setDocument(MarkdownDocument.fromPluginResource("documentation/compartment-graph.md", new HashMap<>()));
-        splitPane.setBottomComponent(markdownReader);
+        bottomPanel.addTab("Quick guide", UIUtils.getIconFromResources("actions/help.png"), markdownReader, DocumentTabPane.CloseMode.withoutCloseButton);
+
+        bottomPanel.addTab("Journal",
+                UIUtils.getIconFromResources("actions/edit-undo-history.png"),
+                new HistoryJournalUI(getHistoryJournal()),
+                DocumentTabPane.CloseMode.withoutCloseButton);
+
+        splitPane.setBottomComponent(bottomPanel);
     }
 
     @Override

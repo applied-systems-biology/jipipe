@@ -37,4 +37,13 @@ public enum JIPipeGraphViewMode {
     public Dimension gridToRealSize(Dimension gridSize, double zoom) {
         return new Dimension((int) Math.round(gridSize.width * gridWidth * zoom), (int) Math.round(gridSize.height * gridHeight * zoom));
     }
+
+
+    @Override
+    public String toString() {
+        if (this == JIPipeGraphViewMode.VerticalCompact) {
+            return "Vertical (compact)";
+        }
+        return name();
+    }
 }

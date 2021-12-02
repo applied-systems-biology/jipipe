@@ -1,7 +1,7 @@
 package org.hkijena.jipipe.extensions.nodetoolboxtool;
 
 import org.hkijena.jipipe.ui.extension.GraphEditorToolBarButtonExtension;
-import org.hkijena.jipipe.ui.grapheditor.JIPipeGraphCompartmentUI;
+import org.hkijena.jipipe.ui.grapheditor.JIPipePipelineGraphEditorUI;
 import org.hkijena.jipipe.ui.grapheditor.JIPipeGraphEditorUI;
 import org.hkijena.jipipe.utils.UIUtils;
 
@@ -16,6 +16,6 @@ public class NodeToolBoxMenuExtension extends GraphEditorToolBarButtonExtension 
 
     @Override
     public boolean isVisibleInGraph() {
-        return getGraphEditorUI() instanceof JIPipeGraphCompartmentUI;
+        return getGraphEditorUI() instanceof JIPipePipelineGraphEditorUI;
     }
 }

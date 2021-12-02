@@ -1,10 +1,14 @@
 package org.hkijena.jipipe.ui.history;
 
+import com.google.common.eventbus.Subscribe;
 import org.hkijena.jipipe.api.history.JIPipeHistoryJournal;
 import org.hkijena.jipipe.api.history.JIPipeHistoryJournalSnapshot;
+import org.hkijena.jipipe.utils.StringUtils;
+import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
 import java.awt.*;
+import java.time.LocalDateTime;
 
 public class HistoryJournalUI extends JPanel {
     private final JIPipeHistoryJournal historyJournal;
@@ -13,12 +17,55 @@ public class HistoryJournalUI extends JPanel {
     public HistoryJournalUI(JIPipeHistoryJournal historyJournal) {
         this.historyJournal = historyJournal;
         initialize();
+        reloadList();
+        historyJournal.getEventBus().register(this);
     }
 
     private void initialize() {
         setLayout(new BorderLayout());
         snapshotJList = new JList<>();
+        snapshotJList.setCellRenderer(new JIPipeHistorySnapshotListCellRenderer());
+        add(new JScrollPane(snapshotJList), BorderLayout.CENTER);
 
+        JToolBar toolBar = new JToolBar();
+        toolBar.setFloatable(false);
+
+        JButton undoButton = new JButton("Undo", UIUtils.getIconFromResources("actions/edit-undo.png"));
+        undoButton.addActionListener(e -> getHistoryJournal().undo(null));
+        toolBar.add(undoButton);
+
+        JButton redoButton = new JButton("Undo", UIUtils.getIconFromResources("actions/edit-undo.png"));
+        redoButton.addActionListener(e -> getHistoryJournal().redo(null));
+        toolBar.add(redoButton);
+
+        toolBar.add(Box.createHorizontalGlue());
+
+        JButton createSnapshotButton = new JButton("Create snapshot", UIUtils.getIconFromResources("actions/save.png"));
+        createSnapshotButton.addActionListener(e -> createSnapshot());
+        toolBar.add(createSnapshotButton);
+
+        add(toolBar, BorderLayout.NORTH);
+    }
+
+    private void createSnapshot() {
+        historyJournal.snapshot("Manual snapshot", "Created via the Journal interface", null, UIUtils.getIconFromResources("actions/save.png"));
+    }
+
+    public void reloadList() {
+        DefaultListModel<JIPipeHistoryJournalSnapshot> model = new DefaultListModel<>();
+        for (JIPipeHistoryJournalSnapshot snapshot : historyJournal.getSnapshots()) {
+            model.add(0, snapshot);
+        }
+        snapshotJList.setModel(model);
+        JIPipeHistoryJournalSnapshot currentSnapshot = historyJournal.getCurrentSnapshot();
+        if(currentSnapshot != null) {
+            snapshotJList.setSelectedValue(currentSnapshot, true);
+        }
+    }
+
+    @Subscribe
+    public void onHistoryJournalChanged(JIPipeHistoryJournal.ChangedEvent event) {
+        reloadList();
     }
 
     public JIPipeHistoryJournal getHistoryJournal() {

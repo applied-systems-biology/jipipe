@@ -6,6 +6,7 @@ import org.hkijena.jipipe.api.nodes.JIPipeGraph;
 import org.hkijena.jipipe.extensions.settings.HistoryJournalSettings;
 
 import javax.swing.*;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -39,6 +40,14 @@ public class JIPipeDedicatedGraphHistoryJournal implements JIPipeHistoryJournal 
         }
         currentWorker = new Worker(this, name, description, icon);
         currentWorker.execute();
+    }
+
+    @Override
+    public JIPipeHistoryJournalSnapshot getCurrentSnapshot() {
+        if(currentSnapshotIndex >= 0 && currentSnapshotIndex < snapshots.size()) {
+            return snapshots.get(currentSnapshotIndex);
+        }
+        return null;
     }
 
     @Override
@@ -76,6 +85,7 @@ public class JIPipeDedicatedGraphHistoryJournal implements JIPipeHistoryJournal 
         }
         if(snapshot.restore()) {
             currentSnapshotIndex = targetIndex - 1;
+            getEventBus().post(new ChangedEvent(this));
             return true;
         }
         return false;
@@ -135,7 +145,7 @@ public class JIPipeDedicatedGraphHistoryJournal implements JIPipeHistoryJournal 
         @Override
         protected Snapshot doInBackground() throws Exception {
             JIPipeGraph copy = new JIPipeGraph(historyJournal.graph);
-            return new Snapshot(historyJournal, name, description, icon, copy);
+            return new Snapshot(historyJournal, LocalDateTime.now(), name, description, icon, copy);
         }
 
         @Override
@@ -153,13 +163,15 @@ public class JIPipeDedicatedGraphHistoryJournal implements JIPipeHistoryJournal 
      */
     public static class Snapshot implements JIPipeHistoryJournalSnapshot {
         private final JIPipeDedicatedGraphHistoryJournal historyJournal;
+        private final LocalDateTime creationTime;
         private final String name;
         private final String description;
         private final Icon icon;
         private final JIPipeGraph graph;
 
-        public Snapshot(JIPipeDedicatedGraphHistoryJournal historyJournal, String name, String description, Icon icon, JIPipeGraph graph) {
+        public Snapshot(JIPipeDedicatedGraphHistoryJournal historyJournal, LocalDateTime creationTime, String name, String description, Icon icon, JIPipeGraph graph) {
             this.historyJournal = historyJournal;
+            this.creationTime = creationTime;
             this.name = name;
             this.description = description;
             this.icon = icon;
@@ -193,6 +205,11 @@ public class JIPipeDedicatedGraphHistoryJournal implements JIPipeHistoryJournal 
 
         public JIPipeDedicatedGraphHistoryJournal getHistoryJournal() {
             return historyJournal;
+        }
+
+        @Override
+        public LocalDateTime getCreationTime() {
+            return creationTime;
         }
     }
 }

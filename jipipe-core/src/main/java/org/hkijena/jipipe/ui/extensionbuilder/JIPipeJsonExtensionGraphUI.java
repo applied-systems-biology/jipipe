@@ -20,7 +20,7 @@ import org.hkijena.jipipe.ui.JIPipeJsonExtensionWorkbench;
 import org.hkijena.jipipe.ui.components.MarkdownDocument;
 import org.hkijena.jipipe.ui.components.MarkdownReader;
 import org.hkijena.jipipe.ui.grapheditor.JIPipeGraphCompartmentDragAndDropBehavior;
-import org.hkijena.jipipe.ui.grapheditor.JIPipeGraphCompartmentUI;
+import org.hkijena.jipipe.ui.grapheditor.JIPipePipelineGraphEditorUI;
 import org.hkijena.jipipe.ui.grapheditor.JIPipeGraphEditorMinimap;
 import org.hkijena.jipipe.ui.grapheditor.JIPipeGraphEditorUI;
 import org.hkijena.jipipe.ui.grapheditor.contextmenu.*;
@@ -116,7 +116,7 @@ public class JIPipeJsonExtensionGraphUI extends JIPipeGraphEditorUI {
     public void reloadMenuBar() {
         menuBar.removeAll();
         getAddableAlgorithms().clear();
-        JIPipeGraphCompartmentUI.initializeAddNodesMenus(this, menuBar, getAddableAlgorithms());
+        JIPipePipelineGraphEditorUI.initializeAddNodesMenus(this, menuBar, getAddableAlgorithms());
         initializeCommonActions();
         updateNavigation();
     }

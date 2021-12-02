@@ -11,23 +11,23 @@
  * See the LICENSE file provided with the code for the full license.
  */
 
-package org.hkijena.jipipe.ui.compartments;
+package org.hkijena.jipipe.ui.grapheditor.compartments;
 
 import org.hkijena.jipipe.api.compartments.algorithms.JIPipeProjectCompartment;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbenchPanel;
-import org.hkijena.jipipe.ui.grapheditor.JIPipeGraphCompartmentUI;
+import org.hkijena.jipipe.ui.grapheditor.JIPipePipelineGraphEditorUI;
 
 import java.awt.BorderLayout;
 
 /**
  * Editor for one project compartment graph
- * Contains a {@link JIPipeGraphCompartmentUI} instance that allows editing the compartment's content
+ * Contains a {@link JIPipePipelineGraphEditorUI} instance that allows editing the compartment's content
  */
 public class JIPipeCompartmentUI extends JIPipeProjectWorkbenchPanel {
 
     private JIPipeProjectCompartment compartment;
-    private JIPipeGraphCompartmentUI graphUI;
+    private JIPipePipelineGraphEditorUI graphUI;
 
     /**
      * Creates a new editor
@@ -45,7 +45,7 @@ public class JIPipeCompartmentUI extends JIPipeProjectWorkbenchPanel {
         setLayout(new BorderLayout());
         initializeToolbar();
 
-        graphUI = new JIPipeGraphCompartmentUI(getProjectWorkbench(), compartment.getProject().getGraph(), compartment.getProjectCompartmentUUID());
+        graphUI = new JIPipePipelineGraphEditorUI(getProjectWorkbench(), compartment.getProject().getGraph(), compartment.getProjectCompartmentUUID());
         add(graphUI, BorderLayout.CENTER);
     }
 

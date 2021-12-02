@@ -37,6 +37,11 @@ public class JIPipeDummyGraphHistoryJournal implements JIPipeHistoryJournal {
     }
 
     @Override
+    public JIPipeHistoryJournalSnapshot getCurrentSnapshot() {
+        return null;
+    }
+
+    @Override
     public EventBus getEventBus() {
         return eventBus;
     }

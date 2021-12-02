@@ -15,7 +15,6 @@ package org.hkijena.jipipe.ui.history;
 
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.history.JIPipeHistoryJournalSnapshot;
-import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.ui.components.ColorIcon;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
@@ -28,54 +27,55 @@ import java.awt.*;
  */
 public class JIPipeHistorySnapshotListCellRenderer extends JPanel implements ListCellRenderer<JIPipeHistoryJournalSnapshot> {
 
-    private ColorIcon nodeColor;
-    private JLabel nodeIcon;
+    private JLabel snapshotIcon;
+    private JLabel dateLabel;
     private JLabel nameLabel;
-    private JLabel pathLabel;
+    private JLabel descriptionLabel;
 
     /**
      * Creates a new renderer
      */
     public JIPipeHistorySnapshotListCellRenderer() {
         setOpaque(true);
-        setBorder(BorderFactory.createEmptyBorder(0, 4, 0, 4));
+        setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
         initialize();
     }
 
     private void initialize() {
         setLayout(new GridBagLayout());
-        nodeColor = new ColorIcon(16, 40);
-        nodeIcon = new JLabel();
+        snapshotIcon = new JLabel();
         nameLabel = new JLabel();
-        pathLabel = new JLabel();
-        pathLabel.setForeground(Color.GRAY);
+        dateLabel = new JLabel();
+        descriptionLabel = new JLabel();
+        descriptionLabel.setForeground(Color.GRAY);
 
-        add(new JLabel(nodeColor), new GridBagConstraints() {
+        add(snapshotIcon, new GridBagConstraints() {
             {
                 gridx = 0;
-                gridy = 0;
-                gridheight = 2;
-            }
-        });
-        add(nodeIcon, new GridBagConstraints() {
-            {
-                gridx = 1;
                 gridy = 0;
                 insets = new Insets(0, 4, 0, 4);
             }
         });
-        add(nameLabel, new GridBagConstraints() {
+        add(dateLabel, new GridBagConstraints() {
             {
-                gridx = 2;
+                gridx = 1;
                 gridy = 0;
                 fill = HORIZONTAL;
                 weightx = 1;
             }
         });
-        add(pathLabel, new GridBagConstraints() {
+        add(nameLabel, new GridBagConstraints() {
             {
-                gridx = 2;
+                gridx = 1;
                 gridy = 1;
+                fill = HORIZONTAL;
+                weightx = 1;
+            }
+        });
+        add(descriptionLabel, new GridBagConstraints() {
+            {
+                gridx = 1;
+                gridy = 2;
                 fill = HORIZONTAL;
                 weightx = 1;
             }
@@ -88,16 +88,14 @@ public class JIPipeHistorySnapshotListCellRenderer extends JPanel implements Lis
         setFont(list.getFont());
 
         if (snapshot != null) {
-            nodeColor.setFillColor(UIUtils.getFillColorFor(snapshot));
-            String menuPath = snapshot.getCategory().getName();
-            menuPath += "\n" + snapshot.getMenuPath();
-            menuPath = StringUtils.getCleanedMenuPath(menuPath).replace("\n", " > ");
-
-            pathLabel.setText(menuPath);
+            descriptionLabel.setText("<html>" + snapshot.getDescription() + "</html>");
             nameLabel.setText(snapshot.getName());
-            nodeIcon.setIcon(JIPipe.getNodes().getIconFor(snapshot));
+            dateLabel.setText(StringUtils.formatDateTime(snapshot.getCreationTime()));
+            snapshotIcon.setIcon(snapshot.getIcon());
         } else {
+            dateLabel.setText("<Null>");
             nameLabel.setText("<Null>");
+            descriptionLabel.setText("<Null>");
         }
 
         if (isSelected) {

@@ -285,6 +285,12 @@ public interface JIPipeHistoryJournal {
     boolean goToSnapshot(JIPipeHistoryJournalSnapshot snapshot, UUID compartment);
 
     /**
+     * Gets the snapshot that represents the current state of the tracked data
+     * @return the snapshot. can be null.
+     */
+    JIPipeHistoryJournalSnapshot getCurrentSnapshot();
+
+    /**
      * Event when the history log was changed
      */
     class ChangedEvent {
