@@ -11,15 +11,14 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
-import java.util.concurrent.ExecutionException;
 
 public class JIPipeProjectHistoryJournal implements JIPipeHistoryJournal {
     private final EventBus eventBus = new EventBus();
     private final JIPipeProject project;
-    private final List<Snapshot> snapshots = new ArrayList<>();
-    private int currentSnapshotIndex = -1;
-    private Worker currentWorker;
     private final HistoryJournalSettings settings;
+    private final List<Snapshot> undoStack = new ArrayList<>();
+    private final List<Snapshot> redoStack = new ArrayList<>();
+    private Snapshot currentSnapshot;
 
     public JIPipeProjectHistoryJournal(JIPipeProject project) {
         this.project = project;
@@ -35,78 +34,94 @@ public class JIPipeProjectHistoryJournal implements JIPipeHistoryJournal {
         if(settings.getMaxEntries() == 0) {
             return;
         }
-        if(currentWorker != null) {
-            try {
-                currentWorker.get();
-            } catch (InterruptedException | ExecutionException e) {
-                e.printStackTrace();
-            }
-        }
-        currentWorker = new Worker(this, name, description, icon);
-        currentWorker.execute();
+        addSnapshot(new Snapshot(this,
+                LocalDateTime.now(),
+                name,
+                description,
+                icon,
+                new JIPipeGraph(project.getGraph()),
+                new JIPipeGraph(project.getCompartmentGraph())));
     }
 
     @Override
     public List<JIPipeHistoryJournalSnapshot> getSnapshots() {
-        return ImmutableList.copyOf(snapshots);
-    }
-
-    @Override
-    public boolean redo(UUID compartment) {
-        int redoIndex = currentSnapshotIndex + 1;
-        if(redoIndex >= 0 && redoIndex < snapshots.size()) {
-            return goToSnapshot(snapshots.get(redoIndex), compartment);
+        List<JIPipeHistoryJournalSnapshot> snapshots = new ArrayList<>(undoStack);
+        for (int i = redoStack.size() - 1; i >= 0; i--) {
+            Snapshot snapshot = redoStack.get(i);
+            snapshots.add(snapshot);
         }
-        else {
-            return false;
-        }
-    }
-
-    @Override
-    public boolean undo(UUID compartment) {
-        int undoIndex = currentSnapshotIndex;
-        if(undoIndex < snapshots.size() && undoIndex >= 0) {
-            return goToSnapshot(snapshots.get(undoIndex), compartment);
-        }
-        else {
-            return false;
-        }
+        return snapshots;
     }
 
     @Override
     public void clear() {
-        snapshots.clear();
+        undoStack.clear();
+        redoStack.clear();
+        currentSnapshot = null;
         getEventBus().post(new ChangedEvent(this));
     }
 
     @Override
     public boolean goToSnapshot(JIPipeHistoryJournalSnapshot snapshot, UUID compartment) {
-        int targetIndex = snapshots.indexOf((Snapshot)snapshot);
-        if(targetIndex == -1) {
-            return false;
-        }
-        if(snapshot.restore()) {
-            currentSnapshotIndex = targetIndex;
+        if(undoStack.contains((Snapshot)snapshot)) {
+//            boolean createSnapshot = redoStack.isEmpty();
+
+            // Shift other undo operations into the redo stack
+            while(!undoStack.isEmpty()) {
+                Snapshot pop = undoStack.remove(undoStack.size() - 1);
+                redoStack.add(pop);
+                if(pop == snapshot)
+                    break;
+            }
+
+            // If the redo stack was empty at the beginning, create a new snapshot
+//            if(createSnapshot) {
+//                JIPipeGraph copy = new JIPipeGraph(getProject().getGraph());
+//                JIPipeGraph compartmentGraph = new JIPipeGraph(project.getCompartmentGraph());
+//                redoStack.push(new Snapshot(this,
+//                        LocalDateTime.now(),
+//                        "Before undo",
+//                        "A snapshot of the current version",
+//                        UIUtils.getIconFromResources("actions/edit-undo.png"),
+//                        copy,
+//                        compartmentGraph));
+//            }
+
+            // Move the undo operation out of the stacks
+            currentSnapshot = (Snapshot) snapshot;
+
             getEventBus().post(new ChangedEvent(this));
-            return true;
+            return currentSnapshot.restore();
         }
+        else if(redoStack.contains((Snapshot) snapshot)) {
+
+        }
+
         return false;
     }
 
     @Override
     public JIPipeHistoryJournalSnapshot getCurrentSnapshot() {
-        if(currentSnapshotIndex >= 0 && currentSnapshotIndex < snapshots.size()) {
-            return snapshots.get(currentSnapshotIndex);
-        }
-        return null;
+        return currentSnapshot;
     }
 
-    /**
-     * Removes all snapshots that would be triggered by a "redo"
-     */
-    private void clearRedoStack() {
-        while(snapshots.size() > (currentSnapshotIndex + 1)) {
-            snapshots.remove(snapshots.size() - 1);
+    @Override
+    public JIPipeHistoryJournalSnapshot getUndoSnapshot() {
+        if(undoStack.isEmpty()) {
+            return null;
+        }
+        else {
+            return undoStack.get(undoStack.size() - 1);
+        }
+    }
+
+    @Override
+    public JIPipeHistoryJournalSnapshot getRedoSnapshot() {
+        if(redoStack.isEmpty()) {
+            return null;
+        }
+        else {
+            return redoStack.get(redoStack.size() - 1);
         }
     }
 
@@ -115,54 +130,22 @@ public class JIPipeProjectHistoryJournal implements JIPipeHistoryJournal {
      * @param snapshot the snapshot
      */
     private void addSnapshot(Snapshot snapshot) {
-        currentWorker = null;
-        clearRedoStack();
-        snapshots.add(snapshot);
-
+       redoStack.clear();
         if(settings.getMaxEntries() > 0) {
-            while(snapshots.size() > settings.getMaxEntries()) {
-                snapshots.remove(0);
+            while(undoStack.size() > settings.getMaxEntries()) {
+                Snapshot removed = undoStack.remove(0);
+                if(currentSnapshot == removed) {
+                    currentSnapshot = null;
+                }
             }
         }
-
-        currentSnapshotIndex = snapshots.size() - 1;
+        undoStack.add(snapshot);
         getEventBus().post(new ChangedEvent(this));
     }
 
     @Override
     public EventBus getEventBus() {
         return eventBus;
-    }
-
-    public static class Worker extends SwingWorker<Snapshot, Object> {
-
-        private final JIPipeProjectHistoryJournal historyJournal;
-        private final String name;
-        private final String description;
-        private final Icon icon;
-
-        public Worker(JIPipeProjectHistoryJournal historyJournal, String name, String description, Icon icon) {
-            this.historyJournal = historyJournal;
-            this.name = name;
-            this.description = description;
-            this.icon = icon;
-        }
-
-        @Override
-        protected Snapshot doInBackground() throws Exception {
-            JIPipeGraph copy = new JIPipeGraph(historyJournal.getProject().getGraph());
-            JIPipeGraph compartmentGraph = new JIPipeGraph(historyJournal.project.getCompartmentGraph());
-            return new Snapshot(historyJournal, LocalDateTime.now(), name, description, icon, copy, compartmentGraph);
-        }
-
-        @Override
-        protected void done() {
-            try {
-                historyJournal.addSnapshot(get());
-            } catch (InterruptedException | ExecutionException e) {
-                e.printStackTrace();
-            }
-        }
     }
 
     /**

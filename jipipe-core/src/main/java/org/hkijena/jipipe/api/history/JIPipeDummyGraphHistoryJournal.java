@@ -22,18 +22,18 @@ public class JIPipeDummyGraphHistoryJournal implements JIPipeHistoryJournal {
     }
 
     @Override
-    public boolean redo(UUID compartment) {
-        return false;
-    }
-
-    @Override
-    public boolean undo(UUID compartment) {
-        return false;
-    }
-
-    @Override
     public boolean goToSnapshot(JIPipeHistoryJournalSnapshot snapshot, UUID compartment) {
         return false;
+    }
+
+    @Override
+    public JIPipeHistoryJournalSnapshot getUndoSnapshot() {
+        return null;
+    }
+
+    @Override
+    public JIPipeHistoryJournalSnapshot getRedoSnapshot() {
+        return null;
     }
 
     @Override

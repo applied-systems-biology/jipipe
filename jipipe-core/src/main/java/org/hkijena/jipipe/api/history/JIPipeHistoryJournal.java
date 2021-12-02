@@ -222,7 +222,7 @@ public interface JIPipeHistoryJournal {
      */
     default void snapshotBeforeRemoveNodes(Collection<JIPipeGraphNode> nodes, UUID compartment) {
         snapshot("Remove " + nodes.size() + " nodes",
-                "Removed following nodes from the graph: <ul>" +  nodes.stream().map(s -> "<li><code>" + s.getName() + "</code></li>") + "</ul>",
+                "Removed following nodes from the graph: <ul>" +  nodes.stream().map(s -> "<li><code>" + s.getName() + "</code></li>").collect(Collectors.joining()) + "</ul>",
                 compartment,
                 UIUtils.getIconFromResources("actions/delete.png"));
     }
@@ -267,14 +267,26 @@ public interface JIPipeHistoryJournal {
      * @param compartment the compartment. can be null.
      * @return if redo was successful
      */
-    boolean redo(UUID compartment);
+    default boolean redo(UUID compartment) {
+        JIPipeHistoryJournalSnapshot snapshot = getRedoSnapshot();
+        if(snapshot != null) {
+            return goToSnapshot(snapshot, compartment);
+        }
+        return false;
+    }
 
     /**
      * Undo the last undo operation
      * @param compartment the compartment. can be null.
      * @return if undo was successful
      */
-    boolean undo(UUID compartment);
+    default boolean undo(UUID compartment) {
+        JIPipeHistoryJournalSnapshot snapshot = getUndoSnapshot();
+        if(snapshot != null) {
+            return goToSnapshot(snapshot, compartment);
+        }
+        return false;
+    }
 
     /**
      * Attempts to go to a specified snapshot
@@ -285,8 +297,20 @@ public interface JIPipeHistoryJournal {
     boolean goToSnapshot(JIPipeHistoryJournalSnapshot snapshot, UUID compartment);
 
     /**
-     * Gets the snapshot that represents the current state of the tracked data
+     * Gets the snapshot for the next undo operation
      * @return the snapshot. can be null.
+     */
+    JIPipeHistoryJournalSnapshot getUndoSnapshot();
+
+    /**
+     * Gets the snapshot for the next redo operation
+     * @return the snapshot. can be null
+     */
+    JIPipeHistoryJournalSnapshot getRedoSnapshot();
+
+    /**
+     * Gets the snapshot that represents the current state of the data
+     * @return the snapshot. can be null
      */
     JIPipeHistoryJournalSnapshot getCurrentSnapshot();
 

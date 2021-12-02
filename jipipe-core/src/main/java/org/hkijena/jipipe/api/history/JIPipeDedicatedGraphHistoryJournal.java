@@ -43,10 +43,20 @@ public class JIPipeDedicatedGraphHistoryJournal implements JIPipeHistoryJournal 
     }
 
     @Override
-    public JIPipeHistoryJournalSnapshot getCurrentSnapshot() {
+    public JIPipeHistoryJournalSnapshot getUndoSnapshot() {
         if(currentSnapshotIndex >= 0 && currentSnapshotIndex < snapshots.size()) {
             return snapshots.get(currentSnapshotIndex);
         }
+        return null;
+    }
+
+    @Override
+    public JIPipeHistoryJournalSnapshot getRedoSnapshot() {
+        return null;
+    }
+
+    @Override
+    public JIPipeHistoryJournalSnapshot getCurrentSnapshot() {
         return null;
     }
 
@@ -59,28 +69,6 @@ public class JIPipeDedicatedGraphHistoryJournal implements JIPipeHistoryJournal 
     @Override
     public List<JIPipeHistoryJournalSnapshot> getSnapshots() {
         return ImmutableList.copyOf(snapshots);
-    }
-
-    @Override
-    public boolean redo(UUID compartment) {
-        int redoIndex = currentSnapshotIndex + 1;
-        if(redoIndex >= 0 && redoIndex < snapshots.size()) {
-            return goToSnapshot(snapshots.get(redoIndex), compartment);
-        }
-        else {
-            return false;
-        }
-    }
-
-    @Override
-    public boolean undo(UUID compartment) {
-        int undoIndex = currentSnapshotIndex;
-        if(undoIndex < snapshots.size() && undoIndex >= 0) {
-            return goToSnapshot(snapshots.get(undoIndex), compartment);
-        }
-        else {
-            return false;
-        }
     }
 
     @Override
