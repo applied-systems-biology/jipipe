@@ -4,6 +4,7 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.eventbus.EventBus;
 import org.hkijena.jipipe.api.JIPipeProject;
 import org.hkijena.jipipe.api.nodes.JIPipeGraph;
+import org.hkijena.jipipe.extensions.settings.HistoryJournalSettings;
 
 import javax.swing.*;
 import java.util.ArrayList;
@@ -17,9 +18,11 @@ public class JIPipeProjectHistoryJournal implements JIPipeHistoryJournal {
     private final List<Snapshot> snapshots = new ArrayList<>();
     private int currentSnapshotIndex = -1;
     private Worker currentWorker;
+    private final HistoryJournalSettings settings;
 
     public JIPipeProjectHistoryJournal(JIPipeProject project) {
         this.project = project;
+        this.settings = HistoryJournalSettings.getInstance();
     }
 
     public JIPipeProject getProject() {
@@ -28,6 +31,9 @@ public class JIPipeProjectHistoryJournal implements JIPipeHistoryJournal {
 
     @Override
     public void snapshot(String name, String description, UUID compartment, Icon icon) {
+        if(settings.getMaxEntries() == 0) {
+            return;
+        }
         if(currentWorker != null) {
             try {
                 currentWorker.get();
@@ -96,6 +102,13 @@ public class JIPipeProjectHistoryJournal implements JIPipeHistoryJournal {
         currentWorker = null;
         clearRedoStack();
         snapshots.add(snapshot);
+
+        if(settings.getMaxEntries() > 0) {
+            while(snapshots.size() > settings.getMaxEntries()) {
+                snapshots.remove(0);
+            }
+        }
+
         currentSnapshotIndex = snapshots.size() - 1;
         getEventBus().post(new ChangedEvent(this));
     }

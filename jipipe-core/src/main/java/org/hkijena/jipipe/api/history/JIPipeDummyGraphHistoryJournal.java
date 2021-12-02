@@ -32,6 +32,11 @@ public class JIPipeDummyGraphHistoryJournal implements JIPipeHistoryJournal {
     }
 
     @Override
+    public boolean goToSnapshot(JIPipeHistoryJournalSnapshot snapshot, UUID compartment) {
+        return false;
+    }
+
+    @Override
     public EventBus getEventBus() {
         return eventBus;
     }

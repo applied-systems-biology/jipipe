@@ -71,6 +71,12 @@ public class StandardSettingsExtension extends JIPipePrepackagedDefaultJavaExten
                 null,
                 null,
                 new AutoSaveSettings());
+        registerSettingsSheet(HistoryJournalSettings.ID,
+                "Journal",
+                UIUtils.getIconFromResources("actions/edit-undo-history.png"),
+                null,
+                null,
+                new HistoryJournalSettings());
         registerSettingsSheet(GeneralUISettings.ID,
                 "General",
                 UIUtils.getIconFromResources("actions/settings.png"),
