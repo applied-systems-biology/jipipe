@@ -115,7 +115,12 @@ public class JIPipeDedicatedGraphHistoryJournal implements JIPipeHistoryJournal 
             return null;
         }
         else {
-            return undoStack.get(undoStack.size() - 1);
+            for (int i = undoStack.size() - 1; i >= 0 ; i--) {
+                if(undoStack.get(i) != currentSnapshot) {
+                    return undoStack.get(i);
+                }
+            }
+            return null;
         }
     }
 

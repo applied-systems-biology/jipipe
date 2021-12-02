@@ -101,7 +101,6 @@ public class JIPipeProjectHistoryJournal implements JIPipeHistoryJournal {
                 if(pop == snapshot)
                     break;
             }
-            System.out.println(currentSnapshot == snapshot);
             currentSnapshot = (Snapshot) snapshot;
 
             getEventBus().post(new ChangedEvent(this));
@@ -122,7 +121,12 @@ public class JIPipeProjectHistoryJournal implements JIPipeHistoryJournal {
             return null;
         }
         else {
-            return undoStack.get(undoStack.size() - 1);
+            for (int i = undoStack.size() - 1; i >= 0 ; i--) {
+                if(undoStack.get(i) != currentSnapshot) {
+                    return undoStack.get(i);
+                }
+            }
+            return null;
         }
     }
 
