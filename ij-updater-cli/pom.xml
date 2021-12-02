@@ -10,7 +10,7 @@
     </parent>
 
     <artifactId>ij-updater-cli</artifactId>
-    <version>1.52.1</version>
+    <version>1.52.2</version>
 
     <name>ij-updater-cli</name>
     <description>ImageJ Updater CLI</description>
@@ -77,7 +77,7 @@
 	<repositories>
         <repository>
             <id>imagej.public</id>
-            <url>http://maven.imagej.net/content/groups/public</url>
+            <url>https://maven.imagej.net/content/groups/public</url>
         </repository>
     </repositories>
 

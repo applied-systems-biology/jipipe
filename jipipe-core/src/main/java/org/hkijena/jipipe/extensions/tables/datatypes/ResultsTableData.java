@@ -704,6 +704,7 @@ public class ResultsTableData implements JIPipeData, TableModel {
             throw new NullPointerException("Column '" + newName + "' already exists!");
 
         table.renameColumn(column, newName);
+        cleanupTable();
     }
 
     /**

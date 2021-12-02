@@ -250,7 +250,7 @@ public class ImageJDataTypesExtension extends JIPipePrepackagedDefaultJavaExtens
 
     @Override
     public String getDependencyVersion() {
-        return "1.52.1";
+        return "1.52.2";
     }
 
     @Override
