@@ -34,7 +34,7 @@ public class HistoryJournalUI extends JPanel {
         undoButton.addActionListener(e -> getHistoryJournal().undo(null));
         toolBar.add(undoButton);
 
-        JButton redoButton = new JButton("Undo", UIUtils.getIconFromResources("actions/edit-undo.png"));
+        JButton redoButton = new JButton("Redo", UIUtils.getIconFromResources("actions/edit-redo.png"));
         redoButton.addActionListener(e -> getHistoryJournal().redo(null));
         toolBar.add(redoButton);
 

@@ -86,7 +86,7 @@ public class JIPipeProjectHistoryJournal implements JIPipeHistoryJournal {
             return false;
         }
         if(snapshot.restore()) {
-            currentSnapshotIndex = targetIndex - 1;
+            currentSnapshotIndex = targetIndex;
             getEventBus().post(new ChangedEvent(this));
             return true;
         }
