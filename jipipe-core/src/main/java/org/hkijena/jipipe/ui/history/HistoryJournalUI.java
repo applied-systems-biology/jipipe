@@ -40,11 +40,24 @@ public class HistoryJournalUI extends JPanel {
 
         toolBar.add(Box.createHorizontalGlue());
 
+        JButton clearButton = new JButton("Clear", UIUtils.getIconFromResources("actions/clear-brush.png"));
+        clearButton.addActionListener(e -> clearSnapshots());
+
         JButton createSnapshotButton = new JButton("Create snapshot", UIUtils.getIconFromResources("actions/save.png"));
         createSnapshotButton.addActionListener(e -> createSnapshot());
         toolBar.add(createSnapshotButton);
 
         add(toolBar, BorderLayout.NORTH);
+    }
+
+    private void clearSnapshots() {
+        if(JOptionPane.showConfirmDialog(this,
+                "Do you really want to clear the journal?",
+                "Clear journal",
+                JOptionPane.YES_NO_OPTION,
+                JOptionPane.QUESTION_MESSAGE) == JOptionPane.YES_OPTION) {
+            getHistoryJournal().clear();
+        }
     }
 
     private void createSnapshot() {

@@ -291,6 +291,11 @@ public interface JIPipeHistoryJournal {
     JIPipeHistoryJournalSnapshot getCurrentSnapshot();
 
     /**
+     * Clears the journal
+     */
+    void clear();
+
+    /**
      * Event when the history log was changed
      */
     class ChangedEvent {

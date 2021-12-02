@@ -42,6 +42,11 @@ public class JIPipeDummyGraphHistoryJournal implements JIPipeHistoryJournal {
     }
 
     @Override
+    public void clear() {
+
+    }
+
+    @Override
     public EventBus getEventBus() {
         return eventBus;
     }

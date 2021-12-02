@@ -74,6 +74,12 @@ public class JIPipeProjectHistoryJournal implements JIPipeHistoryJournal {
     }
 
     @Override
+    public void clear() {
+        snapshots.clear();
+        getEventBus().post(new ChangedEvent(this));
+    }
+
+    @Override
     public boolean goToSnapshot(JIPipeHistoryJournalSnapshot snapshot, UUID compartment) {
         int targetIndex = snapshots.indexOf((Snapshot)snapshot);
         if(targetIndex == -1) {

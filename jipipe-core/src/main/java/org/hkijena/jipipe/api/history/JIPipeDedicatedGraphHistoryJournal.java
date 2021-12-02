@@ -51,6 +51,12 @@ public class JIPipeDedicatedGraphHistoryJournal implements JIPipeHistoryJournal 
     }
 
     @Override
+    public void clear() {
+        snapshots.clear();
+        getEventBus().post(new ChangedEvent(this));
+    }
+
+    @Override
     public List<JIPipeHistoryJournalSnapshot> getSnapshots() {
         return ImmutableList.copyOf(snapshots);
     }
