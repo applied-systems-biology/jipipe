@@ -170,7 +170,7 @@ public class PythonExtension extends JIPipePrepackagedDefaultJavaExtension {
 
     @Override
     public String getDependencyVersion() {
-        return "1.52.2";
+        return "1.53.0";
     }
 
     private static void installPythonAdapterLibrary(JIPipeWorkbench workbench) {
