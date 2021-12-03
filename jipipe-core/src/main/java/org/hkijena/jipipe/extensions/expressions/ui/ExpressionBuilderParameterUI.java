@@ -33,8 +33,8 @@ import java.util.Set;
  * Allows users to easily define strings, booleans, numbers, variables, and expressions within an UI
  */
 public class ExpressionBuilderParameterUI extends JPanel {
-    private JComboBox<Mode> modeJComboBox = new JComboBox<>();
-    private DefaultExpressionEvaluatorSyntaxTokenMaker tokenMaker = new DefaultExpressionEvaluatorSyntaxTokenMaker();
+    private final JComboBox<Mode> modeJComboBox = new JComboBox<>();
+    private final DefaultExpressionEvaluatorSyntaxTokenMaker tokenMaker = new DefaultExpressionEvaluatorSyntaxTokenMaker();
     private RSyntaxTextArea expressionEditor;
     private JCheckBox booleanEditor;
     private JSpinner numberEditor;

@@ -74,7 +74,11 @@ public abstract class ExpressionFunction extends Function {
             for (int i = 0; i < getMaximumArgumentCount(); i++) {
                 if (i != 0)
                     result.append(", ");
-                result.append("x").append(i + 1);
+                ParameterInfo parameterInfo = getParameterInfo(i);
+                if(parameterInfo != null)
+                    result.append(parameterInfo.getName());
+                else
+                    result.append("x").append(i + 1);
             }
             result.append(")");
             return result.toString();
