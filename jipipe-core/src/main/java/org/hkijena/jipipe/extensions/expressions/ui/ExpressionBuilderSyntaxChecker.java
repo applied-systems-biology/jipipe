@@ -11,9 +11,10 @@
  * See the LICENSE file provided with the code for the full license.
  */
 
-package org.hkijena.jipipe.extensions.expressions;
+package org.hkijena.jipipe.extensions.expressions.ui;
 
 import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
+import org.hkijena.jipipe.extensions.expressions.DefaultExpressionParameter;
 import org.hkijena.jipipe.ui.components.DocumentChangeListener;
 import org.hkijena.jipipe.utils.UIUtils;
 
