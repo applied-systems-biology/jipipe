@@ -107,7 +107,7 @@ public class MergeChannelsAlgorithm extends JIPipeIteratingAlgorithm {
 
     @Override
     public boolean supportsParallelization() {
-        return true;
+        return false;
     }
 
     @Override
