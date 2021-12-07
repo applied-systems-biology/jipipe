@@ -36,6 +36,15 @@ public class HistoryJournalUI extends JPanel {
         redoButton.addActionListener(e -> getHistoryJournal().redo(null));
         toolBar.add(redoButton);
 
+        JButton selectButton = new JButton("Go to", UIUtils.getIconFromResources("actions/view-calendar-time-spent.png"));
+        selectButton.addActionListener(e -> {
+            JIPipeHistoryJournalSnapshot snapshot = snapshotJList.getSelectedValue();
+            if(snapshot != null)  {
+                getHistoryJournal().goToSnapshot(snapshot, null);
+            }
+        });
+        toolBar.add(selectButton);
+
         toolBar.add(Box.createHorizontalGlue());
 
         JButton clearButton = new JButton("Clear", UIUtils.getIconFromResources("actions/clear-brush.png"));
