@@ -93,13 +93,15 @@ public class ExtensionSettings implements JIPipeParameterCollection {
      */
     public static ExtensionSettings getInstanceFromRaw() {
         ExtensionSettings result = new ExtensionSettings();
-        JsonNode node = JIPipeSettingsRegistry.getRawNode();
-        JIPipeParameterTree tree = new JIPipeParameterTree(result);
         try {
-            for (Map.Entry<String, JIPipeParameterAccess> entry : tree.getParameters().entrySet()) {
-                JsonNode entryNode = node.path(ID + "/" + entry.getKey());
-                Object value = JsonUtils.getObjectMapper().readerFor(entry.getValue().getFieldClass()).readValue(entryNode);
-                entry.getValue().set(value);
+            JsonNode node = JIPipeSettingsRegistry.getRawNode();
+            if(node != null && !node.isMissingNode()) {
+                JIPipeParameterTree tree = new JIPipeParameterTree(result);
+                for (Map.Entry<String, JIPipeParameterAccess> entry : tree.getParameters().entrySet()) {
+                    JsonNode entryNode = node.path(ID + "/" + entry.getKey());
+                    Object value = JsonUtils.getObjectMapper().readerFor(entry.getValue().getFieldClass()).readValue(entryNode);
+                    entry.getValue().set(value);
+                }
             }
         } catch (Exception e) {
             e.printStackTrace();
