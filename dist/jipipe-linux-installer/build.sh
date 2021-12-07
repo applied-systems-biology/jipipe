@@ -28,3 +28,5 @@ if [[ ! -e "./appimagetool-x86_64.AppImage" ]]; then
 fi
 chmod +x ./appimagetool-x86_64.AppImage
 ARCH=x86_64 ./appimagetool-x86_64.AppImage AppDir
+
+mv jipipe-installer-x86_64.AppImage jipipe-$JIPIPE_VERSION-installer-x86_64.AppImage
