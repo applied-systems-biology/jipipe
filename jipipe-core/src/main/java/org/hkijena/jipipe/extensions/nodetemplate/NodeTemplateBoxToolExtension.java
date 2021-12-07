@@ -30,7 +30,7 @@ public class NodeTemplateBoxToolExtension extends JIPipePrepackagedDefaultJavaEx
 
     @Override
     public String getDependencyVersion() {
-        return "1.53.0";
+        return "1.53.1";
     }
 
     @Override
