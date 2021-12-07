@@ -133,7 +133,8 @@ public class JIPipeProjectTemplate {
             try {
                 node = JsonUtils.getObjectMapper().readValue(getLocation(), JsonNode.class);
                 metadata = JsonUtils.getObjectMapper().convertValue(node.get("metadata"), JIPipeProjectMetadata.class);
-            } catch (IOException e) {
+            } catch (Exception e) {
+                System.err.println("Unable to load project template: " + getLocation() + " (resource: " + storedAsResource + ")");
                 e.printStackTrace();
                 metadata = new JIPipeProjectMetadata();
                 metadata.setName("Could not load!");

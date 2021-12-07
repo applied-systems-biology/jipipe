@@ -68,6 +68,7 @@ if [[ ! -e $PWD/Fiji.app ]]; then
   # Download JIPipe dependencies
   pushd $PWD/Fiji.app/Contents/MacOS
     ./ImageJ-macosx --pass-classpath --full-classpath --main-class org.hkijena.ijupdatercli.Main activate clij clij2 IJPB-plugins ImageScience IJ-OpenCV-plugins Multi-Template-Matching
+    ./ImageJ-macosx --pass-classpath --full-classpath --main-class org.hkijena.ijupdatercli.Main update
   popd
   echo "PROGRESS:100"
 

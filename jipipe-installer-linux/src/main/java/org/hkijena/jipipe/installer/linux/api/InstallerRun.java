@@ -233,38 +233,72 @@ public class InstallerRun implements JIPipeRunnable {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-        CommandLine commandLine = new CommandLine(installationPath.resolve("Fiji.app").resolve("ImageJ-linux64").toFile());
-        commandLine.addArgument("--pass-classpath");
-        commandLine.addArgument("--full-classpath");
-        commandLine.addArgument("--main-class");
-        commandLine.addArgument("org.hkijena.ijupdatercli.Main");
-        commandLine.addArgument("activate");
-        for (String fijiUpdateSite : FIJI_UPDATE_SITES) {
-            commandLine.addArgument(fijiUpdateSite);
-        }
-        DefaultExecutor executor = new DefaultExecutor();
-        executor.setWatchdog(new ExecuteWatchdog(ExecuteWatchdog.INFINITE_TIMEOUT));
-        LogOutputStream stdOutputStream = new LogOutputStream() {
-            @Override
-            protected void processLine(String s, int i) {
-                subStatusConsumer.accept(subStatus.resolve(s));
+        {
+            CommandLine commandLine = new CommandLine(installationPath.resolve("Fiji.app").resolve("ImageJ-linux64").toFile());
+            commandLine.addArgument("--pass-classpath");
+            commandLine.addArgument("--full-classpath");
+            commandLine.addArgument("--main-class");
+            commandLine.addArgument("org.hkijena.ijupdatercli.Main");
+            commandLine.addArgument("activate");
+            for (String fijiUpdateSite : FIJI_UPDATE_SITES) {
+                commandLine.addArgument(fijiUpdateSite);
             }
-        };
-        LogOutputStream stdErrorStream = new LogOutputStream() {
-            @Override
-            protected void processLine(String s, int i) {
-                subStatusConsumer.accept(subStatus.resolve(s));
+            DefaultExecutor executor = new DefaultExecutor();
+            executor.setWatchdog(new ExecuteWatchdog(ExecuteWatchdog.INFINITE_TIMEOUT));
+            LogOutputStream stdOutputStream = new LogOutputStream() {
+                @Override
+                protected void processLine(String s, int i) {
+                    subStatusConsumer.accept(subStatus.resolve(s));
+                }
+            };
+            LogOutputStream stdErrorStream = new LogOutputStream() {
+                @Override
+                protected void processLine(String s, int i) {
+                    subStatusConsumer.accept(subStatus.resolve(s));
+                }
+            };
+            executor.setStreamHandler(new PumpStreamHandler(stdOutputStream, stdErrorStream));
+            int result = 0;
+            try {
+                result = executor.execute(commandLine);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
             }
-        };
-        executor.setStreamHandler(new PumpStreamHandler(stdOutputStream, stdErrorStream));
-        int result = 0;
-        try {
-            result = executor.execute(commandLine);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
+            if (executor.isFailure(result)) {
+                throw new RuntimeException("Installation failed.");
+            }
         }
-        if (executor.isFailure(result)) {
-            throw new RuntimeException("Installation failed.");
+        {
+            CommandLine commandLine = new CommandLine(installationPath.resolve("Fiji.app").resolve("ImageJ-linux64").toFile());
+            commandLine.addArgument("--pass-classpath");
+            commandLine.addArgument("--full-classpath");
+            commandLine.addArgument("--main-class");
+            commandLine.addArgument("org.hkijena.ijupdatercli.Main");
+            commandLine.addArgument("update");
+            DefaultExecutor executor = new DefaultExecutor();
+            executor.setWatchdog(new ExecuteWatchdog(ExecuteWatchdog.INFINITE_TIMEOUT));
+            LogOutputStream stdOutputStream = new LogOutputStream() {
+                @Override
+                protected void processLine(String s, int i) {
+                    subStatusConsumer.accept(subStatus.resolve(s));
+                }
+            };
+            LogOutputStream stdErrorStream = new LogOutputStream() {
+                @Override
+                protected void processLine(String s, int i) {
+                    subStatusConsumer.accept(subStatus.resolve(s));
+                }
+            };
+            executor.setStreamHandler(new PumpStreamHandler(stdOutputStream, stdErrorStream));
+            int result = 0;
+            try {
+                result = executor.execute(commandLine);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+            if (executor.isFailure(result)) {
+                throw new RuntimeException("Installation failed.");
+            }
         }
         ++progress;
         subStatusConsumer.accept(subStatus.resolve("ImageJ dependencies were installed."));

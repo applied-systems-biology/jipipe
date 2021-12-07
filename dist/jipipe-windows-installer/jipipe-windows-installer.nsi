@@ -126,6 +126,7 @@ Section "Common files (Required)" SEC01
   ; Bootstrap update sites
   SetOutPath "$INSTDIR\Fiji.app"
   nsExec::ExecToLog "$INSTDIR\Fiji.app\ImageJ-win64.exe --pass-classpath --full-classpath --main-class org.hkijena.ijupdatercli.Main activate clij clij2 IJPB-plugins ImageScience IJ-OpenCV-plugins Multi-Template-Matching"
+  nsExec::ExecToLog "$INSTDIR\Fiji.app\ImageJ-win64.exe --pass-classpath --full-classpath --main-class org.hkijena.ijupdatercli.Main update"
 
   ; Start menu & desktop shortcuts
   CreateDirectory "$SMPROGRAMS\JIPipe"
