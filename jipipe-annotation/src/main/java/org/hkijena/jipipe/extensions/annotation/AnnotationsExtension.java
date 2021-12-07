@@ -67,6 +67,11 @@ public class AnnotationsExtension extends JIPipePrepackagedDefaultJavaExtension 
     }
 
     private void registerAlgorithms() {
+        registerEnumParameterType("simplify-annotations:removal-mode",
+                SimplifyAnnotationsAlgorithm.AnnotationRemovalMode.class,
+                "Combined annotation action",
+                "Determines how combined annotations are processed.");
+
         registerNodeType("merge-slots", MergeDataSlots.class);
         registerNodeType("annotation-table-from-file", AnnotationTableFromFile.class);
         registerNodeType("annotate-set", AnnotateByExpression.class, UIUtils.getIconURLFromResources("actions/tag.png"));
@@ -91,6 +96,7 @@ public class AnnotationsExtension extends JIPipePrepackagedDefaultJavaExtension 
         registerNodeType("rename-annotation", RenameAnnotation.class, UIUtils.getIconURLFromResources("actions/edit-find-replace.png"));
         registerNodeType("rename-data-annotation", RenameDataAnnotation.class, UIUtils.getIconURLFromResources("actions/edit-find-replace.png"));
         registerNodeType("annotate-with-source-slot", AnnotateWithSourceSlot.class, UIUtils.getIconURLFromResources("actions/distribute-graph-directed.png"));
+        registerNodeType("simplify-annotations", SimplifyAnnotationsAlgorithm.class, UIUtils.getIconURLFromResources("actions/image-auto-adjust.png"));
     }
 
     @Override
