@@ -39,7 +39,7 @@ public class HistoryJournalUI extends JPanel {
         JButton selectButton = new JButton("Go to", UIUtils.getIconFromResources("actions/view-calendar-time-spent.png"));
         selectButton.addActionListener(e -> {
             JIPipeHistoryJournalSnapshot snapshot = snapshotJList.getSelectedValue();
-            if(snapshot != null)  {
+            if(snapshot != null && !(snapshot instanceof CurrentStateSnapshot))  {
                 getHistoryJournal().goToSnapshot(snapshot, null);
             }
         });
