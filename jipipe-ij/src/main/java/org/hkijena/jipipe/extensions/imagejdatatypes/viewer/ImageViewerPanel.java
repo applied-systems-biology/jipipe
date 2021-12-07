@@ -107,6 +107,10 @@ public class ImageViewerPanel extends JPanel {
         updateZoomStatus();
     }
 
+    public ImageViewerUISettings getSettings() {
+        return settings;
+    }
+
     public <T extends ImageViewerPanelPlugin> T getPlugin(Class<T> klass) {
         for (ImageViewerPanelPlugin plugin : plugins) {
             if (klass.isAssignableFrom(plugin.getClass()))

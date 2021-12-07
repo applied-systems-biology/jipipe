@@ -30,6 +30,18 @@ public class ImageViewerUISettings implements JIPipeParameterCollection {
     private final EventBus eventBus = new EventBus();
     private boolean showSideBar = true;
     private int defaultAnimationSpeed = 250;
+    private boolean alwaysClearROIs = true;
+
+    @JIPipeDocumentation(name = "Always clear ROIs", description = "If enabled, viewers will always clear ROI lists if new data is loaded.")
+    @JIPipeParameter("always-clear-rois")
+    public boolean isAlwaysClearROIs() {
+        return alwaysClearROIs;
+    }
+
+    @JIPipeParameter("always-clear-rois")
+    public void setAlwaysClearROIs(boolean alwaysClearROIs) {
+        this.alwaysClearROIs = alwaysClearROIs;
+    }
 
     @JIPipeDocumentation(name = "Show side bar", description = "If enabled, show a side bar with additional settings and tools")
     @JIPipeParameter("show-side-bar")

@@ -30,6 +30,7 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.viewer.plugins.PixelInfoPlu
 import org.hkijena.jipipe.extensions.imagejdatatypes.viewer.plugins.ROIManagerPlugin;
 import org.hkijena.jipipe.extensions.imagejdatatypes.viewer.plugins.maskdrawer.MeasurementDrawerPlugin;
 import org.hkijena.jipipe.extensions.imagejdatatypes.viewer.plugins.maskdrawer.MeasurementPlugin;
+import org.hkijena.jipipe.extensions.settings.ImageViewerUISettings;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.cache.JIPipeCacheDataViewerWindow;
 import org.hkijena.jipipe.utils.UIUtils;
@@ -130,7 +131,7 @@ public class CachedImagePlusDataViewerWindow extends JIPipeCacheDataViewerWindow
         image.setTitle(image.getTitle());
         boolean fitImage = imageViewerPanel.getImage() == null;
         imageViewerPanel.setImage(image);
-        if (!rois.isEmpty()) {
+        if (!rois.isEmpty() || ImageViewerUISettings.getInstance().isAlwaysClearROIs()) {
             imageViewerPanel.getPlugin(ROIManagerPlugin.class).clearROIs();
             imageViewerPanel.getPlugin(ROIManagerPlugin.class).importROIs(rois);
         }
