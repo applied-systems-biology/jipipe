@@ -29,4 +29,5 @@ fi
 chmod +x ./appimagetool-x86_64.AppImage
 ARCH=x86_64 ./appimagetool-x86_64.AppImage AppDir
 
+rm jipipe-$JIPIPE_VERSION-installer-x86_64.AppImage
 mv jipipe-installer-x86_64.AppImage jipipe-$JIPIPE_VERSION-installer-x86_64.AppImage
