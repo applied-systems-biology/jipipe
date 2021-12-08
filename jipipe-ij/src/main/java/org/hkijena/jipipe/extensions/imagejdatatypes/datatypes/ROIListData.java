@@ -920,7 +920,7 @@ public class ROIListData extends ArrayList<Roi> implements JIPipeData {
     /**
      * Generates ROI statistics
      *
-     * @param imp            the reference image. Can be null to measure on a black image
+     * @param imp            the reference image. Can be null to measure on a black image. Warning: If you provide an existing image that should not be changed, make a duplicate!
      * @param measurements   which measurements to extract
      * @param addNameToTable if true, add the ROI's name to the table
      * @return the measurements
@@ -928,9 +928,6 @@ public class ROIListData extends ArrayList<Roi> implements JIPipeData {
     public ResultsTableData measure(ImagePlus imp, ImageStatisticsSetParameter measurements, boolean addNameToTable) {
         ResultsTableData result = new ResultsTableData(new ResultsTable());
         if (imp != null) {
-
-            // Make a duplicate to prevent the measuring messing with the image
-            imp = ImageJUtils.duplicate(imp);
 
             measurements.updateAnalyzer();
             Analyzer aSys = new Analyzer(imp); // System Analyzer

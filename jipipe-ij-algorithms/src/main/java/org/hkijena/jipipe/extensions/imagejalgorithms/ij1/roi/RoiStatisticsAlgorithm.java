@@ -28,6 +28,7 @@ import org.hkijena.jipipe.api.nodes.categories.RoiNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ROIListData;
+import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageSliceIndex;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.measure.ImageStatisticsSetParameter;
 import org.hkijena.jipipe.extensions.parameters.primitives.OptionalStringParameter;
@@ -99,6 +100,10 @@ public class RoiStatisticsAlgorithm extends ImageRoiProcessorAlgorithm {
                 ImagePlus referenceImage = null;
                 if (referenceEntry.getKey() != null) {
                     referenceImage = referenceEntry.getKey().getImage();
+                }
+                if(referenceImage != null) {
+                    // This is needed, as measuring messes with the image
+                    referenceImage = ImageJUtils.duplicate(referenceImage);
                 }
                 ResultsTableData result = data.measure(referenceImage, measurements, addNameToTable);
                 List<JIPipeAnnotation> annotations = new ArrayList<>();

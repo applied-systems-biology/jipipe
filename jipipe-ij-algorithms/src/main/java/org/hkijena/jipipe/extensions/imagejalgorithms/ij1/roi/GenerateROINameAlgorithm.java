@@ -20,6 +20,7 @@ import org.hkijena.jipipe.extensions.expressions.ExpressionVariables;
 import org.hkijena.jipipe.extensions.expressions.StringQueryExpression;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ROIListData;
+import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.measure.ImageStatisticsSetParameter;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.measure.MeasurementColumn;
 import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
@@ -69,6 +70,10 @@ public class GenerateROINameAlgorithm extends ImageRoiProcessorAlgorithm {
             ImagePlus referenceImage = null;
             if (referenceEntry.getKey() != null) {
                 referenceImage = referenceEntry.getKey().getImage();
+            }
+            if(referenceImage != null) {
+                // This is needed, as measuring messes with the image
+                referenceImage = ImageJUtils.duplicate(referenceImage);
             }
             for (Roi roi : referenceEntry.getValue()) {
                 tmp.clear();

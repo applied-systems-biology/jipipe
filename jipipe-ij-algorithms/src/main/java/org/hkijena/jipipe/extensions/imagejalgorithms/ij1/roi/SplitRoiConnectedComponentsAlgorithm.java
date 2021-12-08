@@ -37,6 +37,7 @@ import org.hkijena.jipipe.extensions.expressions.ExpressionParameterVariableSour
 import org.hkijena.jipipe.extensions.expressions.ExpressionVariables;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ROIListData;
+import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.measure.ImageStatisticsSetParameter;
 import org.hkijena.jipipe.extensions.parameters.primitives.OptionalAnnotationNameParameter;
 import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
@@ -117,6 +118,10 @@ public class SplitRoiConnectedComponentsAlgorithm extends ImageRoiProcessorAlgor
                         "Try to remove the images associated to the ROI.");
             }
             referenceImage = referenceImages.keySet().iterator().next().getImage();
+            if(referenceImage != null) {
+                // This is needed, as measuring messes with the image
+                referenceImage = ImageJUtils.duplicate(referenceImage);
+            }
             measurements = input.measure(referenceImage, overlapFilterMeasurements, false);
         }
         int currentProgress = 0;

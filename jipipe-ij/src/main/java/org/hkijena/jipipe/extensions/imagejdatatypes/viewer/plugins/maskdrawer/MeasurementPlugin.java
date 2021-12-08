@@ -93,7 +93,7 @@ public class MeasurementPlugin extends ImageViewerPanelPlugin implements JIPipeP
         }
         ROIListData data = new ROIListData();
         data.add(roi);
-        ResultsTableData measurements = data.measure(new ImagePlus("Reference", getViewerPanel().getCurrentSlice()),
+        ResultsTableData measurements = data.measure(new ImagePlus("Reference", getViewerPanel().getCurrentSlice().duplicate()),
                 statistics, false);
         if (measurements.getRowCount() != 1) {
             showNoMeasurements();
