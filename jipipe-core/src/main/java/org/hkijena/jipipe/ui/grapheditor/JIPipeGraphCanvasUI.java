@@ -101,6 +101,9 @@ public class JIPipeGraphCanvasUI extends JIPipeWorkbenchPanel implements MouseMo
     private final GraphEditorUISettings settings;
     private final JIPipeHistoryJournal historyJournal;
     private final UUID compartment;
+    private final Map<JIPipeNodeUI, Point> currentlyDraggedOffsets = new HashMap<>();
+    private final NodeHotKeyStorage nodeHotKeyStorage;
+    private final Color improvedStrokeBackgroundColor = UIManager.getColor("Panel.background");
     private boolean layoutHelperEnabled;
     private JIPipeGraphViewMode viewMode;
     private JIPipeGraphDragAndDropBehavior dragAndDropBehavior;
@@ -109,16 +112,13 @@ public class JIPipeGraphCanvasUI extends JIPipeWorkbenchPanel implements MouseMo
     private Point selectionSecond;
     private long lastTimeExpandedNegative = 0;
     private List<NodeUIContextAction> contextActions = new ArrayList<>();
-    private final Map<JIPipeNodeUI, Point> currentlyDraggedOffsets = new HashMap<>();
     private JIPipeDataSlotUI currentConnectionDragSource;
     private JIPipeDataSlotUI currentConnectionDragTarget;
     private JIPipeDataSlotUI currentHighlightedForDisconnect;
     private Set<JIPipeDataSlot> currentHighlightedForDisconnectSourceSlots;
     private double zoom = 1.0;
     private JScrollPane scrollPane;
-    private final NodeHotKeyStorage nodeHotKeyStorage;
     private Set<JIPipeGraphNode> scheduledSelection = new HashSet<>();
-    private final Color improvedStrokeBackgroundColor = UIManager.getColor("Panel.background");
     private boolean hasDragSnapshot = false;
 
     /**
@@ -128,9 +128,10 @@ public class JIPipeGraphCanvasUI extends JIPipeWorkbenchPanel implements MouseMo
 
     /**
      * Creates a new UI
-     *  @param workbench   the workbench
-     * @param graph       The algorithm graph
-     * @param compartment The compartment to show
+     *
+     * @param workbench      the workbench
+     * @param graph          The algorithm graph
+     * @param compartment    The compartment to show
      * @param historyJournal object that tracks the history of this graph. Set to null to disable the undo feature.
      */
     public JIPipeGraphCanvasUI(JIPipeWorkbench workbench, JIPipeGraph graph, UUID compartment, JIPipeHistoryJournal historyJournal) {
@@ -587,8 +588,8 @@ public class JIPipeGraphCanvasUI extends JIPipeWorkbenchPanel implements MouseMo
     }
 
     private void createMoveSnapshotIfNeeded() {
-        if(!hasDragSnapshot) {
-            if(getHistoryJournal() != null) {
+        if (!hasDragSnapshot) {
+            if (getHistoryJournal() != null) {
                 getHistoryJournal().snapshot("Move nodes", "Nodes were dragged with the mouse", getCompartment(), UIUtils.getIconFromResources("actions/transform-move.png"));
             }
             hasDragSnapshot = true;
@@ -624,7 +625,7 @@ public class JIPipeGraphCanvasUI extends JIPipeWorkbenchPanel implements MouseMo
                 if (!hasDragSnapshot) {
                     // Check if something would change
                     if (!Objects.equals(currentlyDragged.getLocation(), viewMode.realLocationToGrid(new Point(x, y), zoom))) {
-                       createMoveSnapshotIfNeeded();
+                        createMoveSnapshotIfNeeded();
                     }
                 }
 

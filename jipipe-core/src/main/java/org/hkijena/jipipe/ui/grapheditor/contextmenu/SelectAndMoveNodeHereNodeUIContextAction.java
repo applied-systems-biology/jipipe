@@ -41,7 +41,7 @@ public class SelectAndMoveNodeHereNodeUIContextAction implements NodeUIContextAc
         if (algorithm != null) {
             JIPipeNodeUI ui = canvasUI.getNodeUIs().getOrDefault(algorithm, null);
             if (ui != null) {
-                if(canvasUI.getHistoryJournal() != null) {
+                if (canvasUI.getHistoryJournal() != null) {
                     canvasUI.getHistoryJournal().snapshotBeforeMoveNodes(Collections.singleton(ui.getNode()), ui.getNode().getCompartmentUUIDInGraph());
                 }
                 ui.moveToClosestGridPoint(canvasUI.getGraphEditorCursor(), false, true);

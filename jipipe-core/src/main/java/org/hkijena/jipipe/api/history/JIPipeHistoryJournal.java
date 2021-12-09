@@ -21,39 +21,42 @@ public interface JIPipeHistoryJournal {
 
     /**
      * The event bus
+     *
      * @return the event bus
      */
     EventBus getEventBus();
 
     /**
      * Creates a new snapshot in the history journal
-     * @param name the name of the snapshot
+     *
+     * @param name        the name of the snapshot
      * @param description the description of the snapshot
      * @param compartment the compartment. can be null.
-     * @param icon an icon. can be null.
+     * @param icon        an icon. can be null.
      */
     void snapshot(String name, String description, UUID compartment, Icon icon);
 
     /**
      * Gets the list of all snapshots.
      * The higher the index, the newer the snapshot.
+     *
      * @return the list of snapshots
      */
     List<JIPipeHistoryJournalSnapshot> getSnapshots();
 
     /**
      * Snapshot before cutting a compartment
-     * @param nodes the nodes
+     *
+     * @param nodes       the nodes
      * @param compartment the compartment. can be null.
      */
     default void snapshotBeforeCutNodes(Set<JIPipeGraphNode> nodes, UUID compartment) {
-        if(nodes.size() == 1) {
+        if (nodes.size() == 1) {
             snapshot("Cut node",
                     "Node <code>" + nodes.iterator().next().getDisplayName() + "</code>",
                     compartment,
                     UIUtils.getIconFromResources("actions/edit-cut.png"));
-        }
-        else {
+        } else {
             snapshot("Cut node",
                     "Nodes <ul>" + nodes.stream().map(n -> "<li><code>" + n.getDisplayName() + "</li></code>").collect(Collectors.joining()) + "</ul>",
                     compartment,
@@ -63,6 +66,7 @@ public interface JIPipeHistoryJournal {
 
     /**
      * Snapshot before cutting a compartment
+     *
      * @param compartment the compartment
      */
     default void snapshotBeforeCutCompartment(JIPipeProjectCompartment compartment) {
@@ -74,7 +78,8 @@ public interface JIPipeHistoryJournal {
 
     /**
      * Snapshot before disconnecting two slots
-     * @param slot the slot
+     *
+     * @param slot        the slot
      * @param compartment the compartment. can be null.
      */
     default void snapshotBeforeDisconnectAll(JIPipeDataSlot slot, UUID compartment) {
@@ -86,8 +91,9 @@ public interface JIPipeHistoryJournal {
 
     /**
      * Snapshot before disconnecting two slots
-     * @param source the source
-     * @param target the target
+     *
+     * @param source      the source
+     * @param target      the target
      * @param compartment the compartment. can be null.
      */
     default void snapshotBeforeDisconnect(JIPipeDataSlot source, JIPipeDataSlot target, UUID compartment) {
@@ -99,8 +105,9 @@ public interface JIPipeHistoryJournal {
 
     /**
      * Snapshot before connecting two slots
-     * @param source the source
-     * @param target the target
+     *
+     * @param source      the source
+     * @param target      the target
      * @param compartment the compartment. can be null.
      */
     default void snapshotBeforeConnect(JIPipeDataSlot source, JIPipeDataSlot target, UUID compartment) {
@@ -112,8 +119,9 @@ public interface JIPipeHistoryJournal {
 
     /**
      * Snapshot before adding a slot
-     * @param node the node
-     * @param info the slot info
+     *
+     * @param node        the node
+     * @param info        the slot info
      * @param compartment the compartment. can be null.
      */
     default void snapshotBeforeAddSlot(JIPipeGraphNode node, JIPipeDataSlotInfo info, UUID compartment) {
@@ -125,8 +133,9 @@ public interface JIPipeHistoryJournal {
 
     /**
      * Snapshot before adding a slot
-     * @param node the node
-     * @param info the slot info
+     *
+     * @param node        the node
+     * @param info        the slot info
      * @param compartment the compartment. can be null.
      */
     default void snapshotBeforeRemoveSlot(JIPipeGraphNode node, JIPipeDataSlotInfo info, UUID compartment) {
@@ -138,7 +147,8 @@ public interface JIPipeHistoryJournal {
 
     /**
      * Snapshot before adding a slot
-     * @param slot the slot
+     *
+     * @param slot        the slot
      * @param compartment the compartment. can be null.
      */
     default void snapshotBeforeLabelSlot(JIPipeDataSlot slot, UUID compartment) {
@@ -150,7 +160,8 @@ public interface JIPipeHistoryJournal {
 
     /**
      * Snapshot before adding a slot
-     * @param slot the slot
+     *
+     * @param slot        the slot
      * @param compartment the compartment. can be null.
      */
     default void snapshotBeforeMoveSlot(JIPipeDataSlot slot, UUID compartment) {
@@ -162,6 +173,7 @@ public interface JIPipeHistoryJournal {
 
     /**
      * Create snapshot before a slot edit
+     *
      * @param slot the slot
      */
     default void snapshotBeforeEditSlot(JIPipeDataSlot slot, UUID compartment) {
@@ -170,31 +182,34 @@ public interface JIPipeHistoryJournal {
 
     /**
      * Create a snapshot for adding a node
-     * @param nodes the nodes
+     *
+     * @param nodes       the nodes
      * @param compartment the compartment. can be null.
      */
     default void snapshotBeforeAddNodes(Collection<JIPipeGraphNode> nodes, UUID compartment) {
         snapshot("Add " + nodes.size() + " nodes",
-                "Added following nodes into the graph: <ul>" +  nodes.stream().map(s -> "<li><code>" + s.getName() + "</code></li>").collect(Collectors.joining()) + "</ul>",
+                "Added following nodes into the graph: <ul>" + nodes.stream().map(s -> "<li><code>" + s.getName() + "</code></li>").collect(Collectors.joining()) + "</ul>",
                 compartment,
                 UIUtils.getIconFromResources("actions/list-add.png"));
     }
 
     /**
      * Create a snapshot for adding a node
-     * @param nodes the nodes
+     *
+     * @param nodes       the nodes
      * @param compartment the compartment. can be null.
      */
     default void snapshotBeforePasteNodes(Collection<JIPipeGraphNode> nodes, UUID compartment) {
         snapshot("Paste " + nodes.size() + " nodes",
-                "Added following nodes into the graph: <ul>" +  nodes.stream().map(s -> "<li><code>" + s.getName() + "</code></li>").collect(Collectors.joining()) + "</ul>",
+                "Added following nodes into the graph: <ul>" + nodes.stream().map(s -> "<li><code>" + s.getName() + "</code></li>").collect(Collectors.joining()) + "</ul>",
                 compartment,
                 UIUtils.getIconFromResources("actions/edit-paste.png"));
     }
 
     /**
      * Create a snapshot for adding a node
-     * @param node the node
+     *
+     * @param node        the node
      * @param compartment the compartment. can be null.
      */
     default void snapshotBeforeAddNode(JIPipeGraphNode node, UUID compartment) {
@@ -206,6 +221,7 @@ public interface JIPipeHistoryJournal {
 
     /**
      * Create a snapshot for adding a node
+     *
      * @param compartment the compartment.
      */
     default void snapshotBeforeAddCompartment(String compartment) {
@@ -217,31 +233,34 @@ public interface JIPipeHistoryJournal {
 
     /**
      * Create a snapshot for adding a node
-     * @param nodes the nodes
+     *
+     * @param nodes       the nodes
      * @param compartment the compartment. can be null.
      */
     default void snapshotBeforeRemoveNodes(Collection<JIPipeGraphNode> nodes, UUID compartment) {
         snapshot("Remove " + nodes.size() + " nodes",
-                "Removed following nodes from the graph: <ul>" +  nodes.stream().map(s -> "<li><code>" + s.getName() + "</code></li>").collect(Collectors.joining()) + "</ul>",
+                "Removed following nodes from the graph: <ul>" + nodes.stream().map(s -> "<li><code>" + s.getName() + "</code></li>").collect(Collectors.joining()) + "</ul>",
                 compartment,
                 UIUtils.getIconFromResources("actions/delete.png"));
     }
 
     /**
      * Create a snapshot for moving nodes
-     * @param nodes the nodes
+     *
+     * @param nodes       the nodes
      * @param compartment the compartment
      */
     default void snapshotBeforeMoveNodes(Set<JIPipeGraphNode> nodes, UUID compartment) {
         snapshot("Moved " + nodes.size() + " nodes",
-                "Moved following nodes: <ul>" +  nodes.stream().map(s -> "<li><code>" + s.getName() + "</code></li>") + "</ul>",
+                "Moved following nodes: <ul>" + nodes.stream().map(s -> "<li><code>" + s.getName() + "</code></li>") + "</ul>",
                 compartment,
                 UIUtils.getIconFromResources("actions/transform-move.png"));
     }
 
     /**
      * Create a snapshot for removing a node
-     * @param node the node
+     *
+     * @param node        the node
      * @param compartment the compartment. can be null.
      */
     default void snapshotBeforeRemoveNode(JIPipeGraphNode node, UUID compartment) {
@@ -253,6 +272,7 @@ public interface JIPipeHistoryJournal {
 
     /**
      * Create a snapshot for removing a node
+     *
      * @param compartment the node
      */
     default void snapshotBeforeRemoveCompartment(JIPipeProjectCompartment compartment) {
@@ -264,12 +284,13 @@ public interface JIPipeHistoryJournal {
 
     /**
      * Redo the last undo operation
+     *
      * @param compartment the compartment. can be null.
      * @return if redo was successful
      */
     default boolean redo(UUID compartment) {
         JIPipeHistoryJournalSnapshot snapshot = getRedoSnapshot();
-        if(snapshot != null) {
+        if (snapshot != null) {
             return goToSnapshot(snapshot, compartment);
         }
         return false;
@@ -277,12 +298,13 @@ public interface JIPipeHistoryJournal {
 
     /**
      * Undo the last undo operation
+     *
      * @param compartment the compartment. can be null.
      * @return if undo was successful
      */
     default boolean undo(UUID compartment) {
         JIPipeHistoryJournalSnapshot snapshot = getUndoSnapshot();
-        if(snapshot != null) {
+        if (snapshot != null) {
             return goToSnapshot(snapshot, compartment);
         }
         return false;
@@ -290,7 +312,8 @@ public interface JIPipeHistoryJournal {
 
     /**
      * Attempts to go to a specified snapshot
-     * @param snapshot the snapshot
+     *
+     * @param snapshot    the snapshot
      * @param compartment the compartment. can be null.
      * @return if the undo/redo was successful
      */
@@ -298,18 +321,21 @@ public interface JIPipeHistoryJournal {
 
     /**
      * Gets the snapshot for the next undo operation
+     *
      * @return the snapshot. can be null.
      */
     JIPipeHistoryJournalSnapshot getUndoSnapshot();
 
     /**
      * Gets the snapshot for the next redo operation
+     *
      * @return the snapshot. can be null
      */
     JIPipeHistoryJournalSnapshot getRedoSnapshot();
 
     /**
      * Gets the snapshot that represents the current state of the data
+     *
      * @return the snapshot. can be null
      */
     JIPipeHistoryJournalSnapshot getCurrentSnapshot();

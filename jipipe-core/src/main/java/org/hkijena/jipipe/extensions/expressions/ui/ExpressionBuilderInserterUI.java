@@ -2,13 +2,17 @@ package org.hkijena.jipipe.extensions.expressions.ui;
 
 import com.google.common.html.HtmlEscapers;
 import org.hkijena.jipipe.api.registries.JIPipeExpressionRegistry;
-import org.hkijena.jipipe.extensions.expressions.*;
+import org.hkijena.jipipe.extensions.expressions.ExpressionConstantEntry;
+import org.hkijena.jipipe.extensions.expressions.ExpressionFunction;
+import org.hkijena.jipipe.extensions.expressions.ExpressionOperatorEntry;
+import org.hkijena.jipipe.extensions.expressions.ExpressionParameterVariable;
+import org.hkijena.jipipe.extensions.expressions.ParameterInfo;
 import org.hkijena.jipipe.ui.components.FormPanel;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
-import java.awt.*;
+import java.awt.BorderLayout;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -123,22 +127,21 @@ public class ExpressionBuilderInserterUI extends JPanel {
             StringBuilder descriptionBuilder = new StringBuilder();
             descriptionBuilder.append("<html>");
             descriptionBuilder.append("<div>").append(functionEntry.getDescription()).append("</div>");
-            if(function.getMaximumArgumentCount() > 0) {
+            if (function.getMaximumArgumentCount() > 0) {
 //                descriptionBuilder.append("<h2>Parameters</h2>");
                 descriptionBuilder.append("<table>");
                 for (int i = 0; i < Math.min(5, function.getMaximumArgumentCount()); i++) {
                     ParameterInfo parameterInfo = function.getParameterInfo(i);
                     descriptionBuilder.append("<tr>");
-                    if(parameterInfo != null) {
+                    if (parameterInfo != null) {
                         descriptionBuilder.append("<td><code>").append(parameterInfo.getName()).append("</code></td><td>")
                                 .append(StringUtils.orElse(parameterInfo.getDescription(), "No description provided")).append("</td>");
-                    }
-                    else {
+                    } else {
                         descriptionBuilder.append("<td><code>").append("x").append(i + 1).append("</code></td><td>No description provided</td>");
                     }
                     descriptionBuilder.append("</tr>");
                 }
-                if(function.getMaximumArgumentCount() > 5) {
+                if (function.getMaximumArgumentCount() > 5) {
                     descriptionBuilder.append("<tr><td>...</td></tr>");
                 }
                 descriptionBuilder.append("</table>");
@@ -205,6 +208,7 @@ public class ExpressionBuilderInserterUI extends JPanel {
 
     /**
      * Checks if parameters were edited. Returns true if no parameters are available.
+     *
      * @return true if no parameters are available.
      */
     public boolean parametersWereEdited() {

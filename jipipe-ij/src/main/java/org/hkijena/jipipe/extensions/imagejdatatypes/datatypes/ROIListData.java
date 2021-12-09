@@ -37,7 +37,6 @@ import org.hkijena.jipipe.api.data.JIPipeDataSource;
 import org.hkijena.jipipe.api.data.JIPipeDataStorageDocumentation;
 import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
 import org.hkijena.jipipe.extensions.imagejdatatypes.display.CachedROIListDataViewerWindow;
-import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageSliceIndex;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.RoiOutline;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.measure.ImageStatisticsSetParameter;
@@ -169,7 +168,7 @@ public class ROIListData extends ArrayList<Roi> implements JIPipeData {
                     if (roi.getName() != null) {
                         label = roi.getName();
                     }
-                    while(label.endsWith(".roi")) {
+                    while (label.endsWith(".roi")) {
                         label = label.substring(0, label.length() - 4);
                     }
                     label = StringUtils.makeUniqueString(label, " ", existing);
@@ -214,7 +213,7 @@ public class ROIListData extends ArrayList<Roi> implements JIPipeData {
                     if (roi.getName() != null) {
                         label = roi.getName();
                     }
-                    while(label.endsWith(".roi")) {
+                    while (label.endsWith(".roi")) {
                         label = label.substring(0, label.length() - 4);
                     }
                     label = StringUtils.makeUniqueString(label, " ", existing);

@@ -147,7 +147,7 @@ public class JIPipeSlotEditorUI extends JPanel {
         if (!JIPipeProjectWorkbench.canModifySlots(editorUI.getWorkbench()))
             return;
         JIPipeDataSlot slot = getSelectedSlot();
-        if(slot == null) {
+        if (slot == null) {
             return;
         }
         if (!slot.getInfo().isUserModifiable()) {
@@ -167,7 +167,7 @@ public class JIPipeSlotEditorUI extends JPanel {
             String newLabel = JOptionPane.showInputDialog(this,
                     "Please enter a new label for the slot.\nLeave the text empty to remove an existing label.",
                     slot.getInfo().getCustomName());
-            if(editorUI.getHistoryJournal() != null) {
+            if (editorUI.getHistoryJournal() != null) {
                 editorUI.getHistoryJournal().snapshotBeforeLabelSlot(slot, slot.getNode().getCompartmentUUIDInGraph());
             }
             slot.getInfo().setCustomName(newLabel);
@@ -177,7 +177,7 @@ public class JIPipeSlotEditorUI extends JPanel {
     private void moveSlotDown() {
         JIPipeDataSlot slot = getSelectedSlot();
         if (slot != null) {
-            if(editorUI.getHistoryJournal() != null) {
+            if (editorUI.getHistoryJournal() != null) {
                 editorUI.getHistoryJournal().snapshotBeforeMoveSlot(slot, slot.getNode().getCompartmentUUIDInGraph());
             }
             ((JIPipeMutableSlotConfiguration) algorithm.getSlotConfiguration()).moveDown(slot.getName(), slot.getSlotType());
@@ -188,7 +188,7 @@ public class JIPipeSlotEditorUI extends JPanel {
     private void moveSlotUp() {
         JIPipeDataSlot slot = getSelectedSlot();
         if (slot != null) {
-            if(editorUI.getHistoryJournal() != null) {
+            if (editorUI.getHistoryJournal() != null) {
                 editorUI.getHistoryJournal().snapshotBeforeMoveSlot(slot, slot.getNode().getCompartmentUUIDInGraph());
             }
             ((JIPipeMutableSlotConfiguration) algorithm.getSlotConfiguration()).moveUp(slot.getName(), slot.getSlotType());
@@ -244,7 +244,7 @@ public class JIPipeSlotEditorUI extends JPanel {
                         JOptionPane.ERROR_MESSAGE);
                 continue;
             }
-            if(editorUI.getHistoryJournal() != null) {
+            if (editorUI.getHistoryJournal() != null) {
                 editorUI.getHistoryJournal().snapshotBeforeRemoveSlot(slot.getNode(), slot.getInfo(), slot.getNode().getCompartmentUUIDInGraph());
             }
             if (slot.isInput())

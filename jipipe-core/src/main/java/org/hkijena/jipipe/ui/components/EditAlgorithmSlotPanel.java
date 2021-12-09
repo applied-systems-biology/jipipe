@@ -63,7 +63,8 @@ public class EditAlgorithmSlotPanel extends JPanel {
 
     /**
      * Creates a new instance
-     *  @param existingSlot the existing slot
+     *
+     * @param existingSlot   the existing slot
      * @param historyJournal the history journal. can be null.
      */
     public EditAlgorithmSlotPanel(JIPipeDataSlot existingSlot, JIPipeHistoryJournal historyJournal) {
@@ -206,7 +207,7 @@ public class EditAlgorithmSlotPanel extends JPanel {
             return;
 
         // Create a undo snapshot
-        if(getHistoryJournal() != null) {
+        if (getHistoryJournal() != null) {
             getHistoryJournal().snapshotBeforeEditSlot(existingSlot, existingSlot.getNode().getCompartmentUUIDInGraph());
         }
 
@@ -372,9 +373,9 @@ public class EditAlgorithmSlotPanel extends JPanel {
     /**
      * Shows a dialog for adding slots
      *
-     * @param parent       parent component
+     * @param parent         parent component
      * @param historyJournal the graph history for undo snapshots. can be null.
-     * @param existingSlot the slot to be edited
+     * @param existingSlot   the slot to be edited
      */
     public static void showDialog(Component parent, JIPipeHistoryJournal historyJournal, JIPipeDataSlot existingSlot) {
         JDialog dialog = new JDialog();

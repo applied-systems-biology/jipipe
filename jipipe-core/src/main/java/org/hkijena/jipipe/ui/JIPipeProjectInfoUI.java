@@ -15,22 +15,15 @@ package org.hkijena.jipipe.ui;
 
 import com.google.common.eventbus.Subscribe;
 import com.google.common.html.HtmlEscapers;
-import ij.ImagePlus;
-import ij.plugin.filter.GaussianBlur;
-import ij.process.ImageProcessor;
 import org.hkijena.jipipe.api.JIPipeAuthorMetadata;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.ui.components.BackgroundPanel;
 import org.hkijena.jipipe.ui.components.FormPanel;
 import org.hkijena.jipipe.ui.components.MarkdownDocument;
-import org.hkijena.jipipe.ui.grapheditor.JIPipeGraphCanvasUI;
-import org.hkijena.jipipe.ui.grapheditor.JIPipeGraphViewMode;
 import org.hkijena.jipipe.ui.parameters.ParameterPanel;
-import org.hkijena.jipipe.utils.ResourceUtils;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 
-import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.text.html.HTMLEditorKit;
 import java.awt.BorderLayout;
@@ -43,9 +36,7 @@ import java.awt.datatransfer.StringSelection;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.awt.image.BufferedImage;
-import java.io.IOException;
 import java.util.HashMap;
-import java.util.concurrent.ExecutionException;
 
 /**
  * UI that gives an overview of a pipeline (shows parameters, etc.)

@@ -97,10 +97,9 @@ public class JIPipeRunnerQueueUI extends JPanel {
             add(runningQueuePanel, BorderLayout.EAST);
             throbberIcon.start();
             int size = JIPipeRunnerQueue.getInstance().size();
-            if(size <= 1) {
+            if (size <= 1) {
                 queueCountLabel.setText("");
-            }
-            else {
+            } else {
                 queueCountLabel.setText(" +" + (size - 1) + "");
             }
             revalidate();

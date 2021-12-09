@@ -87,8 +87,8 @@ public class ImageViewerPanel extends JPanel {
     private JScrollPane scrollPane;
     private JSpinner animationSpeedControl = new JSpinner(new SpinnerNumberModel(250, 5, 10000, 1));
     private int rotation = 0;
-    private JMenuItem exportAllSlicesItem;    private Timer animationTimer = new Timer(250, e -> animateNextSlice());
-    private JMenuItem exportMovieItem;
+    private JMenuItem exportAllSlicesItem;
+    private JMenuItem exportMovieItem;    private Timer animationTimer = new Timer(250, e -> animateNextSlice());
     private JToolBar toolBar = new JToolBar();
     private List<ImageViewerPanelPlugin> plugins = new ArrayList<>();
     private JButton rotateLeftButton;
@@ -472,7 +472,7 @@ public class ImageViewerPanel extends JPanel {
 
     public void exportVideo() {
         Path path = FileChooserSettings.saveFile(this, FileChooserSettings.LastDirectoryKey.Data, "Export video", UIUtils.EXTENSION_FILTER_AVI);
-        if(path == null) {
+        if (path == null) {
             return;
         }
 

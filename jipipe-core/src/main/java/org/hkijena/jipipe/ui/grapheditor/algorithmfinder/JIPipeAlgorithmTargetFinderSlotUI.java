@@ -28,8 +28,6 @@ import javax.swing.*;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.UUID;
 
 /**
@@ -124,14 +122,14 @@ public class JIPipeAlgorithmTargetFinderSlotUI extends JPanel {
         if (!JIPipeProjectWorkbench.canModifySlots(canvasUI.getWorkbench()))
             return;
         JIPipeDefaultMutableSlotConfiguration slotConfiguration = (JIPipeDefaultMutableSlotConfiguration) inputSlot.getNode().getSlotConfiguration();
-        if(canvasUI.getHistoryJournal() != null) {
+        if (canvasUI.getHistoryJournal() != null) {
             canvasUI.getHistoryJournal().snapshotBeforeRemoveSlot(inputSlot.getNode(), inputSlot.getInfo(), compartment);
         }
         slotConfiguration.removeInputSlot(inputSlot.getName(), true);
     }
 
     private void connectToNewInstance() {
-        if(canvasUI.getHistoryJournal() != null) {
+        if (canvasUI.getHistoryJournal() != null) {
             canvasUI.getHistoryJournal().snapshotBeforeAddNode(inputSlot.getNode(), compartment);
             canvasUI.getHistoryJournal().snapshotBeforeConnect(outputSlot, inputSlot, compartment);
         }
@@ -144,7 +142,7 @@ public class JIPipeAlgorithmTargetFinderSlotUI extends JPanel {
 
     private void connectToExistingInstance() {
         if (graph.canConnect(outputSlot, inputSlot, true)) {
-            if(canvasUI.getHistoryJournal() != null) {
+            if (canvasUI.getHistoryJournal() != null) {
                 canvasUI.getHistoryJournal().snapshotBeforeConnect(outputSlot, inputSlot, compartment);
             }
             graph.connect(outputSlot, inputSlot);

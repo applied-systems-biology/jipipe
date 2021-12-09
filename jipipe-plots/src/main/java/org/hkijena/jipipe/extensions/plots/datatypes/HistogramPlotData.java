@@ -45,7 +45,7 @@ public class HistogramPlotData extends PlotData {
     private HistogramType_ histogramType = HistogramType_.Frequency;
     private int binAxisFontSize = 12;
     private int valueAxisFontSize = 12;
-    private OptionalDoubleParameter valueAxisMinimum = new OptionalDoubleParameter(Double.NEGATIVE_INFINITY,false);
+    private OptionalDoubleParameter valueAxisMinimum = new OptionalDoubleParameter(Double.NEGATIVE_INFINITY, false);
     private OptionalDoubleParameter valueAxisMaximum = new OptionalDoubleParameter(Double.POSITIVE_INFINITY, false);
 
     /**

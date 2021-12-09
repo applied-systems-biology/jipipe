@@ -4,12 +4,8 @@ import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeAnnotation;
-import org.hkijena.jipipe.api.data.JIPipeAnnotationMergeStrategy;
-import org.hkijena.jipipe.api.data.JIPipeDataAnnotationMergeStrategy;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.data.JIPipeDefaultMutableSlotConfiguration;
-import org.hkijena.jipipe.api.nodes.JIPipeDataBatch;
-import org.hkijena.jipipe.api.nodes.JIPipeIteratingAlgorithm;
 import org.hkijena.jipipe.api.nodes.JIPipeMergingAlgorithm;
 import org.hkijena.jipipe.api.nodes.JIPipeMergingDataBatch;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
@@ -50,8 +46,8 @@ public class RunProcessMergingAlgorithm extends JIPipeMergingAlgorithm {
     @Override
     protected void runIteration(JIPipeMergingDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
         Path workDirectory = getNewScratch();
-        Path inputPath = PathUtils.resolveAndMakeSubDirectory(workDirectory,"inputs");
-        Path outputPath = PathUtils.resolveAndMakeSubDirectory(workDirectory,"outputs");
+        Path inputPath = PathUtils.resolveAndMakeSubDirectory(workDirectory, "inputs");
+        Path outputPath = PathUtils.resolveAndMakeSubDirectory(workDirectory, "outputs");
         progressInfo.log("Inputs will be written to: " + inputPath);
         progressInfo.log("Outputs will be extracted from: " + outputPath);
 
@@ -70,34 +66,33 @@ public class RunProcessMergingAlgorithm extends JIPipeMergingAlgorithm {
         variables.set("output_folder", outputPath.toString());
 
         ProcessEnvironment environment = new ProcessEnvironment(getProcessEnvironment());
-        if(overrideArguments.isEnabled()) {
+        if (overrideArguments.isEnabled()) {
             environment.setArguments(overrideArguments.getContent());
         }
 
         ProcessUtils.runProcess(environment, variables, progressInfo);
 
         // Extract outputs
-        if(outputOutputFolder) {
+        if (outputOutputFolder) {
             dataBatch.addOutputData("Output folder", new FolderData(outputPath), progressInfo);
         }
 
         for (JIPipeDataSlot slot : getOutputSlots()) {
-            if(outputOutputFolder && "Output folder".equals(slot.getName()))
+            if (outputOutputFolder && "Output folder".equals(slot.getName()))
                 continue;
             Path slotPath = outputPath.resolve(slot.getName());
-            if(Files.exists(slotPath.resolve("data-table.json"))) {
+            if (Files.exists(slotPath.resolve("data-table.json"))) {
                 JIPipeDataSlot loaded = JIPipeDataSlot.loadFromStoragePath(slotPath, progressInfo.resolve("Extracting output '" + slot.getName() + "'"));
                 for (int i = 0; i < loaded.getRowCount(); i++) {
                     dataBatch.addOutputData(slot.getName(), loaded.getData(i, slot.getAcceptedDataType(), progressInfo), progressInfo);
                 }
-            }
-            else {
+            } else {
                 progressInfo.log("Unable to load slot from " + slotPath + ": No data-table.json");
             }
         }
 
         // Clean up
-        if(cleanUpAfterwards) {
+        if (cleanUpAfterwards) {
             try {
                 PathUtils.deleteDirectoryRecursively(inputPath,
                         progressInfo.resolve("Cleanup"));
@@ -142,19 +137,18 @@ public class RunProcessMergingAlgorithm extends JIPipeMergingAlgorithm {
 
     @JIPipeParameter("output-output-folder")
     public void setOutputOutputFolder(boolean outputOutputFolder) {
-        if(this.outputOutputFolder != outputOutputFolder) {
+        if (this.outputOutputFolder != outputOutputFolder) {
             this.outputOutputFolder = outputOutputFolder;
             JIPipeDefaultMutableSlotConfiguration slotConfiguration = (JIPipeDefaultMutableSlotConfiguration) getSlotConfiguration();
-            if(outputOutputFolder) {
-                if(!slotConfiguration.hasOutputSlot("Output folder") || getOutputSlot("Output folder").getAcceptedDataType() != FolderData.class) {
-                    if(slotConfiguration.hasOutputSlot("Output folder")) {
+            if (outputOutputFolder) {
+                if (!slotConfiguration.hasOutputSlot("Output folder") || getOutputSlot("Output folder").getAcceptedDataType() != FolderData.class) {
+                    if (slotConfiguration.hasOutputSlot("Output folder")) {
                         slotConfiguration.removeOutputSlot("Output folder", false);
                     }
                     slotConfiguration.addOutputSlot("Output folder", FolderData.class, null, false);
                 }
-            }
-            else {
-                if(slotConfiguration.hasOutputSlot("Output folder")) {
+            } else {
+                if (slotConfiguration.hasOutputSlot("Output folder")) {
                     slotConfiguration.removeOutputSlot("Output folder", false);
                 }
             }

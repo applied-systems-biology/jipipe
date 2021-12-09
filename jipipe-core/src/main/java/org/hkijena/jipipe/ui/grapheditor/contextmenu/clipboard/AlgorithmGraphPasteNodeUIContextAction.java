@@ -31,7 +31,6 @@ import java.awt.Point;
 import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
@@ -128,7 +127,7 @@ public class AlgorithmGraphPasteNodeUIContextAction implements NodeUIContextActi
         }
 
         // Add to graph
-        if(canvasUI.getHistoryJournal() != null) {
+        if (canvasUI.getHistoryJournal() != null) {
             canvasUI.getHistoryJournal().snapshotBeforePasteNodes(graph.getGraphNodes(), canvasUI.getCompartment());
         }
         canvasUI.getGraph().mergeWith(graph);

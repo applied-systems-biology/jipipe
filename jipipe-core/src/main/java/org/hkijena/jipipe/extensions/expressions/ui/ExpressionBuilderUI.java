@@ -14,15 +14,22 @@
 package org.hkijena.jipipe.extensions.expressions.ui;
 
 import com.fathzer.soft.javaluator.Operator;
-import com.google.common.html.HtmlEscapers;
 import org.fife.ui.rsyntaxtextarea.RSyntaxDocument;
 import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
 import org.fife.ui.rsyntaxtextarea.TokenMaker;
 import org.fife.ui.rsyntaxtextarea.TokenMakerFactory;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.registries.JIPipeExpressionRegistry;
-import org.hkijena.jipipe.extensions.expressions.*;
-import org.hkijena.jipipe.ui.components.*;
+import org.hkijena.jipipe.extensions.expressions.DefaultExpressionEvaluator;
+import org.hkijena.jipipe.extensions.expressions.DefaultExpressionEvaluatorSyntaxTokenMaker;
+import org.hkijena.jipipe.extensions.expressions.DefaultExpressionParameter;
+import org.hkijena.jipipe.extensions.expressions.ExpressionConstantEntry;
+import org.hkijena.jipipe.extensions.expressions.ExpressionOperatorEntry;
+import org.hkijena.jipipe.extensions.expressions.ExpressionParameterVariable;
+import org.hkijena.jipipe.ui.components.DocumentTabPane;
+import org.hkijena.jipipe.ui.components.MarkdownDocument;
+import org.hkijena.jipipe.ui.components.MarkdownReader;
+import org.hkijena.jipipe.ui.components.SearchTextField;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.hkijena.jipipe.utils.search.RankedData;
@@ -42,11 +49,9 @@ import java.awt.event.ComponentEvent;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -61,12 +66,12 @@ public class ExpressionBuilderUI extends JPanel {
     public static final Color COLOR_STRING = new Color(0xe80da5);
     private static final EntryRankingFunction RANKING_FUNCTION = new EntryRankingFunction();
     private static final Function<Object, String> ENTRY_TO_STRING_FUNCTION = new EntryToStringFunction();
+    private final SearchTextField searchField = new SearchTextField();
+    private final DefaultExpressionEvaluatorSyntaxTokenMaker tokenMaker = new DefaultExpressionEvaluatorSyntaxTokenMaker();
     private Set<ExpressionParameterVariable> variables;
     private JList<Object> commandPaletteList = new JList<>();
     private List<ExpressionOperatorEntry> operatorEntryList;
     private List<ExpressionConstantEntry> constantEntryList;
-    private final SearchTextField searchField = new SearchTextField();
-    private final DefaultExpressionEvaluatorSyntaxTokenMaker tokenMaker = new DefaultExpressionEvaluatorSyntaxTokenMaker();
     private RSyntaxTextArea expressionEditor;
     private DocumentTabPane tabPane = new DocumentTabPane();
     private ExpressionBuilderInserterUI lastVariableInserter;
@@ -200,29 +205,28 @@ public class ExpressionBuilderUI extends JPanel {
     }
 
     private void createInserter() {
-        if(commandPaletteList.getSelectedValue() != null) {
+        if (commandPaletteList.getSelectedValue() != null) {
             Object value = commandPaletteList.getSelectedValue();
 
             // Variables and constants will share one tab -> Will re-open
-            if(value instanceof ExpressionParameterVariable ||value instanceof ExpressionConstantEntry) {
-              if(lastVariableInserter != null) {
-                  DocumentTabPane.DocumentTab tab = tabPane.getTabContaining(lastVariableInserter);
-                  tabPane.forceCloseTab(tab);
-              }
-            }
-            else {
+            if (value instanceof ExpressionParameterVariable || value instanceof ExpressionConstantEntry) {
+                if (lastVariableInserter != null) {
+                    DocumentTabPane.DocumentTab tab = tabPane.getTabContaining(lastVariableInserter);
+                    tabPane.forceCloseTab(tab);
+                }
+            } else {
                 // Find another tab with the same content, but without parameters
                 DocumentTabPane.DocumentTab existing = null;
                 for (DocumentTabPane.DocumentTab tab : tabPane.getTabs()) {
-                    if(tab.getContent() instanceof ExpressionBuilderInserterUI) {
+                    if (tab.getContent() instanceof ExpressionBuilderInserterUI) {
                         ExpressionBuilderInserterUI inserterUI = (ExpressionBuilderInserterUI) tab.getContent();
-                        if(!inserterUI.parametersWereEdited()) {
+                        if (!inserterUI.parametersWereEdited()) {
                             existing = tab;
                             break;
                         }
                     }
                 }
-                if(existing != null) {
+                if (existing != null) {
                     tabPane.forceCloseTab(existing);
                 }
             }
@@ -230,25 +234,21 @@ public class ExpressionBuilderUI extends JPanel {
             String title;
             Icon icon;
             ExpressionBuilderInserterUI inserterUI = new ExpressionBuilderInserterUI(this, value);
-            if(value instanceof ExpressionParameterVariable) {
+            if (value instanceof ExpressionParameterVariable) {
                 title = "Variable " + ((ExpressionParameterVariable) value).getName();
                 icon = UIUtils.getIconFromResources("actions/variable.png");
                 lastVariableInserter = inserterUI;
-            }
-            else if(value instanceof ExpressionConstantEntry) {
+            } else if (value instanceof ExpressionConstantEntry) {
                 title = "Constant " + ((ExpressionConstantEntry) value).getName();
                 icon = UIUtils.getIconFromResources("actions/insert-variable.png");
                 lastVariableInserter = inserterUI;
-            }
-            else if(value instanceof ExpressionOperatorEntry) {
+            } else if (value instanceof ExpressionOperatorEntry) {
                 title = "Operator " + ((ExpressionOperatorEntry) value).getName();
                 icon = UIUtils.getIconFromResources("actions/insert-operator.png");
-            }
-            else if(value instanceof JIPipeExpressionRegistry.ExpressionFunctionEntry) {
+            } else if (value instanceof JIPipeExpressionRegistry.ExpressionFunctionEntry) {
                 title = "Function " + ((JIPipeExpressionRegistry.ExpressionFunctionEntry) value).getName();
                 icon = UIUtils.getIconFromResources("actions/insert-math-expression.png");
-            }
-            else {
+            } else {
                 return;
             }
             tabPane.addTab(title,
@@ -353,9 +353,9 @@ public class ExpressionBuilderUI extends JPanel {
     }
 
     private void insertCurrentlyInsertedValue() {
-        if(tabPane.getCurrentContent() != null && tabPane.getCurrentContent() instanceof ExpressionBuilderInserterUI) {
+        if (tabPane.getCurrentContent() != null && tabPane.getCurrentContent() instanceof ExpressionBuilderInserterUI) {
             ExpressionBuilderInserterUI inserterUI = (ExpressionBuilderInserterUI) tabPane.getCurrentContent();
-            if(!inserterUI.isInserterCommitted()) {
+            if (!inserterUI.isInserterCommitted()) {
                 Object currentlyInsertedObject = inserterUI.getInsertedObject();
                 if (currentlyInsertedObject instanceof ExpressionParameterVariable) {
                     ExpressionParameterVariable variable = (ExpressionParameterVariable) currentlyInsertedObject;
@@ -375,7 +375,7 @@ public class ExpressionBuilderUI extends JPanel {
     }
 
     private boolean checkInserterBeforeAccept() {
-        if(tabPane.getCurrentContent() != null && tabPane.getCurrentContent() instanceof ExpressionBuilderInserterUI) {
+        if (tabPane.getCurrentContent() != null && tabPane.getCurrentContent() instanceof ExpressionBuilderInserterUI) {
             ExpressionBuilderInserterUI inserterUI = (ExpressionBuilderInserterUI) tabPane.getCurrentContent();
             if (inserterUI.getInsertedObject() != null) {
                 if (!inserterUI.isInserterCommitted() && inserterUI.parametersWereEdited()) {

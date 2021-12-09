@@ -47,7 +47,7 @@ public class DeleteNodeUIContextAction implements NodeUIContextAction {
                 JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
             Set<JIPipeGraphNode> nodes = selection.stream().map(JIPipeNodeUI::getNode).collect(Collectors.toSet());
             UUID compartment = nodes.stream().map(JIPipeGraphNode::getUUIDInGraph).findFirst().orElse(null);
-            if(canvasUI.getHistoryJournal() != null) {
+            if (canvasUI.getHistoryJournal() != null) {
                 canvasUI.getHistoryJournal().snapshotBeforeRemoveNodes(nodes, compartment);
             }
             canvasUI.getGraph().removeNodes(nodes, true);

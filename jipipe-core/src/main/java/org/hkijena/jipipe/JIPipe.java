@@ -53,7 +53,6 @@ import org.hkijena.jipipe.ui.ijupdater.IJProgressAdapter;
 import org.hkijena.jipipe.ui.ijupdater.JIPipeImageJPluginManager;
 import org.hkijena.jipipe.ui.registries.JIPipeCustomMenuRegistry;
 import org.hkijena.jipipe.ui.running.JIPipeRunnerQueue;
-import org.hkijena.jipipe.utils.PathUtils;
 import org.hkijena.jipipe.utils.json.JsonUtils;
 import org.scijava.Context;
 import org.scijava.InstantiableException;
@@ -448,7 +447,7 @@ public class JIPipe extends AbstractService implements JIPipeRegistry {
             // Try to use the existing database
             Path dbPath = Paths.get(Prefs.getImageJDir()).resolve("db.xml.gz");
             boolean dbPathSuccess = false;
-            if(Files.isRegularFile(dbPath)) {
+            if (Files.isRegularFile(dbPath)) {
                 try {
                     Document document = readXMLGZ(dbPath);
                     NodeList activeSitesNodes = document.getElementsByTagName("update-site");
@@ -456,17 +455,16 @@ public class JIPipe extends AbstractService implements JIPipeRegistry {
                         String name = activeSitesNodes.item(i).getAttributes().getNamedItem("name").getNodeValue();
                         missingSites.removeIf(site -> Objects.equals(site.getName(), name));
                     }
-                    if(missingSites.isEmpty()) {
-                       dbPathSuccess = true;
+                    if (missingSites.isEmpty()) {
+                        dbPathSuccess = true;
                     }
-                }
-                catch (Exception e) {
+                } catch (Exception e) {
                     logService.warn("Unable to read " + dbPath);
                 }
             }
 
             // Query update sites again (via ImageJ)
-            if(!dbPathSuccess) {
+            if (!dbPathSuccess) {
                 try {
                     UpdaterUtil.useSystemProxies();
                     Authenticator.setDefault(new SwingAuthenticator());
@@ -632,7 +630,8 @@ public class JIPipe extends AbstractService implements JIPipeRegistry {
 
     /**
      * Imports data from a slot folder
-     * @param slotFolder a folder that contains data-table.json
+     *
+     * @param slotFolder   a folder that contains data-table.json
      * @param progressInfo the progress info
      * @return the imported data slot
      */

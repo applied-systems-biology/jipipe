@@ -27,7 +27,7 @@ public class JIPipeDedicatedGraphHistoryJournal implements JIPipeHistoryJournal 
 
     @Override
     public void snapshot(String name, String description, UUID compartment, Icon icon) {
-        if(settings.getMaxEntries() == 0) {
+        if (settings.getMaxEntries() == 0) {
             return;
         }
         addSnapshot(new Snapshot(this,
@@ -58,11 +58,11 @@ public class JIPipeDedicatedGraphHistoryJournal implements JIPipeHistoryJournal 
 
     @Override
     public boolean goToSnapshot(JIPipeHistoryJournalSnapshot snapshot, UUID compartment) {
-        if(undoStack.contains((Snapshot)snapshot)) {
+        if (undoStack.contains((Snapshot) snapshot)) {
             boolean createSnapshot = redoStack.isEmpty();
 
             // If the redo stack was empty at the beginning, create a new snapshot
-            if(createSnapshot) {
+            if (createSnapshot) {
                 JIPipeGraph copy = new JIPipeGraph(graph);
                 redoStack.add(new Snapshot(this,
                         LocalDateTime.now(),
@@ -74,10 +74,10 @@ public class JIPipeDedicatedGraphHistoryJournal implements JIPipeHistoryJournal 
             }
 
             // Shift other undo operations into the redo stack
-            while(!undoStack.isEmpty()) {
+            while (!undoStack.isEmpty()) {
                 Snapshot pop = undoStack.remove(undoStack.size() - 1);
                 redoStack.add(pop);
-                if(pop == snapshot)
+                if (pop == snapshot)
                     break;
             }
 
@@ -85,13 +85,12 @@ public class JIPipeDedicatedGraphHistoryJournal implements JIPipeHistoryJournal 
 
             getEventBus().post(new ChangedEvent(this));
             return currentSnapshot.restore();
-        }
-        else if(redoStack.contains((Snapshot) snapshot)) {
+        } else if (redoStack.contains((Snapshot) snapshot)) {
             // Shift other undo operations into the undo stack
-            while(!redoStack.isEmpty()) {
+            while (!redoStack.isEmpty()) {
                 Snapshot pop = redoStack.remove(redoStack.size() - 1);
                 undoStack.add(pop);
-                if(pop == snapshot)
+                if (pop == snapshot)
                     break;
             }
 
@@ -111,12 +110,11 @@ public class JIPipeDedicatedGraphHistoryJournal implements JIPipeHistoryJournal 
 
     @Override
     public JIPipeHistoryJournalSnapshot getUndoSnapshot() {
-        if(undoStack.isEmpty()) {
+        if (undoStack.isEmpty()) {
             return null;
-        }
-        else {
-            for (int i = undoStack.size() - 1; i >= 0 ; i--) {
-                if(undoStack.get(i) != currentSnapshot) {
+        } else {
+            for (int i = undoStack.size() - 1; i >= 0; i--) {
+                if (undoStack.get(i) != currentSnapshot) {
                     return undoStack.get(i);
                 }
             }
@@ -126,12 +124,11 @@ public class JIPipeDedicatedGraphHistoryJournal implements JIPipeHistoryJournal 
 
     @Override
     public JIPipeHistoryJournalSnapshot getRedoSnapshot() {
-        if(redoStack.isEmpty()) {
+        if (redoStack.isEmpty()) {
             return null;
-        }
-        else {
-            for (int i = redoStack.size() - 1; i >= 0 ; i--) {
-                if(redoStack.get(i) != currentSnapshot) {
+        } else {
+            for (int i = redoStack.size() - 1; i >= 0; i--) {
+                if (redoStack.get(i) != currentSnapshot) {
                     return redoStack.get(i);
                 }
             }
@@ -141,14 +138,15 @@ public class JIPipeDedicatedGraphHistoryJournal implements JIPipeHistoryJournal 
 
     /**
      * Adds a snapshot
+     *
      * @param snapshot the snapshot
      */
     private void addSnapshot(Snapshot snapshot) {
         redoStack.clear();
-        if(settings.getMaxEntries() > 0) {
-            while(undoStack.size() > settings.getMaxEntries()) {
+        if (settings.getMaxEntries() > 0) {
+            while (undoStack.size() > settings.getMaxEntries()) {
                 Snapshot removed = undoStack.remove(0);
-                if(currentSnapshot == removed) {
+                if (currentSnapshot == removed) {
                     currentSnapshot = null;
                 }
             }

@@ -102,9 +102,9 @@ public class IntegerRange {
     /**
      * Generates the list of integers based on the value. Throws no exceptions.
      *
-     * @return null if the format is wrong
      * @param min the min value the integers can have
      * @param max the max value the integers can have
+     * @return null if the format is wrong
      */
     public List<Integer> tryGetIntegers(int min, int max) {
         try {
@@ -117,59 +117,57 @@ public class IntegerRange {
     /**
      * Generates the list of integers based on the value
      *
-     * @return the generated integers
-     * @throws NumberFormatException if the format is wrong
      * @param min the min value the integers can have
      * @param max the max value the integers can have
+     * @return the generated integers
+     * @throws NumberFormatException if the format is wrong
      */
     public List<Integer> getIntegers(int min, int max) throws NumberFormatException {
-        if(isUseExpression()) {
+        if (isUseExpression()) {
             ExpressionVariables variables = new ExpressionVariables();
             variables.set("min", min);
             variables.set("max", max);
             Object result = expression.evaluate(variables);
             List<Integer> integers = new ArrayList<>();
-            if(result instanceof Number) {
+            if (result instanceof Number) {
                 integers.add(((Number) result).intValue());
-            }
-            else if (result instanceof String) {
+            } else if (result instanceof String) {
                 try {
-                    integers.add((int)Double.parseDouble("" + result));
-                }
-                catch (Exception e) {
+                    integers.add((int) Double.parseDouble("" + result));
+                } catch (Exception e) {
                     return getIntegersFromRangeString("" + result);
                 }
-            }
-            else if(result instanceof Collection) {
+            } else if (result instanceof Collection) {
                 for (Object o : (Collection<?>) result) {
-                    if(o instanceof Number) {
+                    if (o instanceof Number) {
                         integers.add(((Number) o).intValue());
-                    }
-                    else if(o instanceof String) {
+                    } else if (o instanceof String) {
                         try {
-                            integers.add((int)Double.parseDouble("" + o));
-                        }
-                        catch (Exception e) {
+                            integers.add((int) Double.parseDouble("" + o));
+                        } catch (Exception e) {
                             integers.addAll(getIntegersFromRangeString("" + o));
                         }
-                    }
-                    else {
+                    } else {
                         throw new UnsupportedOperationException("Invalid expression output for integer range: " + o);
                     }
                 }
-            }
-            else {
+            } else {
                 throw new UnsupportedOperationException("Invalid expression output for integer range: " + result);
             }
             return integers;
-        }
-        else {
+        } else {
             return getIntegersFromRangeString(value);
         }
     }
 
+    @Override
+    public String toString() {
+        return StringUtils.orElse(value, "[Empty]");
+    }
+
     /**
      * Converts a range string of format [range];[range];... to a list of integers
+     *
      * @param value the range string
      * @return the list of integers
      */
@@ -232,11 +230,6 @@ public class IntegerRange {
             }
         }
         return integers;
-    }
-
-    @Override
-    public String toString() {
-        return StringUtils.orElse(value, "[Empty]");
     }
 
     public static class VariableSource implements ExpressionParameterVariableSource {

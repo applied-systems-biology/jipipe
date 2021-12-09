@@ -30,8 +30,8 @@ import java.util.Map;
  */
 public class AnchorParameterEditorUI extends JIPipeParameterEditorUI {
 
-    private boolean skipNextReload = false;
     private final Map<Anchor, JToggleButton> anchorSelectionMap = new HashMap<>();
+    private boolean skipNextReload = false;
 
     /**
      * @param workbench       workbench
@@ -141,7 +141,7 @@ public class AnchorParameterEditorUI extends JIPipeParameterEditorUI {
         anchorSelectionMap.get(anchor).setSelected(true);
 
         AnchorParameterSettings settings = getParameterAccess().getAnnotationOfType(AnchorParameterSettings.class);
-        if(settings != null) {
+        if (settings != null) {
             anchorSelectionMap.get(Anchor.TopLeft).setVisible(settings.allowTopLeft());
             anchorSelectionMap.get(Anchor.TopCenter).setVisible(settings.allowTopCenter());
             anchorSelectionMap.get(Anchor.TopRight).setVisible(settings.allowTopRight());

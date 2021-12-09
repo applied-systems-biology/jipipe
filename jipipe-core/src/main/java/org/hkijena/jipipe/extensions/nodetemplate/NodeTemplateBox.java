@@ -455,7 +455,7 @@ public class NodeTemplateBox extends JIPipeWorkbenchPanel {
             String string = searchStrings[i];
             if (nameHayStack.contains(string.toLowerCase()))
                 --ranks[0];
-            if(i == 0 && nameHayStack.startsWith(string.toLowerCase()))
+            if (i == 0 && nameHayStack.startsWith(string.toLowerCase()))
                 ranks[0] -= 2;
 //            if (name2HayStack.contains(string.toLowerCase()))
 //                --ranks[1];

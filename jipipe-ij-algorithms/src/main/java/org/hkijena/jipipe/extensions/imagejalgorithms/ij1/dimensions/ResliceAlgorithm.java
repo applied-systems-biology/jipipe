@@ -1,7 +1,6 @@
 package org.hkijena.jipipe.extensions.imagejalgorithms.ij1.dimensions;
 
 import ij.ImagePlus;
-import ij.plugin.Slicer;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
@@ -66,8 +65,8 @@ public class ResliceAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusData(result), progressInfo);
     }
 
-     @JIPipeDocumentation(name = "Flip vertically")
-     @JIPipeParameter("flip-vertical")
+    @JIPipeDocumentation(name = "Flip vertically")
+    @JIPipeParameter("flip-vertical")
     public boolean isFlipVertical() {
         return flipVertical;
     }

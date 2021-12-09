@@ -33,7 +33,7 @@ public abstract class CategoryPlotData extends PlotData {
     private String valueAxisLabel = "Value";
     private int categoryAxisFontSize = 12;
     private int valueAxisFontSize = 12;
-    private OptionalDoubleParameter valueAxisMinimum = new OptionalDoubleParameter(Double.NEGATIVE_INFINITY,false);
+    private OptionalDoubleParameter valueAxisMinimum = new OptionalDoubleParameter(Double.NEGATIVE_INFINITY, false);
     private OptionalDoubleParameter valueAxisMaximum = new OptionalDoubleParameter(Double.POSITIVE_INFINITY, false);
 
     /**

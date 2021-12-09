@@ -6,7 +6,7 @@ import org.hkijena.jipipe.api.history.JIPipeHistoryJournalSnapshot;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
-import java.awt.*;
+import java.awt.BorderLayout;
 
 public class HistoryJournalUI extends JPanel {
     private final JIPipeHistoryJournal historyJournal;
@@ -39,7 +39,7 @@ public class HistoryJournalUI extends JPanel {
         JButton selectButton = new JButton("Go to", UIUtils.getIconFromResources("actions/view-calendar-time-spent.png"));
         selectButton.addActionListener(e -> {
             JIPipeHistoryJournalSnapshot snapshot = snapshotJList.getSelectedValue();
-            if(snapshot != null && !(snapshot instanceof CurrentStateSnapshot))  {
+            if (snapshot != null && !(snapshot instanceof CurrentStateSnapshot)) {
                 getHistoryJournal().goToSnapshot(snapshot, null);
             }
         });
@@ -59,7 +59,7 @@ public class HistoryJournalUI extends JPanel {
     }
 
     private void clearSnapshots() {
-        if(JOptionPane.showConfirmDialog(this,
+        if (JOptionPane.showConfirmDialog(this,
                 "Do you really want to clear the journal?",
                 "Clear journal",
                 JOptionPane.YES_NO_OPTION,
@@ -78,7 +78,7 @@ public class HistoryJournalUI extends JPanel {
         for (JIPipeHistoryJournalSnapshot snapshot : historyJournal.getSnapshots()) {
             model.add(0, snapshot);
         }
-        if(currentSnapshot == null) {
+        if (currentSnapshot == null) {
             currentSnapshot = new CurrentStateSnapshot();
             model.add(0, currentSnapshot);
         }

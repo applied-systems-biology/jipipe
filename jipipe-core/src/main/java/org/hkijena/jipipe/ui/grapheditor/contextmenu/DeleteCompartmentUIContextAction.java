@@ -14,7 +14,6 @@
 package org.hkijena.jipipe.ui.grapheditor.contextmenu;
 
 import com.google.common.collect.ImmutableList;
-import org.hkijena.jipipe.api.JIPipeProject;
 import org.hkijena.jipipe.api.compartments.algorithms.JIPipeProjectCompartment;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.extensions.settings.GraphEditorUISettings;
@@ -45,7 +44,7 @@ public class DeleteCompartmentUIContextAction implements NodeUIContextAction {
             for (JIPipeNodeUI ui : ImmutableList.copyOf(selection)) {
                 if (ui.getNode() instanceof JIPipeProjectCompartment) {
                     JIPipeProjectCompartment compartment = (JIPipeProjectCompartment) ui.getNode();
-                    if(canvasUI.getHistoryJournal() != null) {
+                    if (canvasUI.getHistoryJournal() != null) {
                         canvasUI.getHistoryJournal().snapshotBeforeRemoveCompartment(compartment);
                     }
                     compartment.getProject().removeCompartment(compartment);

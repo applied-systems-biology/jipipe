@@ -35,10 +35,10 @@ public abstract class XYPlotData extends PlotData {
     private String yAxisLabel = "Y";
     private int xAxisFontSize = 12;
     private int yAxisFontSize = 12;
-    private OptionalDoubleParameter xAxisMinimum = new OptionalDoubleParameter(Double.NEGATIVE_INFINITY,false);
-    private OptionalDoubleParameter yAxisMinimum = new OptionalDoubleParameter(Double.NEGATIVE_INFINITY,false);
+    private OptionalDoubleParameter xAxisMinimum = new OptionalDoubleParameter(Double.NEGATIVE_INFINITY, false);
+    private OptionalDoubleParameter yAxisMinimum = new OptionalDoubleParameter(Double.NEGATIVE_INFINITY, false);
     private OptionalDoubleParameter xAxisMaximum = new OptionalDoubleParameter(Double.POSITIVE_INFINITY, false);
-    private OptionalDoubleParameter yAxisMaximum = new OptionalDoubleParameter(Double.POSITIVE_INFINITY,false);
+    private OptionalDoubleParameter yAxisMaximum = new OptionalDoubleParameter(Double.POSITIVE_INFINITY, false);
 
     /**
      * Creates a new instance

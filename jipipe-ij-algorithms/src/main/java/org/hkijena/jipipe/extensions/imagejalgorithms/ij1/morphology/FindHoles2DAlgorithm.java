@@ -66,7 +66,7 @@ public class FindHoles2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
             byte[] roiMaskPixels = (byte[]) ip2.getPixels();
             byte[] maskPixels = (byte[]) ip.getPixels();
             for (int i = 0; i < roiMaskPixels.length; i++) {
-                maskPixels[i] = (byte)(Math.max(0, Byte.toUnsignedInt(roiMaskPixels[i]) - Byte.toUnsignedInt(maskPixels[i])));
+                maskPixels[i] = (byte) (Math.max(0, Byte.toUnsignedInt(roiMaskPixels[i]) - Byte.toUnsignedInt(maskPixels[i])));
             }
         }, progressInfo);
 
