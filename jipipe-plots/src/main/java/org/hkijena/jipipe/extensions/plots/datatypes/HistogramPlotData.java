@@ -15,6 +15,7 @@ package org.hkijena.jipipe.extensions.plots.datatypes;
 
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
+import org.hkijena.jipipe.extensions.parameters.primitives.OptionalDoubleParameter;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.JFreeChart;
@@ -44,6 +45,8 @@ public class HistogramPlotData extends PlotData {
     private HistogramType_ histogramType = HistogramType_.Frequency;
     private int binAxisFontSize = 12;
     private int valueAxisFontSize = 12;
+    private OptionalDoubleParameter valueAxisMinimum = new OptionalDoubleParameter(Double.NEGATIVE_INFINITY,false);
+    private OptionalDoubleParameter valueAxisMaximum = new OptionalDoubleParameter(Double.POSITIVE_INFINITY, false);
 
     /**
      * Creates a new instance
@@ -63,6 +66,8 @@ public class HistogramPlotData extends PlotData {
         this.valueAxisLabel = other.valueAxisLabel;
         this.binAxisFontSize = other.binAxisFontSize;
         this.valueAxisFontSize = other.valueAxisFontSize;
+        this.valueAxisMinimum = new OptionalDoubleParameter(other.valueAxisMinimum);
+        this.valueAxisMaximum = new OptionalDoubleParameter(other.valueAxisMaximum);
     }
 
     @Override
@@ -94,6 +99,9 @@ public class HistogramPlotData extends PlotData {
         chart.getXYPlot().getDomainAxis().setTickLabelFont(new Font(Font.SANS_SERIF, Font.PLAIN, binAxisFontSize));
         chart.getXYPlot().getRangeAxis().setLabelFont(new Font(Font.SANS_SERIF, Font.BOLD, valueAxisFontSize));
         chart.getXYPlot().getRangeAxis().setTickLabelFont(new Font(Font.SANS_SERIF, Font.PLAIN, valueAxisFontSize));
+
+        calibrateAxis(chart.getXYPlot().getRangeAxis(), getValueAxisMinimum(), getValueAxisMaximum());
+
         updateChartProperties(chart);
         return chart;
     }
@@ -120,6 +128,28 @@ public class HistogramPlotData extends PlotData {
     public void setValueAxisLabel(String valueAxisLabel) {
         this.valueAxisLabel = valueAxisLabel;
 
+    }
+
+    @JIPipeDocumentation(name = "Value axis minimum", description = "Minimum of the value axis values. If disabled or infinite, the value is calculated automatically.")
+    @JIPipeParameter("value-axis-minimum")
+    public OptionalDoubleParameter getValueAxisMinimum() {
+        return valueAxisMinimum;
+    }
+
+    @JIPipeParameter("value-axis-minimum")
+    public void setValueAxisMinimum(OptionalDoubleParameter valueAxisMinimum) {
+        this.valueAxisMinimum = valueAxisMinimum;
+    }
+
+    @JIPipeDocumentation(name = "Value axis maximum", description = "Maximum of the value axis values. If disabled or infinite, the value is calculated automatically.")
+    @JIPipeParameter("value-axis-maximum")
+    public OptionalDoubleParameter getValueAxisMaximum() {
+        return valueAxisMaximum;
+    }
+
+    @JIPipeParameter("value-axis-maximum")
+    public void setValueAxisMaximum(OptionalDoubleParameter valueAxisMaximum) {
+        this.valueAxisMaximum = valueAxisMaximum;
     }
 
     @JIPipeDocumentation(name = "Bins", description = "Number of bins")

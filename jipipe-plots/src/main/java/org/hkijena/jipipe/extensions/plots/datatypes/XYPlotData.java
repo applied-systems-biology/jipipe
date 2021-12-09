@@ -15,6 +15,7 @@ package org.hkijena.jipipe.extensions.plots.datatypes;
 
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
+import org.hkijena.jipipe.extensions.parameters.primitives.OptionalDoubleParameter;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.jfree.data.xy.XYDataset;
 import org.jfree.data.xy.XYSeries;
@@ -34,6 +35,10 @@ public abstract class XYPlotData extends PlotData {
     private String yAxisLabel = "Y";
     private int xAxisFontSize = 12;
     private int yAxisFontSize = 12;
+    private OptionalDoubleParameter xAxisMinimum = new OptionalDoubleParameter(Double.NEGATIVE_INFINITY,false);
+    private OptionalDoubleParameter yAxisMinimum = new OptionalDoubleParameter(Double.NEGATIVE_INFINITY,false);
+    private OptionalDoubleParameter xAxisMaximum = new OptionalDoubleParameter(Double.POSITIVE_INFINITY, false);
+    private OptionalDoubleParameter yAxisMaximum = new OptionalDoubleParameter(Double.POSITIVE_INFINITY,false);
 
     /**
      * Creates a new instance
@@ -53,6 +58,10 @@ public abstract class XYPlotData extends PlotData {
         this.yAxisLabel = other.yAxisLabel;
         this.xAxisFontSize = other.xAxisFontSize;
         this.yAxisFontSize = other.yAxisFontSize;
+        this.xAxisMinimum = new OptionalDoubleParameter(other.xAxisMinimum);
+        this.yAxisMinimum = new OptionalDoubleParameter(other.yAxisMinimum);
+        this.xAxisMaximum = new OptionalDoubleParameter(other.xAxisMaximum);
+        this.yAxisMaximum = new OptionalDoubleParameter(other.yAxisMaximum);
     }
 
     /**
@@ -124,5 +133,49 @@ public abstract class XYPlotData extends PlotData {
     @JIPipeParameter("y-axis-font-size")
     public void setyAxisFontSize(int yAxisFontSize) {
         this.yAxisFontSize = yAxisFontSize;
+    }
+
+    @JIPipeDocumentation(name = "X axis minimum", description = "Minimum of the X axis values. If disabled or infinite, the value is calculated automatically.")
+    @JIPipeParameter("x-axis-minimum")
+    public OptionalDoubleParameter getxAxisMinimum() {
+        return xAxisMinimum;
+    }
+
+    @JIPipeParameter("x-axis-minimum")
+    public void setxAxisMinimum(OptionalDoubleParameter xAxisMinimum) {
+        this.xAxisMinimum = xAxisMinimum;
+    }
+
+    @JIPipeDocumentation(name = "Y axis minimum", description = "Minimum of the Y axis values. If disabled or infinite, the value is calculated automatically.")
+    @JIPipeParameter("y-axis-minimum")
+    public OptionalDoubleParameter getyAxisMinimum() {
+        return yAxisMinimum;
+    }
+
+    @JIPipeParameter("y-axis-minimum")
+    public void setyAxisMinimum(OptionalDoubleParameter yAxisMinimum) {
+        this.yAxisMinimum = yAxisMinimum;
+    }
+
+    @JIPipeDocumentation(name = "X axis maximum", description = "Maximum of the X axis values. If disabled or infinite, the value is calculated automatically.")
+    @JIPipeParameter("x-axis-maximum")
+    public OptionalDoubleParameter getxAxisMaximum() {
+        return xAxisMaximum;
+    }
+
+    @JIPipeParameter("x-axis-maximum")
+    public void setxAxisMaximum(OptionalDoubleParameter xAxisMaximum) {
+        this.xAxisMaximum = xAxisMaximum;
+    }
+
+    @JIPipeDocumentation(name = "Y axis maximum", description = "Maximum of the Y axis values. If disabled or infinite, the value is calculated automatically.")
+    @JIPipeParameter("y-axis-maximum")
+    public OptionalDoubleParameter getyAxisMaximum() {
+        return yAxisMaximum;
+    }
+
+    @JIPipeParameter("y-axis-maximum")
+    public void setyAxisMaximum(OptionalDoubleParameter yAxisMaximum) {
+        this.yAxisMaximum = yAxisMaximum;
     }
 }

@@ -53,6 +53,10 @@ public class ScatterXYPlotData extends XYPlotData {
         chart.getXYPlot().getDomainAxis().setTickLabelFont(new Font(Font.SANS_SERIF, Font.PLAIN, getxAxisFontSize()));
         chart.getXYPlot().getRangeAxis().setLabelFont(new Font(Font.SANS_SERIF, Font.BOLD, getyAxisFontSize()));
         chart.getXYPlot().getRangeAxis().setTickLabelFont(new Font(Font.SANS_SERIF, Font.PLAIN, getyAxisFontSize()));
+
+        calibrateAxis(chart.getXYPlot().getDomainAxis(), getxAxisMinimum(), getxAxisMaximum());
+        calibrateAxis(chart.getXYPlot().getRangeAxis(), getyAxisMinimum(), getyAxisMaximum());
+
         updateChartProperties(chart);
         return chart;
     }

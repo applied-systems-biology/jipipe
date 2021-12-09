@@ -17,6 +17,7 @@ import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.JFreeChart;
+import org.jfree.chart.axis.ValueAxis;
 import org.jfree.chart.renderer.AbstractRenderer;
 import org.jfree.chart.renderer.xy.XYItemRenderer;
 
@@ -60,6 +61,9 @@ public class LineXYPlotData extends XYPlotData {
         chart.getXYPlot().getDomainAxis().setTickLabelFont(new Font(Font.SANS_SERIF, Font.PLAIN, getxAxisFontSize()));
         chart.getXYPlot().getRangeAxis().setLabelFont(new Font(Font.SANS_SERIF, Font.BOLD, getyAxisFontSize()));
         chart.getXYPlot().getRangeAxis().setTickLabelFont(new Font(Font.SANS_SERIF, Font.PLAIN, getyAxisFontSize()));
+
+        calibrateAxis(chart.getXYPlot().getDomainAxis(), getxAxisMinimum(), getxAxisMaximum());
+        calibrateAxis(chart.getXYPlot().getRangeAxis(), getyAxisMinimum(), getyAxisMaximum());
 
         // Set line thickness
         XYItemRenderer renderer = chart.getXYPlot().getRenderer();

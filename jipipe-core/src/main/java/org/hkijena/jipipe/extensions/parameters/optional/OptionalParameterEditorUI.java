@@ -13,8 +13,10 @@
 
 package org.hkijena.jipipe.extensions.parameters.optional;
 
+import com.google.common.eventbus.Subscribe;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
+import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.parameters.JIPipeParameterEditorUI;
 import org.hkijena.jipipe.utils.UIUtils;
@@ -68,6 +70,15 @@ public class OptionalParameterEditorUI extends JIPipeParameterEditorUI {
         OptionalParameterContentAccess<?> access = new OptionalParameterContentAccess(getParameterAccess(), parameter);
         JIPipeParameterEditorUI ui = JIPipe.getParameterTypes().createEditorFor(getWorkbench(), access);
         add(ui, BorderLayout.CENTER);
+
+        // Listen for changes inside the parameter content
+        access.getEventBus().register(new Object() {
+            @Subscribe
+            public void onContentChanged(JIPipeParameterCollection.ParameterChangedEvent event) {
+                // We trigger the change event
+                setParameter(parameter, false);
+            }
+        });
 
         revalidate();
         repaint();
