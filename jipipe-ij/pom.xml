@@ -5,11 +5,11 @@
     <parent>
         <artifactId>pom-jipipe</artifactId>
         <groupId>org.hkijena</groupId>
-        <version>1.53.2</version>
+        <version>1.54.0</version>
     </parent>
 
     <artifactId>jipipe-ij</artifactId>
-    <version>1.53.2</version>
+    <version>1.54.0</version>
 
     <name>jipipe-ij</name>
     <description>JIPipe ImageJ data types</description>
@@ -78,22 +78,22 @@
             <dependency>
                 <groupId>org.hkijena</groupId>
                 <artifactId>jipipe-core</artifactId>
-                <version>1.53.2</version>
+                <version>1.54.0</version>
             </dependency>
             <dependency>
                 <groupId>org.hkijena</groupId>
                 <artifactId>jipipe-tables</artifactId>
-                <version>1.53.2</version>
+                <version>1.54.0</version>
             </dependency>
             <dependency>
                 <groupId>org.hkijena</groupId>
                 <artifactId>jipipe-strings</artifactId>
-                <version>1.53.2</version>
+                <version>1.54.0</version>
             </dependency>
             <dependency>
                 <groupId>org.hkijena</groupId>
                 <artifactId>jipipe-filesystem</artifactId>
-                <version>1.53.2</version>
+                <version>1.54.0</version>
             </dependency>
         </dependencies>
     </dependencyManagement>

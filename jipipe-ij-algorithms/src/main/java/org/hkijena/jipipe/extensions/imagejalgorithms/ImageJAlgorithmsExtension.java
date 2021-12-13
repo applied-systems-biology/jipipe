@@ -824,7 +824,7 @@ public class ImageJAlgorithmsExtension extends JIPipePrepackagedDefaultJavaExten
 
     @Override
     public String getDependencyVersion() {
-        return "1.53.2";
+        return "1.54.0";
     }
 
     private static Map<Class<? extends JIPipeData>, Class<? extends JIPipeData>> get3DConversion() {

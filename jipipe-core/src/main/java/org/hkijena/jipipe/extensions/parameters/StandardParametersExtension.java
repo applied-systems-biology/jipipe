@@ -119,7 +119,7 @@ public class StandardParametersExtension extends JIPipePrepackagedDefaultJavaExt
 
     @Override
     public String getDependencyVersion() {
-        return "1.53.2";
+        return "1.54.0";
     }
 
     @Override
