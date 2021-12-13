@@ -44,7 +44,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.Stack;
 
 /**
  * Runnable instance of an {@link JIPipeProject}
@@ -209,20 +208,6 @@ public class JIPipeRun implements JIPipeRunnable {
         Set<JIPipeGraphNode> unExecutableAlgorithms = copiedGraph.getDeactivatedAlgorithms(!configuration.isIgnoreDeactivatedInputs());
         Set<JIPipeGraphNode> executedAlgorithms = new HashSet<>();
         List<JIPipeDataSlot> traversedSlots = copiedGraph.traverseSlots();
-
-//        // Detect predecessors of cached nodes
-//        // These will be marked as unexecutable
-//        if(configuration.isLoadFromCache()) {
-//            progressInfo.log("Detecting unnecessary workloads");
-//            for (JIPipeGraphNode node : copiedGraph.getGraphNodes()) {
-//                if(!unExecutableAlgorithms.contains(node) && isCached(node, cacheQuery)) {
-//                    for (JIPipeDataSlot inputSlot : node.getInputSlots()) {
-//                        for (JIPipeDataSlot sourceSlot : copiedGraph.getSourceSlots(inputSlot)) {
-//                        }
-//                    }
-//                }
-//            }
-//        }
 
         // Create GC
         JIPipeGraphGCHelper gc = new JIPipeGraphGCHelper(copiedGraph);
