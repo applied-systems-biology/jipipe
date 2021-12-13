@@ -58,6 +58,7 @@ public class Main {
             UpdaterUtil.useSystemProxies();
             Authenticator.setDefault(new SwingAuthenticator());
             filesCollection = new FilesCollection(getImageJRoot().toFile());
+            filesCollection.downloadIndexAndChecksum(createProgress());
             refreshUpdateSites(filesCollection, new StderrLogService());
             filesCollection.tryLoadingCollection();
             filesCollection.markForUpdate(false);
