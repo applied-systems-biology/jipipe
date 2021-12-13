@@ -1,20 +1,27 @@
 package org.hkijena.ijupdatercli;
 
 import net.imagej.ui.swing.updater.ProgressDialog;
+import net.imagej.ui.swing.updater.ReviewSiteURLsDialog;
 import net.imagej.ui.swing.updater.SwingAuthenticator;
 import net.imagej.updater.FilesCollection;
 import net.imagej.updater.Installer;
+import net.imagej.updater.URLChange;
 import net.imagej.updater.UpdateSite;
 import net.imagej.updater.util.AvailableSites;
 import net.imagej.updater.util.Progress;
 import net.imagej.updater.util.StderrProgress;
 import net.imagej.updater.util.UpdaterUtil;
+import org.scijava.log.DefaultLogger;
+import org.scijava.log.Logger;
+import org.scijava.log.StderrLogService;
 import org.scijava.util.AppUtils;
 import org.xml.sax.SAXException;
 
+import javax.swing.*;
 import javax.xml.parsers.ParserConfigurationException;
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 import java.net.Authenticator;
 import java.nio.file.Path;
 import java.util.Arrays;
@@ -50,10 +57,10 @@ public class Main {
         try {
             UpdaterUtil.useSystemProxies();
             Authenticator.setDefault(new SwingAuthenticator());
-
             filesCollection = new FilesCollection(getImageJRoot().toFile());
-            AvailableSites.initializeAndAddSites(filesCollection);
-            filesCollection.downloadIndexAndChecksum(createProgress());
+            refreshUpdateSites(filesCollection, new StderrLogService());
+            filesCollection.tryLoadingCollection();
+            filesCollection.markForUpdate(false);
         } catch (Exception e) {
             e.printStackTrace();
             return;
@@ -130,6 +137,11 @@ public class Main {
         } else {
             throw new RuntimeException("Invalid command!");
         }
+    }
+
+    private static void refreshUpdateSites(FilesCollection files, Logger log) {
+        List<URLChange> changes = AvailableSites.initializeAndAddSites(files, log);
+        AvailableSites.applySitesURLUpdates(files, changes);
     }
 
     private static Set<String> getUpdateSiteNames(List<String> list) {
