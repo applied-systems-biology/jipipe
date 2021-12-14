@@ -47,7 +47,7 @@ public class GraphNodeParameterReferenceEditorUI extends JIPipeParameterEditorUI
 
     private void editParameters() {
         GraphNodeParameters parameters = getParameter(GraphNodeParameters.class);
-        GraphNodeParametersUI panel = new GraphNodeParametersUI(getWorkbench(), parameters, FormPanel.WITH_SCROLLING);
+        GraphNodeParametersUI panel = new GraphNodeParametersUI(getWorkbench(), parameters, FormPanel.WITH_SCROLLING, false);
         JFrame editorDialog = new JFrame();
         editorDialog.setIconImage(UIUtils.getIcon128FromResources("jipipe.png").getImage());
         editorDialog.setTitle("Edit parameters");

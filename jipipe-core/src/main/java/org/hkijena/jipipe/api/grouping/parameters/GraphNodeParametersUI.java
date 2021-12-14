@@ -41,16 +41,19 @@ public class GraphNodeParametersUI extends JIPipeWorkbenchPanel {
     private FormPanel content;
     private JIPipeParameterTree tree;
     private final int formPanelFlags;
+    private boolean withRefresh;
 
     /**
      * @param workbench      the workbench
      * @param parameters     the parameters to edit
      * @param formPanelFlags flags for the form panel
+     * @param withRefresh if the editor should refresh on changes
      */
-    public GraphNodeParametersUI(JIPipeWorkbench workbench, GraphNodeParameters parameters, int formPanelFlags) {
+    public GraphNodeParametersUI(JIPipeWorkbench workbench, GraphNodeParameters parameters, int formPanelFlags, boolean withRefresh) {
         super(workbench);
         this.parameters = parameters;
         this.formPanelFlags = formPanelFlags;
+        this.withRefresh = withRefresh;
         parameters.getEventBus().register(this);
         parameters.getGraph().getEventBus().register(this);
         initialize();
@@ -61,11 +64,25 @@ public class GraphNodeParametersUI extends JIPipeWorkbenchPanel {
         return parameters;
     }
 
+    public boolean isWithRefresh() {
+        return withRefresh;
+    }
+
+    public void setWithRefresh(boolean withRefresh) {
+        this.withRefresh = withRefresh;
+    }
+
     private void initialize() {
         setLayout(new BorderLayout());
 
         JToolBar toolBar = new JToolBar();
         toolBar.setFloatable(false);
+
+        JButton refreshButton = new JButton(UIUtils.getIconFromResources("actions/view-refresh.png"));
+        refreshButton.setToolTipText("Refresh");
+        refreshButton.addActionListener(e -> refreshContent());
+        toolBar.add(refreshButton);
+
         toolBar.add(Box.createHorizontalGlue());
 
         JButton autoAddAlgorithmButton = new JButton("Auto add algorithm", UIUtils.getIconFromResources("actions/configure.png"));
@@ -115,13 +132,19 @@ public class GraphNodeParametersUI extends JIPipeWorkbenchPanel {
 
             parameters.addGroups(groupList);
         }
+        if(!withRefresh) {
+            refreshContent();
+        }
     }
 
     private void addEmptyGroup() {
         parameters.addNewGroup();
+        if(!withRefresh) {
+            refreshContent();
+        }
     }
 
-    private void refreshContent() {
+    public void refreshContent() {
         tree = getParameters().getGraph().getParameterTree(false);
         int scrollValue = 0;
         if (content.getScrollPane() != null) {
@@ -132,7 +155,12 @@ public class GraphNodeParametersUI extends JIPipeWorkbenchPanel {
             GraphNodeParameterReferenceGroupUI groupUI = new GraphNodeParameterReferenceGroupUI(this, referenceGroup);
             JButton removeButton = new JButton(UIUtils.getIconFromResources("actions/close-tab.png"));
             UIUtils.makeBorderlessWithoutMargin(removeButton);
-            removeButton.addActionListener(e -> parameters.removeGroup(referenceGroup));
+            removeButton.addActionListener(e -> {
+                parameters.removeGroup(referenceGroup);
+                if(!isWithRefresh()) {
+                    refreshContent();
+                }
+            });
             content.addToForm(groupUI, removeButton, null);
         }
         content.addVerticalGlue();
@@ -149,7 +177,8 @@ public class GraphNodeParametersUI extends JIPipeWorkbenchPanel {
      */
     @Subscribe
     public void onParameterReferenceChanged(ParameterReferencesChangedEvent event) {
-        refreshContent();
+        if(withRefresh)
+            refreshContent();
     }
 
     /**
@@ -159,7 +188,8 @@ public class GraphNodeParametersUI extends JIPipeWorkbenchPanel {
      */
     @Subscribe
     public void onParameterStructureChanged(JIPipeParameterCollection.ParameterStructureChangedEvent event) {
-        refreshContent();
+        if(withRefresh)
+            refreshContent();
     }
 
     /**
@@ -169,7 +199,8 @@ public class GraphNodeParametersUI extends JIPipeWorkbenchPanel {
      */
     @Subscribe
     public void onGraphStructureChanged(JIPipeGraph.GraphChangedEvent event) {
-        refreshContent();
+        if(withRefresh)
+            refreshContent();
     }
 
     /**

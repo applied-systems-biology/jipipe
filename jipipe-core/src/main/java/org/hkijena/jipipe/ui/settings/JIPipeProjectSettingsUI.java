@@ -31,8 +31,6 @@ import javax.swing.tree.TreePath;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
-import java.awt.event.ComponentAdapter;
-import java.awt.event.ComponentEvent;
 import java.util.HashMap;
 
 /**
@@ -99,7 +97,7 @@ public class JIPipeProjectSettingsUI extends JIPipeProjectWorkbenchPanel {
         } else if (id.equals("PARAMETERS")) {
             FormPanel parameterUI = new FormPanel(MarkdownDocument.fromPluginResource("documentation/project-settings-parameters.md", new HashMap<>()),
                     FormPanel.WITH_SCROLLING | FormPanel.WITH_DOCUMENTATION);
-            GraphNodeParametersUI graphNodeParametersUI = new GraphNodeParametersUI(getWorkbench(), getPipelineParameters().getExportedParameters(), FormPanel.NONE);
+            GraphNodeParametersUI graphNodeParametersUI = new GraphNodeParametersUI(getWorkbench(), getPipelineParameters().getExportedParameters(), FormPanel.NONE, false);
             graphNodeParametersUI.setBorder(BorderFactory.createLineBorder(Color.DARK_GRAY));
             parameterUI.addWideToForm(graphNodeParametersUI, null);
             parameterUI.addVerticalGlue();

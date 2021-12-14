@@ -80,6 +80,10 @@ public class GraphNodeParameterReferenceGroup {
     @JsonSetter("content")
     public void setContent(List<GraphNodeParameterReference> content) {
         this.content = content;
+        triggerChangedEvent();
+    }
+
+    public void triggerChangedEvent() {
         eventBus.post(new ParameterReferencesChangedEvent());
     }
 
@@ -91,7 +95,7 @@ public class GraphNodeParameterReferenceGroup {
     public void addContent(GraphNodeParameterReference reference) {
         if (!content.contains(reference))
             this.content.add(reference);
-        eventBus.post(new ParameterReferencesChangedEvent());
+        triggerChangedEvent();
     }
 
     /**
@@ -107,7 +111,7 @@ public class GraphNodeParameterReferenceGroup {
                 this.content.add(reference);
             }
         }
-        eventBus.post(new ParameterReferencesChangedEvent());
+        triggerChangedEvent();
     }
 
     /**
@@ -117,7 +121,7 @@ public class GraphNodeParameterReferenceGroup {
      */
     public void removeContent(GraphNodeParameterReference reference) {
         this.content.remove(reference);
-        eventBus.post(new ParameterReferencesChangedEvent());
+        triggerChangedEvent();
     }
 
     public EventBus getEventBus() {
