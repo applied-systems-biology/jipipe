@@ -82,7 +82,7 @@ public class LocalImageCalculator2DExpression extends JIPipeIteratingAlgorithm {
                 throw new UserFriendlyRuntimeException("Input images do not have the same size!",
                         "Input images do not have the same size!",
                         getName(),
-                        "All input images in the same batch should have the same width, height, number of slices, number of frames, and number of channes.",
+                        "All input images in the same batch should have the same width, height, number of slices, number of frames, and number of channels.",
                         "Please check the input images.");
             }
         }

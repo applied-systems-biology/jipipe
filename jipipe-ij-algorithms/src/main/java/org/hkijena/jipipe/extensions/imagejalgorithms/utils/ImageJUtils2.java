@@ -1,5 +1,7 @@
 package org.hkijena.jipipe.extensions.imagejalgorithms.utils;
 
+import gnu.trove.set.TIntSet;
+import gnu.trove.set.hash.TIntHashSet;
 import ij.ImagePlus;
 import ij.gui.Roi;
 import ij.plugin.filter.Analyzer;
@@ -26,6 +28,40 @@ import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
 
 public class ImageJUtils2 {
 
+    public static void removeLabelsExcept(ImageProcessor processor, int[] labelsToKeep) {
+        TIntSet labelsToKeep_ = new TIntHashSet();
+        for (int i : labelsToKeep) {
+            labelsToKeep_.add(i);
+        }
+        if(processor instanceof ByteProcessor) {
+            byte[] pixels = (byte[]) processor.getPixels();
+            for (int i = 0; i < pixels.length; i++) {
+                if(!labelsToKeep_.contains(pixels[i] & 0xff)) {
+                    pixels[i] = 0;
+                }
+            }
+        }
+        else if(processor instanceof ShortProcessor) {
+            short[] pixels = (short[]) processor.getPixels();
+            for (int i = 0; i < pixels.length; i++) {
+                if(!labelsToKeep_.contains(pixels[i] & 0xffff)) {
+                    pixels[i] = 0;
+                }
+            }
+        }
+        else if(processor instanceof FloatProcessor) {
+            float[] pixels = (float[]) processor.getPixels();
+            for (int i = 0; i < pixels.length; i++) {
+                if(!labelsToKeep_.contains((int)pixels[i])) {
+                    pixels[i] = 0;
+                }
+            }
+        }
+        else {
+            throw new UnsupportedOperationException("Unsupported label type!");
+        }
+    }
+
     public static ResultsTableData measureLabels(ImageProcessor label, ImageProcessor image, ImageStatisticsSetParameter measurements) {
         int measurementsNativeValue = measurements.getNativeValue();
         ImageProcessor mask = new ByteProcessor(label.getWidth(), label.getHeight());
@@ -51,7 +87,7 @@ public class ImageJUtils2 {
                 if(label instanceof FloatProcessor) {
                     float[] labelBytes = (float[]) label.getPixels();
                     for (int j = 0; j < maskBytes.length; j++) {
-                        maskBytes[j] = Float.floatToIntBits(labelBytes[j]) == id ? Byte.MAX_VALUE : 0;
+                        maskBytes[j] = (int)(labelBytes[j]) == id ? Byte.MAX_VALUE : 0;
                     }
                 }
                 else if(label instanceof ShortProcessor) {

@@ -17,6 +17,7 @@ import org.hkijena.jipipe.extensions.imagejalgorithms.utils.ImageJUtils2;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.measure.ImageStatisticsSetParameter;
+import org.hkijena.jipipe.extensions.imagejdatatypes.util.measure.Measurement;
 import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
 
 @JIPipeDocumentation(name = "Extract label statistics 2D", description = "Extracts statistics for all labels in the image. Statistics are extracted over an image (optional). If no image is supplied, the label itself will be used as the image. " +
@@ -51,24 +52,34 @@ public class ExtractLabelStatisticsAlgorithm extends JIPipeIteratingAlgorithm {
 
     @Override
     protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
-        ImagePlus label = dataBatch.getInputData("Labels", ImagePlusGreyscaleData.class, progressInfo).getImage();
+        ImagePlus labels = dataBatch.getInputData("Labels", ImagePlusGreyscaleData.class, progressInfo).getImage();
         ImagePlus reference;
         if(dataBatch.getInputRow("Image") >= 0) {
             reference = dataBatch.getInputData("Image", ImagePlusGreyscaleData.class, progressInfo).getImage();
         }
         else {
-            reference = label;
+            reference = labels;
         }
 
         ResultsTableData result = new ResultsTableData();
 
-        ImageJUtils.forEachIndexedZCTSlice(reference, (ip, index) -> {
-            int z = Math.min(index.getZ(), label.getNSlices() - 1);
-            int c = Math.min(index.getC(), label.getNChannels() - 1);
-            int t = Math.min(index.getT(), label.getNFrames() - 1);
-            ImageProcessor labelProcessor = ImageJUtils.getSliceZero(label, c, z, t);
-            ResultsTableData measurements = ImageJUtils2.measureLabels(labelProcessor, ip, this.measurements);
-            result.addRows(measurements);
+        ImageJUtils.forEachIndexedZCTSlice(reference, (referenceProcessor, index) -> {
+            int z = Math.min(index.getZ(), labels.getNSlices() - 1);
+            int c = Math.min(index.getC(), labels.getNChannels() - 1);
+            int t = Math.min(index.getT(), labels.getNFrames() - 1);
+            ImageProcessor labelProcessor = ImageJUtils.getSliceZero(labels, c, z, t);
+            ResultsTableData forRoi = ImageJUtils2.measureLabels(labelProcessor, referenceProcessor, this.measurements);
+            if (this.measurements.getValues().contains(Measurement.StackPosition)) {
+                int columnChannel = forRoi.getOrCreateColumnIndex("Ch", false);
+                int columnStack = forRoi.getOrCreateColumnIndex("Slice", false);
+                int columnFrame = forRoi.getOrCreateColumnIndex("Frame", false);
+                for (int row = 0; row < forRoi.getRowCount(); row++) {
+                    forRoi.setValueAt(c + 1, row, columnChannel);
+                    forRoi.setValueAt(z + 1, row, columnStack);
+                    forRoi.setValueAt(t + 1, row, columnFrame);
+                }
+            }
+            result.addRows(forRoi);
         }, progressInfo);
 
         dataBatch.addOutputData(getFirstOutputSlot(), result, progressInfo);
