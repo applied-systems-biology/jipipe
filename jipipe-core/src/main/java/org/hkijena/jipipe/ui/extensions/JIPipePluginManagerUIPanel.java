@@ -20,6 +20,7 @@ import org.hkijena.jipipe.JIPipeJsonExtension;
 import org.hkijena.jipipe.ui.JIPipeJsonExtensionWindow;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbenchPanel;
+import org.hkijena.jipipe.utils.AutoResizeSplitPane;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
@@ -55,16 +56,7 @@ public class JIPipePluginManagerUIPanel extends JIPipeProjectWorkbenchPanel {
         dependencyJList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         dependencyJList.addListSelectionListener(e -> showDetails(dependencyJList.getSelectedValue()));
 
-        splitPane = new JSplitPane();
-        splitPane.setDividerSize(3);
-        splitPane.setResizeWeight(0.33);
-        addComponentListener(new ComponentAdapter() {
-            @Override
-            public void componentResized(ComponentEvent e) {
-                super.componentResized(e);
-                splitPane.setDividerLocation(0.33);
-            }
-        });
+        splitPane = new AutoResizeSplitPane(JSplitPane.HORIZONTAL_SPLIT, AutoResizeSplitPane.RATIO_1_TO_3);
         JScrollPane scrollPane = new JScrollPane(dependencyJList);
         splitPane.setLeftComponent(scrollPane);
         splitPane.setRightComponent(new JPanel());

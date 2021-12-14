@@ -21,6 +21,7 @@ import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.JIPipeWorkbenchPanel;
 import org.hkijena.jipipe.ui.components.MarkdownDocument;
 import org.hkijena.jipipe.ui.parameters.ParameterPanel;
+import org.hkijena.jipipe.utils.AutoResizeSplitPane;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
@@ -46,8 +47,8 @@ import java.util.stream.Collectors;
  */
 public class JIPipeApplicationSettingsUI extends JIPipeWorkbenchPanel {
 
-    private JTree tree = new JTree();
-    private Map<String, TreeNode> nodePathMap = new HashMap<>();
+    private final JTree tree = new JTree();
+    private final Map<String, TreeNode> nodePathMap = new HashMap<>();
 
     /**
      * Creates a new instance
@@ -62,16 +63,7 @@ public class JIPipeApplicationSettingsUI extends JIPipeWorkbenchPanel {
     private void initialize() {
         setLayout(new BorderLayout());
         tree.setCellRenderer(new SettingsCategoryNodeRenderer());
-        JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, tree, new JPanel());
-        splitPane.setDividerSize(3);
-        splitPane.setResizeWeight(0.33);
-        addComponentListener(new ComponentAdapter() {
-            @Override
-            public void componentResized(ComponentEvent e) {
-                super.componentResized(e);
-                splitPane.setDividerLocation(0.33);
-            }
-        });
+        JSplitPane splitPane = new AutoResizeSplitPane(JSplitPane.HORIZONTAL_SPLIT, tree, new JPanel(), AutoResizeSplitPane.RATIO_1_TO_3);
         add(splitPane, BorderLayout.CENTER);
 
         Map<String, List<JIPipeSettingsRegistry.Sheet>> byCategory =

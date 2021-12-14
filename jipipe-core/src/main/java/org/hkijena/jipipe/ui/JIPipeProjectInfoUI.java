@@ -21,6 +21,7 @@ import org.hkijena.jipipe.ui.components.BackgroundPanel;
 import org.hkijena.jipipe.ui.components.FormPanel;
 import org.hkijena.jipipe.ui.components.MarkdownDocument;
 import org.hkijena.jipipe.ui.parameters.ParameterPanel;
+import org.hkijena.jipipe.utils.AutoResizeSplitPane;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 
@@ -165,17 +166,7 @@ public class JIPipeProjectInfoUI extends JIPipeProjectWorkbenchPanel {
 
         descriptionReaderScrollPane.setBorder(null);
         parameterPanel.getScrollPane().setBorder(null);
-        JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, descriptionReaderScrollPane, parameterPanel);
-        splitPane.setBorder(null);
-        splitPane.setDividerSize(3);
-        splitPane.setResizeWeight(0.66);
-        addComponentListener(new ComponentAdapter() {
-            @Override
-            public void componentResized(ComponentEvent e) {
-                super.componentResized(e);
-                splitPane.setDividerLocation(0.66);
-            }
-        });
+        AutoResizeSplitPane splitPane = new AutoResizeSplitPane(JSplitPane.HORIZONTAL_SPLIT, descriptionReaderScrollPane, parameterPanel, AutoResizeSplitPane.RATIO_3_TO_1);
         add(splitPane, BorderLayout.CENTER);
     }
 

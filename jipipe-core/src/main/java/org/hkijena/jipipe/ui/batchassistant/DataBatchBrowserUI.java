@@ -19,6 +19,7 @@ import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.JIPipeWorkbenchPanel;
 import org.hkijena.jipipe.ui.cache.JIPipeCacheDataSlotTableUI;
 import org.hkijena.jipipe.ui.cache.JIPipeCacheMultiDataSlotTableUI;
+import org.hkijena.jipipe.utils.AutoResizeSplitPane;
 
 import javax.swing.*;
 import javax.swing.tree.DefaultMutableTreeNode;
@@ -51,17 +52,8 @@ public class DataBatchBrowserUI extends JIPipeWorkbenchPanel {
         setLayout(new BorderLayout());
         tree = new DataBatchTree(getWorkbench(), dataBatch);
 
-        splitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT, tree,
-                new JPanel());
-        splitPane.setDividerSize(3);
-        splitPane.setResizeWeight(0.33);
-        addComponentListener(new ComponentAdapter() {
-            @Override
-            public void componentResized(ComponentEvent e) {
-                super.componentResized(e);
-                splitPane.setDividerLocation(0.33);
-            }
-        });
+        splitPane = new AutoResizeSplitPane(JSplitPane.VERTICAL_SPLIT, tree,
+                new JPanel(), AutoResizeSplitPane.RATIO_1_TO_3);
         add(splitPane, BorderLayout.CENTER);
 
         tree.getTree().addTreeSelectionListener(e -> showCurrentlySelectedNode());

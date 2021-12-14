@@ -40,12 +40,12 @@ public class GraphNodeParametersUI extends JIPipeWorkbenchPanel {
     private final GraphNodeParameters parameters;
     private FormPanel content;
     private JIPipeParameterTree tree;
-    private int formPanelFlags;
+    private final int formPanelFlags;
 
     /**
      * @param workbench      the workbench
      * @param parameters     the parameters to edit
-     * @param formPanelFlags
+     * @param formPanelFlags flags for the form panel
      */
     public GraphNodeParametersUI(JIPipeWorkbench workbench, GraphNodeParameters parameters, int formPanelFlags) {
         super(workbench);

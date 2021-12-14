@@ -28,6 +28,7 @@ import org.hkijena.jipipe.ui.grapheditor.contextmenu.clipboard.AlgorithmGraphCop
 import org.hkijena.jipipe.ui.grapheditor.contextmenu.clipboard.AlgorithmGraphCutNodeUIContextAction;
 import org.hkijena.jipipe.ui.grapheditor.contextmenu.clipboard.AlgorithmGraphPasteNodeUIContextAction;
 import org.hkijena.jipipe.ui.grapheditor.nodeui.JIPipeNodeUI;
+import org.hkijena.jipipe.utils.AutoResizeSplitPane;
 
 import javax.swing.*;
 import java.awt.BorderLayout;
@@ -89,16 +90,7 @@ public class JIPipeJsonExtensionGraphUI extends JIPipeGraphEditorUI {
     private void initializeDefaultPanel() {
         defaultPanel = new JPanel(new BorderLayout());
 
-        JSplitPane splitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT);
-        splitPane.setDividerSize(3);
-        splitPane.setResizeWeight(0.33);
-        addComponentListener(new ComponentAdapter() {
-            @Override
-            public void componentResized(ComponentEvent e) {
-                super.componentResized(e);
-                splitPane.setDividerLocation(0.33);
-            }
-        });
+        JSplitPane splitPane = new AutoResizeSplitPane(JSplitPane.VERTICAL_SPLIT, AutoResizeSplitPane.RATIO_1_TO_3);
         defaultPanel.add(splitPane, BorderLayout.CENTER);
 
         JIPipeGraphEditorMinimap minimap = new JIPipeGraphEditorMinimap(this);

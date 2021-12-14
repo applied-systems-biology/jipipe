@@ -36,6 +36,7 @@ import org.hkijena.jipipe.ui.running.JIPipeRunExecuterUI;
 import org.hkijena.jipipe.ui.running.JIPipeRunnerQueue;
 import org.hkijena.jipipe.ui.running.RunUIWorkerFinishedEvent;
 import org.hkijena.jipipe.ui.running.RunUIWorkerInterruptedEvent;
+import org.hkijena.jipipe.utils.AutoResizeSplitPane;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.hkijena.jipipe.utils.json.JsonUtils;
 
@@ -83,17 +84,8 @@ public class JIPipeAlgorithmCacheBrowserUI extends JIPipeProjectWorkbenchPanel {
         setLayout(new BorderLayout());
         tree = new JIPipeAlgorithmCacheTree(getProjectWorkbench(), graphNode);
 
-        splitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT, tree,
-                new JPanel());
-        splitPane.setDividerSize(3);
-        splitPane.setResizeWeight(0.33);
-        addComponentListener(new ComponentAdapter() {
-            @Override
-            public void componentResized(ComponentEvent e) {
-                super.componentResized(e);
-                splitPane.setDividerLocation(0.33);
-            }
-        });
+        splitPane = new AutoResizeSplitPane(JSplitPane.VERTICAL_SPLIT, tree,
+                new JPanel(), AutoResizeSplitPane.RATIO_1_TO_3);
         add(splitPane, BorderLayout.CENTER);
 
         tree.getTree().addTreeSelectionListener(e -> showCurrentlySelectedNode());

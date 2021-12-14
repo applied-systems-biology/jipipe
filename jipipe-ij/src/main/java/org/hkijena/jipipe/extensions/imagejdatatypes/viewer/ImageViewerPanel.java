@@ -40,6 +40,7 @@ import org.hkijena.jipipe.ui.components.DocumentTabPane;
 import org.hkijena.jipipe.ui.components.FormPanel;
 import org.hkijena.jipipe.ui.components.PathEditor;
 import org.hkijena.jipipe.ui.running.JIPipeRunExecuterUI;
+import org.hkijena.jipipe.utils.AutoResizeSplitPane;
 import org.hkijena.jipipe.utils.PathIOMode;
 import org.hkijena.jipipe.utils.PathType;
 import org.hkijena.jipipe.utils.StringUtils;
@@ -380,18 +381,9 @@ public class ImageViewerPanel extends JPanel {
             remove(currentContentPanel);
         }
         if (enableSideBarButton.isSelected()) {
-            JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT,
+            JSplitPane splitPane = new AutoResizeSplitPane(JSplitPane.HORIZONTAL_SPLIT,
                     scrollPane,
-                    tabPane);
-            splitPane.setDividerSize(3);
-            splitPane.setResizeWeight(0.66);
-            addComponentListener(new ComponentAdapter() {
-                @Override
-                public void componentResized(ComponentEvent e) {
-                    super.componentResized(e);
-                    splitPane.setDividerLocation(0.66);
-                }
-            });
+                    tabPane, AutoResizeSplitPane.RATIO_3_TO_1);
             add(splitPane, BorderLayout.CENTER);
             currentContentPanel = splitPane;
         } else {

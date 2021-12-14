@@ -20,6 +20,7 @@ import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.JIPipeWorkbenchPanel;
 import org.hkijena.jipipe.ui.components.SearchTextField;
 import org.hkijena.jipipe.ui.components.SearchTextFieldTableRowFilter;
+import org.hkijena.jipipe.utils.AutoResizeSplitPane;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.jdesktop.swingx.JXTable;
 
@@ -171,18 +172,9 @@ public class ManagerUI extends JIPipeWorkbenchPanel {
             add(toolBar, BorderLayout.NORTH);
             optionPanel.removeAll();
             optionPanel.add(content, BorderLayout.CENTER);
-            JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT,
+            JSplitPane splitPane = new AutoResizeSplitPane(JSplitPane.HORIZONTAL_SPLIT,
                     tablePanel,
-                    optionPanel);
-            splitPane.setDividerSize(3);
-            splitPane.setResizeWeight(0.66);
-            addComponentListener(new ComponentAdapter() {
-                @Override
-                public void componentResized(ComponentEvent e) {
-                    super.componentResized(e);
-                    splitPane.setDividerLocation(0.66);
-                }
-            });
+                    optionPanel, AutoResizeSplitPane.RATIO_3_TO_1);
             add(splitPane, BorderLayout.CENTER);
         }
         revalidate();

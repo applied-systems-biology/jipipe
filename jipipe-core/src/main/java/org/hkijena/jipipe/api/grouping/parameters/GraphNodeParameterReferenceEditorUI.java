@@ -25,7 +25,7 @@ import java.awt.BorderLayout;
 /**
  * Editor for {@link GraphNodeParameters}
  */
-public class GraphNodeParameterEditorUI extends JIPipeParameterEditorUI {
+public class GraphNodeParameterReferenceEditorUI extends JIPipeParameterEditorUI {
 
     /**
      * Creates new instance
@@ -33,7 +33,7 @@ public class GraphNodeParameterEditorUI extends JIPipeParameterEditorUI {
      * @param workbench       the workbench
      * @param parameterAccess Parameter
      */
-    public GraphNodeParameterEditorUI(JIPipeWorkbench workbench, JIPipeParameterAccess parameterAccess) {
+    public GraphNodeParameterReferenceEditorUI(JIPipeWorkbench workbench, JIPipeParameterAccess parameterAccess) {
         super(workbench, parameterAccess);
         initialize();
     }
@@ -48,13 +48,13 @@ public class GraphNodeParameterEditorUI extends JIPipeParameterEditorUI {
     private void editParameters() {
         GraphNodeParameters parameters = getParameter(GraphNodeParameters.class);
         GraphNodeParametersUI panel = new GraphNodeParametersUI(getWorkbench(), parameters, FormPanel.WITH_SCROLLING);
-        JDialog editorDialog = new JDialog();
+        JFrame editorDialog = new JFrame();
+        editorDialog.setIconImage(UIUtils.getIcon128FromResources("jipipe.png").getImage());
         editorDialog.setTitle("Edit parameters");
         editorDialog.setContentPane(panel);
-        editorDialog.setModal(false);
         editorDialog.pack();
-        editorDialog.setSize(480, 640);
-        editorDialog.setLocationRelativeTo(getParent());
+        editorDialog.setSize(800, 600);
+        editorDialog.setLocationRelativeTo(getWorkbench().getWindow());
         editorDialog.setVisible(true);
     }
 

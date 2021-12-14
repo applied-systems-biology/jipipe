@@ -36,6 +36,7 @@ import org.hkijena.jipipe.ui.components.FormPanel;
 import org.hkijena.jipipe.ui.components.JIPipeNodeInfoListCellRenderer;
 import org.hkijena.jipipe.ui.components.SearchTextField;
 import org.hkijena.jipipe.ui.parameters.ParameterPanel;
+import org.hkijena.jipipe.utils.AutoResizeSplitPane;
 import org.hkijena.jipipe.utils.TooltipUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.hkijena.jipipe.utils.json.JsonUtils;
@@ -107,16 +108,7 @@ public class RunSingleAlgorithmDialog extends JDialog implements JIPipeWorkbench
         formPanel = new FormPanel(null, FormPanel.WITH_SCROLLING);
 
         if (selectedNode == null) {
-            JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, listPanel, formPanel);
-            splitPane.setDividerSize(3);
-            splitPane.setResizeWeight(0.33);
-            addComponentListener(new ComponentAdapter() {
-                @Override
-                public void componentResized(ComponentEvent e) {
-                    super.componentResized(e);
-                    splitPane.setDividerLocation(0.33);
-                }
-            });
+            AutoResizeSplitPane splitPane = new AutoResizeSplitPane(JSplitPane.HORIZONTAL_SPLIT, listPanel, formPanel, AutoResizeSplitPane.RATIO_1_TO_3);
             contentPanel.add(splitPane, BorderLayout.CENTER);
         } else {
             contentPanel.add(formPanel, BorderLayout.CENTER);

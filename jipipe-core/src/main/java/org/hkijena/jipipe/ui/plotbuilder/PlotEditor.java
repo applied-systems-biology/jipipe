@@ -41,6 +41,7 @@ import org.hkijena.jipipe.ui.components.DocumentTabPane;
 import org.hkijena.jipipe.ui.components.PlotReader;
 import org.hkijena.jipipe.ui.components.UserFriendlyErrorUI;
 import org.hkijena.jipipe.ui.parameters.ParameterPanel;
+import org.hkijena.jipipe.utils.AutoResizeSplitPane;
 import org.hkijena.jipipe.utils.ReflectionUtils;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
@@ -109,17 +110,7 @@ public class PlotEditor extends JIPipeWorkbenchPanel implements JIPipeParameterC
         // Create plot reader
         plotReader = new PlotReader(this);
 
-        splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, plotReader, tabbedPane);
-        splitPane.setDividerSize(3);
-        splitPane.setResizeWeight(0.66);
-        addComponentListener(new ComponentAdapter() {
-            @Override
-            public void componentResized(ComponentEvent e) {
-                super.componentResized(e);
-                splitPane.setDividerLocation(0.66);
-            }
-        });
-
+        splitPane = new AutoResizeSplitPane(JSplitPane.HORIZONTAL_SPLIT, plotReader, tabbedPane, AutoResizeSplitPane.RATIO_3_TO_1);
         add(splitPane, BorderLayout.CENTER);
     }
 
