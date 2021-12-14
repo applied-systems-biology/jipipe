@@ -43,7 +43,7 @@ import java.util.Set;
 @JIPipeOutputSlot(value = ImagePlus3DGreyscaleData.class, slotName = "Output", autoCreate = true)
 public class FilterLabelsByExpression3DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
-    private DefaultExpressionParameter expression = new DefaultExpressionParameter("value > 10 AND num_pixels > 50");
+    private DefaultExpressionParameter expression = new DefaultExpressionParameter("id > 10 AND num_pixels > 50");
 
     public FilterLabelsByExpression3DAlgorithm(JIPipeNodeInfo info) {
         super(info);

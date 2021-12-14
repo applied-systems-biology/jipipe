@@ -47,7 +47,7 @@ import java.util.Set;
 @JIPipeOutputSlot(value = ImagePlusGreyscaleData.class, slotName = "Output", autoCreate = true)
 public class FilterLabelsByExpression2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
-    private DefaultExpressionParameter expression = new DefaultExpressionParameter("value > 10 AND num_pixels > 50");
+    private DefaultExpressionParameter expression = new DefaultExpressionParameter("id > 10 AND num_pixels > 50");
 
     public FilterLabelsByExpression2DAlgorithm(JIPipeNodeInfo info) {
         super(info);

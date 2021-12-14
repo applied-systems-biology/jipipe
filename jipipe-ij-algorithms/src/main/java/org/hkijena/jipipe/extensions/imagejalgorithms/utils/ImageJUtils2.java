@@ -1,7 +1,15 @@
 package org.hkijena.jipipe.extensions.imagejalgorithms.utils;
 
 import ij.ImagePlus;
+import ij.gui.Roi;
+import ij.plugin.filter.Analyzer;
+import ij.process.ByteProcessor;
+import ij.process.ColorProcessor;
+import ij.process.FloatProcessor;
 import ij.process.ImageProcessor;
+import ij.process.ImageStatistics;
+import ij.process.ShortProcessor;
+import inra.ijpb.label.LabelImages;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeDataSlotInfo;
 import org.hkijena.jipipe.api.data.JIPipeMutableSlotConfiguration;
@@ -13,8 +21,72 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ROIListData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleMaskData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageSliceIndex;
+import org.hkijena.jipipe.extensions.imagejdatatypes.util.measure.ImageStatisticsSetParameter;
+import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
 
 public class ImageJUtils2 {
+
+    public static ResultsTableData measureLabels(ImageProcessor label, ImageProcessor image, ImageStatisticsSetParameter measurements) {
+        int measurementsNativeValue = measurements.getNativeValue();
+        ImageProcessor mask = new ByteProcessor(label.getWidth(), label.getHeight());
+
+        // Ensure the correct type for label
+        label = ImageJUtils.convertToGreyscaleIfNeeded(new ImagePlus("", label)).getProcessor();
+
+        // Copy image
+        image= image.duplicate();
+        image.setRoi((Roi) null);
+
+        int[] allLabels = LabelImages.findAllLabels(label);
+
+        ResultsTableData result = new ResultsTableData();
+        result.addNumericColumn("label_id");
+
+        for (int i = 0; i < allLabels.length; i++) {
+            int id = allLabels[i];
+
+            // Update mask
+            {
+                byte[] maskBytes = (byte[]) mask.getPixels();
+                if(label instanceof FloatProcessor) {
+                    float[] labelBytes = (float[]) label.getPixels();
+                    for (int j = 0; j < maskBytes.length; j++) {
+                        maskBytes[j] = Float.floatToIntBits(labelBytes[j]) == id ? Byte.MAX_VALUE : 0;
+                    }
+                }
+                else if(label instanceof ShortProcessor) {
+                    short[] labelBytes = (short[]) label.getPixels();
+                    for (int j = 0; j < maskBytes.length; j++) {
+                        maskBytes[j] = labelBytes[j] == id ? Byte.MAX_VALUE : 0;
+                    }
+                }
+                else if(label instanceof ByteProcessor) {
+                    byte[] labelBytes = (byte[]) label.getPixels();
+                    for (int j = 0; j < maskBytes.length; j++) {
+                        maskBytes[j] = labelBytes[j] == id ? Byte.MAX_VALUE : 0;
+                    }
+                }
+                else {
+                    throw new UnsupportedOperationException("Unknown label type!");
+                }
+            }
+
+            image.setMask(mask);
+            ImageStatistics statistics = image.getStatistics();
+
+            ResultsTableData labelResult = new ResultsTableData();
+            Analyzer analyzer = new Analyzer(new ImagePlus("label=" + id, image), measurementsNativeValue, labelResult.getTable());
+            analyzer.saveResults(statistics, null);
+
+            int labelIdColumn = labelResult.addNumericColumn("label_id");
+            for (int j = 0; j < labelResult.getRowCount(); j++) {
+                labelResult.setValueAt(id, j, labelIdColumn);
+            }
+            result.addRows(labelResult);
+        }
+        return result;
+    }
+
     public static ImageProcessor getMaskProcessorFromMaskOrROI(ImageROITargetArea sourceArea, int width, int height, ROIListData rois, ImagePlus mask, ImageSliceIndex sliceIndex) {
         switch (sourceArea) {
             case WholeImage: {

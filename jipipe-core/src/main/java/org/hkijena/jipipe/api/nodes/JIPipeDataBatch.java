@@ -401,6 +401,11 @@ public class JIPipeDataBatch implements Comparable<JIPipeDataBatch> {
         return dummy;
     }
 
+    /**
+     * Returns the row of the data in the original data slot
+     * @param slot the slot name
+     * @return the row or -1 if no data is present
+     */
     public int getInputRow(String slot) {
         for (Map.Entry<JIPipeDataSlot, Integer> entry : getInputSlotRows().entrySet()) {
             if (slot.equals(entry.getKey().getName())) {
@@ -410,6 +415,11 @@ public class JIPipeDataBatch implements Comparable<JIPipeDataBatch> {
         return -1;
     }
 
+    /**
+     * Returns the row of the data in the original data slot
+     * @param slot the slot
+     * @return the row or -1 if no data is present
+     */
     public int getInputRow(JIPipeDataSlot slot) {
         return getInputSlotRows().getOrDefault(slot, -1);
     }
