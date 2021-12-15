@@ -1340,6 +1340,22 @@ public class ResultsTableData implements JIPipeData, TableModel {
     }
 
     /**
+     * Removes a column with given name
+     * @param columnName the column name
+     * @return if a column was removed
+     */
+    public boolean removeColumn(String columnName) {
+        int columnIndex = getColumnIndex(columnName);
+        if(columnIndex >= 0) {
+            removeColumnAt(columnIndex);
+            return true;
+        }
+        else {
+            return false;
+        }
+    }
+
+    /**
      * Helper class for adding a row into the table
      */
     public static class RowBuilder {

@@ -7,6 +7,7 @@ import ij.gui.Roi;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
+import org.hkijena.jipipe.api.data.JIPipeAnnotation;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.data.JIPipeDefaultMutableSlotConfiguration;
 import org.hkijena.jipipe.api.nodes.JIPipeDataBatch;
@@ -27,9 +28,7 @@ import org.hkijena.jipipe.utils.ResourceUtils;
 import org.hkijena.jipipe.utils.StringUtils;
 
 import java.awt.Rectangle;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 
 @JIPipeDocumentation(name = "Filter ROI by overlap", description = "Filters the ROI lists by testing for mutual overlap. The ROI1 output contains all ROI1 input ROI that overlap with any of ROI2. " +
         "The ROI2 output contains all ROI2 input ROI that overlap with a ROI1 ROI.")
@@ -138,6 +137,13 @@ public class FilterROIByOverlapAlgorithm extends JIPipeIteratingAlgorithm {
         ExpressionVariables variableSet = new ExpressionVariables();
         ROIListData temp = new ROIListData();
         ROIListData result = new ROIListData();
+
+        // Write annotations map
+        Map<String, String> annotations = new HashMap<>();
+        for (Map.Entry<String, JIPipeAnnotation> entry : dataBatch.getGlobalAnnotations().entrySet()) {
+            annotations.put(entry.getKey(), entry.getValue().getValue());
+        }
+        variableSet.set("annotations", annotations);
 
         // Apply comparison
         for (int i = 0; i < first.size(); i++) {

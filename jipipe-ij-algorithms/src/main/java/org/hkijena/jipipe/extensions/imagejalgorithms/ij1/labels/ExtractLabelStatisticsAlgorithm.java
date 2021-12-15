@@ -10,14 +10,12 @@ import org.hkijena.jipipe.api.nodes.JIPipeInputSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeIteratingAlgorithm;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.JIPipeOutputSlot;
-import org.hkijena.jipipe.api.nodes.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.imagejalgorithms.utils.ImageJUtils2;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.measure.ImageStatisticsSetParameter;
-import org.hkijena.jipipe.extensions.imagejdatatypes.util.measure.Measurement;
 import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
 
 @JIPipeDocumentation(name = "Extract label statistics 2D", description = "Extracts statistics for all labels in the image. Statistics are extracted over an image (optional). If no image is supplied, the label itself will be used as the image. " +
@@ -68,17 +66,7 @@ public class ExtractLabelStatisticsAlgorithm extends JIPipeIteratingAlgorithm {
             int c = Math.min(index.getC(), labels.getNChannels() - 1);
             int t = Math.min(index.getT(), labels.getNFrames() - 1);
             ImageProcessor labelProcessor = ImageJUtils.getSliceZero(labels, c, z, t);
-            ResultsTableData forRoi = ImageJUtils2.measureLabels(labelProcessor, referenceProcessor, this.measurements);
-            if (this.measurements.getValues().contains(Measurement.StackPosition)) {
-                int columnChannel = forRoi.getOrCreateColumnIndex("Ch", false);
-                int columnStack = forRoi.getOrCreateColumnIndex("Slice", false);
-                int columnFrame = forRoi.getOrCreateColumnIndex("Frame", false);
-                for (int row = 0; row < forRoi.getRowCount(); row++) {
-                    forRoi.setValueAt(c + 1, row, columnChannel);
-                    forRoi.setValueAt(z + 1, row, columnStack);
-                    forRoi.setValueAt(t + 1, row, columnFrame);
-                }
-            }
+            ResultsTableData forRoi = ImageJUtils2.measureLabels(labelProcessor, referenceProcessor, this.measurements, index, progressInfo);
             result.addRows(forRoi);
         }, progressInfo);
 

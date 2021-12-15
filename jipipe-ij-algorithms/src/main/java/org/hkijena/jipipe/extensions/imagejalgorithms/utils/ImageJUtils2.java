@@ -6,12 +6,12 @@ import ij.ImagePlus;
 import ij.gui.Roi;
 import ij.plugin.filter.Analyzer;
 import ij.process.ByteProcessor;
-import ij.process.ColorProcessor;
 import ij.process.FloatProcessor;
 import ij.process.ImageProcessor;
 import ij.process.ImageStatistics;
 import ij.process.ShortProcessor;
 import inra.ijpb.label.LabelImages;
+import org.hkijena.jipipe.api.JIPipePercentageProgressInfo;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeDataSlotInfo;
 import org.hkijena.jipipe.api.data.JIPipeMutableSlotConfiguration;
@@ -24,6 +24,7 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePl
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageSliceIndex;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.measure.ImageStatisticsSetParameter;
+import org.hkijena.jipipe.extensions.imagejdatatypes.util.measure.Measurement;
 import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
 
 public class ImageJUtils2 {
@@ -62,7 +63,16 @@ public class ImageJUtils2 {
         }
     }
 
-    public static ResultsTableData measureLabels(ImageProcessor label, ImageProcessor image, ImageStatisticsSetParameter measurements) {
+    /**
+     * Measures properties of a label image
+     * @param label the label
+     * @param image the reference image
+     * @param measurements the measurements
+     * @param index the current image index (zero-based)
+     * @param progressInfo the progress info
+     * @return the measurements
+     */
+    public static ResultsTableData measureLabels(ImageProcessor label, ImageProcessor image, ImageStatisticsSetParameter measurements, ImageSliceIndex index, JIPipeProgressInfo progressInfo) {
         int measurementsNativeValue = measurements.getNativeValue();
         ImageProcessor mask = new ByteProcessor(label.getWidth(), label.getHeight());
 
@@ -78,31 +88,31 @@ public class ImageJUtils2 {
         ResultsTableData result = new ResultsTableData();
         result.addNumericColumn("label_id");
 
+        JIPipePercentageProgressInfo percentageProgress = progressInfo.percentage("Measure labels");
         for (int i = 0; i < allLabels.length; i++) {
+            if(progressInfo.isCancelled())
+                return null;
+            percentageProgress.logPercentage(i, allLabels.length);
             int id = allLabels[i];
-
             // Update mask
             {
                 byte[] maskBytes = (byte[]) mask.getPixels();
-                if(label instanceof FloatProcessor) {
+                if (label instanceof FloatProcessor) {
                     float[] labelBytes = (float[]) label.getPixels();
                     for (int j = 0; j < maskBytes.length; j++) {
-                        maskBytes[j] = (int)(labelBytes[j]) == id ? Byte.MAX_VALUE : 0;
+                        maskBytes[j] = (int) (labelBytes[j]) == id ? Byte.MAX_VALUE : 0;
                     }
-                }
-                else if(label instanceof ShortProcessor) {
+                } else if (label instanceof ShortProcessor) {
                     short[] labelBytes = (short[]) label.getPixels();
                     for (int j = 0; j < maskBytes.length; j++) {
                         maskBytes[j] = labelBytes[j] == id ? Byte.MAX_VALUE : 0;
                     }
-                }
-                else if(label instanceof ByteProcessor) {
+                } else if (label instanceof ByteProcessor) {
                     byte[] labelBytes = (byte[]) label.getPixels();
                     for (int j = 0; j < maskBytes.length; j++) {
                         maskBytes[j] = labelBytes[j] == id ? Byte.MAX_VALUE : 0;
                     }
-                }
-                else {
+                } else {
                     throw new UnsupportedOperationException("Unknown label type!");
                 }
             }
@@ -119,6 +129,16 @@ public class ImageJUtils2 {
                 labelResult.setValueAt(id, j, labelIdColumn);
             }
             result.addRows(labelResult);
+        }
+        if (measurements.getValues().contains(Measurement.StackPosition)) {
+            int columnChannel = result.getOrCreateColumnIndex("Ch", false);
+            int columnStack = result.getOrCreateColumnIndex("Slice", false);
+            int columnFrame = result.getOrCreateColumnIndex("Frame", false);
+            for (int row = 0; row < result.getRowCount(); row++) {
+                result.setValueAt(index.getC() + 1, row, columnChannel);
+                result.setValueAt(index.getZ() + 1, row, columnStack);
+                result.setValueAt(index.getT() + 1, row, columnFrame);
+            }
         }
         return result;
     }

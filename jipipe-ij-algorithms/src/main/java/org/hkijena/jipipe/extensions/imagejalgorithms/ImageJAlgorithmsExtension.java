@@ -366,6 +366,7 @@ public class ImageJAlgorithmsExtension extends JIPipePrepackagedDefaultJavaExten
         registerNodeType("ij1-labels-extract-statistics", ExtractLabelStatisticsAlgorithm.class, UIUtils.getIconURLFromResources("actions/sum.png"));
         registerNodeType("ij1-labels-filter-by-statistics", FilterLabelsByStatisticsAlgorithm.class, UIUtils.getIconURLFromResources("actions/filter.png"));
         registerNodeType("ij1-labels-filter-by-mask", FilterLabelsByMaskAlgorithm.class, UIUtils.getIconURLFromResources("actions/filter.png"));
+        registerNodeType("ij1-labels-filter-by-overlap", FilterLabelsByOverlapAlgorithm.class, UIUtils.getIconURLFromResources("actions/filter.png"));
     }
 
     private void registerConverterAlgorithms() {
