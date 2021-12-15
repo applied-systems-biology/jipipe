@@ -33,7 +33,7 @@ import org.hkijena.jipipe.extensions.parameters.generators.IntegerRange;
 import org.hkijena.jipipe.extensions.parameters.primitives.BooleanParameterSettings;
 
 @JIPipeDocumentation(name = "Filter labels", description = "Allows to keep only a specific set of labels.")
-@JIPipeNode(menuPath = "Labels", nodeTypeCategory = ImagesNodeTypeCategory.class)
+@JIPipeNode(menuPath = "Labels\nFilter", nodeTypeCategory = ImagesNodeTypeCategory.class)
 @JIPipeInputSlot(value = ImagePlusGreyscaleData.class, slotName = "Input", autoCreate = true)
 @JIPipeOutputSlot(value = ImagePlusGreyscaleData.class, slotName = "Output", autoCreate = true)
 public class FilterLabelsByIdAlgorithm extends JIPipeSimpleIteratingAlgorithm {

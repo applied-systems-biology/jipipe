@@ -24,7 +24,7 @@ import org.hkijena.jipipe.extensions.parameters.primitives.BooleanParameterSetti
 @JIPipeDocumentation(name = "Keep/Delete labels by overlap", description = "Deletes or keeps labels by a mask image. If the mask is white (value larger than zero) " +
         "on overlapping a pixel, the associated label is kept or deleted (depending on the setting)")
 @JIPipeNode(menuPath = "Labels", nodeTypeCategory = ImagesNodeTypeCategory.class)
-@JIPipeInputSlot(value = ImagePlusGreyscaleData.class, slotName = "Labels", autoCreate = true)
+@JIPipeInputSlot(value = ImagePlusGreyscaleData.class, slotName = "Labels\nFilter", autoCreate = true)
 @JIPipeInputSlot(value = ImagePlusGreyscaleMaskData.class, slotName = "Mask", autoCreate = true)
 @JIPipeOutputSlot(value = ImagePlusGreyscaleData.class, slotName = "Labels", autoCreate = true)
 public class FilterLabelsByMaskAlgorithm extends JIPipeIteratingAlgorithm {

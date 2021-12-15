@@ -43,7 +43,7 @@ import org.hkijena.jipipe.utils.UIUtils;
 @JIPipeDocumentation(name = "Filter labels by statistics 2D", description = "Filters the ROI list elements via statistics. Statistics are extracted over an image (optional). " +
         "If no image is supplied, the label itself will be used as the image. " +
         "If higher-dimensional data is provided, the filter is applied to each 2D slice.")
-@JIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Filter")
+@JIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Labels\nFilter")
 @JIPipeInputSlot(value = ImagePlusGreyscaleData.class, slotName = "Labels", autoCreate = true)
 @JIPipeInputSlot(value = ImagePlusGreyscaleData.class, slotName = "Image", autoCreate = true, optional = true)
 @JIPipeOutputSlot(value = ImagePlusGreyscaleData.class, slotName = "Labels", autoCreate = true)

@@ -43,7 +43,7 @@ import java.util.Set;
 
 @JIPipeDocumentation(name = "Filter labels by expression 2D", description = "Filters labels with a filter expression. " +
         "If higher-dimensional data is provided, the filter is applied to each 2D slice.")
-@JIPipeNode(menuPath = "Labels", nodeTypeCategory = ImagesNodeTypeCategory.class)
+@JIPipeNode(menuPath = "Labels\nFilter", nodeTypeCategory = ImagesNodeTypeCategory.class)
 @JIPipeInputSlot(value = ImagePlusGreyscaleData.class, slotName = "Input", autoCreate = true)
 @JIPipeOutputSlot(value = ImagePlusGreyscaleData.class, slotName = "Output", autoCreate = true)
 public class FilterLabelsByExpression2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
