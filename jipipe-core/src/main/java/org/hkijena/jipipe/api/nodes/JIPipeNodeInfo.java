@@ -19,6 +19,8 @@ import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.extensions.parameters.primitives.HTMLText;
 import org.hkijena.jipipe.utils.StringUtils;
 
+import javax.swing.*;
+import java.net.URL;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -158,6 +160,22 @@ public interface JIPipeNodeInfo {
         }
 
         return true;
+    }
+
+    /**
+     * Gets the icon for this node info
+     * @return the icon
+     */
+    default Icon getIcon() {
+        return JIPipe.getNodes().getIconFor(this);
+    }
+
+    /**
+     * Gets the icon for this node info
+     * @return the icon
+     */
+    default URL getIconURL() {
+        return JIPipe.getNodes().getIconURLFor(this);
     }
 
     /**

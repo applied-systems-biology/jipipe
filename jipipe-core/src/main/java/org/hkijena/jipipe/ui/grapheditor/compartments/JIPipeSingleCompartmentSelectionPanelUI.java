@@ -104,7 +104,7 @@ public class JIPipeSingleCompartmentSelectionPanelUI extends JIPipeProjectWorkbe
     }
 
     private void openInEditor() {
-        getProjectWorkbench().openCompartmentGraph(compartment, true);
+        getProjectWorkbench().getOrOpenPipelineEditorTab(compartment, true);
     }
 
     /**

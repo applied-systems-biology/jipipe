@@ -18,6 +18,7 @@ import org.hkijena.jipipe.extensions.expressions.ExpressionParameterVariable;
 import org.hkijena.jipipe.extensions.expressions.ExpressionParameterVariableSource;
 import org.hkijena.jipipe.extensions.expressions.ExpressionVariables;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ROIListData;
+import org.hkijena.jipipe.extensions.parameters.primitives.BooleanParameterSettings;
 
 import java.awt.Rectangle;
 import java.util.HashSet;
@@ -31,6 +32,7 @@ public class FilterROIListsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     private DefaultExpressionParameter filter = new DefaultExpressionParameter("count > 0");
     private boolean includeAnnotations = true;
+    private boolean outputEmptyLists = false;
 
     public FilterROIListsAlgorithm(JIPipeNodeInfo info) {
         super(info);
@@ -40,6 +42,7 @@ public class FilterROIListsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         super(other);
         this.filter = new DefaultExpressionParameter(other.filter);
         this.includeAnnotations = other.includeAnnotations;
+        this.outputEmptyLists = other.outputEmptyLists;
     }
 
     @Override
@@ -61,6 +64,21 @@ public class FilterROIListsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         if (filter.test(parameters)) {
             dataBatch.addOutputData(getFirstOutputSlot(), rois, progressInfo);
         }
+        else if(outputEmptyLists) {
+            dataBatch.addOutputData(getFirstOutputSlot(), new ROIListData(), progressInfo);
+        }
+    }
+
+    @JIPipeDocumentation(name = "Operation on filtered-out ROI", description = "Determines what kind of data is stored into the output if a ROI list was filtered out.")
+    @JIPipeParameter("output-empty-list")
+    @BooleanParameterSettings(comboBoxStyle = true, trueLabel = "Output empty list", falseLabel = "Output nothing")
+    public boolean isOutputEmptyLists() {
+        return outputEmptyLists;
+    }
+
+    @JIPipeParameter("output-empty-list")
+    public void setOutputEmptyLists(boolean outputEmptyLists) {
+        this.outputEmptyLists = outputEmptyLists;
     }
 
     @JIPipeDocumentation(name = "Include annotations", description = "If enabled, annotations are also available as string variables. Please note that " +

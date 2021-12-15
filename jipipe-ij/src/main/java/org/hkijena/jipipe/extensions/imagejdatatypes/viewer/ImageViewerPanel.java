@@ -52,8 +52,6 @@ import javax.swing.*;
 import java.awt.Adjustable;
 import java.awt.BorderLayout;
 import java.awt.Component;
-import java.awt.event.ComponentAdapter;
-import java.awt.event.ComponentEvent;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.nio.file.Path;
@@ -98,6 +96,7 @@ public class ImageViewerPanel extends JPanel {
     private Component currentContentPanel;
     private DocumentTabPane tabPane = new DocumentTabPane();
     private Map<String, FormPanel> formPanels = new HashMap<>();
+    private boolean isUpdatingSliders = false;
     public ImageViewerPanel() {
         if (JIPipe.getInstance() != null) {
             settings = ImageViewerUISettings.getInstance();
@@ -192,9 +191,18 @@ public class ImageViewerPanel extends JPanel {
         add(bottomPanel, BorderLayout.SOUTH);
 
         // Register slider events
-        stackSlider.addAdjustmentListener(e -> refreshSlice());
-        channelSlider.addAdjustmentListener(e -> refreshSlice());
-        frameSlider.addAdjustmentListener(e -> refreshSlice());
+        stackSlider.addAdjustmentListener(e -> {
+            if(!isUpdatingSliders)
+                refreshSlice();
+        });
+        channelSlider.addAdjustmentListener(e -> {
+            if(!isUpdatingSliders)
+                refreshSlice();
+        });
+        frameSlider.addAdjustmentListener(e -> {
+            if(!isUpdatingSliders)
+                refreshSlice();
+        });
 
         initializeAnimationControls();
         updateSideBar();
@@ -556,25 +564,31 @@ public class ImageViewerPanel extends JPanel {
     }
 
     private void refreshSliders() {
-        if (image != null) {
-            bottomPanel.setVisible(true);
-            bottomPanel.clear();
+        try {
+            isUpdatingSliders = true;
+            if (image != null) {
+                bottomPanel.setVisible(true);
+                bottomPanel.clear();
 
-            if (image.getNChannels() > 1)
-                addSliderToForm(channelSlider, channelSliderLabel, animationChannelToggle);
-            if (image.getNSlices() > 1)
-                addSliderToForm(stackSlider, stackSliderLabel, animationStackToggle);
-            if (image.getNFrames() > 1)
-                addSliderToForm(frameSlider, frameSliderLabel, animationFrameToggle);
+                if (image.getNChannels() > 1)
+                    addSliderToForm(channelSlider, channelSliderLabel, animationChannelToggle);
+                if (image.getNSlices() > 1)
+                    addSliderToForm(stackSlider, stackSliderLabel, animationStackToggle);
+                if (image.getNFrames() > 1)
+                    addSliderToForm(frameSlider, frameSliderLabel, animationFrameToggle);
 
-            stackSlider.setMinimum(1);
-            stackSlider.setMaximum(image.getNSlices() + 1);
-            channelSlider.setMinimum(1);
-            channelSlider.setMaximum(image.getNChannels() + 1);
-            frameSlider.setMinimum(1);
-            frameSlider.setMaximum(image.getNFrames() + 1);
-        } else {
-            bottomPanel.setVisible(false);
+                stackSlider.setMinimum(1);
+                stackSlider.setMaximum(image.getNSlices() + 1);
+                channelSlider.setMinimum(1);
+                channelSlider.setMaximum(image.getNChannels() + 1);
+                frameSlider.setMinimum(1);
+                frameSlider.setMaximum(image.getNFrames() + 1);
+            } else {
+                bottomPanel.setVisible(false);
+            }
+        }
+        finally {
+            isUpdatingSliders = false;
         }
     }
 
@@ -729,7 +743,7 @@ public class ImageViewerPanel extends JPanel {
 //            System.out.println("bps: " + image.getDisplayRangeMin() + ", " + image.getDisplayRangeMax());
             image.setPosition(channel, stack, frame);
             this.currentSlice = image.getProcessor();
-            this.statistics = image.getStatistics();
+            this.statistics = currentSlice.getStatistics();
             for (ImageViewerPanelPlugin plugin : plugins) {
 //                System.out.println(plugin + ": " + image.getDisplayRangeMin() + ", " + image.getDisplayRangeMax());
                 plugin.onSliceChanged();

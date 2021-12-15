@@ -286,11 +286,11 @@ public class JIPipeNodeRegistry implements JIPipeValidatable {
     /**
      * Returns the icon resource path URL for a node
      *
-     * @param klass node type
+     * @param info node type
      * @return icon url
      */
-    public URL getIconURLFor(JIPipeNodeInfo klass) {
-        return iconURLs.getOrDefault(klass, ResourceUtils.getPluginResource("icons/actions/configure.png"));
+    public URL getIconURLFor(JIPipeNodeInfo info) {
+        return iconURLs.getOrDefault(info, ResourceUtils.getPluginResource("icons/actions/configure.png"));
     }
 
     /**

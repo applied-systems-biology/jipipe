@@ -18,7 +18,6 @@ import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.JIPipeWorkbenchPanel;
 import org.hkijena.jipipe.ui.components.DocumentTabPane;
 import org.hkijena.jipipe.ui.grapheditor.JIPipePipelineGraphEditorUI;
-import org.hkijena.jipipe.ui.grapheditor.compartments.JIPipeCompartmentUI;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import java.awt.BorderLayout;
@@ -82,7 +81,7 @@ public class JIPipeNodeGroupUI extends JIPipeWorkbenchPanel {
     }
 
     /**
-     * Finds open {@link JIPipeCompartmentUI} tabs
+     * Finds open {@link JIPipeNodeGroupUI} tabs
      *
      * @param nodeGroup Targeted compartment
      * @return List of UIs

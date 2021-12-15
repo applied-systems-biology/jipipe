@@ -18,7 +18,7 @@ import com.fasterxml.jackson.annotation.JsonSetter;
 import org.hkijena.jipipe.api.compartments.algorithms.JIPipeProjectCompartment;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
 import org.hkijena.jipipe.ui.components.DocumentTabPane;
-import org.hkijena.jipipe.ui.grapheditor.compartments.JIPipeCompartmentUI;
+import org.hkijena.jipipe.ui.grapheditor.JIPipePipelineGraphEditorUI;
 import org.hkijena.jipipe.utils.StringUtils;
 
 import javax.swing.*;
@@ -50,11 +50,9 @@ public class JIPipeProjectTabMetadata {
             String id = null;
             if (singletonTabId != null) {
                 id = "singleton:" + singletonTabId;
-            } else if (component instanceof JIPipeCompartmentUI) {
-                JIPipeCompartmentUI graphCompartmentUI = (JIPipeCompartmentUI) component;
-                if (graphCompartmentUI.getCompartment().getGraph() != null) {
-                    id = "graph-compartment:" + graphCompartmentUI.getCompartment().getProjectCompartmentUUID();
-                }
+            } else if (component instanceof JIPipePipelineGraphEditorUI) {
+                JIPipePipelineGraphEditorUI graphCompartmentUI = (JIPipePipelineGraphEditorUI) component;
+                id = "graph-compartment:" + graphCompartmentUI.getCompartment();
             }
 
             if (id != null) {
@@ -80,7 +78,7 @@ public class JIPipeProjectTabMetadata {
                 try {
                     JIPipeProjectCompartment compartment = workbench.getProject().findCompartment(compartmentId);
                     if (compartment != null) {
-                        DocumentTabPane.DocumentTab tab = workbench.openCompartmentGraph(compartment, false);
+                        DocumentTabPane.DocumentTab tab = workbench.getOrOpenPipelineEditorTab(compartment, false);
                         if (tab != null) {
                             tabIds.put(id, tab);
                         }

@@ -87,7 +87,7 @@ public class JIPipeMultiCompartmentSelectionPanelUI extends JIPipeProjectWorkben
 
     private void openInEditor() {
         for (JIPipeProjectCompartment compartment : compartments) {
-            getProjectWorkbench().openCompartmentGraph(compartment, true);
+            getProjectWorkbench().getOrOpenPipelineEditorTab(compartment, true);
         }
     }
 }

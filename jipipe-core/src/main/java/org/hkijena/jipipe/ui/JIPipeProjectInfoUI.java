@@ -17,7 +17,9 @@ import com.google.common.eventbus.Subscribe;
 import com.google.common.html.HtmlEscapers;
 import org.hkijena.jipipe.api.JIPipeAuthorMetadata;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
+import org.hkijena.jipipe.ui.bookmarks.BookmarkListPanel;
 import org.hkijena.jipipe.ui.components.BackgroundPanel;
+import org.hkijena.jipipe.ui.components.DocumentTabPane;
 import org.hkijena.jipipe.ui.components.FormPanel;
 import org.hkijena.jipipe.ui.components.MarkdownDocument;
 import org.hkijena.jipipe.ui.parameters.ParameterPanel;
@@ -166,7 +168,20 @@ public class JIPipeProjectInfoUI extends JIPipeProjectWorkbenchPanel {
 
         descriptionReaderScrollPane.setBorder(null);
         parameterPanel.getScrollPane().setBorder(null);
-        AutoResizeSplitPane splitPane = new AutoResizeSplitPane(JSplitPane.HORIZONTAL_SPLIT, descriptionReaderScrollPane, parameterPanel, AutoResizeSplitPane.RATIO_3_TO_1);
+
+        DocumentTabPane tabPane = new DocumentTabPane();
+        tabPane.addTab("Bookmarks",
+                UIUtils.getIconFromResources("actions/bookmark.png"),
+                new BookmarkListPanel(getWorkbench(), getProject().getGraph(), null),
+                DocumentTabPane.CloseMode.withoutCloseButton,
+                false);
+        tabPane.addTab("Parameters",
+                UIUtils.getIconFromResources("actions/wrench.png"),
+                parameterPanel,
+                DocumentTabPane.CloseMode.withoutCloseButton,
+                false);
+
+        AutoResizeSplitPane splitPane = new AutoResizeSplitPane(JSplitPane.HORIZONTAL_SPLIT, descriptionReaderScrollPane, tabPane, AutoResizeSplitPane.RATIO_3_TO_1);
         add(splitPane, BorderLayout.CENTER);
     }
 

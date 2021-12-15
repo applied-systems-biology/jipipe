@@ -32,8 +32,6 @@ import org.hkijena.jipipe.utils.AutoResizeSplitPane;
 
 import javax.swing.*;
 import java.awt.BorderLayout;
-import java.awt.event.ComponentAdapter;
-import java.awt.event.ComponentEvent;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.UUID;
@@ -63,6 +61,8 @@ public class JIPipeJsonExtensionGraphUI extends JIPipeGraphEditorUI {
         getCanvasUI().setContextActions(Arrays.asList(
                 new SelectAllNodeUIContextAction(),
                 new InvertSelectionNodeUIContextAction(),
+                new AddBookmarkNodeUIContextAction(),
+                new RemoveBookmarkNodeUIContextAction(),
                 NodeUIContextAction.SEPARATOR,
                 new AlgorithmGraphCutNodeUIContextAction(),
                 new AlgorithmGraphCopyNodeUIContextAction(),

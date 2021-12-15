@@ -57,9 +57,8 @@ import java.nio.file.Path;
 import java.util.*;
 
 /**
- * An algorithm is is a set of input and output data slots, and a run() function
+ * A node is a set of input and output data slots, and a run() function
  * It is part of the {@link JIPipeGraph}.
- * <p>
  * The workload of this node is considered optional (this means it can have an empty workload),
  * which is important for structural graphs like the compartment graph.
  * Use {@link JIPipeAlgorithm} as base class to indicate a non-optional workload.
@@ -81,6 +80,7 @@ public abstract class JIPipeGraphNode implements JIPipeValidatable, JIPipeParame
     private JIPipeGraph graph;
     private Path projectWorkDirectory;
     private Path scratchBaseDirectory;
+    private boolean bookmarked;
 
     /**
      * Initializes this algorithm with a custom provided slot configuration
@@ -131,6 +131,7 @@ public abstract class JIPipeGraphNode implements JIPipeValidatable, JIPipeParame
      */
     public JIPipeGraphNode(JIPipeGraphNode other) {
         this.info = other.info;
+        this.bookmarked = other.bookmarked;
         this.slotConfiguration = copySlotConfiguration(other);
         this.locations = new HashMap<>();
         for (Map.Entry<String, Map<String, Point>> entry : other.locations.entrySet()) {
@@ -281,6 +282,17 @@ public abstract class JIPipeGraphNode implements JIPipeValidatable, JIPipeParame
             return false;
         }
         return JIPipeParameterCollection.super.isParameterUIVisible(tree, access);
+    }
+
+    @JIPipeDocumentation(name = "Bookmark this node", description = "If enabled, the node is highlighted in the graph editor UI and added into the bookmark list.")
+    @JIPipeParameter("jipipe:node:bookmarked")
+    public boolean isBookmarked() {
+        return bookmarked;
+    }
+
+    @JIPipeParameter("jipipe:node:bookmarked")
+    public void setBookmarked(boolean bookmarked) {
+        this.bookmarked = bookmarked;
     }
 
     /**
@@ -614,6 +626,7 @@ public abstract class JIPipeGraphNode implements JIPipeValidatable, JIPipeParame
         }
         return result;
     }
+
 
     /**
      * Returns the first output slot according to the slot order.

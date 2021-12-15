@@ -11,12 +11,11 @@ import java.awt.geom.RoundRectangle2D;
 import java.awt.image.BufferedImage;
 import java.awt.image.ConvolveOp;
 import java.awt.image.Kernel;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
 public class DropShadowRenderer {
-    private static final Map<Double, Map<DropShadowRenderer.Position, BufferedImage>> CACHE
-            = new HashMap<Double, Map<DropShadowRenderer.Position, BufferedImage>>();
     private Color shadowColor;
     private int shadowSize;
     private float shadowOpacity;
@@ -25,6 +24,14 @@ public class DropShadowRenderer {
     private boolean showLeftShadow;
     private boolean showBottomShadow;
     private boolean showRightShadow;
+    private BufferedImage imageTop;
+    private BufferedImage imageTopLeft;
+    private BufferedImage imageLeft;
+    private BufferedImage imageBottomLeft;
+    private BufferedImage imageBottomRight;
+    private BufferedImage imageRight;
+    private BufferedImage imageTopRight;
+    private BufferedImage imageBottom;
 
     public DropShadowRenderer() {
         this(Color.BLACK, 5);
@@ -49,17 +56,111 @@ public class DropShadowRenderer {
         this.showLeftShadow = showLeftShadow;
         this.showBottomShadow = showBottomShadow;
         this.showRightShadow = showRightShadow;
+        initialize();
+    }
+
+    private void initialize() {
+        /*
+         * To draw a drop shadow, I have to:
+         *  1) Create a rounded rectangle
+         *  2) Create a BufferedImage to draw the rounded rect in
+         *  3) Translate the graphics for the image, so that the rectangle
+         *     is centered in the drawn space. The border around the rectangle
+         *     needs to be shadowWidth wide, so that there is space for the
+         *     shadow to be drawn.
+         *  4) Draw the rounded rect as shadowColor, with an opacity of shadowOpacity
+         *  5) Create the BLUR_KERNEL
+         *  6) Blur the image
+         *  7) copy off the corners, sides, etc into images to be used for
+         *     drawing the Border
+         */
+        int rectWidth = cornerSize + 1;
+        RoundRectangle2D rect = new RoundRectangle2D.Double(0, 0, rectWidth, rectWidth, cornerSize, cornerSize);
+        int imageWidth = rectWidth + shadowSize * 2;
+        BufferedImage image = GraphicsUtilities.createCompatibleTranslucentImage(imageWidth, imageWidth);
+        Graphics2D buffer = (Graphics2D) image.getGraphics();
+
+        try {
+            buffer.setPaint(new Color(shadowColor.getRed(), shadowColor.getGreen(),
+                    shadowColor.getBlue(), (int) (shadowOpacity * 255)));
+//                buffer.setColor(new Color(0.0f, 0.0f, 0.0f, shadowOpacity));
+            buffer.translate(shadowSize, shadowSize);
+            buffer.fill(rect);
+        } finally {
+            buffer.dispose();
+        }
+
+        float blurry = 1.0f / (float) (shadowSize * shadowSize);
+        float[] blurKernel = new float[shadowSize * shadowSize];
+        Arrays.fill(blurKernel, blurry);
+        ConvolveOp blur = new ConvolveOp(new Kernel(shadowSize, shadowSize, blurKernel));
+        BufferedImage targetImage = GraphicsUtilities.createCompatibleTranslucentImage(imageWidth, imageWidth);
+        ((Graphics2D) targetImage.getGraphics()).drawImage(image, blur, -(shadowSize / 2), -(shadowSize / 2));
+
+        int x = 1;
+        int y = 1;
+        int w = shadowSize;
+        int h = shadowSize;
+
+        // Top left
+        imageTopLeft = getSubImage(targetImage, x, y, w, h);
+        x = 1;
+        y = h;
+        w = shadowSize;
+        h = 1;
+
+        // Left
+        imageLeft = getSubImage(targetImage, x, y, w, h);
+        x = 1;
+        y = rectWidth;
+        w = shadowSize;
+        h = shadowSize;
+
+        // Bottom left
+        imageBottomLeft = getSubImage(targetImage, x, y, w, h);
+        x = cornerSize + 1;
+        y = rectWidth;
+        w = 1;
+        h = shadowSize;
+
+        // Bottom
+        imageBottom = getSubImage(targetImage, x, y, w, h);
+        x = rectWidth;
+        y = x;
+        w = shadowSize;
+        h = shadowSize;
+
+        // Bottom right
+        imageBottomRight = getSubImage(targetImage, x, y, w, h);
+        x = rectWidth;
+        y = cornerSize + 1;
+        w = shadowSize;
+        h = 1;
+
+        // Right
+        imageRight = getSubImage(targetImage, x, y, w, h);
+        x = rectWidth;
+        y = 1;
+        w = shadowSize;
+        h = shadowSize;
+
+        // Top right
+        imageTopRight = getSubImage(targetImage, x, y, w, h);
+        x = shadowSize;
+        y = 1;
+        w = 1;
+        h = shadowSize;
+
+        // Top
+        imageTop = getSubImage(targetImage, x, y, w, h);
+
+        image.flush();
     }
 
     /**
      * {@inheritDoc}
      */
     public void paint(Graphics2D g2, int x, int y, int width, int height) {
-        /*
-         * 1) Get images for this border
-         * 2) Paint the images for each side of the border that should be painted
-         */
-        Map<DropShadowRenderer.Position, BufferedImage> images = getImages();
 
         //The location and size of the shadows depends on which shadows are being
         //drawn. For instance, if the left & bottom shadows are being drawn, then
@@ -118,10 +219,10 @@ public class DropShadowRenderer {
             }
         }
 
-        g2.setRenderingHint(RenderingHints.KEY_INTERPOLATION,
-                RenderingHints.VALUE_INTERPOLATION_BILINEAR);
-        g2.setRenderingHint(RenderingHints.KEY_RENDERING,
-                RenderingHints.VALUE_RENDER_SPEED);
+//        g2.setRenderingHint(RenderingHints.KEY_INTERPOLATION,
+//                RenderingHints.VALUE_INTERPOLATION_BILINEAR);
+//        g2.setRenderingHint(RenderingHints.KEY_RENDERING,
+//                RenderingHints.VALUE_RENDER_SPEED);
 
         if (showLeftShadow) {
             Rectangle leftShadowRect =
@@ -129,7 +230,7 @@ public class DropShadowRenderer {
                             topLeftShadowPoint.y + shadowSize,
                             shadowSize,
                             bottomLeftShadowPoint.y - topLeftShadowPoint.y - shadowSize);
-            g2.drawImage(images.get(DropShadowRenderer.Position.LEFT),
+            g2.drawImage(imageLeft,
                     leftShadowRect.x, leftShadowRect.y,
                     leftShadowRect.width, leftShadowRect.height, null);
         }
@@ -140,7 +241,7 @@ public class DropShadowRenderer {
                             y + height - shadowSize,
                             bottomRightShadowPoint.x - bottomLeftShadowPoint.x - shadowSize,
                             shadowSize);
-            g2.drawImage(images.get(DropShadowRenderer.Position.BOTTOM),
+            g2.drawImage(imageBottom,
                     bottomShadowRect.x, bottomShadowRect.y,
                     bottomShadowRect.width, bottomShadowRect.height, null);
         }
@@ -151,7 +252,7 @@ public class DropShadowRenderer {
                             topRightShadowPoint.y + shadowSize,
                             shadowSize,
                             bottomRightShadowPoint.y - topRightShadowPoint.y - shadowSize);
-            g2.drawImage(images.get(DropShadowRenderer.Position.RIGHT),
+            g2.drawImage(imageRight,
                     rightShadowRect.x, rightShadowRect.y,
                     rightShadowRect.width, rightShadowRect.height, null);
         }
@@ -162,120 +263,27 @@ public class DropShadowRenderer {
                             y,
                             topRightShadowPoint.x - topLeftShadowPoint.x - shadowSize,
                             shadowSize);
-            g2.drawImage(images.get(DropShadowRenderer.Position.TOP),
+            g2.drawImage(imageTop,
                     topShadowRect.x, topShadowRect.y,
                     topShadowRect.width, topShadowRect.height, null);
         }
 
         if (showLeftShadow || showTopShadow) {
-            g2.drawImage(images.get(DropShadowRenderer.Position.TOP_LEFT),
+            g2.drawImage(imageTopLeft,
                     topLeftShadowPoint.x, topLeftShadowPoint.y, null);
         }
         if (showLeftShadow || showBottomShadow) {
-            g2.drawImage(images.get(DropShadowRenderer.Position.BOTTOM_LEFT),
+            g2.drawImage(imageBottomLeft,
                     bottomLeftShadowPoint.x, bottomLeftShadowPoint.y, null);
         }
         if (showRightShadow || showBottomShadow) {
-            g2.drawImage(images.get(DropShadowRenderer.Position.BOTTOM_RIGHT),
+            g2.drawImage(imageBottomRight,
                     bottomRightShadowPoint.x, bottomRightShadowPoint.y, null);
         }
         if (showRightShadow || showTopShadow) {
-            g2.drawImage(images.get(DropShadowRenderer.Position.TOP_RIGHT),
+            g2.drawImage(imageTopRight,
                     topRightShadowPoint.x, topRightShadowPoint.y, null);
         }
-    }
-
-    private Map<DropShadowRenderer.Position, BufferedImage> getImages() {
-        //first, check to see if an image for this size has already been rendered
-        //if so, use the cache. Else, draw and save
-        Map<DropShadowRenderer.Position, BufferedImage> images = CACHE.get(shadowSize + (shadowColor.hashCode() * .3) + (shadowOpacity * .12));//TODO do a real hash
-        if (images == null) {
-            images = new HashMap<DropShadowRenderer.Position, BufferedImage>();
-
-            /*
-             * To draw a drop shadow, I have to:
-             *  1) Create a rounded rectangle
-             *  2) Create a BufferedImage to draw the rounded rect in
-             *  3) Translate the graphics for the image, so that the rectangle
-             *     is centered in the drawn space. The border around the rectangle
-             *     needs to be shadowWidth wide, so that there is space for the
-             *     shadow to be drawn.
-             *  4) Draw the rounded rect as shadowColor, with an opacity of shadowOpacity
-             *  5) Create the BLUR_KERNEL
-             *  6) Blur the image
-             *  7) copy off the corners, sides, etc into images to be used for
-             *     drawing the Border
-             */
-            int rectWidth = cornerSize + 1;
-            RoundRectangle2D rect = new RoundRectangle2D.Double(0, 0, rectWidth, rectWidth, cornerSize, cornerSize);
-            int imageWidth = rectWidth + shadowSize * 2;
-            BufferedImage image = GraphicsUtilities.createCompatibleTranslucentImage(imageWidth, imageWidth);
-            Graphics2D buffer = (Graphics2D) image.getGraphics();
-
-            try {
-                buffer.setPaint(new Color(shadowColor.getRed(), shadowColor.getGreen(),
-                        shadowColor.getBlue(), (int) (shadowOpacity * 255)));
-//                buffer.setColor(new Color(0.0f, 0.0f, 0.0f, shadowOpacity));
-                buffer.translate(shadowSize, shadowSize);
-                buffer.fill(rect);
-            } finally {
-                buffer.dispose();
-            }
-
-            float blurry = 1.0f / (float) (shadowSize * shadowSize);
-            float[] blurKernel = new float[shadowSize * shadowSize];
-            for (int i = 0; i < blurKernel.length; i++) {
-                blurKernel[i] = blurry;
-            }
-            ConvolveOp blur = new ConvolveOp(new Kernel(shadowSize, shadowSize, blurKernel));
-            BufferedImage targetImage = GraphicsUtilities.createCompatibleTranslucentImage(imageWidth, imageWidth);
-            ((Graphics2D) targetImage.getGraphics()).drawImage(image, blur, -(shadowSize / 2), -(shadowSize / 2));
-
-            int x = 1;
-            int y = 1;
-            int w = shadowSize;
-            int h = shadowSize;
-            images.put(DropShadowRenderer.Position.TOP_LEFT, getSubImage(targetImage, x, y, w, h));
-            x = 1;
-            y = h;
-            w = shadowSize;
-            h = 1;
-            images.put(DropShadowRenderer.Position.LEFT, getSubImage(targetImage, x, y, w, h));
-            x = 1;
-            y = rectWidth;
-            w = shadowSize;
-            h = shadowSize;
-            images.put(DropShadowRenderer.Position.BOTTOM_LEFT, getSubImage(targetImage, x, y, w, h));
-            x = cornerSize + 1;
-            y = rectWidth;
-            w = 1;
-            h = shadowSize;
-            images.put(DropShadowRenderer.Position.BOTTOM, getSubImage(targetImage, x, y, w, h));
-            x = rectWidth;
-            y = x;
-            w = shadowSize;
-            h = shadowSize;
-            images.put(DropShadowRenderer.Position.BOTTOM_RIGHT, getSubImage(targetImage, x, y, w, h));
-            x = rectWidth;
-            y = cornerSize + 1;
-            w = shadowSize;
-            h = 1;
-            images.put(DropShadowRenderer.Position.RIGHT, getSubImage(targetImage, x, y, w, h));
-            x = rectWidth;
-            y = 1;
-            w = shadowSize;
-            h = shadowSize;
-            images.put(DropShadowRenderer.Position.TOP_RIGHT, getSubImage(targetImage, x, y, w, h));
-            x = shadowSize;
-            y = 1;
-            w = 1;
-            h = shadowSize;
-            images.put(DropShadowRenderer.Position.TOP, getSubImage(targetImage, x, y, w, h));
-
-            image.flush();
-            CACHE.put(shadowSize + (shadowColor.hashCode() * .3) + (shadowOpacity * .12), images); //TODO do a real hash
-        }
-        return images;
     }
 
     /**
@@ -312,68 +320,31 @@ public class DropShadowRenderer {
         return showTopShadow;
     }
 
-    public void setShowTopShadow(boolean showTopShadow) {
-        this.showTopShadow = showTopShadow;
-    }
-
     public boolean isShowLeftShadow() {
         return showLeftShadow;
-    }
-
-    public void setShowLeftShadow(boolean showLeftShadow) {
-        this.showLeftShadow = showLeftShadow;
     }
 
     public boolean isShowRightShadow() {
         return showRightShadow;
     }
 
-    public void setShowRightShadow(boolean showRightShadow) {
-        this.showRightShadow = showRightShadow;
-    }
-
     public boolean isShowBottomShadow() {
         return showBottomShadow;
-    }
-
-    public void setShowBottomShadow(boolean showBottomShadow) {
-        this.showBottomShadow = showBottomShadow;
     }
 
     public int getShadowSize() {
         return shadowSize;
     }
 
-    public void setShadowSize(int shadowSize) {
-        this.shadowSize = shadowSize;
-    }
-
     public Color getShadowColor() {
         return shadowColor;
-    }
-
-    public void setShadowColor(Color shadowColor) {
-        this.shadowColor = shadowColor;
     }
 
     public float getShadowOpacity() {
         return shadowOpacity;
     }
 
-    public void setShadowOpacity(float shadowOpacity) {
-        this.shadowOpacity = shadowOpacity;
-    }
-
     public int getCornerSize() {
         return cornerSize;
-    }
-
-    public void setCornerSize(int cornerSize) {
-        this.cornerSize = cornerSize;
-    }
-
-    private static enum Position {
-        TOP, TOP_LEFT, LEFT, BOTTOM_LEFT,
-        BOTTOM, BOTTOM_RIGHT, RIGHT, TOP_RIGHT
     }
 }
