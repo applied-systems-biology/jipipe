@@ -95,18 +95,18 @@ public class JIPipeProjectInfoUI extends JIPipeProjectWorkbenchPanel {
         authors.append("<html>");
         affiliations.append("<html>");
         for (JIPipeAuthorMetadata author : getProject().getMetadata().getAuthors()) {
-            authors.append(HtmlEscapers.htmlEscaper().escape(author.getFirstName()));
+            authors.append(HtmlEscapers.htmlEscaper().escape(StringUtils.nullToEmpty(author.getFirstName())));
             authors.append(" ");
-            authors.append(HtmlEscapers.htmlEscaper().escape(author.getLastName()));
+            authors.append(HtmlEscapers.htmlEscaper().escape(StringUtils.nullToEmpty(author.getLastName())));
             authors.append("<br/>");
 
             affiliations.append("<u>");
-            affiliations.append(HtmlEscapers.htmlEscaper().escape(author.getFirstName()));
+            affiliations.append(HtmlEscapers.htmlEscaper().escape(StringUtils.nullToEmpty(author.getFirstName())));
             affiliations.append(" ");
-            affiliations.append(HtmlEscapers.htmlEscaper().escape(author.getLastName()));
+            affiliations.append(HtmlEscapers.htmlEscaper().escape(StringUtils.nullToEmpty(author.getLastName())));
             affiliations.append("</u>");
             affiliations.append("<br/>");
-            affiliations.append(HtmlEscapers.htmlEscaper().escape(author.getAffiliations()).replace("\n", "<br/>"));
+            affiliations.append(HtmlEscapers.htmlEscaper().escape(StringUtils.nullToEmpty(author.getAffiliations())).replace("\n", "<br/>"));
             affiliations.append("<br/>");
             affiliations.append("<br/>");
         }
