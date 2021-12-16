@@ -14,7 +14,7 @@
 package org.hkijena.jipipe.ui.project;
 
 import org.hkijena.jipipe.api.JIPipeProjectTemplate;
-import org.hkijena.jipipe.ui.components.TemplateProjectListCellRenderer;
+import org.hkijena.jipipe.ui.components.renderers.TemplateProjectListCellRenderer;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;

@@ -7,11 +7,11 @@ import org.hkijena.jipipe.api.nodes.JIPipeInputSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.JIPipeOutputSlot;
 import org.hkijena.jipipe.api.nodes.categories.InternalNodeTypeCategory;
-import org.hkijena.jipipe.ui.components.AlwaysOnTopToggle;
-import org.hkijena.jipipe.ui.components.JIPipeNodeInfoListCellRenderer;
-import org.hkijena.jipipe.ui.components.MarkdownDocument;
-import org.hkijena.jipipe.ui.components.MarkdownReader;
-import org.hkijena.jipipe.ui.components.SearchTextField;
+import org.hkijena.jipipe.ui.components.window.AlwaysOnTopToggle;
+import org.hkijena.jipipe.ui.components.renderers.JIPipeNodeInfoListCellRenderer;
+import org.hkijena.jipipe.ui.components.markdown.MarkdownDocument;
+import org.hkijena.jipipe.ui.components.markdown.MarkdownReader;
+import org.hkijena.jipipe.ui.components.search.SearchTextField;
 import org.hkijena.jipipe.utils.AutoResizeSplitPane;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
@@ -20,8 +20,6 @@ import org.hkijena.jipipe.utils.search.RankedData;
 import javax.swing.*;
 import java.awt.BorderLayout;
 import java.awt.Cursor;
-import java.awt.event.ComponentAdapter;
-import java.awt.event.ComponentEvent;
 import java.util.List;
 
 public class NodeToolBox extends JPanel {

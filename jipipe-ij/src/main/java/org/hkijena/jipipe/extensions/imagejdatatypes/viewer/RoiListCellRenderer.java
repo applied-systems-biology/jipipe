@@ -14,7 +14,7 @@
 package org.hkijena.jipipe.extensions.imagejdatatypes.viewer;
 
 import ij.gui.Roi;
-import org.hkijena.jipipe.ui.components.ColorIcon;
+import org.hkijena.jipipe.ui.components.icons.SolidColorIcon;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 
@@ -27,7 +27,7 @@ import java.awt.GridBagLayout;
 
 public class RoiListCellRenderer extends JPanel implements ListCellRenderer<Roi> {
 
-    private ColorIcon strokeFillPreview = new ColorIcon(16, 16);
+    private SolidColorIcon strokeFillPreview = new SolidColorIcon(16, 16);
     private JLabel iconLabel = new JLabel();
     private JLabel nameLabel = new JLabel();
     private JLabel infoLabel = new JLabel();

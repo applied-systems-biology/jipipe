@@ -106,6 +106,7 @@ public class GraphNodeParameterReferenceGroupUI extends JPanel {
      * Edits name and description of a {@link GraphNodeParameterReferenceGroup}
      */
     public static class GroupMetadataEditor extends JPanel {
+        private final GraphNodeParameterReferenceGroupUI parent;
         private final GraphNodeParameterReferenceGroup group;
 
         /**
@@ -113,6 +114,7 @@ public class GraphNodeParameterReferenceGroupUI extends JPanel {
          * @param group  the group to be edited
          */
         public GroupMetadataEditor(GraphNodeParameterReferenceGroupUI parent, GraphNodeParameterReferenceGroup group) {
+            this.parent = parent;
             this.group = group;
             initialize();
         }
@@ -143,7 +145,7 @@ public class GraphNodeParameterReferenceGroupUI extends JPanel {
 
         private void changeDescription() {
             HTMLText currentDescription = group.getDescription();
-            HTMLText newDescription = UIUtils.getHTMLByDialog(this, "Set description", "Please enter a new description:", currentDescription);
+            HTMLText newDescription = UIUtils.getHTMLByDialog(parent.getParametersUI().getWorkbench(), this, "Set description", "Please enter a new description:", currentDescription);
             if (newDescription != null) {
                 group.setDescription(newDescription);
             }

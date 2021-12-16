@@ -29,10 +29,10 @@ import org.hkijena.jipipe.api.registries.JIPipeSettingsRegistry;
 import org.hkijena.jipipe.extensions.parameters.primitives.HTMLText;
 import org.hkijena.jipipe.extensions.settings.GeneralDataSettings;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
-import org.hkijena.jipipe.ui.components.ColorIcon;
-import org.hkijena.jipipe.ui.components.HTMLEditor;
+import org.hkijena.jipipe.ui.components.icons.SolidColorIcon;
+import org.hkijena.jipipe.ui.components.html.HTMLEditor;
 import org.hkijena.jipipe.ui.components.JIPipeValidityReportUI;
-import org.hkijena.jipipe.ui.components.MarkdownDocument;
+import org.hkijena.jipipe.ui.components.markdown.MarkdownDocument;
 import org.hkijena.jipipe.ui.components.UserFriendlyErrorUI;
 import org.hkijena.jipipe.ui.extension.JIPipeMenuExtension;
 import org.hkijena.jipipe.ui.extension.JIPipeMenuExtensionTarget;
@@ -41,6 +41,7 @@ import org.hkijena.jipipe.utils.json.JsonUtils;
 import org.hkijena.jipipe.utils.ui.ListSelectionMode;
 import org.hkijena.jipipe.utils.ui.RoundedLineBorder;
 import org.jdesktop.swingx.JXTable;
+import sun.misc.BASE64Encoder;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
@@ -54,6 +55,7 @@ import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.StringSelection;
 import java.awt.datatransfer.Transferable;
+import java.awt.datatransfer.UnsupportedFlavorException;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
@@ -61,6 +63,7 @@ import java.awt.event.MouseEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.image.BufferedImage;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -76,6 +79,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
@@ -87,6 +91,7 @@ public class UIUtils {
 
     public static final FileNameExtensionFilter EXTENSION_FILTER_CSV = new FileNameExtensionFilter("CSV table (*.csv)", "csv");
     public static final FileNameExtensionFilter EXTENSION_FILTER_PNG = new FileNameExtensionFilter("PNG image (*.png)", "png");
+    public static final FileNameExtensionFilter EXTENSION_FILTER_IMAGEIO_IMAGES = new FileNameExtensionFilter("Image file (*.png, *.jpg, *.jpeg, *.bmp)", "png", "jpg", "jpeg", "bmp");
     public static final FileNameExtensionFilter EXTENSION_FILTER_SVG = new FileNameExtensionFilter("SVG image (*.svg)", "svg");
     public static final FileNameExtensionFilter EXTENSION_FILTER_MD = new FileNameExtensionFilter("Markdown text (*.md)", "md");
     public static final FileNameExtensionFilter EXTENSION_FILTER_PDF = new FileNameExtensionFilter("Portable document format (*.pdf)", "pdf");
@@ -509,8 +514,8 @@ public class UIUtils {
      * @param color the color
      * @return the icon
      */
-    public static ColorIcon getIconFromColor(Color color) {
-        return new ColorIcon(16, 16, color);
+    public static SolidColorIcon getIconFromColor(Color color) {
+        return new SolidColorIcon(16, 16, color);
     }
 
     /**
@@ -575,9 +580,9 @@ public class UIUtils {
 //        component.setPreferredSize(new Dimension(component.getPreferredSize().width, 25));
 //        component.setMinimumSize(new Dimension(25, 25));
 //        component.setMaximumSize(new Dimension(Integer.MAX_VALUE, 25));
-        Border margin = new EmptyBorder(2, 2, 2, 2);
-        Border compound = new CompoundBorder(BorderFactory.createEtchedBorder(), margin);
-        component.setBorder(compound);
+        Border margin = new EmptyBorder(3, 3, 3, 3);
+//        Border compound = new CompoundBorder(BorderFactory.createEtchedBorder(), margin);
+        component.setBorder(margin);
     }
 
     /**
@@ -777,28 +782,121 @@ public class UIUtils {
         return Collections.emptyList();
     }
 
+    public static String imageToBase64(BufferedImage image, String type) {
+        String imageString = null;
+        ByteArrayOutputStream bos = new ByteArrayOutputStream();
+
+        try {
+            ImageIO.write(image, type, bos);
+            byte[] imageBytes = bos.toByteArray();
+
+            BASE64Encoder encoder = new BASE64Encoder();
+            imageString = encoder.encode(imageBytes);
+
+            bos.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return imageString;
+    }
+
+    /**
+     * Converts a given Image into a BufferedImage
+     *
+     * @param img The Image to be converted
+     * @param type the output image type
+     * @return The converted BufferedImage
+     */
+    public static BufferedImage toBufferedImage(Image img, int type)
+    {
+        if (img instanceof BufferedImage)
+        {
+            return (BufferedImage) img;
+        }
+
+        // Create a buffered image with transparency
+        BufferedImage bimage = new BufferedImage(img.getWidth(null), img.getHeight(null), type);
+
+        // Draw the image on to the buffered image
+        Graphics2D bGr = bimage.createGraphics();
+        bGr.drawImage(img, 0, 0, null);
+        bGr.dispose();
+
+        // Return the buffered image
+        return bimage;
+    }
+
+    /**
+     * Get an image off the system clipboard.
+     *
+     * @return Returns an Image if successful; otherwise returns null.
+     * @param type the image type
+     */
+    public static BufferedImage getImageFromClipboard(int type) {
+        Transferable transferable = Toolkit.getDefaultToolkit().getSystemClipboard().getContents(null);
+        if (transferable != null && transferable.isDataFlavorSupported(DataFlavor.imageFlavor)) {
+            try {
+                Image image = (Image) transferable.getTransferData(DataFlavor.imageFlavor);
+                return toBufferedImage(image, type);
+            } catch (UnsupportedFlavorException | IOException e) {
+                return null;
+            }
+        }
+        return null;
+    }
+
     /**
      * Gets a formatted HTML string by dialog
      *
+     *
+     * @param workbench the workbench
      * @param parent       the parent component
      * @param title        the title
      * @param message      message
      * @param initialValue initial value
      * @return value or null
      */
-    public static HTMLText getHTMLByDialog(Component parent, String title, String message, HTMLText initialValue) {
-        HTMLEditor area = new HTMLEditor(HTMLEditor.NONE);
+    public static HTMLText getHTMLByDialog(JIPipeWorkbench workbench, Component parent, String title, String message, HTMLText initialValue) {
+        HTMLEditor area = new HTMLEditor(workbench, HTMLEditor.Mode.Full, HTMLEditor.WITH_SCROLL_BAR);
         area.setText(initialValue.getHtml());
-        JScrollPane scrollPane = new JScrollPane(area);
-        int result = JOptionPane.showOptionDialog(
-                parent,
-                new Object[]{message, scrollPane},
-                title,
-                JOptionPane.OK_CANCEL_OPTION,
-                JOptionPane.QUESTION_MESSAGE,
-                null, null, null);
 
-        if (result == JOptionPane.OK_OPTION) {
+        JDialog dialog = new JDialog(SwingUtilities.getWindowAncestor(parent), title);
+        dialog.setSize(1024, 768);
+        dialog.setLayout(new BorderLayout());
+        if (!StringUtils.isNullOrEmpty(message)) {
+            dialog.add(new JLabel(message), BorderLayout.NORTH);
+        }
+        dialog.add(area, BorderLayout.CENTER);
+
+        JPanel buttonPanel = new JPanel();
+        buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.X_AXIS));
+        buttonPanel.add(Box.createHorizontalGlue());
+
+        AtomicBoolean confirmation = new AtomicBoolean(false);
+
+        JButton cancelButton = new JButton("Cancel", UIUtils.getIconFromResources("actions/cancel.png"));
+        cancelButton.addActionListener(e -> {
+            confirmation.set(false);
+            dialog.setVisible(false);
+        });
+        buttonPanel.add(cancelButton);
+
+        JButton confirmButton = new JButton("OK", UIUtils.getIconFromResources("actions/ok.png"));
+        confirmButton.addActionListener(e -> {
+            confirmation.set(true);
+            dialog.setVisible(false);
+        });
+        buttonPanel.add(confirmButton);
+
+        dialog.add(buttonPanel, BorderLayout.SOUTH);
+
+        dialog.revalidate();
+        dialog.repaint();
+        dialog.setLocationRelativeTo(parent);
+        dialog.setModal(true);
+        dialog.setVisible(true);
+
+        if (confirmation.get()) {
             return new HTMLText(area.getHTML());
         }
         return null;
@@ -814,18 +912,46 @@ public class UIUtils {
      * @return value or null
      */
     public static String getMultiLineStringByDialog(Component parent, String title, String message, String initialValue) {
-        JTextArea area = new JTextArea(5, 10);
+        JTextArea area = new JTextArea();
         area.setText(initialValue);
-        JScrollPane scrollPane = new JScrollPane(area);
-        int result = JOptionPane.showOptionDialog(
-                parent,
-                new Object[]{message, scrollPane},
-                title,
-                JOptionPane.OK_CANCEL_OPTION,
-                JOptionPane.QUESTION_MESSAGE,
-                null, null, null);
 
-        if (result == JOptionPane.OK_OPTION) {
+        JDialog dialog = new JDialog(SwingUtilities.getWindowAncestor(parent), title);
+        dialog.setSize(1024, 768);
+        dialog.setLayout(new BorderLayout());
+        if (!StringUtils.isNullOrEmpty(message)) {
+            dialog.add(new JLabel(message), BorderLayout.NORTH);
+        }
+        dialog.add(area, BorderLayout.CENTER);
+
+        JPanel buttonPanel = new JPanel();
+        buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.X_AXIS));
+        buttonPanel.add(Box.createHorizontalGlue());
+
+        AtomicBoolean confirmation = new AtomicBoolean(false);
+
+        JButton cancelButton = new JButton("Cancel", UIUtils.getIconFromResources("actions/cancel.png"));
+        cancelButton.addActionListener(e -> {
+            confirmation.set(false);
+            dialog.setVisible(false);
+        });
+        buttonPanel.add(cancelButton);
+
+        JButton confirmButton = new JButton("OK", UIUtils.getIconFromResources("actions/ok.png"));
+        confirmButton.addActionListener(e -> {
+            confirmation.set(true);
+            dialog.setVisible(false);
+        });
+        buttonPanel.add(confirmButton);
+
+        dialog.add(buttonPanel, BorderLayout.SOUTH);
+
+        dialog.revalidate();
+        dialog.repaint();
+        dialog.setLocationRelativeTo(parent);
+        dialog.setModal(true);
+        dialog.setVisible(true);
+
+        if (confirmation.get()) {
             return area.getText();
         }
         return null;

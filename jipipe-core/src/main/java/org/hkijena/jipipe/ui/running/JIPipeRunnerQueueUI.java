@@ -14,7 +14,7 @@
 package org.hkijena.jipipe.ui.running;
 
 import com.google.common.eventbus.Subscribe;
-import org.hkijena.jipipe.ui.components.ThrobberIcon;
+import org.hkijena.jipipe.ui.components.icons.ThrobberIcon;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.hkijena.jipipe.utils.ui.RoundedLineBorder;
 

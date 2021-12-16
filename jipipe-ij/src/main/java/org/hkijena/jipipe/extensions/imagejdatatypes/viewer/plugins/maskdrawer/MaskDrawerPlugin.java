@@ -19,7 +19,7 @@ import org.hkijena.jipipe.extensions.parameters.ranges.NumberRangeParameterSetti
 import org.hkijena.jipipe.extensions.parameters.ranges.PaintGenerator;
 import org.hkijena.jipipe.ui.JIPipeDummyWorkbench;
 import org.hkijena.jipipe.ui.components.ColorChooserButton;
-import org.hkijena.jipipe.ui.components.ColorIcon;
+import org.hkijena.jipipe.ui.components.icons.SolidColorIcon;
 import org.hkijena.jipipe.ui.components.FormPanel;
 import org.hkijena.jipipe.ui.parameters.ParameterPanel;
 import org.hkijena.jipipe.ui.theme.JIPipeUITheme;
@@ -132,7 +132,7 @@ public class MaskDrawerPlugin extends ImageViewerPanelPlugin {
                 colorButtonGroup,
                 "255",
                 "Sets the currently drawn color to foreground (255)",
-                new ColorIcon(16, 16, Color.WHITE, Color.DARK_GRAY),
+                new SolidColorIcon(16, 16, Color.WHITE, Color.DARK_GRAY),
                 this::getCurrentColor,
                 this::setCurrentColor);
         addSelectionButton(MaskColor.Background,
@@ -141,7 +141,7 @@ public class MaskDrawerPlugin extends ImageViewerPanelPlugin {
                 colorButtonGroup,
                 "0",
                 "Sets the currently drawn color to background (0)",
-                new ColorIcon(16, 16, Color.BLACK, Color.DARK_GRAY),
+                new SolidColorIcon(16, 16, Color.BLACK, Color.DARK_GRAY),
                 this::getCurrentColor,
                 this::setCurrentColor);
 

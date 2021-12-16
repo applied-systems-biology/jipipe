@@ -15,8 +15,8 @@ package org.hkijena.jipipe.ui.ijupdater;
 
 import net.imagej.ui.swing.updater.ViewOptions;
 import net.imagej.updater.FileObject;
-import org.hkijena.jipipe.ui.components.SearchTextField;
-import org.hkijena.jipipe.ui.components.SearchTextFieldTableRowFilter;
+import org.hkijena.jipipe.ui.components.search.SearchTextField;
+import org.hkijena.jipipe.ui.components.search.SearchTextFieldTableRowFilter;
 
 import javax.swing.table.TableModel;
 

@@ -14,6 +14,8 @@
 package org.hkijena.jipipe.ui.components;
 
 import com.google.common.eventbus.EventBus;
+import org.hkijena.jipipe.ui.components.icons.ColorIcon;
+import org.hkijena.jipipe.ui.components.icons.SolidColorIcon;
 import org.hkijena.jipipe.utils.ColorUtils;
 
 import javax.swing.*;
@@ -24,7 +26,7 @@ import java.util.Objects;
 
 public class ColorChooserButton extends JButton implements ActionListener {
     private final EventBus eventBus = new EventBus();
-    private ColorIcon icon = new ColorIcon(16, 16);
+    private ColorIcon icon = new SolidColorIcon(16, 16);
     private Color selectedColor = Color.RED;
     private String selectColorPrompt = "Select color";
     private boolean updateWithHexCode = false;

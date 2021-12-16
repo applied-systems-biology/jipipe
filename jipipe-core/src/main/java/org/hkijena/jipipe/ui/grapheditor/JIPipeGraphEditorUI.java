@@ -25,8 +25,8 @@ import org.hkijena.jipipe.extensions.settings.GraphEditorUISettings;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.JIPipeWorkbenchPanel;
-import org.hkijena.jipipe.ui.components.ColorIcon;
-import org.hkijena.jipipe.ui.components.SearchBox;
+import org.hkijena.jipipe.ui.components.icons.SolidColorIcon;
+import org.hkijena.jipipe.ui.components.search.SearchBox;
 import org.hkijena.jipipe.ui.components.ZoomViewPort;
 import org.hkijena.jipipe.ui.extension.GraphEditorToolBarButtonExtension;
 import org.hkijena.jipipe.ui.grapheditor.contextmenu.NodeUIContextAction;
@@ -851,7 +851,7 @@ public abstract class JIPipeGraphEditorUI extends JIPipeWorkbenchPanel implement
      */
     public static class NavigationRenderer extends JPanel implements ListCellRenderer<Object> {
 
-        private ColorIcon icon;
+        private SolidColorIcon icon;
         private JLabel iconLabel;
         private JLabel actionLabel;
         private JLabel algorithmLabel;
@@ -867,7 +867,7 @@ public abstract class JIPipeGraphEditorUI extends JIPipeWorkbenchPanel implement
             setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
 
 
-            icon = new ColorIcon(16, 40);
+            icon = new SolidColorIcon(16, 40);
             iconLabel = new JLabel(icon);
             Insets border = new Insets(2, 4, 2, 2);
             add(iconLabel, new GridBagConstraints() {
