@@ -63,8 +63,7 @@ public class FilterROIListsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         parameters.set("height", bounds.height);
         if (filter.test(parameters)) {
             dataBatch.addOutputData(getFirstOutputSlot(), rois, progressInfo);
-        }
-        else if(outputEmptyLists) {
+        } else if (outputEmptyLists) {
             dataBatch.addOutputData(getFirstOutputSlot(), new ROIListData(), progressInfo);
         }
     }

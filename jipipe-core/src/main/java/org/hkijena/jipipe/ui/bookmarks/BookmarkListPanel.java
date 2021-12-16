@@ -36,8 +36,8 @@ public class BookmarkListPanel extends JIPipeWorkbenchPanel {
     private JButton runButton;
 
     /**
-     * @param workbench the workbench
-     * @param graph the graph where bookmarks are tracked
+     * @param workbench     the workbench
+     * @param graph         the graph where bookmarks are tracked
      * @param graphEditorUI the canvas. can be null.
      */
     public BookmarkListPanel(JIPipeWorkbench workbench, JIPipeGraph graph, JIPipeGraphEditorUI graphEditorUI) {
@@ -51,7 +51,7 @@ public class BookmarkListPanel extends JIPipeWorkbenchPanel {
         initialize();
         reloadList();
         graph.getEventBus().register(this);
-        if(graph.getProject() != null) {
+        if (graph.getProject() != null) {
             graph.getProject().getCompartmentGraph().getEventBus().register(this);
         }
         registerNodeEvents();
@@ -78,12 +78,12 @@ public class BookmarkListPanel extends JIPipeWorkbenchPanel {
                 item.setToolTipText(entry.getDescription());
                 item.setAccelerator(entry.getKeyboardShortcut());
                 item.addActionListener(e -> {
-                   runSelectedNode(entry);
+                    runSelectedNode(entry);
                 });
                 runMenu.add(item);
             }
         }
-        if(graph.getProject() != null) {
+        if (graph.getProject() != null) {
             toolBar.add(runButton);
         }
 
@@ -97,7 +97,7 @@ public class BookmarkListPanel extends JIPipeWorkbenchPanel {
         nodeJList.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
-                if(e.getClickCount() == 2) {
+                if (e.getClickCount() == 2) {
                     goToBookmark(nodeJList.getSelectedValue());
                 }
             }
@@ -108,28 +108,26 @@ public class BookmarkListPanel extends JIPipeWorkbenchPanel {
 
     private void runSelectedNode(NodeUIContextAction entry) {
         JIPipeGraphNode node = nodeJList.getSelectedValue();
-        if(node instanceof JIPipeAlgorithm)  {
+        if (node instanceof JIPipeAlgorithm) {
             goToBookmark(node);
             JIPipeProjectCompartment compartment = node.getProjectCompartment();
             DocumentTabPane.DocumentTab tab = ((JIPipeProjectWorkbench) getWorkbench()).getOrOpenPipelineEditorTab(compartment, true);
             JIPipePipelineGraphEditorUI editorUI = (JIPipePipelineGraphEditorUI) tab.getContent();
             JIPipeNodeUI ui = editorUI.getCanvasUI().getNodeUIs().getOrDefault(node, null);
-            if(ui != null) {
+            if (ui != null) {
                 entry.run(editorUI.getCanvasUI(), Collections.singleton(ui));
-            }
-            else {
+            } else {
                 getWorkbench().sendStatusBarText("Unable to run selected bookmark!");
             }
-        }
-        else {
+        } else {
             getWorkbench().sendStatusBarText("Unable to run selected bookmark!");
         }
     }
 
     private void removeSelectedBookmarks() {
         List<JIPipeGraphNode> selection = nodeJList.getSelectedValuesList();
-        if(!selection.isEmpty()) {
-            if(JOptionPane.showConfirmDialog(this, "Do you really want to remove the selected bookmarks?", "Remove bookmarks", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE) == JOptionPane.NO_OPTION) {
+        if (!selection.isEmpty()) {
+            if (JOptionPane.showConfirmDialog(this, "Do you really want to remove the selected bookmarks?", "Remove bookmarks", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE) == JOptionPane.NO_OPTION) {
                 return;
             }
             for (JIPipeGraphNode node : selection) {
@@ -142,33 +140,29 @@ public class BookmarkListPanel extends JIPipeWorkbenchPanel {
     }
 
     private void goToBookmark(JIPipeGraphNode node) {
-        if(node.getGraph() == null)
+        if (node.getGraph() == null)
             return;
-        if(getWorkbench() instanceof JIPipeProjectWorkbench && graph.getProject() != null) {
-            if(node instanceof JIPipeProjectCompartment) {
+        if (getWorkbench() instanceof JIPipeProjectWorkbench && graph.getProject() != null) {
+            if (node instanceof JIPipeProjectCompartment) {
                 ((JIPipeProjectWorkbench) getWorkbench()).getOrOpenPipelineEditorTab((JIPipeProjectCompartment) node, true);
-            }
-            else {
+            } else {
                 JIPipeProjectCompartment compartment = node.getProjectCompartment();
                 DocumentTabPane.DocumentTab tab = ((JIPipeProjectWorkbench) getWorkbench()).getOrOpenPipelineEditorTab(compartment, true);
                 SwingUtilities.invokeLater(() -> {
                     JIPipePipelineGraphEditorUI editorUI = (JIPipePipelineGraphEditorUI) tab.getContent();
                     JIPipeNodeUI ui = editorUI.getCanvasUI().getNodeUIs().getOrDefault(node, null);
-                    if(ui != null) {
+                    if (ui != null) {
                         editorUI.selectOnly(ui);
-                    }
-                    else {
+                    } else {
                         getWorkbench().sendStatusBarText("Unable to navigate to bookmark");
                     }
                 });
             }
-        }
-        else if(graphEditorUI != null) {
+        } else if (graphEditorUI != null) {
             JIPipeNodeUI ui = graphEditorUI.getCanvasUI().getNodeUIs().getOrDefault(node, null);
-            if(ui != null) {
+            if (ui != null) {
                 graphEditorUI.selectOnly(ui);
-            }
-            else {
+            } else {
                 getWorkbench().sendStatusBarText("Unable to navigate to bookmark");
             }
         }
@@ -185,7 +179,7 @@ public class BookmarkListPanel extends JIPipeWorkbenchPanel {
     private void reloadList() {
         DefaultListModel<JIPipeGraphNode> model = new DefaultListModel<>();
         JIPipeProject project = graph.getProject();
-        if(project != null) {
+        if (project != null) {
             project.getCompartments().values().stream().filter(JIPipeGraphNode::isBookmarked).sorted(Comparator.comparing(JIPipeGraphNode::getName)).forEach(model::addElement);
         }
         graph.getGraphNodes().stream().filter(JIPipeGraphNode::isBookmarked).sorted(Comparator.comparing(JIPipeGraphNode::getName)).forEach(model::addElement);
@@ -197,7 +191,7 @@ public class BookmarkListPanel extends JIPipeWorkbenchPanel {
         for (JIPipeGraphNode node : graph.getGraphNodes()) {
             node.getEventBus().register(this);
         }
-        if(graph.getProject() != null) {
+        if (graph.getProject() != null) {
             for (JIPipeGraphNode node : graph.getProject().getCompartmentGraph().getGraphNodes()) {
                 node.getEventBus().register(this);
             }
@@ -212,10 +206,9 @@ public class BookmarkListPanel extends JIPipeWorkbenchPanel {
 
     @Subscribe
     public void onNodeParametersChanged(JIPipeParameterCollection.ParameterChangedEvent event) {
-        if("jipipe:node:bookmarked".equals(event.getKey())) {
+        if ("jipipe:node:bookmarked".equals(event.getKey())) {
             reloadTimer.restart();
-        }
-        else if("jipipe:node:description".equals(event.getKey())) {
+        } else if ("jipipe:node:description".equals(event.getKey())) {
             reloadTimer.restart();
         }
     }

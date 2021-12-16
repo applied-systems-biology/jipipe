@@ -6,14 +6,11 @@ import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.Point;
 import java.awt.Rectangle;
-import java.awt.RenderingHints;
 import java.awt.geom.RoundRectangle2D;
 import java.awt.image.BufferedImage;
 import java.awt.image.ConvolveOp;
 import java.awt.image.Kernel;
 import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
 
 public class DropShadowRenderer {
     private Color shadowColor;

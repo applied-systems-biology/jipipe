@@ -90,22 +90,20 @@ public class BookmarkedNodeListCellRenderer extends JPanel implements ListCellRe
 
         setFont(list.getFont());
 
-        if(node instanceof JIPipeProjectCompartment) {
+        if (node instanceof JIPipeProjectCompartment) {
             descriptionLabel.setText("<html>" + StringUtils.orElse(node.getCustomDescription().getBody(), "No description given") + "</html>");
             nameLabel.setText(node.getName());
             nodeIcon.setIcon(UIUtils.getIconFromResources("data-types/graph-compartment.png"));
             compartmentLabel.setIcon(null);
             compartmentLabel.setText("Compartment");
-        }
-        else if (node != null) {
+        } else if (node != null) {
             descriptionLabel.setText("<html>" + StringUtils.orElse(node.getCustomDescription().getBody(), "No description given") + "</html>");
             nameLabel.setText(node.getName());
             JIPipeProjectCompartment compartment = node.getProjectCompartment();
-            if(compartment != null) {
+            if (compartment != null) {
                 compartmentLabel.setIcon(UIUtils.getIconFromResources("data-types/graph-compartment.png"));
                 compartmentLabel.setText(compartment.getName());
-            }
-            else {
+            } else {
                 compartmentLabel.setIcon(null);
                 compartmentLabel.setText("");
             }

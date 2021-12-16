@@ -1,7 +1,6 @@
 package org.hkijena.ijupdatercli;
 
 import net.imagej.ui.swing.updater.ProgressDialog;
-import net.imagej.ui.swing.updater.ReviewSiteURLsDialog;
 import net.imagej.ui.swing.updater.SwingAuthenticator;
 import net.imagej.updater.FilesCollection;
 import net.imagej.updater.Installer;
@@ -11,17 +10,14 @@ import net.imagej.updater.util.AvailableSites;
 import net.imagej.updater.util.Progress;
 import net.imagej.updater.util.StderrProgress;
 import net.imagej.updater.util.UpdaterUtil;
-import org.scijava.log.DefaultLogger;
 import org.scijava.log.Logger;
 import org.scijava.log.StderrLogService;
 import org.scijava.util.AppUtils;
 import org.xml.sax.SAXException;
 
-import javax.swing.*;
 import javax.xml.parsers.ParserConfigurationException;
 import java.io.File;
 import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
 import java.net.Authenticator;
 import java.nio.file.Path;
 import java.util.Arrays;

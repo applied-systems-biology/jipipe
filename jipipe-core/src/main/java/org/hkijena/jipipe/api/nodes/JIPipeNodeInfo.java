@@ -164,6 +164,7 @@ public interface JIPipeNodeInfo {
 
     /**
      * Gets the icon for this node info
+     *
      * @return the icon
      */
     default Icon getIcon() {
@@ -172,6 +173,7 @@ public interface JIPipeNodeInfo {
 
     /**
      * Gets the icon for this node info
+     *
      * @return the icon
      */
     default URL getIconURL() {

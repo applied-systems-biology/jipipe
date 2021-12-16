@@ -157,7 +157,7 @@ public class FilterLabelsByOverlapAlgorithm extends JIPipeIteratingAlgorithm {
             ImageProcessor otherLabelProcessor = ImageJUtils.getClosestSliceZero(otherLabels, index);
 
             // If we are interested in overlaps, delete the output first
-            if(settings.outputOverlaps) {
+            if (settings.outputOverlaps) {
                 outputProcessor.setColor(0);
                 outputProcessor.fill();
             }
@@ -168,7 +168,7 @@ public class FilterLabelsByOverlapAlgorithm extends JIPipeIteratingAlgorithm {
             TIntIntMap targetLabelMeasurementRows = new TIntIntHashMap();
             TIntIntMap otherLabelMeasurementRows = new TIntIntHashMap();
 
-            if(withExpression) {
+            if (withExpression) {
                 // Apply measurements (global) and store them into the variables
                 targetLabelMeasurements = ImageJUtils2.measureLabels(targetLabelProcessor,
                         targetLabelProcessor,
@@ -181,7 +181,6 @@ public class FilterLabelsByOverlapAlgorithm extends JIPipeIteratingAlgorithm {
                         overlapFilterMeasurements,
                         index,
                         progressInfo.resolve(index.toString()).resolve(otherPrefix));
-
 
 
                 for (int row = 0; row < targetLabelMeasurements.getRowCount(); row++) {
@@ -202,7 +201,7 @@ public class FilterLabelsByOverlapAlgorithm extends JIPipeIteratingAlgorithm {
             for (int targetLabelIndex = 0; targetLabelIndex < allTargetLabels.length; targetLabelIndex++) {
 
                 // Set variables from table
-                if(withExpression) {
+                if (withExpression) {
                     int row = targetLabelMeasurementRows.get(allTargetLabels[targetLabelIndex]);
                     for (int col = 0; col < targetLabelMeasurements.getColumnCount(); col++) {
                         variables.set(targetPrefix + "." + targetLabelMeasurements.getColumnName(col), targetLabelMeasurements.getValueAt(row, col));
@@ -212,11 +211,11 @@ public class FilterLabelsByOverlapAlgorithm extends JIPipeIteratingAlgorithm {
                 for (int otherLabelIndex = 0; otherLabelIndex < allOtherLabels.length; otherLabelIndex++) {
                     percentageProgressInfo.logPercentage(otherLabelIndex + targetLabelIndex * allOtherLabels.length, allTargetLabels.length * allOtherLabels.length);
 
-                    if(progressInfo.isCancelled())
+                    if (progressInfo.isCancelled())
                         return;
 
                     // Set variables from table
-                    if(withExpression) {
+                    if (withExpression) {
                         int row = otherLabelMeasurementRows.get(allOtherLabels[otherLabelIndex]);
                         for (int col = 0; col < otherLabelMeasurements.getColumnCount(); col++) {
                             variables.set(targetPrefix + "." + otherLabelMeasurements.getColumnName(col), otherLabelMeasurements.getValueAt(row, col));
@@ -232,7 +231,7 @@ public class FilterLabelsByOverlapAlgorithm extends JIPipeIteratingAlgorithm {
 
                     boolean matched;
 
-                    if(withExpression) {
+                    if (withExpression) {
                         // Apply measurements
                         ResultsTableData overlapMeasurements = ImageJUtils2.measureLabels(overlap, overlap, overlapFilterMeasurements, index, progressInfo);
                         overlapMeasurements.removeColumn("label_id");
@@ -247,8 +246,7 @@ public class FilterLabelsByOverlapAlgorithm extends JIPipeIteratingAlgorithm {
                             }
                         }
                         matched = overlapMeasurements.getRowCount() > 0 && settings.overlapFilter.test(variables);
-                    }
-                    else {
+                    } else {
                         matched = overlap.getStatistics().max > 0;
 //                        System.out.println(allTargetLabels[targetLabelIndex] + "<-> " + allOtherLabels[otherLabelIndex] + " = " + matched);
                     }
@@ -269,19 +267,19 @@ public class FilterLabelsByOverlapAlgorithm extends JIPipeIteratingAlgorithm {
                     }
 
                     // End after first match
-                    if(matched) {
+                    if (matched) {
                         matchedLabels.add(allTargetLabels[targetLabelIndex]);
                         break;
                     }
                 }
             }
 
-            if(!settings.outputOverlaps) {
+            if (!settings.outputOverlaps) {
                 ImageJUtils2.removeLabelsExcept(outputProcessor, matchedLabels.toArray());
             }
 
             // Write pixels
-           ImageJUtils.setSliceZero(targetLabels, outputProcessor, index);
+            ImageJUtils.setSliceZero(targetLabels, outputProcessor, index);
         }, progressInfo);
 
         dataBatch.addOutputData(outputSlot, new ImagePlusGreyscaleData(targetLabels), progressInfo);
@@ -291,142 +289,121 @@ public class FilterLabelsByOverlapAlgorithm extends JIPipeIteratingAlgorithm {
         final int numPixels = overlap.getWidth() * overlap.getHeight();
         byte[] overlapPixels = (byte[]) overlap.getPixels();
 
-        if(labels1 instanceof ByteProcessor) {
+        if (labels1 instanceof ByteProcessor) {
             byte[] labels1pixels = (byte[]) labels1.getPixels();
-            if(labels2 instanceof ByteProcessor) {
+            if (labels2 instanceof ByteProcessor) {
                 byte[] labels2pixels = (byte[]) labels2.getPixels();
                 for (int i = 0; i < numPixels; i++) {
                     int roi1Label = labels1pixels[i] & 0xff;
                     int roi2Label = labels2pixels[i] & 0xff;
-                    if(roi1Label == label1 && roi2Label == label2) {
-                        overlapPixels[i] = (byte)255;
-                    }
-                    else {
+                    if (roi1Label == label1 && roi2Label == label2) {
+                        overlapPixels[i] = (byte) 255;
+                    } else {
                         overlapPixels[i] = 0;
                     }
                 }
-            }
-            else if(labels2 instanceof ShortProcessor) {
+            } else if (labels2 instanceof ShortProcessor) {
                 short[] labels2pixels = (short[]) labels2.getPixels();
                 for (int i = 0; i < numPixels; i++) {
                     int roi1Label = labels1pixels[i] & 0xff;
                     int roi2Label = labels2pixels[i] & 0xffff;
-                    if(roi1Label == label1 && roi2Label == label2) {
-                        overlapPixels[i] = (byte)255;
-                    }
-                    else {
+                    if (roi1Label == label1 && roi2Label == label2) {
+                        overlapPixels[i] = (byte) 255;
+                    } else {
                         overlapPixels[i] = 0;
                     }
                 }
-            }
-            else if(labels2 instanceof FloatProcessor) {
+            } else if (labels2 instanceof FloatProcessor) {
                 float[] labels2pixels = (float[]) labels2.getPixels();
                 for (int i = 0; i < numPixels; i++) {
                     int roi1Label = labels1pixels[i] & 0xff;
                     int roi2Label = (int) labels2pixels[i];
-                    if(roi1Label == label1 && roi2Label == label2) {
-                        overlapPixels[i] = (byte)255;
-                    }
-                    else {
+                    if (roi1Label == label1 && roi2Label == label2) {
+                        overlapPixels[i] = (byte) 255;
+                    } else {
                         overlapPixels[i] = 0;
                     }
                 }
-            }
-            else {
+            } else {
                 throw new UnsupportedOperationException();
             }
-        }
-        else if(labels1 instanceof ShortProcessor) {
+        } else if (labels1 instanceof ShortProcessor) {
             short[] labels1pixels = (short[]) labels1.getPixels();
-            if(labels2 instanceof ByteProcessor) {
+            if (labels2 instanceof ByteProcessor) {
                 byte[] labels2pixels = (byte[]) labels2.getPixels();
                 for (int i = 0; i < numPixels; i++) {
                     int roi1Label = labels1pixels[i] & 0xffff;
                     int roi2Label = labels2pixels[i] & 0xff;
-                    if(roi1Label == label1 && roi2Label == label2) {
-                        overlapPixels[i] = (byte)255;
-                    }
-                    else {
+                    if (roi1Label == label1 && roi2Label == label2) {
+                        overlapPixels[i] = (byte) 255;
+                    } else {
                         overlapPixels[i] = 0;
                     }
                 }
-            }
-            else if(labels2 instanceof ShortProcessor) {
+            } else if (labels2 instanceof ShortProcessor) {
                 short[] labels2pixels = (short[]) labels2.getPixels();
                 for (int i = 0; i < numPixels; i++) {
                     int roi1Label = labels1pixels[i] & 0xffff;
                     int roi2Label = labels2pixels[i] & 0xffff;
-                    if(roi1Label == label1 && roi2Label == label2) {
-                        overlapPixels[i] = (byte)255;
-                    }
-                    else {
+                    if (roi1Label == label1 && roi2Label == label2) {
+                        overlapPixels[i] = (byte) 255;
+                    } else {
                         overlapPixels[i] = 0;
                     }
                 }
-            }
-            else if(labels2 instanceof FloatProcessor) {
+            } else if (labels2 instanceof FloatProcessor) {
                 float[] labels2pixels = (float[]) labels2.getPixels();
                 for (int i = 0; i < numPixels; i++) {
                     int roi1Label = labels1pixels[i] & 0xffff;
                     int roi2Label = (int) labels2pixels[i];
-                    if(roi1Label == label1 && roi2Label == label2) {
-                        overlapPixels[i] = (byte)255;
-                    }
-                    else {
+                    if (roi1Label == label1 && roi2Label == label2) {
+                        overlapPixels[i] = (byte) 255;
+                    } else {
                         overlapPixels[i] = 0;
                     }
                 }
-            }
-            else {
+            } else {
                 throw new UnsupportedOperationException();
             }
-        }
-        else if(labels1 instanceof FloatProcessor) {
+        } else if (labels1 instanceof FloatProcessor) {
             float[] labels1pixels = (float[]) labels1.getPixels();
-            if(labels2 instanceof ByteProcessor) {
+            if (labels2 instanceof ByteProcessor) {
                 byte[] labels2pixels = (byte[]) labels2.getPixels();
                 for (int i = 0; i < numPixels; i++) {
                     int roi1Label = (int) labels1pixels[i];
                     int roi2Label = labels2pixels[i] & 0xff;
-                    if(roi1Label == label1 && roi2Label == label2) {
-                        overlapPixels[i] = (byte)255;
-                    }
-                    else {
+                    if (roi1Label == label1 && roi2Label == label2) {
+                        overlapPixels[i] = (byte) 255;
+                    } else {
                         overlapPixels[i] = 0;
                     }
                 }
-            }
-            else if(labels2 instanceof ShortProcessor) {
+            } else if (labels2 instanceof ShortProcessor) {
                 short[] labels2pixels = (short[]) labels2.getPixels();
                 for (int i = 0; i < numPixels; i++) {
                     int roi1Label = (int) labels1pixels[i];
                     int roi2Label = labels2pixels[i] & 0xffff;
-                    if(roi1Label == label1 && roi2Label == label2) {
-                        overlapPixels[i] = (byte)255;
-                    }
-                    else {
+                    if (roi1Label == label1 && roi2Label == label2) {
+                        overlapPixels[i] = (byte) 255;
+                    } else {
                         overlapPixels[i] = 0;
                     }
                 }
-            }
-            else if(labels2 instanceof FloatProcessor) {
+            } else if (labels2 instanceof FloatProcessor) {
                 float[] labels2pixels = (float[]) labels2.getPixels();
                 for (int i = 0; i < numPixels; i++) {
                     int roi1Label = (int) labels1pixels[i];
                     int roi2Label = (int) labels2pixels[i];
-                    if(roi1Label == label1 && roi2Label == label2) {
-                        overlapPixels[i] = (byte)255;
-                    }
-                    else {
+                    if (roi1Label == label1 && roi2Label == label2) {
+                        overlapPixels[i] = (byte) 255;
+                    } else {
                         overlapPixels[i] = 0;
                     }
                 }
-            }
-            else {
+            } else {
                 throw new UnsupportedOperationException();
             }
-        }
-        else {
+        } else {
             throw new UnsupportedOperationException();
         }
 

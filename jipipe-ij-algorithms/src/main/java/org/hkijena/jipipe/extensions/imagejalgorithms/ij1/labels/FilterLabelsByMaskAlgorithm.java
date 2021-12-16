@@ -12,7 +12,11 @@ import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
-import org.hkijena.jipipe.api.nodes.*;
+import org.hkijena.jipipe.api.nodes.JIPipeDataBatch;
+import org.hkijena.jipipe.api.nodes.JIPipeInputSlot;
+import org.hkijena.jipipe.api.nodes.JIPipeIteratingAlgorithm;
+import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
+import org.hkijena.jipipe.api.nodes.JIPipeOutputSlot;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.imagejalgorithms.utils.ImageJUtils2;
@@ -57,12 +61,12 @@ public class FilterLabelsByMaskAlgorithm extends JIPipeIteratingAlgorithm {
         ImagePlus labelImage = dataBatch.getInputData("Labels", ImagePlusGreyscaleData.class, progressInfo).getDuplicateImage();
         ImagePlus maskImage = dataBatch.getInputData("Mask", ImagePlusGreyscaleMaskData.class, progressInfo).getImage();
 
-        if(!ImageJUtils.imagesHaveSameSize(labelImage, maskImage)) {
+        if (!ImageJUtils.imagesHaveSameSize(labelImage, maskImage)) {
             throw new UserFriendlyRuntimeException("Input images do not have the same size!",
                     "Input images do not have the same size!",
                     getName(),
                     "All input images in the same batch should have the same width, height, number of slices, number of frames, and number of channels.",
-                    "Please check the input images."); 
+                    "Please check the input images.");
         }
 
         TIntSet labelsToKeep = new TIntHashSet();
@@ -74,35 +78,32 @@ public class FilterLabelsByMaskAlgorithm extends JIPipeIteratingAlgorithm {
             ImageProcessor maskProcessor = ImageJUtils.getSliceZero(maskImage, c, z, t);
             byte[] maskBytes = (byte[]) maskProcessor.getPixels();
 
-            if(labelProcessor instanceof ByteProcessor) {
+            if (labelProcessor instanceof ByteProcessor) {
                 byte[] labelBytes = (byte[]) labelProcessor.getPixels();
                 for (int i = 0; i < maskBytes.length; i++) {
-                    if((maskBytes[i] & 0xff) > 0) {
+                    if ((maskBytes[i] & 0xff) > 0) {
                         labelsToKeep.add(Byte.toUnsignedInt(labelBytes[i]));
                     }
                 }
-            }
-            else if(labelProcessor instanceof ShortProcessor) {
+            } else if (labelProcessor instanceof ShortProcessor) {
                 short[] labelBytes = (short[]) labelProcessor.getPixels();
                 for (int i = 0; i < maskBytes.length; i++) {
-                    if((maskBytes[i] & 0xff) > 0) {
+                    if ((maskBytes[i] & 0xff) > 0) {
                         labelsToKeep.add(Short.toUnsignedInt(labelBytes[i]));
                     }
                 }
-            }
-            else if(labelProcessor instanceof FloatProcessor) {
+            } else if (labelProcessor instanceof FloatProcessor) {
                 float[] labelBytes = (float[]) labelProcessor.getPixels();
                 for (int i = 0; i < maskBytes.length; i++) {
-                    if((maskBytes[i] & 0xff) > 0) {
+                    if ((maskBytes[i] & 0xff) > 0) {
                         labelsToKeep.add((int) labelBytes[i]);
                     }
                 }
-            }
-            else {
+            } else {
                 throw new UnsupportedOperationException("Unsupported label type!");
             }
 
-            if(deleteMaskedLabels)
+            if (deleteMaskedLabels)
                 LabelImages.replaceLabels(labelProcessor, labelsToKeep.toArray(), 0);
             else {
                 ImageJUtils2.removeLabelsExcept(labelProcessor, labelsToKeep.toArray());

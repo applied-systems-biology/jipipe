@@ -20,7 +20,11 @@ import ij.process.ImageProcessor;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
-import org.hkijena.jipipe.api.nodes.*;
+import org.hkijena.jipipe.api.nodes.JIPipeDataBatch;
+import org.hkijena.jipipe.api.nodes.JIPipeInputSlot;
+import org.hkijena.jipipe.api.nodes.JIPipeIteratingAlgorithm;
+import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
+import org.hkijena.jipipe.api.nodes.JIPipeOutputSlot;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeContextAction;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
@@ -76,10 +80,9 @@ public class FilterLabelsByStatisticsAlgorithm extends JIPipeIteratingAlgorithm 
     protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
         ImagePlus labels = dataBatch.getInputData("Labels", ImagePlusGreyscaleData.class, progressInfo).getDuplicateImage();
         ImagePlus reference;
-        if(dataBatch.getInputRow("Image") >= 0) {
+        if (dataBatch.getInputRow("Image") >= 0) {
             reference = dataBatch.getInputData("Image", ImagePlusGreyscaleData.class, progressInfo).getImage();
-        }
-        else {
+        } else {
             reference = labels;
         }
 
@@ -101,7 +104,7 @@ public class FilterLabelsByStatisticsAlgorithm extends JIPipeIteratingAlgorithm 
                 for (int col = 0; col < forRoi.getColumnCount(); col++) {
                     variables.set(forRoi.getColumnName(col), forRoi.getValueAt(row, col));
                 }
-                if(filters.test(variables)) {
+                if (filters.test(variables)) {
                     labelsToKeep.add((int) forRoi.getValueAsDouble(row, "label_id"));
                 }
             }

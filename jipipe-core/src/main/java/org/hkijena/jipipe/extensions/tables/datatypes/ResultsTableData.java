@@ -1156,6 +1156,22 @@ public class ResultsTableData implements JIPipeData, TableModel {
         return !isNumericColumn(col);
     }
 
+    /**
+     * Removes a column with given name
+     *
+     * @param columnName the column name
+     * @return if a column was removed
+     */
+    public boolean removeColumn(String columnName) {
+        int columnIndex = getColumnIndex(columnName);
+        if (columnIndex >= 0) {
+            removeColumnAt(columnIndex);
+            return true;
+        } else {
+            return false;
+        }
+    }
+
     public static ResultsTableData importFrom(Path storagePath) {
         try {
             return new ResultsTableData(ResultsTable.open(PathUtils.findFileByExtensionIn(storagePath, ".csv").toString()));
@@ -1337,22 +1353,6 @@ public class ResultsTableData implements JIPipeData, TableModel {
             }
         }
         return resultsTableData;
-    }
-
-    /**
-     * Removes a column with given name
-     * @param columnName the column name
-     * @return if a column was removed
-     */
-    public boolean removeColumn(String columnName) {
-        int columnIndex = getColumnIndex(columnName);
-        if(columnIndex >= 0) {
-            removeColumnAt(columnIndex);
-            return true;
-        }
-        else {
-            return false;
-        }
     }
 
     /**

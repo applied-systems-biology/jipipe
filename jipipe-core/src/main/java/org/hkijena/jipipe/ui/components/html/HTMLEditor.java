@@ -63,9 +63,9 @@ public class HTMLEditor extends JIPipeWorkbenchPanel {
     public static final int WITH_DIALOG_EDITOR_BUTTON = 2;
     private final Set<String> availableFonts = new HashSet<>(Arrays.asList(GraphicsEnvironment.getLocalGraphicsEnvironment().getAvailableFontFamilyNames()));
     private final Map<String, Action> availableEditorKitActions = new HashMap<>();
+    private final boolean enableDialogEditor;
     private JTextPane wysiwygEditorPane;
     private EditorPane htmlEditorPane;
-
     private HTMLEditorKit wysiwygEditorKit;
     private Map<JToggleButton, BooleanSupplier> updatedButtons = new HashMap<>();
     private JComboBox<String> fontSelection;
@@ -77,7 +77,6 @@ public class HTMLEditor extends JIPipeWorkbenchPanel {
     private JPanel editorContainer;
     private JButton modeButton;
     private JButton editInDialogButton;
-    private final boolean enableDialogEditor;
     private JButton insertImageButton;
     private JButton insertLinkButton;
 
@@ -102,11 +101,10 @@ public class HTMLEditor extends JIPipeWorkbenchPanel {
 
     private void reloadEditor() {
         editorContainer.removeAll();
-        if(mode == Mode.HTML) {
+        if (mode == Mode.HTML) {
             htmlEditorPane.setText(wysiwygEditorPane.getText());
             editorContainer.add(htmlEditorPane, BorderLayout.CENTER);
-        }
-        else {
+        } else {
             wysiwygEditorPane.setText(htmlEditorPane.getText());
             editorContainer.add(wysiwygEditorPane, BorderLayout.CENTER);
         }
@@ -138,7 +136,7 @@ public class HTMLEditor extends JIPipeWorkbenchPanel {
 
     private void reloadToolbar() {
         toolBarContainer.removeAll();
-        if(mode == Mode.Compact) {
+        if (mode == Mode.Compact) {
             JToolBar toolBar = new JToolBar();
             toolBar.add(foregroundColorButton);
             toolBar.add(createFormatActionButton(new StyledEditorKit.BoldAction(),
@@ -157,11 +155,10 @@ public class HTMLEditor extends JIPipeWorkbenchPanel {
             toolBar.add(insertImageButton);
             toolBar.add(Box.createHorizontalGlue());
             toolBar.add(modeButton);
-            if(enableDialogEditor)
+            if (enableDialogEditor)
                 toolBar.add(editInDialogButton);
             toolBarContainer.add(toolBar);
-        }
-        else if(mode == Mode.Full) {
+        } else if (mode == Mode.Full) {
 
             // Toolbar 1
             JToolBar toolBar1 = new JToolBar();
@@ -174,7 +171,7 @@ public class HTMLEditor extends JIPipeWorkbenchPanel {
 
             toolBar1.add(Box.createHorizontalGlue());
             toolBar1.add(modeButton);
-            if(enableDialogEditor)
+            if (enableDialogEditor)
                 toolBar1.add(editInDialogButton);
 
             // Toolbar 2
@@ -237,12 +234,11 @@ public class HTMLEditor extends JIPipeWorkbenchPanel {
             toolBarContainer.add(toolBar1);
             toolBarContainer.add(toolBar2);
             toolBarContainer.add(toolBar3);
-        }
-        else{
+        } else {
             JToolBar toolBar = new JToolBar();
             toolBar.add(Box.createHorizontalGlue());
             toolBar.add(modeButton);
-            if(enableDialogEditor)
+            if (enableDialogEditor)
                 toolBar.add(editInDialogButton);
             toolBarContainer.add(toolBar);
         }
@@ -274,13 +270,13 @@ public class HTMLEditor extends JIPipeWorkbenchPanel {
 //            }
 //        });
         wysiwygEditorPane.addHyperlinkListener(e -> {
-            if(e.getEventType() == HyperlinkEvent.EventType.ACTIVATED) {
+            if (e.getEventType() == HyperlinkEvent.EventType.ACTIVATED) {
                 try {
-                    if(e.getURL() == null) {
+                    if (e.getURL() == null) {
                         JOptionPane.showMessageDialog(this, "This link is invalid! (Content is '" + e.getDescription() + "')", "Visit URL", JOptionPane.ERROR_MESSAGE);
                         return;
                     }
-                    if(JOptionPane.showConfirmDialog(this, "Do you really want to visit " + e.getURL() + "?", "Visit URL", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE) == JOptionPane.YES_OPTION) {
+                    if (JOptionPane.showConfirmDialog(this, "Do you really want to visit " + e.getURL() + "?", "Visit URL", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE) == JOptionPane.YES_OPTION) {
                         Desktop.getDesktop().browse(e.getURL().toURI());
                     }
                 } catch (Exception ex) {
@@ -299,7 +295,7 @@ public class HTMLEditor extends JIPipeWorkbenchPanel {
         htmlEditorPane.getDocument().addDocumentListener(new DocumentChangeListener() {
             @Override
             public void changed(DocumentEvent documentEvent) {
-                if(mode == Mode.HTML) {
+                if (mode == Mode.HTML) {
                     wysiwygEditorPane.setText(htmlEditorPane.getText());
                 }
             }
@@ -361,7 +357,7 @@ public class HTMLEditor extends JIPipeWorkbenchPanel {
         // Color selection
         foregroundColorButton = new ColorChooserButton("");
         foregroundColorButton.setIcon(new OverlayColorIcon(UIUtils.getIconFromResources("actions/format-stroke-color.png"),
-                new Rectangle(0,14,16,2), true, false));
+                new Rectangle(0, 14, 16, 2), true, false));
         UIUtils.makeFlat25x25(foregroundColorButton);
         foregroundColorButton.setToolTipText("Set color");
         foregroundColorButton.getEventBus().register(new Object() {
@@ -402,7 +398,7 @@ public class HTMLEditor extends JIPipeWorkbenchPanel {
         editInDialogButton.setToolTipText("Edit in dedicated window");
         editInDialogButton.addActionListener(e -> {
             HTMLText result = UIUtils.getHTMLByDialog(getWorkbench(), this, "Edit", null, new HTMLText(getHTML()));
-            if(result != null) {
+            if (result != null) {
                 setText(result.getHtml());
             }
         });
@@ -454,7 +450,7 @@ public class HTMLEditor extends JIPipeWorkbenchPanel {
         parameterCollection.addParameter("url", String.class, "URL", "The URL");
         parameterCollection.addParameter("text", String.class, "Text", "The link text");
         parameterCollection.setAllowUserModification(false);
-        if(ParameterPanel.showDialog(getWorkbench(), parameterCollection, null, "Insert link", FormPanel.WITH_SCROLLING)) {
+        if (ParameterPanel.showDialog(getWorkbench(), parameterCollection, null, "Insert link", FormPanel.WITH_SCROLLING)) {
             try {
                 int caretPosition = wysiwygEditorPane.getCaretPosition();
                 HTMLDocument document = (HTMLDocument) wysiwygEditorPane.getDocument();
@@ -469,14 +465,14 @@ public class HTMLEditor extends JIPipeWorkbenchPanel {
 
     private void insertImageFromClipboard() {
         BufferedImage image = UIUtils.getImageFromClipboard(BufferedImage.TYPE_INT_RGB);
-        if(image != null) {
+        if (image != null) {
             insertImage(image);
         }
     }
 
     private void insertImageFromFile() {
         Path path = FileChooserSettings.openFile(this, FileChooserSettings.LastDirectoryKey.Data, "Insert image from file", UIUtils.EXTENSION_FILTER_IMAGEIO_IMAGES);
-        if(path != null) {
+        if (path != null) {
             try {
                 insertImage(ImageIO.read(path.toFile()));
             } catch (IOException e) {
@@ -489,7 +485,7 @@ public class HTMLEditor extends JIPipeWorkbenchPanel {
         setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
         String base64 = UIUtils.imageToBase64(image, "png");
         setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
-        if(base64.length() > 128 * 1024) {
+        if (base64.length() > 128 * 1024) {
             Object result = JOptionPane.showInputDialog(this, "The image has a size of " + image.getWidth() + " x " + image.getHeight() + " pixels (" + (base64.length() / 1024) + "KB)." +
                             "Images of this size can impact the performance of the editor.\nIn the following setting, you can downscale the image to a specified data size or scale.", "Insert image", JOptionPane.WARNING_MESSAGE,
                     UIUtils.getIconFromResources("apps/jipipe.png"), new Object[]{
@@ -508,24 +504,22 @@ public class HTMLEditor extends JIPipeWorkbenchPanel {
                             "20%",
                             "10%"
                     }, "128KB");
-            if(result instanceof String) {
+            if (result instanceof String) {
                 String s = result.toString();
                 double percentage;
-                if(s.endsWith("KB")) {
+                if (s.endsWith("KB")) {
                     double targetBytes = Integer.parseInt(s.substring(0, s.length() - 2)) * 1024;
                     percentage = Math.sqrt(targetBytes / base64.length());
-                }
-                else {
+                } else {
                     percentage = Double.parseDouble(s.substring(0, s.length() - 1)) / 100.0;
                 }
-                if(percentage < 1) {
-                   ImageProcessor processor = new ColorProcessor(image);
-                   processor = processor.resize((int) (processor.getWidth() * percentage), (int) (processor.getHeight() * percentage));
-                   image = processor.getBufferedImage();
-                   base64 = UIUtils.imageToBase64(image, "png");
+                if (percentage < 1) {
+                    ImageProcessor processor = new ColorProcessor(image);
+                    processor = processor.resize((int) (processor.getWidth() * percentage), (int) (processor.getHeight() * percentage));
+                    image = processor.getBufferedImage();
+                    base64 = UIUtils.imageToBase64(image, "png");
                 }
-            }
-            else {
+            } else {
                 return;
             }
         }
@@ -545,10 +539,10 @@ public class HTMLEditor extends JIPipeWorkbenchPanel {
             HTMLDocument document = (HTMLDocument) wysiwygEditorPane.getDocument();
             StringBuilder html = new StringBuilder();
             html.append("<img").append(" src=\"").append("data:image/png;base64,").append(base64).append("\"");
-            if(!StringUtils.isNullOrEmpty(parameterCollection.get("width").get(String.class))) {
+            if (!StringUtils.isNullOrEmpty(parameterCollection.get("width").get(String.class))) {
                 html.append(" width=\"").append(parameterCollection.get("width").get(String.class)).append("\"");
             }
-            if(!StringUtils.isNullOrEmpty(parameterCollection.get("height").get(String.class))) {
+            if (!StringUtils.isNullOrEmpty(parameterCollection.get("height").get(String.class))) {
                 html.append(" height=\"").append(parameterCollection.get("height").get(String.class)).append("\"");
             }
             html.append("></img>");
@@ -779,6 +773,12 @@ public class HTMLEditor extends JIPipeWorkbenchPanel {
         frame.setVisible(true);
     }
 
+    public enum Mode {
+        Compact,
+        Full,
+        HTML
+    }
+
     public static class StrikeThroughAction extends StyledEditorKit.StyledTextAction {
 
         /**
@@ -858,11 +858,5 @@ public class HTMLEditor extends JIPipeWorkbenchPanel {
                 setCharacterAttributes(editor, sas, false);
             }
         }
-    }
-
-    public enum Mode {
-        Compact,
-        Full,
-        HTML
     }
 }

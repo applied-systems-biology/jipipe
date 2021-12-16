@@ -61,13 +61,13 @@ public class OverlayColorIcon implements ColorIcon {
         fillColor = c;
     }
 
-    public void setBorderColor(Color c) {
-        borderColor = c;
-    }
-
     @Override
     public Color getBorderColor() {
         return borderColor;
+    }
+
+    public void setBorderColor(Color c) {
+        borderColor = c;
     }
 
     @Override
@@ -95,11 +95,11 @@ public class OverlayColorIcon implements ColorIcon {
     @Override
     public void paintIcon(Component c, Graphics g, int x, int y) {
         baseIcon.paintIcon(c, g, x, y);
-        if(drawFill) {
+        if (drawFill) {
             g.setColor(fillColor);
             g.fillRect(x + insets.x, y + insets.y, insets.width, insets.height);
         }
-        if(drawBorder) {
+        if (drawBorder) {
             g.setColor(borderColor);
             g.drawRect(x + insets.x, y + insets.y, insets.width, insets.height);
         }

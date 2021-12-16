@@ -43,8 +43,6 @@ import org.hkijena.jipipe.utils.json.JsonUtils;
 import javax.swing.*;
 import javax.swing.tree.DefaultMutableTreeNode;
 import java.awt.BorderLayout;
-import java.awt.event.ComponentAdapter;
-import java.awt.event.ComponentEvent;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;

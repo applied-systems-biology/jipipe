@@ -33,8 +33,8 @@ import org.hkijena.jipipe.extensions.core.nodes.JIPipeCommentNode;
 import org.hkijena.jipipe.extensions.settings.GraphEditorUISettings;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.JIPipeWorkbenchPanel;
-import org.hkijena.jipipe.ui.components.renderers.DropShadowRenderer;
 import org.hkijena.jipipe.ui.components.ZoomViewPort;
+import org.hkijena.jipipe.ui.components.renderers.DropShadowRenderer;
 import org.hkijena.jipipe.ui.grapheditor.actions.JIPipeNodeUIAction;
 import org.hkijena.jipipe.ui.grapheditor.actions.OpenContextMenuAction;
 import org.hkijena.jipipe.ui.grapheditor.contextmenu.NodeUIContextAction;
@@ -137,7 +137,8 @@ public class JIPipeGraphCanvasUI extends JIPipeWorkbenchPanel implements MouseMo
 
     /**
      * Creates a new UI
-     *  @param workbench      the workbench
+     *
+     * @param workbench      the workbench
      * @param graphEditorUI
      * @param graph          The algorithm graph
      * @param compartment    The compartment to show
@@ -1015,14 +1016,12 @@ public class JIPipeGraphCanvasUI extends JIPipeWorkbenchPanel implements MouseMo
 
             graphics2D.setColor(nodeUI.getFillColor());
             graphics2D.fillRect(x, y, width, height);
-            if(nodeUI.getNode().isBookmarked()) {
+            if (nodeUI.getNode().isBookmarked()) {
                 graphics2D.setColor(new Color(0x33cc33));
-            }
-            else {
+            } else {
                 graphics2D.setColor(nodeUI.getBorderColor());
             }
             graphics2D.drawRect(x, y, width, height);
-
 
 
             ImageIcon icon = JIPipe.getInstance().getNodeRegistry().getIconFor(nodeUI.getNode().getInfo());
@@ -1064,7 +1063,7 @@ public class JIPipeGraphCanvasUI extends JIPipeWorkbenchPanel implements MouseMo
         if (settings.isDrawNodeShadows()) {
             for (JIPipeNodeUI ui : nodeUIs.values()) {
                 DROP_SHADOW_BORDER.paint(g, ui.getX() - 3, ui.getY() - 3, ui.getWidth() + 8, ui.getHeight() + 8);
-                if(ui.getNode().isBookmarked()) {
+                if (ui.getNode().isBookmarked()) {
                     BOOKMARK_SHADOW_BORDER.paint(g, ui.getX() - 12, ui.getY() - 12, ui.getWidth() + 24, ui.getHeight() + 24);
                 }
             }

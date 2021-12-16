@@ -403,6 +403,7 @@ public class JIPipeDataBatch implements Comparable<JIPipeDataBatch> {
 
     /**
      * Returns the row of the data in the original data slot
+     *
      * @param slot the slot name
      * @return the row or -1 if no data is present
      */
@@ -417,6 +418,7 @@ public class JIPipeDataBatch implements Comparable<JIPipeDataBatch> {
 
     /**
      * Returns the row of the data in the original data slot
+     *
      * @param slot the slot
      * @return the row or -1 if no data is present
      */

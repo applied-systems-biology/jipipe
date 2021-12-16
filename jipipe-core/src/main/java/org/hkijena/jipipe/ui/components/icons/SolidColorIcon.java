@@ -13,7 +13,6 @@
 
 package org.hkijena.jipipe.ui.components.icons;
 
-import javax.swing.*;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Graphics;
@@ -25,10 +24,9 @@ import java.awt.Insets;
 public class SolidColorIcon implements ColorIcon {
     private final int imageWidth;
     private final int imageHeight;
-
+    private final Insets insets;
     private Color fillColor;
     private Color borderColor;
-    private final Insets insets;
 
     /**
      * Creates a 16x16 black icon
@@ -81,13 +79,13 @@ public class SolidColorIcon implements ColorIcon {
         fillColor = c;
     }
 
-    public void setBorderColor(Color c) {
-        borderColor = c;
-    }
-
     @Override
     public Color getBorderColor() {
         return borderColor;
+    }
+
+    public void setBorderColor(Color c) {
+        borderColor = c;
     }
 
     @Override

@@ -464,7 +464,8 @@ public class JIPipeRun implements JIPipeRunnable {
 
     /**
      * Returns true if the data in the node is already cached
-     * @param algorithm the node (inside copy graph)
+     *
+     * @param algorithm  the node (inside copy graph)
      * @param cacheQuery the cache query
      * @return true if data is found in the cache
      */

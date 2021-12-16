@@ -19,8 +19,8 @@ import org.hkijena.jipipe.JIPipeDependency;
 import org.hkijena.jipipe.api.JIPipeAuthorMetadata;
 import org.hkijena.jipipe.api.data.JIPipeDataInfo;
 import org.hkijena.jipipe.api.registries.JIPipeDatatypeRegistry;
-import org.hkijena.jipipe.ui.components.renderers.JIPipeDataInfoListCellRenderer;
 import org.hkijena.jipipe.ui.components.markdown.MarkdownDocument;
+import org.hkijena.jipipe.ui.components.renderers.JIPipeDataInfoListCellRenderer;
 
 import javax.swing.*;
 import java.util.Comparator;

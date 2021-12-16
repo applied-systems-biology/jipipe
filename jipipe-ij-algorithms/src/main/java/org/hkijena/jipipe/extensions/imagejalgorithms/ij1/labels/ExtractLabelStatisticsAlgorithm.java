@@ -52,10 +52,9 @@ public class ExtractLabelStatisticsAlgorithm extends JIPipeIteratingAlgorithm {
     protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
         ImagePlus labels = dataBatch.getInputData("Labels", ImagePlusGreyscaleData.class, progressInfo).getImage();
         ImagePlus reference;
-        if(dataBatch.getInputRow("Image") >= 0) {
+        if (dataBatch.getInputRow("Image") >= 0) {
             reference = dataBatch.getInputData("Image", ImagePlusGreyscaleData.class, progressInfo).getImage();
-        }
-        else {
+        } else {
             reference = labels;
         }
 

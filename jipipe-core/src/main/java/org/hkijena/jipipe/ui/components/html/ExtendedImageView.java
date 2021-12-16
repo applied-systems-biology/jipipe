@@ -55,6 +55,35 @@ import java.util.Dictionary;
  */
 public class ExtendedImageView extends View {
     /**
+     * Property name for pending image icon
+     */
+    private static final String PENDING_IMAGE = "html.pendingImage";
+    /**
+     * Property name for missing image icon
+     */
+    private static final String MISSING_IMAGE = "html.missingImage";
+    /**
+     * Document property for image cache.
+     */
+    private static final String IMAGE_CACHE_PROPERTY = "imageCache";
+    // Height/width to use before we know the real size, these should at least
+    // the size of <code>sMissingImageIcon</code> and
+    // <code>sPendingImageIcon</code>
+    private static final int DEFAULT_WIDTH = 38;
+    private static final int DEFAULT_HEIGHT = 38;
+    /**
+     * Default border to use if one is not specified.
+     */
+    private static final int DEFAULT_BORDER = 2;
+    // Bitmask values
+    private static final int LOADING_FLAG = 1;
+    private static final int LINK_FLAG = 2;
+    private static final int WIDTH_FLAG = 4;
+    private static final int HEIGHT_FLAG = 8;
+    private static final int RELOAD_FLAG = 16;
+    private static final int RELOAD_IMAGE_FLAG = 32;
+    private static final int SYNC_LOAD_FLAG = 64;
+    /**
      * If true, when some of the bits are available a repaint is done.
      * <p>
      * This is set to false as swing does not offer a repaint that takes a
@@ -67,48 +96,16 @@ public class ExtendedImageView extends View {
      * Repaint delay when some of the bits are available.
      */
     private static int sIncRate = 100;
-    /**
-     * Property name for pending image icon
-     */
-    private static final String PENDING_IMAGE = "html.pendingImage";
-    /**
-     * Property name for missing image icon
-     */
-    private static final String MISSING_IMAGE = "html.missingImage";
-
-    /**
-     * Document property for image cache.
-     */
-    private static final String IMAGE_CACHE_PROPERTY = "imageCache";
-
-    // Height/width to use before we know the real size, these should at least
-    // the size of <code>sMissingImageIcon</code> and
-    // <code>sPendingImageIcon</code>
-    private static final int DEFAULT_WIDTH = 38;
-    private static final int DEFAULT_HEIGHT= 38;
-
-    /**
-     * Default border to use if one is not specified.
-     */
-    private static final int DEFAULT_BORDER = 2;
-
-    // Bitmask values
-    private static final int LOADING_FLAG = 1;
-    private static final int LINK_FLAG = 2;
-    private static final int WIDTH_FLAG = 4;
-    private static final int HEIGHT_FLAG = 8;
-    private static final int RELOAD_FLAG = 16;
-    private static final int RELOAD_IMAGE_FLAG = 32;
-    private static final int SYNC_LOAD_FLAG = 64;
-
     private AttributeSet attr;
     private Image image;
     private Image disabledImage;
     private int width;
     private int height;
-    /** Bitmask containing some of the above bitmask values. Because the
+    /**
+     * Bitmask containing some of the above bitmask values. Because the
      * image loading notification can happen on another thread access to
-     * this is synchronized (at least for modifying it). */
+     * this is synchronized (at least for modifying it).
+     */
     private int state;
     private Container container;
     private Rectangle fBounds;
@@ -131,9 +128,10 @@ public class ExtendedImageView extends View {
      * and there is valid alt text.
      */
     private View altView;
-    /** Alignment along the vertical (Y) axis. */
+    /**
+     * Alignment along the vertical (Y) axis.
+     */
     private float vAlign;
-
 
 
     /**
@@ -154,8 +152,8 @@ public class ExtendedImageView extends View {
      * <code>HTML.Attribute.ALT</code>.
      */
     public String getAltText() {
-        return (String)getElement().getAttributes().getAttribute
-            (HTML.Attribute.ALT);
+        return (String) getElement().getAttributes().getAttribute
+                (HTML.Attribute.ALT);
     }
 
     /**
@@ -163,15 +161,15 @@ public class ExtendedImageView extends View {
      * or null if it could not be determined.
      */
     public URL getImageURL() {
-        String src = (String)getElement().getAttributes().
-                             getAttribute(HTML.Attribute.SRC);
+        String src = (String) getElement().getAttributes().
+                getAttribute(HTML.Attribute.SRC);
         if (src == null) {
             return null;
         }
 
-        URL reference = ((HTMLDocument)getDocument()).getBase();
+        URL reference = ((HTMLDocument) getDocument()).getBase();
         try {
-            URL u = new URL(reference,src);
+            URL u = new URL(reference, src);
             return u;
         } catch (MalformedURLException e) {
             return null;
@@ -202,7 +200,7 @@ public class ExtendedImageView extends View {
 
     private Image getImage(boolean enabled) {
         Image img = getImage();
-        if (! enabled) {
+        if (!enabled) {
             if (disabledImage == null) {
                 disabledImage = GrayFilter.createDisabledImage(img);
             }
@@ -212,27 +210,26 @@ public class ExtendedImageView extends View {
     }
 
     /**
+     * Returns true if the image should be loaded when first asked for.
+     */
+    public boolean getLoadsSynchronously() {
+        return ((state & SYNC_LOAD_FLAG) != 0);
+    }
+
+    /**
      * Sets how the image is loaded. If <code>newValue</code> is true,
      * the image we be loaded when first asked for, otherwise it will
      * be loaded asynchronously. The default is to not load synchronously,
      * that is to load the image asynchronously.
      */
     public void setLoadsSynchronously(boolean newValue) {
-        synchronized(this) {
+        synchronized (this) {
             if (newValue) {
                 state |= SYNC_LOAD_FLAG;
-            }
-            else {
+            } else {
                 state = (state | SYNC_LOAD_FLAG) ^ SYNC_LOAD_FLAG;
             }
         }
-    }
-
-    /**
-     * Returns true if the image should be loaded when first asked for.
-     */
-    public boolean getLoadsSynchronously() {
-        return ((state & SYNC_LOAD_FLAG) != 0);
     }
 
     /**
@@ -272,16 +269,16 @@ public class ExtendedImageView extends View {
         this.attr = sheet.getViewAttributes(this);
 
         // Gutters
-        borderSize = (short)getIntAttr(HTML.Attribute.BORDER, isLink() ?
-                                       DEFAULT_BORDER : 0);
+        borderSize = (short) getIntAttr(HTML.Attribute.BORDER, isLink() ?
+                DEFAULT_BORDER : 0);
 
-        leftInset = rightInset = (short)(getIntAttr(HTML.Attribute.HSPACE,
-                                                    0) + borderSize);
-        topInset = bottomInset = (short)(getIntAttr(HTML.Attribute.VSPACE,
-                                                    0) + borderSize);
+        leftInset = rightInset = (short) (getIntAttr(HTML.Attribute.HSPACE,
+                0) + borderSize);
+        topInset = bottomInset = (short) (getIntAttr(HTML.Attribute.VSPACE,
+                0) + borderSize);
 
-        borderColor = ((StyledDocument)getDocument()).getForeground
-                      (getAttributes());
+        borderColor = ((StyledDocument) getDocument()).getForeground
+                (getAttributes());
 
         AttributeSet attr = getElement().getAttributes();
 
@@ -295,21 +292,19 @@ public class ExtendedImageView extends View {
             alignment = alignment.toString();
             if ("top".equals(alignment)) {
                 vAlign = 0f;
-            }
-            else if ("middle".equals(alignment)) {
+            } else if ("middle".equals(alignment)) {
                 vAlign = .5f;
             }
         }
 
-        AttributeSet anchorAttr = (AttributeSet)attr.getAttribute(HTML.Tag.A);
+        AttributeSet anchorAttr = (AttributeSet) attr.getAttribute(HTML.Tag.A);
         if (anchorAttr != null && anchorAttr.isDefined
-            (HTML.Attribute.HREF)) {
-            synchronized(this) {
+                (HTML.Attribute.HREF)) {
+            synchronized (this) {
                 state |= LINK_FLAG;
             }
-        }
-        else {
-            synchronized(this) {
+        } else {
+            synchronized (this) {
                 state = (state | LINK_FLAG) ^ LINK_FLAG;
             }
         }
@@ -324,7 +319,7 @@ public class ExtendedImageView extends View {
         super.setParent(parent);
         container = (parent != null) ? getContainer() : null;
         if (oldParent != parent) {
-            synchronized(this) {
+            synchronized (this) {
                 state |= RELOAD_FLAG;
             }
         }
@@ -334,9 +329,9 @@ public class ExtendedImageView extends View {
      * Invoked when the Elements attributes have changed. Recreates the image.
      */
     public void changedUpdate(DocumentEvent e, Shape a, ViewFactory f) {
-        super.changedUpdate(e,a,f);
+        super.changedUpdate(e, a, f);
 
-        synchronized(this) {
+        synchronized (this) {
             state |= RELOAD_FLAG | RELOAD_IMAGE_FLAG;
         }
 
@@ -354,8 +349,8 @@ public class ExtendedImageView extends View {
     public void paint(Graphics g, Shape a) {
         sync();
 
-        Rectangle rect = (a instanceof Rectangle) ? (Rectangle)a :
-                         a.getBounds();
+        Rectangle rect = (a instanceof Rectangle) ? (Rectangle) a :
+                a.getBounds();
         Rectangle clip = g.getClipBounds();
 
         fBounds.setBounds(rect);
@@ -363,28 +358,26 @@ public class ExtendedImageView extends View {
         paintBorder(g, rect);
         if (clip != null) {
             g.clipRect(rect.x + leftInset, rect.y + topInset,
-                       rect.width - leftInset - rightInset,
-                       rect.height - topInset - bottomInset);
+                    rect.width - leftInset - rightInset,
+                    rect.height - topInset - bottomInset);
         }
 
         Container host = getContainer();
         Image img = getImage(host == null || host.isEnabled());
         if (img != null) {
-            if (! hasPixels(img)) {
+            if (!hasPixels(img)) {
                 // No pixels yet, use the default
                 Icon icon = getLoadingImageIcon();
                 if (icon != null) {
                     icon.paintIcon(host, g,
                             rect.x + leftInset, rect.y + topInset);
                 }
-            }
-            else {
+            } else {
                 // Draw the image
                 g.drawImage(img, rect.x + leftInset, rect.y + topInset,
-                            width, height, imageObserver);
+                        width, height, imageObserver);
             }
-        }
-        else {
+        } else {
             Icon icon = getNoImageIcon();
             if (icon != null) {
                 icon.paintIcon(host, g,
@@ -393,12 +386,12 @@ public class ExtendedImageView extends View {
             View view = getAltView();
             // Paint the view representing the alt text, if its non-null
             if (view != null && ((state & WIDTH_FLAG) == 0 ||
-                                 width > DEFAULT_WIDTH)) {
+                    width > DEFAULT_WIDTH)) {
                 // Assume layout along the y direction
                 Rectangle altRect = new Rectangle
-                    (rect.x + leftInset + DEFAULT_WIDTH, rect.y + topInset,
-                     rect.width - leftInset - rightInset - DEFAULT_WIDTH,
-                     rect.height - topInset - bottomInset);
+                        (rect.x + leftInset + DEFAULT_WIDTH, rect.y + topInset,
+                                rect.width - leftInset - rightInset - DEFAULT_WIDTH,
+                                rect.height - topInset - bottomInset);
 
                 view.paint(g, altRect);
             }
@@ -411,11 +404,11 @@ public class ExtendedImageView extends View {
 
     private void paintHighlights(Graphics g, Shape shape) {
         if (container instanceof JTextComponent) {
-            JTextComponent tc = (JTextComponent)container;
+            JTextComponent tc = (JTextComponent) container;
             Highlighter h = tc.getHighlighter();
             if (h instanceof LayeredHighlighter) {
-                ((LayeredHighlighter)h).paintLayeredHighlights
-                    (g, getStartOffset(), getEndOffset(), shape, tc, this);
+                ((LayeredHighlighter) h).paintLayeredHighlights
+                        (g, getStartOffset(), getEndOffset(), shape, tc, this);
             }
         }
     }
@@ -430,9 +423,9 @@ public class ExtendedImageView extends View {
             int n = (image == null) ? 1 : borderSize;
             for (int counter = 0; counter < n; counter++) {
                 g.drawRect(rect.x + xOffset + counter,
-                           rect.y + yOffset + counter,
-                           rect.width - counter - counter - xOffset -xOffset-1,
-                           rect.height - counter - counter -yOffset-yOffset-1);
+                        rect.y + yOffset + counter,
+                        rect.width - counter - counter - xOffset - xOffset - 1,
+                        rect.height - counter - counter - yOffset - yOffset - 1);
             }
         }
     }
@@ -442,10 +435,10 @@ public class ExtendedImageView extends View {
      * axis.
      *
      * @param axis may be either X_AXIS or Y_AXIS
-     * @return   the span the view would like to be rendered into;
-     *           typically the view is told to render into the span
-     *           that is returned, although there is no guarantee;
-     *           the parent may choose to resize or break the view
+     * @return the span the view would like to be rendered into;
+     * typically the view is told to render into the span
+     * that is returned, although there is no guarantee;
+     * the parent may choose to resize or break the view
      */
     public float getPreferredSpan(int axis) {
         sync();
@@ -464,15 +457,14 @@ public class ExtendedImageView extends View {
 
         if (image != null) {
             switch (axis) {
-            case View.X_AXIS:
-                return width + leftInset + rightInset;
-            case View.Y_AXIS:
-                return height + topInset + bottomInset;
-            default:
-                throw new IllegalArgumentException("Invalid axis: " + axis);
+                case View.X_AXIS:
+                    return width + leftInset + rightInset;
+                case View.Y_AXIS:
+                    return height + topInset + bottomInset;
+                default:
+                    throw new IllegalArgumentException("Invalid axis: " + axis);
             }
-        }
-        else {
+        } else {
             View view = getAltView();
             float retValue = 0f;
 
@@ -480,12 +472,12 @@ public class ExtendedImageView extends View {
                 retValue = view.getPreferredSpan(axis);
             }
             switch (axis) {
-            case View.X_AXIS:
-                return retValue + (float)(width + leftInset + rightInset);
-            case View.Y_AXIS:
-                return retValue + (float)(height + topInset + bottomInset);
-            default:
-                throw new IllegalArgumentException("Invalid axis: " + axis);
+                case View.X_AXIS:
+                    return retValue + (float) (width + leftInset + rightInset);
+                case View.Y_AXIS:
+                    return retValue + (float) (height + topInset + bottomInset);
+                default:
+                    throw new IllegalArgumentException("Invalid axis: " + axis);
             }
         }
     }
@@ -498,17 +490,17 @@ public class ExtendedImageView extends View {
      *
      * @param axis may be either X_AXIS or Y_AXIS
      * @return the desired alignment; this should be a value
-     *   between 0.0 and 1.0 where 0 indicates alignment at the
-     *   origin and 1.0 indicates alignment to the full span
-     *   away from the origin; an alignment of 0.5 would be the
-     *   center of the view
+     * between 0.0 and 1.0 where 0 indicates alignment at the
+     * origin and 1.0 indicates alignment to the full span
+     * away from the origin; an alignment of 0.5 would be the
+     * center of the view
      */
     public float getAlignment(int axis) {
         switch (axis) {
-        case View.Y_AXIS:
-            return vAlign;
-        default:
-            return super.getAlignment(axis);
+            case View.Y_AXIS:
+                return vAlign;
+            default:
+                return super.getAlignment(axis);
         }
     }
 
@@ -517,10 +509,10 @@ public class ExtendedImageView extends View {
      * to the coordinate space of the view mapped to it.
      *
      * @param pos the position to convert
-     * @param a the allocated region to render into
+     * @param a   the allocated region to render into
      * @return the bounding box of the given position
-     * @exception BadLocationException  if the given position does not represent a
-     *   valid location in the associated document
+     * @throws BadLocationException if the given position does not represent a
+     *                              valid location in the associated document
      * @see View#modelToView
      */
     public Shape modelToView(int pos, Shape a, Position.Bias b) throws BadLocationException {
@@ -545,7 +537,7 @@ public class ExtendedImageView extends View {
      * @param y the Y coordinate
      * @param a the allocated region to render into
      * @return the location within the model that best represents the
-     *  given point of view
+     * given point of view
      * @see View#viewToModel
      */
     public int viewToModel(float x, float y, Shape a, Position.Bias[] bias) {
@@ -562,7 +554,7 @@ public class ExtendedImageView extends View {
      * Sets the size of the view.  This should cause
      * layout of the view if it has any layout duties.
      *
-     * @param width the width &gt;= 0
+     * @param width  the width &gt;= 0
      * @param height the height &gt;= 0
      */
     public void setSize(float width, float height) {
@@ -572,8 +564,8 @@ public class ExtendedImageView extends View {
             View view = getAltView();
 
             if (view != null) {
-                view.setSize(Math.max(0f, width - (float)(DEFAULT_WIDTH + leftInset + rightInset)),
-                             Math.max(0f, height - (float)(topInset + bottomInset)));
+                view.setSize(Math.max(0f, width - (float) (DEFAULT_WIDTH + leftInset + rightInset)),
+                        Math.max(0f, height - (float) (topInset + bottomInset)));
             }
         }
     }
@@ -590,8 +582,8 @@ public class ExtendedImageView extends View {
      */
     private boolean hasPixels(Image image) {
         return image != null &&
-            (image.getHeight(imageObserver) > 0) &&
-            (image.getWidth(imageObserver) > 0);
+                (image.getHeight(imageObserver) > 0) &&
+                (image.getWidth(imageObserver) > 0);
     }
 
     /**
@@ -616,7 +608,7 @@ public class ExtendedImageView extends View {
     private void repaint(long delay) {
         if (container != null && fBounds != null) {
             container.repaint(delay, fBounds.x, fBounds.y, fBounds.width,
-                               fBounds.height);
+                    fBounds.height);
         }
     }
 
@@ -628,14 +620,13 @@ public class ExtendedImageView extends View {
         AttributeSet attr = getElement().getAttributes();
         if (attr.isDefined(name)) {             // does not check parents!
             int i;
-            String val = (String)attr.getAttribute(name);
+            String val = (String) attr.getAttribute(name);
             if (val == null) {
                 i = deflt;
-            }
-            else {
-                try{
+            } else {
+                try {
                     i = Math.max(0, Integer.parseInt(val));
-                }catch( NumberFormatException x ) {
+                } catch (NumberFormatException x) {
                     i = deflt;
                 }
             }
@@ -654,7 +645,7 @@ public class ExtendedImageView extends View {
         }
         s = state;
         if ((s & RELOAD_FLAG) != 0) {
-            synchronized(this) {
+            synchronized (this) {
                 state = (state | RELOAD_FLAG) ^ RELOAD_FLAG;
             }
             setPropertiesFromAttributes();
@@ -667,11 +658,11 @@ public class ExtendedImageView extends View {
      * <code>updateImageSize</code> directly.
      */
     private void refreshImage() {
-        synchronized(this) {
+        synchronized (this) {
             // clear out width/height/realoadimage flag and set loading flag
             state = (state | LOADING_FLAG | RELOAD_IMAGE_FLAG | WIDTH_FLAG |
-                     HEIGHT_FLAG) ^ (WIDTH_FLAG | HEIGHT_FLAG |
-                                     RELOAD_IMAGE_FLAG);
+                    HEIGHT_FLAG) ^ (WIDTH_FLAG | HEIGHT_FLAG |
+                    RELOAD_IMAGE_FLAG);
             image = null;
             width = height = 0;
         }
@@ -682,9 +673,8 @@ public class ExtendedImageView extends View {
 
             // And update the size params
             updateImageSize();
-        }
-        finally {
-            synchronized(this) {
+        } finally {
+            synchronized (this) {
                 // Clear out state in case someone threw an exception.
                 state = (state | LOADING_FLAG) ^ LOADING_FLAG;
             }
@@ -711,12 +701,11 @@ public class ExtendedImageView extends View {
         URL src = getImageURL();
         Image newImage = null;
         if (src != null) {
-            Dictionary cache = (Dictionary)getDocument().
+            Dictionary cache = (Dictionary) getDocument().
                     getProperty(IMAGE_CACHE_PROPERTY);
             if (cache != null) {
-                newImage = (Image)cache.get(src);
-            }
-            else {
+                newImage = (Image) cache.get(src);
+            } else {
                 newImage = Toolkit.getDefaultToolkit().createImage(src);
                 if (newImage != null && getLoadsSynchronously()) {
                     // Force the image to be loaded by using an ImageIcon.
@@ -764,7 +753,7 @@ public class ExtendedImageView extends View {
             }
 
             Image img;
-            synchronized(this) {
+            synchronized (this) {
                 img = image;
             }
             if (newWidth <= 0) {
@@ -795,16 +784,15 @@ public class ExtendedImageView extends View {
             // Make sure the image starts loading:
             if ((newState & (WIDTH_FLAG | HEIGHT_FLAG)) != 0) {
                 Toolkit.getDefaultToolkit().prepareImage(newImage, newWidth,
-                                                         newHeight,
-                                                         imageObserver);
-            }
-            else {
+                        newHeight,
+                        imageObserver);
+            } else {
                 Toolkit.getDefaultToolkit().prepareImage(newImage, -1, -1,
-                                                         imageObserver);
+                        imageObserver);
             }
 
             boolean createText = false;
-            synchronized(this) {
+            synchronized (this) {
                 // If imageloading failed, other thread may have called
                 // ImageLoader which will null out image, hence we check
                 // for it.
@@ -813,11 +801,10 @@ public class ExtendedImageView extends View {
                         width = newWidth;
                     }
                     if ((newState & HEIGHT_FLAG) == HEIGHT_FLAG ||
-                        height == 0) {
+                            height == 0) {
                         height = newHeight;
                     }
-                }
-                else {
+                } else {
                     createText = true;
                     if ((newState & WIDTH_FLAG) == WIDTH_FLAG) {
                         width = newWidth;
@@ -833,8 +820,7 @@ public class ExtendedImageView extends View {
                 // Only reset if this thread determined image is null
                 updateAltTextView();
             }
-        }
-        else {
+        } else {
             width = height = DEFAULT_HEIGHT;
             updateAltTextView();
         }
@@ -850,7 +836,7 @@ public class ExtendedImageView extends View {
             ImageLabelView newView;
 
             newView = new ImageLabelView(getElement(), text);
-            synchronized(this) {
+            synchronized (this) {
                 altView = newView;
             }
         }
@@ -862,7 +848,7 @@ public class ExtendedImageView extends View {
     private View getAltView() {
         View view;
 
-        synchronized(this) {
+        synchronized (this) {
             view = altView;
         }
         if (view != null && view.getParent() == null) {
@@ -879,19 +865,18 @@ public class ExtendedImageView extends View {
         if (SwingUtilities.isEventDispatchThread()) {
             Document doc = getDocument();
             if (doc instanceof AbstractDocument) {
-                ((AbstractDocument)doc).readLock();
+                ((AbstractDocument) doc).readLock();
             }
             preferenceChanged(null, true, true);
             if (doc instanceof AbstractDocument) {
-                ((AbstractDocument)doc).readUnlock();
+                ((AbstractDocument) doc).readUnlock();
             }
-        }
-        else {
+        } else {
             SwingUtilities.invokeLater(new Runnable() {
-                    public void run() {
-                        safePreferenceChanged();
-                    }
-                });
+                public void run() {
+                    safePreferenceChanged();
+                }
+            });
         }
     }
 
@@ -911,14 +896,14 @@ public class ExtendedImageView extends View {
             newHeight = specifiedHeight;
         } else if (specifiedWidth != -1 ^ specifiedHeight != -1) {
             if (specifiedWidth <= 0) {
-                proportion = specifiedHeight / ((double)newHeight);
-                newWidth = (int)(proportion * newWidth);
+                proportion = specifiedHeight / ((double) newHeight);
+                newWidth = (int) (proportion * newWidth);
                 newHeight = specifiedHeight;
             }
 
             if (specifiedHeight <= 0) {
-                proportion = specifiedWidth / ((double)newWidth);
-                newHeight = (int)(proportion * newHeight);
+                proportion = specifiedWidth / ((double) newWidth);
+                newHeight = (int) (proportion * newHeight);
                 newWidth = specifiedWidth;
             }
         }
@@ -940,17 +925,17 @@ public class ExtendedImageView extends View {
         // necessary and return. This is ok as we know when loading finishes
         // it will pick up the new height/width, if necessary.
         public boolean imageUpdate(Image img, int flags, int x, int y,
-                                   int newWidth, int newHeight ) {
+                                   int newWidth, int newHeight) {
             if (img != image && img != disabledImage ||
-                image == null || getParent() == null) {
+                    image == null || getParent() == null) {
 
                 return false;
             }
 
             // Bail out if there was an error:
-            if ((flags & (ABORT|ERROR)) != 0) {
+            if ((flags & (ABORT | ERROR)) != 0) {
                 repaint(0);
-                synchronized(ExtendedImageView.this) {
+                synchronized (ExtendedImageView.this) {
                     if (image == img) {
                         // Be sure image hasn't changed since we don't
                         // initialy synchronize
@@ -979,11 +964,11 @@ public class ExtendedImageView extends View {
                 // Resize image if necessary:
                 short changed = 0;
                 if ((flags & ImageObserver.HEIGHT) != 0 && !getElement().
-                      getAttributes().isDefined(HTML.Attribute.HEIGHT)) {
+                        getAttributes().isDefined(HTML.Attribute.HEIGHT)) {
                     changed |= 1;
                 }
                 if ((flags & ImageObserver.WIDTH) != 0 && !getElement().
-                      getAttributes().isDefined(HTML.Attribute.WIDTH)) {
+                        getAttributes().isDefined(HTML.Attribute.WIDTH)) {
                     changed |= 2;
                 }
 
@@ -993,13 +978,13 @@ public class ExtendedImageView extends View {
                  * specified HTML attributes.
                  */
                 if (((flags & ImageObserver.HEIGHT) != 0) &&
-                     ((flags & ImageObserver.WIDTH) != 0)) {
-                        Dimension d = adjustWidthHeight(newWidth, newHeight);
-                        newWidth = d.width;
-                        newHeight = d.height;
-                        changed |= 3;
+                        ((flags & ImageObserver.WIDTH) != 0)) {
+                    Dimension d = adjustWidthHeight(newWidth, newHeight);
+                    newWidth = d.width;
+                    newHeight = d.height;
+                    changed |= 3;
                 }
-                synchronized(ExtendedImageView.this) {
+                synchronized (ExtendedImageView.this) {
                     if ((changed & 1) == 1 && (state & HEIGHT_FLAG) == 0) {
                         height = newHeight;
                     }
@@ -1020,10 +1005,9 @@ public class ExtendedImageView extends View {
             }
 
             // Repaint when done or when new pixels arrive:
-            if ((flags & (FRAMEBITS|ALLBITS)) != 0) {
+            if ((flags & (FRAMEBITS | ALLBITS)) != 0) {
                 repaint(0);
-            }
-            else if ((flags & SOMEBITS) != 0 && sIsInc) {
+            } else if ((flags & SOMEBITS) != 0 && sIsInc) {
                 repaint(sIncRate);
             }
             return ((flags & ALLBITS) == 0);
@@ -1089,7 +1073,7 @@ public class ExtendedImageView extends View {
                 AttributeSet attr = parent.getAttributes();
 
                 if (attr != null && (doc instanceof StyledDocument)) {
-                    fg = ((StyledDocument)doc).getForeground(attr);
+                    fg = ((StyledDocument) doc).getForeground(attr);
                 }
             }
             return fg;

@@ -678,10 +678,11 @@ public class JIPipe extends AbstractService implements JIPipeRegistry {
     /**
      * Ensures that JIPipe is initialized and available.
      * Creates a new {@link ImageJ} instance to obtain a {@link Context} if JIPipe is not initialized already.
+     *
      * @return the {@link JIPipe} instance
      */
     public static JIPipe ensureInstance() {
-        if(getInstance() != null)
+        if (getInstance() != null)
             return getInstance();
         final ImageJ ij = new ImageJ();
         Context context = ij.context();
@@ -690,11 +691,12 @@ public class JIPipe extends AbstractService implements JIPipeRegistry {
 
     /**
      * Ensures that JIPipe is initialized and available.
+     *
      * @param context the context to initialize JIPipe
      * @return the {@link JIPipe} instance
      */
     public static JIPipe ensureInstance(Context context) {
-        if(getInstance() != null)
+        if (getInstance() != null)
             return getInstance();
         JIPipe instance = JIPipe.createInstance(context);
         JIPipe.getInstance().initialize();

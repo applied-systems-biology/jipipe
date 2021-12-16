@@ -818,17 +818,17 @@ public class ImageJUtils {
 
     /**
      * Sets the slice of an image to the processor based on the index. Handles all configurations of images.
-     * @param image the image
+     *
+     * @param image     the image
      * @param processor the processor
-     * @param index the index
+     * @param index     the index
      */
     public static void setSliceZero(ImagePlus image, ImageProcessor processor, ImageSliceIndex index) {
-        if(image.getStackSize() == 1) {
-            if(index.getC() != 0 && index.getT() != 0 && index.getZ() != 0)
+        if (image.getStackSize() == 1) {
+            if (index.getC() != 0 && index.getT() != 0 && index.getZ() != 0)
                 throw new IndexOutOfBoundsException("Out of range: " + index + " in " + image);
             image.setProcessor(processor);
-        }
-        else {
+        } else {
             image.getStack().setProcessor(processor, image.getStackIndex(index.getC() + 1, index.getZ() + 1, index.getT() + 1));
         }
     }
@@ -1748,6 +1748,7 @@ public class ImageJUtils {
     /**
      * Gets the slice closest to the requested slice index (zero-based).
      * If there are fewer slices than requested, the last slice is chosen
+     *
      * @param image the image
      * @param index the slice index (zero-based)
      * @return the slice

@@ -36,9 +36,9 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.viewer.plugins.maskdrawer.M
 import org.hkijena.jipipe.extensions.imagejdatatypes.viewer.plugins.maskdrawer.MeasurementPlugin;
 import org.hkijena.jipipe.extensions.settings.FileChooserSettings;
 import org.hkijena.jipipe.extensions.settings.ImageViewerUISettings;
-import org.hkijena.jipipe.ui.components.tabs.DocumentTabPane;
 import org.hkijena.jipipe.ui.components.FormPanel;
 import org.hkijena.jipipe.ui.components.PathEditor;
+import org.hkijena.jipipe.ui.components.tabs.DocumentTabPane;
 import org.hkijena.jipipe.ui.running.JIPipeRunExecuterUI;
 import org.hkijena.jipipe.utils.AutoResizeSplitPane;
 import org.hkijena.jipipe.utils.PathIOMode;
@@ -87,8 +87,8 @@ public class ImageViewerPanel extends JPanel {
     private JSpinner animationSpeedControl = new JSpinner(new SpinnerNumberModel(250, 5, 10000, 1));
     private int rotation = 0;
     private JMenuItem exportAllSlicesItem;
-    private JMenuItem exportMovieItem;    private Timer animationTimer = new Timer(250, e -> animateNextSlice());
-    private JToolBar toolBar = new JToolBar();
+    private JMenuItem exportMovieItem;
+    private JToolBar toolBar = new JToolBar();    private Timer animationTimer = new Timer(250, e -> animateNextSlice());
     private List<ImageViewerPanelPlugin> plugins = new ArrayList<>();
     private JButton rotateLeftButton;
     private JButton rotateRightButton;
@@ -192,15 +192,15 @@ public class ImageViewerPanel extends JPanel {
 
         // Register slider events
         stackSlider.addAdjustmentListener(e -> {
-            if(!isUpdatingSliders)
+            if (!isUpdatingSliders)
                 refreshSlice();
         });
         channelSlider.addAdjustmentListener(e -> {
-            if(!isUpdatingSliders)
+            if (!isUpdatingSliders)
                 refreshSlice();
         });
         frameSlider.addAdjustmentListener(e -> {
-            if(!isUpdatingSliders)
+            if (!isUpdatingSliders)
                 refreshSlice();
         });
 
@@ -586,8 +586,7 @@ public class ImageViewerPanel extends JPanel {
             } else {
                 bottomPanel.setVisible(false);
             }
-        }
-        finally {
+        } finally {
             isUpdatingSliders = false;
         }
     }

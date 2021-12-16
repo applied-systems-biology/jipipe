@@ -38,16 +38,16 @@ import java.util.Stack;
 public class GraphNodeParametersUI extends JIPipeWorkbenchPanel {
 
     private final GraphNodeParameters parameters;
+    private final int formPanelFlags;
     private FormPanel content;
     private JIPipeParameterTree tree;
-    private final int formPanelFlags;
     private boolean withRefresh;
 
     /**
      * @param workbench      the workbench
      * @param parameters     the parameters to edit
      * @param formPanelFlags flags for the form panel
-     * @param withRefresh if the editor should refresh on changes
+     * @param withRefresh    if the editor should refresh on changes
      */
     public GraphNodeParametersUI(JIPipeWorkbench workbench, GraphNodeParameters parameters, int formPanelFlags, boolean withRefresh) {
         super(workbench);
@@ -132,14 +132,14 @@ public class GraphNodeParametersUI extends JIPipeWorkbenchPanel {
 
             parameters.addGroups(groupList);
         }
-        if(!withRefresh) {
+        if (!withRefresh) {
             refreshContent();
         }
     }
 
     private void addEmptyGroup() {
         parameters.addNewGroup();
-        if(!withRefresh) {
+        if (!withRefresh) {
             refreshContent();
         }
     }
@@ -157,7 +157,7 @@ public class GraphNodeParametersUI extends JIPipeWorkbenchPanel {
             UIUtils.makeBorderlessWithoutMargin(removeButton);
             removeButton.addActionListener(e -> {
                 parameters.removeGroup(referenceGroup);
-                if(!isWithRefresh()) {
+                if (!isWithRefresh()) {
                     refreshContent();
                 }
             });
@@ -177,7 +177,7 @@ public class GraphNodeParametersUI extends JIPipeWorkbenchPanel {
      */
     @Subscribe
     public void onParameterReferenceChanged(ParameterReferencesChangedEvent event) {
-        if(withRefresh)
+        if (withRefresh)
             refreshContent();
     }
 
@@ -188,7 +188,7 @@ public class GraphNodeParametersUI extends JIPipeWorkbenchPanel {
      */
     @Subscribe
     public void onParameterStructureChanged(JIPipeParameterCollection.ParameterStructureChangedEvent event) {
-        if(withRefresh)
+        if (withRefresh)
             refreshContent();
     }
 
@@ -199,7 +199,7 @@ public class GraphNodeParametersUI extends JIPipeWorkbenchPanel {
      */
     @Subscribe
     public void onGraphStructureChanged(JIPipeGraph.GraphChangedEvent event) {
-        if(withRefresh)
+        if (withRefresh)
             refreshContent();
     }
 

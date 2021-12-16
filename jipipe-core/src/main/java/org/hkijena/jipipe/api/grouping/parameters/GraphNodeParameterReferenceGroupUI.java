@@ -67,7 +67,7 @@ public class GraphNodeParameterReferenceGroupUI extends JPanel {
             UIUtils.makeBorderlessWithoutMargin(removeButton);
             removeButton.addActionListener(e -> {
                 group.removeContent(reference);
-                if(!parametersUI.isWithRefresh()) {
+                if (!parametersUI.isWithRefresh()) {
                     refreshUI();
                 }
             });
@@ -93,8 +93,8 @@ public class GraphNodeParameterReferenceGroupUI extends JPanel {
             }
         }
         group.addContent(referenceList);
-        if(!parametersUI.isWithRefresh()) {
-           refreshUI();
+        if (!parametersUI.isWithRefresh()) {
+            refreshUI();
         }
     }
 
@@ -128,7 +128,7 @@ public class GraphNodeParameterReferenceGroupUI extends JPanel {
             nameEditor.getTextField().getDocument().addDocumentListener(new DocumentChangeListener() {
                 @Override
                 public void changed(DocumentEvent documentEvent) {
-                    if(!Objects.equals(nameEditor.getText(), group.getName())) {
+                    if (!Objects.equals(nameEditor.getText(), group.getName())) {
                         group.setName(nameEditor.getText());
                         group.triggerChangedEvent();
                     }

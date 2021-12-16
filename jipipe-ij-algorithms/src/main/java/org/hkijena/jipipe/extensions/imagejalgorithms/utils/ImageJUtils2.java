@@ -34,41 +34,39 @@ public class ImageJUtils2 {
         for (int i : labelsToKeep) {
             labelsToKeep_.add(i);
         }
-        if(processor instanceof ByteProcessor) {
+        if (processor instanceof ByteProcessor) {
             byte[] pixels = (byte[]) processor.getPixels();
             for (int i = 0; i < pixels.length; i++) {
-                if(!labelsToKeep_.contains(pixels[i] & 0xff)) {
+                if (!labelsToKeep_.contains(pixels[i] & 0xff)) {
                     pixels[i] = 0;
                 }
             }
-        }
-        else if(processor instanceof ShortProcessor) {
+        } else if (processor instanceof ShortProcessor) {
             short[] pixels = (short[]) processor.getPixels();
             for (int i = 0; i < pixels.length; i++) {
-                if(!labelsToKeep_.contains(pixels[i] & 0xffff)) {
+                if (!labelsToKeep_.contains(pixels[i] & 0xffff)) {
                     pixels[i] = 0;
                 }
             }
-        }
-        else if(processor instanceof FloatProcessor) {
+        } else if (processor instanceof FloatProcessor) {
             float[] pixels = (float[]) processor.getPixels();
             for (int i = 0; i < pixels.length; i++) {
-                if(!labelsToKeep_.contains((int)pixels[i])) {
+                if (!labelsToKeep_.contains((int) pixels[i])) {
                     pixels[i] = 0;
                 }
             }
-        }
-        else {
+        } else {
             throw new UnsupportedOperationException("Unsupported label type!");
         }
     }
 
     /**
      * Measures properties of a label image
-     * @param label the label
-     * @param image the reference image
+     *
+     * @param label        the label
+     * @param image        the reference image
      * @param measurements the measurements
-     * @param index the current image index (zero-based)
+     * @param index        the current image index (zero-based)
      * @param progressInfo the progress info
      * @return the measurements
      */
@@ -80,7 +78,7 @@ public class ImageJUtils2 {
         label = ImageJUtils.convertToGreyscaleIfNeeded(new ImagePlus("", label)).getProcessor();
 
         // Copy image
-        image= image.duplicate();
+        image = image.duplicate();
         image.setRoi((Roi) null);
 
         int[] allLabels = LabelImages.findAllLabels(label);
@@ -90,7 +88,7 @@ public class ImageJUtils2 {
 
         JIPipePercentageProgressInfo percentageProgress = progressInfo.percentage("Measure labels");
         for (int i = 0; i < allLabels.length; i++) {
-            if(progressInfo.isCancelled())
+            if (progressInfo.isCancelled())
                 return null;
             percentageProgress.logPercentage(i, allLabels.length);
             int id = allLabels[i];

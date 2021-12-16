@@ -19,7 +19,7 @@ import java.awt.event.MouseMotionListener;
  */
 public class ExtendedHTMLEditorKit extends HTMLEditorKit {
     private static HTMLFactory factory = null;
-    private HyperlinkHoverLinkController handler= new HyperlinkHoverLinkController();
+    private HyperlinkHoverLinkController handler = new HyperlinkHoverLinkController();
 
     public ExtendedHTMLEditorKit() {
         super();
@@ -28,23 +28,23 @@ public class ExtendedHTMLEditorKit extends HTMLEditorKit {
 
     @Override
     public void install(JEditorPane c) {
-        MouseListener[] oldMouseListeners=c.getMouseListeners();
-        MouseMotionListener[] oldMouseMotionListeners=c.getMouseMotionListeners();
+        MouseListener[] oldMouseListeners = c.getMouseListeners();
+        MouseMotionListener[] oldMouseMotionListeners = c.getMouseMotionListeners();
         super.install(c);
         //the following code removes link handler added by original
         //HTMLEditorKit
 
-        for (MouseListener l: c.getMouseListeners()) {
+        for (MouseListener l : c.getMouseListeners()) {
             c.removeMouseListener(l);
         }
-        for (MouseListener l: oldMouseListeners) {
+        for (MouseListener l : oldMouseListeners) {
             c.addMouseListener(l);
         }
 
-        for (MouseMotionListener l: c.getMouseMotionListeners()) {
+        for (MouseMotionListener l : c.getMouseMotionListeners()) {
             c.removeMouseMotionListener(l);
         }
-        for (MouseMotionListener l: oldMouseMotionListeners) {
+        for (MouseMotionListener l : oldMouseMotionListeners) {
             c.addMouseMotionListener(l);
         }
 
@@ -83,7 +83,7 @@ public class ExtendedHTMLEditorKit extends HTMLEditorKit {
             JEditorPane editor = (JEditorPane) e.getSource();
 
             if (editor.isEditable() && SwingUtilities.isLeftMouseButton(e)) {
-                if (e.getClickCount()==2) {
+                if (e.getClickCount() == 2) {
                     editor.setEditable(false);
                     super.mouseClicked(e);
                     editor.setEditable(true);
@@ -91,6 +91,7 @@ public class ExtendedHTMLEditorKit extends HTMLEditorKit {
             }
 
         }
+
         public void mouseMoved(MouseEvent e) {
             JEditorPane editor = (JEditorPane) e.getSource();
 

@@ -16,7 +16,6 @@ package org.hkijena.jipipe.extensions.imagejalgorithms.ij1.labels;
 import gnu.trove.list.array.TIntArrayList;
 import ij.ImagePlus;
 import ij.ImageStack;
-import ij.process.ImageProcessor;
 import inra.ijpb.label.LabelImages;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeNode;

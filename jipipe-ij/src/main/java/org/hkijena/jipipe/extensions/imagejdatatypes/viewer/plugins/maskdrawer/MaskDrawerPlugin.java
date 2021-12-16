@@ -19,8 +19,8 @@ import org.hkijena.jipipe.extensions.parameters.ranges.NumberRangeParameterSetti
 import org.hkijena.jipipe.extensions.parameters.ranges.PaintGenerator;
 import org.hkijena.jipipe.ui.JIPipeDummyWorkbench;
 import org.hkijena.jipipe.ui.components.ColorChooserButton;
-import org.hkijena.jipipe.ui.components.icons.SolidColorIcon;
 import org.hkijena.jipipe.ui.components.FormPanel;
+import org.hkijena.jipipe.ui.components.icons.SolidColorIcon;
 import org.hkijena.jipipe.ui.parameters.ParameterPanel;
 import org.hkijena.jipipe.ui.theme.JIPipeUITheme;
 import org.hkijena.jipipe.utils.ColorUtils;

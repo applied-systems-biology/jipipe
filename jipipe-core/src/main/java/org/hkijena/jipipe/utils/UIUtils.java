@@ -29,11 +29,11 @@ import org.hkijena.jipipe.api.registries.JIPipeSettingsRegistry;
 import org.hkijena.jipipe.extensions.parameters.primitives.HTMLText;
 import org.hkijena.jipipe.extensions.settings.GeneralDataSettings;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
-import org.hkijena.jipipe.ui.components.icons.SolidColorIcon;
-import org.hkijena.jipipe.ui.components.html.HTMLEditor;
 import org.hkijena.jipipe.ui.components.JIPipeValidityReportUI;
-import org.hkijena.jipipe.ui.components.markdown.MarkdownDocument;
 import org.hkijena.jipipe.ui.components.UserFriendlyErrorUI;
+import org.hkijena.jipipe.ui.components.html.HTMLEditor;
+import org.hkijena.jipipe.ui.components.icons.SolidColorIcon;
+import org.hkijena.jipipe.ui.components.markdown.MarkdownDocument;
 import org.hkijena.jipipe.ui.extension.JIPipeMenuExtension;
 import org.hkijena.jipipe.ui.extension.JIPipeMenuExtensionTarget;
 import org.hkijena.jipipe.ui.theme.JIPipeUITheme;
@@ -803,14 +803,12 @@ public class UIUtils {
     /**
      * Converts a given Image into a BufferedImage
      *
-     * @param img The Image to be converted
+     * @param img  The Image to be converted
      * @param type the output image type
      * @return The converted BufferedImage
      */
-    public static BufferedImage toBufferedImage(Image img, int type)
-    {
-        if (img instanceof BufferedImage)
-        {
+    public static BufferedImage toBufferedImage(Image img, int type) {
+        if (img instanceof BufferedImage) {
             return (BufferedImage) img;
         }
 
@@ -829,8 +827,8 @@ public class UIUtils {
     /**
      * Get an image off the system clipboard.
      *
-     * @return Returns an Image if successful; otherwise returns null.
      * @param type the image type
+     * @return Returns an Image if successful; otherwise returns null.
      */
     public static BufferedImage getImageFromClipboard(int type) {
         Transferable transferable = Toolkit.getDefaultToolkit().getSystemClipboard().getContents(null);
@@ -848,8 +846,7 @@ public class UIUtils {
     /**
      * Gets a formatted HTML string by dialog
      *
-     *
-     * @param workbench the workbench
+     * @param workbench    the workbench
      * @param parent       the parent component
      * @param title        the title
      * @param message      message
