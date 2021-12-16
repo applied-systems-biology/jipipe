@@ -490,7 +490,7 @@ public class HTMLEditor extends JIPipeWorkbenchPanel {
         String base64 = UIUtils.imageToBase64(image, "png");
         setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
         if(base64.length() > 128 * 1024) {
-            Object result = JOptionPane.showInputDialog(this, "The image has a size of " + image.getWidth() + " x " + image.getHeight() + " pixels. " +
+            Object result = JOptionPane.showInputDialog(this, "The image has a size of " + image.getWidth() + " x " + image.getHeight() + " pixels (" + (base64.length() / 1024) + "KB)." +
                             "Images of this size can impact the performance of the editor.\nIn the following setting, you can downscale the image to a specified data size or scale.", "Insert image", JOptionPane.WARNING_MESSAGE,
                     UIUtils.getIconFromResources("apps/jipipe.png"), new Object[]{
                             "512KB",
