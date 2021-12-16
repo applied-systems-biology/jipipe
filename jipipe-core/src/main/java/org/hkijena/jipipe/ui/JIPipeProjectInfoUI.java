@@ -20,6 +20,7 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.ui.bookmarks.BookmarkListPanel;
 import org.hkijena.jipipe.ui.components.BackgroundPanel;
 import org.hkijena.jipipe.ui.components.FormPanel;
+import org.hkijena.jipipe.ui.components.html.ExtendedHTMLEditorKit;
 import org.hkijena.jipipe.ui.components.markdown.MarkdownDocument;
 import org.hkijena.jipipe.ui.components.tabs.DocumentTabPane;
 import org.hkijena.jipipe.ui.parameters.ParameterPanel;
@@ -65,7 +66,7 @@ public class JIPipeProjectInfoUI extends JIPipeProjectWorkbenchPanel {
         super(workbenchUI);
         descriptionReader = new JTextPane();
         descriptionReader.setContentType("text/html");
-        descriptionReader.setEditorKit(new HTMLEditorKit());
+        descriptionReader.setEditorKit(new ExtendedHTMLEditorKit());
         descriptionReader.setEditable(false);
         descriptionReaderScrollPane = new JScrollPane(descriptionReader);
         parameterPanel = new ParameterPanel(getWorkbench(),
