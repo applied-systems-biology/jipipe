@@ -148,6 +148,7 @@ public class GraphNodeParameterReferenceGroupUI extends JPanel {
             HTMLText newDescription = UIUtils.getHTMLByDialog(parent.getParametersUI().getWorkbench(), this, "Set description", "Please enter a new description:", currentDescription);
             if (newDescription != null) {
                 group.setDescription(newDescription);
+                group.triggerChangedEvent();
             }
         }
     }
