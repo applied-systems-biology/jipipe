@@ -22,6 +22,7 @@ import org.hkijena.jipipe.extensions.expressions.functions.filesystem.IsFileFunc
 import org.hkijena.jipipe.extensions.expressions.functions.filesystem.PathCombineFunction;
 import org.hkijena.jipipe.extensions.expressions.functions.filesystem.PathExistsFunction;
 import org.hkijena.jipipe.extensions.expressions.functions.math.ClampFunction;
+import org.hkijena.jipipe.extensions.expressions.functions.math.PercentageFunction;
 import org.hkijena.jipipe.extensions.expressions.functions.statistics.*;
 import org.hkijena.jipipe.extensions.expressions.functions.quantities.QuantityConvertFunction;
 import org.hkijena.jipipe.extensions.expressions.functions.quantities.QuantityGetUnitFunction;
@@ -244,6 +245,7 @@ public class ExpressionExtension extends JIPipePrepackagedDefaultJavaExtension {
         registerExpressionFunction(new QuantityConvertFunction());
         registerExpressionFunction(new SwitchFunction());
         registerExpressionFunction(new CaseFunction());
+        registerExpressionFunction(new PercentageFunction());
 
         registerExpressionFunction(new CreateRGBColorFunction());
         registerExpressionFunction(new CreateHSBColorFunction());
@@ -256,5 +258,6 @@ public class ExpressionExtension extends JIPipePrepackagedDefaultJavaExtension {
         registerExpressionFunction(new LABToRGBFunction());
         registerExpressionFunction(new HSBToLABFunction());
         registerExpressionFunction(new HSBToRGBFunction());
+        registerExpressionFunction(new FalseColorsFunction());
     }
 }
