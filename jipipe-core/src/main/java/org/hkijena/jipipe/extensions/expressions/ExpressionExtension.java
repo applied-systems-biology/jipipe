@@ -3,6 +3,30 @@ package org.hkijena.jipipe.extensions.expressions;
 import org.hkijena.jipipe.JIPipeJavaExtension;
 import org.hkijena.jipipe.extensions.JIPipePrepackagedDefaultJavaExtension;
 import org.hkijena.jipipe.extensions.expressions.functions.*;
+import org.hkijena.jipipe.extensions.expressions.functions.collections.*;
+import org.hkijena.jipipe.extensions.expressions.functions.color.*;
+import org.hkijena.jipipe.extensions.expressions.functions.convert.ToBooleanFunction;
+import org.hkijena.jipipe.extensions.expressions.functions.convert.ToJsonFunction;
+import org.hkijena.jipipe.extensions.expressions.functions.convert.ToNumberFunction;
+import org.hkijena.jipipe.extensions.expressions.functions.convert.ToStringFunction;
+import org.hkijena.jipipe.extensions.expressions.functions.datetime.GetDateDayFunction;
+import org.hkijena.jipipe.extensions.expressions.functions.datetime.GetDateMonthFunction;
+import org.hkijena.jipipe.extensions.expressions.functions.datetime.GetDateYearFunction;
+import org.hkijena.jipipe.extensions.expressions.functions.datetime.GetTimeHoursFunction;
+import org.hkijena.jipipe.extensions.expressions.functions.datetime.GetTimeMinutesFunction;
+import org.hkijena.jipipe.extensions.expressions.functions.datetime.GetTimeSecondsFunction;
+import org.hkijena.jipipe.extensions.expressions.functions.filesystem.GetParentDirectoryFunction;
+import org.hkijena.jipipe.extensions.expressions.functions.filesystem.GetPathNameFunction;
+import org.hkijena.jipipe.extensions.expressions.functions.filesystem.IsDirectoryFunction;
+import org.hkijena.jipipe.extensions.expressions.functions.filesystem.IsFileFunction;
+import org.hkijena.jipipe.extensions.expressions.functions.filesystem.PathCombineFunction;
+import org.hkijena.jipipe.extensions.expressions.functions.filesystem.PathExistsFunction;
+import org.hkijena.jipipe.extensions.expressions.functions.math.ClampFunction;
+import org.hkijena.jipipe.extensions.expressions.functions.statistics.*;
+import org.hkijena.jipipe.extensions.expressions.functions.quantities.QuantityConvertFunction;
+import org.hkijena.jipipe.extensions.expressions.functions.quantities.QuantityGetUnitFunction;
+import org.hkijena.jipipe.extensions.expressions.functions.quantities.QuantityGetValueFunction;
+import org.hkijena.jipipe.extensions.expressions.functions.string.*;
 import org.hkijena.jipipe.extensions.expressions.ui.DefaultExpressionParameterEditorUI;
 import org.hkijena.jipipe.extensions.parameters.primitives.HTMLText;
 import org.hkijena.jipipe.extensions.parameters.primitives.StringList;
@@ -220,5 +244,17 @@ public class ExpressionExtension extends JIPipePrepackagedDefaultJavaExtension {
         registerExpressionFunction(new QuantityConvertFunction());
         registerExpressionFunction(new SwitchFunction());
         registerExpressionFunction(new CaseFunction());
+
+        registerExpressionFunction(new CreateRGBColorFunction());
+        registerExpressionFunction(new CreateHSBColorFunction());
+        registerExpressionFunction(new CreateLABColorFunction());
+        registerExpressionFunction(new RGBToHexFunction());
+        registerExpressionFunction(new HexToRGBFunction());
+        registerExpressionFunction(new RGBToLABFunction());
+        registerExpressionFunction(new RGBToHSBFunction());
+        registerExpressionFunction(new LABToHSBFunction());
+        registerExpressionFunction(new LABToRGBFunction());
+        registerExpressionFunction(new HSBToLABFunction());
+        registerExpressionFunction(new HSBToRGBFunction());
     }
 }
