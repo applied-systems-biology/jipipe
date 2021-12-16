@@ -46,6 +46,8 @@ import java.awt.event.ActionEvent;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -263,14 +265,14 @@ public class HTMLEditor extends JIPipeWorkbenchPanel {
         wysiwygEditorKit.getStyleSheet().addRule("body { font-family: Dialog; }" +
                 "p { margin: 0; }");
         wysiwygEditorPane.setCursor(Cursor.getPredefinedCursor(Cursor.TEXT_CURSOR));
-        wysiwygEditorPane.getDocument().addDocumentListener(new DocumentChangeListener() {
-            @Override
-            public void changed(DocumentEvent documentEvent) {
-                if(mode != Mode.HTML) {
-                    htmlEditorPane.setText(wysiwygEditorPane.getText());
-                }
-            }
-        });
+//        wysiwygEditorPane.getDocument().addDocumentListener(new DocumentChangeListener() {
+//            @Override
+//            public void changed(DocumentEvent documentEvent) {
+//                if(mode != Mode.HTML) {
+//                    htmlEditorPane.setText(wysiwygEditorPane.getText());
+//                }
+//            }
+//        });
         wysiwygEditorPane.addHyperlinkListener(e -> {
             if(e.getEventType() == HyperlinkEvent.EventType.ACTIVATED) {
                 try {
@@ -410,19 +412,41 @@ public class HTMLEditor extends JIPipeWorkbenchPanel {
         UIUtils.makeFlatH25(insertImageButton);
         JPopupMenu insertImageMenu = UIUtils.addPopupMenuToComponent(insertImageButton);
         {
-            JMenuItem insertImageFromFileItem = new JMenuItem("From file ...", UIUtils.getIconFromResources("actions/document-open-folder.png"));
+            JMenuItem insertImageFromFileItem = new JMenuItem("Embed from file ...", UIUtils.getIconFromResources("actions/document-open-folder.png"));
             insertImageFromFileItem.addActionListener(e -> insertImageFromFile());
             insertImageMenu.add(insertImageFromFileItem);
 
-            JMenuItem insertImageFromClipboardItem = new JMenuItem("From clipboard", UIUtils.getIconFromResources("actions/edit-paste.png"));
+            JMenuItem insertImageFromClipboardItem = new JMenuItem("Embed from clipboard", UIUtils.getIconFromResources("actions/edit-paste.png"));
             insertImageFromClipboardItem.addActionListener(e -> insertImageFromClipboard());
             insertImageMenu.add(insertImageFromClipboardItem);
+
+            insertImageMenu.addSeparator();
+
+            JMenuItem insertImageFromURL = new JMenuItem("Link from URL", UIUtils.getIconFromResources("actions/edit-link.png"));
+            insertImageFromURL.addActionListener(e -> insertImageURL());
+            insertImageMenu.add(insertImageFromURL);
         }
 
         // Insert link
         insertLinkButton = new JButton("Link", UIUtils.getIconFromResources("actions/insert-link.png"));
         UIUtils.makeFlatH25(insertLinkButton);
         insertLinkButton.addActionListener(e -> insertLink());
+    }
+
+    private void insertImageURL() {
+        String urlString = JOptionPane.showInputDialog(this, "Please insert the URL of the image into the following box.\nPlease note that the image will not be embedded into the document.", "Insert image", JOptionPane.PLAIN_MESSAGE);
+        try {
+            URL url = new URL(urlString);
+            try {
+                int caretPosition = wysiwygEditorPane.getCaretPosition();
+                HTMLDocument document = (HTMLDocument) wysiwygEditorPane.getDocument();
+                wysiwygEditorKit.insertHTML(document, caretPosition, "<img src=\"" + url + "\" ></img>", 0, 0, HTML.Tag.IMG);
+            } catch (BadLocationException | IOException e) {
+                throw new RuntimeException(e);
+            }
+        } catch (MalformedURLException e) {
+            JOptionPane.showMessageDialog(this, "'" + urlString + "' is not a valid URL!");
+        }
     }
 
     private void insertLink() {
@@ -462,11 +486,18 @@ public class HTMLEditor extends JIPipeWorkbenchPanel {
     }
 
     private void insertImage(BufferedImage image) {
-
-        if(image.getWidth() > 400 || image.getHeight() > 400) {
+        setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
+        String base64 = UIUtils.imageToBase64(image, "png");
+        setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+        if(base64.length() > 128 * 1024) {
             Object result = JOptionPane.showInputDialog(this, "The image has a size of " + image.getWidth() + " x " + image.getHeight() + " pixels. " +
-                            "Images of this size can impact the performance of the editor.\nIn the following setting, you can set the scale of the image (default is no scaling).", "Insert image", JOptionPane.WARNING_MESSAGE,
+                            "Images of this size can impact the performance of the editor.\nIn the following setting, you can downscale the image to a specified data size or scale.", "Insert image", JOptionPane.WARNING_MESSAGE,
                     UIUtils.getIconFromResources("apps/jipipe.png"), new Object[]{
+                            "512KB",
+                            "256KB",
+                            "128KB",
+                            "64KB",
+                            "32KB",
                             "100%",
                             "80%",
                             "75%",
@@ -476,14 +507,22 @@ public class HTMLEditor extends JIPipeWorkbenchPanel {
                             "25%",
                             "20%",
                             "10%"
-                    }, "100%");
+                    }, "128KB");
             if(result instanceof String) {
                 String s = result.toString();
-                double percentage = Double.parseDouble(s.substring(0, s.length() - 1)) / 100.0;
+                double percentage;
+                if(s.endsWith("KB")) {
+                    double targetBytes = Integer.parseInt(s.substring(0, s.length() - 2)) * 1024;
+                    percentage = Math.sqrt(targetBytes / base64.length());
+                }
+                else {
+                    percentage = Double.parseDouble(s.substring(0, s.length() - 1)) / 100.0;
+                }
                 if(percentage < 1) {
                    ImageProcessor processor = new ColorProcessor(image);
                    processor = processor.resize((int) (processor.getWidth() * percentage), (int) (processor.getHeight() * percentage));
                    image = processor.getBufferedImage();
+                   base64 = UIUtils.imageToBase64(image, "png");
                 }
             }
             else {
@@ -496,7 +535,11 @@ public class HTMLEditor extends JIPipeWorkbenchPanel {
         parameterCollection.addParameter("width", String.class, "Width", "");
         parameterCollection.addParameter("height", String.class, "Height", "");
 
-        String base64 = UIUtils.imageToBase64(image, "png");
+        // Has no effect currently, so it's disabled
+//        if(!ParameterPanel.showDialog(getWorkbench(), parameterCollection, null, "Insert image", WITH_SCROLL_BAR)) {
+//            return;
+//        }
+
         int caretPosition = wysiwygEditorPane.getCaretPosition();
         try {
             HTMLDocument document = (HTMLDocument) wysiwygEditorPane.getDocument();

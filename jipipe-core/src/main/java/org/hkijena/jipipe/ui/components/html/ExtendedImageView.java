@@ -145,7 +145,7 @@ public class ExtendedImageView extends View {
         super(elem);
         fBounds = new Rectangle();
         imageObserver = new ImageHandler();
-        state = RELOAD_FLAG | RELOAD_IMAGE_FLAG;
+        state = RELOAD_FLAG | RELOAD_IMAGE_FLAG | SYNC_LOAD_FLAG;
     }
 
     /**
