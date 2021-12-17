@@ -76,7 +76,6 @@ public class BookmarkListPanel extends JIPipeWorkbenchPanel {
             else {
                 JMenuItem item = new JMenuItem(entry.getName(), entry.getIcon());
                 item.setToolTipText(entry.getDescription());
-                item.setAccelerator(entry.getKeyboardShortcut());
                 item.addActionListener(e -> {
                     runSelectedNode(entry);
                 });
