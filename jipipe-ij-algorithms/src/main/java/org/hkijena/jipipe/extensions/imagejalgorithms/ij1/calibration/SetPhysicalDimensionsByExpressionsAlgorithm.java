@@ -51,7 +51,7 @@ public class SetPhysicalDimensionsByExpressionsAlgorithm extends JIPipeSimpleIte
             img.setCalibration(calibration);
         }
         ExpressionVariables variables = new ExpressionVariables();
-        ImagePlusPropertiesExpressionParameterVariableSource.extractValues(variables, img, dataBatch.getGlobalAnnotations().values());
+        ImagePlusPropertiesExpressionParameterVariableSource.extractValues(variables, img, dataBatch.getMergedAnnotations().values());
         if (physicalDimensionX.isEnabled()) {
             Quantity quantity = Quantity.parse(StringUtils.nullToEmpty(physicalDimensionX.getContent().evaluate(variables)));
             calibration.setXUnit(quantity.getUnit());

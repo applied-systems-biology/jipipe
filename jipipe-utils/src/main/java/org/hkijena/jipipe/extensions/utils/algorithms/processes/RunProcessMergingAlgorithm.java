@@ -59,7 +59,7 @@ public class RunProcessMergingAlgorithm extends JIPipeMergingAlgorithm {
 
         // Run process
         ExpressionVariables variables = new ExpressionVariables();
-        for (Map.Entry<String, JIPipeAnnotation> entry : dataBatch.getGlobalAnnotations().entrySet()) {
+        for (Map.Entry<String, JIPipeAnnotation> entry : dataBatch.getMergedAnnotations().entrySet()) {
             variables.set(entry.getKey(), entry.getValue().getValue());
         }
         variables.set("input_folder", inputPath.toString());

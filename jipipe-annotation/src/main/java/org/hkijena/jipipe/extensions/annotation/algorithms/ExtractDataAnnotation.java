@@ -45,7 +45,7 @@ public class ExtractDataAnnotation extends JIPipeSimpleIteratingAlgorithm {
 
     @Override
     protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
-        String targetedAnnotationName = annotationNameQuery.queryFirst(dataBatch.getGlobalDataAnnotations().keySet(), new ExpressionVariables());
+        String targetedAnnotationName = annotationNameQuery.queryFirst(dataBatch.getMergedDataAnnotations().keySet(), new ExpressionVariables());
         if (targetedAnnotationName == null) {
             if (ignoreMissingAnnotations)
                 return;
@@ -53,19 +53,19 @@ public class ExtractDataAnnotation extends JIPipeSimpleIteratingAlgorithm {
                     "Could not find data annotation!",
                     getDisplayName(),
                     "The node tried to find a data annotation that matches the expression '" + annotationNameQuery.getExpression() + "', but none did match. Following were available: " +
-                            String.join(", ", dataBatch.getGlobalAnnotations().keySet()),
+                            String.join(", ", dataBatch.getMergedAnnotations().keySet()),
                     "Check if the expression is correct or enable 'Ignore missing annotations'");
         }
-        JIPipeDataAnnotation dataAnnotation = dataBatch.getGlobalDataAnnotation(targetedAnnotationName);
+        JIPipeDataAnnotation dataAnnotation = dataBatch.getMergedDataAnnotation(targetedAnnotationName);
         if (!keepOtherDataAnnotations) {
-            dataBatch.getGlobalAnnotations().clear();
-            dataBatch.addGlobalDataAnnotation(dataAnnotation, JIPipeDataAnnotationMergeStrategy.OverwriteExisting);
+            dataBatch.getMergedAnnotations().clear();
+            dataBatch.addMergedDataAnnotation(dataAnnotation, JIPipeDataAnnotationMergeStrategy.OverwriteExisting);
         }
         if (!keepCurrentAnnotation) {
-            dataBatch.removeGlobalDataAnnotation(targetedAnnotationName);
+            dataBatch.removeMergedDataAnnotation(targetedAnnotationName);
         }
         if (annotateWithCurrentData.isEnabled()) {
-            dataBatch.addGlobalDataAnnotation(new JIPipeDataAnnotation(annotateWithCurrentData.getContent(), dataBatch.getInputData(getFirstInputSlot(), JIPipeData.class, progressInfo)),
+            dataBatch.addMergedDataAnnotation(new JIPipeDataAnnotation(annotateWithCurrentData.getContent(), dataBatch.getInputData(getFirstInputSlot(), JIPipeData.class, progressInfo)),
                     JIPipeDataAnnotationMergeStrategy.OverwriteExisting);
         }
         dataBatch.addOutputData(getFirstOutputSlot(), dataAnnotation.getData(JIPipeData.class, progressInfo), progressInfo);

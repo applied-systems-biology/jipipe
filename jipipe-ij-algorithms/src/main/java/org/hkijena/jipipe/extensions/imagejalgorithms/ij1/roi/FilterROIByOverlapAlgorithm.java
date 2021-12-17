@@ -144,7 +144,7 @@ public class FilterROIByOverlapAlgorithm extends JIPipeIteratingAlgorithm {
 
         // Write annotations map
         Map<String, String> annotations = new HashMap<>();
-        for (Map.Entry<String, JIPipeAnnotation> entry : dataBatch.getGlobalAnnotations().entrySet()) {
+        for (Map.Entry<String, JIPipeAnnotation> entry : dataBatch.getMergedAnnotations().entrySet()) {
             annotations.put(entry.getKey(), entry.getValue().getValue());
         }
         variableSet.set("annotations", annotations);

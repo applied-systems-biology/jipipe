@@ -137,7 +137,7 @@ public abstract class JIPipeSimpleIteratingAlgorithm extends JIPipeParameterSlot
             final int row = 0;
             JIPipeProgressInfo slotProgress = progressInfo.resolveAndLog("Data row", row, 1);
             JIPipeDataBatch dataBatch = new JIPipeDataBatch(this);
-            dataBatch.addGlobalAnnotations(parameterAnnotations, JIPipeAnnotationMergeStrategy.Merge);
+            dataBatch.addMergedAnnotations(parameterAnnotations, JIPipeAnnotationMergeStrategy.Merge);
             uploadAdaptiveParameters(dataBatch, tree, parameterBackups, progressInfo);
             if (isPassThrough()) {
                 runPassThrough(slotProgress, dataBatch);
@@ -161,9 +161,9 @@ public abstract class JIPipeSimpleIteratingAlgorithm extends JIPipeParameterSlot
                     JIPipeProgressInfo slotProgress = progressInfo.resolveAndLog("Data row", i, getFirstInputSlot().getRowCount());
                     JIPipeDataBatch dataBatch = new JIPipeDataBatch(this);
                     dataBatch.setInputData(getFirstInputSlot(), i);
-                    dataBatch.addGlobalAnnotations(getFirstInputSlot().getAnnotations(i), JIPipeAnnotationMergeStrategy.Merge);
-                    dataBatch.addGlobalDataAnnotations(getFirstInputSlot().getDataAnnotations(i), JIPipeDataAnnotationMergeStrategy.MergeTables);
-                    dataBatch.addGlobalAnnotations(parameterAnnotations, JIPipeAnnotationMergeStrategy.Merge);
+                    dataBatch.addMergedAnnotations(getFirstInputSlot().getAnnotations(i), JIPipeAnnotationMergeStrategy.Merge);
+                    dataBatch.addMergedDataAnnotations(getFirstInputSlot().getDataAnnotations(i), JIPipeDataAnnotationMergeStrategy.MergeTables);
+                    dataBatch.addMergedAnnotations(parameterAnnotations, JIPipeAnnotationMergeStrategy.Merge);
                     uploadAdaptiveParameters(dataBatch, tree, parameterBackups, progressInfo);
                     if (isPassThrough()) {
                         runPassThrough(slotProgress, dataBatch);
@@ -184,9 +184,9 @@ public abstract class JIPipeSimpleIteratingAlgorithm extends JIPipeParameterSlot
                         JIPipeProgressInfo slotProgress = progressInfo.resolveAndLog("Data row", rowIndex, getFirstInputSlot().getRowCount());
                         JIPipeDataBatch dataBatch = new JIPipeDataBatch(this);
                         dataBatch.setInputData(getFirstInputSlot(), rowIndex);
-                        dataBatch.addGlobalAnnotations(getFirstInputSlot().getAnnotations(rowIndex), JIPipeAnnotationMergeStrategy.Merge);
-                        dataBatch.addGlobalDataAnnotations(getFirstInputSlot().getDataAnnotations(rowIndex), JIPipeDataAnnotationMergeStrategy.MergeTables);
-                        dataBatch.addGlobalAnnotations(parameterAnnotations, JIPipeAnnotationMergeStrategy.Merge);
+                        dataBatch.addMergedAnnotations(getFirstInputSlot().getAnnotations(rowIndex), JIPipeAnnotationMergeStrategy.Merge);
+                        dataBatch.addMergedDataAnnotations(getFirstInputSlot().getDataAnnotations(rowIndex), JIPipeDataAnnotationMergeStrategy.MergeTables);
+                        dataBatch.addMergedAnnotations(parameterAnnotations, JIPipeAnnotationMergeStrategy.Merge);
                         uploadAdaptiveParameters(dataBatch, finalTree, parameterBackups, progressInfo);
                         if (isPassThrough()) {
                             runPassThrough(slotProgress, dataBatch);
@@ -211,7 +211,7 @@ public abstract class JIPipeSimpleIteratingAlgorithm extends JIPipeParameterSlot
 
     private void uploadAdaptiveParameters(JIPipeDataBatch dataBatch, JIPipeParameterTree tree, Map<String, Object> parameterBackups, JIPipeProgressInfo progressInfo) {
         ExpressionVariables expressionVariables = new ExpressionVariables();
-        for (JIPipeAnnotation annotation : dataBatch.getGlobalAnnotations().values()) {
+        for (JIPipeAnnotation annotation : dataBatch.getMergedAnnotations().values()) {
             expressionVariables.put(annotation.getName(), annotation.getValue());
         }
         for (StringQueryExpressionAndStringPairParameter overriddenParameter : getAdaptiveParameterSettings().getOverriddenParameters()) {
@@ -260,7 +260,7 @@ public abstract class JIPipeSimpleIteratingAlgorithm extends JIPipeParameterSlot
             name = target.getName();
         name = getAdaptiveParameterSettings().getParameterAnnotationsPrefix() + name;
         String value = JsonUtils.toJsonString(newValue);
-        dataBatch.addGlobalAnnotation(new JIPipeAnnotation(name, value), JIPipeAnnotationMergeStrategy.Merge);
+        dataBatch.addMergedAnnotation(new JIPipeAnnotation(name, value), JIPipeAnnotationMergeStrategy.Merge);
     }
 
     @Override
@@ -358,7 +358,7 @@ public abstract class JIPipeSimpleIteratingAlgorithm extends JIPipeParameterSlot
                 continue;
             JIPipeMergingDataBatch dataBatch = new JIPipeMergingDataBatch(this);
             dataBatch.addInputData(slot, i);
-            dataBatch.addGlobalAnnotations(slot.getAnnotations(i), JIPipeAnnotationMergeStrategy.Merge);
+            dataBatch.addMergedAnnotations(slot.getAnnotations(i), JIPipeAnnotationMergeStrategy.Merge);
             batches.add(dataBatch);
         }
         return batches;

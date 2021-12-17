@@ -111,14 +111,14 @@ public class ModifyAnnotationScript extends JIPipeSimpleIteratingAlgorithm {
 
     @Override
     protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
-        PyDictionary annotationDict = JIPipeAnnotation.annotationMapToPython(dataBatch.getGlobalAnnotations());
+        PyDictionary annotationDict = JIPipeAnnotation.annotationMapToPython(dataBatch.getMergedAnnotations());
         pythonInterpreter.set("annotations", annotationDict);
         pythonInterpreter.exec(code.getCode(getProjectWorkDirectory()));
         annotationDict = (PyDictionary) pythonInterpreter.get("annotations");
 
         // Convert the results back into JIPipe
-        dataBatch.getGlobalAnnotations().clear();
-        JIPipeAnnotation.setAnnotationsFromPython(annotationDict, dataBatch.getGlobalAnnotations());
+        dataBatch.getMergedAnnotations().clear();
+        JIPipeAnnotation.setAnnotationsFromPython(annotationDict, dataBatch.getMergedAnnotations());
 
         dataBatch.addOutputData(getFirstOutputSlot(), dataBatch.getInputData(getFirstInputSlot(), JIPipeData.class, progressInfo), progressInfo);
     }

@@ -216,8 +216,8 @@ public class JIPipeMergingDataBatchBuilder {
                 for (JIPipeDataSlot slot : slotList) {
                     Multimap<String, Integer> slotMap = matchedRows.get(slot);
                     dataBatch.addInputData(slot, slotMap.get(key));
-                    dataBatch.addGlobalAnnotations(slot.getAnnotations(slotMap.get(key)), annotationMergeStrategy);
-                    dataBatch.addGlobalDataAnnotations(slot.getDataAnnotations(slotMap.get(key)), getDataAnnotationMergeStrategy());
+                    dataBatch.addMergedAnnotations(slot.getAnnotations(slotMap.get(key)), annotationMergeStrategy);
+                    dataBatch.addMergedDataAnnotations(slot.getDataAnnotations(slotMap.get(key)), getDataAnnotationMergeStrategy());
                 }
                 dataBatches.add(dataBatch);
             }
@@ -265,8 +265,8 @@ public class JIPipeMergingDataBatchBuilder {
                     annotations.addAll(slot.getAnnotations(dataBatch.getInputRows(slot)));
                     dataAnnotations.addAll(slot.getDataAnnotations(dataBatch.getInputRows(slot)));
                 }
-                dataBatch.addGlobalAnnotations(annotations, getAnnotationMergeStrategy());
-                dataBatch.addGlobalDataAnnotations(dataAnnotations, getDataAnnotationMergeStrategy());
+                dataBatch.addMergedAnnotations(annotations, getAnnotationMergeStrategy());
+                dataBatch.addMergedDataAnnotations(dataAnnotations, getDataAnnotationMergeStrategy());
             }
         }
         // Ensure that all slots are known to the data batch builder
@@ -298,8 +298,8 @@ public class JIPipeMergingDataBatchBuilder {
                     batch.addEmptySlot(slot2);
                 }
                 batch.addInputData(slot, row);
-                batch.addGlobalAnnotations(slot.getAnnotations(row), getAnnotationMergeStrategy());
-                batch.addGlobalDataAnnotations(slot.getDataAnnotations(row), getDataAnnotationMergeStrategy());
+                batch.addMergedAnnotations(slot.getAnnotations(row), getAnnotationMergeStrategy());
+                batch.addMergedDataAnnotations(slot.getDataAnnotations(row), getDataAnnotationMergeStrategy());
                 split.add(batch);
             }
         }
@@ -329,8 +329,8 @@ public class JIPipeMergingDataBatchBuilder {
                 dataAnnotations.addAll(slot.getDataAnnotations(row));
             }
             progressInfo.log("Merging " + annotations.size() + " annotations");
-            batch.addGlobalAnnotations(annotations, getAnnotationMergeStrategy());
-            batch.addGlobalDataAnnotations(dataAnnotations, getDataAnnotationMergeStrategy());
+            batch.addMergedAnnotations(annotations, getAnnotationMergeStrategy());
+            batch.addMergedDataAnnotations(dataAnnotations, getDataAnnotationMergeStrategy());
         }
         return Arrays.asList(batch);
     }
@@ -491,8 +491,8 @@ public class JIPipeMergingDataBatchBuilder {
                     continue;
                 dataBatch.addInputData(rowNode.slot, rowNode.rows);
                 for (Integer row : rowNode.rows) {
-                    dataBatch.addGlobalAnnotations(rowNode.slot.getAnnotations(row), annotationMergeStrategy);
-                    dataBatch.addGlobalDataAnnotations(rowNode.slot.getDataAnnotations(row), dataAnnotationMergeStrategy);
+                    dataBatch.addMergedAnnotations(rowNode.slot.getAnnotations(row), annotationMergeStrategy);
+                    dataBatch.addMergedDataAnnotations(rowNode.slot.getDataAnnotations(row), dataAnnotationMergeStrategy);
                 }
 
 //                dataBatch.addGlobalAnnotations(rowNode.annotations, annotationMergeStrategy);
@@ -600,8 +600,8 @@ public class JIPipeMergingDataBatchBuilder {
                     continue;
                 int targetRow = entry.getValue().iterator().next();
                 singleBatch.setInputData(entry.getKey(), targetRow);
-                singleBatch.setGlobalAnnotations(batch.getGlobalAnnotations());
-                singleBatch.setGlobalDataAnnotations(batch.getGlobalDataAnnotations());
+                singleBatch.setMergedAnnotations(batch.getMergedAnnotations());
+                singleBatch.setMergedDataAnnotations(batch.getMergedDataAnnotations());
             }
             result.add(singleBatch);
         }

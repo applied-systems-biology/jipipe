@@ -54,7 +54,7 @@ public class SimplifyAnnotationsAlgorithm extends JIPipeSimpleIteratingAlgorithm
 
     @Override
     protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
-        List<JIPipeAnnotation> combinedAnnotations = annotationFilter.queryAll(dataBatch.getGlobalAnnotations().values());
+        List<JIPipeAnnotation> combinedAnnotations = annotationFilter.queryAll(dataBatch.getMergedAnnotations().values());
 
         String combinedValue;
         {
@@ -67,12 +67,12 @@ public class SimplifyAnnotationsAlgorithm extends JIPipeSimpleIteratingAlgorithm
 
         if (annotationRemovalMode != AnnotationRemovalMode.Keep) {
             for (JIPipeAnnotation annotation : combinedAnnotations) {
-                dataBatch.getGlobalAnnotations().remove(annotation.getName());
+                dataBatch.getMergedAnnotations().remove(annotation.getName());
             }
         }
         if (annotationRemovalMode == AnnotationRemovalMode.Rename) {
             Set<String> existing = new HashSet<>();
-            for (JIPipeAnnotation annotation : dataBatch.getGlobalAnnotations().values()) {
+            for (JIPipeAnnotation annotation : dataBatch.getMergedAnnotations().values()) {
                 existing.add(annotation.getName());
             }
             ExpressionVariables variables = new ExpressionVariables();
@@ -81,7 +81,7 @@ public class SimplifyAnnotationsAlgorithm extends JIPipeSimpleIteratingAlgorithm
                 String newName = StringUtils.makeUniqueString(renameFunction.generate(variables), " ", existing);
                 existing.add(newName);
 
-                dataBatch.getGlobalAnnotations().put(newName, new JIPipeAnnotation(newName, annotation.getValue()));
+                dataBatch.getMergedAnnotations().put(newName, new JIPipeAnnotation(newName, annotation.getValue()));
             }
         }
 

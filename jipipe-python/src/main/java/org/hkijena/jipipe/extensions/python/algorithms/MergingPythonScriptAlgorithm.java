@@ -161,7 +161,7 @@ public class MergingPythonScriptAlgorithm extends JIPipeMergingAlgorithm {
         PythonUtils.parametersToPython(code, scriptParameters);
 
         // Add annotations
-        PythonUtils.annotationsToPython(code, dataBatch.getGlobalAnnotations().values());
+        PythonUtils.annotationsToPython(code, dataBatch.getMergedAnnotations().values());
 
         Path workDirectory = getNewScratch();
 

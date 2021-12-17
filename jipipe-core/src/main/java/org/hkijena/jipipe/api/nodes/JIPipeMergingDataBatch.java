@@ -34,8 +34,8 @@ import java.util.*;
 public class JIPipeMergingDataBatch implements Comparable<JIPipeMergingDataBatch> {
     private JIPipeGraphNode node;
     private Map<JIPipeDataSlot, Set<Integer>> inputSlotRows;
-    private Map<String, JIPipeAnnotation> annotations = new HashMap<>();
-    private Map<String, JIPipeDataAnnotation> dataAnnotations = new HashMap<>();
+    private Map<String, JIPipeAnnotation> mergedAnnotations = new HashMap<>();
+    private Map<String, JIPipeDataAnnotation> mergedDataAnnotations = new HashMap<>();
 
     /**
      * Creates a new interface
@@ -56,8 +56,8 @@ public class JIPipeMergingDataBatch implements Comparable<JIPipeMergingDataBatch
     public JIPipeMergingDataBatch(JIPipeMergingDataBatch other) {
         this.node = other.node;
         this.inputSlotRows = new HashMap<>(other.inputSlotRows);
-        this.annotations = new HashMap<>(other.annotations);
-        this.dataAnnotations = new HashMap<>(other.dataAnnotations);
+        this.mergedAnnotations = new HashMap<>(other.mergedAnnotations);
+        this.mergedDataAnnotations = new HashMap<>(other.mergedDataAnnotations);
     }
 
     public JIPipeGraphNode getNode() {
@@ -124,13 +124,13 @@ public class JIPipeMergingDataBatch implements Comparable<JIPipeMergingDataBatch
      *
      * @param annotation added annotation. Cannot be null.
      */
-    public void addGlobalDataAnnotation(JIPipeDataAnnotation annotation, JIPipeDataAnnotationMergeStrategy strategy) {
-        JIPipeDataAnnotation existing = this.dataAnnotations.getOrDefault(annotation.getName(), null);
+    public void addMergedDataAnnotation(JIPipeDataAnnotation annotation, JIPipeDataAnnotationMergeStrategy strategy) {
+        JIPipeDataAnnotation existing = this.mergedDataAnnotations.getOrDefault(annotation.getName(), null);
         if (existing == null) {
-            this.dataAnnotations.put(annotation.getName(), annotation);
+            this.mergedDataAnnotations.put(annotation.getName(), annotation);
         } else {
             annotation = strategy.merge(Arrays.asList(existing, annotation)).get(0);
-            this.dataAnnotations.put(annotation.getName(), annotation);
+            this.mergedDataAnnotations.put(annotation.getName(), annotation);
         }
     }
 
@@ -139,47 +139,47 @@ public class JIPipeMergingDataBatch implements Comparable<JIPipeMergingDataBatch
      *
      * @param annotations added annotations
      */
-    public void addGlobalDataAnnotations(Collection<JIPipeDataAnnotation> annotations, JIPipeDataAnnotationMergeStrategy strategy) {
+    public void addMergedDataAnnotations(Collection<JIPipeDataAnnotation> annotations, JIPipeDataAnnotationMergeStrategy strategy) {
         for (JIPipeDataAnnotation annotation : annotations) {
-            addGlobalDataAnnotation(annotation, strategy);
+            addMergedDataAnnotation(annotation, strategy);
         }
     }
 
     /**
-     * Adds annotations to the global annotation storage of this interface.
-     * Global annotations are passed to all output slots.
+     * Adds annotations to the merged annotation storage of this interface.
+     * Merged annotations are passed to all output slots.
      *
      * @param annotations the annotations
      * @param strategy    strategy to apply on merging existing values
      */
-    public void addGlobalAnnotations(Map<String, String> annotations, JIPipeAnnotationMergeStrategy strategy) {
+    public void addMergedAnnotations(Map<String, String> annotations, JIPipeAnnotationMergeStrategy strategy) {
         for (Map.Entry<String, String> entry : annotations.entrySet()) {
-            JIPipeAnnotation existing = this.annotations.getOrDefault(entry.getKey(), null);
+            JIPipeAnnotation existing = this.mergedAnnotations.getOrDefault(entry.getKey(), null);
             if (existing == null) {
-                this.annotations.put(entry.getKey(), new JIPipeAnnotation(entry.getKey(), entry.getValue()));
+                this.mergedAnnotations.put(entry.getKey(), new JIPipeAnnotation(entry.getKey(), entry.getValue()));
             } else {
                 String newValue = strategy.merge(existing.getValue(), entry.getValue());
-                this.annotations.put(entry.getKey(), new JIPipeAnnotation(entry.getKey(), newValue));
+                this.mergedAnnotations.put(entry.getKey(), new JIPipeAnnotation(entry.getKey(), newValue));
             }
         }
     }
 
     /**
-     * Adds annotations to the global annotation storage of this interface.
-     * Global annotations are passed to all output slots.
+     * Adds annotations to the merged annotation storage of this interface.
+     * Merged annotations are passed to all output slots.
      *
      * @param annotations the annotations
      * @param strategy    strategy to apply on merging existing values
      */
-    public void addGlobalAnnotations(List<JIPipeAnnotation> annotations, JIPipeAnnotationMergeStrategy strategy) {
+    public void addMergedAnnotations(List<JIPipeAnnotation> annotations, JIPipeAnnotationMergeStrategy strategy) {
         for (JIPipeAnnotation annotation : annotations) {
             if (annotation != null) {
-                JIPipeAnnotation existing = this.annotations.getOrDefault(annotation.getName(), null);
+                JIPipeAnnotation existing = this.mergedAnnotations.getOrDefault(annotation.getName(), null);
                 if (existing == null) {
-                    this.annotations.put(annotation.getName(), annotation);
+                    this.mergedAnnotations.put(annotation.getName(), annotation);
                 } else {
                     String newValue = strategy.merge(existing.getValue(), annotation.getValue());
-                    this.annotations.put(annotation.getName(), new JIPipeAnnotation(annotation.getName(), newValue));
+                    this.mergedAnnotations.put(annotation.getName(), new JIPipeAnnotation(annotation.getName(), newValue));
                 }
             }
         }
@@ -280,12 +280,12 @@ public class JIPipeMergingDataBatch implements Comparable<JIPipeMergingDataBatch
      *
      * @return map from annotation name to annotation value
      */
-    public Map<String, JIPipeAnnotation> getGlobalAnnotations() {
-        return annotations;
+    public Map<String, JIPipeAnnotation> getMergedAnnotations() {
+        return mergedAnnotations;
     }
 
-    public void setGlobalAnnotations(Map<String, JIPipeAnnotation> annotations) {
-        this.annotations = annotations;
+    public void setMergedAnnotations(Map<String, JIPipeAnnotation> annotations) {
+        this.mergedAnnotations = annotations;
     }
 
     /**
@@ -294,12 +294,12 @@ public class JIPipeMergingDataBatch implements Comparable<JIPipeMergingDataBatch
      *
      * @return map from annotation name to annotation value
      */
-    public Map<String, JIPipeDataAnnotation> getGlobalDataAnnotations() {
-        return dataAnnotations;
+    public Map<String, JIPipeDataAnnotation> getMergedDataAnnotations() {
+        return mergedDataAnnotations;
     }
 
-    public void setGlobalDataAnnotations(Map<String, JIPipeDataAnnotation> dataAnnotations) {
-        this.dataAnnotations = dataAnnotations;
+    public void setMergedDataAnnotations(Map<String, JIPipeDataAnnotation> dataAnnotations) {
+        this.mergedDataAnnotations = dataAnnotations;
     }
 
     /**
@@ -307,13 +307,13 @@ public class JIPipeMergingDataBatch implements Comparable<JIPipeMergingDataBatch
      *
      * @param annotation added annotation. Cannot be null.
      */
-    public void addGlobalAnnotation(JIPipeAnnotation annotation, JIPipeAnnotationMergeStrategy strategy) {
-        JIPipeAnnotation existing = this.annotations.getOrDefault(annotation.getName(), null);
+    public void addMergedAnnotation(JIPipeAnnotation annotation, JIPipeAnnotationMergeStrategy strategy) {
+        JIPipeAnnotation existing = this.mergedAnnotations.getOrDefault(annotation.getName(), null);
         if (existing == null) {
-            this.annotations.put(annotation.getName(), annotation);
+            this.mergedAnnotations.put(annotation.getName(), annotation);
         } else {
             String newValue = strategy.merge(existing.getValue(), annotation.getValue());
-            this.annotations.put(annotation.getName(), new JIPipeAnnotation(annotation.getName(), newValue));
+            this.mergedAnnotations.put(annotation.getName(), new JIPipeAnnotation(annotation.getName(), newValue));
         }
     }
 
@@ -323,28 +323,28 @@ public class JIPipeMergingDataBatch implements Comparable<JIPipeMergingDataBatch
      *
      * @param info removed annotation
      */
-    public void removeGlobalAnnotation(String info) {
-        annotations.remove(info);
+    public void removeMergedAnnotation(String info) {
+        mergedAnnotations.remove(info);
     }
 
     /**
-     * Returns a global annotation
+     * Returns a merged annotation
      *
      * @param name name of the annotation
      * @return the annotation instance or null if there is no such annotation
      */
-    public JIPipeAnnotation getGlobalAnnotation(String name) {
-        return annotations.getOrDefault(name, null);
+    public JIPipeAnnotation getMergedAnnotation(String name) {
+        return mergedAnnotations.getOrDefault(name, null);
     }
 
     /**
-     * Returns a global annotation
+     * Returns a merged annotation
      *
      * @param name name of the annotation
      * @return the annotation instance or null if there is no such annotation
      */
-    public JIPipeDataAnnotation getGlobalDataAnnotation(String name) {
-        return dataAnnotations.getOrDefault(name, null);
+    public JIPipeDataAnnotation getMergedDataAnnotation(String name) {
+        return mergedDataAnnotations.getOrDefault(name, null);
     }
 
 
@@ -377,7 +377,7 @@ public class JIPipeMergingDataBatch implements Comparable<JIPipeMergingDataBatch
      *
      * @param slotName              Slot name
      * @param data                  Added data
-     * @param additionalAnnotations Annotations that are added additionally to the global ones
+     * @param additionalAnnotations Annotations that are added additionally to the merged ones
      * @param progressInfo          data storage progress
      */
     public void addOutputData(String slotName, JIPipeData data, List<JIPipeAnnotation> additionalAnnotations, JIPipeProgressInfo progressInfo) {
@@ -390,7 +390,7 @@ public class JIPipeMergingDataBatch implements Comparable<JIPipeMergingDataBatch
      *
      * @param slotName              Slot name
      * @param data                  Added data
-     * @param additionalAnnotations Annotations that are added additionally to the global ones
+     * @param additionalAnnotations Annotations that are added additionally to the merged ones
      */
     public void addOutputData(String slotName, JIPipeVirtualData data, List<JIPipeAnnotation> additionalAnnotations) {
         addOutputData(node.getOutputSlot(slotName), data, additionalAnnotations, JIPipeAnnotationMergeStrategy.Merge);
@@ -402,7 +402,7 @@ public class JIPipeMergingDataBatch implements Comparable<JIPipeMergingDataBatch
      *
      * @param slotName              Slot name
      * @param data                  Added data
-     * @param additionalAnnotations Annotations that are added additionally to the global ones
+     * @param additionalAnnotations Annotations that are added additionally to the merged ones
      * @param progressInfo          data storage progress
      */
     public void addOutputData(String slotName, JIPipeData data, List<JIPipeAnnotation> additionalAnnotations, JIPipeAnnotationMergeStrategy annotationMergeStrategy, JIPipeProgressInfo progressInfo) {
@@ -415,7 +415,7 @@ public class JIPipeMergingDataBatch implements Comparable<JIPipeMergingDataBatch
      *
      * @param slotName              Slot name
      * @param data                  Added data
-     * @param additionalAnnotations Annotations that are added additionally to the global ones
+     * @param additionalAnnotations Annotations that are added additionally to the merged ones
      */
     public void addOutputData(String slotName, JIPipeVirtualData data, JIPipeAnnotationMergeStrategy annotationMergeStrategy, List<JIPipeAnnotation> additionalAnnotations) {
         addOutputData(node.getOutputSlot(slotName), data, additionalAnnotations, annotationMergeStrategy);
@@ -424,7 +424,7 @@ public class JIPipeMergingDataBatch implements Comparable<JIPipeMergingDataBatch
     public void addOutputData(JIPipeDataSlot slot, JIPipeVirtualData data, List<JIPipeAnnotation> additionalAnnotations, JIPipeAnnotationMergeStrategy annotationMergeStrategy, List<JIPipeDataAnnotation> additionalDataAnnotations, JIPipeDataAnnotationMergeStrategy dataAnnotationMergeStrategy) {
         addOutputData(slot, data, additionalAnnotations, annotationMergeStrategy);
         Multimap<String, JIPipeDataAnnotation> localDataAnnotations = HashMultimap.create();
-        for (Map.Entry<String, JIPipeDataAnnotation> entry : dataAnnotations.entrySet()) {
+        for (Map.Entry<String, JIPipeDataAnnotation> entry : mergedDataAnnotations.entrySet()) {
             localDataAnnotations.put(entry.getKey(), entry.getValue());
         }
         for (JIPipeDataAnnotation dataAnnotation : additionalDataAnnotations) {
@@ -448,8 +448,8 @@ public class JIPipeMergingDataBatch implements Comparable<JIPipeMergingDataBatch
             throw new IllegalArgumentException("The provided slot does not belong to the data interface algorithm!");
         if (!slot.isOutput())
             throw new IllegalArgumentException("Slot is not an output slot!");
-        slot.addData(data, new ArrayList<>(annotations.values()), JIPipeAnnotationMergeStrategy.Merge, progressInfo);
-        for (Map.Entry<String, JIPipeDataAnnotation> entry : dataAnnotations.entrySet()) {
+        slot.addData(data, new ArrayList<>(mergedAnnotations.values()), JIPipeAnnotationMergeStrategy.Merge, progressInfo);
+        for (Map.Entry<String, JIPipeDataAnnotation> entry : mergedDataAnnotations.entrySet()) {
             slot.setVirtualDataAnnotation(slot.getRowCount() - 1, entry.getKey(), entry.getValue().getVirtualData());
         }
     }
@@ -466,8 +466,8 @@ public class JIPipeMergingDataBatch implements Comparable<JIPipeMergingDataBatch
             throw new IllegalArgumentException("The provided slot does not belong to the data interface algorithm!");
         if (!slot.isOutput())
             throw new IllegalArgumentException("Slot is not an output slot!");
-        slot.addData(data, new ArrayList<>(annotations.values()), JIPipeAnnotationMergeStrategy.Merge);
-        for (Map.Entry<String, JIPipeDataAnnotation> entry : dataAnnotations.entrySet()) {
+        slot.addData(data, new ArrayList<>(mergedAnnotations.values()), JIPipeAnnotationMergeStrategy.Merge);
+        for (Map.Entry<String, JIPipeDataAnnotation> entry : mergedDataAnnotations.entrySet()) {
             slot.setVirtualDataAnnotation(slot.getRowCount() - 1, entry.getKey(), entry.getValue().getVirtualData());
         }
     }
@@ -478,7 +478,7 @@ public class JIPipeMergingDataBatch implements Comparable<JIPipeMergingDataBatch
      *
      * @param slotName              Slot name
      * @param data                  Added data
-     * @param additionalAnnotations Annotations that are added additionally to the global ones
+     * @param additionalAnnotations Annotations that are added additionally to the merged ones
      * @param mergeStrategy         how annotations should be merged
      * @param progressInfo          storage progress
      */
@@ -492,7 +492,7 @@ public class JIPipeMergingDataBatch implements Comparable<JIPipeMergingDataBatch
      *
      * @param slot                  Slot instance
      * @param data                  Added data
-     * @param additionalAnnotations Annotations that are added additionally to the global ones
+     * @param additionalAnnotations Annotations that are added additionally to the merged ones
      * @param mergeStrategy         how annotations should be merged
      * @param progressInfo          storage progress
      */
@@ -501,11 +501,11 @@ public class JIPipeMergingDataBatch implements Comparable<JIPipeMergingDataBatch
             throw new IllegalArgumentException("The provided slot does not belong to the data interface algorithm!");
         if (!slot.isOutput())
             throw new IllegalArgumentException("Slot is not an output slot!");
-        List<JIPipeAnnotation> finalAnnotations = new ArrayList<>(annotations.values());
+        List<JIPipeAnnotation> finalAnnotations = new ArrayList<>(mergedAnnotations.values());
         finalAnnotations.addAll(additionalAnnotations);
         slot.addData(data, finalAnnotations, mergeStrategy, progressInfo);
         Multimap<String, JIPipeDataAnnotation> localDataAnnotations = HashMultimap.create();
-        for (Map.Entry<String, JIPipeDataAnnotation> entry : dataAnnotations.entrySet()) {
+        for (Map.Entry<String, JIPipeDataAnnotation> entry : mergedDataAnnotations.entrySet()) {
             localDataAnnotations.put(entry.getKey(), entry.getValue());
         }
         for (JIPipeDataAnnotation dataAnnotation : additionalDataAnnotations) {
@@ -522,7 +522,7 @@ public class JIPipeMergingDataBatch implements Comparable<JIPipeMergingDataBatch
      *
      * @param slot                  Slot instance
      * @param data                  Added data
-     * @param additionalAnnotations Annotations that are added additionally to the global ones
+     * @param additionalAnnotations Annotations that are added additionally to the merged ones
      * @param mergeStrategy         how annotations should be merged
      * @param progressInfo          data storage progress
      */
@@ -531,10 +531,10 @@ public class JIPipeMergingDataBatch implements Comparable<JIPipeMergingDataBatch
             throw new IllegalArgumentException("The provided slot does not belong to the data interface algorithm!");
         if (!slot.isOutput())
             throw new IllegalArgumentException("Slot is not an output slot!");
-        List<JIPipeAnnotation> finalAnnotations = new ArrayList<>(annotations.values());
+        List<JIPipeAnnotation> finalAnnotations = new ArrayList<>(mergedAnnotations.values());
         finalAnnotations.addAll(additionalAnnotations);
         slot.addData(data, finalAnnotations, mergeStrategy, progressInfo);
-        for (Map.Entry<String, JIPipeDataAnnotation> entry : dataAnnotations.entrySet()) {
+        for (Map.Entry<String, JIPipeDataAnnotation> entry : mergedDataAnnotations.entrySet()) {
             slot.setVirtualDataAnnotation(slot.getRowCount() - 1, entry.getKey(), entry.getValue().getVirtualData());
         }
     }
@@ -545,7 +545,7 @@ public class JIPipeMergingDataBatch implements Comparable<JIPipeMergingDataBatch
      *
      * @param slot                  Slot instance
      * @param data                  Added data
-     * @param additionalAnnotations Annotations that are added additionally to the global ones
+     * @param additionalAnnotations Annotations that are added additionally to the merged ones
      * @param mergeStrategy         how annotations should be merged
      */
     public void addOutputData(JIPipeDataSlot slot, JIPipeVirtualData data, List<JIPipeAnnotation> additionalAnnotations, JIPipeAnnotationMergeStrategy mergeStrategy) {
@@ -553,10 +553,10 @@ public class JIPipeMergingDataBatch implements Comparable<JIPipeMergingDataBatch
             throw new IllegalArgumentException("The provided slot does not belong to the data interface algorithm!");
         if (!slot.isOutput())
             throw new IllegalArgumentException("Slot is not an output slot!");
-        List<JIPipeAnnotation> finalAnnotations = new ArrayList<>(annotations.values());
+        List<JIPipeAnnotation> finalAnnotations = new ArrayList<>(mergedAnnotations.values());
         finalAnnotations.addAll(additionalAnnotations);
         slot.addData(data, finalAnnotations, mergeStrategy);
-        for (Map.Entry<String, JIPipeDataAnnotation> entry : dataAnnotations.entrySet()) {
+        for (Map.Entry<String, JIPipeDataAnnotation> entry : mergedDataAnnotations.entrySet()) {
             slot.setVirtualDataAnnotation(slot.getRowCount() - 1, entry.getKey(), entry.getValue().getVirtualData());
         }
     }
@@ -637,10 +637,10 @@ public class JIPipeMergingDataBatch implements Comparable<JIPipeMergingDataBatch
      */
     public JIPipeDataSlot toDummySlot(JIPipeDataSlotInfo info, JIPipeGraphNode node, JIPipeDataSlot sourceSlot) {
         JIPipeDataSlot dummy = new JIPipeDataSlot(info, node);
-        ArrayList<JIPipeAnnotation> annotations = new ArrayList<>(getGlobalAnnotations().values());
+        ArrayList<JIPipeAnnotation> annotations = new ArrayList<>(getMergedAnnotations().values());
         for (int row : getInputRows(sourceSlot.getName())) {
             dummy.addData(sourceSlot.getVirtualData(row), annotations, JIPipeAnnotationMergeStrategy.Merge);
-            for (Map.Entry<String, JIPipeDataAnnotation> entry : dataAnnotations.entrySet()) {
+            for (Map.Entry<String, JIPipeDataAnnotation> entry : mergedDataAnnotations.entrySet()) {
                 dummy.setVirtualDataAnnotation(dummy.getRowCount() - 1, entry.getKey(), entry.getValue().getVirtualData());
             }
         }
@@ -649,13 +649,13 @@ public class JIPipeMergingDataBatch implements Comparable<JIPipeMergingDataBatch
 
     @Override
     public int compareTo(JIPipeMergingDataBatch o) {
-        Set<String> annotationKeySet = new HashSet<>(annotations.keySet());
-        annotationKeySet.addAll(o.annotations.keySet());
+        Set<String> annotationKeySet = new HashSet<>(mergedAnnotations.keySet());
+        annotationKeySet.addAll(o.mergedAnnotations.keySet());
         List<String> annotationKeys = new ArrayList<>(annotationKeySet);
         annotationKeys.sort(Comparator.naturalOrder());
         for (String key : annotationKeys) {
-            JIPipeAnnotation here = annotations.getOrDefault(key, null);
-            JIPipeAnnotation there = o.annotations.getOrDefault(key, null);
+            JIPipeAnnotation here = mergedAnnotations.getOrDefault(key, null);
+            JIPipeAnnotation there = o.mergedAnnotations.getOrDefault(key, null);
             String hereValue = here != null ? here.getValue() : "";
             String thereValue = there != null ? there.getValue() : "";
             int c = hereValue.compareTo(thereValue);

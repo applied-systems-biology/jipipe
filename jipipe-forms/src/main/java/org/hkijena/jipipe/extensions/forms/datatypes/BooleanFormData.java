@@ -107,7 +107,7 @@ public class BooleanFormData extends ParameterFormData {
     public void loadData(JIPipeMergingDataBatch dataBatch) {
         if (annotationIOSettings.getInputAnnotation().isEnabled()) {
             JIPipeAnnotation annotation =
-                    dataBatch.getGlobalAnnotations().getOrDefault(annotationIOSettings.getInputAnnotation().getContent(),
+                    dataBatch.getMergedAnnotations().getOrDefault(annotationIOSettings.getInputAnnotation().getContent(),
                             null);
             if (annotation != null) {
                 String value = StringUtils.nullToEmpty(annotation.getValue());
@@ -132,12 +132,12 @@ public class BooleanFormData extends ParameterFormData {
         if (annotationIOSettings.getOutputAnnotation().isEnabled()) {
             if (value) {
                 if (trueString.isEnabled()) {
-                    annotationIOSettings.getAnnotationMergeStrategy().mergeInto(dataBatch.getGlobalAnnotations(),
+                    annotationIOSettings.getAnnotationMergeStrategy().mergeInto(dataBatch.getMergedAnnotations(),
                             Collections.singletonList(annotationIOSettings.getOutputAnnotation().createAnnotation(trueString.getContent())));
                 }
             } else {
                 if (falseString.isEnabled()) {
-                    annotationIOSettings.getAnnotationMergeStrategy().mergeInto(dataBatch.getGlobalAnnotations(),
+                    annotationIOSettings.getAnnotationMergeStrategy().mergeInto(dataBatch.getMergedAnnotations(),
                             Collections.singletonList(annotationIOSettings.getOutputAnnotation().createAnnotation(falseString.getContent())));
                 }
             }

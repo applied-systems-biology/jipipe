@@ -76,7 +76,7 @@ public class FilterTablesAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
         ExpressionVariables parameters = new ExpressionVariables();
         if (includeAnnotations) {
-            for (JIPipeAnnotation annotation : dataBatch.getGlobalAnnotations().values()) {
+            for (JIPipeAnnotation annotation : dataBatch.getMergedAnnotations().values()) {
                 parameters.set(annotation.getName(), annotation.getValue());
             }
         }

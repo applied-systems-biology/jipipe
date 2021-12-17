@@ -33,6 +33,7 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.compat.ResultsTableDataImpo
 import org.hkijena.jipipe.extensions.imagejdatatypes.datasources.BioFormatsImporter;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datasources.ImagePlusFromFile;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datasources.ROIDataFromFile;
+import org.hkijena.jipipe.extensions.imagejdatatypes.datasources.ROIDataFromOMEImage;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datasources.ResultsTableFromFile;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.LUTData;
@@ -374,6 +375,7 @@ public class ImageJDataTypesExtension extends JIPipePrepackagedDefaultJavaExtens
 
         // Register data sources
         registerNodeType("import-imagej-roi-from-file", ROIDataFromFile.class);
+        registerNodeType("extract-imagej-roi-from-ome-image", ROIDataFromOMEImage.class);
         registerNodeType("import-imagej-results-table-from-file", ResultsTableFromFile.class);
         registerNodeType("import-imagej-imgplus-from-file", ImagePlusFromFile.class);
         registerNodeType("import-imagej-bioformats", BioFormatsImporter.class, UIUtils.getIconURLFromResources("apps/bioformats.png"));

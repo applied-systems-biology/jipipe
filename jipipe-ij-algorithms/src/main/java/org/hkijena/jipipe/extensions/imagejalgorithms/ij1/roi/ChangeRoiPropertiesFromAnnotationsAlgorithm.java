@@ -94,26 +94,26 @@ public class ChangeRoiPropertiesFromAnnotationsAlgorithm extends JIPipeSimpleIte
             c = roi.getCPosition();
             t = roi.getTPosition();
             if (positionX.isEnabled())
-                x = NumberUtils.createDouble(dataBatch.getGlobalAnnotation(positionX.getContent()).getValue());
+                x = NumberUtils.createDouble(dataBatch.getMergedAnnotation(positionX.getContent()).getValue());
             if (positionY.isEnabled())
-                y = NumberUtils.createDouble(dataBatch.getGlobalAnnotation(positionY.getContent()).getValue());
+                y = NumberUtils.createDouble(dataBatch.getMergedAnnotation(positionY.getContent()).getValue());
             if (positionZ.isEnabled())
-                z = NumberUtils.createDouble(dataBatch.getGlobalAnnotation(positionZ.getContent()).getValue()).intValue();
+                z = NumberUtils.createDouble(dataBatch.getMergedAnnotation(positionZ.getContent()).getValue()).intValue();
             if (positionC.isEnabled())
-                c = NumberUtils.createDouble(dataBatch.getGlobalAnnotation(positionC.getContent()).getValue()).intValue();
+                c = NumberUtils.createDouble(dataBatch.getMergedAnnotation(positionC.getContent()).getValue()).intValue();
             if (positionT.isEnabled())
-                t = NumberUtils.createDouble(dataBatch.getGlobalAnnotation(positionT.getContent()).getValue()).intValue();
+                t = NumberUtils.createDouble(dataBatch.getMergedAnnotation(positionT.getContent()).getValue()).intValue();
             roi.setPosition(c, z, t);
             roi.setLocation(x, y);
 
             if (fillColor.isEnabled())
-                roi.setFillColor(ColorUtils.parseColor(dataBatch.getGlobalAnnotation(fillColor.getContent()).getValue()));
+                roi.setFillColor(ColorUtils.parseColor(dataBatch.getMergedAnnotation(fillColor.getContent()).getValue()));
             if (lineColor.isEnabled())
-                roi.setStrokeColor(ColorUtils.parseColor(dataBatch.getGlobalAnnotation(lineColor.getContent()).getValue()));
+                roi.setStrokeColor(ColorUtils.parseColor(dataBatch.getMergedAnnotation(lineColor.getContent()).getValue()));
             if (lineWidth.isEnabled())
-                roi.setStrokeWidth(NumberUtils.createDouble(dataBatch.getGlobalAnnotation(lineWidth.getContent()).getValue()));
+                roi.setStrokeWidth(NumberUtils.createDouble(dataBatch.getMergedAnnotation(lineWidth.getContent()).getValue()));
             if (roiName.isEnabled())
-                roi.setName(dataBatch.getGlobalAnnotation(roiName.getContent()).getValue());
+                roi.setName(dataBatch.getMergedAnnotation(roiName.getContent()).getValue());
         }
 
         dataBatch.addOutputData(getFirstOutputSlot(), data, progressInfo);

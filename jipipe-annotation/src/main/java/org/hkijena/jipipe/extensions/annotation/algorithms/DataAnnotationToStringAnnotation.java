@@ -43,11 +43,11 @@ public class DataAnnotationToStringAnnotation extends JIPipeSimpleIteratingAlgor
     @Override
     protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
         List<JIPipeAnnotation> annotationList = new ArrayList<>();
-        for (String name : ImmutableList.copyOf(dataBatch.getGlobalDataAnnotations().keySet())) {
+        for (String name : ImmutableList.copyOf(dataBatch.getMergedDataAnnotations().keySet())) {
             if (nameFilter.test(name)) {
-                annotationList.add(new JIPipeAnnotation(name, dataBatch.getGlobalDataAnnotation(name).getVirtualData().getStringRepresentation()));
+                annotationList.add(new JIPipeAnnotation(name, dataBatch.getMergedDataAnnotation(name).getVirtualData().getStringRepresentation()));
                 if (!keepDataAnnotations)
-                    dataBatch.getGlobalAnnotations().remove(name);
+                    dataBatch.getMergedAnnotations().remove(name);
             }
         }
         dataBatch.addOutputData(getFirstOutputSlot(), dataBatch.getInputData(getFirstInputSlot(), JIPipeData.class, progressInfo), annotationList, annotationMergeStrategy, progressInfo);

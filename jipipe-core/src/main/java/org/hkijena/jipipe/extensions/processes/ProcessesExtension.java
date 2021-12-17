@@ -39,11 +39,6 @@ public class ProcessesExtension extends JIPipePrepackagedDefaultJavaExtension {
     }
 
     @Override
-    public List<ImageIcon> getSplashIcons() {
-        return Arrays.asList(UIUtils.getIcon32FromResources("apps/utilities-terminal.png"));
-    }
-
-    @Override
     public void register() {
         ProcessesExtensionSettings extensionSettings = new ProcessesExtensionSettings();
 

@@ -85,7 +85,7 @@ public class SimpleIteratingFormProcessorAlgorithm extends JIPipeAlgorithm imple
                     continue;
                 JIPipeMergingDataBatch dataBatch = new JIPipeMergingDataBatch(this);
                 dataBatch.addInputData(dataSlot, row);
-                dataBatch.addGlobalAnnotations(dataSlot.getAnnotations(row), JIPipeAnnotationMergeStrategy.Merge);
+                dataBatch.addMergedAnnotations(dataSlot.getAnnotations(row), JIPipeAnnotationMergeStrategy.Merge);
                 dataBatchList.add(dataBatch);
             }
 
@@ -170,15 +170,15 @@ public class SimpleIteratingFormProcessorAlgorithm extends JIPipeAlgorithm imple
                 JIPipeDataSlot forms = dataBatchForms.get(i);
                 JIPipeMergingDataBatch dataBatch = dataBatchList.get(i);
                 getFirstOutputSlot().addData(dataBatch.getVirtualInputData(dataSlot).get(0),
-                        new ArrayList<>(dataBatch.getGlobalAnnotations().values()),
+                        new ArrayList<>(dataBatch.getMergedAnnotations().values()),
                         JIPipeAnnotationMergeStrategy.OverwriteExisting,
-                        new ArrayList<>(dataBatch.getGlobalDataAnnotations().values()),
+                        new ArrayList<>(dataBatch.getMergedDataAnnotations().values()),
                         JIPipeDataAnnotationMergeStrategy.OverwriteExisting);
 
                 // Copy user-modified forms
                 for (int row = 0; row < forms.getRowCount(); row++) {
                     List<JIPipeAnnotation> annotations = new ArrayList<>(forms.getAnnotations(row));
-                    annotations.addAll(dataBatch.getGlobalAnnotations().values());
+                    annotations.addAll(dataBatch.getMergedAnnotations().values());
                     formsOutputSlot.addData(forms.getVirtualData(row),
                             annotations,
                             JIPipeAnnotationMergeStrategy.OverwriteExisting,
@@ -243,7 +243,7 @@ public class SimpleIteratingFormProcessorAlgorithm extends JIPipeAlgorithm imple
                 continue;
             JIPipeMergingDataBatch dataBatch = new JIPipeMergingDataBatch(this);
             dataBatch.addInputData(slot, i);
-            dataBatch.addGlobalAnnotations(slot.getAnnotations(i), JIPipeAnnotationMergeStrategy.Merge);
+            dataBatch.addMergedAnnotations(slot.getAnnotations(i), JIPipeAnnotationMergeStrategy.Merge);
             batches.add(dataBatch);
         }
         return batches;

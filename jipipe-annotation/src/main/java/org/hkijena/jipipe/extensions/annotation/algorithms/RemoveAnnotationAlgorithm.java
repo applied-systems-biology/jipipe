@@ -61,9 +61,9 @@ public class RemoveAnnotationAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     @Override
     protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
-        List<JIPipeAnnotation> matches = annotationExpression.queryAll(dataBatch.getGlobalAnnotations().values());
+        List<JIPipeAnnotation> matches = annotationExpression.queryAll(dataBatch.getMergedAnnotations().values());
         for (JIPipeAnnotation match : matches) {
-            dataBatch.removeGlobalAnnotation(match.getName());
+            dataBatch.removeMergedAnnotation(match.getName());
         }
         dataBatch.addOutputData(getFirstOutputSlot(), dataBatch.getInputData(getFirstInputSlot(), JIPipeData.class, progressInfo), progressInfo);
     }
