@@ -77,7 +77,7 @@ public class DeepLearningExtension extends JIPipePrepackagedDefaultJavaExtension
 
     @Override
     public String getDependencyVersion() {
-        return "1.56.0";
+        return "1.57.0";
     }
 
     @Override
