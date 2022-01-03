@@ -21,8 +21,8 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.extensions.parameters.colors.ColorMap;
 import org.hkijena.jipipe.extensions.parameters.colors.ColorMapEnumItemInfo;
 import org.hkijena.jipipe.extensions.settings.FileChooserSettings;
-import org.hkijena.jipipe.ui.components.ColorIcon;
 import org.hkijena.jipipe.ui.components.PickEnumValueDialog;
+import org.hkijena.jipipe.ui.components.icons.SolidColorIcon;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.hkijena.jipipe.utils.json.JsonUtils;
 import org.jdesktop.swingx.JXMultiThumbSlider;
@@ -46,7 +46,7 @@ import java.util.List;
 public class ImageViewerLUTEditor extends JPanel implements ThumbListener {
     private final ImageViewerPanel imageViewerPanel;
     private final int targetChannel;
-    private final ColorIcon changeColorButtonDisplayedColor = new ColorIcon(16, 16);
+    private final SolidColorIcon changeColorButtonDisplayedColor = new SolidColorIcon(16, 16);
     /**
      * The multi-thumb slider to use for the gradient stops
      */

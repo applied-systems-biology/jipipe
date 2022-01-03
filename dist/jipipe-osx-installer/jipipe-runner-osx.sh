@@ -74,7 +74,7 @@ if [[ ! -e $PWD/Fiji.app ]]; then
 
 fi
 
-cd $PWD/Fiji.app/Contents/MacOS
+cd "$PWD/Fiji.app/Contents/MacOS"
 nohup ./ImageJ-macosx --pass-classpath --full-classpath --main-class org.hkijena.jipipe.JIPipeLauncher &
 
 echo "QUITAPP"

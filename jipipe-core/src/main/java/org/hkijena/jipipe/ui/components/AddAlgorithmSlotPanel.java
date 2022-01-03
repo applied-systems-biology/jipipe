@@ -21,6 +21,9 @@ import org.hkijena.jipipe.api.data.JIPipeSlotType;
 import org.hkijena.jipipe.api.history.JIPipeHistoryJournal;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.nodes.JIPipeIOSlotConfiguration;
+import org.hkijena.jipipe.ui.components.renderers.InheritedSlotListCellRenderer;
+import org.hkijena.jipipe.ui.components.renderers.JIPipeDataInfoListCellRenderer;
+import org.hkijena.jipipe.ui.components.search.SearchTextField;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.jdesktop.swingx.JXTextField;
@@ -65,8 +68,8 @@ public class AddAlgorithmSlotPanel extends JPanel {
     private JCheckBox optionalInputEditor = new JCheckBox();
 
     /**
-     * @param algorithm    the target algorithm
-     * @param slotType     the slot type to be created
+     * @param algorithm      the target algorithm
+     * @param slotType       the slot type to be created
      * @param historyJournal the history journal. can be null.
      */
     public AddAlgorithmSlotPanel(JIPipeGraphNode algorithm, JIPipeSlotType slotType, JIPipeHistoryJournal historyJournal) {
@@ -240,7 +243,7 @@ public class AddAlgorithmSlotPanel extends JPanel {
         }
         slotDefinition.setInheritanceConversions(inheritanceConversions);
 
-        if(getHistoryJournal() != null) {
+        if (getHistoryJournal() != null) {
             getHistoryJournal().snapshotBeforeAddSlot(algorithm, slotDefinition, algorithm.getCompartmentUUIDInGraph());
         }
 
@@ -356,10 +359,10 @@ public class AddAlgorithmSlotPanel extends JPanel {
     /**
      * Shows a dialog for adding slots
      *
-     * @param parent       parent component
+     * @param parent         parent component
      * @param historyJournal the graph history
-     * @param algorithm    target algorithm
-     * @param slotType     slot type to be created
+     * @param algorithm      target algorithm
+     * @param slotType       slot type to be created
      */
     public static void showDialog(Component parent, JIPipeHistoryJournal historyJournal, JIPipeGraphNode algorithm, JIPipeSlotType slotType) {
         JDialog dialog = new JDialog();

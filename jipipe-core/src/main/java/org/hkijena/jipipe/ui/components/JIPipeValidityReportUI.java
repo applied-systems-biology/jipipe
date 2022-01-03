@@ -14,12 +14,13 @@
 package org.hkijena.jipipe.ui.components;
 
 import org.hkijena.jipipe.api.JIPipeIssueReport;
+import org.hkijena.jipipe.ui.components.markdown.MarkdownDocument;
+import org.hkijena.jipipe.ui.components.markdown.MarkdownReader;
+import org.hkijena.jipipe.utils.AutoResizeSplitPane;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
 import java.awt.BorderLayout;
-import java.awt.event.ComponentAdapter;
-import java.awt.event.ComponentEvent;
 import java.util.HashMap;
 
 /**
@@ -93,17 +94,8 @@ public class JIPipeValidityReportUI extends JPanel {
 
         // Create split pane if needed
         if (withHelp) {
-            splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, new JLabel(),
-                    new MarkdownReader(false, helpDocument));
-            splitPane.setDividerSize(3);
-            splitPane.setResizeWeight(0.66);
-            addComponentListener(new ComponentAdapter() {
-                @Override
-                public void componentResized(ComponentEvent e) {
-                    super.componentResized(e);
-                    splitPane.setDividerLocation(0.66);
-                }
-            });
+            splitPane = new AutoResizeSplitPane(JSplitPane.HORIZONTAL_SPLIT, new JLabel(),
+                    new MarkdownReader(false, helpDocument), AutoResizeSplitPane.RATIO_3_TO_1);
             add(splitPane, BorderLayout.CENTER);
         }
     }

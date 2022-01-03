@@ -27,6 +27,7 @@ public class RoiOverlapStatisticsVariableSource implements ExpressionParameterVa
 
     static {
         VARIABLES = new HashSet<>();
+        VARIABLES.add(new ExpressionParameterVariable("Annotations map", "A map of annotations that are attached to the data batch", "annotations"));
         VARIABLES.add(new ExpressionParameterVariable("ROI 1 Z", "The Z location of the first ROI (first index is 1, zero indicates no Z constraint)", "First.z"));
         VARIABLES.add(new ExpressionParameterVariable("ROI 1 C", "The channel (C) location of the first ROI (first index is 1, zero indicates no C constraint)", "First.c"));
         VARIABLES.add(new ExpressionParameterVariable("ROI 1 T", "The frame (T) location of the first ROI (first index is 1, zero indicates no T constraint)", "First.t"));

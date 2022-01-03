@@ -74,7 +74,7 @@ public class SetSingleAnnotation extends JIPipeSimpleIteratingAlgorithm {
     @Override
     protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
         ExpressionVariables variableSet = new ExpressionVariables();
-        for (JIPipeAnnotation annotation : dataBatch.getGlobalAnnotations().values()) {
+        for (JIPipeAnnotation annotation : dataBatch.getMergedAnnotations().values()) {
             variableSet.set(annotation.getName(), annotation.getValue());
         }
         variableSet.set("data_string", getFirstInputSlot().getVirtualData(dataBatch.getInputSlotRows().get(getFirstInputSlot())).getStringRepresentation());
@@ -89,7 +89,7 @@ public class SetSingleAnnotation extends JIPipeSimpleIteratingAlgorithm {
                     "You wanted to set the name of an annotation, but the expression generated an empty name. This is not allowed.",
                     "Check if the expression is correct.");
         }
-        dataBatch.addGlobalAnnotation(new JIPipeAnnotation(name, value), annotationMergeStrategy);
+        dataBatch.addMergedAnnotation(new JIPipeAnnotation(name, value), annotationMergeStrategy);
         dataBatch.addOutputData(getFirstOutputSlot(), dataBatch.getInputData(getFirstInputSlot(), JIPipeData.class, progressInfo), progressInfo);
     }
 

@@ -36,10 +36,11 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.viewer.plugins.maskdrawer.M
 import org.hkijena.jipipe.extensions.imagejdatatypes.viewer.plugins.maskdrawer.MeasurementPlugin;
 import org.hkijena.jipipe.extensions.settings.FileChooserSettings;
 import org.hkijena.jipipe.extensions.settings.ImageViewerUISettings;
-import org.hkijena.jipipe.ui.components.DocumentTabPane;
 import org.hkijena.jipipe.ui.components.FormPanel;
 import org.hkijena.jipipe.ui.components.PathEditor;
+import org.hkijena.jipipe.ui.components.tabs.DocumentTabPane;
 import org.hkijena.jipipe.ui.running.JIPipeRunExecuterUI;
+import org.hkijena.jipipe.utils.AutoResizeSplitPane;
 import org.hkijena.jipipe.utils.PathIOMode;
 import org.hkijena.jipipe.utils.PathType;
 import org.hkijena.jipipe.utils.StringUtils;
@@ -51,8 +52,6 @@ import javax.swing.*;
 import java.awt.Adjustable;
 import java.awt.BorderLayout;
 import java.awt.Component;
-import java.awt.event.ComponentAdapter;
-import java.awt.event.ComponentEvent;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.nio.file.Path;
@@ -87,9 +86,9 @@ public class ImageViewerPanel extends JPanel {
     private JScrollPane scrollPane;
     private JSpinner animationSpeedControl = new JSpinner(new SpinnerNumberModel(250, 5, 10000, 1));
     private int rotation = 0;
-    private JMenuItem exportAllSlicesItem;    private Timer animationTimer = new Timer(250, e -> animateNextSlice());
+    private JMenuItem exportAllSlicesItem;
     private JMenuItem exportMovieItem;
-    private JToolBar toolBar = new JToolBar();
+    private JToolBar toolBar = new JToolBar();    private Timer animationTimer = new Timer(250, e -> animateNextSlice());
     private List<ImageViewerPanelPlugin> plugins = new ArrayList<>();
     private JButton rotateLeftButton;
     private JButton rotateRightButton;
@@ -97,6 +96,7 @@ public class ImageViewerPanel extends JPanel {
     private Component currentContentPanel;
     private DocumentTabPane tabPane = new DocumentTabPane();
     private Map<String, FormPanel> formPanels = new HashMap<>();
+    private boolean isUpdatingSliders = false;
     public ImageViewerPanel() {
         if (JIPipe.getInstance() != null) {
             settings = ImageViewerUISettings.getInstance();
@@ -191,9 +191,18 @@ public class ImageViewerPanel extends JPanel {
         add(bottomPanel, BorderLayout.SOUTH);
 
         // Register slider events
-        stackSlider.addAdjustmentListener(e -> refreshSlice());
-        channelSlider.addAdjustmentListener(e -> refreshSlice());
-        frameSlider.addAdjustmentListener(e -> refreshSlice());
+        stackSlider.addAdjustmentListener(e -> {
+            if (!isUpdatingSliders)
+                refreshSlice();
+        });
+        channelSlider.addAdjustmentListener(e -> {
+            if (!isUpdatingSliders)
+                refreshSlice();
+        });
+        frameSlider.addAdjustmentListener(e -> {
+            if (!isUpdatingSliders)
+                refreshSlice();
+        });
 
         initializeAnimationControls();
         updateSideBar();
@@ -380,18 +389,9 @@ public class ImageViewerPanel extends JPanel {
             remove(currentContentPanel);
         }
         if (enableSideBarButton.isSelected()) {
-            JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT,
+            JSplitPane splitPane = new AutoResizeSplitPane(JSplitPane.HORIZONTAL_SPLIT,
                     scrollPane,
-                    tabPane);
-            splitPane.setDividerSize(3);
-            splitPane.setResizeWeight(0.66);
-            addComponentListener(new ComponentAdapter() {
-                @Override
-                public void componentResized(ComponentEvent e) {
-                    super.componentResized(e);
-                    splitPane.setDividerLocation(0.66);
-                }
-            });
+                    tabPane, AutoResizeSplitPane.RATIO_3_TO_1);
             add(splitPane, BorderLayout.CENTER);
             currentContentPanel = splitPane;
         } else {
@@ -472,7 +472,7 @@ public class ImageViewerPanel extends JPanel {
 
     public void exportVideo() {
         Path path = FileChooserSettings.saveFile(this, FileChooserSettings.LastDirectoryKey.Data, "Export video", UIUtils.EXTENSION_FILTER_AVI);
-        if(path == null) {
+        if (path == null) {
             return;
         }
 
@@ -564,25 +564,30 @@ public class ImageViewerPanel extends JPanel {
     }
 
     private void refreshSliders() {
-        if (image != null) {
-            bottomPanel.setVisible(true);
-            bottomPanel.clear();
+        try {
+            isUpdatingSliders = true;
+            if (image != null) {
+                bottomPanel.setVisible(true);
+                bottomPanel.clear();
 
-            if (image.getNChannels() > 1)
-                addSliderToForm(channelSlider, channelSliderLabel, animationChannelToggle);
-            if (image.getNSlices() > 1)
-                addSliderToForm(stackSlider, stackSliderLabel, animationStackToggle);
-            if (image.getNFrames() > 1)
-                addSliderToForm(frameSlider, frameSliderLabel, animationFrameToggle);
+                if (image.getNChannels() > 1)
+                    addSliderToForm(channelSlider, channelSliderLabel, animationChannelToggle);
+                if (image.getNSlices() > 1)
+                    addSliderToForm(stackSlider, stackSliderLabel, animationStackToggle);
+                if (image.getNFrames() > 1)
+                    addSliderToForm(frameSlider, frameSliderLabel, animationFrameToggle);
 
-            stackSlider.setMinimum(1);
-            stackSlider.setMaximum(image.getNSlices() + 1);
-            channelSlider.setMinimum(1);
-            channelSlider.setMaximum(image.getNChannels() + 1);
-            frameSlider.setMinimum(1);
-            frameSlider.setMaximum(image.getNFrames() + 1);
-        } else {
-            bottomPanel.setVisible(false);
+                stackSlider.setMinimum(1);
+                stackSlider.setMaximum(image.getNSlices() + 1);
+                channelSlider.setMinimum(1);
+                channelSlider.setMaximum(image.getNChannels() + 1);
+                frameSlider.setMinimum(1);
+                frameSlider.setMaximum(image.getNFrames() + 1);
+            } else {
+                bottomPanel.setVisible(false);
+            }
+        } finally {
+            isUpdatingSliders = false;
         }
     }
 
@@ -737,7 +742,7 @@ public class ImageViewerPanel extends JPanel {
 //            System.out.println("bps: " + image.getDisplayRangeMin() + ", " + image.getDisplayRangeMax());
             image.setPosition(channel, stack, frame);
             this.currentSlice = image.getProcessor();
-            this.statistics = image.getStatistics();
+            this.statistics = currentSlice.getStatistics();
             for (ImageViewerPanelPlugin plugin : plugins) {
 //                System.out.println(plugin + ": " + image.getDisplayRangeMin() + ", " + image.getDisplayRangeMax());
                 plugin.onSliceChanged();

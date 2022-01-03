@@ -114,7 +114,7 @@ public abstract class JIPipeParameterlessSimpleIteratingAlgorithm extends JIPipe
                     JIPipeProgressInfo slotProgress = progressInfo.resolveAndLog("Data row", i, getFirstInputSlot().getRowCount());
                     JIPipeDataBatch dataBatch = new JIPipeDataBatch(this);
                     dataBatch.setInputData(getFirstInputSlot(), i);
-                    dataBatch.addGlobalAnnotations(getFirstInputSlot().getAnnotations(i), JIPipeAnnotationMergeStrategy.Merge);
+                    dataBatch.addMergedAnnotations(getFirstInputSlot().getAnnotations(i), JIPipeAnnotationMergeStrategy.Merge);
                     runIteration(dataBatch, slotProgress);
                 }
             } else {
@@ -129,7 +129,7 @@ public abstract class JIPipeParameterlessSimpleIteratingAlgorithm extends JIPipe
                         JIPipeProgressInfo slotProgress = progressInfo.resolveAndLog("Data row", rowIndex, getFirstInputSlot().getRowCount());
                         JIPipeDataBatch dataBatch = new JIPipeDataBatch(this);
                         dataBatch.setInputData(getFirstInputSlot(), rowIndex);
-                        dataBatch.addGlobalAnnotations(getFirstInputSlot().getAnnotations(rowIndex), JIPipeAnnotationMergeStrategy.Merge);
+                        dataBatch.addMergedAnnotations(getFirstInputSlot().getAnnotations(rowIndex), JIPipeAnnotationMergeStrategy.Merge);
                         runIteration(dataBatch, slotProgress);
                     });
                 }
@@ -231,8 +231,8 @@ public abstract class JIPipeParameterlessSimpleIteratingAlgorithm extends JIPipe
                 continue;
             JIPipeMergingDataBatch dataBatch = new JIPipeMergingDataBatch(this);
             dataBatch.addInputData(slot, i);
-            dataBatch.addGlobalAnnotations(slot.getAnnotations(i), JIPipeAnnotationMergeStrategy.Merge);
-            dataBatch.addGlobalDataAnnotations(slot.getDataAnnotations(i), JIPipeDataAnnotationMergeStrategy.MergeTables);
+            dataBatch.addMergedAnnotations(slot.getAnnotations(i), JIPipeAnnotationMergeStrategy.Merge);
+            dataBatch.addMergedDataAnnotations(slot.getDataAnnotations(i), JIPipeDataAnnotationMergeStrategy.MergeTables);
             batches.add(dataBatch);
         }
         return batches;

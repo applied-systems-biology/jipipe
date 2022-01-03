@@ -817,6 +817,23 @@ public class ImageJUtils {
     }
 
     /**
+     * Sets the slice of an image to the processor based on the index. Handles all configurations of images.
+     *
+     * @param image     the image
+     * @param processor the processor
+     * @param index     the index
+     */
+    public static void setSliceZero(ImagePlus image, ImageProcessor processor, ImageSliceIndex index) {
+        if (image.getStackSize() == 1) {
+            if (index.getC() != 0 && index.getT() != 0 && index.getZ() != 0)
+                throw new IndexOutOfBoundsException("Out of range: " + index + " in " + image);
+            image.setProcessor(processor);
+        } else {
+            image.getStack().setProcessor(processor, image.getStackIndex(index.getC() + 1, index.getZ() + 1, index.getT() + 1));
+        }
+    }
+
+    /**
      * Runs the function for each Z, C, and T slice.
      *
      * @param img          the image
@@ -1726,6 +1743,21 @@ public class ImageJUtils {
             }
         }
         return img;
+    }
+
+    /**
+     * Gets the slice closest to the requested slice index (zero-based).
+     * If there are fewer slices than requested, the last slice is chosen
+     *
+     * @param image the image
+     * @param index the slice index (zero-based)
+     * @return the slice
+     */
+    public static ImageProcessor getClosestSliceZero(ImagePlus image, ImageSliceIndex index) {
+        int z = Math.min(index.getZ(), image.getNSlices() - 1);
+        int c = Math.min(index.getZ(), image.getNChannels() - 1);
+        int t = Math.min(index.getZ(), image.getNFrames() - 1);
+        return getSliceZero(image, c, z, t);
     }
 
     public static class GradientStop implements Comparable<GradientStop> {

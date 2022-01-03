@@ -61,6 +61,9 @@ public class LineXYPlotData extends XYPlotData {
         chart.getXYPlot().getRangeAxis().setLabelFont(new Font(Font.SANS_SERIF, Font.BOLD, getyAxisFontSize()));
         chart.getXYPlot().getRangeAxis().setTickLabelFont(new Font(Font.SANS_SERIF, Font.PLAIN, getyAxisFontSize()));
 
+        calibrateAxis(chart.getXYPlot().getDomainAxis(), getxAxisMinimum(), getxAxisMaximum());
+        calibrateAxis(chart.getXYPlot().getRangeAxis(), getyAxisMinimum(), getyAxisMaximum());
+
         // Set line thickness
         XYItemRenderer renderer = chart.getXYPlot().getRenderer();
         renderer.setDefaultStroke(new BasicStroke(lineThickness));

@@ -50,7 +50,7 @@ public class ApplyExpressionPerRowAlgorithm extends JIPipeSimpleIteratingAlgorit
     protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
         ResultsTableData data = (ResultsTableData) dataBatch.getInputData(getFirstInputSlot(), ResultsTableData.class, progressInfo).duplicate();
         ExpressionVariables variableSet = new ExpressionVariables();
-        Map<String, String> annotationsMap = JIPipeAnnotation.annotationListToMap(dataBatch.getGlobalAnnotations().values(), JIPipeAnnotationMergeStrategy.OverwriteExisting);
+        Map<String, String> annotationsMap = JIPipeAnnotation.annotationListToMap(dataBatch.getMergedAnnotations().values(), JIPipeAnnotationMergeStrategy.OverwriteExisting);
         variableSet.set("annotations", annotationsMap);
         variableSet.set("num_rows", data.getRowCount());
         for (ExpressionTableColumnGeneratorProcessor expression : expressionList) {

@@ -73,20 +73,6 @@ public class QuickRun implements JIPipeRunnable, JIPipeValidatable {
         targetNodeCopy = run.getGraph().getEquivalentAlgorithm(targetNode);
         ((JIPipeAlgorithm) targetNodeCopy).setEnabled(true);
 
-        // Disable all algorithms that are not dependencies of the benched algorithm
-//        List<JIPipeGraphNode> predecessorAlgorithms = testBenchRun.getGraph()
-//                .getPredecessorAlgorithms(benchedAlgorithm, testBenchRun.getGraph().traverse());
-        Set<JIPipeGraphNode> predecessorAlgorithms = findPredecessorsWithoutCache();
-        if (!settings.isExcludeSelected())
-            predecessorAlgorithms.add(targetNodeCopy);
-        for (JIPipeGraphNode node : run.getGraph().getGraphNodes()) {
-            if (!predecessorAlgorithms.contains(node)) {
-                if (node instanceof JIPipeAlgorithm) {
-                    ((JIPipeAlgorithm) node).setEnabled(false);
-                }
-            }
-        }
-
         // Disable storing intermediate results
         if (!settings.isStoreIntermediateResults()) {
             HashSet<JIPipeGraphNode> disabled = new HashSet<>(run.getGraph().getGraphNodes());
@@ -139,6 +125,19 @@ public class QuickRun implements JIPipeRunnable, JIPipeValidatable {
 
     @Override
     public void run() {
+
+        // Disable all algorithms that are not dependencies of the benched algorithm
+        Set<JIPipeGraphNode> predecessorAlgorithms = findPredecessorsWithoutCache();
+        if (!settings.isExcludeSelected())
+            predecessorAlgorithms.add(targetNodeCopy);
+        for (JIPipeGraphNode node : run.getGraph().getGraphNodes()) {
+            if (!predecessorAlgorithms.contains(node)) {
+                if (node instanceof JIPipeAlgorithm) {
+                    ((JIPipeAlgorithm) node).setEnabled(false);
+                }
+            }
+        }
+
         // Remove the benched algorithm from cache. This is a workaround.
         if (settings.isLoadFromCache()) {
             getProject().getCache().clear(targetNode);

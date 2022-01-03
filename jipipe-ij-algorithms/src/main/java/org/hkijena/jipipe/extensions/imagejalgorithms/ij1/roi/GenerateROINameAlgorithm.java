@@ -60,7 +60,7 @@ public class GenerateROINameAlgorithm extends ImageRoiProcessorAlgorithm {
         ROIListData tmp = new ROIListData();
 
         if (includeAnnotations) {
-            for (JIPipeAnnotation value : dataBatch.getGlobalAnnotations().values()) {
+            for (JIPipeAnnotation value : dataBatch.getMergedAnnotations().values()) {
                 parameters.set(value.getName(), value.getValue());
             }
         }
@@ -71,7 +71,7 @@ public class GenerateROINameAlgorithm extends ImageRoiProcessorAlgorithm {
             if (referenceEntry.getKey() != null) {
                 referenceImage = referenceEntry.getKey().getImage();
             }
-            if(referenceImage != null) {
+            if (referenceImage != null) {
                 // This is needed, as measuring messes with the image
                 referenceImage = ImageJUtils.duplicate(referenceImage);
             }

@@ -13,6 +13,8 @@
 
 package org.hkijena.jipipe.ui.components;
 
+import org.hkijena.jipipe.utils.UIUtils;
+
 import javax.swing.*;
 import java.awt.Color;
 import java.awt.Graphics;
@@ -40,13 +42,18 @@ public class BackgroundPanel extends JPanel {
 
     @Override
     public void paint(Graphics g) {
-        g.setColor(UIManager.getColor("Panel.background"));
+        if(UIUtils.DARK_THEME) {
+            g.setColor(Color.BLACK);
+        }
+        else {
+            g.setColor(Color.WHITE);
+        }
         g.fillRect(0, 0, getWidth(), getHeight());
         if (backgroundImage != null) {
             double factorh = 1.0 * getHeight() / backgroundImage.getHeight();
-            double factorw = 1.0 * getWidth() / backgroundImage.getWidth();
-            double factor = Math.max(factorw, factorh);
-            g.drawImage(backgroundImage, 0, 0, (int) (backgroundImage.getWidth() * factor), (int) (backgroundImage.getHeight() * factor), null);
+//            double factorw = 1.0 * getWidth() / backgroundImage.getWidth();
+//            double factor = Math.min(factorw, factorh);
+            g.drawImage(backgroundImage, 0, 0, (int) (backgroundImage.getWidth() * factorh), (int) (backgroundImage.getHeight() * factorh), null);
         }
 
         if (withGrid) {

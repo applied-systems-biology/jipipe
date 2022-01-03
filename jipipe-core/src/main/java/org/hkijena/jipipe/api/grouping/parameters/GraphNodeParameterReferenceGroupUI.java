@@ -28,6 +28,7 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * UI for {@link GraphNodeParameterReferenceGroup}
@@ -59,12 +60,17 @@ public class GraphNodeParameterReferenceGroupUI extends JPanel {
         add(contentPanel, BorderLayout.CENTER);
     }
 
-    private void refreshUI() {
+    public void refreshUI() {
         contentPanel.clear();
         for (GraphNodeParameterReference reference : group.getContent()) {
             JButton removeButton = new JButton(UIUtils.getIconFromResources("actions/close-tab.png"));
             UIUtils.makeBorderlessWithoutMargin(removeButton);
-            removeButton.addActionListener(e -> group.removeContent(reference));
+            removeButton.addActionListener(e -> {
+                group.removeContent(reference);
+                if (!parametersUI.isWithRefresh()) {
+                    refreshUI();
+                }
+            });
 
             contentPanel.addToForm(new GraphNodeParameterReferenceUI(this, reference), removeButton, null);
         }
@@ -75,7 +81,7 @@ public class GraphNodeParameterReferenceGroupUI extends JPanel {
         contentPanel.addWideToForm(addButton, null);
     }
 
-    private void addReference() {
+    public void addReference() {
         JIPipeParameterTree tree = parametersUI.getTree();
         List<Object> selected = ParameterTreeUI.showPickerDialog(this, tree, "Add parameter");
         List<GraphNodeParameterReference> referenceList = new ArrayList<>();
@@ -87,6 +93,9 @@ public class GraphNodeParameterReferenceGroupUI extends JPanel {
             }
         }
         group.addContent(referenceList);
+        if (!parametersUI.isWithRefresh()) {
+            refreshUI();
+        }
     }
 
     public GraphNodeParametersUI getParametersUI() {
@@ -97,6 +106,7 @@ public class GraphNodeParameterReferenceGroupUI extends JPanel {
      * Edits name and description of a {@link GraphNodeParameterReferenceGroup}
      */
     public static class GroupMetadataEditor extends JPanel {
+        private final GraphNodeParameterReferenceGroupUI parent;
         private final GraphNodeParameterReferenceGroup group;
 
         /**
@@ -104,6 +114,7 @@ public class GraphNodeParameterReferenceGroupUI extends JPanel {
          * @param group  the group to be edited
          */
         public GroupMetadataEditor(GraphNodeParameterReferenceGroupUI parent, GraphNodeParameterReferenceGroup group) {
+            this.parent = parent;
             this.group = group;
             initialize();
         }
@@ -117,7 +128,10 @@ public class GraphNodeParameterReferenceGroupUI extends JPanel {
             nameEditor.getTextField().getDocument().addDocumentListener(new DocumentChangeListener() {
                 @Override
                 public void changed(DocumentEvent documentEvent) {
-                    group.setName(nameEditor.getText());
+                    if (!Objects.equals(nameEditor.getText(), group.getName())) {
+                        group.setName(nameEditor.getText());
+                        group.triggerChangedEvent();
+                    }
                 }
             });
             add(nameEditor, BorderLayout.CENTER);
@@ -131,9 +145,10 @@ public class GraphNodeParameterReferenceGroupUI extends JPanel {
 
         private void changeDescription() {
             HTMLText currentDescription = group.getDescription();
-            HTMLText newDescription = UIUtils.getHTMLByDialog(this, "Set description", "Please enter a new description:", currentDescription);
+            HTMLText newDescription = UIUtils.getHTMLByDialog(parent.getParametersUI().getWorkbench(), this, "Set description", "Please enter a new description:", currentDescription);
             if (newDescription != null) {
                 group.setDescription(newDescription);
+                group.triggerChangedEvent();
             }
         }
     }

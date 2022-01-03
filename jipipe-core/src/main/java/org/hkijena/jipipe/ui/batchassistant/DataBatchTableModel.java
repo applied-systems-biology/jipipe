@@ -48,7 +48,7 @@ public class DataBatchTableModel implements TableModel {
                     previewMap.put(entry.getKey().getName(), entry.getKey().getVirtualData(entry.getValue().iterator().next()));
                 }
             }
-            annotationColumnSet.addAll(dataBatch.getGlobalAnnotations().keySet());
+            annotationColumnSet.addAll(dataBatch.getMergedAnnotations().keySet());
             previewedData.add(previewMap);
         }
 
@@ -121,7 +121,7 @@ public class DataBatchTableModel implements TableModel {
             return preview;
         } else {
             String column = annotationColumns.get(columnIndex - 1 - inputSlotNames.size());
-            JIPipeAnnotation annotation = dataBatchList.get(rowIndex).getGlobalAnnotations().getOrDefault(column, null);
+            JIPipeAnnotation annotation = dataBatchList.get(rowIndex).getMergedAnnotations().getOrDefault(column, null);
             if (annotation != null)
                 return annotation.getValue();
             else

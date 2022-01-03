@@ -119,7 +119,7 @@ public class EnumFormData extends ParameterFormData {
     public void loadData(JIPipeMergingDataBatch dataBatch) {
         if (annotationIOSettings.getInputAnnotation().isEnabled()) {
             JIPipeAnnotation annotation =
-                    dataBatch.getGlobalAnnotations().getOrDefault(annotationIOSettings.getInputAnnotation().getContent(),
+                    dataBatch.getMergedAnnotations().getOrDefault(annotationIOSettings.getInputAnnotation().getContent(),
                             null);
             if (annotation != null) {
                 this.value = StringUtils.nullToEmpty(annotation.getValue());
@@ -130,7 +130,7 @@ public class EnumFormData extends ParameterFormData {
     @Override
     public void writeData(JIPipeMergingDataBatch dataBatch) {
         if (annotationIOSettings.getOutputAnnotation().isEnabled()) {
-            annotationIOSettings.getAnnotationMergeStrategy().mergeInto(dataBatch.getGlobalAnnotations(),
+            annotationIOSettings.getAnnotationMergeStrategy().mergeInto(dataBatch.getMergedAnnotations(),
                     Collections.singletonList(annotationIOSettings.getOutputAnnotation().createAnnotation(value)));
         }
     }

@@ -68,7 +68,7 @@ public class SimpleFileAnnotationGenerator extends JIPipeSimpleIteratingAlgorith
         if (!StringUtils.isNullOrEmpty(generatedAnnotation)) {
             FileData inputData = dataBatch.getInputData(getFirstInputSlot(), FileData.class, progressInfo);
             String discriminator = inputData.toPath().getFileName().toString();
-            dataBatch.addGlobalAnnotation(new JIPipeAnnotation(generatedAnnotation, discriminator), JIPipeAnnotationMergeStrategy.OverwriteExisting);
+            dataBatch.addMergedAnnotation(new JIPipeAnnotation(generatedAnnotation, discriminator), JIPipeAnnotationMergeStrategy.OverwriteExisting);
             dataBatch.addOutputData(getFirstOutputSlot(), inputData, progressInfo);
         }
     }

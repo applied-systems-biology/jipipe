@@ -1,8 +1,8 @@
 package org.hkijena.jipipe.extensions.nodetemplate;
 
 import org.hkijena.jipipe.ui.extension.GraphEditorToolBarButtonExtension;
-import org.hkijena.jipipe.ui.grapheditor.JIPipePipelineGraphEditorUI;
 import org.hkijena.jipipe.ui.grapheditor.JIPipeGraphEditorUI;
+import org.hkijena.jipipe.ui.grapheditor.JIPipePipelineGraphEditorUI;
 import org.hkijena.jipipe.utils.UIUtils;
 
 public class NodeTemplateBoxMenuExtension extends GraphEditorToolBarButtonExtension {

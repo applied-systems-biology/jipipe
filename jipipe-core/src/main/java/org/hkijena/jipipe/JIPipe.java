@@ -17,6 +17,7 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.eventbus.EventBus;
 import ij.IJ;
 import ij.Prefs;
+import net.imagej.ImageJ;
 import net.imagej.ui.swing.updater.SwingAuthenticator;
 import net.imagej.updater.FilesCollection;
 import net.imagej.updater.UpdateSite;
@@ -53,7 +54,6 @@ import org.hkijena.jipipe.ui.ijupdater.IJProgressAdapter;
 import org.hkijena.jipipe.ui.ijupdater.JIPipeImageJPluginManager;
 import org.hkijena.jipipe.ui.registries.JIPipeCustomMenuRegistry;
 import org.hkijena.jipipe.ui.running.JIPipeRunnerQueue;
-import org.hkijena.jipipe.utils.PathUtils;
 import org.hkijena.jipipe.utils.json.JsonUtils;
 import org.scijava.Context;
 import org.scijava.InstantiableException;
@@ -448,7 +448,7 @@ public class JIPipe extends AbstractService implements JIPipeRegistry {
             // Try to use the existing database
             Path dbPath = Paths.get(Prefs.getImageJDir()).resolve("db.xml.gz");
             boolean dbPathSuccess = false;
-            if(Files.isRegularFile(dbPath)) {
+            if (Files.isRegularFile(dbPath)) {
                 try {
                     Document document = readXMLGZ(dbPath);
                     NodeList activeSitesNodes = document.getElementsByTagName("update-site");
@@ -456,17 +456,16 @@ public class JIPipe extends AbstractService implements JIPipeRegistry {
                         String name = activeSitesNodes.item(i).getAttributes().getNamedItem("name").getNodeValue();
                         missingSites.removeIf(site -> Objects.equals(site.getName(), name));
                     }
-                    if(missingSites.isEmpty()) {
-                       dbPathSuccess = true;
+                    if (missingSites.isEmpty()) {
+                        dbPathSuccess = true;
                     }
-                }
-                catch (Exception e) {
+                } catch (Exception e) {
                     logService.warn("Unable to read " + dbPath);
                 }
             }
 
             // Query update sites again (via ImageJ)
-            if(!dbPathSuccess) {
+            if (!dbPathSuccess) {
                 try {
                     UpdaterUtil.useSystemProxies();
                     Authenticator.setDefault(new SwingAuthenticator());
@@ -632,7 +631,8 @@ public class JIPipe extends AbstractService implements JIPipeRegistry {
 
     /**
      * Imports data from a slot folder
-     * @param slotFolder a folder that contains data-table.json
+     *
+     * @param slotFolder   a folder that contains data-table.json
      * @param progressInfo the progress info
      * @return the imported data slot
      */
@@ -676,7 +676,37 @@ public class JIPipe extends AbstractService implements JIPipeRegistry {
     }
 
     /**
-     * Helper to create JIPipe from a context
+     * Ensures that JIPipe is initialized and available.
+     * Creates a new {@link ImageJ} instance to obtain a {@link Context} if JIPipe is not initialized already.
+     *
+     * @return the {@link JIPipe} instance
+     */
+    public static JIPipe ensureInstance() {
+        if (getInstance() != null)
+            return getInstance();
+        final ImageJ ij = new ImageJ();
+        Context context = ij.context();
+        return ensureInstance(context);
+    }
+
+    /**
+     * Ensures that JIPipe is initialized and available.
+     *
+     * @param context the context to initialize JIPipe
+     * @return the {@link JIPipe} instance
+     */
+    public static JIPipe ensureInstance(Context context) {
+        if (getInstance() != null)
+            return getInstance();
+        JIPipe instance = JIPipe.createInstance(context);
+        JIPipe.getInstance().initialize();
+        return instance;
+    }
+
+    /**
+     * Helper to create JIPipe from a context.
+     * Will create a new JIPipe instance, so be careful.
+     * We recommend using the ensureInstance() method.
      *
      * @param context the context
      */

@@ -14,7 +14,7 @@
 package org.hkijena.jipipe.ui.running;
 
 import com.google.common.eventbus.Subscribe;
-import org.hkijena.jipipe.ui.components.ThrobberIcon;
+import org.hkijena.jipipe.ui.components.icons.ThrobberIcon;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.hkijena.jipipe.utils.ui.RoundedLineBorder;
 
@@ -97,10 +97,9 @@ public class JIPipeRunnerQueueUI extends JPanel {
             add(runningQueuePanel, BorderLayout.EAST);
             throbberIcon.start();
             int size = JIPipeRunnerQueue.getInstance().size();
-            if(size <= 1) {
+            if (size <= 1) {
                 queueCountLabel.setText("");
-            }
-            else {
+            } else {
                 queueCountLabel.setText(" +" + (size - 1) + "");
             }
             revalidate();

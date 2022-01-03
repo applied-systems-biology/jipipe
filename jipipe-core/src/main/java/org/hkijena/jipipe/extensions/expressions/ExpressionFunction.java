@@ -75,7 +75,7 @@ public abstract class ExpressionFunction extends Function {
                 if (i != 0)
                     result.append(", ");
                 ParameterInfo parameterInfo = getParameterInfo(i);
-                if(parameterInfo != null)
+                if (parameterInfo != null)
                     result.append(parameterInfo.getName());
                 else
                     result.append("x").append(i + 1);

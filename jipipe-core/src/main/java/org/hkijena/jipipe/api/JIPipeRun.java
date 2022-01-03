@@ -209,6 +209,7 @@ public class JIPipeRun implements JIPipeRunnable {
         Set<JIPipeGraphNode> executedAlgorithms = new HashSet<>();
         List<JIPipeDataSlot> traversedSlots = copiedGraph.traverseSlots();
 
+        // Create GC
         JIPipeGraphGCHelper gc = new JIPipeGraphGCHelper(copiedGraph);
         progressInfo.resolve("GC").log("GC status: " + gc);
         gc.getEventBus().register(this);
@@ -462,9 +463,23 @@ public class JIPipeRun implements JIPipeRunnable {
     }
 
     /**
+     * Returns true if the data in the node is already cached
+     *
+     * @param algorithm  the node (inside copy graph)
+     * @param cacheQuery the cache query
+     * @return true if data is found in the cache
+     */
+    private boolean isCached(JIPipeGraphNode algorithm, JIPipeProjectCacheQuery cacheQuery) {
+        JIPipeGraphNode projectAlgorithm = cacheQuery.getNode(algorithm.getUUIDInGraph());
+        JIPipeProjectCacheState stateId = cacheQuery.getCachedId(projectAlgorithm);
+        Map<String, JIPipeDataSlot> cachedData = project.getCache().extract(projectAlgorithm, stateId);
+        return !cachedData.isEmpty();
+    }
+
+    /**
      * Attempts to load data from cache
      *
-     * @param algorithm  the target algorithm
+     * @param algorithm  the target node (inside copy graph)
      * @param cacheQuery the cache query
      * @return if successful. This means all output slots were restored.
      */

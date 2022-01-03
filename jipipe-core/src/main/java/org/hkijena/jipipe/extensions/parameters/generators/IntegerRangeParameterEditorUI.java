@@ -19,7 +19,6 @@ import org.hkijena.jipipe.api.parameters.JIPipeManualParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.extensions.expressions.DefaultExpressionParameter;
 import org.hkijena.jipipe.extensions.expressions.ExpressionParameterSettings;
-import org.hkijena.jipipe.extensions.expressions.ExpressionParameterVariable;
 import org.hkijena.jipipe.extensions.expressions.ExpressionParameterVariableSource;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.components.DocumentChangeListener;
@@ -32,7 +31,6 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Font;
 import java.lang.annotation.Annotation;
-import java.util.Set;
 
 /**
  * Editor for {@link IntegerRange}
@@ -71,7 +69,7 @@ public class IntegerRangeParameterEditorUI extends JIPipeParameterEditorUI {
         rangeStringEditor.getDocument().addDocumentListener(new DocumentChangeListener() {
             @Override
             public void changed(DocumentEvent documentEvent) {
-                if(!isUpdating) {
+                if (!isUpdating) {
                     IntegerRange rangeString = getParameter(IntegerRange.class);
                     if (!rangeString.isUseExpression()) {
                         rangeString.setValue(rangeStringEditor.getText());
@@ -117,8 +115,7 @@ public class IntegerRangeParameterEditorUI extends JIPipeParameterEditorUI {
             revalidate();
             repaint();
             checkParameter();
-        }
-        finally {
+        } finally {
             isUpdating = false;
         }
     }
@@ -126,7 +123,7 @@ public class IntegerRangeParameterEditorUI extends JIPipeParameterEditorUI {
     private void checkParameter() {
         IntegerRange rangeString = getParameter(IntegerRange.class);
         try {
-            if(!rangeString.isUseExpression()) {
+            if (!rangeString.isUseExpression()) {
                 rangeString.getIntegers(0, 0);
             }
             rangeStringEditor.setBorder(BorderFactory.createEtchedBorder());

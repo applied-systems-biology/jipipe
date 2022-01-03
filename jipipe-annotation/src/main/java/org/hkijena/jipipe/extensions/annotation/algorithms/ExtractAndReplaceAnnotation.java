@@ -67,13 +67,13 @@ public class ExtractAndReplaceAnnotation extends JIPipeSimpleIteratingAlgorithm 
     @Override
     protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
         for (StringPatternExtractionFunction function : functions) {
-            JIPipeAnnotation inputAnnotation = dataBatch.getGlobalAnnotation(function.getInput());
+            JIPipeAnnotation inputAnnotation = dataBatch.getMergedAnnotation(function.getInput());
             if (inputAnnotation == null)
                 continue;
             String newValue = function.getParameter().apply(inputAnnotation.getValue());
             if (newValue == null)
                 continue;
-            dataBatch.addGlobalAnnotation(new JIPipeAnnotation(function.getOutput(), newValue), annotationMergeStrategy);
+            dataBatch.addMergedAnnotation(new JIPipeAnnotation(function.getOutput(), newValue), annotationMergeStrategy);
         }
         dataBatch.addOutputData(getFirstOutputSlot(), dataBatch.getInputData(getFirstInputSlot(), JIPipeData.class, progressInfo), progressInfo);
     }

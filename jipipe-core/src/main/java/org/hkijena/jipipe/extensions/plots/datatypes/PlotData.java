@@ -38,12 +38,13 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
 import org.hkijena.jipipe.extensions.parameters.colors.ColorListParameter;
+import org.hkijena.jipipe.extensions.parameters.primitives.OptionalDoubleParameter;
 import org.hkijena.jipipe.extensions.plots.CachedPlotViewerWindow;
 import org.hkijena.jipipe.extensions.plots.utils.ColorMap;
 import org.hkijena.jipipe.extensions.plots.utils.ColorMapSupplier;
 import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
-import org.hkijena.jipipe.ui.components.DocumentTabPane;
+import org.hkijena.jipipe.ui.components.tabs.DocumentTabPane;
 import org.hkijena.jipipe.ui.plotbuilder.PlotEditor;
 import org.hkijena.jipipe.utils.ParameterUtils;
 import org.hkijena.jipipe.utils.PathUtils;
@@ -51,6 +52,7 @@ import org.hkijena.jipipe.utils.UIUtils;
 import org.hkijena.jipipe.utils.json.JsonUtils;
 import org.jfree.chart.ChartUtils;
 import org.jfree.chart.JFreeChart;
+import org.jfree.chart.axis.ValueAxis;
 import org.jfree.graphics2d.svg.SVGGraphics2D;
 import org.jfree.graphics2d.svg.SVGUtils;
 
@@ -518,6 +520,38 @@ public abstract class PlotData implements JIPipeData, JIPipeParameterCollection,
             throw new RuntimeException(e);
         }
         return result;
+    }
+
+    /**
+     * Calibrates the axes of a plot, setting min and max values
+     *
+     * @param axis the axis
+     * @param min  the min value
+     * @param max  the max value
+     */
+    public static void calibrateAxis(ValueAxis axis, OptionalDoubleParameter min, OptionalDoubleParameter max) {
+        double _min = Double.NEGATIVE_INFINITY;
+        double _max = Double.POSITIVE_INFINITY;
+        if (min.isEnabled()) {
+            _min = min.getContent();
+        }
+        if (max.isEnabled()) {
+            _max = max.getContent();
+        }
+        if (!Double.isFinite(_min) && !Double.isFinite(_max)) {
+            axis.setAutoRange(true);
+            return;
+        }
+        if (!Double.isFinite(_min) || !Double.isFinite(_max)) {
+            axis.setAutoRange(true);
+            if (!Double.isFinite(_min)) {
+                _min = axis.getLowerBound();
+            }
+            if (!Double.isFinite(_max)) {
+                _max = axis.getUpperBound();
+            }
+        }
+        axis.setRange(_min, _max);
     }
 
     /**

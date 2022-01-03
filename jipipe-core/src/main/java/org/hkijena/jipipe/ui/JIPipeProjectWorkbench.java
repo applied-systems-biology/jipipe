@@ -32,23 +32,23 @@ import org.hkijena.jipipe.extensions.settings.ProjectsSettings;
 import org.hkijena.jipipe.extensions.settings.RuntimeSettings;
 import org.hkijena.jipipe.ui.cache.JIPipeCacheBrowserUI;
 import org.hkijena.jipipe.ui.cache.JIPipeCacheManagerUI;
-import org.hkijena.jipipe.ui.grapheditor.compartments.JIPipeCompartmentsGraphEditorUI;
-import org.hkijena.jipipe.ui.grapheditor.compartments.JIPipeCompartmentUI;
-import org.hkijena.jipipe.ui.compendium.JIPipeAlgorithmCompendiumUI;
-import org.hkijena.jipipe.ui.compendium.JIPipeDataTypeCompendiumUI;
-import org.hkijena.jipipe.ui.compendium.WelcomePanel;
-import org.hkijena.jipipe.ui.components.DocumentTabPane;
-import org.hkijena.jipipe.ui.components.DownloadOfflineManualRun;
-import org.hkijena.jipipe.ui.components.MarkdownDocument;
-import org.hkijena.jipipe.ui.components.MarkdownReader;
 import org.hkijena.jipipe.ui.components.MemoryStatusUI;
 import org.hkijena.jipipe.ui.components.RecentProjectsMenu;
 import org.hkijena.jipipe.ui.components.ReloadableValidityChecker;
+import org.hkijena.jipipe.ui.components.markdown.MarkdownDocument;
+import org.hkijena.jipipe.ui.components.markdown.MarkdownReader;
+import org.hkijena.jipipe.ui.components.tabs.DocumentTabPane;
 import org.hkijena.jipipe.ui.data.VirtualDataControl;
+import org.hkijena.jipipe.ui.documentation.DownloadOfflineManualRun;
+import org.hkijena.jipipe.ui.documentation.JIPipeAlgorithmCompendiumUI;
+import org.hkijena.jipipe.ui.documentation.JIPipeDataTypeCompendiumUI;
+import org.hkijena.jipipe.ui.documentation.WelcomePanel;
 import org.hkijena.jipipe.ui.extension.JIPipeMenuExtensionTarget;
 import org.hkijena.jipipe.ui.extensionbuilder.JIPipeJsonExporter;
 import org.hkijena.jipipe.ui.extensions.JIPipePluginManagerUIPanel;
 import org.hkijena.jipipe.ui.extensions.JIPipePluginValidityCheckerPanel;
+import org.hkijena.jipipe.ui.grapheditor.JIPipePipelineGraphEditorUI;
+import org.hkijena.jipipe.ui.grapheditor.compartments.JIPipeCompartmentsGraphEditorUI;
 import org.hkijena.jipipe.ui.ijupdater.JIPipeImageJPluginManager;
 import org.hkijena.jipipe.ui.notifications.NotificationButton;
 import org.hkijena.jipipe.ui.notifications.WorkbenchNotificationInboxUI;
@@ -259,17 +259,17 @@ public class JIPipeProjectWorkbench extends JPanel implements JIPipeWorkbench {
     }
 
     /**
-     * Finds open {@link JIPipeCompartmentUI} tabs
+     * Finds open {@link JIPipePipelineGraphEditorUI} tabs
      *
      * @param compartment Targeted compartment
      * @return List of UIs
      */
-    public List<JIPipeCompartmentUI> findCompartmentUIs(JIPipeProjectCompartment compartment) {
-        List<JIPipeCompartmentUI> result = new ArrayList<>();
+    public List<JIPipePipelineGraphEditorUI> findOpenPipelineEditorTabs(JIPipeProjectCompartment compartment) {
+        List<JIPipePipelineGraphEditorUI> result = new ArrayList<>();
         for (DocumentTabPane.DocumentTab tab : documentTabPane.getTabs()) {
-            if (tab.getContent() instanceof JIPipeCompartmentUI) {
-                if (((JIPipeCompartmentUI) tab.getContent()).getCompartment() == compartment)
-                    result.add((JIPipeCompartmentUI) tab.getContent());
+            if (tab.getContent() instanceof JIPipePipelineGraphEditorUI) {
+                if (((JIPipePipelineGraphEditorUI) tab.getContent()).getCompartment() == compartment.getProjectCompartmentUUID())
+                    result.add((JIPipePipelineGraphEditorUI) tab.getContent());
             }
         }
         return result;
@@ -280,11 +280,12 @@ public class JIPipeProjectWorkbench extends JPanel implements JIPipeWorkbench {
      *
      * @param compartment The compartment
      * @param switchToTab If true, switch to the tab
+     * @return the tab. its content is a {@link JIPipePipelineGraphEditorUI}
      */
-    public DocumentTabPane.DocumentTab openCompartmentGraph(JIPipeProjectCompartment compartment, boolean switchToTab) {
-        List<JIPipeCompartmentUI> compartmentUIs = findCompartmentUIs(compartment);
+    public DocumentTabPane.DocumentTab getOrOpenPipelineEditorTab(JIPipeProjectCompartment compartment, boolean switchToTab) {
+        List<JIPipePipelineGraphEditorUI> compartmentUIs = findOpenPipelineEditorTabs(compartment);
         if (compartmentUIs.isEmpty()) {
-            JIPipeCompartmentUI compartmentUI = new JIPipeCompartmentUI(this, compartment);
+            JIPipePipelineGraphEditorUI compartmentUI = new JIPipePipelineGraphEditorUI(this, compartment.getProject().getGraph(), compartment.getProjectCompartmentUUID());
             DocumentTabPane.DocumentTab documentTab = documentTabPane.addTab(compartment.getName(),
                     UIUtils.getIconFromResources("data-types/graph-compartment.png"),
                     compartmentUI,
@@ -740,14 +741,14 @@ public class JIPipeProjectWorkbench extends JPanel implements JIPipeWorkbench {
     }
 
     private void newCompartmentAfterCurrent() {
-        if (documentTabPane.getCurrentContent() instanceof JIPipeCompartmentUI) {
-            JIPipeCompartmentUI ui = (JIPipeCompartmentUI) documentTabPane.getCurrentContent();
+        if (documentTabPane.getCurrentContent() instanceof JIPipePipelineGraphEditorUI) {
+            JIPipePipelineGraphEditorUI ui = (JIPipePipelineGraphEditorUI) documentTabPane.getCurrentContent();
             String compartmentName = UIUtils.getUniqueStringByDialog(this, "Please enter the name of the compartment",
                     "Compartment", s -> project.getCompartments().containsKey(s));
             if (compartmentName != null && !compartmentName.trim().isEmpty()) {
                 JIPipeProjectCompartment compartment = project.addCompartment(compartmentName);
-                project.connectCompartments(ui.getCompartment(), compartment);
-                openCompartmentGraph(compartment, true);
+                project.connectCompartments(project.getCompartments().get(ui.getCompartment()), compartment);
+                getOrOpenPipelineEditorTab(compartment, true);
             }
         } else {
             JOptionPane.showMessageDialog(this, "Please switch to a graph compartment editor.", "New compartment after current", JOptionPane.ERROR_MESSAGE);
@@ -790,7 +791,7 @@ public class JIPipeProjectWorkbench extends JPanel implements JIPipeWorkbench {
      */
     @Subscribe
     public void onCompartmentRemoved(JIPipeProject.CompartmentRemovedEvent event) {
-        for (JIPipeCompartmentUI compartmentUI : findCompartmentUIs(event.getCompartment())) {
+        for (JIPipePipelineGraphEditorUI compartmentUI : findOpenPipelineEditorTabs(event.getCompartment())) {
             documentTabPane.remove(compartmentUI);
         }
     }

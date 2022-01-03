@@ -55,11 +55,11 @@ public class ProcessEnvironment extends ExternalEnvironment {
 
     @Override
     public String getInfo() {
-        if(SystemUtils.IS_OS_WINDOWS)
+        if (SystemUtils.IS_OS_WINDOWS)
             return StringUtils.orElse(getExecutablePathWindows(), "<Not set>");
-        else if(SystemUtils.IS_OS_LINUX)
+        else if (SystemUtils.IS_OS_LINUX)
             return StringUtils.orElse(getExecutablePathLinux(), "<Not set>");
-        else if(SystemUtils.IS_OS_MAC_OSX)
+        else if (SystemUtils.IS_OS_MAC_OSX)
             return StringUtils.orElse(getExecutablePathOSX(), "<Not set>");
         else {
             return "<Operating system not detected>";
@@ -120,23 +120,21 @@ public class ProcessEnvironment extends ExternalEnvironment {
     }
 
     public Path getAbsoluteExecutablePath() {
-        if(SystemUtils.IS_OS_WINDOWS) {
-            if(StringUtils.isNullOrEmpty(getExecutablePathWindows()))
+        if (SystemUtils.IS_OS_WINDOWS) {
+            if (StringUtils.isNullOrEmpty(getExecutablePathWindows()))
                 return Paths.get("");
             return PathUtils.relativeToImageJToAbsolute(getExecutablePathWindows());
-        }
-        else if(SystemUtils.IS_OS_LINUX) {
-            if(StringUtils.isNullOrEmpty(getExecutablePathLinux()))
+        } else if (SystemUtils.IS_OS_LINUX) {
+            if (StringUtils.isNullOrEmpty(getExecutablePathLinux()))
                 return Paths.get("");
             return PathUtils.relativeToImageJToAbsolute(getExecutablePathLinux());
-        }
-        else if(SystemUtils.IS_OS_MAC_OSX) {
+        } else if (SystemUtils.IS_OS_MAC_OSX) {
             if (StringUtils.isNullOrEmpty(getExecutablePathOSX()))
                 return Paths.get("");
             return PathUtils.relativeToImageJToAbsolute(getExecutablePathOSX());
         } else {
             System.err.println("Operating system not detected.");
-            if(StringUtils.isNullOrEmpty(getExecutablePathWindows()))
+            if (StringUtils.isNullOrEmpty(getExecutablePathWindows()))
                 return Paths.get("");
             return PathUtils.relativeToImageJToAbsolute(getExecutablePathWindows());
         }

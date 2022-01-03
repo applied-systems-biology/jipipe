@@ -16,11 +16,12 @@ import org.hkijena.jipipe.extensions.settings.NodeTemplateSettings;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.JIPipeWorkbenchPanel;
-import org.hkijena.jipipe.ui.components.AlwaysOnTopToggle;
-import org.hkijena.jipipe.ui.components.MarkdownDocument;
-import org.hkijena.jipipe.ui.components.MarkdownReader;
-import org.hkijena.jipipe.ui.components.SearchTextField;
+import org.hkijena.jipipe.ui.components.markdown.MarkdownDocument;
+import org.hkijena.jipipe.ui.components.markdown.MarkdownReader;
+import org.hkijena.jipipe.ui.components.search.SearchTextField;
+import org.hkijena.jipipe.ui.components.window.AlwaysOnTopToggle;
 import org.hkijena.jipipe.ui.parameters.ParameterPanel;
+import org.hkijena.jipipe.utils.AutoResizeSplitPane;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.hkijena.jipipe.utils.json.JsonUtils;
@@ -29,8 +30,6 @@ import org.hkijena.jipipe.utils.search.RankedData;
 import javax.swing.*;
 import java.awt.BorderLayout;
 import java.awt.Cursor;
-import java.awt.event.ComponentAdapter;
-import java.awt.event.ComponentEvent;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -91,17 +90,7 @@ public class NodeTemplateBox extends JIPipeWorkbenchPanel {
         templateList.setTransferHandler(new NodeTemplateBoxTransferHandler());
         JScrollPane scrollPane = new JScrollPane(templateList);
 
-        JSplitPane splitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT, scrollPane, documentationReader);
-        splitPane.setDividerSize(3);
-        splitPane.setResizeWeight(0.66);
-        addComponentListener(new ComponentAdapter() {
-            @Override
-            public void componentResized(ComponentEvent e) {
-                super.componentResized(e);
-                splitPane.setDividerLocation(0.66);
-            }
-        });
-
+        AutoResizeSplitPane splitPane = new AutoResizeSplitPane(JSplitPane.VERTICAL_SPLIT, scrollPane, documentationReader, AutoResizeSplitPane.RATIO_3_TO_1);
         add(splitPane, BorderLayout.CENTER);
 
         JButton manageButton = new JButton("Manage", UIUtils.getIconFromResources("actions/wrench.png"));
@@ -455,7 +444,7 @@ public class NodeTemplateBox extends JIPipeWorkbenchPanel {
             String string = searchStrings[i];
             if (nameHayStack.contains(string.toLowerCase()))
                 --ranks[0];
-            if(i == 0 && nameHayStack.startsWith(string.toLowerCase()))
+            if (i == 0 && nameHayStack.startsWith(string.toLowerCase()))
                 ranks[0] -= 2;
 //            if (name2HayStack.contains(string.toLowerCase()))
 //                --ranks[1];

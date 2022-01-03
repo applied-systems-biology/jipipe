@@ -13,6 +13,7 @@
 
 package org.hkijena.jipipe.extensions.parameters.optional;
 
+import com.google.common.eventbus.EventBus;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.extensions.parameters.pairs.PairParameter;
@@ -24,6 +25,7 @@ import java.util.Collection;
  * Parameter access for the key entry in {@link PairParameter}
  */
 public class OptionalParameterContentAccess<T> implements JIPipeParameterAccess {
+    private final EventBus eventBus = new EventBus();
     private final JIPipeParameterAccess parent;
     private final OptionalParameter<T> optionalParameter;
 
@@ -90,6 +92,7 @@ public class OptionalParameterContentAccess<T> implements JIPipeParameterAccess 
     @Override
     public <U> boolean set(U value) {
         optionalParameter.setContent((T) value);
+        eventBus.post(new JIPipeParameterCollection.ParameterChangedEvent(this, "content"));
         return true;
     }
 
@@ -116,5 +119,9 @@ public class OptionalParameterContentAccess<T> implements JIPipeParameterAccess 
 
     public JIPipeParameterAccess getParent() {
         return parent;
+    }
+
+    public EventBus getEventBus() {
+        return eventBus;
     }
 }

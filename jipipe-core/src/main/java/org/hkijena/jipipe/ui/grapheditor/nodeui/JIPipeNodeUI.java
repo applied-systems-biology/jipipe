@@ -26,7 +26,7 @@ import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.JIPipeWorkbenchPanel;
 import org.hkijena.jipipe.ui.components.AddAlgorithmSlotPanel;
-import org.hkijena.jipipe.ui.components.ZoomIcon;
+import org.hkijena.jipipe.ui.components.icons.ZoomIcon;
 import org.hkijena.jipipe.ui.grapheditor.JIPipeGraphCanvasUI;
 import org.hkijena.jipipe.ui.grapheditor.JIPipeGraphViewMode;
 import org.hkijena.jipipe.ui.grapheditor.contextmenu.NodeUIContextAction;
@@ -200,6 +200,8 @@ public abstract class JIPipeNodeUI extends JIPipeWorkbenchPanel {
             updateActivationStatus();
         } else if (event.getSource() == node && "jipipe:algorithm:pass-through".equals(event.getKey())) {
             updateActivationStatus();
+        } else if (event.getSource() == node && "jipipe:node:bookmarked".equals(event.getKey())) {
+            getGraphUI().repaint();
         }
     }
 

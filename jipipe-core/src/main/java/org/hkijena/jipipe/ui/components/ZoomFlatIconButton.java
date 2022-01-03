@@ -1,6 +1,7 @@
 package org.hkijena.jipipe.ui.components;
 
 import com.google.common.eventbus.Subscribe;
+import org.hkijena.jipipe.ui.components.icons.ZoomIcon;
 
 import javax.swing.*;
 import java.awt.Dimension;

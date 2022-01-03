@@ -102,7 +102,7 @@ public class UploadOMEROImageAlgorithm extends JIPipeMergingAlgorithm {
     @Override
     protected void runIteration(JIPipeMergingDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
         List<OMEImageData> images = dataBatch.getInputData("Image", OMEImageData.class, progressInfo);
-        ArrayList<JIPipeAnnotation> annotations = new ArrayList<>(dataBatch.getGlobalAnnotations().values());
+        ArrayList<JIPipeAnnotation> annotations = new ArrayList<>(dataBatch.getMergedAnnotations().values());
         for (OMEImageData image : images) {
             Path targetPath = getNewScratch();
             exportImages(image, annotations, targetPath, progressInfo);

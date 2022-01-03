@@ -25,12 +25,13 @@ import org.hkijena.jipipe.extensions.settings.GraphEditorUISettings;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.JIPipeWorkbenchPanel;
-import org.hkijena.jipipe.ui.components.ColorIcon;
-import org.hkijena.jipipe.ui.components.SearchBox;
 import org.hkijena.jipipe.ui.components.ZoomViewPort;
+import org.hkijena.jipipe.ui.components.icons.SolidColorIcon;
+import org.hkijena.jipipe.ui.components.search.SearchBox;
 import org.hkijena.jipipe.ui.extension.GraphEditorToolBarButtonExtension;
 import org.hkijena.jipipe.ui.grapheditor.contextmenu.NodeUIContextAction;
 import org.hkijena.jipipe.ui.grapheditor.nodeui.JIPipeNodeUI;
+import org.hkijena.jipipe.utils.AutoResizeSplitPane;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.hkijena.jipipe.utils.ui.CopyImageToClipboard;
@@ -41,8 +42,6 @@ import javax.imageio.ImageIO;
 import javax.swing.FocusManager;
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ComponentAdapter;
-import java.awt.event.ComponentEvent;
 import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
@@ -73,21 +72,17 @@ public abstract class JIPipeGraphEditorUI extends JIPipeWorkbenchPanel implement
     public static final KeyStroke KEY_STROKE_ZOOM_OUT = KeyStroke.getKeyStroke(KeyEvent.VK_SUBTRACT, InputEvent.CTRL_MASK, false);
     public static final KeyStroke KEY_STROKE_ZOOM_RESET = KeyStroke.getKeyStroke(KeyEvent.VK_NUMPAD0, InputEvent.CTRL_MASK, false);
     private final GraphEditorUISettings graphUISettings;
-
-    protected JMenuBar menuBar = new JMenuBar();
     private final JIPipeGraphCanvasUI canvasUI;
     private final JIPipeGraph algorithmGraph;
-
+    private final SearchBox<Object> navigator = new SearchBox<>();
+    private final JIPipeHistoryJournal historyJournal;
+    protected JMenuBar menuBar = new JMenuBar();
     private JSplitPane splitPane;
     private JScrollPane scrollPane;
     private Point panningOffset = null;
     private Point panningScrollbarOffset = null;
     private boolean isPanning = false;
-
     private Set<JIPipeNodeInfo> addableAlgorithms = new HashSet<>();
-    private final SearchBox<Object> navigator = new SearchBox<>();
-
-    private final JIPipeHistoryJournal historyJournal;
 
     /**
      * @param workbenchUI    the workbench
@@ -99,7 +94,7 @@ public abstract class JIPipeGraphEditorUI extends JIPipeWorkbenchPanel implement
         super(workbenchUI);
         this.algorithmGraph = algorithmGraph;
         this.historyJournal = historyJournal;
-        this.canvasUI = new JIPipeGraphCanvasUI(getWorkbench(), algorithmGraph, compartment, historyJournal);
+        this.canvasUI = new JIPipeGraphCanvasUI(getWorkbench(), this, algorithmGraph, compartment, historyJournal);
         this.graphUISettings = GraphEditorUISettings.getInstance();
         initialize();
         reloadMenuBar();
@@ -110,7 +105,6 @@ public abstract class JIPipeGraphEditorUI extends JIPipeWorkbenchPanel implement
         SwingUtilities.invokeLater(canvasUI::crop);
         canvasUI.setLayoutHelperEnabled(graphUISettings.isEnableLayoutHelper());
     }
-
 
 
     public GraphEditorUISettings getGraphUISettings() {
@@ -157,16 +151,7 @@ public abstract class JIPipeGraphEditorUI extends JIPipeWorkbenchPanel implement
 
     private void initialize() {
         setLayout(new BorderLayout());
-        splitPane = new JSplitPane();
-        splitPane.setDividerSize(3);
-        splitPane.setResizeWeight(0.33);
-        addComponentListener(new ComponentAdapter() {
-            @Override
-            public void componentResized(ComponentEvent e) {
-                super.componentResized(e);
-                splitPane.setDividerLocation(0.66);
-            }
-        });
+        splitPane = new AutoResizeSplitPane(JSplitPane.HORIZONTAL_SPLIT, AutoResizeSplitPane.RATIO_3_TO_1);
 
         canvasUI.fullRedraw();
         canvasUI.getEventBus().register(this);
@@ -213,7 +198,7 @@ public abstract class JIPipeGraphEditorUI extends JIPipeWorkbenchPanel implement
                 return;
             JIPipeNodeInfo info = (JIPipeNodeInfo) event.getValue();
             JIPipeGraphNode node = info.newInstance();
-            if(getHistoryJournal() != null) {
+            if (getHistoryJournal() != null) {
                 getHistoryJournal().snapshotBeforeAddNode(node, getCompartment());
             }
             canvasUI.getScheduledSelection().clear();
@@ -255,7 +240,7 @@ public abstract class JIPipeGraphEditorUI extends JIPipeWorkbenchPanel implement
         if (!graphEditorToolBarButtonExtensions.isEmpty())
             menuBar.add(new JSeparator(JSeparator.VERTICAL));
 
-        if(getHistoryJournal() != null) {
+        if (getHistoryJournal() != null) {
             JButton undoButton = new JButton(UIUtils.getIconFromResources("actions/undo.png"));
             undoButton.setToolTipText("<html>Undo<br><i>Ctrl-Z</i></html>");
             UIUtils.makeFlat25x25(undoButton);
@@ -283,7 +268,7 @@ public abstract class JIPipeGraphEditorUI extends JIPipeWorkbenchPanel implement
             layoutMenu.removeAll();
             JMenuItem autoLayoutItem = new JMenuItem("Auto-layout all nodes", UIUtils.getIconFromResources("actions/distribute-unclump.png"));
             autoLayoutItem.addActionListener(e -> {
-                if(getHistoryJournal() != null) {
+                if (getHistoryJournal() != null) {
                     getHistoryJournal().snapshot("Auto-layout", "Apply auto-layout", getCompartment(), UIUtils.getIconFromResources("actions/distribute-unclump.png"));
                 }
                 canvasUI.autoLayoutAll();
@@ -307,7 +292,7 @@ public abstract class JIPipeGraphEditorUI extends JIPipeWorkbenchPanel implement
         centerViewButton.setToolTipText("Center view to nodes");
         UIUtils.makeFlat25x25(centerViewButton);
         centerViewButton.addActionListener(e -> {
-            if(getHistoryJournal() != null) {
+            if (getHistoryJournal() != null) {
                 getHistoryJournal().snapshot("Center view to nodes", "Apply center view to nodes", getCompartment(), UIUtils.getIconFromResources("actions/view-restore.png"));
             }
             canvasUI.crop();
@@ -448,7 +433,7 @@ public abstract class JIPipeGraphEditorUI extends JIPipeWorkbenchPanel implement
     }
 
     private void redo() {
-        if(getHistoryJournal() != null) {
+        if (getHistoryJournal() != null) {
             int scrollX = scrollPane.getHorizontalScrollBar().getValue();
             int scrollY = scrollPane.getVerticalScrollBar().getValue();
             if (getHistoryJournal().redo(getCompartment())) {
@@ -464,7 +449,7 @@ public abstract class JIPipeGraphEditorUI extends JIPipeWorkbenchPanel implement
     }
 
     private void undo() {
-        if(getHistoryJournal() != null) {
+        if (getHistoryJournal() != null) {
             int scrollX = scrollPane.getHorizontalScrollBar().getValue();
             int scrollY = scrollPane.getVerticalScrollBar().getValue();
             if (getHistoryJournal().undo(getCompartment())) {
@@ -816,7 +801,7 @@ public abstract class JIPipeGraphEditorUI extends JIPipeWorkbenchPanel implement
             String string = searchStrings[i];
             if (nameHayStack.contains(string.toLowerCase()))
                 --ranks[0];
-            if( i == 0 && nameHayStack.startsWith(string.toLowerCase()))
+            if (i == 0 && nameHayStack.startsWith(string.toLowerCase()))
                 ranks[0] -= 2;
             if (menuHayStack.contains(string.toLowerCase()))
                 --ranks[1];
@@ -866,7 +851,7 @@ public abstract class JIPipeGraphEditorUI extends JIPipeWorkbenchPanel implement
      */
     public static class NavigationRenderer extends JPanel implements ListCellRenderer<Object> {
 
-        private ColorIcon icon;
+        private SolidColorIcon icon;
         private JLabel iconLabel;
         private JLabel actionLabel;
         private JLabel algorithmLabel;
@@ -882,7 +867,7 @@ public abstract class JIPipeGraphEditorUI extends JIPipeWorkbenchPanel implement
             setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
 
 
-            icon = new ColorIcon(16, 40);
+            icon = new SolidColorIcon(16, 40);
             iconLabel = new JLabel(icon);
             Insets border = new Insets(2, 4, 2, 2);
             add(iconLabel, new GridBagConstraints() {

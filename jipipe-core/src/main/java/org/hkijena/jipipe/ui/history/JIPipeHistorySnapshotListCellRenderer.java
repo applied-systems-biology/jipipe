@@ -13,14 +13,15 @@
 
 package org.hkijena.jipipe.ui.history;
 
-import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.history.JIPipeHistoryJournalSnapshot;
-import org.hkijena.jipipe.ui.components.ColorIcon;
 import org.hkijena.jipipe.utils.StringUtils;
-import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
-import java.awt.*;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.Insets;
 
 /**
  * Renderer for {@link JIPipeHistoryJournalSnapshot}

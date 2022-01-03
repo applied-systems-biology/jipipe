@@ -14,7 +14,7 @@
 package org.hkijena.jipipe.api.grouping;
 
 import org.hkijena.jipipe.JIPipeJavaExtension;
-import org.hkijena.jipipe.api.grouping.parameters.GraphNodeParameterEditorUI;
+import org.hkijena.jipipe.api.grouping.parameters.GraphNodeParameterReferenceEditorUI;
 import org.hkijena.jipipe.api.grouping.parameters.GraphNodeParameters;
 import org.hkijena.jipipe.api.grouping.parameters.NodeGroupContents;
 import org.hkijena.jipipe.api.grouping.parameters.NodeGroupContentsParameterEditorUI;
@@ -63,7 +63,7 @@ public class GroupingExtension extends JIPipePrepackagedDefaultJavaExtension {
                 null,
                 "Exported parameters",
                 "Organizes parameters sourced from another graph",
-                GraphNodeParameterEditorUI.class);
+                GraphNodeParameterReferenceEditorUI.class);
     }
 
     @Override
@@ -73,6 +73,6 @@ public class GroupingExtension extends JIPipePrepackagedDefaultJavaExtension {
 
     @Override
     public String getDependencyVersion() {
-        return "1.53.2";
+        return "1.57.0";
     }
 }

@@ -63,7 +63,7 @@ public class ImportData extends JIPipeSimpleIteratingAlgorithm {
     @Override
     protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
         if (ignoreInputAnnotations)
-            dataBatch.setGlobalAnnotations(new HashMap<>());
+            dataBatch.setMergedAnnotations(new HashMap<>());
         Path dataFolder = dataBatch.getInputData(getFirstInputSlot(), FolderData.class, progressInfo).toPath();
         if (!Files.exists(dataFolder.resolve("data-table.json"))) {
             throw new UserFriendlyRuntimeException("Missing data-table.json!",

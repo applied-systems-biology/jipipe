@@ -15,6 +15,7 @@ package org.hkijena.jipipe.extensions.plots.datatypes;
 
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
+import org.hkijena.jipipe.extensions.parameters.primitives.OptionalDoubleParameter;
 import org.jfree.data.category.CategoryDataset;
 import org.jfree.data.category.DefaultCategoryDataset;
 
@@ -32,6 +33,8 @@ public abstract class CategoryPlotData extends PlotData {
     private String valueAxisLabel = "Value";
     private int categoryAxisFontSize = 12;
     private int valueAxisFontSize = 12;
+    private OptionalDoubleParameter valueAxisMinimum = new OptionalDoubleParameter(Double.NEGATIVE_INFINITY, false);
+    private OptionalDoubleParameter valueAxisMaximum = new OptionalDoubleParameter(Double.POSITIVE_INFINITY, false);
 
     /**
      * Creates a new instance
@@ -51,6 +54,8 @@ public abstract class CategoryPlotData extends PlotData {
         this.valueAxisLabel = other.valueAxisLabel;
         this.categoryAxisFontSize = other.categoryAxisFontSize;
         this.valueAxisFontSize = other.valueAxisFontSize;
+        this.valueAxisMinimum = new OptionalDoubleParameter(other.valueAxisMinimum);
+        this.valueAxisMaximum = new OptionalDoubleParameter(other.valueAxisMaximum);
     }
 
     /**
@@ -92,7 +97,6 @@ public abstract class CategoryPlotData extends PlotData {
     @JIPipeParameter("value-axis-label")
     public void setValueAxisLabel(String valueAxisLabel) {
         this.valueAxisLabel = valueAxisLabel;
-
     }
 
     @JIPipeDocumentation(name = "Category axis font size", description = "Font size of the category axis")
@@ -115,5 +119,27 @@ public abstract class CategoryPlotData extends PlotData {
     @JIPipeParameter("value-axis-font-size")
     public void setValueAxisFontSize(int valueAxisFontSize) {
         this.valueAxisFontSize = valueAxisFontSize;
+    }
+
+    @JIPipeDocumentation(name = "Value axis minimum", description = "Minimum of the value axis values. If disabled or infinite, the value is calculated automatically.")
+    @JIPipeParameter("value-axis-minimum")
+    public OptionalDoubleParameter getValueAxisMinimum() {
+        return valueAxisMinimum;
+    }
+
+    @JIPipeParameter("value-axis-minimum")
+    public void setValueAxisMinimum(OptionalDoubleParameter valueAxisMinimum) {
+        this.valueAxisMinimum = valueAxisMinimum;
+    }
+
+    @JIPipeDocumentation(name = "Value axis maximum", description = "Maximum of the value axis values. If disabled or infinite, the value is calculated automatically.")
+    @JIPipeParameter("value-axis-maximum")
+    public OptionalDoubleParameter getValueAxisMaximum() {
+        return valueAxisMaximum;
+    }
+
+    @JIPipeParameter("value-axis-maximum")
+    public void setValueAxisMaximum(OptionalDoubleParameter valueAxisMaximum) {
+        this.valueAxisMaximum = valueAxisMaximum;
     }
 }

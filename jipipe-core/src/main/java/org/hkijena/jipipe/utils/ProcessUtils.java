@@ -45,7 +45,6 @@ import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
@@ -92,8 +91,9 @@ public class ProcessUtils {
 
     /**
      * Runs a process
-     * @param environment the process environment
-     * @param variables additional variables for the arguments (can be null)
+     *
+     * @param environment  the process environment
+     * @param variables    additional variables for the arguments (can be null)
      * @param progressInfo the progress info
      */
     public static void runProcess(ProcessEnvironment environment, ExpressionVariables variables, JIPipeProgressInfo progressInfo) {
@@ -113,7 +113,7 @@ public class ProcessUtils {
             progressInfo.log("Setting environment variable " + entry.getKey() + "=" + entry.getValue());
         }
 
-        if(variables == null) {
+        if (variables == null) {
             variables = new ExpressionVariables();
         }
         variables.set("executable", environment.getAbsoluteExecutablePath().toString());

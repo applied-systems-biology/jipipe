@@ -95,7 +95,7 @@ public class ExtensionSettings implements JIPipeParameterCollection {
         ExtensionSettings result = new ExtensionSettings();
         try {
             JsonNode node = JIPipeSettingsRegistry.getRawNode();
-            if(node != null && !node.isMissingNode()) {
+            if (node != null && !node.isMissingNode()) {
                 JIPipeParameterTree tree = new JIPipeParameterTree(result);
                 for (Map.Entry<String, JIPipeParameterAccess> entry : tree.getParameters().entrySet()) {
                     JsonNode entryNode = node.path(ID + "/" + entry.getKey());

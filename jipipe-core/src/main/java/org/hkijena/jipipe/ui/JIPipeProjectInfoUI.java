@@ -15,22 +15,19 @@ package org.hkijena.jipipe.ui;
 
 import com.google.common.eventbus.Subscribe;
 import com.google.common.html.HtmlEscapers;
-import ij.ImagePlus;
-import ij.plugin.filter.GaussianBlur;
-import ij.process.ImageProcessor;
 import org.hkijena.jipipe.api.JIPipeAuthorMetadata;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
+import org.hkijena.jipipe.ui.bookmarks.BookmarkListPanel;
 import org.hkijena.jipipe.ui.components.BackgroundPanel;
 import org.hkijena.jipipe.ui.components.FormPanel;
-import org.hkijena.jipipe.ui.components.MarkdownDocument;
-import org.hkijena.jipipe.ui.grapheditor.JIPipeGraphCanvasUI;
-import org.hkijena.jipipe.ui.grapheditor.JIPipeGraphViewMode;
+import org.hkijena.jipipe.ui.components.html.ExtendedHTMLEditorKit;
+import org.hkijena.jipipe.ui.components.markdown.MarkdownDocument;
+import org.hkijena.jipipe.ui.components.tabs.DocumentTabPane;
 import org.hkijena.jipipe.ui.parameters.ParameterPanel;
-import org.hkijena.jipipe.utils.ResourceUtils;
+import org.hkijena.jipipe.utils.AutoResizeSplitPane;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 
-import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.text.html.HTMLEditorKit;
 import java.awt.BorderLayout;
@@ -40,12 +37,8 @@ import java.awt.Font;
 import java.awt.Toolkit;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.StringSelection;
-import java.awt.event.ComponentAdapter;
-import java.awt.event.ComponentEvent;
 import java.awt.image.BufferedImage;
-import java.io.IOException;
 import java.util.HashMap;
-import java.util.concurrent.ExecutionException;
 
 /**
  * UI that gives an overview of a pipeline (shows parameters, etc.)
@@ -73,7 +66,7 @@ public class JIPipeProjectInfoUI extends JIPipeProjectWorkbenchPanel {
         super(workbenchUI);
         descriptionReader = new JTextPane();
         descriptionReader.setContentType("text/html");
-        descriptionReader.setEditorKit(new HTMLEditorKit());
+        descriptionReader.setEditorKit(new ExtendedHTMLEditorKit());
         descriptionReader.setEditable(false);
         descriptionReaderScrollPane = new JScrollPane(descriptionReader);
         parameterPanel = new ParameterPanel(getWorkbench(),
@@ -103,18 +96,18 @@ public class JIPipeProjectInfoUI extends JIPipeProjectWorkbenchPanel {
         authors.append("<html>");
         affiliations.append("<html>");
         for (JIPipeAuthorMetadata author : getProject().getMetadata().getAuthors()) {
-            authors.append(HtmlEscapers.htmlEscaper().escape(author.getFirstName()));
+            authors.append(HtmlEscapers.htmlEscaper().escape(StringUtils.nullToEmpty(author.getFirstName())));
             authors.append(" ");
-            authors.append(HtmlEscapers.htmlEscaper().escape(author.getLastName()));
+            authors.append(HtmlEscapers.htmlEscaper().escape(StringUtils.nullToEmpty(author.getLastName())));
             authors.append("<br/>");
 
             affiliations.append("<u>");
-            affiliations.append(HtmlEscapers.htmlEscaper().escape(author.getFirstName()));
+            affiliations.append(HtmlEscapers.htmlEscaper().escape(StringUtils.nullToEmpty(author.getFirstName())));
             affiliations.append(" ");
-            affiliations.append(HtmlEscapers.htmlEscaper().escape(author.getLastName()));
+            affiliations.append(HtmlEscapers.htmlEscaper().escape(StringUtils.nullToEmpty(author.getLastName())));
             affiliations.append("</u>");
             affiliations.append("<br/>");
-            affiliations.append(HtmlEscapers.htmlEscaper().escape(author.getAffiliations()).replace("\n", "<br/>"));
+            affiliations.append(HtmlEscapers.htmlEscaper().escape(StringUtils.nullToEmpty(author.getAffiliations())).replace("\n", "<br/>"));
             affiliations.append("<br/>");
             affiliations.append("<br/>");
         }
@@ -174,17 +167,20 @@ public class JIPipeProjectInfoUI extends JIPipeProjectWorkbenchPanel {
 
         descriptionReaderScrollPane.setBorder(null);
         parameterPanel.getScrollPane().setBorder(null);
-        JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, descriptionReaderScrollPane, parameterPanel);
-        splitPane.setBorder(null);
-        splitPane.setDividerSize(3);
-        splitPane.setResizeWeight(0.66);
-        addComponentListener(new ComponentAdapter() {
-            @Override
-            public void componentResized(ComponentEvent e) {
-                super.componentResized(e);
-                splitPane.setDividerLocation(0.66);
-            }
-        });
+
+        DocumentTabPane tabPane = new DocumentTabPane();
+        tabPane.addTab("Bookmarks",
+                UIUtils.getIconFromResources("actions/bookmark.png"),
+                new BookmarkListPanel(getWorkbench(), getProject().getGraph(), null),
+                DocumentTabPane.CloseMode.withoutCloseButton,
+                false);
+        tabPane.addTab("Parameters",
+                UIUtils.getIconFromResources("actions/wrench.png"),
+                parameterPanel,
+                DocumentTabPane.CloseMode.withoutCloseButton,
+                false);
+
+        AutoResizeSplitPane splitPane = new AutoResizeSplitPane(JSplitPane.HORIZONTAL_SPLIT, descriptionReaderScrollPane, tabPane, AutoResizeSplitPane.RATIO_3_TO_1);
         add(splitPane, BorderLayout.CENTER);
     }
 

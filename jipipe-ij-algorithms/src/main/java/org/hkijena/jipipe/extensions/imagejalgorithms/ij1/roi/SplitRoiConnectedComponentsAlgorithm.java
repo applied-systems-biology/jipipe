@@ -49,6 +49,7 @@ import org.jgrapht.graph.DefaultUndirectedGraph;
 
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -105,6 +106,14 @@ public class SplitRoiConnectedComponentsAlgorithm extends ImageRoiProcessorAlgor
         boolean withFiltering = !StringUtils.isNullOrEmpty(overlapFilter.getExpression());
         ROIListData temp = new ROIListData();
         ExpressionVariables variableSet = new ExpressionVariables();
+
+        // Write annotations map
+        Map<String, String> annotations = new HashMap<>();
+        for (Map.Entry<String, JIPipeAnnotation> entry : dataBatch.getMergedAnnotations().entrySet()) {
+            annotations.put(entry.getKey(), entry.getValue().getValue());
+        }
+        variableSet.set("annotations", annotations);
+
         ResultsTableData measurements = null;
         ImagePlus referenceImage = null;
         if (withFiltering) {
@@ -118,7 +127,7 @@ public class SplitRoiConnectedComponentsAlgorithm extends ImageRoiProcessorAlgor
                         "Try to remove the images associated to the ROI.");
             }
             referenceImage = referenceImages.keySet().iterator().next().getImage();
-            if(referenceImage != null) {
+            if (referenceImage != null) {
                 // This is needed, as measuring messes with the image
                 referenceImage = ImageJUtils.duplicate(referenceImage);
             }

@@ -86,7 +86,7 @@ public class AnnotateWithSourceSlot extends JIPipeSimpleIteratingAlgorithm {
                         StringUtils.orElse(sourceSlot.getInfo().getCustomName(), sourceSlot.getName())).collect(Collectors.toList()));
             }
 
-            dataBatch.addGlobalAnnotation(new JIPipeAnnotation(generatedAnnotation, annotationValue), annotationMergeStrategy);
+            dataBatch.addMergedAnnotation(new JIPipeAnnotation(generatedAnnotation, annotationValue), annotationMergeStrategy);
             dataBatch.addOutputData(getFirstOutputSlot(), inputData, progressInfo);
         }
     }

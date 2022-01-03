@@ -33,9 +33,10 @@ import org.hkijena.jipipe.extensions.nodetoolboxtool.NodeToolBox;
 import org.hkijena.jipipe.extensions.settings.GeneralUISettings;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
-import org.hkijena.jipipe.ui.components.DocumentTabPane;
-import org.hkijena.jipipe.ui.components.MarkdownDocument;
-import org.hkijena.jipipe.ui.components.MarkdownReader;
+import org.hkijena.jipipe.ui.bookmarks.BookmarkListPanel;
+import org.hkijena.jipipe.ui.components.markdown.MarkdownDocument;
+import org.hkijena.jipipe.ui.components.markdown.MarkdownReader;
+import org.hkijena.jipipe.ui.components.tabs.DocumentTabPane;
 import org.hkijena.jipipe.ui.grapheditor.actions.RunAndShowResultsAction;
 import org.hkijena.jipipe.ui.grapheditor.actions.UpdateCacheAction;
 import org.hkijena.jipipe.ui.grapheditor.contextmenu.*;
@@ -48,6 +49,7 @@ import org.hkijena.jipipe.ui.grapheditor.settings.JIPipeMultiAlgorithmSelectionP
 import org.hkijena.jipipe.ui.grapheditor.settings.JIPipeSingleAlgorithmSelectionPanelUI;
 import org.hkijena.jipipe.ui.grouping.JIPipeNodeGroupUI;
 import org.hkijena.jipipe.ui.history.HistoryJournalUI;
+import org.hkijena.jipipe.utils.AutoResizeSplitPane;
 import org.hkijena.jipipe.utils.DocumentationUtils;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.TooltipUtils;
@@ -55,8 +57,6 @@ import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
 import java.awt.BorderLayout;
-import java.awt.event.ComponentAdapter;
-import java.awt.event.ComponentEvent;
 import java.lang.reflect.Method;
 import java.net.URL;
 import java.util.*;
@@ -144,6 +144,8 @@ public class JIPipePipelineGraphEditorUI extends JIPipeGraphEditorUI {
         List<NodeUIContextAction> actions = new ArrayList<>(Arrays.asList(
                 new SelectAllNodeUIContextAction(),
                 new InvertSelectionNodeUIContextAction(),
+                new AddBookmarkNodeUIContextAction(),
+                new RemoveBookmarkNodeUIContextAction(),
                 NodeUIContextAction.SEPARATOR,
                 new AlgorithmGraphCutNodeUIContextAction(),
                 new AlgorithmGraphCopyNodeUIContextAction(),
@@ -203,16 +205,7 @@ public class JIPipePipelineGraphEditorUI extends JIPipeGraphEditorUI {
     private void initializeDefaultPanel() {
         defaultPanel = new JPanel(new BorderLayout());
 
-        JSplitPane splitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT);
-        splitPane.setDividerSize(3);
-        splitPane.setResizeWeight(0.33);
-        addComponentListener(new ComponentAdapter() {
-            @Override
-            public void componentResized(ComponentEvent e) {
-                super.componentResized(e);
-                splitPane.setDividerLocation(0.33);
-            }
-        });
+        JSplitPane splitPane = new AutoResizeSplitPane(JSplitPane.VERTICAL_SPLIT, AutoResizeSplitPane.RATIO_1_TO_3);
         defaultPanel.add(splitPane, BorderLayout.CENTER);
 
         JIPipeGraphEditorMinimap minimap = new JIPipeGraphEditorMinimap(this);
@@ -229,6 +222,9 @@ public class JIPipePipelineGraphEditorUI extends JIPipeGraphEditorUI {
 
         bottomPanel.addTab("Node templates", UIUtils.getIconFromResources("actions/favorite.png"),
                 new NodeTemplateBox(getWorkbench()), DocumentTabPane.CloseMode.withoutCloseButton);
+
+        bottomPanel.addTab("Bookmarks", UIUtils.getIconFromResources("actions/bookmarks.png"),
+                new BookmarkListPanel(getWorkbench(), getAlgorithmGraph(), this), DocumentTabPane.CloseMode.withoutCloseButton);
 
         bottomPanel.addTab("Journal",
                 UIUtils.getIconFromResources("actions/edit-undo-history.png"),

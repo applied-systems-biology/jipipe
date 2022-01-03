@@ -16,7 +16,7 @@ package org.hkijena.jipipe.extensions.parameters.primitives;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.components.DocumentChangeListener;
-import org.hkijena.jipipe.ui.components.HTMLEditor;
+import org.hkijena.jipipe.ui.components.html.HTMLEditor;
 import org.hkijena.jipipe.ui.parameters.JIPipeParameterEditorUI;
 
 import javax.swing.*;
@@ -29,7 +29,7 @@ import java.util.Objects;
  */
 public class HTMLTextParameterEditorUI extends JIPipeParameterEditorUI {
 
-    private HTMLEditor editor = new HTMLEditor(HTMLEditor.NONE);
+    private final HTMLEditor editor;
     private boolean isReloading = false;
 
     /**
@@ -38,6 +38,7 @@ public class HTMLTextParameterEditorUI extends JIPipeParameterEditorUI {
      */
     public HTMLTextParameterEditorUI(JIPipeWorkbench workbench, JIPipeParameterAccess parameterAccess) {
         super(workbench, parameterAccess);
+        editor = new HTMLEditor(workbench, HTMLEditor.Mode.Compact, HTMLEditor.WITH_DIALOG_EDITOR_BUTTON);
         initialize();
         reload();
     }

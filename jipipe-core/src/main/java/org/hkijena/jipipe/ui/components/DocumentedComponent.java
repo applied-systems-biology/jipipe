@@ -13,6 +13,9 @@
 
 package org.hkijena.jipipe.ui.components;
 
+import org.hkijena.jipipe.ui.components.markdown.MarkdownDocument;
+import org.hkijena.jipipe.ui.components.markdown.MarkdownReader;
+
 import javax.swing.*;
 import java.awt.Component;
 import java.awt.event.ComponentAdapter;

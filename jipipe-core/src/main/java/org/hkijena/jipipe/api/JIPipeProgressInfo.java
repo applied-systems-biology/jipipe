@@ -345,6 +345,10 @@ public class JIPipeProgressInfo {
         this.progress.getAndAccumulate(progress, Integer::sum);
     }
 
+    public JIPipePercentageProgressInfo percentage(String text) {
+        return new JIPipePercentageProgressInfo(resolve(text));
+    }
+
     public static class StatusUpdatedEvent {
         private final JIPipeProgressInfo source;
         private final int progress;
@@ -374,4 +378,5 @@ public class JIPipeProgressInfo {
             return message;
         }
     }
+
 }

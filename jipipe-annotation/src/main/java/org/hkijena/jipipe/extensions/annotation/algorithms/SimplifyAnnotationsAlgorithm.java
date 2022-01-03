@@ -6,7 +6,6 @@ import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeAnnotation;
 import org.hkijena.jipipe.api.data.JIPipeAnnotationMergeStrategy;
 import org.hkijena.jipipe.api.data.JIPipeData;
-import org.hkijena.jipipe.api.data.JIPipeVirtualData;
 import org.hkijena.jipipe.api.nodes.JIPipeDataBatch;
 import org.hkijena.jipipe.api.nodes.JIPipeInputSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
@@ -24,7 +23,6 @@ import org.hkijena.jipipe.extensions.parameters.primitives.StringParameterSettin
 import org.hkijena.jipipe.utils.StringUtils;
 
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -56,7 +54,7 @@ public class SimplifyAnnotationsAlgorithm extends JIPipeSimpleIteratingAlgorithm
 
     @Override
     protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
-        List<JIPipeAnnotation> combinedAnnotations = annotationFilter.queryAll(dataBatch.getGlobalAnnotations().values());
+        List<JIPipeAnnotation> combinedAnnotations = annotationFilter.queryAll(dataBatch.getMergedAnnotations().values());
 
         String combinedValue;
         {
@@ -67,14 +65,14 @@ public class SimplifyAnnotationsAlgorithm extends JIPipeSimpleIteratingAlgorithm
             combinedValue = combinationFunction.evaluateToString(variables);
         }
 
-        if(annotationRemovalMode != AnnotationRemovalMode.Keep) {
+        if (annotationRemovalMode != AnnotationRemovalMode.Keep) {
             for (JIPipeAnnotation annotation : combinedAnnotations) {
-                dataBatch.getGlobalAnnotations().remove(annotation.getName());
+                dataBatch.getMergedAnnotations().remove(annotation.getName());
             }
         }
-        if(annotationRemovalMode == AnnotationRemovalMode.Rename) {
+        if (annotationRemovalMode == AnnotationRemovalMode.Rename) {
             Set<String> existing = new HashSet<>();
-            for (JIPipeAnnotation annotation : dataBatch.getGlobalAnnotations().values()) {
+            for (JIPipeAnnotation annotation : dataBatch.getMergedAnnotations().values()) {
                 existing.add(annotation.getName());
             }
             ExpressionVariables variables = new ExpressionVariables();
@@ -83,7 +81,7 @@ public class SimplifyAnnotationsAlgorithm extends JIPipeSimpleIteratingAlgorithm
                 String newName = StringUtils.makeUniqueString(renameFunction.generate(variables), " ", existing);
                 existing.add(newName);
 
-                dataBatch.getGlobalAnnotations().put(newName, new JIPipeAnnotation(newName, annotation.getValue()));
+                dataBatch.getMergedAnnotations().put(newName, new JIPipeAnnotation(newName, annotation.getValue()));
             }
         }
 
@@ -153,7 +151,7 @@ public class SimplifyAnnotationsAlgorithm extends JIPipeSimpleIteratingAlgorithm
 
     @Override
     public boolean isParameterUIVisible(JIPipeParameterTree tree, JIPipeParameterAccess access) {
-        if("rename-function".equals(access.getKey()) && getAnnotationRemovalMode() != AnnotationRemovalMode.Rename) {
+        if ("rename-function".equals(access.getKey()) && getAnnotationRemovalMode() != AnnotationRemovalMode.Rename) {
             return false;
         }
         return super.isParameterUIVisible(tree, access);

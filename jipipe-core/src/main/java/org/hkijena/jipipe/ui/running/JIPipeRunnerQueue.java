@@ -28,11 +28,10 @@ import java.util.Queue;
 public class JIPipeRunnerQueue {
 
     private static JIPipeRunnerQueue instance;
-
-    private JIPipeRunWorker currentlyRunningWorker = null;
     private final Queue<JIPipeRunWorker> queue = new ArrayDeque<>();
     private final Map<JIPipeRunnable, JIPipeRunWorker> assignedWorkers = new HashMap<>();
     private final EventBus eventBus = new EventBus();
+    private JIPipeRunWorker currentlyRunningWorker = null;
 
     private JIPipeRunnerQueue() {
 
@@ -64,6 +63,7 @@ public class JIPipeRunnerQueue {
 
     /**
      * The size of the queue (includes the currently running {@link org.hkijena.jipipe.api.JIPipeRun}
+     *
      * @return the size
      */
     public int size() {

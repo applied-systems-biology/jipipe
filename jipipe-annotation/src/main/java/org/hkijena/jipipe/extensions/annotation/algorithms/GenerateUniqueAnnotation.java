@@ -71,7 +71,7 @@ public class GenerateUniqueAnnotation extends JIPipeSimpleIteratingAlgorithm {
             JIPipeData inputData = dataBatch.getInputData(getFirstInputSlot(), JIPipeData.class, progressInfo);
             String discriminator = !StringUtils.isNullOrEmpty(baseName) ? baseName + " " : "";
             discriminator += "[" + dataBatch.getInputSlotRows().get(getFirstInputSlot()) + "]";
-            dataBatch.addGlobalAnnotation(new JIPipeAnnotation(generatedAnnotation, discriminator), annotationMergeStrategy);
+            dataBatch.addMergedAnnotation(new JIPipeAnnotation(generatedAnnotation, discriminator), annotationMergeStrategy);
             dataBatch.addOutputData(getFirstOutputSlot(), inputData, progressInfo);
         }
     }

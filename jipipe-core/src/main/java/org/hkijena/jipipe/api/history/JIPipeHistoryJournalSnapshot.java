@@ -5,8 +5,12 @@ import java.time.LocalDateTime;
 
 public interface JIPipeHistoryJournalSnapshot {
     LocalDateTime getCreationTime();
+
     String getName();
+
     String getDescription();
+
     Icon getIcon();
+
     boolean restore();
 }

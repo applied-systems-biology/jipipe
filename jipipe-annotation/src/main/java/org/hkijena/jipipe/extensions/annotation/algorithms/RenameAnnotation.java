@@ -68,11 +68,11 @@ public class RenameAnnotation extends JIPipeSimpleIteratingAlgorithm {
     @Override
     protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
         List<JIPipeAnnotation> annotations = new ArrayList<>();
-        for (JIPipeAnnotation annotation : ImmutableList.copyOf(dataBatch.getGlobalAnnotations().values())) {
+        for (JIPipeAnnotation annotation : ImmutableList.copyOf(dataBatch.getMergedAnnotations().values())) {
             for (StringQueryExpressionAndStringPairParameter renamingItem : renamingItems) {
                 if (renamingItem.getKey().test(annotation.getName())) {
                     annotations.add(new JIPipeAnnotation(renamingItem.getValue(), annotation.getValue()));
-                    dataBatch.getGlobalAnnotations().remove(annotation.getName());
+                    dataBatch.getMergedAnnotations().remove(annotation.getName());
                 }
             }
         }

@@ -71,7 +71,7 @@ public class JsonNodeInfo implements JIPipeNodeInfo, JIPipeValidatable, JIPipePa
     private Map<JIPipeDataSlot, String> exportedSlotNames = new HashMap<>();
     private StringList menuPath = new StringList();
     private boolean hidden = false;
-    private JIPipeAlgorithmIconRef icon = new JIPipeAlgorithmIconRef();
+    private JIPipeAlgorithmIconRef customIcon = new JIPipeAlgorithmIconRef();
     private GraphWrapperAlgorithmInput algorithmInput;
     private GraphWrapperAlgorithmOutput algorithmOutput;
     private GraphNodeParameters exportedParameters;
@@ -433,15 +433,15 @@ public class JsonNodeInfo implements JIPipeNodeInfo, JIPipeValidatable, JIPipePa
     @JIPipeDocumentation(name = "Icon", description = "A custom algorithm icon")
     @JIPipeParameter(value = "icon", uiOrder = 25)
     @JsonGetter("icon")
-    public JIPipeAlgorithmIconRef getIcon() {
-        if (icon == null)
-            icon = new JIPipeAlgorithmIconRef();
-        return icon;
+    public JIPipeAlgorithmIconRef getCustomIcon() {
+        if (customIcon == null)
+            customIcon = new JIPipeAlgorithmIconRef();
+        return customIcon;
     }
 
     @JIPipeParameter("icon")
-    public void setIcon(JIPipeAlgorithmIconRef icon) {
-        this.icon = icon;
+    public void setCustomIcon(JIPipeAlgorithmIconRef customIcon) {
+        this.customIcon = customIcon;
 
     }
 }

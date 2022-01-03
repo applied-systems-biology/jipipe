@@ -16,6 +16,8 @@ package org.hkijena.jipipe.ui.components;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.data.JIPipeDataInfo;
 import org.hkijena.jipipe.api.data.JIPipeDataSlotInfo;
+import org.hkijena.jipipe.ui.components.renderers.JIPipeDataInfoListCellRenderer;
+import org.hkijena.jipipe.ui.components.renderers.JIPipeInheritanceConversionListCellRenderer;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;

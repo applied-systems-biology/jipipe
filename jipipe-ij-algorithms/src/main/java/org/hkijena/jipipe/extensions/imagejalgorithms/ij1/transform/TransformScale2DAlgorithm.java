@@ -115,7 +115,7 @@ public class TransformScale2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         int sy = img.getHeight();
 
         ExpressionVariables variables = new ExpressionVariables();
-        ImagePlusPropertiesExpressionParameterVariableSource.extractValues(variables, img, dataBatch.getGlobalAnnotations().values());
+        ImagePlusPropertiesExpressionParameterVariableSource.extractValues(variables, img, dataBatch.getMergedAnnotations().values());
 
         if (xAxis.isEnabled() && yAxis.isEnabled()) {
             variables.set("x", sx);
@@ -134,11 +134,10 @@ public class TransformScale2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
             sx = (int) (sx * fac);
         }
 
-        if(avoidUnnecessaryScaling && img.getWidth() == sx && img.getHeight() == sy) {
+        if (avoidUnnecessaryScaling && img.getWidth() == sx && img.getHeight() == sy) {
             progressInfo.log("Image already has the target size. No scaling needed.");
             dataBatch.addOutputData(getFirstOutputSlot(), inputData, progressInfo);
-        }
-        else {
+        } else {
             if (img.isStack()) {
                 ImageStack result = new ImageStack(sx, sy, img.getStackSize());
                 int finalSx = sx;

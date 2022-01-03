@@ -2,7 +2,7 @@ package org.hkijena.jipipe.ui;
 
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.notifications.JIPipeNotificationInbox;
-import org.hkijena.jipipe.ui.components.DocumentTabPane;
+import org.hkijena.jipipe.ui.components.tabs.DocumentTabPane;
 import org.scijava.Context;
 
 import javax.swing.*;

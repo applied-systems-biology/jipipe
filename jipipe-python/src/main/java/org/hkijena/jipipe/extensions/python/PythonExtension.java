@@ -35,7 +35,7 @@ import org.hkijena.jipipe.extensions.python.installers.SelectSystemPythonInstall
 import org.hkijena.jipipe.extensions.python.installers.SelectVirtualEnvPythonInstaller;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
-import org.hkijena.jipipe.ui.components.DocumentTabPane;
+import org.hkijena.jipipe.ui.components.tabs.DocumentTabPane;
 import org.hkijena.jipipe.ui.running.JIPipeRunExecuterUI;
 import org.hkijena.jipipe.ui.settings.JIPipeApplicationSettingsUI;
 import org.hkijena.jipipe.utils.UIUtils;
@@ -170,7 +170,7 @@ public class PythonExtension extends JIPipePrepackagedDefaultJavaExtension {
 
     @Override
     public String getDependencyVersion() {
-        return "1.53.2";
+        return "1.57.0";
     }
 
     private static void installPythonAdapterLibrary(JIPipeWorkbench workbench) {

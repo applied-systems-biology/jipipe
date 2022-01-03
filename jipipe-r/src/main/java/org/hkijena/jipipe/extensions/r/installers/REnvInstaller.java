@@ -17,7 +17,7 @@ import org.hkijena.jipipe.extensions.parameters.primitives.StringParameterSettin
 import org.hkijena.jipipe.extensions.r.REnvironment;
 import org.hkijena.jipipe.extensions.settings.RuntimeSettings;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
-import org.hkijena.jipipe.ui.components.MarkdownDocument;
+import org.hkijena.jipipe.ui.components.markdown.MarkdownDocument;
 import org.hkijena.jipipe.ui.parameters.ParameterPanel;
 import org.hkijena.jipipe.utils.PathUtils;
 import org.hkijena.jipipe.utils.ProcessUtils;
@@ -191,7 +191,7 @@ public class REnvInstaller extends ExternalEnvironmentInstaller {
      */
     public static String getLatestDownload() {
         if (SystemUtils.IS_OS_WINDOWS) {
-            return "https://github.com/applied-systems-biology/jipipe/releases/download/1.53.2-installers/R-4.1.0-win.exe";
+            return "https://github.com/applied-systems-biology/jipipe/releases/download/1.57.0-installers/R-4.1.0-win.exe";
         } else {
             return "https://cloud.r-project.org/bin/";
         }

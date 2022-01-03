@@ -46,7 +46,7 @@ import org.hkijena.jipipe.extensions.tables.IntegratingColumnOperation;
 import org.hkijena.jipipe.extensions.tables.TableColumnReference;
 import org.hkijena.jipipe.extensions.tables.display.CachedTableViewerWindow;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
-import org.hkijena.jipipe.ui.components.DocumentTabPane;
+import org.hkijena.jipipe.ui.components.tabs.DocumentTabPane;
 import org.hkijena.jipipe.ui.tableeditor.TableEditor;
 import org.hkijena.jipipe.utils.PathUtils;
 import org.hkijena.jipipe.utils.StringUtils;
@@ -1154,6 +1154,22 @@ public class ResultsTableData implements JIPipeData, TableModel {
 
     public boolean isStringColumn(int col) {
         return !isNumericColumn(col);
+    }
+
+    /**
+     * Removes a column with given name
+     *
+     * @param columnName the column name
+     * @return if a column was removed
+     */
+    public boolean removeColumn(String columnName) {
+        int columnIndex = getColumnIndex(columnName);
+        if (columnIndex >= 0) {
+            removeColumnAt(columnIndex);
+            return true;
+        } else {
+            return false;
+        }
     }
 
     public static ResultsTableData importFrom(Path storagePath) {

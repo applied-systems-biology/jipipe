@@ -61,9 +61,9 @@ public class JsonNodeRegistrationTask extends JIPipeDefaultNodeRegistrationTask 
             if (info == null)
                 throw new NullPointerException("Algorithm is null!");
             JIPipe.getNodes().register(info, source);
-            if (info.getIcon().getIconName() != null) {
+            if (info.getCustomIcon().getIconName() != null) {
                 JIPipe.getNodes().registerIcon(info,
-                        ResourceUtils.getPluginResource("icons/" + info.getIcon().getIconName()));
+                        ResourceUtils.getPluginResource("icons/" + info.getCustomIcon().getIconName()));
             }
         } catch (IOException e) {
             throw new RuntimeException(e);

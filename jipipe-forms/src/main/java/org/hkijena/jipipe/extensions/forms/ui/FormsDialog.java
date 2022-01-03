@@ -12,18 +12,17 @@ import org.hkijena.jipipe.extensions.forms.datatypes.ParameterFormData;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.batchassistant.DataBatchBrowserUI;
 import org.hkijena.jipipe.ui.batchassistant.DataBatchTableUI;
-import org.hkijena.jipipe.ui.components.ColorIcon;
-import org.hkijena.jipipe.ui.components.DocumentTabPane;
 import org.hkijena.jipipe.ui.components.FormPanel;
-import org.hkijena.jipipe.ui.components.MarkdownDocument;
 import org.hkijena.jipipe.ui.components.UserFriendlyErrorUI;
+import org.hkijena.jipipe.ui.components.icons.SolidColorIcon;
+import org.hkijena.jipipe.ui.components.markdown.MarkdownDocument;
+import org.hkijena.jipipe.ui.components.tabs.DocumentTabPane;
+import org.hkijena.jipipe.utils.AutoResizeSplitPane;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.jdesktop.swingx.JXTable;
 
 import javax.swing.*;
 import java.awt.BorderLayout;
-import java.awt.event.ComponentAdapter;
-import java.awt.event.ComponentEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.util.ArrayList;
@@ -44,9 +43,9 @@ public class FormsDialog extends JFrame {
     private DocumentTabPane tabPane = new DocumentTabPane();
     private String lastTab = "";
     private List<DataBatchStatus> dataBatchStatuses = new ArrayList<>();
-    private JLabel unvisitedLabel = new JLabel(new ColorIcon(16, 16, DataBatchStatusTableCellRenderer.getColorUnvisited()));
-    private JLabel visitedLabel = new JLabel(new ColorIcon(16, 16, DataBatchStatusTableCellRenderer.getColorVisited()));
-    private JLabel invalidLabel = new JLabel(new ColorIcon(16, 16, DataBatchStatusTableCellRenderer.getColorInvalid()));
+    private JLabel unvisitedLabel = new JLabel(new SolidColorIcon(16, 16, DataBatchStatusTableCellRenderer.getColorUnvisited()));
+    private JLabel visitedLabel = new JLabel(new SolidColorIcon(16, 16, DataBatchStatusTableCellRenderer.getColorVisited()));
+    private JLabel invalidLabel = new JLabel(new SolidColorIcon(16, 16, DataBatchStatusTableCellRenderer.getColorInvalid()));
     private JToggleButton visitedButton = new JToggleButton("Reviewed", UIUtils.getIconFromResources("actions/eye.png"));
     private MarkdownDocument documentation;
 
@@ -160,17 +159,7 @@ public class FormsDialog extends JFrame {
         dataBatchTableUI = new DataBatchTableUI(dataBatchList);
         dataBatchTableUI.getTable().setDefaultRenderer(Integer.class, new DataBatchStatusTableCellRenderer(dataBatchStatuses));
         dataBatchTableUI.getTable().setDefaultRenderer(String.class, new DataBatchStatusTableCellRenderer(dataBatchStatuses));
-        JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, dataBatchTableUI, tabPane);
-        splitPane.setDividerSize(3);
-        splitPane.setResizeWeight(0.33);
-        addComponentListener(new ComponentAdapter() {
-            @Override
-            public void componentResized(ComponentEvent e) {
-                super.componentResized(e);
-                splitPane.setDividerLocation(0.33);
-            }
-        });
-        splitPane.setDividerLocation(0.33);
+        JSplitPane splitPane = new AutoResizeSplitPane(JSplitPane.HORIZONTAL_SPLIT, dataBatchTableUI, tabPane, AutoResizeSplitPane.RATIO_1_TO_3);
         contentPanel.add(splitPane, BorderLayout.CENTER);
 
         initializeBottomBar(contentPanel);

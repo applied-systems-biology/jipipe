@@ -1869,9 +1869,9 @@ public class JIPipeGraph implements JIPipeValidatable {
      * Generated when a connection was made in {@link JIPipeGraph}
      */
     public static class NodeConnectedEvent {
-        private JIPipeGraph graph;
-        private JIPipeDataSlot source;
-        private JIPipeDataSlot target;
+        private final JIPipeGraph graph;
+        private final JIPipeDataSlot source;
+        private final JIPipeDataSlot target;
 
         /**
          * @param graph  the graph
@@ -1901,9 +1901,9 @@ public class JIPipeGraph implements JIPipeValidatable {
      * Generated when slots are disconnected
      */
     public static class NodeDisconnectedEvent {
-        private JIPipeGraph graph;
-        private JIPipeDataSlot source;
-        private JIPipeDataSlot target;
+        private final JIPipeGraph graph;
+        private final JIPipeDataSlot source;
+        private final JIPipeDataSlot target;
 
         /**
          * @param graph  the graph
@@ -1933,17 +1933,17 @@ public class JIPipeGraph implements JIPipeValidatable {
      * Triggered when an algorithm's slots change
      */
     public static class NodeSlotsChangedEvent {
-        private JIPipeGraphNode algorithm;
+        private final JIPipeGraphNode node;
 
         /**
-         * @param algorithm the algorithm
+         * @param node the algorithm
          */
-        public NodeSlotsChangedEvent(JIPipeGraphNode algorithm) {
-            this.algorithm = algorithm;
+        public NodeSlotsChangedEvent(JIPipeGraphNode node) {
+            this.node = node;
         }
 
-        public JIPipeGraphNode getAlgorithm() {
-            return algorithm;
+        public JIPipeGraphNode getNode() {
+            return node;
         }
     }
 }

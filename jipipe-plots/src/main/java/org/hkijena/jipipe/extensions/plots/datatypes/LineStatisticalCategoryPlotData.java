@@ -65,6 +65,8 @@ public class LineStatisticalCategoryPlotData extends StatisticalCategoryPlotData
         chart.getCategoryPlot().getRangeAxis().setLabelFont(new Font(Font.SANS_SERIF, Font.BOLD, getValueAxisFontSize()));
         chart.getCategoryPlot().getRangeAxis().setTickLabelFont(new Font(Font.SANS_SERIF, Font.PLAIN, getValueAxisFontSize()));
 
+        calibrateAxis(chart.getCategoryPlot().getRangeAxis(), getValueAxisMinimum(), getValueAxisMaximum());
+
         // Set line thickness
         CategoryItemRenderer renderer = chart.getCategoryPlot().getRenderer();
         renderer.setDefaultStroke(new BasicStroke(lineThickness));

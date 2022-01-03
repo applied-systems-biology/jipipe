@@ -33,8 +33,8 @@ import org.hkijena.jipipe.extensions.core.nodes.JIPipeCommentNode;
 import org.hkijena.jipipe.extensions.settings.GraphEditorUISettings;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.JIPipeWorkbenchPanel;
-import org.hkijena.jipipe.ui.components.DropShadowRenderer;
 import org.hkijena.jipipe.ui.components.ZoomViewPort;
+import org.hkijena.jipipe.ui.components.renderers.DropShadowRenderer;
 import org.hkijena.jipipe.ui.grapheditor.actions.JIPipeNodeUIAction;
 import org.hkijena.jipipe.ui.grapheditor.actions.OpenContextMenuAction;
 import org.hkijena.jipipe.ui.grapheditor.contextmenu.NodeUIContextAction;
@@ -77,6 +77,14 @@ public class JIPipeGraphCanvasUI extends JIPipeWorkbenchPanel implements MouseMo
             true,
             true,
             true);
+    public static final DropShadowRenderer BOOKMARK_SHADOW_BORDER = new DropShadowRenderer(new Color(0x33cc33),
+            12,
+            0.3f,
+            12,
+            true,
+            true,
+            true,
+            true);
     public static final Stroke STROKE_UNIT = new BasicStroke(1);
     public static final Stroke STROKE_UNIT_COMMENT = new BasicStroke(1, BasicStroke.CAP_ROUND, BasicStroke.JOIN_BEVEL, 0, new float[]{1}, 0);
     public static final Stroke STROKE_DEFAULT = new BasicStroke(4);
@@ -93,6 +101,7 @@ public class JIPipeGraphCanvasUI extends JIPipeWorkbenchPanel implements MouseMo
 //    public static final int SHADOW_WIDTH = 5;
 //    public static final int SHADOW_SHIFT = 2;
 
+    private final JIPipeGraphEditorUI graphEditorUI;
     private final ImageIcon cursorImage = UIUtils.getIconFromResources("actions/target.png");
     private final JIPipeGraph graph;
     private final BiMap<JIPipeGraphNode, JIPipeNodeUI> nodeUIs = HashBiMap.create();
@@ -101,6 +110,9 @@ public class JIPipeGraphCanvasUI extends JIPipeWorkbenchPanel implements MouseMo
     private final GraphEditorUISettings settings;
     private final JIPipeHistoryJournal historyJournal;
     private final UUID compartment;
+    private final Map<JIPipeNodeUI, Point> currentlyDraggedOffsets = new HashMap<>();
+    private final NodeHotKeyStorage nodeHotKeyStorage;
+    private final Color improvedStrokeBackgroundColor = UIManager.getColor("Panel.background");
     private boolean layoutHelperEnabled;
     private JIPipeGraphViewMode viewMode;
     private JIPipeGraphDragAndDropBehavior dragAndDropBehavior;
@@ -109,16 +121,13 @@ public class JIPipeGraphCanvasUI extends JIPipeWorkbenchPanel implements MouseMo
     private Point selectionSecond;
     private long lastTimeExpandedNegative = 0;
     private List<NodeUIContextAction> contextActions = new ArrayList<>();
-    private final Map<JIPipeNodeUI, Point> currentlyDraggedOffsets = new HashMap<>();
     private JIPipeDataSlotUI currentConnectionDragSource;
     private JIPipeDataSlotUI currentConnectionDragTarget;
     private JIPipeDataSlotUI currentHighlightedForDisconnect;
     private Set<JIPipeDataSlot> currentHighlightedForDisconnectSourceSlots;
     private double zoom = 1.0;
     private JScrollPane scrollPane;
-    private final NodeHotKeyStorage nodeHotKeyStorage;
     private Set<JIPipeGraphNode> scheduledSelection = new HashSet<>();
-    private final Color improvedStrokeBackgroundColor = UIManager.getColor("Panel.background");
     private boolean hasDragSnapshot = false;
 
     /**
@@ -128,13 +137,16 @@ public class JIPipeGraphCanvasUI extends JIPipeWorkbenchPanel implements MouseMo
 
     /**
      * Creates a new UI
-     *  @param workbench   the workbench
-     * @param graph       The algorithm graph
-     * @param compartment The compartment to show
+     *
+     * @param workbench      the workbench
+     * @param graphEditorUI
+     * @param graph          The algorithm graph
+     * @param compartment    The compartment to show
      * @param historyJournal object that tracks the history of this graph. Set to null to disable the undo feature.
      */
-    public JIPipeGraphCanvasUI(JIPipeWorkbench workbench, JIPipeGraph graph, UUID compartment, JIPipeHistoryJournal historyJournal) {
+    public JIPipeGraphCanvasUI(JIPipeWorkbench workbench, JIPipeGraphEditorUI graphEditorUI, JIPipeGraph graph, UUID compartment, JIPipeHistoryJournal historyJournal) {
         super(workbench);
+        this.graphEditorUI = graphEditorUI;
         this.historyJournal = historyJournal;
         setLayout(null);
         this.graph = graph;
@@ -152,6 +164,10 @@ public class JIPipeGraphCanvasUI extends JIPipeWorkbenchPanel implements MouseMo
         addNewNodes();
         graph.getEventBus().register(this);
         initializeHotkeys();
+    }
+
+    public JIPipeGraphEditorUI getGraphEditorUI() {
+        return graphEditorUI;
     }
 
     public GraphEditorUISettings getSettings() {
@@ -587,8 +603,8 @@ public class JIPipeGraphCanvasUI extends JIPipeWorkbenchPanel implements MouseMo
     }
 
     private void createMoveSnapshotIfNeeded() {
-        if(!hasDragSnapshot) {
-            if(getHistoryJournal() != null) {
+        if (!hasDragSnapshot) {
+            if (getHistoryJournal() != null) {
                 getHistoryJournal().snapshot("Move nodes", "Nodes were dragged with the mouse", getCompartment(), UIUtils.getIconFromResources("actions/transform-move.png"));
             }
             hasDragSnapshot = true;
@@ -624,7 +640,7 @@ public class JIPipeGraphCanvasUI extends JIPipeWorkbenchPanel implements MouseMo
                 if (!hasDragSnapshot) {
                     // Check if something would change
                     if (!Objects.equals(currentlyDragged.getLocation(), viewMode.realLocationToGrid(new Point(x, y), zoom))) {
-                       createMoveSnapshotIfNeeded();
+                        createMoveSnapshotIfNeeded();
                     }
                 }
 
@@ -1000,8 +1016,13 @@ public class JIPipeGraphCanvasUI extends JIPipeWorkbenchPanel implements MouseMo
 
             graphics2D.setColor(nodeUI.getFillColor());
             graphics2D.fillRect(x, y, width, height);
-            graphics2D.setColor(nodeUI.getBorderColor());
+            if (nodeUI.getNode().isBookmarked()) {
+                graphics2D.setColor(new Color(0x33cc33));
+            } else {
+                graphics2D.setColor(nodeUI.getBorderColor());
+            }
             graphics2D.drawRect(x, y, width, height);
+
 
             ImageIcon icon = JIPipe.getInstance().getNodeRegistry().getIconFor(nodeUI.getNode().getInfo());
             int iconSize = Math.min(16, Math.min(width, height)) - 3;
@@ -1042,6 +1063,9 @@ public class JIPipeGraphCanvasUI extends JIPipeWorkbenchPanel implements MouseMo
         if (settings.isDrawNodeShadows()) {
             for (JIPipeNodeUI ui : nodeUIs.values()) {
                 DROP_SHADOW_BORDER.paint(g, ui.getX() - 3, ui.getY() - 3, ui.getWidth() + 8, ui.getHeight() + 8);
+                if (ui.getNode().isBookmarked()) {
+                    BOOKMARK_SHADOW_BORDER.paint(g, ui.getX() - 12, ui.getY() - 12, ui.getWidth() + 24, ui.getHeight() + 24);
+                }
             }
         }
 
