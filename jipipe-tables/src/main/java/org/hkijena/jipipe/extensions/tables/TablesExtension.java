@@ -147,12 +147,14 @@ public class TablesExtension extends JIPipePrepackagedDefaultJavaExtension {
         registerNodeType("table-convert-columns", ConvertColumnsAlgorithm.class, UIUtils.getIconURLFromResources("actions/formula.png"));
         registerNodeType("table-apply-expression-per-row", ApplyExpressionPerRowAlgorithm.class, UIUtils.getIconURLFromResources("actions/insert-math-expression.png"));
         registerNodeType("table-split-into-columns", SplitTableIntoColumnsAlgorithm.class, UIUtils.getIconURLFromResources("actions/split.png"));
+        registerNodeType("table-split-into-rows", SplitTableIntoRowsAlgorithm.class, UIUtils.getIconURLFromResources("actions/split.png"));
         registerNodeType("table-merge-from-columns", MergeColumnsAlgorithm.class, UIUtils.getIconURLFromResources("actions/merge.png"));
         registerNodeType("table-merge-tables", MergeTableRowsAlgorithm.class, UIUtils.getIconURLFromResources("actions/merge.png"));
         registerNodeType("table-split-by-columns", SplitTableByColumnsAlgorithm.class, UIUtils.getIconURLFromResources("actions/split.png"));
         registerNodeType("table-filter", FilterTableRowsAlgorithm.class, UIUtils.getIconURLFromResources("actions/filter.png"));
         registerNodeType("table-filter-2", FilterTablesAlgorithm.class, UIUtils.getIconURLFromResources("actions/filter.png"));
-        registerNodeType("table-sort", SortTableAlgorithm.class, UIUtils.getIconURLFromResources("actions/view-sort.png"));
+        registerNodeType("table-sort", SortTableRowsAlgorithm.class, UIUtils.getIconURLFromResources("actions/view-sort.png"));
+        registerNodeType("table-sort-columns", SortTableColumnsAlgorithm.class, UIUtils.getIconURLFromResources("actions/view-sort.png"));
         registerNodeType("table-add-annotation-columns", AddAnnotationColumnsAlgorithm.class, UIUtils.getIconURLFromResources("actions/edit-table-insert-column-right.png"));
         registerNodeType("convert-annotation-table-to-annotated-tables", ConvertAnnotationTableToAnnotatedTables.class, UIUtils.getIconURLFromResources("data-types/annotation-table.png"));
         registerNodeType("modify-tables", ModifyTablesScript.class, UIUtils.getIconURLFromResources("apps/python.png"));

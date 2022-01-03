@@ -13,6 +13,7 @@
 
 package org.hkijena.jipipe.extensions.tables.algorithms;
 
+import org.apache.commons.lang3.math.NumberUtils;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
@@ -26,6 +27,7 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.expressions.StringQueryExpression;
 import org.hkijena.jipipe.extensions.tables.datatypes.DoubleArrayTableColumn;
 import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
+import org.hkijena.jipipe.extensions.tables.datatypes.TableColumn;
 
 /**
  * Algorithm that removes columns
@@ -37,6 +39,7 @@ import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
 public class ColumnToNumericAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     private StringQueryExpression filters = new StringQueryExpression();
+    private boolean onlyIfPossible = false;
 
     /**
      * Creates a new instance
@@ -55,6 +58,7 @@ public class ColumnToNumericAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     public ColumnToNumericAlgorithm(ColumnToNumericAlgorithm other) {
         super(other);
         this.filters = new StringQueryExpression(other.filters);
+        this.onlyIfPossible = other.onlyIfPossible;
     }
 
     @Override
@@ -63,8 +67,21 @@ public class ColumnToNumericAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         int columnCount = table.getColumnCount();
         for (int col = 0; col < columnCount; col++) {
             String columnName = table.getColumnName(col);
-            if (filters.test(columnName)) {
-                double[] data = table.getColumnReference(col).getDataAsDouble(table.getRowCount());
+            TableColumn columnReference = table.getColumnReference(col);
+            if (filters.test(columnName) && !columnReference.isNumeric()) {
+                if(onlyIfPossible) {
+                    boolean success = true;
+                    for (int i = 0; i < columnReference.getRows(); i++) {
+                        if(!NumberUtils.isCreatable(columnReference.getRowAsString(i))) {
+                            success = false;
+                            break;
+                        }
+                    }
+                    if(!success) {
+                        continue;
+                    }
+                }
+                double[] data = columnReference.getDataAsDouble(table.getRowCount());
                 table.removeColumnAt(col);
                 --col;
                 --columnCount;
@@ -83,5 +100,17 @@ public class ColumnToNumericAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     @JIPipeParameter("filters")
     public void setFilters(StringQueryExpression filters) {
         this.filters = filters;
+    }
+
+    @JIPipeDocumentation(name = "Only convert if possible", description = "If enabled, values are tested if they are numeric before a conversion is applied. If not, then " +
+            "the column is left alone.")
+    @JIPipeParameter("only-if-possible")
+    public boolean isOnlyIfPossible() {
+        return onlyIfPossible;
+    }
+
+    @JIPipeParameter("only-if-possible")
+    public void setOnlyIfPossible(boolean onlyIfPossible) {
+        this.onlyIfPossible = onlyIfPossible;
     }
 }

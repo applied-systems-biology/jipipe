@@ -38,21 +38,22 @@ import java.util.Comparator;
 /**
  * Algorithm that integrates columns
  */
-@JIPipeDocumentation(name = "Sort table", description = "Sorts the table by columns")
+@JIPipeDocumentation(name = "Sort table rows", description = "Sorts the table rows by columns")
 @JIPipeNode(nodeTypeCategory = TableNodeTypeCategory.class)
 @JIPipeInputSlot(value = ResultsTableData.class, slotName = "Input", autoCreate = true)
 @JIPipeOutputSlot(value = ResultsTableData.class, slotName = "Output", autoCreate = true)
-public class SortTableAlgorithm extends JIPipeSimpleIteratingAlgorithm {
+public class SortTableRowsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     private StringQueryExpressionAndSortOrderPairParameter.List sortOrderList = new StringQueryExpressionAndSortOrderPairParameter.List();
     private boolean useNaturalSortOrder = true;
+    private boolean reverseSortOrder = false;
 
     /**
      * Creates a new instance
      *
      * @param info algorithm info
      */
-    public SortTableAlgorithm(JIPipeNodeInfo info) {
+    public SortTableRowsAlgorithm(JIPipeNodeInfo info) {
         super(info);
         sortOrderList.addNewInstance();
     }
@@ -62,9 +63,10 @@ public class SortTableAlgorithm extends JIPipeSimpleIteratingAlgorithm {
      *
      * @param other the original
      */
-    public SortTableAlgorithm(SortTableAlgorithm other) {
+    public SortTableRowsAlgorithm(SortTableRowsAlgorithm other) {
         super(other);
         this.useNaturalSortOrder = other.useNaturalSortOrder;
+        this.reverseSortOrder = other.reverseSortOrder;
         this.sortOrderList = new StringQueryExpressionAndSortOrderPairParameter.List(other.sortOrderList);
     }
 
@@ -79,6 +81,9 @@ public class SortTableAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         Comparator<Integer> comparator = getRowComparator(sortOrderList.get(0), input);
         for (int i = 1; i < sortOrderList.size(); i++) {
             comparator = comparator.thenComparing(getRowComparator(sortOrderList.get(i), input));
+        }
+        if(reverseSortOrder) {
+            comparator = comparator.reversed();
         }
 
         java.util.List sortedRows = new ArrayList<>();
@@ -136,8 +141,20 @@ public class SortTableAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         return result;
     }
 
+    @JIPipeDocumentation(name = "Reverse sort order", description = "If enabled, the sort order is reversed.")
+    @JIPipeParameter("reverse-sort-order")
+    public boolean isReverseSortOrder() {
+        return reverseSortOrder;
+    }
+
+    @JIPipeParameter("reverse-sort-order")
+    public void setReverseSortOrder(boolean reverseSortOrder) {
+        this.reverseSortOrder = reverseSortOrder;
+    }
+
     @Override
     public void reportValidity(JIPipeIssueReport report) {
+        super.reportValidity(report);
         report.resolve("Filters").report(sortOrderList);
     }
 
