@@ -147,7 +147,9 @@ public abstract class JIPipeAlgorithm extends JIPipeGraphNode {
     }
 
     @JIPipeDocumentation(name = "Pass through", description = "If enabled, the algorithm will pass the input data directly to the output data without any processing. " +
-            "This is different from enabling/disabling the algorithm as this will not disable dependent algorithms.")
+            "This is different from enabling/disabling the algorithm as this will not disable dependent algorithms.\n" +
+            "Please note that setting this parameter via adaptive parameters (if available) does not always yield the expected result. " +
+            "The reason behind this is that pass-through is not trivial for certain nodes. We recommend to use a split node if node execution should be made adaptive.")
     @JIPipeParameter(value = "jipipe:algorithm:pass-through")
     public boolean isPassThrough() {
         return passThrough;
