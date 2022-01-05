@@ -2,11 +2,8 @@
 <project version="4">
   <component name="Encoding">
     <file url="file://$PROJECT_DIR$/ij-updater-cli/src/main/java" charset="UTF-8" />
-    <file url="file://$PROJECT_DIR$/ij-updater-cli/src/main/resources" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/jipipe-annotation/src/main/java" charset="UTF-8" />
-    <file url="file://$PROJECT_DIR$/jipipe-annotation/src/main/resources" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/jipipe-cellpose/src/main/java" charset="UTF-8" />
-    <file url="file://$PROJECT_DIR$/jipipe-cellpose/src/main/resources" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/jipipe-clij/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/jipipe-clij/src/main/resources" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/jipipe-core/src/main/java" charset="UTF-8" />
@@ -14,34 +11,21 @@
     <file url="file://$PROJECT_DIR$/jipipe-deep-learning/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/jipipe-deep-learning/src/main/resources" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/jipipe-filesystem/src/main/java" charset="UTF-8" />
-    <file url="file://$PROJECT_DIR$/jipipe-filesystem/src/main/resources" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/jipipe-forms/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/jipipe-forms/src/main/resources" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/jipipe-ij-algorithms/src/main/java" charset="UTF-8" />
-    <file url="file://$PROJECT_DIR$/jipipe-ij-algorithms/src/main/resources" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/jipipe-ij-multi-template-matching/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/jipipe-ij-multi-template-matching/src/main/resources" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/jipipe-ij-omero/src/main/java" charset="UTF-8" />
-    <file url="file://$PROJECT_DIR$/jipipe-ij-omero/src/main/resources" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/jipipe-ij/src/main/java" charset="UTF-8" />
-    <file url="file://$PROJECT_DIR$/jipipe-ij/src/main/resources" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/jipipe-launcher/src/main/java" charset="UTF-8" />
-    <file url="file://$PROJECT_DIR$/jipipe-launcher/src/main/resources" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/jipipe-multiparameters/src/main/java" charset="UTF-8" />
-    <file url="file://$PROJECT_DIR$/jipipe-multiparameters/src/main/resources" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/jipipe-plots/src/main/java" charset="UTF-8" />
-    <file url="file://$PROJECT_DIR$/jipipe-plots/src/main/resources" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/jipipe-python/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/jipipe-python/src/main/resources" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/jipipe-r/src/main/java" charset="UTF-8" />
-    <file url="file://$PROJECT_DIR$/jipipe-r/src/main/resources" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/jipipe-strings/src/main/java" charset="UTF-8" />
-    <file url="file://$PROJECT_DIR$/jipipe-strings/src/main/resources" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/jipipe-tables/src/main/java" charset="UTF-8" />
-    <file url="file://$PROJECT_DIR$/jipipe-tables/src/main/resources" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/jipipe-utils/src/main/java" charset="UTF-8" />
-    <file url="file://$PROJECT_DIR$/jipipe-utils/src/main/resources" charset="UTF-8" />
-    <file url="file://$PROJECT_DIR$/src/main/java" charset="UTF-8" />
-    <file url="file://$PROJECT_DIR$/src/main/resources" charset="UTF-8" />
   </component>
 </project>
