@@ -54,6 +54,10 @@ public class ImagePlus4DColorLABData extends ImagePlus4DColorData implements Col
         super(ImageJUtils.convertToColorLABIfNeeded(image));
     }
 
+    public ImagePlus4DColorLABData(ImagePlus image, ColorSpace ignored) {
+        super(ImageJUtils.convertToColorLABIfNeeded(image));
+    }
+
     public ImagePlus4DColorLABData(ImageSource source) {
         super(new ConverterWrapperImageSource(source, ImageJUtils::convertToColorLABIfNeeded));
     }

@@ -53,6 +53,10 @@ public class ImagePlus2DColorRGBData extends ImagePlus2DColorData implements Col
         super(ImageJUtils.convertToColorRGBIfNeeded(image));
     }
 
+    public ImagePlus2DColorRGBData(ImagePlus image, ColorSpace ignored) {
+        super(ImageJUtils.convertToColorRGBIfNeeded(image));
+    }
+
     public ImagePlus2DColorRGBData(ImageSource source) {
         super(new ConverterWrapperImageSource(source, ImageJUtils::convertToColorRGBIfNeeded));
     }

@@ -25,7 +25,7 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.util.ConverterWrapperImageS
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageSource;
 
-import java.awt.Component;
+import java.awt.*;
 import java.nio.file.Path;
 
 /**
@@ -49,10 +49,11 @@ public class ImagePlusColorHSBData extends ImagePlusColorData implements Colored
      */
     public static final ColorSpace COLOR_SPACE = new HSBColorSpace();
 
-    /**
-     * @param image wrapped image
-     */
     public ImagePlusColorHSBData(ImagePlus image) {
+        super(ImageJUtils.convertToColorHSBIfNeeded(image));
+    }
+
+    public ImagePlusColorHSBData(ImagePlus image, ColorSpace ignored) {
         super(ImageJUtils.convertToColorHSBIfNeeded(image));
     }
 

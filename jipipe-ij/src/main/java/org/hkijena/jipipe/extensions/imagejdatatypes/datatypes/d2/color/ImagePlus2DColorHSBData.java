@@ -47,10 +47,12 @@ public class ImagePlus2DColorHSBData extends ImagePlus2DColorData implements Col
      */
     public static final ColorSpace COLOR_SPACE = new HSBColorSpace();
 
-    /**
-     * @param image wrapped image
-     */
+
     public ImagePlus2DColorHSBData(ImagePlus image) {
+        super(ImageJUtils.convertToColorHSBIfNeeded(image));
+    }
+
+    public ImagePlus2DColorHSBData(ImagePlus image, ColorSpace ignored) {
         super(ImageJUtils.convertToColorHSBIfNeeded(image));
     }
 

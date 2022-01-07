@@ -53,6 +53,10 @@ public class ImagePlus5DColorRGBData extends ImagePlus5DColorData implements Col
         super(ImageJUtils.convertToColorRGBIfNeeded(image));
     }
 
+    public ImagePlus5DColorRGBData(ImagePlus image, ColorSpace ignored) {
+        super(ImageJUtils.convertToColorRGBIfNeeded(image));
+    }
+
     public ImagePlus5DColorRGBData(ImageSource source) {
         super(new ConverterWrapperImageSource(source, ImageJUtils::convertToColorRGBIfNeeded));
     }

@@ -48,10 +48,11 @@ public class ImagePlusColorRGBData extends ImagePlusColorData implements Colored
      */
     public static final ColorSpace COLOR_SPACE = new RGBColorSpace();
 
-    /**
-     * @param image wrapped image
-     */
     public ImagePlusColorRGBData(ImagePlus image) {
+        super(ImageJUtils.convertToColorRGBIfNeeded(image));
+    }
+
+    public ImagePlusColorRGBData(ImagePlus image, ColorSpace ignored) {
         super(ImageJUtils.convertToColorRGBIfNeeded(image));
     }
 

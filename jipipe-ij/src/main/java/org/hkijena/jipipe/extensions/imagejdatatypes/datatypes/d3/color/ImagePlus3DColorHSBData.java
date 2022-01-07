@@ -54,6 +54,10 @@ public class ImagePlus3DColorHSBData extends ImagePlus3DColorData implements Col
         super(ImageJUtils.convertToColorHSBIfNeeded(image));
     }
 
+    public ImagePlus3DColorHSBData(ImagePlus image, ColorSpace ignored) {
+        super(ImageJUtils.convertToColorHSBIfNeeded(image));
+    }
+
     public ImagePlus3DColorHSBData(ImageSource source) {
         super(new ConverterWrapperImageSource(source, ImageJUtils::convertToColorHSBIfNeeded));
     }
