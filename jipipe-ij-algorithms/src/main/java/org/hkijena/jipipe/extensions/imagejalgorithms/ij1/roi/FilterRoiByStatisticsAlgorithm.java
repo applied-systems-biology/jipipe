@@ -17,6 +17,7 @@ import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
+import org.hkijena.jipipe.api.data.JIPipeAnnotation;
 import org.hkijena.jipipe.api.nodes.JIPipeDataBatch;
 import org.hkijena.jipipe.api.nodes.JIPipeInputSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
@@ -112,6 +113,9 @@ public class FilterRoiByStatisticsAlgorithm extends ImageRoiProcessorAlgorithm {
         // Apply filter
         ROIListData outputData = new ROIListData();
         ExpressionVariables variableSet = new ExpressionVariables();
+        for (JIPipeAnnotation annotation : dataBatch.getMergedAnnotations().values()) {
+            variableSet.set(annotation.getName(), annotation.getValue());
+        }
         for (int row = 0; row < allStatistics.getRowCount(); row++) {
             for (int col = 0; col < allStatistics.getColumnCount(); col++) {
                 variableSet.set(allStatistics.getColumnName(col), allStatistics.getValueAt(row, col));
@@ -129,7 +133,8 @@ public class FilterRoiByStatisticsAlgorithm extends ImageRoiProcessorAlgorithm {
     @JIPipeParameter(value = "filter", important = true)
     @JIPipeDocumentation(name = "Filter", description = "Filtering expression. This is applied per ROI. " +
             "Click the 'f' button to see all available variables you can test for (note: requires from you to enable the corresponding measurement!)." +
-            "An example for an expression would be 'Area > 200 AND Mean > 10'")
+            "An example for an expression would be 'Area > 200 AND Mean > 10'." +
+            "Annotations are available as variables.")
     @ExpressionParameterSettings(variableSource = MeasurementExpressionParameterVariableSource.class)
     public DefaultExpressionParameter getFilters() {
         return filters;

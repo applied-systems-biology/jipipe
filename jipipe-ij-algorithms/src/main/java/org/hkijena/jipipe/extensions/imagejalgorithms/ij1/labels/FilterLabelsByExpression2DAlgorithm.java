@@ -20,6 +20,7 @@ import inra.ijpb.label.LabelImages;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
+import org.hkijena.jipipe.api.data.JIPipeAnnotation;
 import org.hkijena.jipipe.api.nodes.JIPipeDataBatch;
 import org.hkijena.jipipe.api.nodes.JIPipeInputSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
@@ -68,6 +69,9 @@ public class FilterLabelsByExpression2DAlgorithm extends JIPipeSimpleIteratingAl
             int[] numPixels = LabelImages.pixelCount(ip, allLabels);
             TIntArrayList keptLabels = new TIntArrayList();
             ExpressionVariables parameters = new ExpressionVariables();
+            for (JIPipeAnnotation annotation : dataBatch.getMergedAnnotations().values()) {
+                parameters.set(annotation.getName(), annotation.getValue());
+            }
             for (int i = 0; i < allLabels.length; i++) {
                 parameters.set("id", allLabels[i]);
                 parameters.set("num_pixels", numPixels[i]);
@@ -85,7 +89,7 @@ public class FilterLabelsByExpression2DAlgorithm extends JIPipeSimpleIteratingAl
         dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusGreyscaleData(outputImage), progressInfo);
     }
 
-    @JIPipeDocumentation(name = "Filter expression", description = "This filter expression determines which labels are kept.")
+    @JIPipeDocumentation(name = "Filter expression", description = "This filter expression determines which labels are kept. Annotations are available as variables.")
     @ExpressionParameterSettings(variableSource = VariableSource.class)
     @JIPipeParameter("expression")
     public DefaultExpressionParameter getExpression() {

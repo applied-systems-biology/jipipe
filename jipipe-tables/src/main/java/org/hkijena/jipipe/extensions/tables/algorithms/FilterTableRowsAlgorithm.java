@@ -16,6 +16,7 @@ package org.hkijena.jipipe.extensions.tables.algorithms;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
+import org.hkijena.jipipe.api.data.JIPipeAnnotation;
 import org.hkijena.jipipe.api.nodes.JIPipeDataBatch;
 import org.hkijena.jipipe.api.nodes.JIPipeInputSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
@@ -69,6 +70,9 @@ public class FilterTableRowsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         ResultsTableData input = dataBatch.getInputData(getFirstInputSlot(), ResultsTableData.class, progressInfo);
         List<Integer> selectedRows = new ArrayList<>();
         ExpressionVariables variableSet = new ExpressionVariables();
+        for (JIPipeAnnotation annotation : dataBatch.getMergedAnnotations().values()) {
+            variableSet.set(annotation.getName(), annotation.getValue());
+        }
         for (int row = 0; row < input.getRowCount(); row++) {
             for (int col = 0; col < input.getColumnCount(); col++) {
                 variableSet.set(input.getColumnName(col), input.getValueAt(row, col));
@@ -84,7 +88,8 @@ public class FilterTableRowsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     @JIPipeDocumentation(name = "Filters", description = "Allows you to select how to filter the values. " +
             "Each row is iterated individually and its columns are available as variables inside the expression. For example there are columns 'Area' and 'X'. " +
-            "Then you can filter the table via an expression 'AREA > 100 AND X > 200 AND X < 1000'")
+            "Then you can filter the table via an expression 'AREA > 100 AND X > 200 AND X < 1000'." +
+            "Annotations are available as variables.")
     @JIPipeParameter("filters")
     public DefaultExpressionParameter getFilters() {
         return filters;

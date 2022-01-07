@@ -20,6 +20,7 @@ import ij.process.ImageProcessor;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
+import org.hkijena.jipipe.api.data.JIPipeAnnotation;
 import org.hkijena.jipipe.api.nodes.JIPipeDataBatch;
 import org.hkijena.jipipe.api.nodes.JIPipeInputSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeIteratingAlgorithm;
@@ -100,6 +101,9 @@ public class FilterLabelsByStatisticsAlgorithm extends JIPipeIteratingAlgorithm 
             // Find labels to keep
             labelsToKeep.clear();
             variables.clear();
+            for (JIPipeAnnotation annotation : dataBatch.getMergedAnnotations().values()) {
+                variables.set(annotation.getName(), annotation.getValue());
+            }
             for (int row = 0; row < forRoi.getRowCount(); row++) {
                 for (int col = 0; col < forRoi.getColumnCount(); col++) {
                     variables.set(forRoi.getColumnName(col), forRoi.getValueAt(row, col));
@@ -119,7 +123,8 @@ public class FilterLabelsByStatisticsAlgorithm extends JIPipeIteratingAlgorithm 
     @JIPipeParameter(value = "filter", important = true)
     @JIPipeDocumentation(name = "Filter", description = "Filtering expression. This is applied per label. " +
             "Click the 'Edit' button to see all available variables you can test for (note: requires from you to enable the corresponding measurement!)." +
-            "An example for an expression would be 'Area > 200 AND Mean > 10'")
+            "An example for an expression would be 'Area > 200 AND Mean > 10'." +
+            "Annotations are available as variables.")
     @ExpressionParameterSettings(variableSource = MeasurementExpressionParameterVariableSource.class)
     public DefaultExpressionParameter getFilters() {
         return filters;
