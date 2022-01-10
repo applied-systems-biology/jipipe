@@ -569,6 +569,20 @@ public class UIUtils {
         component.setBorder(BorderFactory.createEmptyBorder(3, 3, 3, 3));
     }
 
+    public static String getAWTWindowTitle(Window window) {
+        String windowTitle;
+        if(window instanceof JFrame) {
+            windowTitle = ((JFrame) window).getTitle();
+        }
+        else if(window instanceof JDialog) {
+            windowTitle = ((JDialog) window).getTitle();
+        }
+        else {
+            windowTitle = "Unnamed window";
+        }
+        return windowTitle;
+    }
+
     /**
      * Makes a button flat and have a height of 25px
      *

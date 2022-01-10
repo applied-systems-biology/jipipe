@@ -26,12 +26,17 @@ import org.hkijena.jipipe.extensions.settings.GeneralUISettings;
 import org.hkijena.jipipe.ui.theme.CustomTabbedPaneUI;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.jdesktop.swingx.JXStatusBar;
+import org.jdesktop.swingx.plaf.basic.BasicStatusBarUI;
 
 import javax.swing.*;
-import java.awt.BorderLayout;
-import java.awt.Component;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
+import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
@@ -49,17 +54,19 @@ public class DocumentTabPane extends JPanel {
     /**
      * List of open tabs
      */
-    private Set<DocumentTab> tabs = new HashSet<>();
+    private final Set<DocumentTab> tabs = new HashSet<>();
 
     /**
      * Last tabs have priority over lower index tabs
      */
-    private List<DocumentTab> tabHistory = new ArrayList<>();
+    private final List<DocumentTab> tabHistory = new ArrayList<>();
 
     /**
      * Contains tabs that can be closed, but opened again
      */
-    private BiMap<String, DocumentTab> singletonTabs = HashBiMap.create();
+    private final BiMap<String, DocumentTab> singletonTabs = HashBiMap.create();
+
+    private boolean enableTabContextMenu = true;
 
     /**
      * Creates a new instance
@@ -83,7 +90,7 @@ public class DocumentTabPane extends JPanel {
                         closeTab(getTabContainingTabComponent(component));
                     }
                 }
-                else if(e.getButton() == MouseEvent.BUTTON3) {
+                else if(enableTabContextMenu && e.getButton() == MouseEvent.BUTTON3) {
                     int tabIndex = tabbedPane.getUI().tabForCoordinate(tabbedPane, e.getX(), e.getY());
                     if (tabIndex >= 0 && tabIndex < tabbedPane.getTabCount()) {
                         Component component = tabbedPane.getTabComponentAt(tabIndex);
@@ -218,6 +225,12 @@ public class DocumentTabPane extends JPanel {
         closeRightItem.addActionListener(e-> closeAllTabsToTheRight(tab, false));
         popupMenu.add(closeRightItem);
 
+        popupMenu.addSeparator();
+
+        JMenuItem detachItem = new JMenuItem("Detach tab", UIUtils.getIconFromResources("actions/tab-detach.png"));
+        detachItem.addActionListener(e->detachTab(this, tab, true));
+        popupMenu.add(detachItem);
+
         if (closeMode != CloseMode.withoutCloseButton) {
             JButton closeButton = new JButton(UIUtils.getIconFromResources("actions/close-tab.png"));
             closeButton.setToolTipText("Close tab");
@@ -240,7 +253,6 @@ public class DocumentTabPane extends JPanel {
             closeItem.setEnabled(false);
         }
         if (allowRename) {
-            popupMenu.addSeparator();
             JMenuItem renameButton = new JMenuItem("Rename", UIUtils.getIconFromResources("actions/tag.png"));
             UIUtils.makeBorderlessWithoutMargin(renameButton);
             renameButton.addActionListener(e -> {
@@ -327,12 +339,50 @@ public class DocumentTabPane extends JPanel {
      * @param tab the tab
      * @param reattachAfterClose if the window is closed, re-attach the tab (always true for non-closable tabs)
      */
-    public void detachTab(DocumentTab tab, boolean reattachAfterClose) {
-        JFrame frame = new JFrame(tab.getTitle());
+    public JFrame detachTab(JComponent parent, DocumentTab tab, boolean reattachAfterClose) {
+        forceCloseTab(tab);
+        JFrame frame = new JFrame( UIUtils.getAWTWindowTitle(SwingUtilities.getWindowAncestor(this)) + ": Tab <" + tab.getTitle() + ">");
         frame.setIconImage(UIUtils.getIcon128FromResources("jipipe.png").getImage());
-        if(reattachAfterClose || tab.getCloseMode() == CloseMode.withoutCloseButton) {
+        frame.setSize(getSize());
+        frame.setLocationRelativeTo(parent);
 
+        if(reattachAfterClose || tab.getCloseMode() == CloseMode.withoutCloseButton) {
+            frame.addWindowListener(new WindowAdapter() {
+                @Override
+                public void windowClosing(WindowEvent e) {
+                    addTab(tab);
+                    switchToLastTab();
+                }
+            });
         }
+
+        JPanel contentPane = new JPanel(new BorderLayout());
+        contentPane.add(tab.getContent(), BorderLayout.CENTER);
+
+        JXStatusBar statusBar = new JXStatusBar();
+        statusBar.putClientProperty(BasicStatusBarUI.AUTO_ADD_SEPARATOR, false);
+
+        statusBar.add(new JLabel("Detached tab from '" + UIUtils.getAWTWindowTitle(SwingUtilities.getWindowAncestor(this)) + "'",
+                UIUtils.getIconFromResources("actions/window-duplicate.png"), SwingConstants.LEFT));
+        statusBar.add(Box.createHorizontalGlue(), new JXStatusBar.Constraint(JXStatusBar.Constraint.ResizeBehavior.FILL));
+        JButton reAttachButton = new JButton("Reattach", UIUtils.getIconFromResources("actions/tab_breakoff.png"));
+        reAttachButton.addActionListener(e-> {
+            frame.setVisible(false);
+            frame.setContentPane(new JPanel());
+            frame.dispose();
+            addTab(tab);
+            switchToLastTab();
+        });
+        UIUtils.makeFlatH25(reAttachButton);
+        statusBar.add(reAttachButton);
+
+        contentPane.add(statusBar, BorderLayout.SOUTH);
+
+        frame.setContentPane(contentPane);
+        frame.setVisible(true);
+        frame.revalidate();
+        frame.repaint();
+        return frame;
     }
 
     /**
@@ -521,6 +571,14 @@ public class DocumentTabPane extends JPanel {
             else
                 closeTab(tab);
         }
+    }
+
+    public boolean isEnableTabContextMenu() {
+        return enableTabContextMenu;
+    }
+
+    public void setEnableTabContextMenu(boolean enableTabContextMenu) {
+        this.enableTabContextMenu = enableTabContextMenu;
     }
 
     /**

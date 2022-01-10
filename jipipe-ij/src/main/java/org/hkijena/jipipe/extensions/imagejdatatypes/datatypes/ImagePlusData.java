@@ -165,6 +165,7 @@ public class ImagePlusData implements JIPipeData, ColoredImagePlusData {
         } else {
             return JIPipe.createData(getClass(), imageSource, colorSpace);
         }
+
     }
 
     /**
