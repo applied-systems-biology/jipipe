@@ -323,6 +323,19 @@ public class DocumentTabPane extends JPanel {
     }
 
     /**
+     * Detaches a tab
+     * @param tab the tab
+     * @param reattachAfterClose if the window is closed, re-attach the tab (always true for non-closable tabs)
+     */
+    public void detachTab(DocumentTab tab, boolean reattachAfterClose) {
+        JFrame frame = new JFrame(tab.getTitle());
+        frame.setIconImage(UIUtils.getIcon128FromResources("jipipe.png").getImage());
+        if(reattachAfterClose || tab.getCloseMode() == CloseMode.withoutCloseButton) {
+
+        }
+    }
+
+    /**
      * Closes a tab.
      * @param tab the tab.
      * @param force if non-closable tabs are affected

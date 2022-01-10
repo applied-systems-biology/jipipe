@@ -58,7 +58,7 @@ public class PlotReader extends JPanel {
         toolBar = new JToolBar();
         toolBar.setFloatable(false);
 
-        JButton exportButton = new JButton("Export", UIUtils.getIconFromResources("actions/save.png"));
+        JButton exportButton = new JButton("Export", UIUtils.getIconFromResources("actions/document-export.png"));
         JPopupMenu exportMenu = UIUtils.addPopupMenuToComponent(exportButton);
 
         JMenuItem copyCurrentPlot = new JMenuItem("Copy to clipboard (current size)",
