@@ -80,13 +80,18 @@ public class DocumentTabPane extends JPanel {
                     int tabIndex = tabbedPane.getUI().tabForCoordinate(tabbedPane, e.getX(), e.getY());
                     if (tabIndex >= 0 && tabIndex < tabbedPane.getTabCount()) {
                         Component component = tabbedPane.getTabComponentAt(tabIndex);
-                        for (DocumentTab tab : tabs) {
-                            if (tab.getTabComponent() == component) {
-                                closeTab(tab);
-                                break;
-                            }
+                        closeTab(getTabContainingTabComponent(component));
+                    }
+                }
+                else if(e.getButton() == MouseEvent.BUTTON3) {
+                    int tabIndex = tabbedPane.getUI().tabForCoordinate(tabbedPane, e.getX(), e.getY());
+                    if (tabIndex >= 0 && tabIndex < tabbedPane.getTabCount()) {
+                        Component component = tabbedPane.getTabComponentAt(tabIndex);
+                        DocumentTab tab = getTabContainingTabComponent(component);
+                        System.out.println(tab.getPopupMenu());
+                        if(tab.getPopupMenu() != null) {
+                            tab.getPopupMenu().show(e.getComponent(), e.getX(), e.getY());
                         }
-
                     }
                 }
             }
@@ -105,7 +110,7 @@ public class DocumentTabPane extends JPanel {
      * Updates the order of tabs we go though when tabs are closed
      */
     private void updateTabHistory() {
-        DocumentTab tab = getTabContaining(tabbedPane.getSelectedComponent());
+        DocumentTab tab = getTabContainingContent(tabbedPane.getSelectedComponent());
         if (tab != null) {
             int indexInHistory = tabHistory.indexOf(tab);
             if (indexInHistory >= 0) {
@@ -121,8 +126,18 @@ public class DocumentTabPane extends JPanel {
      * @param content the content
      * @return the tab containing the content. Null if not found
      */
-    public DocumentTab getTabContaining(Component content) {
+    public DocumentTab getTabContainingContent(Component content) {
         return tabs.stream().filter(t -> t.getContent() == content).findFirst().orElse(null);
+    }
+
+    /**
+     * Returns the tab that contains the specified tab component
+     *
+     * @param content the content
+     * @return the tab containing the content. Null if not found
+     */
+    public DocumentTab getTabContainingTabComponent(Component content) {
+        return tabs.stream().filter(t -> t.getTabComponent() == content).findFirst().orElse(null);
     }
 
     public Set<DocumentTab> getTabs() {
@@ -171,7 +186,10 @@ public class DocumentTabPane extends JPanel {
         tabPanel.add(titleLabel);
         tabPanel.add(Box.createHorizontalGlue());
 
-        DocumentTab tab = new DocumentTab(title, icon, tabPanel, component, closeMode);
+        JPopupMenu popupMenu = new JPopupMenu();
+//        tabPanel.setComponentPopupMenu(popupMenu);
+
+        DocumentTab tab = new DocumentTab(title, icon, tabPanel, component, closeMode, popupMenu);
 
         tab.getEventBus().register(new Object() {
             @Subscribe
@@ -180,19 +198,26 @@ public class DocumentTabPane extends JPanel {
             }
         });
 
-        if (allowRename) {
-            JButton renameButton = new JButton(UIUtils.getIconFromResources("actions/tag.png"));
-            renameButton.setToolTipText("Rename tab");
-            UIUtils.makeBorderlessWithoutMargin(renameButton);
-            renameButton.addActionListener(e -> {
-                String newName = JOptionPane.showInputDialog(this, "Rename tab '" + titleLabel.getText() + "' to ...", titleLabel.getText());
-                if (newName != null && !newName.isEmpty()) {
-                    tab.setTitle(newName);
-                }
-            });
-            tabPanel.add(Box.createHorizontalStrut(8));
-            tabPanel.add(renameButton);
-        }
+        JMenuItem closeItem = new JMenuItem("Close", UIUtils.getIconFromResources("actions/tab-close.png"));
+        closeItem.addActionListener(e -> closeTab(tab));
+        popupMenu.add(closeItem);
+
+        JMenuItem closeOthersItem = new JMenuItem("Close other tabs", UIUtils.getIconFromResources("actions/tab-close-other.png"));
+        closeOthersItem.addActionListener(e-> closeAllTabsExcept(tab, false));
+        popupMenu.add(closeOthersItem);
+
+        JMenuItem closeAllItem = new JMenuItem("Close all tabs", UIUtils.getIconFromResources("actions/tab-close-other.png"));
+        closeAllItem.addActionListener(e-> closeAllTabs(false));
+        popupMenu.add(closeAllItem);
+
+        JMenuItem closeLeftItem = new JMenuItem("Close tabs to the left", UIUtils.getIconFromResources("actions/view-left-close.png"));
+        closeLeftItem.addActionListener(e-> closeAllTabsToTheLeft(tab, false));
+        popupMenu.add(closeLeftItem);
+
+        JMenuItem closeRightItem = new JMenuItem("Close tabs to the right", UIUtils.getIconFromResources("actions/view-right-close.png"));
+        closeRightItem.addActionListener(e-> closeAllTabsToTheRight(tab, false));
+        popupMenu.add(closeRightItem);
+
         if (closeMode != CloseMode.withoutCloseButton) {
             JButton closeButton = new JButton(UIUtils.getIconFromResources("actions/close-tab.png"));
             closeButton.setToolTipText("Close tab");
@@ -209,10 +234,104 @@ public class DocumentTabPane extends JPanel {
             closeButton.addActionListener(e -> closeTab(tab));
             tabPanel.add(Box.createHorizontalStrut(8));
             tabPanel.add(closeButton);
+            closeItem.setEnabled(true);
         }
+        else {
+            closeItem.setEnabled(false);
+        }
+        if (allowRename) {
+            popupMenu.addSeparator();
+            JMenuItem renameButton = new JMenuItem("Rename", UIUtils.getIconFromResources("actions/tag.png"));
+            UIUtils.makeBorderlessWithoutMargin(renameButton);
+            renameButton.addActionListener(e -> {
+                String newName = JOptionPane.showInputDialog(this, "Rename tab '" + titleLabel.getText() + "' to ...", titleLabel.getText());
+                if (newName != null && !newName.isEmpty()) {
+                    tab.setTitle(newName);
+                }
+            });
+            tabPanel.add(Box.createHorizontalStrut(8));
+            popupMenu.add(renameButton);
+        }
+
 
         addTab(tab);
         return tab;
+    }
+
+    /**
+     * Closes all tabs to the right of the provided tab.
+     * @param tab the tab
+     * @param force if non-closable tabs are affected
+     */
+    private void closeAllTabsToTheRight(DocumentTab tab, boolean force) {
+        int index = -1;
+        for (int i = 0; i < getTabCount(); i++) {
+            if(getTabbedPane().getTabComponentAt(i) == tab.getTabComponent()) {
+                index = i;
+                break;
+            }
+        }
+        if(index >= 0) {
+            Set<Component> toClose = new HashSet<>();
+            for (int i = index + 1; i < getTabCount(); i++) {
+                toClose.add(getTabbedPane().getTabComponentAt(i));
+            }
+            for (Component component : toClose) {
+                closeTab(getTabContainingTabComponent(component), force);
+            }
+        }
+    }
+
+    /**
+     * Closes all tabs to the left of the provided tab.
+     * @param tab the tab
+     * @param force if non-closable tabs are affected
+     */
+    private void closeAllTabsToTheLeft(DocumentTab tab, boolean force) {
+        int index = -1;
+        for (int i = 0; i < getTabCount(); i++) {
+            if(getTabbedPane().getTabComponentAt(i) == tab.getTabComponent()) {
+                index = i;
+                break;
+            }
+        }
+        if(index > 0) {
+            Set<Component> toClose = new HashSet<>();
+            for (int i = 0; i < index; i++) {
+                toClose.add(getTabbedPane().getTabComponentAt(i));
+            }
+            for (Component component : toClose) {
+                closeTab(getTabContainingTabComponent(component), force);
+            }
+        }
+    }
+
+    /**
+     * Closes all tabs except the provided one.
+     * @param exception the tab that should be excluded
+     * @param force if non-closable tabs are affected
+     */
+    public void closeAllTabsExcept(DocumentTab exception, boolean force) {
+        for (DocumentTab tab : ImmutableList.copyOf(tabs)) {
+            if(tab == exception)
+                continue;
+            if(force)
+                forceCloseTab(tab);
+            else
+                closeTab(tab);
+        }
+    }
+
+    /**
+     * Closes a tab.
+     * @param tab the tab.
+     * @param force if non-closable tabs are affected
+     */
+    public void closeTab(DocumentTab tab, boolean force) {
+        if(force)
+            forceCloseTab(tab);
+        else
+            closeTab(tab);
     }
 
     /**
@@ -380,10 +499,14 @@ public class DocumentTabPane extends JPanel {
 
     /**
      * Closes all tabs
+     * @param force if non-closable tabs will be closed
      */
-    public void closeAllTabs() {
+    public void closeAllTabs(boolean force) {
         for (DocumentTab tab : ImmutableList.copyOf(tabs)) {
-            forceCloseTab(tab);
+            if(force)
+                forceCloseTab(tab);
+            else
+                closeTab(tab);
         }
     }
 
@@ -415,17 +538,19 @@ public class DocumentTabPane extends JPanel {
     public static class DocumentTab implements JIPipeParameterCollection {
         private final EventBus eventBus = new EventBus();
         private String title;
-        private Icon icon;
-        private Component tabComponent;
-        private Component content;
-        private CloseMode closeMode;
+        private final Icon icon;
+        private final Component tabComponent;
+        private final Component content;
+        private final CloseMode closeMode;
+        private final JPopupMenu popupMenu;
 
-        private DocumentTab(String title, Icon icon, Component tabComponent, Component content, CloseMode closeMode) {
+        private DocumentTab(String title, Icon icon, Component tabComponent, Component content, CloseMode closeMode, JPopupMenu popupMenu) {
             this.title = title;
             this.icon = icon;
             this.tabComponent = tabComponent;
             this.content = content;
             this.closeMode = closeMode;
+            this.popupMenu = popupMenu;
         }
 
         @JIPipeParameter("title")
@@ -457,6 +582,10 @@ public class DocumentTabPane extends JPanel {
         @Override
         public EventBus getEventBus() {
             return eventBus;
+        }
+
+        public JPopupMenu getPopupMenu() {
+            return popupMenu;
         }
     }
 }

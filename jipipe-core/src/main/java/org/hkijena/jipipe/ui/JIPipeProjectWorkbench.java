@@ -312,7 +312,7 @@ public class JIPipeProjectWorkbench extends JPanel implements JIPipeWorkbench {
                 documentTabPane.switchToLastTab();
             return documentTab;
         } else if (switchToTab) {
-            DocumentTabPane.DocumentTab tab = documentTabPane.getTabContaining(compartmentUIs.get(0));
+            DocumentTabPane.DocumentTab tab = documentTabPane.getTabContainingContent(compartmentUIs.get(0));
             documentTabPane.switchToContent(compartmentUIs.get(0));
             return tab;
         }
@@ -443,6 +443,12 @@ public class JIPipeProjectWorkbench extends JPanel implements JIPipeWorkbench {
 
         projectMenu.addSeparator();
 
+        JMenuItem editCompartmentsButton = new JMenuItem("Edit compartments", UIUtils.getIconFromResources("actions/edit.png"));
+        editCompartmentsButton.setToolTipText("Opens an editor that allows to add more compartments and edit connections");
+//        editCompartmentsButton.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_C, KeyEvent.CTRL_DOWN_MASK + KeyEvent.ALT_DOWN_MASK));
+        editCompartmentsButton.addActionListener(e -> openCompartmentEditor());
+        projectMenu.add(editCompartmentsButton);
+
         JMenuItem openProjectSettingsButton = new JMenuItem("Project settings", UIUtils.getIconFromResources("actions/wrench.png"));
         openProjectSettingsButton.setToolTipText("Opens the project settings");
         openProjectSettingsButton.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, KeyEvent.CTRL_DOWN_MASK + KeyEvent.ALT_DOWN_MASK));
@@ -480,24 +486,6 @@ public class JIPipeProjectWorkbench extends JPanel implements JIPipeWorkbench {
 
         menu.add(projectMenu);
 
-        JMenu compartmentMenu = new JMenu("Compartment");
-
-        JMenuItem editCompartmentsButton = new JMenuItem("Edit compartments", UIUtils.getIconFromResources("actions/edit.png"));
-        editCompartmentsButton.setToolTipText("Opens an editor that allows to add more compartments and edit connections");
-        editCompartmentsButton.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_K, KeyEvent.CTRL_DOWN_MASK));
-        editCompartmentsButton.addActionListener(e -> openCompartmentEditor());
-        compartmentMenu.add(editCompartmentsButton);
-
-        JMenuItem newCompartmentButton = new JMenuItem("New compartment after current", UIUtils.getIconFromResources("actions/document-new.png"));
-        newCompartmentButton.setToolTipText("Adds a new compartment after the currently selected output into the project");
-        newCompartmentButton.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_ADD, KeyEvent.CTRL_DOWN_MASK | KeyEvent.SHIFT_DOWN_MASK));
-        newCompartmentButton.addActionListener(e -> newCompartmentAfterCurrent());
-        compartmentMenu.add(newCompartmentButton);
-
-        UIUtils.installMenuExtension(this, compartmentMenu, JIPipeMenuExtensionTarget.ProjectCompartmentMenu, true);
-
-        menu.add(compartmentMenu);
-
         // Plugins menu
         JMenu pluginsMenu = new JMenu("Plugins");
 
@@ -521,7 +509,7 @@ public class JIPipeProjectWorkbench extends JPanel implements JIPipeWorkbench {
         manageImageJPlugins.addActionListener(e -> manageImageJPlugins());
         pluginsMenu.add(manageImageJPlugins);
 
-        UIUtils.installMenuExtension(this, compartmentMenu, JIPipeMenuExtensionTarget.ProjectPluginsMenu, true);
+        UIUtils.installMenuExtension(this, pluginsMenu, JIPipeMenuExtensionTarget.ProjectPluginsMenu, true);
 
         menu.add(pluginsMenu);
 

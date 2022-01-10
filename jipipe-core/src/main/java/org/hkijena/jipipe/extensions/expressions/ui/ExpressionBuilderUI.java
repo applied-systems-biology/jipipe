@@ -200,7 +200,7 @@ public class ExpressionBuilderUI extends JPanel {
             // Variables and constants will share one tab -> Will re-open
             if (value instanceof ExpressionParameterVariable || value instanceof ExpressionConstantEntry) {
                 if (lastVariableInserter != null) {
-                    DocumentTabPane.DocumentTab tab = tabPane.getTabContaining(lastVariableInserter);
+                    DocumentTabPane.DocumentTab tab = tabPane.getTabContainingContent(lastVariableInserter);
                     tabPane.forceCloseTab(tab);
                 }
             } else {

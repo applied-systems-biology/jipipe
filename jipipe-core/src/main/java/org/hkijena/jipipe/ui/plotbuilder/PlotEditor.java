@@ -22,6 +22,7 @@ import ij.measure.ResultsTable;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeIssueReport;
+import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.JIPipeValidatable;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataInfo;
@@ -32,6 +33,7 @@ import org.hkijena.jipipe.extensions.parameters.references.JIPipeDataInfoRef;
 import org.hkijena.jipipe.extensions.plots.datatypes.PlotData;
 import org.hkijena.jipipe.extensions.plots.datatypes.PlotDataSeries;
 import org.hkijena.jipipe.extensions.plots.datatypes.PlotMetadata;
+import org.hkijena.jipipe.extensions.settings.FileChooserSettings;
 import org.hkijena.jipipe.extensions.tables.datatypes.DoubleArrayTableColumn;
 import org.hkijena.jipipe.extensions.tables.datatypes.StringArrayTableColumn;
 import org.hkijena.jipipe.extensions.tables.datatypes.TableColumn;
@@ -42,6 +44,7 @@ import org.hkijena.jipipe.ui.components.UserFriendlyErrorUI;
 import org.hkijena.jipipe.ui.components.tabs.DocumentTabPane;
 import org.hkijena.jipipe.ui.parameters.ParameterPanel;
 import org.hkijena.jipipe.utils.AutoResizeSplitPane;
+import org.hkijena.jipipe.utils.PathUtils;
 import org.hkijena.jipipe.utils.ReflectionUtils;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
@@ -50,6 +53,7 @@ import org.scijava.Priority;
 import javax.swing.*;
 import javax.swing.table.TableModel;
 import java.awt.BorderLayout;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -62,7 +66,7 @@ import java.util.Objects;
  */
 public class PlotEditor extends JIPipeWorkbenchPanel implements JIPipeParameterCollection, JIPipeValidatable {
 
-    private EventBus eventBus = new EventBus();
+    private final EventBus eventBus = new EventBus();
     private JIPipeDataInfoRef plotType = new JIPipeDataInfoRef();
     private PlotData currentPlot;
     private JSplitPane splitPane;
@@ -108,8 +112,34 @@ public class PlotEditor extends JIPipeWorkbenchPanel implements JIPipeParameterC
         // Create plot reader
         plotReader = new PlotReader(this);
 
+        JButton saveButton = new JButton("Save", UIUtils.getIconFromResources("actions/save.png"));
+        saveButton.addActionListener(e -> savePlot());
+        plotReader.getToolBar().add(saveButton, 0);
+
+        JButton openButton = new JButton("Open", UIUtils.getIconFromResources("actions/fileopen.png"));
+        openButton.addActionListener(e -> openPlot());
+        plotReader.getToolBar().add(openButton, 0);
+
+
         splitPane = new AutoResizeSplitPane(JSplitPane.HORIZONTAL_SPLIT, plotReader, tabbedPane, AutoResizeSplitPane.RATIO_3_TO_1);
         add(splitPane, BorderLayout.CENTER);
+    }
+
+    private void savePlot() {
+        Path path = FileChooserSettings.saveDirectory(this, FileChooserSettings.LastDirectoryKey.Data, "Save plot");
+        if(path != null) {
+            if(PathUtils.ensureEmptyFolder(this, path)) {
+                getCurrentPlot().saveTo(path, path.getFileName().toString(), false, new JIPipeProgressInfo());
+            }
+        }
+    }
+
+    private void openPlot() {
+        Path path = FileChooserSettings.openDirectory(this, FileChooserSettings.LastDirectoryKey.Data, "Open plot");
+        if(path != null) {
+            PlotData plotData = PlotData.importFrom(path, PlotData.class);
+            importExistingPlot(plotData);
+        }
     }
 
     private void installDefaultDataSources() {

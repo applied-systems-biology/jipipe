@@ -17,7 +17,9 @@ import ij.Prefs;
 import org.apache.commons.lang3.SystemUtils;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 
+import javax.swing.*;
 import javax.xml.bind.annotation.adapters.HexBinaryAdapter;
+import java.awt.Component;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -228,5 +230,52 @@ public class PathUtils {
             return path;
         Path imageJDir = Paths.get(Prefs.getImageJDir());
         return imageJDir.resolve(path);
+    }
+
+    /**
+     * Ensures that the path exists and is empty
+     *
+     * @param parent the parent component for the dialog box
+     * @param path   the path
+     * @return if the operation was successful
+     */
+    public static boolean ensureEmptyFolder(Component parent, Path path) {
+        if (Files.isRegularFile(path)) {
+            return false;
+        }
+        if (Files.isDirectory(path)) {
+            try {
+                if (Files.list(path).findAny().isPresent()) {
+                    int response = JOptionPane.showConfirmDialog(parent,
+                            "The selected directory '" + path + "' is not empty! Remove contents and continue?",
+                            "Empty directory expected",
+                            JOptionPane.YES_NO_CANCEL_OPTION,
+                            JOptionPane.ERROR_MESSAGE);
+                    if(response == JOptionPane.YES_OPTION) {
+                        deleteDirectoryRecursively(path, new JIPipeProgressInfo());
+                        Files.createDirectories(path);
+                        return true;
+                    }
+                    else if(response == JOptionPane.NO_OPTION) {
+                        return true;
+                    }
+                    else {
+                        return false;
+                    }
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+                return false;
+            }
+        } else {
+            try {
+                Files.createDirectories(path);
+            } catch (IOException e) {
+                e.printStackTrace();
+                return false;
+            }
+            return true;
+        }
+        return false;
     }
 }

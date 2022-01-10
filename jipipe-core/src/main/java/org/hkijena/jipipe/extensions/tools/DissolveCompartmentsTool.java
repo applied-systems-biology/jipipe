@@ -36,7 +36,7 @@ public class DissolveCompartmentsTool extends JIPipeMenuExtension {
         if (JOptionPane.showConfirmDialog(workbench.getWindow(), "You will lose all manual node positions and all nodes will be put into one compartment. This operation cannot be undone. Do you want to continue?", "Dissolve compartments", JOptionPane.YES_NO_OPTION) == JOptionPane.NO_OPTION) {
             return;
         }
-        workbench.getDocumentTabPane().closeAllTabs();
+        workbench.getDocumentTabPane().closeAllTabs(true);
         try (BusyCursor cursor = new BusyCursor(workbench.getWindow())) {
             JIPipeGraph graph = new JIPipeGraph(workbench.getProject().getGraph());
             // Replace project compartment with IOInterface

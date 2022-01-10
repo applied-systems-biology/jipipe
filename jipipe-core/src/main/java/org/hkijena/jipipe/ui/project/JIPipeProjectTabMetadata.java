@@ -45,7 +45,7 @@ public class JIPipeProjectTabMetadata {
         DocumentTabPane documentTabPane = workbench.getDocumentTabPane();
         for (int i = 0; i < documentTabPane.getTabCount(); i++) {
             Component component = documentTabPane.getTabbedPane().getComponentAt(i);
-            DocumentTabPane.DocumentTab tab = documentTabPane.getTabContaining(component);
+            DocumentTabPane.DocumentTab tab = documentTabPane.getTabContainingContent(component);
             String singletonTabId = documentTabPane.getSingletonTabs().inverse().getOrDefault(tab, null);
             String id = null;
             if (singletonTabId != null) {

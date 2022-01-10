@@ -13,6 +13,7 @@
 
 package org.hkijena.jipipe.ui.components;
 
+import org.hkijena.jipipe.extensions.plots.datatypes.PlotData;
 import org.hkijena.jipipe.extensions.settings.FileChooserSettings;
 import org.hkijena.jipipe.ui.plotbuilder.PlotEditor;
 import org.hkijena.jipipe.utils.UIUtils;

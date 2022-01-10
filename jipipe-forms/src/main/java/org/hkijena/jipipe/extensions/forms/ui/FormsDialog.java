@@ -124,7 +124,7 @@ public class FormsDialog extends JFrame {
             else if (result == JOptionPane.NO_OPTION)
                 return false;
             else {
-                tabPane.closeAllTabs();
+                tabPane.closeAllTabs(true);
                 lastTab = TAB_ISSUES_DETECTED;
                 switchToDataBatchUI(row);
                 return false;
@@ -186,9 +186,9 @@ public class FormsDialog extends JFrame {
 
     private void closeAllTabsAndRememberLast() {
         if (tabPane.getTabCount() > 0 && tabPane.getCurrentContent() != null) {
-            lastTab = tabPane.getTabContaining(tabPane.getCurrentContent()).getTitle();
+            lastTab = tabPane.getTabContainingContent(tabPane.getCurrentContent()).getTitle();
         }
-        tabPane.closeAllTabs();
+        tabPane.closeAllTabs(true);
     }
 
     private void switchToDataBatchUI(int selectedRow) {
