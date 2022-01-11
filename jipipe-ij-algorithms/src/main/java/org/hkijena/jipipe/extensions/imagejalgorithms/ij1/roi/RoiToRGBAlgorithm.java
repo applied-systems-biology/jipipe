@@ -206,9 +206,9 @@ public class RoiToRGBAlgorithm extends JIPipeIteratingAlgorithm {
                             int rt = (bytes[i] & 0xff0000) >> 16;
                             int gt = (bytes[i] & 0xff00) >> 8;
                             int bt = bytes[i] & 0xff;
-                            int r = Math.min(255, Math.max((int) (rs + opacity * (rt - rs)), 0));
-                            int g = Math.min(255, Math.max((int) (gs + opacity * (gt - gs)), 0));
-                            int b = Math.min(255, Math.max((int) (bs + opacity * (bt - bs)), 0));
+                            int r = Math.min(255, Math.max((int) ((1 - opacity) * rs + opacity * rt), 0));
+                            int g = Math.min(255, Math.max((int) ((1 - opacity) * gs + opacity * gt), 0));
+                            int b = Math.min(255, Math.max((int) ((1 - opacity) * bs + opacity * bt), 0));
                             int rgb = b + (g << 8) + (r << 16);
                             bytes[i] = rgb;
                         }

@@ -91,11 +91,7 @@ import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.io.ROIToGUI;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.io.ResultsTableFromGUI;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.io.ResultsTableToGUI;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.labels.*;
-import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.lut.LUTInverterAlgorithm;
-import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.lut.RemoveLUTAlgorithm;
-import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.lut.SetLUTFromColorMapAlgorithm;
-import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.lut.SetLUTFromColorsAlgorithm;
-import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.lut.SetLUTFromImageAlgorithm;
+import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.lut.*;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.math.*;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.math.distancemap.ApplyDistanceTransform2DAlgorithm;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.math.distancemap.ChamferDistanceMap2DAlgorithm;
@@ -395,6 +391,7 @@ public class ImageJAlgorithmsExtension extends JIPipePrepackagedDefaultJavaExten
 
     private void registerLUTAlgorithms() {
         registerNodeType("ij1-remove-lut", RemoveLUTAlgorithm.class, UIUtils.getIconURLFromResources("actions/paint-gradient-linear.png"));
+        registerNodeType("ij1-apply-lut", ApplyLUTAlgorithm.class, UIUtils.getIconURLFromResources("actions/paint-gradient-linear.png"));
         registerNodeType("ij1-set-lut-from-colors", SetLUTFromColorsAlgorithm.class, UIUtils.getIconURLFromResources("actions/paint-gradient-linear.png"));
         registerNodeType("ij1-set-lut-from-color-map", SetLUTFromColorMapAlgorithm.class, UIUtils.getIconURLFromResources("actions/paint-gradient-linear.png"));
         registerNodeType("ij1-set-lut-from-color-image", SetLUTFromImageAlgorithm.class, UIUtils.getIconURLFromResources("actions/paint-gradient-linear.png"));
@@ -795,8 +792,11 @@ public class ImageJAlgorithmsExtension extends JIPipePrepackagedDefaultJavaExten
     }
 
     private void registerColorAlgorithms() {
+        registerParameterType("ij1-color-overlay-channels:channel", OverlayChannelsAlgorithm.Channel.class, "Channel settings", "Settings for a channel");
+
         registerNodeType("ij1-color-invert", InvertColorsAlgorithm.class, UIUtils.getIconURLFromResources("actions/invertimage.png"));
         registerNodeType("ij1-color-merge-channels", MergeChannelsAlgorithm.class, UIUtils.getIconURLFromResources("actions/merge.png"));
+        registerNodeType("ij1-color-overlay-channels", OverlayChannelsAlgorithm.class, UIUtils.getIconURLFromResources("actions/merge.png"));
         registerNodeType("ij1-color-arrange-channels", ArrangeChannelsAlgorithm.class);
         registerNodeType("ij1-color-split-channels", SplitChannelsAlgorithm.class, UIUtils.getIconURLFromResources("actions/split.png"));
         registerNodeType("ij1-color-combine-rgb", CombineChannelsToRGBAlgorithm.class, UIUtils.getIconURLFromResources("actions/colors-rgb.png"));
