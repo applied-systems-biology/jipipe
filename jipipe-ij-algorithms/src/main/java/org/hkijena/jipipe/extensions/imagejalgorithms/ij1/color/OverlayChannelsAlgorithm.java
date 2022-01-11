@@ -54,7 +54,7 @@ import java.util.Map;
 import static org.hkijena.jipipe.api.nodes.JIPipeIteratingAlgorithm.ITERATING_ALGORITHM_DESCRIPTION;
 import static org.hkijena.jipipe.extensions.imagejalgorithms.ImageJAlgorithmsExtension.TO_COLOR_RGB_CONVERSION;
 
-@JIPipeDocumentation(name = "Overlay channels", description = "Merges each greyscale image plane into an RGB image. " + "\n\n" + ITERATING_ALGORITHM_DESCRIPTION)
+@JIPipeDocumentation(name = "Overlay images", description = "Overlays greyscale or RGB images RGB image. " + "\n\n" + ITERATING_ALGORITHM_DESCRIPTION)
 @JIPipeNode(menuPath = "Colors", nodeTypeCategory = ImagesNodeTypeCategory.class)
 @JIPipeInputSlot(value = ImagePlusGreyscale8UData.class, slotName = "Input")
 @JIPipeOutputSlot(value = ImagePlusColorRGBData.class, slotName = "Output")
