@@ -3,8 +3,8 @@ package org.hkijena.jipipe.extensions.utils.algorithms;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
-import org.hkijena.jipipe.api.data.JIPipeAnnotation;
-import org.hkijena.jipipe.api.data.JIPipeAnnotationMergeStrategy;
+import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
+import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataInfo;
 import org.hkijena.jipipe.api.nodes.JIPipeDataBatch;
@@ -36,7 +36,7 @@ public class RunExpressionAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     private DefaultExpressionParameter expression = new DefaultExpressionParameter();
     private OptionalAnnotationNameParameter writeToAnnotation = new OptionalAnnotationNameParameter("", false);
-    private JIPipeAnnotationMergeStrategy writeToAnnotationMergeStrategy = JIPipeAnnotationMergeStrategy.OverwriteExisting;
+    private JIPipeTextAnnotationMergeMode writeToAnnotationMergeStrategy = JIPipeTextAnnotationMergeMode.OverwriteExisting;
 
     public RunExpressionAlgorithm(JIPipeNodeInfo info) {
         super(info);
@@ -76,12 +76,12 @@ public class RunExpressionAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     @JIPipeDocumentation(name = "Annotation merge strategy", description = "If 'Write result to annotation' is enabled, apply following strategy if an annotation " +
             "already exists")
     @JIPipeParameter("write-to-annotation-merge-strategy")
-    public JIPipeAnnotationMergeStrategy getWriteToAnnotationMergeStrategy() {
+    public JIPipeTextAnnotationMergeMode getWriteToAnnotationMergeStrategy() {
         return writeToAnnotationMergeStrategy;
     }
 
     @JIPipeParameter("write-to-annotation-merge-strategy")
-    public void setWriteToAnnotationMergeStrategy(JIPipeAnnotationMergeStrategy writeToAnnotationMergeStrategy) {
+    public void setWriteToAnnotationMergeStrategy(JIPipeTextAnnotationMergeMode writeToAnnotationMergeStrategy) {
         this.writeToAnnotationMergeStrategy = writeToAnnotationMergeStrategy;
     }
 
@@ -89,14 +89,14 @@ public class RunExpressionAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
         JIPipeData data = dataBatch.getInputData(getFirstInputSlot(), JIPipeData.class, progressInfo);
         ExpressionVariables variableSet = new ExpressionVariables();
-        for (JIPipeAnnotation annotation : dataBatch.getMergedAnnotations().values()) {
+        for (JIPipeTextAnnotation annotation : dataBatch.getMergedAnnotations().values()) {
             variableSet.set(annotation.getName(), annotation.getValue());
         }
         variableSet.set("data_string", "" + data);
         variableSet.set("data_type", JIPipeDataInfo.getInstance(data.getClass()).getId());
         variableSet.set("row", dataBatch.getInputSlotRows().get(getFirstInputSlot()));
         Object result = expression.evaluate(variableSet);
-        List<JIPipeAnnotation> annotationList = new ArrayList<>();
+        List<JIPipeTextAnnotation> annotationList = new ArrayList<>();
         if (result != null && writeToAnnotation.isEnabled()) {
             annotationList.add(writeToAnnotation.createAnnotation(result.toString()));
         }

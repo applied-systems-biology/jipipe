@@ -2,8 +2,8 @@ package org.hkijena.jipipe.extensions.forms.ui;
 
 import org.hkijena.jipipe.api.JIPipeIssueReport;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
-import org.hkijena.jipipe.api.data.JIPipeAnnotation;
-import org.hkijena.jipipe.api.data.JIPipeAnnotationMergeStrategy;
+import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
+import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeMergingDataBatch;
 import org.hkijena.jipipe.extensions.forms.FormsExtension;
@@ -78,7 +78,7 @@ public class FormsDialog extends JFrame {
             formCopy.loadData(dataBatchList.get(index));
             copy.addData(formCopy,
                     originalForms.getAnnotations(row),
-                    JIPipeAnnotationMergeStrategy.OverwriteExisting,
+                    JIPipeTextAnnotationMergeMode.OverwriteExisting,
                     progressInfo);
         }
         return copy;
@@ -231,7 +231,7 @@ public class FormsDialog extends JFrame {
         JIPipeProgressInfo progressInfo = new JIPipeProgressInfo();
         JIPipeDataSlot formsForRow = dataBatchForms.get(selectedRow);
         for (int row = 0; row < formsForRow.getRowCount(); row++) {
-            String tab = formsForRow.getAnnotationOr(row, tabAnnotation, new JIPipeAnnotation(tabAnnotation, "General")).getValue();
+            String tab = formsForRow.getAnnotationOr(row, tabAnnotation, new JIPipeTextAnnotation(tabAnnotation, "General")).getValue();
             List<Integer> rowList = groupedByTabName.getOrDefault(tab, null);
             if (rowList == null) {
                 rowList = new ArrayList<>();
@@ -291,7 +291,7 @@ public class FormsDialog extends JFrame {
         for (int row = 0; row < formsForRow.getRowCount(); row++) {
             FormData formData = formsForRow.getData(row, FormData.class, progressInfo);
             String name = formData.toString();
-            String tab = formsForRow.getAnnotationOr(row, tabAnnotation, new JIPipeAnnotation(tabAnnotation, "General")).getValue();
+            String tab = formsForRow.getAnnotationOr(row, tabAnnotation, new JIPipeTextAnnotation(tabAnnotation, "General")).getValue();
             if (formData instanceof ParameterFormData) {
                 name = ((ParameterFormData) formData).getName();
             }
@@ -507,9 +507,9 @@ public class FormsDialog extends JFrame {
             FormData target = dataBatchForms.get(i).getData(row, FormData.class, progressInfo);
             if (target.isUsingCustomReset()) {
                 target.customReset();
-                copy.addData(target, tmpCopy.getAnnotations(row), JIPipeAnnotationMergeStrategy.OverwriteExisting, progressInfo);
+                copy.addData(target, tmpCopy.getAnnotations(row), JIPipeTextAnnotationMergeMode.OverwriteExisting, progressInfo);
             } else {
-                copy.addData(src, tmpCopy.getAnnotations(row), JIPipeAnnotationMergeStrategy.OverwriteExisting, progressInfo);
+                copy.addData(src, tmpCopy.getAnnotations(row), JIPipeTextAnnotationMergeMode.OverwriteExisting, progressInfo);
             }
         }
         dataBatchForms.set(i, copy);
@@ -566,7 +566,7 @@ public class FormsDialog extends JFrame {
                 }
                 copy.addData(targetData,
                         forms.getAnnotations(row),
-                        JIPipeAnnotationMergeStrategy.OverwriteExisting,
+                        JIPipeTextAnnotationMergeMode.OverwriteExisting,
                         progressInfo);
             }
             dataBatchForms.set(i, copy);

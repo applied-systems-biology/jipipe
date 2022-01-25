@@ -16,8 +16,8 @@ package org.hkijena.jipipe.extensions.filesystem.algorithms;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
-import org.hkijena.jipipe.api.data.JIPipeAnnotation;
-import org.hkijena.jipipe.api.data.JIPipeAnnotationMergeStrategy;
+import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
+import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
 import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
 import org.hkijena.jipipe.api.nodes.JIPipeDataBatch;
 import org.hkijena.jipipe.api.nodes.JIPipeInputSlot;
@@ -82,13 +82,13 @@ public class AnnotationTableToPaths extends JIPipeSimpleIteratingAlgorithm {
         }
         Set<String> annotationColumns = new HashSet<>(tableData.getColumnNames());
         for (int row = 0; row < tableData.getRowCount(); row++) {
-            List<JIPipeAnnotation> annotations = new ArrayList<>();
+            List<JIPipeTextAnnotation> annotations = new ArrayList<>();
             for (String annotationColumn : annotationColumns) {
-                annotations.add(new JIPipeAnnotation(annotationColumn, tableData.getValueAsString(row, annotationColumn)));
+                annotations.add(new JIPipeTextAnnotation(annotationColumn, tableData.getValueAsString(row, annotationColumn)));
             }
 
             String data = tableColumn.getRowAsString(row);
-            dataBatch.addOutputData(getFirstOutputSlot(), new PathData(Paths.get(data)), annotations, JIPipeAnnotationMergeStrategy.Merge, progressInfo);
+            dataBatch.addOutputData(getFirstOutputSlot(), new PathData(Paths.get(data)), annotations, JIPipeTextAnnotationMergeMode.Merge, progressInfo);
         }
     }
 

@@ -24,7 +24,7 @@ import org.hkijena.jipipe.api.JIPipeIssueReport;
 import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.compat.ImageJDatatypeAdapter;
-import org.hkijena.jipipe.api.data.JIPipeAnnotation;
+import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.data.JIPipeDataSlotInfo;
@@ -128,7 +128,7 @@ public class MacroWrapperAlgorithm extends JIPipeIteratingAlgorithm {
         StringBuilder finalCode = new StringBuilder();
         // Inject annotations
         finalCode.append("function getJIPipeAnnotation(key) {\n");
-        for (Map.Entry<String, JIPipeAnnotation> entry : dataBatch.getMergedAnnotations().entrySet()) {
+        for (Map.Entry<String, JIPipeTextAnnotation> entry : dataBatch.getMergedAnnotations().entrySet()) {
             finalCode.append("if (key == \"").append(MacroUtils.escapeString(entry.getKey())).append("\") { return \"").append(MacroUtils.escapeString(entry.getValue().getValue())).append("\"; }\n");
         }
         finalCode.append("return \"\";\n");

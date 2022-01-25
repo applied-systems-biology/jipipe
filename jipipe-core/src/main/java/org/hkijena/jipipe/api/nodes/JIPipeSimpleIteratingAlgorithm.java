@@ -19,12 +19,10 @@ import gnu.trove.set.hash.TIntHashSet;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeIssueReport;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
-import org.hkijena.jipipe.api.data.JIPipeAnnotation;
-import org.hkijena.jipipe.api.data.JIPipeAnnotationMergeStrategy;
-import org.hkijena.jipipe.api.data.JIPipeData;
-import org.hkijena.jipipe.api.data.JIPipeDataAnnotationMergeStrategy;
-import org.hkijena.jipipe.api.data.JIPipeDataSlot;
-import org.hkijena.jipipe.api.data.JIPipeSlotConfiguration;
+import org.hkijena.jipipe.api.annotation.JIPipeDataAnnotationMergeMode;
+import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
+import org.hkijena.jipipe.api.data.*;
+import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
@@ -110,7 +108,7 @@ public abstract class JIPipeSimpleIteratingAlgorithm extends JIPipeParameterSlot
     }
 
     @Override
-    public void runParameterSet(JIPipeProgressInfo progressInfo, List<JIPipeAnnotation> parameterAnnotations) {
+    public void runParameterSet(JIPipeProgressInfo progressInfo, List<JIPipeTextAnnotation> parameterAnnotations) {
         if (getEffectiveInputSlotCount() > 1)
             throw new UserFriendlyRuntimeException("Too many input slots for JIPipeSimpleIteratingAlgorithm!",
                     "Error in source code detected!",
@@ -137,7 +135,7 @@ public abstract class JIPipeSimpleIteratingAlgorithm extends JIPipeParameterSlot
             final int row = 0;
             JIPipeProgressInfo slotProgress = progressInfo.resolveAndLog("Data row", row, 1);
             JIPipeDataBatch dataBatch = new JIPipeDataBatch(this);
-            dataBatch.addMergedAnnotations(parameterAnnotations, JIPipeAnnotationMergeStrategy.Merge);
+            dataBatch.addMergedAnnotations(parameterAnnotations, JIPipeTextAnnotationMergeMode.Merge);
             uploadAdaptiveParameters(dataBatch, tree, parameterBackups, progressInfo);
             if (isPassThrough()) {
                 runPassThrough(slotProgress, dataBatch);
@@ -161,9 +159,9 @@ public abstract class JIPipeSimpleIteratingAlgorithm extends JIPipeParameterSlot
                     JIPipeProgressInfo slotProgress = progressInfo.resolveAndLog("Data row", i, getFirstInputSlot().getRowCount());
                     JIPipeDataBatch dataBatch = new JIPipeDataBatch(this);
                     dataBatch.setInputData(getFirstInputSlot(), i);
-                    dataBatch.addMergedAnnotations(getFirstInputSlot().getAnnotations(i), JIPipeAnnotationMergeStrategy.Merge);
-                    dataBatch.addMergedDataAnnotations(getFirstInputSlot().getDataAnnotations(i), JIPipeDataAnnotationMergeStrategy.MergeTables);
-                    dataBatch.addMergedAnnotations(parameterAnnotations, JIPipeAnnotationMergeStrategy.Merge);
+                    dataBatch.addMergedAnnotations(getFirstInputSlot().getAnnotations(i), JIPipeTextAnnotationMergeMode.Merge);
+                    dataBatch.addMergedDataAnnotations(getFirstInputSlot().getDataAnnotations(i), JIPipeDataAnnotationMergeMode.MergeTables);
+                    dataBatch.addMergedAnnotations(parameterAnnotations, JIPipeTextAnnotationMergeMode.Merge);
                     uploadAdaptiveParameters(dataBatch, tree, parameterBackups, progressInfo);
                     if (isPassThrough()) {
                         runPassThrough(slotProgress, dataBatch);
@@ -184,9 +182,9 @@ public abstract class JIPipeSimpleIteratingAlgorithm extends JIPipeParameterSlot
                         JIPipeProgressInfo slotProgress = progressInfo.resolveAndLog("Data row", rowIndex, getFirstInputSlot().getRowCount());
                         JIPipeDataBatch dataBatch = new JIPipeDataBatch(this);
                         dataBatch.setInputData(getFirstInputSlot(), rowIndex);
-                        dataBatch.addMergedAnnotations(getFirstInputSlot().getAnnotations(rowIndex), JIPipeAnnotationMergeStrategy.Merge);
-                        dataBatch.addMergedDataAnnotations(getFirstInputSlot().getDataAnnotations(rowIndex), JIPipeDataAnnotationMergeStrategy.MergeTables);
-                        dataBatch.addMergedAnnotations(parameterAnnotations, JIPipeAnnotationMergeStrategy.Merge);
+                        dataBatch.addMergedAnnotations(getFirstInputSlot().getAnnotations(rowIndex), JIPipeTextAnnotationMergeMode.Merge);
+                        dataBatch.addMergedDataAnnotations(getFirstInputSlot().getDataAnnotations(rowIndex), JIPipeDataAnnotationMergeMode.MergeTables);
+                        dataBatch.addMergedAnnotations(parameterAnnotations, JIPipeTextAnnotationMergeMode.Merge);
                         uploadAdaptiveParameters(dataBatch, finalTree, parameterBackups, progressInfo);
                         if (isPassThrough()) {
                             runPassThrough(slotProgress, dataBatch);
@@ -211,7 +209,7 @@ public abstract class JIPipeSimpleIteratingAlgorithm extends JIPipeParameterSlot
 
     private void uploadAdaptiveParameters(JIPipeDataBatch dataBatch, JIPipeParameterTree tree, Map<String, Object> parameterBackups, JIPipeProgressInfo progressInfo) {
         ExpressionVariables expressionVariables = new ExpressionVariables();
-        for (JIPipeAnnotation annotation : dataBatch.getMergedAnnotations().values()) {
+        for (JIPipeTextAnnotation annotation : dataBatch.getMergedAnnotations().values()) {
             expressionVariables.put(annotation.getName(), annotation.getValue());
         }
         for (StringQueryExpressionAndStringPairParameter overriddenParameter : getAdaptiveParameterSettings().getOverriddenParameters()) {
@@ -260,7 +258,7 @@ public abstract class JIPipeSimpleIteratingAlgorithm extends JIPipeParameterSlot
             name = target.getName();
         name = getAdaptiveParameterSettings().getParameterAnnotationsPrefix() + name;
         String value = JsonUtils.toJsonString(newValue);
-        dataBatch.addMergedAnnotation(new JIPipeAnnotation(name, value), JIPipeAnnotationMergeStrategy.Merge);
+        dataBatch.addMergedAnnotation(new JIPipeTextAnnotation(name, value), JIPipeTextAnnotationMergeMode.Merge);
     }
 
     @Override
@@ -358,7 +356,7 @@ public abstract class JIPipeSimpleIteratingAlgorithm extends JIPipeParameterSlot
                 continue;
             JIPipeMergingDataBatch dataBatch = new JIPipeMergingDataBatch(this);
             dataBatch.addInputData(slot, i);
-            dataBatch.addMergedAnnotations(slot.getAnnotations(i), JIPipeAnnotationMergeStrategy.Merge);
+            dataBatch.addMergedAnnotations(slot.getAnnotations(i), JIPipeTextAnnotationMergeMode.Merge);
             batches.add(dataBatch);
         }
         return batches;

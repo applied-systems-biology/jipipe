@@ -2,7 +2,7 @@ package org.hkijena.jipipe.extensions.imagejdatatypes.util;
 
 import ij.ImagePlus;
 import ij.measure.Calibration;
-import org.hkijena.jipipe.api.data.JIPipeAnnotation;
+import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.extensions.expressions.ExpressionParameterVariable;
 import org.hkijena.jipipe.extensions.expressions.ExpressionParameterVariableSource;
@@ -37,8 +37,8 @@ public class ImagePlusPropertiesExpressionParameterVariableSource implements Exp
         return VARIABLES;
     }
 
-    public static void extractValues(ExpressionVariables variables, ImagePlus imagePlus, Collection<JIPipeAnnotation> annotations) {
-        for (JIPipeAnnotation annotation : annotations) {
+    public static void extractValues(ExpressionVariables variables, ImagePlus imagePlus, Collection<JIPipeTextAnnotation> annotations) {
+        for (JIPipeTextAnnotation annotation : annotations) {
             variables.set(annotation.getName(), annotation.getValue());
         }
         variables.set("width", imagePlus.getWidth());

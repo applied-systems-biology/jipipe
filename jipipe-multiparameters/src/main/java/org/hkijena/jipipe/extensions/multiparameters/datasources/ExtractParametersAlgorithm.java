@@ -4,8 +4,8 @@ import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
-import org.hkijena.jipipe.api.data.JIPipeAnnotation;
-import org.hkijena.jipipe.api.data.JIPipeAnnotationMergeStrategy;
+import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
+import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeAlgorithm;
@@ -123,11 +123,11 @@ public class ExtractParametersAlgorithm extends JIPipeAlgorithm {
                 }
             }
 
-            List<JIPipeAnnotation> annotationList = new ArrayList<>();
+            List<JIPipeTextAnnotation> annotationList = new ArrayList<>();
             nodeUUIDAnnotation.addAnnotationIfEnabled(annotationList, node.getUUIDInGraph().toString());
             nodeAliasIDAnnotation.addAnnotationIfEnabled(annotationList, node.getAliasIdInGraph());
             nodeNameAnnotation.addAnnotationIfEnabled(annotationList, node.getName());
-            getFirstOutputSlot().addData(parametersData, annotationList, JIPipeAnnotationMergeStrategy.OverwriteExisting, progressInfo);
+            getFirstOutputSlot().addData(parametersData, annotationList, JIPipeTextAnnotationMergeMode.OverwriteExisting, progressInfo);
         }
     }
 }

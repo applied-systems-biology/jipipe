@@ -20,8 +20,8 @@ import org.apache.commons.lang3.math.NumberUtils;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
-import org.hkijena.jipipe.api.data.JIPipeAnnotation;
-import org.hkijena.jipipe.api.data.JIPipeAnnotationMergeStrategy;
+import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
+import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeInputSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeMergingAlgorithm;
@@ -80,7 +80,7 @@ public class AssembleExtractedROIAlgorithm extends JIPipeMergingAlgorithm {
             for (Integer roiImageRow : dataBatch.getInputRows(roiSlot)) {
                 ImagePlusData roiImage = roiSlot.getData(roiImageRow, ImagePlusData.class, progressInfo);
                 ImagePlus convertedRoiImage = ImageJUtils.convertToSameTypeIfNeeded(roiImage.getImage(), targetImage.getImage(), doScaling);
-                Map<String, String> annotationMap = JIPipeAnnotation.annotationListToMap(roiSlot.getAnnotations(roiImageRow), JIPipeAnnotationMergeStrategy.OverwriteExisting);
+                Map<String, String> annotationMap = JIPipeTextAnnotation.annotationListToMap(roiSlot.getAnnotations(roiImageRow), JIPipeTextAnnotationMergeMode.OverwriteExisting);
                 int x = NumberUtils.createDouble(annotationMap.get(annotationX)).intValue();
                 int y = NumberUtils.createDouble(annotationMap.get(annotationY)).intValue();
                 int z = 0;

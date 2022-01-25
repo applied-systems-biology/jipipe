@@ -17,12 +17,10 @@ import gnu.trove.set.TIntSet;
 import gnu.trove.set.hash.TIntHashSet;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
-import org.hkijena.jipipe.api.data.JIPipeAnnotation;
-import org.hkijena.jipipe.api.data.JIPipeAnnotationMergeStrategy;
-import org.hkijena.jipipe.api.data.JIPipeDataAnnotationMergeStrategy;
-import org.hkijena.jipipe.api.data.JIPipeDataSlot;
-import org.hkijena.jipipe.api.data.JIPipeSlotConfiguration;
-import org.hkijena.jipipe.api.data.JIPipeVirtualData;
+import org.hkijena.jipipe.api.annotation.JIPipeDataAnnotationMergeMode;
+import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
+import org.hkijena.jipipe.api.data.*;
+import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
@@ -121,7 +119,7 @@ public abstract class JIPipeIteratingMissingDataGeneratorAlgorithm extends JIPip
     }
 
     @Override
-    public void runParameterSet(JIPipeProgressInfo progressInfo, List<JIPipeAnnotation> parameterAnnotations) {
+    public void runParameterSet(JIPipeProgressInfo progressInfo, List<JIPipeTextAnnotation> parameterAnnotations) {
 
         if (isPassThrough() && canPassThrough()) {
             progressInfo.log("Data passed through to output");
@@ -269,12 +267,12 @@ public abstract class JIPipeIteratingMissingDataGeneratorAlgorithm extends JIPip
                 if (keepOriginalAnnotations) {
                     for (int row : rows) {
                         JIPipeVirtualData virtualData = inputSlot.getVirtualData(row);
-                        List<JIPipeAnnotation> annotations = inputSlot.getAnnotations(row);
+                        List<JIPipeTextAnnotation> annotations = inputSlot.getAnnotations(row);
                         outputSlot.addData(virtualData,
                                 annotations,
-                                JIPipeAnnotationMergeStrategy.OverwriteExisting,
+                                JIPipeTextAnnotationMergeMode.OverwriteExisting,
                                 inputSlot.getDataAnnotations(row),
-                                JIPipeDataAnnotationMergeStrategy.OverwriteExisting);
+                                JIPipeDataAnnotationMergeMode.OverwriteExisting);
                     }
                 } else {
                     for (int row : rows) {

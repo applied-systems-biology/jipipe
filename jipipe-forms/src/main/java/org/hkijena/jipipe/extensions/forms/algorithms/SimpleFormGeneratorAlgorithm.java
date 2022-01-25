@@ -2,8 +2,8 @@ package org.hkijena.jipipe.extensions.forms.algorithms;
 
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
-import org.hkijena.jipipe.api.data.JIPipeAnnotation;
-import org.hkijena.jipipe.api.data.JIPipeAnnotationMergeStrategy;
+import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
+import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
@@ -42,10 +42,10 @@ public abstract class SimpleFormGeneratorAlgorithm extends FormGeneratorAlgorith
 
     @Override
     public void run(JIPipeDataSlot combined, JIPipeProgressInfo progressInfo) {
-        List<JIPipeAnnotation> annotationList = new ArrayList<>();
+        List<JIPipeTextAnnotation> annotationList = new ArrayList<>();
         if (formData.getTabSettings().getTabAnnotation().isEnabled()) {
             annotationList.add(formData.getTabSettings().getTabAnnotation().createAnnotation(formData.getTabSettings().getTab()));
         }
-        combined.addData(formData.duplicate(), annotationList, JIPipeAnnotationMergeStrategy.OverwriteExisting, progressInfo);
+        combined.addData(formData.duplicate(), annotationList, JIPipeTextAnnotationMergeMode.OverwriteExisting, progressInfo);
     }
 }

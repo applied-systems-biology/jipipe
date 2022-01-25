@@ -1,9 +1,9 @@
 package org.hkijena.jipipe.extensions.core;
 
 import org.hkijena.jipipe.JIPipeJavaExtension;
-import org.hkijena.jipipe.api.data.JIPipeAnnotationMergeStrategy;
+import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
 import org.hkijena.jipipe.api.data.JIPipeData;
-import org.hkijena.jipipe.api.data.JIPipeDataAnnotationMergeStrategy;
+import org.hkijena.jipipe.api.annotation.JIPipeDataAnnotationMergeMode;
 import org.hkijena.jipipe.api.data.JIPipeEmptyData;
 import org.hkijena.jipipe.api.data.JIPipeMergedDataAnnotationsData;
 import org.hkijena.jipipe.api.nodes.JIPipeAnnotationMatchingMethod;
@@ -77,11 +77,11 @@ public class CoreExtension extends JIPipePrepackagedDefaultJavaExtension {
                 "Annotation matching method",
                 "Determines how annotations are matched with each other");
         registerEnumParameterType("jipipe:annotation-merge-strategy",
-                JIPipeAnnotationMergeStrategy.class,
+                JIPipeTextAnnotationMergeMode.class,
                 "Annotation merge strategy",
                 "Determines how annotations are merged.");
         registerEnumParameterType("jipipe:data-annotation-merge-strategy",
-                JIPipeDataAnnotationMergeStrategy.class,
+                JIPipeDataAnnotationMergeMode.class,
                 "Data annotation merge strategy",
                 "Determines how data annotations are merged.");
         registerEnumParameterType("theme",

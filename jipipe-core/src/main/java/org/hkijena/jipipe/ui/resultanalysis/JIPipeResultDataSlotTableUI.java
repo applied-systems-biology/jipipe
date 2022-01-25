@@ -16,7 +16,7 @@ package org.hkijena.jipipe.ui.resultanalysis;
 import com.google.common.eventbus.Subscribe;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeRun;
-import org.hkijena.jipipe.api.data.JIPipeAnnotation;
+import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.data.JIPipeDataInfo;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.data.JIPipeExportedDataAnnotation;
@@ -101,7 +101,7 @@ public class JIPipeResultDataSlotTableUI extends JIPipeProjectWorkbenchPanel {
         dataAnnotationPreviewRenderer = new JIPipeRowDataAnnotationTableCellRenderer(getProjectWorkbench(), slot, table, scrollPane);
         table.setDefaultRenderer(JIPipeExportedDataTableRow.class, previewRenderer);
         table.setDefaultRenderer(JIPipeExportedDataAnnotation.class, dataAnnotationPreviewRenderer);
-        table.setDefaultRenderer(JIPipeAnnotation.class, new JIPipeAnnotationTableCellRenderer());
+        table.setDefaultRenderer(JIPipeTextAnnotation.class, new JIPipeAnnotationTableCellRenderer());
         table.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
 
         scrollPane.getViewport().setBackground(UIManager.getColor("TextArea.background"));

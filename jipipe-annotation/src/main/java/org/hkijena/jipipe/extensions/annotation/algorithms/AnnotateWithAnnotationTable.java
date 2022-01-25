@@ -5,12 +5,9 @@ import gnu.trove.set.hash.TIntHashSet;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
-import org.hkijena.jipipe.api.data.JIPipeAnnotation;
-import org.hkijena.jipipe.api.data.JIPipeAnnotationMergeStrategy;
-import org.hkijena.jipipe.api.data.JIPipeData;
-import org.hkijena.jipipe.api.data.JIPipeDataSlot;
-import org.hkijena.jipipe.api.data.JIPipeDataSlotInfo;
-import org.hkijena.jipipe.api.data.JIPipeSlotType;
+import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
+import org.hkijena.jipipe.api.data.*;
+import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.nodes.JIPipeInputSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeIteratingAlgorithmDataBatchGenerationSettings;
 import org.hkijena.jipipe.api.nodes.JIPipeMergingDataBatch;
@@ -107,7 +104,7 @@ public class AnnotateWithAnnotationTable extends JIPipeParameterSlotAlgorithm {
     }
 
     @Override
-    public void runParameterSet(JIPipeProgressInfo progressInfo, List<JIPipeAnnotation> parameterAnnotations) {
+    public void runParameterSet(JIPipeProgressInfo progressInfo, List<JIPipeTextAnnotation> parameterAnnotations) {
         if (isPassThrough() && canPassThrough()) {
             progressInfo.log("Data passed through to output");
             runPassThrough(progressInfo);
@@ -122,8 +119,8 @@ public class AnnotateWithAnnotationTable extends JIPipeParameterSlotAlgorithm {
         for (int i = 0; i < annotationSlot.getRowCount(); i++) {
             AnnotationTableData data = annotationSlot.getData(i, AnnotationTableData.class, progressInfo);
             for (int j = 0; j < data.getRowCount(); j++) {
-                List<JIPipeAnnotation> annotations = data.getAnnotations(j);
-                dummy.addData(data, annotations, JIPipeAnnotationMergeStrategy.Merge, progressInfo);
+                List<JIPipeTextAnnotation> annotations = data.getAnnotations(j);
+                dummy.addData(data, annotations, JIPipeTextAnnotationMergeMode.Merge, progressInfo);
             }
         }
 
@@ -135,13 +132,13 @@ public class AnnotateWithAnnotationTable extends JIPipeParameterSlotAlgorithm {
                 continue;
             Set<Integer> metadataRows = dataBatch.getInputRows(dummy);
 
-            Map<String, JIPipeAnnotation> newAnnotations = new HashMap<>();
+            Map<String, JIPipeTextAnnotation> newAnnotations = new HashMap<>();
             for (int row : metadataRows) {
-                for (JIPipeAnnotation annotation : dummy.getAnnotations(row)) {
-                    JIPipeAnnotation existing = newAnnotations.getOrDefault(annotation.getName(), null);
+                for (JIPipeTextAnnotation annotation : dummy.getAnnotations(row)) {
+                    JIPipeTextAnnotation existing = newAnnotations.getOrDefault(annotation.getName(), null);
                     if (existing != null) {
                         String value = getTableMergeSettings().getAnnotationMergeStrategy().merge(existing.getValue(), annotation.getValue());
-                        existing = new JIPipeAnnotation(existing.getName(), value);
+                        existing = new JIPipeTextAnnotation(existing.getName(), value);
                     } else {
                         existing = annotation;
                     }
@@ -150,21 +147,21 @@ public class AnnotateWithAnnotationTable extends JIPipeParameterSlotAlgorithm {
             }
 
             for (int row : dataRows) {
-                Map<String, JIPipeAnnotation> annotationMap = new HashMap<>();
+                Map<String, JIPipeTextAnnotation> annotationMap = new HashMap<>();
 
                 // Fetch existing annotations
                 if (!discardExistingAnnotations) {
-                    for (JIPipeAnnotation annotation : dataInputSlot.getAnnotations(row)) {
+                    for (JIPipeTextAnnotation annotation : dataInputSlot.getAnnotations(row)) {
                         annotationMap.put(annotation.getName(), annotation);
                     }
                 }
 
                 // Merge new annotations
-                for (JIPipeAnnotation annotation : newAnnotations.values()) {
-                    JIPipeAnnotation existing = annotationMap.getOrDefault(annotation.getName(), null);
+                for (JIPipeTextAnnotation annotation : newAnnotations.values()) {
+                    JIPipeTextAnnotation existing = annotationMap.getOrDefault(annotation.getName(), null);
                     if (existing != null) {
                         String value = getTableMergeSettings().getAnnotationMergeStrategy().merge(existing.getValue(), annotation.getValue());
-                        existing = new JIPipeAnnotation(existing.getName(), value);
+                        existing = new JIPipeTextAnnotation(existing.getName(), value);
                     } else {
                         existing = annotation;
                     }
@@ -172,7 +169,7 @@ public class AnnotateWithAnnotationTable extends JIPipeParameterSlotAlgorithm {
                 }
 
                 // Add data to output
-                getFirstOutputSlot().addData(dataInputSlot.getData(row, JIPipeData.class, progressInfo), new ArrayList<>(annotationMap.values()), JIPipeAnnotationMergeStrategy.Merge, progressInfo);
+                getFirstOutputSlot().addData(dataInputSlot.getData(row, JIPipeData.class, progressInfo), new ArrayList<>(annotationMap.values()), JIPipeTextAnnotationMergeMode.Merge, progressInfo);
             }
         }
     }

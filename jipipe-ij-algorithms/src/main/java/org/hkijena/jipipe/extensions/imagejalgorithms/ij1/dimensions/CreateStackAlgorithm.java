@@ -19,7 +19,7 @@ import ij.process.ImageProcessor;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
-import org.hkijena.jipipe.api.data.JIPipeAnnotation;
+import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.data.JIPipeDefaultMutableSlotConfiguration;
 import org.hkijena.jipipe.api.nodes.JIPipeInputSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeMergingAlgorithm;
@@ -102,7 +102,7 @@ public class CreateStackAlgorithm extends JIPipeMergingAlgorithm {
         Set<Integer> inputRows = dataBatch.getInputRows(getFirstInputSlot());
         List<Integer> sortedInputRows;
         if (!StringUtils.isNullOrEmpty(counterAnnotation)) {
-            JIPipeAnnotation defaultCounter = new JIPipeAnnotation(counterAnnotation, "");
+            JIPipeTextAnnotation defaultCounter = new JIPipeTextAnnotation(counterAnnotation, "");
             sortedInputRows = inputRows.stream().sorted(Comparator.comparing(row ->
                     getFirstInputSlot().getAnnotationOr(row, counterAnnotation, defaultCounter))).collect(Collectors.toList());
             dataBatch.removeMergedAnnotation(counterAnnotation);

@@ -19,11 +19,11 @@ import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
-import org.hkijena.jipipe.api.data.JIPipeAnnotation;
-import org.hkijena.jipipe.api.data.JIPipeAnnotationMergeStrategy;
-import org.hkijena.jipipe.api.data.JIPipeDataAnnotation;
-import org.hkijena.jipipe.api.data.JIPipeDataAnnotationMergeStrategy;
-import org.hkijena.jipipe.api.data.JIPipeDataSlot;
+import org.hkijena.jipipe.api.annotation.JIPipeDataAnnotation;
+import org.hkijena.jipipe.api.annotation.JIPipeDataAnnotationMergeMode;
+import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
+import org.hkijena.jipipe.api.data.*;
+import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
 import org.hkijena.jipipe.api.nodes.JIPipeInputSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeMergingDataBatch;
@@ -260,7 +260,7 @@ public class PredictClassifierAlgorithm extends JIPipeSingleIterationAlgorithm {
 
                 ResultsTableData rowMetadata = new ResultsTableData();
                 rowMetadata.addRow();
-                for (JIPipeAnnotation annotation : getInputSlot("Input").getAnnotations(inputRow)) {
+                for (JIPipeTextAnnotation annotation : getInputSlot("Input").getAnnotations(inputRow)) {
                     rowMetadata.setValueAt(annotation.getValue(), 0, annotation.getName());
                 }
                 for (int i = 0; i < inputModel.getModelConfiguration().getNumClasses(); i++) {
@@ -278,7 +278,7 @@ public class PredictClassifierAlgorithm extends JIPipeSingleIterationAlgorithm {
                     }
                 }
 
-                List<JIPipeAnnotation> annotations = new ArrayList<>(getInputSlot("Input").getAnnotations(inputRow));
+                List<JIPipeTextAnnotation> annotations = new ArrayList<>(getInputSlot("Input").getAnnotations(inputRow));
                 List<JIPipeDataAnnotation> dataAnnotations = new ArrayList<>();
 
                 predictedLabelsAnnotation.addAnnotationIfEnabled(annotations, "" + bestClass);
@@ -287,9 +287,9 @@ public class PredictClassifierAlgorithm extends JIPipeSingleIterationAlgorithm {
                 dataBatch.addOutputData(getFirstOutputSlot(),
                         getInputSlot("Input").getVirtualData(inputRow),
                         annotations,
-                        JIPipeAnnotationMergeStrategy.OverwriteExisting,
+                        JIPipeTextAnnotationMergeMode.OverwriteExisting,
                         dataAnnotations,
-                        JIPipeDataAnnotationMergeStrategy.OverwriteExisting);
+                        JIPipeDataAnnotationMergeMode.OverwriteExisting);
             }
 
             if (cleanUpAfterwards) {

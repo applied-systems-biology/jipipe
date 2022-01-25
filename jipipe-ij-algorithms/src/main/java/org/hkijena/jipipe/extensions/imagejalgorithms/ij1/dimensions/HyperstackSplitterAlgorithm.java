@@ -5,8 +5,8 @@ import ij.ImageStack;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
-import org.hkijena.jipipe.api.data.JIPipeAnnotation;
-import org.hkijena.jipipe.api.data.JIPipeAnnotationMergeStrategy;
+import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
+import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.data.JIPipeDefaultMutableSlotConfiguration;
 import org.hkijena.jipipe.api.nodes.JIPipeDataBatch;
@@ -35,7 +35,7 @@ public class HyperstackSplitterAlgorithm extends JIPipeSimpleIteratingAlgorithm 
 
     private OutputSlotMapParameterCollection outputIndices;
     private HyperstackDimension targetDimension = HyperstackDimension.Channel;
-    private JIPipeAnnotationMergeStrategy annotationMergeStrategy = JIPipeAnnotationMergeStrategy.OverwriteExisting;
+    private JIPipeTextAnnotationMergeMode annotationMergeStrategy = JIPipeTextAnnotationMergeMode.OverwriteExisting;
     private OptionalAnnotationNameParameter targetDimensionAnnotation = new OptionalAnnotationNameParameter("Channel", true);
 
     public HyperstackSplitterAlgorithm(JIPipeNodeInfo info) {
@@ -77,7 +77,7 @@ public class HyperstackSplitterAlgorithm extends JIPipeSimpleIteratingAlgorithm 
                 stackOutput.setDimensions(1, img.getNSlices(), img.getNFrames());
                 stackOutput.copyScale(img);
 
-                List<JIPipeAnnotation> annotationList = new ArrayList<>();
+                List<JIPipeTextAnnotation> annotationList = new ArrayList<>();
                 targetDimensionAnnotation.addAnnotationIfEnabled(annotationList, c + "");
 
                 for (JIPipeDataSlot outputSlot : getOutputSlots()) {
@@ -105,7 +105,7 @@ public class HyperstackSplitterAlgorithm extends JIPipeSimpleIteratingAlgorithm 
                 stackOutput.setDimensions(img.getNChannels(), 1, img.getNFrames());
                 stackOutput.copyScale(img);
 
-                List<JIPipeAnnotation> annotationList = new ArrayList<>();
+                List<JIPipeTextAnnotation> annotationList = new ArrayList<>();
                 targetDimensionAnnotation.addAnnotationIfEnabled(annotationList, z + "");
 
                 for (JIPipeDataSlot outputSlot : getOutputSlots()) {
@@ -133,7 +133,7 @@ public class HyperstackSplitterAlgorithm extends JIPipeSimpleIteratingAlgorithm 
                 stackOutput.setDimensions(img.getNChannels(), img.getNSlices(), 1);
                 stackOutput.copyScale(img);
 
-                List<JIPipeAnnotation> annotationList = new ArrayList<>();
+                List<JIPipeTextAnnotation> annotationList = new ArrayList<>();
                 targetDimensionAnnotation.addAnnotationIfEnabled(annotationList, t + "");
 
                 for (JIPipeDataSlot outputSlot : getOutputSlots()) {
@@ -181,12 +181,12 @@ public class HyperstackSplitterAlgorithm extends JIPipeSimpleIteratingAlgorithm 
 
     @JIPipeDocumentation(name = "Annotation merge strategy", description = "Determines how annotations are overwritten.")
     @JIPipeParameter("annotation-merge-strategy")
-    public JIPipeAnnotationMergeStrategy getAnnotationMergeStrategy() {
+    public JIPipeTextAnnotationMergeMode getAnnotationMergeStrategy() {
         return annotationMergeStrategy;
     }
 
     @JIPipeParameter("annotation-merge-strategy")
-    public void setAnnotationMergeStrategy(JIPipeAnnotationMergeStrategy annotationMergeStrategy) {
+    public void setAnnotationMergeStrategy(JIPipeTextAnnotationMergeMode annotationMergeStrategy) {
         this.annotationMergeStrategy = annotationMergeStrategy;
     }
 }

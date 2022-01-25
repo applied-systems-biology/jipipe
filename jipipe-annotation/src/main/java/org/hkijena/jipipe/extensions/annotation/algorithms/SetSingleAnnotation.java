@@ -17,8 +17,8 @@ import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
-import org.hkijena.jipipe.api.data.JIPipeAnnotation;
-import org.hkijena.jipipe.api.data.JIPipeAnnotationMergeStrategy;
+import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
+import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
 import org.hkijena.jipipe.api.nodes.JIPipeDataBatch;
@@ -50,7 +50,7 @@ public class SetSingleAnnotation extends JIPipeSimpleIteratingAlgorithm {
 
     private StringQueryExpression annotationValue = new StringQueryExpression();
     private StringQueryExpression annotationName = new StringQueryExpression();
-    private JIPipeAnnotationMergeStrategy annotationMergeStrategy = JIPipeAnnotationMergeStrategy.OverwriteExisting;
+    private JIPipeTextAnnotationMergeMode annotationMergeStrategy = JIPipeTextAnnotationMergeMode.OverwriteExisting;
 
     /**
      * @param info the info
@@ -74,7 +74,7 @@ public class SetSingleAnnotation extends JIPipeSimpleIteratingAlgorithm {
     @Override
     protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
         ExpressionVariables variableSet = new ExpressionVariables();
-        for (JIPipeAnnotation annotation : dataBatch.getMergedAnnotations().values()) {
+        for (JIPipeTextAnnotation annotation : dataBatch.getMergedAnnotations().values()) {
             variableSet.set(annotation.getName(), annotation.getValue());
         }
         variableSet.set("data_string", getFirstInputSlot().getVirtualData(dataBatch.getInputSlotRows().get(getFirstInputSlot())).getStringRepresentation());
@@ -89,7 +89,7 @@ public class SetSingleAnnotation extends JIPipeSimpleIteratingAlgorithm {
                     "You wanted to set the name of an annotation, but the expression generated an empty name. This is not allowed.",
                     "Check if the expression is correct.");
         }
-        dataBatch.addMergedAnnotation(new JIPipeAnnotation(name, value), annotationMergeStrategy);
+        dataBatch.addMergedAnnotation(new JIPipeTextAnnotation(name, value), annotationMergeStrategy);
         dataBatch.addOutputData(getFirstOutputSlot(), dataBatch.getInputData(getFirstInputSlot(), JIPipeData.class, progressInfo), progressInfo);
     }
 

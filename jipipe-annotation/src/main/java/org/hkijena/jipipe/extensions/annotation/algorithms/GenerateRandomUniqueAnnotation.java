@@ -17,10 +17,10 @@ import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeIssueReport;
 import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
-import org.hkijena.jipipe.api.data.JIPipeAnnotation;
-import org.hkijena.jipipe.api.data.JIPipeAnnotationMergeStrategy;
+import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
+import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
 import org.hkijena.jipipe.api.data.JIPipeData;
-import org.hkijena.jipipe.api.data.JIPipeDataAnnotationMergeStrategy;
+import org.hkijena.jipipe.api.annotation.JIPipeDataAnnotationMergeMode;
 import org.hkijena.jipipe.api.nodes.JIPipeInputSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.JIPipeOutputSlot;
@@ -45,7 +45,7 @@ import java.util.List;
 public class GenerateRandomUniqueAnnotation extends JIPipeParameterSlotAlgorithm {
 
     private String generatedAnnotation = "#Random";
-    private JIPipeAnnotationMergeStrategy annotationMergeStrategy = JIPipeAnnotationMergeStrategy.OverwriteExisting;
+    private JIPipeTextAnnotationMergeMode annotationMergeStrategy = JIPipeTextAnnotationMergeMode.OverwriteExisting;
 
     /**
      * New instance
@@ -68,8 +68,8 @@ public class GenerateRandomUniqueAnnotation extends JIPipeParameterSlotAlgorithm
     }
 
     @Override
-    public void runParameterSet(JIPipeProgressInfo progressInfo, List<JIPipeAnnotation> parameterAnnotations) {
-        List<JIPipeAnnotation> annotations = new ArrayList<>();
+    public void runParameterSet(JIPipeProgressInfo progressInfo, List<JIPipeTextAnnotation> parameterAnnotations) {
+        List<JIPipeTextAnnotation> annotations = new ArrayList<>();
         List<Integer> availableRows = new ArrayList<>();
         for (int i = 0; i < getFirstInputSlot().getRowCount(); i++) {
             availableRows.add(i);
@@ -79,12 +79,12 @@ public class GenerateRandomUniqueAnnotation extends JIPipeParameterSlotAlgorithm
         for (Integer row : availableRows) {
             annotations.clear();
             annotations.addAll(getFirstInputSlot().getAnnotations(row));
-            annotations.add(new JIPipeAnnotation(generatedAnnotation, "" + (index++)));
+            annotations.add(new JIPipeTextAnnotation(generatedAnnotation, "" + (index++)));
             getFirstOutputSlot().addData(getFirstInputSlot().getVirtualData(row),
                     annotations,
                     annotationMergeStrategy,
                     getFirstInputSlot().getDataAnnotations(row),
-                    JIPipeDataAnnotationMergeStrategy.OverwriteExisting);
+                    JIPipeDataAnnotationMergeMode.OverwriteExisting);
         }
     }
 
@@ -116,12 +116,12 @@ public class GenerateRandomUniqueAnnotation extends JIPipeParameterSlotAlgorithm
 
     @JIPipeDocumentation(name = "Merge same annotation values", description = "Determines which strategy is applied if an annotation already exists.")
     @JIPipeParameter("annotation-merge-strategy")
-    public JIPipeAnnotationMergeStrategy getAnnotationMergeStrategy() {
+    public JIPipeTextAnnotationMergeMode getAnnotationMergeStrategy() {
         return annotationMergeStrategy;
     }
 
     @JIPipeParameter("annotation-merge-strategy")
-    public void setAnnotationMergeStrategy(JIPipeAnnotationMergeStrategy annotationMergeStrategy) {
+    public void setAnnotationMergeStrategy(JIPipeTextAnnotationMergeMode annotationMergeStrategy) {
         this.annotationMergeStrategy = annotationMergeStrategy;
     }
 }

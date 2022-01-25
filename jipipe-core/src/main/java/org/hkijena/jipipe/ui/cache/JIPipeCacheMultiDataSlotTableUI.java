@@ -18,7 +18,7 @@ import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeProject;
 import org.hkijena.jipipe.api.JIPipeProjectCache;
 import org.hkijena.jipipe.api.compartments.algorithms.JIPipeProjectCompartment;
-import org.hkijena.jipipe.api.data.JIPipeAnnotation;
+import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataInfo;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
@@ -139,7 +139,7 @@ public class JIPipeCacheMultiDataSlotTableUI extends JIPipeWorkbenchPanel {
         table.setDefaultRenderer(Component.class, new JIPipeComponentCellRenderer());
         table.setDefaultRenderer(JIPipeGraphNode.class, new JIPipeNodeTableCellRenderer());
         table.setDefaultRenderer(JIPipeProjectCompartment.class, new JIPipeProjectCompartmentTableCellRenderer());
-        table.setDefaultRenderer(JIPipeAnnotation.class, new JIPipeAnnotationTableCellRenderer());
+        table.setDefaultRenderer(JIPipeTextAnnotation.class, new JIPipeAnnotationTableCellRenderer());
         table.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
 
         JScrollPane scrollPane = new JScrollPane(table);

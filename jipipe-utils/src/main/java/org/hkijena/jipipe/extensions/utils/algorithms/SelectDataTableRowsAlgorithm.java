@@ -5,10 +5,10 @@ import gnu.trove.set.hash.TIntHashSet;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
-import org.hkijena.jipipe.api.data.JIPipeAnnotation;
-import org.hkijena.jipipe.api.data.JIPipeAnnotationMergeStrategy;
+import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
+import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
 import org.hkijena.jipipe.api.data.JIPipeData;
-import org.hkijena.jipipe.api.data.JIPipeDataAnnotationMergeStrategy;
+import org.hkijena.jipipe.api.annotation.JIPipeDataAnnotationMergeMode;
 import org.hkijena.jipipe.api.nodes.JIPipeInputSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.JIPipeOutputSlot;
@@ -37,15 +37,15 @@ public class SelectDataTableRowsAlgorithm extends JIPipeParameterSlotAlgorithm {
     }
 
     @Override
-    public void runParameterSet(JIPipeProgressInfo progressInfo, List<JIPipeAnnotation> parameterAnnotations) {
+    public void runParameterSet(JIPipeProgressInfo progressInfo, List<JIPipeTextAnnotation> parameterAnnotations) {
         TIntSet allowedRows = new TIntHashSet(limit.getIntegers(0, getFirstInputSlot().getRowCount()));
         for (int row = 0; row < getFirstInputSlot().getRowCount(); row++) {
             if (allowedRows.contains(row)) {
                 getFirstOutputSlot().addData(getFirstInputSlot().getVirtualData(row),
                         getFirstInputSlot().getAnnotations(row),
-                        JIPipeAnnotationMergeStrategy.Merge,
+                        JIPipeTextAnnotationMergeMode.Merge,
                         getFirstInputSlot().getDataAnnotations(row),
-                        JIPipeDataAnnotationMergeStrategy.OverwriteExisting);
+                        JIPipeDataAnnotationMergeMode.OverwriteExisting);
             }
         }
     }

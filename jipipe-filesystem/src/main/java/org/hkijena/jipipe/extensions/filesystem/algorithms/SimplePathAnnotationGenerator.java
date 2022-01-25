@@ -17,8 +17,8 @@ import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeIssueReport;
 import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
-import org.hkijena.jipipe.api.data.JIPipeAnnotation;
-import org.hkijena.jipipe.api.data.JIPipeAnnotationMergeStrategy;
+import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
+import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
 import org.hkijena.jipipe.api.nodes.JIPipeDataBatch;
 import org.hkijena.jipipe.api.nodes.JIPipeInputSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
@@ -46,7 +46,7 @@ public class SimplePathAnnotationGenerator extends JIPipeSimpleIteratingAlgorith
     private String generatedAnnotation = "#Dataset";
     private boolean fullPath = false;
     private boolean removeExtensions = true;
-    private JIPipeAnnotationMergeStrategy annotationMergeStrategy = JIPipeAnnotationMergeStrategy.OverwriteExisting;
+    private JIPipeTextAnnotationMergeMode annotationMergeStrategy = JIPipeTextAnnotationMergeMode.OverwriteExisting;
 
     /**
      * Creates a new instance
@@ -92,7 +92,7 @@ public class SimplePathAnnotationGenerator extends JIPipeSimpleIteratingAlgorith
                 }
             }
 
-            dataBatch.addMergedAnnotation(new JIPipeAnnotation(generatedAnnotation, annotationValue), annotationMergeStrategy);
+            dataBatch.addMergedAnnotation(new JIPipeTextAnnotation(generatedAnnotation, annotationValue), annotationMergeStrategy);
             dataBatch.addOutputData(getFirstOutputSlot(), inputData, progressInfo);
         }
     }
@@ -147,12 +147,12 @@ public class SimplePathAnnotationGenerator extends JIPipeSimpleIteratingAlgorith
 
     @JIPipeDocumentation(name = "Merge same annotation values", description = "Determines which strategy is applied if an annotation already exists.")
     @JIPipeParameter("annotation-merge-strategy")
-    public JIPipeAnnotationMergeStrategy getAnnotationMergeStrategy() {
+    public JIPipeTextAnnotationMergeMode getAnnotationMergeStrategy() {
         return annotationMergeStrategy;
     }
 
     @JIPipeParameter("annotation-merge-strategy")
-    public void setAnnotationMergeStrategy(JIPipeAnnotationMergeStrategy annotationMergeStrategy) {
+    public void setAnnotationMergeStrategy(JIPipeTextAnnotationMergeMode annotationMergeStrategy) {
         this.annotationMergeStrategy = annotationMergeStrategy;
     }
 }

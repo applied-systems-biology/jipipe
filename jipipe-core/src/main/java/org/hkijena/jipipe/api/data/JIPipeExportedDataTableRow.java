@@ -2,6 +2,7 @@ package org.hkijena.jipipe.api.data;
 
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonSetter;
+import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -11,7 +12,7 @@ import java.util.List;
  */
 public class JIPipeExportedDataTableRow {
     private int index;
-    private List<JIPipeAnnotation> annotations = new ArrayList<>();
+    private List<JIPipeTextAnnotation> annotations = new ArrayList<>();
     private List<JIPipeExportedDataAnnotation> dataAnnotations = new ArrayList<>();
     private String trueDataType;
 
@@ -43,7 +44,7 @@ public class JIPipeExportedDataTableRow {
      * @return Annotations
      */
     @JsonGetter("annotations")
-    public List<JIPipeAnnotation> getAnnotations() {
+    public List<JIPipeTextAnnotation> getAnnotations() {
         return annotations;
     }
 
@@ -53,7 +54,7 @@ public class JIPipeExportedDataTableRow {
      * @param annotations List of annotations
      */
     @JsonSetter("annotations")
-    public void setAnnotations(List<JIPipeAnnotation> annotations) {
+    public void setAnnotations(List<JIPipeTextAnnotation> annotations) {
         this.annotations = annotations;
     }
 
@@ -73,7 +74,7 @@ public class JIPipeExportedDataTableRow {
      * @param annotations List of annotations
      */
     @JsonSetter("traits")
-    public void setTraits(List<JIPipeAnnotation> annotations) {
+    public void setTraits(List<JIPipeTextAnnotation> annotations) {
         this.annotations = annotations;
     }
 

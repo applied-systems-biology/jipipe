@@ -18,7 +18,7 @@ import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeIssueReport;
 import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
-import org.hkijena.jipipe.api.data.JIPipeAnnotation;
+import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.data.JIPipeDefaultMutableSlotConfiguration;
 import org.hkijena.jipipe.api.nodes.JIPipeGraph;
 import org.hkijena.jipipe.api.nodes.JIPipeInputSlot;
@@ -115,8 +115,8 @@ public class PlotTablesAlgorithm extends JIPipeMergingAlgorithm {
             seriesTable.addRows(inputData.getRowCount());
 
             ExpressionVariables variables = new ExpressionVariables();
-            List<JIPipeAnnotation> originalAnnotations = getFirstInputSlot().getAnnotations(row);
-            for (JIPipeAnnotation annotation : originalAnnotations) {
+            List<JIPipeTextAnnotation> originalAnnotations = getFirstInputSlot().getAnnotations(row);
+            for (JIPipeTextAnnotation annotation : originalAnnotations) {
                 variables.set(annotation.getName(), annotation.getValue());
             }
 

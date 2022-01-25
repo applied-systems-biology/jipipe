@@ -22,7 +22,7 @@ import ij.process.ImageStatistics;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
-import org.hkijena.jipipe.api.data.JIPipeAnnotation;
+import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.nodes.JIPipeDataBatch;
 import org.hkijena.jipipe.api.nodes.JIPipeInputSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeIteratingAlgorithm;
@@ -131,7 +131,7 @@ public class ImageStatisticsExpressionAlgorithm extends JIPipeIteratingAlgorithm
         parameters.set("num_c", img.getNChannels());
         parameters.set("num_t", img.getNFrames());
 
-        for (JIPipeAnnotation annotation : dataBatch.getMergedAnnotations().values()) {
+        for (JIPipeTextAnnotation annotation : dataBatch.getMergedAnnotations().values()) {
             parameters.set(annotation.getName(), annotation.getValue());
         }
 

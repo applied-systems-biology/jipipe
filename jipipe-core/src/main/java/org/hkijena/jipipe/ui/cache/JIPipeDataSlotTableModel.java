@@ -13,8 +13,8 @@
 
 package org.hkijena.jipipe.ui.cache;
 
-import org.hkijena.jipipe.api.data.JIPipeAnnotation;
-import org.hkijena.jipipe.api.data.JIPipeDataAnnotation;
+import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
+import org.hkijena.jipipe.api.annotation.JIPipeDataAnnotation;
 import org.hkijena.jipipe.api.data.JIPipeDataInfo;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.extensions.settings.GeneralDataSettings;
@@ -149,7 +149,7 @@ public class JIPipeDataSlotTableModel implements TableModel {
         else if (toDataAnnotationColumnIndex(columnIndex) != -1)
             return Component.class;
         else {
-            return JIPipeAnnotation.class;
+            return JIPipeTextAnnotation.class;
         }
     }
 

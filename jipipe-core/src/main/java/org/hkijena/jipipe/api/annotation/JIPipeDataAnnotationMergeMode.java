@@ -1,8 +1,9 @@
-package org.hkijena.jipipe.api.data;
+package org.hkijena.jipipe.api.annotation;
 
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
+import org.hkijena.jipipe.api.data.*;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -11,7 +12,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public enum JIPipeDataAnnotationMergeStrategy {
+public enum JIPipeDataAnnotationMergeMode {
     Merge,
     MergeTables,
     SkipExisting,
@@ -53,7 +54,7 @@ public enum JIPipeDataAnnotationMergeStrategy {
                             new JIPipeDataSlotInfo(JIPipeData.class, JIPipeSlotType.Output, "Merged", null), null
                     ));
                     for (JIPipeDataAnnotation value : values) {
-                        mergedDataAnnotationsData.getDataSlot().addData(value.getVirtualData(), Collections.emptyList(), JIPipeAnnotationMergeStrategy.OverwriteExisting);
+                        mergedDataAnnotationsData.getDataSlot().addData(value.getVirtualData(), Collections.emptyList(), JIPipeTextAnnotationMergeMode.OverwriteExisting);
                     }
                     result.add(new JIPipeDataAnnotation(name, mergedDataAnnotationsData));
                 }
@@ -82,7 +83,7 @@ public enum JIPipeDataAnnotationMergeStrategy {
                         new JIPipeDataSlotInfo(JIPipeData.class, JIPipeSlotType.Output, "Merged", null), null
                 ));
                 for (JIPipeVirtualData virtualData : allData) {
-                    mergedDataAnnotationsData.getDataSlot().addData(virtualData, Collections.emptyList(), JIPipeAnnotationMergeStrategy.OverwriteExisting);
+                    mergedDataAnnotationsData.getDataSlot().addData(virtualData, Collections.emptyList(), JIPipeTextAnnotationMergeMode.OverwriteExisting);
                 }
                 result.add(new JIPipeDataAnnotation(name, mergedDataAnnotationsData));
             }

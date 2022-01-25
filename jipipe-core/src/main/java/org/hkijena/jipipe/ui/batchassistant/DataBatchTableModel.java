@@ -1,6 +1,6 @@
 package org.hkijena.jipipe.ui.batchassistant;
 
-import org.hkijena.jipipe.api.data.JIPipeAnnotation;
+import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.data.JIPipeVirtualData;
 import org.hkijena.jipipe.api.nodes.JIPipeMergingDataBatch;
@@ -121,7 +121,7 @@ public class DataBatchTableModel implements TableModel {
             return preview;
         } else {
             String column = annotationColumns.get(columnIndex - 1 - inputSlotNames.size());
-            JIPipeAnnotation annotation = dataBatchList.get(rowIndex).getMergedAnnotations().getOrDefault(column, null);
+            JIPipeTextAnnotation annotation = dataBatchList.get(rowIndex).getMergedAnnotations().getOrDefault(column, null);
             if (annotation != null)
                 return annotation.getValue();
             else

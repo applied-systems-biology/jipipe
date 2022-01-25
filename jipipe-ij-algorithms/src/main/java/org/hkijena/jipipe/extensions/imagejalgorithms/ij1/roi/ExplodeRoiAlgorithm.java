@@ -17,8 +17,8 @@ import ij.gui.Roi;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
-import org.hkijena.jipipe.api.data.JIPipeAnnotation;
-import org.hkijena.jipipe.api.data.JIPipeAnnotationMergeStrategy;
+import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
+import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
 import org.hkijena.jipipe.api.data.JIPipeDefaultMutableSlotConfiguration;
 import org.hkijena.jipipe.api.nodes.JIPipeDataBatch;
 import org.hkijena.jipipe.api.nodes.JIPipeInputSlot;
@@ -75,13 +75,13 @@ public class ExplodeRoiAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         ROIListData data = dataBatch.getInputData(getFirstInputSlot(), ROIListData.class, progressInfo);
         for (int i = 0; i < data.size(); i++) {
             Roi roi = data.get(i);
-            List<JIPipeAnnotation> annotations = new ArrayList<>();
+            List<JIPipeTextAnnotation> annotations = new ArrayList<>();
             if (generatedAnnotation.isEnabled() && !StringUtils.isNullOrEmpty(generatedAnnotation.getContent())) {
-                annotations.add(new JIPipeAnnotation(generatedAnnotation.getContent(), "index=" + i + ";name=" + roi.getName()));
+                annotations.add(new JIPipeTextAnnotation(generatedAnnotation.getContent(), "index=" + i + ";name=" + roi.getName()));
             }
             ROIListData output = new ROIListData();
             output.add(roi);
-            dataBatch.addOutputData(getFirstOutputSlot(), output, annotations, JIPipeAnnotationMergeStrategy.Merge, progressInfo);
+            dataBatch.addOutputData(getFirstOutputSlot(), output, annotations, JIPipeTextAnnotationMergeMode.Merge, progressInfo);
         }
     }
 

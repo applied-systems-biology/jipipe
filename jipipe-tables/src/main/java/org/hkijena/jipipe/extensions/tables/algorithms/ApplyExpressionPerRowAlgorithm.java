@@ -3,8 +3,8 @@ package org.hkijena.jipipe.extensions.tables.algorithms;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
-import org.hkijena.jipipe.api.data.JIPipeAnnotation;
-import org.hkijena.jipipe.api.data.JIPipeAnnotationMergeStrategy;
+import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
+import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
 import org.hkijena.jipipe.api.nodes.JIPipeDataBatch;
 import org.hkijena.jipipe.api.nodes.JIPipeInputSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
@@ -50,7 +50,7 @@ public class ApplyExpressionPerRowAlgorithm extends JIPipeSimpleIteratingAlgorit
     protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
         ResultsTableData data = (ResultsTableData) dataBatch.getInputData(getFirstInputSlot(), ResultsTableData.class, progressInfo).duplicate();
         ExpressionVariables variableSet = new ExpressionVariables();
-        Map<String, String> annotationsMap = JIPipeAnnotation.annotationListToMap(dataBatch.getMergedAnnotations().values(), JIPipeAnnotationMergeStrategy.OverwriteExisting);
+        Map<String, String> annotationsMap = JIPipeTextAnnotation.annotationListToMap(dataBatch.getMergedAnnotations().values(), JIPipeTextAnnotationMergeMode.OverwriteExisting);
         variableSet.set("annotations", annotationsMap);
         variableSet.set("num_rows", data.getRowCount());
         for (ExpressionTableColumnGeneratorProcessor expression : expressionList) {

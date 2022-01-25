@@ -15,8 +15,8 @@ package org.hkijena.jipipe.ui.batchassistant;
 
 import org.apache.commons.lang.WordUtils;
 import org.hkijena.jipipe.JIPipe;
-import org.hkijena.jipipe.api.data.JIPipeAnnotation;
-import org.hkijena.jipipe.api.data.JIPipeAnnotationMergeStrategy;
+import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
+import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.nodes.JIPipeIteratingAlgorithm;
@@ -60,7 +60,7 @@ public class DataBatchUI extends JIPipeProjectWorkbenchPanel {
         add(dataBatchName, BorderLayout.NORTH);
 
         FormPanel metaDataList = new FormPanel(null, FormPanel.NONE);
-        for (JIPipeAnnotation annotation : batch.getMergedAnnotations().values()) {
+        for (JIPipeTextAnnotation annotation : batch.getMergedAnnotations().values()) {
             JLabel title = new JLabel(annotation.getName(), UIUtils.getIconFromResources("data-types/annotation.png"), JLabel.LEFT);
             JTextField content = UIUtils.makeReadonlyBorderlessTextField(WordUtils.abbreviate(annotation.getValue(), 50, 70, " ..."));
             content.setToolTipText(annotation.getValue());
@@ -102,7 +102,7 @@ public class DataBatchUI extends JIPipeProjectWorkbenchPanel {
     private void displayData(JIPipeDataSlot slot, Set<Integer> rows) {
         JIPipeDataSlot copySlot = new JIPipeDataSlot(slot.getInfo(), slot.getNode());
         for (int row : rows) {
-            copySlot.addData(slot.getVirtualData(row), slot.getAnnotations(row), JIPipeAnnotationMergeStrategy.Merge);
+            copySlot.addData(slot.getVirtualData(row), slot.getAnnotations(row), JIPipeTextAnnotationMergeMode.Merge);
         }
         JIPipeCacheDataSlotTableUI tableUI = new JIPipeCacheDataSlotTableUI(getProjectWorkbench(), copySlot);
 //        DataSlotTableUI tableUI = new DataSlotTableUI(getProjectWorkbench(), copySlot);

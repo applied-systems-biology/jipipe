@@ -3,9 +3,9 @@ package org.hkijena.jipipe.extensions.utils.algorithms.distribute;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
-import org.hkijena.jipipe.api.data.JIPipeAnnotationMergeStrategy;
+import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
 import org.hkijena.jipipe.api.data.JIPipeData;
-import org.hkijena.jipipe.api.data.JIPipeDataAnnotationMergeStrategy;
+import org.hkijena.jipipe.api.annotation.JIPipeDataAnnotationMergeMode;
 import org.hkijena.jipipe.api.data.JIPipeDefaultMutableSlotConfiguration;
 import org.hkijena.jipipe.api.nodes.JIPipeInputSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeMergingAlgorithm;
@@ -68,9 +68,9 @@ public class DistributeDataRandomlyByCountAlgorithm extends JIPipeMergingAlgorit
                 // Add output with restoring annotations
                 getOutputSlot(target).addData(getFirstInputSlot().getVirtualData(row),
                         getFirstInputSlot().getAnnotations(row),
-                        JIPipeAnnotationMergeStrategy.OverwriteExisting,
+                        JIPipeTextAnnotationMergeMode.OverwriteExisting,
                         getFirstInputSlot().getDataAnnotations(row),
-                        JIPipeDataAnnotationMergeStrategy.OverwriteExisting);
+                        JIPipeDataAnnotationMergeMode.OverwriteExisting);
             }
             --available;
             countMap.put(target, available);

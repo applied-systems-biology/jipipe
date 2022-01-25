@@ -16,10 +16,10 @@ package org.hkijena.jipipe.extensions.annotation.algorithms;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
-import org.hkijena.jipipe.api.data.JIPipeAnnotation;
-import org.hkijena.jipipe.api.data.JIPipeAnnotationMergeStrategy;
+import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
+import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
 import org.hkijena.jipipe.api.data.JIPipeData;
-import org.hkijena.jipipe.api.data.JIPipeDataAnnotationMergeStrategy;
+import org.hkijena.jipipe.api.annotation.JIPipeDataAnnotationMergeMode;
 import org.hkijena.jipipe.api.nodes.JIPipeInputSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.JIPipeOutputSlot;
@@ -54,11 +54,11 @@ public class RemoveArrayAnnotationsAlgorithm extends JIPipeParameterSlotAlgorith
     }
 
     @Override
-    public void runParameterSet(JIPipeProgressInfo progressInfo, List<JIPipeAnnotation> parameterAnnotations) {
+    public void runParameterSet(JIPipeProgressInfo progressInfo, List<JIPipeTextAnnotation> parameterAnnotations) {
         if (removeColumn) {
             Set<String> toRemove = annotationNameFilter.queryAll(getFirstInputSlot().getAnnotationColumns(), new ExpressionVariables()).stream().filter(columnName -> {
                 for (int row = 0; row < getFirstInputSlot().getRowCount(); row++) {
-                    JIPipeAnnotation existing = getFirstInputSlot().getAnnotationOr(row, columnName, null);
+                    JIPipeTextAnnotation existing = getFirstInputSlot().getAnnotationOr(row, columnName, null);
                     if (existing != null && existing.isArray())
                         return true;
                 }
@@ -70,13 +70,13 @@ public class RemoveArrayAnnotationsAlgorithm extends JIPipeParameterSlotAlgorith
             }
         } else {
             for (int row = 0; row < getFirstInputSlot().getRowCount(); row++) {
-                List<JIPipeAnnotation> annotations = getFirstInputSlot().getAnnotations(row);
+                List<JIPipeTextAnnotation> annotations = getFirstInputSlot().getAnnotations(row);
                 annotations.removeIf(annotation -> annotationNameFilter.test(annotation.getName()) && annotation.isArray());
                 getFirstOutputSlot().addData(getFirstInputSlot().getVirtualData(row),
                         annotations,
-                        JIPipeAnnotationMergeStrategy.Merge,
+                        JIPipeTextAnnotationMergeMode.Merge,
                         getFirstInputSlot().getDataAnnotations(row),
-                        JIPipeDataAnnotationMergeStrategy.OverwriteExisting);
+                        JIPipeDataAnnotationMergeMode.OverwriteExisting);
             }
         }
     }

@@ -22,8 +22,8 @@ import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeIssueReport;
 import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
-import org.hkijena.jipipe.api.data.JIPipeAnnotation;
-import org.hkijena.jipipe.api.data.JIPipeAnnotationMergeStrategy;
+import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
+import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
 import org.hkijena.jipipe.api.nodes.JIPipeDataBatch;
 import org.hkijena.jipipe.api.nodes.JIPipeInputSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
@@ -55,7 +55,7 @@ public class TileImageAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     private OptionalAnnotationNameParameter numTilesX = new OptionalAnnotationNameParameter("Num Tiles X", true);
     private OptionalAnnotationNameParameter numTilesY = new OptionalAnnotationNameParameter("Num Tiles Y", true);
 
-    private JIPipeAnnotationMergeStrategy annotationMergeStrategy = JIPipeAnnotationMergeStrategy.OverwriteExisting;
+    private JIPipeTextAnnotationMergeMode annotationMergeStrategy = JIPipeTextAnnotationMergeMode.OverwriteExisting;
 
     public TileImageAlgorithm(JIPipeNodeInfo info) {
         super(info);
@@ -106,7 +106,7 @@ public class TileImageAlgorithm extends JIPipeSimpleIteratingAlgorithm {
                 ImagePlus tileImage = new ImagePlus("Tile " + x + ", " + y, tileStack);
                 tileImage.setDimensions(img.getNChannels(), img.getNSlices(), img.getNFrames());
                 tileImage.copyScale(img);
-                List<JIPipeAnnotation> annotations = new ArrayList<>();
+                List<JIPipeTextAnnotation> annotations = new ArrayList<>();
                 tileXAnnotation.addAnnotationIfEnabled(annotations, x + "");
                 tileYAnnotation.addAnnotationIfEnabled(annotations, y + "");
                 numTilesX.addAnnotationIfEnabled(annotations, nTilesX + "");
@@ -118,12 +118,12 @@ public class TileImageAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     @JIPipeDocumentation(name = "Merge existing annotations", description = "Determines how existing annotations are merged")
     @JIPipeParameter("annotation-merge-strategy")
-    public JIPipeAnnotationMergeStrategy getAnnotationMergeStrategy() {
+    public JIPipeTextAnnotationMergeMode getAnnotationMergeStrategy() {
         return annotationMergeStrategy;
     }
 
     @JIPipeParameter("annotation-merge-strategy")
-    public void setAnnotationMergeStrategy(JIPipeAnnotationMergeStrategy annotationMergeStrategy) {
+    public void setAnnotationMergeStrategy(JIPipeTextAnnotationMergeMode annotationMergeStrategy) {
         this.annotationMergeStrategy = annotationMergeStrategy;
     }
 

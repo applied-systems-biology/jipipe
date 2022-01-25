@@ -5,7 +5,7 @@ import org.apache.commons.exec.ExecuteWatchdog;
 import org.apache.commons.exec.LogOutputStream;
 import org.apache.commons.exec.PumpStreamHandler;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
-import org.hkijena.jipipe.api.data.JIPipeAnnotation;
+import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.data.JIPipeDataInfo;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
@@ -55,9 +55,9 @@ public class RUtils {
      * @param code        the code
      * @param annotations the annotations
      */
-    public static void annotationsToR(StringBuilder code, Collection<JIPipeAnnotation> annotations) {
+    public static void annotationsToR(StringBuilder code, Collection<JIPipeTextAnnotation> annotations) {
         code.append("JIPipe.Annotations <- list()\n");
-        for (JIPipeAnnotation annotation : annotations) {
+        for (JIPipeTextAnnotation annotation : annotations) {
             code.append(String.format("Annotations$\"%s\" <- \"%s\"\n", MacroUtils.escapeString(annotation.getName()),
                     MacroUtils.escapeString(annotation.getValue())));
         }
@@ -148,7 +148,7 @@ public class RUtils {
             StringBuilder stringBuilder = new StringBuilder();
             for (int row = 0; row < slot.getRowCount(); row++) {
                 stringBuilder.setLength(0);
-                for (JIPipeAnnotation annotation : slot.getAnnotations(row)) {
+                for (JIPipeTextAnnotation annotation : slot.getAnnotations(row)) {
                     if (stringBuilder.length() > 0)
                         stringBuilder.append(", ");
                     stringBuilder.append("\"")

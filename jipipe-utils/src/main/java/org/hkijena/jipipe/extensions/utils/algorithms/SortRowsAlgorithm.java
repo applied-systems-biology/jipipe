@@ -3,8 +3,8 @@ package org.hkijena.jipipe.extensions.utils.algorithms;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
-import org.hkijena.jipipe.api.data.JIPipeAnnotation;
-import org.hkijena.jipipe.api.data.JIPipeAnnotationMergeStrategy;
+import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
+import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.nodes.JIPipeInputSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
@@ -45,7 +45,7 @@ public class SortRowsAlgorithm extends JIPipeParameterSlotAlgorithm {
     }
 
     @Override
-    public void runParameterSet(JIPipeProgressInfo progressInfo, List<JIPipeAnnotation> parameterAnnotations) {
+    public void runParameterSet(JIPipeProgressInfo progressInfo, List<JIPipeTextAnnotation> parameterAnnotations) {
         Set<String> unMatchedAnnotationNames = new HashSet<>(getFirstInputSlot().getAnnotationColumns());
         List<String> annotationOrder = new ArrayList<>();
         Map<String, SortOrder> annotationOrderSortOrder = new HashMap<>();
@@ -70,14 +70,14 @@ public class SortRowsAlgorithm extends JIPipeParameterSlotAlgorithm {
             Comparator<Integer> local;
             if (annotationOrderSortOrder.get(key) == SortOrder.Ascending) {
                 local = (o1, o2) -> {
-                    JIPipeAnnotation lhs = getFirstInputSlot().getAnnotationOr(o1, key, new JIPipeAnnotation());
-                    JIPipeAnnotation rhs = getFirstInputSlot().getAnnotationOr(o2, key, new JIPipeAnnotation());
+                    JIPipeTextAnnotation lhs = getFirstInputSlot().getAnnotationOr(o1, key, new JIPipeTextAnnotation());
+                    JIPipeTextAnnotation rhs = getFirstInputSlot().getAnnotationOr(o2, key, new JIPipeTextAnnotation());
                     return lhs.compareTo(rhs);
                 };
             } else {
                 local = (o1, o2) -> {
-                    JIPipeAnnotation lhs = getFirstInputSlot().getAnnotationOr(o1, key, new JIPipeAnnotation());
-                    JIPipeAnnotation rhs = getFirstInputSlot().getAnnotationOr(o2, key, new JIPipeAnnotation());
+                    JIPipeTextAnnotation lhs = getFirstInputSlot().getAnnotationOr(o1, key, new JIPipeTextAnnotation());
+                    JIPipeTextAnnotation rhs = getFirstInputSlot().getAnnotationOr(o2, key, new JIPipeTextAnnotation());
                     return -lhs.compareTo(rhs);
                 };
             }
@@ -95,12 +95,12 @@ public class SortRowsAlgorithm extends JIPipeParameterSlotAlgorithm {
         }
         if (comparator != null)
             rows.sort(comparator);
-        List<JIPipeAnnotation> annotations = new ArrayList<>();
+        List<JIPipeTextAnnotation> annotations = new ArrayList<>();
         for (Integer row : rows) {
             annotations.clear();
             annotations.addAll(getFirstInputSlot().getAnnotations(row));
             annotations.addAll(parameterAnnotations);
-            getFirstOutputSlot().addData(getFirstInputSlot().getData(row, JIPipeData.class, progressInfo), annotations, JIPipeAnnotationMergeStrategy.Merge, progressInfo);
+            getFirstOutputSlot().addData(getFirstInputSlot().getData(row, JIPipeData.class, progressInfo), annotations, JIPipeTextAnnotationMergeMode.Merge, progressInfo);
         }
     }
 

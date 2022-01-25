@@ -20,8 +20,8 @@ import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeIssueReport;
 import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
-import org.hkijena.jipipe.api.data.JIPipeAnnotation;
-import org.hkijena.jipipe.api.data.JIPipeAnnotationMergeStrategy;
+import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
+import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
 import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
 import org.hkijena.jipipe.api.nodes.JIPipeDataBatch;
 import org.hkijena.jipipe.api.nodes.JIPipeInputSlot;
@@ -109,7 +109,7 @@ public class SplitRoiConnectedComponentsAlgorithm extends ImageRoiProcessorAlgor
 
         // Write annotations map
         Map<String, String> annotations = new HashMap<>();
-        for (Map.Entry<String, JIPipeAnnotation> entry : dataBatch.getMergedAnnotations().entrySet()) {
+        for (Map.Entry<String, JIPipeTextAnnotation> entry : dataBatch.getMergedAnnotations().entrySet()) {
             annotations.put(entry.getKey(), entry.getValue().getValue());
         }
         variableSet.set("annotations", annotations);
@@ -262,7 +262,7 @@ public class SplitRoiConnectedComponentsAlgorithm extends ImageRoiProcessorAlgor
                 rois.add(input.get(index));
             }
             if (componentNameAnnotation.isEnabled()) {
-                dataBatch.addOutputData(getFirstOutputSlot(), rois, Collections.singletonList(new JIPipeAnnotation(componentNameAnnotation.getContent(), outputIndex + "")), JIPipeAnnotationMergeStrategy.Merge, progressInfo);
+                dataBatch.addOutputData(getFirstOutputSlot(), rois, Collections.singletonList(new JIPipeTextAnnotation(componentNameAnnotation.getContent(), outputIndex + "")), JIPipeTextAnnotationMergeMode.Merge, progressInfo);
             } else {
                 dataBatch.addOutputData(getFirstOutputSlot(), rois, progressInfo);
             }

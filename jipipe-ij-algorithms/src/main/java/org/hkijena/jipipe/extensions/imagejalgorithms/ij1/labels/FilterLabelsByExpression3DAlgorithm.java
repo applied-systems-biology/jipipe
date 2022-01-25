@@ -19,7 +19,7 @@ import inra.ijpb.label.LabelImages;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
-import org.hkijena.jipipe.api.data.JIPipeAnnotation;
+import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.nodes.JIPipeDataBatch;
 import org.hkijena.jipipe.api.nodes.JIPipeInputSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
@@ -65,7 +65,7 @@ public class FilterLabelsByExpression3DAlgorithm extends JIPipeSimpleIteratingAl
         int[] numPixels = LabelImages.pixelCount(image, allLabels);
         TIntArrayList keptLabels = new TIntArrayList();
         ExpressionVariables parameters = new ExpressionVariables();
-        for (JIPipeAnnotation annotation : dataBatch.getMergedAnnotations().values()) {
+        for (JIPipeTextAnnotation annotation : dataBatch.getMergedAnnotations().values()) {
             parameters.set(annotation.getName(), annotation.getValue());
         }
         for (int i = 0; i < allLabels.length; i++) {

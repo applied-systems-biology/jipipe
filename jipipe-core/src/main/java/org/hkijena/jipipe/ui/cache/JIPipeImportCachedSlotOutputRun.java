@@ -6,8 +6,8 @@ import org.hkijena.jipipe.api.JIPipeProject;
 import org.hkijena.jipipe.api.JIPipeProjectCacheQuery;
 import org.hkijena.jipipe.api.JIPipeProjectCacheState;
 import org.hkijena.jipipe.api.JIPipeRunnable;
-import org.hkijena.jipipe.api.data.JIPipeAnnotation;
-import org.hkijena.jipipe.api.data.JIPipeAnnotationMergeStrategy;
+import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
+import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataInfo;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
@@ -112,10 +112,10 @@ public class JIPipeImportCachedSlotOutputRun implements JIPipeRunnable {
         for (JIPipeExportedDataTableRow row : exportedDataTable.getRowList()) {
             slotProgressInfo.log("Importing data row " + row.getIndex());
             Path storageFolder = dataFolder.resolve("" + row.getIndex());
-            List<JIPipeAnnotation> annotationList = row.getAnnotations();
+            List<JIPipeTextAnnotation> annotationList = row.getAnnotations();
             JIPipeDataInfo trueDataType = exportedDataTable.getDataTypeOf(row.getIndex());
             JIPipeData data = JIPipe.importData(storageFolder, trueDataType.getDataClass());
-            tempSlot.addData(data, annotationList, JIPipeAnnotationMergeStrategy.OverwriteExisting, slotProgressInfo);
+            tempSlot.addData(data, annotationList, JIPipeTextAnnotationMergeMode.OverwriteExisting, slotProgressInfo);
 
             for (JIPipeExportedDataAnnotation dataAnnotation : row.getDataAnnotations()) {
                 try {

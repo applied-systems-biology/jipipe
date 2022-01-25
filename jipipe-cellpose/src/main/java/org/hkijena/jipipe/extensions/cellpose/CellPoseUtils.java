@@ -9,8 +9,8 @@ import ij.ImagePlus;
 import ij.gui.PolygonRoi;
 import ij.gui.Roi;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
-import org.hkijena.jipipe.api.data.JIPipeAnnotation;
-import org.hkijena.jipipe.api.data.JIPipeAnnotationMergeStrategy;
+import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
+import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
 import org.hkijena.jipipe.api.nodes.JIPipeMergingDataBatch;
 import org.hkijena.jipipe.extensions.cellpose.parameters.OutputParameters;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ROIListData;
@@ -103,26 +103,26 @@ public class CellPoseUtils {
         return rois;
     }
 
-    public static void extractCellposeOutputs(JIPipeMergingDataBatch dataBatch, JIPipeProgressInfo progressInfo, Path outputRoiOutline, Path outputLabels, Path outputFlows, Path outputProbabilities, Path outputStyles, List<JIPipeAnnotation> annotationList, OutputParameters outputParameters) {
+    public static void extractCellposeOutputs(JIPipeMergingDataBatch dataBatch, JIPipeProgressInfo progressInfo, Path outputRoiOutline, Path outputLabels, Path outputFlows, Path outputProbabilities, Path outputStyles, List<JIPipeTextAnnotation> annotationList, OutputParameters outputParameters) {
         if (outputParameters.isOutputROI()) {
             ROIListData rois = cellPoseROIJsonToImageJ(outputRoiOutline);
-            dataBatch.addOutputData("ROI", rois, annotationList, JIPipeAnnotationMergeStrategy.OverwriteExisting, progressInfo);
+            dataBatch.addOutputData("ROI", rois, annotationList, JIPipeTextAnnotationMergeMode.OverwriteExisting, progressInfo);
         }
         if (outputParameters.isOutputLabels()) {
             ImagePlus labels = IJ.openImage(outputLabels.toString());
-            dataBatch.addOutputData("Labels", new ImagePlus3DGreyscaleData(labels), annotationList, JIPipeAnnotationMergeStrategy.OverwriteExisting, progressInfo);
+            dataBatch.addOutputData("Labels", new ImagePlus3DGreyscaleData(labels), annotationList, JIPipeTextAnnotationMergeMode.OverwriteExisting, progressInfo);
         }
         if (outputParameters.isOutputFlows()) {
             ImagePlus flows = IJ.openImage(outputFlows.toString());
-            dataBatch.addOutputData("Flows", new ImagePlus3DColorRGBData(flows), annotationList, JIPipeAnnotationMergeStrategy.OverwriteExisting, progressInfo);
+            dataBatch.addOutputData("Flows", new ImagePlus3DColorRGBData(flows), annotationList, JIPipeTextAnnotationMergeMode.OverwriteExisting, progressInfo);
         }
         if (outputParameters.isOutputProbabilities()) {
             ImagePlus probabilities = IJ.openImage(outputProbabilities.toString());
-            dataBatch.addOutputData("Probabilities", new ImagePlus3DGreyscale32FData(probabilities), annotationList, JIPipeAnnotationMergeStrategy.OverwriteExisting, progressInfo);
+            dataBatch.addOutputData("Probabilities", new ImagePlus3DGreyscale32FData(probabilities), annotationList, JIPipeTextAnnotationMergeMode.OverwriteExisting, progressInfo);
         }
         if (outputParameters.isOutputStyles()) {
             ImagePlus styles = IJ.openImage(outputStyles.toString());
-            dataBatch.addOutputData("Styles", new ImagePlus3DGreyscale32FData(styles), annotationList, JIPipeAnnotationMergeStrategy.OverwriteExisting, progressInfo);
+            dataBatch.addOutputData("Styles", new ImagePlus3DGreyscale32FData(styles), annotationList, JIPipeTextAnnotationMergeMode.OverwriteExisting, progressInfo);
         }
     }
 

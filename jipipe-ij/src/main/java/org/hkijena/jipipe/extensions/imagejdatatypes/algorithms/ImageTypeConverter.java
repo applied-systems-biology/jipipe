@@ -18,7 +18,7 @@ import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeIssueReport;
 import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
-import org.hkijena.jipipe.api.data.JIPipeAnnotationMergeStrategy;
+import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.data.JIPipeDefaultMutableSlotConfiguration;
@@ -69,7 +69,7 @@ public class ImageTypeConverter extends JIPipeAlgorithm {
         for (int i = 0; i < inputSlot.getRowCount(); ++i) {
             ImagePlusData data = inputSlot.getData(i, ImagePlusData.class, progressInfo);
             JIPipeData converted = JIPipe.createData(outputSlot.getAcceptedDataType(), data.getImage());
-            outputSlot.addData(converted, outputSlot.getAnnotations(i), JIPipeAnnotationMergeStrategy.Merge, progressInfo);
+            outputSlot.addData(converted, outputSlot.getAnnotations(i), JIPipeTextAnnotationMergeMode.Merge, progressInfo);
         }
     }
 

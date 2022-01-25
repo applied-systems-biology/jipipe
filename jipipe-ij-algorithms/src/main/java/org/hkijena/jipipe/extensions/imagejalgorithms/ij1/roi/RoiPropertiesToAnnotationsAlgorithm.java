@@ -17,8 +17,8 @@ import ij.gui.Roi;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
-import org.hkijena.jipipe.api.data.JIPipeAnnotation;
-import org.hkijena.jipipe.api.data.JIPipeAnnotationMergeStrategy;
+import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
+import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
 import org.hkijena.jipipe.api.nodes.JIPipeDataBatch;
 import org.hkijena.jipipe.api.nodes.JIPipeInputSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
@@ -52,7 +52,7 @@ public class RoiPropertiesToAnnotationsAlgorithm extends JIPipeSimpleIteratingAl
     private OptionalAnnotationNameParameter fillColorAnnotation = new OptionalAnnotationNameParameter("Fill color", false);
     private OptionalAnnotationNameParameter lineColorAnnotation = new OptionalAnnotationNameParameter("Line color", false);
     private OptionalAnnotationNameParameter lineWidthAnnotation = new OptionalAnnotationNameParameter("Line width", false);
-    private JIPipeAnnotationMergeStrategy annotationMergeStrategy = JIPipeAnnotationMergeStrategy.OverwriteExisting;
+    private JIPipeTextAnnotationMergeMode annotationMergeStrategy = JIPipeTextAnnotationMergeMode.OverwriteExisting;
     private boolean deduplicate = false;
     private boolean onlyFirst = false;
 
@@ -80,7 +80,7 @@ public class RoiPropertiesToAnnotationsAlgorithm extends JIPipeSimpleIteratingAl
     @Override
     protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
         ROIListData rois = dataBatch.getInputData(getFirstInputSlot(), ROIListData.class, progressInfo);
-        List<JIPipeAnnotation> annotations = new ArrayList<>();
+        List<JIPipeTextAnnotation> annotations = new ArrayList<>();
         countAnnotation.addAnnotationIfEnabled(annotations, rois.size() + "");
 
         List<String> names = new ArrayList<>();
@@ -247,12 +247,12 @@ public class RoiPropertiesToAnnotationsAlgorithm extends JIPipeSimpleIteratingAl
 
     @JIPipeDocumentation(name = "Annotation merge strategy", description = "Determines how the newly generated annotations are merged with existing annotations.")
     @JIPipeParameter("annotation-merge-strategy")
-    public JIPipeAnnotationMergeStrategy getAnnotationMergeStrategy() {
+    public JIPipeTextAnnotationMergeMode getAnnotationMergeStrategy() {
         return annotationMergeStrategy;
     }
 
     @JIPipeParameter("annotation-merge-strategy")
-    public void setAnnotationMergeStrategy(JIPipeAnnotationMergeStrategy annotationMergeStrategy) {
+    public void setAnnotationMergeStrategy(JIPipeTextAnnotationMergeMode annotationMergeStrategy) {
         this.annotationMergeStrategy = annotationMergeStrategy;
     }
 

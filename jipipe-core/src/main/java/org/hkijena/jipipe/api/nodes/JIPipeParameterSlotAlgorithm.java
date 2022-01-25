@@ -16,12 +16,8 @@ package org.hkijena.jipipe.api.nodes;
 import com.google.common.eventbus.Subscribe;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
-import org.hkijena.jipipe.api.data.JIPipeAnnotation;
-import org.hkijena.jipipe.api.data.JIPipeDataSlot;
-import org.hkijena.jipipe.api.data.JIPipeDataSlotInfo;
-import org.hkijena.jipipe.api.data.JIPipeMutableSlotConfiguration;
-import org.hkijena.jipipe.api.data.JIPipeSlotConfiguration;
-import org.hkijena.jipipe.api.data.JIPipeSlotType;
+import org.hkijena.jipipe.api.data.*;
+import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
@@ -181,7 +177,7 @@ public abstract class JIPipeParameterSlotAlgorithm extends JIPipeAlgorithm {
                     if (progressInfo.isCancelled())
                         break;
                     ParametersData data = parameterSlot.getData(row, ParametersData.class, progressInfo);
-                    List<JIPipeAnnotation> annotations = new ArrayList<>();
+                    List<JIPipeTextAnnotation> annotations = new ArrayList<>();
                     for (Map.Entry<String, Object> entry : data.getParameterData().entrySet()) {
                         JIPipeParameterAccess target = tree.getParameters().getOrDefault(entry.getKey(), null);
                         if (target == null) {
@@ -200,7 +196,7 @@ public abstract class JIPipeParameterSlotAlgorithm extends JIPipeAlgorithm {
                                 annotationName = target.getName();
                             }
                             annotationName = parameterSlotAlgorithmSettings.getParameterAnnotationsPrefix() + annotationName;
-                            annotations.add(new JIPipeAnnotation(annotationName, "" + target.get(Object.class)));
+                            annotations.add(new JIPipeTextAnnotation(annotationName, "" + target.get(Object.class)));
                         }
                     }
                     runParameterSet(progressInfo.resolve("Parameter set", row, parameterSlot.getRowCount()), annotations);
@@ -222,7 +218,7 @@ public abstract class JIPipeParameterSlotAlgorithm extends JIPipeAlgorithm {
      * @param progressInfo         progress info from the run
      * @param parameterAnnotations parameter annotations
      */
-    public abstract void runParameterSet(JIPipeProgressInfo progressInfo, List<JIPipeAnnotation> parameterAnnotations);
+    public abstract void runParameterSet(JIPipeProgressInfo progressInfo, List<JIPipeTextAnnotation> parameterAnnotations);
 
     private void updateParameterSlot() {
         if (getSlotConfiguration() instanceof JIPipeMutableSlotConfiguration) {

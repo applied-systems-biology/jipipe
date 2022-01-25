@@ -17,8 +17,8 @@ import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeIssueReport;
 import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
-import org.hkijena.jipipe.api.data.JIPipeAnnotation;
-import org.hkijena.jipipe.api.data.JIPipeAnnotationMergeStrategy;
+import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
+import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.nodes.JIPipeDataBatch;
 import org.hkijena.jipipe.api.nodes.JIPipeInputSlot;
@@ -41,7 +41,7 @@ import org.hkijena.jipipe.extensions.parameters.primitives.StringParameterSettin
 public class ExtractAndReplaceAnnotation extends JIPipeSimpleIteratingAlgorithm {
 
     private StringPatternExtractionFunction.List functions = new StringPatternExtractionFunction.List();
-    private JIPipeAnnotationMergeStrategy annotationMergeStrategy = JIPipeAnnotationMergeStrategy.OverwriteExisting;
+    private JIPipeTextAnnotationMergeMode annotationMergeStrategy = JIPipeTextAnnotationMergeMode.OverwriteExisting;
 
     /**
      * New instance
@@ -67,13 +67,13 @@ public class ExtractAndReplaceAnnotation extends JIPipeSimpleIteratingAlgorithm 
     @Override
     protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
         for (StringPatternExtractionFunction function : functions) {
-            JIPipeAnnotation inputAnnotation = dataBatch.getMergedAnnotation(function.getInput());
+            JIPipeTextAnnotation inputAnnotation = dataBatch.getMergedAnnotation(function.getInput());
             if (inputAnnotation == null)
                 continue;
             String newValue = function.getParameter().apply(inputAnnotation.getValue());
             if (newValue == null)
                 continue;
-            dataBatch.addMergedAnnotation(new JIPipeAnnotation(function.getOutput(), newValue), annotationMergeStrategy);
+            dataBatch.addMergedAnnotation(new JIPipeTextAnnotation(function.getOutput(), newValue), annotationMergeStrategy);
         }
         dataBatch.addOutputData(getFirstOutputSlot(), dataBatch.getInputData(getFirstInputSlot(), JIPipeData.class, progressInfo), progressInfo);
     }
@@ -106,12 +106,12 @@ public class ExtractAndReplaceAnnotation extends JIPipeSimpleIteratingAlgorithm 
 
     @JIPipeDocumentation(name = "Merge same annotation values", description = "Determines which strategy is applied if an annotation already exists.")
     @JIPipeParameter("annotation-merge-strategy")
-    public JIPipeAnnotationMergeStrategy getAnnotationMergeStrategy() {
+    public JIPipeTextAnnotationMergeMode getAnnotationMergeStrategy() {
         return annotationMergeStrategy;
     }
 
     @JIPipeParameter("annotation-merge-strategy")
-    public void setAnnotationMergeStrategy(JIPipeAnnotationMergeStrategy annotationMergeStrategy) {
+    public void setAnnotationMergeStrategy(JIPipeTextAnnotationMergeMode annotationMergeStrategy) {
         this.annotationMergeStrategy = annotationMergeStrategy;
     }
 }

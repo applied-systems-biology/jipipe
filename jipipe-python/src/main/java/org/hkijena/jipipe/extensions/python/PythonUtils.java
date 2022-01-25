@@ -9,8 +9,8 @@ import org.apache.commons.lang.WordUtils;
 import org.apache.commons.lang3.SystemUtils;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
-import org.hkijena.jipipe.api.data.JIPipeAnnotation;
-import org.hkijena.jipipe.api.data.JIPipeAnnotationMergeStrategy;
+import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
+import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataInfo;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
@@ -72,9 +72,9 @@ public class PythonUtils {
      * @param code        the code
      * @param annotations the annotations
      */
-    public static void annotationsToPython(StringBuilder code, Collection<JIPipeAnnotation> annotations) {
+    public static void annotationsToPython(StringBuilder code, Collection<JIPipeTextAnnotation> annotations) {
         code.append("jipipe_annotations = {}\n");
-        for (JIPipeAnnotation annotation : annotations) {
+        for (JIPipeTextAnnotation annotation : annotations) {
             code.append("jipipe_annotations[\"").append(MacroUtils.escapeString(annotation.getName())).append("\"] = ")
                     .append("\"").append(annotation.getValue()).append("\"\n");
         }
@@ -245,7 +245,7 @@ public class PythonUtils {
         runPython(codeFilePath, environment, libraryPaths, progressInfo);
     }
 
-    public static void extractOutputs(JIPipeDataBatch dataBatch, Map<String, Path> outputSlotPaths, List<JIPipeDataSlot> outputSlots, JIPipeAnnotationMergeStrategy annotationMergeStrategy, JIPipeProgressInfo progressInfo) {
+    public static void extractOutputs(JIPipeDataBatch dataBatch, Map<String, Path> outputSlotPaths, List<JIPipeDataSlot> outputSlots, JIPipeTextAnnotationMergeMode annotationMergeStrategy, JIPipeProgressInfo progressInfo) {
         for (JIPipeDataSlot outputSlot : outputSlots) {
             Path storagePath = outputSlotPaths.get(outputSlot.getName());
             JIPipeExportedDataTable table = JIPipeExportedDataTable.loadFromJson(outputSlotPaths.get(outputSlot.getName()).resolve("data-table.json"));
@@ -258,7 +258,7 @@ public class PythonUtils {
         }
     }
 
-    public static void extractOutputs(JIPipeMergingDataBatch dataBatch, Map<String, Path> outputSlotPaths, List<JIPipeDataSlot> outputSlots, JIPipeAnnotationMergeStrategy annotationMergeStrategy, JIPipeProgressInfo progressInfo) {
+    public static void extractOutputs(JIPipeMergingDataBatch dataBatch, Map<String, Path> outputSlotPaths, List<JIPipeDataSlot> outputSlots, JIPipeTextAnnotationMergeMode annotationMergeStrategy, JIPipeProgressInfo progressInfo) {
         for (JIPipeDataSlot outputSlot : outputSlots) {
             Path storagePath = outputSlotPaths.get(outputSlot.getName());
             JIPipeExportedDataTable table = JIPipeExportedDataTable.loadFromJson(outputSlotPaths.get(outputSlot.getName()).resolve("data-table.json"));
@@ -279,7 +279,7 @@ public class PythonUtils {
                 JIPipeDataInfo dataInfo = table.getDataTypeOf(row);
                 Path rowStoragePath = table.getRowStoragePath(storagePath, row);
                 JIPipeData data = JIPipe.importData(rowStoragePath, dataInfo.getDataClass());
-                outputSlot.addData(data, table.getRowList().get(row).getAnnotations(), JIPipeAnnotationMergeStrategy.OverwriteExisting, progressInfo);
+                outputSlot.addData(data, table.getRowList().get(row).getAnnotations(), JIPipeTextAnnotationMergeMode.OverwriteExisting, progressInfo);
             }
         }
     }

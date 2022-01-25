@@ -1,9 +1,12 @@
-package org.hkijena.jipipe.api.data;
+package org.hkijena.jipipe.api.annotation;
 
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
+import org.hkijena.jipipe.api.data.JIPipeData;
+import org.hkijena.jipipe.api.data.JIPipeDataInfo;
+import org.hkijena.jipipe.api.data.JIPipeVirtualData;
 
-public class JIPipeDataAnnotation {
+public class JIPipeDataAnnotation implements JIPipeAnnotation {
     private final String name;
     private final JIPipeVirtualData virtualData;
 
@@ -21,6 +24,7 @@ public class JIPipeDataAnnotation {
         return virtualData.getDataClass();
     }
 
+    @Override
     public String getName() {
         return name;
     }

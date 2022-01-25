@@ -18,7 +18,7 @@ import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeIssueReport;
 import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
-import org.hkijena.jipipe.api.data.JIPipeAnnotation;
+import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.nodes.JIPipeDataBatch;
 import org.hkijena.jipipe.api.nodes.JIPipeInputSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
@@ -116,7 +116,7 @@ public class ModifyTablesScript extends JIPipeSimpleIteratingAlgorithm {
         ResultsTableData inputData = dataBatch.getInputData(getFirstInputSlot(), ResultsTableData.class, progressInfo);
         PyDictionary tableDict = inputData.toPython();
 
-        PyDictionary annotationDict = JIPipeAnnotation.annotationMapToPython(dataBatch.getMergedAnnotations());
+        PyDictionary annotationDict = JIPipeTextAnnotation.annotationMapToPython(dataBatch.getMergedAnnotations());
         pythonInterpreter.set("annotations", annotationDict);
         pythonInterpreter.set("table", tableDict);
         pythonInterpreter.set("nrow", inputData.getRowCount());
@@ -125,7 +125,7 @@ public class ModifyTablesScript extends JIPipeSimpleIteratingAlgorithm {
         annotationDict = (PyDictionary) pythonInterpreter.get("annotations");
 
         dataBatch.getMergedAnnotations().clear();
-        JIPipeAnnotation.setAnnotationsFromPython(annotationDict, dataBatch.getMergedAnnotations());
+        JIPipeTextAnnotation.setAnnotationsFromPython(annotationDict, dataBatch.getMergedAnnotations());
 
         dataBatch.addOutputData(getFirstOutputSlot(), ResultsTableData.fromPython(tableDict), progressInfo);
     }

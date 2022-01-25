@@ -2,7 +2,7 @@ package org.hkijena.jipipe.extensions.forms.utils;
 
 import com.google.common.eventbus.EventBus;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.data.JIPipeAnnotationMergeStrategy;
+import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.extensions.parameters.primitives.OptionalAnnotationNameParameter;
@@ -14,7 +14,7 @@ public class SingleAnnotationIOSettings implements JIPipeParameterCollection {
     private final EventBus eventBus = new EventBus();
     private OptionalAnnotationNameParameter outputAnnotation = new OptionalAnnotationNameParameter("Text", true);
     private OptionalAnnotationNameParameter inputAnnotation = new OptionalAnnotationNameParameter("", false);
-    private JIPipeAnnotationMergeStrategy annotationMergeStrategy = JIPipeAnnotationMergeStrategy.OverwriteExisting;
+    private JIPipeTextAnnotationMergeMode annotationMergeStrategy = JIPipeTextAnnotationMergeMode.OverwriteExisting;
 
     public SingleAnnotationIOSettings() {
     }
@@ -50,12 +50,12 @@ public class SingleAnnotationIOSettings implements JIPipeParameterCollection {
 
     @JIPipeDocumentation(name = "Merge output annotation", description = "Determines how the output annotation is merged with existing values.")
     @JIPipeParameter("merge-strategy")
-    public JIPipeAnnotationMergeStrategy getAnnotationMergeStrategy() {
+    public JIPipeTextAnnotationMergeMode getAnnotationMergeStrategy() {
         return annotationMergeStrategy;
     }
 
     @JIPipeParameter("merge-strategy")
-    public void setAnnotationMergeStrategy(JIPipeAnnotationMergeStrategy annotationMergeStrategy) {
+    public void setAnnotationMergeStrategy(JIPipeTextAnnotationMergeMode annotationMergeStrategy) {
         this.annotationMergeStrategy = annotationMergeStrategy;
     }
 

@@ -19,8 +19,8 @@ import gnu.trove.set.hash.TIntHashSet;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeIssueReport;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
-import org.hkijena.jipipe.api.data.JIPipeAnnotationMergeStrategy;
-import org.hkijena.jipipe.api.data.JIPipeDataAnnotationMergeStrategy;
+import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
+import org.hkijena.jipipe.api.annotation.JIPipeDataAnnotationMergeMode;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.data.JIPipeSlotConfiguration;
 import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
@@ -114,7 +114,7 @@ public abstract class JIPipeParameterlessSimpleIteratingAlgorithm extends JIPipe
                     JIPipeProgressInfo slotProgress = progressInfo.resolveAndLog("Data row", i, getFirstInputSlot().getRowCount());
                     JIPipeDataBatch dataBatch = new JIPipeDataBatch(this);
                     dataBatch.setInputData(getFirstInputSlot(), i);
-                    dataBatch.addMergedAnnotations(getFirstInputSlot().getAnnotations(i), JIPipeAnnotationMergeStrategy.Merge);
+                    dataBatch.addMergedAnnotations(getFirstInputSlot().getAnnotations(i), JIPipeTextAnnotationMergeMode.Merge);
                     runIteration(dataBatch, slotProgress);
                 }
             } else {
@@ -129,7 +129,7 @@ public abstract class JIPipeParameterlessSimpleIteratingAlgorithm extends JIPipe
                         JIPipeProgressInfo slotProgress = progressInfo.resolveAndLog("Data row", rowIndex, getFirstInputSlot().getRowCount());
                         JIPipeDataBatch dataBatch = new JIPipeDataBatch(this);
                         dataBatch.setInputData(getFirstInputSlot(), rowIndex);
-                        dataBatch.addMergedAnnotations(getFirstInputSlot().getAnnotations(rowIndex), JIPipeAnnotationMergeStrategy.Merge);
+                        dataBatch.addMergedAnnotations(getFirstInputSlot().getAnnotations(rowIndex), JIPipeTextAnnotationMergeMode.Merge);
                         runIteration(dataBatch, slotProgress);
                     });
                 }
@@ -231,8 +231,8 @@ public abstract class JIPipeParameterlessSimpleIteratingAlgorithm extends JIPipe
                 continue;
             JIPipeMergingDataBatch dataBatch = new JIPipeMergingDataBatch(this);
             dataBatch.addInputData(slot, i);
-            dataBatch.addMergedAnnotations(slot.getAnnotations(i), JIPipeAnnotationMergeStrategy.Merge);
-            dataBatch.addMergedDataAnnotations(slot.getDataAnnotations(i), JIPipeDataAnnotationMergeStrategy.MergeTables);
+            dataBatch.addMergedAnnotations(slot.getAnnotations(i), JIPipeTextAnnotationMergeMode.Merge);
+            dataBatch.addMergedDataAnnotations(slot.getDataAnnotations(i), JIPipeDataAnnotationMergeMode.MergeTables);
             batches.add(dataBatch);
         }
         return batches;

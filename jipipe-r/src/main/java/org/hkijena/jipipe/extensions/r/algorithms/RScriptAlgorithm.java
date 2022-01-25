@@ -5,13 +5,9 @@ import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeIssueReport;
 import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
-import org.hkijena.jipipe.api.data.JIPipeAnnotation;
-import org.hkijena.jipipe.api.data.JIPipeAnnotationMergeStrategy;
-import org.hkijena.jipipe.api.data.JIPipeData;
-import org.hkijena.jipipe.api.data.JIPipeDataInfo;
-import org.hkijena.jipipe.api.data.JIPipeDataSlot;
-import org.hkijena.jipipe.api.data.JIPipeDefaultMutableSlotConfiguration;
-import org.hkijena.jipipe.api.data.JIPipeExportedDataTable;
+import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
+import org.hkijena.jipipe.api.data.*;
+import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.nodes.DefaultJIPipeInputSlot;
 import org.hkijena.jipipe.api.nodes.DefaultJIPipeOutputSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeInputSlot;
@@ -115,7 +111,7 @@ public class RScriptAlgorithm extends JIPipeParameterSlotAlgorithm {
     }
 
     @Override
-    public void runParameterSet(JIPipeProgressInfo progressInfo, List<JIPipeAnnotation> parameterAnnotations) {
+    public void runParameterSet(JIPipeProgressInfo progressInfo, List<JIPipeTextAnnotation> parameterAnnotations) {
         StringBuilder code = new StringBuilder();
 
         // Add user variables
@@ -170,7 +166,7 @@ public class RScriptAlgorithm extends JIPipeParameterSlotAlgorithm {
                 JIPipeDataInfo dataInfo = table.getDataTypeOf(row);
                 Path rowStoragePath = table.getRowStoragePath(storagePath, row);
                 JIPipeData data = JIPipe.importData(rowStoragePath, dataInfo.getDataClass());
-                outputSlot.addData(data, table.getRowList().get(row).getAnnotations(), JIPipeAnnotationMergeStrategy.OverwriteExisting, progressInfo);
+                outputSlot.addData(data, table.getRowList().get(row).getAnnotations(), JIPipeTextAnnotationMergeMode.OverwriteExisting, progressInfo);
             }
         }
 

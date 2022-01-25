@@ -19,7 +19,7 @@ import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
-import org.hkijena.jipipe.api.data.JIPipeAnnotation;
+import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.data.JIPipeDataSlotInfo;
 import org.hkijena.jipipe.api.data.JIPipeSlotType;
@@ -277,7 +277,7 @@ public class TrainClassifierModelAlgorithm extends JIPipeSingleIterationAlgorith
             }
 
             // Extract the label annotation + value
-            JIPipeAnnotation annotation = labelAnnotation.queryFirst(inputImagesSlot.getAnnotations(imageIndex));
+            JIPipeTextAnnotation annotation = labelAnnotation.queryFirst(inputImagesSlot.getAnnotations(imageIndex));
             int imageLabel = Integer.parseInt(annotation.getValue());
 
             // Insert into table

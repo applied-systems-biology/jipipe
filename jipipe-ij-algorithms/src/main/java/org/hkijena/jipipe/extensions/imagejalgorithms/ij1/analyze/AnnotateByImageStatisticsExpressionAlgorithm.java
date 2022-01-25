@@ -22,8 +22,8 @@ import ij.process.ImageStatistics;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
-import org.hkijena.jipipe.api.data.JIPipeAnnotation;
-import org.hkijena.jipipe.api.data.JIPipeAnnotationMergeStrategy;
+import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
+import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
 import org.hkijena.jipipe.api.nodes.JIPipeDataBatch;
 import org.hkijena.jipipe.api.nodes.JIPipeInputSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeIteratingAlgorithm;
@@ -113,7 +113,7 @@ public class AnnotateByImageStatisticsExpressionAlgorithm extends JIPipeIteratin
         }));
 
         List<Float> pixelsList = new ArrayList<>();
-        List<JIPipeAnnotation> outputAnnotations = new ArrayList<>();
+        List<JIPipeTextAnnotation> outputAnnotations = new ArrayList<>();
 
         int currentIndexBatch = 0;
         ExpressionVariables parameters = new ExpressionVariables();
@@ -123,7 +123,7 @@ public class AnnotateByImageStatisticsExpressionAlgorithm extends JIPipeIteratin
         parameters.set("num_c", img.getNChannels());
         parameters.set("num_t", img.getNFrames());
 
-        for (JIPipeAnnotation annotation : dataBatch.getMergedAnnotations().values()) {
+        for (JIPipeTextAnnotation annotation : dataBatch.getMergedAnnotations().values()) {
             parameters.set(annotation.getName(), annotation.getValue());
         }
 
@@ -165,13 +165,13 @@ public class AnnotateByImageStatisticsExpressionAlgorithm extends JIPipeIteratin
 
             for (ExpressionTableColumnGeneratorProcessor columnGenerator : annotations) {
                 Object expressionResult = columnGenerator.getKey().evaluate(parameters);
-                outputAnnotations.add(new JIPipeAnnotation(columnGenerator.getValue(), StringUtils.nullToEmpty(expressionResult)));
+                outputAnnotations.add(new JIPipeTextAnnotation(columnGenerator.getValue(), StringUtils.nullToEmpty(expressionResult)));
             }
 
             ++currentIndexBatch;
         }
 
-        dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusData(img), outputAnnotations, JIPipeAnnotationMergeStrategy.OverwriteExisting, progressInfo);
+        dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusData(img), outputAnnotations, JIPipeTextAnnotationMergeMode.OverwriteExisting, progressInfo);
     }
 
     @JIPipeDocumentation(name = "Load example", description = "Loads example parameters that showcase how to use this algorithm.")

@@ -16,7 +16,7 @@ import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipePercentageProgressInfo;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
-import org.hkijena.jipipe.api.data.JIPipeAnnotation;
+import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.data.JIPipeDefaultMutableSlotConfiguration;
 import org.hkijena.jipipe.api.nodes.JIPipeDataBatch;
@@ -147,7 +147,7 @@ public class FilterLabelsByOverlapAlgorithm extends JIPipeIteratingAlgorithm {
 
         // Write annotations map
         Map<String, String> annotations = new HashMap<>();
-        for (Map.Entry<String, JIPipeAnnotation> entry : dataBatch.getMergedAnnotations().entrySet()) {
+        for (Map.Entry<String, JIPipeTextAnnotation> entry : dataBatch.getMergedAnnotations().entrySet()) {
             annotations.put(entry.getKey(), entry.getValue().getValue());
         }
         variables.set("annotations", annotations);

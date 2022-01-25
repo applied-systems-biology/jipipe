@@ -11,7 +11,7 @@
  * See the LICENSE file provided with the code for the full license.
  */
 
-package org.hkijena.jipipe.api.data;
+package org.hkijena.jipipe.api.annotation;
 
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonSetter;
@@ -32,7 +32,7 @@ import java.util.Objects;
 /**
  * A single annotation
  */
-public class JIPipeAnnotation implements Comparable<JIPipeAnnotation> {
+public class JIPipeTextAnnotation implements Comparable<JIPipeTextAnnotation>, JIPipeAnnotation {
 
     private String name;
     private String value;
@@ -40,7 +40,7 @@ public class JIPipeAnnotation implements Comparable<JIPipeAnnotation> {
     /**
      * Creates an empty instance
      */
-    public JIPipeAnnotation() {
+    public JIPipeTextAnnotation() {
     }
 
     /**
@@ -49,7 +49,7 @@ public class JIPipeAnnotation implements Comparable<JIPipeAnnotation> {
      * @param name  the name
      * @param value the value
      */
-    public JIPipeAnnotation(String name, String value) {
+    public JIPipeTextAnnotation(String name, String value) {
         this.name = name;
         this.value = value;
     }
@@ -63,7 +63,7 @@ public class JIPipeAnnotation implements Comparable<JIPipeAnnotation> {
      * @param name   the name
      * @param values the values
      */
-    public JIPipeAnnotation(String name, Collection<String> values) {
+    public JIPipeTextAnnotation(String name, Collection<String> values) {
         this(name, values.isEmpty() ? "" : (values.size() == 1 ? values.iterator().next() : JsonUtils.toJsonString(values)));
     }
 
@@ -76,11 +76,12 @@ public class JIPipeAnnotation implements Comparable<JIPipeAnnotation> {
      * @param name   the name
      * @param values the values
      */
-    public JIPipeAnnotation(String name, String[] values) {
+    public JIPipeTextAnnotation(String name, String[] values) {
         this(name, values.length == 0 ? "" : (values.length == 1 ? values[0] : JsonUtils.toJsonString(values)));
     }
 
     @JsonGetter("name")
+    @Override
     public String getName() {
         if (name == null)
             return "";
@@ -124,7 +125,7 @@ public class JIPipeAnnotation implements Comparable<JIPipeAnnotation> {
     }
 
     @Override
-    public int compareTo(JIPipeAnnotation o) {
+    public int compareTo(JIPipeTextAnnotation o) {
         return NaturalOrderComparator.INSTANCE.compare(getValue(), o.getValue());
     }
 
@@ -138,7 +139,7 @@ public class JIPipeAnnotation implements Comparable<JIPipeAnnotation> {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        JIPipeAnnotation that = (JIPipeAnnotation) o;
+        JIPipeTextAnnotation that = (JIPipeTextAnnotation) o;
         return Objects.equals(getName(), that.getName()) &&
                 Objects.equals(getValue(), that.getValue());
     }
@@ -154,7 +155,7 @@ public class JIPipeAnnotation implements Comparable<JIPipeAnnotation> {
      * @param other the other
      * @return if the names are equal
      */
-    public boolean nameEquals(JIPipeAnnotation other) {
+    public boolean nameEquals(JIPipeTextAnnotation other) {
         return Objects.equals(getName(), other.getName());
     }
 
@@ -190,7 +191,7 @@ public class JIPipeAnnotation implements Comparable<JIPipeAnnotation> {
      * @param rhs the second
      * @return if both have the same name and are not null
      */
-    public static boolean nameEquals(JIPipeAnnotation lhs, JIPipeAnnotation rhs) {
+    public static boolean nameEquals(JIPipeTextAnnotation lhs, JIPipeTextAnnotation rhs) {
         if (lhs == null || rhs == null)
             return false;
         return lhs.nameEquals(rhs);
@@ -202,9 +203,9 @@ public class JIPipeAnnotation implements Comparable<JIPipeAnnotation> {
      * @param annotationMap the annotations
      * @return the Python dictionary
      */
-    public static PyDictionary annotationMapToPython(Map<String, JIPipeAnnotation> annotationMap) {
+    public static PyDictionary annotationMapToPython(Map<String, JIPipeTextAnnotation> annotationMap) {
         PyDictionary annotationDict = new PyDictionary();
-        for (Map.Entry<String, JIPipeAnnotation> entry : annotationMap.entrySet()) {
+        for (Map.Entry<String, JIPipeTextAnnotation> entry : annotationMap.entrySet()) {
             annotationDict.put(new PyString(entry.getKey()), new PyString(entry.getValue().getValue()));
         }
         return annotationDict;
@@ -216,11 +217,11 @@ public class JIPipeAnnotation implements Comparable<JIPipeAnnotation> {
      * @param annotationDict the dictionary
      * @param target         the target map
      */
-    public static void setAnnotationsFromPython(PyDictionary annotationDict, Map<String, JIPipeAnnotation> target) {
+    public static void setAnnotationsFromPython(PyDictionary annotationDict, Map<String, JIPipeTextAnnotation> target) {
         for (Object key : annotationDict.keys()) {
             String keyString = "" + key;
             String valueString = "" + annotationDict.get(key);
-            target.put(keyString, new JIPipeAnnotation(keyString, valueString));
+            target.put(keyString, new JIPipeTextAnnotation(keyString, valueString));
         }
     }
 
@@ -229,12 +230,12 @@ public class JIPipeAnnotation implements Comparable<JIPipeAnnotation> {
      *
      * @param annotationDict the dictionary
      */
-    public static List<JIPipeAnnotation> extractAnnotationsFromPython(PyDictionary annotationDict) {
-        List<JIPipeAnnotation> result = new ArrayList<>();
+    public static List<JIPipeTextAnnotation> extractAnnotationsFromPython(PyDictionary annotationDict) {
+        List<JIPipeTextAnnotation> result = new ArrayList<>();
         for (Object key : annotationDict.keys()) {
             String keyString = "" + key;
             String valueString = "" + annotationDict.get(key);
-            result.add(new JIPipeAnnotation(keyString, valueString));
+            result.add(new JIPipeTextAnnotation(keyString, valueString));
         }
         return result;
     }
@@ -245,9 +246,9 @@ public class JIPipeAnnotation implements Comparable<JIPipeAnnotation> {
      * @param annotations the annotations
      * @return the Python dictionary
      */
-    public static PyDictionary annotationListToPython(Collection<JIPipeAnnotation> annotations) {
+    public static PyDictionary annotationListToPython(Collection<JIPipeTextAnnotation> annotations) {
         PyDictionary annotationDict = new PyDictionary();
-        for (JIPipeAnnotation annotation : annotations) {
+        for (JIPipeTextAnnotation annotation : annotations) {
             annotationDict.put(new PyString(annotation.getName()), new PyString(annotation.getValue()));
         }
         return annotationDict;
@@ -259,9 +260,9 @@ public class JIPipeAnnotation implements Comparable<JIPipeAnnotation> {
      * @param annotations the annotations
      * @return annotations as map
      */
-    public static Map<String, String> annotationListToMap(Collection<JIPipeAnnotation> annotations, JIPipeAnnotationMergeStrategy mergeStrategy) {
+    public static Map<String, String> annotationListToMap(Collection<JIPipeTextAnnotation> annotations, JIPipeTextAnnotationMergeMode mergeStrategy) {
         Map<String, String> result = new HashMap<>();
-        for (JIPipeAnnotation annotation : mergeStrategy.merge(annotations)) {
+        for (JIPipeTextAnnotation annotation : mergeStrategy.merge(annotations)) {
             result.put(annotation.getName(), annotation.getValue());
         }
         return result;
@@ -273,10 +274,10 @@ public class JIPipeAnnotation implements Comparable<JIPipeAnnotation> {
      * @param map the map
      * @return the annotations
      */
-    public static List<JIPipeAnnotation> mapToAnnotationList(Map<String, String> map) {
-        List<JIPipeAnnotation> annotations = new ArrayList<>();
+    public static List<JIPipeTextAnnotation> mapToAnnotationList(Map<String, String> map) {
+        List<JIPipeTextAnnotation> annotations = new ArrayList<>();
         for (Map.Entry<String, String> entry : map.entrySet()) {
-            annotations.add(new JIPipeAnnotation(entry.getKey(), entry.getValue()));
+            annotations.add(new JIPipeTextAnnotation(entry.getKey(), entry.getValue()));
         }
         return annotations;
     }

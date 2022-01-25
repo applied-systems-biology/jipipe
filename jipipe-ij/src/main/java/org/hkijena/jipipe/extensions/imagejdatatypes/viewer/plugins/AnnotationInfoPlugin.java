@@ -1,6 +1,6 @@
 package org.hkijena.jipipe.extensions.imagejdatatypes.viewer.plugins;
 
-import org.hkijena.jipipe.api.data.JIPipeAnnotation;
+import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.extensions.imagejdatatypes.viewer.ImageViewerPanel;
 import org.hkijena.jipipe.extensions.settings.FileChooserSettings;
 import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
@@ -101,7 +101,7 @@ public class AnnotationInfoPlugin extends ImageViewerPanelPlugin {
         model.addStringColumn("Name");
         model.addStringColumn("Value");
         if (cacheDataViewerWindow != null && cacheDataViewerWindow.getDataSource() != null) {
-            for (JIPipeAnnotation annotation : cacheDataViewerWindow.getDataSource().getSlot().getAnnotations(cacheDataViewerWindow.getDataSource().getRow())) {
+            for (JIPipeTextAnnotation annotation : cacheDataViewerWindow.getDataSource().getSlot().getAnnotations(cacheDataViewerWindow.getDataSource().getRow())) {
                 model.addRow();
                 model.setLastValue(annotation.getName(), "Name");
                 model.setLastValue(annotation.getValue(), "Value");

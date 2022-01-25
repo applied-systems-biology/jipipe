@@ -18,8 +18,8 @@ import ij.process.ImageProcessor;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
-import org.hkijena.jipipe.api.data.JIPipeAnnotation;
-import org.hkijena.jipipe.api.data.JIPipeAnnotationMergeStrategy;
+import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
+import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
 import org.hkijena.jipipe.api.data.JIPipeDefaultMutableSlotConfiguration;
 import org.hkijena.jipipe.api.nodes.JIPipeDataBatch;
 import org.hkijena.jipipe.api.nodes.JIPipeInputSlot;
@@ -56,7 +56,7 @@ public class ManualThreshold8U2DAlgorithm extends JIPipeSimpleIteratingAlgorithm
     private IntNumberRangeParameter threshold = new IntNumberRangeParameter(0, 256);
     private OptionalAnnotationNameParameter minThresholdAnnotation = new OptionalAnnotationNameParameter("Min Threshold", true);
     private OptionalAnnotationNameParameter maxThresholdAnnotation = new OptionalAnnotationNameParameter("Max Threshold", true);
-    private JIPipeAnnotationMergeStrategy thresholdAnnotationStrategy = JIPipeAnnotationMergeStrategy.OverwriteExisting;
+    private JIPipeTextAnnotationMergeMode thresholdAnnotationStrategy = JIPipeTextAnnotationMergeMode.OverwriteExisting;
 
     /**
      * Instantiates a new node type.
@@ -106,7 +106,7 @@ public class ManualThreshold8U2DAlgorithm extends JIPipeSimpleIteratingAlgorithm
                     ip.set(i, 255);
             }
         }, progressInfo);
-        List<JIPipeAnnotation> annotations = new ArrayList<>();
+        List<JIPipeTextAnnotation> annotations = new ArrayList<>();
         if (minThresholdAnnotation.isEnabled()) {
             annotations.add(minThresholdAnnotation.createAnnotation("" + minThreshold));
         }
@@ -156,12 +156,12 @@ public class ManualThreshold8U2DAlgorithm extends JIPipeSimpleIteratingAlgorithm
 
     @JIPipeDocumentation(name = "Threshold annotation strategy", description = "Determines what happens if annotations are already present.")
     @JIPipeParameter("threshold-annotation-strategy")
-    public JIPipeAnnotationMergeStrategy getThresholdAnnotationStrategy() {
+    public JIPipeTextAnnotationMergeMode getThresholdAnnotationStrategy() {
         return thresholdAnnotationStrategy;
     }
 
     @JIPipeParameter("threshold-annotation-strategy")
-    public void setThresholdAnnotationStrategy(JIPipeAnnotationMergeStrategy thresholdAnnotationStrategy) {
+    public void setThresholdAnnotationStrategy(JIPipeTextAnnotationMergeMode thresholdAnnotationStrategy) {
         this.thresholdAnnotationStrategy = thresholdAnnotationStrategy;
     }
 }

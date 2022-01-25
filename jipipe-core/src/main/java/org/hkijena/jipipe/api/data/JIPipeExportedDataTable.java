@@ -17,6 +17,7 @@ import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonSetter;
 import ij.measure.ResultsTable;
 import org.hkijena.jipipe.JIPipe;
+import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
 import org.hkijena.jipipe.extensions.tables.datatypes.AnnotationTableData;
 import org.hkijena.jipipe.utils.StringUtils;
@@ -232,7 +233,7 @@ public class JIPipeExportedDataTable implements TableModel {
                     table.addValue(dataAnnotationColumn, "");
             }
             for (String annotationColumn : getAnnotationColumns()) {
-                JIPipeAnnotation existing = row.getAnnotations().stream().filter(t -> t.nameEquals(annotationColumn)).findFirst().orElse(null);
+                JIPipeTextAnnotation existing = row.getAnnotations().stream().filter(t -> t.nameEquals(annotationColumn)).findFirst().orElse(null);
                 if (existing != null)
                     table.addValue(annotationColumn, existing.getValue());
                 else
@@ -260,7 +261,7 @@ public class JIPipeExportedDataTable implements TableModel {
         if (annotationColumns == null) {
             Set<String> registeredAnnotations = new HashSet<>();
             for (JIPipeExportedDataTableRow row : rowList) {
-                registeredAnnotations.addAll(row.getAnnotations().stream().map(JIPipeAnnotation::getName).collect(Collectors.toSet()));
+                registeredAnnotations.addAll(row.getAnnotations().stream().map(JIPipeTextAnnotation::getName).collect(Collectors.toSet()));
             }
             annotationColumns = new ArrayList<>(registeredAnnotations);
         }
@@ -330,7 +331,7 @@ public class JIPipeExportedDataTable implements TableModel {
         else if (toDataAnnotationColumnIndex(columnIndex) != -1)
             return JIPipeExportedDataAnnotation.class;
         else
-            return JIPipeAnnotation.class;
+            return JIPipeTextAnnotation.class;
     }
 
     @Override
@@ -394,7 +395,7 @@ public class JIPipeExportedDataTable implements TableModel {
         int outputRow = 0;
         for (JIPipeExportedDataTableRow row : getRowList()) {
             output.addRow();
-            for (JIPipeAnnotation annotation : row.getAnnotations()) {
+            for (JIPipeTextAnnotation annotation : row.getAnnotations()) {
                 if (annotation != null) {
                     int col = output.addAnnotationColumn(annotation.getName());
                     output.setValueAt(annotation.getValue(), outputRow, col);

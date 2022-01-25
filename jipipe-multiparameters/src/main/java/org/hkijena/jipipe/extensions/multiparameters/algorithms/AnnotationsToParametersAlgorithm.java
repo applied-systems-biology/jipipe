@@ -5,7 +5,7 @@ import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
-import org.hkijena.jipipe.api.data.JIPipeAnnotation;
+import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
 import org.hkijena.jipipe.api.nodes.JIPipeDataBatch;
@@ -66,7 +66,7 @@ public class AnnotationsToParametersAlgorithm extends JIPipeParameterlessSimpleI
     protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
         ParametersData data = new ParametersData();
         for (Map.Entry<String, JIPipeParameterAccess> entry : extractedParameters.getParameters().entrySet()) {
-            JIPipeAnnotation annotation = dataBatch.getMergedAnnotation(entry.getKey());
+            JIPipeTextAnnotation annotation = dataBatch.getMergedAnnotation(entry.getKey());
             if (annotation != null) {
                 try {
                     Object value = JsonUtils.getObjectMapper().readerFor(entry.getValue().getFieldClass()).readValue(annotation.getValue());

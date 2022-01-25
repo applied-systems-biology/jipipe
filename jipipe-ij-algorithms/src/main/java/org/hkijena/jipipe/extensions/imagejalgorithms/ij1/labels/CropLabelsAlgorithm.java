@@ -19,8 +19,8 @@ import inra.ijpb.label.LabelImages;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
-import org.hkijena.jipipe.api.data.JIPipeAnnotation;
-import org.hkijena.jipipe.api.data.JIPipeAnnotationMergeStrategy;
+import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
+import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
 import org.hkijena.jipipe.api.nodes.JIPipeDataBatch;
 import org.hkijena.jipipe.api.nodes.JIPipeInputSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
@@ -98,16 +98,16 @@ public class CropLabelsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
                 if (!knownLabels.contains(i))
                     continue;
                 ImagePlus cropped = LabelImages.cropLabel(inputImage, i, border);
-                List<JIPipeAnnotation> annotations = new ArrayList<>();
+                List<JIPipeTextAnnotation> annotations = new ArrayList<>();
                 labelIdAnnotation.addAnnotationIfEnabled(annotations, "" + i);
-                dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusGreyscaleData(cropped), annotations, JIPipeAnnotationMergeStrategy.OverwriteExisting, progressInfo);
+                dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusGreyscaleData(cropped), annotations, JIPipeTextAnnotationMergeMode.OverwriteExisting, progressInfo);
             }
         } else {
             for (int i : knownLabels.toArray()) {
                 ImagePlus cropped = LabelImages.cropLabel(inputImage, i, border);
-                List<JIPipeAnnotation> annotations = new ArrayList<>();
+                List<JIPipeTextAnnotation> annotations = new ArrayList<>();
                 labelIdAnnotation.addAnnotationIfEnabled(annotations, "" + i);
-                dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusGreyscaleData(cropped), annotations, JIPipeAnnotationMergeStrategy.OverwriteExisting, progressInfo);
+                dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusGreyscaleData(cropped), annotations, JIPipeTextAnnotationMergeMode.OverwriteExisting, progressInfo);
             }
         }
     }

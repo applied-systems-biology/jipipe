@@ -15,8 +15,8 @@ package org.hkijena.jipipe.api.nodes;
 
 import com.google.common.eventbus.EventBus;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.data.JIPipeAnnotationMergeStrategy;
-import org.hkijena.jipipe.api.data.JIPipeDataAnnotationMergeStrategy;
+import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
+import org.hkijena.jipipe.api.annotation.JIPipeDataAnnotationMergeMode;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
@@ -36,9 +36,9 @@ public class JIPipeIteratingMissingDataGeneratorDataBatchGenerationSettings impl
     private JIPipeColumMatching columnMatching = JIPipeColumMatching.PrefixHashUnion;
     private StringQueryExpression customColumns = new StringQueryExpression();
     private OptionalIntegerRange limit = new OptionalIntegerRange(new IntegerRange("0-9"), false);
-    private JIPipeAnnotationMergeStrategy annotationMergeStrategy = JIPipeAnnotationMergeStrategy.Merge;
+    private JIPipeTextAnnotationMergeMode annotationMergeStrategy = JIPipeTextAnnotationMergeMode.Merge;
     private JIPipeAnnotationMatchingMethod annotationMatchingMethod = JIPipeAnnotationMatchingMethod.ExactMatch;
-    private JIPipeDataAnnotationMergeStrategy dataAnnotationMergeStrategy = JIPipeDataAnnotationMergeStrategy.MergeTables;
+    private JIPipeDataAnnotationMergeMode dataAnnotationMergeStrategy = JIPipeDataAnnotationMergeMode.MergeTables;
     private DefaultExpressionParameter customAnnotationMatching = new DefaultExpressionParameter("exact_match_results");
 
     public JIPipeIteratingMissingDataGeneratorDataBatchGenerationSettings() {
@@ -143,23 +143,23 @@ public class JIPipeIteratingMissingDataGeneratorDataBatchGenerationSettings impl
     @JIPipeDocumentation(name = "Merge same annotation values", description = "Determines which strategy is applied if data sets that " +
             "define different values for the same annotation columns are encountered.")
     @JIPipeParameter("annotation-merge-strategy")
-    public JIPipeAnnotationMergeStrategy getAnnotationMergeStrategy() {
+    public JIPipeTextAnnotationMergeMode getAnnotationMergeStrategy() {
         return annotationMergeStrategy;
     }
 
     @JIPipeParameter("annotation-merge-strategy")
-    public void setAnnotationMergeStrategy(JIPipeAnnotationMergeStrategy annotationMergeStrategy) {
+    public void setAnnotationMergeStrategy(JIPipeTextAnnotationMergeMode annotationMergeStrategy) {
         this.annotationMergeStrategy = annotationMergeStrategy;
     }
 
     @JIPipeDocumentation(name = "Merge same data annotation values", description = "Determines which strategy is applied if different values for the same data annotation columns are encountered.")
     @JIPipeParameter("data-annotation-merge-strategy")
-    public JIPipeDataAnnotationMergeStrategy getDataAnnotationMergeStrategy() {
+    public JIPipeDataAnnotationMergeMode getDataAnnotationMergeStrategy() {
         return dataAnnotationMergeStrategy;
     }
 
     @JIPipeParameter("data-annotation-merge-strategy")
-    public void setDataAnnotationMergeStrategy(JIPipeDataAnnotationMergeStrategy dataAnnotationMergeStrategy) {
+    public void setDataAnnotationMergeStrategy(JIPipeDataAnnotationMergeMode dataAnnotationMergeStrategy) {
         this.dataAnnotationMergeStrategy = dataAnnotationMergeStrategy;
     }
 }

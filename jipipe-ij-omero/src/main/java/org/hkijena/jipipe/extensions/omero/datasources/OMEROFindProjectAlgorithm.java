@@ -21,8 +21,8 @@ import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeIssueReport;
 import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
-import org.hkijena.jipipe.api.data.JIPipeAnnotation;
-import org.hkijena.jipipe.api.data.JIPipeAnnotationMergeStrategy;
+import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
+import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
 import org.hkijena.jipipe.api.nodes.JIPipeDataBatch;
 import org.hkijena.jipipe.api.nodes.JIPipeInputSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
@@ -94,21 +94,21 @@ public class OMEROFindProjectAlgorithm extends JIPipeSimpleIteratingAlgorithm {
                     if (!tagFilters.test(tags)) {
                         continue;
                     }
-                    List<JIPipeAnnotation> annotations = new ArrayList<>();
+                    List<JIPipeTextAnnotation> annotations = new ArrayList<>();
                     if (addKeyValuePairsAsAnnotations) {
                         for (Map.Entry<String, String> entry : keyValuePairs.entrySet()) {
-                            annotations.add(new JIPipeAnnotation(entry.getKey(), entry.getValue()));
+                            annotations.add(new JIPipeTextAnnotation(entry.getKey(), entry.getValue()));
                         }
                     }
                     if (tagAnnotation.isEnabled()) {
                         List<String> sortedTags = tags.stream().sorted().collect(Collectors.toList());
                         String value = JsonUtils.toJsonString(sortedTags);
-                        annotations.add(new JIPipeAnnotation(tagAnnotation.getContent(), value));
+                        annotations.add(new JIPipeTextAnnotation(tagAnnotation.getContent(), value));
                     }
                     if (projectNameAnnotation.isEnabled()) {
-                        annotations.add(new JIPipeAnnotation(projectNameAnnotation.getContent(), project.getName()));
+                        annotations.add(new JIPipeTextAnnotation(projectNameAnnotation.getContent(), project.getName()));
                     }
-                    getFirstOutputSlot().addData(new OMEROProjectReferenceData(project.getId()), annotations, JIPipeAnnotationMergeStrategy.Merge, progressInfo);
+                    getFirstOutputSlot().addData(new OMEROProjectReferenceData(project.getId()), annotations, JIPipeTextAnnotationMergeMode.Merge, progressInfo);
                 }
             } catch (DSOutOfServiceException | DSAccessException e) {
                 throw new RuntimeException(e);

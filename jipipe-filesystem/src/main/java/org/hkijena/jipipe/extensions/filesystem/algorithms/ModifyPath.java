@@ -3,7 +3,7 @@ package org.hkijena.jipipe.extensions.filesystem.algorithms;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
-import org.hkijena.jipipe.api.data.JIPipeAnnotation;
+import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.nodes.JIPipeDataBatch;
 import org.hkijena.jipipe.api.nodes.JIPipeInputSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
@@ -43,7 +43,7 @@ public class ModifyPath extends JIPipeSimpleIteratingAlgorithm {
         PathData input = dataBatch.getInputData(getFirstInputSlot(), PathData.class, progressInfo);
         ExpressionVariables variableSet = new ExpressionVariables();
         if (accessAnnotations) {
-            for (JIPipeAnnotation annotation : dataBatch.getMergedAnnotations().values()) {
+            for (JIPipeTextAnnotation annotation : dataBatch.getMergedAnnotations().values()) {
                 variableSet.set(annotation.getName(), annotation.getValue());
             }
         }

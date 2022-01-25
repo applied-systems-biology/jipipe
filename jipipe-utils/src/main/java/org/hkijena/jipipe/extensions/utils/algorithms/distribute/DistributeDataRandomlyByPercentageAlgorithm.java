@@ -3,9 +3,9 @@ package org.hkijena.jipipe.extensions.utils.algorithms.distribute;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
-import org.hkijena.jipipe.api.data.JIPipeAnnotationMergeStrategy;
+import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
 import org.hkijena.jipipe.api.data.JIPipeData;
-import org.hkijena.jipipe.api.data.JIPipeDataAnnotationMergeStrategy;
+import org.hkijena.jipipe.api.annotation.JIPipeDataAnnotationMergeMode;
 import org.hkijena.jipipe.api.data.JIPipeDataSlotInfo;
 import org.hkijena.jipipe.api.data.JIPipeDefaultMutableSlotConfiguration;
 import org.hkijena.jipipe.api.data.JIPipeSlotType;
@@ -88,9 +88,9 @@ public class DistributeDataRandomlyByPercentageAlgorithm extends JIPipeMergingAl
             if (available > 0) {
                 getOutputSlot(target).addData(getFirstInputSlot().getVirtualData(row),
                         getFirstInputSlot().getAnnotations(row),
-                        JIPipeAnnotationMergeStrategy.OverwriteExisting,
+                        JIPipeTextAnnotationMergeMode.OverwriteExisting,
                         getFirstInputSlot().getDataAnnotations(row),
-                        JIPipeDataAnnotationMergeStrategy.OverwriteExisting);
+                        JIPipeDataAnnotationMergeMode.OverwriteExisting);
             }
             --available;
             weightMap.put(target, available);

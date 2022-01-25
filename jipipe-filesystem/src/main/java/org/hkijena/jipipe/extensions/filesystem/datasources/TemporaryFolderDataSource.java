@@ -3,7 +3,7 @@ package org.hkijena.jipipe.extensions.filesystem.datasources;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
-import org.hkijena.jipipe.api.data.JIPipeAnnotation;
+import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.JIPipeOutputSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeParameterSlotAlgorithm;
@@ -36,7 +36,7 @@ public class TemporaryFolderDataSource extends JIPipeParameterSlotAlgorithm {
     }
 
     @Override
-    public void runParameterSet(JIPipeProgressInfo progressInfo, List<JIPipeAnnotation> parameterAnnotations) {
+    public void runParameterSet(JIPipeProgressInfo progressInfo, List<JIPipeTextAnnotation> parameterAnnotations) {
         getFirstOutputSlot().addData(new FileData(isUseScratchDirectory() ? getNewScratch() : RuntimeSettings.generateTempDirectory(getBaseName())), progressInfo);
     }
 

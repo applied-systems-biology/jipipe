@@ -27,8 +27,8 @@ import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeIssueReport;
 import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
-import org.hkijena.jipipe.api.data.JIPipeAnnotation;
-import org.hkijena.jipipe.api.data.JIPipeAnnotationMergeStrategy;
+import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
+import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
 import org.hkijena.jipipe.api.nodes.JIPipeDataBatch;
 import org.hkijena.jipipe.api.nodes.JIPipeInputSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
@@ -112,7 +112,7 @@ public class DownloadOMEROImageAlgorithm extends JIPipeSimpleIteratingAlgorithm 
     }
 
     @Override
-    public void runParameterSet(JIPipeProgressInfo progressInfo, List<JIPipeAnnotation> parameterAnnotations) {
+    public void runParameterSet(JIPipeProgressInfo progressInfo, List<JIPipeTextAnnotation> parameterAnnotations) {
         this.parameterProgressInfo = progressInfo;
         this.lastGroupId.set(-1);
         // Run downloader
@@ -218,19 +218,19 @@ public class DownloadOMEROImageAlgorithm extends JIPipeSimpleIteratingAlgorithm 
             }
 
             for (ImagePlus image : images) {
-                List<JIPipeAnnotation> annotations = new ArrayList<>();
+                List<JIPipeTextAnnotation> annotations = new ArrayList<>();
 
                 if (addKeyValuePairsAsAnnotations || tagAnnotation.isEnabled()) {
                     try {
 //                        ImageData imageData = gateway.getBrowseFacility().getImage(gateway.getContext(), imageReferenceData.getImageId());
 //                        if (addKeyValuePairsAsAnnotations) {
 //                            for (Map.Entry<String, String> entry : OMEROUtils.getKeyValuePairAnnotations(gateway.getMetadata(), gateway.getContext(), imageData).entrySet()) {
-//                                annotations.add(new JIPipeAnnotation(entry.getKey(), entry.getValue()));
+//                                annotations.add(new JIPipeTextAnnotation(entry.getKey(), entry.getValue()));
 //                            }
 //                        }
 //                        if (tagAnnotation.isEnabled()) {
 //                            List<String> sortedTags = OMEROUtils.getTagAnnotations(gateway.getMetadata(), gateway.getContext(), imageData).stream().sorted().collect(Collectors.toList());
-//                            annotations.add(new JIPipeAnnotation(tagAnnotation.getContent(), JsonUtils.toJsonString(sortedTags)));
+//                            annotations.add(new JIPipeTextAnnotation(tagAnnotation.getContent(), JsonUtils.toJsonString(sortedTags)));
 //                        }
                     } catch (Exception e) {
                         throw new RuntimeException(e);
@@ -238,7 +238,7 @@ public class DownloadOMEROImageAlgorithm extends JIPipeSimpleIteratingAlgorithm 
                 }
 
                 if (titleAnnotation.isEnabled()) {
-                    annotations.add(new JIPipeAnnotation(titleAnnotation.getContent(), image.getTitle()));
+                    annotations.add(new JIPipeTextAnnotation(titleAnnotation.getContent(), image.getTitle()));
                 }
 
                 ROIListData rois = new ROIListData();
@@ -246,7 +246,7 @@ public class DownloadOMEROImageAlgorithm extends JIPipeSimpleIteratingAlgorithm 
                     rois = ROIHandler.openROIs(process.getOMEMetadata(), new ImagePlus[]{image});
                 }
 
-                dataBatch.addOutputData(getFirstOutputSlot(), new OMEImageData(image, rois, omexmlMetadata), annotations, JIPipeAnnotationMergeStrategy.Merge, progressInfo);
+                dataBatch.addOutputData(getFirstOutputSlot(), new OMEImageData(image, rois, omexmlMetadata), annotations, JIPipeTextAnnotationMergeMode.Merge, progressInfo);
             }
         } catch (FormatException | IOException e) {
             throw new RuntimeException(e);

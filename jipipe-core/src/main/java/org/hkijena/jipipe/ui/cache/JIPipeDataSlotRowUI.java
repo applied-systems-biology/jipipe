@@ -16,10 +16,10 @@ package org.hkijena.jipipe.ui.cache;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.JIPipeRunnable;
-import org.hkijena.jipipe.api.data.JIPipeAnnotation;
+import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.data.JIPipeCacheSlotDataSource;
 import org.hkijena.jipipe.api.data.JIPipeData;
-import org.hkijena.jipipe.api.data.JIPipeDataAnnotation;
+import org.hkijena.jipipe.api.annotation.JIPipeDataAnnotation;
 import org.hkijena.jipipe.api.data.JIPipeDataDisplayOperation;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.extensions.parameters.primitives.DynamicDataDisplayOperationIdEnumParameter;
@@ -99,7 +99,7 @@ public class JIPipeDataSlotRowUI extends JIPipeWorkbenchPanel {
         if (!slot.getAnnotations(row).isEmpty()) {
             JButton annotationButton = new JButton("Annotations ...", UIUtils.getIconFromResources("data-types/annotation.png"));
             JPopupMenu annotationMenu = UIUtils.addPopupMenuToComponent(annotationButton);
-            for (JIPipeAnnotation annotation : slot.getAnnotations(row)) {
+            for (JIPipeTextAnnotation annotation : slot.getAnnotations(row)) {
                 JMenu entryMenu = new JMenu(annotation.getName());
                 entryMenu.setIcon(UIUtils.getIconFromResources("data-types/annotation.png"));
 

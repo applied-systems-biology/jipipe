@@ -16,8 +16,8 @@ package org.hkijena.jipipe.extensions.tables.algorithms;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
-import org.hkijena.jipipe.api.data.JIPipeAnnotation;
-import org.hkijena.jipipe.api.data.JIPipeAnnotationMergeStrategy;
+import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
+import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
 import org.hkijena.jipipe.api.nodes.JIPipeDataBatch;
 import org.hkijena.jipipe.api.nodes.JIPipeInputSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
@@ -75,11 +75,11 @@ public class SplitTableIntoColumnsAlgorithm extends JIPipeSimpleIteratingAlgorit
         for (String columnName : input.getColumnNames()) {
             if (columnFilter.test(columnName)) {
                 TableColumn column = input.getColumnCopy(input.getColumnIndex(columnName));
-                List<JIPipeAnnotation> annotations = new ArrayList<>();
+                List<JIPipeTextAnnotation> annotations = new ArrayList<>();
                 if (generatedAnnotation.isEnabled() && !StringUtils.isNullOrEmpty(generatedAnnotation.getContent())) {
-                    annotations.add(new JIPipeAnnotation(generatedAnnotation.getContent(), columnName));
+                    annotations.add(new JIPipeTextAnnotation(generatedAnnotation.getContent(), columnName));
                 }
-                dataBatch.addOutputData(getFirstOutputSlot(), column, annotations, JIPipeAnnotationMergeStrategy.Merge, progressInfo);
+                dataBatch.addOutputData(getFirstOutputSlot(), column, annotations, JIPipeTextAnnotationMergeMode.Merge, progressInfo);
             }
         }
     }

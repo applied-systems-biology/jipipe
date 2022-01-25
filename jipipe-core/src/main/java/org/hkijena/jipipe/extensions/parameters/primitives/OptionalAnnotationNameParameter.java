@@ -15,7 +15,7 @@ package org.hkijena.jipipe.extensions.parameters.primitives;
 
 import org.hkijena.jipipe.api.JIPipeIssueReport;
 import org.hkijena.jipipe.api.JIPipeValidatable;
-import org.hkijena.jipipe.api.data.JIPipeAnnotation;
+import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.utils.ResourceUtils;
 
 import java.util.Collection;
@@ -49,8 +49,8 @@ public class OptionalAnnotationNameParameter extends OptionalStringParameter imp
      * @param value the value of the annotation
      * @return annotation
      */
-    public JIPipeAnnotation createAnnotation(String value) {
-        return new JIPipeAnnotation(getContent(), value);
+    public JIPipeTextAnnotation createAnnotation(String value) {
+        return new JIPipeTextAnnotation(getContent(), value);
     }
 
     /**
@@ -59,8 +59,8 @@ public class OptionalAnnotationNameParameter extends OptionalStringParameter imp
      * @param values the value of the annotation
      * @return annotation
      */
-    public JIPipeAnnotation createAnnotation(String[] values) {
-        return new JIPipeAnnotation(getContent(), values);
+    public JIPipeTextAnnotation createAnnotation(String[] values) {
+        return new JIPipeTextAnnotation(getContent(), values);
     }
 
     /**
@@ -69,8 +69,8 @@ public class OptionalAnnotationNameParameter extends OptionalStringParameter imp
      * @param values the value of the annotation
      * @return annotation
      */
-    public JIPipeAnnotation createAnnotation(Collection<String> values) {
-        return new JIPipeAnnotation(getContent(), values);
+    public JIPipeTextAnnotation createAnnotation(Collection<String> values) {
+        return new JIPipeTextAnnotation(getContent(), values);
     }
 
     /**
@@ -79,7 +79,7 @@ public class OptionalAnnotationNameParameter extends OptionalStringParameter imp
      * @param annotations list of annotations
      * @param value       the value
      */
-    public void addAnnotationIfEnabled(Collection<JIPipeAnnotation> annotations, String value) {
+    public void addAnnotationIfEnabled(Collection<JIPipeTextAnnotation> annotations, String value) {
         if (isEnabled()) {
             annotations.add(createAnnotation(value));
         }
@@ -91,7 +91,7 @@ public class OptionalAnnotationNameParameter extends OptionalStringParameter imp
      * @param annotations list of annotations
      * @param values      the value
      */
-    public void addAnnotationIfEnabled(Collection<JIPipeAnnotation> annotations, String[] values) {
+    public void addAnnotationIfEnabled(Collection<JIPipeTextAnnotation> annotations, String[] values) {
         if (isEnabled()) {
             annotations.add(createAnnotation(values));
         }
@@ -103,7 +103,7 @@ public class OptionalAnnotationNameParameter extends OptionalStringParameter imp
      * @param annotations list of annotations
      * @param values      the value
      */
-    public void addAnnotationIfEnabled(Collection<JIPipeAnnotation> annotations, Collection<String> values) {
+    public void addAnnotationIfEnabled(Collection<JIPipeTextAnnotation> annotations, Collection<String> values) {
         if (isEnabled()) {
             annotations.add(createAnnotation(values));
         }

@@ -2,6 +2,7 @@ package org.hkijena.jipipe.api.data;
 
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
+import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.cache.JIPipeCacheDataSlotTableUI;
 import org.hkijena.jipipe.utils.UIUtils;
@@ -37,7 +38,7 @@ public class JIPipeDataTableData implements JIPipeData {
         JIPipeDataSlot copySlot = new JIPipeDataSlot(dataSlot.getInfo(), dataSlot.getNode());
         for (int row = 0; row < dataSlot.getRowCount(); row++) {
             JIPipeData copy = dataSlot.getData(row, JIPipeData.class, progressInfo).duplicate();
-            copySlot.addData(copy, dataSlot.getAnnotations(row), JIPipeAnnotationMergeStrategy.OverwriteExisting, progressInfo);
+            copySlot.addData(copy, dataSlot.getAnnotations(row), JIPipeTextAnnotationMergeMode.OverwriteExisting, progressInfo);
         }
         return new JIPipeDataTableData(copySlot);
     }

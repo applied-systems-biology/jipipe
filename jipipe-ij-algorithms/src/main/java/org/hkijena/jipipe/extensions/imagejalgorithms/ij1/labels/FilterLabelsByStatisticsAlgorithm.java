@@ -20,7 +20,7 @@ import ij.process.ImageProcessor;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
-import org.hkijena.jipipe.api.data.JIPipeAnnotation;
+import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.nodes.JIPipeDataBatch;
 import org.hkijena.jipipe.api.nodes.JIPipeInputSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeIteratingAlgorithm;
@@ -101,7 +101,7 @@ public class FilterLabelsByStatisticsAlgorithm extends JIPipeIteratingAlgorithm 
             // Find labels to keep
             labelsToKeep.clear();
             variables.clear();
-            for (JIPipeAnnotation annotation : dataBatch.getMergedAnnotations().values()) {
+            for (JIPipeTextAnnotation annotation : dataBatch.getMergedAnnotations().values()) {
                 variables.set(annotation.getName(), annotation.getValue());
             }
             for (int row = 0; row < forRoi.getRowCount(); row++) {

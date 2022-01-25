@@ -22,8 +22,8 @@ import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeIssueReport;
 import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
-import org.hkijena.jipipe.api.data.JIPipeAnnotation;
-import org.hkijena.jipipe.api.data.JIPipeAnnotationMergeStrategy;
+import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
+import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
 import org.hkijena.jipipe.api.nodes.JIPipeDataBatch;
 import org.hkijena.jipipe.api.nodes.JIPipeInputSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
@@ -70,7 +70,7 @@ public class DownloadOMEROTableAlgorithm extends JIPipeSimpleIteratingAlgorithm 
     }
 
     @Override
-    public void runParameterSet(JIPipeProgressInfo progressInfo, List<JIPipeAnnotation> parameterAnnotations) {
+    public void runParameterSet(JIPipeProgressInfo progressInfo, List<JIPipeTextAnnotation> parameterAnnotations) {
         super.runParameterSet(progressInfo, parameterAnnotations);
     }
 
@@ -86,10 +86,10 @@ public class DownloadOMEROTableAlgorithm extends JIPipeSimpleIteratingAlgorithm 
                 long fileID = fileAnnotationData.getFileID();
                 TableData table = tablesFacility.getTable(context, fileID);
                 ResultsTableData resultsTableData = OMEROUtils.tableFromOMERO(table);
-                List<JIPipeAnnotation> annotations = new ArrayList<>();
+                List<JIPipeTextAnnotation> annotations = new ArrayList<>();
                 if (fileNameAnnotation.isEnabled())
-                    annotations.add(new JIPipeAnnotation(fileNameAnnotation.getContent(), fileName));
-                dataBatch.addOutputData(getFirstOutputSlot(), resultsTableData, annotations, JIPipeAnnotationMergeStrategy.Merge, progressInfo);
+                    annotations.add(new JIPipeTextAnnotation(fileNameAnnotation.getContent(), fileName));
+                dataBatch.addOutputData(getFirstOutputSlot(), resultsTableData, annotations, JIPipeTextAnnotationMergeMode.Merge, progressInfo);
             }
         } catch (Exception e) {
             throw new RuntimeException(e);

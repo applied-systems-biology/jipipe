@@ -21,8 +21,8 @@ import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeIssueReport;
 import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
-import org.hkijena.jipipe.api.data.JIPipeAnnotation;
-import org.hkijena.jipipe.api.data.JIPipeAnnotationMergeStrategy;
+import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
+import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.JIPipeOutputSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeParameterSlotAlgorithm;
@@ -62,7 +62,7 @@ public class OMEROFindGroupAlgorithm extends JIPipeParameterSlotAlgorithm {
     }
 
     @Override
-    public void runParameterSet(JIPipeProgressInfo progressInfo, List<JIPipeAnnotation> parameterAnnotations) {
+    public void runParameterSet(JIPipeProgressInfo progressInfo, List<JIPipeTextAnnotation> parameterAnnotations) {
         LoginCredentials credentials = this.credentials.getCredentials();
         progressInfo.log("Connecting to " + credentials.getUser().getUsername() + "@" + credentials.getServer().getHost());
         try (Gateway gateway = new Gateway(new OMEROToJIPipeLogger(progressInfo))) {
@@ -72,11 +72,11 @@ public class OMEROFindGroupAlgorithm extends JIPipeParameterSlotAlgorithm {
                 if (!groupNameFilters.test(groupData.getName())) {
                     continue;
                 }
-                List<JIPipeAnnotation> annotations = new ArrayList<>();
+                List<JIPipeTextAnnotation> annotations = new ArrayList<>();
                 if (groupNameAnnotation.isEnabled()) {
-                    annotations.add(new JIPipeAnnotation(groupNameAnnotation.getContent(), groupData.getName()));
+                    annotations.add(new JIPipeTextAnnotation(groupNameAnnotation.getContent(), groupData.getName()));
                 }
-                getFirstOutputSlot().addData(new OMEROGroupReferenceData(groupData.getId()), annotations, JIPipeAnnotationMergeStrategy.Merge, progressInfo);
+                getFirstOutputSlot().addData(new OMEROGroupReferenceData(groupData.getId()), annotations, JIPipeTextAnnotationMergeMode.Merge, progressInfo);
             }
         } catch (Exception e) {
             throw new RuntimeException(e);

@@ -11,12 +11,13 @@
  * See the LICENSE file provided with the code for the full license.
  */
 
-package org.hkijena.jipipe.api.data;
+package org.hkijena.jipipe.api.annotation;
 
 import com.google.common.eventbus.EventBus;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
+import org.hkijena.jipipe.api.data.*;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
@@ -351,11 +352,11 @@ public class JIPipeDataByMetadataExporter implements JIPipeParameterCollection {
                 String metadataKey = dataSlot.getAnnotationColumns().get(col);
                 if (!metadataKeyFilter.test(metadataKey))
                     continue;
-                JIPipeAnnotation metadataValue;
+                JIPipeTextAnnotation metadataValue;
                 if (ignoreMissingMetadata) {
                     metadataValue = dataSlot.getAnnotationOr(row, metadataKey, null);
                 } else {
-                    metadataValue = dataSlot.getAnnotationOr(row, metadataKey, new JIPipeAnnotation(metadataKey, missingString));
+                    metadataValue = dataSlot.getAnnotationOr(row, metadataKey, new JIPipeTextAnnotation(metadataKey, missingString));
                 }
                 if (metadataValue != null) {
                     if (metadataValue.getValue().length() > metadataValueLengthLimit)
@@ -371,7 +372,7 @@ public class JIPipeDataByMetadataExporter implements JIPipeParameterCollection {
             ExpressionVariables parameters = new ExpressionVariables();
             for (int col = 0; col < dataSlot.getAnnotationColumns().size(); col++) {
                 String metadataKey = dataSlot.getAnnotationColumns().get(col);
-                JIPipeAnnotation metadataValue = dataSlot.getAnnotationOr(row, metadataKey, null);
+                JIPipeTextAnnotation metadataValue = dataSlot.getAnnotationOr(row, metadataKey, null);
                 if (metadataValue == null && ignoreMissingMetadata)
                     continue;
                 String value = metadataValue != null ? metadataValue.getValue() : missingString;
@@ -401,7 +402,7 @@ public class JIPipeDataByMetadataExporter implements JIPipeParameterCollection {
             ExpressionVariables parameters = new ExpressionVariables();
             for (int col = 0; col < dataSlot.getAnnotationColumns().size(); col++) {
                 String metadataKey = dataSlot.getAnnotationColumns().get(col);
-                JIPipeAnnotation metadataValue = dataSlot.getAnnotationOr(row, metadataKey, null);
+                JIPipeTextAnnotation metadataValue = dataSlot.getAnnotationOr(row, metadataKey, null);
                 if (metadataValue == null && ignoreMissingMetadata)
                     continue;
                 String value = metadataValue != null ? metadataValue.getValue() : missingString;
@@ -430,7 +431,7 @@ public class JIPipeDataByMetadataExporter implements JIPipeParameterCollection {
                     metadataStringBuilder.append(appendDataTypeMetadataKey).append(equalsString);
                 metadataStringBuilder.append(dataTypeName);
             }
-            for (JIPipeAnnotation metadataValue : dataRow.getAnnotations()) {
+            for (JIPipeTextAnnotation metadataValue : dataRow.getAnnotations()) {
                 if (metadataValue.getValue().length() > metadataValueLengthLimit)
                     continue;
                 if (!metadataKeyFilter.test(metadataValue.getName()))
@@ -443,7 +444,7 @@ public class JIPipeDataByMetadataExporter implements JIPipeParameterCollection {
             }
         } else {
             ExpressionVariables parameters = new ExpressionVariables();
-            for (JIPipeAnnotation annotation : dataRow.getAnnotations()) {
+            for (JIPipeTextAnnotation annotation : dataRow.getAnnotations()) {
                 parameters.put(annotation.getName(), annotation.getValue());
             }
 

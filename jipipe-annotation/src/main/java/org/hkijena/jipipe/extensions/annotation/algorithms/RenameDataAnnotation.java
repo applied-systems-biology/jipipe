@@ -17,10 +17,10 @@ import com.google.common.collect.ImmutableList;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
-import org.hkijena.jipipe.api.data.JIPipeAnnotationMergeStrategy;
+import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
 import org.hkijena.jipipe.api.data.JIPipeData;
-import org.hkijena.jipipe.api.data.JIPipeDataAnnotation;
-import org.hkijena.jipipe.api.data.JIPipeDataAnnotationMergeStrategy;
+import org.hkijena.jipipe.api.annotation.JIPipeDataAnnotation;
+import org.hkijena.jipipe.api.annotation.JIPipeDataAnnotationMergeMode;
 import org.hkijena.jipipe.api.nodes.JIPipeDataBatch;
 import org.hkijena.jipipe.api.nodes.JIPipeInputSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
@@ -44,7 +44,7 @@ import java.util.List;
 public class RenameDataAnnotation extends JIPipeSimpleIteratingAlgorithm {
 
     private StringQueryExpressionAndStringPairParameter.List renamingItems = new StringQueryExpressionAndStringPairParameter.List();
-    private JIPipeDataAnnotationMergeStrategy annotationMergeStrategy = JIPipeDataAnnotationMergeStrategy.OverwriteExisting;
+    private JIPipeDataAnnotationMergeMode annotationMergeStrategy = JIPipeDataAnnotationMergeMode.OverwriteExisting;
 
     /**
      * New instance
@@ -81,7 +81,7 @@ public class RenameDataAnnotation extends JIPipeSimpleIteratingAlgorithm {
         dataBatch.addOutputData(getFirstOutputSlot(),
                 dataBatch.getInputData(getFirstInputSlot(), JIPipeData.class, progressInfo),
                 Collections.emptyList(),
-                JIPipeAnnotationMergeStrategy.OverwriteExisting,
+                JIPipeTextAnnotationMergeMode.OverwriteExisting,
                 annotations,
                 annotationMergeStrategy,
                 progressInfo);
@@ -100,12 +100,12 @@ public class RenameDataAnnotation extends JIPipeSimpleIteratingAlgorithm {
 
     @JIPipeDocumentation(name = "Merge same annotation values", description = "Determines which strategy is applied if an annotation already exists.")
     @JIPipeParameter("annotation-merge-strategy")
-    public JIPipeDataAnnotationMergeStrategy getAnnotationMergeStrategy() {
+    public JIPipeDataAnnotationMergeMode getAnnotationMergeStrategy() {
         return annotationMergeStrategy;
     }
 
     @JIPipeParameter("annotation-merge-strategy")
-    public void setAnnotationMergeStrategy(JIPipeDataAnnotationMergeStrategy annotationMergeStrategy) {
+    public void setAnnotationMergeStrategy(JIPipeDataAnnotationMergeMode annotationMergeStrategy) {
         this.annotationMergeStrategy = annotationMergeStrategy;
     }
 }

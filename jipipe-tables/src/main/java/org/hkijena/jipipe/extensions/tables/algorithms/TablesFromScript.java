@@ -18,8 +18,8 @@ import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeIssueReport;
 import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
-import org.hkijena.jipipe.api.data.JIPipeAnnotation;
-import org.hkijena.jipipe.api.data.JIPipeAnnotationMergeStrategy;
+import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
+import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
 import org.hkijena.jipipe.api.nodes.JIPipeAlgorithm;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.JIPipeOutputSlot;
@@ -118,8 +118,8 @@ public class TablesFromScript extends JIPipeAlgorithm {
 
         for (PyDictionary row : rows) {
             ResultsTableData data = ResultsTableData.fromPython((PyDictionary) row.get("data"));
-            List<JIPipeAnnotation> annotations = JIPipeAnnotation.extractAnnotationsFromPython((PyDictionary) row.getOrDefault("annotations", new PyDictionary()));
-            getFirstOutputSlot().addData(data, annotations, JIPipeAnnotationMergeStrategy.Merge, progressInfo);
+            List<JIPipeTextAnnotation> annotations = JIPipeTextAnnotation.extractAnnotationsFromPython((PyDictionary) row.getOrDefault("annotations", new PyDictionary()));
+            getFirstOutputSlot().addData(data, annotations, JIPipeTextAnnotationMergeMode.Merge, progressInfo);
         }
 
         this.pythonInterpreter = null;

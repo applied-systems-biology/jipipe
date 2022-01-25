@@ -19,8 +19,8 @@ import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeIssueReport;
 import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
-import org.hkijena.jipipe.api.data.JIPipeAnnotation;
-import org.hkijena.jipipe.api.data.JIPipeAnnotationMergeStrategy;
+import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
+import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
 import org.hkijena.jipipe.api.nodes.JIPipeDataBatch;
 import org.hkijena.jipipe.api.nodes.JIPipeInputSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
@@ -136,28 +136,28 @@ public class ImagePropertiesToAnnotationAlgorithm extends JIPipeSimpleIteratingA
     @Override
     protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
         ImagePlusData inputData = dataBatch.getInputData(getFirstInputSlot(), ImagePlusData.class, progressInfo);
-        List<JIPipeAnnotation> annotations = new ArrayList<>();
+        List<JIPipeTextAnnotation> annotations = new ArrayList<>();
 
         if (getTitleAnnotation().isEnabled()) {
-            annotations.add(new JIPipeAnnotation(getTitleAnnotation().getContent(), "" + inputData.getImage().getTitle()));
+            annotations.add(new JIPipeTextAnnotation(getTitleAnnotation().getContent(), "" + inputData.getImage().getTitle()));
         }
         if (getWidthAnnotation().isEnabled()) {
-            annotations.add(new JIPipeAnnotation(getWidthAnnotation().getContent(), "" + inputData.getImage().getWidth()));
+            annotations.add(new JIPipeTextAnnotation(getWidthAnnotation().getContent(), "" + inputData.getImage().getWidth()));
         }
         if (getHeightAnnotation().isEnabled()) {
-            annotations.add(new JIPipeAnnotation(getHeightAnnotation().getContent(), "" + inputData.getImage().getHeight()));
+            annotations.add(new JIPipeTextAnnotation(getHeightAnnotation().getContent(), "" + inputData.getImage().getHeight()));
         }
         if (getStackSizeAnnotation().isEnabled()) {
-            annotations.add(new JIPipeAnnotation(getStackSizeAnnotation().getContent(), "" + inputData.getImage().getNSlices()));
+            annotations.add(new JIPipeTextAnnotation(getStackSizeAnnotation().getContent(), "" + inputData.getImage().getNSlices()));
         }
         if (getPlaneNumberAnnotation().isEnabled()) {
-            annotations.add(new JIPipeAnnotation(getPlaneNumberAnnotation().getContent(), "" + inputData.getImage().getStackSize()));
+            annotations.add(new JIPipeTextAnnotation(getPlaneNumberAnnotation().getContent(), "" + inputData.getImage().getStackSize()));
         }
         if (getChannelSizeAnnotation().isEnabled()) {
-            annotations.add(new JIPipeAnnotation(getChannelSizeAnnotation().getContent(), "" + inputData.getImage().getNChannels()));
+            annotations.add(new JIPipeTextAnnotation(getChannelSizeAnnotation().getContent(), "" + inputData.getImage().getNChannels()));
         }
         if (getFramesSizeAnnotation().isEnabled()) {
-            annotations.add(new JIPipeAnnotation(getFramesSizeAnnotation().getContent(), "" + inputData.getImage().getNFrames()));
+            annotations.add(new JIPipeTextAnnotation(getFramesSizeAnnotation().getContent(), "" + inputData.getImage().getNFrames()));
         }
         if (physicalDimensionXAnnotation.isEnabled()) {
             Calibration calibration = inputData.getImage().getCalibration();
@@ -229,10 +229,10 @@ public class ImagePropertiesToAnnotationAlgorithm extends JIPipeSimpleIteratingA
                     type = "UNKNOWN";
                     break;
             }
-            annotations.add(new JIPipeAnnotation(getImageTypeAnnotation().getContent(), type));
+            annotations.add(new JIPipeTextAnnotation(getImageTypeAnnotation().getContent(), type));
         }
         if (getBitDepthAnnotation().isEnabled()) {
-            annotations.add(new JIPipeAnnotation(getBitDepthAnnotation().getContent(), "" + inputData.getImage().getBitDepth()));
+            annotations.add(new JIPipeTextAnnotation(getBitDepthAnnotation().getContent(), "" + inputData.getImage().getBitDepth()));
         }
         if (getColorSpaceAnnotation().isEnabled()) {
             String colorSpace;
@@ -243,10 +243,10 @@ public class ImagePropertiesToAnnotationAlgorithm extends JIPipeSimpleIteratingA
             } else {
                 colorSpace = "Greyscale";
             }
-            annotations.add(new JIPipeAnnotation(getBitDepthAnnotation().getContent(), colorSpace));
+            annotations.add(new JIPipeTextAnnotation(getBitDepthAnnotation().getContent(), colorSpace));
         }
 
-        dataBatch.addOutputData(getFirstOutputSlot(), inputData, annotations, JIPipeAnnotationMergeStrategy.Merge, progressInfo);
+        dataBatch.addOutputData(getFirstOutputSlot(), inputData, annotations, JIPipeTextAnnotationMergeMode.Merge, progressInfo);
     }
 
     @JIPipeDocumentation(name = "Annotate with physical dimension (X)", description = "If enabled, the physical size of one pixel (including the unit) is annotated the the image.")

@@ -19,8 +19,8 @@ import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
-import org.hkijena.jipipe.api.data.JIPipeAnnotation;
-import org.hkijena.jipipe.api.data.JIPipeAnnotationMergeStrategy;
+import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
+import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
 import org.hkijena.jipipe.api.nodes.JIPipeInputSlot;
@@ -233,19 +233,19 @@ public class PredictImageAlgorithm extends JIPipeSingleIterationAlgorithm {
                 Set<Integer> inputRows = dataBatch.getInputSlotRows().get(inputRawImageSlot);
                 for (Integer imageIndex : inputRows) {
                     JIPipeProgressInfo imageProgress = modelProgress.resolveAndLog("Read outputs", imageCounter++, inputRows.size());
-                    List<JIPipeAnnotation> annotations = inputRawImageSlot.getAnnotations(imageIndex);
+                    List<JIPipeTextAnnotation> annotations = inputRawImageSlot.getAnnotations(imageIndex);
                     Path predictPath = predictionsDirectory.resolve(imageCounter + "_img.tif");
 
                     if (!deferImageLoading) {
                         ImagePlus image = IJ.openImage(predictPath.toString());
 
                         // We will restore the original annotations of the results
-                        dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusData(image), annotations, JIPipeAnnotationMergeStrategy.OverwriteExisting, imageProgress);
+                        dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusData(image), annotations, JIPipeTextAnnotationMergeMode.OverwriteExisting, imageProgress);
                     } else {
                         dataBatch.addOutputData(getFirstOutputSlot(),
                                 new ImagePlusData(new ImagePlusFromFileImageSource(predictPath, false, false)),
                                 annotations,
-                                JIPipeAnnotationMergeStrategy.OverwriteExisting,
+                                JIPipeTextAnnotationMergeMode.OverwriteExisting,
                                 imageProgress);
                     }
                 }

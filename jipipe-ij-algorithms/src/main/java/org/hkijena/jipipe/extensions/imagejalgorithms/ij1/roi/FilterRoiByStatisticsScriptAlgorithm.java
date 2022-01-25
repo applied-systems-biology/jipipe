@@ -19,7 +19,7 @@ import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeIssueReport;
 import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
-import org.hkijena.jipipe.api.data.JIPipeAnnotation;
+import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.nodes.JIPipeDataBatch;
 import org.hkijena.jipipe.api.nodes.JIPipeInputSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
@@ -147,7 +147,7 @@ public class FilterRoiByStatisticsScriptAlgorithm extends ImageRoiProcessorAlgor
             roiList.add(roiItemDictionary);
         }
 
-        PyDictionary annotationDict = JIPipeAnnotation.annotationMapToPython(dataBatch.getMergedAnnotations());
+        PyDictionary annotationDict = JIPipeTextAnnotation.annotationMapToPython(dataBatch.getMergedAnnotations());
         pythonInterpreter.set("annotations", annotationDict);
         pythonInterpreter.set("roi_list", roiList);
         pythonInterpreter.exec(code.getCode(getProjectWorkDirectory()));
@@ -160,7 +160,7 @@ public class FilterRoiByStatisticsScriptAlgorithm extends ImageRoiProcessorAlgor
             outputData.add(roi);
         }
         dataBatch.getMergedAnnotations().clear();
-        JIPipeAnnotation.setAnnotationsFromPython(annotationDict, dataBatch.getMergedAnnotations());
+        JIPipeTextAnnotation.setAnnotationsFromPython(annotationDict, dataBatch.getMergedAnnotations());
 
         dataBatch.addOutputData(getFirstOutputSlot(), outputData, progressInfo);
     }

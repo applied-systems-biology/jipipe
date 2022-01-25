@@ -7,7 +7,7 @@ import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeIssueReport;
 import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
-import org.hkijena.jipipe.api.data.JIPipeAnnotation;
+import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.data.JIPipeDataSlotInfo;
 import org.hkijena.jipipe.api.data.JIPipeDefaultMutableSlotConfiguration;
 import org.hkijena.jipipe.api.data.JIPipeSlotType;
@@ -359,7 +359,7 @@ public class CellPoseAlgorithm extends JIPipeSingleIterationAlgorithm {
             int inputRow = inputRowList.get(i);
 
             // Fetch original annotations and write them
-            List<JIPipeAnnotation> annotationList = new ArrayList<>(getInputSlot("Input").getAnnotations(inputRow));
+            List<JIPipeTextAnnotation> annotationList = new ArrayList<>(getInputSlot("Input").getAnnotations(inputRow));
 
             // Read diameters
             if (diameterAnnotation.isEnabled()) {

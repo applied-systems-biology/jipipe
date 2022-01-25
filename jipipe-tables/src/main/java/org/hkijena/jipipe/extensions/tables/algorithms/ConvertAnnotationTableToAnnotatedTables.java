@@ -16,7 +16,7 @@ package org.hkijena.jipipe.extensions.tables.algorithms;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
-import org.hkijena.jipipe.api.data.JIPipeAnnotationMergeStrategy;
+import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
 import org.hkijena.jipipe.api.nodes.JIPipeDataBatch;
 import org.hkijena.jipipe.api.nodes.JIPipeInputSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
@@ -73,7 +73,7 @@ public class ConvertAnnotationTableToAnnotatedTables extends JIPipeSimpleIterati
             if (!keepAnnotationColumns) {
                 data.removeColumns(annotationColumns);
             }
-            dataBatch.addOutputData(getFirstOutputSlot(), data, annotationTableData.getAnnotations(0), JIPipeAnnotationMergeStrategy.Merge, progressInfo);
+            dataBatch.addOutputData(getFirstOutputSlot(), data, annotationTableData.getAnnotations(0), JIPipeTextAnnotationMergeMode.Merge, progressInfo);
         }
     }
 

@@ -3,7 +3,7 @@ package org.hkijena.jipipe.extensions.utils.algorithms;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
-import org.hkijena.jipipe.api.data.JIPipeAnnotationMergeStrategy;
+import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeInputSlot;
@@ -23,7 +23,7 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 @JIPipeOutputSlot(value = JIPipeData.class, slotName = "Data", inheritedSlot = "Placeholder", autoCreate = true)
 public class UsePlaceholderForMissingDataAlgorithm extends JIPipeMissingDataGeneratorAlgorithm {
 
-    private JIPipeAnnotationMergeStrategy placeholderAnnotationMergeStrategy = JIPipeAnnotationMergeStrategy.Merge;
+    private JIPipeTextAnnotationMergeMode placeholderAnnotationMergeStrategy = JIPipeTextAnnotationMergeMode.Merge;
 
     public UsePlaceholderForMissingDataAlgorithm(JIPipeNodeInfo info) {
         super(info);
@@ -46,12 +46,12 @@ public class UsePlaceholderForMissingDataAlgorithm extends JIPipeMissingDataGene
 
     @JIPipeDocumentation(name = "Merge placeholder annotations", description = "Determines how annotations of placeholder items are merged")
     @JIPipeParameter("placeholder-annotation-merge-strategy")
-    public JIPipeAnnotationMergeStrategy getPlaceholderAnnotationMergeStrategy() {
+    public JIPipeTextAnnotationMergeMode getPlaceholderAnnotationMergeStrategy() {
         return placeholderAnnotationMergeStrategy;
     }
 
     @JIPipeParameter("placeholder-annotation-merge-strategy")
-    public void setPlaceholderAnnotationMergeStrategy(JIPipeAnnotationMergeStrategy placeholderAnnotationMergeStrategy) {
+    public void setPlaceholderAnnotationMergeStrategy(JIPipeTextAnnotationMergeMode placeholderAnnotationMergeStrategy) {
         this.placeholderAnnotationMergeStrategy = placeholderAnnotationMergeStrategy;
     }
 }

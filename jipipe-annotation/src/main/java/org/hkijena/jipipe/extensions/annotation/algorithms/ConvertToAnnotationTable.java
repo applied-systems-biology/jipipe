@@ -17,7 +17,7 @@ import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeIssueReport;
 import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
-import org.hkijena.jipipe.api.data.JIPipeAnnotation;
+import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.nodes.JIPipeColumMatching;
 import org.hkijena.jipipe.api.nodes.JIPipeInputSlot;
@@ -83,7 +83,7 @@ public class ConvertToAnnotationTable extends JIPipeMergingAlgorithm {
             output.addRow();
             if (dataColumn >= 0)
                 output.setValueAt(getFirstInputSlot().getVirtualData(sourceRow).getStringRepresentation(), row, dataColumn);
-            for (JIPipeAnnotation annotation : getFirstInputSlot().getAnnotations(sourceRow)) {
+            for (JIPipeTextAnnotation annotation : getFirstInputSlot().getAnnotations(sourceRow)) {
                 if (annotation != null) {
                     int col = output.addAnnotationColumn(annotation.getName());
                     output.setValueAt(annotation.getValue(), row, col);

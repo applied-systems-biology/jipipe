@@ -18,8 +18,8 @@ import ij.gui.Roi;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
-import org.hkijena.jipipe.api.data.JIPipeAnnotation;
-import org.hkijena.jipipe.api.data.JIPipeAnnotationMergeStrategy;
+import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
+import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
 import org.hkijena.jipipe.api.nodes.JIPipeDataBatch;
 import org.hkijena.jipipe.api.nodes.JIPipeInputSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
@@ -106,12 +106,12 @@ public class RoiStatisticsAlgorithm extends ImageRoiProcessorAlgorithm {
                     referenceImage = ImageJUtils.duplicate(referenceImage);
                 }
                 ResultsTableData result = data.measure(referenceImage, measurements, addNameToTable);
-                List<JIPipeAnnotation> annotations = new ArrayList<>();
+                List<JIPipeTextAnnotation> annotations = new ArrayList<>();
                 if (indexAnnotation.isEnabled() && !StringUtils.isNullOrEmpty(indexAnnotation.getContent())) {
-                    annotations.add(new JIPipeAnnotation(indexAnnotation.getContent(), entry.getKey().toString()));
+                    annotations.add(new JIPipeTextAnnotation(indexAnnotation.getContent(), entry.getKey().toString()));
                 }
 
-                dataBatch.addOutputData(getFirstOutputSlot(), result, annotations, JIPipeAnnotationMergeStrategy.Merge, progressInfo);
+                dataBatch.addOutputData(getFirstOutputSlot(), result, annotations, JIPipeTextAnnotationMergeMode.Merge, progressInfo);
             }
         }
     }

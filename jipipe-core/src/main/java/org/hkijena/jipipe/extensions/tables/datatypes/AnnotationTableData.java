@@ -15,7 +15,7 @@ package org.hkijena.jipipe.extensions.tables.datatypes;
 
 import ij.measure.ResultsTable;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.data.JIPipeAnnotation;
+import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.utils.StringUtils;
 
 import java.nio.file.Path;
@@ -81,11 +81,11 @@ public class AnnotationTableData extends ResultsTableData {
      * @param row the row
      * @return annotations
      */
-    public List<JIPipeAnnotation> getAnnotations(int row) {
-        List<JIPipeAnnotation> result = new ArrayList<>();
+    public List<JIPipeTextAnnotation> getAnnotations(int row) {
+        List<JIPipeTextAnnotation> result = new ArrayList<>();
         for (int col = 0; col < getColumnCount(); col++) {
             String columnName = getColumnName(col);
-            result.add(new JIPipeAnnotation(columnName, StringUtils.orElse(getValueAsString(row, col), "")));
+            result.add(new JIPipeTextAnnotation(columnName, StringUtils.orElse(getValueAsString(row, col), "")));
         }
         return result;
     }

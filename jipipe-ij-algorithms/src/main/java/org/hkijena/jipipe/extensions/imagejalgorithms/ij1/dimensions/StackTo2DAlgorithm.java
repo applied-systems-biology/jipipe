@@ -18,8 +18,8 @@ import ij.process.ImageProcessor;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
-import org.hkijena.jipipe.api.data.JIPipeAnnotation;
-import org.hkijena.jipipe.api.data.JIPipeAnnotationMergeStrategy;
+import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
+import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
 import org.hkijena.jipipe.api.data.JIPipeDefaultMutableSlotConfiguration;
 import org.hkijena.jipipe.api.nodes.JIPipeDataBatch;
 import org.hkijena.jipipe.api.nodes.JIPipeInputSlot;
@@ -88,7 +88,7 @@ public class StackTo2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         ImagePlusData inputData = dataBatch.getInputData(getFirstInputSlot(), ImagePlusData.class, progressInfo);
         ImagePlus img = inputData.getDuplicateImage();
         ImageJUtils.forEachIndexedZCTSlice(img, (ip, index) -> {
-            List<JIPipeAnnotation> annotationList = new ArrayList<>();
+            List<JIPipeTextAnnotation> annotationList = new ArrayList<>();
             annotationIndex.addAnnotationIfEnabled(annotationList, "" + (img.getStackIndex(index.getC() + 1, index.getZ() + 1, index.getT() + 1) - 1));
             annotationT.addAnnotationIfEnabled(annotationList, "" + index.getT());
             annotationC.addAnnotationIfEnabled(annotationList, "" + index.getC());
@@ -98,7 +98,7 @@ public class StackTo2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
             dataBatch.addOutputData(getFirstOutputSlot(),
                     new ImagePlus2DData(resultImage),
                     annotationList,
-                    JIPipeAnnotationMergeStrategy.OverwriteExisting,
+                    JIPipeTextAnnotationMergeMode.OverwriteExisting,
                     progressInfo);
         }, progressInfo);
     }

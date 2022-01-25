@@ -1,4 +1,4 @@
-package org.hkijena.jipipe.api.data;
+package org.hkijena.jipipe.api.annotation;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import org.hkijena.jipipe.utils.StringUtils;
@@ -15,7 +15,7 @@ import java.util.Map;
 /**
  * Determines how annotations are merged
  */
-public enum JIPipeAnnotationMergeStrategy {
+public enum JIPipeTextAnnotationMergeMode {
     SkipExisting,
     OverwriteExisting,
     Merge,
@@ -28,17 +28,17 @@ public enum JIPipeAnnotationMergeStrategy {
      * @param annotations input annotations. can have duplicate names.
      * @return annotations without duplicate names.
      */
-    public List<JIPipeAnnotation> merge(Collection<JIPipeAnnotation> annotations) {
+    public List<JIPipeTextAnnotation> merge(Collection<JIPipeTextAnnotation> annotations) {
         if (this == Discard) {
             return new ArrayList<>();
         }
         Map<String, String> map = new HashMap<>();
-        for (JIPipeAnnotation annotation : annotations) {
+        for (JIPipeTextAnnotation annotation : annotations) {
             map.put(annotation.getName(), merge(map.getOrDefault(annotation.getName(), ""), annotation.getValue()));
         }
-        List<JIPipeAnnotation> result = new ArrayList<>();
+        List<JIPipeTextAnnotation> result = new ArrayList<>();
         for (Map.Entry<String, String> entry : map.entrySet()) {
-            result.add(new JIPipeAnnotation(entry.getKey(), entry.getValue()));
+            result.add(new JIPipeTextAnnotation(entry.getKey(), entry.getValue()));
         }
         return result;
     }
@@ -50,22 +50,22 @@ public enum JIPipeAnnotationMergeStrategy {
      * @param target      the target list
      * @param annotations input annotations. can have duplicate names.
      */
-    public void mergeInto(Map<String, JIPipeAnnotation> target, Collection<JIPipeAnnotation> annotations) {
+    public void mergeInto(Map<String, JIPipeTextAnnotation> target, Collection<JIPipeTextAnnotation> annotations) {
         if (this == Discard) {
             target.clear();
             return;
         }
         Map<String, String> map = new HashMap<>();
-        for (Map.Entry<String, JIPipeAnnotation> entry : target.entrySet()) {
+        for (Map.Entry<String, JIPipeTextAnnotation> entry : target.entrySet()) {
             if (entry.getValue() != null) {
                 map.put(entry.getKey(), entry.getValue().getValue());
             }
         }
-        for (JIPipeAnnotation annotation : annotations) {
+        for (JIPipeTextAnnotation annotation : annotations) {
             map.put(annotation.getName(), merge(map.getOrDefault(annotation.getName(), ""), annotation.getValue()));
         }
         for (Map.Entry<String, String> entry : map.entrySet()) {
-            target.put(entry.getKey(), new JIPipeAnnotation(entry.getKey(), entry.getValue()));
+            target.put(entry.getKey(), new JIPipeTextAnnotation(entry.getKey(), entry.getValue()));
         }
     }
 

@@ -5,7 +5,7 @@ import ij.gui.Roi;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
-import org.hkijena.jipipe.api.data.JIPipeAnnotation;
+import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.nodes.JIPipeDataBatch;
 import org.hkijena.jipipe.api.nodes.JIPipeInputSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
@@ -60,7 +60,7 @@ public class GenerateROINameAlgorithm extends ImageRoiProcessorAlgorithm {
         ROIListData tmp = new ROIListData();
 
         if (includeAnnotations) {
-            for (JIPipeAnnotation value : dataBatch.getMergedAnnotations().values()) {
+            for (JIPipeTextAnnotation value : dataBatch.getMergedAnnotations().values()) {
                 parameters.set(value.getName(), value.getValue());
             }
         }

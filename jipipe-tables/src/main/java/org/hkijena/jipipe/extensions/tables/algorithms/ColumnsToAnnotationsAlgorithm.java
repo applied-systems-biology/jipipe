@@ -5,8 +5,8 @@ import com.google.common.collect.Multimap;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
-import org.hkijena.jipipe.api.data.JIPipeAnnotation;
-import org.hkijena.jipipe.api.data.JIPipeAnnotationMergeStrategy;
+import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
+import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
 import org.hkijena.jipipe.api.nodes.JIPipeDataBatch;
 import org.hkijena.jipipe.api.nodes.JIPipeInputSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
@@ -30,8 +30,8 @@ import java.util.Set;
 @JIPipeOutputSlot(value = ResultsTableData.class, slotName = "Output", autoCreate = true)
 public class ColumnsToAnnotationsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
-    private JIPipeAnnotationMergeStrategy rowMergingStrategy = JIPipeAnnotationMergeStrategy.Merge;
-    private JIPipeAnnotationMergeStrategy annotationMergeStrategy = JIPipeAnnotationMergeStrategy.Merge;
+    private JIPipeTextAnnotationMergeMode rowMergingStrategy = JIPipeTextAnnotationMergeMode.Merge;
+    private JIPipeTextAnnotationMergeMode annotationMergeStrategy = JIPipeTextAnnotationMergeMode.Merge;
     private TableCellValueQueryExpression filter = new TableCellValueQueryExpression();
 
     public ColumnsToAnnotationsAlgorithm(JIPipeNodeInfo info) {
@@ -56,12 +56,12 @@ public class ColumnsToAnnotationsAlgorithm extends JIPipeSimpleIteratingAlgorith
                 }
             }
         }
-        List<JIPipeAnnotation> annotationList = new ArrayList<>();
+        List<JIPipeTextAnnotation> annotationList = new ArrayList<>();
         for (Map.Entry<String, Collection<String>> entry : annotationsToGenerate.asMap().entrySet()) {
             Set<String> values = new LinkedHashSet<>(entry.getValue());
-            List<JIPipeAnnotation> forName = new ArrayList<>();
+            List<JIPipeTextAnnotation> forName = new ArrayList<>();
             for (String value : values) {
-                forName.add(new JIPipeAnnotation(entry.getKey(), value));
+                forName.add(new JIPipeTextAnnotation(entry.getKey(), value));
             }
             annotationList.addAll(rowMergingStrategy.merge(forName));
         }
@@ -71,23 +71,23 @@ public class ColumnsToAnnotationsAlgorithm extends JIPipeSimpleIteratingAlgorith
     @JIPipeDocumentation(name = "Row merging strategy", description = "Important if the rows of the selected columns have different values. Determines how they are merged. " +
             "Ordered by row index.")
     @JIPipeParameter("row-merging-strategy")
-    public JIPipeAnnotationMergeStrategy getRowMergingStrategy() {
+    public JIPipeTextAnnotationMergeMode getRowMergingStrategy() {
         return rowMergingStrategy;
     }
 
     @JIPipeParameter("row-merging-strategy")
-    public void setRowMergingStrategy(JIPipeAnnotationMergeStrategy rowMergingStrategy) {
+    public void setRowMergingStrategy(JIPipeTextAnnotationMergeMode rowMergingStrategy) {
         this.rowMergingStrategy = rowMergingStrategy;
     }
 
     @JIPipeDocumentation(name = "Annotation merge strategy", description = "Determines what happens if there is already an annotation with the same column name.")
     @JIPipeParameter("annotation-merge-strategy")
-    public JIPipeAnnotationMergeStrategy getAnnotationMergeStrategy() {
+    public JIPipeTextAnnotationMergeMode getAnnotationMergeStrategy() {
         return annotationMergeStrategy;
     }
 
     @JIPipeParameter("annotation-merge-strategy")
-    public void setAnnotationMergeStrategy(JIPipeAnnotationMergeStrategy annotationMergeStrategy) {
+    public void setAnnotationMergeStrategy(JIPipeTextAnnotationMergeMode annotationMergeStrategy) {
         this.annotationMergeStrategy = annotationMergeStrategy;
     }
 

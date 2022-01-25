@@ -19,8 +19,8 @@ import ij.process.ImageProcessor;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
-import org.hkijena.jipipe.api.data.JIPipeAnnotation;
-import org.hkijena.jipipe.api.data.JIPipeAnnotationMergeStrategy;
+import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
+import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
 import org.hkijena.jipipe.api.nodes.JIPipeDataBatch;
 import org.hkijena.jipipe.api.nodes.JIPipeInputSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeIteratingAlgorithm;
@@ -58,7 +58,7 @@ public class ExtractFromROIAlgorithm extends JIPipeIteratingAlgorithm {
     private OptionalAnnotationNameParameter annotationBoundingWidth = new OptionalAnnotationNameParameter("Width", true);
     private OptionalAnnotationNameParameter annotationBoundingHeight = new OptionalAnnotationNameParameter("Height", true);
     private Anchor xyAnchor = Anchor.TopLeft;
-    private JIPipeAnnotationMergeStrategy annotationMergeStrategy = JIPipeAnnotationMergeStrategy.OverwriteExisting;
+    private JIPipeTextAnnotationMergeMode annotationMergeStrategy = JIPipeTextAnnotationMergeMode.OverwriteExisting;
 
     public ExtractFromROIAlgorithm(JIPipeNodeInfo info) {
         super(info);
@@ -100,7 +100,7 @@ public class ExtractFromROIAlgorithm extends JIPipeIteratingAlgorithm {
                     }
                     ImagePlus resultImage = new ImagePlus(image.getImage().getTitle() + " cropped", resultProcessor);
                     resultImage.copyScale(image.getImage());
-                    List<JIPipeAnnotation> annotations = new ArrayList<>();
+                    List<JIPipeTextAnnotation> annotations = new ArrayList<>();
                     Rectangle bounds = roi.getBounds();
                     Point coords = xyAnchor.getRectangleCoordinates(bounds);
                     annotationX.addAnnotationIfEnabled(annotations, "" + coords.x);
@@ -219,12 +219,12 @@ public class ExtractFromROIAlgorithm extends JIPipeIteratingAlgorithm {
 
     @JIPipeDocumentation(name = "Annotation merging", description = "Determines how generated annotations are merged with existing annotations")
     @JIPipeParameter("annotation-merging")
-    public JIPipeAnnotationMergeStrategy getAnnotationMergeStrategy() {
+    public JIPipeTextAnnotationMergeMode getAnnotationMergeStrategy() {
         return annotationMergeStrategy;
     }
 
     @JIPipeParameter("annotation-merging")
-    public void setAnnotationMergeStrategy(JIPipeAnnotationMergeStrategy annotationMergeStrategy) {
+    public void setAnnotationMergeStrategy(JIPipeTextAnnotationMergeMode annotationMergeStrategy) {
         this.annotationMergeStrategy = annotationMergeStrategy;
     }
 }

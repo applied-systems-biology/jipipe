@@ -13,14 +13,14 @@
 
 package org.hkijena.jipipe.ui.resultanalysis;
 
-import org.hkijena.jipipe.api.data.JIPipeAnnotation;
+import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 
 import javax.swing.*;
 import javax.swing.table.TableCellRenderer;
 import java.awt.Component;
 
 /**
- * Renders {@link JIPipeAnnotation}
+ * Renders {@link JIPipeTextAnnotation}
  */
 public class JIPipeAnnotationTableCellRenderer extends JLabel implements TableCellRenderer {
 
@@ -34,8 +34,8 @@ public class JIPipeAnnotationTableCellRenderer extends JLabel implements TableCe
 
     @Override
     public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
-        if (value instanceof JIPipeAnnotation) {
-            setText(((JIPipeAnnotation) value).getValue());
+        if (value instanceof JIPipeTextAnnotation) {
+            setText(((JIPipeTextAnnotation) value).getValue());
         } else {
             setText("<html><p style=\"color: red;\">NA</p></html>");
         }

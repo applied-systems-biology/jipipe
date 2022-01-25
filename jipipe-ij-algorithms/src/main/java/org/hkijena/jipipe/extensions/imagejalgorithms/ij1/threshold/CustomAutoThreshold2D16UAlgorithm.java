@@ -24,8 +24,8 @@ import ij.process.ShortProcessor;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
-import org.hkijena.jipipe.api.data.JIPipeAnnotation;
-import org.hkijena.jipipe.api.data.JIPipeAnnotationMergeStrategy;
+import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
+import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
 import org.hkijena.jipipe.api.data.JIPipeDefaultMutableSlotConfiguration;
 import org.hkijena.jipipe.api.nodes.JIPipeDataBatch;
 import org.hkijena.jipipe.api.nodes.JIPipeInputSlot;
@@ -72,7 +72,7 @@ public class CustomAutoThreshold2D16UAlgorithm extends JIPipeIteratingAlgorithm 
 
     private DefaultExpressionParameter thresholdCombinationExpression = new DefaultExpressionParameter("MIN(thresholds)");
     private ImageROITargetArea sourceArea = ImageROITargetArea.WholeImage;
-    private JIPipeAnnotationMergeStrategy thresholdAnnotationStrategy = JIPipeAnnotationMergeStrategy.OverwriteExisting;
+    private JIPipeTextAnnotationMergeMode thresholdAnnotationStrategy = JIPipeTextAnnotationMergeMode.OverwriteExisting;
 
     private boolean accessPixels = true;
 
@@ -125,7 +125,7 @@ public class CustomAutoThreshold2D16UAlgorithm extends JIPipeIteratingAlgorithm 
         ImagePlus maskInput = null;
         ExpressionVariables parameters = new ExpressionVariables();
 
-        for (JIPipeAnnotation annotation : dataBatch.getMergedAnnotations().values()) {
+        for (JIPipeTextAnnotation annotation : dataBatch.getMergedAnnotations().values()) {
             parameters.set(annotation.getName(), annotation.getValue());
         }
 
@@ -181,7 +181,7 @@ public class CustomAutoThreshold2D16UAlgorithm extends JIPipeIteratingAlgorithm 
         variableSet.set("thresholds", thresholds);
         Number combined = (Number) thresholdCombinationExpression.evaluate(variableSet);
         int threshold = combined.intValue();
-        List<JIPipeAnnotation> annotations = new ArrayList<>();
+        List<JIPipeTextAnnotation> annotations = new ArrayList<>();
         if (thresholdAnnotation.isEnabled()) {
             annotations.add(thresholdAnnotation.createAnnotation("" + threshold));
         }
@@ -195,7 +195,7 @@ public class CustomAutoThreshold2D16UAlgorithm extends JIPipeIteratingAlgorithm 
         dataBatch.addOutputData(getFirstOutputSlot(),
                 new ImagePlusGreyscaleMaskData(outputImage),
                 annotations,
-                JIPipeAnnotationMergeStrategy.OverwriteExisting,
+                JIPipeTextAnnotationMergeMode.OverwriteExisting,
                 progressInfo);
     }
 
@@ -214,7 +214,7 @@ public class CustomAutoThreshold2D16UAlgorithm extends JIPipeIteratingAlgorithm 
         }, progressInfo.resolve("Combining pixels"));
         ImageStatistics statistics = new ShortProcessor(pixels.size(), 1, pixels.toArray(), inputImage.getProcessor().getColorModel()).getStatistics();
         int threshold = getThreshold(parameters, statistics, pixels);
-        List<JIPipeAnnotation> annotations = new ArrayList<>();
+        List<JIPipeTextAnnotation> annotations = new ArrayList<>();
         if (thresholdAnnotation.isEnabled()) {
             annotations.add(thresholdAnnotation.createAnnotation("" + threshold));
         }
@@ -228,7 +228,7 @@ public class CustomAutoThreshold2D16UAlgorithm extends JIPipeIteratingAlgorithm 
         dataBatch.addOutputData(getFirstOutputSlot(),
                 new ImagePlusGreyscaleMaskData(outputImage),
                 annotations,
-                JIPipeAnnotationMergeStrategy.Merge,
+                JIPipeTextAnnotationMergeMode.Merge,
                 progressInfo);
     }
 
@@ -258,7 +258,7 @@ public class CustomAutoThreshold2D16UAlgorithm extends JIPipeIteratingAlgorithm 
 
             thresholds.add(threshold);
         }, progressInfo);
-        List<JIPipeAnnotation> annotations = new ArrayList<>();
+        List<JIPipeTextAnnotation> annotations = new ArrayList<>();
         if (thresholdAnnotation.isEnabled()) {
             ExpressionVariables variableSet = new ExpressionVariables();
             variableSet.set("thresholds", thresholds);
@@ -342,12 +342,12 @@ public class CustomAutoThreshold2D16UAlgorithm extends JIPipeIteratingAlgorithm 
 
     @JIPipeDocumentation(name = "Threshold annotation strategy", description = "Determines what happens if annotations are already present.")
     @JIPipeParameter("threshold-annotation-strategy")
-    public JIPipeAnnotationMergeStrategy getThresholdAnnotationStrategy() {
+    public JIPipeTextAnnotationMergeMode getThresholdAnnotationStrategy() {
         return thresholdAnnotationStrategy;
     }
 
     @JIPipeParameter("threshold-annotation-strategy")
-    public void setThresholdAnnotationStrategy(JIPipeAnnotationMergeStrategy thresholdAnnotationStrategy) {
+    public void setThresholdAnnotationStrategy(JIPipeTextAnnotationMergeMode thresholdAnnotationStrategy) {
         this.thresholdAnnotationStrategy = thresholdAnnotationStrategy;
     }
 

@@ -13,7 +13,7 @@
 
 package org.hkijena.jipipe.extensions.expressions;
 
-import org.hkijena.jipipe.api.data.JIPipeDataAnnotation;
+import org.hkijena.jipipe.api.annotation.JIPipeDataAnnotation;
 import org.hkijena.jipipe.api.data.JIPipeDataInfo;
 
 import java.util.ArrayList;

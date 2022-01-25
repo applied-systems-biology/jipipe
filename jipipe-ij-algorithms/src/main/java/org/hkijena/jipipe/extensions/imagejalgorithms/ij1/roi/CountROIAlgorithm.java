@@ -3,8 +3,8 @@ package org.hkijena.jipipe.extensions.imagejalgorithms.ij1.roi;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
-import org.hkijena.jipipe.api.data.JIPipeAnnotation;
-import org.hkijena.jipipe.api.data.JIPipeAnnotationMergeStrategy;
+import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
+import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.data.JIPipeDefaultMutableSlotConfiguration;
 import org.hkijena.jipipe.api.nodes.JIPipeInputSlot;
@@ -63,18 +63,18 @@ public class CountROIAlgorithm extends JIPipeMergingAlgorithm {
     }
 
     @Override
-    public void runParameterSet(JIPipeProgressInfo progressInfo, List<JIPipeAnnotation> parameterAnnotations) {
+    public void runParameterSet(JIPipeProgressInfo progressInfo, List<JIPipeTextAnnotation> parameterAnnotations) {
         currentResult = new AnnotationTableData();
         super.runParameterSet(progressInfo, parameterAnnotations);
 
         // We do a custom merge into one final table
-        List<JIPipeAnnotation> annotations = new ArrayList<>();
+        List<JIPipeTextAnnotation> annotations = new ArrayList<>();
         for (JIPipeDataSlot inputSlot : getEffectiveInputSlots()) {
             for (int row = 0; row < inputSlot.getRowCount(); row++) {
                 annotations.addAll(inputSlot.getAnnotations(row));
             }
         }
-        getFirstOutputSlot().addData(currentResult, annotations, JIPipeAnnotationMergeStrategy.Merge, progressInfo);
+        getFirstOutputSlot().addData(currentResult, annotations, JIPipeTextAnnotationMergeMode.Merge, progressInfo);
         currentResult = null;
     }
 
@@ -89,7 +89,7 @@ public class CountROIAlgorithm extends JIPipeMergingAlgorithm {
             currentResult.setValueAt(1.0 * count, row, col);
         }
         if (addAnnotations) {
-            for (JIPipeAnnotation annotation : dataBatch.getMergedAnnotations().values()) {
+            for (JIPipeTextAnnotation annotation : dataBatch.getMergedAnnotations().values()) {
                 int col = currentResult.getOrCreateColumnIndex(annotation.getName(), false);
                 currentResult.setValueAt(annotation.getValue(), row, col);
             }

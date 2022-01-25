@@ -21,7 +21,7 @@ import org.apache.commons.lang3.math.NumberUtils;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
-import org.hkijena.jipipe.api.data.JIPipeAnnotation;
+import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.data.JIPipeDefaultMutableSlotConfiguration;
 import org.hkijena.jipipe.api.nodes.JIPipeDataBatch;
 import org.hkijena.jipipe.api.nodes.JIPipeInputSlot;
@@ -97,13 +97,13 @@ public class ThresholdByAnnotation2DAlgorithm extends JIPipeSimpleIteratingAlgor
         float maxThreshold = Float.POSITIVE_INFINITY;
 
         if (minThresholdAnnotation.isEnabled()) {
-            JIPipeAnnotation annotation = dataBatch.getMergedAnnotation(minThresholdAnnotation.getContent());
+            JIPipeTextAnnotation annotation = dataBatch.getMergedAnnotation(minThresholdAnnotation.getContent());
             if (annotation != null) {
                 minThreshold = NumberUtils.createFloat(annotation.getValue().replace(',', '.'));
             }
         }
         if (maxThresholdAnnotation.isEnabled()) {
-            JIPipeAnnotation annotation = dataBatch.getMergedAnnotation(maxThresholdAnnotation.getContent());
+            JIPipeTextAnnotation annotation = dataBatch.getMergedAnnotation(maxThresholdAnnotation.getContent());
             if (annotation != null) {
                 maxThreshold = NumberUtils.createFloat(annotation.getValue().replace(',', '.'));
             }

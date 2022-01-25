@@ -16,6 +16,10 @@ package org.hkijena.jipipe.api.data;
 import com.google.common.eventbus.EventBus;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
+import org.hkijena.jipipe.api.annotation.JIPipeDataAnnotation;
+import org.hkijena.jipipe.api.annotation.JIPipeDataAnnotationMergeMode;
+import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
+import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
 import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
 import org.hkijena.jipipe.api.nodes.JIPipeAlgorithm;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
@@ -53,7 +57,7 @@ public class JIPipeDataSlot {
 
     // String annotations
     private List<String> annotationColumns = new ArrayList<>();
-    private Map<String, ArrayList<JIPipeAnnotation>> annotations = new HashMap<>();
+    private Map<String, ArrayList<JIPipeTextAnnotation>> annotations = new HashMap<>();
 
     // Data annotations
     private List<String> dataAnnotationColumns = new ArrayList<>();
@@ -215,9 +219,9 @@ public class JIPipeDataSlot {
      * @param row the row
      * @return map from annotation name to annotation instance. Non-existing annotations are not present.
      */
-    public Map<String, JIPipeAnnotation> getAnnotationMap(int row) {
-        Map<String, JIPipeAnnotation> result = new HashMap<>();
-        for (JIPipeAnnotation annotation : getAnnotations(row)) {
+    public Map<String, JIPipeTextAnnotation> getAnnotationMap(int row) {
+        Map<String, JIPipeTextAnnotation> result = new HashMap<>();
+        for (JIPipeTextAnnotation annotation : getAnnotations(row)) {
             result.put(annotation.getName(), annotation);
         }
         return result;
@@ -291,10 +295,10 @@ public class JIPipeDataSlot {
      * @param row The row
      * @return Annotations at row
      */
-    public synchronized List<JIPipeAnnotation> getAnnotations(int row) {
-        List<JIPipeAnnotation> result = new ArrayList<>();
+    public synchronized List<JIPipeTextAnnotation> getAnnotations(int row) {
+        List<JIPipeTextAnnotation> result = new ArrayList<>();
         for (String info : annotationColumns) {
-            JIPipeAnnotation annotation = getOrCreateAnnotationColumnData(info).get(row);
+            JIPipeTextAnnotation annotation = getOrCreateAnnotationColumnData(info).get(row);
             if (annotation != null)
                 result.add(annotation);
         }
@@ -307,11 +311,11 @@ public class JIPipeDataSlot {
      * @param rows The set of rows
      * @return Annotations at row
      */
-    public synchronized List<JIPipeAnnotation> getAnnotations(Collection<Integer> rows) {
-        List<JIPipeAnnotation> result = new ArrayList<>();
+    public synchronized List<JIPipeTextAnnotation> getAnnotations(Collection<Integer> rows) {
+        List<JIPipeTextAnnotation> result = new ArrayList<>();
         for (String info : annotationColumns) {
             for (int row : rows) {
-                JIPipeAnnotation annotation = getOrCreateAnnotationColumnData(info).get(row);
+                JIPipeTextAnnotation annotation = getOrCreateAnnotationColumnData(info).get(row);
                 if (annotation != null)
                     result.add(annotation);
             }
@@ -327,7 +331,7 @@ public class JIPipeDataSlot {
      * @param orElse alternative value
      * @return annotation of type 'type' or 'orElse'
      */
-    public JIPipeAnnotation getAnnotationOr(int row, String name, JIPipeAnnotation orElse) {
+    public JIPipeTextAnnotation getAnnotationOr(int row, String name, JIPipeTextAnnotation orElse) {
         return getAnnotations(row).stream().filter(a -> a != null && Objects.equals(a.getName(), name)).findFirst().orElse(orElse);
     }
 
@@ -338,8 +342,8 @@ public class JIPipeDataSlot {
      * @param columnName Annotation type
      * @return All annotation instances of the provided type. Size is getRowCount()
      */
-    private synchronized List<JIPipeAnnotation> getOrCreateAnnotationColumnData(String columnName) {
-        ArrayList<JIPipeAnnotation> arrayList = annotations.getOrDefault(columnName, null);
+    private synchronized List<JIPipeTextAnnotation> getOrCreateAnnotationColumnData(String columnName) {
+        ArrayList<JIPipeTextAnnotation> arrayList = annotations.getOrDefault(columnName, null);
         if (arrayList == null) {
             annotationColumns.add(columnName);
             arrayList = new ArrayList<>();
@@ -378,7 +382,7 @@ public class JIPipeDataSlot {
      * @param annotations  Optional annotations
      * @param progressInfo progress for data storage
      */
-    public synchronized void addData(JIPipeData value, List<JIPipeAnnotation> annotations, JIPipeAnnotationMergeStrategy mergeStrategy, JIPipeProgressInfo progressInfo) {
+    public synchronized void addData(JIPipeData value, List<JIPipeTextAnnotation> annotations, JIPipeTextAnnotationMergeMode mergeStrategy, JIPipeProgressInfo progressInfo) {
         if (!accepts(value))
             throw new IllegalArgumentException("Tried to add data of type " + value.getClass() + ", but slot only accepts " + acceptedDataType + ". A converter could not be found.");
         if (uniqueData) {
@@ -391,8 +395,8 @@ public class JIPipeDataSlot {
         }
         JIPipeVirtualData virtualData = new JIPipeVirtualData(JIPipe.getDataTypes().convert(value, getAcceptedDataType()));
         data.add(virtualData);
-        for (JIPipeAnnotation annotation : annotations) {
-            List<JIPipeAnnotation> annotationArray = getOrCreateAnnotationColumnData(annotation.getName());
+        for (JIPipeTextAnnotation annotation : annotations) {
+            List<JIPipeTextAnnotation> annotationArray = getOrCreateAnnotationColumnData(annotation.getName());
             annotationArray.set(getRowCount() - 1, annotation);
         }
         if (info.isVirtual())
@@ -405,8 +409,8 @@ public class JIPipeDataSlot {
      * @param annotation The annotation instance
      * @param overwrite  If false, existing annotations of the same type are not overwritten
      */
-    public synchronized void addAnnotationToAllData(JIPipeAnnotation annotation, boolean overwrite) {
-        List<JIPipeAnnotation> annotationArray = getOrCreateAnnotationColumnData(annotation.getName());
+    public synchronized void addAnnotationToAllData(JIPipeTextAnnotation annotation, boolean overwrite) {
+        List<JIPipeTextAnnotation> annotationArray = getOrCreateAnnotationColumnData(annotation.getName());
         for (int i = 0; i < getRowCount(); ++i) {
             if (!overwrite && annotationArray.get(i) != null)
                 continue;
@@ -434,7 +438,7 @@ public class JIPipeDataSlot {
      * @param progressInfo progress for data storage
      */
     public synchronized void addData(JIPipeData value, JIPipeProgressInfo progressInfo) {
-        addData(value, Collections.emptyList(), JIPipeAnnotationMergeStrategy.Merge, progressInfo);
+        addData(value, Collections.emptyList(), JIPipeTextAnnotationMergeMode.Merge, progressInfo);
     }
 
     /**
@@ -443,7 +447,7 @@ public class JIPipeDataSlot {
      * @param annotations A valid annotation list with size equals to getRowCount()
      * @return row index greater or equal to 0 if found, otherwise -1
      */
-    public int findRowWithAnnotations(List<JIPipeAnnotation> annotations) {
+    public int findRowWithAnnotations(List<JIPipeTextAnnotation> annotations) {
         String[] infoMap = new String[annotations.size()];
         for (int i = 0; i < annotations.size(); ++i) {
             int infoIndex = annotationColumns.indexOf(annotations.get(i).getName());
@@ -455,8 +459,8 @@ public class JIPipeDataSlot {
             boolean equal = true;
             for (int i = 0; i < annotations.size(); ++i) {
                 String info = infoMap[i];
-                JIPipeAnnotation rowAnnotation = this.annotations.get(info).get(row);
-                if (!JIPipeAnnotation.nameEquals(annotations.get(i), rowAnnotation)) {
+                JIPipeTextAnnotation rowAnnotation = this.annotations.get(info).get(row);
+                if (!JIPipeTextAnnotation.nameEquals(annotations.get(i), rowAnnotation)) {
                     equal = false;
                 }
             }
@@ -677,7 +681,7 @@ public class JIPipeDataSlot {
         String text = "Copying data from " + sourceSlot.getDisplayName() + " to " + getDisplayName();
         for (int row = 0; row < sourceSlot.getRowCount(); ++row) {
             progressInfo.resolveAndLog(text, row, sourceSlot.getRowCount());
-            addData(sourceSlot.getVirtualData(row), sourceSlot.getAnnotations(row), JIPipeAnnotationMergeStrategy.Merge);
+            addData(sourceSlot.getVirtualData(row), sourceSlot.getAnnotations(row), JIPipeTextAnnotationMergeMode.Merge);
 
             // Copy data annotations
             for (Map.Entry<String, JIPipeVirtualData> entry : sourceSlot.getVirtualDataAnnotationMap(row).entrySet()) {
@@ -693,7 +697,7 @@ public class JIPipeDataSlot {
      * @param annotations   the annotations
      * @param mergeStrategy merge strategy
      */
-    public void addData(JIPipeVirtualData virtualData, List<JIPipeAnnotation> annotations, JIPipeAnnotationMergeStrategy mergeStrategy) {
+    public void addData(JIPipeVirtualData virtualData, List<JIPipeTextAnnotation> annotations, JIPipeTextAnnotationMergeMode mergeStrategy) {
         if (!accepts(virtualData.getDataClass()))
             throw new IllegalArgumentException("Tried to add data of type " + virtualData.getDataClass() + ", but slot only accepts " + acceptedDataType + ". A converter could not be found.");
         if (uniqueData) {
@@ -705,8 +709,8 @@ public class JIPipeDataSlot {
             annotations = mergeStrategy.merge(annotations);
         }
         data.add(virtualData);
-        for (JIPipeAnnotation annotation : annotations) {
-            List<JIPipeAnnotation> annotationArray = getOrCreateAnnotationColumnData(annotation.getName());
+        for (JIPipeTextAnnotation annotation : annotations) {
+            List<JIPipeTextAnnotation> annotationArray = getOrCreateAnnotationColumnData(annotation.getName());
             annotationArray.set(getRowCount() - 1, annotation);
         }
     }
@@ -718,7 +722,7 @@ public class JIPipeDataSlot {
      * @param annotations   the annotations
      * @param mergeStrategy merge strategy
      */
-    public void addData(JIPipeVirtualData virtualData, List<JIPipeAnnotation> annotations, JIPipeAnnotationMergeStrategy mergeStrategy, List<JIPipeDataAnnotation> dataAnnotations, JIPipeDataAnnotationMergeStrategy dataAnnotationMergeStrategy) {
+    public void addData(JIPipeVirtualData virtualData, List<JIPipeTextAnnotation> annotations, JIPipeTextAnnotationMergeMode mergeStrategy, List<JIPipeDataAnnotation> dataAnnotations, JIPipeDataAnnotationMergeMode dataAnnotationMergeStrategy) {
         if (!accepts(virtualData.getDataClass()))
             throw new IllegalArgumentException("Tried to add data of type " + virtualData.getDataClass() + ", but slot only accepts " + acceptedDataType + ". A converter could not be found.");
         if (uniqueData) {
@@ -730,8 +734,8 @@ public class JIPipeDataSlot {
             annotations = mergeStrategy.merge(annotations);
         }
         data.add(virtualData);
-        for (JIPipeAnnotation annotation : annotations) {
-            List<JIPipeAnnotation> annotationArray = getOrCreateAnnotationColumnData(annotation.getName());
+        for (JIPipeTextAnnotation annotation : annotations) {
+            List<JIPipeTextAnnotation> annotationArray = getOrCreateAnnotationColumnData(annotation.getName());
             annotationArray.set(getRowCount() - 1, annotation);
         }
         for (JIPipeDataAnnotation annotation : dataAnnotationMergeStrategy.merge(dataAnnotations)) {
@@ -878,7 +882,7 @@ public class JIPipeDataSlot {
      * @param column the column
      * @return the annotation
      */
-    public JIPipeAnnotation getAnnotation(int row, int column) {
+    public JIPipeTextAnnotation getAnnotation(int row, int column) {
         String annotation = annotationColumns.get(column);
         return annotations.get(annotation).get(row);
     }
@@ -912,7 +916,7 @@ public class JIPipeDataSlot {
     public JIPipeDataSlot slice(Collection<Integer> rows) {
         JIPipeDataSlot result = new JIPipeDataSlot(getInfo(), getNode());
         for (Integer row : rows) {
-            result.addData(getVirtualData(row), getAnnotations(row), JIPipeAnnotationMergeStrategy.OverwriteExisting);
+            result.addData(getVirtualData(row), getAnnotations(row), JIPipeTextAnnotationMergeMode.OverwriteExisting);
             for (Map.Entry<String, JIPipeVirtualData> entry : getVirtualDataAnnotationMap(row).entrySet()) {
                 result.setVirtualDataAnnotation(result.getRowCount() - 1, entry.getKey(), entry.getValue());
             }
@@ -934,7 +938,7 @@ public class JIPipeDataSlot {
             output.addRow();
             if (dataColumn >= 0)
                 output.setValueAt(getVirtualData(row).getStringRepresentation(), row, dataColumn);
-            for (JIPipeAnnotation annotation : getAnnotations(sourceRow)) {
+            for (JIPipeTextAnnotation annotation : getAnnotations(sourceRow)) {
                 if (annotation != null) {
                     int col = output.addAnnotationColumn(annotation.getName());
                     output.setValueAt(annotation.getValue(), row, col);
@@ -961,7 +965,7 @@ public class JIPipeDataSlot {
             Path rowStorage = storagePath.resolve("" + row.getIndex());
             Class<? extends JIPipeData> rowDataType = JIPipe.getDataTypes().getById(row.getTrueDataType());
             JIPipeData data = JIPipe.importData(rowStorage, rowDataType);
-            slot.addData(data, row.getAnnotations(), JIPipeAnnotationMergeStrategy.OverwriteExisting, rowProgress);
+            slot.addData(data, row.getAnnotations(), JIPipeTextAnnotationMergeMode.OverwriteExisting, rowProgress);
 
             for (JIPipeExportedDataAnnotation dataAnnotation : row.getDataAnnotations()) {
                 Path dataAnnotationRowStorage = storagePath.resolve(dataAnnotation.getRowStorageFolder());

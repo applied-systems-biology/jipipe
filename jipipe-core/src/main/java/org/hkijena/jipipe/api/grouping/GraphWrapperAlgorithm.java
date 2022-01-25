@@ -21,8 +21,8 @@ import org.hkijena.jipipe.JIPipeDependency;
 import org.hkijena.jipipe.api.JIPipeGraphRunner;
 import org.hkijena.jipipe.api.JIPipeIssueReport;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
-import org.hkijena.jipipe.api.data.JIPipeAnnotationMergeStrategy;
-import org.hkijena.jipipe.api.data.JIPipeDataAnnotationMergeStrategy;
+import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
+import org.hkijena.jipipe.api.annotation.JIPipeDataAnnotationMergeMode;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.data.JIPipeDataSlotInfo;
 import org.hkijena.jipipe.api.data.JIPipeDefaultMutableSlotConfiguration;
@@ -177,9 +177,9 @@ public class GraphWrapperAlgorithm extends JIPipeAlgorithm implements JIPipeData
                 for (Integer row : dataBatch.getInputRows(inputSlot)) {
                     groupInputSlot.addData(inputSlot.getVirtualData(row),
                             inputSlot.getAnnotations(row),
-                            JIPipeAnnotationMergeStrategy.OverwriteExisting,
+                            JIPipeTextAnnotationMergeMode.OverwriteExisting,
                             inputSlot.getDataAnnotations(row),
-                            JIPipeDataAnnotationMergeStrategy.OverwriteExisting);
+                            JIPipeDataAnnotationMergeMode.OverwriteExisting);
                 }
             }
 

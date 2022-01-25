@@ -17,8 +17,8 @@ import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
-import org.hkijena.jipipe.api.data.JIPipeAnnotation;
-import org.hkijena.jipipe.api.data.JIPipeAnnotationMergeStrategy;
+import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
+import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataInfo;
 import org.hkijena.jipipe.api.data.JIPipeExportedDataTable;
@@ -47,7 +47,7 @@ public class ImportData extends JIPipeSimpleIteratingAlgorithm {
 
     private boolean ignoreInputAnnotations = false;
     private boolean ignoreImportedDataAnnotations = false;
-    private JIPipeAnnotationMergeStrategy annotationMergeStrategy = JIPipeAnnotationMergeStrategy.Merge;
+    private JIPipeTextAnnotationMergeMode annotationMergeStrategy = JIPipeTextAnnotationMergeMode.Merge;
 
     public ImportData(JIPipeNodeInfo info) {
         super(info);
@@ -85,7 +85,7 @@ public class ImportData extends JIPipeSimpleIteratingAlgorithm {
         for (JIPipeExportedDataTableRow row : exportedDataTable.getRowList()) {
             progressInfo.log("Importing data row " + row.getIndex());
             Path storageFolder = dataFolder.resolve("" + row.getIndex());
-            List<JIPipeAnnotation> annotationList = ignoreImportedDataAnnotations ? Collections.emptyList() : row.getAnnotations();
+            List<JIPipeTextAnnotation> annotationList = ignoreImportedDataAnnotations ? Collections.emptyList() : row.getAnnotations();
             JIPipeDataInfo trueDataType = exportedDataTable.getDataTypeOf(row.getIndex());
             JIPipeData data = JIPipe.importData(storageFolder, trueDataType.getDataClass());
             dataBatch.addOutputData(getFirstOutputSlot(), data, annotationList, annotationMergeStrategy, progressInfo);
@@ -116,12 +116,12 @@ public class ImportData extends JIPipeSimpleIteratingAlgorithm {
 
     @JIPipeDocumentation(name = "Merge imported annotations", description = "Determines what happens when imported data has the same annotations as the input folder.")
     @JIPipeParameter("annotation-merge-strategy")
-    public JIPipeAnnotationMergeStrategy getAnnotationMergeStrategy() {
+    public JIPipeTextAnnotationMergeMode getAnnotationMergeStrategy() {
         return annotationMergeStrategy;
     }
 
     @JIPipeParameter("annotation-merge-strategy")
-    public void setAnnotationMergeStrategy(JIPipeAnnotationMergeStrategy annotationMergeStrategy) {
+    public void setAnnotationMergeStrategy(JIPipeTextAnnotationMergeMode annotationMergeStrategy) {
         this.annotationMergeStrategy = annotationMergeStrategy;
     }
 }

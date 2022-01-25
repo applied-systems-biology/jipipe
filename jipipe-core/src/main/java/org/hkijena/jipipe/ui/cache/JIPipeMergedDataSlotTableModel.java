@@ -15,8 +15,8 @@ package org.hkijena.jipipe.ui.cache;
 
 import org.hkijena.jipipe.api.JIPipeProject;
 import org.hkijena.jipipe.api.compartments.algorithms.JIPipeProjectCompartment;
-import org.hkijena.jipipe.api.data.JIPipeAnnotation;
-import org.hkijena.jipipe.api.data.JIPipeDataAnnotation;
+import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
+import org.hkijena.jipipe.api.annotation.JIPipeDataAnnotation;
 import org.hkijena.jipipe.api.data.JIPipeDataInfo;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.data.JIPipeExportedDataTable;
@@ -231,7 +231,7 @@ public class JIPipeMergedDataSlotTableModel implements TableModel {
             else if (toDataAnnotationColumnIndex(columnIndex) != -1)
                 return Component.class;
             else
-                return JIPipeAnnotation.class;
+                return JIPipeTextAnnotation.class;
         } else {
             if (columnIndex == 0)
                 return Integer.class;
@@ -244,7 +244,7 @@ public class JIPipeMergedDataSlotTableModel implements TableModel {
             else if (toDataAnnotationColumnIndex(columnIndex) != -1)
                 return Component.class;
             else
-                return JIPipeAnnotation.class;
+                return JIPipeTextAnnotation.class;
         }
     }
 

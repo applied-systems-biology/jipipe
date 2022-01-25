@@ -16,8 +16,8 @@ package org.hkijena.jipipe.extensions.tables.algorithms;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
-import org.hkijena.jipipe.api.data.JIPipeAnnotation;
-import org.hkijena.jipipe.api.data.JIPipeAnnotationMergeStrategy;
+import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
+import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
 import org.hkijena.jipipe.api.nodes.JIPipeDataBatch;
 import org.hkijena.jipipe.api.nodes.JIPipeInputSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
@@ -86,13 +86,13 @@ public class SplitTableByColumnsAlgorithm extends JIPipeSimpleIteratingAlgorithm
             Map<String, List<Integer>> groupedByCondition = rows.stream().collect(Collectors.groupingBy(rowConditions::get));
             for (Map.Entry<String, List<Integer>> entry : groupedByCondition.entrySet()) {
                 ResultsTableData output = input.getRows(entry.getValue());
-                List<JIPipeAnnotation> annotations = new ArrayList<>();
+                List<JIPipeTextAnnotation> annotations = new ArrayList<>();
                 if (addAsAnnotations && output.getRowCount() > 0) {
                     for (String column : interestingColumns) {
-                        annotations.add(new JIPipeAnnotation(column, output.getValueAsString(0, column)));
+                        annotations.add(new JIPipeTextAnnotation(column, output.getValueAsString(0, column)));
                     }
                 }
-                dataBatch.addOutputData(getFirstOutputSlot(), output, annotations, JIPipeAnnotationMergeStrategy.Merge, progressInfo);
+                dataBatch.addOutputData(getFirstOutputSlot(), output, annotations, JIPipeTextAnnotationMergeMode.Merge, progressInfo);
             }
         }
     }

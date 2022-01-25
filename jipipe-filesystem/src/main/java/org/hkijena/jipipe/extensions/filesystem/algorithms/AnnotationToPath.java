@@ -16,7 +16,7 @@ package org.hkijena.jipipe.extensions.filesystem.algorithms;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
-import org.hkijena.jipipe.api.data.JIPipeAnnotation;
+import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.nodes.JIPipeDataBatch;
 import org.hkijena.jipipe.api.nodes.JIPipeInputSlot;
@@ -64,7 +64,7 @@ public class AnnotationToPath extends JIPipeSimpleIteratingAlgorithm {
 
     @Override
     protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
-        JIPipeAnnotation matchingAnnotation = annotationExpression.queryFirst(dataBatch.getMergedAnnotations().values());
+        JIPipeTextAnnotation matchingAnnotation = annotationExpression.queryFirst(dataBatch.getMergedAnnotations().values());
         if (matchingAnnotation == null || StringUtils.isNullOrEmpty(matchingAnnotation.getValue())) {
             dataBatch.addOutputData(getFirstOutputSlot(), new PathData(Paths.get("")), progressInfo);
             return;

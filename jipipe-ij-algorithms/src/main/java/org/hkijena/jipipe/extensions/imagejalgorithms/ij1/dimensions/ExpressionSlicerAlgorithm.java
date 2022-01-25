@@ -6,8 +6,8 @@ import ij.process.ImageProcessor;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
-import org.hkijena.jipipe.api.data.JIPipeAnnotation;
-import org.hkijena.jipipe.api.data.JIPipeAnnotationMergeStrategy;
+import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
+import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
 import org.hkijena.jipipe.api.nodes.JIPipeDataBatch;
 import org.hkijena.jipipe.api.nodes.JIPipeInputSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
@@ -131,7 +131,7 @@ public class ExpressionSlicerAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
             ImageStack stack = new ImageStack(img.getWidth(), img.getHeight(),
                     numZ * numC * numT);
-            List<JIPipeAnnotation> annotations = new ArrayList<>();
+            List<JIPipeTextAnnotation> annotations = new ArrayList<>();
             for (int z = 0; z < numZ; z++) {
                 for (int c = 0; c < numC; c++) {
                     for (int t = 0; t < numT; t++) {
@@ -151,7 +151,7 @@ public class ExpressionSlicerAlgorithm extends JIPipeSimpleIteratingAlgorithm {
             ImagePlus resultImage = new ImagePlus("Slice", stack);
             resultImage.setDimensions(numC, numZ, numT);
             resultImage.copyScale(img);
-            dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusData(resultImage), annotations, JIPipeAnnotationMergeStrategy.Merge, progressInfo);
+            dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusData(resultImage), annotations, JIPipeTextAnnotationMergeMode.Merge, progressInfo);
         }
     }
 

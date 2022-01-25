@@ -13,7 +13,7 @@
 
 package org.hkijena.jipipe.extensions.expressions;
 
-import org.hkijena.jipipe.api.data.JIPipeAnnotation;
+import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -47,13 +47,13 @@ public class AnnotationQueryExpression extends DefaultExpressionParameter {
      * @param annotations existing annotations for the data
      * @return the annotation that matches the query or null if none matches
      */
-    public JIPipeAnnotation queryFirst(Collection<JIPipeAnnotation> annotations) {
+    public JIPipeTextAnnotation queryFirst(Collection<JIPipeTextAnnotation> annotations) {
         ExpressionVariables variableSet = new ExpressionVariables();
         try {
             Object evaluationResult = evaluate(variableSet);
             if (evaluationResult instanceof String) {
                 String key = (String) evaluationResult;
-                for (JIPipeAnnotation annotation : annotations) {
+                for (JIPipeTextAnnotation annotation : annotations) {
                     if (Objects.equals(annotation.getName(), key))
                         return annotation;
                 }
@@ -61,7 +61,7 @@ public class AnnotationQueryExpression extends DefaultExpressionParameter {
         } catch (Exception e) {
         }
         try {
-            for (JIPipeAnnotation annotation : annotations) {
+            for (JIPipeTextAnnotation annotation : annotations) {
                 variableSet.set("key", annotation.getName());
                 variableSet.set("value", annotation.getValue());
                 boolean evaluationResult = test(variableSet);
@@ -70,7 +70,7 @@ public class AnnotationQueryExpression extends DefaultExpressionParameter {
             }
         } catch (Exception e) {
         }
-        for (JIPipeAnnotation annotation : annotations) {
+        for (JIPipeTextAnnotation annotation : annotations) {
             if (Objects.equals(annotation.getName(), getExpression()))
                 return annotation;
         }
@@ -83,14 +83,14 @@ public class AnnotationQueryExpression extends DefaultExpressionParameter {
      * @param annotations existing annotations for the data
      * @return the annotation that matches the query or null if none matches
      */
-    public java.util.List<JIPipeAnnotation> queryAll(Collection<JIPipeAnnotation> annotations) {
-        java.util.List<JIPipeAnnotation> result = new ArrayList<>();
+    public java.util.List<JIPipeTextAnnotation> queryAll(Collection<JIPipeTextAnnotation> annotations) {
+        java.util.List<JIPipeTextAnnotation> result = new ArrayList<>();
         ExpressionVariables variableSet = new ExpressionVariables();
         try {
             Object evaluationResult = evaluate(variableSet);
             if (evaluationResult instanceof String) {
                 String key = (String) evaluationResult;
-                for (JIPipeAnnotation annotation : annotations) {
+                for (JIPipeTextAnnotation annotation : annotations) {
                     if (Objects.equals(annotation.getName(), key)) {
                         result.add(annotation);
                     }
@@ -100,7 +100,7 @@ public class AnnotationQueryExpression extends DefaultExpressionParameter {
         }
         if (!result.isEmpty())
             return result;
-        for (JIPipeAnnotation annotation : annotations) {
+        for (JIPipeTextAnnotation annotation : annotations) {
             variableSet.set("key", annotation.getName());
             variableSet.set("value", annotation.getValue());
             boolean evaluationResult = test(variableSet);

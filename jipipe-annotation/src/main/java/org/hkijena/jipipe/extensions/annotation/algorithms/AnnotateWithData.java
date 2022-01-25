@@ -3,8 +3,8 @@ package org.hkijena.jipipe.extensions.annotation.algorithms;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
-import org.hkijena.jipipe.api.data.JIPipeAnnotation;
-import org.hkijena.jipipe.api.data.JIPipeAnnotationMergeStrategy;
+import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
+import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeDataBatch;
@@ -30,7 +30,7 @@ public class AnnotateWithData extends JIPipeIteratingAlgorithm {
     private String annotationName = "Label";
     private boolean mergeInputAnnotations = true;
     private boolean mergeLabelAnnotations = true;
-    private JIPipeAnnotationMergeStrategy annotationMergeStrategy = JIPipeAnnotationMergeStrategy.Merge;
+    private JIPipeTextAnnotationMergeMode annotationMergeStrategy = JIPipeTextAnnotationMergeMode.Merge;
 
     public AnnotateWithData(JIPipeNodeInfo info) {
         super(info);
@@ -51,7 +51,7 @@ public class AnnotateWithData extends JIPipeIteratingAlgorithm {
         int dataRow = dataBatch.getInputSlotRows().get(inputDataSlot);
         int annotationRow = dataBatch.getInputSlotRows().get(inputAnnotationSlot);
 
-        List<JIPipeAnnotation> annotationList = new ArrayList<>();
+        List<JIPipeTextAnnotation> annotationList = new ArrayList<>();
         if (mergeInputAnnotations)
             annotationList.addAll(inputDataSlot.getAnnotations(dataRow));
         if (mergeLabelAnnotations)
@@ -102,12 +102,12 @@ public class AnnotateWithData extends JIPipeIteratingAlgorithm {
     @JIPipeDocumentation(name = "Annotation merge strategy", description = "Determines how annotations from 'Input' and 'Annotation' are merged, " +
             "if both are enabled.")
     @JIPipeParameter("annotation-merge-strategy")
-    public JIPipeAnnotationMergeStrategy getAnnotationMergeStrategy() {
+    public JIPipeTextAnnotationMergeMode getAnnotationMergeStrategy() {
         return annotationMergeStrategy;
     }
 
     @JIPipeParameter("annotation-merge-strategy")
-    public void setAnnotationMergeStrategy(JIPipeAnnotationMergeStrategy annotationMergeStrategy) {
+    public void setAnnotationMergeStrategy(JIPipeTextAnnotationMergeMode annotationMergeStrategy) {
         this.annotationMergeStrategy = annotationMergeStrategy;
     }
 }

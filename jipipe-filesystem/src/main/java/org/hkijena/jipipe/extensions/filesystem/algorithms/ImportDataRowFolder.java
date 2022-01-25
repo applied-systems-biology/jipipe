@@ -18,8 +18,8 @@ import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeIssueReport;
 import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
-import org.hkijena.jipipe.api.data.JIPipeAnnotation;
-import org.hkijena.jipipe.api.data.JIPipeAnnotationMergeStrategy;
+import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
+import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.nodes.JIPipeDataBatch;
 import org.hkijena.jipipe.api.nodes.JIPipeInputSlot;
@@ -63,12 +63,12 @@ public class ImportDataRowFolder extends JIPipeSimpleIteratingAlgorithm {
     protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
         Path folder = dataBatch.getInputData("Data row folder", FolderData.class, progressInfo).toPath();
         JIPipeData data = JIPipe.importData(folder, dataType.getInfo().getDataClass());
-        List<JIPipeAnnotation> annotations = new ArrayList<>();
+        List<JIPipeTextAnnotation> annotations = new ArrayList<>();
         for (StringAndStringPairParameter item : this.annotations) {
-            annotations.add(new JIPipeAnnotation(item.getKey(), item.getValue()));
+            annotations.add(new JIPipeTextAnnotation(item.getKey(), item.getValue()));
         }
 
-        dataBatch.addOutputData(getFirstOutputSlot(), data, annotations, JIPipeAnnotationMergeStrategy.Merge, progressInfo);
+        dataBatch.addOutputData(getFirstOutputSlot(), data, annotations, JIPipeTextAnnotationMergeMode.Merge, progressInfo);
     }
 
     @JIPipeDocumentation(name = "Annotations", description = "Use this list to set annotations")

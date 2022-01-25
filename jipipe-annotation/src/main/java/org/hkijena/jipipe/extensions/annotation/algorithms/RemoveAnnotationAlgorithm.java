@@ -16,7 +16,7 @@ package org.hkijena.jipipe.extensions.annotation.algorithms;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
-import org.hkijena.jipipe.api.data.JIPipeAnnotation;
+import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.nodes.JIPipeDataBatch;
 import org.hkijena.jipipe.api.nodes.JIPipeInputSlot;
@@ -61,8 +61,8 @@ public class RemoveAnnotationAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     @Override
     protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
-        List<JIPipeAnnotation> matches = annotationExpression.queryAll(dataBatch.getMergedAnnotations().values());
-        for (JIPipeAnnotation match : matches) {
+        List<JIPipeTextAnnotation> matches = annotationExpression.queryAll(dataBatch.getMergedAnnotations().values());
+        for (JIPipeTextAnnotation match : matches) {
             dataBatch.removeMergedAnnotation(match.getName());
         }
         dataBatch.addOutputData(getFirstOutputSlot(), dataBatch.getInputData(getFirstInputSlot(), JIPipeData.class, progressInfo), progressInfo);

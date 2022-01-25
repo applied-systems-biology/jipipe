@@ -21,8 +21,8 @@ import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeIssueReport;
 import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
-import org.hkijena.jipipe.api.data.JIPipeAnnotation;
-import org.hkijena.jipipe.api.data.JIPipeAnnotationMergeStrategy;
+import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
+import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
 import org.hkijena.jipipe.api.nodes.JIPipeInputSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.JIPipeOutputSlot;
@@ -82,7 +82,7 @@ public class OMEROFindImageAlgorithm extends JIPipeParameterSlotAlgorithm {
     }
 
     @Override
-    public void runParameterSet(JIPipeProgressInfo progressInfo, List<JIPipeAnnotation> parameterAnnotations) {
+    public void runParameterSet(JIPipeProgressInfo progressInfo, List<JIPipeTextAnnotation> parameterAnnotations) {
         Set<Long> datasetIds = new HashSet<>();
         for (int row = 0; row < getFirstInputSlot().getRowCount(); row++) {
             datasetIds.add(getFirstInputSlot().getData(row, OMERODatasetReferenceData.class, progressInfo).getDatasetId());
@@ -108,20 +108,20 @@ public class OMEROFindImageAlgorithm extends JIPipeParameterSlotAlgorithm {
                         if (!tagFilters.test(tags)) {
                             continue;
                         }
-                        List<JIPipeAnnotation> annotations = new ArrayList<>();
+                        List<JIPipeTextAnnotation> annotations = new ArrayList<>();
                         if (addKeyValuePairsAsAnnotations) {
                             for (Map.Entry<String, String> entry : keyValuePairs.entrySet()) {
-                                annotations.add(new JIPipeAnnotation(entry.getKey(), entry.getValue()));
+                                annotations.add(new JIPipeTextAnnotation(entry.getKey(), entry.getValue()));
                             }
                         }
                         if (tagAnnotation.isEnabled()) {
                             List<String> sortedTags = tags.stream().sorted().collect(Collectors.toList());
                             String value = JsonUtils.toJsonString(sortedTags);
-                            annotations.add(new JIPipeAnnotation(tagAnnotation.getContent(), value));
+                            annotations.add(new JIPipeTextAnnotation(tagAnnotation.getContent(), value));
                         }
                         if (datasetNameAnnotation.isEnabled())
-                            annotations.add(new JIPipeAnnotation(datasetNameAnnotation.getContent(), datasetData.getName()));
-                        getFirstOutputSlot().addData(new OMEROImageReferenceData(imageData.getId()), annotations, JIPipeAnnotationMergeStrategy.Merge, progressInfo);
+                            annotations.add(new JIPipeTextAnnotation(datasetNameAnnotation.getContent(), datasetData.getName()));
+                        getFirstOutputSlot().addData(new OMEROImageReferenceData(imageData.getId()), annotations, JIPipeTextAnnotationMergeMode.Merge, progressInfo);
                     }
 
                 }

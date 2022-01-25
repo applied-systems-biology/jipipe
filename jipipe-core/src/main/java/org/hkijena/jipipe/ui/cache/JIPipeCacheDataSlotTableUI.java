@@ -16,7 +16,7 @@ package org.hkijena.jipipe.ui.cache;
 import com.google.common.eventbus.Subscribe;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeProjectCache;
-import org.hkijena.jipipe.api.data.JIPipeAnnotation;
+import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.data.JIPipeDataInfo;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
@@ -116,7 +116,7 @@ public class JIPipeCacheDataSlotTableUI extends JIPipeWorkbenchPanel {
             table.setRowHeight(25);
         table.setDefaultRenderer(JIPipeDataInfo.class, new JIPipeDataInfoCellRenderer());
         table.setDefaultRenderer(Component.class, new JIPipeComponentCellRenderer());
-        table.setDefaultRenderer(JIPipeAnnotation.class, new JIPipeAnnotationTableCellRenderer());
+        table.setDefaultRenderer(JIPipeTextAnnotation.class, new JIPipeAnnotationTableCellRenderer());
         table.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
 
         scrollPane = new JScrollPane(table);

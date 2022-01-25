@@ -21,8 +21,8 @@ import ij.process.ImageProcessor;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
-import org.hkijena.jipipe.api.data.JIPipeAnnotation;
-import org.hkijena.jipipe.api.data.JIPipeAnnotationMergeStrategy;
+import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
+import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
 import org.hkijena.jipipe.api.nodes.JIPipeDataBatch;
 import org.hkijena.jipipe.api.nodes.JIPipeInputSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
@@ -81,7 +81,7 @@ public class GreyscalePixelsGenerator extends JIPipeSimpleIteratingAlgorithm {
                 ResultsTableData resultsTable = toResultsTable(pixels);
                 if (!StringUtils.isNullOrEmpty(sliceAnnotation)) {
                     dataBatch.addOutputData(getFirstOutputSlot(), resultsTable,
-                            Collections.singletonList(new JIPipeAnnotation(sliceAnnotation, "slice=" + index)), JIPipeAnnotationMergeStrategy.Merge, progressInfo);
+                            Collections.singletonList(new JIPipeTextAnnotation(sliceAnnotation, "slice=" + index)), JIPipeTextAnnotationMergeMode.Merge, progressInfo);
                 } else {
                     dataBatch.addOutputData(getFirstOutputSlot(), resultsTable, progressInfo);
                 }

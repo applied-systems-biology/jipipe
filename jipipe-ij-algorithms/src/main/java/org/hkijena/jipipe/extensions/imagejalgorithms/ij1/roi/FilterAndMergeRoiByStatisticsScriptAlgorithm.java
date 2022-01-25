@@ -19,8 +19,8 @@ import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeIssueReport;
 import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
-import org.hkijena.jipipe.api.data.JIPipeAnnotation;
-import org.hkijena.jipipe.api.data.JIPipeAnnotationMergeStrategy;
+import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
+import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
 import org.hkijena.jipipe.api.nodes.JIPipeDataBatch;
 import org.hkijena.jipipe.api.nodes.JIPipeInputSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
@@ -129,8 +129,8 @@ public class FilterAndMergeRoiByStatisticsScriptAlgorithm extends ImageRoiProces
                 Roi roi = (Roi) item.get("data");
                 listData.add(roi);
             }
-            List<JIPipeAnnotation> annotations = JIPipeAnnotation.extractAnnotationsFromPython((PyDictionary) row.getOrDefault("annotations", new PyDictionary()));
-            getFirstOutputSlot().addData(listData, annotations, JIPipeAnnotationMergeStrategy.Merge, progressInfo);
+            List<JIPipeTextAnnotation> annotations = JIPipeTextAnnotation.extractAnnotationsFromPython((PyDictionary) row.getOrDefault("annotations", new PyDictionary()));
+            getFirstOutputSlot().addData(listData, annotations, JIPipeTextAnnotationMergeMode.Merge, progressInfo);
         }
 
         this.pythonInterpreter = null;
@@ -170,7 +170,7 @@ public class FilterAndMergeRoiByStatisticsScriptAlgorithm extends ImageRoiProces
             roiList.add(roiItemDictionary);
         }
 
-        PyDictionary annotationDict = JIPipeAnnotation.annotationMapToPython(dataBatch.getMergedAnnotations());
+        PyDictionary annotationDict = JIPipeTextAnnotation.annotationMapToPython(dataBatch.getMergedAnnotations());
         PyDictionary rowDict = new PyDictionary();
         rowDict.put("annotations", annotationDict);
         rowDict.put("roi_list", roiList);

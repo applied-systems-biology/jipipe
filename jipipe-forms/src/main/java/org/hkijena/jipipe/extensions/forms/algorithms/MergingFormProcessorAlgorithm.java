@@ -5,10 +5,10 @@ import gnu.trove.set.hash.TIntHashSet;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
-import org.hkijena.jipipe.api.data.JIPipeAnnotation;
-import org.hkijena.jipipe.api.data.JIPipeAnnotationMergeStrategy;
+import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
+import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
 import org.hkijena.jipipe.api.data.JIPipeData;
-import org.hkijena.jipipe.api.data.JIPipeDataAnnotationMergeStrategy;
+import org.hkijena.jipipe.api.annotation.JIPipeDataAnnotationMergeMode;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
 import org.hkijena.jipipe.api.nodes.*;
@@ -155,19 +155,19 @@ public class MergingFormProcessorAlgorithm extends JIPipeAlgorithm implements JI
                 JIPipeMergingDataBatch dataBatch = dataBatchList.get(i);
                 getFirstOutputSlot().addData(dataBatch.getVirtualInputData(dataSlot).get(0),
                         new ArrayList<>(dataBatch.getMergedAnnotations().values()),
-                        JIPipeAnnotationMergeStrategy.OverwriteExisting,
+                        JIPipeTextAnnotationMergeMode.OverwriteExisting,
                         new ArrayList<>(dataBatch.getMergedDataAnnotations().values()),
-                        JIPipeDataAnnotationMergeStrategy.OverwriteExisting);
+                        JIPipeDataAnnotationMergeMode.OverwriteExisting);
 
                 // Copy user-modified forms
                 for (int row = 0; row < forms.getRowCount(); row++) {
-                    List<JIPipeAnnotation> annotations = new ArrayList<>(forms.getAnnotations(row));
+                    List<JIPipeTextAnnotation> annotations = new ArrayList<>(forms.getAnnotations(row));
                     annotations.addAll(dataBatch.getMergedAnnotations().values());
                     formsOutputSlot.addData(forms.getVirtualData(row),
                             annotations,
-                            JIPipeAnnotationMergeStrategy.OverwriteExisting,
+                            JIPipeTextAnnotationMergeMode.OverwriteExisting,
                             forms.getDataAnnotations(row),
-                            JIPipeDataAnnotationMergeStrategy.OverwriteExisting);
+                            JIPipeDataAnnotationMergeMode.OverwriteExisting);
                 }
             }
         }

@@ -5,14 +5,10 @@ import gnu.trove.set.hash.TIntHashSet;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
-import org.hkijena.jipipe.api.data.JIPipeAnnotation;
-import org.hkijena.jipipe.api.data.JIPipeAnnotationMergeStrategy;
-import org.hkijena.jipipe.api.data.JIPipeData;
-import org.hkijena.jipipe.api.data.JIPipeDataAnnotationMergeStrategy;
-import org.hkijena.jipipe.api.data.JIPipeDataSlot;
-import org.hkijena.jipipe.api.data.JIPipeDataSlotInfo;
-import org.hkijena.jipipe.api.data.JIPipeMutableSlotConfiguration;
-import org.hkijena.jipipe.api.data.JIPipeSlotType;
+import org.hkijena.jipipe.api.annotation.JIPipeDataAnnotationMergeMode;
+import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
+import org.hkijena.jipipe.api.data.*;
+import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.MiscellaneousNodeTypeCategory;
@@ -32,7 +28,6 @@ import javax.swing.*;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
@@ -109,7 +104,7 @@ public class IteratingFormProcessorAlgorithm extends JIPipeAlgorithm implements 
             }
 
             // Keep current merged annotations
-            List<Map<String, JIPipeAnnotation>> dataBatchListPreFormAnnotations = new ArrayList<>();
+            List<Map<String, JIPipeTextAnnotation>> dataBatchListPreFormAnnotations = new ArrayList<>();
             for (JIPipeMergingDataBatch dataBatch : dataBatchList) {
                 dataBatchListPreFormAnnotations.add(new HashMap<>(dataBatch.getMergedAnnotations()));
             }
@@ -189,13 +184,13 @@ public class IteratingFormProcessorAlgorithm extends JIPipeAlgorithm implements 
             for (int i = 0; i < dataBatchForms.size(); i++) {
                 JIPipeDataSlot forms = dataBatchForms.get(i);
                 JIPipeMergingDataBatch dataBatch = dataBatchList.get(i);
-                Map<String, JIPipeAnnotation> preFormAnnotations = dataBatchListPreFormAnnotations.get(i);
+                Map<String, JIPipeTextAnnotation> preFormAnnotations = dataBatchListPreFormAnnotations.get(i);
                 for (String name : getInputSlotMap().keySet()) {
                     if (!name.equals("Forms")) {
                         JIPipeDataSlot inputSlot = getInputSlot(name);
                         JIPipeDataSlot outputSlot = getOutputSlot(name);
                         for (int row : dataBatch.getInputSlotRows().get(inputSlot)) {
-                            List<JIPipeAnnotation> annotations;
+                            List<JIPipeTextAnnotation> annotations;
                             if(restoreAnnotations) {
                                 annotations = new ArrayList<>();
                                 extractRestoredAnnotations(dataBatch, preFormAnnotations, inputSlot, row, annotations);
@@ -205,20 +200,20 @@ public class IteratingFormProcessorAlgorithm extends JIPipeAlgorithm implements 
                             }
                             outputSlot.addData(inputSlot.getVirtualData(row),
                                     annotations,
-                                    JIPipeAnnotationMergeStrategy.OverwriteExisting,
+                                    JIPipeTextAnnotationMergeMode.OverwriteExisting,
                                     inputSlot.getDataAnnotations(row),
-                                    JIPipeDataAnnotationMergeStrategy.OverwriteExisting);
+                                    JIPipeDataAnnotationMergeMode.OverwriteExisting);
                         }
                     }
                 }
                 for (int row = 0; row < forms.getRowCount(); row++) {
-                    List<JIPipeAnnotation> annotations = new ArrayList<>(forms.getAnnotations(row));
+                    List<JIPipeTextAnnotation> annotations = new ArrayList<>(forms.getAnnotations(row));
                     annotations.addAll(dataBatch.getMergedAnnotations().values());
                     formsOutputSlot.addData(forms.getVirtualData(row),
                             annotations,
-                            JIPipeAnnotationMergeStrategy.OverwriteExisting,
+                            JIPipeTextAnnotationMergeMode.OverwriteExisting,
                             forms.getDataAnnotations(row),
-                            JIPipeDataAnnotationMergeStrategy.OverwriteExisting);
+                            JIPipeDataAnnotationMergeMode.OverwriteExisting);
                 }
             }
         }
@@ -232,17 +227,17 @@ public class IteratingFormProcessorAlgorithm extends JIPipeAlgorithm implements 
      * @param row row of the data in the input slot
      * @param annotations target list
      */
-    public static void extractRestoredAnnotations(JIPipeMergingDataBatch dataBatch, Map<String, JIPipeAnnotation> preFormAnnotations, JIPipeDataSlot inputSlot, int row, List<JIPipeAnnotation> annotations) {
-        Map<String, JIPipeAnnotation> originalAnnotationMap = inputSlot.getAnnotationMap(row);
-        for (JIPipeAnnotation formAnnotation : dataBatch.getMergedAnnotations().values()) {
-            JIPipeAnnotation preFormAnnotation = preFormAnnotations.getOrDefault(formAnnotation.getName(), null);
+    public static void extractRestoredAnnotations(JIPipeMergingDataBatch dataBatch, Map<String, JIPipeTextAnnotation> preFormAnnotations, JIPipeDataSlot inputSlot, int row, List<JIPipeTextAnnotation> annotations) {
+        Map<String, JIPipeTextAnnotation> originalAnnotationMap = inputSlot.getAnnotationMap(row);
+        for (JIPipeTextAnnotation formAnnotation : dataBatch.getMergedAnnotations().values()) {
+            JIPipeTextAnnotation preFormAnnotation = preFormAnnotations.getOrDefault(formAnnotation.getName(), null);
             if(preFormAnnotation == null) {
                 // Added by form
                 annotations.add(formAnnotation);
             }
             else {
                 // Was it changed by the form?
-                JIPipeAnnotation originalAnnotation = originalAnnotationMap.getOrDefault(formAnnotation.getName(), null);
+                JIPipeTextAnnotation originalAnnotation = originalAnnotationMap.getOrDefault(formAnnotation.getName(), null);
                 if(originalAnnotation == null) {
                     annotations.add(formAnnotation);
                 }

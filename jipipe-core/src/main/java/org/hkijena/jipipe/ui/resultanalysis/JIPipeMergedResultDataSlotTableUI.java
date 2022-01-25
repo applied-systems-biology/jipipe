@@ -17,13 +17,8 @@ import com.google.common.eventbus.Subscribe;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeRun;
 import org.hkijena.jipipe.api.compartments.algorithms.JIPipeProjectCompartment;
-import org.hkijena.jipipe.api.data.JIPipeAnnotation;
-import org.hkijena.jipipe.api.data.JIPipeDataInfo;
-import org.hkijena.jipipe.api.data.JIPipeDataSlot;
-import org.hkijena.jipipe.api.data.JIPipeExportedDataAnnotation;
-import org.hkijena.jipipe.api.data.JIPipeExportedDataTable;
-import org.hkijena.jipipe.api.data.JIPipeExportedDataTableRow;
-import org.hkijena.jipipe.api.data.JIPipeMergedExportedDataTable;
+import org.hkijena.jipipe.api.data.*;
+import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.extensions.settings.FileChooserSettings;
@@ -101,7 +96,7 @@ public class JIPipeMergedResultDataSlotTableUI extends JIPipeProjectWorkbenchPan
         table.setDefaultRenderer(JIPipeDataInfo.class, new JIPipeDataInfoCellRenderer());
         table.setDefaultRenderer(JIPipeGraphNode.class, new JIPipeNodeTableCellRenderer());
         table.setDefaultRenderer(JIPipeProjectCompartment.class, new JIPipeProjectCompartmentTableCellRenderer());
-        table.setDefaultRenderer(JIPipeAnnotation.class, new JIPipeAnnotationTableCellRenderer());
+        table.setDefaultRenderer(JIPipeTextAnnotation.class, new JIPipeAnnotationTableCellRenderer());
         table.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
 
         scrollPane = new JScrollPane(table);

@@ -6,8 +6,8 @@ import ij.process.ImageProcessor;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
-import org.hkijena.jipipe.api.data.JIPipeAnnotation;
-import org.hkijena.jipipe.api.data.JIPipeAnnotationMergeStrategy;
+import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
+import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
 import org.hkijena.jipipe.api.nodes.JIPipeDataBatch;
 import org.hkijena.jipipe.api.nodes.JIPipeInputSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
@@ -46,7 +46,7 @@ public class ManualLABThreshold2DAlgorithm extends JIPipeSimpleIteratingAlgorith
     private OptionalAnnotationNameParameter maxGreenRedThresholdAnnotation = new OptionalAnnotationNameParameter("Max Threshold a", true);
     private OptionalAnnotationNameParameter minBlueYellowThresholdAnnotation = new OptionalAnnotationNameParameter("Min Threshold B", true);
     private OptionalAnnotationNameParameter maxBlueYellowThresholdAnnotation = new OptionalAnnotationNameParameter("Max Threshold B", true);
-    private JIPipeAnnotationMergeStrategy thresholdAnnotationStrategy = JIPipeAnnotationMergeStrategy.OverwriteExisting;
+    private JIPipeTextAnnotationMergeMode thresholdAnnotationStrategy = JIPipeTextAnnotationMergeMode.OverwriteExisting;
 
 
     public ManualLABThreshold2DAlgorithm(JIPipeNodeInfo info) {
@@ -106,7 +106,7 @@ public class ManualLABThreshold2DAlgorithm extends JIPipeSimpleIteratingAlgorith
 
         }, progressInfo);
 
-        List<JIPipeAnnotation> annotations = new ArrayList<>();
+        List<JIPipeTextAnnotation> annotations = new ArrayList<>();
         minLightnessThresholdAnnotation.addAnnotationIfEnabled(annotations, "" + minL);
         maxLightnessThresholdAnnotation.addAnnotationIfEnabled(annotations, "" + maxL);
         minGreenRedThresholdAnnotation.addAnnotationIfEnabled(annotations, "" + minA);
@@ -221,12 +221,12 @@ public class ManualLABThreshold2DAlgorithm extends JIPipeSimpleIteratingAlgorith
 
     @JIPipeDocumentation(name = "Threshold annotation strategy", description = "Determines what happens if annotations are already present.")
     @JIPipeParameter("threshold-annotation-strategy")
-    public JIPipeAnnotationMergeStrategy getThresholdAnnotationStrategy() {
+    public JIPipeTextAnnotationMergeMode getThresholdAnnotationStrategy() {
         return thresholdAnnotationStrategy;
     }
 
     @JIPipeParameter("threshold-annotation-strategy")
-    public void setThresholdAnnotationStrategy(JIPipeAnnotationMergeStrategy thresholdAnnotationStrategy) {
+    public void setThresholdAnnotationStrategy(JIPipeTextAnnotationMergeMode thresholdAnnotationStrategy) {
         this.thresholdAnnotationStrategy = thresholdAnnotationStrategy;
     }
 }

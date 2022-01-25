@@ -3,8 +3,8 @@ package org.hkijena.jipipe.extensions.multiparameters.algorithms;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
-import org.hkijena.jipipe.api.data.JIPipeAnnotation;
-import org.hkijena.jipipe.api.data.JIPipeAnnotationMergeStrategy;
+import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
+import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
 import org.hkijena.jipipe.api.nodes.JIPipeDataBatch;
 import org.hkijena.jipipe.api.nodes.JIPipeInputSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
@@ -26,7 +26,7 @@ import java.util.Map;
 @JIPipeOutputSlot(value = ParametersData.class, slotName = "Output", autoCreate = true)
 public class ParametersToAnnotationsAlgorithm extends JIPipeParameterlessSimpleIteratingAlgorithm {
 
-    private JIPipeAnnotationMergeStrategy annotationMergeStrategy = JIPipeAnnotationMergeStrategy.OverwriteExisting;
+    private JIPipeTextAnnotationMergeMode annotationMergeStrategy = JIPipeTextAnnotationMergeMode.OverwriteExisting;
 
     public ParametersToAnnotationsAlgorithm(JIPipeNodeInfo info) {
         super(info);
@@ -40,21 +40,21 @@ public class ParametersToAnnotationsAlgorithm extends JIPipeParameterlessSimpleI
     @Override
     protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
         ParametersData data = dataBatch.getInputData(getFirstInputSlot(), ParametersData.class, progressInfo);
-        List<JIPipeAnnotation> annotationList = new ArrayList<>();
+        List<JIPipeTextAnnotation> annotationList = new ArrayList<>();
         for (Map.Entry<String, Object> entry : data.getParameterData().entrySet()) {
-            annotationList.add(new JIPipeAnnotation(entry.getKey(), JsonUtils.toJsonString(entry.getValue())));
+            annotationList.add(new JIPipeTextAnnotation(entry.getKey(), JsonUtils.toJsonString(entry.getValue())));
         }
         dataBatch.addOutputData(getFirstOutputSlot(), data, annotationList, annotationMergeStrategy, progressInfo);
     }
 
     @JIPipeDocumentation(name = "Merge existing annotations", description = "Determines how existing annotations are merged")
     @JIPipeParameter("annotation-merge-strategy")
-    public JIPipeAnnotationMergeStrategy getAnnotationMergeStrategy() {
+    public JIPipeTextAnnotationMergeMode getAnnotationMergeStrategy() {
         return annotationMergeStrategy;
     }
 
     @JIPipeParameter("annotation-merge-strategy")
-    public void setAnnotationMergeStrategy(JIPipeAnnotationMergeStrategy annotationMergeStrategy) {
+    public void setAnnotationMergeStrategy(JIPipeTextAnnotationMergeMode annotationMergeStrategy) {
         this.annotationMergeStrategy = annotationMergeStrategy;
     }
 }

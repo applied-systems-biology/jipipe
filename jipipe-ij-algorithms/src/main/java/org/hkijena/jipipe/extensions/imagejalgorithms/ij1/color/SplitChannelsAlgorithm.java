@@ -23,11 +23,9 @@ import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeIssueReport;
 import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
-import org.hkijena.jipipe.api.data.JIPipeAnnotation;
-import org.hkijena.jipipe.api.data.JIPipeAnnotationMergeStrategy;
-import org.hkijena.jipipe.api.data.JIPipeDataSlotInfo;
-import org.hkijena.jipipe.api.data.JIPipeDefaultMutableSlotConfiguration;
-import org.hkijena.jipipe.api.data.JIPipeSlotType;
+import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
+import org.hkijena.jipipe.api.data.*;
+import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
 import org.hkijena.jipipe.api.nodes.JIPipeDataBatch;
 import org.hkijena.jipipe.api.nodes.JIPipeInputSlot;
@@ -136,14 +134,14 @@ public class SplitChannelsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
                     }
                 }
 
-                List<JIPipeAnnotation> annotations = new ArrayList<>();
+                List<JIPipeTextAnnotation> annotations = new ArrayList<>();
                 if (annotateWithSlotName) {
-                    annotations.add(new JIPipeAnnotation(annotationColumnSlotName, slotName));
+                    annotations.add(new JIPipeTextAnnotation(annotationColumnSlotName, slotName));
                 }
                 if (annotateWithChannelIndex) {
-                    annotations.add(new JIPipeAnnotation(annotationColumnChannelIndex, "" + channelIndex));
+                    annotations.add(new JIPipeTextAnnotation(annotationColumnChannelIndex, "" + channelIndex));
                 }
-                dataBatch.addOutputData(slotName, new ImagePlusGreyscaleData(image), annotations, JIPipeAnnotationMergeStrategy.Merge, progressInfo);
+                dataBatch.addOutputData(slotName, new ImagePlusGreyscaleData(image), annotations, JIPipeTextAnnotationMergeMode.Merge, progressInfo);
             }
             return;
         }
@@ -191,12 +189,12 @@ public class SplitChannelsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
                 }
             }
 
-            List<JIPipeAnnotation> annotations = new ArrayList<>();
+            List<JIPipeTextAnnotation> annotations = new ArrayList<>();
             if (annotateWithSlotName) {
-                annotations.add(new JIPipeAnnotation(annotationColumnSlotName, slotName));
+                annotations.add(new JIPipeTextAnnotation(annotationColumnSlotName, slotName));
             }
             if (annotateWithChannelIndex) {
-                annotations.add(new JIPipeAnnotation(annotationColumnChannelIndex, "" + channelIndex));
+                annotations.add(new JIPipeTextAnnotation(annotationColumnChannelIndex, "" + channelIndex));
             }
 
             // Rebuild image stack
@@ -213,7 +211,7 @@ public class SplitChannelsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
             }
 
             ImagePlus output = new ImagePlus(image.getTitle() + " C=" + channelIndex, stack);
-            dataBatch.addOutputData(slotName, new ImagePlusGreyscaleData(output), annotations, JIPipeAnnotationMergeStrategy.Merge, progressInfo);
+            dataBatch.addOutputData(slotName, new ImagePlusGreyscaleData(output), annotations, JIPipeTextAnnotationMergeMode.Merge, progressInfo);
         }
     }
 

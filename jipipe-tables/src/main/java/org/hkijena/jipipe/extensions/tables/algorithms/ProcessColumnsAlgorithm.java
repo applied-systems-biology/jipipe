@@ -17,8 +17,8 @@ import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeIssueReport;
 import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
-import org.hkijena.jipipe.api.data.JIPipeAnnotation;
-import org.hkijena.jipipe.api.data.JIPipeAnnotationMergeStrategy;
+import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
+import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
 import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
 import org.hkijena.jipipe.api.nodes.JIPipeDataBatch;
 import org.hkijena.jipipe.api.nodes.JIPipeInputSlot;
@@ -85,7 +85,7 @@ public class ProcessColumnsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         ResultsTableData input = dataBatch.getInputData(getFirstInputSlot(), ResultsTableData.class, progressInfo);
         List<TableColumn> resultColumns = new ArrayList<>();
         ExpressionVariables expressionVariables = new ExpressionVariables();
-        Map<String, String> annotationsMap = JIPipeAnnotation.annotationListToMap(dataBatch.getMergedAnnotations().values(), JIPipeAnnotationMergeStrategy.OverwriteExisting);
+        Map<String, String> annotationsMap = JIPipeTextAnnotation.annotationListToMap(dataBatch.getMergedAnnotations().values(), JIPipeTextAnnotationMergeMode.OverwriteExisting);
         expressionVariables.set("annotations", annotationsMap);
         if (append) {
             for (String columnName : input.getColumnNames()) {

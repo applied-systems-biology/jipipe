@@ -16,11 +16,9 @@ package org.hkijena.jipipe.extensions.annotation.algorithms;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
-import org.hkijena.jipipe.api.data.JIPipeAnnotation;
-import org.hkijena.jipipe.api.data.JIPipeAnnotationMergeStrategy;
-import org.hkijena.jipipe.api.data.JIPipeData;
-import org.hkijena.jipipe.api.data.JIPipeDataSlot;
-import org.hkijena.jipipe.api.data.JIPipeDefaultMutableSlotConfiguration;
+import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
+import org.hkijena.jipipe.api.data.*;
+import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.nodes.JIPipeAlgorithm;
 import org.hkijena.jipipe.api.nodes.JIPipeInputSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
@@ -79,12 +77,12 @@ public class SplitByAnnotation extends JIPipeAlgorithm {
         JIPipeDataSlot inputSlot = getFirstInputSlot();
         List<String> outputSlotKeys = getOutputSlotMap().keySet().stream().sorted().collect(Collectors.toList());
         for (int row = 0; row < inputSlot.getRowCount(); ++row) {
-            List<JIPipeAnnotation> annotations = inputSlot.getAnnotations(row);
+            List<JIPipeTextAnnotation> annotations = inputSlot.getAnnotations(row);
             String dataString = inputSlot.getData(row, JIPipeData.class, progressInfo).toString();
             for (String outputSlotKey : outputSlotKeys) {
                 AnnotationGeneratorExpression expression = targetSlots.get(outputSlotKey).get(AnnotationGeneratorExpression.class);
                 if (expression.test(annotations, dataString)) {
-                    getOutputSlot(outputSlotKey).addData(inputSlot.getData(row, JIPipeData.class, progressInfo), annotations, JIPipeAnnotationMergeStrategy.Merge, progressInfo);
+                    getOutputSlot(outputSlotKey).addData(inputSlot.getData(row, JIPipeData.class, progressInfo), annotations, JIPipeTextAnnotationMergeMode.Merge, progressInfo);
                 }
             }
         }

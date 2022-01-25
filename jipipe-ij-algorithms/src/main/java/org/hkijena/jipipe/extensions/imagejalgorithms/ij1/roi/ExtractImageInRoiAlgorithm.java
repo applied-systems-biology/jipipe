@@ -17,7 +17,7 @@ import ij.ImagePlus;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
-import org.hkijena.jipipe.api.data.JIPipeAnnotation;
+import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.nodes.JIPipeDataBatch;
 import org.hkijena.jipipe.api.nodes.JIPipeInputSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeIteratingAlgorithm;
@@ -70,7 +70,7 @@ public class ExtractImageInRoiAlgorithm extends JIPipeIteratingAlgorithm {
         ImagePlus image = dataBatch.getInputData("Image", ImagePlusData.class, progressInfo).getImage();
         ROIListData rois = dataBatch.getInputData("ROI", ROIListData.class, progressInfo);
 
-        List<JIPipeAnnotation> annotationList = new ArrayList<>();
+        List<JIPipeTextAnnotation> annotationList = new ArrayList<>();
     }
 
     @JIPipeDocumentation(name = "Ignore ROI Z location", description = "If enabled, the image will be extracted from all Z slices regardless of the ROI location.")

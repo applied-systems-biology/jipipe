@@ -18,11 +18,8 @@ import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeIssueReport;
 import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
-import org.hkijena.jipipe.api.data.JIPipeAnnotation;
-import org.hkijena.jipipe.api.data.JIPipeDataSlot;
-import org.hkijena.jipipe.api.data.JIPipeDataSlotInfo;
-import org.hkijena.jipipe.api.data.JIPipeDefaultMutableSlotConfiguration;
-import org.hkijena.jipipe.api.data.JIPipeSlotType;
+import org.hkijena.jipipe.api.data.*;
+import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.JIPipeParameterSlotAlgorithm;
 import org.hkijena.jipipe.api.nodes.categories.MiscellaneousNodeTypeCategory;
@@ -93,7 +90,7 @@ public class JythonScriptAlgorithm extends JIPipeParameterSlotAlgorithm {
             slotConfiguration.clearOutputSlots(true);
             slotConfiguration.addSlot("Table", new JIPipeDataSlotInfo(ResultsTableData.class, JIPipeSlotType.Output), true);
             code.setCode("from org.hkijena.jipipe.extensions.tables.datatypes import ResultsTableData\n" +
-                    "from org.hkijena.jipipe.api.data import JIPipeAnnotation\n" +
+                    "from org.hkijena.jipipe.api.data import JIPipeTextAnnotation\n" +
                     "from random import random\n" +
                     "\n" +
                     "# We generate a table of 10 values\n" +
@@ -106,13 +103,13 @@ public class JythonScriptAlgorithm extends JIPipeParameterSlotAlgorithm {
                     "\n" +
                     "# The output is written into the output slot\n" +
                     "# You can add annotations via an overload of addData()\n" +
-                    "output_Table.addData(table, [JIPipeAnnotation(\"Dataset\", \"Generated\")])\n");
+                    "output_Table.addData(table, [JIPipeTextAnnotation(\"Dataset\", \"Generated\")])\n");
             getEventBus().post(new ParameterChangedEvent(this, "code"));
         }
     }
 
     @Override
-    public void runParameterSet(JIPipeProgressInfo progressInfo, List<JIPipeAnnotation> parameterAnnotations) {
+    public void runParameterSet(JIPipeProgressInfo progressInfo, List<JIPipeTextAnnotation> parameterAnnotations) {
         PythonInterpreter pythonInterpreter = new PythonInterpreter();
         JythonUtils.passParametersToPython(pythonInterpreter, scriptParameters);
         pythonInterpreter.set("parameter_annotations", parameterAnnotations);

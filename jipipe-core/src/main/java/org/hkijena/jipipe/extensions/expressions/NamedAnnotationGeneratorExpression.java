@@ -13,7 +13,7 @@
 
 package org.hkijena.jipipe.extensions.expressions;
 
-import org.hkijena.jipipe.api.data.JIPipeAnnotation;
+import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.extensions.parameters.collections.ListParameter;
 import org.hkijena.jipipe.extensions.parameters.pairs.PairParameter;
 
@@ -37,8 +37,8 @@ public class NamedAnnotationGeneratorExpression extends PairParameter<Annotation
      * @param variableSet existing variables
      * @return the annotation
      */
-    public JIPipeAnnotation generateAnnotation(Collection<JIPipeAnnotation> annotations, ExpressionVariables variableSet) {
-        return new JIPipeAnnotation(getValue(), getKey().generateAnnotationValue(annotations, variableSet));
+    public JIPipeTextAnnotation generateAnnotation(Collection<JIPipeTextAnnotation> annotations, ExpressionVariables variableSet) {
+        return new JIPipeTextAnnotation(getValue(), getKey().generateAnnotationValue(annotations, variableSet));
     }
 
     public static class List extends ListParameter<NamedAnnotationGeneratorExpression> {

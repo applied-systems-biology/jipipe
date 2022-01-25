@@ -4,8 +4,8 @@ import com.google.common.collect.ImmutableList;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
-import org.hkijena.jipipe.api.data.JIPipeAnnotation;
-import org.hkijena.jipipe.api.data.JIPipeAnnotationMergeStrategy;
+import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
+import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.nodes.JIPipeDataBatch;
 import org.hkijena.jipipe.api.nodes.JIPipeInputSlot;
@@ -26,7 +26,7 @@ import java.util.List;
 public class DataAnnotationToStringAnnotation extends JIPipeSimpleIteratingAlgorithm {
 
     private StringQueryExpression nameFilter = new StringQueryExpression();
-    private JIPipeAnnotationMergeStrategy annotationMergeStrategy = JIPipeAnnotationMergeStrategy.OverwriteExisting;
+    private JIPipeTextAnnotationMergeMode annotationMergeStrategy = JIPipeTextAnnotationMergeMode.OverwriteExisting;
     private boolean keepDataAnnotations = true;
 
     public DataAnnotationToStringAnnotation(JIPipeNodeInfo info) {
@@ -42,10 +42,10 @@ public class DataAnnotationToStringAnnotation extends JIPipeSimpleIteratingAlgor
 
     @Override
     protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
-        List<JIPipeAnnotation> annotationList = new ArrayList<>();
+        List<JIPipeTextAnnotation> annotationList = new ArrayList<>();
         for (String name : ImmutableList.copyOf(dataBatch.getMergedDataAnnotations().keySet())) {
             if (nameFilter.test(name)) {
-                annotationList.add(new JIPipeAnnotation(name, dataBatch.getMergedDataAnnotation(name).getVirtualData().getStringRepresentation()));
+                annotationList.add(new JIPipeTextAnnotation(name, dataBatch.getMergedDataAnnotation(name).getVirtualData().getStringRepresentation()));
                 if (!keepDataAnnotations)
                     dataBatch.getMergedAnnotations().remove(name);
             }
@@ -77,12 +77,12 @@ public class DataAnnotationToStringAnnotation extends JIPipeSimpleIteratingAlgor
 
     @JIPipeDocumentation(name = "Merge same annotation values", description = "Determines how the newly created string annotations are merged into existing ones. ")
     @JIPipeParameter("annotation-merge-strategy")
-    public JIPipeAnnotationMergeStrategy getAnnotationMergeStrategy() {
+    public JIPipeTextAnnotationMergeMode getAnnotationMergeStrategy() {
         return annotationMergeStrategy;
     }
 
     @JIPipeParameter("annotation-merge-strategy")
-    public void setAnnotationMergeStrategy(JIPipeAnnotationMergeStrategy annotationMergeStrategy) {
+    public void setAnnotationMergeStrategy(JIPipeTextAnnotationMergeMode annotationMergeStrategy) {
         this.annotationMergeStrategy = annotationMergeStrategy;
     }
 }

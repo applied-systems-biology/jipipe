@@ -13,7 +13,7 @@
 
 package org.hkijena.jipipe.extensions.expressions;
 
-import org.hkijena.jipipe.api.data.JIPipeAnnotation;
+import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 
 import java.util.Collection;
 
@@ -44,8 +44,8 @@ public class AnnotationGeneratorExpression extends DefaultExpressionParameter {
      * @param variableSet existing variables
      * @return the annotation value
      */
-    public String generateAnnotationValue(Collection<JIPipeAnnotation> annotations, ExpressionVariables variableSet) {
-        for (JIPipeAnnotation annotation : annotations) {
+    public String generateAnnotationValue(Collection<JIPipeTextAnnotation> annotations, ExpressionVariables variableSet) {
+        for (JIPipeTextAnnotation annotation : annotations) {
             if (!variableSet.containsKey(annotation.getName()))
                 variableSet.set(annotation.getName(), annotation.getValue());
         }
@@ -59,9 +59,9 @@ public class AnnotationGeneratorExpression extends DefaultExpressionParameter {
      * @param dataString  the data as string
      * @return the test results.
      */
-    public boolean test(Collection<JIPipeAnnotation> annotations, String dataString) {
+    public boolean test(Collection<JIPipeTextAnnotation> annotations, String dataString) {
         ExpressionVariables variableSet = new ExpressionVariables();
-        for (JIPipeAnnotation annotation : annotations) {
+        for (JIPipeTextAnnotation annotation : annotations) {
             variableSet.set(annotation.getName(), annotation.getValue());
         }
         variableSet.set("data_string", dataString);

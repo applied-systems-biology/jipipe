@@ -3,11 +3,10 @@ package org.hkijena.jipipe.extensions.datatables.algorithms;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
-import org.hkijena.jipipe.api.data.JIPipeAnnotation;
-import org.hkijena.jipipe.api.data.JIPipeAnnotationMergeStrategy;
-import org.hkijena.jipipe.api.data.JIPipeData;
-import org.hkijena.jipipe.api.data.JIPipeDataAnnotationMergeStrategy;
-import org.hkijena.jipipe.api.data.JIPipeDataTableData;
+import org.hkijena.jipipe.api.annotation.JIPipeDataAnnotationMergeMode;
+import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
+import org.hkijena.jipipe.api.data.*;
+import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.nodes.JIPipeInputSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.JIPipeOutputSlot;
@@ -26,7 +25,7 @@ import java.util.List;
 public class ExtractTableAlgorithm extends JIPipeParameterSlotAlgorithm {
 
     private boolean mergeAnnotations = true;
-    private JIPipeAnnotationMergeStrategy mergeStrategy = JIPipeAnnotationMergeStrategy.Merge;
+    private JIPipeTextAnnotationMergeMode mergeStrategy = JIPipeTextAnnotationMergeMode.Merge;
 
     public ExtractTableAlgorithm(JIPipeNodeInfo info) {
         super(info);
@@ -44,8 +43,8 @@ public class ExtractTableAlgorithm extends JIPipeParameterSlotAlgorithm {
     }
 
     @Override
-    public void runParameterSet(JIPipeProgressInfo progressInfo, List<JIPipeAnnotation> parameterAnnotations) {
-        List<JIPipeAnnotation> annotations = new ArrayList<>();
+    public void runParameterSet(JIPipeProgressInfo progressInfo, List<JIPipeTextAnnotation> parameterAnnotations) {
+        List<JIPipeTextAnnotation> annotations = new ArrayList<>();
         for (int row = 0; row < getFirstInputSlot().getRowCount(); row++) {
             JIPipeDataTableData dataTableData = getFirstInputSlot().getData(row, JIPipeDataTableData.class,
                     progressInfo.resolve("Table", row, getFirstInputSlot().getRowCount()));
@@ -61,7 +60,7 @@ public class ExtractTableAlgorithm extends JIPipeParameterSlotAlgorithm {
                         annotations,
                         mergeStrategy,
                         dataTableData.getDataSlot().getDataAnnotations(row2),
-                        JIPipeDataAnnotationMergeStrategy.OverwriteExisting);
+                        JIPipeDataAnnotationMergeMode.OverwriteExisting);
             }
 
         }
@@ -80,12 +79,12 @@ public class ExtractTableAlgorithm extends JIPipeParameterSlotAlgorithm {
 
     @JIPipeDocumentation(name = "Annotation merge strategy", description = "Determines how table annotations are merged into the data.")
     @JIPipeParameter("merge-strategy")
-    public JIPipeAnnotationMergeStrategy getMergeStrategy() {
+    public JIPipeTextAnnotationMergeMode getMergeStrategy() {
         return mergeStrategy;
     }
 
     @JIPipeParameter("merge-strategy")
-    public void setMergeStrategy(JIPipeAnnotationMergeStrategy mergeStrategy) {
+    public void setMergeStrategy(JIPipeTextAnnotationMergeMode mergeStrategy) {
         this.mergeStrategy = mergeStrategy;
     }
 }

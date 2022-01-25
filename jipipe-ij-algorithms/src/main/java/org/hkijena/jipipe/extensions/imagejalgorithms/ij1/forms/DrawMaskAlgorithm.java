@@ -5,7 +5,7 @@ import ij.ImagePlus;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
-import org.hkijena.jipipe.api.data.JIPipeAnnotation;
+import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
 import org.hkijena.jipipe.api.nodes.JIPipeInputSlot;
@@ -55,7 +55,7 @@ public class DrawMaskAlgorithm extends JIPipeIteratingMissingDataGeneratorAlgori
     }
 
     @Override
-    public void runParameterSet(JIPipeProgressInfo progressInfo, List<JIPipeAnnotation> parameterAnnotations) {
+    public void runParameterSet(JIPipeProgressInfo progressInfo, List<JIPipeTextAnnotation> parameterAnnotations) {
         // Generate the output first
         super.runParameterSet(progressInfo, parameterAnnotations);
 
@@ -112,7 +112,7 @@ public class DrawMaskAlgorithm extends JIPipeIteratingMissingDataGeneratorAlgori
 
         // Create the form
         JIPipeDataSlot formsSlot = JIPipeDataSlot.createSingletonSlot(new MaskDrawerFormData(dataBatches, this), this);
-        formsSlot.addAnnotationToAllData(new JIPipeAnnotation("Tab", "Draw mask"), true);
+        formsSlot.addAnnotationToAllData(new JIPipeTextAnnotation("Tab", "Draw mask"), true);
 
         // Form user input
         progressInfo.log("Waiting for user input ...");

@@ -3,7 +3,7 @@ package org.hkijena.jipipe.extensions.forms.datatypes;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeIssueReport;
-import org.hkijena.jipipe.api.data.JIPipeAnnotation;
+import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.nodes.JIPipeMergingDataBatch;
 import org.hkijena.jipipe.api.parameters.JIPipeManualParameterAccess;
@@ -174,7 +174,7 @@ public class PathFormData extends ParameterFormData {
     @Override
     public void loadData(JIPipeMergingDataBatch dataBatch) {
         if (annotationIOSettings.getInputAnnotation().isEnabled()) {
-            JIPipeAnnotation annotation =
+            JIPipeTextAnnotation annotation =
                     dataBatch.getMergedAnnotations().getOrDefault(annotationIOSettings.getInputAnnotation().getContent(),
                             null);
             if (annotation != null) {

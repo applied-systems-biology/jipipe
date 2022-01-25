@@ -16,7 +16,7 @@ package org.hkijena.jipipe.ui.resultanalysis;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.JIPipeRunnable;
-import org.hkijena.jipipe.api.data.JIPipeAnnotation;
+import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataImportOperation;
 import org.hkijena.jipipe.api.data.JIPipeDataInfo;
@@ -89,7 +89,7 @@ public class JIPipeDefaultResultDataSlotRowUI extends JIPipeResultDataSlotRowUI 
         if (!getRow().getAnnotations().isEmpty()) {
             JButton annotationButton = new JButton("Annotations ...", UIUtils.getIconFromResources("data-types/annotation.png"));
             JPopupMenu annotationMenu = UIUtils.addPopupMenuToComponent(annotationButton);
-            for (JIPipeAnnotation annotation : getRow().getAnnotations()) {
+            for (JIPipeTextAnnotation annotation : getRow().getAnnotations()) {
                 JMenu entryMenu = new JMenu(annotation.getName());
                 entryMenu.setIcon(UIUtils.getIconFromResources("data-types/annotation.png"));
 

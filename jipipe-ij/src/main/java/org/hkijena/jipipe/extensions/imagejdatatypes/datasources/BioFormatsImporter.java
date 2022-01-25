@@ -27,8 +27,8 @@ import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeIssueReport;
 import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
-import org.hkijena.jipipe.api.data.JIPipeAnnotation;
-import org.hkijena.jipipe.api.data.JIPipeAnnotationMergeStrategy;
+import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
+import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
 import org.hkijena.jipipe.api.data.JIPipeDefaultMutableSlotConfiguration;
 import org.hkijena.jipipe.api.nodes.JIPipeDataBatch;
 import org.hkijena.jipipe.api.nodes.JIPipeInputSlot;
@@ -171,10 +171,10 @@ public class BioFormatsImporter extends JIPipeSimpleIteratingAlgorithm {
             }
 
             for (ImagePlus image : images) {
-                List<JIPipeAnnotation> annotations = new ArrayList<>();
+                List<JIPipeTextAnnotation> annotations = new ArrayList<>();
                 String title = image.getTitle();
                 if (titleAnnotation.isEnabled()) {
-                    annotations.add(new JIPipeAnnotation(titleAnnotation.getContent(), title));
+                    annotations.add(new JIPipeTextAnnotation(titleAnnotation.getContent(), title));
                 }
                 if (seriesAnnotation.isEnabled()) {
                     int idx = title.lastIndexOf('#');
@@ -196,7 +196,7 @@ public class BioFormatsImporter extends JIPipeSimpleIteratingAlgorithm {
                     rois = ROIHandler.openROIs(process.getOMEMetadata(), new ImagePlus[]{image});
                 }
 
-                dataBatch.addOutputData(getFirstOutputSlot(), new OMEImageData(image, rois, omexmlMetadata), annotations, JIPipeAnnotationMergeStrategy.Merge, progressInfo);
+                dataBatch.addOutputData(getFirstOutputSlot(), new OMEImageData(image, rois, omexmlMetadata), annotations, JIPipeTextAnnotationMergeMode.Merge, progressInfo);
             }
         } catch (FormatException | IOException e) {
             throw new RuntimeException(e);

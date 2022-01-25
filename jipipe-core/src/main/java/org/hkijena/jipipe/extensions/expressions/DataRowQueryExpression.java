@@ -13,7 +13,7 @@
 
 package org.hkijena.jipipe.extensions.expressions;
 
-import org.hkijena.jipipe.api.data.JIPipeAnnotation;
+import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.data.JIPipeVirtualData;
@@ -94,9 +94,9 @@ public class DataRowQueryExpression extends DefaultExpressionParameter {
      * @param annotations the annotations
      * @return if the expression matches
      */
-    private boolean test(JIPipeVirtualData data, java.util.List<JIPipeAnnotation> annotations) {
+    private boolean test(JIPipeVirtualData data, java.util.List<JIPipeTextAnnotation> annotations) {
         ExpressionVariables variables = new ExpressionVariables();
-        for (JIPipeAnnotation annotation : annotations) {
+        for (JIPipeTextAnnotation annotation : annotations) {
             variables.set(annotation.getName(), annotation.getValue());
         }
         variables.set("data_string", data.getStringRepresentation());
@@ -111,9 +111,9 @@ public class DataRowQueryExpression extends DefaultExpressionParameter {
      * @param annotations the annotations
      * @return if the expression matches
      */
-    private boolean test(JIPipeData data, java.util.List<JIPipeAnnotation> annotations) {
+    private boolean test(JIPipeData data, java.util.List<JIPipeTextAnnotation> annotations) {
         ExpressionVariables variables = new ExpressionVariables();
-        for (JIPipeAnnotation annotation : annotations) {
+        for (JIPipeTextAnnotation annotation : annotations) {
             variables.set(annotation.getName(), annotation.getValue());
         }
         variables.set("data_string", data.toString());

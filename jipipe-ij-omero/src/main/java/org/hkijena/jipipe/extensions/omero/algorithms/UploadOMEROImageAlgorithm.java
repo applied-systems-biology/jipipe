@@ -18,12 +18,10 @@ import omero.gateway.model.DatasetData;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
-import org.hkijena.jipipe.api.data.JIPipeAnnotation;
-import org.hkijena.jipipe.api.data.JIPipeAnnotationMergeStrategy;
-import org.hkijena.jipipe.api.data.JIPipeDataByMetadataExporter;
-import org.hkijena.jipipe.api.data.JIPipeDataSlot;
-import org.hkijena.jipipe.api.data.JIPipeDataSlotInfo;
-import org.hkijena.jipipe.api.data.JIPipeSlotType;
+import org.hkijena.jipipe.api.annotation.JIPipeDataByMetadataExporter;
+import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
+import org.hkijena.jipipe.api.data.*;
+import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.nodes.JIPipeInputSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeMergingAlgorithm;
 import org.hkijena.jipipe.api.nodes.JIPipeMergingDataBatch;
@@ -78,7 +76,7 @@ public class UploadOMEROImageAlgorithm extends JIPipeMergingAlgorithm {
     }
 
     @Override
-    public void runParameterSet(JIPipeProgressInfo progressInfo, List<JIPipeAnnotation> parameterAnnotations) {
+    public void runParameterSet(JIPipeProgressInfo progressInfo, List<JIPipeTextAnnotation> parameterAnnotations) {
         this.parameterProgressInfo = progressInfo;
         super.runParameterSet(progressInfo, parameterAnnotations);
         for (OMEROGateway gateway : currentGateways.values()) {
@@ -102,7 +100,7 @@ public class UploadOMEROImageAlgorithm extends JIPipeMergingAlgorithm {
     @Override
     protected void runIteration(JIPipeMergingDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
         List<OMEImageData> images = dataBatch.getInputData("Image", OMEImageData.class, progressInfo);
-        ArrayList<JIPipeAnnotation> annotations = new ArrayList<>(dataBatch.getMergedAnnotations().values());
+        ArrayList<JIPipeTextAnnotation> annotations = new ArrayList<>(dataBatch.getMergedAnnotations().values());
         for (OMEImageData image : images) {
             Path targetPath = getNewScratch();
             exportImages(image, annotations, targetPath, progressInfo);
@@ -117,7 +115,7 @@ public class UploadOMEROImageAlgorithm extends JIPipeMergingAlgorithm {
         }
     }
 
-    private void uploadImages(Path targetPath, List<JIPipeAnnotation> annotations, long datasetId, JIPipeProgressInfo progressInfo) {
+    private void uploadImages(Path targetPath, List<JIPipeTextAnnotation> annotations, long datasetId, JIPipeProgressInfo progressInfo) {
         // Create OMERO connection if needed
         OMEROImageUploader uploader;
         OMEROGateway gateway;
@@ -145,20 +143,20 @@ public class UploadOMEROImageAlgorithm extends JIPipeMergingAlgorithm {
         List<Path> filePaths = PathUtils.findFilesByExtensionIn(targetPath, ".ome.tif");
         progressInfo.log("Uploading " + filePaths.size() + " files");
 
-        List<JIPipeAnnotation> filteredAnnotations = uploadedAnnotationsFilter.queryAll(annotations);
+        List<JIPipeTextAnnotation> filteredAnnotations = uploadedAnnotationsFilter.queryAll(annotations);
         if (!uploadAnnotations) {
             filteredAnnotations = null;
         }
         for (Path filePath : filePaths) {
             for (long imageId : uploader.upload(filePath, filteredAnnotations, gateway)) {
-                getFirstOutputSlot().addData(new OMEROImageReferenceData(imageId), annotations, JIPipeAnnotationMergeStrategy.Merge, progressInfo);
+                getFirstOutputSlot().addData(new OMEROImageReferenceData(imageId), annotations, JIPipeTextAnnotationMergeMode.Merge, progressInfo);
             }
         }
     }
 
-    private void exportImages(OMEImageData image, List<JIPipeAnnotation> annotations, Path targetPath, JIPipeProgressInfo progressInfo) {
+    private void exportImages(OMEImageData image, List<JIPipeTextAnnotation> annotations, Path targetPath, JIPipeProgressInfo progressInfo) {
         JIPipeDataSlot dummy = new JIPipeDataSlot(new JIPipeDataSlotInfo(OMEImageData.class, JIPipeSlotType.Input), this);
-        dummy.addData(image, annotations, JIPipeAnnotationMergeStrategy.Merge, progressInfo);
+        dummy.addData(image, annotations, JIPipeTextAnnotationMergeMode.Merge, progressInfo);
 
         // Export to BioFormats
         progressInfo.log("Image files will be written into " + targetPath);

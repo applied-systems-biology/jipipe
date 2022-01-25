@@ -4,8 +4,8 @@ import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeData;
-import org.hkijena.jipipe.api.data.JIPipeDataAnnotation;
-import org.hkijena.jipipe.api.data.JIPipeDataAnnotationMergeStrategy;
+import org.hkijena.jipipe.api.annotation.JIPipeDataAnnotation;
+import org.hkijena.jipipe.api.annotation.JIPipeDataAnnotationMergeMode;
 import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
 import org.hkijena.jipipe.api.nodes.JIPipeDataBatch;
 import org.hkijena.jipipe.api.nodes.JIPipeInputSlot;
@@ -59,14 +59,14 @@ public class ExtractDataAnnotation extends JIPipeSimpleIteratingAlgorithm {
         JIPipeDataAnnotation dataAnnotation = dataBatch.getMergedDataAnnotation(targetedAnnotationName);
         if (!keepOtherDataAnnotations) {
             dataBatch.getMergedAnnotations().clear();
-            dataBatch.addMergedDataAnnotation(dataAnnotation, JIPipeDataAnnotationMergeStrategy.OverwriteExisting);
+            dataBatch.addMergedDataAnnotation(dataAnnotation, JIPipeDataAnnotationMergeMode.OverwriteExisting);
         }
         if (!keepCurrentAnnotation) {
             dataBatch.removeMergedDataAnnotation(targetedAnnotationName);
         }
         if (annotateWithCurrentData.isEnabled()) {
             dataBatch.addMergedDataAnnotation(new JIPipeDataAnnotation(annotateWithCurrentData.getContent(), dataBatch.getInputData(getFirstInputSlot(), JIPipeData.class, progressInfo)),
-                    JIPipeDataAnnotationMergeStrategy.OverwriteExisting);
+                    JIPipeDataAnnotationMergeMode.OverwriteExisting);
         }
         dataBatch.addOutputData(getFirstOutputSlot(), dataAnnotation.getData(JIPipeData.class, progressInfo), progressInfo);
     }

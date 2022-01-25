@@ -15,7 +15,7 @@ import omero.gateway.model.MapAnnotationData;
 import omero.model.NamedValue;
 import omero.model.Pixels;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
-import org.hkijena.jipipe.api.data.JIPipeAnnotation;
+import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.extensions.omero.OMEROSettings;
 
 import java.nio.file.Path;
@@ -71,7 +71,7 @@ public class OMEROImageUploader implements AutoCloseable {
         }
     }
 
-    public List<Long> upload(Path imagePath, List<JIPipeAnnotation> annotationList, OMEROGateway gateway) {
+    public List<Long> upload(Path imagePath, List<JIPipeTextAnnotation> annotationList, OMEROGateway gateway) {
         ImportCandidates candidates = new ImportCandidates(reader, new String[]{imagePath.toString()}, handler);
         reader.setMetadataOptions(new DefaultMetadataOptions(MetadataLevel.ALL));
         List<Long> uploadedImages = new ArrayList<>();
@@ -80,7 +80,7 @@ public class OMEROImageUploader implements AutoCloseable {
         }
         if (annotationList != null && !annotationList.isEmpty()) {
             List<NamedValue> namedValues = new ArrayList<>();
-            for (JIPipeAnnotation annotation : annotationList) {
+            for (JIPipeTextAnnotation annotation : annotationList) {
                 namedValues.add(new NamedValue(annotation.getName(), annotation.getValue()));
             }
             MapAnnotationData mapAnnotationData = new MapAnnotationData();
