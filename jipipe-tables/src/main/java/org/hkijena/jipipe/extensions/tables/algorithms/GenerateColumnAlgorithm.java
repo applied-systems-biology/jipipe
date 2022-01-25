@@ -35,7 +35,8 @@ import org.hkijena.jipipe.extensions.tables.parameters.processors.ExpressionTabl
 /**
  * Algorithm that adds or replaces a column by a generated value
  */
-@JIPipeDocumentation(name = "Set/replace table column", description = "Adds a new column or replaces an existing table column by generating values")
+@JIPipeDocumentation(name = "Add table column", description = "Adds a new column. By default no changes are applied if the column already exists. " +
+        "Can be optionally configured to replace existing columns.")
 @JIPipeNode(nodeTypeCategory = TableNodeTypeCategory.class)
 @JIPipeInputSlot(value = ResultsTableData.class, slotName = "Input", autoCreate = true)
 @JIPipeOutputSlot(value = ResultsTableData.class, slotName = "Output", autoCreate = true)
