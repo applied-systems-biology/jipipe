@@ -33,7 +33,7 @@
       "citation" : ""
     },
     "id" : "org.hkijena.jipipe:utils",
-    "version" : "1.60.0",
+    "version" : "1.61.0",
     "ij:update-site-dependencies" : [ ],
     "ij:update-site-providers" : [ ]
   }, {
@@ -54,7 +54,7 @@
       "citation" : ""
     },
     "id" : "org.hkijena.jipipe:imagej-algorithms",
-    "version" : "1.60.0",
+    "version" : "1.61.0",
     "ij:update-site-dependencies" : [ ],
     "ij:update-site-providers" : [ ]
   }, {
@@ -75,7 +75,7 @@
       "citation" : ""
     },
     "id" : "org.hkijena.jipipe:compartments",
-    "version" : "1.60.0",
+    "version" : "1.61.0",
     "ij:update-site-dependencies" : [ ],
     "ij:update-site-providers" : [ ]
   }, {
@@ -96,7 +96,7 @@
       "citation" : ""
     },
     "id" : "org.hkijena.jipipe:annotations",
-    "version" : "1.60.0",
+    "version" : "1.61.0",
     "ij:update-site-dependencies" : [ ],
     "ij:update-site-providers" : [ ]
   }, {
@@ -117,7 +117,7 @@
       "citation" : ""
     },
     "id" : "org.hkijena.jipipe:filesystem",
-    "version" : "1.60.0",
+    "version" : "1.61.0",
     "ij:update-site-dependencies" : [ ],
     "ij:update-site-providers" : [ ]
   }, {
@@ -138,7 +138,7 @@
       "citation" : ""
     },
     "id" : "org.hkijena.jipipe:imagej-integration",
-    "version" : "1.60.0",
+    "version" : "1.61.0",
     "ij:update-site-dependencies" : [ ],
     "ij:update-site-providers" : [ ]
   }, {
@@ -159,7 +159,7 @@
       "citation" : ""
     },
     "id" : "org.hkijena.jipipe:cellpose",
-    "version" : "1.60.0",
+    "version" : "1.61.0",
     "ij:update-site-dependencies" : [ ],
     "ij:update-site-providers" : [ ]
   }, {
@@ -180,7 +180,7 @@
       "citation" : ""
     },
     "id" : "org.hkijena.jipipe:core",
-    "version" : "1.60.0",
+    "version" : "1.61.0",
     "ij:update-site-dependencies" : [ ],
     "ij:update-site-providers" : [ ]
   } ],

@@ -128,6 +128,8 @@ import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.threshold.local.Phansa
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.threshold.local.SauvolaLocalAutoThreshold2DAlgorithm;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.transform.*;
 import org.hkijena.jipipe.extensions.imagejalgorithms.utils.ImageROITargetArea;
+import org.hkijena.jipipe.extensions.imagejalgorithms.utils.OverlapStatistics;
+import org.hkijena.jipipe.extensions.imagejalgorithms.utils.OverlapStatisticsSetParameter;
 import org.hkijena.jipipe.extensions.imagejalgorithms.utils.SourceWrapMode;
 import org.hkijena.jipipe.extensions.imagejdatatypes.algorithms.DisplayRangeCalibrationAlgorithm;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
@@ -363,6 +365,8 @@ public class ImageJAlgorithmsExtension extends JIPipePrepackagedDefaultJavaExten
         registerNodeType("ij1-labels-filter-by-statistics", FilterLabelsByStatisticsAlgorithm.class, UIUtils.getIconURLFromResources("actions/filter.png"));
         registerNodeType("ij1-labels-filter-by-mask", FilterLabelsByMaskAlgorithm.class, UIUtils.getIconURLFromResources("actions/filter.png"));
         registerNodeType("ij1-labels-filter-by-overlap", FilterLabelsByOverlapAlgorithm.class, UIUtils.getIconURLFromResources("actions/filter.png"));
+        registerNodeType("ij1-labels-overlap-statistics", OverlapMeasureLabelsAlgorithm.class, UIUtils.getIconURLFromResources("actions/sum.png"));
+        registerNodeType("ij1-labels-annotate-with-overlap-statistics", AnnotateWithOverlapMeasureLabelsAlgorithm.class, UIUtils.getIconURLFromResources("actions/sum.png"));
     }
 
     private void registerConverterAlgorithms() {
@@ -461,6 +465,14 @@ public class ImageJAlgorithmsExtension extends JIPipePrepackagedDefaultJavaExten
                 SourceWrapMode.class,
                 "Border pixels mode",
                 "Determines how source pixels at borders are acquired.");
+        registerEnumParameterType("ij1-overlap-statistics",
+                OverlapStatistics.class,
+                "Overlap statistics",
+                "Measurements of similarity/error between two binary or label images.");
+        registerParameterType("ij1-overlap-statistics:set",
+                OverlapStatisticsSetParameter.class,
+                "Overlap statistics set",
+                "Measurements of similarity/error between two binary or label images.");
     }
 
     private void registerROIAlgorithms() {
@@ -828,7 +840,7 @@ public class ImageJAlgorithmsExtension extends JIPipePrepackagedDefaultJavaExten
 
     @Override
     public String getDependencyVersion() {
-        return "1.60.0";
+        return "1.61.0";
     }
 
     private static Map<Class<? extends JIPipeData>, Class<? extends JIPipeData>> get3DConversion() {

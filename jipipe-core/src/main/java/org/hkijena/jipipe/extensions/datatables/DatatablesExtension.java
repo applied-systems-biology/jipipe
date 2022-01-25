@@ -32,7 +32,7 @@ public class DatatablesExtension extends JIPipePrepackagedDefaultJavaExtension {
 
     @Override
     public String getDependencyVersion() {
-        return "1.60.0";
+        return "1.61.0";
     }
 
     @Override
