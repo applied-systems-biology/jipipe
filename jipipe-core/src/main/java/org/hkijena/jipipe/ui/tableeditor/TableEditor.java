@@ -19,6 +19,8 @@ import com.google.common.primitives.Ints;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.registries.JIPipeExpressionRegistry;
 import org.hkijena.jipipe.extensions.settings.FileChooserSettings;
+import org.hkijena.jipipe.extensions.settings.ImageViewerUISettings;
+import org.hkijena.jipipe.extensions.settings.TableViewerUISettings;
 import org.hkijena.jipipe.extensions.tables.ConvertingColumnOperation;
 import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
@@ -63,6 +65,7 @@ import java.util.stream.Collectors;
  */
 public class TableEditor extends JIPipeWorkbenchPanel {
     private static final int MAX_UNDO = 10;
+    private final TableViewerUISettings settings;
     private ResultsTableData tableModel;
     private JXTable jxTable;
     private Stack<ResultsTableData> undoBuffer = new Stack<>();
@@ -76,7 +79,10 @@ public class TableEditor extends JIPipeWorkbenchPanel {
     private FormPanel.GroupHeaderPanel rowPaletteGroup;
     private FormPanel.GroupHeaderPanel columnPaletteGroup;
     private FormPanel.GroupHeaderPanel selectionPaletteGroup;
-    private JToolBar toolBar = new JToolBar();
+    private final JToolBar toolBar = new JToolBar();
+    private Component currentContentPanel;
+    private JToggleButton enableSideBarButton = new JToggleButton();
+    private final DocumentTabPane sideBar = new DocumentTabPane();
 
     /**
      * @param workbench  the workbench
@@ -84,8 +90,14 @@ public class TableEditor extends JIPipeWorkbenchPanel {
      */
     public TableEditor(JIPipeWorkbench workbench, ResultsTableData tableModel) {
         super(workbench);
+        if (JIPipe.getInstance() != null) {
+            settings = TableViewerUISettings.getInstance();
+        } else {
+            settings = null;
+        }
         this.tableModel = tableModel;
         initialize();
+        updateSideBar();
         setTableModel(tableModel);
     }
 
@@ -136,8 +148,38 @@ public class TableEditor extends JIPipeWorkbenchPanel {
         createPlotButton.addActionListener(e -> createNewPlot());
         toolBar.add(createPlotButton);
 
+        enableSideBarButton.setIcon(UIUtils.getIconFromResources("actions/sidebar.png"));
+        enableSideBarButton.setToolTipText("Show side bar with additional tools");
+        if (settings != null) {
+            enableSideBarButton.setSelected(settings.isShowSideBar());
+        } else {
+            enableSideBarButton.setSelected(true);
+        }
+        enableSideBarButton.addActionListener(e -> {
+            if (settings != null) {
+                settings.setShowSideBar(enableSideBarButton.isSelected());
+            }
+            updateSideBar();
+        });
+        toolBar.add(enableSideBarButton);
+
         add(toolBar, BorderLayout.NORTH);
 
+        initializePalettePanel();
+
+        jxTable = new JXTable();
+        jxTable.setModel(tableModel);
+        jxTable.setColumnSelectionAllowed(true);
+        jxTable.setRowSelectionAllowed(true);
+        jxTable.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
+        jxTable.setDefaultRenderer(String.class, new Renderer(this));
+        jxTable.setDefaultRenderer(Double.class, new Renderer(this));
+        jxTable.packAll();
+
+        jxTable.getSelectionModel().addListSelectionListener(listSelectionEvent -> updateConvertMenu());
+    }
+
+    private void initializePalettePanel() {
         // Create palette
         palettePanel = new FormPanel(MarkdownDocument.fromPluginResource("documentation/table-analyzer.md", new HashMap<>()),
                 FormPanel.WITH_SCROLLING);
@@ -241,20 +283,29 @@ public class TableEditor extends JIPipeWorkbenchPanel {
                 this::exportToImageJ);
         palettePanel.addVerticalGlue();
 
-        jxTable = new JXTable();
-        jxTable.setModel(tableModel);
-        jxTable.setColumnSelectionAllowed(true);
-        jxTable.setRowSelectionAllowed(true);
-        jxTable.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
-        jxTable.setDefaultRenderer(String.class, new Renderer(this));
-        jxTable.setDefaultRenderer(Double.class, new Renderer(this));
-        jxTable.packAll();
+        sideBar.addTab("Table",
+                UIUtils.getIconFromResources("actions/table.png"),
+                palettePanel,
+                DocumentTabPane.CloseMode.withoutCloseButton);
+    }
 
-        JScrollPane scrollPane = new JScrollPane(jxTable);
-        JSplitPane splitPane = new AutoResizeSplitPane(JSplitPane.HORIZONTAL_SPLIT, scrollPane, palettePanel, AutoResizeSplitPane.RATIO_3_TO_1);
-        add(splitPane, BorderLayout.CENTER);
-
-        jxTable.getSelectionModel().addListSelectionListener(listSelectionEvent -> updateConvertMenu());
+    private void updateSideBar() {
+        if (currentContentPanel != null) {
+            remove(currentContentPanel);
+        }
+        if (enableSideBarButton.isSelected()) {
+            JSplitPane splitPane = new AutoResizeSplitPane(JSplitPane.HORIZONTAL_SPLIT,
+                    new JScrollPane(jxTable),
+                    sideBar, AutoResizeSplitPane.RATIO_3_TO_1);
+            add(splitPane, BorderLayout.CENTER);
+            currentContentPanel = splitPane;
+        } else {
+            JScrollPane scrollPane = new JScrollPane(jxTable);
+            add(scrollPane, BorderLayout.CENTER);
+            currentContentPanel = scrollPane;
+        }
+        revalidate();
+        repaint();
     }
 
     public JToolBar getToolBar() {
@@ -713,6 +764,10 @@ public class TableEditor extends JIPipeWorkbenchPanel {
         }
         updateSelectionStatistics();
         SwingUtilities.invokeLater(this::autoSizeColumns);
+    }
+
+    public DocumentTabPane getSideBar() {
+        return sideBar;
     }
 
     /**

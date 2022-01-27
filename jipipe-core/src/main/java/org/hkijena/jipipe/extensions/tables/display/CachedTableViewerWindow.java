@@ -19,6 +19,8 @@ import org.hkijena.jipipe.api.data.JIPipeVirtualData;
 import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.cache.JIPipeCacheDataViewerWindow;
+import org.hkijena.jipipe.ui.cache.JIPipeCachedDataViewerAnnotationInfoPanel;
+import org.hkijena.jipipe.ui.components.tabs.DocumentTabPane;
 import org.hkijena.jipipe.ui.tableeditor.TableEditor;
 import org.hkijena.jipipe.utils.UIUtils;
 
@@ -28,6 +30,7 @@ public class CachedTableViewerWindow extends JIPipeCacheDataViewerWindow {
 
     private TableEditor tableEditor;
     private JLabel errorLabel;
+    private JIPipeCachedDataViewerAnnotationInfoPanel annotationInfoPanel;
 
     public CachedTableViewerWindow(JIPipeWorkbench workbench, JIPipeCacheSlotDataSource dataSource, String displayName, boolean deferLoading) {
         super(workbench, dataSource, displayName);
@@ -40,6 +43,13 @@ public class CachedTableViewerWindow extends JIPipeCacheDataViewerWindow {
         tableEditor = new TableEditor(getWorkbench(), new ResultsTableData());
         errorLabel = new JLabel(UIUtils.getIconFromResources("emblems/no-data.png"));
         tableEditor.getToolBar().add(errorLabel, 0);
+
+        annotationInfoPanel = new JIPipeCachedDataViewerAnnotationInfoPanel(getWorkbench());
+        tableEditor.getSideBar().addTab("Annotations",
+                UIUtils.getIconFromResources("data-types/annotation.png"),
+                annotationInfoPanel,
+                DocumentTabPane.CloseMode.withoutCloseButton);
+
         setContentPane(tableEditor);
     }
 
@@ -68,7 +78,10 @@ public class CachedTableViewerWindow extends JIPipeCacheDataViewerWindow {
     @Override
     protected void addErrorUI() {
         if (getAlgorithm() != null) {
-            errorLabel.setText(String.format("No data available in node '%s', slot '%s', row %d", getAlgorithm().getName(), getSlotName(), getDataSource().getRow()));
+            errorLabel.setText(String.format("No data available in node '%s', slot '%s', row %d",
+                    getAlgorithm().getName(),
+                    getSlotName(),
+                    getDataSource().getRow()));
         } else {
             errorLabel.setText("No data available");
         }
@@ -79,6 +92,7 @@ public class CachedTableViewerWindow extends JIPipeCacheDataViewerWindow {
 
     @Override
     protected void loadData(JIPipeVirtualData virtualData, JIPipeProgressInfo progressInfo) {
+        annotationInfoPanel.displayAnnotations(getDataSource());
         ResultsTableData data = (ResultsTableData) virtualData.getData(progressInfo);
         ResultsTableData duplicate = (ResultsTableData) data.duplicate();
         tableEditor.setTableModel(duplicate);

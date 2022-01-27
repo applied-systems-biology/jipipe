@@ -88,7 +88,8 @@ public class ImageViewerPanel extends JPanel {
     private int rotation = 0;
     private JMenuItem exportAllSlicesItem;
     private JMenuItem exportMovieItem;
-    private JToolBar toolBar = new JToolBar();    private Timer animationTimer = new Timer(250, e -> animateNextSlice());
+    private JToolBar toolBar = new JToolBar();
+    private Timer animationTimer = new Timer(250, e -> animateNextSlice());
     private List<ImageViewerPanelPlugin> plugins = new ArrayList<>();
     private JButton rotateLeftButton;
     private JButton rotateRightButton;

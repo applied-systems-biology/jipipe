@@ -101,6 +101,12 @@ public class StandardSettingsExtension extends JIPipePrepackagedDefaultJavaExten
                 "UI",
                 null,
                 new ImageViewerUISettings());
+        registerSettingsSheet(TableViewerUISettings.ID,
+                "Table viewer",
+                UIUtils.getIconFromResources("actions/table.png"),
+                "UI",
+                null,
+                new TableViewerUISettings());
         registerEnumParameterType("settings:" + FileChooserSettings.ID + ":file-chooser-type",
                 FileChooserSettings.FileChooserType.class,
                 "File chooser type",

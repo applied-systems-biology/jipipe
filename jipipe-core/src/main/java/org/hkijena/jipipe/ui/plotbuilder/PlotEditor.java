@@ -74,6 +74,7 @@ public class PlotEditor extends JIPipeWorkbenchPanel implements JIPipeParameterC
     private List<JIPipePlotSeriesBuilder> seriesBuilders = new ArrayList<>();
     private boolean isRebuilding = false;
     private PlotReader plotReader;
+    private DocumentTabPane sideBar = new DocumentTabPane();
 
     /**
      * @param workbench the workbench
@@ -94,18 +95,17 @@ public class PlotEditor extends JIPipeWorkbenchPanel implements JIPipeParameterC
         setLayout(new BorderLayout());
 
         // Create settings panel
-        DocumentTabPane tabbedPane = new DocumentTabPane();
-        tabbedPane.addTab("Settings", UIUtils.getIconFromResources("actions/configure.png"),
+        sideBar.addTab("Settings", UIUtils.getIconFromResources("actions/configure.png"),
                 new ParameterPanel(getWorkbench(),
                         this,
                         null,
                         ParameterPanel.WITH_DOCUMENTATION | ParameterPanel.DOCUMENTATION_BELOW | ParameterPanel.WITH_SCROLLING),
                 DocumentTabPane.CloseMode.withoutCloseButton,
                 false);
-        tabbedPane.addTab("Series", UIUtils.getIconFromResources("actions/stock_select-column.png"),
+        sideBar.addTab("Series", UIUtils.getIconFromResources("actions/stock_select-column.png"),
                 new JIPipePlotSeriesListEditorUI(getWorkbench(), this),
                 DocumentTabPane.CloseMode.withoutCloseButton);
-        tabbedPane.addTab("Data", UIUtils.getIconFromResources("data-types/results-table.png"),
+        sideBar.addTab("Data", UIUtils.getIconFromResources("data-types/results-table.png"),
                 new JIPipePlotAvailableDataManagerUI(getWorkbench(), this),
                 DocumentTabPane.CloseMode.withoutCloseButton);
 
@@ -120,9 +120,12 @@ public class PlotEditor extends JIPipeWorkbenchPanel implements JIPipeParameterC
         openButton.addActionListener(e -> openPlot());
         plotReader.getToolBar().add(openButton, 0);
 
-
-        splitPane = new AutoResizeSplitPane(JSplitPane.HORIZONTAL_SPLIT, plotReader, tabbedPane, AutoResizeSplitPane.RATIO_3_TO_1);
+        splitPane = new AutoResizeSplitPane(JSplitPane.HORIZONTAL_SPLIT, plotReader, sideBar, AutoResizeSplitPane.RATIO_3_TO_1);
         add(splitPane, BorderLayout.CENTER);
+    }
+
+    public DocumentTabPane getSideBar() {
+        return sideBar;
     }
 
     private void savePlot() {

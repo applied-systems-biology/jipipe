@@ -19,6 +19,8 @@ import org.hkijena.jipipe.api.data.JIPipeVirtualData;
 import org.hkijena.jipipe.extensions.plots.datatypes.PlotData;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.cache.JIPipeCacheDataViewerWindow;
+import org.hkijena.jipipe.ui.cache.JIPipeCachedDataViewerAnnotationInfoPanel;
+import org.hkijena.jipipe.ui.components.tabs.DocumentTabPane;
 import org.hkijena.jipipe.ui.plotbuilder.PlotEditor;
 import org.hkijena.jipipe.utils.UIUtils;
 
@@ -28,6 +30,7 @@ public class CachedPlotViewerWindow extends JIPipeCacheDataViewerWindow {
 
     private PlotEditor plotEditor;
     private JLabel errorLabel;
+    private JIPipeCachedDataViewerAnnotationInfoPanel annotationInfoPanel;
 
     public CachedPlotViewerWindow(JIPipeWorkbench workbench, JIPipeCacheSlotDataSource dataSource, String displayName, boolean deferLoading) {
         super(workbench, dataSource, displayName);
@@ -40,6 +43,13 @@ public class CachedPlotViewerWindow extends JIPipeCacheDataViewerWindow {
         plotEditor = new PlotEditor(getWorkbench());
         errorLabel = new JLabel(UIUtils.getIconFromResources("emblems/no-data.png"));
         plotEditor.getToolBar().add(errorLabel, 0);
+
+        annotationInfoPanel = new JIPipeCachedDataViewerAnnotationInfoPanel(getWorkbench());
+        plotEditor.getSideBar().addTab("Annotations",
+                UIUtils.getIconFromResources("data-types/annotation.png"),
+                annotationInfoPanel,
+                DocumentTabPane.CloseMode.withoutCloseButton);
+
         setContentPane(plotEditor);
     }
 
@@ -80,6 +90,7 @@ public class CachedPlotViewerWindow extends JIPipeCacheDataViewerWindow {
 
     @Override
     protected void loadData(JIPipeVirtualData virtualData, JIPipeProgressInfo progressInfo) {
+        annotationInfoPanel.displayAnnotations(getDataSource());
         PlotData data = (PlotData) virtualData.getData(progressInfo);
         PlotData duplicate = (PlotData) data.duplicate();
         plotEditor.importExistingPlot(duplicate);
