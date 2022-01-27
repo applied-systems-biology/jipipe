@@ -48,7 +48,7 @@ public class StandardSettingsExtension extends JIPipePrepackagedDefaultJavaExten
 
     @Override
     public String getDependencyVersion() {
-        return "1.61.0";
+        return "1.62.0";
     }
 
     @Override

@@ -59,7 +59,7 @@ public class FilesystemExtension extends JIPipePrepackagedDefaultJavaExtension {
 
     @Override
     public String getDependencyVersion() {
-        return "1.61.0";
+        return "1.62.0";
     }
 
     @Override
