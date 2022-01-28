@@ -20,7 +20,7 @@ import javax.swing.table.TableCellRenderer;
 import java.awt.Component;
 
 /**
- * Renders {@link JIPipeTextAnnotation}
+ * Renders {@link org.hkijena.jipipe.api.annotation.JIPipeAnnotation}
  */
 public class JIPipeAnnotationTableCellRenderer extends JLabel implements TableCellRenderer {
 

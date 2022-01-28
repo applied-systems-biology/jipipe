@@ -6,7 +6,7 @@ import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.annotation.JIPipeDataAnnotationMergeMode;
 import org.hkijena.jipipe.api.data.JIPipeEmptyData;
 import org.hkijena.jipipe.api.data.JIPipeMergedDataAnnotationsData;
-import org.hkijena.jipipe.api.nodes.JIPipeAnnotationMatchingMethod;
+import org.hkijena.jipipe.api.nodes.JIPipeTextAnnotationMatchingMethod;
 import org.hkijena.jipipe.api.nodes.categories.*;
 import org.hkijena.jipipe.extensions.JIPipePrepackagedDefaultJavaExtension;
 import org.hkijena.jipipe.extensions.core.data.CopyContainingFolderDataImportOperation;
@@ -73,7 +73,7 @@ public class CoreExtension extends JIPipePrepackagedDefaultJavaExtension {
 
         // Global parameters
         registerEnumParameterType("jipipe:annotation-matching-method",
-                JIPipeAnnotationMatchingMethod.class,
+                JIPipeTextAnnotationMatchingMethod.class,
                 "Annotation matching method",
                 "Determines how annotations are matched with each other");
         registerEnumParameterType("jipipe:annotation-merge-strategy",

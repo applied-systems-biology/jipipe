@@ -13,7 +13,7 @@
 
 package org.hkijena.jipipe.api.nodes;
 
-public enum JIPipeAnnotationMatchingMethod {
+public enum JIPipeTextAnnotationMatchingMethod {
     ExactMatch,
     CustomExpression;
 

@@ -35,7 +35,7 @@ public class JIPipeMergingAlgorithmDataBatchGenerationSettings implements JIPipe
     private StringQueryExpression customColumns = new StringQueryExpression();
     private JIPipeTextAnnotationMergeMode annotationMergeStrategy = JIPipeTextAnnotationMergeMode.Merge;
     private OptionalIntegerRange limit = new OptionalIntegerRange(new IntegerRange("0-9"), false);
-    private JIPipeAnnotationMatchingMethod annotationMatchingMethod = JIPipeAnnotationMatchingMethod.ExactMatch;
+    private JIPipeTextAnnotationMatchingMethod annotationMatchingMethod = JIPipeTextAnnotationMatchingMethod.ExactMatch;
     private DefaultExpressionParameter customAnnotationMatching = new DefaultExpressionParameter("exact_match_results");
     private JIPipeDataAnnotationMergeMode dataAnnotationMergeStrategy = JIPipeDataAnnotationMergeMode.MergeTables;
 
@@ -56,12 +56,12 @@ public class JIPipeMergingAlgorithmDataBatchGenerationSettings implements JIPipe
     @JIPipeDocumentation(name = "Annotation matching method", description = "Allows to customize when two annotation sets are considered as equal. " +
             "By default, non-empty annotation values should match exactly. You can also use a custom expression, instead.")
     @JIPipeParameter(value = "annotation-matching-method", uiOrder = 1999)
-    public JIPipeAnnotationMatchingMethod getAnnotationMatchingMethod() {
+    public JIPipeTextAnnotationMatchingMethod getAnnotationMatchingMethod() {
         return annotationMatchingMethod;
     }
 
     @JIPipeParameter("annotation-matching-method")
-    public void setAnnotationMatchingMethod(JIPipeAnnotationMatchingMethod annotationMatchingMethod) {
+    public void setAnnotationMatchingMethod(JIPipeTextAnnotationMatchingMethod annotationMatchingMethod) {
         this.annotationMatchingMethod = annotationMatchingMethod;
         triggerParameterUIChange();
     }
@@ -107,7 +107,7 @@ public class JIPipeMergingAlgorithmDataBatchGenerationSettings implements JIPipe
                 return false;
         }
         if (access.getSource() == this && "custom-annotation-matching".equals(access.getKey())) {
-            if (getAnnotationMatchingMethod() != JIPipeAnnotationMatchingMethod.CustomExpression)
+            if (getAnnotationMatchingMethod() != JIPipeTextAnnotationMatchingMethod.CustomExpression)
                 return false;
         }
         return JIPipeDataBatchGenerationSettings.super.isParameterUIVisible(tree, access);

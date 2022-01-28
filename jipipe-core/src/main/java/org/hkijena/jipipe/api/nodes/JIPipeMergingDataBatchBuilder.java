@@ -42,7 +42,7 @@ public class JIPipeMergingDataBatchBuilder {
     private JIPipeTextAnnotationMergeMode annotationMergeStrategy = JIPipeTextAnnotationMergeMode.Merge;
     private JIPipeDataAnnotationMergeMode dataAnnotationMergeStrategy = JIPipeDataAnnotationMergeMode.MergeTables;
     private boolean applyMerging = true;
-    private JIPipeAnnotationMatchingMethod annotationMatchingMethod = JIPipeAnnotationMatchingMethod.ExactMatch;
+    private JIPipeTextAnnotationMatchingMethod annotationMatchingMethod = JIPipeTextAnnotationMatchingMethod.ExactMatch;
     private DefaultExpressionParameter customAnnotationMatching = new DefaultExpressionParameter("exact_match_results");
 
     public JIPipeMergingDataBatchBuilder() {
@@ -151,7 +151,7 @@ public class JIPipeMergingDataBatchBuilder {
             return applySplitAllSolver(progressInfo.resolveAndLog("Split into batches"));
         }
 
-        if (referenceColumns.size() == 1 && annotationMatchingMethod == JIPipeAnnotationMatchingMethod.ExactMatch) {
+        if (referenceColumns.size() == 1 && annotationMatchingMethod == JIPipeTextAnnotationMatchingMethod.ExactMatch) {
             return applyDictionarySolver(progressInfo.resolveAndLog("Dictionary solver"));
         }
 
@@ -540,11 +540,11 @@ public class JIPipeMergingDataBatchBuilder {
         this.dataAnnotationMergeStrategy = dataAnnotationMergeStrategy;
     }
 
-    public JIPipeAnnotationMatchingMethod getAnnotationMatchingMethod() {
+    public JIPipeTextAnnotationMatchingMethod getAnnotationMatchingMethod() {
         return annotationMatchingMethod;
     }
 
-    public void setAnnotationMatchingMethod(JIPipeAnnotationMatchingMethod annotationMatchingMethod) {
+    public void setAnnotationMatchingMethod(JIPipeTextAnnotationMatchingMethod annotationMatchingMethod) {
         this.annotationMatchingMethod = annotationMatchingMethod;
     }
 
@@ -626,7 +626,7 @@ public class JIPipeMergingDataBatchBuilder {
             this.annotations = annotations;
         }
 
-        public boolean isCompatibleTo(RowNode otherNode, JIPipeAnnotationMatchingMethod annotationMatchingMethod, DefaultExpressionParameter customAnnotationMatching) {
+        public boolean isCompatibleTo(RowNode otherNode, JIPipeTextAnnotationMatchingMethod annotationMatchingMethod, DefaultExpressionParameter customAnnotationMatching) {
             boolean exactMatchResults;
             {
                 Set<String> annotationsToTest = new HashSet<>(annotations.keySet());
@@ -639,7 +639,7 @@ public class JIPipeMergingDataBatchBuilder {
                     }
                 }
             }
-            if (annotationMatchingMethod == JIPipeAnnotationMatchingMethod.ExactMatch) {
+            if (annotationMatchingMethod == JIPipeTextAnnotationMatchingMethod.ExactMatch) {
                 return exactMatchResults;
             } else {
                 ExpressionVariables expressionVariables = new ExpressionVariables();
