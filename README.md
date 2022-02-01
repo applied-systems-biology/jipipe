@@ -34,7 +34,6 @@ The project consists of following parts:
 * **JIPipe-Utils** provides some helpful utility extensions.
 * **JIPipe-Forms** provides core functions to allow user interaction during pipeline runs.
 * **JIPipe-Cellpose** provides integration of [Cellpose](https://cellpose.org/)
-* **JIPipe-Deep-Learning** provides integration of deep learning
 * **JIPipe-Launcher** provides a JAR file that launches JIPipe from outside of ImageJ
 * **IJ-Updater-CLI** is an alternative way to trigger ImageJ updates. This is used within the installer tools.
 

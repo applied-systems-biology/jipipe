@@ -318,7 +318,6 @@
     <orderEntry type="module" module-name="jipipe-forms" scope="RUNTIME" />
     <orderEntry type="module" module-name="jipipe-r" scope="RUNTIME" />
     <orderEntry type="module" module-name="jipipe-cellpose" scope="RUNTIME" />
-    <orderEntry type="module" module-name="jipipe-deep-learning" scope="RUNTIME" />
     <orderEntry type="library" scope="RUNTIME" name="Maven: net.haesleinhuepf:clij2_:2.3.0.6" level="project" />
     <orderEntry type="library" scope="RUNTIME" name="Maven: net.haesleinhuepf:clij_:1.8.0.6" level="project" />
     <orderEntry type="library" scope="RUNTIME" name="Maven: net.haesleinhuepf:clij-coremem:2.3.0.4" level="project" />
