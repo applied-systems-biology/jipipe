@@ -249,7 +249,7 @@ public class ImagePropertiesToAnnotationAlgorithm extends JIPipeSimpleIteratingA
         dataBatch.addOutputData(getFirstOutputSlot(), inputData, annotations, JIPipeTextAnnotationMergeMode.Merge, progressInfo);
     }
 
-    @JIPipeDocumentation(name = "Annotate with physical dimension (X)", description = "If enabled, the physical size of one pixel (including the unit) is annotated the the image.")
+    @JIPipeDocumentation(name = "Annotate with physical dimension (X)", description = "If enabled, the physical size of one pixel (including the unit) is annotated to the image.")
     @JIPipeParameter("physical-dimension-x-annotation")
     public OptionalAnnotationNameParameter getPhysicalDimensionXAnnotation() {
         return physicalDimensionXAnnotation;
@@ -260,7 +260,7 @@ public class ImagePropertiesToAnnotationAlgorithm extends JIPipeSimpleIteratingA
         this.physicalDimensionXAnnotation = physicalDimensionXAnnotation;
     }
 
-    @JIPipeDocumentation(name = "Annotate with physical dimension (Y)", description = "If enabled, the physical size of one pixel (including the unit) is annotated the the image.")
+    @JIPipeDocumentation(name = "Annotate with physical dimension (Y)", description = "If enabled, the physical size of one pixel (including the unit) is annotated to the image.")
     @JIPipeParameter("physical-dimension-y-annotation")
     public OptionalAnnotationNameParameter getPhysicalDimensionYAnnotation() {
         return physicalDimensionYAnnotation;
@@ -272,7 +272,7 @@ public class ImagePropertiesToAnnotationAlgorithm extends JIPipeSimpleIteratingA
         this.physicalDimensionYAnnotation = physicalDimensionYAnnotation;
     }
 
-    @JIPipeDocumentation(name = "Annotate with physical dimension (Z)", description = "If enabled, the physical size of one pixel (including the unit) is annotated the the image.")
+    @JIPipeDocumentation(name = "Annotate with physical dimension (Z)", description = "If enabled, the physical size of one pixel (including the unit) is annotated to the image.")
     @JIPipeParameter("physical-dimension-z-annotation")
     public OptionalAnnotationNameParameter getPhysicalDimensionZAnnotation() {
         return physicalDimensionZAnnotation;
@@ -283,7 +283,7 @@ public class ImagePropertiesToAnnotationAlgorithm extends JIPipeSimpleIteratingA
         this.physicalDimensionZAnnotation = physicalDimensionZAnnotation;
     }
 
-    @JIPipeDocumentation(name = "Annotate with physical dimension (Time)", description = "If enabled, the time unit for multi-frame images is annotated the the image.")
+    @JIPipeDocumentation(name = "Annotate with physical dimension (Time)", description = "If enabled, the time unit for multi-frame images is annotated to the image.")
     @JIPipeParameter("physical-dimension-t-annotation")
     public OptionalAnnotationNameParameter getPhysicalDimensionTAnnotation() {
         return physicalDimensionTAnnotation;
@@ -294,7 +294,7 @@ public class ImagePropertiesToAnnotationAlgorithm extends JIPipeSimpleIteratingA
         this.physicalDimensionTAnnotation = physicalDimensionTAnnotation;
     }
 
-    @JIPipeDocumentation(name = "Annotate with physical dimension (Value)", description = "If enabled, the physical size of greyscale pixel values is annotated the the image.")
+    @JIPipeDocumentation(name = "Annotate with physical dimension (Value)", description = "If enabled, the physical size of greyscale pixel values is annotated to the image.")
     @JIPipeParameter("physical-dimension-value-annotation")
     public OptionalAnnotationNameParameter getPhysicalDimensionValueAnnotation() {
         return physicalDimensionValueAnnotation;
