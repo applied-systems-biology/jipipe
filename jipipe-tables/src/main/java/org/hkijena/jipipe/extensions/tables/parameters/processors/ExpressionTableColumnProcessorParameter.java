@@ -15,7 +15,7 @@ package org.hkijena.jipipe.extensions.tables.parameters.processors;
 
 import org.hkijena.jipipe.extensions.expressions.DefaultExpressionParameter;
 import org.hkijena.jipipe.extensions.expressions.StringQueryExpression;
-import org.hkijena.jipipe.extensions.parameters.functions.FunctionParameter;
+import org.hkijena.jipipe.extensions.parameters.api.functions.FunctionParameter;
 
 /**
  * A parameter that models processing an input column via an conversion function

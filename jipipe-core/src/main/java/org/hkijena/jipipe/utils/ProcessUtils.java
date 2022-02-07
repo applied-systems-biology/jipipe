@@ -27,7 +27,7 @@ import org.apache.commons.lang.WordUtils;
 import org.apache.commons.lang3.SystemUtils;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.extensions.expressions.ExpressionVariables;
-import org.hkijena.jipipe.extensions.parameters.pairs.StringQueryExpressionAndStringPairParameter;
+import org.hkijena.jipipe.extensions.parameters.library.pairs.StringQueryExpressionAndStringPairParameter;
 import org.hkijena.jipipe.extensions.processes.ProcessEnvironment;
 import org.hkijena.jipipe.utils.scripting.MacroUtils;
 import org.jgrapht.graph.DefaultDirectedGraph;

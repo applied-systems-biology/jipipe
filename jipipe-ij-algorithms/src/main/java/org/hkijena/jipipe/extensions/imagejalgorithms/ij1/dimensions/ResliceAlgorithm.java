@@ -13,8 +13,8 @@ import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.imagejalgorithms.utils.Reslicer;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
-import org.hkijena.jipipe.extensions.parameters.roi.Anchor;
-import org.hkijena.jipipe.extensions.parameters.roi.AnchorParameterSettings;
+import org.hkijena.jipipe.extensions.parameters.library.roi.Anchor;
+import org.hkijena.jipipe.extensions.parameters.library.roi.AnchorParameterSettings;
 
 @JIPipeDocumentation(name = "Reslice", description = "Defines a new Z axis and projects the image so that its Z axis is the newly defined one.")
 @JIPipeInputSlot(value = ImagePlusData.class, slotName = "Input", autoCreate = true)

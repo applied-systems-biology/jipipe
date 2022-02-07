@@ -14,8 +14,8 @@
 package org.hkijena.jipipe.extensions.tables.parameters.processors;
 
 import org.hkijena.jipipe.extensions.expressions.DefaultExpressionParameter;
-import org.hkijena.jipipe.extensions.parameters.pairs.PairParameter;
-import org.hkijena.jipipe.extensions.parameters.pairs.PairParameterSettings;
+import org.hkijena.jipipe.extensions.parameters.api.pairs.PairParameter;
+import org.hkijena.jipipe.extensions.parameters.api.pairs.PairParameterSettings;
 
 /**
  * Processor-like parameter that maps a column generator to a string

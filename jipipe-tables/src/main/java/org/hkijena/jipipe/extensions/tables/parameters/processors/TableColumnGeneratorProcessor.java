@@ -13,7 +13,7 @@
 
 package org.hkijena.jipipe.extensions.tables.parameters.processors;
 
-import org.hkijena.jipipe.extensions.parameters.pairs.PairParameter;
+import org.hkijena.jipipe.extensions.parameters.api.pairs.PairParameter;
 import org.hkijena.jipipe.extensions.tables.parameters.enums.TableColumnGeneratorParameter;
 
 /**

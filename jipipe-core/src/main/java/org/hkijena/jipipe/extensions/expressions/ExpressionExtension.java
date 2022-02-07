@@ -29,8 +29,8 @@ import org.hkijena.jipipe.extensions.expressions.functions.quantities.QuantityGe
 import org.hkijena.jipipe.extensions.expressions.functions.quantities.QuantityGetValueFunction;
 import org.hkijena.jipipe.extensions.expressions.functions.string.*;
 import org.hkijena.jipipe.extensions.expressions.ui.DefaultExpressionParameterEditorUI;
-import org.hkijena.jipipe.extensions.parameters.primitives.HTMLText;
-import org.hkijena.jipipe.extensions.parameters.primitives.StringList;
+import org.hkijena.jipipe.extensions.parameters.library.markup.HTMLText;
+import org.hkijena.jipipe.extensions.parameters.library.primitives.list.StringList;
 import org.scijava.plugin.Plugin;
 
 @Plugin(type = JIPipeJavaExtension.class)

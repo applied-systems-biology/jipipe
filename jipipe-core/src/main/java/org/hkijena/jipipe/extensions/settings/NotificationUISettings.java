@@ -5,8 +5,8 @@ import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
-import org.hkijena.jipipe.extensions.parameters.primitives.OptionalIntegerParameter;
-import org.hkijena.jipipe.extensions.parameters.primitives.StringList;
+import org.hkijena.jipipe.extensions.parameters.library.primitives.optional.OptionalIntegerParameter;
+import org.hkijena.jipipe.extensions.parameters.library.primitives.list.StringList;
 
 public class NotificationUISettings implements JIPipeParameterCollection {
     public static String ID = "notification-ui";

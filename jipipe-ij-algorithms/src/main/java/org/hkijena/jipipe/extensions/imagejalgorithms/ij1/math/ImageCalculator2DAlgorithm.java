@@ -33,7 +33,7 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscale32FData;
-import org.hkijena.jipipe.extensions.parameters.collections.InputSlotMapParameterCollection;
+import org.hkijena.jipipe.extensions.parameters.library.graph.InputSlotMapParameterCollection;
 
 import java.util.HashSet;
 import java.util.Map;

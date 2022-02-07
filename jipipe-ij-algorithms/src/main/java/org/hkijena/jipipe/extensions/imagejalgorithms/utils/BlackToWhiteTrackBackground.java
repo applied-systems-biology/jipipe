@@ -1,6 +1,6 @@
 package org.hkijena.jipipe.extensions.imagejalgorithms.utils;
 
-import org.hkijena.jipipe.extensions.parameters.ranges.PaintGenerator;
+import org.hkijena.jipipe.extensions.parameters.library.ranges.PaintGenerator;
 
 import java.awt.Color;
 import java.awt.LinearGradientPaint;

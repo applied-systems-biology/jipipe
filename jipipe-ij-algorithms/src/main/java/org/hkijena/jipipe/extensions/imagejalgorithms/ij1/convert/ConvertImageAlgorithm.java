@@ -15,8 +15,8 @@ import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscale8UData;
-import org.hkijena.jipipe.extensions.parameters.editors.JIPipeDataParameterSettings;
-import org.hkijena.jipipe.extensions.parameters.references.JIPipeDataInfoRef;
+import org.hkijena.jipipe.extensions.parameters.library.editors.JIPipeDataParameterSettings;
+import org.hkijena.jipipe.extensions.parameters.library.references.JIPipeDataInfoRef;
 
 @JIPipeDocumentation(name = "Convert image", description = "Converts an image into another image type")
 @JIPipeInputSlot(value = ImagePlusData.class, slotName = "Input", autoCreate = true)

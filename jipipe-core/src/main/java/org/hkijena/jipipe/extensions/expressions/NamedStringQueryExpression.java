@@ -13,8 +13,8 @@
 
 package org.hkijena.jipipe.extensions.expressions;
 
-import org.hkijena.jipipe.extensions.parameters.collections.ListParameter;
-import org.hkijena.jipipe.extensions.parameters.pairs.PairParameter;
+import org.hkijena.jipipe.extensions.parameters.api.collections.ListParameter;
+import org.hkijena.jipipe.extensions.parameters.api.pairs.PairParameter;
 
 import java.util.HashMap;
 import java.util.Map;

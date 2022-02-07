@@ -32,9 +32,9 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ROIListData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.color.ImagePlusColorRGBData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
-import org.hkijena.jipipe.extensions.parameters.colors.OptionalColorParameter;
-import org.hkijena.jipipe.extensions.parameters.primitives.NumberParameterSettings;
-import org.hkijena.jipipe.extensions.parameters.primitives.OptionalDoubleParameter;
+import org.hkijena.jipipe.extensions.parameters.library.colors.OptionalColorParameter;
+import org.hkijena.jipipe.extensions.parameters.library.primitives.NumberParameterSettings;
+import org.hkijena.jipipe.extensions.parameters.library.primitives.optional.OptionalDoubleParameter;
 
 import java.awt.Color;
 import java.awt.Font;

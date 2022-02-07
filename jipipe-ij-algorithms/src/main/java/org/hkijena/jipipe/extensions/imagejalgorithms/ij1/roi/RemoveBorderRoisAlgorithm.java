@@ -29,8 +29,8 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ROIListData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.RoiOutline;
-import org.hkijena.jipipe.extensions.parameters.roi.Anchor;
-import org.hkijena.jipipe.extensions.parameters.roi.Margin;
+import org.hkijena.jipipe.extensions.parameters.library.roi.Anchor;
+import org.hkijena.jipipe.extensions.parameters.library.roi.Margin;
 
 import java.awt.Rectangle;
 

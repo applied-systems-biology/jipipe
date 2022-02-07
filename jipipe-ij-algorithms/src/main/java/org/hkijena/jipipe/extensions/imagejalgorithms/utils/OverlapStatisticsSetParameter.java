@@ -1,8 +1,7 @@
 package org.hkijena.jipipe.extensions.imagejalgorithms.utils;
 
-import ij.plugin.filter.Analyzer;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.measure.Measurement;
-import org.hkijena.jipipe.extensions.parameters.primitives.DynamicSetParameter;
+import org.hkijena.jipipe.extensions.parameters.api.enums.DynamicSetParameter;
 
 import java.util.Arrays;
 import java.util.HashSet;

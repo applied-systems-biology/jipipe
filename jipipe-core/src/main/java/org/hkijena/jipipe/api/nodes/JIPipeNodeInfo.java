@@ -16,7 +16,7 @@ package org.hkijena.jipipe.api.nodes;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.JIPipeDependency;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
-import org.hkijena.jipipe.extensions.parameters.primitives.HTMLText;
+import org.hkijena.jipipe.extensions.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.utils.StringUtils;
 
 import javax.swing.*;

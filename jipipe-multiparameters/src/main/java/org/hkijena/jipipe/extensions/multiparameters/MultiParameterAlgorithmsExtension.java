@@ -22,8 +22,8 @@ import org.hkijena.jipipe.extensions.multiparameters.algorithms.ParametersToAnno
 import org.hkijena.jipipe.extensions.multiparameters.datasources.ExtractParametersAlgorithm;
 import org.hkijena.jipipe.extensions.multiparameters.datasources.ParametersDataDefinition;
 import org.hkijena.jipipe.extensions.multiparameters.datasources.ParametersDataTableDefinition;
-import org.hkijena.jipipe.extensions.parameters.primitives.HTMLText;
-import org.hkijena.jipipe.extensions.parameters.primitives.StringList;
+import org.hkijena.jipipe.extensions.parameters.library.markup.HTMLText;
+import org.hkijena.jipipe.extensions.parameters.library.primitives.list.StringList;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.scijava.plugin.Plugin;
 

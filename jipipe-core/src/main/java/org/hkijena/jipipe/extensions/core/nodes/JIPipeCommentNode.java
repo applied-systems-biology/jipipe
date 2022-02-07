@@ -11,7 +11,7 @@ import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.JIPipeOutputSlot;
 import org.hkijena.jipipe.api.nodes.categories.MiscellaneousNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
-import org.hkijena.jipipe.extensions.parameters.references.JIPipeAlgorithmIconRef;
+import org.hkijena.jipipe.extensions.parameters.library.references.JIPipeAlgorithmIconRef;
 
 import java.awt.Color;
 

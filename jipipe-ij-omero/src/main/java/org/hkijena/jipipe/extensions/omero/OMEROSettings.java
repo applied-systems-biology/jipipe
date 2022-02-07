@@ -18,7 +18,7 @@ import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
-import org.hkijena.jipipe.extensions.parameters.primitives.PasswordParameter;
+import org.hkijena.jipipe.extensions.parameters.library.auth.PasswordParameter;
 
 public class OMEROSettings implements JIPipeParameterCollection {
     public static final String ID = "org.hkijena.jipipe:omero";

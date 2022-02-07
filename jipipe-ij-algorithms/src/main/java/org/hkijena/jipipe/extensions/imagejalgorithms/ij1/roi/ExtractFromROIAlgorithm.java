@@ -32,9 +32,9 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ROIListData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d2.ImagePlus2DData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
-import org.hkijena.jipipe.extensions.parameters.colors.OptionalColorParameter;
-import org.hkijena.jipipe.extensions.parameters.primitives.OptionalAnnotationNameParameter;
-import org.hkijena.jipipe.extensions.parameters.roi.Anchor;
+import org.hkijena.jipipe.extensions.parameters.library.colors.OptionalColorParameter;
+import org.hkijena.jipipe.extensions.parameters.library.primitives.optional.OptionalAnnotationNameParameter;
+import org.hkijena.jipipe.extensions.parameters.library.roi.Anchor;
 
 import java.awt.Color;
 import java.awt.Point;

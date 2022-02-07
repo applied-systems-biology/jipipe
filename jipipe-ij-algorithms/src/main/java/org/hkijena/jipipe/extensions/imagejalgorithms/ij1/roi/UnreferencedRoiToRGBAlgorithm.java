@@ -34,9 +34,9 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ROIListData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.color.ImagePlusColorRGBData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.measure.Measurement;
-import org.hkijena.jipipe.extensions.parameters.colors.OptionalColorParameter;
-import org.hkijena.jipipe.extensions.parameters.primitives.OptionalDoubleParameter;
-import org.hkijena.jipipe.extensions.parameters.roi.Margin;
+import org.hkijena.jipipe.extensions.parameters.library.colors.OptionalColorParameter;
+import org.hkijena.jipipe.extensions.parameters.library.primitives.optional.OptionalDoubleParameter;
+import org.hkijena.jipipe.extensions.parameters.library.roi.Margin;
 import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
 
 import java.awt.Color;

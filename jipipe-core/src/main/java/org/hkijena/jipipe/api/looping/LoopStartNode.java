@@ -22,7 +22,7 @@ import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.JIPipeOutputSlot;
 import org.hkijena.jipipe.api.nodes.categories.MiscellaneousNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
-import org.hkijena.jipipe.extensions.parameters.generators.IntegerRange;
+import org.hkijena.jipipe.extensions.parameters.library.primitives.ranges.IntegerRange;
 
 import java.util.ArrayList;
 import java.util.Collections;

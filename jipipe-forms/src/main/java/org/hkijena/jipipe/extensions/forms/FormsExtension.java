@@ -25,8 +25,8 @@ import org.hkijena.jipipe.extensions.forms.datatypes.GroupHeaderFormData;
 import org.hkijena.jipipe.extensions.forms.datatypes.IntegerFormData;
 import org.hkijena.jipipe.extensions.forms.datatypes.PathFormData;
 import org.hkijena.jipipe.extensions.forms.datatypes.StringFormData;
-import org.hkijena.jipipe.extensions.parameters.primitives.HTMLText;
-import org.hkijena.jipipe.extensions.parameters.primitives.StringList;
+import org.hkijena.jipipe.extensions.parameters.library.markup.HTMLText;
+import org.hkijena.jipipe.extensions.parameters.library.primitives.list.StringList;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.scijava.plugin.Plugin;
 

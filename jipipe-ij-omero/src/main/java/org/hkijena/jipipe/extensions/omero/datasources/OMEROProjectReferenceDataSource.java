@@ -23,7 +23,7 @@ import org.hkijena.jipipe.api.nodes.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.nodes.categories.DataSourceNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.omero.datatypes.OMEROProjectReferenceData;
-import org.hkijena.jipipe.extensions.parameters.primitives.LongList;
+import org.hkijena.jipipe.extensions.parameters.library.primitives.list.LongList;
 
 @JIPipeDocumentation(name = "Define project IDs", description = "Manually defines OMERO project ids.")
 @JIPipeOutputSlot(value = OMEROProjectReferenceData.class, slotName = "Output", autoCreate = true)

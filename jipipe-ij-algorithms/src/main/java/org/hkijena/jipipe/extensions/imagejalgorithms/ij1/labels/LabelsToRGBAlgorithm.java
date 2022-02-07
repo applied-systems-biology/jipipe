@@ -31,7 +31,7 @@ import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.color.ImagePlusColorRGBData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleData;
-import org.hkijena.jipipe.extensions.parameters.primitives.EnumParameterSettings;
+import org.hkijena.jipipe.extensions.parameters.api.enums.EnumParameterSettings;
 
 import java.awt.Color;
 

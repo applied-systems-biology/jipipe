@@ -13,8 +13,8 @@ import org.hkijena.jipipe.api.nodes.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
-import org.hkijena.jipipe.extensions.parameters.quantities.OptionalQuantity;
-import org.hkijena.jipipe.extensions.parameters.quantities.QuantityParameterSettings;
+import org.hkijena.jipipe.extensions.parameters.library.quantities.OptionalQuantity;
+import org.hkijena.jipipe.extensions.parameters.library.quantities.QuantityParameterSettings;
 
 @JIPipeDocumentation(name = "Set physical dimensions", description = "Allows to set the physical dimensions of the incoming images")
 @JIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Calibration")

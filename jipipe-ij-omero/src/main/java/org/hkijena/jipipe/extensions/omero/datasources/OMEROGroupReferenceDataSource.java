@@ -24,7 +24,7 @@ import org.hkijena.jipipe.api.nodes.categories.DataSourceNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.omero.datatypes.OMEROGroupReferenceData;
 import org.hkijena.jipipe.extensions.omero.datatypes.OMEROProjectReferenceData;
-import org.hkijena.jipipe.extensions.parameters.primitives.LongList;
+import org.hkijena.jipipe.extensions.parameters.library.primitives.list.LongList;
 
 @JIPipeDocumentation(name = "Define group IDs", description = "Manually defines OMERO group ids.")
 @JIPipeOutputSlot(value = OMEROGroupReferenceData.class, slotName = "Output", autoCreate = true)

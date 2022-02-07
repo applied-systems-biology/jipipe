@@ -26,8 +26,8 @@ import org.hkijena.jipipe.api.nodes.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.nodes.categories.TableNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.expressions.ExpressionVariables;
-import org.hkijena.jipipe.extensions.parameters.pairs.PairParameterSettings;
-import org.hkijena.jipipe.extensions.parameters.pairs.StringQueryExpressionAndStringQueryPairParameter;
+import org.hkijena.jipipe.extensions.parameters.api.pairs.PairParameterSettings;
+import org.hkijena.jipipe.extensions.parameters.library.pairs.StringQueryExpressionAndStringQueryPairParameter;
 import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
 
 /**

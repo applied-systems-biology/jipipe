@@ -14,7 +14,7 @@
 package org.hkijena.jipipe.ui.components.renderers;
 
 import org.hkijena.jipipe.JIPipe;
-import org.hkijena.jipipe.extensions.parameters.references.JIPipeDataInfoRef;
+import org.hkijena.jipipe.extensions.parameters.library.references.JIPipeDataInfoRef;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;

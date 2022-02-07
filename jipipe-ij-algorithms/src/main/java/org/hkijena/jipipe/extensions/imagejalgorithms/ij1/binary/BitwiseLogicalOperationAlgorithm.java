@@ -16,7 +16,7 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscale8UData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
-import org.hkijena.jipipe.extensions.parameters.util.LogicalOperation;
+import org.hkijena.jipipe.extensions.parameters.library.util.LogicalOperation;
 
 @JIPipeDocumentation(name = "Bitwise operation", description = "Combines two 8-bit images with a bitwise operation. You can use it to, for example combine two masks.")
 @JIPipeNode(menuPath = "Binary", nodeTypeCategory = ImagesNodeTypeCategory.class)

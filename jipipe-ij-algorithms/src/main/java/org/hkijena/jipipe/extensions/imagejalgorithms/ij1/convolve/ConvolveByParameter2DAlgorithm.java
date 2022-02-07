@@ -30,7 +30,7 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscale32FData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
-import org.hkijena.jipipe.extensions.parameters.matrix.Matrix2DFloat;
+import org.hkijena.jipipe.extensions.parameters.library.matrix.Matrix2DFloat;
 
 /**
  * Wrapper around {@link ij.plugin.filter.Convolver}

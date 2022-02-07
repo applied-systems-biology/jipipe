@@ -28,7 +28,7 @@ import org.hkijena.jipipe.api.nodes.categories.DataSourceNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.OptionalBitDepth;
-import org.hkijena.jipipe.extensions.parameters.primitives.OptionalIntegerParameter;
+import org.hkijena.jipipe.extensions.parameters.library.primitives.optional.OptionalIntegerParameter;
 
 /**
  * Wrapper around {@link ij.process.ImageProcessor}

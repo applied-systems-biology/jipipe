@@ -37,8 +37,8 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscale32FData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
-import org.hkijena.jipipe.extensions.parameters.primitives.DoubleList;
-import org.hkijena.jipipe.extensions.parameters.primitives.NumberParameterSettings;
+import org.hkijena.jipipe.extensions.parameters.library.primitives.list.DoubleList;
+import org.hkijena.jipipe.extensions.parameters.library.primitives.NumberParameterSettings;
 
 import java.util.Vector;
 

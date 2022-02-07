@@ -1,6 +1,6 @@
 package org.hkijena.jipipe.extensions.r.parameters;
 
-import org.hkijena.jipipe.extensions.parameters.scripts.ScriptParameter;
+import org.hkijena.jipipe.extensions.parameters.api.scripts.ScriptParameter;
 import org.scijava.script.ScriptLanguage;
 
 public class RScriptParameter extends ScriptParameter {

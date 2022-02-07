@@ -39,17 +39,18 @@ import org.hkijena.jipipe.api.registries.JIPipeNodeRegistrationTask;
 import org.hkijena.jipipe.api.registries.JIPipeParameterTypeRegistry;
 import org.hkijena.jipipe.extensions.expressions.ExpressionFunction;
 import org.hkijena.jipipe.extensions.expressions.functions.ColumnOperationAdapterFunction;
-import org.hkijena.jipipe.extensions.parameters.collections.ListParameter;
-import org.hkijena.jipipe.extensions.parameters.primitives.EnumParameterTypeInfo;
-import org.hkijena.jipipe.extensions.parameters.primitives.HTMLText;
-import org.hkijena.jipipe.extensions.parameters.primitives.StringList;
+import org.hkijena.jipipe.extensions.parameters.api.collections.ListParameter;
+import org.hkijena.jipipe.extensions.parameters.api.enums.EnumParameterGenerator;
+import org.hkijena.jipipe.extensions.parameters.api.enums.EnumParameterTypeInfo;
+import org.hkijena.jipipe.extensions.parameters.library.markup.HTMLText;
+import org.hkijena.jipipe.extensions.parameters.library.primitives.list.StringList;
 import org.hkijena.jipipe.extensions.tables.ColumnOperation;
 import org.hkijena.jipipe.ui.compat.ImageJDatatypeImporterUI;
 import org.hkijena.jipipe.ui.extension.GraphEditorToolBarButtonExtension;
 import org.hkijena.jipipe.ui.extension.JIPipeMenuExtension;
 import org.hkijena.jipipe.ui.grapheditor.contextmenu.NodeUIContextAction;
 import org.hkijena.jipipe.ui.parameters.JIPipeParameterEditorUI;
-import org.hkijena.jipipe.ui.parameters.JIPipeParameterGeneratorUI;
+import org.hkijena.jipipe.api.parameters.JIPipeParameterGenerator;
 import org.hkijena.jipipe.ui.resultanalysis.JIPipeResultDataSlotPreview;
 import org.hkijena.jipipe.ui.resultanalysis.JIPipeResultDataSlotRowUI;
 import org.hkijena.jipipe.utils.DocumentationUtils;
@@ -321,6 +322,7 @@ public abstract class JIPipeDefaultJavaExtension extends AbstractService impleme
      */
     public void registerEnumParameterType(String id, Class<? extends Enum<?>> parameterClass, String name, String description) {
         registerParameterType(new EnumParameterTypeInfo(id, parameterClass, name, description), null);
+        registerParameterGenerator(parameterClass, new EnumParameterGenerator());
     }
 
     /**
@@ -451,13 +453,11 @@ public abstract class JIPipeDefaultJavaExtension extends AbstractService impleme
      * Registers a UI that can generate parameters
      *
      * @param parameterClass Parameter class
-     * @param uiClass        The generator UI class
-     * @param name           Generator name
-     * @param description    Description for the generator
+     * @param generator The generator object
      */
-    public void registerParameterGenerator(Class<?> parameterClass, Class<? extends JIPipeParameterGeneratorUI> uiClass, String name, String description) {
+    public void registerParameterGenerator(Class<?> parameterClass, JIPipeParameterGenerator generator) {
         JIPipeParameterTypeRegistry parametertypeRegistry = registry.getParameterTypeRegistry();
-        parametertypeRegistry.registerGenerator(parameterClass, uiClass, name, description);
+        parametertypeRegistry.registerGenerator(parameterClass, generator);
     }
 
     /**

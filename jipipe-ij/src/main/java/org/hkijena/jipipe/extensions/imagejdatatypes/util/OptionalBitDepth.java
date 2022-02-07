@@ -1,6 +1,6 @@
 package org.hkijena.jipipe.extensions.imagejdatatypes.util;
 
-import org.hkijena.jipipe.extensions.parameters.primitives.EnumParameterSettings;
+import org.hkijena.jipipe.extensions.parameters.api.enums.EnumParameterSettings;
 
 /**
  * Enum of ImageJ bit depths

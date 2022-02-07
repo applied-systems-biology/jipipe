@@ -1,8 +1,8 @@
 package org.hkijena.jipipe.extensions.imagejalgorithms.ij1;
 
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.HyperstackDimension;
-import org.hkijena.jipipe.extensions.parameters.collections.ListParameter;
-import org.hkijena.jipipe.extensions.parameters.pairs.PairParameter;
+import org.hkijena.jipipe.extensions.parameters.api.collections.ListParameter;
+import org.hkijena.jipipe.extensions.parameters.api.pairs.PairParameter;
 
 public class HyperstackDimensionPairParameter extends PairParameter<HyperstackDimension, HyperstackDimension> {
 

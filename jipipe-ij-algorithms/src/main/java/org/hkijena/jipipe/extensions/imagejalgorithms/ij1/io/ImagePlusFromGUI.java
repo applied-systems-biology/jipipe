@@ -29,7 +29,7 @@ import org.hkijena.jipipe.extensions.expressions.ExpressionParameterSettings;
 import org.hkijena.jipipe.extensions.expressions.ExpressionVariables;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.parameters.ImageQueryExpressionVariableSource;
-import org.hkijena.jipipe.extensions.parameters.util.LogicalOperation;
+import org.hkijena.jipipe.extensions.parameters.library.util.LogicalOperation;
 
 import java.util.ArrayList;
 import java.util.List;

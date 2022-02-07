@@ -13,7 +13,7 @@
 
 package org.hkijena.jipipe.api.nodes;
 
-import org.hkijena.jipipe.extensions.parameters.primitives.HTMLText;
+import org.hkijena.jipipe.extensions.parameters.library.markup.HTMLText;
 
 import java.util.ArrayList;
 import java.util.List;

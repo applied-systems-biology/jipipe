@@ -1,6 +1,6 @@
 package org.hkijena.jipipe.extensions.imagejdatatypes.util;
 
-import org.hkijena.jipipe.extensions.parameters.primitives.EnumItemInfo;
+import org.hkijena.jipipe.extensions.parameters.api.enums.EnumItemInfo;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;

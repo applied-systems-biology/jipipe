@@ -18,7 +18,7 @@ import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.Neighborhood2D;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d3.greyscale.ImagePlus3DGreyscaleData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d3.greyscale.ImagePlus3DGreyscaleMaskData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
-import org.hkijena.jipipe.extensions.parameters.primitives.BooleanParameterSettings;
+import org.hkijena.jipipe.extensions.parameters.library.primitives.BooleanParameterSettings;
 
 @JIPipeDocumentation(name = "Morphological reconstruction 3D", description = "Geodesic reconstruction repeats conditional dilations or erosions until idempotence. " +
         "Two images are required: the marker image, used to initialize the reconstruction, an the mask image, used to constrain the reconstruction. " +

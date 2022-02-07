@@ -16,13 +16,11 @@ package org.hkijena.jipipe.api.registries;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import com.google.common.collect.ImmutableBiMap;
-import org.hkijena.jipipe.api.JIPipeDefaultDocumentation;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTypeInfo;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.parameters.JIPipeParameterEditorUI;
-import org.hkijena.jipipe.ui.parameters.JIPipeParameterGeneratorUI;
+import org.hkijena.jipipe.api.parameters.JIPipeParameterGenerator;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.Collections;
@@ -35,11 +33,10 @@ import java.util.Set;
  * Registry for all known parameter types
  */
 public class JIPipeParameterTypeRegistry {
-    private BiMap<String, JIPipeParameterTypeInfo> registeredParameters = HashBiMap.create();
-    private BiMap<Class<?>, JIPipeParameterTypeInfo> registeredParameterClasses = HashBiMap.create();
-    private Map<Class<?>, Class<? extends JIPipeParameterEditorUI>> parameterTypesUIs = new HashMap<>();
-    private Map<Class<?>, Set<Class<? extends JIPipeParameterGeneratorUI>>> parameterGeneratorUIs = new HashMap<>();
-    private Map<Class<? extends JIPipeParameterGeneratorUI>, JIPipeDocumentation> parameterGeneratorUIDocumentations = new HashMap<>();
+    private final BiMap<String, JIPipeParameterTypeInfo> registeredParameters = HashBiMap.create();
+    private final BiMap<Class<?>, JIPipeParameterTypeInfo> registeredParameterClasses = HashBiMap.create();
+    private final Map<Class<?>, Class<? extends JIPipeParameterEditorUI>> parameterTypesUIs = new HashMap<>();
+    private final Map<Class<?>, Set<JIPipeParameterGenerator>> parameterGeneratorUIs = new HashMap<>();
 
     /**
      * Registers a new parameter type
@@ -131,18 +128,15 @@ public class JIPipeParameterTypeRegistry {
      * Registers a UI that can generate parameters
      *
      * @param parameterClass Parameter class
-     * @param uiClass        The generator UI class
-     * @param name           Generator name
-     * @param description    Description for the generator
+     * @param generator  The generator object
      */
-    public void registerGenerator(Class<?> parameterClass, Class<? extends JIPipeParameterGeneratorUI> uiClass, String name, String description) {
-        Set<Class<? extends JIPipeParameterGeneratorUI>> generators = parameterGeneratorUIs.getOrDefault(parameterClass, null);
+    public void registerGenerator(Class<?> parameterClass, JIPipeParameterGenerator generator) {
+        Set<JIPipeParameterGenerator> generators = parameterGeneratorUIs.getOrDefault(parameterClass, null);
         if (generators == null) {
             generators = new HashSet<>();
             parameterGeneratorUIs.put(parameterClass, generators);
         }
-        generators.add(uiClass);
-        parameterGeneratorUIDocumentations.put(uiClass, new JIPipeDefaultDocumentation(name, description));
+        generators.add(generator);
     }
 
     /**
@@ -151,17 +145,7 @@ public class JIPipeParameterTypeRegistry {
      * @param parameterClass the parameter class
      * @return Set of generators
      */
-    public Set<Class<? extends JIPipeParameterGeneratorUI>> getGeneratorsFor(Class<?> parameterClass) {
+    public Set<JIPipeParameterGenerator> getGeneratorsFor(Class<?> parameterClass) {
         return parameterGeneratorUIs.getOrDefault(parameterClass, Collections.emptySet());
-    }
-
-    /**
-     * Returns documentation for the generator
-     *
-     * @param generatorClass the generator
-     * @return documentation
-     */
-    public JIPipeDocumentation getGeneratorDocumentationFor(Class<? extends JIPipeParameterGeneratorUI> generatorClass) {
-        return parameterGeneratorUIDocumentations.get(generatorClass);
     }
 }

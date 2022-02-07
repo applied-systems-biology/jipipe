@@ -1,6 +1,6 @@
 package org.hkijena.jipipe.extensions.expressions;
 
-import org.hkijena.jipipe.extensions.parameters.optional.OptionalParameter;
+import org.hkijena.jipipe.extensions.parameters.api.optional.OptionalParameter;
 
 public class OptionalDefaultExpressionParameter extends OptionalParameter<DefaultExpressionParameter> {
 

@@ -19,7 +19,7 @@ import com.fasterxml.jackson.annotation.JsonSetter;
 import com.google.common.html.HtmlEscapers;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.registries.JIPipeExpressionRegistry;
-import org.hkijena.jipipe.extensions.parameters.primitives.DynamicEnumParameter;
+import org.hkijena.jipipe.extensions.parameters.api.enums.DynamicEnumParameter;
 import org.hkijena.jipipe.extensions.tables.IntegratingColumnOperation;
 import org.hkijena.jipipe.utils.UIUtils;
 

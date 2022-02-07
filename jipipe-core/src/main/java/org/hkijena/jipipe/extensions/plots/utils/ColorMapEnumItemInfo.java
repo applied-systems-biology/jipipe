@@ -13,7 +13,7 @@
 
 package org.hkijena.jipipe.extensions.plots.utils;
 
-import org.hkijena.jipipe.extensions.parameters.primitives.EnumItemInfo;
+import org.hkijena.jipipe.extensions.parameters.api.enums.EnumItemInfo;
 
 import javax.swing.*;
 

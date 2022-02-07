@@ -13,8 +13,8 @@
 
 package org.hkijena.jipipe.ui.components;
 
-import org.hkijena.jipipe.extensions.parameters.primitives.EnumItemInfo;
-import org.hkijena.jipipe.extensions.parameters.primitives.EnumParameterEditorUI;
+import org.hkijena.jipipe.extensions.parameters.api.enums.EnumItemInfo;
+import org.hkijena.jipipe.extensions.parameters.api.enums.EnumParameterEditorUI;
 import org.hkijena.jipipe.ui.components.search.SearchTextField;
 import org.hkijena.jipipe.utils.UIUtils;
 

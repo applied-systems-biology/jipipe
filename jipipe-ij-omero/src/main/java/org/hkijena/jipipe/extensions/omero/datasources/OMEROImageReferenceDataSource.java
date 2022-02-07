@@ -23,7 +23,7 @@ import org.hkijena.jipipe.api.nodes.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.nodes.categories.DataSourceNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.omero.datatypes.OMEROImageReferenceData;
-import org.hkijena.jipipe.extensions.parameters.primitives.LongList;
+import org.hkijena.jipipe.extensions.parameters.library.primitives.list.LongList;
 
 @JIPipeDocumentation(name = "Define image IDs", description = "Manually defines OMERO image ids that can be used for importing data.")
 @JIPipeOutputSlot(value = OMEROImageReferenceData.class, slotName = "Output", autoCreate = true)

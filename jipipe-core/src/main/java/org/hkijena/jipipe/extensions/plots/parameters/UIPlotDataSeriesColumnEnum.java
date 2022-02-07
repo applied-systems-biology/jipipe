@@ -13,7 +13,7 @@
 
 package org.hkijena.jipipe.extensions.plots.parameters;
 
-import org.hkijena.jipipe.extensions.parameters.primitives.DynamicEnumParameter;
+import org.hkijena.jipipe.extensions.parameters.api.enums.DynamicEnumParameter;
 
 /**
  * Parameter that contains one selected {@link org.hkijena.jipipe.extensions.plots.datatypes.PlotDataSeries} item.

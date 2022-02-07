@@ -14,8 +14,8 @@
 package org.hkijena.jipipe.extensions.plots.parameters;
 
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
-import org.hkijena.jipipe.extensions.parameters.primitives.DynamicEnumParameter;
-import org.hkijena.jipipe.extensions.parameters.primitives.DynamicEnumParameterSettings;
+import org.hkijena.jipipe.extensions.parameters.api.enums.DynamicEnumParameter;
+import org.hkijena.jipipe.extensions.parameters.api.enums.DynamicEnumParameterSettings;
 import org.hkijena.jipipe.extensions.tables.datatypes.TableColumn;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.parameters.JIPipeParameterEditorUI;

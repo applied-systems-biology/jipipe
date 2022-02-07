@@ -28,8 +28,8 @@ import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
-import org.hkijena.jipipe.extensions.parameters.pairs.IntRangeAndIntegerPairParameter;
-import org.hkijena.jipipe.extensions.parameters.pairs.PairParameterSettings;
+import org.hkijena.jipipe.extensions.parameters.library.pairs.IntRangeAndIntegerPairParameter;
+import org.hkijena.jipipe.extensions.parameters.api.pairs.PairParameterSettings;
 
 @JIPipeDocumentation(name = "Replace label values", description = "Replaces label values by the specified value.")
 @JIPipeNode(menuPath = "Labels", nodeTypeCategory = ImagesNodeTypeCategory.class)

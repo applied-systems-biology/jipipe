@@ -1,6 +1,6 @@
 package org.hkijena.jipipe.extensions.python;
 
-import org.hkijena.jipipe.extensions.parameters.optional.OptionalParameter;
+import org.hkijena.jipipe.extensions.parameters.api.optional.OptionalParameter;
 
 /**
  * An optional {@link PythonEnvironment}

@@ -27,7 +27,7 @@ import org.hkijena.jipipe.api.nodes.categories.RoiNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ROIListData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageSliceIndex;
-import org.hkijena.jipipe.extensions.parameters.util.LogicalOperation;
+import org.hkijena.jipipe.extensions.parameters.library.util.LogicalOperation;
 
 import java.util.List;
 import java.util.Map;

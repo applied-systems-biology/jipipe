@@ -28,7 +28,7 @@ import org.hkijena.jipipe.api.nodes.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.nodes.categories.DataSourceNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
-import org.hkijena.jipipe.extensions.parameters.matrix.Matrix2DFloat;
+import org.hkijena.jipipe.extensions.parameters.library.matrix.Matrix2DFloat;
 
 /**
  * Wrapper around {@link Convolver}

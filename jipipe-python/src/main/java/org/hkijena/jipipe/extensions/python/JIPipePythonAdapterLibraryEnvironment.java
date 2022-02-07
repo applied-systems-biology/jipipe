@@ -14,7 +14,7 @@
 package org.hkijena.jipipe.extensions.python;
 
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
-import org.hkijena.jipipe.extensions.parameters.collections.ListParameter;
+import org.hkijena.jipipe.extensions.parameters.api.collections.ListParameter;
 
 import java.nio.file.Paths;
 import java.util.Map;

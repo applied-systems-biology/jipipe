@@ -12,10 +12,10 @@ import org.hkijena.jipipe.api.parameters.JIPipeDummyParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeManualParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.forms.utils.SingleAnnotationIOSettings;
-import org.hkijena.jipipe.extensions.parameters.pairs.PairParameter;
-import org.hkijena.jipipe.extensions.parameters.pairs.PairParameterSettings;
-import org.hkijena.jipipe.extensions.parameters.pairs.StringAndStringPairParameter;
-import org.hkijena.jipipe.extensions.parameters.primitives.DynamicStringEnumParameter;
+import org.hkijena.jipipe.extensions.parameters.api.pairs.PairParameter;
+import org.hkijena.jipipe.extensions.parameters.api.pairs.PairParameterSettings;
+import org.hkijena.jipipe.extensions.parameters.library.pairs.StringAndStringPairParameter;
+import org.hkijena.jipipe.extensions.parameters.library.primitives.DynamicStringEnumParameter;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.utils.StringUtils;
 

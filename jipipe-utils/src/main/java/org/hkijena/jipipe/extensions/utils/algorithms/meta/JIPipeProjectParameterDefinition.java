@@ -26,7 +26,7 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
 import org.hkijena.jipipe.extensions.multiparameters.datasources.ParametersDataTableDefinition;
 import org.hkijena.jipipe.extensions.multiparameters.datatypes.ParametersData;
-import org.hkijena.jipipe.extensions.parameters.table.ParameterTable;
+import org.hkijena.jipipe.extensions.parameters.library.table.ParameterTable;
 import org.hkijena.jipipe.extensions.settings.FileChooserSettings;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.settings.JIPipeProjectInfoParameters;

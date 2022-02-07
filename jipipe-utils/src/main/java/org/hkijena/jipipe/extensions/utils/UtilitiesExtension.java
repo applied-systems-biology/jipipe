@@ -23,8 +23,8 @@ import org.hkijena.jipipe.extensions.datatables.algorithms.ExtractTableAlgorithm
 import org.hkijena.jipipe.extensions.datatables.algorithms.MergeDataToTableAlgorithm;
 import org.hkijena.jipipe.extensions.filesystem.resultanalysis.CopyPathDataOperation;
 import org.hkijena.jipipe.extensions.filesystem.resultanalysis.OpenPathDataOperation;
-import org.hkijena.jipipe.extensions.parameters.primitives.HTMLText;
-import org.hkijena.jipipe.extensions.parameters.primitives.StringList;
+import org.hkijena.jipipe.extensions.parameters.library.markup.HTMLText;
+import org.hkijena.jipipe.extensions.parameters.library.primitives.list.StringList;
 import org.hkijena.jipipe.extensions.utils.algorithms.*;
 import org.hkijena.jipipe.extensions.utils.algorithms.distribute.DistributeDataRandomlyByCountAlgorithm;
 import org.hkijena.jipipe.extensions.utils.algorithms.distribute.DistributeDataRandomlyByPercentageAlgorithm;

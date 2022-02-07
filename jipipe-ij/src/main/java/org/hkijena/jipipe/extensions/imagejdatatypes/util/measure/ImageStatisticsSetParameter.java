@@ -1,14 +1,14 @@
 package org.hkijena.jipipe.extensions.imagejdatatypes.util.measure;
 
 import ij.plugin.filter.Analyzer;
-import org.hkijena.jipipe.extensions.parameters.primitives.DynamicSetParameter;
+import org.hkijena.jipipe.extensions.parameters.api.enums.DynamicSetParameter;
 
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
 /**
- * A {@link org.hkijena.jipipe.extensions.parameters.primitives.DynamicSetParameter} that contains image statistics measurements.
+ * A {@link DynamicSetParameter} that contains image statistics measurements.
  * Contains {@link Measurement} items
  */
 public class ImageStatisticsSetParameter extends DynamicSetParameter<Measurement> {

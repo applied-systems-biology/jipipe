@@ -13,7 +13,7 @@
 
 package org.hkijena.jipipe.extensions.clij2.parameters;
 
-import org.hkijena.jipipe.extensions.parameters.scripts.ScriptParameter;
+import org.hkijena.jipipe.extensions.parameters.api.scripts.ScriptParameter;
 import org.scijava.script.ScriptLanguage;
 
 /**

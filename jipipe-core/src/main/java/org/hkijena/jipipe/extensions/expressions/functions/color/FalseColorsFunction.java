@@ -4,7 +4,7 @@ import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.extensions.expressions.ExpressionFunction;
 import org.hkijena.jipipe.extensions.expressions.ExpressionVariables;
 import org.hkijena.jipipe.extensions.expressions.ParameterInfo;
-import org.hkijena.jipipe.extensions.parameters.colors.ColorMap;
+import org.hkijena.jipipe.extensions.parameters.library.colors.ColorMap;
 
 import java.awt.Color;
 import java.util.Arrays;

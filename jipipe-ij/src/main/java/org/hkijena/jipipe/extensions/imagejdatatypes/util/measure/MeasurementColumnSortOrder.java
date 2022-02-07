@@ -13,9 +13,9 @@
 
 package org.hkijena.jipipe.extensions.imagejdatatypes.util.measure;
 
-import org.hkijena.jipipe.extensions.parameters.collections.ListParameter;
-import org.hkijena.jipipe.extensions.parameters.pairs.PairParameter;
-import org.hkijena.jipipe.extensions.parameters.util.SortOrder;
+import org.hkijena.jipipe.extensions.parameters.api.collections.ListParameter;
+import org.hkijena.jipipe.extensions.parameters.api.pairs.PairParameter;
+import org.hkijena.jipipe.extensions.parameters.library.util.SortOrder;
 import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
 
 import java.util.Comparator;
