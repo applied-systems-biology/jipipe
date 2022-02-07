@@ -5,11 +5,11 @@
     <parent>
         <artifactId>pom-jipipe</artifactId>
         <groupId>org.hkijena</groupId>
-        <version>1.62.0</version>
+        <version>1.63.0</version>
     </parent>
 
     <artifactId>jipipe-launcher</artifactId>
-    <version>1.62.0</version>
+    <version>1.63.0</version>
 
     <name>jipipe-launcher</name>
     <description>JIPipe launcher Application</description>
@@ -104,88 +104,88 @@
             <dependency>
                 <groupId>org.hkijena</groupId>
                 <artifactId>jipipe-core</artifactId>
-                <version>1.62.0</version>
+                <version>1.63.0</version>
             </dependency>
             <dependency>
                 <groupId>org.hkijena</groupId>
                 <artifactId>jipipe-python</artifactId>
-                <version>1.62.0</version>
+                <version>1.63.0</version>
             </dependency>
             <dependency>
                 <groupId>org.hkijena</groupId>
                 <artifactId>jipipe-annotation</artifactId>
-                <version>1.62.0</version>
+                <version>1.63.0</version>
             </dependency>
             <dependency>
                 <groupId>org.hkijena</groupId>
                 <artifactId>jipipe-filesystem</artifactId>
-                <version>1.62.0</version>
+                <version>1.63.0</version>
             </dependency>
             <dependency>
                 <groupId>org.hkijena</groupId>
                 <artifactId>jipipe-multiparameters</artifactId>
-                <version>1.62.0</version>
+                <version>1.63.0</version>
             </dependency>
             <dependency>
                 <groupId>org.hkijena</groupId>
                 <artifactId>jipipe-plots</artifactId>
-                <version>1.62.0</version>
+                <version>1.63.0</version>
             </dependency>
             <dependency>
                 <groupId>org.hkijena</groupId>
                 <artifactId>jipipe-tables</artifactId>
-                <version>1.62.0</version>
+                <version>1.63.0</version>
             </dependency>
             <dependency>
                 <groupId>org.hkijena</groupId>
                 <artifactId>jipipe-ij</artifactId>
-                <version>1.62.0</version>
+                <version>1.63.0</version>
                 <scope>runtime</scope>
             </dependency>
             <dependency>
                 <groupId>org.hkijena</groupId>
                 <artifactId>jipipe-ij-algorithms</artifactId>
-                <version>1.62.0</version>
+                <version>1.63.0</version>
             </dependency>
             <dependency>
                 <groupId>org.hkijena</groupId>
                 <artifactId>jipipe-ij-multi-template-matching</artifactId>
-                <version>1.62.0</version>
+                <version>1.63.0</version>
             </dependency>
             <dependency>
                 <groupId>org.hkijena</groupId>
                 <artifactId>jipipe-clij</artifactId>
-                <version>1.62.0</version>
+                <version>1.63.0</version>
             </dependency>
             <dependency>
                 <groupId>org.hkijena</groupId>
                 <artifactId>jipipe-strings</artifactId>
-                <version>1.62.0</version>
+                <version>1.63.0</version>
             </dependency>
             <dependency>
                 <groupId>org.hkijena</groupId>
                 <artifactId>jipipe-utils</artifactId>
-                <version>1.62.0</version>
+                <version>1.63.0</version>
             </dependency>
             <dependency>
                 <groupId>org.hkijena</groupId>
                 <artifactId>jipipe-ij-omero</artifactId>
-                <version>1.62.0</version>
+                <version>1.63.0</version>
             </dependency>
             <dependency>
                 <groupId>org.hkijena</groupId>
                 <artifactId>jipipe-forms</artifactId>
-                <version>1.62.0</version>
+                <version>1.63.0</version>
             </dependency>
             <dependency>
                 <groupId>org.hkijena</groupId>
                 <artifactId>jipipe-r</artifactId>
-                <version>1.62.0</version>
+                <version>1.63.0</version>
             </dependency>
             <dependency>
                 <groupId>org.hkijena</groupId>
                 <artifactId>jipipe-cellpose</artifactId>
-                <version>1.62.0</version>
+                <version>1.63.0</version>
             </dependency>
             <dependency>
                 <groupId>fr.inra.ijpb</groupId>

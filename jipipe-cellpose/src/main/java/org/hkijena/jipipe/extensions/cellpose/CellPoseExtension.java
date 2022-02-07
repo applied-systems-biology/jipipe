@@ -54,7 +54,7 @@ public class CellPoseExtension extends JIPipePrepackagedDefaultJavaExtension {
 
     @Override
     public String getDependencyVersion() {
-        return "1.62.0";
+        return "1.63.0";
     }
 
     @Override

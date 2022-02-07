@@ -13,7 +13,7 @@ target
 /dist/zip/package/
 /dist/zip/dependencies/
 /dist/zip/*.zip
-/dist/jipipe-windows-installer/JIPipe-1.62.0-Setup.exe
+/dist/jipipe-windows-installer/JIPipe-1.63.0-Setup.exe
 /miniconda/
 /cellpose-cpu/
 /cellpose-gpu/
@@ -26,6 +26,6 @@ target
 /r/
 /jipipe/
 /dist/zip/*
-/dist/JIPipe-1.62.0.zip
+/dist/JIPipe-1.63.0.zip
 **/__pycache__/
 
