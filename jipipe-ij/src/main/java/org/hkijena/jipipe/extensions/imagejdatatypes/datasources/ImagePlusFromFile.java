@@ -22,15 +22,11 @@ import org.hkijena.jipipe.api.JIPipeIssueReport;
 import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.annotation.JIPipeDataAnnotationMergeMode;
-import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
-import org.hkijena.jipipe.api.data.*;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
-import org.hkijena.jipipe.api.nodes.JIPipeDataBatch;
-import org.hkijena.jipipe.api.nodes.JIPipeGraph;
-import org.hkijena.jipipe.api.nodes.JIPipeInputSlot;
-import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
-import org.hkijena.jipipe.api.nodes.JIPipeOutputSlot;
-import org.hkijena.jipipe.api.nodes.JIPipeSimpleIteratingAlgorithm;
+import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
+import org.hkijena.jipipe.api.data.JIPipeDefaultMutableSlotConfiguration;
+import org.hkijena.jipipe.api.data.JIPipeVirtualData;
+import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.DataSourceNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.filesystem.dataypes.FileData;
@@ -89,6 +85,43 @@ public class ImagePlusFromFile extends JIPipeSimpleIteratingAlgorithm {
         this.removeLut = other.removeLut;
         this.removeOverlay = other.removeOverlay;
         this.deferLoading = other.deferLoading;
+    }
+
+    /**
+     * Loads an image from a file path
+     *
+     * @param fileName     the image file name
+     * @param progressInfo progress
+     * @return the generated data
+     */
+    public static ImagePlus readImageFrom(Path fileName, JIPipeProgressInfo progressInfo) {
+        ImagePlus image;
+        String fileNameString = fileName.getFileName().toString();
+        if (fileNameString.endsWith(".ome.tiff") || fileNameString.endsWith(".ome.tif") || fileNameString.endsWith(".czi")) {
+            // Pass to bioformats
+            progressInfo.log("Using BioFormats importer. Please use the Bio-Formats importer node for more settings.");
+            BioFormatsImporter importer = JIPipe.createNode(BioFormatsImporter.class);
+            importer.setAllSlotsVirtual(false, false, null);
+            importer.getFirstInputSlot().addData(new FileData(fileName), progressInfo);
+            importer.run(progressInfo);
+            image = importer.getFirstOutputSlot().getData(0, OMEImageData.class, progressInfo).getImage();
+        } else {
+            image = IJ.openImage(fileName.toString());
+        }
+        if (image == null) {
+            // Try Bioformats again?
+            // Pass to bioformats
+            progressInfo.log("Using BioFormats importer. Please use the Bio-Formats importer node for more settings.");
+            BioFormatsImporter importer = JIPipe.createNode(BioFormatsImporter.class);
+            importer.setAllSlotsVirtual(false, false, null);
+            importer.getFirstInputSlot().addData(new FileData(fileName), progressInfo);
+            importer.run(progressInfo);
+            image = importer.getFirstOutputSlot().getData(0, OMEImageData.class, progressInfo).getImage();
+        }
+        if (image == null) {
+            throw new NullPointerException("Image could not be loaded!");
+        }
+        return image;
     }
 
     @JIPipeDocumentation(name = "Remove overlays", description = "If enabled, remove overlay ROIs from the imported image")
@@ -214,42 +247,5 @@ public class ImagePlusFromFile extends JIPipeSimpleIteratingAlgorithm {
         this.generatedImageType = generatedImageType;
         getFirstOutputSlot().setAcceptedDataType(generatedImageType.getInfo().getDataClass());
         getEventBus().post(new JIPipeGraph.NodeSlotsChangedEvent(this));
-    }
-
-    /**
-     * Loads an image from a file path
-     *
-     * @param fileName     the image file name
-     * @param progressInfo progress
-     * @return the generated data
-     */
-    public static ImagePlus readImageFrom(Path fileName, JIPipeProgressInfo progressInfo) {
-        ImagePlus image;
-        String fileNameString = fileName.getFileName().toString();
-        if (fileNameString.endsWith(".ome.tiff") || fileNameString.endsWith(".ome.tif") || fileNameString.endsWith(".czi")) {
-            // Pass to bioformats
-            progressInfo.log("Using BioFormats importer. Please use the Bio-Formats importer node for more settings.");
-            BioFormatsImporter importer = JIPipe.createNode(BioFormatsImporter.class);
-            importer.setAllSlotsVirtual(false, false, null);
-            importer.getFirstInputSlot().addData(new FileData(fileName), progressInfo);
-            importer.run(progressInfo);
-            image = importer.getFirstOutputSlot().getData(0, OMEImageData.class, progressInfo).getImage();
-        } else {
-            image = IJ.openImage(fileName.toString());
-        }
-        if (image == null) {
-            // Try Bioformats again?
-            // Pass to bioformats
-            progressInfo.log("Using BioFormats importer. Please use the Bio-Formats importer node for more settings.");
-            BioFormatsImporter importer = JIPipe.createNode(BioFormatsImporter.class);
-            importer.setAllSlotsVirtual(false, false, null);
-            importer.getFirstInputSlot().addData(new FileData(fileName), progressInfo);
-            importer.run(progressInfo);
-            image = importer.getFirstOutputSlot().getData(0, OMEImageData.class, progressInfo).getImage();
-        }
-        if (image == null) {
-            throw new NullPointerException("Image could not be loaded!");
-        }
-        return image;
     }
 }

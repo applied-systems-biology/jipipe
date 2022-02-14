@@ -77,45 +77,45 @@ public class OverlapMeasureLabelsAlgorithm extends JIPipeIteratingAlgorithm {
         ResultsBuilder rb = new ResultsBuilder();
         ResultsTable totalTable = new ResultsTable();
         totalTable.incrementCounter();
-        totalTable.setPrecision( 6 );
+        totalTable.setPrecision(6);
 
-        if( measurements.getValues().contains(OverlapStatistics.TotalOverlap) ) // Overlap
+        if (measurements.getValues().contains(OverlapStatistics.TotalOverlap)) // Overlap
         {
-            rb.addResult( LabelImages.getTargetOverlapPerLabel( sourceImage, targetImage ) );
-            totalTable.addValue( "TotalOverlap", LabelImages.getTotalOverlap( sourceImage, targetImage ) );
+            rb.addResult(LabelImages.getTargetOverlapPerLabel(sourceImage, targetImage));
+            totalTable.addValue("TotalOverlap", LabelImages.getTotalOverlap(sourceImage, targetImage));
         }
 
-        if( measurements.getValues().contains(OverlapStatistics.JaccardIndex) ) // Jaccard index
+        if (measurements.getValues().contains(OverlapStatistics.JaccardIndex)) // Jaccard index
         {
-            rb.addResult( LabelImages.getJaccardIndexPerLabel( sourceImage, targetImage ) );
-            totalTable.addValue( "JaccardIndex", LabelImages.getJaccardIndex( sourceImage, targetImage ) );
+            rb.addResult(LabelImages.getJaccardIndexPerLabel(sourceImage, targetImage));
+            totalTable.addValue("JaccardIndex", LabelImages.getJaccardIndex(sourceImage, targetImage));
         }
 
-        if( measurements.getValues().contains(OverlapStatistics.DiceCoefficient) ) // Dice coefficient
+        if (measurements.getValues().contains(OverlapStatistics.DiceCoefficient)) // Dice coefficient
         {
-            rb.addResult( LabelImages.getDiceCoefficientPerLabel( sourceImage, targetImage ) );
-            totalTable.addValue( "DiceCoefficient", LabelImages.getDiceCoefficient( sourceImage, targetImage ) );
+            rb.addResult(LabelImages.getDiceCoefficientPerLabel(sourceImage, targetImage));
+            totalTable.addValue("DiceCoefficient", LabelImages.getDiceCoefficient(sourceImage, targetImage));
         }
 
-        if( measurements.getValues().contains(OverlapStatistics.VolumeSimilarity) ) // Volume similarity
+        if (measurements.getValues().contains(OverlapStatistics.VolumeSimilarity)) // Volume similarity
         {
-            rb.addResult( LabelImages.getVolumeSimilarityPerLabel( sourceImage, targetImage ) );
-            totalTable.addValue( "VolumeSimilarity", LabelImages.getVolumeSimilarity( sourceImage, targetImage ) );
+            rb.addResult(LabelImages.getVolumeSimilarityPerLabel(sourceImage, targetImage));
+            totalTable.addValue("VolumeSimilarity", LabelImages.getVolumeSimilarity(sourceImage, targetImage));
         }
 
-        if( measurements.getValues().contains(OverlapStatistics.FalseNegativeError) ) // False negative error
+        if (measurements.getValues().contains(OverlapStatistics.FalseNegativeError)) // False negative error
         {
-            rb.addResult( LabelImages.getFalseNegativeErrorPerLabel( sourceImage, targetImage ) );
-            totalTable.addValue( "FalseNegativeError", LabelImages.getFalseNegativeError( sourceImage, targetImage ) );
+            rb.addResult(LabelImages.getFalseNegativeErrorPerLabel(sourceImage, targetImage));
+            totalTable.addValue("FalseNegativeError", LabelImages.getFalseNegativeError(sourceImage, targetImage));
         }
 
-        if( measurements.getValues().contains(OverlapStatistics.FalsePositiveError) ) // False positive error
+        if (measurements.getValues().contains(OverlapStatistics.FalsePositiveError)) // False positive error
         {
-            rb.addResult( LabelImages.getFalsePositiveErrorPerLabel( sourceImage, targetImage ) );
-            totalTable.addValue( "FalsePositiveError", LabelImages.getFalsePositiveError( sourceImage, targetImage ) );
+            rb.addResult(LabelImages.getFalsePositiveErrorPerLabel(sourceImage, targetImage));
+            totalTable.addValue("FalsePositiveError", LabelImages.getFalsePositiveError(sourceImage, targetImage));
         }
 
-        rb.getResultsTable().setPrecision( 6 );
+        rb.getResultsTable().setPrecision(6);
         dataBatch.addOutputData("Total", new ResultsTableData(totalTable), progressInfo);
         dataBatch.addOutputData("Per label", new ResultsTableData(rb.getResultsTable()), progressInfo);
     }

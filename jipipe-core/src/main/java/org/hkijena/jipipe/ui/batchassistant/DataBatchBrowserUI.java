@@ -23,7 +23,7 @@ import org.hkijena.jipipe.utils.AutoResizeSplitPane;
 
 import javax.swing.*;
 import javax.swing.tree.DefaultMutableTreeNode;
-import java.awt.BorderLayout;
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 

@@ -24,6 +24,17 @@ import java.util.Collection;
 public interface JIPipeParameterAccess {
 
     /**
+     * Compares the priority
+     *
+     * @param lhs access
+     * @param rhs access
+     * @return the order
+     */
+    static int comparePriority(JIPipeParameterAccess lhs, JIPipeParameterAccess rhs) {
+        return -Double.compare(lhs.getPriority(), rhs.getPriority());
+    }
+
+    /**
      * Returns the unique ID of this parameter
      *
      * @return Unique parameter key
@@ -136,16 +147,5 @@ public interface JIPipeParameterAccess {
      */
     default JIPipeParameterPersistence getPersistence() {
         return JIPipeParameterPersistence.Collection;
-    }
-
-    /**
-     * Compares the priority
-     *
-     * @param lhs access
-     * @param rhs access
-     * @return the order
-     */
-    static int comparePriority(JIPipeParameterAccess lhs, JIPipeParameterAccess rhs) {
-        return -Double.compare(lhs.getPriority(), rhs.getPriority());
     }
 }

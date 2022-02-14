@@ -47,6 +47,10 @@ public class GraphEditorUISettings implements JIPipeParameterCollection {
     private boolean drawNodeShadows = true;
     private boolean drawImprovedEdges = true;
 
+    public static GraphEditorUISettings getInstance() {
+        return JIPipe.getSettings().getSettings(ID, GraphEditorUISettings.class);
+    }
+
     @JIPipeDocumentation(name = "Improve edge drawing", description = "If enabled, edges are drawn with outlines to make them easier distinguishable. " +
             "If you have issues with the performance, you should disable this setting.")
     @JIPipeParameter("draw-improved-edges")
@@ -238,9 +242,5 @@ public class GraphEditorUISettings implements JIPipeParameterCollection {
     @JIPipeParameter("show-open-context-menu-button")
     public void setShowSettingsNodeButton(boolean showSettingsNodeButton) {
         this.showSettingsNodeButton = showSettingsNodeButton;
-    }
-
-    public static GraphEditorUISettings getInstance() {
-        return JIPipe.getSettings().getSettings(ID, GraphEditorUISettings.class);
     }
 }

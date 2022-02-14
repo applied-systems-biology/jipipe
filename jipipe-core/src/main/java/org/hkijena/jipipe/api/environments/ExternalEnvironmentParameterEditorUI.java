@@ -18,9 +18,7 @@ import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Font;
+import java.awt.*;
 import java.util.List;
 import java.util.Objects;
 

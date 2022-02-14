@@ -16,9 +16,11 @@ package org.hkijena.jipipe.api.nodes;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
-import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
-import org.hkijena.jipipe.api.data.*;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
+import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
+import org.hkijena.jipipe.api.data.JIPipeData;
+import org.hkijena.jipipe.api.data.JIPipeDataSlot;
+import org.hkijena.jipipe.api.data.JIPipeSlotConfiguration;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
@@ -31,12 +33,7 @@ import org.hkijena.jipipe.utils.ResourceUtils;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.json.JsonUtils;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 
 /**
  * An {@link JIPipeAlgorithm} that applies a single iteration with a data batch containing all data.

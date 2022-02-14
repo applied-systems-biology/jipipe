@@ -13,21 +13,13 @@
 
 package org.hkijena.jipipe.extensions.expressions;
 
-import com.fathzer.soft.javaluator.BracketPair;
-import com.fathzer.soft.javaluator.Constant;
-import com.fathzer.soft.javaluator.Function;
-import com.fathzer.soft.javaluator.Operator;
-import com.fathzer.soft.javaluator.Parameters;
+import com.fathzer.soft.javaluator.*;
 import com.google.common.collect.ImmutableList;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
 import org.hkijena.jipipe.api.registries.JIPipeExpressionRegistry;
-import org.hkijena.jipipe.extensions.expressions.constants.BooleanFalseConstant;
-import org.hkijena.jipipe.extensions.expressions.constants.BooleanTrueConstant;
-import org.hkijena.jipipe.extensions.expressions.constants.NumericEulerConstant;
-import org.hkijena.jipipe.extensions.expressions.constants.NumericPiConstant;
-import org.hkijena.jipipe.extensions.expressions.constants.NumericTauConstant;
+import org.hkijena.jipipe.extensions.expressions.constants.*;
 import org.hkijena.jipipe.extensions.expressions.operators.*;
 
 import java.util.*;
@@ -85,6 +77,143 @@ public class DefaultExpressionEvaluator extends ExpressionEvaluator {
             }
         }
         knownNonAlphanumericOperatorTokens.sort(Comparator.comparing(String::length).reversed());
+    }
+
+    public static Parameters createParameters() {
+        Parameters parameters = new Parameters();
+        parameters.addFunctionBracket(BracketPair.PARENTHESES);
+        parameters.addExpressionBracket(BracketPair.PARENTHESES);
+
+        parameters.add(CONSTANT_TRUE);
+        parameters.add(CONSTANT_FALSE);
+        parameters.add(CONSTANT_E);
+        parameters.add(CONSTANT_PI);
+        parameters.add(CONSTANT_TAU);
+
+        // Add boolean operators
+        parameters.add(OPERATOR_NEGATE_SYMBOL);
+        parameters.add(OPERATOR_NEGATE_TEXT);
+        parameters.add(OPERATOR_AND_SYMBOL);
+        parameters.add(OPERATOR_AND_TEXT);
+        parameters.add(OPERATOR_OR_SYMBOL);
+        parameters.add(OPERATOR_OR_TEXT);
+        parameters.add(OPERATOR_XOR_TEXT);
+        parameters.add(OPERATOR_NUMERIC_EQUALS);
+        parameters.add(OPERATOR_NUMERIC_LESS_THAN);
+        parameters.add(OPERATOR_NUMERIC_GREATER_THAN);
+        parameters.add(OPERATOR_NUMERIC_LESS_THAN_OR_EQUAL);
+        parameters.add(OPERATOR_NUMERIC_GREATER_THAN_OR_EQUAL);
+        parameters.add(OPERATOR_NUMERIC_EQUALS_TEXT);
+        parameters.add(OPERATOR_NUMERIC_UNEQUALS);
+        parameters.add(OPERATOR_NUMERIC_UNEQUALS_TEXT);
+
+        // Add numeric operators
+        parameters.add(OPERATOR_NUMERIC_STRING_PLUS);
+        parameters.add(OPERATOR_NUMERIC_MINUS);
+        parameters.add(OPERATOR_NUMERIC_MULTIPLY);
+        parameters.add(OPERATOR_NUMERIC_DIVIDE);
+        parameters.add(OPERATOR_NUMERIC_MODULO);
+        parameters.add(OPERATOR_NUMERIC_EXPONENT);
+        parameters.add(OPERATOR_NUMERIC_NEGATE);
+
+        // Add string operators
+        parameters.add(OPERATOR_STRING_CONTAINS);
+        parameters.add(OPERATOR_STRING_CONTAINS2);
+
+        // Add variable operators
+        parameters.add(OPERATOR_VARIABLE_EXISTS);
+        parameters.add(OPERATOR_VARIABLE_RESOLVE);
+        parameters.add(OPERATOR_ELEMENT_ACCESS_TEXT);
+        parameters.add(OPERATOR_ELEMENT_ACCESS_SYMBOL);
+
+        // Add operators from JIPipe (if available)
+        if (JIPipe.getInstance() != null) {
+            for (JIPipeExpressionRegistry.ExpressionFunctionEntry functionEntry : JIPipe.getInstance().getExpressionRegistry().getRegisteredExpressionFunctions().values()) {
+                parameters.add(functionEntry.getFunction());
+            }
+        }
+
+        return parameters;
+    }
+
+    /**
+     * Escapes a variable name into a valid expression
+     *
+     * @param variableName the variable name
+     * @return an expression that evaluates the variable
+     */
+    public static String escapeVariable(String variableName) {
+        if (variableName.contains(" ") || variableName.contains("(") || variableName.contains(")"))
+            variableName = "$\"" + DefaultExpressionEvaluator.escapeString(variableName) + "\"";
+        else {
+            List<String> tokens = DefaultExpressionParameter.getEvaluatorInstance().getKnownNonAlphanumericOperatorTokens();
+            boolean processed = false;
+            for (String token : tokens) {
+                if (variableName.contains(token)) {
+                    variableName = "$\"" + DefaultExpressionEvaluator.escapeString(variableName) + "\"";
+                    processed = true;
+                    break;
+                }
+            }
+            if (!processed) {
+                for (Operator operator : DefaultExpressionParameter.getEvaluatorInstance().getOperators()) {
+                    if (operator.getSymbol().equals(variableName)) {
+                        variableName = "$\"" + DefaultExpressionEvaluator.escapeString(variableName) + "\"";
+                        processed = true;
+                        break;
+                    }
+                }
+            }
+            if (!processed) {
+                for (Constant constant : DefaultExpressionParameter.getEvaluatorInstance().getConstants()) {
+                    if (constant.getName().equals(variableName)) {
+                        variableName = "$\"" + DefaultExpressionEvaluator.escapeString(variableName) + "\"";
+                        processed = true;
+                        break;
+                    }
+                }
+            }
+        }
+        return variableName;
+    }
+
+    /**
+     * Escapes a string, so it can be used within quotes
+     *
+     * @param string the string
+     * @return string with quotes and backslashes escaped
+     */
+    public static String escapeString(String string) {
+        return string.replace("\\", "\\\\").replace("\"", "\\\"");
+    }
+
+    /**
+     * Deep-copies an object.
+     * Supports handling {@link Collection} and {@link Map}
+     *
+     * @param object the object
+     * @return the copy
+     */
+    public static Object deepCopyObject(Object object) {
+        if (object == null)
+            return null;
+        if (object instanceof Collection) {
+            List<Object> result = new ArrayList<>();
+            Collection<?> collection = (Collection<?>) object;
+            for (Object item : collection) {
+                result.add(deepCopyObject(item));
+            }
+            return result;
+        } else if (object instanceof Map) {
+            Map<?, ?> map = (Map<?, ?>) object;
+            Map<Object, Object> result = new HashMap<>();
+            for (Map.Entry<?, ?> entry : map.entrySet()) {
+                result.put(deepCopyObject(entry.getKey()), deepCopyObject(entry.getValue()));
+            }
+            return result;
+        } else {
+            return object;
+        }
     }
 
     public List<String> tokenize(String expression, boolean includeQuotesAsToken, boolean includeQuotesIntoToken) {
@@ -301,142 +430,5 @@ public class DefaultExpressionEvaluator extends ExpressionEvaluator {
 
     public List<String> getKnownNonAlphanumericOperatorTokens() {
         return knownNonAlphanumericOperatorTokens;
-    }
-
-    public static Parameters createParameters() {
-        Parameters parameters = new Parameters();
-        parameters.addFunctionBracket(BracketPair.PARENTHESES);
-        parameters.addExpressionBracket(BracketPair.PARENTHESES);
-
-        parameters.add(CONSTANT_TRUE);
-        parameters.add(CONSTANT_FALSE);
-        parameters.add(CONSTANT_E);
-        parameters.add(CONSTANT_PI);
-        parameters.add(CONSTANT_TAU);
-
-        // Add boolean operators
-        parameters.add(OPERATOR_NEGATE_SYMBOL);
-        parameters.add(OPERATOR_NEGATE_TEXT);
-        parameters.add(OPERATOR_AND_SYMBOL);
-        parameters.add(OPERATOR_AND_TEXT);
-        parameters.add(OPERATOR_OR_SYMBOL);
-        parameters.add(OPERATOR_OR_TEXT);
-        parameters.add(OPERATOR_XOR_TEXT);
-        parameters.add(OPERATOR_NUMERIC_EQUALS);
-        parameters.add(OPERATOR_NUMERIC_LESS_THAN);
-        parameters.add(OPERATOR_NUMERIC_GREATER_THAN);
-        parameters.add(OPERATOR_NUMERIC_LESS_THAN_OR_EQUAL);
-        parameters.add(OPERATOR_NUMERIC_GREATER_THAN_OR_EQUAL);
-        parameters.add(OPERATOR_NUMERIC_EQUALS_TEXT);
-        parameters.add(OPERATOR_NUMERIC_UNEQUALS);
-        parameters.add(OPERATOR_NUMERIC_UNEQUALS_TEXT);
-
-        // Add numeric operators
-        parameters.add(OPERATOR_NUMERIC_STRING_PLUS);
-        parameters.add(OPERATOR_NUMERIC_MINUS);
-        parameters.add(OPERATOR_NUMERIC_MULTIPLY);
-        parameters.add(OPERATOR_NUMERIC_DIVIDE);
-        parameters.add(OPERATOR_NUMERIC_MODULO);
-        parameters.add(OPERATOR_NUMERIC_EXPONENT);
-        parameters.add(OPERATOR_NUMERIC_NEGATE);
-
-        // Add string operators
-        parameters.add(OPERATOR_STRING_CONTAINS);
-        parameters.add(OPERATOR_STRING_CONTAINS2);
-
-        // Add variable operators
-        parameters.add(OPERATOR_VARIABLE_EXISTS);
-        parameters.add(OPERATOR_VARIABLE_RESOLVE);
-        parameters.add(OPERATOR_ELEMENT_ACCESS_TEXT);
-        parameters.add(OPERATOR_ELEMENT_ACCESS_SYMBOL);
-
-        // Add operators from JIPipe (if available)
-        if (JIPipe.getInstance() != null) {
-            for (JIPipeExpressionRegistry.ExpressionFunctionEntry functionEntry : JIPipe.getInstance().getExpressionRegistry().getRegisteredExpressionFunctions().values()) {
-                parameters.add(functionEntry.getFunction());
-            }
-        }
-
-        return parameters;
-    }
-
-    /**
-     * Escapes a variable name into a valid expression
-     *
-     * @param variableName the variable name
-     * @return an expression that evaluates the variable
-     */
-    public static String escapeVariable(String variableName) {
-        if (variableName.contains(" ") || variableName.contains("(") || variableName.contains(")"))
-            variableName = "$\"" + DefaultExpressionEvaluator.escapeString(variableName) + "\"";
-        else {
-            List<String> tokens = DefaultExpressionParameter.getEvaluatorInstance().getKnownNonAlphanumericOperatorTokens();
-            boolean processed = false;
-            for (String token : tokens) {
-                if (variableName.contains(token)) {
-                    variableName = "$\"" + DefaultExpressionEvaluator.escapeString(variableName) + "\"";
-                    processed = true;
-                    break;
-                }
-            }
-            if (!processed) {
-                for (Operator operator : DefaultExpressionParameter.getEvaluatorInstance().getOperators()) {
-                    if (operator.getSymbol().equals(variableName)) {
-                        variableName = "$\"" + DefaultExpressionEvaluator.escapeString(variableName) + "\"";
-                        processed = true;
-                        break;
-                    }
-                }
-            }
-            if (!processed) {
-                for (Constant constant : DefaultExpressionParameter.getEvaluatorInstance().getConstants()) {
-                    if (constant.getName().equals(variableName)) {
-                        variableName = "$\"" + DefaultExpressionEvaluator.escapeString(variableName) + "\"";
-                        processed = true;
-                        break;
-                    }
-                }
-            }
-        }
-        return variableName;
-    }
-
-    /**
-     * Escapes a string, so it can be used within quotes
-     *
-     * @param string the string
-     * @return string with quotes and backslashes escaped
-     */
-    public static String escapeString(String string) {
-        return string.replace("\\", "\\\\").replace("\"", "\\\"");
-    }
-
-    /**
-     * Deep-copies an object.
-     * Supports handling {@link Collection} and {@link Map}
-     *
-     * @param object the object
-     * @return the copy
-     */
-    public static Object deepCopyObject(Object object) {
-        if (object == null)
-            return null;
-        if (object instanceof Collection) {
-            List<Object> result = new ArrayList<>();
-            Collection<?> collection = (Collection<?>) object;
-            for (Object item : collection) {
-                result.add(deepCopyObject(item));
-            }
-            return result;
-        } else if (object instanceof Map) {
-            Map<?, ?> map = (Map<?, ?>) object;
-            Map<Object, Object> result = new HashMap<>();
-            for (Map.Entry<?, ?> entry : map.entrySet()) {
-                result.put(deepCopyObject(entry.getKey()), deepCopyObject(entry.getValue()));
-            }
-            return result;
-        } else {
-            return object;
-        }
     }
 }

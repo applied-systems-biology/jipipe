@@ -14,14 +14,9 @@ import org.hkijena.jipipe.utils.AutoResizeSplitPane;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashSet;
+import java.awt.*;
 import java.util.List;
-import java.util.Set;
-import java.util.TreeSet;
+import java.util.*;
 
 public class WorkbenchNotificationInboxUI extends JIPipeWorkbenchPanel {
 

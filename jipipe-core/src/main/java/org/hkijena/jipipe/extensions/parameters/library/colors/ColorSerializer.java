@@ -19,7 +19,7 @@ import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import org.hkijena.jipipe.utils.ColorUtils;
 
-import java.awt.Color;
+import java.awt.*;
 import java.io.IOException;
 
 /**

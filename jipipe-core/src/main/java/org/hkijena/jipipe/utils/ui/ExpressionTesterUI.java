@@ -21,11 +21,7 @@ import org.hkijena.jipipe.api.parameters.JIPipeDummyParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeManualParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.registries.JIPipeExpressionRegistry;
-import org.hkijena.jipipe.extensions.expressions.DefaultExpressionEvaluator;
-import org.hkijena.jipipe.extensions.expressions.DefaultExpressionParameter;
-import org.hkijena.jipipe.extensions.expressions.ExpressionFunction;
-import org.hkijena.jipipe.extensions.expressions.ExpressionOperatorEntry;
-import org.hkijena.jipipe.extensions.expressions.ExpressionVariables;
+import org.hkijena.jipipe.extensions.expressions.*;
 import org.hkijena.jipipe.extensions.expressions.ui.DefaultExpressionParameterEditorUI;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.JIPipeWorkbenchPanel;
@@ -36,12 +32,9 @@ import org.hkijena.jipipe.utils.UIUtils;
 import org.hkijena.jipipe.utils.json.JsonUtils;
 
 import javax.swing.*;
-import java.awt.BorderLayout;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
+import java.awt.*;
 import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * A developer tool to test {@link org.hkijena.jipipe.extensions.expressions.DefaultExpressionEvaluator}

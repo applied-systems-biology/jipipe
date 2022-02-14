@@ -24,7 +24,7 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.extensions.expressions.NumericFunctionExpression;
 import org.hkijena.jipipe.extensions.parameters.library.roi.Anchor;
 
-import java.awt.Color;
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 

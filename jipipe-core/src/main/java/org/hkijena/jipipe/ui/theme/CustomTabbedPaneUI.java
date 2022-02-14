@@ -18,13 +18,7 @@ import javax.swing.plaf.ComponentUI;
 import javax.swing.plaf.UIResource;
 import javax.swing.plaf.basic.BasicTabbedPaneUI;
 import javax.swing.plaf.metal.MetalLookAndFeel;
-import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.FontMetrics;
-import java.awt.Graphics;
-import java.awt.Insets;
-import java.awt.LayoutManager;
-import java.awt.Rectangle;
+import java.awt.*;
 
 /**
  * {@link javax.swing.plaf.metal.MetalTabbedPaneUI} without the slants
@@ -45,6 +39,10 @@ public class CustomTabbedPaneUI extends BasicTabbedPaneUI {
     private boolean ocean;
     // Selected border color for ocean.
     private Color oceanSelectedBorderColor;
+
+    public static ComponentUI createUI(JComponent x) {
+        return new javax.swing.plaf.metal.MetalTabbedPaneUI();
+    }
 
     protected LayoutManager createLayoutManager() {
         if (tabPane.getTabLayoutPolicy() == JTabbedPane.SCROLL_TAB_LAYOUT) {
@@ -1155,10 +1153,6 @@ public class CustomTabbedPaneUI extends BasicTabbedPaneUI {
      */
     int getRolloverTabIndex() {
         return getRolloverTab();
-    }
-
-    public static ComponentUI createUI(JComponent x) {
-        return new javax.swing.plaf.metal.MetalTabbedPaneUI();
     }
 
     /**

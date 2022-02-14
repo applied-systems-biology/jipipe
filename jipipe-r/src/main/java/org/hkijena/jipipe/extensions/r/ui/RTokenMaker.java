@@ -6279,6 +6279,103 @@ public class RTokenMaker extends AbstractJFlexCTokenMaker {
         this(new java.io.InputStreamReader(in));
     }
 
+    private static int[] zzUnpackAction() {
+        int[] result = new int[2639];
+        int offset = 0;
+        offset = zzUnpackAction(ZZ_ACTION_PACKED_0, offset, result);
+        return result;
+    }
+
+    private static int zzUnpackAction(String packed, int offset, int[] result) {
+        int i = 0;       /* index in packed string  */
+        int j = offset;  /* index in unpacked array */
+        int l = packed.length();
+        while (i < l) {
+            int count = packed.charAt(i++);
+            int value = packed.charAt(i++);
+            do result[j++] = value; while (--count > 0);
+        }
+        return j;
+    }
+
+    private static int[] zzUnpackRowMap() {
+        int[] result = new int[2639];
+        int offset = 0;
+        offset = zzUnpackRowMap(ZZ_ROWMAP_PACKED_0, offset, result);
+        return result;
+    }
+
+    private static int zzUnpackRowMap(String packed, int offset, int[] result) {
+        int i = 0;  /* index in packed string  */
+        int j = offset;  /* index in unpacked array */
+        int l = packed.length();
+        while (i < l) {
+            int high = packed.charAt(i++) << 16;
+            result[j++] = high | packed.charAt(i++);
+        }
+        return j;
+    }
+
+    private static int[] zzUnpackTrans() {
+        int[] result = new int[229152];
+        int offset = 0;
+        offset = zzUnpackTrans(ZZ_TRANS_PACKED_0, offset, result);
+        offset = zzUnpackTrans(ZZ_TRANS_PACKED_1, offset, result);
+        return result;
+    }
+
+    /* user code: */
+
+    private static int zzUnpackTrans(String packed, int offset, int[] result) {
+        int i = 0;       /* index in packed string  */
+        int j = offset;  /* index in unpacked array */
+        int l = packed.length();
+        while (i < l) {
+            int count = packed.charAt(i++);
+            int value = packed.charAt(i++);
+            value--;
+            do result[j++] = value; while (--count > 0);
+        }
+        return j;
+    }
+
+    private static int[] zzUnpackAttribute() {
+        int[] result = new int[2639];
+        int offset = 0;
+        offset = zzUnpackAttribute(ZZ_ATTRIBUTE_PACKED_0, offset, result);
+        return result;
+    }
+
+    private static int zzUnpackAttribute(String packed, int offset, int[] result) {
+        int i = 0;       /* index in packed string  */
+        int j = offset;  /* index in unpacked array */
+        int l = packed.length();
+        while (i < l) {
+            int count = packed.charAt(i++);
+            int value = packed.charAt(i++);
+            do result[j++] = value; while (--count > 0);
+        }
+        return j;
+    }
+
+    /**
+     * Unpacks the compressed character translation table.
+     *
+     * @param packed the packed character translation table
+     * @return the unpacked character translation table
+     */
+    private static char[] zzUnpackCMap(String packed) {
+        char[] map = new char[0x10000];
+        int i = 0;  /* index in packed string  */
+        int j = 0;  /* index in unpacked array */
+        while (i < 200) {
+            int count = packed.charAt(i++);
+            char value = packed.charAt(i++);
+            do map[j++] = value; while (--count > 0);
+        }
+        return map;
+    }
+
     /**
      * Adds the token specified to the current linked list of tokens.
      *
@@ -6333,8 +6430,6 @@ public class RTokenMaker extends AbstractJFlexCTokenMaker {
     public String[] getLineCommentStartAndEnd(int languageIndex) {
         return new String[]{"#", null};
     }
-
-    /* user code: */
 
     /**
      * Returns the first token in the linked list of tokens generated
@@ -6706,101 +6801,6 @@ public class RTokenMaker extends AbstractJFlexCTokenMaker {
                     }
             }
         }
-    }
-
-    private static int[] zzUnpackAction() {
-        int[] result = new int[2639];
-        int offset = 0;
-        offset = zzUnpackAction(ZZ_ACTION_PACKED_0, offset, result);
-        return result;
-    }
-
-    private static int zzUnpackAction(String packed, int offset, int[] result) {
-        int i = 0;       /* index in packed string  */
-        int j = offset;  /* index in unpacked array */
-        int l = packed.length();
-        while (i < l) {
-            int count = packed.charAt(i++);
-            int value = packed.charAt(i++);
-            do result[j++] = value; while (--count > 0);
-        }
-        return j;
-    }
-
-    private static int[] zzUnpackRowMap() {
-        int[] result = new int[2639];
-        int offset = 0;
-        offset = zzUnpackRowMap(ZZ_ROWMAP_PACKED_0, offset, result);
-        return result;
-    }
-
-    private static int zzUnpackRowMap(String packed, int offset, int[] result) {
-        int i = 0;  /* index in packed string  */
-        int j = offset;  /* index in unpacked array */
-        int l = packed.length();
-        while (i < l) {
-            int high = packed.charAt(i++) << 16;
-            result[j++] = high | packed.charAt(i++);
-        }
-        return j;
-    }
-
-    private static int[] zzUnpackTrans() {
-        int[] result = new int[229152];
-        int offset = 0;
-        offset = zzUnpackTrans(ZZ_TRANS_PACKED_0, offset, result);
-        offset = zzUnpackTrans(ZZ_TRANS_PACKED_1, offset, result);
-        return result;
-    }
-
-    private static int zzUnpackTrans(String packed, int offset, int[] result) {
-        int i = 0;       /* index in packed string  */
-        int j = offset;  /* index in unpacked array */
-        int l = packed.length();
-        while (i < l) {
-            int count = packed.charAt(i++);
-            int value = packed.charAt(i++);
-            value--;
-            do result[j++] = value; while (--count > 0);
-        }
-        return j;
-    }
-
-    private static int[] zzUnpackAttribute() {
-        int[] result = new int[2639];
-        int offset = 0;
-        offset = zzUnpackAttribute(ZZ_ATTRIBUTE_PACKED_0, offset, result);
-        return result;
-    }
-
-    private static int zzUnpackAttribute(String packed, int offset, int[] result) {
-        int i = 0;       /* index in packed string  */
-        int j = offset;  /* index in unpacked array */
-        int l = packed.length();
-        while (i < l) {
-            int count = packed.charAt(i++);
-            int value = packed.charAt(i++);
-            do result[j++] = value; while (--count > 0);
-        }
-        return j;
-    }
-
-    /**
-     * Unpacks the compressed character translation table.
-     *
-     * @param packed the packed character translation table
-     * @return the unpacked character translation table
-     */
-    private static char[] zzUnpackCMap(String packed) {
-        char[] map = new char[0x10000];
-        int i = 0;  /* index in packed string  */
-        int j = 0;  /* index in unpacked array */
-        while (i < 200) {
-            int count = packed.charAt(i++);
-            char value = packed.charAt(i++);
-            do map[j++] = value; while (--count > 0);
-        }
-        return map;
     }
 
 

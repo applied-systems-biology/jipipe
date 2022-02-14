@@ -5,9 +5,8 @@ import org.hkijena.jipipe.api.parameters.DefaultJIPipeParameterGenerator;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.DynamicStringSetParameter;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
-import org.hkijena.jipipe.utils.ReflectionUtils;
 
-import java.awt.Component;
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -34,7 +33,7 @@ public class EnumParameterGenerator extends DefaultJIPipeParameterGenerator {
     public <T> List<T> generateAfterDialog(JIPipeWorkbench workbench, Component parent, Class<T> klass) {
         List<T> result = new ArrayList<>();
         for (String value : generatedValues.getValues()) {
-            Object enumValue = Enum.valueOf((Class<Enum>)klass, value);
+            Object enumValue = Enum.valueOf((Class<Enum>) klass, value);
             result.add((T) enumValue);
         }
         return result;

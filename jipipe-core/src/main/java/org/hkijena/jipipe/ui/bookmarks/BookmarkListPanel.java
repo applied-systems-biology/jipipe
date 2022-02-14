@@ -18,7 +18,7 @@ import org.hkijena.jipipe.ui.grapheditor.nodeui.JIPipeNodeUI;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
-import java.awt.BorderLayout;
+import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.Collections;

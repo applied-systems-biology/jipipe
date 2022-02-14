@@ -12,8 +12,8 @@ import org.hkijena.jipipe.api.environments.ExternalEnvironmentInstaller;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
-import org.hkijena.jipipe.extensions.parameters.library.primitives.optional.OptionalPathParameter;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.StringParameterSettings;
+import org.hkijena.jipipe.extensions.parameters.library.primitives.optional.OptionalPathParameter;
 import org.hkijena.jipipe.extensions.r.REnvironment;
 import org.hkijena.jipipe.extensions.settings.RuntimeSettings;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
@@ -44,6 +44,19 @@ public class REnvInstaller extends ExternalEnvironmentInstaller {
      */
     public REnvInstaller(JIPipeWorkbench workbench, JIPipeParameterAccess parameterAccess) {
         super(workbench, parameterAccess);
+    }
+
+    /**
+     * Gets the latest download link for Miniconda
+     *
+     * @return the download URL
+     */
+    public static String getLatestDownload() {
+        if (SystemUtils.IS_OS_WINDOWS) {
+            return "https://github.com/applied-systems-biology/jipipe/releases/download/1.63.0-installers/R-4.1.0-win.exe";
+        } else {
+            return "https://cloud.r-project.org/bin/";
+        }
     }
 
     @Override
@@ -182,19 +195,6 @@ public class REnvInstaller extends ExternalEnvironmentInstaller {
 
     public void setConfiguration(Configuration configuration) {
         this.configuration = configuration;
-    }
-
-    /**
-     * Gets the latest download link for Miniconda
-     *
-     * @return the download URL
-     */
-    public static String getLatestDownload() {
-        if (SystemUtils.IS_OS_WINDOWS) {
-            return "https://github.com/applied-systems-biology/jipipe/releases/download/1.63.0-installers/R-4.1.0-win.exe";
-        } else {
-            return "https://cloud.r-project.org/bin/";
-        }
     }
 
     public static class Configuration implements JIPipeParameterCollection {

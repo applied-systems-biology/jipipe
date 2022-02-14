@@ -20,7 +20,7 @@ import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
-import java.awt.Component;
+import java.awt.*;
 
 /**
  * Renders an available entry for inherited slot in {@link JIPipeDataSlotInfo}

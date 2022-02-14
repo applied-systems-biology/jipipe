@@ -29,7 +29,7 @@ import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 import org.scijava.plugin.PluginService;
 
-import java.awt.GraphicsEnvironment;
+import java.awt.*;
 import java.io.File;
 import java.io.IOException;
 

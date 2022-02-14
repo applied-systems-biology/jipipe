@@ -62,7 +62,7 @@ public class SplitTableIntoRowsAlgorithm extends JIPipeSimpleIteratingAlgorithm 
         for (int row = 0; row < input.getRowCount(); row++) {
             ResultsTableData output = input.getRow(row);
             List<JIPipeTextAnnotation> annotations = new ArrayList<>();
-            if(annotateWithValues) {
+            if (annotateWithValues) {
                 for (int col = 0; col < output.getColumnCount(); col++) {
                     annotations.add(new JIPipeTextAnnotation(output.getColumnName(col), output.getValueAsString(0, col)));
                 }

@@ -19,17 +19,12 @@ import org.hkijena.jipipe.api.JIPipeProgressInfo;
 
 import javax.swing.*;
 import javax.xml.bind.annotation.adapters.HexBinaryAdapter;
-import java.awt.Component;
+import java.awt.*;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.file.FileVisitResult;
-import java.nio.file.FileVisitor;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.SimpleFileVisitor;
+import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.security.DigestInputStream;
 import java.security.MessageDigest;
@@ -251,15 +246,13 @@ public class PathUtils {
                             "Empty directory expected",
                             JOptionPane.YES_NO_CANCEL_OPTION,
                             JOptionPane.ERROR_MESSAGE);
-                    if(response == JOptionPane.YES_OPTION) {
+                    if (response == JOptionPane.YES_OPTION) {
                         deleteDirectoryRecursively(path, new JIPipeProgressInfo());
                         Files.createDirectories(path);
                         return true;
-                    }
-                    else if(response == JOptionPane.NO_OPTION) {
+                    } else if (response == JOptionPane.NO_OPTION) {
                         return true;
-                    }
-                    else {
+                    } else {
                         return false;
                     }
                 }

@@ -20,24 +20,10 @@ import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.data.JIPipeDefaultMutableSlotConfiguration;
-import org.hkijena.jipipe.api.nodes.JIPipeGraph;
-import org.hkijena.jipipe.api.nodes.JIPipeInputSlot;
-import org.hkijena.jipipe.api.nodes.JIPipeMergingAlgorithm;
-import org.hkijena.jipipe.api.nodes.JIPipeMergingDataBatch;
-import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
-import org.hkijena.jipipe.api.nodes.JIPipeOutputSlot;
+import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.TableNodeTypeCategory;
-import org.hkijena.jipipe.api.parameters.JIPipeDynamicParameterCollection;
-import org.hkijena.jipipe.api.parameters.JIPipeMutableParameterAccess;
-import org.hkijena.jipipe.api.parameters.JIPipeParameter;
-import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
-import org.hkijena.jipipe.api.parameters.JIPipeParameterPersistence;
-import org.hkijena.jipipe.extensions.expressions.ExpressionParameterSettings;
-import org.hkijena.jipipe.extensions.expressions.ExpressionParameterVariable;
-import org.hkijena.jipipe.extensions.expressions.ExpressionParameterVariableSource;
-import org.hkijena.jipipe.extensions.expressions.ExpressionVariables;
-import org.hkijena.jipipe.extensions.expressions.StringQueryExpression;
-import org.hkijena.jipipe.extensions.expressions.TableColumnSourceExpressionParameter;
+import org.hkijena.jipipe.api.parameters.*;
+import org.hkijena.jipipe.extensions.expressions.*;
 import org.hkijena.jipipe.extensions.parameters.library.editors.JIPipeDataParameterSettings;
 import org.hkijena.jipipe.extensions.parameters.library.references.JIPipeDataInfoRef;
 import org.hkijena.jipipe.extensions.plots.datatypes.PlotColumn;
@@ -48,12 +34,7 @@ import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
 import org.hkijena.jipipe.ui.plotbuilder.PlotDataClassFilter;
 import org.scijava.Priority;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Algorithm that creates {@link PlotData} from {@link ResultsTableData}

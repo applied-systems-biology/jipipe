@@ -22,7 +22,7 @@ import org.hkijena.jipipe.utils.UIUtils;
 import org.hkijena.jipipe.utils.ui.RoundedLineBorder;
 
 import javax.swing.*;
-import java.awt.BorderLayout;
+import java.awt.*;
 
 /**
  * Generic parameter for {@link ListParameter}

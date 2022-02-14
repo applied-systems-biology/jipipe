@@ -28,8 +28,7 @@ import org.hkijena.jipipe.utils.json.JsonUtils;
 import org.hkijena.jipipe.utils.search.RankedData;
 
 import javax.swing.*;
-import java.awt.BorderLayout;
-import java.awt.Cursor;
+import java.awt.*;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -58,6 +57,54 @@ public class NodeTemplateBox extends JIPipeWorkbenchPanel {
         initialize();
         reloadTemplateList();
         NodeTemplateSettings.getInstance().getEventBus().register(this);
+    }
+
+    public static void openNewToolBoxWindow(JIPipeWorkbench workbench) {
+        NodeTemplateBox toolBox = new NodeTemplateBox(workbench);
+        JFrame window = new JFrame();
+        toolBox.getToolBar().add(new AlwaysOnTopToggle(window));
+        window.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+        window.setAlwaysOnTop(true);
+        window.setTitle("Node templates");
+        window.setIconImage(UIUtils.getIcon128FromResources("jipipe.png").getImage());
+        window.setContentPane(toolBox);
+        window.pack();
+        window.setSize(300, 700);
+        window.setVisible(true);
+    }
+
+    private static int[] rankNavigationEntry(JIPipeNodeTemplate template, String[] searchStrings) {
+        if (searchStrings == null || searchStrings.length == 0)
+            return new int[0];
+        String nameHayStack;
+        String name2HayStack;
+        String descriptionHayStack;
+        nameHayStack = StringUtils.orElse(template.getName(), "").toLowerCase();
+//        name2HayStack = StringUtils.orElse(template.getNodeInfo().getName(), "").toLowerCase();
+        descriptionHayStack = StringUtils.orElse(template.getDescription().getBody(), "").toLowerCase();
+
+        nameHayStack = nameHayStack.toLowerCase();
+//        name2HayStack = name2HayStack.toLowerCase();
+        descriptionHayStack = descriptionHayStack.toLowerCase();
+
+        int[] ranks = new int[3];
+
+        for (int i = 0; i < searchStrings.length; i++) {
+            String string = searchStrings[i];
+            if (nameHayStack.contains(string.toLowerCase()))
+                --ranks[0];
+            if (i == 0 && nameHayStack.startsWith(string.toLowerCase()))
+                ranks[0] -= 2;
+//            if (name2HayStack.contains(string.toLowerCase()))
+//                --ranks[1];
+            if (descriptionHayStack.contains(string.toLowerCase()))
+                --ranks[2];
+        }
+
+        if (ranks[0] == 0 && ranks[1] == 0 && ranks[2] == 0)
+            return null;
+
+        return ranks;
     }
 
     public JToolBar getToolBar() {
@@ -408,53 +455,5 @@ public class NodeTemplateBox extends JIPipeWorkbenchPanel {
 
     public JIPipeProject getProject() {
         return project;
-    }
-
-    public static void openNewToolBoxWindow(JIPipeWorkbench workbench) {
-        NodeTemplateBox toolBox = new NodeTemplateBox(workbench);
-        JFrame window = new JFrame();
-        toolBox.getToolBar().add(new AlwaysOnTopToggle(window));
-        window.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
-        window.setAlwaysOnTop(true);
-        window.setTitle("Node templates");
-        window.setIconImage(UIUtils.getIcon128FromResources("jipipe.png").getImage());
-        window.setContentPane(toolBox);
-        window.pack();
-        window.setSize(300, 700);
-        window.setVisible(true);
-    }
-
-    private static int[] rankNavigationEntry(JIPipeNodeTemplate template, String[] searchStrings) {
-        if (searchStrings == null || searchStrings.length == 0)
-            return new int[0];
-        String nameHayStack;
-        String name2HayStack;
-        String descriptionHayStack;
-        nameHayStack = StringUtils.orElse(template.getName(), "").toLowerCase();
-//        name2HayStack = StringUtils.orElse(template.getNodeInfo().getName(), "").toLowerCase();
-        descriptionHayStack = StringUtils.orElse(template.getDescription().getBody(), "").toLowerCase();
-
-        nameHayStack = nameHayStack.toLowerCase();
-//        name2HayStack = name2HayStack.toLowerCase();
-        descriptionHayStack = descriptionHayStack.toLowerCase();
-
-        int[] ranks = new int[3];
-
-        for (int i = 0; i < searchStrings.length; i++) {
-            String string = searchStrings[i];
-            if (nameHayStack.contains(string.toLowerCase()))
-                --ranks[0];
-            if (i == 0 && nameHayStack.startsWith(string.toLowerCase()))
-                ranks[0] -= 2;
-//            if (name2HayStack.contains(string.toLowerCase()))
-//                --ranks[1];
-            if (descriptionHayStack.contains(string.toLowerCase()))
-                --ranks[2];
-        }
-
-        if (ranks[0] == 0 && ranks[1] == 0 && ranks[2] == 0)
-            return null;
-
-        return ranks;
     }
 }

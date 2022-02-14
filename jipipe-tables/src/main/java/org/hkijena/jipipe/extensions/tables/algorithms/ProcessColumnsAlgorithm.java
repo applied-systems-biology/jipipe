@@ -20,31 +20,18 @@ import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
 import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
-import org.hkijena.jipipe.api.nodes.JIPipeDataBatch;
-import org.hkijena.jipipe.api.nodes.JIPipeInputSlot;
-import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
-import org.hkijena.jipipe.api.nodes.JIPipeOutputSlot;
-import org.hkijena.jipipe.api.nodes.JIPipeSimpleIteratingAlgorithm;
+import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.TableNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.expressions.ExpressionParameterSettings;
 import org.hkijena.jipipe.extensions.expressions.ExpressionVariables;
 import org.hkijena.jipipe.extensions.expressions.TableColumnValuesExpressionParameterVariableSource;
-import org.hkijena.jipipe.extensions.tables.datatypes.DoubleArrayTableColumn;
-import org.hkijena.jipipe.extensions.tables.datatypes.RelabeledTableColumn;
-import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
-import org.hkijena.jipipe.extensions.tables.datatypes.StringArrayTableColumn;
-import org.hkijena.jipipe.extensions.tables.datatypes.TableColumn;
+import org.hkijena.jipipe.extensions.tables.datatypes.*;
 import org.hkijena.jipipe.extensions.tables.parameters.collections.ExpressionTableColumnProcessorParameterList;
 import org.hkijena.jipipe.extensions.tables.parameters.processors.ExpressionTableColumnProcessorParameter;
 import org.hkijena.jipipe.utils.StringUtils;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Algorithm that integrates columns

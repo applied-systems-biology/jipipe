@@ -1,10 +1,6 @@
 package org.hkijena.jipipe.extensions.python;
 
-import org.apache.commons.exec.CommandLine;
-import org.apache.commons.exec.DefaultExecutor;
-import org.apache.commons.exec.ExecuteWatchdog;
-import org.apache.commons.exec.LogOutputStream;
-import org.apache.commons.exec.PumpStreamHandler;
+import org.apache.commons.exec.*;
 import org.apache.commons.lang.WordUtils;
 import org.apache.commons.lang3.SystemUtils;
 import org.hkijena.jipipe.JIPipe;
@@ -22,11 +18,11 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
 import org.hkijena.jipipe.extensions.expressions.ExpressionVariables;
-import org.hkijena.jipipe.extensions.parameters.library.primitives.ranges.IntegerRange;
 import org.hkijena.jipipe.extensions.parameters.library.pairs.StringQueryExpressionAndStringPairParameter;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.list.DoubleList;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.list.IntegerList;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.list.StringList;
+import org.hkijena.jipipe.extensions.parameters.library.primitives.ranges.IntegerRange;
 import org.hkijena.jipipe.extensions.settings.RuntimeSettings;
 import org.hkijena.jipipe.utils.PathUtils;
 import org.hkijena.jipipe.utils.ProcessUtils;
@@ -37,12 +33,7 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class PythonUtils {

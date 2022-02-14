@@ -29,11 +29,7 @@ import org.hkijena.jipipe.api.nodes.JIPipeDataBatch;
 import org.hkijena.jipipe.api.nodes.JIPipeIteratingAlgorithm;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
-import org.hkijena.jipipe.api.parameters.JIPipeContextAction;
-import org.hkijena.jipipe.api.parameters.JIPipeDynamicParameterCollection;
-import org.hkijena.jipipe.api.parameters.JIPipeParameter;
-import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
-import org.hkijena.jipipe.api.parameters.JIPipeParameterPersistence;
+import org.hkijena.jipipe.api.parameters.*;
 import org.hkijena.jipipe.extensions.clij2.CLIJExtension;
 import org.hkijena.jipipe.extensions.clij2.datatypes.CLIJImageData;
 import org.hkijena.jipipe.extensions.clij2.parameters.OpenCLKernelScript;
@@ -48,11 +44,7 @@ import org.python.core.PyDictionary;
 import org.python.util.PythonInterpreter;
 
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @JIPipeDocumentation(name = "CLIJ2 Execute OpenCL kernel (iterating)", description = "Executes an OpenCL kernel via CLIJ2 to process images.")
 @JIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class)

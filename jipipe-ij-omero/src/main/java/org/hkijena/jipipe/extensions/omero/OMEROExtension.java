@@ -19,14 +19,7 @@ import org.hkijena.jipipe.extensions.omero.algorithms.DownloadOMEROImageAlgorith
 import org.hkijena.jipipe.extensions.omero.algorithms.DownloadOMEROTableAlgorithm;
 import org.hkijena.jipipe.extensions.omero.algorithms.UploadOMEROImageAlgorithm;
 import org.hkijena.jipipe.extensions.omero.algorithms.UploadOMEROTableAlgorithm;
-import org.hkijena.jipipe.extensions.omero.datasources.OMERODatasetReferenceDataSource;
-import org.hkijena.jipipe.extensions.omero.datasources.OMEROFindDatasetAlgorithm;
-import org.hkijena.jipipe.extensions.omero.datasources.OMEROFindGroupAlgorithm;
-import org.hkijena.jipipe.extensions.omero.datasources.OMEROFindImageAlgorithm;
-import org.hkijena.jipipe.extensions.omero.datasources.OMEROFindProjectAlgorithm;
-import org.hkijena.jipipe.extensions.omero.datasources.OMEROGroupReferenceDataSource;
-import org.hkijena.jipipe.extensions.omero.datasources.OMEROImageReferenceDataSource;
-import org.hkijena.jipipe.extensions.omero.datasources.OMEROProjectReferenceDataSource;
+import org.hkijena.jipipe.extensions.omero.datasources.*;
 import org.hkijena.jipipe.extensions.omero.datatypes.OMERODatasetReferenceData;
 import org.hkijena.jipipe.extensions.omero.datatypes.OMEROGroupReferenceData;
 import org.hkijena.jipipe.extensions.omero.datatypes.OMEROImageReferenceData;

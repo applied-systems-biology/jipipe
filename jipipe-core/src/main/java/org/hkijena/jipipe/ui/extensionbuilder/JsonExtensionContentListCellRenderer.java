@@ -18,7 +18,7 @@ import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
-import java.awt.Component;
+import java.awt.*;
 
 /**
  * Renders the contents of a {@link org.hkijena.jipipe.JIPipeJsonExtension}

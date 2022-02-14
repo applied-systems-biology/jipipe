@@ -17,7 +17,7 @@ import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 
 import javax.swing.*;
 import javax.swing.table.TableCellRenderer;
-import java.awt.Component;
+import java.awt.*;
 
 /**
  * Renders {@link org.hkijena.jipipe.api.annotation.JIPipeAnnotation}

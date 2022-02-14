@@ -23,17 +23,11 @@ import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
-import java.awt.BorderLayout;
-import java.awt.Component;
-import java.awt.Dimension;
+import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -59,6 +53,61 @@ public class JIPipeNodeInfoPicker extends JPanel {
         this.availableInfos.addAll(availableInfos.stream().sorted(Comparator.comparing(JIPipeNodeInfo::getName)).collect(Collectors.toList()));
         initialize();
         refreshNodeInfoList();
+    }
+
+    /**
+     * Shows a dialog to pick nodes
+     *
+     * @param parent              parent component
+     * @param mode                mode
+     * @param availableAlgorithms list of available nodes
+     * @return picked nodes
+     */
+    public static Set<JIPipeNodeInfo> showDialog(Component parent, Mode mode, Set<JIPipeNodeInfo> availableAlgorithms) {
+        JDialog dialog = new JDialog(SwingUtilities.getWindowAncestor(parent));
+        JIPipeNodeInfoPicker picker = new JIPipeNodeInfoPicker(mode, availableAlgorithms);
+
+        JPanel panel = new JPanel(new BorderLayout());
+        panel.add(picker, BorderLayout.CENTER);
+
+        JPanel buttonPanel = new JPanel();
+        buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.X_AXIS));
+        buttonPanel.add(Box.createHorizontalGlue());
+
+        JButton cancelButton = new JButton("Cancel", UIUtils.getIconFromResources("actions/cancel.png"));
+        cancelButton.addActionListener(e -> {
+            picker.setSelectedInfos(Collections.emptySet());
+            dialog.setVisible(false);
+        });
+        buttonPanel.add(cancelButton);
+
+        JButton confirmButton = new JButton("Pick", UIUtils.getIconFromResources("actions/checkmark.png"));
+        confirmButton.addActionListener(e -> dialog.setVisible(false));
+        buttonPanel.add(confirmButton);
+
+        panel.add(buttonPanel, BorderLayout.SOUTH);
+
+        picker.nodeInfoJList.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                if (e.getClickCount() == 2) {
+                    if (picker.nodeInfoJList.getSelectedValue() != null) {
+                        dialog.setVisible(false);
+                    }
+                }
+            }
+        });
+
+        dialog.setContentPane(panel);
+        dialog.setTitle("Pick algorithm");
+        dialog.setModal(true);
+        dialog.pack();
+        dialog.setSize(new Dimension(500, 600));
+        dialog.setLocationRelativeTo(parent);
+        UIUtils.addEscapeListener(dialog);
+        dialog.setVisible(true);
+
+        return picker.getSelectedInfos();
     }
 
     private void initialize() {
@@ -187,61 +236,6 @@ public class JIPipeNodeInfoPicker extends JPanel {
         this.selectedInfos = new HashSet<>(nodeInfos);
         eventBus.post(new SelectedInfosChangedEvent(this));
         refreshNodeInfoList();
-    }
-
-    /**
-     * Shows a dialog to pick nodes
-     *
-     * @param parent              parent component
-     * @param mode                mode
-     * @param availableAlgorithms list of available nodes
-     * @return picked nodes
-     */
-    public static Set<JIPipeNodeInfo> showDialog(Component parent, Mode mode, Set<JIPipeNodeInfo> availableAlgorithms) {
-        JDialog dialog = new JDialog(SwingUtilities.getWindowAncestor(parent));
-        JIPipeNodeInfoPicker picker = new JIPipeNodeInfoPicker(mode, availableAlgorithms);
-
-        JPanel panel = new JPanel(new BorderLayout());
-        panel.add(picker, BorderLayout.CENTER);
-
-        JPanel buttonPanel = new JPanel();
-        buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.X_AXIS));
-        buttonPanel.add(Box.createHorizontalGlue());
-
-        JButton cancelButton = new JButton("Cancel", UIUtils.getIconFromResources("actions/cancel.png"));
-        cancelButton.addActionListener(e -> {
-            picker.setSelectedInfos(Collections.emptySet());
-            dialog.setVisible(false);
-        });
-        buttonPanel.add(cancelButton);
-
-        JButton confirmButton = new JButton("Pick", UIUtils.getIconFromResources("actions/checkmark.png"));
-        confirmButton.addActionListener(e -> dialog.setVisible(false));
-        buttonPanel.add(confirmButton);
-
-        panel.add(buttonPanel, BorderLayout.SOUTH);
-
-        picker.nodeInfoJList.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mouseClicked(MouseEvent e) {
-                if (e.getClickCount() == 2) {
-                    if (picker.nodeInfoJList.getSelectedValue() != null) {
-                        dialog.setVisible(false);
-                    }
-                }
-            }
-        });
-
-        dialog.setContentPane(panel);
-        dialog.setTitle("Pick algorithm");
-        dialog.setModal(true);
-        dialog.pack();
-        dialog.setSize(new Dimension(500, 600));
-        dialog.setLocationRelativeTo(parent);
-        UIUtils.addEscapeListener(dialog);
-        dialog.setVisible(true);
-
-        return picker.getSelectedInfos();
     }
 
     /**

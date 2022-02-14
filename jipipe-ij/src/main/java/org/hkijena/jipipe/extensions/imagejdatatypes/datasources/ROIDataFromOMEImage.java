@@ -13,21 +13,13 @@
 
 package org.hkijena.jipipe.extensions.imagejdatatypes.datasources;
 
-import ij.gui.Roi;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
-import org.hkijena.jipipe.api.nodes.JIPipeDataBatch;
-import org.hkijena.jipipe.api.nodes.JIPipeInputSlot;
-import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
-import org.hkijena.jipipe.api.nodes.JIPipeOutputSlot;
-import org.hkijena.jipipe.api.nodes.JIPipeSimpleIteratingAlgorithm;
+import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.DataSourceNodeTypeCategory;
-import org.hkijena.jipipe.extensions.filesystem.dataypes.FileData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.OMEImageData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ROIListData;
-
-import java.util.List;
 
 /**
  * Loads ROI data from a file via IJ.openFile()
@@ -57,7 +49,7 @@ public class ROIDataFromOMEImage extends JIPipeSimpleIteratingAlgorithm {
     @Override
     protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
         OMEImageData omeImageData = dataBatch.getInputData(getFirstInputSlot(), OMEImageData.class, progressInfo);
-        if(omeImageData.getRois() != null)
+        if (omeImageData.getRois() != null)
             dataBatch.addOutputData(getFirstOutputSlot(), omeImageData.getRois(), progressInfo);
         else
             dataBatch.addOutputData(getFirstOutputSlot(), new ROIListData(), progressInfo);

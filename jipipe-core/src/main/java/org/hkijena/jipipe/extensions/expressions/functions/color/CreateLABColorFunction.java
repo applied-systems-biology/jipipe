@@ -16,25 +16,22 @@ public class CreateLABColorFunction extends ExpressionFunction {
 
     @Override
     public ParameterInfo getParameterInfo(int index) {
-        if(index == 0) {
+        if (index == 0) {
             return new ParameterInfo("L*", "The L* component", Number.class);
-        }
-        else  if(index == 1) {
+        } else if (index == 1) {
             return new ParameterInfo("a*", "The a* component", Number.class);
-        }
-        else  if(index == 2) {
+        } else if (index == 2) {
             return new ParameterInfo("b*", "The b* component", Number.class);
-        }
-        else {
+        } else {
             return null;
         }
     }
 
     @Override
     public Object evaluate(List<Object> parameters, ExpressionVariables variables) {
-        int h = ((Number)parameters.get(0)).intValue();
-        int s = ((Number)parameters.get(1)).intValue();
-        int b = ((Number)parameters.get(2)).intValue();
-        return Arrays.asList(h,s,b);
+        int h = ((Number) parameters.get(0)).intValue();
+        int s = ((Number) parameters.get(1)).intValue();
+        int b = ((Number) parameters.get(2)).intValue();
+        return Arrays.asList(h, s, b);
     }
 }

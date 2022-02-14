@@ -18,7 +18,6 @@ import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
-import org.hkijena.jipipe.ui.grapheditor.JIPipeGraphEditorUI;
 
 public class TableViewerUISettings implements JIPipeParameterCollection {
 
@@ -26,6 +25,10 @@ public class TableViewerUISettings implements JIPipeParameterCollection {
 
     private final EventBus eventBus = new EventBus();
     private boolean showSideBar = true;
+
+    public static TableViewerUISettings getInstance() {
+        return JIPipe.getSettings().getSettings(ID, TableViewerUISettings.class);
+    }
 
     @JIPipeDocumentation(name = "Show side bar", description = "If enabled, show a side bar with additional settings and tools")
     @JIPipeParameter("show-side-bar")
@@ -41,9 +44,5 @@ public class TableViewerUISettings implements JIPipeParameterCollection {
     @Override
     public EventBus getEventBus() {
         return eventBus;
-    }
-
-    public static TableViewerUISettings getInstance() {
-        return JIPipe.getSettings().getSettings(ID, TableViewerUISettings.class);
     }
 }

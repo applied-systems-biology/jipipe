@@ -17,11 +17,7 @@ import org.apache.commons.lang3.math.NumberUtils;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
-import org.hkijena.jipipe.api.nodes.JIPipeDataBatch;
-import org.hkijena.jipipe.api.nodes.JIPipeInputSlot;
-import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
-import org.hkijena.jipipe.api.nodes.JIPipeOutputSlot;
-import org.hkijena.jipipe.api.nodes.JIPipeSimpleIteratingAlgorithm;
+import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.TableNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.expressions.StringQueryExpression;
@@ -69,15 +65,15 @@ public class ColumnToNumericAlgorithm extends JIPipeSimpleIteratingAlgorithm {
             String columnName = table.getColumnName(col);
             TableColumn columnReference = table.getColumnReference(col);
             if (filters.test(columnName) && !columnReference.isNumeric()) {
-                if(onlyIfPossible) {
+                if (onlyIfPossible) {
                     boolean success = true;
                     for (int i = 0; i < columnReference.getRows(); i++) {
-                        if(!NumberUtils.isCreatable(columnReference.getRowAsString(i))) {
+                        if (!NumberUtils.isCreatable(columnReference.getRowAsString(i))) {
                             success = false;
                             break;
                         }
                     }
-                    if(!success) {
+                    if (!success) {
                         continue;
                     }
                 }

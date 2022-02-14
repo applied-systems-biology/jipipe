@@ -25,16 +25,11 @@ import org.hkijena.jipipe.utils.UIUtils;
 import javax.swing.*;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreePath;
-import java.awt.BorderLayout;
-import java.awt.Desktop;
+import java.awt.*;
 import java.io.IOException;
 import java.nio.file.Files;
-import java.util.ArrayList;
-import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Objects;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 
 /**
  * UI around an {@link JIPipeRun} result

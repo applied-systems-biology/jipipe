@@ -27,27 +27,14 @@ import org.hkijena.jipipe.JIPipeImageJUpdateSiteDependency;
 import org.hkijena.jipipe.JIPipeJavaExtension;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.extensions.JIPipePrepackagedDefaultJavaExtension;
-import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.EigenvalueSelection2D;
-import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.HyperstackDimensionPairParameter;
-import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.InterpolationMethod;
-import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.MacroWrapperAlgorithm;
-import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.Neighborhood2D;
-import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.Neighborhood2D3D;
-import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.Neighborhood3D;
+import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.*;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.analyze.AnnotateByImageStatisticsExpressionAlgorithm;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.analyze.FindParticles2D;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.analyze.ImageStatisticsAlgorithm;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.analyze.ImageStatisticsExpressionAlgorithm;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.background.RollingBallBackgroundEstimator2DAlgorithm;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.binary.*;
-import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.blur.BoxFilter2DAlgorithm;
-import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.blur.BoxFilter3DAlgorithm;
-import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.blur.GaussianBlur2DAlgorithm;
-import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.blur.GaussianBlur3DAlgorithm;
-import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.blur.MedianBlurFilter2DAlgorithm;
-import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.blur.MedianBlurFilter3DAlgorithm;
-import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.blur.MedianBlurGreyscale8U2DAlgorithm;
-import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.blur.MedianBlurRGB2DAlgorithm;
+import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.blur.*;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.calibration.SetPhysicalDimensionsAlgorithm;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.calibration.SetPhysicalDimensionsByExpressionsAlgorithm;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.color.*;
@@ -66,38 +53,17 @@ import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.edge.SobelEdgeDetector
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.export.ExportImageAlgorithm;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.export.ExportROIAlgorithm;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.export.ExportTableAlgorithm;
-import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.features.DifferenceOfGaussian2DAlgorithm;
-import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.features.DirectionalFilter2DAlgorithm;
-import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.features.FrangiVesselnessFeatures;
-import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.features.LaplacianOfGaussian2DAlgorithm;
-import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.features.LocalMaxima2DAlgorithm;
-import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.features.MeijeringVesselness2DFeatures;
+import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.features.*;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.fft.FFT2DForwardTransform;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.fft.FFT2DInverseTransform;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.fft.FFT2DSwapQuadrants;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.forms.DrawMaskAlgorithm;
-import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.generate.GenerateLUTImageFromColorMap;
-import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.generate.GenerateMissingImageFromMathExpression2D;
-import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.generate.GenerateMissingTablesAlgorithm;
-import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.generate.GenerateMissingZeroImage;
-import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.generate.GenerateStructureElement2DAlgorithm;
-import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.generate.GenerateStructureElement3DAlgorithm;
-import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.generate.GenerateZeroImage;
-import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.generate.ImageFromMatrix2DAlgorithm;
-import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.io.ImagePlusFromGUI;
-import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.io.ImagePlusToGUI;
-import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.io.ROIFromGUI;
-import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.io.ROIToGUI;
-import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.io.ResultsTableFromGUI;
-import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.io.ResultsTableToGUI;
+import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.generate.*;
+import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.io.*;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.labels.*;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.lut.*;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.math.*;
-import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.math.distancemap.ApplyDistanceTransform2DAlgorithm;
-import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.math.distancemap.ChamferDistanceMap2DAlgorithm;
-import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.math.distancemap.ChamferDistanceMap3DAlgorithm;
-import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.math.distancemap.GeodesicDistanceMap2DAlgorithm;
-import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.math.distancemap.LabelChamferDistanceMap3DAlgorithm;
+import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.math.distancemap.*;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.math.local.*;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.misc.DataToPreviewAlgorithm;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.morphology.*;
@@ -120,12 +86,7 @@ import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.threshold.color.ColorT
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.threshold.color.ManualHSBThreshold2DAlgorithm;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.threshold.color.ManualLABThreshold2DAlgorithm;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.threshold.color.ManualRGBThreshold2DAlgorithm;
-import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.threshold.local.BernsenLocalAutoThreshold2DAlgorithm;
-import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.threshold.local.ContrastLocalAutoThreshold2DAlgorithm;
-import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.threshold.local.LocalAutoThreshold2DAlgorithm;
-import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.threshold.local.NiblackLocalAutoThreshold2DAlgorithm;
-import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.threshold.local.PhansalkarLocalAutoThreshold2DAlgorithm;
-import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.threshold.local.SauvolaLocalAutoThreshold2DAlgorithm;
+import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.threshold.local.*;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.transform.*;
 import org.hkijena.jipipe.extensions.imagejalgorithms.utils.ImageROITargetArea;
 import org.hkijena.jipipe.extensions.imagejalgorithms.utils.OverlapStatistics;
@@ -138,40 +99,20 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.color.ImagePlusCo
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d2.ImagePlus2DData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d2.color.ImagePlus2DColorHSBData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d2.color.ImagePlus2DColorRGBData;
-import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d2.greyscale.ImagePlus2DGreyscale16UData;
-import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d2.greyscale.ImagePlus2DGreyscale32FData;
-import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d2.greyscale.ImagePlus2DGreyscale8UData;
-import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d2.greyscale.ImagePlus2DGreyscaleData;
-import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d2.greyscale.ImagePlus2DGreyscaleMaskData;
+import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d2.greyscale.*;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d3.ImagePlus3DData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d3.color.ImagePlus3DColorHSBData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d3.color.ImagePlus3DColorRGBData;
-import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d3.greyscale.ImagePlus3DGreyscale16UData;
-import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d3.greyscale.ImagePlus3DGreyscale32FData;
-import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d3.greyscale.ImagePlus3DGreyscale8UData;
-import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d3.greyscale.ImagePlus3DGreyscaleData;
-import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d3.greyscale.ImagePlus3DGreyscaleMaskData;
+import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d3.greyscale.*;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d4.ImagePlus4DData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d4.color.ImagePlus4DColorHSBData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d4.color.ImagePlus4DColorRGBData;
-import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d4.greyscale.ImagePlus4DGreyscale16UData;
-import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d4.greyscale.ImagePlus4DGreyscale32FData;
-import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d4.greyscale.ImagePlus4DGreyscale8UData;
-import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d4.greyscale.ImagePlus4DGreyscaleData;
-import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d4.greyscale.ImagePlus4DGreyscaleMaskData;
+import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d4.greyscale.*;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d5.ImagePlus5DData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d5.color.ImagePlus5DColorHSBData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d5.color.ImagePlus5DColorRGBData;
-import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d5.greyscale.ImagePlus5DGreyscale16UData;
-import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d5.greyscale.ImagePlus5DGreyscale32FData;
-import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d5.greyscale.ImagePlus5DGreyscale8UData;
-import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d5.greyscale.ImagePlus5DGreyscaleData;
-import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d5.greyscale.ImagePlus5DGreyscaleMaskData;
-import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscale16UData;
-import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscale32FData;
-import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscale8UData;
-import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleData;
-import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleMaskData;
+import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d5.greyscale.*;
+import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.*;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.HyperstackDimension;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.RoiOutline;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.measure.ImageStatisticsSetParameter;
@@ -241,6 +182,282 @@ public class ImageJAlgorithmsExtension extends JIPipePrepackagedDefaultJavaExten
      * Conversion rules convert data to their 3D counterparts
      */
     public static final Map<Class<? extends JIPipeData>, Class<? extends JIPipeData>> TO_3D_CONVERSION = get3DConversion();
+
+    private static Map<Class<? extends JIPipeData>, Class<? extends JIPipeData>> get3DConversion() {
+        Map<Class<? extends JIPipeData>, Class<? extends JIPipeData>> result = new HashMap<>();
+
+        result.put(ImagePlusData.class, ImagePlus3DData.class);
+        result.put(ImagePlusGreyscaleData.class, ImagePlus3DGreyscaleData.class);
+        result.put(ImagePlusGreyscale8UData.class, ImagePlus3DGreyscale8UData.class);
+        result.put(ImagePlusGreyscaleMaskData.class, ImagePlus3DGreyscaleMaskData.class);
+        result.put(ImagePlusGreyscale16UData.class, ImagePlus3DGreyscale16UData.class);
+        result.put(ImagePlusGreyscale32FData.class, ImagePlus3DGreyscale32FData.class);
+        result.put(ImagePlusColorHSBData.class, ImagePlus3DColorHSBData.class);
+        result.put(ImagePlusColorRGBData.class, ImagePlus3DColorRGBData.class);
+
+        result.put(ImagePlus2DData.class, ImagePlus3DData.class);
+        result.put(ImagePlus2DGreyscaleData.class, ImagePlus3DGreyscaleData.class);
+        result.put(ImagePlus2DGreyscale8UData.class, ImagePlus3DGreyscale8UData.class);
+        result.put(ImagePlus2DGreyscaleMaskData.class, ImagePlus3DGreyscaleMaskData.class);
+        result.put(ImagePlus2DGreyscale16UData.class, ImagePlus3DGreyscale16UData.class);
+        result.put(ImagePlus2DGreyscale32FData.class, ImagePlus3DGreyscale32FData.class);
+        result.put(ImagePlus2DColorHSBData.class, ImagePlus3DColorHSBData.class);
+        result.put(ImagePlus2DColorRGBData.class, ImagePlus3DColorRGBData.class);
+
+        result.put(ImagePlus4DData.class, ImagePlus3DData.class);
+        result.put(ImagePlus4DGreyscaleData.class, ImagePlus3DGreyscaleData.class);
+        result.put(ImagePlus4DGreyscale8UData.class, ImagePlus3DGreyscale8UData.class);
+        result.put(ImagePlus4DGreyscaleMaskData.class, ImagePlus3DGreyscaleMaskData.class);
+        result.put(ImagePlus4DGreyscale16UData.class, ImagePlus3DGreyscale16UData.class);
+        result.put(ImagePlus4DGreyscale32FData.class, ImagePlus3DGreyscale32FData.class);
+        result.put(ImagePlus4DColorHSBData.class, ImagePlus3DColorHSBData.class);
+        result.put(ImagePlus4DColorRGBData.class, ImagePlus3DColorRGBData.class);
+
+        result.put(ImagePlus5DData.class, ImagePlus3DData.class);
+        result.put(ImagePlus5DGreyscaleData.class, ImagePlus3DGreyscaleData.class);
+        result.put(ImagePlus5DGreyscale8UData.class, ImagePlus3DGreyscale8UData.class);
+        result.put(ImagePlus5DGreyscaleMaskData.class, ImagePlus3DGreyscaleMaskData.class);
+        result.put(ImagePlus5DGreyscale16UData.class, ImagePlus3DGreyscale16UData.class);
+        result.put(ImagePlus5DGreyscale32FData.class, ImagePlus3DGreyscale32FData.class);
+        result.put(ImagePlus5DColorHSBData.class, ImagePlus3DColorHSBData.class);
+        result.put(ImagePlus5DColorRGBData.class, ImagePlus3DColorRGBData.class);
+
+        return result;
+    }
+
+    private static Map<Class<? extends JIPipeData>, Class<? extends JIPipeData>> get2DConversion() {
+        Map<Class<? extends JIPipeData>, Class<? extends JIPipeData>> result = new HashMap<>();
+
+        result.put(ImagePlusData.class, ImagePlus2DData.class);
+        result.put(ImagePlusGreyscaleData.class, ImagePlus2DGreyscaleData.class);
+        result.put(ImagePlusGreyscale8UData.class, ImagePlus2DGreyscale8UData.class);
+        result.put(ImagePlusGreyscaleMaskData.class, ImagePlus2DGreyscaleMaskData.class);
+        result.put(ImagePlusGreyscale16UData.class, ImagePlus2DGreyscale16UData.class);
+        result.put(ImagePlusGreyscale32FData.class, ImagePlus2DGreyscale32FData.class);
+        result.put(ImagePlusColorHSBData.class, ImagePlus2DColorHSBData.class);
+        result.put(ImagePlusColorRGBData.class, ImagePlus2DColorRGBData.class);
+
+        result.put(ImagePlus3DData.class, ImagePlus2DData.class);
+        result.put(ImagePlus3DGreyscaleData.class, ImagePlus2DGreyscaleData.class);
+        result.put(ImagePlus3DGreyscale8UData.class, ImagePlus2DGreyscale8UData.class);
+        result.put(ImagePlus3DGreyscaleMaskData.class, ImagePlus2DGreyscaleMaskData.class);
+        result.put(ImagePlus3DGreyscale16UData.class, ImagePlus2DGreyscale16UData.class);
+        result.put(ImagePlus3DGreyscale32FData.class, ImagePlus2DGreyscale32FData.class);
+        result.put(ImagePlus3DColorHSBData.class, ImagePlus2DColorHSBData.class);
+        result.put(ImagePlus3DColorRGBData.class, ImagePlus2DColorRGBData.class);
+
+        result.put(ImagePlus4DData.class, ImagePlus2DData.class);
+        result.put(ImagePlus4DGreyscaleData.class, ImagePlus2DGreyscaleData.class);
+        result.put(ImagePlus4DGreyscale8UData.class, ImagePlus2DGreyscale8UData.class);
+        result.put(ImagePlus4DGreyscaleMaskData.class, ImagePlus2DGreyscaleMaskData.class);
+        result.put(ImagePlus4DGreyscale16UData.class, ImagePlus2DGreyscale16UData.class);
+        result.put(ImagePlus4DGreyscale32FData.class, ImagePlus2DGreyscale32FData.class);
+        result.put(ImagePlus4DColorHSBData.class, ImagePlus2DColorHSBData.class);
+        result.put(ImagePlus4DColorRGBData.class, ImagePlus2DColorRGBData.class);
+
+        result.put(ImagePlus5DData.class, ImagePlus2DData.class);
+        result.put(ImagePlus5DGreyscaleData.class, ImagePlus2DGreyscaleData.class);
+        result.put(ImagePlus5DGreyscale8UData.class, ImagePlus2DGreyscale8UData.class);
+        result.put(ImagePlus5DGreyscaleMaskData.class, ImagePlus2DGreyscaleMaskData.class);
+        result.put(ImagePlus5DGreyscale16UData.class, ImagePlus2DGreyscale16UData.class);
+        result.put(ImagePlus5DGreyscale32FData.class, ImagePlus2DGreyscale32FData.class);
+        result.put(ImagePlus5DColorHSBData.class, ImagePlus2DColorHSBData.class);
+        result.put(ImagePlus5DColorRGBData.class, ImagePlus2DColorRGBData.class);
+
+        return result;
+    }
+
+    private static Map<Class<? extends JIPipeData>, Class<? extends JIPipeData>> getDecreaseDimensionConversion() {
+        Map<Class<? extends JIPipeData>, Class<? extends JIPipeData>> result = new HashMap<>();
+
+        result.put(ImagePlus3DData.class, ImagePlus2DData.class);
+        result.put(ImagePlus3DGreyscaleData.class, ImagePlus2DGreyscaleData.class);
+        result.put(ImagePlus3DGreyscale8UData.class, ImagePlus2DGreyscale8UData.class);
+        result.put(ImagePlus3DGreyscaleMaskData.class, ImagePlus2DGreyscaleMaskData.class);
+        result.put(ImagePlus3DGreyscale16UData.class, ImagePlus2DGreyscale16UData.class);
+        result.put(ImagePlus3DGreyscale32FData.class, ImagePlus2DGreyscale32FData.class);
+        result.put(ImagePlus3DColorHSBData.class, ImagePlus2DColorHSBData.class);
+        result.put(ImagePlus3DColorRGBData.class, ImagePlus2DColorRGBData.class);
+
+        result.put(ImagePlus4DData.class, ImagePlus3DData.class);
+        result.put(ImagePlus4DGreyscaleData.class, ImagePlus3DGreyscaleData.class);
+        result.put(ImagePlus4DGreyscale8UData.class, ImagePlus3DGreyscale8UData.class);
+        result.put(ImagePlus4DGreyscaleMaskData.class, ImagePlus3DGreyscaleMaskData.class);
+        result.put(ImagePlus4DGreyscale16UData.class, ImagePlus3DGreyscale16UData.class);
+        result.put(ImagePlus4DGreyscale32FData.class, ImagePlus3DGreyscale32FData.class);
+        result.put(ImagePlus4DColorHSBData.class, ImagePlus3DColorHSBData.class);
+        result.put(ImagePlus4DColorRGBData.class, ImagePlus3DColorRGBData.class);
+
+        result.put(ImagePlus5DData.class, ImagePlus4DData.class);
+        result.put(ImagePlus5DGreyscaleData.class, ImagePlus4DGreyscaleData.class);
+        result.put(ImagePlus5DGreyscale8UData.class, ImagePlus4DGreyscale8UData.class);
+        result.put(ImagePlus5DGreyscaleMaskData.class, ImagePlus4DGreyscaleMaskData.class);
+        result.put(ImagePlus5DGreyscale16UData.class, ImagePlus4DGreyscale16UData.class);
+        result.put(ImagePlus5DGreyscale32FData.class, ImagePlus4DGreyscale32FData.class);
+        result.put(ImagePlus5DColorHSBData.class, ImagePlus4DColorHSBData.class);
+        result.put(ImagePlus5DColorRGBData.class, ImagePlus4DColorRGBData.class);
+
+        return result;
+    }
+
+    private static Map<Class<? extends JIPipeData>, Class<? extends JIPipeData>> getMaskQualifierMap() {
+        Map<Class<? extends JIPipeData>, Class<? extends JIPipeData>> result = new HashMap<>();
+
+        result.put(ImagePlusData.class, ImagePlusGreyscaleMaskData.class);
+        result.put(ImagePlusGreyscaleData.class, ImagePlusGreyscaleMaskData.class);
+        result.put(ImagePlusGreyscale8UData.class, ImagePlusGreyscaleMaskData.class);
+        result.put(ImagePlusGreyscale16UData.class, ImagePlusGreyscaleMaskData.class);
+        result.put(ImagePlusGreyscale32FData.class, ImagePlusGreyscaleMaskData.class);
+        result.put(ImagePlusColorHSBData.class, ImagePlusGreyscaleMaskData.class);
+        result.put(ImagePlusColorRGBData.class, ImagePlusGreyscaleMaskData.class);
+
+        result.put(ImagePlus2DData.class, ImagePlus2DGreyscaleMaskData.class);
+        result.put(ImagePlus2DGreyscaleData.class, ImagePlus2DGreyscaleMaskData.class);
+        result.put(ImagePlus2DGreyscale8UData.class, ImagePlus2DGreyscaleMaskData.class);
+        result.put(ImagePlus2DGreyscale16UData.class, ImagePlus2DGreyscaleMaskData.class);
+        result.put(ImagePlus2DGreyscale32FData.class, ImagePlus2DGreyscaleMaskData.class);
+        result.put(ImagePlus2DColorHSBData.class, ImagePlus2DGreyscaleMaskData.class);
+        result.put(ImagePlus2DColorRGBData.class, ImagePlus2DGreyscaleMaskData.class);
+
+        result.put(ImagePlus3DData.class, ImagePlus3DGreyscaleMaskData.class);
+        result.put(ImagePlus3DGreyscaleData.class, ImagePlus3DGreyscaleMaskData.class);
+        result.put(ImagePlus3DGreyscale8UData.class, ImagePlus3DGreyscaleMaskData.class);
+        result.put(ImagePlus3DGreyscale16UData.class, ImagePlus3DGreyscaleMaskData.class);
+        result.put(ImagePlus3DGreyscale32FData.class, ImagePlus3DGreyscaleMaskData.class);
+        result.put(ImagePlus3DColorHSBData.class, ImagePlus3DGreyscaleMaskData.class);
+        result.put(ImagePlus3DColorRGBData.class, ImagePlus3DGreyscaleMaskData.class);
+
+        result.put(ImagePlus4DData.class, ImagePlus4DGreyscaleMaskData.class);
+        result.put(ImagePlus4DGreyscaleData.class, ImagePlus4DGreyscaleMaskData.class);
+        result.put(ImagePlus4DGreyscale8UData.class, ImagePlus4DGreyscaleMaskData.class);
+        result.put(ImagePlus4DGreyscale16UData.class, ImagePlus4DGreyscaleMaskData.class);
+        result.put(ImagePlus4DGreyscale32FData.class, ImagePlus4DGreyscaleMaskData.class);
+        result.put(ImagePlus4DColorHSBData.class, ImagePlus4DGreyscaleMaskData.class);
+        result.put(ImagePlus4DColorRGBData.class, ImagePlus4DGreyscaleMaskData.class);
+
+        result.put(ImagePlus5DData.class, ImagePlus5DGreyscaleMaskData.class);
+        result.put(ImagePlus5DGreyscaleData.class, ImagePlus5DGreyscaleMaskData.class);
+        result.put(ImagePlus5DGreyscale8UData.class, ImagePlus5DGreyscaleMaskData.class);
+        result.put(ImagePlus5DGreyscale16UData.class, ImagePlus5DGreyscaleMaskData.class);
+        result.put(ImagePlus5DGreyscale32FData.class, ImagePlus5DGreyscaleMaskData.class);
+        result.put(ImagePlus5DColorHSBData.class, ImagePlus5DGreyscaleMaskData.class);
+        result.put(ImagePlus5DColorRGBData.class, ImagePlus5DGreyscaleMaskData.class);
+
+        return result;
+    }
+
+    private static Map<Class<? extends JIPipeData>, Class<? extends JIPipeData>> getToGrayscale32FConversion() {
+        Map<Class<? extends JIPipeData>, Class<? extends JIPipeData>> result = new HashMap<>();
+
+        result.put(ImagePlusData.class, ImagePlusGreyscale32FData.class);
+        result.put(ImagePlusGreyscaleData.class, ImagePlusGreyscale32FData.class);
+        result.put(ImagePlusGreyscale8UData.class, ImagePlusGreyscale32FData.class);
+        result.put(ImagePlusGreyscaleMaskData.class, ImagePlusGreyscale32FData.class);
+        result.put(ImagePlusGreyscale16UData.class, ImagePlusGreyscale32FData.class);
+        result.put(ImagePlusColorHSBData.class, ImagePlusGreyscale32FData.class);
+        result.put(ImagePlusColorRGBData.class, ImagePlusGreyscale32FData.class);
+
+        result.put(ImagePlus2DData.class, ImagePlus2DGreyscale32FData.class);
+        result.put(ImagePlus2DGreyscaleData.class, ImagePlus2DGreyscale32FData.class);
+        result.put(ImagePlus2DGreyscale8UData.class, ImagePlus2DGreyscale32FData.class);
+        result.put(ImagePlus2DGreyscaleMaskData.class, ImagePlus2DGreyscale32FData.class);
+        result.put(ImagePlus2DGreyscale16UData.class, ImagePlus2DGreyscale32FData.class);
+        result.put(ImagePlus2DColorHSBData.class, ImagePlus2DGreyscale32FData.class);
+        result.put(ImagePlus2DColorRGBData.class, ImagePlus2DGreyscale32FData.class);
+
+        result.put(ImagePlus3DData.class, ImagePlus3DGreyscale32FData.class);
+        result.put(ImagePlus3DGreyscaleData.class, ImagePlus3DGreyscale32FData.class);
+        result.put(ImagePlus3DGreyscale8UData.class, ImagePlus3DGreyscale32FData.class);
+        result.put(ImagePlus3DGreyscaleMaskData.class, ImagePlus3DGreyscale32FData.class);
+        result.put(ImagePlus3DGreyscale16UData.class, ImagePlus3DGreyscale32FData.class);
+        result.put(ImagePlus3DColorHSBData.class, ImagePlus3DGreyscale32FData.class);
+        result.put(ImagePlus3DColorRGBData.class, ImagePlus3DGreyscale32FData.class);
+
+        result.put(ImagePlus4DData.class, ImagePlus4DGreyscale32FData.class);
+        result.put(ImagePlus4DGreyscaleData.class, ImagePlus4DGreyscale32FData.class);
+        result.put(ImagePlus4DGreyscale8UData.class, ImagePlus4DGreyscale32FData.class);
+        result.put(ImagePlus4DGreyscaleMaskData.class, ImagePlus4DGreyscale32FData.class);
+        result.put(ImagePlus4DGreyscale16UData.class, ImagePlus4DGreyscale32FData.class);
+        result.put(ImagePlus4DColorHSBData.class, ImagePlus4DGreyscale32FData.class);
+        result.put(ImagePlus4DColorRGBData.class, ImagePlus4DGreyscale32FData.class);
+
+        result.put(ImagePlus5DData.class, ImagePlus5DGreyscale32FData.class);
+        result.put(ImagePlus5DGreyscaleData.class, ImagePlus5DGreyscale32FData.class);
+        result.put(ImagePlus5DGreyscale8UData.class, ImagePlus5DGreyscale32FData.class);
+        result.put(ImagePlus5DGreyscaleMaskData.class, ImagePlus5DGreyscale32FData.class);
+        result.put(ImagePlus5DGreyscale16UData.class, ImagePlus5DGreyscale32FData.class);
+        result.put(ImagePlus5DColorHSBData.class, ImagePlus5DGreyscale32FData.class);
+        result.put(ImagePlus5DColorRGBData.class, ImagePlus5DGreyscale32FData.class);
+
+        return result;
+    }
+
+    private static Map<Class<? extends JIPipeData>, Class<? extends JIPipeData>> getToGrayscaleConversion() {
+        Map<Class<? extends JIPipeData>, Class<? extends JIPipeData>> result = new HashMap<>();
+
+        result.put(ImagePlusData.class, ImagePlusGreyscaleData.class);
+        result.put(ImagePlusColorHSBData.class, ImagePlusGreyscaleData.class);
+        result.put(ImagePlusColorRGBData.class, ImagePlusGreyscaleData.class);
+
+        result.put(ImagePlus2DData.class, ImagePlus2DGreyscaleData.class);
+        result.put(ImagePlus2DColorHSBData.class, ImagePlus2DGreyscaleData.class);
+        result.put(ImagePlus2DColorRGBData.class, ImagePlus2DGreyscaleData.class);
+
+        result.put(ImagePlus3DData.class, ImagePlus3DGreyscaleData.class);
+        result.put(ImagePlus3DColorHSBData.class, ImagePlus3DGreyscaleData.class);
+        result.put(ImagePlus3DColorRGBData.class, ImagePlus3DGreyscaleData.class);
+
+        result.put(ImagePlus4DData.class, ImagePlus4DGreyscaleData.class);
+        result.put(ImagePlus4DColorHSBData.class, ImagePlus4DGreyscaleData.class);
+        result.put(ImagePlus4DColorRGBData.class, ImagePlus4DGreyscaleData.class);
+
+        result.put(ImagePlus5DData.class, ImagePlus5DGreyscaleData.class);
+        result.put(ImagePlus5DColorHSBData.class, ImagePlus5DGreyscaleData.class);
+        result.put(ImagePlus5DColorRGBData.class, ImagePlus5DGreyscaleData.class);
+
+        return result;
+    }
+
+    private static Map<Class<? extends JIPipeData>, Class<? extends JIPipeData>> getToColorRgbConversion() {
+        Map<Class<? extends JIPipeData>, Class<? extends JIPipeData>> result = new HashMap<>();
+
+        result.put(ImagePlusData.class, ImagePlusColorRGBData.class);
+        result.put(ImagePlusGreyscaleData.class, ImagePlusColorRGBData.class);
+        result.put(ImagePlusGreyscale8UData.class, ImagePlusColorRGBData.class);
+        result.put(ImagePlusGreyscale16UData.class, ImagePlusColorRGBData.class);
+        result.put(ImagePlusGreyscale32FData.class, ImagePlusColorRGBData.class);
+        result.put(ImagePlusGreyscaleMaskData.class, ImagePlusColorRGBData.class);
+
+        result.put(ImagePlus2DData.class, ImagePlus2DColorRGBData.class);
+        result.put(ImagePlus2DGreyscaleData.class, ImagePlus2DColorRGBData.class);
+        result.put(ImagePlus2DGreyscale8UData.class, ImagePlus2DColorRGBData.class);
+        result.put(ImagePlus2DGreyscale16UData.class, ImagePlus2DColorRGBData.class);
+        result.put(ImagePlus2DGreyscale32FData.class, ImagePlus2DColorRGBData.class);
+        result.put(ImagePlus2DGreyscaleMaskData.class, ImagePlus2DColorRGBData.class);
+
+        result.put(ImagePlus3DData.class, ImagePlus3DColorRGBData.class);
+        result.put(ImagePlus3DGreyscaleData.class, ImagePlus3DColorRGBData.class);
+        result.put(ImagePlus3DGreyscale8UData.class, ImagePlus3DColorRGBData.class);
+        result.put(ImagePlus3DGreyscale16UData.class, ImagePlus3DColorRGBData.class);
+        result.put(ImagePlus3DGreyscale32FData.class, ImagePlus3DColorRGBData.class);
+        result.put(ImagePlus3DGreyscaleMaskData.class, ImagePlus3DColorRGBData.class);
+
+        result.put(ImagePlus4DData.class, ImagePlus4DColorRGBData.class);
+        result.put(ImagePlus4DGreyscaleData.class, ImagePlus4DColorRGBData.class);
+        result.put(ImagePlus4DGreyscale8UData.class, ImagePlus4DColorRGBData.class);
+        result.put(ImagePlus4DGreyscale16UData.class, ImagePlus4DColorRGBData.class);
+        result.put(ImagePlus4DGreyscale32FData.class, ImagePlus4DColorRGBData.class);
+        result.put(ImagePlus4DGreyscaleMaskData.class, ImagePlus4DColorRGBData.class);
+
+        result.put(ImagePlus5DData.class, ImagePlus5DColorRGBData.class);
+        result.put(ImagePlus5DGreyscaleData.class, ImagePlus5DColorRGBData.class);
+        result.put(ImagePlus5DGreyscale8UData.class, ImagePlus5DColorRGBData.class);
+        result.put(ImagePlus5DGreyscale16UData.class, ImagePlus5DColorRGBData.class);
+        result.put(ImagePlus5DGreyscale32FData.class, ImagePlus5DColorRGBData.class);
+        result.put(ImagePlus5DGreyscaleMaskData.class, ImagePlus5DColorRGBData.class);
+
+        return result;
+    }
 
     @Override
     public StringList getDependencyCitations() {
@@ -841,282 +1058,6 @@ public class ImageJAlgorithmsExtension extends JIPipePrepackagedDefaultJavaExten
     @Override
     public String getDependencyVersion() {
         return "1.63.0";
-    }
-
-    private static Map<Class<? extends JIPipeData>, Class<? extends JIPipeData>> get3DConversion() {
-        Map<Class<? extends JIPipeData>, Class<? extends JIPipeData>> result = new HashMap<>();
-
-        result.put(ImagePlusData.class, ImagePlus3DData.class);
-        result.put(ImagePlusGreyscaleData.class, ImagePlus3DGreyscaleData.class);
-        result.put(ImagePlusGreyscale8UData.class, ImagePlus3DGreyscale8UData.class);
-        result.put(ImagePlusGreyscaleMaskData.class, ImagePlus3DGreyscaleMaskData.class);
-        result.put(ImagePlusGreyscale16UData.class, ImagePlus3DGreyscale16UData.class);
-        result.put(ImagePlusGreyscale32FData.class, ImagePlus3DGreyscale32FData.class);
-        result.put(ImagePlusColorHSBData.class, ImagePlus3DColorHSBData.class);
-        result.put(ImagePlusColorRGBData.class, ImagePlus3DColorRGBData.class);
-
-        result.put(ImagePlus2DData.class, ImagePlus3DData.class);
-        result.put(ImagePlus2DGreyscaleData.class, ImagePlus3DGreyscaleData.class);
-        result.put(ImagePlus2DGreyscale8UData.class, ImagePlus3DGreyscale8UData.class);
-        result.put(ImagePlus2DGreyscaleMaskData.class, ImagePlus3DGreyscaleMaskData.class);
-        result.put(ImagePlus2DGreyscale16UData.class, ImagePlus3DGreyscale16UData.class);
-        result.put(ImagePlus2DGreyscale32FData.class, ImagePlus3DGreyscale32FData.class);
-        result.put(ImagePlus2DColorHSBData.class, ImagePlus3DColorHSBData.class);
-        result.put(ImagePlus2DColorRGBData.class, ImagePlus3DColorRGBData.class);
-
-        result.put(ImagePlus4DData.class, ImagePlus3DData.class);
-        result.put(ImagePlus4DGreyscaleData.class, ImagePlus3DGreyscaleData.class);
-        result.put(ImagePlus4DGreyscale8UData.class, ImagePlus3DGreyscale8UData.class);
-        result.put(ImagePlus4DGreyscaleMaskData.class, ImagePlus3DGreyscaleMaskData.class);
-        result.put(ImagePlus4DGreyscale16UData.class, ImagePlus3DGreyscale16UData.class);
-        result.put(ImagePlus4DGreyscale32FData.class, ImagePlus3DGreyscale32FData.class);
-        result.put(ImagePlus4DColorHSBData.class, ImagePlus3DColorHSBData.class);
-        result.put(ImagePlus4DColorRGBData.class, ImagePlus3DColorRGBData.class);
-
-        result.put(ImagePlus5DData.class, ImagePlus3DData.class);
-        result.put(ImagePlus5DGreyscaleData.class, ImagePlus3DGreyscaleData.class);
-        result.put(ImagePlus5DGreyscale8UData.class, ImagePlus3DGreyscale8UData.class);
-        result.put(ImagePlus5DGreyscaleMaskData.class, ImagePlus3DGreyscaleMaskData.class);
-        result.put(ImagePlus5DGreyscale16UData.class, ImagePlus3DGreyscale16UData.class);
-        result.put(ImagePlus5DGreyscale32FData.class, ImagePlus3DGreyscale32FData.class);
-        result.put(ImagePlus5DColorHSBData.class, ImagePlus3DColorHSBData.class);
-        result.put(ImagePlus5DColorRGBData.class, ImagePlus3DColorRGBData.class);
-
-        return result;
-    }
-
-    private static Map<Class<? extends JIPipeData>, Class<? extends JIPipeData>> get2DConversion() {
-        Map<Class<? extends JIPipeData>, Class<? extends JIPipeData>> result = new HashMap<>();
-
-        result.put(ImagePlusData.class, ImagePlus2DData.class);
-        result.put(ImagePlusGreyscaleData.class, ImagePlus2DGreyscaleData.class);
-        result.put(ImagePlusGreyscale8UData.class, ImagePlus2DGreyscale8UData.class);
-        result.put(ImagePlusGreyscaleMaskData.class, ImagePlus2DGreyscaleMaskData.class);
-        result.put(ImagePlusGreyscale16UData.class, ImagePlus2DGreyscale16UData.class);
-        result.put(ImagePlusGreyscale32FData.class, ImagePlus2DGreyscale32FData.class);
-        result.put(ImagePlusColorHSBData.class, ImagePlus2DColorHSBData.class);
-        result.put(ImagePlusColorRGBData.class, ImagePlus2DColorRGBData.class);
-
-        result.put(ImagePlus3DData.class, ImagePlus2DData.class);
-        result.put(ImagePlus3DGreyscaleData.class, ImagePlus2DGreyscaleData.class);
-        result.put(ImagePlus3DGreyscale8UData.class, ImagePlus2DGreyscale8UData.class);
-        result.put(ImagePlus3DGreyscaleMaskData.class, ImagePlus2DGreyscaleMaskData.class);
-        result.put(ImagePlus3DGreyscale16UData.class, ImagePlus2DGreyscale16UData.class);
-        result.put(ImagePlus3DGreyscale32FData.class, ImagePlus2DGreyscale32FData.class);
-        result.put(ImagePlus3DColorHSBData.class, ImagePlus2DColorHSBData.class);
-        result.put(ImagePlus3DColorRGBData.class, ImagePlus2DColorRGBData.class);
-
-        result.put(ImagePlus4DData.class, ImagePlus2DData.class);
-        result.put(ImagePlus4DGreyscaleData.class, ImagePlus2DGreyscaleData.class);
-        result.put(ImagePlus4DGreyscale8UData.class, ImagePlus2DGreyscale8UData.class);
-        result.put(ImagePlus4DGreyscaleMaskData.class, ImagePlus2DGreyscaleMaskData.class);
-        result.put(ImagePlus4DGreyscale16UData.class, ImagePlus2DGreyscale16UData.class);
-        result.put(ImagePlus4DGreyscale32FData.class, ImagePlus2DGreyscale32FData.class);
-        result.put(ImagePlus4DColorHSBData.class, ImagePlus2DColorHSBData.class);
-        result.put(ImagePlus4DColorRGBData.class, ImagePlus2DColorRGBData.class);
-
-        result.put(ImagePlus5DData.class, ImagePlus2DData.class);
-        result.put(ImagePlus5DGreyscaleData.class, ImagePlus2DGreyscaleData.class);
-        result.put(ImagePlus5DGreyscale8UData.class, ImagePlus2DGreyscale8UData.class);
-        result.put(ImagePlus5DGreyscaleMaskData.class, ImagePlus2DGreyscaleMaskData.class);
-        result.put(ImagePlus5DGreyscale16UData.class, ImagePlus2DGreyscale16UData.class);
-        result.put(ImagePlus5DGreyscale32FData.class, ImagePlus2DGreyscale32FData.class);
-        result.put(ImagePlus5DColorHSBData.class, ImagePlus2DColorHSBData.class);
-        result.put(ImagePlus5DColorRGBData.class, ImagePlus2DColorRGBData.class);
-
-        return result;
-    }
-
-    private static Map<Class<? extends JIPipeData>, Class<? extends JIPipeData>> getDecreaseDimensionConversion() {
-        Map<Class<? extends JIPipeData>, Class<? extends JIPipeData>> result = new HashMap<>();
-
-        result.put(ImagePlus3DData.class, ImagePlus2DData.class);
-        result.put(ImagePlus3DGreyscaleData.class, ImagePlus2DGreyscaleData.class);
-        result.put(ImagePlus3DGreyscale8UData.class, ImagePlus2DGreyscale8UData.class);
-        result.put(ImagePlus3DGreyscaleMaskData.class, ImagePlus2DGreyscaleMaskData.class);
-        result.put(ImagePlus3DGreyscale16UData.class, ImagePlus2DGreyscale16UData.class);
-        result.put(ImagePlus3DGreyscale32FData.class, ImagePlus2DGreyscale32FData.class);
-        result.put(ImagePlus3DColorHSBData.class, ImagePlus2DColorHSBData.class);
-        result.put(ImagePlus3DColorRGBData.class, ImagePlus2DColorRGBData.class);
-
-        result.put(ImagePlus4DData.class, ImagePlus3DData.class);
-        result.put(ImagePlus4DGreyscaleData.class, ImagePlus3DGreyscaleData.class);
-        result.put(ImagePlus4DGreyscale8UData.class, ImagePlus3DGreyscale8UData.class);
-        result.put(ImagePlus4DGreyscaleMaskData.class, ImagePlus3DGreyscaleMaskData.class);
-        result.put(ImagePlus4DGreyscale16UData.class, ImagePlus3DGreyscale16UData.class);
-        result.put(ImagePlus4DGreyscale32FData.class, ImagePlus3DGreyscale32FData.class);
-        result.put(ImagePlus4DColorHSBData.class, ImagePlus3DColorHSBData.class);
-        result.put(ImagePlus4DColorRGBData.class, ImagePlus3DColorRGBData.class);
-
-        result.put(ImagePlus5DData.class, ImagePlus4DData.class);
-        result.put(ImagePlus5DGreyscaleData.class, ImagePlus4DGreyscaleData.class);
-        result.put(ImagePlus5DGreyscale8UData.class, ImagePlus4DGreyscale8UData.class);
-        result.put(ImagePlus5DGreyscaleMaskData.class, ImagePlus4DGreyscaleMaskData.class);
-        result.put(ImagePlus5DGreyscale16UData.class, ImagePlus4DGreyscale16UData.class);
-        result.put(ImagePlus5DGreyscale32FData.class, ImagePlus4DGreyscale32FData.class);
-        result.put(ImagePlus5DColorHSBData.class, ImagePlus4DColorHSBData.class);
-        result.put(ImagePlus5DColorRGBData.class, ImagePlus4DColorRGBData.class);
-
-        return result;
-    }
-
-    private static Map<Class<? extends JIPipeData>, Class<? extends JIPipeData>> getMaskQualifierMap() {
-        Map<Class<? extends JIPipeData>, Class<? extends JIPipeData>> result = new HashMap<>();
-
-        result.put(ImagePlusData.class, ImagePlusGreyscaleMaskData.class);
-        result.put(ImagePlusGreyscaleData.class, ImagePlusGreyscaleMaskData.class);
-        result.put(ImagePlusGreyscale8UData.class, ImagePlusGreyscaleMaskData.class);
-        result.put(ImagePlusGreyscale16UData.class, ImagePlusGreyscaleMaskData.class);
-        result.put(ImagePlusGreyscale32FData.class, ImagePlusGreyscaleMaskData.class);
-        result.put(ImagePlusColorHSBData.class, ImagePlusGreyscaleMaskData.class);
-        result.put(ImagePlusColorRGBData.class, ImagePlusGreyscaleMaskData.class);
-
-        result.put(ImagePlus2DData.class, ImagePlus2DGreyscaleMaskData.class);
-        result.put(ImagePlus2DGreyscaleData.class, ImagePlus2DGreyscaleMaskData.class);
-        result.put(ImagePlus2DGreyscale8UData.class, ImagePlus2DGreyscaleMaskData.class);
-        result.put(ImagePlus2DGreyscale16UData.class, ImagePlus2DGreyscaleMaskData.class);
-        result.put(ImagePlus2DGreyscale32FData.class, ImagePlus2DGreyscaleMaskData.class);
-        result.put(ImagePlus2DColorHSBData.class, ImagePlus2DGreyscaleMaskData.class);
-        result.put(ImagePlus2DColorRGBData.class, ImagePlus2DGreyscaleMaskData.class);
-
-        result.put(ImagePlus3DData.class, ImagePlus3DGreyscaleMaskData.class);
-        result.put(ImagePlus3DGreyscaleData.class, ImagePlus3DGreyscaleMaskData.class);
-        result.put(ImagePlus3DGreyscale8UData.class, ImagePlus3DGreyscaleMaskData.class);
-        result.put(ImagePlus3DGreyscale16UData.class, ImagePlus3DGreyscaleMaskData.class);
-        result.put(ImagePlus3DGreyscale32FData.class, ImagePlus3DGreyscaleMaskData.class);
-        result.put(ImagePlus3DColorHSBData.class, ImagePlus3DGreyscaleMaskData.class);
-        result.put(ImagePlus3DColorRGBData.class, ImagePlus3DGreyscaleMaskData.class);
-
-        result.put(ImagePlus4DData.class, ImagePlus4DGreyscaleMaskData.class);
-        result.put(ImagePlus4DGreyscaleData.class, ImagePlus4DGreyscaleMaskData.class);
-        result.put(ImagePlus4DGreyscale8UData.class, ImagePlus4DGreyscaleMaskData.class);
-        result.put(ImagePlus4DGreyscale16UData.class, ImagePlus4DGreyscaleMaskData.class);
-        result.put(ImagePlus4DGreyscale32FData.class, ImagePlus4DGreyscaleMaskData.class);
-        result.put(ImagePlus4DColorHSBData.class, ImagePlus4DGreyscaleMaskData.class);
-        result.put(ImagePlus4DColorRGBData.class, ImagePlus4DGreyscaleMaskData.class);
-
-        result.put(ImagePlus5DData.class, ImagePlus5DGreyscaleMaskData.class);
-        result.put(ImagePlus5DGreyscaleData.class, ImagePlus5DGreyscaleMaskData.class);
-        result.put(ImagePlus5DGreyscale8UData.class, ImagePlus5DGreyscaleMaskData.class);
-        result.put(ImagePlus5DGreyscale16UData.class, ImagePlus5DGreyscaleMaskData.class);
-        result.put(ImagePlus5DGreyscale32FData.class, ImagePlus5DGreyscaleMaskData.class);
-        result.put(ImagePlus5DColorHSBData.class, ImagePlus5DGreyscaleMaskData.class);
-        result.put(ImagePlus5DColorRGBData.class, ImagePlus5DGreyscaleMaskData.class);
-
-        return result;
-    }
-
-    private static Map<Class<? extends JIPipeData>, Class<? extends JIPipeData>> getToGrayscale32FConversion() {
-        Map<Class<? extends JIPipeData>, Class<? extends JIPipeData>> result = new HashMap<>();
-
-        result.put(ImagePlusData.class, ImagePlusGreyscale32FData.class);
-        result.put(ImagePlusGreyscaleData.class, ImagePlusGreyscale32FData.class);
-        result.put(ImagePlusGreyscale8UData.class, ImagePlusGreyscale32FData.class);
-        result.put(ImagePlusGreyscaleMaskData.class, ImagePlusGreyscale32FData.class);
-        result.put(ImagePlusGreyscale16UData.class, ImagePlusGreyscale32FData.class);
-        result.put(ImagePlusColorHSBData.class, ImagePlusGreyscale32FData.class);
-        result.put(ImagePlusColorRGBData.class, ImagePlusGreyscale32FData.class);
-
-        result.put(ImagePlus2DData.class, ImagePlus2DGreyscale32FData.class);
-        result.put(ImagePlus2DGreyscaleData.class, ImagePlus2DGreyscale32FData.class);
-        result.put(ImagePlus2DGreyscale8UData.class, ImagePlus2DGreyscale32FData.class);
-        result.put(ImagePlus2DGreyscaleMaskData.class, ImagePlus2DGreyscale32FData.class);
-        result.put(ImagePlus2DGreyscale16UData.class, ImagePlus2DGreyscale32FData.class);
-        result.put(ImagePlus2DColorHSBData.class, ImagePlus2DGreyscale32FData.class);
-        result.put(ImagePlus2DColorRGBData.class, ImagePlus2DGreyscale32FData.class);
-
-        result.put(ImagePlus3DData.class, ImagePlus3DGreyscale32FData.class);
-        result.put(ImagePlus3DGreyscaleData.class, ImagePlus3DGreyscale32FData.class);
-        result.put(ImagePlus3DGreyscale8UData.class, ImagePlus3DGreyscale32FData.class);
-        result.put(ImagePlus3DGreyscaleMaskData.class, ImagePlus3DGreyscale32FData.class);
-        result.put(ImagePlus3DGreyscale16UData.class, ImagePlus3DGreyscale32FData.class);
-        result.put(ImagePlus3DColorHSBData.class, ImagePlus3DGreyscale32FData.class);
-        result.put(ImagePlus3DColorRGBData.class, ImagePlus3DGreyscale32FData.class);
-
-        result.put(ImagePlus4DData.class, ImagePlus4DGreyscale32FData.class);
-        result.put(ImagePlus4DGreyscaleData.class, ImagePlus4DGreyscale32FData.class);
-        result.put(ImagePlus4DGreyscale8UData.class, ImagePlus4DGreyscale32FData.class);
-        result.put(ImagePlus4DGreyscaleMaskData.class, ImagePlus4DGreyscale32FData.class);
-        result.put(ImagePlus4DGreyscale16UData.class, ImagePlus4DGreyscale32FData.class);
-        result.put(ImagePlus4DColorHSBData.class, ImagePlus4DGreyscale32FData.class);
-        result.put(ImagePlus4DColorRGBData.class, ImagePlus4DGreyscale32FData.class);
-
-        result.put(ImagePlus5DData.class, ImagePlus5DGreyscale32FData.class);
-        result.put(ImagePlus5DGreyscaleData.class, ImagePlus5DGreyscale32FData.class);
-        result.put(ImagePlus5DGreyscale8UData.class, ImagePlus5DGreyscale32FData.class);
-        result.put(ImagePlus5DGreyscaleMaskData.class, ImagePlus5DGreyscale32FData.class);
-        result.put(ImagePlus5DGreyscale16UData.class, ImagePlus5DGreyscale32FData.class);
-        result.put(ImagePlus5DColorHSBData.class, ImagePlus5DGreyscale32FData.class);
-        result.put(ImagePlus5DColorRGBData.class, ImagePlus5DGreyscale32FData.class);
-
-        return result;
-    }
-
-    private static Map<Class<? extends JIPipeData>, Class<? extends JIPipeData>> getToGrayscaleConversion() {
-        Map<Class<? extends JIPipeData>, Class<? extends JIPipeData>> result = new HashMap<>();
-
-        result.put(ImagePlusData.class, ImagePlusGreyscaleData.class);
-        result.put(ImagePlusColorHSBData.class, ImagePlusGreyscaleData.class);
-        result.put(ImagePlusColorRGBData.class, ImagePlusGreyscaleData.class);
-
-        result.put(ImagePlus2DData.class, ImagePlus2DGreyscaleData.class);
-        result.put(ImagePlus2DColorHSBData.class, ImagePlus2DGreyscaleData.class);
-        result.put(ImagePlus2DColorRGBData.class, ImagePlus2DGreyscaleData.class);
-
-        result.put(ImagePlus3DData.class, ImagePlus3DGreyscaleData.class);
-        result.put(ImagePlus3DColorHSBData.class, ImagePlus3DGreyscaleData.class);
-        result.put(ImagePlus3DColorRGBData.class, ImagePlus3DGreyscaleData.class);
-
-        result.put(ImagePlus4DData.class, ImagePlus4DGreyscaleData.class);
-        result.put(ImagePlus4DColorHSBData.class, ImagePlus4DGreyscaleData.class);
-        result.put(ImagePlus4DColorRGBData.class, ImagePlus4DGreyscaleData.class);
-
-        result.put(ImagePlus5DData.class, ImagePlus5DGreyscaleData.class);
-        result.put(ImagePlus5DColorHSBData.class, ImagePlus5DGreyscaleData.class);
-        result.put(ImagePlus5DColorRGBData.class, ImagePlus5DGreyscaleData.class);
-
-        return result;
-    }
-
-    private static Map<Class<? extends JIPipeData>, Class<? extends JIPipeData>> getToColorRgbConversion() {
-        Map<Class<? extends JIPipeData>, Class<? extends JIPipeData>> result = new HashMap<>();
-
-        result.put(ImagePlusData.class, ImagePlusColorRGBData.class);
-        result.put(ImagePlusGreyscaleData.class, ImagePlusColorRGBData.class);
-        result.put(ImagePlusGreyscale8UData.class, ImagePlusColorRGBData.class);
-        result.put(ImagePlusGreyscale16UData.class, ImagePlusColorRGBData.class);
-        result.put(ImagePlusGreyscale32FData.class, ImagePlusColorRGBData.class);
-        result.put(ImagePlusGreyscaleMaskData.class, ImagePlusColorRGBData.class);
-
-        result.put(ImagePlus2DData.class, ImagePlus2DColorRGBData.class);
-        result.put(ImagePlus2DGreyscaleData.class, ImagePlus2DColorRGBData.class);
-        result.put(ImagePlus2DGreyscale8UData.class, ImagePlus2DColorRGBData.class);
-        result.put(ImagePlus2DGreyscale16UData.class, ImagePlus2DColorRGBData.class);
-        result.put(ImagePlus2DGreyscale32FData.class, ImagePlus2DColorRGBData.class);
-        result.put(ImagePlus2DGreyscaleMaskData.class, ImagePlus2DColorRGBData.class);
-
-        result.put(ImagePlus3DData.class, ImagePlus3DColorRGBData.class);
-        result.put(ImagePlus3DGreyscaleData.class, ImagePlus3DColorRGBData.class);
-        result.put(ImagePlus3DGreyscale8UData.class, ImagePlus3DColorRGBData.class);
-        result.put(ImagePlus3DGreyscale16UData.class, ImagePlus3DColorRGBData.class);
-        result.put(ImagePlus3DGreyscale32FData.class, ImagePlus3DColorRGBData.class);
-        result.put(ImagePlus3DGreyscaleMaskData.class, ImagePlus3DColorRGBData.class);
-
-        result.put(ImagePlus4DData.class, ImagePlus4DColorRGBData.class);
-        result.put(ImagePlus4DGreyscaleData.class, ImagePlus4DColorRGBData.class);
-        result.put(ImagePlus4DGreyscale8UData.class, ImagePlus4DColorRGBData.class);
-        result.put(ImagePlus4DGreyscale16UData.class, ImagePlus4DColorRGBData.class);
-        result.put(ImagePlus4DGreyscale32FData.class, ImagePlus4DColorRGBData.class);
-        result.put(ImagePlus4DGreyscaleMaskData.class, ImagePlus4DColorRGBData.class);
-
-        result.put(ImagePlus5DData.class, ImagePlus5DColorRGBData.class);
-        result.put(ImagePlus5DGreyscaleData.class, ImagePlus5DColorRGBData.class);
-        result.put(ImagePlus5DGreyscale8UData.class, ImagePlus5DColorRGBData.class);
-        result.put(ImagePlus5DGreyscale16UData.class, ImagePlus5DColorRGBData.class);
-        result.put(ImagePlus5DGreyscale32FData.class, ImagePlus5DColorRGBData.class);
-        result.put(ImagePlus5DGreyscaleMaskData.class, ImagePlus5DColorRGBData.class);
-
-        return result;
     }
 }
 

@@ -2,12 +2,7 @@ package org.hkijena.jipipe.extensions.parameters.library.table;
 
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.nodes.JIPipeGraph;
-import org.hkijena.jipipe.api.parameters.JIPipeDynamicParameterCollection;
-import org.hkijena.jipipe.api.parameters.JIPipeMultiParameterAccess;
-import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
-import org.hkijena.jipipe.api.parameters.JIPipeParameterGenerator;
-import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
-import org.hkijena.jipipe.api.parameters.JIPipeParameterTypeInfo;
+import org.hkijena.jipipe.api.parameters.*;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.components.AddDynamicParameterPanel;
@@ -22,17 +17,11 @@ import org.jdesktop.swingx.JXTable;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
-import java.awt.BorderLayout;
-import java.awt.Component;
-import java.awt.Font;
+import java.awt.*;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class ParameterTableEditorWindow extends JFrame {
@@ -58,6 +47,23 @@ public class ParameterTableEditorWindow extends JFrame {
         });
         initialize();
         reload();
+    }
+
+    public static ParameterTableEditorWindow getInstance(JIPipeWorkbench workbench, Component parent, JIPipeParameterAccess parameterAccess, ParameterTable parameterTable) {
+        ParameterTableEditorWindow window = OPEN_WINDOWS.getOrDefault(parameterTable, null);
+        if (window == null) {
+            window = new ParameterTableEditorWindow(workbench, parameterAccess, parameterTable);
+            window.setSize(1024, 768);
+            window.setLocationRelativeTo(parent);
+            window.setTitle(parameterAccess.getName());
+            window.setVisible(true);
+            OPEN_WINDOWS.put(parameterTable, window);
+            return window;
+        } else {
+            window.toFront();
+            window.repaint();
+        }
+        return window;
     }
 
     private void initialize() {
@@ -467,22 +473,5 @@ public class ParameterTableEditorWindow extends JFrame {
 
     public JIPipeWorkbench getWorkbench() {
         return workbench;
-    }
-
-    public static ParameterTableEditorWindow getInstance(JIPipeWorkbench workbench, Component parent, JIPipeParameterAccess parameterAccess, ParameterTable parameterTable) {
-        ParameterTableEditorWindow window = OPEN_WINDOWS.getOrDefault(parameterTable, null);
-        if (window == null) {
-            window = new ParameterTableEditorWindow(workbench, parameterAccess, parameterTable);
-            window.setSize(1024, 768);
-            window.setLocationRelativeTo(parent);
-            window.setTitle(parameterAccess.getName());
-            window.setVisible(true);
-            OPEN_WINDOWS.put(parameterTable, window);
-            return window;
-        } else {
-            window.toFront();
-            window.repaint();
-        }
-        return window;
     }
 }

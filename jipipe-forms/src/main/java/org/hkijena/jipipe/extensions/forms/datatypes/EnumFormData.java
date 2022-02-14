@@ -19,7 +19,7 @@ import org.hkijena.jipipe.extensions.parameters.library.primitives.DynamicString
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.utils.StringUtils;
 
-import java.awt.Component;
+import java.awt.*;
 import java.nio.file.Path;
 import java.util.Collections;
 import java.util.stream.Collectors;
@@ -41,6 +41,10 @@ public class EnumFormData extends ParameterFormData {
         this.annotationIOSettings = new SingleAnnotationIOSettings(other.annotationIOSettings);
         this.items = new StringAndStringPairParameter.List(other.items);
         annotationIOSettings.getEventBus().register(this);
+    }
+
+    public static EnumFormData importFrom(Path rowStorage) {
+        return FormData.importFrom(rowStorage, EnumFormData.class);
     }
 
     @JIPipeDocumentation(name = "Initial value", description = "The initial value. Should be the annotation value of the item.")
@@ -133,9 +137,5 @@ public class EnumFormData extends ParameterFormData {
             annotationIOSettings.getAnnotationMergeStrategy().mergeInto(dataBatch.getMergedAnnotations(),
                     Collections.singletonList(annotationIOSettings.getOutputAnnotation().createAnnotation(value)));
         }
-    }
-
-    public static EnumFormData importFrom(Path rowStorage) {
-        return FormData.importFrom(rowStorage, EnumFormData.class);
     }
 }

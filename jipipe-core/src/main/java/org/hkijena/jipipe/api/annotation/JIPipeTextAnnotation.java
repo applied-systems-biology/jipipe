@@ -22,12 +22,7 @@ import org.python.core.PyDictionary;
 import org.python.core.PyString;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 
 /**
  * A single annotation
@@ -78,6 +73,105 @@ public class JIPipeTextAnnotation implements Comparable<JIPipeTextAnnotation>, J
      */
     public JIPipeTextAnnotation(String name, String[] values) {
         this(name, values.length == 0 ? "" : (values.length == 1 ? values[0] : JsonUtils.toJsonString(values)));
+    }
+
+    /**
+     * Returns true if both have the same name.
+     * Returns false if either are null
+     *
+     * @param lhs the first
+     * @param rhs the second
+     * @return if both have the same name and are not null
+     */
+    public static boolean nameEquals(JIPipeTextAnnotation lhs, JIPipeTextAnnotation rhs) {
+        if (lhs == null || rhs == null)
+            return false;
+        return lhs.nameEquals(rhs);
+    }
+
+    /**
+     * Converts a map of annotations into a Python dictionary
+     *
+     * @param annotationMap the annotations
+     * @return the Python dictionary
+     */
+    public static PyDictionary annotationMapToPython(Map<String, JIPipeTextAnnotation> annotationMap) {
+        PyDictionary annotationDict = new PyDictionary();
+        for (Map.Entry<String, JIPipeTextAnnotation> entry : annotationMap.entrySet()) {
+            annotationDict.put(new PyString(entry.getKey()), new PyString(entry.getValue().getValue()));
+        }
+        return annotationDict;
+    }
+
+    /**
+     * Sets annotations from a Python dictionary
+     *
+     * @param annotationDict the dictionary
+     * @param target         the target map
+     */
+    public static void setAnnotationsFromPython(PyDictionary annotationDict, Map<String, JIPipeTextAnnotation> target) {
+        for (Object key : annotationDict.keys()) {
+            String keyString = "" + key;
+            String valueString = "" + annotationDict.get(key);
+            target.put(keyString, new JIPipeTextAnnotation(keyString, valueString));
+        }
+    }
+
+    /**
+     * Sets annotations from a Python dictionary
+     *
+     * @param annotationDict the dictionary
+     */
+    public static List<JIPipeTextAnnotation> extractAnnotationsFromPython(PyDictionary annotationDict) {
+        List<JIPipeTextAnnotation> result = new ArrayList<>();
+        for (Object key : annotationDict.keys()) {
+            String keyString = "" + key;
+            String valueString = "" + annotationDict.get(key);
+            result.add(new JIPipeTextAnnotation(keyString, valueString));
+        }
+        return result;
+    }
+
+    /**
+     * Converts a list of annotations into a Python dictionary
+     *
+     * @param annotations the annotations
+     * @return the Python dictionary
+     */
+    public static PyDictionary annotationListToPython(Collection<JIPipeTextAnnotation> annotations) {
+        PyDictionary annotationDict = new PyDictionary();
+        for (JIPipeTextAnnotation annotation : annotations) {
+            annotationDict.put(new PyString(annotation.getName()), new PyString(annotation.getValue()));
+        }
+        return annotationDict;
+    }
+
+    /**
+     * Converts a set of annotations to a map
+     *
+     * @param annotations the annotations
+     * @return annotations as map
+     */
+    public static Map<String, String> annotationListToMap(Collection<JIPipeTextAnnotation> annotations, JIPipeTextAnnotationMergeMode mergeStrategy) {
+        Map<String, String> result = new HashMap<>();
+        for (JIPipeTextAnnotation annotation : mergeStrategy.merge(annotations)) {
+            result.put(annotation.getName(), annotation.getValue());
+        }
+        return result;
+    }
+
+    /**
+     * Converts an annotation map to a list
+     *
+     * @param map the map
+     * @return the annotations
+     */
+    public static List<JIPipeTextAnnotation> mapToAnnotationList(Map<String, String> map) {
+        List<JIPipeTextAnnotation> annotations = new ArrayList<>();
+        for (Map.Entry<String, String> entry : map.entrySet()) {
+            annotations.add(new JIPipeTextAnnotation(entry.getKey(), entry.getValue()));
+        }
+        return annotations;
     }
 
     @JsonGetter("name")
@@ -181,104 +275,5 @@ public class JIPipeTextAnnotation implements Comparable<JIPipeTextAnnotation>, J
      */
     public boolean isArray() {
         return getArray().length > 1;
-    }
-
-    /**
-     * Returns true if both have the same name.
-     * Returns false if either are null
-     *
-     * @param lhs the first
-     * @param rhs the second
-     * @return if both have the same name and are not null
-     */
-    public static boolean nameEquals(JIPipeTextAnnotation lhs, JIPipeTextAnnotation rhs) {
-        if (lhs == null || rhs == null)
-            return false;
-        return lhs.nameEquals(rhs);
-    }
-
-    /**
-     * Converts a map of annotations into a Python dictionary
-     *
-     * @param annotationMap the annotations
-     * @return the Python dictionary
-     */
-    public static PyDictionary annotationMapToPython(Map<String, JIPipeTextAnnotation> annotationMap) {
-        PyDictionary annotationDict = new PyDictionary();
-        for (Map.Entry<String, JIPipeTextAnnotation> entry : annotationMap.entrySet()) {
-            annotationDict.put(new PyString(entry.getKey()), new PyString(entry.getValue().getValue()));
-        }
-        return annotationDict;
-    }
-
-    /**
-     * Sets annotations from a Python dictionary
-     *
-     * @param annotationDict the dictionary
-     * @param target         the target map
-     */
-    public static void setAnnotationsFromPython(PyDictionary annotationDict, Map<String, JIPipeTextAnnotation> target) {
-        for (Object key : annotationDict.keys()) {
-            String keyString = "" + key;
-            String valueString = "" + annotationDict.get(key);
-            target.put(keyString, new JIPipeTextAnnotation(keyString, valueString));
-        }
-    }
-
-    /**
-     * Sets annotations from a Python dictionary
-     *
-     * @param annotationDict the dictionary
-     */
-    public static List<JIPipeTextAnnotation> extractAnnotationsFromPython(PyDictionary annotationDict) {
-        List<JIPipeTextAnnotation> result = new ArrayList<>();
-        for (Object key : annotationDict.keys()) {
-            String keyString = "" + key;
-            String valueString = "" + annotationDict.get(key);
-            result.add(new JIPipeTextAnnotation(keyString, valueString));
-        }
-        return result;
-    }
-
-    /**
-     * Converts a list of annotations into a Python dictionary
-     *
-     * @param annotations the annotations
-     * @return the Python dictionary
-     */
-    public static PyDictionary annotationListToPython(Collection<JIPipeTextAnnotation> annotations) {
-        PyDictionary annotationDict = new PyDictionary();
-        for (JIPipeTextAnnotation annotation : annotations) {
-            annotationDict.put(new PyString(annotation.getName()), new PyString(annotation.getValue()));
-        }
-        return annotationDict;
-    }
-
-    /**
-     * Converts a set of annotations to a map
-     *
-     * @param annotations the annotations
-     * @return annotations as map
-     */
-    public static Map<String, String> annotationListToMap(Collection<JIPipeTextAnnotation> annotations, JIPipeTextAnnotationMergeMode mergeStrategy) {
-        Map<String, String> result = new HashMap<>();
-        for (JIPipeTextAnnotation annotation : mergeStrategy.merge(annotations)) {
-            result.put(annotation.getName(), annotation.getValue());
-        }
-        return result;
-    }
-
-    /**
-     * Converts an annotation map to a list
-     *
-     * @param map the map
-     * @return the annotations
-     */
-    public static List<JIPipeTextAnnotation> mapToAnnotationList(Map<String, String> map) {
-        List<JIPipeTextAnnotation> annotations = new ArrayList<>();
-        for (Map.Entry<String, String> entry : map.entrySet()) {
-            annotations.add(new JIPipeTextAnnotation(entry.getKey(), entry.getValue()));
-        }
-        return annotations;
     }
 }

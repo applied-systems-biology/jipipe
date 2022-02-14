@@ -39,11 +39,7 @@ import org.hkijena.jipipe.extensions.omero.util.OMEROUtils;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.optional.OptionalAnnotationNameParameter;
 import org.hkijena.jipipe.utils.json.JsonUtils;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @JIPipeDocumentation(name = "List images", description = "Returns the ID(s) of images(s) according to search criteria. Requires project IDs as input.")

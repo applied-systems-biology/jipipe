@@ -1,22 +1,12 @@
 package org.hkijena.jipipe.extensions.imagejalgorithms.utils;
 
-import ij.CompositeImage;
-import ij.IJ;
-import ij.ImagePlus;
-import ij.ImageStack;
-import ij.Prefs;
-import ij.gui.ImageCanvas;
-import ij.gui.Line;
-import ij.gui.NewImage;
-import ij.gui.PolygonRoi;
-import ij.gui.Roi;
+import ij.*;
+import ij.gui.*;
 import ij.measure.Calibration;
 import ij.process.ColorProcessor;
 import ij.process.ImageProcessor;
 
-import java.awt.Color;
-import java.awt.Graphics;
-import java.awt.Rectangle;
+import java.awt.*;
 
 /**
  * Copy of {@link ij.plugin.Slicer} that has a proper API

@@ -18,11 +18,7 @@ import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeIssueReport;
 import org.hkijena.jipipe.api.JIPipeMetadata;
 import org.hkijena.jipipe.api.compat.ImageJDatatypeAdapter;
-import org.hkijena.jipipe.api.data.JIPipeData;
-import org.hkijena.jipipe.api.data.JIPipeDataConverter;
-import org.hkijena.jipipe.api.data.JIPipeDataDisplayOperation;
-import org.hkijena.jipipe.api.data.JIPipeDataImportOperation;
-import org.hkijena.jipipe.api.data.JIPipeDataOperation;
+import org.hkijena.jipipe.api.data.*;
 import org.hkijena.jipipe.api.environments.ExternalEnvironment;
 import org.hkijena.jipipe.api.environments.ExternalEnvironmentInstaller;
 import org.hkijena.jipipe.api.environments.ExternalEnvironmentParameterEditorUI;
@@ -33,6 +29,7 @@ import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeDefaultParameterTypeInfo;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
+import org.hkijena.jipipe.api.parameters.JIPipeParameterGenerator;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTypeInfo;
 import org.hkijena.jipipe.api.registries.JIPipeJavaNodeRegistrationTask;
 import org.hkijena.jipipe.api.registries.JIPipeNodeRegistrationTask;
@@ -50,7 +47,6 @@ import org.hkijena.jipipe.ui.extension.GraphEditorToolBarButtonExtension;
 import org.hkijena.jipipe.ui.extension.JIPipeMenuExtension;
 import org.hkijena.jipipe.ui.grapheditor.contextmenu.NodeUIContextAction;
 import org.hkijena.jipipe.ui.parameters.JIPipeParameterEditorUI;
-import org.hkijena.jipipe.api.parameters.JIPipeParameterGenerator;
 import org.hkijena.jipipe.ui.resultanalysis.JIPipeResultDataSlotPreview;
 import org.hkijena.jipipe.ui.resultanalysis.JIPipeResultDataSlotRowUI;
 import org.hkijena.jipipe.utils.DocumentationUtils;
@@ -453,7 +449,7 @@ public abstract class JIPipeDefaultJavaExtension extends AbstractService impleme
      * Registers a UI that can generate parameters
      *
      * @param parameterClass Parameter class
-     * @param generator The generator object
+     * @param generator      The generator object
      */
     public void registerParameterGenerator(Class<?> parameterClass, JIPipeParameterGenerator generator) {
         JIPipeParameterTypeRegistry parametertypeRegistry = registry.getParameterTypeRegistry();

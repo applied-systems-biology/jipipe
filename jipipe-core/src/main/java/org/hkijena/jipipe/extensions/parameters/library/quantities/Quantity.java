@@ -39,6 +39,24 @@ public class Quantity {
         this.unit = other.unit;
     }
 
+    /**
+     * Parses a quantity from a string
+     *
+     * @param string the parsed string
+     */
+    public static Quantity parse(String string) {
+        Matcher matcher = PARSE_QUANTITY_PATTERN.matcher(string);
+        if (matcher.find()) {
+            String valueString = matcher.group(1);
+            String unitString = matcher.groupCount() >= 2 ? matcher.group(2) : "";
+            valueString = valueString.replace(',', '.').replace(" ", "");
+            unitString = unitString.replace(" ", "");
+            return new Quantity(NumberUtils.createDouble(valueString), unitString);
+        } else {
+            return null;
+        }
+    }
+
     @Override
     public String toString() {
         return (value + " " + unit).trim();
@@ -62,23 +80,5 @@ public class Quantity {
     @JsonSetter("unit")
     public void setUnit(String unit) {
         this.unit = unit;
-    }
-
-    /**
-     * Parses a quantity from a string
-     *
-     * @param string the parsed string
-     */
-    public static Quantity parse(String string) {
-        Matcher matcher = PARSE_QUANTITY_PATTERN.matcher(string);
-        if (matcher.find()) {
-            String valueString = matcher.group(1);
-            String unitString = matcher.groupCount() >= 2 ? matcher.group(2) : "";
-            valueString = valueString.replace(',', '.').replace(" ", "");
-            unitString = unitString.replace(" ", "");
-            return new Quantity(NumberUtils.createDouble(valueString), unitString);
-        } else {
-            return null;
-        }
     }
 }

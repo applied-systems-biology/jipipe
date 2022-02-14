@@ -21,11 +21,7 @@ import org.hkijena.jipipe.utils.StringUtils;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 /**
  * {@link JIPipeParameterAccess} generated from reflection

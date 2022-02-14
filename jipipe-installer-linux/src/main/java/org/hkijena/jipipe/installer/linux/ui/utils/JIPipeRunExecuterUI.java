@@ -19,8 +19,7 @@ import org.hkijena.jipipe.installer.linux.ui.events.RunUIWorkerFinishedEvent;
 import org.hkijena.jipipe.installer.linux.ui.events.RunUIWorkerProgressEvent;
 
 import javax.swing.*;
-import java.awt.BorderLayout;
-import java.awt.Font;
+import java.awt.*;
 
 /**
  * UI that executes an {@link JIPipeRunnable}

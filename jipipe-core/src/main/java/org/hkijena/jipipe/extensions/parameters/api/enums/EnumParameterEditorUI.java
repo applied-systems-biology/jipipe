@@ -21,9 +21,7 @@ import org.hkijena.jipipe.utils.ReflectionUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
-import java.awt.BorderLayout;
-import java.awt.Component;
-import java.awt.Font;
+import java.awt.*;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Objects;

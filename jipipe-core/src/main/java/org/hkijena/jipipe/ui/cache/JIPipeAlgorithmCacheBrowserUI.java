@@ -16,11 +16,7 @@ package org.hkijena.jipipe.ui.cache;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.eventbus.Subscribe;
-import org.hkijena.jipipe.api.JIPipeIssueReport;
-import org.hkijena.jipipe.api.JIPipeProgressInfo;
-import org.hkijena.jipipe.api.JIPipeProjectCache;
-import org.hkijena.jipipe.api.JIPipeProjectCacheState;
-import org.hkijena.jipipe.api.JIPipeRun;
+import org.hkijena.jipipe.api.*;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeAlgorithm;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
@@ -42,15 +38,12 @@ import org.hkijena.jipipe.utils.json.JsonUtils;
 
 import javax.swing.*;
 import javax.swing.tree.DefaultMutableTreeNode;
-import java.awt.BorderLayout;
+import java.awt.*;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 
 /**
  * UI around an {@link JIPipeRun} result

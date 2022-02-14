@@ -23,7 +23,7 @@ import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
-import java.awt.BorderLayout;
+import java.awt.*;
 import java.net.URL;
 import java.util.HashSet;
 import java.util.Set;
@@ -44,6 +44,19 @@ public class JIPipeAlgorithmIconRefParameterEditorUI extends JIPipeParameterEdit
         super(workbench, parameterAccess);
         initialize();
         reload();
+    }
+
+    public static Set<String> getAvailableAlgorithmIcons() {
+        if (availableAlgorithmIcons == null) {
+            availableAlgorithmIcons = new HashSet<>();
+            Set<String> rawIcons = ResourceUtils.walkInternalResourceFolder("icons/");
+            String basePath = ResourceUtils.getResourcePath("icons/");
+            for (String rawIcon : rawIcons) {
+                if (rawIcon.endsWith(".png"))
+                    availableAlgorithmIcons.add(rawIcon.substring(basePath.length()));
+            }
+        }
+        return availableAlgorithmIcons;
     }
 
     private void initialize() {
@@ -90,18 +103,5 @@ public class JIPipeAlgorithmIconRefParameterEditorUI extends JIPipeParameterEdit
             currentlyDisplayed.setText("<None selected>");
             currentlyDisplayed.setIcon(UIUtils.getIconFromResources("actions/configure.png"));
         }
-    }
-
-    public static Set<String> getAvailableAlgorithmIcons() {
-        if (availableAlgorithmIcons == null) {
-            availableAlgorithmIcons = new HashSet<>();
-            Set<String> rawIcons = ResourceUtils.walkInternalResourceFolder("icons/");
-            String basePath = ResourceUtils.getResourcePath("icons/");
-            for (String rawIcon : rawIcons) {
-                if (rawIcon.endsWith(".png"))
-                    availableAlgorithmIcons.add(rawIcon.substring(basePath.length()));
-            }
-        }
-        return availableAlgorithmIcons;
     }
 }

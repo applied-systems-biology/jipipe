@@ -16,8 +16,7 @@ package org.hkijena.jipipe.ui.components;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
-import java.awt.Color;
-import java.awt.Graphics;
+import java.awt.*;
 import java.awt.image.BufferedImage;
 
 public class BackgroundPanel extends JPanel {
@@ -42,10 +41,9 @@ public class BackgroundPanel extends JPanel {
 
     @Override
     public void paint(Graphics g) {
-        if(UIUtils.DARK_THEME) {
+        if (UIUtils.DARK_THEME) {
             g.setColor(Color.BLACK);
-        }
-        else {
+        } else {
             g.setColor(Color.WHITE);
         }
         g.fillRect(0, 0, getWidth(), getHeight());

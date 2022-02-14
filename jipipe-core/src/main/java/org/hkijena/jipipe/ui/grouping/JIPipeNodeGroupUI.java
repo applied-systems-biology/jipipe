@@ -20,7 +20,7 @@ import org.hkijena.jipipe.ui.components.tabs.DocumentTabPane;
 import org.hkijena.jipipe.ui.grapheditor.JIPipePipelineGraphEditorUI;
 import org.hkijena.jipipe.utils.UIUtils;
 
-import java.awt.BorderLayout;
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -43,19 +43,6 @@ public class JIPipeNodeGroupUI extends JIPipeWorkbenchPanel {
         super(workbenchUI);
         this.nodeGroup = nodeGroup;
         initialize();
-    }
-
-    private void initialize() {
-        setLayout(new BorderLayout());
-        graphUI = new JIPipePipelineGraphEditorUI(getWorkbench(), nodeGroup.getWrappedGraph(), null);
-        add(graphUI, BorderLayout.CENTER);
-    }
-
-    /**
-     * @return The displayed compartment
-     */
-    public NodeGroup getNodeGroup() {
-        return nodeGroup;
     }
 
     /**
@@ -95,5 +82,18 @@ public class JIPipeNodeGroupUI extends JIPipeWorkbenchPanel {
             }
         }
         return result;
+    }
+
+    private void initialize() {
+        setLayout(new BorderLayout());
+        graphUI = new JIPipePipelineGraphEditorUI(getWorkbench(), nodeGroup.getWrappedGraph(), null);
+        add(graphUI, BorderLayout.CENTER);
+    }
+
+    /**
+     * @return The displayed compartment
+     */
+    public NodeGroup getNodeGroup() {
+        return nodeGroup;
     }
 }

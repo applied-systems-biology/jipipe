@@ -29,9 +29,9 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ROIListData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.measure.MeasurementColumn;
+import org.hkijena.jipipe.extensions.parameters.api.enums.EnumParameterSettings;
 import org.hkijena.jipipe.extensions.parameters.library.colors.ColorMapEnumItemInfo;
 import org.hkijena.jipipe.extensions.parameters.library.colors.OptionalColorMapParameter;
-import org.hkijena.jipipe.extensions.parameters.api.enums.EnumParameterSettings;
 import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
 
 import java.util.Map;

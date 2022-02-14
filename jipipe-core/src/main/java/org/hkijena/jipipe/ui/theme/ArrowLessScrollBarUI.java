@@ -19,9 +19,13 @@ import org.hkijena.jipipe.extensions.settings.GeneralUISettings;
 import javax.swing.*;
 import javax.swing.plaf.ComponentUI;
 import javax.swing.plaf.basic.BasicScrollBarUI;
-import java.awt.Dimension;
+import java.awt.*;
 
 public class ArrowLessScrollBarUI extends BasicScrollBarUI {
+    public static ComponentUI createUI(JComponent c) {
+        return new ArrowLessScrollBarUI();
+    }
+
     @Override
     protected JButton createDecreaseButton(int orientation) {
         try {
@@ -54,10 +58,6 @@ public class ArrowLessScrollBarUI extends BasicScrollBarUI {
         jbutton.setMinimumSize(new Dimension(0, 0));
         jbutton.setMaximumSize(new Dimension(0, 0));
         return jbutton;
-    }
-
-    public static ComponentUI createUI(JComponent c) {
-        return new ArrowLessScrollBarUI();
     }
 
 }

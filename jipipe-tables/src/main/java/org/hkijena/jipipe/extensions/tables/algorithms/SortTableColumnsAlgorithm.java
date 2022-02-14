@@ -61,10 +61,10 @@ public class SortTableColumnsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
         ResultsTableData input = dataBatch.getInputData(getFirstInputSlot(), ResultsTableData.class, progressInfo);
         Comparator<String> comparator = Comparator.naturalOrder();
-        if(useNaturalSortOrder) {
+        if (useNaturalSortOrder) {
             comparator = new NaturalOrderComparator<>();
         }
-        if(reverseSortOrder) {
+        if (reverseSortOrder) {
             comparator = comparator.reversed();
         }
         ArrayList<String> columnNames = new ArrayList<>(input.getColumnNames());

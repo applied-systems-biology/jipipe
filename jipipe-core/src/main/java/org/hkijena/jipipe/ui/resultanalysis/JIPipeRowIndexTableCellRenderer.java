@@ -15,7 +15,7 @@ package org.hkijena.jipipe.ui.resultanalysis;
 
 import javax.swing.*;
 import javax.swing.table.TableCellRenderer;
-import java.awt.Component;
+import java.awt.*;
 
 /**
  * Renders the location of of {@link org.hkijena.jipipe.api.data.JIPipeExportedDataTable} and {@link org.hkijena.jipipe.api.data.JIPipeMergedExportedDataTable}

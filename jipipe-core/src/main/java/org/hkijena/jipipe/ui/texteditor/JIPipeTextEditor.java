@@ -21,7 +21,7 @@ import org.hkijena.jipipe.utils.UIUtils;
 import org.scijava.ui.swing.script.EditorPane;
 
 import javax.swing.*;
-import java.awt.BorderLayout;
+import java.awt.*;
 
 public class JIPipeTextEditor extends JIPipeWorkbenchPanel {
     private EditorPane textArea;
@@ -32,6 +32,14 @@ public class JIPipeTextEditor extends JIPipeWorkbenchPanel {
     public JIPipeTextEditor(JIPipeWorkbench workbench) {
         super(workbench);
         initialize();
+    }
+
+    public static JIPipeTextEditor openInNewTab(JIPipeWorkbench workbench, String name) {
+        JIPipeTextEditor editor = new JIPipeTextEditor(workbench);
+        workbench.getDocumentTabPane().addTab(name, UIUtils.getIconFromResources("actions/edit-select-text.png"),
+                editor, DocumentTabPane.CloseMode.withAskOnCloseButton, true);
+        workbench.getDocumentTabPane().switchToLastTab();
+        return editor;
     }
 
     private void initialize() {
@@ -69,13 +77,5 @@ public class JIPipeTextEditor extends JIPipeWorkbenchPanel {
 
     public void setText(String data) {
         textArea.setText(data);
-    }
-
-    public static JIPipeTextEditor openInNewTab(JIPipeWorkbench workbench, String name) {
-        JIPipeTextEditor editor = new JIPipeTextEditor(workbench);
-        workbench.getDocumentTabPane().addTab(name, UIUtils.getIconFromResources("actions/edit-select-text.png"),
-                editor, DocumentTabPane.CloseMode.withAskOnCloseButton, true);
-        workbench.getDocumentTabPane().switchToLastTab();
-        return editor;
     }
 }

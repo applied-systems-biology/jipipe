@@ -22,7 +22,7 @@ import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
-import java.awt.Color;
+import java.awt.*;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.ArrayList;

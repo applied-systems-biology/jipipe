@@ -53,12 +53,7 @@ import org.hkijena.jipipe.ui.ijupdater.JIPipeImageJPluginManager;
 import org.hkijena.jipipe.ui.notifications.NotificationButton;
 import org.hkijena.jipipe.ui.notifications.WorkbenchNotificationInboxUI;
 import org.hkijena.jipipe.ui.project.JIPipeProjectTabMetadata;
-import org.hkijena.jipipe.ui.running.JIPipeLogViewer;
-import org.hkijena.jipipe.ui.running.JIPipeRunExecuterUI;
-import org.hkijena.jipipe.ui.running.JIPipeRunQueueNotifier;
-import org.hkijena.jipipe.ui.running.JIPipeRunSettingsUI;
-import org.hkijena.jipipe.ui.running.JIPipeRunnerQueueUI;
-import org.hkijena.jipipe.ui.running.RealTimeProjectRunner;
+import org.hkijena.jipipe.ui.running.*;
 import org.hkijena.jipipe.ui.settings.JIPipeApplicationSettingsUI;
 import org.hkijena.jipipe.ui.settings.JIPipeProjectSettingsUI;
 import org.hkijena.jipipe.utils.UIUtils;
@@ -67,9 +62,7 @@ import org.jdesktop.swingx.plaf.basic.BasicStatusBarUI;
 import org.scijava.Context;
 
 import javax.swing.*;
-import java.awt.BorderLayout;
-import java.awt.Desktop;
-import java.awt.Window;
+import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.awt.event.WindowEvent;
 import java.io.IOException;
@@ -155,6 +148,30 @@ public class JIPipeProjectWorkbench extends JPanel implements JIPipeWorkbench {
 
         // Install the run notifier
         JIPipeRunQueueNotifier.install();
+    }
+
+    public static boolean canAddOrDeleteNodes(JIPipeWorkbench workbench) {
+        if (workbench instanceof JIPipeProjectWorkbench) {
+            JIPipeProject project = ((JIPipeProjectWorkbench) workbench).getProject();
+            if (project.getMetadata().getPermissions().isPreventAddingDeletingNodes()) {
+                JOptionPane.showMessageDialog(workbench.getWindow(), "Deleting nodes & compartments is disabled for this project. " +
+                        "\n\nIf this is not intentional, change this setting in Project > Project settings > Prevent adding/deleting nodes");
+                return false;
+            }
+        }
+        return true;
+    }
+
+    public static boolean canModifySlots(JIPipeWorkbench workbench) {
+        if (workbench instanceof JIPipeProjectWorkbench) {
+            JIPipeProject project = ((JIPipeProjectWorkbench) workbench).getProject();
+            if (project.getMetadata().getPermissions().isPreventModifyingSlots()) {
+                JOptionPane.showMessageDialog(workbench.getWindow(), "Modifying slots is disabled for this project. " +
+                        "\n\nIf this is not intentional, change this setting in Project > Project settings > Prevent modifying slots");
+                return false;
+            }
+        }
+        return true;
     }
 
     public void restoreStandardTabs(boolean showIntroduction, boolean isNewProject) {
@@ -808,29 +825,5 @@ public class JIPipeProjectWorkbench extends JPanel implements JIPipeWorkbench {
     @Override
     public JIPipeNotificationInbox getNotificationInbox() {
         return notificationInbox;
-    }
-
-    public static boolean canAddOrDeleteNodes(JIPipeWorkbench workbench) {
-        if (workbench instanceof JIPipeProjectWorkbench) {
-            JIPipeProject project = ((JIPipeProjectWorkbench) workbench).getProject();
-            if (project.getMetadata().getPermissions().isPreventAddingDeletingNodes()) {
-                JOptionPane.showMessageDialog(workbench.getWindow(), "Deleting nodes & compartments is disabled for this project. " +
-                        "\n\nIf this is not intentional, change this setting in Project > Project settings > Prevent adding/deleting nodes");
-                return false;
-            }
-        }
-        return true;
-    }
-
-    public static boolean canModifySlots(JIPipeWorkbench workbench) {
-        if (workbench instanceof JIPipeProjectWorkbench) {
-            JIPipeProject project = ((JIPipeProjectWorkbench) workbench).getProject();
-            if (project.getMetadata().getPermissions().isPreventModifyingSlots()) {
-                JOptionPane.showMessageDialog(workbench.getWindow(), "Modifying slots is disabled for this project. " +
-                        "\n\nIf this is not intentional, change this setting in Project > Project settings > Prevent modifying slots");
-                return false;
-            }
-        }
-        return true;
     }
 }

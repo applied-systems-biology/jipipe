@@ -14,7 +14,7 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 
-import java.awt.Component;
+import java.awt.*;
 import java.nio.file.Path;
 
 /**
@@ -56,6 +56,10 @@ public class CLIJImageData implements JIPipeData {
         CLIJ2 clij = CLIJ2.getInstance();
         this.image = clij.create(other.image);
         other.image.copyTo(this.image, true);
+    }
+
+    public static CLIJImageData importFrom(Path storageFilePath) {
+        return new CLIJImageData(ImagePlusData.importFrom(storageFilePath));
     }
 
     @Override
@@ -116,9 +120,5 @@ public class CLIJImageData implements JIPipeData {
             return image.toString();
         else
             return "<Null>";
-    }
-
-    public static CLIJImageData importFrom(Path storageFilePath) {
-        return new CLIJImageData(ImagePlusData.importFrom(storageFilePath));
     }
 }

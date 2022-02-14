@@ -62,16 +62,6 @@ public class ImagePlus5DColorHSBData extends ImagePlus5DColorData implements Col
         super(new ConverterWrapperImageSource(source, ImageJUtils::convertToColorHSBIfNeeded));
     }
 
-    @Override
-    public ColorSpace getColorSpace() {
-        return COLOR_SPACE;
-    }
-
-    @Override
-    public Component preview(int width, int height) {
-        return ImageJUtils.generatePreview(this.getImage(), getColorSpace(), width, height);
-    }
-
     public static ImagePlusData importFrom(Path storageFolder) {
         return new ImagePlus5DColorHSBData(ImagePlusData.importImagePlusFrom(storageFolder));
     }
@@ -88,5 +78,15 @@ public class ImagePlus5DColorHSBData extends ImagePlus5DColorData implements Col
         } else {
             return new ImagePlus5DColorHSBData(data.getImageSource());
         }
+    }
+
+    @Override
+    public ColorSpace getColorSpace() {
+        return COLOR_SPACE;
+    }
+
+    @Override
+    public Component preview(int width, int height) {
+        return ImageJUtils.generatePreview(this.getImage(), getColorSpace(), width, height);
     }
 }

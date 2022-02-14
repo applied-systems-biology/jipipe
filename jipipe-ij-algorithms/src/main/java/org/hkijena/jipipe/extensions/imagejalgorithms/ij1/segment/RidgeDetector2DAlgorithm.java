@@ -1,10 +1,6 @@
 package org.hkijena.jipipe.extensions.imagejalgorithms.ij1.segment;
 
-import de.biomedical_imaging.ij.steger.Junction;
-import de.biomedical_imaging.ij.steger.Line;
-import de.biomedical_imaging.ij.steger.LineDetector;
-import de.biomedical_imaging.ij.steger.Lines;
-import de.biomedical_imaging.ij.steger.OverlapOption;
+import de.biomedical_imaging.ij.steger.*;
 import ij.ImagePlus;
 import ij.gui.PointRoi;
 import ij.gui.PolygonRoi;
@@ -16,11 +12,7 @@ import org.hkijena.jipipe.api.JIPipeCitation;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
-import org.hkijena.jipipe.api.nodes.JIPipeDataBatch;
-import org.hkijena.jipipe.api.nodes.JIPipeInputSlot;
-import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
-import org.hkijena.jipipe.api.nodes.JIPipeOutputSlot;
-import org.hkijena.jipipe.api.nodes.JIPipeSimpleIteratingAlgorithm;
+import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
@@ -31,7 +23,7 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePl
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageSliceIndex;
 
-import java.awt.Polygon;
+import java.awt.*;
 
 @JIPipeDocumentation(name = "Ridge detector", description = "A ridge detector that detects lines and outputs a binary mask where lines are detected.")
 @JIPipeCitation("https://github.com/thorstenwagner/ij-ridgedetection")

@@ -19,7 +19,7 @@ import org.hkijena.jipipe.ui.components.PathEditor;
 import org.hkijena.jipipe.utils.PathIOMode;
 import org.hkijena.jipipe.utils.PathType;
 
-import java.awt.BorderLayout;
+import java.awt.*;
 
 /**
  * Imports {@link org.hkijena.jipipe.extensions.filesystem.dataypes.PathData}

@@ -25,12 +25,7 @@ import org.hkijena.jipipe.utils.json.JsonDeserializable;
 import org.hkijena.jipipe.utils.json.JsonUtils;
 
 import java.io.IOException;
-import java.util.Comparator;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
-import java.util.Stack;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;

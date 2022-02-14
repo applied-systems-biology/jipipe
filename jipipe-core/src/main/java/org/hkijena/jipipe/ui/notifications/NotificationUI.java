@@ -8,9 +8,7 @@ import org.hkijena.jipipe.ui.components.markdown.MarkdownDocument;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Font;
+import java.awt.*;
 
 public class NotificationUI extends JIPipeWorkbenchPanel {
 

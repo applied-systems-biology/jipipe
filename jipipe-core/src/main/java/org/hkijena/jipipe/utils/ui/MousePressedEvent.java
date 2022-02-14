@@ -1,6 +1,6 @@
 package org.hkijena.jipipe.utils.ui;
 
-import java.awt.Component;
+import java.awt.*;
 import java.awt.event.MouseEvent;
 
 public class MousePressedEvent extends MouseEvent {

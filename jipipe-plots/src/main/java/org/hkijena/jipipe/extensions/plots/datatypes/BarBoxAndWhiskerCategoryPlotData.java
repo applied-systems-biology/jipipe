@@ -18,7 +18,7 @@ import org.jfree.chart.ChartFactory;
 import org.jfree.chart.JFreeChart;
 import org.jfree.data.statistics.BoxAndWhiskerCategoryDataset;
 
-import java.awt.Font;
+import java.awt.*;
 import java.nio.file.Path;
 
 /**
@@ -48,6 +48,10 @@ public class BarBoxAndWhiskerCategoryPlotData extends BoxAndWhiskerCategoryPlotD
         super(other);
     }
 
+    public static BarBoxAndWhiskerCategoryPlotData importFrom(Path storagePath) {
+        return PlotData.importFrom(storagePath, BarBoxAndWhiskerCategoryPlotData.class);
+    }
+
     @Override
     public JFreeChart getChart() {
         JFreeChart chart = ChartFactory.createBoxAndWhiskerChart(getTitle(),
@@ -67,9 +71,5 @@ public class BarBoxAndWhiskerCategoryPlotData extends BoxAndWhiskerCategoryPlotD
 
         updateChartProperties(chart);
         return chart;
-    }
-
-    public static BarBoxAndWhiskerCategoryPlotData importFrom(Path storagePath) {
-        return PlotData.importFrom(storagePath, BarBoxAndWhiskerCategoryPlotData.class);
     }
 }

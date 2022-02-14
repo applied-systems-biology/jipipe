@@ -28,12 +28,9 @@ import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
 import javax.swing.tree.DefaultMutableTreeNode;
-import java.awt.BorderLayout;
-import java.util.ArrayList;
+import java.awt.*;
 import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.UUID;
+import java.util.*;
 
 /**
  * UI around an {@link JIPipeRun} result

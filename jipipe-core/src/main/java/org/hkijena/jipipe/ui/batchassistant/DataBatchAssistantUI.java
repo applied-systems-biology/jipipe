@@ -22,11 +22,7 @@ import org.hkijena.jipipe.api.JIPipeProjectCacheQuery;
 import org.hkijena.jipipe.api.JIPipeProjectCacheState;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
-import org.hkijena.jipipe.api.nodes.JIPipeAlgorithm;
-import org.hkijena.jipipe.api.nodes.JIPipeDataBatchAlgorithm;
-import org.hkijena.jipipe.api.nodes.JIPipeGraph;
-import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
-import org.hkijena.jipipe.api.nodes.JIPipeMergingDataBatch;
+import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbenchPanel;
@@ -35,15 +31,11 @@ import org.hkijena.jipipe.ui.parameters.ParameterPanel;
 import org.hkijena.jipipe.utils.AutoResizeSplitPane;
 import org.hkijena.jipipe.utils.UIUtils;
 
+import javax.swing.Timer;
 import javax.swing.*;
-import java.awt.BorderLayout;
-import java.awt.Component;
-import java.util.ArrayDeque;
-import java.util.ArrayList;
-import java.util.Collections;
+import java.awt.*;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.ExecutionException;
 
 /**

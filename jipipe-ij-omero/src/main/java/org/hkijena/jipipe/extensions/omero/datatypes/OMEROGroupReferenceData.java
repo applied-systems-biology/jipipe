@@ -39,6 +39,15 @@ public class OMEROGroupReferenceData implements JIPipeData {
         this.groupId = groupId;
     }
 
+    public static OMEROGroupReferenceData importFrom(Path storageFilePath) {
+        Path targetFile = PathUtils.findFileByExtensionIn(storageFilePath, ".json");
+        try {
+            return JsonUtils.getObjectMapper().readerFor(OMEROGroupReferenceData.class).readValue(targetFile.toFile());
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     @JsonGetter("group-id")
     public long getGroupId() {
         return groupId;
@@ -72,14 +81,5 @@ public class OMEROGroupReferenceData implements JIPipeData {
     @Override
     public String toString() {
         return "OMERO Group ID=" + groupId;
-    }
-
-    public static OMEROGroupReferenceData importFrom(Path storageFilePath) {
-        Path targetFile = PathUtils.findFileByExtensionIn(storageFilePath, ".json");
-        try {
-            return JsonUtils.getObjectMapper().readerFor(OMEROGroupReferenceData.class).readValue(targetFile.toFile());
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
     }
 }

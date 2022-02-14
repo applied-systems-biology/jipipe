@@ -11,15 +11,11 @@ import org.hkijena.jipipe.api.nodes.JIPipeMergingDataBatch;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
 import org.hkijena.jipipe.api.parameters.JIPipeReflectionParameterAccess;
-import org.hkijena.jipipe.extensions.expressions.DefaultExpressionParameter;
-import org.hkijena.jipipe.extensions.expressions.ExpressionParameterSettings;
-import org.hkijena.jipipe.extensions.expressions.ExpressionVariables;
-import org.hkijena.jipipe.extensions.expressions.NumberQueryExpressionVariableSource;
-import org.hkijena.jipipe.extensions.expressions.StringQueryExpression;
+import org.hkijena.jipipe.extensions.expressions.*;
 import org.hkijena.jipipe.extensions.forms.utils.SingleAnnotationIOSettings;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 
-import java.awt.Component;
+import java.awt.*;
 import java.nio.file.Path;
 import java.util.Collections;
 
@@ -40,6 +36,10 @@ public class DoubleFormData extends ParameterFormData {
         this.validationExpression = new StringQueryExpression(other.validationExpression);
         this.annotationIOSettings = new SingleAnnotationIOSettings(other.annotationIOSettings);
         annotationIOSettings.getEventBus().register(this);
+    }
+
+    public static DoubleFormData importFrom(Path rowStorage) {
+        return FormData.importFrom(rowStorage, DoubleFormData.class);
     }
 
     @JIPipeDocumentation(name = "Initial value", description = "The initial value")
@@ -123,9 +123,5 @@ public class DoubleFormData extends ParameterFormData {
             annotationIOSettings.getAnnotationMergeStrategy().mergeInto(dataBatch.getMergedAnnotations(),
                     Collections.singletonList(annotationIOSettings.getOutputAnnotation().createAnnotation("" + value)));
         }
-    }
-
-    public static DoubleFormData importFrom(Path rowStorage) {
-        return FormData.importFrom(rowStorage, DoubleFormData.class);
     }
 }

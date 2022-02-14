@@ -13,8 +13,6 @@
 
 package org.hkijena.jipipe.extensions.parameters.api.enums;
 
-import org.hkijena.jipipe.extensions.parameters.api.enums.EnumItemInfo;
-
 import javax.swing.*;
 
 /**

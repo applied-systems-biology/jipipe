@@ -16,11 +16,7 @@ package org.hkijena.jipipe.extensions.multiparameters.datatypes;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.DeserializationContext;
-import com.fasterxml.jackson.databind.JsonDeserializer;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.JsonSerializer;
-import com.fasterxml.jackson.databind.SerializerProvider;
+import com.fasterxml.jackson.databind.*;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.google.common.collect.ImmutableList;
@@ -36,7 +32,7 @@ import org.hkijena.jipipe.utils.PathUtils;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.json.JsonUtils;
 
-import java.awt.Desktop;
+import java.awt.*;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -56,6 +52,15 @@ import java.util.Map;
 public class ParametersData implements JIPipeData {
 
     private Map<String, Object> parameterData = new HashMap<>();
+
+    public static ParametersData importFrom(Path storageFilePath) {
+        Path targetFile = PathUtils.findFileByExtensionIn(storageFilePath, ".json");
+        try {
+            return JsonUtils.getObjectMapper().readerFor(ParametersData.class).readValue(targetFile.toFile());
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
 
     @Override
     public void saveTo(Path storageFilePath, String name, boolean forceName, JIPipeProgressInfo progressInfo) {
@@ -97,15 +102,6 @@ public class ParametersData implements JIPipeData {
     @Override
     public String toString() {
         return "Parameters (" + String.join(", ", parameterData.keySet()) + ")";
-    }
-
-    public static ParametersData importFrom(Path storageFilePath) {
-        Path targetFile = PathUtils.findFileByExtensionIn(storageFilePath, ".json");
-        try {
-            return JsonUtils.getObjectMapper().readerFor(ParametersData.class).readValue(targetFile.toFile());
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
     }
 
     /**

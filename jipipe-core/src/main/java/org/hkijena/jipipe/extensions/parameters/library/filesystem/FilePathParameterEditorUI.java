@@ -21,7 +21,7 @@ import org.hkijena.jipipe.ui.parameters.JIPipeParameterEditorUI;
 import org.hkijena.jipipe.utils.PathIOMode;
 import org.hkijena.jipipe.utils.PathType;
 
-import java.awt.BorderLayout;
+import java.awt.*;
 import java.nio.file.Path;
 
 /**

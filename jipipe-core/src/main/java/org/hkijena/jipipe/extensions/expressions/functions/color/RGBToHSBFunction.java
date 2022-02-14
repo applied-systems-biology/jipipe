@@ -5,9 +5,8 @@ import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.extensions.expressions.ExpressionFunction;
 import org.hkijena.jipipe.extensions.expressions.ExpressionVariables;
 import org.hkijena.jipipe.extensions.expressions.ParameterInfo;
-import org.hkijena.jipipe.utils.ColorUtils;
 
-import java.awt.Color;
+import java.awt.*;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
@@ -27,13 +26,13 @@ public class RGBToHSBFunction extends ExpressionFunction {
     @Override
     public Object evaluate(List<Object> parameters, ExpressionVariables variables) {
         List<?> collection = ImmutableList.copyOf((Collection<?>) parameters.get(0));
-        int r = ((Number)collection.get(0)).intValue();
-        int g = ((Number)collection.get(1)).intValue();
-        int b = ((Number)collection.get(2)).intValue();
+        int r = ((Number) collection.get(0)).intValue();
+        int g = ((Number) collection.get(1)).intValue();
+        int b = ((Number) collection.get(2)).intValue();
         float[] hsb = Color.RGBtoHSB(r, g, b, null);
         int H = ((int) (hsb[0] * 255.0));
         int S = ((int) (hsb[1] * 255.0));
         int B = ((int) (hsb[2] * 255.0));
-        return Arrays.asList(H,S,B);
+        return Arrays.asList(H, S, B);
     }
 }

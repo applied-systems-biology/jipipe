@@ -19,9 +19,7 @@ import org.hkijena.jipipe.ui.parameters.JIPipeParameterEditorUI;
 import org.hkijena.jipipe.utils.ReflectionUtils;
 
 import javax.swing.*;
-import java.awt.BorderLayout;
-import java.awt.Component;
-import java.awt.Font;
+import java.awt.*;
 import java.util.List;
 import java.util.Objects;
 import java.util.function.Supplier;

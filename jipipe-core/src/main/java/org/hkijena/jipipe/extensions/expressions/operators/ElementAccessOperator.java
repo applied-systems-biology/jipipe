@@ -5,11 +5,7 @@ import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.extensions.expressions.ExpressionOperator;
 import org.hkijena.jipipe.extensions.expressions.ParameterInfo;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @JIPipeDocumentation(name = "Element access", description = "Access the array element at given position. The first position is zero. If a string is provided, the character at the given position is returned instead.")
 public class ElementAccessOperator extends ExpressionOperator {

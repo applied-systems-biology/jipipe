@@ -15,21 +15,19 @@ public class PercentageFunction extends ExpressionFunction {
 
     @Override
     public Object evaluate(List<Object> parameters, ExpressionVariables variables) {
-        double value = ((Number)parameters.get(0)).doubleValue();
-        double min = ((Number)parameters.get(1)).doubleValue();
-        double max = ((Number)parameters.get(2)).doubleValue();
+        double value = ((Number) parameters.get(0)).doubleValue();
+        double min = ((Number) parameters.get(1)).doubleValue();
+        double max = ((Number) parameters.get(2)).doubleValue();
         return Math.max(0, Math.min(1, (value - min) / (max - min)));
     }
 
     @Override
     public ParameterInfo getParameterInfo(int index) {
-        if(index == 0) {
+        if (index == 0) {
             return new ParameterInfo("Value", "The value", Number.class);
-        }
-        else if(index == 1) {
+        } else if (index == 1) {
             return new ParameterInfo("Minimum", "The minimum", Number.class);
-        }
-        else {
+        } else {
             return new ParameterInfo("Maximum", "The maximum", Number.class);
         }
     }

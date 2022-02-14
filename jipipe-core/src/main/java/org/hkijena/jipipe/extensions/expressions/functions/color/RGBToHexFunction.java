@@ -7,7 +7,7 @@ import org.hkijena.jipipe.extensions.expressions.ExpressionVariables;
 import org.hkijena.jipipe.extensions.expressions.ParameterInfo;
 import org.hkijena.jipipe.utils.ColorUtils;
 
-import java.awt.Color;
+import java.awt.*;
 import java.util.Collection;
 import java.util.List;
 
@@ -25,9 +25,9 @@ public class RGBToHexFunction extends ExpressionFunction {
     @Override
     public Object evaluate(List<Object> parameters, ExpressionVariables variables) {
         List<?> collection = ImmutableList.copyOf((Collection<?>) parameters.get(0));
-        int r = ((Number)collection.get(0)).intValue();
-        int g = ((Number)collection.get(1)).intValue();
-        int b = ((Number)collection.get(2)).intValue();
-        return ColorUtils.colorToHexString(new Color(r,g,b));
+        int r = ((Number) collection.get(0)).intValue();
+        int g = ((Number) collection.get(1)).intValue();
+        int b = ((Number) collection.get(2)).intValue();
+        return ColorUtils.colorToHexString(new Color(r, g, b));
     }
 }

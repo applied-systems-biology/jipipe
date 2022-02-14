@@ -6,8 +6,7 @@ import org.hkijena.jipipe.extensions.settings.NotificationUISettings;
 import org.hkijena.jipipe.ui.JIPipeProjectWindow;
 import org.hkijena.jipipe.utils.UIUtils;
 
-import java.awt.TrayIcon;
-import java.awt.Window;
+import java.awt.*;
 
 /**
  * Generates notifications based on the the runner
@@ -20,6 +19,15 @@ public class JIPipeRunQueueNotifier {
     private JIPipeRunQueueNotifier() {
         this.settings = NotificationUISettings.getInstance();
         JIPipeRunnerQueue.getInstance().getEventBus().register(this);
+    }
+
+    /**
+     * Installs the notifier. Can be called multiple times (singleton)
+     */
+    public static void install() {
+        if (INSTANCE == null) {
+            INSTANCE = new JIPipeRunQueueNotifier();
+        }
     }
 
     /**
@@ -64,15 +72,6 @@ public class JIPipeRunQueueNotifier {
                 return;
             UIUtils.sendTrayNotification("Run failed", "The run '" + event.getRun().getTaskLabel() + "' failed.",
                     TrayIcon.MessageType.ERROR);
-        }
-    }
-
-    /**
-     * Installs the notifier. Can be called multiple times (singleton)
-     */
-    public static void install() {
-        if (INSTANCE == null) {
-            INSTANCE = new JIPipeRunQueueNotifier();
         }
     }
 }

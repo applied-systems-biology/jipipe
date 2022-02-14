@@ -9,15 +9,9 @@ import org.hkijena.jipipe.ui.cache.JIPipeCachedDataPreview;
 import javax.swing.*;
 import javax.swing.event.TableModelListener;
 import javax.swing.table.TableModel;
-import java.awt.Component;
-import java.awt.Point;
-import java.awt.Rectangle;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
+import java.awt.*;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 /**
  * A table model that displays data batches

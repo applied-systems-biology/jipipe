@@ -19,18 +19,14 @@ import inra.ijpb.label.LabelImages;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
-import org.hkijena.jipipe.api.nodes.JIPipeDataBatch;
-import org.hkijena.jipipe.api.nodes.JIPipeInputSlot;
-import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
-import org.hkijena.jipipe.api.nodes.JIPipeOutputSlot;
-import org.hkijena.jipipe.api.nodes.JIPipeSimpleIteratingAlgorithm;
+import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.imagejalgorithms.utils.ImageJUtils2;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
-import org.hkijena.jipipe.extensions.parameters.library.primitives.ranges.IntegerRange;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.BooleanParameterSettings;
+import org.hkijena.jipipe.extensions.parameters.library.primitives.ranges.IntegerRange;
 
 @JIPipeDocumentation(name = "Filter labels", description = "Allows to keep only a specific set of labels.")
 @JIPipeNode(menuPath = "Labels\nFilter", nodeTypeCategory = ImagesNodeTypeCategory.class)

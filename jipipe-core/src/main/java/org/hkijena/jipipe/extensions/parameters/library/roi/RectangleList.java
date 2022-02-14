@@ -15,7 +15,7 @@ package org.hkijena.jipipe.extensions.parameters.library.roi;
 
 import org.hkijena.jipipe.extensions.parameters.api.collections.ListParameter;
 
-import java.awt.Rectangle;
+import java.awt.*;
 
 /**
  * List parameter of {@link Rectangle}

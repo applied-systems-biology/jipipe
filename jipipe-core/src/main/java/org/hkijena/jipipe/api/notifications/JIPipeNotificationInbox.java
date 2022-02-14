@@ -32,6 +32,10 @@ public class JIPipeNotificationInbox {
 
     }
 
+    public static JIPipeNotificationInbox getInstance() {
+        return INSTANCE;
+    }
+
     public Set<JIPipeNotification> getNotifications() {
         return Collections.unmodifiableSet(notifications);
     }
@@ -54,10 +58,6 @@ public class JIPipeNotificationInbox {
 
     public EventBus getEventBus() {
         return eventBus;
-    }
-
-    public static JIPipeNotificationInbox getInstance() {
-        return INSTANCE;
     }
 
     /**

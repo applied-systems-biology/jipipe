@@ -12,11 +12,7 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageSliceIndex;
 import org.hkijena.jipipe.extensions.imagejdatatypes.viewer.ImageViewerPanel;
 import org.hkijena.jipipe.extensions.imagejdatatypes.viewer.plugins.ImageViewerPanelPlugin;
-import org.hkijena.jipipe.extensions.parameters.library.ranges.DefaultTrackBackground;
-import org.hkijena.jipipe.extensions.parameters.library.ranges.IntNumberRangeParameter;
-import org.hkijena.jipipe.extensions.parameters.library.ranges.NumberRangeInvertedMode;
-import org.hkijena.jipipe.extensions.parameters.library.ranges.NumberRangeParameterSettings;
-import org.hkijena.jipipe.extensions.parameters.library.ranges.PaintGenerator;
+import org.hkijena.jipipe.extensions.parameters.library.ranges.*;
 import org.hkijena.jipipe.ui.JIPipeDummyWorkbench;
 import org.hkijena.jipipe.ui.components.ColorChooserButton;
 import org.hkijena.jipipe.ui.components.FormPanel;
@@ -28,12 +24,7 @@ import org.hkijena.jipipe.utils.UIUtils;
 import org.hkijena.jipipe.utils.ui.BusyCursor;
 
 import javax.swing.*;
-import java.awt.BasicStroke;
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Graphics2D;
-import java.awt.Point;
-import java.awt.Stroke;
+import java.awt.*;
 import java.awt.geom.AffineTransform;
 import java.awt.image.AffineTransformOp;
 import java.awt.image.BufferedImage;
@@ -84,6 +75,22 @@ public class MaskDrawerPlugin extends ImageViewerPanelPlugin {
 
         viewerPanel.getCanvas().getEventBus().register(this);
         setCurrentTool(currentTool);
+    }
+
+    public static void main(String[] args) {
+//        ImagePlus img = IJ.openImage("E:\\Projects\\JIPipe\\testdata\\ATTC_IµL_3rdReplicate-Experiment-5516\\in\\data.tif");
+        ImagePlus img = IJ.openImage("E:\\Projects\\Mitochondria\\data_21.12.20\\1 Deconv.lif - 1_Series047_5_cmle_converted.tif");
+        JIPipeUITheme.ModernLight.install();
+        JFrame frame = new JFrame();
+        ImageViewerPanel panel = new ImageViewerPanel();
+        MaskDrawerPlugin maskDrawerPlugin = new MaskDrawerPlugin(panel);
+        panel.setPlugins(Collections.singletonList(maskDrawerPlugin));
+        panel.setImage(img);
+//        maskDrawerPlugin.setMask(IJ.createImage("Mask", img.getWidth(), img.getHeight(), 1, 8));
+        frame.setContentPane(panel);
+        frame.pack();
+        frame.setSize(1280, 1024);
+        frame.setVisible(true);
     }
 
     public void installTool(MaskDrawerTool tool) {
@@ -525,22 +532,6 @@ public class MaskDrawerPlugin extends ImageViewerPanelPlugin {
 
     public void setMaskGenerator(Function<ImagePlus, ImagePlus> maskGenerator) {
         this.maskGenerator = maskGenerator;
-    }
-
-    public static void main(String[] args) {
-//        ImagePlus img = IJ.openImage("E:\\Projects\\JIPipe\\testdata\\ATTC_IµL_3rdReplicate-Experiment-5516\\in\\data.tif");
-        ImagePlus img = IJ.openImage("E:\\Projects\\Mitochondria\\data_21.12.20\\1 Deconv.lif - 1_Series047_5_cmle_converted.tif");
-        JIPipeUITheme.ModernLight.install();
-        JFrame frame = new JFrame();
-        ImageViewerPanel panel = new ImageViewerPanel();
-        MaskDrawerPlugin maskDrawerPlugin = new MaskDrawerPlugin(panel);
-        panel.setPlugins(Collections.singletonList(maskDrawerPlugin));
-        panel.setImage(img);
-//        maskDrawerPlugin.setMask(IJ.createImage("Mask", img.getWidth(), img.getHeight(), 1, 8));
-        frame.setContentPane(panel);
-        frame.pack();
-        frame.setSize(1280, 1024);
-        frame.setVisible(true);
     }
 
     public enum MaskColor {

@@ -22,11 +22,7 @@ import org.hkijena.jipipe.extensions.expressions.ExpressionParameterVariableSour
 import org.hkijena.jipipe.extensions.expressions.ExpressionVariables;
 import org.hkijena.jipipe.utils.StringUtils;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Parameter that contains an integer range as string.
@@ -67,6 +63,73 @@ public class IntegerRange {
         this.value = other.value;
         this.useExpression = other.useExpression;
         this.expression = new DefaultExpressionParameter(other.expression);
+    }
+
+    /**
+     * Converts a range string of format [range];[range];... to a list of integers
+     *
+     * @param value the range string
+     * @return the list of integers
+     */
+    public static List<Integer> getIntegersFromRangeString(String value) {
+        String string = StringUtils.orElse(value, "").replace(" ", "");
+        List<Integer> integers = new ArrayList<>();
+        string = string.replace(',', ';');
+        for (String range : string.split(";")) {
+            if (StringUtils.isNullOrEmpty(range))
+                continue;
+            if (range.contains("-")) {
+                StringBuilder fromBuilder = new StringBuilder();
+                StringBuilder toBuilder = new StringBuilder();
+                boolean negative = false;
+                boolean writeToFrom = true;
+                for (int i = 0; i < range.length(); i++) {
+                    char c = range.charAt(i);
+                    if (c == '(') {
+                        if (negative)
+                            throw new NumberFormatException("Cannot nest brackets!");
+                        negative = true;
+                    } else if (c == ')') {
+                        if (!negative)
+                            throw new NumberFormatException("Cannot end missing start bracket!");
+                        negative = false;
+                    } else if (c == '-') {
+                        if (negative) {
+                            if (writeToFrom)
+                                fromBuilder.append(c);
+                            else
+                                toBuilder.append(c);
+                        } else {
+                            if (!writeToFrom)
+                                throw new RuntimeException("Additional hyphen detected!");
+                            writeToFrom = false;
+                        }
+                    } else {
+                        if (writeToFrom)
+                            fromBuilder.append(c);
+                        else
+                            toBuilder.append(c);
+                    }
+                }
+
+                // Parse borders
+                int from = Integer.parseInt(fromBuilder.toString());
+                int to = Integer.parseInt(toBuilder.toString());
+
+                if (from <= to) {
+                    for (int i = from; i <= to; ++i) {
+                        integers.add(i);
+                    }
+                } else {
+                    for (int i = to; i >= to; --i) {
+                        integers.add(i);
+                    }
+                }
+            } else {
+                integers.add(Integer.parseInt(range));
+            }
+        }
+        return integers;
     }
 
     @JsonGetter("is-expression")
@@ -163,73 +226,6 @@ public class IntegerRange {
     @Override
     public String toString() {
         return StringUtils.orElse(value, "[Empty]");
-    }
-
-    /**
-     * Converts a range string of format [range];[range];... to a list of integers
-     *
-     * @param value the range string
-     * @return the list of integers
-     */
-    public static List<Integer> getIntegersFromRangeString(String value) {
-        String string = StringUtils.orElse(value, "").replace(" ", "");
-        List<Integer> integers = new ArrayList<>();
-        string = string.replace(',', ';');
-        for (String range : string.split(";")) {
-            if (StringUtils.isNullOrEmpty(range))
-                continue;
-            if (range.contains("-")) {
-                StringBuilder fromBuilder = new StringBuilder();
-                StringBuilder toBuilder = new StringBuilder();
-                boolean negative = false;
-                boolean writeToFrom = true;
-                for (int i = 0; i < range.length(); i++) {
-                    char c = range.charAt(i);
-                    if (c == '(') {
-                        if (negative)
-                            throw new NumberFormatException("Cannot nest brackets!");
-                        negative = true;
-                    } else if (c == ')') {
-                        if (!negative)
-                            throw new NumberFormatException("Cannot end missing start bracket!");
-                        negative = false;
-                    } else if (c == '-') {
-                        if (negative) {
-                            if (writeToFrom)
-                                fromBuilder.append(c);
-                            else
-                                toBuilder.append(c);
-                        } else {
-                            if (!writeToFrom)
-                                throw new RuntimeException("Additional hyphen detected!");
-                            writeToFrom = false;
-                        }
-                    } else {
-                        if (writeToFrom)
-                            fromBuilder.append(c);
-                        else
-                            toBuilder.append(c);
-                    }
-                }
-
-                // Parse borders
-                int from = Integer.parseInt(fromBuilder.toString());
-                int to = Integer.parseInt(toBuilder.toString());
-
-                if (from <= to) {
-                    for (int i = from; i <= to; ++i) {
-                        integers.add(i);
-                    }
-                } else {
-                    for (int i = to; i >= to; --i) {
-                        integers.add(i);
-                    }
-                }
-            } else {
-                integers.add(Integer.parseInt(range));
-            }
-        }
-        return integers;
     }
 
     public static class VariableSource implements ExpressionParameterVariableSource {

@@ -1,14 +1,7 @@
 package org.hkijena.jipipe.utils.ui;
 
 import javax.swing.border.AbstractBorder;
-import java.awt.BasicStroke;
-import java.awt.Component;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
-import java.awt.Insets;
-import java.awt.Paint;
-import java.awt.RenderingHints;
-import java.awt.Stroke;
+import java.awt.*;
 
 /**
  * Rounded line border that actually works

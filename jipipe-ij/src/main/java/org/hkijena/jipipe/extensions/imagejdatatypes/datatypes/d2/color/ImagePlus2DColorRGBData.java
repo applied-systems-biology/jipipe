@@ -61,11 +61,6 @@ public class ImagePlus2DColorRGBData extends ImagePlus2DColorData implements Col
         super(new ConverterWrapperImageSource(source, ImageJUtils::convertToColorRGBIfNeeded));
     }
 
-    @Override
-    public ColorSpace getColorSpace() {
-        return COLOR_SPACE;
-    }
-
     public static ImagePlusData importFrom(Path storageFolder) {
         return new ImagePlus2DColorRGBData(ImagePlusData.importImagePlusFrom(storageFolder));
     }
@@ -82,5 +77,10 @@ public class ImagePlus2DColorRGBData extends ImagePlus2DColorData implements Col
         } else {
             return new ImagePlus2DColorLABData(data.getImageSource());
         }
+    }
+
+    @Override
+    public ColorSpace getColorSpace() {
+        return COLOR_SPACE;
     }
 }

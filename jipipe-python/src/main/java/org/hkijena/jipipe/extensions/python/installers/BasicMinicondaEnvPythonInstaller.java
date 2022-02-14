@@ -12,9 +12,9 @@ import org.hkijena.jipipe.api.environments.ExternalEnvironmentInstaller;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
+import org.hkijena.jipipe.extensions.parameters.library.primitives.StringParameterSettings;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.optional.OptionalPathParameter;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.optional.OptionalStringParameter;
-import org.hkijena.jipipe.extensions.parameters.library.primitives.StringParameterSettings;
 import org.hkijena.jipipe.extensions.python.OptionalPythonEnvironment;
 import org.hkijena.jipipe.extensions.python.PythonEnvironment;
 import org.hkijena.jipipe.extensions.python.PythonUtils;
@@ -51,6 +51,36 @@ public class BasicMinicondaEnvPythonInstaller extends ExternalEnvironmentInstall
      */
     public BasicMinicondaEnvPythonInstaller(JIPipeWorkbench workbench, JIPipeParameterAccess parameterAccess) {
         super(workbench, parameterAccess);
+    }
+
+    /**
+     * Gets the latest download link for Miniconda
+     *
+     * @return the download URL
+     */
+    public static String getLatestDownload() {
+        if (SystemUtils.IS_OS_WINDOWS) {
+            return "https://repo.anaconda.com/miniconda/Miniconda3-latest-Windows-x86_64.exe";
+        } else if (SystemUtils.IS_OS_MAC) {
+            return "https://repo.anaconda.com/miniconda/Miniconda3-latest-MacOSX-x86_64.sh";
+        } else {
+            return "https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh";
+        }
+    }
+
+    /**
+     * Gets the latest download link for Miniconda
+     *
+     * @return the download URL
+     */
+    public static String getLatestPy37Download() {
+        if (SystemUtils.IS_OS_WINDOWS) {
+            return "https://repo.anaconda.com/miniconda/Miniconda3-py37_4.8.2-Windows-x86_64.exe";
+        } else if (SystemUtils.IS_OS_MAC) {
+            return "https://repo.anaconda.com/miniconda/Miniconda3-py37_4.8.2-MacOSX-x86_64.sh";
+        } else {
+            return "https://repo.anaconda.com/miniconda/Miniconda3-py37_4.8.2-Linux-x86_64.sh";
+        }
     }
 
     @Override
@@ -360,36 +390,6 @@ public class BasicMinicondaEnvPythonInstaller extends ExternalEnvironmentInstall
 
     public void setConfiguration(Configuration configuration) {
         this.configuration = configuration;
-    }
-
-    /**
-     * Gets the latest download link for Miniconda
-     *
-     * @return the download URL
-     */
-    public static String getLatestDownload() {
-        if (SystemUtils.IS_OS_WINDOWS) {
-            return "https://repo.anaconda.com/miniconda/Miniconda3-latest-Windows-x86_64.exe";
-        } else if (SystemUtils.IS_OS_MAC) {
-            return "https://repo.anaconda.com/miniconda/Miniconda3-latest-MacOSX-x86_64.sh";
-        } else {
-            return "https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh";
-        }
-    }
-
-    /**
-     * Gets the latest download link for Miniconda
-     *
-     * @return the download URL
-     */
-    public static String getLatestPy37Download() {
-        if (SystemUtils.IS_OS_WINDOWS) {
-            return "https://repo.anaconda.com/miniconda/Miniconda3-py37_4.8.2-Windows-x86_64.exe";
-        } else if (SystemUtils.IS_OS_MAC) {
-            return "https://repo.anaconda.com/miniconda/Miniconda3-py37_4.8.2-MacOSX-x86_64.sh";
-        } else {
-            return "https://repo.anaconda.com/miniconda/Miniconda3-py37_4.8.2-Linux-x86_64.sh";
-        }
     }
 
     public static class Configuration implements JIPipeParameterCollection {

@@ -13,7 +13,7 @@
 
 package org.hkijena.jipipe.utils;
 
-import java.awt.Point;
+import java.awt.*;
 
 /**
  * Stores three points, representing the center point, and an area around it
@@ -65,38 +65,6 @@ public class PointRange {
     }
 
     /**
-     * Apply scaling to all components and return the result.
-     * Returns a copy
-     *
-     * @param zoom the zoom
-     * @return scaled copy
-     */
-    public PointRange zoom(double zoom) {
-        PointRange result = new PointRange(this);
-        result.center.x = (int) (result.center.x * zoom);
-        result.center.y = (int) (result.center.y * zoom);
-        result.min.x = (int) (result.min.x * zoom);
-        result.min.y = (int) (result.min.y * zoom);
-        result.max.x = (int) (result.max.x * zoom);
-        result.max.y = (int) (result.max.y * zoom);
-        return result;
-    }
-
-    /**
-     * Adds the point's x and y coordinates to all points
-     *
-     * @param point shift coordinate
-     */
-    public void add(Point point) {
-        center.x += point.x;
-        center.y += point.y;
-        min.x += point.x;
-        min.y += point.y;
-        max.x += point.x;
-        max.y += point.y;
-    }
-
-    /**
      * Gets a point within the range that is closest to the target point
      *
      * @param pointRange the point range
@@ -131,5 +99,37 @@ public class PointRange {
     public static void tighten(PointRange p0, PointRange p1) {
         p0.center = getTightenedTo(p0, p1);
         p1.center = getTightenedTo(p1, p0);
+    }
+
+    /**
+     * Apply scaling to all components and return the result.
+     * Returns a copy
+     *
+     * @param zoom the zoom
+     * @return scaled copy
+     */
+    public PointRange zoom(double zoom) {
+        PointRange result = new PointRange(this);
+        result.center.x = (int) (result.center.x * zoom);
+        result.center.y = (int) (result.center.y * zoom);
+        result.min.x = (int) (result.min.x * zoom);
+        result.min.y = (int) (result.min.y * zoom);
+        result.max.x = (int) (result.max.x * zoom);
+        result.max.y = (int) (result.max.y * zoom);
+        return result;
+    }
+
+    /**
+     * Adds the point's x and y coordinates to all points
+     *
+     * @param point shift coordinate
+     */
+    public void add(Point point) {
+        center.x += point.x;
+        center.y += point.y;
+        min.x += point.x;
+        min.y += point.y;
+        max.x += point.x;
+        max.y += point.y;
     }
 }

@@ -20,12 +20,7 @@ import org.fife.ui.rsyntaxtextarea.TokenMaker;
 import org.fife.ui.rsyntaxtextarea.TokenMakerFactory;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.registries.JIPipeExpressionRegistry;
-import org.hkijena.jipipe.extensions.expressions.DefaultExpressionEvaluator;
-import org.hkijena.jipipe.extensions.expressions.DefaultExpressionEvaluatorSyntaxTokenMaker;
-import org.hkijena.jipipe.extensions.expressions.DefaultExpressionParameter;
-import org.hkijena.jipipe.extensions.expressions.ExpressionConstantEntry;
-import org.hkijena.jipipe.extensions.expressions.ExpressionOperatorEntry;
-import org.hkijena.jipipe.extensions.expressions.ExpressionParameterVariable;
+import org.hkijena.jipipe.extensions.expressions.*;
 import org.hkijena.jipipe.ui.components.markdown.MarkdownDocument;
 import org.hkijena.jipipe.ui.components.markdown.MarkdownReader;
 import org.hkijena.jipipe.ui.components.search.SearchTextField;
@@ -38,21 +33,11 @@ import org.hkijena.jipipe.utils.search.RankingFunction;
 
 import javax.swing.*;
 import javax.swing.text.BadLocationException;
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Component;
-import java.awt.Font;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
-import java.awt.Insets;
+import java.awt.*;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -84,6 +69,47 @@ public class ExpressionBuilderUI extends JPanel {
         initialize();
         expressionEditor.setText(expression);
         rebuildPalette();
+    }
+
+    public static String showDialog(Component parent, String expression, Set<ExpressionParameterVariable> variables) {
+        JDialog dialog = new JDialog(SwingUtilities.getWindowAncestor(parent));
+        dialog.setIconImage(UIUtils.getIcon128FromResources("jipipe.png").getImage());
+
+        ExpressionBuilderUI expressionBuilderUI = new ExpressionBuilderUI(expression, variables);
+        JPanel contentPanel = new JPanel(new BorderLayout(4, 4));
+        contentPanel.add(expressionBuilderUI, BorderLayout.CENTER);
+
+        JPanel buttonPanel = new JPanel();
+        buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.X_AXIS));
+
+        buttonPanel.add(new ExpressionBuilderSyntaxChecker(expressionBuilderUI.expressionEditor));
+
+        buttonPanel.add(Box.createHorizontalGlue());
+
+        JButton cancelButton = new JButton("Discard", UIUtils.getIconFromResources("actions/cancel.png"));
+        cancelButton.addActionListener(e -> dialog.setVisible(false));
+        buttonPanel.add(cancelButton);
+
+        AtomicBoolean confirmed = new AtomicBoolean(false);
+        JButton confirmButton = new JButton("Accept", UIUtils.getIconFromResources("actions/checkmark.png"));
+        confirmButton.addActionListener(e -> {
+            if (expressionBuilderUI.checkInserterBeforeAccept()) {
+                confirmed.set(true);
+                dialog.setVisible(false);
+            }
+        });
+        buttonPanel.add(confirmButton);
+
+        contentPanel.add(buttonPanel, BorderLayout.SOUTH);
+
+        dialog.setContentPane(contentPanel);
+        dialog.setModal(true);
+        dialog.setTitle("Expression builder");
+        dialog.pack();
+        dialog.setSize(800, 600);
+        dialog.setLocationRelativeTo(parent);
+        dialog.setVisible(true);
+        return confirmed.get() ? expressionBuilderUI.getExpression() : null;
     }
 
     private void rebuildPalette() {
@@ -392,47 +418,6 @@ public class ExpressionBuilderUI extends JPanel {
             }
         }
         return true;
-    }
-
-    public static String showDialog(Component parent, String expression, Set<ExpressionParameterVariable> variables) {
-        JDialog dialog = new JDialog(SwingUtilities.getWindowAncestor(parent));
-        dialog.setIconImage(UIUtils.getIcon128FromResources("jipipe.png").getImage());
-
-        ExpressionBuilderUI expressionBuilderUI = new ExpressionBuilderUI(expression, variables);
-        JPanel contentPanel = new JPanel(new BorderLayout(4, 4));
-        contentPanel.add(expressionBuilderUI, BorderLayout.CENTER);
-
-        JPanel buttonPanel = new JPanel();
-        buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.X_AXIS));
-
-        buttonPanel.add(new ExpressionBuilderSyntaxChecker(expressionBuilderUI.expressionEditor));
-
-        buttonPanel.add(Box.createHorizontalGlue());
-
-        JButton cancelButton = new JButton("Discard", UIUtils.getIconFromResources("actions/cancel.png"));
-        cancelButton.addActionListener(e -> dialog.setVisible(false));
-        buttonPanel.add(cancelButton);
-
-        AtomicBoolean confirmed = new AtomicBoolean(false);
-        JButton confirmButton = new JButton("Accept", UIUtils.getIconFromResources("actions/checkmark.png"));
-        confirmButton.addActionListener(e -> {
-            if (expressionBuilderUI.checkInserterBeforeAccept()) {
-                confirmed.set(true);
-                dialog.setVisible(false);
-            }
-        });
-        buttonPanel.add(confirmButton);
-
-        contentPanel.add(buttonPanel, BorderLayout.SOUTH);
-
-        dialog.setContentPane(contentPanel);
-        dialog.setModal(true);
-        dialog.setTitle("Expression builder");
-        dialog.pack();
-        dialog.setSize(800, 600);
-        dialog.setLocationRelativeTo(parent);
-        dialog.setVisible(true);
-        return confirmed.get() ? expressionBuilderUI.getExpression() : null;
     }
 
     public static class EntryToStringFunction implements Function<Object, String> {

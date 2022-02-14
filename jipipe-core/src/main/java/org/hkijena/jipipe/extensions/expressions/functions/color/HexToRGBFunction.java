@@ -1,13 +1,12 @@
 package org.hkijena.jipipe.extensions.expressions.functions.color;
 
-import com.google.common.collect.ImmutableList;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.extensions.expressions.ExpressionFunction;
 import org.hkijena.jipipe.extensions.expressions.ExpressionVariables;
 import org.hkijena.jipipe.extensions.expressions.ParameterInfo;
 import org.hkijena.jipipe.utils.ColorUtils;
 
-import java.awt.Color;
+import java.awt.*;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
@@ -25,8 +24,8 @@ public class HexToRGBFunction extends ExpressionFunction {
 
     @Override
     public Object evaluate(List<Object> parameters, ExpressionVariables variables) {
-       String hex = parameters.get(0) + "";
-       Color color = ColorUtils.parseColor(hex);
-       return Arrays.asList(color.getRed(), color.getGreen(), color.getBlue());
+        String hex = parameters.get(0) + "";
+        Color color = ColorUtils.parseColor(hex);
+        return Arrays.asList(color.getRed(), color.getGreen(), color.getBlue());
     }
 }

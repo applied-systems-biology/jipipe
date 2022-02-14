@@ -28,9 +28,7 @@ import org.hkijena.jipipe.ui.components.FormPanel;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Font;
+import java.awt.*;
 import java.util.Collections;
 import java.util.Set;
 

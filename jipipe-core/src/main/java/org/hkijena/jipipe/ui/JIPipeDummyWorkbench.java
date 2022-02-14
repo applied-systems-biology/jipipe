@@ -6,7 +6,7 @@ import org.hkijena.jipipe.ui.components.tabs.DocumentTabPane;
 import org.scijava.Context;
 
 import javax.swing.*;
-import java.awt.Window;
+import java.awt.*;
 
 /**
  * A dummy implementation of {@link JIPipeWorkbench} that will trigger no errors, but will not work for various functions.

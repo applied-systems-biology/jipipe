@@ -9,10 +9,7 @@ import org.hkijena.jipipe.utils.ui.MouseExitedEvent;
 import org.hkijena.jipipe.utils.ui.MouseMovedEvent;
 
 import javax.swing.*;
-import java.awt.Cursor;
-import java.awt.Graphics2D;
-import java.awt.Point;
-import java.awt.Rectangle;
+import java.awt.*;
 
 /**
  * Ellipse drawing

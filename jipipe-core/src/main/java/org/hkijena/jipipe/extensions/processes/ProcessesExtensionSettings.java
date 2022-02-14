@@ -34,6 +34,10 @@ public class ProcessesExtensionSettings implements ExternalEnvironmentSettings {
     public ProcessesExtensionSettings() {
     }
 
+    public static ProcessesExtensionSettings getInstance() {
+        return JIPipe.getSettings().getSettings(ID, ProcessesExtensionSettings.class);
+    }
+
     @Override
     public EventBus getEventBus() {
         return eventBus;
@@ -61,9 +65,5 @@ public class ProcessesExtensionSettings implements ExternalEnvironmentSettings {
         for (ExternalEnvironment preset : presets) {
             this.presets.add((ProcessEnvironment) preset);
         }
-    }
-
-    public static ProcessesExtensionSettings getInstance() {
-        return JIPipe.getSettings().getSettings(ID, ProcessesExtensionSettings.class);
     }
 }

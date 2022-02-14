@@ -31,7 +31,7 @@ import org.hkijena.jipipe.ui.grapheditor.nodeui.JIPipeNodeUI;
 import org.hkijena.jipipe.utils.AutoResizeSplitPane;
 
 import javax.swing.*;
-import java.awt.BorderLayout;
+import java.awt.*;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.UUID;

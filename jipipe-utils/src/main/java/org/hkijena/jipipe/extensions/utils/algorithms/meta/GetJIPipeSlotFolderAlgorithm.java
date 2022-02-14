@@ -14,17 +14,9 @@
 package org.hkijena.jipipe.extensions.utils.algorithms.meta;
 
 import ij.IJ;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeIssueReport;
-import org.hkijena.jipipe.api.JIPipeNode;
-import org.hkijena.jipipe.api.JIPipeProgressInfo;
-import org.hkijena.jipipe.api.JIPipeProject;
+import org.hkijena.jipipe.api.*;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
-import org.hkijena.jipipe.api.nodes.JIPipeDataBatch;
-import org.hkijena.jipipe.api.nodes.JIPipeInputSlot;
-import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
-import org.hkijena.jipipe.api.nodes.JIPipeOutputSlot;
-import org.hkijena.jipipe.api.nodes.JIPipeSimpleIteratingAlgorithm;
+import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.MiscellaneousNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeContextAction;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;

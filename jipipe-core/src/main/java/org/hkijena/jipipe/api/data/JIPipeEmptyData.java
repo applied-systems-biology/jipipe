@@ -11,6 +11,10 @@ import java.nio.file.Path;
 @JIPipeDataStorageDocumentation("The storage folder is empty.")
 @JIPipeHidden
 public class JIPipeEmptyData implements JIPipeData {
+    public static JIPipeEmptyData importFrom(Path storagePath) {
+        return new JIPipeEmptyData();
+    }
+
     @Override
     public void saveTo(Path storageFilePath, String name, boolean forceName, JIPipeProgressInfo progressInfo) {
 
@@ -29,9 +33,5 @@ public class JIPipeEmptyData implements JIPipeData {
     @Override
     public String toString() {
         return "N/A";
-    }
-
-    public static JIPipeEmptyData importFrom(Path storagePath) {
-        return new JIPipeEmptyData();
     }
 }

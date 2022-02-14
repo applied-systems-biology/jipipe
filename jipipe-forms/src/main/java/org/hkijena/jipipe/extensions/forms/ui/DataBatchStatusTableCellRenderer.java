@@ -4,8 +4,7 @@ import org.hkijena.jipipe.extensions.settings.GeneralUISettings;
 
 import javax.swing.*;
 import javax.swing.table.TableCellRenderer;
-import java.awt.Color;
-import java.awt.Component;
+import java.awt.*;
 import java.util.List;
 
 public class DataBatchStatusTableCellRenderer extends JLabel implements TableCellRenderer {
@@ -22,26 +21,6 @@ public class DataBatchStatusTableCellRenderer extends JLabel implements TableCel
         this.colorInvalidSelected = getColorInvalidSelected();
         this.colorInvalid = getColorInvalid();
         this.colorUnvisited = getColorUnvisited();
-    }
-
-    @Override
-    public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
-        setText("" + value);
-        DataBatchStatus status = dataBatchStatuses.get(table.convertRowIndexToModel(row));
-        if (isSelected) {
-            if (status == DataBatchStatus.Invalid)
-                setBackground(colorInvalidSelected);
-            else
-                setBackground(UIManager.getColor("List.selectionBackground"));
-        } else {
-            if (status == DataBatchStatus.Invalid)
-                setBackground(colorInvalid);
-            else if (status == DataBatchStatus.Unvisited)
-                setBackground(colorUnvisited);
-            else
-                setBackground(UIManager.getColor("List.background"));
-        }
-        return this;
     }
 
     public static Color getColorUnvisited() {
@@ -70,5 +49,25 @@ public class DataBatchStatusTableCellRenderer extends JLabel implements TableCel
             return new Color(0x753232);
         else
             return new Color(0xb57979);
+    }
+
+    @Override
+    public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
+        setText("" + value);
+        DataBatchStatus status = dataBatchStatuses.get(table.convertRowIndexToModel(row));
+        if (isSelected) {
+            if (status == DataBatchStatus.Invalid)
+                setBackground(colorInvalidSelected);
+            else
+                setBackground(UIManager.getColor("List.selectionBackground"));
+        } else {
+            if (status == DataBatchStatus.Invalid)
+                setBackground(colorInvalid);
+            else if (status == DataBatchStatus.Unvisited)
+                setBackground(colorUnvisited);
+            else
+                setBackground(UIManager.getColor("List.background"));
+        }
+        return this;
     }
 }

@@ -13,10 +13,7 @@
 
 package org.hkijena.jipipe.ui.components.icons;
 
-import java.awt.Color;
-import java.awt.Component;
-import java.awt.Graphics;
-import java.awt.Insets;
+import java.awt.*;
 
 /**
  * Icon that is only one specific color, including border

@@ -4,10 +4,7 @@ import ij.ImagePlus;
 import ij.gui.ImageCanvas;
 import ij.process.ImageProcessor;
 
-import java.awt.Color;
-import java.awt.Font;
-import java.awt.FontMetrics;
-import java.awt.Rectangle;
+import java.awt.*;
 
 public class DrawUtils {
     private DrawUtils() {

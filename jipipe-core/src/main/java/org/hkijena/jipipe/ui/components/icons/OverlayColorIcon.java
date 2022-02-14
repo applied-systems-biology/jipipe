@@ -14,10 +14,7 @@
 package org.hkijena.jipipe.ui.components.icons;
 
 import javax.swing.*;
-import java.awt.Color;
-import java.awt.Component;
-import java.awt.Graphics;
-import java.awt.Rectangle;
+import java.awt.*;
 
 /**
  * Icon that overlays a color rectangle on top of another icon

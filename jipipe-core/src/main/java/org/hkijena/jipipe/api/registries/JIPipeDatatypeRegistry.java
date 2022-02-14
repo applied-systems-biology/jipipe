@@ -20,14 +20,7 @@ import org.apache.commons.lang3.reflect.ConstructorUtils;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.JIPipeDependency;
 import org.hkijena.jipipe.api.JIPipeHidden;
-import org.hkijena.jipipe.api.data.JIPipeData;
-import org.hkijena.jipipe.api.data.JIPipeDataConverter;
-import org.hkijena.jipipe.api.data.JIPipeDataDisplayOperation;
-import org.hkijena.jipipe.api.data.JIPipeDataImportOperation;
-import org.hkijena.jipipe.api.data.JIPipeDataInfo;
-import org.hkijena.jipipe.api.data.JIPipeDataSlot;
-import org.hkijena.jipipe.api.data.JIPipeExportedDataAnnotation;
-import org.hkijena.jipipe.api.data.JIPipeExportedDataTableRow;
+import org.hkijena.jipipe.api.data.*;
 import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
 import org.hkijena.jipipe.extensions.settings.GeneralDataSettings;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
@@ -46,14 +39,7 @@ import org.jgrapht.graph.DefaultWeightedEdge;
 import javax.swing.*;
 import java.lang.reflect.InvocationTargetException;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Contains known {@link JIPipeData} types, and associates them to their respective {@link JIPipeDataSlot}.
@@ -77,6 +63,18 @@ public class JIPipeDatatypeRegistry {
      */
     public JIPipeDatatypeRegistry() {
 
+    }
+
+    /**
+     * Returns true if the input data type can be trivially converted into the output data type.
+     * A trivial conversion is applied when the input data is the same as the output data type or inherits from it.
+     *
+     * @param inputDataType  the input data type
+     * @param outputDataType the output data type
+     * @return if the output data type can be assigned from the input data type without any explicit conversion rules
+     */
+    public static boolean isTriviallyConvertible(Class<? extends JIPipeData> inputDataType, Class<? extends JIPipeData> outputDataType) {
+        return outputDataType.isAssignableFrom(inputDataType);
     }
 
     /**
@@ -498,18 +496,6 @@ public class JIPipeDatatypeRegistry {
      */
     public URL getIconURLFor(JIPipeDataInfo info) {
         return getIconURLFor(info.getDataClass());
-    }
-
-    /**
-     * Returns true if the input data type can be trivially converted into the output data type.
-     * A trivial conversion is applied when the input data is the same as the output data type or inherits from it.
-     *
-     * @param inputDataType  the input data type
-     * @param outputDataType the output data type
-     * @return if the output data type can be assigned from the input data type without any explicit conversion rules
-     */
-    public static boolean isTriviallyConvertible(Class<? extends JIPipeData> inputDataType, Class<? extends JIPipeData> outputDataType) {
-        return outputDataType.isAssignableFrom(inputDataType);
     }
 
     /**

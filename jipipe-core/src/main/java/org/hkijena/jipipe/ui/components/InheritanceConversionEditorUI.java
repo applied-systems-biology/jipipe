@@ -21,7 +21,7 @@ import org.hkijena.jipipe.ui.components.renderers.JIPipeInheritanceConversionLis
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
-import java.awt.BorderLayout;
+import java.awt.*;
 import java.util.Map;
 import java.util.Objects;
 

@@ -4,7 +4,7 @@ import ij.ImagePlus;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 
-import java.awt.Color;
+import java.awt.*;
 
 public class HSBColorSpace implements ColorSpace {
     @Override

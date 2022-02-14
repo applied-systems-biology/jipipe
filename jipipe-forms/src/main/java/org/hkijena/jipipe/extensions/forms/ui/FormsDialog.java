@@ -22,14 +22,11 @@ import org.hkijena.jipipe.utils.UIUtils;
 import org.jdesktop.swingx.JXTable;
 
 import javax.swing.*;
-import java.awt.BorderLayout;
+import java.awt.*;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 
 public class FormsDialog extends JFrame {
     private static final String TAB_ISSUES_DETECTED = "Issues detected";

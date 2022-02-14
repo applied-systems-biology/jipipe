@@ -16,25 +16,22 @@ public class CreateRGBColorFunction extends ExpressionFunction {
 
     @Override
     public ParameterInfo getParameterInfo(int index) {
-        if(index == 0) {
+        if (index == 0) {
             return new ParameterInfo("Red", "The red component", Number.class);
-        }
-        else  if(index == 1) {
+        } else if (index == 1) {
             return new ParameterInfo("Green", "The green component", Number.class);
-        }
-        else  if(index == 2) {
+        } else if (index == 2) {
             return new ParameterInfo("Blue", "The blue component", Number.class);
-        }
-        else {
+        } else {
             return null;
         }
     }
 
     @Override
     public Object evaluate(List<Object> parameters, ExpressionVariables variables) {
-        int r = ((Number)parameters.get(0)).intValue();
-        int g = ((Number)parameters.get(1)).intValue();
-        int b = ((Number)parameters.get(2)).intValue();
-        return Arrays.asList(r,g,b);
+        int r = ((Number) parameters.get(0)).intValue();
+        int g = ((Number) parameters.get(1)).intValue();
+        int b = ((Number) parameters.get(2)).intValue();
+        return Arrays.asList(r, g, b);
     }
 }

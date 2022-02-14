@@ -89,6 +89,28 @@ public class JIPipeExportedDataTable implements TableModel {
     }
 
     /**
+     * Loads the table from JSON
+     *
+     * @param fileName JSON file
+     * @return Loaded table
+     */
+    public static JIPipeExportedDataTable loadFromJson(Path fileName) {
+        try {
+            JIPipeExportedDataTable result = JsonUtils.getObjectMapper().readerFor(JIPipeExportedDataTable.class).readValue(fileName.toFile());
+            for (JIPipeExportedDataTableRow row : result.getRowList()) {
+                for (JIPipeExportedDataAnnotation dataAnnotation : row.getDataAnnotations()) {
+                    dataAnnotation.setTableRow(row);
+                }
+            }
+            return result;
+        } catch (IOException e) {
+            throw new UserFriendlyRuntimeException(e, "Unable to load data table from '" + fileName + "'!",
+                    "Load JIPipe results", "Either the file is inaccessible, or corrupt.",
+                    "Check if the file is readable and contains valid JSON data.");
+        }
+    }
+
+    /**
      * @return Gets the algorithm ID
      */
     @JsonGetter("node-id")
@@ -404,28 +426,6 @@ public class JIPipeExportedDataTable implements TableModel {
             ++outputRow;
         }
         return output;
-    }
-
-    /**
-     * Loads the table from JSON
-     *
-     * @param fileName JSON file
-     * @return Loaded table
-     */
-    public static JIPipeExportedDataTable loadFromJson(Path fileName) {
-        try {
-            JIPipeExportedDataTable result = JsonUtils.getObjectMapper().readerFor(JIPipeExportedDataTable.class).readValue(fileName.toFile());
-            for (JIPipeExportedDataTableRow row : result.getRowList()) {
-                for (JIPipeExportedDataAnnotation dataAnnotation : row.getDataAnnotations()) {
-                    dataAnnotation.setTableRow(row);
-                }
-            }
-            return result;
-        } catch (IOException e) {
-            throw new UserFriendlyRuntimeException(e, "Unable to load data table from '" + fileName + "'!",
-                    "Load JIPipe results", "Either the file is inaccessible, or corrupt.",
-                    "Check if the file is readable and contains valid JSON data.");
-        }
     }
 
 }

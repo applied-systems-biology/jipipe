@@ -22,7 +22,7 @@ import org.hkijena.jipipe.utils.UIUtils;
 import org.jdesktop.swingx.JXTable;
 
 import javax.swing.*;
-import java.awt.BorderLayout;
+import java.awt.*;
 import java.nio.file.Path;
 
 /**
@@ -54,47 +54,6 @@ public abstract class JIPipeResultDataSlotPreview extends JIPipeProjectWorkbench
         setLayout(new BorderLayout());
         setOpaque(false);
         this.table = table;
-    }
-
-    /**
-     * This function is called from outside to render the preview.
-     * Please not that it is called everytime the cell is rendered, meaning that you should prevent reloading the data all the time.
-     */
-    public abstract void renderPreview();
-
-    /**
-     * @return the table where the data is rendered in
-     */
-    public JTable getTable() {
-        return table;
-    }
-
-    public JIPipeDataSlot getSlot() {
-        return slot;
-    }
-
-    public JIPipeExportedDataTableRow getRow() {
-        return row;
-    }
-
-    /**
-     * Rebuilds the table to show the updated preview
-     */
-    public void refreshTable() {
-        if (getTable() != null) {
-            if (getTable() instanceof JXTable)
-                UIUtils.packDataTable((JXTable) getTable());
-            getTable().repaint();
-        }
-    }
-
-    /**
-     * The data annotation (optional)
-     *
-     * @return data annotation or null if the main data is referenced
-     */
-    public JIPipeExportedDataAnnotation getDataAnnotation() {
-        return dataAnnotation;
     }
 
     /**
@@ -144,5 +103,46 @@ public abstract class JIPipeResultDataSlotPreview extends JIPipeProjectWorkbench
             return slot.getStoragePath().resolve("" + row.getIndex());
         else
             return slot.getStoragePath().resolve(dataAnnotation.getRowStorageFolder());
+    }
+
+    /**
+     * This function is called from outside to render the preview.
+     * Please not that it is called everytime the cell is rendered, meaning that you should prevent reloading the data all the time.
+     */
+    public abstract void renderPreview();
+
+    /**
+     * @return the table where the data is rendered in
+     */
+    public JTable getTable() {
+        return table;
+    }
+
+    public JIPipeDataSlot getSlot() {
+        return slot;
+    }
+
+    public JIPipeExportedDataTableRow getRow() {
+        return row;
+    }
+
+    /**
+     * Rebuilds the table to show the updated preview
+     */
+    public void refreshTable() {
+        if (getTable() != null) {
+            if (getTable() instanceof JXTable)
+                UIUtils.packDataTable((JXTable) getTable());
+            getTable().repaint();
+        }
+    }
+
+    /**
+     * The data annotation (optional)
+     *
+     * @return data annotation or null if the main data is referenced
+     */
+    public JIPipeExportedDataAnnotation getDataAnnotation() {
+        return dataAnnotation;
     }
 }

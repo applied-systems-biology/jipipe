@@ -13,8 +13,7 @@
 
 package org.hkijena.jipipe.extensions.parameters.library.roi;
 
-import java.awt.Point;
-import java.awt.Rectangle;
+import java.awt.*;
 
 /**
  * An anchor

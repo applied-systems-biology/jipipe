@@ -36,11 +36,6 @@ public class ImageQueryExpressionVariableSource implements ExpressionParameterVa
         VARIABLES.add(new ExpressionParameterVariable("Image title", "The title of the image", "title"));
     }
 
-    @Override
-    public Set<ExpressionParameterVariable> getVariables(JIPipeParameterAccess parameterAccess) {
-        return VARIABLES;
-    }
-
     /**
      * Builds the proper variable set for an image
      *
@@ -71,5 +66,10 @@ public class ImageQueryExpressionVariableSource implements ExpressionParameterVa
         variableSet.set("num_channels", imagePlus.getNChannels());
         variableSet.set("num_frames", imagePlus.getNFrames());
         variableSet.set("title", imagePlus.getTitle());
+    }
+
+    @Override
+    public Set<ExpressionParameterVariable> getVariables(JIPipeParameterAccess parameterAccess) {
+        return VARIABLES;
     }
 }

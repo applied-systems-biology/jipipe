@@ -32,14 +32,11 @@ import org.hkijena.jipipe.utils.TooltipUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.hkijena.jipipe.utils.search.RankedData;
 
+import javax.swing.Timer;
 import javax.swing.*;
-import java.awt.BorderLayout;
-import java.util.ArrayDeque;
-import java.util.ArrayList;
-import java.util.Comparator;
+import java.awt.*;
 import java.util.List;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -81,6 +78,26 @@ public class JIPipeAlgorithmTargetFinderUI extends JPanel {
         initialize();
         initializeAvailableContents();
         reloadAlgorithmList();
+    }
+
+    /**
+     * Finds all algorithms that fit to the slot according to the information in {@link JIPipeNodeInfo}
+     *
+     * @param slot The target slot
+     * @return Unsorted list of algorithm infos
+     */
+    public static List<JIPipeNodeInfo> findCompatibleTargetAlgorithms(JIPipeDataSlot slot) {
+        Class<? extends JIPipeData> outputSlotDataClass = slot.getAcceptedDataType();
+        List<JIPipeNodeInfo> result = new ArrayList<>();
+        for (JIPipeNodeInfo info : JIPipe.getNodes().getRegisteredNodeInfos().values()) {
+            for (Class<? extends JIPipeData> inputSlotDataClass : info.getInputSlots().stream().map(JIPipeInputSlot::value).collect(Collectors.toList())) {
+                if (JIPipe.getDataTypes().isConvertible(outputSlotDataClass, inputSlotDataClass)) {
+                    result.add(info);
+                    break;
+                }
+            }
+        }
+        return result;
     }
 
     private void scrollToBeginning() {
@@ -249,25 +266,5 @@ public class JIPipeAlgorithmTargetFinderUI extends JPanel {
      */
     public UUID getCompartment() {
         return compartment;
-    }
-
-    /**
-     * Finds all algorithms that fit to the slot according to the information in {@link JIPipeNodeInfo}
-     *
-     * @param slot The target slot
-     * @return Unsorted list of algorithm infos
-     */
-    public static List<JIPipeNodeInfo> findCompatibleTargetAlgorithms(JIPipeDataSlot slot) {
-        Class<? extends JIPipeData> outputSlotDataClass = slot.getAcceptedDataType();
-        List<JIPipeNodeInfo> result = new ArrayList<>();
-        for (JIPipeNodeInfo info : JIPipe.getNodes().getRegisteredNodeInfos().values()) {
-            for (Class<? extends JIPipeData> inputSlotDataClass : info.getInputSlots().stream().map(JIPipeInputSlot::value).collect(Collectors.toList())) {
-                if (JIPipe.getDataTypes().isConvertible(outputSlotDataClass, inputSlotDataClass)) {
-                    result.add(info);
-                    break;
-                }
-            }
-        }
-        return result;
     }
 }

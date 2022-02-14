@@ -18,8 +18,7 @@ import org.hkijena.jipipe.utils.UIUtils;
 import org.hkijena.jipipe.utils.search.RankedData;
 
 import javax.swing.*;
-import java.awt.BorderLayout;
-import java.awt.Cursor;
+import java.awt.*;
 import java.util.List;
 
 public class NodeToolBox extends JPanel {
@@ -32,6 +31,56 @@ public class NodeToolBox extends JPanel {
     public NodeToolBox() {
         initialize();
         reloadAlgorithmList();
+    }
+
+    public static void openNewToolBoxWindow() {
+        NodeToolBox toolBox = new NodeToolBox();
+        JFrame window = new JFrame();
+        toolBox.getToolBar().add(new AlwaysOnTopToggle(window));
+        window.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+        window.setAlwaysOnTop(true);
+        window.setTitle("Available nodes");
+        window.setIconImage(UIUtils.getIcon128FromResources("jipipe.png").getImage());
+        window.setContentPane(toolBox);
+        window.pack();
+        window.setSize(300, 700);
+        window.setVisible(true);
+    }
+
+    private static int[] rankNavigationEntry(JIPipeNodeInfo info, String[] searchStrings) {
+        if (searchStrings == null || searchStrings.length == 0)
+            return new int[0];
+        String nameHayStack;
+        String menuHayStack;
+        String descriptionHayStack;
+        if (info.isHidden())
+            return null;
+        nameHayStack = StringUtils.orElse(info.getName(), "").toLowerCase();
+        menuHayStack = info.getCategory().getName() + "\n" + info.getMenuPath();
+        descriptionHayStack = StringUtils.orElse(info.getDescription().getBody(), "").toLowerCase();
+
+        nameHayStack = nameHayStack.toLowerCase();
+        menuHayStack = menuHayStack.toLowerCase();
+        descriptionHayStack = descriptionHayStack.toLowerCase();
+
+        int[] ranks = new int[3];
+
+        for (int i = 0; i < searchStrings.length; i++) {
+            String string = searchStrings[i];
+            if (nameHayStack.contains(string.toLowerCase()))
+                --ranks[0];
+            if (i == 0 && nameHayStack.startsWith(string.toLowerCase()))
+                ranks[0] -= 2;
+            if (menuHayStack.contains(string.toLowerCase()))
+                --ranks[1];
+            if (descriptionHayStack.contains(string.toLowerCase()))
+                --ranks[2];
+        }
+
+        if (ranks[0] == 0 && ranks[1] == 0 && ranks[2] == 0)
+            return null;
+
+        return ranks;
     }
 
     public JToolBar getToolBar() {
@@ -121,55 +170,5 @@ public class NodeToolBox extends JPanel {
                 JIPipeNodeInfo::getName,
                 NodeToolBox::rankNavigationEntry,
                 searchField.getSearchStrings());
-    }
-
-    public static void openNewToolBoxWindow() {
-        NodeToolBox toolBox = new NodeToolBox();
-        JFrame window = new JFrame();
-        toolBox.getToolBar().add(new AlwaysOnTopToggle(window));
-        window.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
-        window.setAlwaysOnTop(true);
-        window.setTitle("Available nodes");
-        window.setIconImage(UIUtils.getIcon128FromResources("jipipe.png").getImage());
-        window.setContentPane(toolBox);
-        window.pack();
-        window.setSize(300, 700);
-        window.setVisible(true);
-    }
-
-    private static int[] rankNavigationEntry(JIPipeNodeInfo info, String[] searchStrings) {
-        if (searchStrings == null || searchStrings.length == 0)
-            return new int[0];
-        String nameHayStack;
-        String menuHayStack;
-        String descriptionHayStack;
-        if (info.isHidden())
-            return null;
-        nameHayStack = StringUtils.orElse(info.getName(), "").toLowerCase();
-        menuHayStack = info.getCategory().getName() + "\n" + info.getMenuPath();
-        descriptionHayStack = StringUtils.orElse(info.getDescription().getBody(), "").toLowerCase();
-
-        nameHayStack = nameHayStack.toLowerCase();
-        menuHayStack = menuHayStack.toLowerCase();
-        descriptionHayStack = descriptionHayStack.toLowerCase();
-
-        int[] ranks = new int[3];
-
-        for (int i = 0; i < searchStrings.length; i++) {
-            String string = searchStrings[i];
-            if (nameHayStack.contains(string.toLowerCase()))
-                --ranks[0];
-            if (i == 0 && nameHayStack.startsWith(string.toLowerCase()))
-                ranks[0] -= 2;
-            if (menuHayStack.contains(string.toLowerCase()))
-                --ranks[1];
-            if (descriptionHayStack.contains(string.toLowerCase()))
-                --ranks[2];
-        }
-
-        if (ranks[0] == 0 && ranks[1] == 0 && ranks[2] == 0)
-            return null;
-
-        return ranks;
     }
 }

@@ -25,16 +25,8 @@ import net.imagej.updater.util.AvailableSites;
 import net.imagej.updater.util.Progress;
 import net.imagej.updater.util.UpdaterUtil;
 import org.apache.commons.lang3.reflect.ConstructorUtils;
-import org.hkijena.jipipe.api.JIPipeIssueReport;
-import org.hkijena.jipipe.api.JIPipeProgressInfo;
-import org.hkijena.jipipe.api.JIPipeProject;
-import org.hkijena.jipipe.api.JIPipeRun;
-import org.hkijena.jipipe.api.JIPipeRunSettings;
-import org.hkijena.jipipe.api.data.JIPipeData;
-import org.hkijena.jipipe.api.data.JIPipeDataDisplayOperation;
-import org.hkijena.jipipe.api.data.JIPipeDataImportOperation;
-import org.hkijena.jipipe.api.data.JIPipeDataInfo;
-import org.hkijena.jipipe.api.data.JIPipeDataSlot;
+import org.hkijena.jipipe.api.*;
+import org.hkijena.jipipe.api.data.*;
 import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
 import org.hkijena.jipipe.api.nodes.JIPipeAlgorithm;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
@@ -45,11 +37,7 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
 import org.hkijena.jipipe.api.registries.*;
 import org.hkijena.jipipe.extensions.parameters.library.jipipe.DynamicDataDisplayOperationIdEnumParameter;
 import org.hkijena.jipipe.extensions.parameters.library.jipipe.DynamicDataImportOperationIdEnumParameter;
-import org.hkijena.jipipe.extensions.settings.AutoSaveSettings;
-import org.hkijena.jipipe.extensions.settings.DefaultCacheDisplaySettings;
-import org.hkijena.jipipe.extensions.settings.DefaultResultImporterSettings;
-import org.hkijena.jipipe.extensions.settings.ExtensionSettings;
-import org.hkijena.jipipe.extensions.settings.ProjectsSettings;
+import org.hkijena.jipipe.extensions.settings.*;
 import org.hkijena.jipipe.ui.ijupdater.IJProgressAdapter;
 import org.hkijena.jipipe.ui.ijupdater.JIPipeImageJPluginManager;
 import org.hkijena.jipipe.ui.registries.JIPipeCustomMenuRegistry;
@@ -81,13 +69,7 @@ import java.net.Authenticator;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.zip.GZIPInputStream;
 
@@ -120,6 +102,290 @@ public class JIPipe extends AbstractService implements JIPipeRegistry {
     private PluginService pluginService;
 
     public JIPipe() {
+    }
+
+    /**
+     * Imports data of given data type from its output folder.
+     * Generally, the output folder should conform to the data type's saveTo() function without 'forceName' enabled
+     *
+     * @param outputFolder the folder that contains the data
+     * @param klass        the data type
+     * @param <T>          the data type
+     * @return imported data
+     */
+    public static <T extends JIPipeData> T importData(Path outputFolder, Class<T> klass) {
+        try {
+            Method method = klass.getDeclaredMethod("importFrom", Path.class);
+            return (T) method.invoke(null, outputFolder);
+        } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    /**
+     * Imports data from a slot folder
+     *
+     * @param slotFolder   a folder that contains data-table.json
+     * @param progressInfo the progress info
+     * @return the imported data slot
+     */
+    public static JIPipeDataSlot importDataSlot(Path slotFolder, JIPipeProgressInfo progressInfo) {
+        return JIPipeDataSlot.loadFromStoragePath(slotFolder, progressInfo);
+    }
+
+    public static JIPipeParameterTypeRegistry getParameterTypes() {
+        return instance.parameterTypeRegistry;
+    }
+
+    public static JIPipeExpressionRegistry getTableOperations() {
+        return instance.tableOperationRegistry;
+    }
+
+    public static JIPipeCustomMenuRegistry getCustomMenus() {
+        return instance.customMenuRegistry;
+    }
+
+    public static JIPipeImageJAdapterRegistry getImageJAdapters() {
+        return instance.imageJDataAdapterRegistry;
+    }
+
+    public static JIPipeSettingsRegistry getSettings() {
+        return instance.settingsRegistry;
+    }
+
+    public static JIPipeNodeRegistry getNodes() {
+        return instance.nodeRegistry;
+    }
+
+    public static JIPipeDatatypeRegistry getDataTypes() {
+        return instance.datatypeRegistry;
+    }
+
+    /**
+     * @return Singleton instance
+     */
+    public static JIPipe getInstance() {
+        return instance;
+    }
+
+    /**
+     * Ensures that JIPipe is initialized and available.
+     * Creates a new {@link ImageJ} instance to obtain a {@link Context} if JIPipe is not initialized already.
+     *
+     * @return the {@link JIPipe} instance
+     */
+    public static JIPipe ensureInstance() {
+        if (getInstance() != null)
+            return getInstance();
+        final ImageJ ij = new ImageJ();
+        Context context = ij.context();
+        return ensureInstance(context);
+    }
+
+    /**
+     * Ensures that JIPipe is initialized and available.
+     *
+     * @param context the context to initialize JIPipe
+     * @return the {@link JIPipe} instance
+     */
+    public static JIPipe ensureInstance(Context context) {
+        if (getInstance() != null)
+            return getInstance();
+        JIPipe instance = JIPipe.createInstance(context);
+        JIPipe.getInstance().initialize();
+        return instance;
+    }
+
+    /**
+     * Helper to create JIPipe from a context.
+     * Will create a new JIPipe instance, so be careful.
+     * We recommend using the ensureInstance() method.
+     *
+     * @param context the context
+     */
+    public static JIPipe createInstance(Context context) {
+        PluginService pluginService = context.getService(PluginService.class);
+        try {
+            instance = (JIPipe) pluginService.getPlugin(JIPipe.class).createInstance();
+            context.inject(instance);
+            instance.setContext(context);
+        } catch (InstantiableException e) {
+            throw new RuntimeException(e);
+        }
+        return instance;
+    }
+
+    public static boolean isInstantiated() {
+        return instance != null;
+    }
+
+    /**
+     * Compares two plugins and sorts them by priority
+     *
+     * @param p0 Plugin
+     * @param p1 Plugin
+     * @return Comparator result
+     */
+    public static int comparePlugins(PluginInfo<?> p0, PluginInfo<?> p1) {
+        return -Double.compare(p0.getPriority(), p1.getPriority());
+    }
+
+    /**
+     * Loads a project
+     *
+     * @param fileName Project file
+     * @return the project
+     * @throws IOException thrown if the file could not be read or the file is corrupt
+     */
+    public static JIPipeProject loadProject(Path fileName) throws IOException {
+        return loadProject(fileName, new JIPipeIssueReport());
+    }
+
+    /**
+     * Loads a project
+     *
+     * @param fileName Project file
+     * @param report   Report whether the project is valid
+     * @return the project
+     * @throws IOException thrown if the file could not be read or the file is corrupt
+     */
+    public static JIPipeProject loadProject(Path fileName, JIPipeIssueReport report) throws IOException {
+        return JIPipeProject.loadProject(fileName, report);
+    }
+
+    /**
+     * Runs a project in the current thread.
+     * The progress will be put into the stdout
+     * This will block the current thread.
+     *
+     * @param project      the project
+     * @param outputFolder the output folder
+     * @param threads      the number of threads (set to zero for using the default value)
+     * @return the result
+     */
+    public static JIPipeRun runProject(JIPipeProject project, Path outputFolder, int threads) {
+        JIPipeRunSettings settings = new JIPipeRunSettings();
+        settings.setOutputPath(outputFolder);
+        if (threads > 0)
+            settings.setNumThreads(threads);
+        JIPipeRun run = new JIPipeRun(project, settings);
+        run.run();
+        return run;
+    }
+
+    /**
+     * Runs a project in the current thread.
+     * The progress will be put into the stdout
+     * This will block the current thread.
+     *
+     * @param project  the project
+     * @param settings settings for the run
+     * @return the result
+     */
+    public static JIPipeRun runProject(JIPipeProject project, JIPipeRunSettings settings) {
+        JIPipeRun run = new JIPipeRun(project, settings);
+        run.run();
+        return run;
+    }
+
+    /**
+     * Runs a project in a different thread.
+     * The progress will be put into the stdout
+     *
+     * @param project      the project
+     * @param outputFolder the output folder
+     * @param threads      the number of threads (set to zero for using the default value)
+     * @return the future result. You have to check the {@link JIPipeRunnerQueue} to see if the run is finished.
+     */
+    public static JIPipeRun enqueueProject(JIPipeProject project, Path outputFolder, int threads) {
+        JIPipeRunSettings settings = new JIPipeRunSettings();
+        settings.setOutputPath(outputFolder);
+        if (threads > 0)
+            settings.setNumThreads(threads);
+        JIPipeRun run = new JIPipeRun(project, settings);
+        JIPipeRunnerQueue.getInstance().enqueue(run);
+        return run;
+    }
+
+    /**
+     * Runs a project in the current thread.
+     * The progress will be put into the stdout
+     *
+     * @param project  the project
+     * @param settings settings for the run
+     * @return the future result. You have to check the {@link JIPipeRunnerQueue} to see if the run is finished.
+     */
+    public static JIPipeRun enqueueProject(JIPipeProject project, JIPipeRunSettings settings) {
+        JIPipeRun run = new JIPipeRun(project, settings);
+        JIPipeRunnerQueue.getInstance().enqueue(run);
+        return run;
+    }
+
+    /**
+     * Creates a new node instance from its id
+     *
+     * @param id    Algorithm ID
+     * @param klass the node type
+     * @param <T>   Algorithm class
+     * @return Algorithm instance
+     */
+    public static <T extends JIPipeGraphNode> T createNode(String id, Class<T> klass) {
+        return (T) getNodes().getInfoById(id).newInstance();
+    }
+
+    /**
+     * Creates a new node instance from its class.
+     * Please note that this might not work for all node types, as there is no 1:1 relation between node classes and their Ids
+     *
+     * @param klass node class
+     * @param <T>   node class
+     * @return the node
+     */
+    public static <T extends JIPipeGraphNode> T createNode(Class<T> klass) {
+        Set<JIPipeNodeInfo> nodeInfos = getNodes().getNodeInfosFromClass(klass);
+        if (nodeInfos.size() > 1)
+            throw new RuntimeException("There are multiple node infos registered for " + klass);
+        if (nodeInfos.isEmpty())
+            throw new IndexOutOfBoundsException("No node infos registered for " + klass);
+        return (T) nodeInfos.iterator().next().newInstance();
+    }
+
+    /**
+     * Duplicates a {@link JIPipeGraphNode}
+     *
+     * @param node the node
+     * @param <T>  the node class
+     * @return a deep copy
+     */
+    public static <T extends JIPipeGraphNode> T duplicateNode(T node) {
+        if (node.getInfo() == null) {
+            System.err.println("Warning: Node " + node + " has no info attached. Create nodes via the static JIPipe method!");
+            try {
+                return (T) node.getClass().getConstructor(node.getClass()).newInstance(node);
+            } catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
+                throw new RuntimeException(e);
+            }
+        } else {
+            return (T) node.getInfo().duplicate(node);
+        }
+    }
+
+    /**
+     * Instantiates a data class with the provided parameters
+     * This method is helpful if output data is constructed based on slot types
+     *
+     * @param klass                 The data class
+     * @param constructorParameters Constructor parameters
+     * @param <T>                   Data class
+     * @return Data instance
+     */
+    public static <T extends JIPipeData> T createData(Class<T> klass, Object... constructorParameters) {
+        try {
+            return ConstructorUtils.invokeConstructor(klass, constructorParameters);
+        } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException | InstantiationException e) {
+            throw new UserFriendlyRuntimeException(e, "Cannot create data instance!", "Undefined", "There is an error in the code that provides the annotation type.",
+                    "Please contact the author of the plugin that provides the annotation type " + klass);
+        }
     }
 
     public List<JIPipeDependency> getFailedExtensions() {
@@ -609,290 +875,6 @@ public class JIPipe extends AbstractService implements JIPipeRegistry {
     @Override
     public JIPipeUtilityRegistry getUtilityRegistry() {
         return utilityRegistry;
-    }
-
-    /**
-     * Imports data of given data type from its output folder.
-     * Generally, the output folder should conform to the data type's saveTo() function without 'forceName' enabled
-     *
-     * @param outputFolder the folder that contains the data
-     * @param klass        the data type
-     * @param <T>          the data type
-     * @return imported data
-     */
-    public static <T extends JIPipeData> T importData(Path outputFolder, Class<T> klass) {
-        try {
-            Method method = klass.getDeclaredMethod("importFrom", Path.class);
-            return (T) method.invoke(null, outputFolder);
-        } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    /**
-     * Imports data from a slot folder
-     *
-     * @param slotFolder   a folder that contains data-table.json
-     * @param progressInfo the progress info
-     * @return the imported data slot
-     */
-    public static JIPipeDataSlot importDataSlot(Path slotFolder, JIPipeProgressInfo progressInfo) {
-        return JIPipeDataSlot.loadFromStoragePath(slotFolder, progressInfo);
-    }
-
-    public static JIPipeParameterTypeRegistry getParameterTypes() {
-        return instance.parameterTypeRegistry;
-    }
-
-    public static JIPipeExpressionRegistry getTableOperations() {
-        return instance.tableOperationRegistry;
-    }
-
-    public static JIPipeCustomMenuRegistry getCustomMenus() {
-        return instance.customMenuRegistry;
-    }
-
-    public static JIPipeImageJAdapterRegistry getImageJAdapters() {
-        return instance.imageJDataAdapterRegistry;
-    }
-
-    public static JIPipeSettingsRegistry getSettings() {
-        return instance.settingsRegistry;
-    }
-
-    public static JIPipeNodeRegistry getNodes() {
-        return instance.nodeRegistry;
-    }
-
-    public static JIPipeDatatypeRegistry getDataTypes() {
-        return instance.datatypeRegistry;
-    }
-
-    /**
-     * @return Singleton instance
-     */
-    public static JIPipe getInstance() {
-        return instance;
-    }
-
-    /**
-     * Ensures that JIPipe is initialized and available.
-     * Creates a new {@link ImageJ} instance to obtain a {@link Context} if JIPipe is not initialized already.
-     *
-     * @return the {@link JIPipe} instance
-     */
-    public static JIPipe ensureInstance() {
-        if (getInstance() != null)
-            return getInstance();
-        final ImageJ ij = new ImageJ();
-        Context context = ij.context();
-        return ensureInstance(context);
-    }
-
-    /**
-     * Ensures that JIPipe is initialized and available.
-     *
-     * @param context the context to initialize JIPipe
-     * @return the {@link JIPipe} instance
-     */
-    public static JIPipe ensureInstance(Context context) {
-        if (getInstance() != null)
-            return getInstance();
-        JIPipe instance = JIPipe.createInstance(context);
-        JIPipe.getInstance().initialize();
-        return instance;
-    }
-
-    /**
-     * Helper to create JIPipe from a context.
-     * Will create a new JIPipe instance, so be careful.
-     * We recommend using the ensureInstance() method.
-     *
-     * @param context the context
-     */
-    public static JIPipe createInstance(Context context) {
-        PluginService pluginService = context.getService(PluginService.class);
-        try {
-            instance = (JIPipe) pluginService.getPlugin(JIPipe.class).createInstance();
-            context.inject(instance);
-            instance.setContext(context);
-        } catch (InstantiableException e) {
-            throw new RuntimeException(e);
-        }
-        return instance;
-    }
-
-    public static boolean isInstantiated() {
-        return instance != null;
-    }
-
-    /**
-     * Compares two plugins and sorts them by priority
-     *
-     * @param p0 Plugin
-     * @param p1 Plugin
-     * @return Comparator result
-     */
-    public static int comparePlugins(PluginInfo<?> p0, PluginInfo<?> p1) {
-        return -Double.compare(p0.getPriority(), p1.getPriority());
-    }
-
-    /**
-     * Loads a project
-     *
-     * @param fileName Project file
-     * @return the project
-     * @throws IOException thrown if the file could not be read or the file is corrupt
-     */
-    public static JIPipeProject loadProject(Path fileName) throws IOException {
-        return loadProject(fileName, new JIPipeIssueReport());
-    }
-
-    /**
-     * Loads a project
-     *
-     * @param fileName Project file
-     * @param report   Report whether the project is valid
-     * @return the project
-     * @throws IOException thrown if the file could not be read or the file is corrupt
-     */
-    public static JIPipeProject loadProject(Path fileName, JIPipeIssueReport report) throws IOException {
-        return JIPipeProject.loadProject(fileName, report);
-    }
-
-    /**
-     * Runs a project in the current thread.
-     * The progress will be put into the stdout
-     * This will block the current thread.
-     *
-     * @param project      the project
-     * @param outputFolder the output folder
-     * @param threads      the number of threads (set to zero for using the default value)
-     * @return the result
-     */
-    public static JIPipeRun runProject(JIPipeProject project, Path outputFolder, int threads) {
-        JIPipeRunSettings settings = new JIPipeRunSettings();
-        settings.setOutputPath(outputFolder);
-        if (threads > 0)
-            settings.setNumThreads(threads);
-        JIPipeRun run = new JIPipeRun(project, settings);
-        run.run();
-        return run;
-    }
-
-    /**
-     * Runs a project in the current thread.
-     * The progress will be put into the stdout
-     * This will block the current thread.
-     *
-     * @param project  the project
-     * @param settings settings for the run
-     * @return the result
-     */
-    public static JIPipeRun runProject(JIPipeProject project, JIPipeRunSettings settings) {
-        JIPipeRun run = new JIPipeRun(project, settings);
-        run.run();
-        return run;
-    }
-
-    /**
-     * Runs a project in a different thread.
-     * The progress will be put into the stdout
-     *
-     * @param project      the project
-     * @param outputFolder the output folder
-     * @param threads      the number of threads (set to zero for using the default value)
-     * @return the future result. You have to check the {@link JIPipeRunnerQueue} to see if the run is finished.
-     */
-    public static JIPipeRun enqueueProject(JIPipeProject project, Path outputFolder, int threads) {
-        JIPipeRunSettings settings = new JIPipeRunSettings();
-        settings.setOutputPath(outputFolder);
-        if (threads > 0)
-            settings.setNumThreads(threads);
-        JIPipeRun run = new JIPipeRun(project, settings);
-        JIPipeRunnerQueue.getInstance().enqueue(run);
-        return run;
-    }
-
-    /**
-     * Runs a project in the current thread.
-     * The progress will be put into the stdout
-     *
-     * @param project  the project
-     * @param settings settings for the run
-     * @return the future result. You have to check the {@link JIPipeRunnerQueue} to see if the run is finished.
-     */
-    public static JIPipeRun enqueueProject(JIPipeProject project, JIPipeRunSettings settings) {
-        JIPipeRun run = new JIPipeRun(project, settings);
-        JIPipeRunnerQueue.getInstance().enqueue(run);
-        return run;
-    }
-
-    /**
-     * Creates a new node instance from its id
-     *
-     * @param id    Algorithm ID
-     * @param klass the node type
-     * @param <T>   Algorithm class
-     * @return Algorithm instance
-     */
-    public static <T extends JIPipeGraphNode> T createNode(String id, Class<T> klass) {
-        return (T) getNodes().getInfoById(id).newInstance();
-    }
-
-    /**
-     * Creates a new node instance from its class.
-     * Please note that this might not work for all node types, as there is no 1:1 relation between node classes and their Ids
-     *
-     * @param klass node class
-     * @param <T>   node class
-     * @return the node
-     */
-    public static <T extends JIPipeGraphNode> T createNode(Class<T> klass) {
-        Set<JIPipeNodeInfo> nodeInfos = getNodes().getNodeInfosFromClass(klass);
-        if (nodeInfos.size() > 1)
-            throw new RuntimeException("There are multiple node infos registered for " + klass);
-        if (nodeInfos.isEmpty())
-            throw new IndexOutOfBoundsException("No node infos registered for " + klass);
-        return (T) nodeInfos.iterator().next().newInstance();
-    }
-
-    /**
-     * Duplicates a {@link JIPipeGraphNode}
-     *
-     * @param node the node
-     * @param <T>  the node class
-     * @return a deep copy
-     */
-    public static <T extends JIPipeGraphNode> T duplicateNode(T node) {
-        if (node.getInfo() == null) {
-            System.err.println("Warning: Node " + node + " has no info attached. Create nodes via the static JIPipe method!");
-            try {
-                return (T) node.getClass().getConstructor(node.getClass()).newInstance(node);
-            } catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
-                throw new RuntimeException(e);
-            }
-        } else {
-            return (T) node.getInfo().duplicate(node);
-        }
-    }
-
-    /**
-     * Instantiates a data class with the provided parameters
-     * This method is helpful if output data is constructed based on slot types
-     *
-     * @param klass                 The data class
-     * @param constructorParameters Constructor parameters
-     * @param <T>                   Data class
-     * @return Data instance
-     */
-    public static <T extends JIPipeData> T createData(Class<T> klass, Object... constructorParameters) {
-        try {
-            return ConstructorUtils.invokeConstructor(klass, constructorParameters);
-        } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException | InstantiationException e) {
-            throw new UserFriendlyRuntimeException(e, "Cannot create data instance!", "Undefined", "There is an error in the code that provides the annotation type.",
-                    "Please contact the author of the plugin that provides the annotation type " + klass);
-        }
     }
 
     /**

@@ -29,8 +29,7 @@ import org.hkijena.jipipe.utils.classfilters.AnyClassFilter;
 import org.hkijena.jipipe.utils.classfilters.ClassFilter;
 
 import javax.swing.*;
-import java.awt.BorderLayout;
-import java.awt.Dimension;
+import java.awt.*;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;

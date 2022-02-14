@@ -14,6 +14,14 @@ public class NodeTemplateSettings implements JIPipeParameterCollection {
     private final EventBus eventBus = new EventBus();
     private JIPipeNodeTemplate.List nodeTemplates = new JIPipeNodeTemplate.List();
 
+    public static NodeTemplateSettings getInstance() {
+        return JIPipe.getSettings().getSettings(ID, NodeTemplateSettings.class);
+    }
+
+    public static void triggerRefreshedEvent() {
+        getInstance().getEventBus().post(new NodeTemplatesRefreshedEvent());
+    }
+
     @Override
     public EventBus getEventBus() {
         return eventBus;
@@ -28,14 +36,6 @@ public class NodeTemplateSettings implements JIPipeParameterCollection {
     @JIPipeParameter("node-templates")
     public void setNodeTemplates(JIPipeNodeTemplate.List nodeTemplates) {
         this.nodeTemplates = nodeTemplates;
-    }
-
-    public static NodeTemplateSettings getInstance() {
-        return JIPipe.getSettings().getSettings(ID, NodeTemplateSettings.class);
-    }
-
-    public static void triggerRefreshedEvent() {
-        getInstance().getEventBus().post(new NodeTemplatesRefreshedEvent());
     }
 
     /**

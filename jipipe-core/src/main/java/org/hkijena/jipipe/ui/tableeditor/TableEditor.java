@@ -19,7 +19,6 @@ import com.google.common.primitives.Ints;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.registries.JIPipeExpressionRegistry;
 import org.hkijena.jipipe.extensions.settings.FileChooserSettings;
-import org.hkijena.jipipe.extensions.settings.ImageViewerUISettings;
 import org.hkijena.jipipe.extensions.settings.TableViewerUISettings;
 import org.hkijena.jipipe.extensions.tables.ConvertingColumnOperation;
 import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
@@ -42,22 +41,13 @@ import org.jdesktop.swingx.ScrollableSizeHint;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableCellRenderer;
-import java.awt.BorderLayout;
-import java.awt.Component;
-import java.awt.FlowLayout;
-import java.awt.Font;
+import java.awt.*;
 import java.io.BufferedOutputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Objects;
-import java.util.Set;
-import java.util.Stack;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -66,23 +56,21 @@ import java.util.stream.Collectors;
 public class TableEditor extends JIPipeWorkbenchPanel {
     private static final int MAX_UNDO = 10;
     private final TableViewerUISettings settings;
+    private final JToolBar toolBar = new JToolBar();
+    private final DocumentTabPane sideBar = new DocumentTabPane();
     private ResultsTableData tableModel;
     private JXTable jxTable;
     private Stack<ResultsTableData> undoBuffer = new Stack<>();
     private boolean isRebuildingSelection = false;
-
     private FormPanel palettePanel;
     private JPanel currentPaletteGroup;
-
     private JButton convertSelectedCellsButton;
     private JPopupMenu convertSelectedCellsMenu;
     private FormPanel.GroupHeaderPanel rowPaletteGroup;
     private FormPanel.GroupHeaderPanel columnPaletteGroup;
     private FormPanel.GroupHeaderPanel selectionPaletteGroup;
-    private final JToolBar toolBar = new JToolBar();
     private Component currentContentPanel;
     private JToggleButton enableSideBarButton = new JToggleButton();
-    private final DocumentTabPane sideBar = new DocumentTabPane();
 
     /**
      * @param workbench  the workbench
@@ -99,6 +87,39 @@ public class TableEditor extends JIPipeWorkbenchPanel {
         initialize();
         updateSideBar();
         setTableModel(tableModel);
+    }
+
+    /**
+     * Imports a table from CSV and creates a new {@link TableEditor} tab
+     *
+     * @param fileName    CSV file
+     * @param workbenchUI workbench
+     */
+    public static ResultsTableData importTableFromCSV(Path fileName, JIPipeProjectWorkbench workbenchUI) {
+        ResultsTableData tableData = ResultsTableData.fromCSV(fileName);
+        // Create table analyzer
+        workbenchUI.getDocumentTabPane().addTab(fileName.getFileName().toString(), UIUtils.getIconFromResources("data-types/results-table.png"),
+                new TableEditor(workbenchUI, tableData), DocumentTabPane.CloseMode.withAskOnCloseButton, true);
+        return tableData;
+    }
+
+    /**
+     * Shows table data in a new window
+     *
+     * @param workbench the workbench
+     * @param tableData the data
+     * @param title     the title
+     * @return the table editor component
+     */
+    public static TableEditor openWindow(JIPipeWorkbench workbench, ResultsTableData tableData, String title) {
+        JFrame window = new JFrame(title);
+        window.getContentPane().setLayout(new BorderLayout());
+        TableEditor editor = new TableEditor(workbench, tableData);
+        window.getContentPane().add(editor, BorderLayout.CENTER);
+        window.setSize(1024, 768);
+        window.setLocationRelativeTo(workbench.getWindow());
+        window.setVisible(true);
+        return editor;
     }
 
     private void initialize() {
@@ -768,39 +789,6 @@ public class TableEditor extends JIPipeWorkbenchPanel {
 
     public DocumentTabPane getSideBar() {
         return sideBar;
-    }
-
-    /**
-     * Imports a table from CSV and creates a new {@link TableEditor} tab
-     *
-     * @param fileName    CSV file
-     * @param workbenchUI workbench
-     */
-    public static ResultsTableData importTableFromCSV(Path fileName, JIPipeProjectWorkbench workbenchUI) {
-        ResultsTableData tableData = ResultsTableData.fromCSV(fileName);
-        // Create table analyzer
-        workbenchUI.getDocumentTabPane().addTab(fileName.getFileName().toString(), UIUtils.getIconFromResources("data-types/results-table.png"),
-                new TableEditor(workbenchUI, tableData), DocumentTabPane.CloseMode.withAskOnCloseButton, true);
-        return tableData;
-    }
-
-    /**
-     * Shows table data in a new window
-     *
-     * @param workbench the workbench
-     * @param tableData the data
-     * @param title     the title
-     * @return the table editor component
-     */
-    public static TableEditor openWindow(JIPipeWorkbench workbench, ResultsTableData tableData, String title) {
-        JFrame window = new JFrame(title);
-        window.getContentPane().setLayout(new BorderLayout());
-        TableEditor editor = new TableEditor(workbench, tableData);
-        window.getContentPane().add(editor, BorderLayout.CENTER);
-        window.setSize(1024, 768);
-        window.setLocationRelativeTo(workbench.getWindow());
-        window.setVisible(true);
-        return editor;
     }
 
     /**

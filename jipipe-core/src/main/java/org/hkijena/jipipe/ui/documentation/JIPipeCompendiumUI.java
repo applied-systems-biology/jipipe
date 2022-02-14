@@ -24,7 +24,7 @@ import org.hkijena.jipipe.utils.UIUtils;
 import org.hkijena.jipipe.utils.ui.BusyCursor;
 
 import javax.swing.*;
-import java.awt.BorderLayout;
+import java.awt.*;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;

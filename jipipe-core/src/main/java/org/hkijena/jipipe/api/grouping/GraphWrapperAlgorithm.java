@@ -21,27 +21,18 @@ import org.hkijena.jipipe.JIPipeDependency;
 import org.hkijena.jipipe.api.JIPipeGraphRunner;
 import org.hkijena.jipipe.api.JIPipeIssueReport;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
-import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
 import org.hkijena.jipipe.api.annotation.JIPipeDataAnnotationMergeMode;
-import org.hkijena.jipipe.api.data.JIPipeDataSlot;
-import org.hkijena.jipipe.api.data.JIPipeDataSlotInfo;
-import org.hkijena.jipipe.api.data.JIPipeDefaultMutableSlotConfiguration;
-import org.hkijena.jipipe.api.data.JIPipeMutableSlotConfiguration;
-import org.hkijena.jipipe.api.data.JIPipeSlotConfiguration;
+import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
+import org.hkijena.jipipe.api.data.*;
 import org.hkijena.jipipe.api.nodes.*;
-import org.hkijena.jipipe.extensions.parameters.library.primitives.ranges.IntegerRange;
 import org.hkijena.jipipe.extensions.parameters.api.enums.EnumItemInfo;
 import org.hkijena.jipipe.extensions.parameters.api.enums.EnumParameterSettings;
+import org.hkijena.jipipe.extensions.parameters.library.primitives.ranges.IntegerRange;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 /**
  * An algorithm that wraps another algorithm graph

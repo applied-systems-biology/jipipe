@@ -3,8 +3,7 @@ package org.hkijena.jipipe.ui.components.icons;
 import org.hkijena.jipipe.ui.components.ZoomViewPort;
 
 import javax.swing.*;
-import java.awt.Component;
-import java.awt.Graphics;
+import java.awt.*;
 
 /**
  * Icon that adapts to the zoom level of a {@link ZoomViewPort}

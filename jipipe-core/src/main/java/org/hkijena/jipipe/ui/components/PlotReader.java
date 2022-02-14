@@ -13,7 +13,6 @@
 
 package org.hkijena.jipipe.ui.components;
 
-import org.hkijena.jipipe.extensions.plots.datatypes.PlotData;
 import org.hkijena.jipipe.extensions.settings.FileChooserSettings;
 import org.hkijena.jipipe.ui.plotbuilder.PlotEditor;
 import org.hkijena.jipipe.utils.UIUtils;
@@ -26,9 +25,7 @@ import org.jfree.graphics2d.svg.SVGUtils;
 
 import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
-import java.awt.BorderLayout;
-import java.awt.Dimension;
-import java.awt.Rectangle;
+import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.nio.file.Path;

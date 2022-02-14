@@ -22,18 +22,14 @@ import inra.ijpb.label.LabelImages;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
-import org.hkijena.jipipe.api.nodes.JIPipeDataBatch;
-import org.hkijena.jipipe.api.nodes.JIPipeInputSlot;
-import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
-import org.hkijena.jipipe.api.nodes.JIPipeOutputSlot;
-import org.hkijena.jipipe.api.nodes.JIPipeSimpleIteratingAlgorithm;
+import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.color.ImagePlusColorRGBData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleData;
 import org.hkijena.jipipe.extensions.parameters.api.enums.EnumParameterSettings;
 
-import java.awt.Color;
+import java.awt.*;
 
 @JIPipeDocumentation(name = "Convert labels to RGB", description = "Visualizes a labels image by assigning a color to each label component")
 @JIPipeNode(menuPath = "Labels", nodeTypeCategory = ImagesNodeTypeCategory.class)
@@ -54,6 +50,39 @@ public class LabelsToRGBAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         this.colorMap = other.colorMap;
         this.backgroundColor = other.backgroundColor;
         this.shuffleLut = other.shuffleLut;
+    }
+
+    private static int computeMaxLabel(ImagePlus imagePlus) {
+        if (imagePlus.getImageStackSize() == 1) {
+            return computeMaxLabel(imagePlus.getProcessor());
+        } else {
+            return computeMaxLabel(imagePlus.getStack());
+        }
+    }
+
+    private static int computeMaxLabel(ImageProcessor image) {
+        int labelMax = 0;
+        if (image instanceof FloatProcessor) {
+            for (int i = 0; i < image.getPixelCount(); i++) {
+                labelMax = Math.max(labelMax, (int) image.getf(i));
+            }
+        } else {
+            for (int i = 0; i < image.getPixelCount(); i++) {
+                labelMax = Math.max(labelMax, image.get(i));
+            }
+        }
+
+        return labelMax;
+    }
+
+    private static int computeMaxLabel(ImageStack image) {
+        int labelMax = 0;
+        for (int i = 1; i <= image.getSize(); i++) {
+            ImageProcessor slice = image.getProcessor(i);
+            labelMax = Math.max(labelMax, computeMaxLabel(slice));
+        }
+
+        return labelMax;
     }
 
     @Override
@@ -98,38 +127,5 @@ public class LabelsToRGBAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     @JIPipeParameter("shuffle-lut")
     public void setShuffleLut(boolean shuffleLut) {
         this.shuffleLut = shuffleLut;
-    }
-
-    private static int computeMaxLabel(ImagePlus imagePlus) {
-        if (imagePlus.getImageStackSize() == 1) {
-            return computeMaxLabel(imagePlus.getProcessor());
-        } else {
-            return computeMaxLabel(imagePlus.getStack());
-        }
-    }
-
-    private static int computeMaxLabel(ImageProcessor image) {
-        int labelMax = 0;
-        if (image instanceof FloatProcessor) {
-            for (int i = 0; i < image.getPixelCount(); i++) {
-                labelMax = Math.max(labelMax, (int) image.getf(i));
-            }
-        } else {
-            for (int i = 0; i < image.getPixelCount(); i++) {
-                labelMax = Math.max(labelMax, image.get(i));
-            }
-        }
-
-        return labelMax;
-    }
-
-    private static int computeMaxLabel(ImageStack image) {
-        int labelMax = 0;
-        for (int i = 1; i <= image.getSize(); i++) {
-            ImageProcessor slice = image.getProcessor(i);
-            labelMax = Math.max(labelMax, computeMaxLabel(slice));
-        }
-
-        return labelMax;
     }
 }

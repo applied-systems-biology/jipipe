@@ -18,7 +18,7 @@ import org.hkijena.jipipe.ui.JIPipeJsonExtensionWorkbenchPanel;
 import org.hkijena.jipipe.ui.components.markdown.MarkdownDocument;
 import org.hkijena.jipipe.ui.parameters.ParameterPanel;
 
-import java.awt.BorderLayout;
+import java.awt.*;
 import java.util.HashMap;
 
 /**

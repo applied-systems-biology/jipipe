@@ -30,6 +30,28 @@ import java.util.List;
 
 @Plugin(type = JIPipeJavaExtension.class)
 public class CellPoseExtension extends JIPipePrepackagedDefaultJavaExtension {
+    private static void installCellposeCPU(JIPipeWorkbench workbench) {
+        CellPoseSettings settings = CellPoseSettings.getInstance();
+        JIPipeParameterTree tree = new JIPipeParameterTree(settings);
+        JIPipeParameterAccess parameterAccess = tree.getParameters().get("python-environment");
+        CellPoseEnvInstaller installer = new CellPoseEnvInstaller(workbench, parameterAccess);
+        JIPipeRunExecuterUI.runInDialog(workbench.getWindow(), installer);
+    }
+
+    private static void installCellposeGPU(JIPipeWorkbench workbench) {
+        CellPoseSettings settings = CellPoseSettings.getInstance();
+        JIPipeParameterTree tree = new JIPipeParameterTree(settings);
+        JIPipeParameterAccess parameterAccess = tree.getParameters().get("python-environment");
+        CellPoseGPUEnvInstaller installer = new CellPoseGPUEnvInstaller(workbench, parameterAccess);
+        JIPipeRunExecuterUI.runInDialog(workbench.getWindow(), installer);
+    }
+
+    private static void configureCellpose(JIPipeWorkbench workbench) {
+        DocumentTabPane.DocumentTab tab = workbench.getDocumentTabPane().selectSingletonTab(JIPipeProjectWorkbench.TAB_APPLICATION_SETTINGS);
+        JIPipeApplicationSettingsUI applicationSettingsUI = (JIPipeApplicationSettingsUI) tab.getContent();
+        applicationSettingsUI.selectNode("/Extensions/Cellpose");
+    }
+
     @Override
     public StringList getDependencyCitations() {
         StringList strings = new StringList();
@@ -105,27 +127,5 @@ public class CellPoseExtension extends JIPipePrepackagedDefaultJavaExtension {
                     CellPoseExtension::configureCellpose));
             JIPipeNotificationInbox.getInstance().push(notification);
         }
-    }
-
-    private static void installCellposeCPU(JIPipeWorkbench workbench) {
-        CellPoseSettings settings = CellPoseSettings.getInstance();
-        JIPipeParameterTree tree = new JIPipeParameterTree(settings);
-        JIPipeParameterAccess parameterAccess = tree.getParameters().get("python-environment");
-        CellPoseEnvInstaller installer = new CellPoseEnvInstaller(workbench, parameterAccess);
-        JIPipeRunExecuterUI.runInDialog(workbench.getWindow(), installer);
-    }
-
-    private static void installCellposeGPU(JIPipeWorkbench workbench) {
-        CellPoseSettings settings = CellPoseSettings.getInstance();
-        JIPipeParameterTree tree = new JIPipeParameterTree(settings);
-        JIPipeParameterAccess parameterAccess = tree.getParameters().get("python-environment");
-        CellPoseGPUEnvInstaller installer = new CellPoseGPUEnvInstaller(workbench, parameterAccess);
-        JIPipeRunExecuterUI.runInDialog(workbench.getWindow(), installer);
-    }
-
-    private static void configureCellpose(JIPipeWorkbench workbench) {
-        DocumentTabPane.DocumentTab tab = workbench.getDocumentTabPane().selectSingletonTab(JIPipeProjectWorkbench.TAB_APPLICATION_SETTINGS);
-        JIPipeApplicationSettingsUI applicationSettingsUI = (JIPipeApplicationSettingsUI) tab.getContent();
-        applicationSettingsUI.selectNode("/Extensions/Cellpose");
     }
 }

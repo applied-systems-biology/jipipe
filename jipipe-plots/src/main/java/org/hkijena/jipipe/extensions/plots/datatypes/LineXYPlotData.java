@@ -20,8 +20,7 @@ import org.jfree.chart.JFreeChart;
 import org.jfree.chart.renderer.AbstractRenderer;
 import org.jfree.chart.renderer.xy.XYItemRenderer;
 
-import java.awt.BasicStroke;
-import java.awt.Font;
+import java.awt.*;
 import java.nio.file.Path;
 
 /**
@@ -50,6 +49,10 @@ public class LineXYPlotData extends XYPlotData {
     public LineXYPlotData(LineXYPlotData other) {
         super(other);
         this.lineThickness = other.lineThickness;
+    }
+
+    public static LineXYPlotData importFrom(Path storagePath) {
+        return PlotData.importFrom(storagePath, LineXYPlotData.class);
     }
 
     @Override
@@ -82,9 +85,5 @@ public class LineXYPlotData extends XYPlotData {
     @JIPipeParameter("line-thickness")
     public void setLineThickness(int lineThickness) {
         this.lineThickness = lineThickness;
-    }
-
-    public static LineXYPlotData importFrom(Path storagePath) {
-        return PlotData.importFrom(storagePath, LineXYPlotData.class);
     }
 }

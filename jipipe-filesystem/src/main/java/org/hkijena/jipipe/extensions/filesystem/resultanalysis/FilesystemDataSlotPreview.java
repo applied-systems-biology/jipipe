@@ -23,7 +23,7 @@ import org.hkijena.jipipe.ui.resultanalysis.JIPipeResultDataSlotPreview;
 import org.hkijena.jipipe.utils.PathUtils;
 
 import javax.swing.*;
-import java.awt.BorderLayout;
+import java.awt.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 

@@ -21,8 +21,8 @@ import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.parameters.JIPipeContextAction;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
-import org.hkijena.jipipe.extensions.parameters.library.primitives.optional.OptionalPathParameter;
 import org.hkijena.jipipe.extensions.parameters.library.filesystem.PathList;
+import org.hkijena.jipipe.extensions.parameters.library.primitives.optional.OptionalPathParameter;
 import org.hkijena.jipipe.ui.JIPipeProjectWindow;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.running.JIPipeRunExecuterUI;
@@ -56,6 +56,10 @@ public class AutoSaveSettings implements JIPipeParameterCollection {
         autoSaveTimer = new Timer(autoSaveDelay * 60 * 1000, e -> autoSaveAll());
         autoSaveTimer.setRepeats(true);
         autoSaveTimer.start();
+    }
+
+    public static AutoSaveSettings getInstance() {
+        return JIPipe.getSettings().getSettings(ID, AutoSaveSettings.class);
     }
 
     private Path getDefaultSavePath() {
@@ -225,10 +229,6 @@ public class AutoSaveSettings implements JIPipeParameterCollection {
                 window.openProject(listControl.getSelectedValue());
             }
         }
-    }
-
-    public static AutoSaveSettings getInstance() {
-        return JIPipe.getSettings().getSettings(ID, AutoSaveSettings.class);
     }
 
 }

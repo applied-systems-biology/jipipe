@@ -18,7 +18,7 @@ import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
 import javax.swing.table.TableCellRenderer;
-import java.awt.Component;
+import java.awt.*;
 
 /**
  * Renders the column header in merged {@link org.hkijena.jipipe.api.data.JIPipeExportedDataTable} instances

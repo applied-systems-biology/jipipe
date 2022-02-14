@@ -25,7 +25,7 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.util.ConverterWrapperImageS
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageSource;
 
-import java.awt.Component;
+import java.awt.*;
 import java.nio.file.Path;
 
 /**
@@ -63,17 +63,6 @@ public class ImagePlus3DColorData extends ImagePlus3DData implements ColoredImag
         super(new ConverterWrapperImageSource(source, ImageJUtils::convertToColorRGBIfNeeded), colorSpace);
     }
 
-    @Override
-    public Component preview(int width, int height) {
-        return ImageJUtils.generatePreview(this.getImage(), getColorSpace(), width, height);
-    }
-
-    @Override
-    public String toString() {
-        return super.toString() + " [" + getColorSpace() + " colors]";
-    }
-
-
     public static ImagePlusData importFrom(Path storageFolder) {
         return new ImagePlus3DColorData(ImagePlusData.importImagePlusFrom(storageFolder));
     }
@@ -97,5 +86,15 @@ public class ImagePlus3DColorData extends ImagePlus3DData implements ColoredImag
         } else {
             return new ImagePlus3DColorData(data.getImageSource(), data.getColorSpace());
         }
+    }
+
+    @Override
+    public Component preview(int width, int height) {
+        return ImageJUtils.generatePreview(this.getImage(), getColorSpace(), width, height);
+    }
+
+    @Override
+    public String toString() {
+        return super.toString() + " [" + getColorSpace() + " colors]";
     }
 }

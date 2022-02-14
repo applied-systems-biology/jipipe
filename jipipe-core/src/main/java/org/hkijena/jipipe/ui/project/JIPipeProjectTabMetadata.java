@@ -22,7 +22,7 @@ import org.hkijena.jipipe.ui.grapheditor.JIPipePipelineGraphEditorUI;
 import org.hkijena.jipipe.utils.StringUtils;
 
 import javax.swing.*;
-import java.awt.Component;
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;

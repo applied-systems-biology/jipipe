@@ -22,6 +22,13 @@ public class FilesystemExtensionSettings implements JIPipeParameterCollection {
     public FilesystemExtensionSettings() {
     }
 
+    public static FilesystemExtensionSettings getInstance() {
+        if (JIPipe.getInstance() != null)
+            return JIPipe.getSettings().getSettings(ID, FilesystemExtensionSettings.class);
+        else
+            return null;
+    }
+
     @Override
     public EventBus getEventBus() {
         return eventBus;
@@ -49,12 +56,5 @@ public class FilesystemExtensionSettings implements JIPipeParameterCollection {
     @JIPipeParameter("auto-label-output-with-filename")
     public void setAutoLabelOutputWithFileName(boolean autoLabelOutputWithFileName) {
         this.autoLabelOutputWithFileName = autoLabelOutputWithFileName;
-    }
-
-    public static FilesystemExtensionSettings getInstance() {
-        if (JIPipe.getInstance() != null)
-            return JIPipe.getSettings().getSettings(ID, FilesystemExtensionSettings.class);
-        else
-            return null;
     }
 }

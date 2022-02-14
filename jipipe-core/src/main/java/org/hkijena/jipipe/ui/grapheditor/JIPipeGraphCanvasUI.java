@@ -13,11 +13,7 @@
 
 package org.hkijena.jipipe.ui.grapheditor;
 
-import com.google.common.collect.BiMap;
-import com.google.common.collect.HashBiMap;
-import com.google.common.collect.ImmutableBiMap;
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.*;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 import gnu.trove.list.TIntList;
@@ -54,11 +50,7 @@ import javax.swing.FocusManager;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.dnd.DropTarget;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
-import java.awt.event.MouseMotionListener;
-import java.awt.event.MouseWheelEvent;
-import java.awt.event.MouseWheelListener;
+import java.awt.event.*;
 import java.awt.image.BufferedImage;
 import java.util.List;
 import java.util.*;

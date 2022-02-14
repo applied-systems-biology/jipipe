@@ -6,7 +6,7 @@ import org.hkijena.jipipe.extensions.expressions.ExpressionVariables;
 import org.hkijena.jipipe.extensions.expressions.ParameterInfo;
 import org.hkijena.jipipe.extensions.parameters.library.colors.ColorMap;
 
-import java.awt.Color;
+import java.awt.*;
 import java.util.Arrays;
 import java.util.List;
 
@@ -19,10 +19,9 @@ public class FalseColorsFunction extends ExpressionFunction {
 
     @Override
     public ParameterInfo getParameterInfo(int index) {
-        if(index == 0) {
+        if (index == 0) {
             return new ParameterInfo("Value", "A numeric value between 0 and 1. (Tip: Use PERC(value, min, max))", Number.class);
-        }
-        else {
+        } else {
             StringBuilder descriptionBuilder = new StringBuilder();
             descriptionBuilder.append("The color map. Supported maps: ");
             for (ColorMap value : ColorMap.values()) {
@@ -34,7 +33,7 @@ public class FalseColorsFunction extends ExpressionFunction {
 
     @Override
     public Object evaluate(List<Object> parameters, ExpressionVariables variables) {
-        double value = ((Number)parameters.get(0)).doubleValue();
+        double value = ((Number) parameters.get(0)).doubleValue();
         value = Math.max(0, Math.min(1, value));
         ColorMap map = ColorMap.valueOf(parameters.get(1) + "");
         Color color = map.apply(value);

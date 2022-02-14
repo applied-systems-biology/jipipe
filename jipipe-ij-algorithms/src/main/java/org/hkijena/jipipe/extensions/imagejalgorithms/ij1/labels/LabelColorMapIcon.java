@@ -18,10 +18,7 @@ import inra.ijpb.color.ColorMaps;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 
 import javax.swing.*;
-import java.awt.Color;
-import java.awt.Component;
-import java.awt.Graphics;
-import java.awt.Insets;
+import java.awt.*;
 import java.awt.image.BufferedImage;
 
 /**

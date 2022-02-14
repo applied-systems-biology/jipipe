@@ -30,13 +30,7 @@ import org.hkijena.jipipe.utils.StringUtils;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 
 /**
  * A data slot holds an {@link JIPipeData} instance.
@@ -75,6 +69,49 @@ public class JIPipeDataSlot {
         this.name = info.getName();
         this.slotType = info.getSlotType();
         this.acceptedDataType = info.getDataClass();
+    }
+
+    /**
+     * Loads this slot from a storage path
+     *
+     * @param storagePath the storage path
+     * @return the slot
+     */
+    public static JIPipeDataSlot loadFromStoragePath(Path storagePath, JIPipeProgressInfo progressInfo) {
+        JIPipeExportedDataTable dataTable = JIPipeExportedDataTable.loadFromJson(storagePath.resolve("data-table.json"));
+        Class<? extends JIPipeData> acceptedDataType = JIPipe.getDataTypes().getById(dataTable.getAcceptedDataTypeId());
+        JIPipeDataSlot slot = new JIPipeDataSlot(new JIPipeDataSlotInfo(acceptedDataType, JIPipeSlotType.Input), null);
+        for (int i = 0; i < dataTable.getRowCount(); i++) {
+            JIPipeProgressInfo rowProgress = progressInfo.resolveAndLog("Row", i, dataTable.getRowCount());
+            JIPipeExportedDataTableRow row = dataTable.getRowList().get(i);
+            Path rowStorage = storagePath.resolve("" + row.getIndex());
+            Class<? extends JIPipeData> rowDataType = JIPipe.getDataTypes().getById(row.getTrueDataType());
+            JIPipeData data = JIPipe.importData(rowStorage, rowDataType);
+            slot.addData(data, row.getAnnotations(), JIPipeTextAnnotationMergeMode.OverwriteExisting, rowProgress);
+
+            for (JIPipeExportedDataAnnotation dataAnnotation : row.getDataAnnotations()) {
+                Path dataAnnotationRowStorage = storagePath.resolve(dataAnnotation.getRowStorageFolder());
+                Class<? extends JIPipeData> dataAnnotationDataType = JIPipe.getDataTypes().getById(dataAnnotation.getTrueDataType());
+                JIPipeData dataAnnotationData = JIPipe.importData(dataAnnotationRowStorage, dataAnnotationDataType);
+                slot.setDataAnnotation(i, dataAnnotation.getName(), dataAnnotationData);
+            }
+        }
+        return slot;
+    }
+
+    /**
+     * Creates a new input slot that contains only one data item
+     *
+     * @param data the data
+     * @return the slot
+     */
+    public static JIPipeDataSlot createSingletonSlot(JIPipeData data, JIPipeGraphNode node) {
+        JIPipeDataSlot slot = new JIPipeDataSlot(new JIPipeDataSlotInfo(data.getClass(),
+                JIPipeSlotType.Input,
+                "Data",
+                null), node);
+        slot.addData(data, new JIPipeProgressInfo());
+        return slot;
     }
 
     /**
@@ -947,48 +984,5 @@ public class JIPipeDataSlot {
             ++row;
         }
         return output;
-    }
-
-    /**
-     * Loads this slot from a storage path
-     *
-     * @param storagePath the storage path
-     * @return the slot
-     */
-    public static JIPipeDataSlot loadFromStoragePath(Path storagePath, JIPipeProgressInfo progressInfo) {
-        JIPipeExportedDataTable dataTable = JIPipeExportedDataTable.loadFromJson(storagePath.resolve("data-table.json"));
-        Class<? extends JIPipeData> acceptedDataType = JIPipe.getDataTypes().getById(dataTable.getAcceptedDataTypeId());
-        JIPipeDataSlot slot = new JIPipeDataSlot(new JIPipeDataSlotInfo(acceptedDataType, JIPipeSlotType.Input), null);
-        for (int i = 0; i < dataTable.getRowCount(); i++) {
-            JIPipeProgressInfo rowProgress = progressInfo.resolveAndLog("Row", i, dataTable.getRowCount());
-            JIPipeExportedDataTableRow row = dataTable.getRowList().get(i);
-            Path rowStorage = storagePath.resolve("" + row.getIndex());
-            Class<? extends JIPipeData> rowDataType = JIPipe.getDataTypes().getById(row.getTrueDataType());
-            JIPipeData data = JIPipe.importData(rowStorage, rowDataType);
-            slot.addData(data, row.getAnnotations(), JIPipeTextAnnotationMergeMode.OverwriteExisting, rowProgress);
-
-            for (JIPipeExportedDataAnnotation dataAnnotation : row.getDataAnnotations()) {
-                Path dataAnnotationRowStorage = storagePath.resolve(dataAnnotation.getRowStorageFolder());
-                Class<? extends JIPipeData> dataAnnotationDataType = JIPipe.getDataTypes().getById(dataAnnotation.getTrueDataType());
-                JIPipeData dataAnnotationData = JIPipe.importData(dataAnnotationRowStorage, dataAnnotationDataType);
-                slot.setDataAnnotation(i, dataAnnotation.getName(), dataAnnotationData);
-            }
-        }
-        return slot;
-    }
-
-    /**
-     * Creates a new input slot that contains only one data item
-     *
-     * @param data the data
-     * @return the slot
-     */
-    public static JIPipeDataSlot createSingletonSlot(JIPipeData data, JIPipeGraphNode node) {
-        JIPipeDataSlot slot = new JIPipeDataSlot(new JIPipeDataSlotInfo(data.getClass(),
-                JIPipeSlotType.Input,
-                "Data",
-                null), node);
-        slot.addData(data, new JIPipeProgressInfo());
-        return slot;
     }
 }

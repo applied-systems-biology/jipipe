@@ -1,9 +1,9 @@
 package org.hkijena.jipipe.extensions.core;
 
 import org.hkijena.jipipe.JIPipeJavaExtension;
+import org.hkijena.jipipe.api.annotation.JIPipeDataAnnotationMergeMode;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
 import org.hkijena.jipipe.api.data.JIPipeData;
-import org.hkijena.jipipe.api.annotation.JIPipeDataAnnotationMergeMode;
 import org.hkijena.jipipe.api.data.JIPipeEmptyData;
 import org.hkijena.jipipe.api.data.JIPipeMergedDataAnnotationsData;
 import org.hkijena.jipipe.api.nodes.JIPipeTextAnnotationMatchingMethod;

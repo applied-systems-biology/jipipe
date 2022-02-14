@@ -25,7 +25,7 @@ import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.utils.PathUtils;
 import org.hkijena.jipipe.utils.json.JsonUtils;
 
-import java.awt.Desktop;
+import java.awt.*;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -58,6 +58,15 @@ public class PathData implements JIPipeData {
     }
 
     protected PathData() {
+    }
+
+    public static PathData importFrom(Path storageFilePath) {
+        Path targetFile = PathUtils.findFileByExtensionIn(storageFilePath, ".json");
+        try {
+            return JsonUtils.getObjectMapper().readerFor(PathData.class).readValue(targetFile.toFile());
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
@@ -115,14 +124,5 @@ public class PathData implements JIPipeData {
 
     public Path toPath() {
         return Paths.get(path);
-    }
-
-    public static PathData importFrom(Path storageFilePath) {
-        Path targetFile = PathUtils.findFileByExtensionIn(storageFilePath, ".json");
-        try {
-            return JsonUtils.getObjectMapper().readerFor(PathData.class).readValue(targetFile.toFile());
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
     }
 }

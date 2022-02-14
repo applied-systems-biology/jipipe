@@ -31,9 +31,7 @@ import org.jdesktop.swingx.multislider.Thumb;
 import org.jdesktop.swingx.multislider.ThumbListener;
 
 import javax.swing.*;
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Dimension;
+import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.nio.file.Path;
 import java.util.ArrayList;

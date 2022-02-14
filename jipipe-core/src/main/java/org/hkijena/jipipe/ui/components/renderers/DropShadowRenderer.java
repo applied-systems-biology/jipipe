@@ -2,10 +2,7 @@ package org.hkijena.jipipe.ui.components.renderers;
 
 import org.jdesktop.swingx.graphics.GraphicsUtilities;
 
-import java.awt.Color;
-import java.awt.Graphics2D;
-import java.awt.Point;
-import java.awt.Rectangle;
+import java.awt.*;
 import java.awt.geom.RoundRectangle2D;
 import java.awt.image.BufferedImage;
 import java.awt.image.ConvolveOp;

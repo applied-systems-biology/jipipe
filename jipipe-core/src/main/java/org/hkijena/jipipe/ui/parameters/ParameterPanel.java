@@ -17,12 +17,7 @@ import com.google.common.eventbus.Subscribe;
 import com.google.common.html.HtmlEscapers;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.parameters.JIPipeDynamicParameterCollection;
-import org.hkijena.jipipe.api.parameters.JIPipeMutableParameterAccess;
-import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
-import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
-import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
-import org.hkijena.jipipe.api.parameters.JIPipeParameterTypeInfo;
+import org.hkijena.jipipe.api.parameters.*;
 import org.hkijena.jipipe.extensions.settings.GeneralUISettings;
 import org.hkijena.jipipe.extensions.settings.GraphEditorUISettings;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
@@ -38,17 +33,9 @@ import org.scijava.Context;
 import org.scijava.Contextual;
 
 import javax.swing.*;
-import java.awt.BorderLayout;
-import java.awt.Component;
-import java.awt.Dimension;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.HashSet;
+import java.awt.*;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.BiFunction;
 import java.util.stream.Collectors;
@@ -127,6 +114,90 @@ public class ParameterPanel extends FormPanel implements Contextual {
             reloadForm();
             this.displayedParameters.getEventBus().register(this);
         }
+    }
+
+    /**
+     * Shows a parameter collection inside a modal dialog
+     *
+     * @param workbench           parent component
+     * @param parameterCollection the parameter collection
+     * @param flags               flags for the editor
+     * @return if the user clicked "OK"
+     */
+    public static boolean showDialog(JIPipeWorkbench workbench, JIPipeParameterCollection parameterCollection, MarkdownDocument defaultDocumentation, String title, int flags) {
+        JDialog dialog = new JDialog(workbench.getWindow());
+        ParameterPanel parameterPanel = new ParameterPanel(workbench, parameterCollection, defaultDocumentation, flags);
+
+        JPanel panel = new JPanel(new BorderLayout(8, 8));
+        panel.setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
+        panel.add(parameterPanel, BorderLayout.CENTER);
+
+        JPanel buttonPanel = new JPanel();
+        buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.X_AXIS));
+        buttonPanel.add(Box.createHorizontalGlue());
+
+        AtomicBoolean clickedOK = new AtomicBoolean(false);
+
+        JButton cancelButton = new JButton("Cancel", UIUtils.getIconFromResources("actions/cancel.png"));
+        cancelButton.addActionListener(e -> {
+            clickedOK.set(false);
+            dialog.setVisible(false);
+        });
+        buttonPanel.add(cancelButton);
+
+        JButton confirmButton = new JButton("OK", UIUtils.getIconFromResources("actions/checkmark.png"));
+        confirmButton.addActionListener(e -> {
+            clickedOK.set(true);
+            dialog.setVisible(false);
+        });
+        buttonPanel.add(confirmButton);
+
+        panel.add(buttonPanel, BorderLayout.SOUTH);
+
+        dialog.setContentPane(panel);
+        dialog.setTitle(title);
+        dialog.setModal(true);
+        dialog.pack();
+        dialog.setSize(new Dimension(800, 600));
+        dialog.setLocationRelativeTo(workbench.getWindow());
+        UIUtils.addEscapeListener(dialog);
+        dialog.setVisible(true);
+
+        return clickedOK.get();
+    }
+
+    private static List<String> getParameterKeysSortedByParameterName(Map<String, JIPipeParameterAccess> parameters, Collection<String> keys) {
+        return keys.stream().sorted(Comparator.comparing(k0 -> parameters.get(k0).getName())).collect(Collectors.toList());
+    }
+
+    public static MarkdownDocument generateParameterDocumentation(JIPipeParameterAccess access, JIPipeParameterTree tree) {
+        StringBuilder markdownString = new StringBuilder();
+        markdownString.append("# ").append(access.getName()).append("\n\n");
+        markdownString.append("<table>");
+
+        if (access.isImportant()) {
+            markdownString.append("<tr><td><img src=\"").append(ResourceUtils.getPluginResource("icons/emblems/important.png")).append("\" /></td>");
+            markdownString.append("<td><strong>Important parameter</strong>: The developer marked this parameter as especially important</td></tr>\n\n");
+        }
+
+        markdownString.append("<tr><td><img src=\"").append(ResourceUtils.getPluginResource("icons/actions/dialog-xml-editor.png")).append("\" /></td>");
+        markdownString.append("<td><strong>Unique identifier</strong>: <code>");
+        markdownString.append(HtmlEscapers.htmlEscaper().escape(tree != null ? tree.getUniqueKey(access) : access.getKey())).append("</code></td></tr>\n\n");
+
+        JIPipeParameterTypeInfo info = JIPipe.getParameterTypes().getInfoByFieldClass(access.getFieldClass());
+        if (info != null) {
+            markdownString.append("<td><img src=\"").append(ResourceUtils.getPluginResource("icons/data-types/data-type.png")).append("\" /></td>");
+            markdownString.append("<td><strong>").append(HtmlEscapers.htmlEscaper().escape(info.getName())).append("</strong>: ");
+            markdownString.append(HtmlEscapers.htmlEscaper().escape(info.getDescription())).append("</td></tr>");
+        }
+        markdownString.append("</table>\n\n");
+
+        if (access.getDescription() != null && !access.getDescription().isEmpty()) {
+            markdownString.append(access.getDescription());
+        } else {
+            markdownString.append("No description provided.");
+        }
+        return new MarkdownDocument(markdownString.toString());
     }
 
     public BiFunction<JIPipeParameterTree, JIPipeParameterAccess, Boolean> getCustomIsParameterVisible() {
@@ -468,89 +539,5 @@ public class ParameterPanel extends FormPanel implements Contextual {
     @Override
     public Context context() {
         return context;
-    }
-
-    /**
-     * Shows a parameter collection inside a modal dialog
-     *
-     * @param workbench           parent component
-     * @param parameterCollection the parameter collection
-     * @param flags               flags for the editor
-     * @return if the user clicked "OK"
-     */
-    public static boolean showDialog(JIPipeWorkbench workbench, JIPipeParameterCollection parameterCollection, MarkdownDocument defaultDocumentation, String title, int flags) {
-        JDialog dialog = new JDialog(workbench.getWindow());
-        ParameterPanel parameterPanel = new ParameterPanel(workbench, parameterCollection, defaultDocumentation, flags);
-
-        JPanel panel = new JPanel(new BorderLayout(8, 8));
-        panel.setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
-        panel.add(parameterPanel, BorderLayout.CENTER);
-
-        JPanel buttonPanel = new JPanel();
-        buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.X_AXIS));
-        buttonPanel.add(Box.createHorizontalGlue());
-
-        AtomicBoolean clickedOK = new AtomicBoolean(false);
-
-        JButton cancelButton = new JButton("Cancel", UIUtils.getIconFromResources("actions/cancel.png"));
-        cancelButton.addActionListener(e -> {
-            clickedOK.set(false);
-            dialog.setVisible(false);
-        });
-        buttonPanel.add(cancelButton);
-
-        JButton confirmButton = new JButton("OK", UIUtils.getIconFromResources("actions/checkmark.png"));
-        confirmButton.addActionListener(e -> {
-            clickedOK.set(true);
-            dialog.setVisible(false);
-        });
-        buttonPanel.add(confirmButton);
-
-        panel.add(buttonPanel, BorderLayout.SOUTH);
-
-        dialog.setContentPane(panel);
-        dialog.setTitle(title);
-        dialog.setModal(true);
-        dialog.pack();
-        dialog.setSize(new Dimension(800, 600));
-        dialog.setLocationRelativeTo(workbench.getWindow());
-        UIUtils.addEscapeListener(dialog);
-        dialog.setVisible(true);
-
-        return clickedOK.get();
-    }
-
-    private static List<String> getParameterKeysSortedByParameterName(Map<String, JIPipeParameterAccess> parameters, Collection<String> keys) {
-        return keys.stream().sorted(Comparator.comparing(k0 -> parameters.get(k0).getName())).collect(Collectors.toList());
-    }
-
-    public static MarkdownDocument generateParameterDocumentation(JIPipeParameterAccess access, JIPipeParameterTree tree) {
-        StringBuilder markdownString = new StringBuilder();
-        markdownString.append("# ").append(access.getName()).append("\n\n");
-        markdownString.append("<table>");
-
-        if (access.isImportant()) {
-            markdownString.append("<tr><td><img src=\"").append(ResourceUtils.getPluginResource("icons/emblems/important.png")).append("\" /></td>");
-            markdownString.append("<td><strong>Important parameter</strong>: The developer marked this parameter as especially important</td></tr>\n\n");
-        }
-
-        markdownString.append("<tr><td><img src=\"").append(ResourceUtils.getPluginResource("icons/actions/dialog-xml-editor.png")).append("\" /></td>");
-        markdownString.append("<td><strong>Unique identifier</strong>: <code>");
-        markdownString.append(HtmlEscapers.htmlEscaper().escape(tree != null ? tree.getUniqueKey(access) : access.getKey())).append("</code></td></tr>\n\n");
-
-        JIPipeParameterTypeInfo info = JIPipe.getParameterTypes().getInfoByFieldClass(access.getFieldClass());
-        if (info != null) {
-            markdownString.append("<td><img src=\"").append(ResourceUtils.getPluginResource("icons/data-types/data-type.png")).append("\" /></td>");
-            markdownString.append("<td><strong>").append(HtmlEscapers.htmlEscaper().escape(info.getName())).append("</strong>: ");
-            markdownString.append(HtmlEscapers.htmlEscaper().escape(info.getDescription())).append("</td></tr>");
-        }
-        markdownString.append("</table>\n\n");
-
-        if (access.getDescription() != null && !access.getDescription().isEmpty()) {
-            markdownString.append(access.getDescription());
-        } else {
-            markdownString.append("No description provided.");
-        }
-        return new MarkdownDocument(markdownString.toString());
     }
 }

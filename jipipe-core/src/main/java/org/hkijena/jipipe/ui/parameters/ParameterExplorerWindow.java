@@ -3,11 +3,7 @@ package org.hkijena.jipipe.ui.parameters;
 import com.google.common.eventbus.Subscribe;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
-import org.hkijena.jipipe.api.parameters.JIPipeManualParameterAccess;
-import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
-import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
-import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
-import org.hkijena.jipipe.api.parameters.JIPipeParameterTypeInfo;
+import org.hkijena.jipipe.api.parameters.*;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.components.FormPanel;
 import org.hkijena.jipipe.ui.components.ParameterTreeUI;
@@ -22,7 +18,7 @@ import javax.swing.*;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreePath;
-import java.awt.BorderLayout;
+import java.awt.*;
 import java.util.Objects;
 
 public class ParameterExplorerWindow extends JFrame {

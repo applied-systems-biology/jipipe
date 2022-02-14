@@ -6,7 +6,7 @@ import org.hkijena.jipipe.api.history.JIPipeHistoryJournalSnapshot;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
-import java.awt.BorderLayout;
+import java.awt.*;
 
 public class HistoryJournalUI extends JPanel {
     private final JIPipeHistoryJournal historyJournal;

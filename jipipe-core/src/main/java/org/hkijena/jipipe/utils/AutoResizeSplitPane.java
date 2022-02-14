@@ -1,7 +1,7 @@
 package org.hkijena.jipipe.utils;
 
 import javax.swing.*;
-import java.awt.Component;
+import java.awt.*;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 

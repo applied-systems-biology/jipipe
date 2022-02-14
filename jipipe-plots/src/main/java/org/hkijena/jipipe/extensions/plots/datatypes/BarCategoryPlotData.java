@@ -19,7 +19,7 @@ import org.jfree.chart.JFreeChart;
 import org.jfree.chart.renderer.category.BarRenderer;
 import org.jfree.chart.renderer.category.StandardBarPainter;
 
-import java.awt.Font;
+import java.awt.*;
 import java.nio.file.Path;
 
 /**
@@ -48,6 +48,10 @@ public class BarCategoryPlotData extends CategoryPlotData {
         super(other);
     }
 
+    public static BarCategoryPlotData importFrom(Path storagePath) {
+        return PlotData.importFrom(storagePath, BarCategoryPlotData.class);
+    }
+
     @Override
     public JFreeChart getChart() {
         JFreeChart chart = ChartFactory.createBarChart(getTitle(), getCategoryAxisLabel(), getValueAxisLabel(), createDataSet());
@@ -62,9 +66,5 @@ public class BarCategoryPlotData extends CategoryPlotData {
 
         updateChartProperties(chart);
         return chart;
-    }
-
-    public static BarCategoryPlotData importFrom(Path storagePath) {
-        return PlotData.importFrom(storagePath, BarCategoryPlotData.class);
     }
 }

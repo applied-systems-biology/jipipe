@@ -6,11 +6,7 @@ import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
 import org.hkijena.jipipe.ui.quickrun.QuickRun;
 import org.hkijena.jipipe.ui.quickrun.QuickRunSettings;
-import org.hkijena.jipipe.ui.running.JIPipeRunnerQueue;
-import org.hkijena.jipipe.ui.running.JIPipeRunnerQueueUI;
-import org.hkijena.jipipe.ui.running.RunUIWorkerFinishedEvent;
-import org.hkijena.jipipe.ui.running.RunUIWorkerInterruptedEvent;
-import org.hkijena.jipipe.ui.running.RunUIWorkerStartedEvent;
+import org.hkijena.jipipe.ui.running.*;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;

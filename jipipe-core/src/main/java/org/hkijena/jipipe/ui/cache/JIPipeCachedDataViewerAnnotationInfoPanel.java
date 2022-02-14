@@ -80,7 +80,7 @@ public class JIPipeCachedDataViewerAnnotationInfoPanel extends JIPipeWorkbenchPa
         model.addStringColumn("Name");
         model.addStringColumn("Value");
         if (dataSource != null) {
-            for (JIPipeTextAnnotation annotation :  dataSource.getSlot().getAnnotations(dataSource.getRow())) {
+            for (JIPipeTextAnnotation annotation : dataSource.getSlot().getAnnotations(dataSource.getRow())) {
                 model.addRow();
                 model.setLastValue(annotation.getName(), "Name");
                 model.setLastValue(annotation.getValue(), "Value");

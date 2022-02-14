@@ -111,7 +111,7 @@ public class OverlayChannelsAlgorithm extends JIPipeIteratingAlgorithm {
         Map<JIPipeDataSlot, ImagePlus> channelInputMap = new HashMap<>();
         for (JIPipeDataSlot inputSlot : getInputSlots()) {
             ImagePlus image = dataBatch.getInputData(inputSlot, ImagePlusData.class, progressInfo).getImage();
-            if(image.getType() != ImagePlus.COLOR_RGB) {
+            if (image.getType() != ImagePlus.COLOR_RGB) {
                 image = ImageJUtils.convertToGreyscale8UIfNeeded(image);
             }
             Channel channelInfo = channelColorAssignment.getParameter(inputSlot.getName(), Channel.class);
@@ -119,9 +119,9 @@ public class OverlayChannelsAlgorithm extends JIPipeIteratingAlgorithm {
             channelInputMap.put(inputSlot, image);
             inputImages.add(image);
         }
-        if(inputImages.isEmpty())
+        if (inputImages.isEmpty())
             return;
-        if(!ImageJUtils.imagesHaveSameSize(inputImages)) {
+        if (!ImageJUtils.imagesHaveSameSize(inputImages)) {
             throw new UserFriendlyRuntimeException("Input images do not have the same size!",
                     "Input images do not have the same size!",
                     getName(),
@@ -133,7 +133,7 @@ public class OverlayChannelsAlgorithm extends JIPipeIteratingAlgorithm {
         final int sz = inputImages.get(0).getNSlices();
         final int sc = inputImages.get(0).getNChannels();
         final int st = inputImages.get(0).getNFrames();
-        ImagePlus resultImage = IJ.createHyperStack(getDisplayName(),sx, sy, sc, sz, st, 24);
+        ImagePlus resultImage = IJ.createHyperStack(getDisplayName(), sx, sy, sc, sz, st, 24);
 
         ImageJUtils.forEachIndexedZCTSlice(resultImage, (resultIp, index) -> {
             for (JIPipeDataSlot inputSlot : getInputSlots()) {
@@ -149,10 +149,9 @@ public class OverlayChannelsAlgorithm extends JIPipeIteratingAlgorithm {
 
                 byte[] inputBytes8U = null;
                 int[] inputBytesRGB = null;
-                if(isRGB) {
+                if (isRGB) {
                     inputBytesRGB = (int[]) inputIp.getPixels();
-                }
-                else {
+                } else {
                     inputBytes8U = (byte[]) inputIp.getPixels();
                 }
 
@@ -160,32 +159,29 @@ public class OverlayChannelsAlgorithm extends JIPipeIteratingAlgorithm {
                 for (int i = 0; i < resultBytes.length; i++) {
 
                     // Source color (apply LUT if greyscale)
-                    int rs,gs,bs;
+                    int rs, gs, bs;
                     double opacity;
 
-                    if(isRGB) {
+                    if (isRGB) {
                         rs = (inputBytesRGB[i] & 0xff0000) >> 16;
                         gs = (inputBytesRGB[i] & 0xff00) >> 8;
                         bs = inputBytesRGB[i] & 0xff;
 
-                        if(channel.blackToAlpha) {
+                        if (channel.blackToAlpha) {
                             int value = (rs + gs + bs) / 255;
                             opacity = channelOpacity * (value / 255.0);
-                        }
-                        else {
+                        } else {
                             opacity = channelOpacity;
                         }
-                    }
-                    else {
+                    } else {
                         int vs = Byte.toUnsignedInt(inputBytes8U[i]);
-                        rs = (int)(vs / 255.0 * cr);
-                        gs = (int)(vs / 255.0 * cg);
-                        bs = (int)(vs / 255.0 * cb);
+                        rs = (int) (vs / 255.0 * cr);
+                        gs = (int) (vs / 255.0 * cg);
+                        bs = (int) (vs / 255.0 * cb);
 
-                        if(channel.blackToAlpha) {
+                        if (channel.blackToAlpha) {
                             opacity = channelOpacity * (vs / 255.0);
-                        }
-                        else {
+                        } else {
                             opacity = channelOpacity;
                         }
                     }

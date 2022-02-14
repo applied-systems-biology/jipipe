@@ -25,6 +25,11 @@ public abstract class JIPipeJsonData implements JIPipeData {
 
     }
 
+    public static <T extends JIPipeData> T importFrom(Path storagePath, Class<T> klass) {
+        Path targetFile = PathUtils.findFileByExtensionIn(storagePath, ".json");
+        return JsonUtils.readFromFile(targetFile, klass);
+    }
+
     @Override
     public void saveTo(Path storageFilePath, String name, boolean forceName, JIPipeProgressInfo progressInfo) {
         JsonUtils.saveToFile(this, storageFilePath.resolve(StringUtils.orElse(name, "data") + ".json"));
@@ -33,10 +38,5 @@ public abstract class JIPipeJsonData implements JIPipeData {
     @Override
     public JIPipeData duplicate() {
         return (JIPipeData) ReflectionUtils.newInstance(getClass(), this);
-    }
-
-    public static <T extends JIPipeData> T importFrom(Path storagePath, Class<T> klass) {
-        Path targetFile = PathUtils.findFileByExtensionIn(storagePath, ".json");
-        return JsonUtils.readFromFile(targetFile, klass);
     }
 }

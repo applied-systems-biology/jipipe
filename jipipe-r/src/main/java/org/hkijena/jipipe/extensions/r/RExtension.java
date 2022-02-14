@@ -31,6 +31,20 @@ import java.util.List;
 
 @Plugin(type = JIPipeJavaExtension.class)
 public class RExtension extends JIPipePrepackagedDefaultJavaExtension {
+    private static void installR(JIPipeWorkbench workbench) {
+        RExtensionSettings settings = RExtensionSettings.getInstance();
+        JIPipeParameterTree tree = new JIPipeParameterTree(settings);
+        JIPipeParameterAccess parameterAccess = tree.getParameters().get("r-environment");
+        REnvInstaller installer = new REnvInstaller(workbench, parameterAccess);
+        JIPipeRunExecuterUI.runInDialog(workbench.getWindow(), installer);
+    }
+
+    private static void configureR(JIPipeWorkbench workbench) {
+        DocumentTabPane.DocumentTab tab = workbench.getDocumentTabPane().selectSingletonTab(JIPipeProjectWorkbench.TAB_APPLICATION_SETTINGS);
+        JIPipeApplicationSettingsUI applicationSettingsUI = (JIPipeApplicationSettingsUI) tab.getContent();
+        applicationSettingsUI.selectNode("/Extensions/R integration");
+    }
+
     @Override
     public StringList getDependencyCitations() {
         StringList strings = new StringList();
@@ -124,19 +138,5 @@ public class RExtension extends JIPipePrepackagedDefaultJavaExtension {
                     RExtension::configureR));
             JIPipeNotificationInbox.getInstance().push(notification);
         }
-    }
-
-    private static void installR(JIPipeWorkbench workbench) {
-        RExtensionSettings settings = RExtensionSettings.getInstance();
-        JIPipeParameterTree tree = new JIPipeParameterTree(settings);
-        JIPipeParameterAccess parameterAccess = tree.getParameters().get("r-environment");
-        REnvInstaller installer = new REnvInstaller(workbench, parameterAccess);
-        JIPipeRunExecuterUI.runInDialog(workbench.getWindow(), installer);
-    }
-
-    private static void configureR(JIPipeWorkbench workbench) {
-        DocumentTabPane.DocumentTab tab = workbench.getDocumentTabPane().selectSingletonTab(JIPipeProjectWorkbench.TAB_APPLICATION_SETTINGS);
-        JIPipeApplicationSettingsUI applicationSettingsUI = (JIPipeApplicationSettingsUI) tab.getContent();
-        applicationSettingsUI.selectNode("/Extensions/R integration");
     }
 }

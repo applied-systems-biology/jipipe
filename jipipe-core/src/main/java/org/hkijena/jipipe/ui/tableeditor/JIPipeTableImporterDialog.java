@@ -20,8 +20,7 @@ import org.hkijena.jipipe.utils.PathType;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
+import java.awt.*;
 
 /**
  * Dialog to import a table

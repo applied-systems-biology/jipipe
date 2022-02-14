@@ -24,12 +24,8 @@ import org.jgrapht.graph.DefaultDirectedGraph;
 import org.jgrapht.graph.DefaultEdge;
 import org.jgrapht.traverse.TopologicalOrderIterator;
 
-import java.awt.Point;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
+import java.awt.*;
+import java.util.*;
 
 /**
  * Applies auto-layout according to Sugiyama et al.

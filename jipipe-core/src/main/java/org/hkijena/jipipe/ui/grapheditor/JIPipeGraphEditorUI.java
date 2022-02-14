@@ -42,20 +42,12 @@ import javax.imageio.ImageIO;
 import javax.swing.FocusManager;
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.InputEvent;
-import java.awt.event.KeyEvent;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
-import java.awt.event.MouseMotionListener;
+import java.awt.event.*;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.nio.file.Path;
-import java.util.Comparator;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Objects;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -106,6 +98,82 @@ public abstract class JIPipeGraphEditorUI extends JIPipeWorkbenchPanel implement
         canvasUI.setLayoutHelperEnabled(graphUISettings.isEnableLayoutHelper());
     }
 
+    private static int[] rankNavigationEntry(Object value, String[] searchStrings) {
+        if (searchStrings == null || searchStrings.length == 0)
+            return new int[0];
+        String nameHayStack;
+        String menuHayStack;
+        String descriptionHayStack;
+        if (value instanceof JIPipeNodeUI) {
+            JIPipeGraphNode node = ((JIPipeNodeUI) value).getNode();
+            nameHayStack = node.getName();
+            menuHayStack = node.getInfo().getCategory().getName() + "\n" + node.getInfo().getMenuPath();
+            descriptionHayStack = StringUtils.orElse(node.getCustomDescription().getBody(), node.getInfo().getDescription().getBody());
+        } else if (value instanceof JIPipeNodeInfo) {
+            JIPipeNodeInfo info = (JIPipeNodeInfo) value;
+            if (info.isHidden())
+                return null;
+            nameHayStack = StringUtils.orElse(info.getName(), "").toLowerCase();
+            menuHayStack = info.getCategory().getName() + "\n" + info.getMenuPath();
+            descriptionHayStack = StringUtils.orElse(info.getDescription().getBody(), "").toLowerCase();
+        } else {
+            return null;
+        }
+
+        nameHayStack = nameHayStack.toLowerCase();
+        menuHayStack = menuHayStack.toLowerCase();
+        descriptionHayStack = descriptionHayStack.toLowerCase();
+
+        int[] ranks = new int[3];
+
+        for (int i = 0; i < searchStrings.length; i++) {
+            String string = searchStrings[i];
+            if (nameHayStack.contains(string.toLowerCase()))
+                --ranks[0];
+            if (i == 0 && nameHayStack.startsWith(string.toLowerCase()))
+                ranks[0] -= 2;
+            if (menuHayStack.contains(string.toLowerCase()))
+                --ranks[1];
+            if (descriptionHayStack.contains(string.toLowerCase()))
+                --ranks[2];
+        }
+
+        if (ranks[0] == 0 && ranks[1] == 0 && ranks[2] == 0)
+            return null;
+
+        return ranks;
+    }
+
+    public static void installContextActionsInto(JToolBar toolBar, Set<JIPipeNodeUI> selection, List<NodeUIContextAction> actionList, JIPipeGraphCanvasUI canvasUI) {
+        JPopupMenu menu = new JPopupMenu();
+        for (NodeUIContextAction action : actionList) {
+            if (action == null) {
+                menu.addSeparator();
+                continue;
+            }
+
+            boolean matches = action.matches(selection);
+            if (!matches && !action.disableOnNonMatch())
+                continue;
+
+            JMenuItem item = new JMenuItem(action.getName(), action.getIcon());
+            item.setToolTipText(action.getDescription());
+            if (matches)
+                item.addActionListener(e -> action.run(canvasUI, ImmutableSet.copyOf(selection)));
+            else
+                item.setEnabled(false);
+            menu.add(item);
+        }
+
+        if (menu.getComponentCount() > 0) {
+            JButton button = new JButton(UIUtils.getIconFromResources("actions/open-menu.png"));
+            UIUtils.makeFlat25x25(button);
+            button.setToolTipText("Shows the context menu for the selected node. Alternatively, you can also right-click the node");
+            UIUtils.addPopupMenuToComponent(button, menu);
+            toolBar.add(Box.createHorizontalStrut(4), 0);
+            toolBar.add(button, 0);
+        }
+    }
 
     public GraphEditorUISettings getGraphUISettings() {
         return graphUISettings;
@@ -767,83 +835,6 @@ public abstract class JIPipeGraphEditorUI extends JIPipeWorkbenchPanel implement
 
     public JIPipeHistoryJournal getHistoryJournal() {
         return historyJournal;
-    }
-
-    private static int[] rankNavigationEntry(Object value, String[] searchStrings) {
-        if (searchStrings == null || searchStrings.length == 0)
-            return new int[0];
-        String nameHayStack;
-        String menuHayStack;
-        String descriptionHayStack;
-        if (value instanceof JIPipeNodeUI) {
-            JIPipeGraphNode node = ((JIPipeNodeUI) value).getNode();
-            nameHayStack = node.getName();
-            menuHayStack = node.getInfo().getCategory().getName() + "\n" + node.getInfo().getMenuPath();
-            descriptionHayStack = StringUtils.orElse(node.getCustomDescription().getBody(), node.getInfo().getDescription().getBody());
-        } else if (value instanceof JIPipeNodeInfo) {
-            JIPipeNodeInfo info = (JIPipeNodeInfo) value;
-            if (info.isHidden())
-                return null;
-            nameHayStack = StringUtils.orElse(info.getName(), "").toLowerCase();
-            menuHayStack = info.getCategory().getName() + "\n" + info.getMenuPath();
-            descriptionHayStack = StringUtils.orElse(info.getDescription().getBody(), "").toLowerCase();
-        } else {
-            return null;
-        }
-
-        nameHayStack = nameHayStack.toLowerCase();
-        menuHayStack = menuHayStack.toLowerCase();
-        descriptionHayStack = descriptionHayStack.toLowerCase();
-
-        int[] ranks = new int[3];
-
-        for (int i = 0; i < searchStrings.length; i++) {
-            String string = searchStrings[i];
-            if (nameHayStack.contains(string.toLowerCase()))
-                --ranks[0];
-            if (i == 0 && nameHayStack.startsWith(string.toLowerCase()))
-                ranks[0] -= 2;
-            if (menuHayStack.contains(string.toLowerCase()))
-                --ranks[1];
-            if (descriptionHayStack.contains(string.toLowerCase()))
-                --ranks[2];
-        }
-
-        if (ranks[0] == 0 && ranks[1] == 0 && ranks[2] == 0)
-            return null;
-
-        return ranks;
-    }
-
-    public static void installContextActionsInto(JToolBar toolBar, Set<JIPipeNodeUI> selection, List<NodeUIContextAction> actionList, JIPipeGraphCanvasUI canvasUI) {
-        JPopupMenu menu = new JPopupMenu();
-        for (NodeUIContextAction action : actionList) {
-            if (action == null) {
-                menu.addSeparator();
-                continue;
-            }
-
-            boolean matches = action.matches(selection);
-            if (!matches && !action.disableOnNonMatch())
-                continue;
-
-            JMenuItem item = new JMenuItem(action.getName(), action.getIcon());
-            item.setToolTipText(action.getDescription());
-            if (matches)
-                item.addActionListener(e -> action.run(canvasUI, ImmutableSet.copyOf(selection)));
-            else
-                item.setEnabled(false);
-            menu.add(item);
-        }
-
-        if (menu.getComponentCount() > 0) {
-            JButton button = new JButton(UIUtils.getIconFromResources("actions/open-menu.png"));
-            UIUtils.makeFlat25x25(button);
-            button.setToolTipText("Shows the context menu for the selected node. Alternatively, you can also right-click the node");
-            UIUtils.addPopupMenuToComponent(button, menu);
-            toolBar.add(Box.createHorizontalStrut(4), 0);
-            toolBar.add(button, 0);
-        }
     }
 
     /**

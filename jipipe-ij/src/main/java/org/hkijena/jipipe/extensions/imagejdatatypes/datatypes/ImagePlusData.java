@@ -20,11 +20,7 @@ import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeHeavyData;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
-import org.hkijena.jipipe.api.data.JIPipeCacheSlotDataSource;
-import org.hkijena.jipipe.api.data.JIPipeData;
-import org.hkijena.jipipe.api.data.JIPipeDataInfo;
-import org.hkijena.jipipe.api.data.JIPipeDataSource;
-import org.hkijena.jipipe.api.data.JIPipeDataStorageDocumentation;
+import org.hkijena.jipipe.api.data.*;
 import org.hkijena.jipipe.api.exceptions.UserFriendlyNullPointerException;
 import org.hkijena.jipipe.extensions.imagejdatatypes.ImageJDataTypesSettings;
 import org.hkijena.jipipe.extensions.imagejdatatypes.color.ColorSpace;
@@ -38,8 +34,7 @@ import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.utils.PathUtils;
 
 import javax.swing.*;
-import java.awt.Color;
-import java.awt.Component;
+import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.nio.file.Path;
 import java.util.Collections;
@@ -113,6 +108,55 @@ public class ImagePlusData implements JIPipeData, ColoredImagePlusData {
         }
         this.image = image;
         this.colorSpace = colorSpace;
+    }
+
+    public static ImagePlus importImagePlusFrom(Path storageFilePath) {
+        Path targetFile = PathUtils.findFileByExtensionIn(storageFilePath, ".tif", ".tiff", ".png", ".jpg", ".jpeg", ".bmp");
+        if (targetFile == null) {
+            throw new UserFriendlyNullPointerException("Could not find a compatible image file in '" + storageFilePath + "'!",
+                    "Unable to find file in location '" + storageFilePath + "'",
+                    "ImagePlusData loading",
+                    "JIPipe needs to load the image from a folder, but it could not find any matching file.",
+                    "Please contact the JIPipe developers about this issue.");
+        }
+        String fileName = targetFile.toString().toLowerCase();
+        if ((fileName.endsWith(".tiff") || fileName.endsWith(".tif")) && ImageJDataTypesSettings.getInstance().isUseBioFormats()) {
+            OMEImageData omeImageData = OMEImageData.importFrom(storageFilePath);
+            return omeImageData.getImage();
+        } else {
+            return IJ.openImage(targetFile.toString());
+        }
+    }
+
+    public static ImagePlusData importFrom(Path storageFilePath) {
+        return new ImagePlusData(importImagePlusFrom(storageFilePath));
+    }
+
+    /**
+     * Gets the dimensionality of {@link ImagePlusData}
+     *
+     * @param klass the class
+     * @return the dimensionality
+     */
+    public static int getDimensionalityOf(Class<? extends ImagePlusData> klass) {
+        try {
+            return klass.getDeclaredField("DIMENSIONALITY").getInt(null);
+        } catch (IllegalAccessException | NoSuchFieldException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    /**
+     * Converts the incoming image data into the current format.
+     *
+     * @param data the data
+     * @return the converted data
+     */
+    public static ImagePlusData convertFrom(ImagePlusData data) {
+        if (data.hasLoadedImage())
+            return new ImagePlusData(data.getImage(), data.getColorSpace());
+        else
+            return new ImagePlusData(data.getImageSource(), data.getColorSpace());
     }
 
     /**
@@ -255,55 +299,6 @@ public class ImagePlusData implements JIPipeData, ColoredImagePlusData {
 
     public boolean hasLoadedImage() {
         return image != null;
-    }
-
-    public static ImagePlus importImagePlusFrom(Path storageFilePath) {
-        Path targetFile = PathUtils.findFileByExtensionIn(storageFilePath, ".tif", ".tiff", ".png", ".jpg", ".jpeg", ".bmp");
-        if (targetFile == null) {
-            throw new UserFriendlyNullPointerException("Could not find a compatible image file in '" + storageFilePath + "'!",
-                    "Unable to find file in location '" + storageFilePath + "'",
-                    "ImagePlusData loading",
-                    "JIPipe needs to load the image from a folder, but it could not find any matching file.",
-                    "Please contact the JIPipe developers about this issue.");
-        }
-        String fileName = targetFile.toString().toLowerCase();
-        if ((fileName.endsWith(".tiff") || fileName.endsWith(".tif")) && ImageJDataTypesSettings.getInstance().isUseBioFormats()) {
-            OMEImageData omeImageData = OMEImageData.importFrom(storageFilePath);
-            return omeImageData.getImage();
-        } else {
-            return IJ.openImage(targetFile.toString());
-        }
-    }
-
-    public static ImagePlusData importFrom(Path storageFilePath) {
-        return new ImagePlusData(importImagePlusFrom(storageFilePath));
-    }
-
-    /**
-     * Gets the dimensionality of {@link ImagePlusData}
-     *
-     * @param klass the class
-     * @return the dimensionality
-     */
-    public static int getDimensionalityOf(Class<? extends ImagePlusData> klass) {
-        try {
-            return klass.getDeclaredField("DIMENSIONALITY").getInt(null);
-        } catch (IllegalAccessException | NoSuchFieldException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    /**
-     * Converts the incoming image data into the current format.
-     *
-     * @param data the data
-     * @return the converted data
-     */
-    public static ImagePlusData convertFrom(ImagePlusData data) {
-        if (data.hasLoadedImage())
-            return new ImagePlusData(data.getImage(), data.getColorSpace());
-        else
-            return new ImagePlusData(data.getImageSource(), data.getColorSpace());
     }
 
 }

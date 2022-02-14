@@ -15,8 +15,8 @@ package org.hkijena.jipipe.extensions.parameters.library.primitives.optional;
 
 import org.hkijena.jipipe.api.JIPipeIssueReport;
 import org.hkijena.jipipe.api.JIPipeValidatable;
-import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.annotation.JIPipeDataAnnotation;
+import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.StringParameterSettings;
 import org.hkijena.jipipe.utils.ResourceUtils;
 

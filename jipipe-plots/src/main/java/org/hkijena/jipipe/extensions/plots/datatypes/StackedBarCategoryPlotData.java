@@ -19,7 +19,7 @@ import org.jfree.chart.JFreeChart;
 import org.jfree.chart.renderer.category.BarRenderer;
 import org.jfree.chart.renderer.category.StandardBarPainter;
 
-import java.awt.Font;
+import java.awt.*;
 import java.nio.file.Path;
 
 /**
@@ -49,6 +49,10 @@ public class StackedBarCategoryPlotData extends CategoryPlotData {
         super(other);
     }
 
+    public static StackedBarCategoryPlotData importFrom(Path storagePath) {
+        return PlotData.importFrom(storagePath, StackedBarCategoryPlotData.class);
+    }
+
     @Override
     public JFreeChart getChart() {
         JFreeChart chart = ChartFactory.createStackedBarChart(getTitle(), getCategoryAxisLabel(), getValueAxisLabel(), createDataSet());
@@ -63,9 +67,5 @@ public class StackedBarCategoryPlotData extends CategoryPlotData {
 
         updateChartProperties(chart);
         return chart;
-    }
-
-    public static StackedBarCategoryPlotData importFrom(Path storagePath) {
-        return PlotData.importFrom(storagePath, StackedBarCategoryPlotData.class);
     }
 }

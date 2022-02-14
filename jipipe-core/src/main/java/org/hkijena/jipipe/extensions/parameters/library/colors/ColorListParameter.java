@@ -2,7 +2,7 @@ package org.hkijena.jipipe.extensions.parameters.library.colors;
 
 import org.hkijena.jipipe.extensions.parameters.api.collections.ListParameter;
 
-import java.awt.Color;
+import java.awt.*;
 import java.util.Collection;
 
 public class ColorListParameter extends ListParameter<Color> {

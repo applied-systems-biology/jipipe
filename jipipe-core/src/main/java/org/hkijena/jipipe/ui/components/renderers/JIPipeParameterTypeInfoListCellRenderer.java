@@ -17,7 +17,7 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameterTypeInfo;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
-import java.awt.Component;
+import java.awt.*;
 
 public class JIPipeParameterTypeInfoListCellRenderer extends JLabel implements ListCellRenderer<JIPipeParameterTypeInfo> {
 

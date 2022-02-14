@@ -32,11 +32,6 @@ public class ImagePlusPropertiesExpressionParameterVariableSource implements Exp
         VARIABLES.add(new ExpressionParameterVariable("Physical dimension (Z)", "Physical dimension in format '[value] [unit]'", "physical_dimension_z"));
     }
 
-    @Override
-    public Set<ExpressionParameterVariable> getVariables(JIPipeParameterAccess parameterAccess) {
-        return VARIABLES;
-    }
-
     public static void extractValues(ExpressionVariables variables, ImagePlus imagePlus, Collection<JIPipeTextAnnotation> annotations) {
         for (JIPipeTextAnnotation annotation : annotations) {
             variables.set(annotation.getName(), annotation.getValue());
@@ -51,6 +46,11 @@ public class ImagePlusPropertiesExpressionParameterVariableSource implements Exp
         variables.set("physical_dimension_y", (calibration.getY(1) + " " + calibration.getYUnit()).trim());
         variables.set("physical_dimension_z", (calibration.getZ(1) + " " + calibration.getZUnit()).trim());
 
+    }
+
+    @Override
+    public Set<ExpressionParameterVariable> getVariables(JIPipeParameterAccess parameterAccess) {
+        return VARIABLES;
     }
 }
 

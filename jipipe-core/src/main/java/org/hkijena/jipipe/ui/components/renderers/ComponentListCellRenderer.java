@@ -14,7 +14,7 @@
 package org.hkijena.jipipe.ui.components.renderers;
 
 import javax.swing.*;
-import java.awt.Component;
+import java.awt.*;
 
 public class ComponentListCellRenderer<T extends Component> extends JLabel implements ListCellRenderer<T> {
 

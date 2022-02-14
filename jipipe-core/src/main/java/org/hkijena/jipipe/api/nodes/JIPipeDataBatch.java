@@ -18,9 +18,11 @@ import com.google.common.collect.Multimap;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.annotation.JIPipeDataAnnotation;
 import org.hkijena.jipipe.api.annotation.JIPipeDataAnnotationMergeMode;
-import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
-import org.hkijena.jipipe.api.data.*;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
+import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
+import org.hkijena.jipipe.api.data.JIPipeData;
+import org.hkijena.jipipe.api.data.JIPipeDataSlot;
+import org.hkijena.jipipe.api.data.JIPipeDataSlotInfo;
 
 import java.util.*;
 

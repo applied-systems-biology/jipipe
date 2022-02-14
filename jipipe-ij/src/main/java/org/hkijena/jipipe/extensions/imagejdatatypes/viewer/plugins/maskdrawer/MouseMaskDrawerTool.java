@@ -14,7 +14,7 @@ import org.hkijena.jipipe.utils.UIUtils;
 import org.hkijena.jipipe.utils.ui.BusyCursor;
 
 import javax.swing.*;
-import java.awt.Cursor;
+import java.awt.*;
 import java.nio.file.Path;
 
 /**

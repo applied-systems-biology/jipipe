@@ -43,6 +43,10 @@ public class ProjectsSettings implements JIPipeParameterCollection {
     public ProjectsSettings() {
     }
 
+    public static ProjectsSettings getInstance() {
+        return JIPipe.getSettings().getSettings(ID, ProjectsSettings.class);
+    }
+
     @Override
     public EventBus getEventBus() {
         return eventBus;
@@ -132,10 +136,6 @@ public class ProjectsSettings implements JIPipeParameterCollection {
     @JIPipeParameter("restore-tabs")
     public void setRestoreTabs(boolean restoreTabs) {
         this.restoreTabs = restoreTabs;
-    }
-
-    public static ProjectsSettings getInstance() {
-        return JIPipe.getSettings().getSettings(ID, ProjectsSettings.class);
     }
 
     /**

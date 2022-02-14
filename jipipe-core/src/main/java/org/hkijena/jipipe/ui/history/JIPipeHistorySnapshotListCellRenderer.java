@@ -17,11 +17,7 @@ import org.hkijena.jipipe.api.history.JIPipeHistoryJournalSnapshot;
 import org.hkijena.jipipe.utils.StringUtils;
 
 import javax.swing.*;
-import java.awt.Color;
-import java.awt.Component;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
-import java.awt.Insets;
+import java.awt.*;
 
 /**
  * Renderer for {@link JIPipeHistoryJournalSnapshot}

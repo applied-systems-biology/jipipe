@@ -22,15 +22,12 @@ import ij.measure.ResultsTable;
 import ij.plugin.ZProjector;
 import ij.process.ByteProcessor;
 import ij.process.ImageProcessor;
+import org.hkijena.jipipe.api.JIPipeCitation;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeDefaultMutableSlotConfiguration;
-import org.hkijena.jipipe.api.nodes.JIPipeDataBatch;
-import org.hkijena.jipipe.api.nodes.JIPipeInputSlot;
-import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
-import org.hkijena.jipipe.api.nodes.JIPipeOutputSlot;
-import org.hkijena.jipipe.api.nodes.JIPipeSimpleIteratingAlgorithm;
+import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.expressions.NumericFunctionExpression;
@@ -56,14 +53,11 @@ import static org.hkijena.jipipe.extensions.imagejalgorithms.ImageJAlgorithmsExt
         "It outputs the segmented mask, the maximum Hough accumulator image, and a table of all detected circles (x, y, Diameter, and Score)." +
         "If higher-dimensional data is provided, the filter is applied to each 2D slice.")
 @JIPipeNode(menuPath = "Threshold", nodeTypeCategory = ImagesNodeTypeCategory.class)
-
-
+@JIPipeCitation("https://github.com/closms/detectcircles")
 @JIPipeInputSlot(value = ImagePlusGreyscaleData.class, slotName = "Input")
 @JIPipeOutputSlot(value = ImagePlusGreyscaleMaskData.class, slotName = "Mask")
 @JIPipeOutputSlot(value = ImagePlusGreyscaleData.class, slotName = "Accumulator")
 @JIPipeOutputSlot(value = ResultsTableData.class, slotName = "Measurements")
-
-
 public class FastHoughSegmentation2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     private final int minEdgeVal = 1;

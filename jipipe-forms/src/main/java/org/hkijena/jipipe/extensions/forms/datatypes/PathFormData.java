@@ -18,7 +18,7 @@ import org.hkijena.jipipe.utils.PathIOMode;
 import org.hkijena.jipipe.utils.PathType;
 import org.hkijena.jipipe.utils.StringUtils;
 
-import java.awt.Component;
+import java.awt.*;
 import java.lang.annotation.Annotation;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -47,6 +47,10 @@ public class PathFormData extends ParameterFormData {
         this.ioMode = other.ioMode;
         this.extensions = new StringList(other.extensions);
         annotationIOSettings.getEventBus().register(this);
+    }
+
+    public static PathFormData importFrom(Path rowStorage) {
+        return FormData.importFrom(rowStorage, PathFormData.class);
     }
 
     @JIPipeDocumentation(name = "Initial value", description = "The initial string value")
@@ -189,9 +193,5 @@ public class PathFormData extends ParameterFormData {
             annotationIOSettings.getAnnotationMergeStrategy().mergeInto(dataBatch.getMergedAnnotations(),
                     Collections.singletonList(annotationIOSettings.getOutputAnnotation().createAnnotation(StringUtils.nullToEmpty(value))));
         }
-    }
-
-    public static PathFormData importFrom(Path rowStorage) {
-        return FormData.importFrom(rowStorage, PathFormData.class);
     }
 }

@@ -17,7 +17,7 @@ import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.data.JIPipeDataInfo;
 
 import javax.swing.*;
-import java.awt.Component;
+import java.awt.*;
 
 /**
  * Renders {@link JIPipeDataInfo}

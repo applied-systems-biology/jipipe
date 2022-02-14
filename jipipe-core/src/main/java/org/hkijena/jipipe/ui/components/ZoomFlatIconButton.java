@@ -4,7 +4,7 @@ import com.google.common.eventbus.Subscribe;
 import org.hkijena.jipipe.ui.components.icons.ZoomIcon;
 
 import javax.swing.*;
-import java.awt.Dimension;
+import java.awt.*;
 
 /**
  * Flat {@link javax.swing.JButton} that zooms and displays a zoomable icon

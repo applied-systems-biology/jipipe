@@ -32,6 +32,10 @@ public class ImageViewerUISettings implements JIPipeParameterCollection {
     private int defaultAnimationSpeed = 250;
     private boolean alwaysClearROIs = true;
 
+    public static ImageViewerUISettings getInstance() {
+        return JIPipe.getSettings().getSettings(ID, ImageViewerUISettings.class);
+    }
+
     @JIPipeDocumentation(name = "Always clear ROIs", description = "If enabled, viewers will always clear ROI lists if new data is loaded.")
     @JIPipeParameter("always-clear-rois")
     public boolean isAlwaysClearROIs() {
@@ -68,9 +72,5 @@ public class ImageViewerUISettings implements JIPipeParameterCollection {
     @Override
     public EventBus getEventBus() {
         return eventBus;
-    }
-
-    public static ImageViewerUISettings getInstance() {
-        return JIPipe.getSettings().getSettings(ID, ImageViewerUISettings.class);
     }
 }

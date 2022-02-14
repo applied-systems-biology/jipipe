@@ -42,6 +42,10 @@ public class CellPoseSizeModelData implements JIPipeData {
         this.name = other.name;
     }
 
+    public static CellPoseSizeModelData importFrom(Path storagePath) {
+        return new CellPoseSizeModelData(PathUtils.findFileByExtensionIn(storagePath, ".npy"));
+    }
+
     private String extractFileName(Path file) {
         String name = file.getFileName().toString();
         if (name.endsWith(".npy"))
@@ -82,9 +86,5 @@ public class CellPoseSizeModelData implements JIPipeData {
     @Override
     public String toString() {
         return "Cellpose size model: " + name + " (" + (data.length / 1024 / 1024) + " MB)";
-    }
-
-    public static CellPoseSizeModelData importFrom(Path storagePath) {
-        return new CellPoseSizeModelData(PathUtils.findFileByExtensionIn(storagePath, ".npy"));
     }
 }

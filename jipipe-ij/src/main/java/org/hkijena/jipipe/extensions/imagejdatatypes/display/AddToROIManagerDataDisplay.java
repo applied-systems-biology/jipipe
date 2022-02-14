@@ -30,7 +30,7 @@ import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
-import java.awt.Frame;
+import java.awt.*;
 import java.util.Map;
 import java.util.Optional;
 

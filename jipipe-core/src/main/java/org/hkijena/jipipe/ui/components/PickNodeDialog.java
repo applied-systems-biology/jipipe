@@ -19,10 +19,7 @@ import org.hkijena.jipipe.ui.components.search.SearchTextField;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
-import java.awt.BorderLayout;
-import java.awt.Component;
-import java.awt.Dimension;
-import java.awt.Window;
+import java.awt.*;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.util.Comparator;
@@ -57,6 +54,30 @@ public class PickNodeDialog extends JDialog {
         }
         setSelectedNode(preSelected);
         nodeJList.setSelectedValue(preSelected, true);
+    }
+
+    /**
+     * Shows a dialog for selecting an algorithm
+     *
+     * @param parent      parent component
+     * @param algorithms  available algorithms
+     * @param preSelected optionally pre-selected node
+     * @param title       the dialog title
+     * @return the selected  algorithm or null of none was selected
+     */
+    public static JIPipeGraphNode showDialog(Component parent, Set<JIPipeGraphNode> algorithms, JIPipeGraphNode preSelected, String title) {
+        PickNodeDialog dialog = new PickNodeDialog(SwingUtilities.getWindowAncestor(parent), algorithms, preSelected);
+        dialog.setTitle(title);
+        dialog.setModal(true);
+        dialog.pack();
+        dialog.setSize(new Dimension(500, 500));
+        dialog.setLocationRelativeTo(parent);
+        UIUtils.addEscapeListener(dialog);
+        dialog.setVisible(true);
+        if (!dialog.canceled)
+            return dialog.getSelectedNode();
+        else
+            return null;
     }
 
     private void initialize() {
@@ -157,29 +178,5 @@ public class PickNodeDialog extends JDialog {
 
     public void setSelectedNode(JIPipeGraphNode selectedNode) {
         this.selectedNode = selectedNode;
-    }
-
-    /**
-     * Shows a dialog for selecting an algorithm
-     *
-     * @param parent      parent component
-     * @param algorithms  available algorithms
-     * @param preSelected optionally pre-selected node
-     * @param title       the dialog title
-     * @return the selected  algorithm or null of none was selected
-     */
-    public static JIPipeGraphNode showDialog(Component parent, Set<JIPipeGraphNode> algorithms, JIPipeGraphNode preSelected, String title) {
-        PickNodeDialog dialog = new PickNodeDialog(SwingUtilities.getWindowAncestor(parent), algorithms, preSelected);
-        dialog.setTitle(title);
-        dialog.setModal(true);
-        dialog.pack();
-        dialog.setSize(new Dimension(500, 500));
-        dialog.setLocationRelativeTo(parent);
-        UIUtils.addEscapeListener(dialog);
-        dialog.setVisible(true);
-        if (!dialog.canceled)
-            return dialog.getSelectedNode();
-        else
-            return null;
     }
 }

@@ -15,7 +15,7 @@ package org.hkijena.jipipe.extensions.parameters.library.colors;
 
 import org.hkijena.jipipe.extensions.parameters.api.optional.OptionalParameter;
 
-import java.awt.Color;
+import java.awt.*;
 
 /**
  * Optional {@link Color}

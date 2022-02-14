@@ -19,7 +19,7 @@ import org.jfree.chart.ChartFactory;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.plot.PiePlot;
 
-import java.awt.Font;
+import java.awt.*;
 import java.nio.file.Path;
 
 /**
@@ -50,6 +50,10 @@ public class Pie2DPlotData extends PiePlotData {
         this.labelFontSize = other.labelFontSize;
     }
 
+    public static Pie2DPlotData importFrom(Path storagePath) {
+        return PlotData.importFrom(storagePath, Pie2DPlotData.class);
+    }
+
     @Override
     public JFreeChart getChart() {
         JFreeChart chart = ChartFactory.createPieChart(getTitle(), createDataSet(), true, true, false);
@@ -72,9 +76,5 @@ public class Pie2DPlotData extends PiePlotData {
             return false;
         this.labelFontSize = labelFontSize;
         return true;
-    }
-
-    public static Pie2DPlotData importFrom(Path storagePath) {
-        return PlotData.importFrom(storagePath, Pie2DPlotData.class);
     }
 }

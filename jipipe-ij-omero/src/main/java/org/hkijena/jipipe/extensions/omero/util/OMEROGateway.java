@@ -8,11 +8,7 @@ import omero.gateway.exception.DSOutOfServiceException;
 import omero.gateway.facility.BrowseFacility;
 import omero.gateway.facility.DataManagerFacility;
 import omero.gateway.facility.MetadataFacility;
-import omero.gateway.model.DatasetData;
-import omero.gateway.model.ExperimenterData;
-import omero.gateway.model.GroupData;
-import omero.gateway.model.ImageData;
-import omero.gateway.model.ProjectData;
+import omero.gateway.model.*;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 
 import java.util.Collection;

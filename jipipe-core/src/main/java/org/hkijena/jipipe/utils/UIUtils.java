@@ -44,6 +44,7 @@ import org.jdesktop.swingx.JXTable;
 import sun.misc.BASE64Encoder;
 
 import javax.imageio.ImageIO;
+import javax.swing.Timer;
 import javax.swing.*;
 import javax.swing.border.Border;
 import javax.swing.border.CompoundBorder;
@@ -51,17 +52,8 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.text.html.HTMLEditorKit;
 import java.awt.*;
-import java.awt.datatransfer.Clipboard;
-import java.awt.datatransfer.DataFlavor;
-import java.awt.datatransfer.StringSelection;
-import java.awt.datatransfer.Transferable;
-import java.awt.datatransfer.UnsupportedFlavorException;
-import java.awt.event.ActionListener;
-import java.awt.event.KeyEvent;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
+import java.awt.datatransfer.*;
+import java.awt.event.*;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -71,14 +63,8 @@ import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
@@ -571,13 +557,11 @@ public class UIUtils {
 
     public static String getAWTWindowTitle(Window window) {
         String windowTitle;
-        if(window instanceof JFrame) {
+        if (window instanceof JFrame) {
             windowTitle = ((JFrame) window).getTitle();
-        }
-        else if(window instanceof JDialog) {
+        } else if (window instanceof JDialog) {
             windowTitle = ((JDialog) window).getTitle();
-        }
-        else {
+        } else {
             windowTitle = "Unnamed window";
         }
         return windowTitle;

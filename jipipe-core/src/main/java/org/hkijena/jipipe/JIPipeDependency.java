@@ -31,6 +31,45 @@ import java.util.Set;
 @JsonDeserialize(as = JIPipeMutableDependency.class)
 public interface JIPipeDependency extends JIPipeValidatable {
     /**
+     * Exports the dependency to an HTML element (without the root tag)
+     *
+     * @param dependency Dependency instance
+     * @return HTML element without HTML root tags
+     */
+    static String toHtmlElement(JIPipeDependency dependency) {
+        StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder.append("<u><strong>").append(dependency.getMetadata().getName()).append("</strong></u><br/>");
+        stringBuilder.append("<i>").append(dependency.getDependencyId()).append("</i><br/><br/>");
+        stringBuilder.append(dependency.getMetadata().getDescription()).append("<br/><br/>");
+        stringBuilder.append("<strong>").append("Version ").append(dependency.getDependencyVersion()).append("</strong><br/>");
+        stringBuilder.append("<strong>").append("By ").append(dependency.getMetadata().getAuthors()).append("</strong><br/>");
+        if (dependency.getMetadata().getWebsite() != null && !dependency.getMetadata().getWebsite().isEmpty())
+            stringBuilder.append("<strong>").append("URL <a href=\"").append(dependency.getMetadata().getWebsite()).append("\" target=\"_blank\">")
+                    .append(dependency.getMetadata().getWebsite()).append("</a></strong><br/>");
+        if (dependency.getMetadata().getLicense() != null && !dependency.getMetadata().getLicense().isEmpty())
+            stringBuilder.append("<strong>").append("Licensed under ").append(dependency.getMetadata().getLicense()).append("</strong><br/>");
+        if (dependency.getMetadata().getCitation() != null && !dependency.getMetadata().getCitation().isEmpty())
+            stringBuilder.append("<strong>").append("Please cite: ").append(dependency.getMetadata().getCitation()).append("</strong><br/>");
+        return stringBuilder.toString();
+    }
+
+    /**
+     * Finds all dependencies that cannot be met
+     *
+     * @param dependencies List of dependencies to be checked. Only the ID will be checked.
+     * @return Set of dependencies whose IDs are not registered
+     */
+    static Set<JIPipeDependency> findUnsatisfiedDependencies(Set<JIPipeDependency> dependencies) {
+        Set<JIPipeDependency> result = new HashSet<>();
+        for (JIPipeDependency dependency : dependencies) {
+            boolean found = JIPipe.getInstance().getRegisteredExtensions().stream().anyMatch(d -> d.getDependencyId().equals(dependency.getDependencyId()));
+            if (!found)
+                result.add(dependency);
+        }
+        return result;
+    }
+
+    /**
      * @return The dependency metadata
      */
     @JsonGetter("metadata")
@@ -77,43 +116,4 @@ public interface JIPipeDependency extends JIPipeValidatable {
 
     @Override
     void reportValidity(JIPipeIssueReport report);
-
-    /**
-     * Exports the dependency to an HTML element (without the root tag)
-     *
-     * @param dependency Dependency instance
-     * @return HTML element without HTML root tags
-     */
-    static String toHtmlElement(JIPipeDependency dependency) {
-        StringBuilder stringBuilder = new StringBuilder();
-        stringBuilder.append("<u><strong>").append(dependency.getMetadata().getName()).append("</strong></u><br/>");
-        stringBuilder.append("<i>").append(dependency.getDependencyId()).append("</i><br/><br/>");
-        stringBuilder.append(dependency.getMetadata().getDescription()).append("<br/><br/>");
-        stringBuilder.append("<strong>").append("Version ").append(dependency.getDependencyVersion()).append("</strong><br/>");
-        stringBuilder.append("<strong>").append("By ").append(dependency.getMetadata().getAuthors()).append("</strong><br/>");
-        if (dependency.getMetadata().getWebsite() != null && !dependency.getMetadata().getWebsite().isEmpty())
-            stringBuilder.append("<strong>").append("URL <a href=\"").append(dependency.getMetadata().getWebsite()).append("\" target=\"_blank\">")
-                    .append(dependency.getMetadata().getWebsite()).append("</a></strong><br/>");
-        if (dependency.getMetadata().getLicense() != null && !dependency.getMetadata().getLicense().isEmpty())
-            stringBuilder.append("<strong>").append("Licensed under ").append(dependency.getMetadata().getLicense()).append("</strong><br/>");
-        if (dependency.getMetadata().getCitation() != null && !dependency.getMetadata().getCitation().isEmpty())
-            stringBuilder.append("<strong>").append("Please cite: ").append(dependency.getMetadata().getCitation()).append("</strong><br/>");
-        return stringBuilder.toString();
-    }
-
-    /**
-     * Finds all dependencies that cannot be met
-     *
-     * @param dependencies List of dependencies to be checked. Only the ID will be checked.
-     * @return Set of dependencies whose IDs are not registered
-     */
-    static Set<JIPipeDependency> findUnsatisfiedDependencies(Set<JIPipeDependency> dependencies) {
-        Set<JIPipeDependency> result = new HashSet<>();
-        for (JIPipeDependency dependency : dependencies) {
-            boolean found = JIPipe.getInstance().getRegisteredExtensions().stream().anyMatch(d -> d.getDependencyId().equals(dependency.getDependencyId()));
-            if (!found)
-                result.add(dependency);
-        }
-        return result;
-    }
 }

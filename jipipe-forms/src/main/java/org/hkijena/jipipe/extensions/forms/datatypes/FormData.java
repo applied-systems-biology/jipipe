@@ -20,7 +20,7 @@ import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.utils.ParameterUtils;
 import org.hkijena.jipipe.utils.json.JsonUtils;
 
-import java.awt.Component;
+import java.awt.*;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -45,6 +45,23 @@ public abstract class FormData implements JIPipeData, JIPipeParameterCollection,
     public FormData(FormData other) {
         this.tabSettings = new TabSettings(other.tabSettings);
         tabSettings.getEventBus().register(this);
+    }
+
+    /**
+     * Helper method that simplifies the importFrom() method definition
+     *
+     * @param storageFilePath the storage folder
+     * @param klass           the form class
+     * @param <T>             the form class
+     * @return the deserialized form
+     */
+    public static <T extends FormData> T importFrom(Path storageFilePath, Class<T> klass) {
+        try {
+            FormData formData = JsonUtils.getObjectMapper().readerFor(klass).readValue(storageFilePath.resolve("form.json").toFile());
+            return (T) formData;
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
@@ -153,23 +170,6 @@ public abstract class FormData implements JIPipeData, JIPipeParameterCollection,
     @JIPipeParameter("form:tabs")
     public TabSettings getTabSettings() {
         return tabSettings;
-    }
-
-    /**
-     * Helper method that simplifies the importFrom() method definition
-     *
-     * @param storageFilePath the storage folder
-     * @param klass           the form class
-     * @param <T>             the form class
-     * @return the deserialized form
-     */
-    public static <T extends FormData> T importFrom(Path storageFilePath, Class<T> klass) {
-        try {
-            FormData formData = JsonUtils.getObjectMapper().readerFor(klass).readValue(storageFilePath.resolve("form.json").toFile());
-            return (T) formData;
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
     }
 
     public static class Serializer extends JsonSerializer<FormData> {

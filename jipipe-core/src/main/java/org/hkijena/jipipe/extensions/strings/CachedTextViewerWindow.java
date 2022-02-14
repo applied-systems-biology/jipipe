@@ -24,7 +24,7 @@ import org.hkijena.jipipe.utils.UIUtils;
 import org.scijava.ui.swing.script.EditorPane;
 
 import javax.swing.*;
-import java.awt.BorderLayout;
+import java.awt.*;
 
 /**
  * Cached viewer for

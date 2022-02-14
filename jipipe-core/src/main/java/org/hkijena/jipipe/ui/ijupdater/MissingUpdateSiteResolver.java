@@ -24,9 +24,7 @@ import org.hkijena.jipipe.utils.UIUtils;
 import org.scijava.Context;
 
 import javax.swing.*;
-import java.awt.BorderLayout;
-import java.awt.Font;
-import java.awt.Window;
+import java.awt.*;
 import java.util.stream.Collectors;
 
 public class MissingUpdateSiteResolver extends JDialog implements JIPipeWorkbench {

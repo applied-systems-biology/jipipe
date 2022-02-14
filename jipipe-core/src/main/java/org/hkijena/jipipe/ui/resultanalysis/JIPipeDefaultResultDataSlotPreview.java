@@ -19,7 +19,7 @@ import org.hkijena.jipipe.api.data.JIPipeExportedDataTableRow;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
 
 import javax.swing.*;
-import java.awt.BorderLayout;
+import java.awt.*;
 
 /**
  * Renders a {@link JIPipeDataSlot} row as table cell

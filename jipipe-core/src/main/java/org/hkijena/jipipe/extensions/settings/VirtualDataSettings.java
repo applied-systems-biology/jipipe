@@ -5,8 +5,8 @@ import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
-import org.hkijena.jipipe.extensions.parameters.library.primitives.optional.OptionalPathParameter;
 import org.hkijena.jipipe.extensions.parameters.library.filesystem.PathParameterSettings;
+import org.hkijena.jipipe.extensions.parameters.library.primitives.optional.OptionalPathParameter;
 import org.hkijena.jipipe.utils.PathIOMode;
 import org.hkijena.jipipe.utils.PathType;
 
@@ -22,6 +22,40 @@ public class VirtualDataSettings implements JIPipeParameterCollection {
     private boolean largeVirtualDataTypesByDefault = true;
     private boolean virtualCache = true;
     private OptionalPathParameter tempDirectory = new OptionalPathParameter();
+
+    public static VirtualDataSettings getInstance() {
+        return JIPipe.getSettings().getSettings(ID, VirtualDataSettings.class);
+    }
+
+    /**
+     * Generates a temporary directory
+     *
+     * @param baseName optional base name
+     * @return a temporary directory
+     */
+    public static Path generateTempDirectory(String baseName) {
+        if (JIPipe.getInstance() == null || !JIPipe.getInstance().getSettingsRegistry().getRegisteredSheets().containsKey(ID)) {
+            try {
+                return Files.createTempDirectory("JIPipe" + baseName);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
+        OptionalPathParameter tempDirectory = getInstance().getTempDirectory();
+        if (tempDirectory.isEnabled()) {
+            try {
+                return Files.createTempDirectory(tempDirectory.getContent(), "JIPipe" + baseName);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        } else {
+            try {
+                return Files.createTempDirectory("JIPipe" + baseName);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
+    }
 
     @Override
     public EventBus getEventBus() {
@@ -74,39 +108,5 @@ public class VirtualDataSettings implements JIPipeParameterCollection {
     @JIPipeParameter("virtual-mode")
     public void setVirtualMode(boolean virtualMode) {
         this.virtualMode = virtualMode;
-    }
-
-    public static VirtualDataSettings getInstance() {
-        return JIPipe.getSettings().getSettings(ID, VirtualDataSettings.class);
-    }
-
-    /**
-     * Generates a temporary directory
-     *
-     * @param baseName optional base name
-     * @return a temporary directory
-     */
-    public static Path generateTempDirectory(String baseName) {
-        if (JIPipe.getInstance() == null || !JIPipe.getInstance().getSettingsRegistry().getRegisteredSheets().containsKey(ID)) {
-            try {
-                return Files.createTempDirectory("JIPipe" + baseName);
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-        }
-        OptionalPathParameter tempDirectory = getInstance().getTempDirectory();
-        if (tempDirectory.isEnabled()) {
-            try {
-                return Files.createTempDirectory(tempDirectory.getContent(), "JIPipe" + baseName);
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-        } else {
-            try {
-                return Files.createTempDirectory("JIPipe" + baseName);
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-        }
     }
 }

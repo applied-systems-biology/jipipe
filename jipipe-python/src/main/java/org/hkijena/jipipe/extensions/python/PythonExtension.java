@@ -22,13 +22,7 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
 import org.hkijena.jipipe.extensions.JIPipePrepackagedDefaultJavaExtension;
 import org.hkijena.jipipe.extensions.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.list.StringList;
-import org.hkijena.jipipe.extensions.python.algorithms.IteratingJythonScriptAlgorithm;
-import org.hkijena.jipipe.extensions.python.algorithms.IteratingPythonScriptAlgorithm;
-import org.hkijena.jipipe.extensions.python.algorithms.JythonScriptAlgorithm;
-import org.hkijena.jipipe.extensions.python.algorithms.MergingJythonScriptAlgorithm;
-import org.hkijena.jipipe.extensions.python.algorithms.MergingPythonScriptAlgorithm;
-import org.hkijena.jipipe.extensions.python.algorithms.PythonScriptAlgorithm;
-import org.hkijena.jipipe.extensions.python.algorithms.SimpleIteratingJythonScriptAlgorithm;
+import org.hkijena.jipipe.extensions.python.algorithms.*;
 import org.hkijena.jipipe.extensions.python.installers.MinicondaEnvPythonInstaller;
 import org.hkijena.jipipe.extensions.python.installers.SelectCondaEnvPythonInstaller;
 import org.hkijena.jipipe.extensions.python.installers.SelectSystemPythonInstaller;
@@ -50,6 +44,36 @@ import java.util.List;
  */
 @Plugin(type = JIPipeJavaExtension.class)
 public class PythonExtension extends JIPipePrepackagedDefaultJavaExtension {
+    private static void installPythonAdapterLibrary(JIPipeWorkbench workbench) {
+        PythonExtensionSettings settings = PythonExtensionSettings.getInstance();
+        JIPipeParameterTree tree = new JIPipeParameterTree(settings);
+        JIPipeParameterAccess parameterAccess = tree.getParameters().get("python-adapter-library");
+        JIPipePythonAdapterLibraryEnvironmentInstaller installer = new JIPipePythonAdapterLibraryEnvironmentInstaller(workbench, parameterAccess);
+        JIPipeRunExecuterUI.runInDialog(workbench.getWindow(), installer);
+    }
+
+    private static void installConda(JIPipeWorkbench workbench) {
+        PythonExtensionSettings settings = PythonExtensionSettings.getInstance();
+        JIPipeParameterTree tree = new JIPipeParameterTree(settings);
+        JIPipeParameterAccess parameterAccess = tree.getParameters().get("python-environment");
+        MinicondaEnvPythonInstaller installer = new MinicondaEnvPythonInstaller(workbench, parameterAccess);
+        JIPipeRunExecuterUI.runInDialog(workbench.getWindow(), installer);
+    }
+
+    private static void selectConda(JIPipeWorkbench workbench) {
+        PythonExtensionSettings settings = PythonExtensionSettings.getInstance();
+        JIPipeParameterTree tree = new JIPipeParameterTree(settings);
+        JIPipeParameterAccess parameterAccess = tree.getParameters().get("python-environment");
+        SelectCondaEnvPythonInstaller installer = new SelectCondaEnvPythonInstaller(workbench, parameterAccess);
+        JIPipeRunExecuterUI.runInDialog(workbench.getWindow(), installer);
+    }
+
+    private static void openSettingsPage(JIPipeWorkbench workbench) {
+        DocumentTabPane.DocumentTab tab = workbench.getDocumentTabPane().selectSingletonTab(JIPipeProjectWorkbench.TAB_APPLICATION_SETTINGS);
+        JIPipeApplicationSettingsUI applicationSettingsUI = (JIPipeApplicationSettingsUI) tab.getContent();
+        applicationSettingsUI.selectNode("/Extensions/Python integration");
+    }
+
     @Override
     public String getName() {
         return "Python integration";
@@ -171,35 +195,5 @@ public class PythonExtension extends JIPipePrepackagedDefaultJavaExtension {
     @Override
     public String getDependencyVersion() {
         return "1.63.0";
-    }
-
-    private static void installPythonAdapterLibrary(JIPipeWorkbench workbench) {
-        PythonExtensionSettings settings = PythonExtensionSettings.getInstance();
-        JIPipeParameterTree tree = new JIPipeParameterTree(settings);
-        JIPipeParameterAccess parameterAccess = tree.getParameters().get("python-adapter-library");
-        JIPipePythonAdapterLibraryEnvironmentInstaller installer = new JIPipePythonAdapterLibraryEnvironmentInstaller(workbench, parameterAccess);
-        JIPipeRunExecuterUI.runInDialog(workbench.getWindow(), installer);
-    }
-
-    private static void installConda(JIPipeWorkbench workbench) {
-        PythonExtensionSettings settings = PythonExtensionSettings.getInstance();
-        JIPipeParameterTree tree = new JIPipeParameterTree(settings);
-        JIPipeParameterAccess parameterAccess = tree.getParameters().get("python-environment");
-        MinicondaEnvPythonInstaller installer = new MinicondaEnvPythonInstaller(workbench, parameterAccess);
-        JIPipeRunExecuterUI.runInDialog(workbench.getWindow(), installer);
-    }
-
-    private static void selectConda(JIPipeWorkbench workbench) {
-        PythonExtensionSettings settings = PythonExtensionSettings.getInstance();
-        JIPipeParameterTree tree = new JIPipeParameterTree(settings);
-        JIPipeParameterAccess parameterAccess = tree.getParameters().get("python-environment");
-        SelectCondaEnvPythonInstaller installer = new SelectCondaEnvPythonInstaller(workbench, parameterAccess);
-        JIPipeRunExecuterUI.runInDialog(workbench.getWindow(), installer);
-    }
-
-    private static void openSettingsPage(JIPipeWorkbench workbench) {
-        DocumentTabPane.DocumentTab tab = workbench.getDocumentTabPane().selectSingletonTab(JIPipeProjectWorkbench.TAB_APPLICATION_SETTINGS);
-        JIPipeApplicationSettingsUI applicationSettingsUI = (JIPipeApplicationSettingsUI) tab.getContent();
-        applicationSettingsUI.selectNode("/Extensions/Python integration");
     }
 }

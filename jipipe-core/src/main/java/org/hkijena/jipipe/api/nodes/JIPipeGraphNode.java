@@ -26,20 +26,9 @@ import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.JIPipeDependency;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeIssueReport;
-import org.hkijena.jipipe.api.JIPipeProgressInfo;
-import org.hkijena.jipipe.api.JIPipeProject;
-import org.hkijena.jipipe.api.JIPipeRun;
-import org.hkijena.jipipe.api.JIPipeValidatable;
+import org.hkijena.jipipe.api.*;
 import org.hkijena.jipipe.api.compartments.algorithms.JIPipeProjectCompartment;
-import org.hkijena.jipipe.api.data.JIPipeData;
-import org.hkijena.jipipe.api.data.JIPipeDataSlot;
-import org.hkijena.jipipe.api.data.JIPipeDataSlotInfo;
-import org.hkijena.jipipe.api.data.JIPipeDefaultMutableSlotConfiguration;
-import org.hkijena.jipipe.api.data.JIPipeMutableSlotConfiguration;
-import org.hkijena.jipipe.api.data.JIPipeSlotConfiguration;
-import org.hkijena.jipipe.api.data.JIPipeSlotType;
+import org.hkijena.jipipe.api.data.*;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
@@ -50,10 +39,11 @@ import org.hkijena.jipipe.extensions.settings.RuntimeSettings;
 import org.hkijena.jipipe.utils.ParameterUtils;
 import org.hkijena.jipipe.utils.StringUtils;
 
-import java.awt.Point;
+import java.awt.*;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.List;
 import java.util.*;
 
 /**
@@ -141,6 +131,22 @@ public abstract class JIPipeGraphNode implements JIPipeValidatable, JIPipeParame
         this.customDescription = other.customDescription;
         updateGraphNodeSlots();
         slotConfiguration.getEventBus().register(this);
+    }
+
+    public static <T extends JIPipeGraphNode> T fromJsonNode(JsonNode node, JIPipeIssueReport issues) {
+        String id = node.get("jipipe:node-info-id").asText();
+        if (!JIPipe.getNodes().hasNodeInfoWithId(id)) {
+            System.err.println("Unable to find node type with ID '" + id + "'. Skipping.");
+            issues.resolve("Nodes").resolve(id).reportIsInvalid("Unable to find node type '" + id + "'!",
+                    "The JSON data requested to load a node of type '" + id + "', but it is not known to JIPipe.",
+                    "Please check if all extensions are are correctly loaded.",
+                    node);
+            return null;
+        }
+        JIPipeNodeInfo info = JIPipe.getNodes().getInfoById(id);
+        JIPipeGraphNode algorithm = info.newInstance();
+        algorithm.fromJson(node, issues.resolve("Nodes").resolve(id));
+        return (T) algorithm;
     }
 
     /**
@@ -626,7 +632,6 @@ public abstract class JIPipeGraphNode implements JIPipeValidatable, JIPipeParame
         }
         return result;
     }
-
 
     /**
      * Returns the first output slot according to the slot order.
@@ -1132,22 +1137,6 @@ public abstract class JIPipeGraphNode implements JIPipeValidatable, JIPipeParame
                 }
             }
         }
-    }
-
-    public static <T extends JIPipeGraphNode> T fromJsonNode(JsonNode node, JIPipeIssueReport issues) {
-        String id = node.get("jipipe:node-info-id").asText();
-        if (!JIPipe.getNodes().hasNodeInfoWithId(id)) {
-            System.err.println("Unable to find node type with ID '" + id + "'. Skipping.");
-            issues.resolve("Nodes").resolve(id).reportIsInvalid("Unable to find node type '" + id + "'!",
-                    "The JSON data requested to load a node of type '" + id + "', but it is not known to JIPipe.",
-                    "Please check if all extensions are are correctly loaded.",
-                    node);
-            return null;
-        }
-        JIPipeNodeInfo info = JIPipe.getNodes().getInfoById(id);
-        JIPipeGraphNode algorithm = info.newInstance();
-        algorithm.fromJson(node, issues.resolve("Nodes").resolve(id));
-        return (T) algorithm;
     }
 
     /**

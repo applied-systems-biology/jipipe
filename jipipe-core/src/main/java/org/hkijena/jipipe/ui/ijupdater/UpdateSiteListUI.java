@@ -24,7 +24,7 @@ import org.hkijena.jipipe.utils.search.RankedData;
 import org.hkijena.jipipe.utils.search.RankingFunction;
 
 import javax.swing.*;
-import java.awt.BorderLayout;
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;

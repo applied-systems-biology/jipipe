@@ -19,7 +19,7 @@ import org.hkijena.jipipe.ui.components.icons.SolidColorIcon;
 import org.hkijena.jipipe.utils.ColorUtils;
 
 import javax.swing.*;
-import java.awt.Color;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Objects;

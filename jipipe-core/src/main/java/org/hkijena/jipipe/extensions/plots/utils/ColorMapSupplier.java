@@ -15,7 +15,7 @@ package org.hkijena.jipipe.extensions.plots.utils;
 
 import org.jfree.chart.plot.DefaultDrawingSupplier;
 
-import java.awt.Paint;
+import java.awt.*;
 
 /**
  * Provides a color palette

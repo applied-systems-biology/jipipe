@@ -46,6 +46,23 @@ public class ExpressionOperatorEntry {
         this.operator = operator;
     }
 
+    /**
+     * Extracts operators from an evaluator
+     *
+     * @param evaluator               the evaluator
+     * @param onlyExpressionOperators if true, operators must inherit from {@link ExpressionOperator}
+     * @return the list
+     */
+    public static List<ExpressionOperatorEntry> fromEvaluator(ExpressionEvaluator evaluator, boolean onlyExpressionOperators) {
+        List<ExpressionOperatorEntry> result = new ArrayList<>();
+        for (Operator operator : evaluator.getOperators()) {
+            if (onlyExpressionOperators && !(operator instanceof ExpressionOperator))
+                continue;
+            result.add(new ExpressionOperatorEntry(operator));
+        }
+        return result;
+    }
+
     public String getName() {
         return name;
     }
@@ -89,22 +106,5 @@ public class ExpressionOperatorEntry {
         } else {
             return operator.getSymbol() + " ()";
         }
-    }
-
-    /**
-     * Extracts operators from an evaluator
-     *
-     * @param evaluator               the evaluator
-     * @param onlyExpressionOperators if true, operators must inherit from {@link ExpressionOperator}
-     * @return the list
-     */
-    public static List<ExpressionOperatorEntry> fromEvaluator(ExpressionEvaluator evaluator, boolean onlyExpressionOperators) {
-        List<ExpressionOperatorEntry> result = new ArrayList<>();
-        for (Operator operator : evaluator.getOperators()) {
-            if (onlyExpressionOperators && !(operator instanceof ExpressionOperator))
-                continue;
-            result.add(new ExpressionOperatorEntry(operator));
-        }
-        return result;
     }
 }

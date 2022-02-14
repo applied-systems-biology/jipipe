@@ -33,9 +33,7 @@ import org.scijava.ui.swing.script.EditorPane;
 
 import javax.swing.*;
 import javax.swing.event.DocumentEvent;
-import java.awt.BorderLayout;
-import java.awt.Component;
-import java.awt.Font;
+import java.awt.*;
 import java.lang.annotation.Annotation;
 import java.nio.file.Path;
 import java.util.Objects;

@@ -13,27 +13,16 @@
 
 package org.hkijena.jipipe.extensions.utils.algorithms.meta;
 
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeIssueReport;
-import org.hkijena.jipipe.api.JIPipeNode;
-import org.hkijena.jipipe.api.JIPipeProgressInfo;
-import org.hkijena.jipipe.api.JIPipeProject;
-import org.hkijena.jipipe.api.JIPipeRun;
-import org.hkijena.jipipe.api.JIPipeRunSettings;
+import org.hkijena.jipipe.api.*;
 import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
-import org.hkijena.jipipe.api.nodes.JIPipeDataBatch;
-import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
-import org.hkijena.jipipe.api.nodes.JIPipeInputSlot;
-import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
-import org.hkijena.jipipe.api.nodes.JIPipeOutputSlot;
-import org.hkijena.jipipe.api.nodes.JIPipeSimpleIteratingAlgorithm;
+import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.MiscellaneousNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
 import org.hkijena.jipipe.extensions.multiparameters.datatypes.ParametersData;
-import org.hkijena.jipipe.extensions.parameters.library.primitives.optional.OptionalIntegerParameter;
 import org.hkijena.jipipe.extensions.parameters.library.filesystem.PathParameterSettings;
+import org.hkijena.jipipe.extensions.parameters.library.primitives.optional.OptionalIntegerParameter;
 import org.hkijena.jipipe.extensions.settings.RuntimeSettings;
 import org.hkijena.jipipe.extensions.utils.datatypes.JIPipeOutputData;
 import org.hkijena.jipipe.ui.settings.JIPipeProjectInfoParameters;

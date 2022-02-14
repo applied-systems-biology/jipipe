@@ -61,16 +61,6 @@ public class ImagePlusColorLABData extends ImagePlusColorData implements Colored
         super(new ConverterWrapperImageSource(source, ImageJUtils::convertToColorLABIfNeeded));
     }
 
-    @Override
-    public ColorSpace getColorSpace() {
-        return COLOR_SPACE;
-    }
-
-    @Override
-    public Component preview(int width, int height) {
-        return ImageJUtils.generatePreview(this.getImage(), getColorSpace(), width, height);
-    }
-
     public static ImagePlusData importFrom(Path storageFolder) {
         return new ImagePlusColorLABData(ImagePlusData.importImagePlusFrom(storageFolder));
     }
@@ -97,5 +87,15 @@ public class ImagePlusColorLABData extends ImagePlusColorData implements Colored
         } else {
             return new ImagePlusColorLABData(data.getImageSource());
         }
+    }
+
+    @Override
+    public ColorSpace getColorSpace() {
+        return COLOR_SPACE;
+    }
+
+    @Override
+    public Component preview(int width, int height) {
+        return ImageJUtils.generatePreview(this.getImage(), getColorSpace(), width, height);
     }
 }

@@ -5,12 +5,7 @@ import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.json.JsonUtils;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Determines how annotations are merged
@@ -21,6 +16,26 @@ public enum JIPipeTextAnnotationMergeMode {
     Merge,
     MergeLists,
     Discard;
+
+    /**
+     * Extracts merged annotations
+     *
+     * @param merged the annotation value
+     * @return the components
+     */
+    public static String[] extractMergedAnnotations(String merged) {
+        if (StringUtils.isNullOrEmpty(merged))
+            return new String[0];
+        if (merged.contains("[") && merged.contains("]")) {
+            try {
+                return JsonUtils.getObjectMapper().readerFor(String[].class).readValue(merged);
+            } catch (IOException e) {
+                return new String[]{merged};
+            }
+        } else {
+            return new String[]{merged};
+        }
+    }
 
     /**
      * Ensures that a list of annotations has unique names. Merges according to the strategy if needed.
@@ -129,26 +144,6 @@ public enum JIPipeTextAnnotationMergeMode {
                 return "Discard annotations";
             default:
                 return super.toString();
-        }
-    }
-
-    /**
-     * Extracts merged annotations
-     *
-     * @param merged the annotation value
-     * @return the components
-     */
-    public static String[] extractMergedAnnotations(String merged) {
-        if (StringUtils.isNullOrEmpty(merged))
-            return new String[0];
-        if (merged.contains("[") && merged.contains("]")) {
-            try {
-                return JsonUtils.getObjectMapper().readerFor(String[].class).readValue(merged);
-            } catch (IOException e) {
-                return new String[]{merged};
-            }
-        } else {
-            return new String[]{merged};
         }
     }
 

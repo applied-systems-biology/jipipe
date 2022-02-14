@@ -16,6 +16,25 @@ public enum ImageROITargetArea {
     InsideMask,
     OutsideMask;
 
+    public static ByteProcessor createWhiteMaskProcessor(ImagePlus img) {
+        ByteProcessor processor = new ByteProcessor(img.getWidth(), img.getHeight());
+        processor.setValue(255);
+        processor.setRoi(0, 0, processor.getWidth(), processor.getHeight());
+        processor.fill();
+        return processor;
+    }
+
+    public static ImagePlus createWhiteMask(ImagePlus img) {
+        ImagePlus result = IJ.createImage(img.getTitle(), img.getWidth(), img.getHeight(), img.getStackSize(), 8);
+        result.setDimensions(img.getNChannels(), img.getNSlices(), img.getNFrames());
+        ImageJUtils.forEachIndexedZCTSlice(result, (processor, index) -> {
+            processor.setValue(255);
+            processor.setRoi(0, 0, processor.getWidth(), processor.getHeight());
+            processor.fill();
+        }, new JIPipeProgressInfo());
+        return result;
+    }
+
     /**
      * Gets the appropriate mask for the current setting
      *
@@ -74,24 +93,5 @@ public enum ImageROITargetArea {
                 return "Outside mask";
         }
         throw new UnsupportedOperationException();
-    }
-
-    public static ByteProcessor createWhiteMaskProcessor(ImagePlus img) {
-        ByteProcessor processor = new ByteProcessor(img.getWidth(), img.getHeight());
-        processor.setValue(255);
-        processor.setRoi(0, 0, processor.getWidth(), processor.getHeight());
-        processor.fill();
-        return processor;
-    }
-
-    public static ImagePlus createWhiteMask(ImagePlus img) {
-        ImagePlus result = IJ.createImage(img.getTitle(), img.getWidth(), img.getHeight(), img.getStackSize(), 8);
-        result.setDimensions(img.getNChannels(), img.getNSlices(), img.getNFrames());
-        ImageJUtils.forEachIndexedZCTSlice(result, (processor, index) -> {
-            processor.setValue(255);
-            processor.setRoi(0, 0, processor.getWidth(), processor.getHeight());
-            processor.fill();
-        }, new JIPipeProgressInfo());
-        return result;
     }
 }

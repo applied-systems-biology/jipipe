@@ -17,8 +17,7 @@ import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.utils.PathUtils;
 import org.hkijena.jipipe.utils.json.JsonUtils;
 
-import java.awt.Color;
-import java.awt.Component;
+import java.awt.*;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -42,75 +41,6 @@ public class LUTData implements JIPipeData {
         for (ImageJUtils.GradientStop stop : other.gradientStops) {
             gradientStops.add(new ImageJUtils.GradientStop(stop));
         }
-    }
-
-    @JsonGetter("gradient-stops")
-    public List<ImageJUtils.GradientStop> getGradientStops() {
-        return gradientStops;
-    }
-
-    @JsonSetter("gradient-stops")
-    public void setGradientStops(List<ImageJUtils.GradientStop> gradientStops) {
-        this.gradientStops = gradientStops;
-    }
-
-    @Override
-    public void saveTo(Path storageFilePath, String name, boolean forceName, JIPipeProgressInfo progressInfo) {
-        try {
-            if (!forceName) {
-                JsonUtils.getObjectMapper().writerWithDefaultPrettyPrinter().writeValue(storageFilePath.resolve("lut.json").toFile(), this);
-            } else {
-                JsonUtils.getObjectMapper().writerWithDefaultPrettyPrinter().writeValue(storageFilePath.resolve(name + ".json").toFile(), this);
-            }
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    @Override
-    public JIPipeData duplicate() {
-        return new LUTData(this);
-    }
-
-    @Override
-    public void display(String displayName, JIPipeWorkbench workbench, JIPipeDataSource source) {
-        ImagePlus image = toImage(256, 256);
-        ImageViewerPanel.showImage(image, displayName);
-    }
-
-    @Override
-    public Component preview(int width, int height) {
-        return new ImagePlusData(toImage(width, height)).preview(width, height);
-    }
-
-    /**
-     * Converts the {@link LUTData} into an ImageJ {@link LUT}
-     *
-     * @return the LUT
-     */
-    public LUT toLUT() {
-        return ImageJUtils.createLUTFromGradient(gradientStops);
-    }
-
-    /**
-     * Renders the {@link LUTData} into an RGB Image
-     *
-     * @return the image
-     */
-    public ImagePlus toImage(int width, int height) {
-        return ImageJUtils.lutToImage(toLUT(), width, height);
-    }
-
-    public int size() {
-        return gradientStops.size();
-    }
-
-    public ImageJUtils.GradientStop get(int index) {
-        return gradientStops.get(index);
-    }
-
-    public void addStop(float position, Color color) {
-        gradientStops.add(new ImageJUtils.GradientStop(position, color));
     }
 
     /**
@@ -230,5 +160,74 @@ public class LUTData implements JIPipeData {
     public static LUTData importFrom(Path storagePath) {
         Path path = PathUtils.findFileByExtensionIn(storagePath, ".json");
         return JsonUtils.readFromFile(path, LUTData.class);
+    }
+
+    @JsonGetter("gradient-stops")
+    public List<ImageJUtils.GradientStop> getGradientStops() {
+        return gradientStops;
+    }
+
+    @JsonSetter("gradient-stops")
+    public void setGradientStops(List<ImageJUtils.GradientStop> gradientStops) {
+        this.gradientStops = gradientStops;
+    }
+
+    @Override
+    public void saveTo(Path storageFilePath, String name, boolean forceName, JIPipeProgressInfo progressInfo) {
+        try {
+            if (!forceName) {
+                JsonUtils.getObjectMapper().writerWithDefaultPrettyPrinter().writeValue(storageFilePath.resolve("lut.json").toFile(), this);
+            } else {
+                JsonUtils.getObjectMapper().writerWithDefaultPrettyPrinter().writeValue(storageFilePath.resolve(name + ".json").toFile(), this);
+            }
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    public JIPipeData duplicate() {
+        return new LUTData(this);
+    }
+
+    @Override
+    public void display(String displayName, JIPipeWorkbench workbench, JIPipeDataSource source) {
+        ImagePlus image = toImage(256, 256);
+        ImageViewerPanel.showImage(image, displayName);
+    }
+
+    @Override
+    public Component preview(int width, int height) {
+        return new ImagePlusData(toImage(width, height)).preview(width, height);
+    }
+
+    /**
+     * Converts the {@link LUTData} into an ImageJ {@link LUT}
+     *
+     * @return the LUT
+     */
+    public LUT toLUT() {
+        return ImageJUtils.createLUTFromGradient(gradientStops);
+    }
+
+    /**
+     * Renders the {@link LUTData} into an RGB Image
+     *
+     * @return the image
+     */
+    public ImagePlus toImage(int width, int height) {
+        return ImageJUtils.lutToImage(toLUT(), width, height);
+    }
+
+    public int size() {
+        return gradientStops.size();
+    }
+
+    public ImageJUtils.GradientStop get(int index) {
+        return gradientStops.get(index);
+    }
+
+    public void addStop(float position, Color color) {
+        gradientStops.add(new ImageJUtils.GradientStop(position, color));
     }
 }

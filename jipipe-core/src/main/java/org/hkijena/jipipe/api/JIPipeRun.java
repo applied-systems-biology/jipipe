@@ -31,19 +31,14 @@ import org.hkijena.jipipe.api.nodes.JIPipeGraph;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.utils.StringUtils;
 
-import java.awt.HeadlessException;
+import java.awt.*;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Runnable instance of an {@link JIPipeProject}
@@ -71,6 +66,23 @@ public class JIPipeRun implements JIPipeRunnable {
         initializeScratchDirectory();
         initializeRelativeDirectories();
         initializeInternalStoragePaths();
+    }
+
+    /**
+     * Loads a JIPipeRun from a folder
+     *
+     * @param folder Folder containing the run
+     * @return The loaded run
+     * @throws IOException Triggered by {@link com.fasterxml.jackson.databind.ObjectMapper}
+     */
+    public static JIPipeRun loadFromFolder(Path folder, JIPipeIssueReport report) throws IOException {
+        Path parameterFile = folder.resolve("project.jip");
+        JIPipeProject project = JIPipeProject.loadProject(parameterFile, report);
+        JIPipeRunSettings configuration = new JIPipeRunSettings();
+        configuration.setOutputPath(folder);
+        JIPipeRun run = new JIPipeRun(project, configuration);
+        run.prepare();
+        return run;
     }
 
     private void initializeScratchDirectory() {
@@ -542,22 +554,5 @@ public class JIPipeRun implements JIPipeRunnable {
     @Override
     public String getTaskLabel() {
         return "Run";
-    }
-
-    /**
-     * Loads a JIPipeRun from a folder
-     *
-     * @param folder Folder containing the run
-     * @return The loaded run
-     * @throws IOException Triggered by {@link com.fasterxml.jackson.databind.ObjectMapper}
-     */
-    public static JIPipeRun loadFromFolder(Path folder, JIPipeIssueReport report) throws IOException {
-        Path parameterFile = folder.resolve("project.jip");
-        JIPipeProject project = JIPipeProject.loadProject(parameterFile, report);
-        JIPipeRunSettings configuration = new JIPipeRunSettings();
-        configuration.setOutputPath(folder);
-        JIPipeRun run = new JIPipeRun(project, configuration);
-        run.prepare();
-        return run;
     }
 }

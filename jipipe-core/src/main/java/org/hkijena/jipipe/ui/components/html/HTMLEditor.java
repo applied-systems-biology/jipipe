@@ -24,24 +24,11 @@ import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.HyperlinkEvent;
-import javax.swing.text.BadLocationException;
-import javax.swing.text.Document;
-import javax.swing.text.Element;
-import javax.swing.text.MutableAttributeSet;
-import javax.swing.text.SimpleAttributeSet;
-import javax.swing.text.StyleConstants;
-import javax.swing.text.StyledDocument;
-import javax.swing.text.StyledEditorKit;
+import javax.swing.text.*;
 import javax.swing.text.html.HTML;
 import javax.swing.text.html.HTMLDocument;
 import javax.swing.text.html.HTMLEditorKit;
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Cursor;
-import java.awt.Desktop;
-import java.awt.Dimension;
-import java.awt.GraphicsEnvironment;
-import java.awt.Rectangle;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
@@ -49,11 +36,7 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.file.Path;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.function.BooleanSupplier;
 
 public class HTMLEditor extends JIPipeWorkbenchPanel {
@@ -86,6 +69,17 @@ public class HTMLEditor extends JIPipeWorkbenchPanel {
         initialize(flags);
         setMode(mode);
         initializeEvents();
+    }
+
+    public static void main(String[] args) {
+        JIPipe.ensureInstance();
+        UIUtils.getThemeFromRawSettings().install();
+        JFrame frame = new JFrame();
+        frame.setContentPane(new HTMLEditor(new JIPipeDummyWorkbench(), Mode.Compact, WITH_SCROLL_BAR));
+        frame.setSize(800, 600);
+        frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+        frame.setLocationRelativeTo(null);
+        frame.setVisible(true);
     }
 
     public Mode getMode() {
@@ -760,17 +754,6 @@ public class HTMLEditor extends JIPipeWorkbenchPanel {
 
         // Workaround https://stackoverflow.com/questions/1527021/html-jtextpane-newline-support
 //        textPane.getDocument().putProperty(DefaultEditorKit.EndOfLineStringProperty, "<br/>\n");
-    }
-
-    public static void main(String[] args) {
-        JIPipe.ensureInstance();
-        UIUtils.getThemeFromRawSettings().install();
-        JFrame frame = new JFrame();
-        frame.setContentPane(new HTMLEditor(new JIPipeDummyWorkbench(), Mode.Compact, WITH_SCROLL_BAR));
-        frame.setSize(800, 600);
-        frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-        frame.setLocationRelativeTo(null);
-        frame.setVisible(true);
     }
 
     public enum Mode {

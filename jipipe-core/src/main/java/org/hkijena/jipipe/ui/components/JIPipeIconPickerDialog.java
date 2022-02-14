@@ -18,10 +18,7 @@ import org.hkijena.jipipe.ui.components.search.SearchTextField;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
-import java.awt.BorderLayout;
-import java.awt.Component;
-import java.awt.Dimension;
-import java.awt.Window;
+import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.util.ArrayList;
@@ -51,6 +48,28 @@ public class JIPipeIconPickerDialog extends JDialog implements MouseListener {
         this.availableIcons.sort(String::compareTo);
         initialize();
         reloadIconList();
+    }
+
+    /**
+     * Picks an icon name using a dialog
+     *
+     * @param parent         The parent component
+     * @param prefix         The prefix put in front of the icon names for rendering the icon
+     * @param availableIcons Icon names without prefix
+     * @return The selected icon or null
+     */
+    public static String showDialog(Component parent, String prefix, Set<String> availableIcons) {
+        JIPipeIconPickerDialog dialog = new JIPipeIconPickerDialog(SwingUtilities.getWindowAncestor(parent),
+                prefix,
+                availableIcons);
+        dialog.pack();
+        dialog.setSize(new Dimension(500, 400));
+        dialog.setLocationRelativeTo(parent);
+        UIUtils.addEscapeListener(dialog);
+        dialog.setModal(true);
+        dialog.setVisible(true);
+
+        return dialog.getSelectedIcon();
     }
 
     private void initialize() {
@@ -140,27 +159,5 @@ public class JIPipeIconPickerDialog extends JDialog implements MouseListener {
     @Override
     public void mouseExited(MouseEvent e) {
 
-    }
-
-    /**
-     * Picks an icon name using a dialog
-     *
-     * @param parent         The parent component
-     * @param prefix         The prefix put in front of the icon names for rendering the icon
-     * @param availableIcons Icon names without prefix
-     * @return The selected icon or null
-     */
-    public static String showDialog(Component parent, String prefix, Set<String> availableIcons) {
-        JIPipeIconPickerDialog dialog = new JIPipeIconPickerDialog(SwingUtilities.getWindowAncestor(parent),
-                prefix,
-                availableIcons);
-        dialog.pack();
-        dialog.setSize(new Dimension(500, 400));
-        dialog.setLocationRelativeTo(parent);
-        UIUtils.addEscapeListener(dialog);
-        dialog.setModal(true);
-        dialog.setVisible(true);
-
-        return dialog.getSelectedIcon();
     }
 }

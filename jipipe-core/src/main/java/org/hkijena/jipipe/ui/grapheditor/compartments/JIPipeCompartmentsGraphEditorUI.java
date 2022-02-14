@@ -47,7 +47,7 @@ import org.hkijena.jipipe.utils.UIUtils;
 import org.hkijena.jipipe.utils.json.JsonUtils;
 
 import javax.swing.*;
-import java.awt.BorderLayout;
+import java.awt.*;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.Arrays;

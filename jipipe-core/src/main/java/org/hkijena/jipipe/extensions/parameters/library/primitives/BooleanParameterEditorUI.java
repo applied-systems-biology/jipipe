@@ -18,8 +18,7 @@ import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.parameters.JIPipeParameterEditorUI;
 
 import javax.swing.*;
-import java.awt.BorderLayout;
-import java.awt.Component;
+import java.awt.*;
 
 /**
  * Parameter editor for boolean data

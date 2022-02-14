@@ -44,10 +44,7 @@ import org.hkijena.jipipe.utils.scripting.MacroUtils;
 import org.scijava.Context;
 
 import javax.swing.*;
-import java.awt.BorderLayout;
-import java.awt.Component;
-import java.awt.Toolkit;
-import java.awt.Window;
+import java.awt.*;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.StringSelection;
 import java.util.Comparator;

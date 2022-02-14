@@ -22,10 +22,7 @@ import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
 
 import javax.swing.*;
 import javax.swing.table.TableCellRenderer;
-import java.awt.Color;
-import java.awt.Component;
-import java.awt.Point;
-import java.awt.Rectangle;
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;

@@ -17,7 +17,7 @@ import org.hkijena.jipipe.ui.components.JIPipeIconPickerDialog;
 import org.hkijena.jipipe.utils.ResourceUtils;
 
 import javax.swing.*;
-import java.awt.Component;
+import java.awt.*;
 
 /**
  * Renders entries in {@link JIPipeIconPickerDialog}

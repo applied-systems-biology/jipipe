@@ -5,8 +5,8 @@ import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
-import org.hkijena.jipipe.extensions.parameters.library.primitives.optional.OptionalIntegerParameter;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.list.StringList;
+import org.hkijena.jipipe.extensions.parameters.library.primitives.optional.OptionalIntegerParameter;
 
 public class NotificationUISettings implements JIPipeParameterCollection {
     public static String ID = "notification-ui";
@@ -17,6 +17,10 @@ public class NotificationUISettings implements JIPipeParameterCollection {
     private OptionalIntegerParameter showAfterMinRuntime = new OptionalIntegerParameter(true, 7);
     private StringList blockedNotifications = new StringList();
     private boolean enableNotifications = true;
+
+    public static NotificationUISettings getInstance() {
+        return JIPipe.getSettings().getSettings(ID, NotificationUISettings.class);
+    }
 
     @JIPipeDocumentation(name = "Show run notifications", description = "If enabled, show notifications when a run is finished. " +
             "Following processes are considered as run: " +
@@ -90,9 +94,5 @@ public class NotificationUISettings implements JIPipeParameterCollection {
     @Override
     public EventBus getEventBus() {
         return eventBus;
-    }
-
-    public static NotificationUISettings getInstance() {
-        return JIPipe.getSettings().getSettings(ID, NotificationUISettings.class);
     }
 }

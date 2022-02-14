@@ -22,11 +22,7 @@ import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeDefaultMutableSlotConfiguration;
-import org.hkijena.jipipe.api.nodes.JIPipeDataBatch;
-import org.hkijena.jipipe.api.nodes.JIPipeInputSlot;
-import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
-import org.hkijena.jipipe.api.nodes.JIPipeOutputSlot;
-import org.hkijena.jipipe.api.nodes.JIPipeSimpleIteratingAlgorithm;
+import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.expressions.ExpressionParameterSettings;
@@ -38,8 +34,7 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImagePlusPropertiesExpressionParameterVariableSource;
 import org.hkijena.jipipe.extensions.parameters.library.roi.Anchor;
 
-import java.awt.Color;
-import java.awt.Rectangle;
+import java.awt.*;
 
 /**
  * Wrapper around {@link ImageProcessor}
@@ -88,6 +83,43 @@ public class TransformScale2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         this.anchor = other.anchor;
         this.background = other.background;
         this.avoidUnnecessaryScaling = other.avoidUnnecessaryScaling;
+    }
+
+    public static ImageProcessor scaleProcessor(ImageProcessor imp, int width, int height, InterpolationMethod interpolationMethod, boolean useAveraging, ScaleMode scaleMode, Anchor location, Color background) {
+        imp.setInterpolationMethod(interpolationMethod.getNativeValue());
+
+        switch (scaleMode) {
+            case Stretch:
+                return imp.resize(width, height, useAveraging);
+            case Fit: {
+                double factor = Math.min(width * 1.0 / imp.getWidth(), height * 1.0 / imp.getHeight());
+                ImageProcessor resized = imp.resize((int) (imp.getWidth() * factor), (int) (imp.getHeight() * factor), useAveraging);
+                ImageProcessor container = IJ.createImage("", width, height, 1, imp.getBitDepth()).getProcessor();
+                container.setRoi(0, 0, width, height);
+                container.setColor(background);
+                container.fill();
+                container.setRoi((Roi) null);
+
+                Rectangle finalRect = location.placeInside(new Rectangle(0, 0, resized.getWidth(), resized.getHeight()), new Rectangle(0, 0, width, height));
+                container.insert(resized, finalRect.x, finalRect.y);
+                return container;
+            }
+            case Cover: {
+                double factor = Math.max(width * 1.0 / imp.getWidth(), height * 1.0 / imp.getHeight());
+                ImageProcessor resized = imp.resize((int) (imp.getWidth() * factor), (int) (imp.getHeight() * factor), useAveraging);
+                ImageProcessor container = IJ.createImage("", width, height, 1, imp.getBitDepth()).getProcessor();
+                container.setRoi(0, 0, width, height);
+                container.setColor(background);
+                container.fill();
+                container.setRoi((Roi) null);
+
+                Rectangle finalRect = location.placeInside(new Rectangle(0, 0, resized.getWidth(), resized.getHeight()), new Rectangle(0, 0, width, height));
+                container.insert(resized, finalRect.x, finalRect.y);
+                return container;
+            }
+            default:
+                throw new UnsupportedOperationException();
+        }
     }
 
     @JIPipeDocumentation(name = "Avoid unnecessary scaling", description = "If enabled, the ImageJ resize method is not called if the image already has the correct size.")
@@ -226,42 +258,5 @@ public class TransformScale2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     @JIPipeParameter("scale-mode")
     public void setScaleMode(ScaleMode scaleMode) {
         this.scaleMode = scaleMode;
-    }
-
-    public static ImageProcessor scaleProcessor(ImageProcessor imp, int width, int height, InterpolationMethod interpolationMethod, boolean useAveraging, ScaleMode scaleMode, Anchor location, Color background) {
-        imp.setInterpolationMethod(interpolationMethod.getNativeValue());
-
-        switch (scaleMode) {
-            case Stretch:
-                return imp.resize(width, height, useAveraging);
-            case Fit: {
-                double factor = Math.min(width * 1.0 / imp.getWidth(), height * 1.0 / imp.getHeight());
-                ImageProcessor resized = imp.resize((int) (imp.getWidth() * factor), (int) (imp.getHeight() * factor), useAveraging);
-                ImageProcessor container = IJ.createImage("", width, height, 1, imp.getBitDepth()).getProcessor();
-                container.setRoi(0, 0, width, height);
-                container.setColor(background);
-                container.fill();
-                container.setRoi((Roi) null);
-
-                Rectangle finalRect = location.placeInside(new Rectangle(0, 0, resized.getWidth(), resized.getHeight()), new Rectangle(0, 0, width, height));
-                container.insert(resized, finalRect.x, finalRect.y);
-                return container;
-            }
-            case Cover: {
-                double factor = Math.max(width * 1.0 / imp.getWidth(), height * 1.0 / imp.getHeight());
-                ImageProcessor resized = imp.resize((int) (imp.getWidth() * factor), (int) (imp.getHeight() * factor), useAveraging);
-                ImageProcessor container = IJ.createImage("", width, height, 1, imp.getBitDepth()).getProcessor();
-                container.setRoi(0, 0, width, height);
-                container.setColor(background);
-                container.fill();
-                container.setRoi((Roi) null);
-
-                Rectangle finalRect = location.placeInside(new Rectangle(0, 0, resized.getWidth(), resized.getHeight()), new Rectangle(0, 0, width, height));
-                container.insert(resized, finalRect.x, finalRect.y);
-                return container;
-            }
-            default:
-                throw new UnsupportedOperationException();
-        }
     }
 }

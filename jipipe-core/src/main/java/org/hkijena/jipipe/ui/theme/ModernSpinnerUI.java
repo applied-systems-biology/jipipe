@@ -18,12 +18,15 @@ import org.hkijena.jipipe.utils.UIUtils;
 import javax.swing.*;
 import javax.swing.plaf.ComponentUI;
 import javax.swing.plaf.basic.BasicSpinnerUI;
-import java.awt.Component;
-import java.awt.Dimension;
+import java.awt.*;
 
 public class ModernSpinnerUI extends BasicSpinnerUI {
 
     public ModernSpinnerUI() {
+    }
+
+    public static ComponentUI createUI(JComponent c) {
+        return new ModernSpinnerUI();
     }
 
     @Override
@@ -44,9 +47,5 @@ public class ModernSpinnerUI extends BasicSpinnerUI {
         button.setBorder(BorderFactory.createEmptyBorder(0, 4, 0, 4));
         installNextButtonListeners(button);
         return button;
-    }
-
-    public static ComponentUI createUI(JComponent c) {
-        return new ModernSpinnerUI();
     }
 }

@@ -23,15 +23,11 @@ import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.components.icons.AnimatedIcon;
 import org.hkijena.jipipe.utils.UIUtils;
 
+import javax.swing.Timer;
 import javax.swing.*;
-import java.awt.Dimension;
-import java.awt.FontMetrics;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.HashSet;
+import java.awt.*;
 import java.util.List;
-import java.util.Set;
-import java.util.TreeSet;
+import java.util.*;
 
 /**
  * UI that monitors the queue

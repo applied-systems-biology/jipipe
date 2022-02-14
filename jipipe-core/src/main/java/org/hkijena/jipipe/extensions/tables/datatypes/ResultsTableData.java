@@ -19,11 +19,7 @@ import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.DeserializationContext;
-import com.fasterxml.jackson.databind.JsonDeserializer;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.JsonSerializer;
-import com.fasterxml.jackson.databind.SerializerProvider;
+import com.fasterxml.jackson.databind.*;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import gnu.trove.map.TIntIntMap;
@@ -58,10 +54,11 @@ import javax.swing.*;
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
 import javax.swing.table.TableModel;
-import java.awt.Component;
+import java.awt.*;
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.nio.file.Path;
+import java.util.List;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -128,6 +125,189 @@ public class ResultsTableData implements JIPipeData, TableModel {
      */
     public ResultsTableData(ResultsTableData other) {
         this.table = (ResultsTable) other.table.clone();
+    }
+
+    public static ResultsTableData importFrom(Path storagePath) {
+        try {
+            return new ResultsTableData(ResultsTable.open(PathUtils.findFileByExtensionIn(storagePath, ".csv").toString()));
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    /**
+     * Converts a Python dictionary of column name to row data list to a results table
+     *
+     * @param tableDict the dictionary
+     * @return equivalent results table
+     */
+    public static ResultsTableData fromPython(PyDictionary tableDict) {
+        Map<String, TableColumn> columns = new HashMap<>();
+        for (Object key : tableDict.keys()) {
+            String columnKey = "" + key;
+            List<Object> rows = (List<Object>) tableDict.get(key);
+            boolean isNumeric = true;
+            for (Object row : rows) {
+                isNumeric &= row instanceof Number;
+            }
+            if (isNumeric) {
+                double[] data = new double[rows.size()];
+                for (int i = 0; i < rows.size(); i++) {
+                    data[i] = ((Number) rows.get(i)).doubleValue();
+                }
+                columns.put(columnKey, new DoubleArrayTableColumn(data, columnKey));
+            } else {
+                String[] data = new String[rows.size()];
+                for (int i = 0; i < rows.size(); i++) {
+                    data[i] = "" + rows.get(i);
+                }
+                columns.put(columnKey, new StringArrayTableColumn(data, columnKey));
+            }
+        }
+        return new ResultsTableData(columns);
+    }
+
+    public static ResultsTableData fromCSV(Path path) {
+        return fromCSV(path, ",");
+    }
+
+    private static String replaceQuotedCommas(String text) {
+        char[] c = text.toCharArray();
+        boolean inQuotes = false;
+        for (int i = 0; i < c.length; i++) {
+            if (c[i] == '"')
+                inQuotes = !inQuotes;
+            if (inQuotes && c[i] == ',')
+                c[i] = commaSubstitute;
+        }
+        return new String(c);
+    }
+
+    private static int getTableType(String[] lines, String cellSeparator) {
+        if (lines.length < 2) return 0;
+        String[] items = lines[1].split(cellSeparator);
+        int nonNumericCount = 0;
+        int nonNumericIndex = 0;
+        for (int i = 0; i < items.length; i++) {
+            if (!items[i].equals("NaN") && Double.isNaN(Tools.parseDouble(items[i]))) {
+                nonNumericCount++;
+                nonNumericIndex = i;
+            }
+        }
+        if (nonNumericCount == 0)
+            return 0; // assume this is all-numeric table
+        if (nonNumericCount == 1 && nonNumericIndex == 1)
+            return 1; // assume this is an ImageJ Results table with row numbers and row labels
+        if (nonNumericCount == 1 && nonNumericIndex == 0)
+            return 2; // assume this is an ImageJ Results table without row numbers and with row labels
+        return 3;
+    }
+
+    public static ResultsTableData fromCSV(Path path, String cellSeparator) {
+        final String lineSeparator = "\n";
+        String text = IJ.openAsString(path.toString());
+        if (text == null)
+            return null;
+        if (text.length() == 0)
+            return new ResultsTableData();
+        if (text.startsWith("Error:"))
+            throw new RuntimeException(new IOException("Error opening " + path));
+        boolean csv = path.endsWith(".csv") || path.endsWith(".CSV");
+        boolean commasReplaced = false;
+        if (csv && text.contains("\"")) {
+            text = replaceQuotedCommas(text);
+            commasReplaced = true;
+        }
+        String commaSubstitute2 = "" + commaSubstitute;
+        String[] lines = text.split(lineSeparator);
+        if (lines.length == 0 || (lines.length == 1 && lines[0].length() == 0))
+            throw new RuntimeException(new IOException("Table is empty or invalid"));
+        String[] headings = lines[0].split(cellSeparator);
+        if (headings.length < 1)
+            throw new RuntimeException(new IOException("This is not a tab or comma delimited text file."));
+        int numbersInHeadings = 0;
+        for (String heading : headings) {
+            if (heading.equals("NaN") || !Double.isNaN(Tools.parseDouble(heading)))
+                numbersInHeadings++;
+        }
+        boolean allNumericHeadings = numbersInHeadings == headings.length;
+        if (allNumericHeadings) {
+            for (int i = 0; i < headings.length; i++)
+                headings[i] = "C" + (i + 1);
+        }
+        int firstColumn = headings.length > 0 && headings[0].equals(" ") ? 1 : 0;
+        for (int i = 0; i < headings.length; i++) {
+            headings[i] = headings[i].trim();
+            if (commasReplaced) {
+                if (headings[i].startsWith("\"") && headings[i].endsWith("\""))
+                    headings[i] = headings[i].substring(1, headings[i].length() - 1);
+            }
+        }
+        int firstRow = allNumericHeadings ? 0 : 1;
+        boolean labels = firstColumn == 1 && headings[1].equals("Label");
+        int type = getTableType(lines, cellSeparator);
+        //if (!labels && (type==1||type==2))
+        //	labels = true;
+        int labelsIndex = (type == 2) ? 0 : 1;
+        if (lines[0].startsWith("\t")) {
+            String[] headings2 = new String[headings.length + 1];
+            headings2[0] = " ";
+            System.arraycopy(headings, 0, headings2, 1, headings.length);
+            headings = headings2;
+            firstColumn = 1;
+        }
+        ResultsTable rt = new ResultsTable();
+        if (firstRow >= lines.length) { //empty table?
+            for (String heading : headings) {
+                if (heading == null) continue;
+                int col = rt.getColumnIndex(heading);
+                if (col == COLUMN_NOT_FOUND)
+                    col = rt.getFreeColumn(heading);
+            }
+            return new ResultsTableData(rt);
+        }
+        for (int i = firstRow; i < lines.length; i++) {
+            rt.incrementCounter();
+            String[] items = lines[i].split(cellSeparator);
+            for (int j = firstColumn; j < headings.length; j++) {
+                if (j == labelsIndex && labels)
+                    rt.addLabel(headings[labelsIndex], items[labelsIndex]);
+                else {
+                    double value = j < items.length ? Tools.parseDouble(items[j]) : Double.NaN;
+                    if (Double.isNaN(value)) {
+                        String item = j < items.length ? items[j] : "";
+                        if (commasReplaced) {
+                            item = item.replaceAll(commaSubstitute2, ",");
+                            if (item.startsWith("\"") && item.endsWith("\""))
+                                item = item.substring(1, item.length() - 1);
+                        }
+                        rt.addValue(headings[j], item);
+                    } else
+                        rt.addValue(headings[j], value);
+                }
+            }
+        }
+        return new ResultsTableData(rt);
+    }
+
+    /**
+     * Converts a table model into a string results table
+     *
+     * @param model the model
+     * @return the results table
+     */
+    public static ResultsTableData fromTableModel(TableModel model) {
+        ResultsTableData resultsTableData = new ResultsTableData();
+        for (int col = 0; col < model.getColumnCount(); col++) {
+            resultsTableData.addColumn(model.getColumnName(col), true);
+        }
+        for (int row = 0; row < model.getRowCount(); row++) {
+            resultsTableData.addRow();
+            for (int col = 0; col < model.getColumnCount(); col++) {
+                resultsTableData.setValueAt("" + model.getValueAt(row, col), row, col);
+            }
+        }
+        return resultsTableData;
     }
 
     private void importFromColumns(Map<String, TableColumn> columns) {
@@ -1170,189 +1350,6 @@ public class ResultsTableData implements JIPipeData, TableModel {
         } else {
             return false;
         }
-    }
-
-    public static ResultsTableData importFrom(Path storagePath) {
-        try {
-            return new ResultsTableData(ResultsTable.open(PathUtils.findFileByExtensionIn(storagePath, ".csv").toString()));
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    /**
-     * Converts a Python dictionary of column name to row data list to a results table
-     *
-     * @param tableDict the dictionary
-     * @return equivalent results table
-     */
-    public static ResultsTableData fromPython(PyDictionary tableDict) {
-        Map<String, TableColumn> columns = new HashMap<>();
-        for (Object key : tableDict.keys()) {
-            String columnKey = "" + key;
-            List<Object> rows = (List<Object>) tableDict.get(key);
-            boolean isNumeric = true;
-            for (Object row : rows) {
-                isNumeric &= row instanceof Number;
-            }
-            if (isNumeric) {
-                double[] data = new double[rows.size()];
-                for (int i = 0; i < rows.size(); i++) {
-                    data[i] = ((Number) rows.get(i)).doubleValue();
-                }
-                columns.put(columnKey, new DoubleArrayTableColumn(data, columnKey));
-            } else {
-                String[] data = new String[rows.size()];
-                for (int i = 0; i < rows.size(); i++) {
-                    data[i] = "" + rows.get(i);
-                }
-                columns.put(columnKey, new StringArrayTableColumn(data, columnKey));
-            }
-        }
-        return new ResultsTableData(columns);
-    }
-
-    public static ResultsTableData fromCSV(Path path) {
-        return fromCSV(path, ",");
-    }
-
-    private static String replaceQuotedCommas(String text) {
-        char[] c = text.toCharArray();
-        boolean inQuotes = false;
-        for (int i = 0; i < c.length; i++) {
-            if (c[i] == '"')
-                inQuotes = !inQuotes;
-            if (inQuotes && c[i] == ',')
-                c[i] = commaSubstitute;
-        }
-        return new String(c);
-    }
-
-    private static int getTableType(String[] lines, String cellSeparator) {
-        if (lines.length < 2) return 0;
-        String[] items = lines[1].split(cellSeparator);
-        int nonNumericCount = 0;
-        int nonNumericIndex = 0;
-        for (int i = 0; i < items.length; i++) {
-            if (!items[i].equals("NaN") && Double.isNaN(Tools.parseDouble(items[i]))) {
-                nonNumericCount++;
-                nonNumericIndex = i;
-            }
-        }
-        if (nonNumericCount == 0)
-            return 0; // assume this is all-numeric table
-        if (nonNumericCount == 1 && nonNumericIndex == 1)
-            return 1; // assume this is an ImageJ Results table with row numbers and row labels
-        if (nonNumericCount == 1 && nonNumericIndex == 0)
-            return 2; // assume this is an ImageJ Results table without row numbers and with row labels
-        return 3;
-    }
-
-    public static ResultsTableData fromCSV(Path path, String cellSeparator) {
-        final String lineSeparator = "\n";
-        String text = IJ.openAsString(path.toString());
-        if (text == null)
-            return null;
-        if (text.length() == 0)
-            return new ResultsTableData();
-        if (text.startsWith("Error:"))
-            throw new RuntimeException(new IOException("Error opening " + path));
-        boolean csv = path.endsWith(".csv") || path.endsWith(".CSV");
-        boolean commasReplaced = false;
-        if (csv && text.contains("\"")) {
-            text = replaceQuotedCommas(text);
-            commasReplaced = true;
-        }
-        String commaSubstitute2 = "" + commaSubstitute;
-        String[] lines = text.split(lineSeparator);
-        if (lines.length == 0 || (lines.length == 1 && lines[0].length() == 0))
-            throw new RuntimeException(new IOException("Table is empty or invalid"));
-        String[] headings = lines[0].split(cellSeparator);
-        if (headings.length < 1)
-            throw new RuntimeException(new IOException("This is not a tab or comma delimited text file."));
-        int numbersInHeadings = 0;
-        for (String heading : headings) {
-            if (heading.equals("NaN") || !Double.isNaN(Tools.parseDouble(heading)))
-                numbersInHeadings++;
-        }
-        boolean allNumericHeadings = numbersInHeadings == headings.length;
-        if (allNumericHeadings) {
-            for (int i = 0; i < headings.length; i++)
-                headings[i] = "C" + (i + 1);
-        }
-        int firstColumn = headings.length > 0 && headings[0].equals(" ") ? 1 : 0;
-        for (int i = 0; i < headings.length; i++) {
-            headings[i] = headings[i].trim();
-            if (commasReplaced) {
-                if (headings[i].startsWith("\"") && headings[i].endsWith("\""))
-                    headings[i] = headings[i].substring(1, headings[i].length() - 1);
-            }
-        }
-        int firstRow = allNumericHeadings ? 0 : 1;
-        boolean labels = firstColumn == 1 && headings[1].equals("Label");
-        int type = getTableType(lines, cellSeparator);
-        //if (!labels && (type==1||type==2))
-        //	labels = true;
-        int labelsIndex = (type == 2) ? 0 : 1;
-        if (lines[0].startsWith("\t")) {
-            String[] headings2 = new String[headings.length + 1];
-            headings2[0] = " ";
-            System.arraycopy(headings, 0, headings2, 1, headings.length);
-            headings = headings2;
-            firstColumn = 1;
-        }
-        ResultsTable rt = new ResultsTable();
-        if (firstRow >= lines.length) { //empty table?
-            for (String heading : headings) {
-                if (heading == null) continue;
-                int col = rt.getColumnIndex(heading);
-                if (col == COLUMN_NOT_FOUND)
-                    col = rt.getFreeColumn(heading);
-            }
-            return new ResultsTableData(rt);
-        }
-        for (int i = firstRow; i < lines.length; i++) {
-            rt.incrementCounter();
-            String[] items = lines[i].split(cellSeparator);
-            for (int j = firstColumn; j < headings.length; j++) {
-                if (j == labelsIndex && labels)
-                    rt.addLabel(headings[labelsIndex], items[labelsIndex]);
-                else {
-                    double value = j < items.length ? Tools.parseDouble(items[j]) : Double.NaN;
-                    if (Double.isNaN(value)) {
-                        String item = j < items.length ? items[j] : "";
-                        if (commasReplaced) {
-                            item = item.replaceAll(commaSubstitute2, ",");
-                            if (item.startsWith("\"") && item.endsWith("\""))
-                                item = item.substring(1, item.length() - 1);
-                        }
-                        rt.addValue(headings[j], item);
-                    } else
-                        rt.addValue(headings[j], value);
-                }
-            }
-        }
-        return new ResultsTableData(rt);
-    }
-
-    /**
-     * Converts a table model into a string results table
-     *
-     * @param model the model
-     * @return the results table
-     */
-    public static ResultsTableData fromTableModel(TableModel model) {
-        ResultsTableData resultsTableData = new ResultsTableData();
-        for (int col = 0; col < model.getColumnCount(); col++) {
-            resultsTableData.addColumn(model.getColumnName(col), true);
-        }
-        for (int row = 0; row < model.getRowCount(); row++) {
-            resultsTableData.addRow();
-            for (int col = 0; col < model.getColumnCount(); col++) {
-                resultsTableData.setValueAt("" + model.getValueAt(row, col), row, col);
-            }
-        }
-        return resultsTableData;
     }
 
     /**

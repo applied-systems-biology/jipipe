@@ -4,7 +4,7 @@ import org.jdesktop.swingx.JXMultiThumbSlider;
 import org.jdesktop.swingx.color.GradientTrackRenderer;
 
 import javax.swing.*;
-import java.awt.Graphics;
+import java.awt.*;
 
 /**
  * A {@link GradientTrackRenderer} that handles the case start=end gracefully

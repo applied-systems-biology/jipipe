@@ -16,25 +16,22 @@ public class CreateHSBColorFunction extends ExpressionFunction {
 
     @Override
     public ParameterInfo getParameterInfo(int index) {
-        if(index == 0) {
+        if (index == 0) {
             return new ParameterInfo("Hue", "The hue component", Number.class);
-        }
-        else  if(index == 1) {
+        } else if (index == 1) {
             return new ParameterInfo("Saturation", "The saturation component", Number.class);
-        }
-        else  if(index == 2) {
+        } else if (index == 2) {
             return new ParameterInfo("Brightness", "The brightness component", Number.class);
-        }
-        else {
+        } else {
             return null;
         }
     }
 
     @Override
     public Object evaluate(List<Object> parameters, ExpressionVariables variables) {
-        int h = ((Number)parameters.get(0)).intValue();
-        int s = ((Number)parameters.get(1)).intValue();
-        int b = ((Number)parameters.get(2)).intValue();
-        return Arrays.asList(h,s,b);
+        int h = ((Number) parameters.get(0)).intValue();
+        int s = ((Number) parameters.get(1)).intValue();
+        int b = ((Number) parameters.get(2)).intValue();
+        return Arrays.asList(h, s, b);
     }
 }

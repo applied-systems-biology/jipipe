@@ -15,12 +15,12 @@ package org.hkijena.jipipe.extensions.parameters.library.primitives;
 
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeIssueReport;
+import org.hkijena.jipipe.api.parameters.DefaultJIPipeParameterGenerator;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
-import org.hkijena.jipipe.api.parameters.DefaultJIPipeParameterGenerator;
 
 import javax.swing.*;
-import java.awt.Component;
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -44,8 +44,7 @@ public class NumberRangeParameterGenerator extends DefaultJIPipeParameterGenerat
                         "Please ensure that the step size is greater than zero.",
                         this);
             }
-        }
-        else {
+        } else {
             if (stepSize >= 0) {
                 report.reportIsInvalid("Invalid step size!",
                         "The step size cannot be zero or negative.",
@@ -62,52 +61,43 @@ public class NumberRangeParameterGenerator extends DefaultJIPipeParameterGenerat
         double rangeMin = Double.NEGATIVE_INFINITY;
         double rangeMax = Double.POSITIVE_INFINITY;
 
-        if(klass == byte.class || klass == Byte.class) {
+        if (klass == byte.class || klass == Byte.class) {
             rangeMin = Byte.MIN_VALUE;
             rangeMax = Byte.MAX_VALUE;
-        }
-        else if(klass == short.class || klass == Short.class) {
+        } else if (klass == short.class || klass == Short.class) {
             rangeMin = Short.MIN_VALUE;
             rangeMax = Short.MAX_VALUE;
-        }
-        else  if(klass == int.class || klass == Integer.class) {
+        } else if (klass == int.class || klass == Integer.class) {
             rangeMin = Integer.MIN_VALUE;
             rangeMax = Integer.MAX_VALUE;
-        }
-        else  if(klass == long.class || klass == Long.class) {
+        } else if (klass == long.class || klass == Long.class) {
             rangeMin = Long.MIN_VALUE;
             rangeMax = Long.MAX_VALUE;
         }
 
         double current = minNumber;
-        while(current < maxNumber) {
-            if(current >= rangeMin && current <= rangeMax) {
-                if(klass == byte.class || klass == Byte.class) {
-                    result.add((T)((Object)(byte)current));
+        while (current < maxNumber) {
+            if (current >= rangeMin && current <= rangeMax) {
+                if (klass == byte.class || klass == Byte.class) {
+                    result.add((T) ((Object) (byte) current));
+                } else if (klass == short.class || klass == Short.class) {
+                    result.add((T) ((Object) (short) current));
+                } else if (klass == int.class || klass == Integer.class) {
+                    result.add((T) ((Object) (int) current));
+                } else if (klass == long.class || klass == Long.class) {
+                    result.add((T) ((Object) (long) current));
+                } else if (klass == float.class || klass == Float.class) {
+                    result.add((T) ((Object) (float) current));
+                } else {
+                    result.add((T) ((Object) current));
                 }
-                else if(klass == short.class || klass == Short.class) {
-                    result.add((T)((Object)(short)current));
-                }
-                else if(klass == int.class || klass == Integer.class) {
-                    result.add((T)((Object)(int)current));
-                }
-                else if(klass == long.class || klass == Long.class) {
-                    result.add((T)((Object)(long)current));
-                }
-                else if(klass == float.class || klass == Float.class) {
-                    result.add((T)((Object)(float)current));
-                }
-                else {
-                    result.add((T)((Object)current));
-                }
-            }
-            else {
+            } else {
                 outsideRange = true;
             }
             current += stepSize;
         }
 
-        if(outsideRange) {
+        if (outsideRange) {
             JOptionPane.showMessageDialog(SwingUtilities.getWindowAncestor(parent),
                     "Numbers outside the supported range [" + rangeMin + ", " + rangeMax + "] have been ignored.",
                     getName(),

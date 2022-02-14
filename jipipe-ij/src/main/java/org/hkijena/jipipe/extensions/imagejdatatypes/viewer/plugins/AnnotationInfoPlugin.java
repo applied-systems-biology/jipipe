@@ -1,22 +1,12 @@
 package org.hkijena.jipipe.extensions.imagejdatatypes.viewer.plugins;
 
-import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.extensions.imagejdatatypes.viewer.ImageViewerPanel;
-import org.hkijena.jipipe.extensions.settings.FileChooserSettings;
-import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
 import org.hkijena.jipipe.ui.cache.JIPipeCacheDataViewerWindow;
 import org.hkijena.jipipe.ui.cache.JIPipeCachedDataViewerAnnotationInfoPanel;
 import org.hkijena.jipipe.ui.components.FormPanel;
-import org.hkijena.jipipe.ui.tableeditor.TableEditor;
 import org.hkijena.jipipe.utils.UIUtils;
-import org.jdesktop.swingx.JXTable;
 
 import javax.swing.*;
-import javax.swing.table.TableCellRenderer;
-import java.awt.BorderLayout;
-import java.awt.Component;
-import java.awt.Font;
-import java.nio.file.Path;
 
 /**
  * To be used with {@link org.hkijena.jipipe.extensions.imagejdatatypes.display.CachedImagePlusDataViewerWindow} and other similar implementations that
@@ -52,8 +42,7 @@ public class AnnotationInfoPlugin extends ImageViewerPanelPlugin {
     public void onImageChanged() {
         if (cacheDataViewerWindow != null && cacheDataViewerWindow.getDataSource() != null) {
             infoPanel.displayAnnotations(cacheDataViewerWindow.getDataSource());
-        }
-        else {
+        } else {
             infoPanel.displayAnnotations(null);
         }
     }

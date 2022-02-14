@@ -22,10 +22,7 @@ import org.hkijena.jipipe.ui.parameters.ParameterPanel;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
-import java.awt.BorderLayout;
-import java.awt.Component;
-import java.awt.Dimension;
-import java.awt.Window;
+import java.awt.*;
 import java.util.List;
 
 /**
@@ -59,7 +56,8 @@ public abstract class DefaultJIPipeParameterGenerator implements JIPipeParameter
 
     /**
      * This function generates the values after the dialog was confirmed
-     * @param <T> the generated class
+     *
+     * @param <T>    the generated class
      * @param parent the parent
      * @return the list of generated objects
      */
@@ -75,9 +73,9 @@ public abstract class DefaultJIPipeParameterGenerator implements JIPipeParameter
      */
     private static class Dialog extends JDialog {
 
-        private boolean cancelled = true;
         private final JIPipeWorkbench workbench;
         private final DefaultJIPipeParameterGenerator generator;
+        private boolean cancelled = true;
 
         public Dialog(Window windowAncestor, JIPipeWorkbench workbench, DefaultJIPipeParameterGenerator generator) {
             super(windowAncestor);

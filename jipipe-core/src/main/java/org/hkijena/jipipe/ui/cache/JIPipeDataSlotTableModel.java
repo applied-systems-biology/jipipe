@@ -13,8 +13,8 @@
 
 package org.hkijena.jipipe.ui.cache;
 
-import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.annotation.JIPipeDataAnnotation;
+import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.data.JIPipeDataInfo;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.extensions.settings.GeneralDataSettings;
@@ -22,9 +22,7 @@ import org.hkijena.jipipe.extensions.settings.GeneralDataSettings;
 import javax.swing.*;
 import javax.swing.event.TableModelListener;
 import javax.swing.table.TableModel;
-import java.awt.Component;
-import java.awt.Point;
-import java.awt.Rectangle;
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;

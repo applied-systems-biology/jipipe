@@ -13,7 +13,7 @@ import org.hkijena.jipipe.api.nodes.categories.MiscellaneousNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.parameters.library.references.JIPipeAlgorithmIconRef;
 
-import java.awt.Color;
+import java.awt.*;
 
 @JIPipeDocumentation(name = "Comment", description = "Allows you to comment an input or output slot. You can customize the color and icon of this node. " +
         "This nodes has no workload attached to it and will connect to any data type. It requires no input and produces no output.")

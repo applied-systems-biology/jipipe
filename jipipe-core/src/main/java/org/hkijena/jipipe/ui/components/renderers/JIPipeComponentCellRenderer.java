@@ -15,7 +15,7 @@ package org.hkijena.jipipe.ui.components.renderers;
 
 import javax.swing.*;
 import javax.swing.table.TableCellRenderer;
-import java.awt.Component;
+import java.awt.*;
 
 public class JIPipeComponentCellRenderer implements TableCellRenderer {
     @Override

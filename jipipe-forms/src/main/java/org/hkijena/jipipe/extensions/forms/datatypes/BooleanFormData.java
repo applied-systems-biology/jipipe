@@ -16,7 +16,7 @@ import org.hkijena.jipipe.extensions.parameters.library.primitives.optional.Opti
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.utils.StringUtils;
 
-import java.awt.Component;
+import java.awt.*;
 import java.nio.file.Path;
 import java.util.Collections;
 
@@ -39,6 +39,10 @@ public class BooleanFormData extends ParameterFormData {
         this.trueString = other.trueString;
         this.falseString = other.falseString;
         annotationIOSettings.getEventBus().register(this);
+    }
+
+    public static BooleanFormData importFrom(Path rowStorage) {
+        return FormData.importFrom(rowStorage, BooleanFormData.class);
     }
 
     @JIPipeDocumentation(name = "Initial value", description = "The initial value")
@@ -142,9 +146,5 @@ public class BooleanFormData extends ParameterFormData {
                 }
             }
         }
-    }
-
-    public static BooleanFormData importFrom(Path rowStorage) {
-        return FormData.importFrom(rowStorage, BooleanFormData.class);
     }
 }

@@ -19,9 +19,7 @@ import org.hkijena.jipipe.ui.components.icons.ThrobberIcon;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
-import java.awt.BorderLayout;
-import java.awt.Component;
-import java.awt.Font;
+import java.awt.*;
 
 /**
  * UI that executes an {@link JIPipeRunnable}
@@ -43,6 +41,30 @@ public class JIPipeRunExecuterUI extends JPanel {
         this.run = run;
         initialize();
         JIPipeRunnerQueue.getInstance().getEventBus().register(this);
+    }
+
+    public static void runInDialog(Component parent, JIPipeRunnable run) {
+        JDialog dialog = new JDialog();
+        dialog.setTitle(run.getTaskLabel());
+        dialog.setIconImage(UIUtils.getIcon128FromResources("jipipe.png").getImage());
+        JIPipeRunExecuterUI ui = new JIPipeRunExecuterUI(run);
+        ui.setDialog(dialog);
+        dialog.setContentPane(ui);
+        dialog.pack();
+        dialog.revalidate();
+        dialog.repaint();
+        dialog.setSize(640, 480);
+        dialog.setLocationRelativeTo(parent);
+        dialog.setModal(true);
+        JIPipeRunnerQueue.getInstance().getEventBus().register(new Object() {
+            @Subscribe
+            public void onWorkerFinished(RunUIWorkerFinishedEvent event) {
+                if (event.getRun() == run)
+                    dialog.setVisible(false);
+            }
+        });
+        JIPipeRunnerQueue.getInstance().enqueue(run);
+        dialog.setVisible(true);
     }
 
     private void initialize() {
@@ -169,29 +191,5 @@ public class JIPipeRunExecuterUI extends JPanel {
 
     public void setDialog(JDialog dialog) {
         this.dialog = dialog;
-    }
-
-    public static void runInDialog(Component parent, JIPipeRunnable run) {
-        JDialog dialog = new JDialog();
-        dialog.setTitle(run.getTaskLabel());
-        dialog.setIconImage(UIUtils.getIcon128FromResources("jipipe.png").getImage());
-        JIPipeRunExecuterUI ui = new JIPipeRunExecuterUI(run);
-        ui.setDialog(dialog);
-        dialog.setContentPane(ui);
-        dialog.pack();
-        dialog.revalidate();
-        dialog.repaint();
-        dialog.setSize(640, 480);
-        dialog.setLocationRelativeTo(parent);
-        dialog.setModal(true);
-        JIPipeRunnerQueue.getInstance().getEventBus().register(new Object() {
-            @Subscribe
-            public void onWorkerFinished(RunUIWorkerFinishedEvent event) {
-                if (event.getRun() == run)
-                    dialog.setVisible(false);
-            }
-        });
-        JIPipeRunnerQueue.getInstance().enqueue(run);
-        dialog.setVisible(true);
     }
 }

@@ -43,23 +43,15 @@ import org.hkijena.jipipe.ui.components.PlotReader;
 import org.hkijena.jipipe.ui.components.UserFriendlyErrorUI;
 import org.hkijena.jipipe.ui.components.tabs.DocumentTabPane;
 import org.hkijena.jipipe.ui.parameters.ParameterPanel;
-import org.hkijena.jipipe.utils.AutoResizeSplitPane;
-import org.hkijena.jipipe.utils.PathUtils;
-import org.hkijena.jipipe.utils.ReflectionUtils;
-import org.hkijena.jipipe.utils.StringUtils;
-import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.utils.*;
 import org.scijava.Priority;
 
 import javax.swing.*;
 import javax.swing.table.TableModel;
-import java.awt.BorderLayout;
+import java.awt.*;
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 
 /**
  * User interface for displaying and creating plots
@@ -130,8 +122,8 @@ public class PlotEditor extends JIPipeWorkbenchPanel implements JIPipeParameterC
 
     private void savePlot() {
         Path path = FileChooserSettings.saveDirectory(this, FileChooserSettings.LastDirectoryKey.Data, "Save plot");
-        if(path != null) {
-            if(PathUtils.ensureEmptyFolder(this, path)) {
+        if (path != null) {
+            if (PathUtils.ensureEmptyFolder(this, path)) {
                 getCurrentPlot().saveTo(path, path.getFileName().toString(), false, new JIPipeProgressInfo());
             }
         }
@@ -139,7 +131,7 @@ public class PlotEditor extends JIPipeWorkbenchPanel implements JIPipeParameterC
 
     private void openPlot() {
         Path path = FileChooserSettings.openDirectory(this, FileChooserSettings.LastDirectoryKey.Data, "Open plot");
-        if(path != null) {
+        if (path != null) {
             PlotData plotData = PlotData.importFrom(path, PlotData.class);
             importExistingPlot(plotData);
         }

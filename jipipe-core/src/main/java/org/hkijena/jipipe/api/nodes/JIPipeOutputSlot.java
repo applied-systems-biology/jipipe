@@ -15,11 +15,7 @@ package org.hkijena.jipipe.api.nodes;
 
 import org.hkijena.jipipe.api.data.JIPipeData;
 
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Repeatable;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+import java.lang.annotation.*;
 
 /**
  * Annotates an {@link JIPipeGraphNode} with an output slot.

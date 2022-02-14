@@ -25,7 +25,7 @@ import javax.swing.*;
 import javax.swing.event.TableModelEvent;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableModel;
-import java.awt.BorderLayout;
+import java.awt.*;
 
 /**
  * UI for {@link ParameterTable}

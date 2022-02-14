@@ -30,6 +30,10 @@ public class HistoryJournalSettings implements JIPipeParameterCollection {
     private final EventBus eventBus = new EventBus();
     private int maxEntries = 50;
 
+    public static HistoryJournalSettings getInstance() {
+        return JIPipe.getSettings().getSettings(ID, HistoryJournalSettings.class);
+    }
+
     @Override
     public EventBus getEventBus() {
         return eventBus;
@@ -45,10 +49,5 @@ public class HistoryJournalSettings implements JIPipeParameterCollection {
     @JIPipeParameter("max-entries")
     public void setMaxEntries(int maxEntries) {
         this.maxEntries = maxEntries;
-    }
-
-
-    public static HistoryJournalSettings getInstance() {
-        return JIPipe.getSettings().getSettings(ID, HistoryJournalSettings.class);
     }
 }

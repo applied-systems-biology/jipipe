@@ -28,10 +28,10 @@ public class LABToRGBFunction extends ExpressionFunction {
     @Override
     public Object evaluate(List<Object> parameters, ExpressionVariables variables) {
         List<?> collection = ImmutableList.copyOf((Collection<?>) parameters.get(0));
-        int l_ = ((Number)collection.get(0)).intValue();
-        int a_ = ((Number)collection.get(1)).intValue();
-        int b_ = ((Number)collection.get(2)).intValue();
-        int[] rgb = CONVERTER.LABtoRGB(l_,a_,b_);
+        int l_ = ((Number) collection.get(0)).intValue();
+        int a_ = ((Number) collection.get(1)).intValue();
+        int b_ = ((Number) collection.get(2)).intValue();
+        int[] rgb = CONVERTER.LABtoRGB(l_, a_, b_);
         return Arrays.asList(rgb[0], rgb[1], rgb[2]);
     }
 }

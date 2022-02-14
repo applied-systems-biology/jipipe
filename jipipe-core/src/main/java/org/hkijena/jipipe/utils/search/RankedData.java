@@ -31,29 +31,6 @@ public class RankedData<T> implements Comparable<RankedData<T>> {
         this.rank = rank;
     }
 
-    public int getRankAt(int i) {
-        return i < rank.length ? rank[i] : 0;
-    }
-
-    @Override
-    public int compareTo(RankedData<T> o) {
-        if (o.rank.length == 0 && rank.length == 0)
-            return 0;
-        int num = Math.min(o.rank.length, rank.length);
-        for (int i = 0; i < num; i++) {
-            int lhs = getRankAt(i);
-            int rhs = o.getRankAt(i);
-            int compare = Integer.compare(lhs, rhs);
-            if (compare != 0)
-                return compare;
-        }
-        return Integer.compare(dataString.length(), o.dataString.length());
-    }
-
-    public T getData() {
-        return data;
-    }
-
     /**
      * Creates a list of sorted ranked data
      *
@@ -84,5 +61,28 @@ public class RankedData<T> implements Comparable<RankedData<T>> {
             }
             return rankedData.stream().map(RankedData::getData).collect(Collectors.toList());
         }
+    }
+
+    public int getRankAt(int i) {
+        return i < rank.length ? rank[i] : 0;
+    }
+
+    @Override
+    public int compareTo(RankedData<T> o) {
+        if (o.rank.length == 0 && rank.length == 0)
+            return 0;
+        int num = Math.min(o.rank.length, rank.length);
+        for (int i = 0; i < num; i++) {
+            int lhs = getRankAt(i);
+            int rhs = o.getRankAt(i);
+            int compare = Integer.compare(lhs, rhs);
+            if (compare != 0)
+                return compare;
+        }
+        return Integer.compare(dataString.length(), o.dataString.length());
+    }
+
+    public T getData() {
+        return data;
     }
 }

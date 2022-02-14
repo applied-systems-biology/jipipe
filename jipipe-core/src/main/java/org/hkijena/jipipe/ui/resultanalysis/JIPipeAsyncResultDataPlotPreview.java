@@ -14,18 +14,13 @@
 package org.hkijena.jipipe.ui.resultanalysis;
 
 import org.hkijena.jipipe.JIPipe;
-import org.hkijena.jipipe.api.data.JIPipeData;
-import org.hkijena.jipipe.api.data.JIPipeDataSlot;
-import org.hkijena.jipipe.api.data.JIPipeEmptyData;
-import org.hkijena.jipipe.api.data.JIPipeExportedDataAnnotation;
-import org.hkijena.jipipe.api.data.JIPipeExportedDataTableRow;
+import org.hkijena.jipipe.api.data.*;
 import org.hkijena.jipipe.extensions.settings.GeneralDataSettings;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
-import java.awt.BorderLayout;
-import java.awt.Component;
+import java.awt.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.concurrent.ExecutionException;

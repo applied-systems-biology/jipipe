@@ -14,7 +14,7 @@ import org.hkijena.jipipe.extensions.expressions.StringQueryExpression;
 import org.hkijena.jipipe.extensions.forms.utils.SingleAnnotationIOSettings;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 
-import java.awt.Component;
+import java.awt.*;
 import java.nio.file.Path;
 import java.util.Collections;
 
@@ -35,6 +35,10 @@ public class StringFormData extends ParameterFormData {
         this.validationExpression = new StringQueryExpression(other.validationExpression);
         this.annotationIOSettings = new SingleAnnotationIOSettings(other.annotationIOSettings);
         annotationIOSettings.getEventBus().register(this);
+    }
+
+    public static StringFormData importFrom(Path rowStorage) {
+        return FormData.importFrom(rowStorage, StringFormData.class);
     }
 
     @JIPipeDocumentation(name = "Initial value", description = "The initial string value")
@@ -113,9 +117,5 @@ public class StringFormData extends ParameterFormData {
             annotationIOSettings.getAnnotationMergeStrategy().mergeInto(dataBatch.getMergedAnnotations(),
                     Collections.singletonList(annotationIOSettings.getOutputAnnotation().createAnnotation(value)));
         }
-    }
-
-    public static StringFormData importFrom(Path rowStorage) {
-        return FormData.importFrom(rowStorage, StringFormData.class);
     }
 }

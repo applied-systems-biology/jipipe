@@ -25,19 +25,10 @@ import org.hkijena.jipipe.utils.AutoResizeSplitPane;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
-import javax.swing.tree.DefaultMutableTreeNode;
-import javax.swing.tree.DefaultTreeModel;
-import javax.swing.tree.TreeCellRenderer;
-import javax.swing.tree.TreeNode;
-import javax.swing.tree.TreePath;
-import java.awt.BorderLayout;
-import java.awt.Component;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
+import javax.swing.tree.*;
+import java.awt.*;
 import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**

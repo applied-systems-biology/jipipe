@@ -18,6 +18,10 @@ public class GeneralDataSettings implements JIPipeParameterCollection {
     private boolean generateResultPreviews = true;
     private boolean autoRemoveOutdatedCachedData = true;
 
+    public static GeneralDataSettings getInstance() {
+        return JIPipe.getSettings().getSettings(ID, GeneralDataSettings.class);
+    }
+
     @Override
     public EventBus getEventBus() {
         return eventBus;
@@ -100,9 +104,5 @@ public class GeneralDataSettings implements JIPipeParameterCollection {
     @JIPipeParameter("auto-remove-outdated-cached-data")
     public void setAutoRemoveOutdatedCachedData(boolean autoRemoveOutdatedCachedData) {
         this.autoRemoveOutdatedCachedData = autoRemoveOutdatedCachedData;
-    }
-
-    public static GeneralDataSettings getInstance() {
-        return JIPipe.getSettings().getSettings(ID, GeneralDataSettings.class);
     }
 }

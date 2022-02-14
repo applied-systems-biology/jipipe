@@ -14,9 +14,9 @@
 package org.hkijena.jipipe.ui.cache;
 
 import org.hkijena.jipipe.api.JIPipeProject;
-import org.hkijena.jipipe.api.compartments.algorithms.JIPipeProjectCompartment;
-import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.annotation.JIPipeDataAnnotation;
+import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
+import org.hkijena.jipipe.api.compartments.algorithms.JIPipeProjectCompartment;
 import org.hkijena.jipipe.api.data.JIPipeDataInfo;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.data.JIPipeExportedDataTable;
@@ -27,14 +27,9 @@ import org.hkijena.jipipe.extensions.settings.GeneralDataSettings;
 import javax.swing.*;
 import javax.swing.event.TableModelListener;
 import javax.swing.table.TableModel;
-import java.awt.Component;
-import java.awt.Point;
-import java.awt.Rectangle;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
+import java.awt.*;
 import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Merges multiple {@link JIPipeDataSlot}

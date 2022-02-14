@@ -19,10 +19,7 @@ import org.hkijena.jipipe.ui.components.search.SearchTextField;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
-import java.awt.BorderLayout;
-import java.awt.Component;
-import java.awt.Dimension;
-import java.awt.Window;
+import java.awt.*;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
@@ -55,6 +52,21 @@ public class PickEnumValueDialog extends JDialog {
         }
         setSelectedItem(preSelected);
         itemJList.setSelectedValue(preSelected, true);
+    }
+
+    public static Object showDialog(Component parent, List<Object> availableItems, EnumItemInfo itemInfo, Object preSelected, String title) {
+        PickEnumValueDialog dialog = new PickEnumValueDialog(SwingUtilities.getWindowAncestor(parent), availableItems, itemInfo, preSelected);
+        dialog.setTitle(title);
+        dialog.setModal(true);
+        dialog.pack();
+        dialog.setSize(new Dimension(500, 500));
+        dialog.setLocationRelativeTo(parent);
+        UIUtils.addEscapeListener(dialog);
+        dialog.setVisible(true);
+        if (!dialog.canceled)
+            return dialog.getSelectedItem();
+        else
+            return null;
     }
 
     private void initialize() {
@@ -163,20 +175,5 @@ public class PickEnumValueDialog extends JDialog {
 
     public void setSelectedItem(Object selectedItem) {
         this.selectedItem = selectedItem;
-    }
-
-    public static Object showDialog(Component parent, List<Object> availableItems, EnumItemInfo itemInfo, Object preSelected, String title) {
-        PickEnumValueDialog dialog = new PickEnumValueDialog(SwingUtilities.getWindowAncestor(parent), availableItems, itemInfo, preSelected);
-        dialog.setTitle(title);
-        dialog.setModal(true);
-        dialog.pack();
-        dialog.setSize(new Dimension(500, 500));
-        dialog.setLocationRelativeTo(parent);
-        UIUtils.addEscapeListener(dialog);
-        dialog.setVisible(true);
-        if (!dialog.canceled)
-            return dialog.getSelectedItem();
-        else
-            return null;
     }
 }

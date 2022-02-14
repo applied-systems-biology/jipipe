@@ -17,7 +17,7 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.viewer.plugins.maskdrawer.M
 import org.hkijena.jipipe.extensions.imagejdatatypes.viewer.plugins.maskdrawer.MeasurementPlugin;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 
-import java.awt.Component;
+import java.awt.*;
 import java.util.Arrays;
 import java.util.List;
 

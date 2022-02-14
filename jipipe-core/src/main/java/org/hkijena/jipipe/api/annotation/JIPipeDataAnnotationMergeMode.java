@@ -5,12 +5,7 @@ import com.google.common.collect.Multimap;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.*;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public enum JIPipeDataAnnotationMergeMode {
     Merge,

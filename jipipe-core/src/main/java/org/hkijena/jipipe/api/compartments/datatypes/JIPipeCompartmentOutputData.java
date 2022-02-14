@@ -31,6 +31,10 @@ import java.nio.file.Path;
 @JIPipeHidden
 @JIPipeDataStorageDocumentation("This is a structural data type. The storage folder is empty.")
 public class JIPipeCompartmentOutputData implements JIPipeData {
+    public static JIPipeCompartmentOutputData importFrom(Path path) {
+        return new JIPipeCompartmentOutputData();
+    }
+
     @Override
     public void saveTo(Path storageFilePath, String name, boolean forceName, JIPipeProgressInfo progressInfo) {
 
@@ -44,9 +48,5 @@ public class JIPipeCompartmentOutputData implements JIPipeData {
     @Override
     public void display(String displayName, JIPipeWorkbench workbench, JIPipeDataSource source) {
 
-    }
-
-    public static JIPipeCompartmentOutputData importFrom(Path path) {
-        return new JIPipeCompartmentOutputData();
     }
 }

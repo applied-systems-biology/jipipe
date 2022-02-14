@@ -27,11 +27,7 @@ import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeIssueReport;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.JIPipeValidatable;
-import org.hkijena.jipipe.api.data.JIPipeCacheSlotDataSource;
-import org.hkijena.jipipe.api.data.JIPipeData;
-import org.hkijena.jipipe.api.data.JIPipeDataInfo;
-import org.hkijena.jipipe.api.data.JIPipeDataSource;
-import org.hkijena.jipipe.api.data.JIPipeDataStorageDocumentation;
+import org.hkijena.jipipe.api.data.*;
 import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
@@ -57,12 +53,7 @@ import org.jfree.graphics2d.svg.SVGGraphics2D;
 import org.jfree.graphics2d.svg.SVGUtils;
 
 import javax.swing.*;
-import java.awt.Color;
-import java.awt.Component;
-import java.awt.Font;
-import java.awt.Image;
-import java.awt.Paint;
-import java.awt.Rectangle;
+import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.nio.file.Path;
@@ -131,6 +122,85 @@ public abstract class PlotData implements JIPipeData, JIPipeParameterCollection,
         }
         this.useCustomColorMap = other.useCustomColorMap;
         this.customColorMap = new ColorListParameter(other.customColorMap);
+    }
+
+    public static <T extends PlotData> T importFrom(Path storageFilePath, Class<T> klass) {
+        try {
+            JsonNode node = JsonUtils.getObjectMapper().readerFor(JsonNode.class).readValue(storageFilePath.resolve("plot-metadata.json").toFile());
+            PlotData plotData = JsonUtils.getObjectMapper().readerFor(klass).readValue(node);
+            ParameterUtils.deserializeParametersFromJson(plotData, node, new JIPipeIssueReport());
+            List<Path> seriesFiles = PathUtils.findFilesByExtensionIn(storageFilePath, ".csv").stream()
+                    .filter(p -> p.getFileName().toString().matches("series\\d+.csv")).sorted(Comparator.comparing(p -> p.getFileName().toString())).collect(Collectors.toList());
+            for (Path seriesFile : seriesFiles) {
+                plotData.addSeries(new PlotDataSeries(ResultsTable.open(seriesFile.toString())));
+            }
+            return (T) plotData;
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    /**
+     * Loads data from a folder
+     *
+     * @param folder folder
+     * @return loaded data
+     */
+    public static PlotData fromFolder(Path folder) {
+        PlotData result;
+        try {
+            JsonNode node = JsonUtils.getObjectMapper().readValue(folder.resolve("plot-metadata.json").toFile(), JsonNode.class);
+            Class<? extends JIPipeData> dataClass = JIPipe.getDataTypes().getById(node.get("plot-data-type").textValue());
+            result = (PlotData) JIPipe.createData(dataClass);
+
+            // Load metadata
+            result.fromJson(node);
+
+            // Load series
+            for (JsonNode element : ImmutableList.copyOf(node.get("plot-series").elements())) {
+                PlotDataSeries series = JsonUtils.getObjectMapper().readerFor(PlotDataSeries.class).readValue(element.get("metadata"));
+                Path fileName = folder.resolve(element.get("file-name").textValue());
+                ResultsTableData tableData = new ResultsTableData(ResultsTable.open(fileName.toString()));
+                series.setTable(tableData.getTable());
+                result.addSeries(series);
+            }
+
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        return result;
+    }
+
+    /**
+     * Calibrates the axes of a plot, setting min and max values
+     *
+     * @param axis the axis
+     * @param min  the min value
+     * @param max  the max value
+     */
+    public static void calibrateAxis(ValueAxis axis, OptionalDoubleParameter min, OptionalDoubleParameter max) {
+        double _min = Double.NEGATIVE_INFINITY;
+        double _max = Double.POSITIVE_INFINITY;
+        if (min.isEnabled()) {
+            _min = min.getContent();
+        }
+        if (max.isEnabled()) {
+            _max = max.getContent();
+        }
+        if (!Double.isFinite(_min) && !Double.isFinite(_max)) {
+            axis.setAutoRange(true);
+            return;
+        }
+        if (!Double.isFinite(_min) || !Double.isFinite(_max)) {
+            axis.setAutoRange(true);
+            if (!Double.isFinite(_min)) {
+                _min = axis.getLowerBound();
+            }
+            if (!Double.isFinite(_max)) {
+                _max = axis.getUpperBound();
+            }
+        }
+        axis.setRange(_min, _max);
     }
 
     @Override
@@ -473,85 +543,6 @@ public abstract class PlotData implements JIPipeData, JIPipeParameterCollection,
      */
     public void fromJson(JsonNode node) {
         ParameterUtils.deserializeParametersFromJson(this, node, new JIPipeIssueReport());
-    }
-
-    public static <T extends PlotData> T importFrom(Path storageFilePath, Class<T> klass) {
-        try {
-            JsonNode node = JsonUtils.getObjectMapper().readerFor(JsonNode.class).readValue(storageFilePath.resolve("plot-metadata.json").toFile());
-            PlotData plotData = JsonUtils.getObjectMapper().readerFor(klass).readValue(node);
-            ParameterUtils.deserializeParametersFromJson(plotData, node, new JIPipeIssueReport());
-            List<Path> seriesFiles = PathUtils.findFilesByExtensionIn(storageFilePath, ".csv").stream()
-                    .filter(p -> p.getFileName().toString().matches("series\\d+.csv")).sorted(Comparator.comparing(p -> p.getFileName().toString())).collect(Collectors.toList());
-            for (Path seriesFile : seriesFiles) {
-                plotData.addSeries(new PlotDataSeries(ResultsTable.open(seriesFile.toString())));
-            }
-            return (T) plotData;
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    /**
-     * Loads data from a folder
-     *
-     * @param folder folder
-     * @return loaded data
-     */
-    public static PlotData fromFolder(Path folder) {
-        PlotData result;
-        try {
-            JsonNode node = JsonUtils.getObjectMapper().readValue(folder.resolve("plot-metadata.json").toFile(), JsonNode.class);
-            Class<? extends JIPipeData> dataClass = JIPipe.getDataTypes().getById(node.get("plot-data-type").textValue());
-            result = (PlotData) JIPipe.createData(dataClass);
-
-            // Load metadata
-            result.fromJson(node);
-
-            // Load series
-            for (JsonNode element : ImmutableList.copyOf(node.get("plot-series").elements())) {
-                PlotDataSeries series = JsonUtils.getObjectMapper().readerFor(PlotDataSeries.class).readValue(element.get("metadata"));
-                Path fileName = folder.resolve(element.get("file-name").textValue());
-                ResultsTableData tableData = new ResultsTableData(ResultsTable.open(fileName.toString()));
-                series.setTable(tableData.getTable());
-                result.addSeries(series);
-            }
-
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-        return result;
-    }
-
-    /**
-     * Calibrates the axes of a plot, setting min and max values
-     *
-     * @param axis the axis
-     * @param min  the min value
-     * @param max  the max value
-     */
-    public static void calibrateAxis(ValueAxis axis, OptionalDoubleParameter min, OptionalDoubleParameter max) {
-        double _min = Double.NEGATIVE_INFINITY;
-        double _max = Double.POSITIVE_INFINITY;
-        if (min.isEnabled()) {
-            _min = min.getContent();
-        }
-        if (max.isEnabled()) {
-            _max = max.getContent();
-        }
-        if (!Double.isFinite(_min) && !Double.isFinite(_max)) {
-            axis.setAutoRange(true);
-            return;
-        }
-        if (!Double.isFinite(_min) || !Double.isFinite(_max)) {
-            axis.setAutoRange(true);
-            if (!Double.isFinite(_min)) {
-                _min = axis.getLowerBound();
-            }
-            if (!Double.isFinite(_max)) {
-                _max = axis.getUpperBound();
-            }
-        }
-        axis.setRange(_min, _max);
     }
 
     /**

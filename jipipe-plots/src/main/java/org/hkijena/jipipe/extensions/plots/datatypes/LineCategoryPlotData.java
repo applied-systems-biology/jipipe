@@ -20,8 +20,7 @@ import org.jfree.chart.JFreeChart;
 import org.jfree.chart.renderer.AbstractRenderer;
 import org.jfree.chart.renderer.category.CategoryItemRenderer;
 
-import java.awt.BasicStroke;
-import java.awt.Font;
+import java.awt.*;
 import java.nio.file.Path;
 
 /**
@@ -51,6 +50,10 @@ public class LineCategoryPlotData extends CategoryPlotData {
     public LineCategoryPlotData(LineCategoryPlotData other) {
         super(other);
         this.lineThickness = other.lineThickness;
+    }
+
+    public static LineCategoryPlotData importFrom(Path storagePath) {
+        return PlotData.importFrom(storagePath, LineCategoryPlotData.class);
     }
 
     @Override
@@ -83,9 +86,5 @@ public class LineCategoryPlotData extends CategoryPlotData {
     @JIPipeParameter("line-thickness")
     public void setLineThickness(int lineThickness) {
         this.lineThickness = lineThickness;
-    }
-
-    public static LineCategoryPlotData importFrom(Path storagePath) {
-        return PlotData.importFrom(storagePath, LineCategoryPlotData.class);
     }
 }

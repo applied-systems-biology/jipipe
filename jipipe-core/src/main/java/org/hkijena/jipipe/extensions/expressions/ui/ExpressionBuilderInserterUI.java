@@ -2,17 +2,13 @@ package org.hkijena.jipipe.extensions.expressions.ui;
 
 import com.google.common.html.HtmlEscapers;
 import org.hkijena.jipipe.api.registries.JIPipeExpressionRegistry;
-import org.hkijena.jipipe.extensions.expressions.ExpressionConstantEntry;
-import org.hkijena.jipipe.extensions.expressions.ExpressionFunction;
-import org.hkijena.jipipe.extensions.expressions.ExpressionOperatorEntry;
-import org.hkijena.jipipe.extensions.expressions.ExpressionParameterVariable;
-import org.hkijena.jipipe.extensions.expressions.ParameterInfo;
+import org.hkijena.jipipe.extensions.expressions.*;
 import org.hkijena.jipipe.ui.components.FormPanel;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
-import java.awt.BorderLayout;
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;

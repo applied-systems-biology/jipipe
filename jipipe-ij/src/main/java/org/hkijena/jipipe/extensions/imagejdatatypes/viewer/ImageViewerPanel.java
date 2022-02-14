@@ -26,12 +26,7 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.util.AVICompression;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.HyperstackDimension;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageSliceIndex;
-import org.hkijena.jipipe.extensions.imagejdatatypes.viewer.plugins.AnimationSpeedPlugin;
-import org.hkijena.jipipe.extensions.imagejdatatypes.viewer.plugins.CalibrationPlugin;
-import org.hkijena.jipipe.extensions.imagejdatatypes.viewer.plugins.ImageViewerPanelPlugin;
-import org.hkijena.jipipe.extensions.imagejdatatypes.viewer.plugins.LUTManagerPlugin;
-import org.hkijena.jipipe.extensions.imagejdatatypes.viewer.plugins.PixelInfoPlugin;
-import org.hkijena.jipipe.extensions.imagejdatatypes.viewer.plugins.ROIManagerPlugin;
+import org.hkijena.jipipe.extensions.imagejdatatypes.viewer.plugins.*;
 import org.hkijena.jipipe.extensions.imagejdatatypes.viewer.plugins.maskdrawer.MeasurementDrawerPlugin;
 import org.hkijena.jipipe.extensions.imagejdatatypes.viewer.plugins.maskdrawer.MeasurementPlugin;
 import org.hkijena.jipipe.extensions.settings.FileChooserSettings;
@@ -40,27 +35,18 @@ import org.hkijena.jipipe.ui.components.FormPanel;
 import org.hkijena.jipipe.ui.components.PathEditor;
 import org.hkijena.jipipe.ui.components.tabs.DocumentTabPane;
 import org.hkijena.jipipe.ui.running.JIPipeRunExecuterUI;
-import org.hkijena.jipipe.utils.AutoResizeSplitPane;
-import org.hkijena.jipipe.utils.PathIOMode;
-import org.hkijena.jipipe.utils.PathType;
-import org.hkijena.jipipe.utils.StringUtils;
-import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.utils.*;
 import org.hkijena.jipipe.utils.ui.CopyImageToClipboard;
 
 import javax.imageio.ImageIO;
+import javax.swing.Timer;
 import javax.swing.*;
-import java.awt.Adjustable;
-import java.awt.BorderLayout;
-import java.awt.Component;
+import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 public class ImageViewerPanel extends JPanel {
     private static final Set<ImageViewerPanel> OPEN_PANELS = new HashSet<>();
@@ -89,9 +75,8 @@ public class ImageViewerPanel extends JPanel {
     private JMenuItem exportAllSlicesItem;
     private JMenuItem exportMovieItem;
     private JToolBar toolBar = new JToolBar();
-    private Timer animationTimer = new Timer(250, e -> animateNextSlice());
     private List<ImageViewerPanelPlugin> plugins = new ArrayList<>();
-    private JButton rotateLeftButton;
+    private JButton rotateLeftButton;    private Timer animationTimer = new Timer(250, e -> animateNextSlice());
     private JButton rotateRightButton;
     private JToggleButton enableSideBarButton = new JToggleButton();
     private Component currentContentPanel;
@@ -106,6 +91,39 @@ public class ImageViewerPanel extends JPanel {
         }
         initialize();
         updateZoomStatus();
+    }
+
+    public static ImageViewerPanel getActiveViewerPanel() {
+        return ACTIVE_PANEL;
+    }
+
+    public static Set<ImageViewerPanel> getOpenViewerPanels() {
+        return OPEN_PANELS;
+    }
+
+    /**
+     * Opens the image in a new frame
+     *
+     * @param image the image
+     * @param title the title
+     * @return the panel
+     */
+    public static ImageViewerPanel showImage(ImagePlus image, String title) {
+        ImageViewerPanel dataDisplay = new ImageViewerPanel();
+        List<ImageViewerPanelPlugin> pluginList = new ArrayList<>();
+        pluginList.add(new CalibrationPlugin(dataDisplay));
+        pluginList.add(new PixelInfoPlugin(dataDisplay));
+        pluginList.add(new LUTManagerPlugin(dataDisplay));
+        pluginList.add(new ROIManagerPlugin(dataDisplay));
+        pluginList.add(new AnimationSpeedPlugin(dataDisplay));
+        pluginList.add(new MeasurementDrawerPlugin(dataDisplay));
+        pluginList.add(new MeasurementPlugin(dataDisplay));
+        dataDisplay.setPlugins(pluginList);
+        dataDisplay.setImage(image);
+        ImageViewerWindow window = new ImageViewerWindow(dataDisplay);
+        window.setTitle(title);
+        window.setVisible(true);
+        return dataDisplay;
     }
 
     public ImageViewerUISettings getSettings() {
@@ -819,39 +837,6 @@ public class ImageViewerPanel extends JPanel {
 
     public ImageStatistics getStatistics() {
         return statistics;
-    }
-
-    public static ImageViewerPanel getActiveViewerPanel() {
-        return ACTIVE_PANEL;
-    }
-
-    public static Set<ImageViewerPanel> getOpenViewerPanels() {
-        return OPEN_PANELS;
-    }
-
-    /**
-     * Opens the image in a new frame
-     *
-     * @param image the image
-     * @param title the title
-     * @return the panel
-     */
-    public static ImageViewerPanel showImage(ImagePlus image, String title) {
-        ImageViewerPanel dataDisplay = new ImageViewerPanel();
-        List<ImageViewerPanelPlugin> pluginList = new ArrayList<>();
-        pluginList.add(new CalibrationPlugin(dataDisplay));
-        pluginList.add(new PixelInfoPlugin(dataDisplay));
-        pluginList.add(new LUTManagerPlugin(dataDisplay));
-        pluginList.add(new ROIManagerPlugin(dataDisplay));
-        pluginList.add(new AnimationSpeedPlugin(dataDisplay));
-        pluginList.add(new MeasurementDrawerPlugin(dataDisplay));
-        pluginList.add(new MeasurementPlugin(dataDisplay));
-        dataDisplay.setPlugins(pluginList);
-        dataDisplay.setImage(image);
-        ImageViewerWindow window = new ImageViewerWindow(dataDisplay);
-        window.setTitle(title);
-        window.setVisible(true);
-        return dataDisplay;
     }
 
 

@@ -18,12 +18,7 @@ import org.hkijena.jipipe.api.registries.JIPipeExpressionRegistry;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
-import java.awt.BorderLayout;
-import java.awt.Component;
-import java.awt.Font;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
-import java.awt.Insets;
+import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.Comparator;
@@ -37,17 +32,6 @@ public class FunctionSelectorList extends JList<JIPipeExpressionRegistry.Express
 
     public FunctionSelectorList() {
         initialize();
-    }
-
-    private void initialize() {
-        DefaultListModel<JIPipeExpressionRegistry.ExpressionFunctionEntry> model = new DefaultListModel<>();
-        for (JIPipeExpressionRegistry.ExpressionFunctionEntry functionEntry : JIPipe.getInstance().getExpressionRegistry().getRegisteredExpressionFunctions().values().stream()
-                .sorted(Comparator.comparing(JIPipeExpressionRegistry.ExpressionFunctionEntry::getName)).collect(Collectors.toList())) {
-            model.addElement(functionEntry);
-        }
-        setCellRenderer(new ExpressionFunctionRenderer());
-        setModel(model);
-        setSelectedIndex(0);
     }
 
     public static JIPipeExpressionRegistry.ExpressionFunctionEntry showDialog(Component parent) {
@@ -93,6 +77,17 @@ public class FunctionSelectorList extends JList<JIPipeExpressionRegistry.Express
         UIUtils.addEscapeListener(dialog);
         dialog.setVisible(true);
         return confirmed.get() ? functionSelectorList.getSelectedValue() : null;
+    }
+
+    private void initialize() {
+        DefaultListModel<JIPipeExpressionRegistry.ExpressionFunctionEntry> model = new DefaultListModel<>();
+        for (JIPipeExpressionRegistry.ExpressionFunctionEntry functionEntry : JIPipe.getInstance().getExpressionRegistry().getRegisteredExpressionFunctions().values().stream()
+                .sorted(Comparator.comparing(JIPipeExpressionRegistry.ExpressionFunctionEntry::getName)).collect(Collectors.toList())) {
+            model.addElement(functionEntry);
+        }
+        setCellRenderer(new ExpressionFunctionRenderer());
+        setModel(model);
+        setSelectedIndex(0);
     }
 
     public static class ExpressionFunctionRenderer extends JPanel implements ListCellRenderer<JIPipeExpressionRegistry.ExpressionFunctionEntry> {
