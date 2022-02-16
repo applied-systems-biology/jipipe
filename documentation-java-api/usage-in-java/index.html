@@ -5,7 +5,7 @@
     
       <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-<meta name="revised" content="2021-11-19T18:01:39 CET">
+<meta name="revised" content="2022-02-16T11:10:37 CET">
 <title>Usage in Java :: JIPipe for ImageJ</title>
 <link rel="shortcut icon" href="../../images/favicon.png" type="image/x-icon" />
 <link href="../../css/font-awesome.min.css" rel="stylesheet">
@@ -743,19 +743,14 @@
 without the need for a GUI or through ImageJ1 or ImageJ2 scripts.</p>
 <h1 id="prerequisites">Prerequisites</h1>
 <p>To use the JIPipe API JIPipe must be initialized first. This requires an ImageJ instance
-or any other way to load SciJava plugins. The following example shows how to initialize JIPipe.</p>
+or any other way to load SciJava plugins. The following example shows how to initialize JIPipe manually from a main function.</p>
 <div class="highlight"><pre style="color:#272822;background-color:#fafafa;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#00a8c8">public</span> <span style="color:#00a8c8">static</span> <span style="color:#00a8c8">void</span> <span style="color:#75af00">main</span><span style="color:#f92672">(</span><span style="color:#111">String</span><span style="color:#f92672">[]</span> <span style="color:#111">args</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
-  <span style="color:#75715e">// Extract necessary SciJava variables
-</span><span style="color:#75715e"></span>  <span style="color:#75715e">// An alternative is to create a @Plugin and execute this plugin via ImageJ
-</span><span style="color:#75715e"></span>  <span style="color:#00a8c8">final</span> <span style="color:#111">ImageJ</span> <span style="color:#111">ij</span> <span style="color:#f92672">=</span> <span style="color:#00a8c8">new</span> <span style="color:#111">ImageJ</span><span style="color:#f92672">();</span>
-  <span style="color:#111">Context</span> <span style="color:#111">context</span> <span style="color:#f92672">=</span> <span style="color:#111">ij</span><span style="color:#f92672">.</span><span style="color:#75af00">context</span><span style="color:#f92672">();</span>
+  <span style="color:#75715e">// Just call this function before all others. It will create a new ImageJ instance and passes the context to JIPipe
+</span><span style="color:#75715e"></span>  <span style="color:#75715e">// If JIPipe is already initialized, the function has no effect
+</span><span style="color:#75715e"></span>  <span style="color:#111">JIPipe</span><span style="color:#f92672">.</span><span style="color:#75af00">ensureInstance</span><span style="color:#f92672">();</span>
 
-  <span style="color:#75715e">// Execute the JIPipe registration if necessary
-</span><span style="color:#75715e"></span>  <span style="color:#00a8c8">if</span> <span style="color:#f92672">(</span><span style="color:#111">JIPipe</span><span style="color:#f92672">.</span><span style="color:#75af00">getInstance</span><span style="color:#f92672">()</span> <span style="color:#f92672">==</span> <span style="color:#00a8c8">null</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
-      <span style="color:#111">JIPipe</span><span style="color:#f92672">.</span><span style="color:#75af00">createInstance</span><span style="color:#f92672">(</span><span style="color:#111">context</span><span style="color:#f92672">);</span>
-      <span style="color:#111">JIPipe</span><span style="color:#f92672">.</span><span style="color:#75af00">getInstance</span><span style="color:#f92672">().</span><span style="color:#75af00">initialize</span><span style="color:#f92672">();</span>
-  <span style="color:#f92672">}</span>
-
+  <span style="color:#75715e">// If you already have a Context object: JIPipe.ensureInstance(context)
+</span><span style="color:#75715e"></span>
   <span style="color:#75715e">// JIPipe is now ready to use
 </span><span style="color:#75715e"></span><span style="color:#f92672">}</span>
 </code></pre></div><h1 id="loading-and-running-a-project">Loading and running a project</h1>
