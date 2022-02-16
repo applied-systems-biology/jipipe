@@ -196,13 +196,11 @@ public class JIPipeCacheMultiDataSlotTableUI extends JIPipeWorkbenchPanel {
         JButton autoSizeButton = new JButton(UIUtils.getIconFromResources("actions/zoom-fit-width.png"));
         autoSizeButton.setToolTipText("Auto-size columns to fit their contents");
         autoSizeButton.addActionListener(e -> table.packAll());
-        UIUtils.makeFlat25x25(autoSizeButton);
         toolBar.add(autoSizeButton);
 
         JButton smallSizeButton = new JButton(UIUtils.getIconFromResources("actions/zoom-best-fit.png"));
         smallSizeButton.setToolTipText("Auto-size columns to the default size");
         smallSizeButton.addActionListener(e -> UIUtils.packDataTable(table));
-        UIUtils.makeFlat25x25(smallSizeButton);
         toolBar.add(smallSizeButton);
 
         toolBar.addSeparator();
@@ -333,7 +331,7 @@ public class JIPipeCacheMultiDataSlotTableUI extends JIPipeWorkbenchPanel {
             JIPipeMergedDataSlotTableModel model = (JIPipeMergedDataSlotTableModel) table.getModel();
             TableCellRenderer defaultRenderer = table.getTableHeader().getDefaultRenderer();
             int modelColumn = table.convertColumnIndexToModel(column);
-            int spacer = model.isWithCompartmentAndAlgorithm() ? 6 : 4;
+            int spacer = model.isWithCompartmentAndAlgorithm() ? 7 : 5;
             if (modelColumn < spacer) {
                 return defaultRenderer.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
             } else if (dataTable.toDataAnnotationColumnIndex(modelColumn) != -1) {

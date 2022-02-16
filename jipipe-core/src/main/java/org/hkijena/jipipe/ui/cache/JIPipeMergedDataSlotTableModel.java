@@ -126,9 +126,9 @@ public class JIPipeMergedDataSlotTableModel implements TableModel {
     @Override
     public int getColumnCount() {
         if (withCompartmentAndAlgorithm)
-            return annotationColumns.size() + dataAnnotationColumns.size() + 6;
+            return annotationColumns.size() + dataAnnotationColumns.size() + 7;
         else
-            return annotationColumns.size() + dataAnnotationColumns.size() + 4;
+            return annotationColumns.size() + dataAnnotationColumns.size() + 5;
     }
 
     /**
@@ -139,13 +139,13 @@ public class JIPipeMergedDataSlotTableModel implements TableModel {
      */
     public int toAnnotationColumnIndex(int columnIndex) {
         if (withCompartmentAndAlgorithm) {
-            if (columnIndex >= getDataAnnotationColumns().size() + 6)
-                return columnIndex - getDataAnnotationColumns().size() - 6;
+            if (columnIndex >= getDataAnnotationColumns().size() + 7)
+                return columnIndex - getDataAnnotationColumns().size() - 7;
             else
                 return -1;
         } else {
-            if (columnIndex >= getDataAnnotationColumns().size() + 4)
-                return columnIndex - getDataAnnotationColumns().size() - 4;
+            if (columnIndex >= getDataAnnotationColumns().size() + 5)
+                return columnIndex - getDataAnnotationColumns().size() - 5;
             else
                 return -1;
         }
@@ -159,14 +159,14 @@ public class JIPipeMergedDataSlotTableModel implements TableModel {
      */
     public int toDataAnnotationColumnIndex(int columnIndex) {
         if (withCompartmentAndAlgorithm) {
-            if (columnIndex < getDataAnnotationColumns().size() + 6 && (columnIndex - 6) < getDataAnnotationColumns().size()) {
-                return columnIndex - 6;
+            if (columnIndex < getDataAnnotationColumns().size() + 7 && (columnIndex - 7) < getDataAnnotationColumns().size()) {
+                return columnIndex - 7;
             } else {
                 return -1;
             }
         } else {
-            if (columnIndex < getDataAnnotationColumns().size() + 4 && (columnIndex - 4) < getDataAnnotationColumns().size()) {
-                return columnIndex - 4;
+            if (columnIndex < getDataAnnotationColumns().size() + 5 && (columnIndex - 5) < getDataAnnotationColumns().size()) {
+                return columnIndex - 5;
             } else {
                 return -1;
             }
@@ -176,30 +176,34 @@ public class JIPipeMergedDataSlotTableModel implements TableModel {
     @Override
     public String getColumnName(int columnIndex) {
         if (withCompartmentAndAlgorithm) {
-            if (columnIndex == 0)
+            if(columnIndex == 0)
+                return "Slot";
+            if (columnIndex == 1)
                 return "Compartment";
-            else if (columnIndex == 1)
+            else if (columnIndex == 2)
                 return "Algorithm";
-            if (columnIndex == 2)
+            if (columnIndex == 3)
                 return "Index";
-            else if (columnIndex == 3)
-                return "Data type";
             else if (columnIndex == 4)
-                return "Preview";
+                return "Data type";
             else if (columnIndex == 5)
+                return "Preview";
+            else if (columnIndex == 6)
                 return "String representation";
             else if (toDataAnnotationColumnIndex(columnIndex) != -1)
                 return dataAnnotationColumns.get(toDataAnnotationColumnIndex(columnIndex));
             else
                 return annotationColumns.get(toAnnotationColumnIndex(columnIndex));
         } else {
-            if (columnIndex == 0)
+            if(columnIndex == 0)
+                return "Slot";
+            if (columnIndex == 1)
                 return "Index";
-            else if (columnIndex == 1)
-                return "Data type";
             else if (columnIndex == 2)
-                return "Preview";
+                return "Data type";
             else if (columnIndex == 3)
+                return "Preview";
+            else if (columnIndex == 4)
                 return "String representation";
             else if (toDataAnnotationColumnIndex(columnIndex) != -1)
                 return dataAnnotationColumns.get(toDataAnnotationColumnIndex(columnIndex));
@@ -212,16 +216,18 @@ public class JIPipeMergedDataSlotTableModel implements TableModel {
     public Class<?> getColumnClass(int columnIndex) {
         if (withCompartmentAndAlgorithm) {
             if (columnIndex == 0)
-                return JIPipeProjectCompartment.class;
+                return String.class;
             else if (columnIndex == 1)
-                return JIPipeGraphNode.class;
+                return JIPipeProjectCompartment.class;
             else if (columnIndex == 2)
-                return Integer.class;
+                return JIPipeGraphNode.class;
             else if (columnIndex == 3)
-                return JIPipeDataInfo.class;
+                return Integer.class;
             else if (columnIndex == 4)
-                return Component.class;
+                return JIPipeDataInfo.class;
             else if (columnIndex == 5)
+                return Component.class;
+            else if (columnIndex == 6)
                 return String.class;
             else if (toDataAnnotationColumnIndex(columnIndex) != -1)
                 return Component.class;
@@ -229,12 +235,14 @@ public class JIPipeMergedDataSlotTableModel implements TableModel {
                 return JIPipeTextAnnotation.class;
         } else {
             if (columnIndex == 0)
-                return Integer.class;
+                return String.class;
             else if (columnIndex == 1)
-                return JIPipeDataInfo.class;
+                return Integer.class;
             else if (columnIndex == 2)
-                return Component.class;
+                return JIPipeDataInfo.class;
             else if (columnIndex == 3)
+                return Component.class;
+            else if (columnIndex == 4)
                 return String.class;
             else if (toDataAnnotationColumnIndex(columnIndex) != -1)
                 return Component.class;
@@ -256,16 +264,18 @@ public class JIPipeMergedDataSlotTableModel implements TableModel {
     public Object getValueAt(int rowIndex, int columnIndex) {
         if (withCompartmentAndAlgorithm) {
             if (columnIndex == 0)
-                return compartmentList.get(rowIndex);
+                return slotList.get(rowIndex).getName();
             else if (columnIndex == 1)
-                return algorithmList.get(rowIndex);
+                return compartmentList.get(rowIndex);
             else if (columnIndex == 2)
-                return rowList.get(rowIndex);
+                return algorithmList.get(rowIndex);
             else if (columnIndex == 3)
+                return rowList.get(rowIndex);
+            else if (columnIndex == 4)
                 return JIPipeDataInfo.getInstance(slotList.get(rowIndex).getDataClass(rowList.get(rowIndex)));
-            else if (columnIndex == 4) {
+            else if (columnIndex == 5) {
                 return getMainDataPreviewComponent(rowIndex);
-            } else if (columnIndex == 5)
+            } else if (columnIndex == 6)
                 return "" + slotList.get(rowIndex).getVirtualData(rowList.get(rowIndex)).getStringRepresentation();
             else if (toDataAnnotationColumnIndex(columnIndex) != -1) {
                 return getDataAnnotationPreviewComponent(rowIndex, columnIndex);
@@ -276,12 +286,14 @@ public class JIPipeMergedDataSlotTableModel implements TableModel {
             }
         } else {
             if (columnIndex == 0)
-                return rowList.get(rowIndex);
+                return slotList.get(rowIndex).getName();
             else if (columnIndex == 1)
+                return rowList.get(rowIndex);
+            else if (columnIndex == 2)
                 return JIPipeDataInfo.getInstance(slotList.get(rowIndex).getDataClass(rowList.get(rowIndex)));
-            else if (columnIndex == 2) {
+            else if (columnIndex == 3) {
                 return getMainDataPreviewComponent(rowIndex);
-            } else if (columnIndex == 3)
+            } else if (columnIndex == 4)
                 return "" + slotList.get(rowIndex).getVirtualData(rowList.get(rowIndex)).getStringRepresentation();
             else if (toDataAnnotationColumnIndex(columnIndex) != -1) {
                 return getDataAnnotationPreviewComponent(rowIndex, columnIndex);
