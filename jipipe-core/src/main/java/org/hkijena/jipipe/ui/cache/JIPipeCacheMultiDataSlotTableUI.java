@@ -35,6 +35,7 @@ import org.hkijena.jipipe.ui.components.PreviewControlUI;
 import org.hkijena.jipipe.ui.components.renderers.JIPipeComponentCellRenderer;
 import org.hkijena.jipipe.ui.components.search.SearchTextField;
 import org.hkijena.jipipe.ui.components.search.SearchTextFieldTableRowFilter;
+import org.hkijena.jipipe.ui.components.tabs.DocumentTabPane;
 import org.hkijena.jipipe.ui.parameters.ParameterPanel;
 import org.hkijena.jipipe.ui.resultanalysis.JIPipeAnnotationTableCellRenderer;
 import org.hkijena.jipipe.ui.resultanalysis.JIPipeNodeTableCellRenderer;
@@ -173,6 +174,7 @@ public class JIPipeCacheMultiDataSlotTableUI extends JIPipeWorkbenchPanel {
         searchTextField.addActionListener(e -> reloadTable());
         toolBar.add(searchTextField);
 
+        // Export menu
         JButton exportButton = new JButton("Export table", UIUtils.getIconFromResources("actions/document-export.png"));
         toolBar.add(exportButton);
         JPopupMenu exportMenu = UIUtils.addPopupMenuToComponent(exportButton);
@@ -193,6 +195,25 @@ public class JIPipeCacheMultiDataSlotTableUI extends JIPipeWorkbenchPanel {
         exportByMetadataExporterItem.addActionListener(e -> exportByMetadataExporter());
         exportMenu.add(exportByMetadataExporterItem);
 
+        // Window menu
+        JButton openWindowButton = new JButton(UIUtils.getIconFromResources("actions/window_new.png"));
+        openWindowButton.setToolTipText("Open in new window/tab");
+        toolBar.add(openWindowButton);
+        JPopupMenu windowMenu = UIUtils.addPopupMenuToComponent(openWindowButton);
+
+        JMenuItem openReferenceWindowItem = new JMenuItem("Open in new tab", UIUtils.getIconFromResources("actions/tab.png"));
+        openReferenceWindowItem.addActionListener(e-> {
+            String name = "Cache: " + slots.stream().map(slot -> slot.getNode().getName()).distinct().collect(Collectors.joining(", "));
+            getWorkbench().getDocumentTabPane().addTab(name,
+                    UIUtils.getIconFromResources("actions/database.png"),
+                    new JIPipeCacheMultiDataSlotTableUI(getWorkbench(), slots, withCompartmentAndAlgorithm),
+                    DocumentTabPane.CloseMode.withSilentCloseButton,
+                    true);
+            getWorkbench().getDocumentTabPane().switchToLastTab();
+        });
+        windowMenu.add(openReferenceWindowItem);
+
+        // Size controls
         JButton autoSizeButton = new JButton(UIUtils.getIconFromResources("actions/zoom-fit-width.png"));
         autoSizeButton.setToolTipText("Auto-size columns to fit their contents");
         autoSizeButton.addActionListener(e -> table.packAll());
